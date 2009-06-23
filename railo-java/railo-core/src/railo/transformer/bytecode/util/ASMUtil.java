@@ -1,0 +1,447 @@
+
+
+package railo.transformer.bytecode.util;
+
+import java.util.Iterator;
+import java.util.List;
+
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.GeneratorAdapter;
+import org.objectweb.asm.commons.Method;
+
+import railo.commons.lang.StringUtil;
+import railo.runtime.exp.PageException;
+import railo.runtime.net.rpc.AxisCaster;
+import railo.runtime.op.Caster;
+import railo.transformer.bytecode.Body;
+import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Literal;
+import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Statement;
+import railo.transformer.bytecode.expression.ExprDouble;
+import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.statement.FlowControl;
+import railo.transformer.bytecode.statement.PrintOut;
+import railo.transformer.bytecode.statement.tag.Attribute;
+import railo.transformer.bytecode.statement.tag.Tag;
+import railo.transformer.bytecode.statement.tag.TagComponent;
+import railo.transformer.cfml.evaluator.EvaluatorException;
+
+public final class ASMUtil {
+
+	private final static Method CONSTRUCTOR_OBJECT = Method.getMethod("void <init> ()");
+	private static long id=0;
+		
+	/**
+	 * Gibt zurück ob das direkt übergeordnete Tag mit dem übergebenen Full-Name (Namespace und Name) existiert.
+	 * @param el Startelement, von wo aus gesucht werden soll.
+	 * @param fullName Name des gesuchten Tags.
+	 * @return Existiert ein solches Tag oder nicht.
+	 */
+	public static boolean hasAncestorTag(Tag tag, String fullName) {
+	    return getAncestorTag(tag, fullName)!=null;
+	}
+	
+
+	/**
+	 * Gibt das übergeordnete CFXD Tag Element zurück, falls dies nicht existiert wird null zurückgegeben.
+	 * @param el Element von dem das parent Element zurückgegeben werden soll.
+	 * @return übergeordnete CFXD Tag Element
+	 */
+	public static Tag getParentTag(Tag tag)	{
+		Statement p=tag.getParent();
+		if(p==null)return null;
+		p=p.getParent();
+		if(p instanceof Tag) return (Tag) p;
+		return null;
+	}
+
+	public static boolean isParentTag(Tag tag,String fullName)	{
+		Tag p = getParentTag(tag);
+		if(p==null) return false;
+		return p.getFullname().equalsIgnoreCase(fullName);
+		
+	}
+	public static boolean isParentTag(Tag tag,Class clazz)	{
+		Tag p = getParentTag(tag);
+		if(p==null) return false;
+		return p.getClass()==clazz;
+		
+	}
+	
+	/**
+	 * has ancestor LoopStatement 
+	 * @param stat
+	 * @return
+	 */
+	public static boolean hasAncestorLoopStatement(Statement stat) {
+		return getAncestorFlowControlStatement(stat)!=null;
+	}
+	
+	/**
+	 * get ancestor LoopStatement 
+	 * @param stat
+	 * @return
+	 */
+	public static FlowControl getAncestorFlowControlStatement(Statement stat) {
+		Statement parent = stat;
+		while(true)	{
+			parent=parent.getParent();
+			if(parent==null)return null;
+			if(parent instanceof FlowControl)	{
+				return (FlowControl) parent;
+			}
+		}
+	}
+
+
+	
+	/**
+	 * Gibt ein übergeordnetes Tag mit dem übergebenen Full-Name (Namespace und Name) zurück, 
+	 * falls ein solches existiert, andernfalls wird null zurückgegeben.
+	 * @param el Startelement, von wo aus gesucht werden soll.
+	 * @param fullName Name des gesuchten Tags.
+	 * @return  Übergeornetes Element oder null.
+	 */
+	public static Tag getAncestorTag(Tag tag, String fullName) {
+		Statement parent=tag;
+		while(true)	{
+			parent=parent.getParent();
+			if(parent==null)return null;
+			if(parent instanceof Tag)	{
+				tag=(Tag) parent;
+				if(tag.getFullname().equalsIgnoreCase(fullName))
+					return tag;
+			}
+		}
+	}
+	
+
+
+    /**
+     * extract the content of a attribut
+     * @param cfxdTag
+     * @param attrName
+     * @return attribute value
+     * @throws EvaluatorException
+     */
+	public static String getAttributeString(Tag tag,String attrName) throws EvaluatorException {
+		Attribute attr = tag.getAttribute(attrName);
+		if(attr.getValue() instanceof Literal) return ((Literal)attr.getValue()).getString();
+        throw new EvaluatorException("attribute ["+attrName+"] must be a constant value");
+    }
+    
+    /**
+     * extract the content of a attribut
+     * @param cfxdTag
+     * @param attrName
+     * @return attribute value
+     * @throws EvaluatorException
+     */
+	public static String getAttributeString(Tag tag,String attrName, String defaultValue) {
+		Attribute attr = tag.getAttribute(attrName);
+		if(attr.getValue() instanceof Literal) return ((Literal)attr.getValue()).getString();
+        return defaultValue; 
+    }
+	
+
+	/**
+	 * Prüft ob das das angegebene Tag in der gleichen Ebene nach dem angegebenen Tag vorkommt.
+	 * @param tag Ausgangspunkt, nach diesem tag darf das angegebene nicht vorkommen.
+	 * @param nameToFind Tag Name der nicht vorkommen darf
+	 * @return kommt das Tag vor.
+	 */
+	public static boolean hasSisterTagAfter(Tag tag, String nameToFind) {
+		Body body=(Body) tag.getParent();
+		List stats = body.getStatements();
+		Iterator it = stats.iterator();
+		Statement other;
+		
+		boolean isAfter=false;
+		while(it.hasNext()) {
+			other=(Statement) it.next();
+			
+			if(other instanceof Tag) {
+				if(isAfter) {
+					if(((Tag) other).getTagLibTag().getName().equals(nameToFind))
+					return true;
+				}
+				else if(other == tag) isAfter=true;
+				
+			}
+			
+		}
+		return false;
+	}
+	
+	
+	
+	/**
+	 * Prüft ob das angegebene Tag innerhalb seiner Ebene einmalig ist oder nicht.
+	 * @param tag Ausgangspunkt, nach diesem tag darf das angegebene nicht vorkommen.
+	 * @return kommt das Tag vor.
+	 */
+	public static boolean hasSisterTagWithSameName(Tag tag) {
+		
+		Body body=(Body) tag.getParent();
+		List stats = body.getStatements();
+		Iterator it = stats.iterator();
+		Statement other;
+		String name=tag.getTagLibTag().getName();
+		
+		while(it.hasNext()) {
+			other=(Statement) it.next();
+			
+			if(other != tag && other instanceof Tag && ((Tag) other).getTagLibTag().getName().equals(name))
+					return true;
+			
+		}
+		return false;
+	}
+
+	/**
+	 * remove this tag from his parent body
+	 * @param tag
+	 */
+	public static void remove(Tag tag) {
+		Body body=(Body) tag.getParent();
+		body.getStatements().remove(tag);
+	}
+
+	/**
+	 * replace src with trg
+	 * @param src
+	 * @param trg
+	 */
+	public static void replace(Tag src, Tag trg, boolean moveBody) {
+		trg.setParent(src.getParent());
+		
+		Body p=(Body) src.getParent();
+		List stats = p.getStatements();
+		Iterator it = stats.iterator();
+		Statement stat;
+		int count=0;
+		
+		while(it.hasNext()) {
+			stat=(Statement) it.next();
+			if(stat==src) {
+				if(moveBody && src.getBody()!=null)src.getBody().setParent(trg);
+				stats.set(count, trg);
+				break;
+			}
+			count++;
+		}
+	}
+	
+	public static Page getAncestorPage(Statement stat) throws BytecodeException {
+		//print.ln("getAncestorPage:"+stat);
+		Statement parent=stat;
+		while(true)	{
+			parent=parent.getParent();
+			//print.out(" - "+parent);
+			if(parent==null) {
+				throw new BytecodeException("missing parent Statement of Statment",stat.getLine());
+				//return null;
+			}
+			if(parent instanceof Page)	return (Page) parent;
+		}
+	}
+	
+	public static Tag getAncestorComponent(Statement stat) throws BytecodeException {
+		//print.ln("getAncestorPage:"+stat);
+		Statement parent=stat;
+		while(true)	{
+			parent=parent.getParent();
+			//print.ln(" - "+parent);
+			if(parent==null) {
+				throw new BytecodeException("missing parent Statement of Statment",stat.getLine());
+				//return null;
+			}
+			if(parent instanceof TagComponent)
+			//if(parent instanceof Tag && "component".equals(((Tag)parent).getTagLibTag().getName()))	
+				return (Tag) parent;
+		}
+	}
+	
+	public static Statement getRoot(Statement stat) {
+		while(true)	{
+			if(isRoot(stat))	{
+				return stat;
+			}
+			stat=stat.getParent();
+		}
+	}
+
+
+
+    public static boolean isRoot(Statement statement) { 
+    	//return statement instanceof Page || (statement instanceof Tag && "component".equals(((Tag)statement).getTagLibTag().getName()));
+    	return statement instanceof Page || statement instanceof TagComponent;
+    }
+	
+	public static void invokeMethod(GeneratorAdapter adapter, Type type, Method method) {
+		if(type.getClass().isInterface())
+			adapter.invokeInterface(type, method);
+		else
+			adapter.invokeVirtual(type, method);
+	}
+
+    public static byte[] createPojo(String className, ASMProperty[] properties,Class parent, String srcName) throws PageException {
+    	className=className.replace('.', '/');
+    	className=className.replace('\\', '/');
+    	className=railo.runtime.type.List.trim(className, "/");
+    	
+    // CREATE CLASS	
+		ClassWriter cw = new ClassWriter(true);
+    	//ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        cw.visit(Opcodes.V1_2, Opcodes.ACC_PUBLIC, className, null, parent.getName().replace('.', '/'), null);
+    	
+    // Constructor
+        GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_OBJECT,null,null,cw);
+        adapter.loadThis();
+        adapter.invokeConstructor(toType(parent,true), CONSTRUCTOR_OBJECT);
+        adapter.returnValue();
+        adapter.endMethod();
+    
+        // properties
+        for(int i=0;i<properties.length;i++){
+        	createProperty(cw,className,properties[i]);
+        }
+        
+        // complexType src
+        if(!StringUtil.isEmpty(srcName)) {
+	        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, "_srcName", "()Ljava/lang/String;", null, null);
+	        mv.visitCode();
+	        Label l0 = new Label();
+	        mv.visitLabel(l0);
+	        mv.visitLineNumber(4, l0);
+	        mv.visitLdcInsn(srcName);
+	        mv.visitInsn(Opcodes.ARETURN);
+	        mv.visitMaxs(1, 0);
+	        mv.visitEnd();
+        }
+        
+        cw.visitEnd();
+        return cw.toByteArray();
+    }
+    
+    private static void createProperty(ClassWriter cw,String classType, ASMProperty property) throws PageException {
+		String name = property.getName().toLowerCase();
+		Type type = property.getASMType();
+		cw.visitField(Opcodes.ACC_PRIVATE, name, type.toString(), null, null).visitEnd();
+		
+    	// get<PropertyName>():object
+    		Type[] types=new Type[0];
+    		Method method = new Method("get"+StringUtil.ucFirst(name),type,types);
+            GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , method, null, null, cw);
+            
+            Label start = new Label();
+            adapter.visitLabel(start);
+			adapter.visitVarInsn(Opcodes.ALOAD, 0);
+			adapter.visitFieldInsn(Opcodes.GETFIELD, classType, name, type.toString());
+			adapter.returnValue();
+			Label end = new Label();
+			adapter.visitLabel(end);
+			
+			adapter.visitLabel(end);
+			adapter.visitLocalVariable("this", "L"+classType+";", null, start, end, 0);
+			adapter.visitMaxs(1, 1);
+			adapter.visitEnd();
+		
+		// set<PropertyName>(object):void
+	    	
+			types=new Type[]{type};
+			method = new Method("set"+StringUtil.ucFirst(name),Types.VOID,types);
+            adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , method, null, null, cw);
+            
+            Label l0 = new Label();
+            adapter.visitLabel(l0);
+            adapter.visitVarInsn(Opcodes.ALOAD, 0);
+            adapter.visitVarInsn(Opcodes.ALOAD, 1);
+            adapter.visitFieldInsn(Opcodes.PUTFIELD, classType, name, type.toString());
+			Label l1 = new Label();
+			adapter.visitLabel(l1);
+			adapter.visitInsn(Opcodes.RETURN);
+			Label l2 = new Label();
+			adapter.visitLabel(l2);
+			adapter.visitLocalVariable("this", "L"+classType+";", null, l0, l2, 0);
+			adapter.visitLocalVariable(name, type.toString(), null, l0, l2, 1);
+			adapter.visitMaxs(2, 2);
+			adapter.visitEnd();
+        
+	}
+
+    /**
+     * translate a string cfml type definition to a Type Object
+     * @param cfType
+     * @param axistype
+     * @return
+     * @throws PageException
+     */
+    public static Type toType(String cfType, boolean axistype) throws PageException {
+		return toType(Caster.cfTypeToClass(cfType), axistype);
+	}
+
+    /**
+     * translate a string cfml type definition to a Type Object
+     * @param cfType
+     * @param axistype
+     * @return
+     * @throws PageException
+     */
+    public static Type toType(Class type, boolean axistype) {
+		if(axistype)type=AxisCaster.toAxisTypeClass(type);
+		return Type.getType(type);	
+	}
+
+
+	public static void removeLiterlChildren(Tag tag, boolean recursive) {
+		Body body=tag.getBody();
+		if(body!=null) {
+        	List list = body.getStatements();
+        	Statement[] stats = (Statement[]) list.toArray(new Statement[list.size()]);
+        	PrintOut po;
+        	Tag t;
+        	for(int i=0;i<stats.length;i++) {
+            	if(stats[i] instanceof PrintOut) {
+            		po=(PrintOut) stats[i];
+            		if(po.getExpr() instanceof Literal) {
+            			body.getStatements().remove(po);
+            		}
+            	}
+            	else if(recursive && stats[i] instanceof Tag) {
+            		t=(Tag) stats[i];
+            		if(t.getTagLibTag().isAllowRemovingLiteral()) {
+            			removeLiterlChildren(t, recursive);
+            		}
+            	}
+            }
+        }
+	}
+
+
+	public synchronized static String getId() {
+		if(id<0)id=0;
+		return StringUtil.addZeros(++id,4);
+	}
+
+
+	public static boolean isEmpty(Body body) {
+		return body==null || body.isEmpty();
+	}
+
+
+	/**
+	 * @param adapter
+	 * @param expr
+	 * @param mode
+	 */
+	public static void pop(GeneratorAdapter adapter, Expression expr,int mode) {
+		if(mode==Expression.MODE_VALUE && (expr instanceof ExprDouble))adapter.pop2();
+		else adapter.pop();
+	}
+}

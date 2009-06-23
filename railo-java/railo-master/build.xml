@@ -1,0 +1,30 @@
+<project name="RailoMaster" default="master" basedir=".">
+
+    <description>Railo master build file to run all three sub projects together.</description>
+    
+    <!-- Load properties -->
+	<property file="build.properties"/>
+    
+	<!-- ================================= 
+          target: init              
+         ================================= -->
+    <target name="init" description="Cleans all three sub projects.">
+    	<echo>***** Start Railo build process. *****</echo>
+    	<ant dir="${loader.dir}" target="clean" inheritall="false" />
+    	<ant dir="${core.dir}" target="clean" inheritall="false" />
+    	<ant dir="${railo.dir}" target="clean" inheritall="false" />
+    </target>
+	
+	<!-- ================================= 
+          target: master              
+         ================================= -->
+    <target name="master" depends="init" description="Creates the Railo loader, core.rc and railo.jar">
+    	<echo>***** Building railo-loader.jar *****</echo>
+    	<ant dir="${loader.dir}" inheritAll="false"/>
+        <echo>***** Building Railo core.rc *****</echo>        
+        <ant dir="${core.dir}" inheritAll="false"/>
+        <echo>***** Building railo.jar *****</echo>
+        <ant dir="${railo.dir}" inheritAll="false"/>
+    </target>
+
+</project>

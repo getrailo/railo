@@ -1,0 +1,65 @@
+<project name="Railo" default="package" basedir=".">
+    
+	<description>Ant build file to build the railo.jar</description>
+	
+	<!-- Load properties -->
+	<property file="build.properties"/>
+	
+	<!-- Set jars -->
+	<path id="classpath">
+		<fileset dir="${lib.dir}"/>
+	</path>
+	
+	<!-- ================================= 
+          target: clean              
+         ================================= -->
+    <target name="clean" description="Clears the build and dist directories.">
+    	<echo>Deleting ${build.dir} and ${dist.dir}</echo>
+    	<delete dir="${build.dir}" />
+    	<delete dir="${dist.dir}"/>
+    </target>
+	
+	<!-- ================================= 
+          target: init              
+         ================================= -->
+    <target name="init" depends="clean" description="Creates nessesary directories.">
+    	<echo>Creating the build and dist directories.</echo>
+    	<mkdir dir="${build.dir}/classes"/>
+    	<mkdir dir="${dist.dir}"/>
+    </target>
+	
+	<!-- ================================= 
+          target: compile              
+         ================================= -->
+    <target name="compile" depends="init" description="Compiles the src classes.">
+        <echo>Compile the src.</echo>
+        <javac srcdir="${src.dir}" destdir="${build.dir}/classes" compiler="javac1.5" encoding="ISO-8859-1">
+        	<classpath refid="classpath"/>
+        </javac>
+    </target>
+	
+	<!-- ================================= 
+          target: copy              
+         ================================= -->
+    <target name="copy" depends="compile" description="Copies the resources.">
+        <echo>Copy the version file. (Needed, but not yet clear how to generate it the right way automaticllay).</echo>
+    	<copy todir="${build.dir}/classes/railo">
+    		<fileset file="${src.dir}/railo/version"/>
+    	</copy>
+    	<echo>Copy the core.rc to the classes/core directory.</echo>
+    	<copy todir="${build.dir}/classes/core">
+    		<fileset dir="${core.dir}"/>
+    	</copy>
+    </target>
+	
+	<!-- ================================= 
+          target: package              
+         ================================= -->
+    <target name="package" depends="copy" description="Creates the railo.jar file.">
+        <echo>Packaging the railo.jar file.</echo>
+    	<jar destfile="${dist.dir}/railo.jar">
+    		<fileset dir="${build.dir}/classes"/>
+    	</jar>
+    </target>
+		
+</project>

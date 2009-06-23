@@ -1,0 +1,61 @@
+<project name="RailoLoader" default="install" basedir=".">
+    
+	<description>Ant build file to build the RailoLoader</description>
+	
+	<!-- Load properties -->
+	<property file="build.properties"/>
+	
+	<!-- Set jars -->
+	<path id="classpath">
+		<fileset dir="${lib.dir}"/>
+	</path>
+	
+	<!-- ================================= 
+          target: clean              
+         ================================= -->
+    <target name="clean" description="Clears the build and dist directories.">
+    	<echo>Deleting ${build.dir} and ${dist.dir}</echo>
+    	<delete dir="${build.dir}" />
+    	<delete dir="${dist.dir}"/>
+    </target>
+	
+	<!-- ================================= 
+          target: init              
+         ================================= -->
+    <target name="init" depends="clean" description="Creates nessesary directories.">
+    	<echo>Creating the build and dist directories.</echo>
+    	<mkdir dir="${build.dir}/classes"/>
+    	<mkdir dir="${dist.dir}"/>
+    </target>
+	
+	<!-- ================================= 
+          target: compile              
+         ================================= -->
+    <target name="compile" depends="init" description="Compiles the src classes.">
+        <echo>Compile the RailoLoader src.</echo>
+        <javac srcdir="${src.dir}" destdir="${build.dir}/classes" compiler="javac1.5" encoding="ISO-8859-1">
+        	<classpath refid="classpath"/>
+        </javac>
+    </target>
+	
+	<!-- ================================= 
+          target: package              
+         ================================= -->
+    <target name="package" depends="compile" description="Creates the railo-loader.jar file.">
+        <echo>Packaging the railo-loader.jar file.</echo>
+    	<jar destfile="${dist.dir}/railo-loader.jar">
+    		<fileset dir="${build.dir}/classes"/>
+    	</jar>
+    </target>
+	
+	<!-- ================================= 
+          target: install              
+         ================================= -->
+    <target name="install" depends="package" description="Copies the railo-loader.jar to the Railo src directory.">
+        <echo>Copy the railo-loader.jar to the Railo core lib directory.</echo>
+    	<copy todir="${railo.core.lib.dir}">
+    		<fileset dir="${dist.dir}"/>
+    	</copy>
+    </target>
+		
+</project>

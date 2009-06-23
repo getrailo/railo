@@ -1,0 +1,83 @@
+<project name="RailoCore" default="install" basedir=".">
+    
+	<description>Ant build file to build the railo.rc</description>
+	
+	<!-- Load properties -->
+	<property file="build.properties"/>
+	
+	<!-- Set jars -->
+	<path id="classpath">
+		<fileset dir="${lib.dir}"/>
+	</path>
+	
+	<!-- ================================= 
+          target: clean              
+         ================================= -->
+    <target name="clean" description="Clears the build and dist directories.">
+    	<echo>Deleting ${build.dir} and ${dist.dir}</echo>
+    	<delete dir="${build.dir}" />
+    	<delete dir="${dist.dir}"/>
+    </target>
+	
+	<!-- ================================= 
+          target: init              
+         ================================= -->
+    <target name="init" depends="clean" description="Creates nessesary directories.">
+    	<echo>Creating the build, admin and dist directories.</echo>
+    	<mkdir dir="${build.dir}/classes"/>
+    	<mkdir dir="${build.dir}/admin"/>
+    	<mkdir dir="${dist.dir}"/>
+    </target>
+	
+	<!-- ================================= 
+          target: compile railo classes             
+         ================================= -->
+    <target name="compile" depends="init" description="Compiles the src classes.">
+        <echo>Compile Railo src.</echo>
+        <javac srcdir="${src.dir}" destdir="${build.dir}/classes" compiler="javac1.5" encoding="ISO-8859-1" fork="true" memorymaximumsize="512m">
+        	<classpath refid="classpath"/>
+        </javac>
+    </target>
+        	
+	<!-- ================================= 
+          target: createadmin              
+         ================================= -->
+    <target name="createadmin" depends="compile" description="Create the railo-context.ra">
+        <echo>Creating the admin is not yet implemented.</echo>
+    </target>
+	
+	<!-- ================================= 
+          target: copy railo.rc dependencies              
+         ================================= -->
+    <target name="copy" depends="createadmin" description="Copies the resource directory.">
+        <echo>Copy resource directory to build.</echo>
+    	<copy todir="${build.dir}/classes/resource">
+    		<fileset dir="${src.dir}/resource"/>
+    	</copy>
+		<echo>Copy railo-context.ra (admin) to context (Not yet implemented).</echo>
+		<copy todir="${build.dir}/classes/resource/context">
+			<fileset dir="${build.dir}/admin"/>
+		</copy>
+    </target>
+	
+	<!-- ================================= 
+          target: package railo.rc              
+         ================================= -->
+    <target name="package" depends="copy" description="Creates the the core.rc file.">
+        <echo>Packaging the core.rc</echo>
+    	<jar destfile="${dist.dir}/${core.version}.rc">
+			<fileset dir="${build.dir}/classes" excludes="**/servlet/**"/>
+		</jar>
+    </target>
+		
+	<!-- ================================= 
+          target: install              
+         ================================= -->
+    <target name="install" depends="package" description="Copies the railo.jar file to the core directory.">
+        <echo>Copy the railo.rc file to the RailoLoader.</echo>
+    	<copy todir="${core.dir}">
+    		<fileset dir="${dist.dir}"/>
+    	</copy>
+    </target>
+		
+</project>
