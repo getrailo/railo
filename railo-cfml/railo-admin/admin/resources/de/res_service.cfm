@@ -1,0 +1,131 @@
+<!--- Datasources --->
+<cfset stText.Settings.DatasourceDescriptionCreate     = "Neue Datenquelle erstellen">
+<cfset stText.Settings.DatasourceDescriptionUpdate     = "Datenquelle aktualisieren">
+<cfset stText.Settings.DatasourceSettings              = "Einstellungen">
+<cfset stText.Settings.DatasourceModify                = "Datenquelle ändern oder hinzufügen">
+
+<cfset stText.Settings.PreserveSingleQuotes            = "Single Quotes erhalten">
+<cfset stText.Settings.PreserveSingleQuotesDescription = "Erhält die einfachen Anführungszeichen (') in den SQL-Statements, die im Tag CFQuery definiert werden.">
+<cfset stText.Settings.ReadOnlyDatasources             = "Readonly Datenquellen">
+<cfset stText.Settings.ReadOnlyDatasourcesDescription  = "Readonly Datenquellen werden im 'Server Administrator' für alle Web Instanzen erstellt und können im 'Web Administrator' nicht geändert werden.">
+<cfset stText.Settings.ListDatasources                 = "Vorhandene Datenquellen">
+<cfset stText.Settings.DatasourceModify                = "Neue Datenquelle erstellen">
+<cfset stText.Settings.Name                            = "Name">
+<cfset stText.Settings.Type                            = "Typ">
+<cfset stText.Settings.NameMissing                     = "Bitte geben Sie einen Namen für die Datenquelle ein.">
+<cfset stText.Settings.DBCheck                         = "Check">
+
+
+<cfset stText.Settings.dbHost		                   = "Host/Server">
+<cfset stText.Settings.dbHostDesc	                   = "Host Name wo die Datenbank liegt">
+<cfset stText.Settings.dbDatabase		               = "Datenbank">
+<cfset stText.Settings.dbDatabaseDesc	               = "Name der Datenbank, welche verbunden werden soll.">
+<cfset stText.Settings.dbPort    		               = "Port">
+<cfset stText.Settings.dbPortDesc   	               = "Der Port der Datenbank die angesprochen werden soll.">
+<cfset stText.Settings.dbUser    		               = "Benutzername">
+<cfset stText.Settings.dbUserDesc   	               = "Benutzername für den Zugriff auf die Datenbank">
+<cfset stText.Settings.dbPass    		               = "Passwort">
+<cfset stText.Settings.dbPassDesc   	               = "Passwort für den Zugriff auf die Datenbank">
+<cfset stText.Settings.dbConnTimeout	               = "Verbindungs Timeout (in Minuten)">
+<cfset stText.Settings.dbConnTimeoutDesc   	           = "Definiert wie lange eine stehende Verbindung aufrechterhalten wird, bevor Sie beendet wird.">
+<cfset stText.Settings.dbConnLimit="Verbindungslimitierung (max)">
+<cfset stText.Settings.dbConnLimitInf="- inf -">
+<cfset stText.Settings.dbConnLimitDesc="Beschränkt die Anzahl Verbindungen die zur Datenbank aufgebaut werden.">
+<cfset stText.Settings.dbBlob    		               = "Blob">
+<cfset stText.Settings.dbBlobDesc   	               = "Erlaubt das einbeziehen von BLOBs">
+<cfset stText.Settings.dbClob    		               = "Clob">
+<cfset stText.Settings.dbClobDesc   	               = "Erlaubt das einbeziehen von CLOBs">
+<cfset stText.Settings.dbAllowed    	               = "Erlaubte Operationen">
+
+<cfset stText.services.update.desc= "
+Sie können Railo auf eine neue Version patchen, also bekannte Fehler ausbügeln 
+und Optimierungen innerhalb ihrer Version einspielen.">
+<cfset stText.services.update.infoTitle= "Info">
+<cfset stText.services.update.update= "Für Ihre Version steht ein Patch zur Verfügung, Sie haben die Version {current} installiert, die aktuell verfügbare Version ist {avaiable}">
+<cfset stText.services.update.noUpdate= "Für Ihre Version {current} steht kein Patch zur Verfügung">
+<cfset stText.services.update.setTitle= "Einstellungen">
+<cfset stText.services.update.setDesc= "Definieren Sie wie und wo Ihre Railo Version ihre Patches bezieht. Damit die eine Änderung dieser Einstellung aktiv wird, ist ein Neustart von Railo erforderlich.">
+<cfset stText.services.update.location= "URL">
+<cfset stText.services.update.locDesc= "Definieren Sie die URL von der ein Railo Update bezogen werden kann, typischerweise 'http://www.railo.ch'">
+<cfset stText.services.update.type= "Typ">
+<cfset stText.services.update.typeDesc= "Definieren Sie hier wie Railo gepatcht werden soll, 'Automatisch' steht dafür, dass Railo automatisch, täglich nach updates sucht. 'Manuell' bedeutet, dass ein Update nur manuell ausgeführt werden kann.">
+<cfset stText.services.update.type_auto= "Automatisch">
+<cfset stText.services.update.type_manually= "Manuell">
+
+<cfset stText.services.update.exe= "Update ausführen">
+<cfset stText.services.update.exeRun= "Update ausführen">
+<cfset stText.services.update.exeDesc= "Spielen Sie die aktuellsten Pacthes für Ihre Version ein. Nach einem erfolgten Update, müssen Sie sich neu in den Administrator einloggen.">
+<cfset stText.services.update.restartDesc="Hier können Sie Railo neu starten. Nach erfolgtem Restart werden bestehende Sitzungen entfernt. Sie müssen sich in den Administrator erneut einloggen.">
+<cfset stText.services.update.restart="Railo neu starten">
+
+<cfset stText.services.update.remove= "Updates entfernen">
+<cfset stText.services.update.removeRun= "Updates entfernen">
+<cfset stText.services.update.removeDesc= "Entfernen Sie alle nach der Grundinstallation nachträglich installierten Updates.">
+
+
+<cfset stText.remote.urlMissing               = "Die Remote Client URL fehlt">
+<cfset stText.remote.serverusername           = "Username">
+<cfset stText.remote.serverusernameDesc       = "Http Access Auhtentication Username">
+<cfset stText.remote.serverpassword           = "Passwort">
+<cfset stText.remote.serverpasswordDesc       = "Http Access Auhtentication Passwort">
+<cfset stText.remote.LabelMissing             = "Die Bezeichnung für den Remote Client fehlt">
+<cfset stText.remote.passwordMissing          = "Das Administrator Passwort für den Remote Client fehlt">
+<cfset stText.remote.securityKeyMissing       = "Der Sicherheitsschlüssel  für den Remote Client fehlt">
+<cfset stText.remote.adminPassword.web        = "Passwort für den Remote Web Administrator">
+<cfset stText.remote.adminPassword.server     = "Passwort für den remote Server Administrator">
+<cfset stText.remote.adminPasswordDesc.web    = "Passwort für den Zugriff auf den Remote Railo Web Administrator">
+<cfset stText.remote.adminPasswordDesc.server = "Passwort für den Zugriff auf den Remote Railo Server Administrator">
+<cfset stText.remote.securityKey              = "Sicherheitsschlüssel">
+<cfset stText.remote.securityKeyDesc          = "Geben Sie hier den Schlüssel des Remote Clients an. Sie finden ihn unter Remote-Scherheitsschlüssel im Administrator des Remote Clients">
+<cfset stText.remote.proxyServer              = "Server">
+<cfset stText.remote.proxyServerDesc          = "Proxy Server (Host)">
+<cfset stText.remote.proxyPort                = "Port">
+<cfset stText.remote.proxyPortDesc            = "Proxy Server Port">
+<cfset stText.remote.proxyUsername            = "Username">
+<cfset stText.remote.proxyPassword            = "Passwort">
+<cfset stText.remote.listClients              = "Liste der Clients">
+<cfset stText.remote.newClient                = "Neuen Remote Client erstellen">
+<cfset stText.remote.desc                     = "Definiert Clients, mit welchen die Einstellungen dieses Administrators, synchronisiert werden sollen">
+<cfset stText.remote.label                    = "Bezeichnung">
+<cfset sttext.remote.securityKeyTitleDesc     = "Falls dieser Web Administrator von einem anderen Server aus synchronisiert werden soll, müssen sie den unten angegebenen Schlüssel bei der Definition der Remote Client Verbindung angeben.">
+<cfset stText.remote.ot.name                  = "Name">
+<cfset stText.remote.ot.url                   = "URL">
+<cfset stText.remote.ot.action                = "Aktion">
+<cfset stText.remote.ot.lastExecution         = "Letzte Ausführung">
+<cfset stText.remote.ot.nextExecutionInMinutes         = "Nächste Ausführung in Minuten">
+<cfset stText.remote.ot.exetime               = "Ausführungszeit">
+<cfset stText.remote.ot.error                 = "Fehlermeldungen">
+<cfset stText.remote.ot.tries                 = "Anzahl Versuche">
+<cfset stText.remote.ot.triesLeft             = "Anzahl verbleibender Versuche">
+<cfset stText.remote.ot.state                 = "Status">
+<cfset stText.remote.ot.overviewDesc          = "Liste der fehlgeschlagenen Tasks. Die hier grün aufgelisteten werden nochmals ausgeführt. Die rot gelisteten Tasks konnten nicht ausgeführt werden.">
+<cfset stText.remote.ot.detailDesc.green      = "Es wurde bereits <tries> mal versucht diesen Task auszuführen. <triesleft> Versuche stehen noch aus">
+<cfset stText.remote.ot.detailDesc.red        = "Dieser Task konnte trotz <tries> Versuchen nicht korrekt ausgeführt werden">
+<cfset stText.remote.ot.fromto                = "1-100 von <recordcount> offenen Tasks">
+<cfset stText.remote.ot.noOt                  = "Zur Zeit gibt es keine offenen Tasks">
+<cfset stText.remote.sync.title               = "Remote Client Synchronisation">
+<cfset stText.remote.sync.desc                = "Definieren sie, mit welchen Clients die hier gemachten Einstellungen synchronisiert werden sollen">
+<cfset stText.remote.downloadArchive          = "Bei ""<Buttons.downloadArchive>"" wird der Download des Archivs auf dem Remote Client ignoriert, das Archiv wird jedoch angelegt. In diesem Fall empfiehlt es sich den Remote Client nicht einzubeziehen.">
+
+<cfset stText .remote.ot.type="Typ">
+<cfset stText .remote.detail.update="Remote Client updaten">
+<cfset stText .remote.detail.updateDesc="">
+<cfset stText .remote.detail.create="Remote Client erstellen">
+<cfset stText .remote.detail.createDesc="">
+<cfset stText .remote.usage.title="Verwendung">
+<cfset stText .remote.usage.sync="Admin Synchronisation">
+<cfset stText .remote.usage.cluster="Cluster Scope">
+<cfset stText .remote.usage.desc="Definiert für was alles der Remote Client verwendet werden soll">
+<cfset stText .remote.connection="Verbindung">
+<cfset stText .remote.connectionDesc="Verbindung zum Remote Client, komplette URL (inkl. Port) und HTTP Access">
+<cfset stText .remote.proxy="Proxy Settings">
+<cfset stText .remote.proxyDesc="Proxy Settings welche für die Verbindung verwendet werden sollen">
+<cfset stText .remote.adminAccess="Admin Access">
+<cfset stText .remote.adminAccessDesc="Definiert den Zugang zum Remote Client, dessen Password und Security Key, die Security key kann innerhalb des Remote Client bezogen werden">
+<cfset stText .remote.url="URL">
+<cfset stText .remote.urlServer="Server">
+<cfset stText .remote.urlServerDesc="Remote Client Server (Beispiel: http://railo.ch)">
+<cfset stText .remote.urlServerMissing="Remote Client Server">
+<cfset stText .remote.urlPath="Pfad">
+<cfset stText .remote.urlPathDesc="Pfad zur Admin.cfc (Beispiel: /railo-context/admin.cfc?wsdl)">
+<cfset stText .remote.urlPathMissing="Der Pfad zur Admin.cfc fehlt">

@@ -1,0 +1,40 @@
+<cfset stText.doc.argTitle="Arguments">
+<cfset stText.doc.arg.name="Name">
+<cfset stText.doc.arg.required="Required">
+<cfset stText.doc.arg._type="Type">
+<cfset stText.doc.arg.description="Description">
+<cfset stText.doc.arg.type.dynamic="There is no restriction for this function regarding its arguments.">
+<cfset stText.doc.arg.type.fixed="The arguments for this function are set. You can not use other arguments except the following ones.">
+<cfset stText.doc.arg.max="Only the number of arguments is rerstricted to {max}.">
+<cfset stText.doc.arg.min="It must have at least {min} arguments.">
+<cfset stText.doc.arg.minMax="It must have at least {min} arguments but a maximum of {max}.">
+<cfset stText.doc.arg.zero="This function has no arguments">
+
+<cfset stText.doc.bodyTitle="Body">
+<cfset stText.doc.body.prohibited="This tag can't have a body.">
+<cfset stText.doc.body.free="This tag may have a body.">
+<cfset stText.doc.body.required="This tag must have a body.">
+
+<cfset stText.doc.attrTitle="Attributess">
+<cfset stText.doc.attrDesc="Attributes, supported by the tag.">
+<cfset stText.doc.attr.name="Name">
+<cfset stText.doc.attr.required="Required">
+<cfset stText.doc.attr.description="Description">
+<cfset stText.doc.attrTitle="Attributes">
+<cfset stText.doc.attr.name="Name">
+<cfset stText.doc.attr._type="Type">
+<cfset stText.doc.attr.required="Required">
+<cfset stText.doc.attr.description="Description">
+<cfset stText.doc.attr.type.dynamic="There is no restriction for attributes for this tag.">
+<cfset stText.doc.attr.type.fixed="The attributes for this tag are fixed. Except for the following attributes no other attributes are allowed.">
+<cfset stText.doc.attr.type.mixed="This tag has a fixed definition of attributes (see below). In addition it allowes to use any additional attribute.">
+<cfset stText.doc.attr.type.noname="This tag only allows one attribute value (no name).">
+<cfset stText.doc.attr.max="Only the number of attributes is restricted to {max}.">
+<cfset stText.doc.attr.min="This tag must have at least {min} attributes.">
+<cfset stText.doc.attr.minMax="This tag must have at least {min} attributes but the most {max}.">
+<cfset stText.doc.attr.zero="This tag has no attributes">
+
+<cfset stText.doc.bodyTitle="Body">
+<cfset stText.doc.body.prohibited="This tag can't have a body.">
+<cfset stText.doc.body.free="This tag may have a body.">
+<cfset stText.doc.body.required="This tag must have a body.">

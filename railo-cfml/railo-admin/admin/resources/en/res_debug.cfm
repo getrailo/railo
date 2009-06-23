@@ -1,0 +1,10 @@
+<cfset stText.Debug.EnableDebugging           = "Enable debugging">
+<cfset stText.Debug.EnableDescription         = "Enable or disable the debugging output">
+<cfset stText.Debug.DebugTemplate             = "Debug template">
+<cfset stText.Debug.DebugTemplateDescription  = "This template is used for formatting the debugging output">
+<cfset stText.Debug.DebugTemplateMissing      = "Please enter a value for the debug template">
+<cfset stText.Debug.LogMemoryUsage            = "Log memory usage">
+<cfset stText.Debug.LogMemoryUsageDescription = "Sets whether the memory usage should be logged">
+<cfset stText.Debug.MemoryLogger              = "Memory logger">
+<cfset stText.Debug.MemoryLoggerDescripiton   = "File the memory usage will be stored to">
+<cfset stText.Debug.TimeZone                  = "Please enter a value for the timezone">

@@ -1,0 +1,25 @@
+<!--- General --->
+<cfset stText.Buttons.Change        = "ändern">
+<cfset stText.Buttons.Create        = "neu">
+<cfset stText.Buttons.Cancel        = "abbrechen">
+<cfset stText.Buttons.Verify        = "überprüfen">
+<cfset stText.Buttons.Repair        = "reparieren">
+<cfset stText.Buttons.Update        = "aktualisieren">
+<cfset stText.Buttons.Save	        = "speichern">
+<cfset stText.Buttons.Optimize      = "optimieren">
+<cfset stText.Buttons.Purge         = "leeren">
+<cfset stText.Buttons.Delete        = "löschen">
+<cfset stText.Buttons.Execute       = "ausführen">
+<cfset stText.Buttons.Submit        = "senden">
+<cfset stText.Buttons.Setting       = "einstellung">
+<cfset stText.Buttons.Search        = "suchen">
+<cfset stText.Buttons.Update        = "aktualisieren">
+<cfset stText.Buttons.filter        = "filter">
+<cfset stText.Buttons.reset         = "zurücksetzen">
+<cfset stText.Buttons.ok         = "OK">
+<cfset stText.Buttons.compileAll = "kompilieren">
+<cfset stText.Buttons.install = "installieren">
+<cfset stText.Buttons.uninstall = "deinstallieren">
+<cfset stText.Buttons.agree = "einverstanden">
+<cfset stText.Buttons.next="nächste">
+<cfset stText.Buttons.previous="vorangegangene">

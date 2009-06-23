@@ -1,0 +1,19 @@
+<cfcomponent hint="Note" extends="railo-context.admin.plugin.Plugin">
+	
+	<cffunction name="init"
+		hint="this function will be called to initalize">
+		<cfargument name="lang" type="struct">
+		<cfargument name="app" type="struct">
+		<cfset app.note=load()>
+		
+	</cffunction>
+
+	<cffunction name="overview" output="yes"
+		hint="load data for a single note">
+		<cfargument name="lang" type="struct">
+		<cfargument name="app" type="struct">
+		<cfargument name="req" type="struct">
+		<cfset req.note=app.note>
+	</cffunction>
+
+</cfcomponent>

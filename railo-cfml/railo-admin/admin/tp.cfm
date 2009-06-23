@@ -1,0 +1,1 @@
+<cfoutput><table border="0" cellpadding="0" cellspacing="0" height="#attributes.height#" width="#attributes.width#"><tr><td height="#attributes.height#" width="#attributes.width#"></td></tr></table></cfoutput>
