@@ -45,7 +45,6 @@ Defaults --->
 		</cfcase>
 	</cfswitch>
 	<cfcatch>
-		<cfrethrow>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>

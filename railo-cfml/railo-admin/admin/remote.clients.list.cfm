@@ -39,9 +39,9 @@
 							password="#session["password"&request.adminType]#"
 							url="#data.urls[idx]#"
 							returnVariable="rclient">
-							
 						
 						<cftry>
+             
 							<cfadmin 
 								action="verifyRemoteClient"
 								type="#request.adminType#"

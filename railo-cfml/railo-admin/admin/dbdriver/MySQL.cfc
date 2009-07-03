@@ -3,12 +3,19 @@
 	<cfset fields=array(
 		field("Charset","CharacterEncording","UTF8",false,"Very important setting, determines the byte value to character mapping for CHAR/VARCHAR/TEXT values."),
 		//field("cache ResultSetMetadata","cacheResultSetMetadata","true,false",false,"Should the driver cache ResultSetMetaData for Statements and PreparedStatements.","radio"),
+		
 		field("Alias Handling","useOldAliasMetadataBehavior","true,false",false,"Should the driver use the legacy behavior for ""AS"" clauses on columns and tables, 
 		and only return aliases (if any) rather than the original column/table name? In 5.0.x, the default value was true.","radio"),
 		//,field("Allow Multiple Queries","allowMultiQueries","true,false",false,"Allow the use of "";"" to delimit multiple queries during one statement (true/false), defaults to ""false""","radio")
 		
 		
-		field('Zero DateTime behavior','zeroDateTimeBehavior','exception,round,convertToNull',false,'What should happen when the driver encounters DATETIME values that are composed entirely of zeroes (used by MySQL to represent invalid dates)? Valid values are "exception", "round" and "convertToNull"',"radio")
+		field('Allow multiple Queries','allowMultiQueries','true,false',false,'Allow the use of ";" to delimit multiple queries during one statement',"radio"),
+		
+		field('Zero DateTime behavior','zeroDateTimeBehavior','exception,round,convertToNull',false,'What should happen when the driver encounters DATETIME values that are composed entirely of zeroes (used by MySQL to represent invalid dates)? Valid values are "exception", "round" and "convertToNull"',"radio"),
+		
+		field('Auto reconnect','autoReconnect','true,false',false,'Should the driver try to re-establish stale and/or dead connections? If enabled the driver will throw an exception for a queries issued on a stale or dead connection, which belong to the current transaction, but will attempt reconnect before the next query issued on the connection in a new transaction. The use of this feature is not recommended, because it has side effects related to session state and data consistency when applications do not handle SQLExceptions properly, and is only designed to be used when you are unable to configure your application to handle SQLExceptions resulting from dead and stale connections properly. Alternatively, investigate setting the MySQL server variable "wait_timeout" to some high value rather than the default of 8 hours.',"radio")
+		
+		
 		
 		
 	)>

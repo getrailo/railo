@@ -42,6 +42,9 @@ ACTIONS --->
 		<cfset attrColl.proxyport=form.proxyport>
 		<cfset attrColl.proxyusername=form.proxyusername>
 		<cfset attrColl.proxyserver=form.proxyserver>
+        
+        <cfdump var="#attrColl#">
+        <cfabort>
 		<cfadmin 
 			action="verifyRemoteClient"
 			type="#request.adminType#"
