@@ -1,5 +1,3 @@
-
-
 package railo.commons.io;
 
 import javax.servlet.ServletOutputStream;

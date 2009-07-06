@@ -1,5 +1,3 @@
-
-
 package railo.commons.sql;
 
 import java.sql.Connection;

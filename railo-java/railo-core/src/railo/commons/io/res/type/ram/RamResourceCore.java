@@ -1,5 +1,3 @@
-
-
 package railo.commons.io.res.type.ram;
 
 import java.io.Serializable;

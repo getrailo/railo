@@ -1,5 +1,3 @@
-
-
 package railo.commons.io.auto;
 
 import java.io.IOException;

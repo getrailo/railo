@@ -1,5 +1,3 @@
-
-
 package railo.commons.io.compress;
 
 import java.io.IOException;

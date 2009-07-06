@@ -1,5 +1,3 @@
-
-
 package railo.commons.io.res.filter;
 
 import railo.commons.io.res.Resource;

@@ -1,5 +1,3 @@
-
-
 package railo.commons.io.log;
 
 import java.io.File;

@@ -1,5 +1,3 @@
-
-
 package railo.commons.io.res.util;
 
 import java.io.File;
@@ -728,6 +726,12 @@ public final class ResourceUtil {
         return strFile.substring(pos+1);
     }
     
+    public static String getName(String strFileName) {
+        int pos=strFileName.lastIndexOf('.');
+        if(pos==-1)return strFileName;
+        return strFileName.substring(0,pos);
+    }
+    
     /**
      * split a FileName in Parts
      * @param fileName
@@ -759,12 +763,18 @@ public final class ResourceUtil {
     /**
      * @param res delete the content of a directory
      */
+
     public static void deleteContent(Resource src,ResourceFilter filter) {
+    	_deleteContent(src, filter,false);
+    }
+    public static void _deleteContent(Resource src,ResourceFilter filter,boolean deleteDirectories) {
     	if(src.isDirectory()) {
         	Resource[] files=filter==null?src.listResources():src.listResources(filter);
             for(int i=0;i<files.length;i++) {
-            	deleteContent(files[i],filter);
+            	_deleteContent(files[i],filter,true);
+            	if(deleteDirectories)src.delete();
             }
+            
         }
         else if(src.isFile()) {
         	src.delete();
@@ -792,12 +802,13 @@ public final class ResourceUtil {
      * @throws FileNotFoundException 
      */
     public static void copyRecursive(Resource src,Resource trg,ResourceFilter filter) throws IOException {
+    	//print.out(src);
+    	//print.out(trg);
         if(!src.exists()) return ;
         if(src.isDirectory()) {
         	if(!trg.exists())trg.createDirectory(true);
         	Resource[] files=filter==null?src.listResources():src.listResources(filter);
             for(int i=0;i<files.length;i++) {
-            	//print.ln(files[i]);
             	copyRecursive(files[i],trg.getRealResource(files[i].getName()),filter);
             }
         }
@@ -1153,6 +1164,18 @@ public final class ResourceUtil {
 		if(!resource.exists())throw new IOException("can't delete resource "+resource+", resource does not exists");
 		if(!resource.canWrite())throw new IOException("can't delete resource "+resource+", no access");
 		
+	}
+	//30
+	public static void deleteEmptyFolders(Resource res) throws IOException {
+		if(res.isDirectory()){
+			Resource[] children = res.listResources();
+			for(int i=0;i<children.length;i++){
+				deleteEmptyFolders(children[i]);
+			}
+			if(res.listResources().length==0){
+				res.remove(false);
+			}
+		}
 	}
 
 }

@@ -1,5 +1,3 @@
-
-
 package railo.commons.io.res.type.file;
 
 import java.io.IOException;

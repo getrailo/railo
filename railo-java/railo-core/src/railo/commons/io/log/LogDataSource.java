@@ -1,9 +1,16 @@
-
-
 package railo.commons.io.log;
 
-import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
+import railo.runtime.db.CFTypes;
+import railo.runtime.db.DataSource;
+import railo.runtime.db.DatasourceConnection;
+import railo.runtime.db.DatasourceConnectionPool;
+import railo.runtime.db.SQL;
+import railo.runtime.db.SQLImpl;
+import railo.runtime.db.SQLItemImpl;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.QueryImpl;
+import railo.runtime.type.dt.DateTimeImpl;
 
 /**
  * Datasource output logger
@@ -11,12 +18,17 @@ import railo.runtime.exp.PageException;
  */
 public final class LogDataSource implements Log {
 
-    private Config config;
-    private String datasource;
+    private static final SQL SELECT = new SQLImpl("select for checking if table exists");//TODO
+    private static final String INSERT = "insert into cflog(application,message,created) values(?,?,?)";//TODO
+    private static final SQL CREATE = new SQLImpl("create table");//TODO
+	private ConfigImpl config;
+    private DataSource datasource;
     private String username;
     private String password;
     private String table;
     private int logLevel;
+	private DatasourceConnectionPool pool;
+	private LogConsole console;
 
     /**
      * Constructor of the class
@@ -27,13 +39,32 @@ public final class LogDataSource implements Log {
      * @param table 
      * @throws PageException 
      */
-    public LogDataSource(int logLevel,Config config, String datasource, String username, String password, String table) {
+    public LogDataSource(int logLevel,ConfigImpl config, DataSource datasource, String username, String password, String table) {
         this.logLevel=logLevel;
         this.config=config;
         this.datasource=datasource;
         this.username=username;
         this.password=password;
         this.table=table;
+        pool = config.getDatasourceConnectionPool();
+        console=LogConsole.getInstance(logLevel);
+        
+        DatasourceConnection dc=null;
+    	try {
+			dc = pool.getDatasourceConnection(datasource, username, password);
+			try {
+				new QueryImpl(dc,SELECT,-1,-1,-1,"query");
+			}
+			catch (PageException e) {
+				new QueryImpl(dc,CREATE,-1,-1,-1,"query");
+			}
+		} 
+    	catch (PageException e) {
+			config.getErrWriter();
+		}
+		finally{
+			if(pool!=null)pool.releaseDatasourceConnection(dc);
+		}
         
         
     }
@@ -43,7 +74,21 @@ public final class LogDataSource implements Log {
      * @see railo.commons.io.log.Log#log(int, java.lang.String, java.lang.String)
      */
     public void log(int level, String application, String message) {
-        // TODO impl
+    	DatasourceConnection dc=null;
+    	try {
+			dc = pool.getDatasourceConnection(datasource, username, password);
+			SQLImpl sql = new SQLImpl(INSERT);
+			sql.addItems(new SQLItemImpl(application,CFTypes.VARCHAR));
+			sql.addItems(new SQLItemImpl(message,CFTypes.VARCHAR));
+			sql.addItems(new SQLItemImpl(new DateTimeImpl(),CFTypes.DATE));
+			new QueryImpl(dc,sql,-1,-1,-1,"query");
+		} 
+    	catch (PageException e) {
+			console.log(level, application, message);
+		}
+		finally{
+			if(pool!=null)pool.releaseDatasourceConnection(dc);
+		}
     }
 
     /**

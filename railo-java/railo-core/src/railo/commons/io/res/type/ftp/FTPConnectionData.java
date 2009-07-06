@@ -1,5 +1,3 @@
-
-
 package railo.commons.io.res.type.ftp;
 
 import railo.commons.lang.StringUtil;

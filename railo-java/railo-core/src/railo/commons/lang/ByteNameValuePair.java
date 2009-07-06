@@ -1,5 +1,3 @@
-
-
 package railo.commons.lang;
 
 import java.io.UnsupportedEncodingException;
