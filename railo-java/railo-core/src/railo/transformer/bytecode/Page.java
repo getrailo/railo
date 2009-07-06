@@ -1,5 +1,3 @@
-
-
 package railo.transformer.bytecode;
 
 import java.io.IOException;
@@ -54,9 +52,9 @@ public final class Page extends BodyBase {
 			new Type[]{Types.STRING}
     		);
 
-	private final static Method CONSTRUCTOR = Method.getMethod("void <init> ()");
-	private final static Method STATIC_CONSTRUCTOR = Method.getMethod("void <clinit> ()");
-
+	public final static Method STATIC_CONSTRUCTOR = Method.getMethod("void <clinit> ()V");
+	public final static Method CONSTRUCTOR = Method.getMethod("void <init> ()V");
+	
 
     public static final Type STRUCT_IMPL = Type.getType(StructImpl.class);
 	private static final Method INIT_STRUCT_IMPL = new Method(
@@ -83,7 +81,7 @@ public final class Page extends BodyBase {
     // int getVersion()
     private final static Method VERSION = new Method(
 			"getVersion",
-			Types.INT,
+			Types.INT_VALUE,
 			new Type[]{}
     		);
     
@@ -104,20 +102,20 @@ public final class Page extends BodyBase {
     private static final Method UDF_CALL = new Method(
 			"udfCall",
 			Types.OBJECT,
-			new Type[]{Types.PAGE_CONTEXT, USER_DEFINED_FUNCTION, Types.INT}
+			new Type[]{Types.PAGE_CONTEXT, USER_DEFINED_FUNCTION, Types.INT_VALUE}
 			);
     
 
 	private static final Method THREAD_CALL = new Method(
 			"threadCall",
 			Types.VOID,
-			new Type[]{Types.PAGE_CONTEXT, Types.INT}
+			new Type[]{Types.PAGE_CONTEXT, Types.INT_VALUE}
 			);
 
 	private static final Method UDF_DEFAULT_VALUE = new Method(
 			"udfDefaultValue",
 			Types.OBJECT,
-			new Type[]{Types.PAGE_CONTEXT, Types.INT, Types.INT}
+			new Type[]{Types.PAGE_CONTEXT, Types.INT_VALUE, Types.INT_VALUE}
 			);
 
 	private static final Method NEW_COMPONENT_IMPL_INSTANCE = new Method(
@@ -152,8 +150,8 @@ public final class Page extends BodyBase {
 	// public boolean setMode(int mode) {
 	private static final Method SET_MODE = new Method(
 			"setMode",
-			Types.INT,
-			new Type[]{Types.INT}
+			Types.INT_VALUE,
+			new Type[]{Types.INT_VALUE}
     		);
 	
 	
@@ -332,19 +330,35 @@ public final class Page extends BodyBase {
      */
     public byte[] execute() throws BytecodeException {
     	List keys=new ArrayList();
-    	ClassWriter cw = new ClassWriter(true);
+    	ClassWriter cw = ASMUtil.getClassWriter(); 
+    	//ClassWriter cw = new ClassWriter(true);
     	
     	// parent
     	String parent="railo/runtime/Page";
     	if(isComponent()) parent="railo/runtime/ComponentPage";
     	else if(isInterface()) parent="railo/runtime/InterfacePage";
     	
-    	//ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
     	cw.visit(Opcodes.V1_2, Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL, name, null, parent, null);
         cw.visitSource(this.source, null);
 
-
-
+        // static constructor
+        GeneratorAdapter ga = new GeneratorAdapter(Opcodes.ACC_PUBLIC,STATIC_CONSTRUCTOR,null,null,cw);
+		BytecodeContext statConstr = new BytecodeContext(null,null,keys,cw,name,ga,STATIC_CONSTRUCTOR);
+		
+		
+        // constructor
+        ga = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR,null,null,cw);
+		BytecodeContext constr = new BytecodeContext(null,null,keys,cw,name,ga,CONSTRUCTOR);
+		ga.loadThis();
+        Type t=Types.PAGE;
+        if(isComponent())t=COMPONENT_PAGE;
+        else if(isInterface())t=INTERFACE_PAGE;
+        ga.invokeConstructor(t, CONSTRUCTOR);
+        
+        
+        
+        
+        
      // getVersion
          GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , VERSION, null, null, cw);
          adapter.push(version);
@@ -365,16 +379,16 @@ public final class Page extends BodyBase {
 // newInstance/initComponent/call
         if(isComponent()) {
         	Tag component=getComponent();
-   	        writeOutNewComponent(keys,cw,component);
-	        writeOutInitComponent(keys,cw,component);
+   	        writeOutNewComponent(statConstr,constr,keys,cw,component);
+	        writeOutInitComponent(statConstr,constr,keys,cw,component);
         }
         else if(isInterface()) {
         	Tag interf=getInterface();
-   	        writeOutNewInterface(keys,cw,interf);
-	        writeOutInitInterface(keys,cw,interf);
+   	        writeOutNewInterface(statConstr,constr,keys,cw,interf);
+	        writeOutInitInterface(statConstr,constr,keys,cw,interf);
         }
         else {
-	        writeOutCall(keys,cw);
+	        writeOutCall(statConstr,constr,keys,cw);
         }
         
 // udfCall     
@@ -387,7 +401,7 @@ public final class Page extends BodyBase {
         else if(functions.length<=10) {
         	
             adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , UDF_CALL, null, new Type[]{Types.THROWABLE}, cw);
-            BytecodeContext bc = new BytecodeContext(keys,cw,name,adapter,UDF_CALL);
+            BytecodeContext bc = new BytecodeContext(statConstr,constr,keys,cw,name,adapter,UDF_CALL);
         	if(functions.length==1){
         		ExpressionUtil.visitLine(bc,functions[0].getStartLine());
         		functions[0].getBody().writeOut(bc);
@@ -401,7 +415,7 @@ public final class Page extends BodyBase {
    // more than 10 functions
         else {
         	adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , UDF_CALL, null, new Type[]{Types.THROWABLE}, cw);
-        	BytecodeContext bc = new BytecodeContext(keys,cw,name,adapter,UDF_CALL);
+        	BytecodeContext bc = new BytecodeContext(statConstr,constr,keys,cw,name,adapter,UDF_CALL);
 		        cv = new ConditionVisitor();
 		        cv.visitBefore();
 		        int count=0;
@@ -432,10 +446,10 @@ public final class Page extends BodyBase {
 	        count=0;
 	        Method innerCall;
 	        for(int i=0;i<functions.length;i+=10) {
-	        	innerCall = new Method("udfCall"+(++count),Types.OBJECT,new Type[]{Types.PAGE_CONTEXT, USER_DEFINED_FUNCTION, Types.INT});
+	        	innerCall = new Method("udfCall"+(++count),Types.OBJECT,new Type[]{Types.PAGE_CONTEXT, USER_DEFINED_FUNCTION, Types.INT_VALUE});
 	        	
 	        	adapter = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , innerCall, null, new Type[]{Types.THROWABLE}, cw);
-	        	writeOutUdfCallInner(new BytecodeContext(keys,cw,name,adapter,innerCall), functions, i, i+10>functions.length?functions.length:i+10);
+	        	writeOutUdfCallInner(new BytecodeContext(statConstr,constr,keys,cw,name,adapter,innerCall), functions, i, i+10>functions.length?functions.length:i+10);
 	        	
 	        	adapter.visitInsn(Opcodes.ACONST_NULL);
 		        adapter.returnValue();
@@ -449,7 +463,7 @@ public final class Page extends BodyBase {
              //print.out("threads:"+threads.length);
              if(threads.length>0) {
              	adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , THREAD_CALL, null, new Type[]{Types.THROWABLE}, cw);
-         			writeOutThreadCallInner(new BytecodeContext(keys,cw,name,adapter,THREAD_CALL),threads,0,threads.length);
+         			writeOutThreadCallInner(new BytecodeContext(statConstr,constr,keys,cw,name,adapter,THREAD_CALL),threads,0,threads.length);
          		//adapter.visitInsn(Opcodes.ACONST_NULL);
          		adapter.returnValue();
          		adapter.endMethod();
@@ -463,7 +477,7 @@ public final class Page extends BodyBase {
         if(functions.length==0 || isInterface()) {}
         else if(functions.length<=10) {
         	adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , UDF_DEFAULT_VALUE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
-            writeUdfDefaultValueInner(new BytecodeContext(keys,cw,name,adapter,UDF_DEFAULT_VALUE),functions,0,functions.length);
+            writeUdfDefaultValueInner(new BytecodeContext(statConstr,constr,keys,cw,name,adapter,UDF_DEFAULT_VALUE),functions,0,functions.length);
             
             ASMConstants.NULL(adapter);
         	adapter.returnValue();
@@ -471,7 +485,7 @@ public final class Page extends BodyBase {
         }
         else {
         	adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , UDF_DEFAULT_VALUE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
-            BytecodeContext bc = new BytecodeContext(keys,cw,name,adapter,UDF_DEFAULT_VALUE);
+            BytecodeContext bc = new BytecodeContext(statConstr,constr,keys,cw,name,adapter,UDF_DEFAULT_VALUE);
         	cv = new ConditionVisitor();
 	        cv.visitBefore();
 	        int count=0;
@@ -503,9 +517,9 @@ public final class Page extends BodyBase {
         count=0;
         Method innerDefaultValue;
         for(int i=0;i<functions.length;i+=10) {
-        	innerDefaultValue = new Method("udfDefaultValue"+(++count),Types.OBJECT,new Type[]{Types.PAGE_CONTEXT, Types.INT, Types.INT});
+        	innerDefaultValue = new Method("udfDefaultValue"+(++count),Types.OBJECT,new Type[]{Types.PAGE_CONTEXT, Types.INT_VALUE, Types.INT_VALUE});
         	adapter = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , innerDefaultValue, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
-        	writeUdfDefaultValueInner(new BytecodeContext(keys,cw,name,adapter,innerDefaultValue), functions, i, i+10>functions.length?functions.length:i+10);
+        	writeUdfDefaultValueInner(new BytecodeContext(statConstr,constr,keys,cw,name,adapter,innerDefaultValue), functions, i, i+10>functions.length?functions.length:i+10);
         	
         	adapter.visitInsn(Opcodes.ACONST_NULL);
 	        adapter.returnValue();
@@ -514,16 +528,17 @@ public final class Page extends BodyBase {
         	
         }
         
+        
+        registerFields(statConstr,keys);
+        
+        
 
-        adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR,null,null,cw);
-        adapter.loadThis();
+        statConstr.getAdapter().returnValue();
+        statConstr.getAdapter().endMethod();
         
-        Type t=Types.PAGE;
-        if(isComponent())t=COMPONENT_PAGE;
-        else if(isInterface())t=INTERFACE_PAGE;
         
-        adapter.invokeConstructor(t, CONSTRUCTOR);
-        registerKeys(new BytecodeContext(keys,cw,name,adapter,CONSTRUCTOR),keys);
+        adapter = constr.getAdapter();//new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR,null,null,cw);
+        
         adapter.returnValue();
         adapter.endMethod();
     	
@@ -535,35 +550,39 @@ public final class Page extends BodyBase {
 
 
 
-	public static void registerKeys(BytecodeContext bc, List keys) throws BytecodeException {
+	public static void registerFields(BytecodeContext staticBC, List keys) throws BytecodeException {
 		Iterator it = keys.iterator();
 		//GeneratorAdapter ad = bc.getAdapter();
 		int count=0;
 		String name;
 		LitString value;
 		
-		GeneratorAdapter statcConst = new GeneratorAdapter(Opcodes.ACC_PUBLIC,STATIC_CONSTRUCTOR,null,null,bc.getClassWriter());
-		BytecodeContext cbw = new BytecodeContext(null,bc.getClassWriter(),bc.getClassName(),statcConst,STATIC_CONSTRUCTOR);
+		//GeneratorAdapter statcConst = new GeneratorAdapter(Opcodes.ACC_PUBLIC,STATIC_CONSTRUCTOR,null,null,bc.getClassWriter());
+		//BytecodeContext cbw = new BytecodeContext(null,bc.getClassWriter(),bc.getClassName(),statcConst,STATIC_CONSTRUCTOR);
+		//BytecodeContext cbw = bc.getStaticConstructor();
+		GeneratorAdapter statcConst = staticBC.getAdapter();
+		
+		
 		
 		while(it.hasNext()) {
 			name="key"+(++count);
 			value=(LitString) it.next();
 			
 
-			FieldVisitor fv = bc.getClassWriter().visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, 
+			FieldVisitor fv = staticBC.getClassWriter().visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, 
 					name, "Lrailo/runtime/type/Collection$Key;", null, null);
 			fv.visitEnd();
 			
-			ExpressionUtil.writeOutSilent(value,cbw, Expression.MODE_REF);
+			ExpressionUtil.writeOutSilent(value,staticBC, Expression.MODE_REF);
 			statcConst.invokeStatic(KEY_IMPL, GET_INSTANCE);
-			statcConst.visitFieldInsn(Opcodes.PUTSTATIC, cbw.getClassName(), name, "Lrailo/runtime/type/Collection$Key;");
+			statcConst.visitFieldInsn(Opcodes.PUTSTATIC, staticBC.getClassName(), name, "Lrailo/runtime/type/Collection$Key;");
 			
 			
 			
 		}
 
-		statcConst.returnValue();
-		statcConst.endMethod();
+		//statcConst.returnValue();
+		//statcConst.endMethod();
 		
 	}
 
@@ -642,9 +661,9 @@ public final class Page extends BodyBase {
         cv.visitAfter(bc);
 	}
 
-	private void writeOutInitComponent(List keys, ClassWriter cw, Tag component) throws BytecodeException {
+	private void writeOutInitComponent(BytecodeContext statConstr,BytecodeContext constr,List keys, ClassWriter cw, Tag component) throws BytecodeException {
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , INIT_COMPONENT, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
-        BytecodeContext bc=new BytecodeContext(keys,cw,name,adapter,INIT_COMPONENT);
+        BytecodeContext bc=new BytecodeContext(statConstr, constr,keys,cw,name,adapter,INIT_COMPONENT);
 		Label methodBegin=new Label();
     	Label methodEnd=new Label();
 
@@ -681,7 +700,7 @@ public final class Page extends BodyBase {
 			
 			
 		//int oldCheckArgs=	pc.undefinedScope().setMode(Undefined.MODE_NO_LOCAL_AND_ARGUMENTS);
-			int oldCheckArgs = adapter.newLocal(Types.INT);
+			int oldCheckArgs = adapter.newLocal(Types.INT_VALUE);
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, UNDEFINED_SCOPE);
 			adapter.push(Undefined.MODE_NO_LOCAL_AND_ARGUMENTS);
@@ -718,7 +737,7 @@ public final class Page extends BodyBase {
 		// undefined.setMode(oldMode);
 		adapter.loadArg(0);
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, UNDEFINED_SCOPE);
-		adapter.loadLocal(oldCheckArgs,Types.INT);
+		adapter.loadLocal(oldCheckArgs,Types.INT_VALUE);
 		adapter.invokeInterface(Types.UNDEFINED, SET_MODE);
 		adapter.pop();
 		
@@ -742,9 +761,9 @@ public final class Page extends BodyBase {
     	
 	}
 	
-	private void writeOutInitInterface(List keys, ClassWriter cw, Tag interf) throws BytecodeException {
+	private void writeOutInitInterface(BytecodeContext statConstr,BytecodeContext constr,List keys, ClassWriter cw, Tag interf) throws BytecodeException {
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , INIT_INTERFACE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
-        BytecodeContext bc=new BytecodeContext(keys,cw,name,adapter,INIT_INTERFACE);
+        BytecodeContext bc=new BytecodeContext(statConstr, constr,keys,cw,name,adapter,INIT_INTERFACE);
 		Label methodBegin=new Label();
     	Label methodEnd=new Label();
 
@@ -855,10 +874,10 @@ public final class Page extends BodyBase {
 		
 	}
 
-	private void writeOutNewComponent(List keys,ClassWriter cw, Tag component) throws BytecodeException {
+	private void writeOutNewComponent(BytecodeContext statConstr,BytecodeContext constr,List keys,ClassWriter cw, Tag component) throws BytecodeException {
 		
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , NEW_COMPONENT_IMPL_INSTANCE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
-        BytecodeContext bc=new BytecodeContext(keys,cw,name,adapter,NEW_COMPONENT_IMPL_INSTANCE);
+        BytecodeContext bc=new BytecodeContext(statConstr, constr,keys,cw,name,adapter,NEW_COMPONENT_IMPL_INSTANCE);
     	Label methodBegin=new Label();
     	Label methodEnd=new Label();
     	
@@ -949,9 +968,9 @@ public final class Page extends BodyBase {
         
 	}
 	
-	private void writeOutNewInterface(List keys,ClassWriter cw, Tag interf) throws BytecodeException {
+	private void writeOutNewInterface(BytecodeContext statConstr,BytecodeContext constr,List keys,ClassWriter cw, Tag interf) throws BytecodeException {
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , NEW_INTERFACE_IMPL_INSTANCE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
-        BytecodeContext bc=new BytecodeContext(keys,cw,name,adapter,NEW_INTERFACE_IMPL_INSTANCE);
+        BytecodeContext bc=new BytecodeContext(statConstr, constr,keys,cw,name,adapter,NEW_INTERFACE_IMPL_INSTANCE);
     	Label methodBegin=new Label();
     	Label methodEnd=new Label();
 
@@ -1054,7 +1073,7 @@ public final class Page extends BodyBase {
 		adapter.loadLocal(sct);
 	}
 
-	private void writeOutCall(List keys,ClassWriter cw) throws BytecodeException {
+	private void writeOutCall(BytecodeContext statConstr,BytecodeContext constr,List keys,ClassWriter cw) throws BytecodeException {
 		//GeneratorAdapter adapter = bc.getAdapter();
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , CALL, null, new Type[]{Types.THROWABLE}, cw);
 	    	Label methodBegin=new Label();
@@ -1063,7 +1082,7 @@ public final class Page extends BodyBase {
 			adapter.visitLocalVariable("this", "L"+name+";", null, methodBegin, methodEnd, 0);
 	    	adapter.visitLabel(methodBegin);
 	        
-	        writeOutCallBody(new BytecodeContext(keys,cw,name,adapter,CALL),this,IFunction.PAGE_TYPE_REGULAR);
+	        writeOutCallBody(new BytecodeContext(statConstr, constr,keys,cw,name,adapter,CALL),this,IFunction.PAGE_TYPE_REGULAR);
 	        
 	        adapter.visitLabel(methodEnd);
 	        adapter.returnValue();
@@ -1085,7 +1104,7 @@ public final class Page extends BodyBase {
 
 		}
 		if(pageType!=IFunction.PAGE_TYPE_INTERFACE){
-			BodyBase.writeOut(bc.getKeys(),body.getStatements(), bc);
+			BodyBase.writeOut(bc.getStaticConstructor(),bc.getConstructor(),bc.getKeys(),body.getStatements(), bc);
 		}
 	}
 

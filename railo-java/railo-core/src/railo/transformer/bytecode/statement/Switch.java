@@ -1,5 +1,3 @@
-
-
 package railo.transformer.bytecode.statement;
 
 import java.util.ArrayList;
@@ -36,7 +34,7 @@ public final class Switch extends StatementBase implements FlowControl,HasBodies
 	// int find(Array array, Object object)
 	private static final Method FIND = new Method(
 			"find",
-			Types.INT,
+			Types.INT_VALUE,
 			new Type[]{Types.ARRAY,Types.OBJECT}
     		);	
 	
@@ -108,7 +106,7 @@ public final class Switch extends StatementBase implements FlowControl,HasBodies
 		}
 		
 		// int result=ArrayUtil.find(array,expression);
-		int result=adapter.newLocal(Types.INT);
+		int result=adapter.newLocal(Types.INT_VALUE);
 		adapter.loadLocal(array);
 		expr.writeOut(bc, Expression.MODE_REF);
 		adapter.invokeStatic(Types.ARRAY_UTIL, FIND);

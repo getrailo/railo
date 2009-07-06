@@ -1,5 +1,3 @@
-
-
 package railo.transformer.bytecode.util;
 
 import org.objectweb.asm.Type;
@@ -147,10 +145,10 @@ public final class Methods_Caster {
     };
     
     public static final Method[] TO_INT_VALUE=new Method[]{
-    	new Method("toIntValue",Types.INT,new Type[]{Types.OBJECT}),
-    	new Method("toIntValue",Types.INT,new Type[]{Types.BOOLEAN_VALUE}),
-    	new Method("toIntValue",Types.INT,new Type[]{Types.DOUBLE_VALUE}),
-    	new Method("toIntValue",Types.INT,new Type[]{Types.STRING})
+    	new Method("toIntValue",Types.INT_VALUE,new Type[]{Types.OBJECT}),
+    	new Method("toIntValue",Types.INT_VALUE,new Type[]{Types.BOOLEAN_VALUE}),
+    	new Method("toIntValue",Types.INT_VALUE,new Type[]{Types.DOUBLE_VALUE}),
+    	new Method("toIntValue",Types.INT_VALUE,new Type[]{Types.STRING})
     };
     
     public static final Method[] TO_LONG=new Method[]{

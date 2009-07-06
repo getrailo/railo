@@ -1,5 +1,3 @@
-
-
 package railo.transformer.cfml;
 
 import railo.runtime.exp.TemplateException;

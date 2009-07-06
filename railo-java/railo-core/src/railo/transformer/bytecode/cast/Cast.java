@@ -1,5 +1,3 @@
-
-
 package railo.transformer.bytecode.cast;
 
 import org.objectweb.asm.Type;
@@ -240,9 +238,9 @@ public final class Cast extends ExpressionBase {
         case 'i':
             if("int".equals(lcType)) {
             	rtn=expr.writeOut(bc,MODE_VALUE);
-            	if(!rtn.equals(Types.INT))
+            	if(!rtn.equals(Types.INT_VALUE))
                 	adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_INT_VALUE[Types.getType(rtn)]);
-                return Types.INT;
+                return Types.INT_VALUE;
             }
             if("integer".equals(lcType)) {
             	rtn=expr.writeOut(bc,MODE_REF);
@@ -470,7 +468,7 @@ public final class Cast extends ExpressionBase {
         break;
 
         case 'i':
-            if("int".equals(lcType)) 							return Types.INT;
+            if("int".equals(lcType)) 							return Types.INT_VALUE;
             if("integer".equals(lcType))						return Types.INTEGER;
         break;
 

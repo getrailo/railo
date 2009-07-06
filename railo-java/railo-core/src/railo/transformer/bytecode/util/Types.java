@@ -1,5 +1,3 @@
-
-
 package railo.transformer.bytecode.util;
 
 import java.io.BufferedReader;
@@ -36,6 +34,8 @@ import railo.runtime.type.FunctionValue;
 import railo.runtime.type.List;
 import railo.runtime.type.Scope;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFImpl;
+import railo.runtime.type.UDFProperties;
 import railo.runtime.type.ref.Reference;
 import railo.runtime.type.ref.VariableReference;
 import railo.runtime.type.scope.Undefined;
@@ -89,7 +89,7 @@ public final class Types {
     public static final Type FLOAT_VALUE = Type.getType(float.class);
 
     public static final Type INTEGER = Type.getType(Integer.class);
-    public static final Type INT = Type.getType(int.class);
+    public static final Type INT_VALUE = Type.getType(int.class);
 
     public static final Type LONG = Type.getType(Long.class);
     public static final Type LONG_VALUE = Type.getType(long.class);
@@ -98,6 +98,7 @@ public final class Types {
     public static final Type SHORT_VALUE = Type.getType(short.class);
 
     public static final Type COMPONENT=Type.getType(railo.runtime.Component.class);
+    public static final Type COMPONENT_PAGE=Type.getType(railo.runtime.ComponentPage.class);
 
     public static final Type COMPONENT_IMPL=Type.getType(railo.runtime.ComponentImpl.class);
     public static final Type INTERFACE_IMPL=Type.getType(railo.runtime.InterfaceImpl.class);
@@ -170,7 +171,9 @@ public final class Types {
 	public static final Type TIMEZONE = Type.getType(java.util.TimeZone.class);
 	public static final Type STRING_BUFFER = Type.getType(StringBuffer.class);
 	public static final Type MEMBER = Type.getType(Member.class);
-	public static final Type USER_DEFINED_FUNCTION = Type.getType(UDF.class);
+	public static final Type UDF = Type.getType(UDF.class);
+	public static final Type UDF_PROPERTIES = Type.getType(UDFProperties.class);
+	public static final Type UDF_IMPL = Type.getType(UDFImpl.class);
 	public static final Type COLLECTION_KEY = Type.getType(Collection.Key.class);
 	public static final Type UNDEFINED = Type.getType(Undefined.class);
 	public static final Type MAP = Type.getType(Map.class);
@@ -223,7 +226,7 @@ public final class Types {
             if("float".equals(lcType))								return FLOAT;
         break;
         case 'i':
-            if("int".equals(lcType))								return INT;
+            if("int".equals(lcType))								return INT_VALUE;
             else if("integer".equals(lcType))						return INTEGER;
         break;
         case 'j':
@@ -335,7 +338,7 @@ public final class Types {
 		if("long".equals(className)) return LONG;
 		if("double".equals(className)) return DOUBLE;
 		if("char".equals(className)) return CHARACTER;
-		if("int".equals(className)) return INT;
+		if("int".equals(className)) return INT_VALUE;
 		if("byte".equals(className)) return BYTE;
 		return type;
 	}

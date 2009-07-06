@@ -1,5 +1,3 @@
-
-
 package railo.transformer.bytecode.op;
 
 import org.objectweb.asm.Label;
@@ -35,7 +33,7 @@ public final class OPDecision extends ExpressionBase implements ExprBoolean {
     public static final int NEEQ = 1003;
     // int compare (Object, Object)
     final public static Method METHOD_COMPARE = new Method("compare",
-			Types.INT,
+			Types.INT_VALUE,
 			new Type[]{Types.OBJECT,Types.OBJECT});
 	
     private OPDecision(Expression left, Expression right, int operation) {

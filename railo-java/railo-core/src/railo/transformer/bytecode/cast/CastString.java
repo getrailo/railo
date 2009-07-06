@@ -1,5 +1,3 @@
-
-
 package railo.transformer.bytecode.cast;
 
 import org.objectweb.asm.Type;

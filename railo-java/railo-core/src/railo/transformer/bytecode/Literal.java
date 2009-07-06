@@ -1,5 +1,3 @@
-
-
 package railo.transformer.bytecode;
 
 import railo.transformer.bytecode.expression.Expression;

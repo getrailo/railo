@@ -1,5 +1,3 @@
-
-
 package railo.transformer.bytecode.util;
 
 import org.objectweb.asm.Type;
@@ -50,31 +48,31 @@ public final class Methods_Operator {
     public static final Method[][] OPERATORS=new Method[][]{
         // Object    
         new Method[] {
-        		new Method("compare",Types.INT,new Type[]{Types.OBJECT,Types.OBJECT}),
-        		new Method("compare",Types.INT,new Type[]{Types.OBJECT,Types.BOOLEAN_VALUE}),
-        		new Method("compare",Types.INT,new Type[]{Types.OBJECT,Types.DOUBLE_VALUE}),
-        		new Method("compare",Types.INT,new Type[]{Types.OBJECT,Types.STRING})
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.OBJECT,Types.OBJECT}),
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.OBJECT,Types.BOOLEAN_VALUE}),
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.OBJECT,Types.DOUBLE_VALUE}),
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.OBJECT,Types.STRING})
         },
         // boolean    
         new Method[] {
-        		new Method("compare",Types.INT,new Type[]{Types.BOOLEAN_VALUE,Types.OBJECT}),
-        		new Method("compare",Types.INT,new Type[]{Types.BOOLEAN_VALUE,Types.BOOLEAN_VALUE}),
-        		new Method("compare",Types.INT,new Type[]{Types.BOOLEAN_VALUE,Types.DOUBLE_VALUE}),
-        		new Method("compare",Types.INT,new Type[]{Types.BOOLEAN_VALUE,Types.STRING})
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.BOOLEAN_VALUE,Types.OBJECT}),
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.BOOLEAN_VALUE,Types.BOOLEAN_VALUE}),
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.BOOLEAN_VALUE,Types.DOUBLE_VALUE}),
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.BOOLEAN_VALUE,Types.STRING})
         },
         // double    
         new Method[] {
-        		new Method("compare",Types.INT,new Type[]{Types.DOUBLE_VALUE,Types.OBJECT}),
-        		new Method("compare",Types.INT,new Type[]{Types.DOUBLE_VALUE,Types.BOOLEAN_VALUE}),
-        		new Method("compare",Types.INT,new Type[]{Types.DOUBLE_VALUE,Types.DOUBLE_VALUE}),
-        		new Method("compare",Types.INT,new Type[]{Types.DOUBLE_VALUE,Types.STRING})
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.DOUBLE_VALUE,Types.OBJECT}),
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.DOUBLE_VALUE,Types.BOOLEAN_VALUE}),
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.DOUBLE_VALUE,Types.DOUBLE_VALUE}),
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.DOUBLE_VALUE,Types.STRING})
         },
         // String    
         new Method[] {
-        		new Method("compare",Types.INT,new Type[]{Types.STRING,Types.OBJECT}),
-        		new Method("compare",Types.INT,new Type[]{Types.STRING,Types.BOOLEAN_VALUE}),
-        		new Method("compare",Types.INT,new Type[]{Types.STRING,Types.DOUBLE_VALUE}),
-        		new Method("compare",Types.INT,new Type[]{Types.STRING,Types.STRING})
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.STRING,Types.OBJECT}),
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.STRING,Types.BOOLEAN_VALUE}),
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.STRING,Types.DOUBLE_VALUE}),
+        		new Method("compare",Types.INT_VALUE,new Type[]{Types.STRING,Types.STRING})
         }
     };
 }

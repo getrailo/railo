@@ -1,5 +1,3 @@
-
-
 package railo.transformer.bytecode.util;
 
 import org.objectweb.asm.Type;
@@ -69,7 +67,7 @@ public final class Methods {
     final public static Method METHOD_TO_FLOAT_VALUE = new Method("toFloatValue",Types.FLOAT_VALUE,new Type[]{Types.OBJECT});
     
 
-    final public static Method METHOD_TO_INTEGER_FROM_INT = new Method("toInteger",Types.INTEGER,new Type[]{Types.INT});
+    final public static Method METHOD_TO_INTEGER_FROM_INT = new Method("toInteger",Types.INTEGER,new Type[]{Types.INT_VALUE});
     
     // Double toDouble (double)
     final public static Method METHOD_TO_DOUBLE_FROM_DOUBLE = new Method("toDouble",Types.DOUBLE,new Type[]{Types.DOUBLE_VALUE});

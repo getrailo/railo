@@ -1,5 +1,3 @@
-
-
 package railo.transformer.cfml.evaluator.impl;
 
 import railo.runtime.config.Config;

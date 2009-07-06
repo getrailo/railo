@@ -1,7 +1,6 @@
-
-
 package railo.transformer.bytecode.util;
 
+import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,6 +13,8 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.SystemOut;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.op.Caster;
@@ -33,7 +34,13 @@ import railo.transformer.cfml.evaluator.EvaluatorException;
 
 public final class ASMUtil {
 
+	private static final int VERSION_2=1;
+	private static final int VERSION_3=2;
+	
+	private static int version=0;
+	
 	private final static Method CONSTRUCTOR_OBJECT = Method.getMethod("void <init> ()");
+	private static final String VERSION_MESSAGE = "you use a old version of the ASM Jar, please update your jar files";
 	private static long id=0;
 		
 	/**
@@ -238,11 +245,9 @@ public final class ASMUtil {
 	}
 	
 	public static Page getAncestorPage(Statement stat) throws BytecodeException {
-		//print.ln("getAncestorPage:"+stat);
 		Statement parent=stat;
 		while(true)	{
 			parent=parent.getParent();
-			//print.out(" - "+parent);
 			if(parent==null) {
 				throw new BytecodeException("missing parent Statement of Statment",stat.getLine());
 				//return null;
@@ -296,8 +301,8 @@ public final class ASMUtil {
     	className=railo.runtime.type.List.trim(className, "/");
     	
     // CREATE CLASS	
-		ClassWriter cw = new ClassWriter(true);
-    	//ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		//ClassWriter cw = new ClassWriter(true);
+    	ClassWriter cw = ASMUtil.getClassWriter();
         cw.visit(Opcodes.V1_2, Opcodes.ACC_PUBLIC, className, null, parent.getName().replace('.', '/'), null);
     	
     // Constructor
@@ -426,7 +431,7 @@ public final class ASMUtil {
 
 	public synchronized static String getId() {
 		if(id<0)id=0;
-		return StringUtil.addZeros(++id,4);
+		return StringUtil.addZeros(++id,6);
 	}
 
 
@@ -444,4 +449,78 @@ public final class ASMUtil {
 		if(mode==Expression.MODE_VALUE && (expr instanceof ExprDouble))adapter.pop2();
 		else adapter.pop();
 	}
+
+
+	public static ClassWriter getClassWriter() {
+		if(version==VERSION_2)
+			return new ClassWriter(true);
+		
+		try{
+			ClassWriter cw = new ClassWriter(true);
+			version=VERSION_2;
+			return cw;
+		}
+		catch(NoSuchMethodError err){
+			if(version==0){
+				version=VERSION_3;
+			}
+			
+			PrintWriter ew = ThreadLocalPageContext.getConfig().getErrWriter();
+			SystemOut.printDate(ew, VERSION_MESSAGE);
+			
+			try {
+				return (ClassWriter) ClassWriter.class.getConstructor(new Class[]{int.class}).newInstance(new Object[]{new Integer(1)});
+				
+			} 
+			catch (Exception e) {
+				throw new RuntimeException(Caster.toPageException(e));
+				
+			}
+		}
+	}
+
+	/*
+	 * For 3.1
+	 * 
+	 * public static ClassWriter getClassWriter() {
+		if(version==VERSION_3)
+			return new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		
+		try{
+			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+			version=VERSION_3;
+			return cw;
+		}
+		catch(NoSuchMethodError err){
+			if(version==0){
+				version=VERSION_2;
+				throw new RuntimeException(new ApplicationException(VERSION_MESSAGE+
+						", after reload this version will work as well, but please update to newer version"));
+			}
+			
+			PrintWriter ew = ThreadLocalPageContext.getConfig().getErrWriter();
+			SystemOut.printDate(ew, VERSION_MESSAGE);
+			//err.printStackTrace(ew);
+			
+			try {
+				return (ClassWriter) ClassWriter.class.getConstructor(new Class[]{boolean.class}).newInstance(new Object[]{Boolean.TRUE});
+				
+			} 
+			catch (Exception e) {
+				throw new RuntimeException(Caster.toPageException(e));
+				
+			}
+		}
+	}*/
+
+
+	public static String createOverfowMethod() {
+		return "_call"+ASMUtil.getId();
+	}
+	
+	// FUTURE add to loader, same method is also in FD Extension railo.intergral.fusiondebug.server.util.FDUtil
+	public static boolean isOverfowMethod(String name) {
+		return name.startsWith("_call") && name.length()>=11;
+	}
+	
 }

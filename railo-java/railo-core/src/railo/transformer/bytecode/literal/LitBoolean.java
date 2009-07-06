@@ -1,5 +1,3 @@
-
-
 package railo.transformer.bytecode.literal;
 
 import org.objectweb.asm.Opcodes;
