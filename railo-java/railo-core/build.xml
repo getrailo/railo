@@ -1,7 +1,7 @@
 <project name="RailoCore" default="install" basedir=".">
     
 	<description>Ant build file to build the railo.rc</description>
-	
+
 	<!-- Load properties -->
 	<property file="build.properties"/>
 	
@@ -11,9 +11,29 @@
 	</path>
 	
 	<!-- ================================= 
+          target: getInfo
+		  This target extracts the version name for the rc file from the INI file                        
+         ================================= -->
+    <target name="getInfo" description="Clears the build and dist directories.">
+		<echo message="Extracting version information from file src/railo/runtime/Info.ini" />
+    	<loadfile property="core.version" srcFile="src/railo/runtime/Info.ini">
+			<filterchain>
+				<linecontainsregexp>
+					<regexp pattern="number=[0-3]+.[0-9]+.[0-9]+.[0-9]+"/>
+				</linecontainsregexp>
+				<replacetokens begintoken="n" endtoken="=">
+					<token key="umber" value=""/>
+				</replacetokens>
+				<striplinebreaks/>
+			</filterchain>
+		</loadfile>
+		<echo message="Version is: ${core.version}.rc" />
+    </target>
+
+	<!-- ================================= 
           target: clean              
          ================================= -->
-    <target name="clean" description="Clears the build and dist directories.">
+    <target name="clean" depends="getInfo" description="Clears the build and dist directories.">
     	<echo>Deleting ${build.dir} and ${dist.dir}</echo>
     	<delete dir="${build.dir}" />
     	<delete dir="${dist.dir}"/>
@@ -43,7 +63,28 @@
           target: createadmin              
          ================================= -->
     <target name="createadmin" depends="compile" description="Create the railo-context.ra">
-        <echo>Creating the admin is not yet implemented.</echo>
+    	
+    	<property name="railo.admin_source_abs" location="${railo.admin_source}"/>
+    	
+    	<input message="Please enter Railo-Admin password:" addproperty="railo.password" defaultvalue="your admin password"/>
+		<echo>Compiling Railo Administrator</echo>
+    	<!-- please note, that you have to set the railo.admin_source location in the properties file -->
+		<get src="${railo.url}?password=${railo.password}&amp;admin_source=${railo.admin_source_abs}" verbose="on" dest="generate.html"/>
+    	<loadfile property="railo.compile_message" srcFile="generate.html" />
+		<echo>Message from Railo: ${railo.compile_message}</echo>
+    	<echo>Admin compiled to: ${railo.admin_source_abs}/railo-context.ra</echo>
+    	<echo>Copying Railo Admin archive...</echo>
+		<copy tofile="${src.dir}/resource/context/railo-context.ra" file="${railo.admin_source_abs}/railo-context.ra" overwrite="yes"/>
+		<copy todir="${src.dir}/resource/context/admin/dbdriver">
+			<fileset dir="${railo.admin_source_abs}/admin/dbdriver"/>
+		</copy>
+		<copy todir="${src.dir}/resource/context/admin/plugin">
+			<fileset dir="${railo.admin_source_abs}/admin/plugin"/>
+		</copy>
+		<copy todir="${src.dir}/resource/context/templates">
+			<fileset dir="${railo.admin_source_abs}/templates"/>
+		</copy>
+    	
     </target>
 	
 	<!-- ================================= 
@@ -79,5 +120,5 @@
     		<fileset dir="${dist.dir}"/>
     	</copy>
     </target>
-		
+
 </project>
