@@ -1,5 +1,3 @@
-
-
 package coldfusion.server;
 
 import railo.runtime.services.DataSourceServiceImpl;

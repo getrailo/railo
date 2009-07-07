@@ -1,5 +1,3 @@
-
-
 package coldfusion.server;
 
 public interface SchedulerService extends Service {

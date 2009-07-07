@@ -1,5 +1,3 @@
-
-
 package coldfusion.server;
 
 import java.io.File;
