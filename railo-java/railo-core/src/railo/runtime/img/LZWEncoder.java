@@ -1,5 +1,3 @@
-
-
 package railo.runtime.img;
 
 import java.io.IOException;
