@@ -1,5 +1,3 @@
-
-
 package railo.runtime.functions.system;
 
 import java.io.IOException;
