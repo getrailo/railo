@@ -1,5 +1,3 @@
-
-
 package railo.runtime.img.gif;
 
 import java.awt.AlphaComposite;
