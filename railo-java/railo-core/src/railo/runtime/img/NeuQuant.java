@@ -1,5 +1,3 @@
-
-
 package railo.runtime.img;
 
 public class NeuQuant {
