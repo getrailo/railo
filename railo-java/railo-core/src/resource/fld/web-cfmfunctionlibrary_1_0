@@ -1628,25 +1628,6 @@
 			<type>string</type>
 		</return>
 	</function>
-	<!-- dec -->
-	<function>
-		<name>dec</name>
-		<class>railo.runtime.functions.math.Dec</class>
-		<description/>
-		<argument>
-			<name>varName</name>
-			<type>variable_string</type>
-			<required>Yes</required>
-		</argument>
-		<argument>
-			<name>returnNewValue</name>
-			<type>boolean</type>
-			<required>No</required>
-		</argument>
-		<return>
-			<type>number</type>
-		</return>
-	</function>
 	<!-- decimalFormat -->
 	<function>
 		<name>decimalFormat</name>
@@ -2623,8 +2604,8 @@
 		<class>railo.runtime.functions.other.GetComponentMetaData</class>
 		<description/>
 		<argument>
-			<name>path</name>
-			<type>string</type>
+			<name>pathOrCFC</name>
+			<type>object</type>
 			<required>yes</required>
 		</argument>
 		<return>
@@ -4840,25 +4821,7 @@
 	
 	
 	
-	<!-- inc -->
-	<function>
-		<name>inc</name>
-		<class>railo.runtime.functions.math.Inc</class>
-		<description/>
-		<argument>
-			<name>varName</name>
-			<type>variable_string</type>
-			<required>Yes</required>
-		</argument>
-		<argument>
-			<name>returnNewValue</name>
-			<type>boolean</type>
-			<required>No</required>
-		</argument>
-		<return>
-			<type>number</type>
-		</return>
-	</function>
+	
 	<!-- incrementValue -->
 	<function>
 		<name>incrementValue</name>
@@ -6102,7 +6065,7 @@
 		<description/>
 		<argument>
 			<name>number</name>
-			<type>number</type>
+			<type>object</type>
 			<required>Yes</required>
 		</argument>
 		<argument>
@@ -6155,7 +6118,7 @@
 		<description/>
 		<argument>
 			<name>currency_number</name>
-			<type>number</type>
+			<type>object</type>
 			<required>Yes</required>
 		</argument>
 		<argument>
@@ -6268,8 +6231,8 @@
 		<class>railo.runtime.functions.international.LSParseDateTime</class>
 		<description/>
 		<argument>
-			<name>dateString</name>
-			<type>string</type>
+			<name>date</name>
+			<type>object</type>
 			<required>Yes</required>
 		</argument>
 		<argument>
@@ -6630,8 +6593,8 @@
 		<class>railo.runtime.functions.string.ParseDateTime</class>
 		<description/>
 		<argument>
-			<name>string1</name>
-			<type>string</type>
+			<name>date</name>
+			<type>object</type>
 			<required>Yes</required>
 		</argument>
 		<argument>
@@ -7754,6 +7717,22 @@
 			<type>string</type>
 		</return>
 	</function>
+	
+	<!-- stringlen -->
+	<function>
+		<name>stringlen</name>
+		<class>railo.runtime.functions.string.StringLen</class>
+		<description/>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
+	
 	<!-- _jsonStruct -->
 	<function>
 		<name>_jsonStruct</name>
@@ -7823,7 +7802,7 @@
 			<required>Yes</required>
 		</argument>
 		<return>
-			<type>struct</type>
+			<type>object</type>
 		</return>
 	</function>
 	<!-- structCount -->
@@ -8230,20 +8209,6 @@
 		</argument>
 		<return>
 			<type>binary</type>
-		</return>
-	</function>
-	<!-- toInt -->
-	<function>
-		<name>toInt</name>
-		<class>railo.runtime.functions.cast.ToInt</class>
-		<description/>
-		<argument>
-			<name>input</name>
-			<type>any</type>
-			<required>Yes</required>
-		</argument>
-		<return>
-			<type>number</type>
 		</return>
 	</function>
 	<!-- ToScript -->

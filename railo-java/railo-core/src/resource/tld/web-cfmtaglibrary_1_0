@@ -19,7 +19,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Stops processing of a page at the tag location. CFML returns everything that was processed before the cfabort tag. The cfabort tag is often used with conditional logic to stop processing a page when a condition occurs. </description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>showError</name>
@@ -58,7 +58,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>cssSrc</name>
@@ -85,7 +85,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>bind</name>
@@ -128,7 +128,7 @@
 			using the ColdFusion Administrator.
 			To register a Java applet, open the ColdFusion Administrator and click Applets.
 		</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>appletSource</name>
@@ -205,7 +205,7 @@
 			By default, client variables are disabled. Also, enables session variables and sets timeouts 
 			for session and application variables. Session and application variables are stored in memory.
 		</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -213,6 +213,20 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>The name of your application. This name can be up to 64 characters long.
    		Required for application and session variables, optional for client variables</description>
+		</attribute>
+		<attribute>
+			<type>object</type>
+			<name>datasource</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>alias for defaultdatasource</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>defaultdatasource</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>the default datasource for this enviroment</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -387,7 +401,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Allows subtag data to be saved with the base tag. Applies only to custom tags.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>baseTag</name>
@@ -413,7 +427,7 @@
 			Authenticates a user, setting a security context for the application. 
 			For more information, see the descriptions of IsAuthenticated and AuthenticatedContext.
 		</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 	</tag>
 	<!-- Break -->
 	<tag>
@@ -424,7 +438,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Used to break out of a cfloop,cfwhile or cfforeach.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 	</tag>
 	<!-- Cache -->
 	<tag>
@@ -436,7 +450,7 @@
 		<description>Speeds up page rendering when dynamic content does not have to be retrieved each time a user accesses
   the page. To accomplish this, cfcache creates temporary files that contain the static HTML returned from
   a ColdFusion page. You can use cfcache for simple URLs and URLs that contain URL parameters.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
@@ -522,7 +536,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -641,7 +655,7 @@
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Handle one case of a cfswicth</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>value</name>
@@ -686,7 +700,7 @@
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>backgroundColor</name>
@@ -956,7 +970,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Used with the cfchart and cfchartseries tags. This tag defines chart data points. Its data is submitted to the cfchartseries tag. </description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>item</name>
@@ -980,7 +994,7 @@
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Used with the cfchart and cfchartseries tags. This tag defines chart data points. Its data is submitted to the cfchartseries tag. </description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>colorlist</name>
@@ -1059,7 +1073,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Defines table column header, width, alignment, and text. Used only inside a cftable.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>header</name>
@@ -1100,7 +1114,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Allows you to create and administer Search collections. </description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		
 		<attribute>
 			<type>boolean</type>
@@ -1260,7 +1274,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 	</tag>
 	<!-- Content -->
 	<tag>
@@ -1270,7 +1284,7 @@
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Defines the MIME type returned by the current page. Optionally, lets you specify the name of a file
   to be returned with the page.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>type</name>
@@ -1330,7 +1344,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Defines cookie variables, including expiration and security options.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -1382,7 +1396,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Lets you retrieve information about a data source, including details about the database, tables, queries, procedures, foreign keys, indexes, and version information about the database, driver, and JDBC. This tag supports only JDBC drivers, and does not support ODBC-based drivers, including the Microsoft Access driver.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>datasource</name>
@@ -1456,7 +1470,7 @@
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Handles interactions with directories.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 	</tag>
 	<!-- Directory -->
 	<tag>
@@ -1466,7 +1480,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Handles interactions with directories.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
@@ -1573,7 +1587,7 @@
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>bind</name>
@@ -1618,7 +1632,7 @@
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>boolean</type>
 			<name>backgroundvisible</name>
@@ -1884,7 +1898,7 @@
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>type</name>
@@ -1907,7 +1921,7 @@
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>number</type>
 			<name>marginbottom</name>
@@ -1998,7 +2012,7 @@
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Outputs variables for debugging purposes. Using cfdump, you can display the contents of simple variables, queries, 
   arrays, structures, and WDDX variables created with cfwddx. if no var attribute defined it dump the hole site information</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>any</type>
 			<name>var</name>
@@ -2114,7 +2128,7 @@
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Used with cfelse and cfelseif, cfif lets you create simple and compound conditional statements 
 	 in CFML. The value in the cfif tag can be any expression.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 	</tag>
 	<!-- ElseIf -->
 	<tag>
@@ -2143,7 +2157,7 @@
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Enables the display of customized HTML pages when errors occur. This lets you maintain a 
   consistent look and feel within your application, even when errors occur.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>type</name>
@@ -2181,7 +2195,7 @@
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Enables ColdFusion developers to execute a process on a server computer.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -2236,7 +2250,7 @@
 		<description>Used to: Abort the processing of the currently executing CFML custom tag, exit the template 
 	within the currently executing CFML custom tag and reexecute a section of code within the currently
 	executing CFML custom tag</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>method</name>
@@ -2251,7 +2265,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
@@ -2369,7 +2383,7 @@
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 	</tag>
 	<!-- File -->
 	<tag>
@@ -2380,7 +2394,7 @@
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Handles all interactions with files. The attributes you use with cffile depend on the value of the action attribute. 
  For example, if the action = "write", use the attributes associated with writing a text file.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>acl</name>
@@ -2512,7 +2526,7 @@ The browser uses file extension to determine file type. </description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Flushes currently available data to the client.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>number</type>
 			<name>interval</name>
@@ -2532,7 +2546,7 @@ The browser uses file extension to determine file type. </description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Builds a form with CFML custom control tags that provide more functionality than standard 
   HTML form input elements.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -2834,7 +2848,7 @@ The browser uses file extension to determine file type. </description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>type</name>
@@ -2941,7 +2955,7 @@ The browser uses file extension to determine file type. </description>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>type</name>
@@ -3006,7 +3020,7 @@ The browser uses file extension to determine file type. </description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>forward the request to a other path.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>template</name>
@@ -3022,7 +3036,7 @@ The browser uses file extension to determine file type. </description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Lets users implement File Transfer Protocol (FTP) operations.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
@@ -3325,7 +3339,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Displays a graphical representation of data.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>type</name>
@@ -3630,7 +3644,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Specifies a data point to be displayed by a cfgraph tag.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>value</name>
@@ -3671,7 +3685,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Used inside cfform, cfgrid lets you place a grid control in a ColdFusion form. A grid control is 
   	a table of data divided into rows and columns. The cfgrid tag column data is specified with cfgridcolumn tags.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -4123,7 +4137,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Used with cfgrid in a cfform, you use cfgridcolumn to specify column data in a cfgrid control. Font and alignment 
   attributes used in cfgridcolumn override any global font or alignment settings defined in cfgrid.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -4342,7 +4356,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Lets you define a cfgrid that does not use a query as source for row data. If a query attribute is
   specified in cfgrid, the cfgridrow tags are ignored.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>data</name>
@@ -4362,7 +4376,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
   grid data. The cfgridupdate tag provides a direct interface with your data source. 
   The cfgridupdate tag applies delete row actions first, then INSERT row actions, and then UPDATE row 
   actions. If an error is encountered, row processing stops.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>grid</name>
@@ -4481,7 +4495,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Generates custom HTTP response headers to return to the client.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -4528,7 +4542,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<description>Writes the text specified in the text attribute to the 'head' section of a generated HTML page. 
 	 The cfhtmlhead tag can be useful for embedding JavaScript code, or placing other HTML tags such, as 
 	 META, LINK, TITLE, or BASE in an HTML page header.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>text</name>
@@ -4547,7 +4561,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<description>Lets you execute HTTP POST and GET operations on files. Using cfhttp, you can execute standard 
   GET operations and create a query object from a text file. POST operations lets you upload MIME file 
   types to a server, or post cookie, formfield, URL, file, or CGI variables directly to a specified server.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>url</name>
@@ -4775,7 +4789,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Required for cfhttp POST operations, cfhttpparam is used to specify the parameters necessary to 
 	 build a cfhttp POST.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -4843,7 +4857,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Lets you resize and add labels to GIF and JPEG format images.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		
 		<attribute>
 			<type>string</type>
@@ -5008,7 +5022,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Retrieves and deletes e-mail messages from a Imap mail server.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>server</name>
@@ -5114,7 +5128,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>To import a JSP Taglibrary or a CFML Custom Tag Directory</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>taglib</name>
@@ -5142,7 +5156,7 @@ If you import a CFML custom tag directory and specify an empty value, "", for th
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>displayName</name>
@@ -5175,7 +5189,7 @@ If an interface extends another interface, and the child interface specifies a f
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Lets you embed references to ColdFusion pages in CFML. You can embed cfinclude tags recursively. 
   For an additional method of encapsulating CFML</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>template</name>
@@ -5195,7 +5209,14 @@ If an interface extends another interface, and the child interface specifies a f
   you specify, or from a query generated by a ColdFusion query. Before you can populate a Verity collection, 
   you must create the collection using either the cfcollection tag or the ColdFusion Administrator. Use 
   cfsearch to search collections you populate with cfindex.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
+		<attribute>
+			<type>string</type>
+			<name>name</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>collection</name>
@@ -5360,7 +5381,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Used inside cfform to place radio buttons, checkboxes, or text boxes. Provides input 
   validation for the specified control type.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		
 		<attribute>
 			<type>string</type>
@@ -5923,7 +5944,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Inserts records in data sources.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>dataSource</name>
@@ -6012,13 +6033,6 @@ Permits searching collections by title or displaying a separate title from the k
 			<description/>
 		</attribute>
 		<attribute>
-			<type>struct</type>
-			<name>argumentcollection</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description/>
-		</attribute>
-		<attribute>
 			<type>string</type>
 			<name>username</name>
 			<required>false</required>
@@ -6089,7 +6103,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Argument for the Invoke Tag</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -6120,7 +6134,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Provides an interface to LDAP Lightweight Directory Access Protocol 
   directory servers like the Netscape Directory Server.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>returnAsBinary</name>
@@ -6300,7 +6314,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<description>Opens a ColdFusion page or HTML file. For example, you might use cflocation to specify a standard 
   message or response that you use in several ColdFusion applications. Use the addToken attribute to verify 
   client requests.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>url</name>
@@ -6332,7 +6346,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>number</type>
 			<name>idletimeout</name>
@@ -6362,7 +6376,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -6392,7 +6406,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 	</tag>
 	<!-- Lock -->
 	<tag>
@@ -6412,7 +6426,7 @@ Permits searching collections by title or displaying a separate title from the k
   Therefore, read-only locks should be used only when the shared data is read only and not modified. If another 
   request already has an exclusive lock on the shared data, the request waits for the exclusive lock to be 
   released.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>number</type>
 			<name>timeout</name>
@@ -6474,7 +6488,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Writes a message to a log file.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>text</name>
@@ -6553,7 +6567,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Looping is a very powerful programming technique that lets you repeat a set of instructions or 
   display output repeatedly until one or more conditions are met. cfloop supports five types of loops.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>index</name>
@@ -6693,7 +6707,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>must</body-content>
 		<body-rtexprvalue>true</body-rtexprvalue>
 		<description>Sends e-mail messages by an SMTP server.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>to</name>
@@ -6954,7 +6968,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Specifies one part of a multipart e-mail message. Can only be used in the cfmail tag. You can use more than one cfmailpart tag within a cfmail tag</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>type</name>
@@ -6986,7 +7000,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Can either attach a file or add a header to a message. It is nested within a cfmail tag. You can 
   use more than one cfmailparam tag within a cfmail tag.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>file</name>
@@ -7059,7 +7073,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>username</name>
@@ -7188,13 +7202,27 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>empty</body-content>
 		<body-rtexprvalue>true</body-rtexprvalue>
 		<description>Flushes the query cache</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Clears queries from the cache in the Application scope.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>filter</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>filter for the elements to delete</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>filterignorecase</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>filter for the elements to delete</description>
 		</attribute>
 	</tag>
 	<!-- Output -->
@@ -7207,7 +7235,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>must</body-content>
 		<body-rtexprvalue>true</body-rtexprvalue>
 		<description>Displays the results of a database query or other operation. To nest cfoutput tags, see the "Usage" section. </description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>query</name>
@@ -7260,7 +7288,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Tests for a parameter's existence, tests its data type, and provides a default value if one 
   is not assigned.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -7316,7 +7344,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
@@ -7587,7 +7615,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Provides additional information for the cfpdf tag. The cfpdfparam tag applies only to the merge action of the cfpdf tag and is always a child tag of the cfpdf tag.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>pages</name>
@@ -7618,7 +7646,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Retrieves and deletes e-mail messages from a POP mail server.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>server</name>
@@ -7731,7 +7759,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Suppresses extra white space and other output, produced by CFML within the tag's scope.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>boolean</type>
 			<name>suppressWhiteSpace</name>
@@ -7757,7 +7785,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Specifies parameter information, including type, name, value, and length. The cfprocparam tag 
   is nested within a cfstoredproc tag.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>type</name>
@@ -7828,7 +7856,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<description>Specifies a result set name that other ColdFusion tags, such as cfoutput and cftable, use to access 
   the result set. It also lets you optionally identify which of the stored procedure's result sets to 
   return. The cfprocresult tag is nested within a cfstoredproc tag.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -7921,7 +7949,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>must</body-content>
 		<body-rtexprvalue>true</body-rtexprvalue>
 		<description>Passes SQL statements to a data source. Not limited to queries.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -8079,7 +8107,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<description>Checks the data type of a query parameter. The cfqueryparam tag is nested within a cfquery tag. 
   It is embedded within the query SQL statement. If you specify its optional parameters, cfqueryparam 
   also performs data validation.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>any</type>
 			<name>value</name>
@@ -8144,7 +8172,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Reads, writes, and deletes keys and values in the system registry. The cfregistry tag is supported 
   on all platforms, including Linux, Solaris, and HP-UX.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
@@ -8220,7 +8248,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Runs a predefined Crystal Reports report.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>template</name>
@@ -8359,7 +8387,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Runs a predefined Crystal Reports report.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -8388,7 +8416,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Rethrows the currently active exception. Preserves the exception's cfcatch.type and cfcatch.
   agContext information.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 	</tag>
 	<!-- Return -->
 	<tag>
@@ -8414,7 +8442,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<handle-exception>true</handle-exception>
 		<description>Saves the generated content inside the tag body in a variable.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>variable</name>
@@ -8446,7 +8474,7 @@ dWord: creates a value of 0 (zero)</description>
   for executing the page, and whether the output from the task is published. If the output is published, 
   a path and file are specified. 
   The event submission and its success or failure status is written to the cfusion-log-schedule.log file.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
@@ -8644,7 +8672,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>tagdependent</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Encloses a code segment containing cfscript.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>language</name>
@@ -8662,7 +8690,7 @@ dWord: creates a value of 0 (zero)</description>
   calling the cfcollection tag, by using the ColdFusion Administrator, or through native Verity indexing 
   tools. Collections are populated with data either with the cfindex tag, or externally, using native 
   Verity indexing tools. Collections must be created and populated before any searches can be executed.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -8799,7 +8827,7 @@ dWord: creates a value of 0 (zero)</description>
 		<description>Used inside cfform, cfselect lets you construct a drop-down list box form control. You can 
   populate the drop-down list box from a query, or using the option tag. Use option elements to populate 
   lists. The syntax for the option tag is the same as for its HTML counterpart.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>datafld</name>
@@ -9124,7 +9152,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Executes a Java servlet on a JRun engine. This tag is used in conjunction with the 
   cfserletparam tag, which passes data to the servlet.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>code</name>
@@ -9177,7 +9205,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>A child of cfservlet. It passes data to the servlet. Each cfservletparam tag within the cfservlet 
   block passes a separate piece of data to the servlet.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -9234,7 +9262,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Controls various aspects of page processing, such as the output of HTML code in pages. One 
   benefit of this option is managing whitespace that can occur in output pages served by ColdFusion.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute-min>1</attribute-min>
 		<attribute>
 			<type>any</type>
@@ -9266,7 +9294,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Pauses the execution of the page for a given interval</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>number</type>
 			<name>time</name>
@@ -9285,7 +9313,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<handle-exception>true</handle-exception>
 		<description>Suppresses all output that is produced by the CFML within the tag's scope.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>boolean</type>
 			<name>bufferoutput</name>
@@ -9302,7 +9330,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Used inside cfform, cfslider lets you place a slider control in a ColdFusion form. A slider 
   control is like a sliding volume control. The slider groove is the area over which the slider moves.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -9506,7 +9534,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Stops the time from starttag to endtag</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>label</name>
@@ -9530,7 +9558,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Executes stored procedures by an ODBC or native connection to a server database. It specifies database connection 
   information and identifies the stored procedure.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>procedure</name>
@@ -9674,7 +9702,7 @@ dWord: creates a value of 0 (zero)</description>
 		<description>Used with cfcase and cfdefaultcase. Evaluates a passed expression and passes control to the 
   cfcase tag that matches the expression result. You can optionally code a cfdefaultcase tag, which 
   receives control if there is no matching cfcase tag value. </description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>expression</name>
@@ -9695,7 +9723,7 @@ dWord: creates a value of 0 (zero)</description>
   characteristics. The cftable tag renders data either as preformatted text, or, with the HTMLTable 
   attribute, as an HTML table. Use cftable to create tables if you don't want to write HTML table tag 
   code, or if your data can be well presented as preformatted text.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>query</name>
@@ -9763,7 +9791,7 @@ dWord: creates a value of 0 (zero)</description>
 		<description>
 			Puts a multiline text entry box in a cfform tag and controls its display characteristics
 		</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>number</type>
 			<name>rows</name>
@@ -10200,7 +10228,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Lets you place a single-line text entry box in a cfform. The tag also gives you control over 
   font characteristics.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -10434,7 +10462,7 @@ dWord: creates a value of 0 (zero)</description>
 		<description>The cfthrow tag raises a developer-specified exception that can be caught with cfcatch tag 
   having any of the following type specifications - cfcatch type = 'custom_type', cfcatch type = 'Application'
   'cfcatch' type = 'Any'</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>type</name>
@@ -10489,7 +10517,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>type</name>
@@ -10515,7 +10543,7 @@ dWord: creates a value of 0 (zero)</description>
 		<handle-exception>true</handle-exception>
 		<description>Groups multiple queries into a single unit. The cftransaction 
   tag provides commit and rollback processing.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
@@ -10538,7 +10566,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Lets you put a tree control in a cfform. Validates user selections. Tree items are created with 
   cftreeitem tags inside the cftree tag block. You can use a ColdFusion query to supply data to the tree.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
@@ -10766,7 +10794,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Populates a tree control, created with cftree, with elements. You can use the img values 
   supplied with ColdFusion or reference your own icons.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>value</name>
@@ -10859,7 +10887,7 @@ dWord: creates a value of 0 (zero)</description>
 			or in the debugging section at the end of the request; or, in Dreamweaver MX and later, in the Server Debug 
 			tab of the Results window.
 		</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>boolean</type>
 			<name>abort</name>
@@ -10923,7 +10951,7 @@ dWord: creates a value of 0 (zero)</description>
   ColdFusion pages. Exceptions include events that disrupt the normal flow of instructions in a 
   ColdFusion page, such as failed database operations, missing include files, and developer-specified 
   events.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 	</tag>
 	<!-- Update -->
 	<tag>
@@ -10932,7 +10960,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Updates existing records in data sources.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>dataSource</name>
@@ -10997,7 +11025,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>play a video</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		
 		<!-- JW -->
 		<attribute>
@@ -11229,7 +11257,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>play a video</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>video</name>
@@ -11303,7 +11331,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>play a video</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		
 		<attribute>
 			<type>string</type>
@@ -11385,7 +11413,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>play a video</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>execution</name>
@@ -11632,7 +11660,7 @@ dWord: creates a value of 0 (zero)</description>
 		<description>Serializes and de-serializes CFML data structures to the XML-based WDDX format. 
   Generates JavaScript statements to instantiate JavaScript objects equivalent to the contents of a 
   WDDX packet or some CFML data structures.</description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
@@ -11694,7 +11722,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Creates a ColdFusion XML document object that contains the markup in the tag body. This tag can include XML and CFML tags. ColdFusion processes the CFML code in the tag body, then assigns the resulting text to an XML document object variable. </description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>variable</name>
@@ -11772,7 +11800,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>action</name>
@@ -11865,7 +11893,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description></description>
-		<attribute-type>fix</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>charset</name>

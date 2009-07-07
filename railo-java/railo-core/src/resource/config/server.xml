@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
 <!-- 
-Path placeholders:
-	{railo-web}: path to the railo web directory typical "{web-root}/WEB-INF/railo"
+Path placeholders: 
 	{railo-server}: path to the railo server directory typical where the railo.jar is located
+	{railo-config}: same as {railo-server} in server context and same as {railo-web} in web context}
 	{temp-directory}: path to the temp directory of the current user of the system
 	{home-directory}: path to the home directory of the current user of the system
 	{web-root-directory}: path to the web root
@@ -49,9 +49,11 @@ Path placeholders:
 		temp-directory - directory for temporary files (upload aso.)
 	 -->
 	<file-system  
-		fld-directory="{railo-web}/library/fld/" 
-		temp-directory="{railo-web}/temp/" 
-		tld-directory="{railo-web}/library/tld/">
+		fld-directory="{railo-config}/library/fld/" 
+		temp-directory="{railo-config}/temp/" 
+		tld-directory="{railo-config}/library/tld/"
+		function-directory="{railo-config}/library/function/"
+		tag-directory="{railo-config}/library/tag/">
 	</file-system>
 	
 	
@@ -70,7 +72,7 @@ Path placeholders:
 	</dump-writers>
 	
 	
-	<remote-clients directory="{railo-web}remote-client/" log="logs/" log-level="info"/>
+	<remote-clients directory="{railo-config}remote-client/" log="logs/" log-level="info"/>
 	
     <resources>
         <!--
@@ -138,6 +140,15 @@ Path placeholders:
     		scheme="http"
     		class="railo.commons.io.res.type.http.HTTPResourceProvider"
     		arguments="lock-timeout:10000;case-sensitive:false;"/>
+    	<!--
+        arguments:
+		lock-timeout   - 	define how long a request wait for a log
+		case-sensitive	-	is http handled case-sensitive or not
+	 	-->
+    	<resource-provider 
+    		scheme="https"
+    		class="railo.commons.io.res.type.http.HTTPSResourceProvider"
+    		arguments="lock-timeout:10000;case-sensitive:false;"/>
     	
     </resources>
 	
@@ -165,7 +176,7 @@ Path placeholders:
 		applicationtimeout="1,0,0,0"
 		
 		requesttimeout="0,0,0,50"
-		requesttimeout-log="{railo-web}/logs/requesttimeout.log"
+		requesttimeout-log="{railo-config}/logs/requesttimeout.log"
 		
 		sessionmanagement="yes"		
 		clientmanagement="no" 
@@ -173,7 +184,7 @@ Path placeholders:
 		setdomaincookies="no"
 		/>
 		
-	<mail spool-interval="5" log="{railo-web}/logs/mail.log" spool-enable="yes" timeout="30">
+	<mail spool-interval="5" log="{railo-config}/logs/mail.log" spool-enable="yes" timeout="30">
 	</mail>
 	
 	<mappings>
@@ -201,8 +212,8 @@ Path placeholders:
 			readonly="yes"
 			trusted="true"
 			virtual="/railo-context/"
-			physical="{railo-web}/context/"
-			archive="{railo-web}/context/railo-context.ra"
+			physical="{railo-config}/context/"
+			archive="{railo-config}/context/railo-context.ra"
 			primary="physical"/>
 
 	</mappings>	
@@ -210,7 +221,7 @@ Path placeholders:
 	<custom-tag>
 		<mapping
 			trusted="yes"
-			physical="{railo-web}/customtags/"/>
+			physical="{railo-config}/customtags/"/>
 	</custom-tag>
 	
 	<cfx-tags>
@@ -250,7 +261,7 @@ Path placeholders:
 	 -->
 	<debugging
 		log-memory-usage="no"
-		memory-log="{railo-web}/logs/memory.log"
+		memory-log="{railo-config}/logs/memory.log"
 		template="/railo-context/templates/debugging/debugging.cfm"
 		debug="yes"/>
 	
