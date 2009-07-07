@@ -1,5 +1,3 @@
-
-
 package railo.runtime.config;
 
 import java.io.IOException;
@@ -34,6 +32,7 @@ import railo.commons.lang.SystemOut;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
 import railo.runtime.Mapping;
+import railo.runtime.MappingImpl;
 import railo.runtime.PageSource;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.cfx.customtag.CFXTagPoolImpl;
@@ -51,6 +50,9 @@ import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
 import railo.runtime.listener.ApplicationListener;
+import railo.runtime.net.amf.AMFCaster;
+import railo.runtime.net.amf.ClassicAMFCaster;
+import railo.runtime.net.amf.ModernAMFCaster;
 import railo.runtime.net.mail.Server;
 import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.op.Caster;
@@ -71,16 +73,20 @@ import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibException;
 import railo.transformer.library.function.FunctionLibFactory;
 import railo.transformer.library.function.FunctionLibFunction;
+import railo.transformer.library.function.FunctionLibFunctionArg;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibException;
 import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
+import railo.transformer.library.tag.TagLibTagAttr;
+import flex.messaging.config.ConfigMap;
 
 
 /**
  * Hold the definitions of the railo cold fusion configuration.
  */
 public abstract class ConfigImpl implements Config {
+
 
 
 	public static final int CLIENT_BOOLEAN_TRUE = 0;
@@ -115,10 +121,10 @@ public abstract class ConfigImpl implements Config {
     private TimeSpan applicationTimeout=new TimeSpanImpl(1,0,0,0);
     private TimeSpan requestTimeout=new TimeSpanImpl(0,0,0,30);
     
-    private boolean sessionManagement;  
-    private boolean clientManagement;
-    private boolean clientCookies; 
-    private boolean domainCookies;
+    private boolean sessionManagement=true;  
+    private boolean clientManagement=false;
+    private boolean clientCookies=true; 
+    private boolean domainCookies=false;
 
     private Resource configFile;
     private Resource configDir;
@@ -126,15 +132,16 @@ public abstract class ConfigImpl implements Config {
     private long loadTime;
 
     private int spoolInterval=30;
-    private boolean spoolEnable=false;
+    private boolean spoolEnable=true;
 
     private Server[] mailServers;
 
-    private int mailTimeout;
+    private int mailTimeout=30;
 
     private TimeZone timeZone;
 
     private String timeServer="";
+    private boolean useTimeServer=true;
 
     private long timeOffset;
     
@@ -144,7 +151,7 @@ public abstract class ConfigImpl implements Config {
 
     private Locale locale;
 
-    private boolean psq;
+    private boolean psq=true;
 
     private String debugTemplate;
     private Map errorTemplates=new HashMap();
@@ -264,6 +271,15 @@ public abstract class ConfigImpl implements Config {
 	private AdminSync adminSync;
 	private String[] customTagExtensions=new String[]{"cfm"};
 	private Class videoExecuterClass=VideoExecuterNotSupported.class;
+	
+	protected MappingImpl tagMapping;
+	private Resource tagDirectory;
+	private Resource functionDirectory;
+	protected MappingImpl functionMapping;
+	private Map amfCasterArguments;
+	private Class amfCasterClass=ClassicAMFCaster.class;
+	private AMFCaster amfCaster;
+	private String defaultDataSource;
 
     /**
 	 * @return the allowURLRequestTimeout
@@ -301,7 +317,8 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#reloadTimeServerOffset()
      */
     public void reloadTimeServerOffset() {
-        if(timeServer!=null && timeServer.trim().length()>0) {
+    	timeOffset=0;
+        if(useTimeServer && !StringUtil.isEmpty(timeServer,true)) {
             NtpClient ntp=new NtpClient(timeServer);
             try {
                 timeOffset=ntp.getOffset();
@@ -388,12 +405,6 @@ public abstract class ConfigImpl implements Config {
         return "cfc";
     }
 
-    /**
-     * @see railo.runtime.config.Config#getCustomTagMappings()
-     */
-    public Mapping[] getCustomTagMappings() {
-        return customTagMappings;
-    }
     
     /**
      * return all Function Library Deskriptors
@@ -404,6 +415,7 @@ public abstract class ConfigImpl implements Config {
     }
     
     public FunctionLib getCombinedFLDs() {
+    	if(combinedFLDs==null)combinedFLDs=FunctionLibFactory.combineFLDs(flds);
         return combinedFLDs;
     }
     
@@ -633,6 +645,7 @@ public abstract class ConfigImpl implements Config {
         if(mappings!=null){
 	        for(int i=0;i<mappings.length;i++) {
 	            mapping = mappings[i];
+	            //print.err(lcRealPath+".startsWith"+(mapping.getStrPhysical()));
 	            if(lcRealPath.startsWith(mapping.getVirtualLowerCaseWithSlash(),0)) {
 	            	return mapping.getPageSource(realPath.substring(mapping.getVirtual().length()));
 	            }
@@ -845,10 +858,150 @@ public abstract class ConfigImpl implements Config {
         }
     }
     
+    protected void setTagDirectory(Resource tagDirectory) {
+    	this.tagDirectory=tagDirectory;
+    	
+    	this.tagMapping= new MappingImpl(this,"/mapping-tag/",tagDirectory.getAbsolutePath(),null,true,true,true,true,true);
+    	
+    	TagLib tl=null;
+        for(int i=0;i<tlds.length;i++) {
+        	// TODO get core taglib
+        	if(tlds[i].getNameSpaceAndSeparator().equals("cf"))tl=tlds[i];	
+        }
+    	
+        // now overwrite with new data
+        if(tagDirectory.isDirectory()) {
+        	String[] files=tagDirectory.list(new ExtensionResourceFilter(getCustomTagExtensions()));
+            for(int i=0;i<files.length;i++) {
+            	if(tl!=null)createTag(tl, files[i]);
+                    
+            }
+        }
+        
+    }
+    
+    public void createTag(TagLib tl,String filename) {
+    	String name=toName(filename);//filename.substring(0,filename.length()-(getCFCExtension().length()+1));xxx
+        
+    	TagLibTag tlt = new TagLibTag(tl);
+        tlt.setName(name);
+        tlt.setTagClass("railo.runtime.tag.CFTagCore");
+        tlt.setHandleExceptions(true);
+        tlt.setBodyContent("free");
+        tlt.setParseBody(false);
+        tlt.setDescription("");
+        tlt.setAttributeType(TagLibTag.ATTRIBUTE_TYPE_MIXED);
+
+
+        TagLibTagAttr tlta = new TagLibTagAttr(tlt);
+        tlta.setName("__filename");
+        tlta.setRequired(true);
+        tlta.setRtexpr(true);
+        tlta.setType("string");
+        tlta.setHidden(true);
+        tlta.setDefaultValue(filename);
+        tlt.setAttribute(tlta);
+        
+        tlta = new TagLibTagAttr(tlt);
+        tlta.setName("__name");
+        tlta.setRequired(true);
+        tlta.setRtexpr(true);
+        tlta.setHidden(true);
+        tlta.setType("string");
+        tlta.setDefaultValue(name);
+        tlt.setAttribute(tlta);
+        
+        tlta = new TagLibTagAttr(tlt);
+        tlta.setName("__isweb");
+        tlta.setRequired(true);
+        tlta.setRtexpr(true);
+        tlta.setHidden(true);
+        tlta.setType("boolean");
+        tlta.setDefaultValue(this instanceof ConfigWeb?"true":"false");
+        tlt.setAttribute(tlta);
+        
+        tl.setTag(tlt);
+    }
+    
+    protected void setFunctionDirectory(Resource functionDirectory) {
+    	this.functionDirectory=functionDirectory;
+    	this.functionMapping= new MappingImpl(this,"/mapping-function/",functionDirectory.getAbsolutePath(),null,true,true,true,true,true);
+    	FunctionLib fl=flds[flds.length-1];
+        
+        // now overwrite with new data
+        if(functionDirectory.isDirectory()) {
+        	String[] files=functionDirectory.list(new ExtensionResourceFilter(getCFMLExtensions()));
+        	
+            for(int i=0;i<files.length;i++) {
+            	if(fl!=null)createFunction(fl, files[i]);
+                    
+            }
+        }
+        
+    }
+    
+    public void createFunction(FunctionLib fl,String filename) {
+    	PageSource ps = functionMapping.getPageSource(filename);
+    	/*if(this instanceof ConfigWeb){
+    		try {
+				Page page = ps.loadPage((ConfigWeb)this);
+				
+			} catch (PageException e) {
+				e.printStackTrace();
+			}
+    	}
+    	PageContextImpl pc=null;
+    	*/
+    	
+    	
+    	
+    	String name=toName(filename);//filename.substring(0,filename.length()-(getCFMLExtensions().length()+1));
+        FunctionLibFunction flf = new FunctionLibFunction(fl);
+    	flf.setArgType(FunctionLibFunction.ARG_DYNAMIC);
+    	flf.setCls("railo.runtime.functions.system.CFFunction");
+    	flf.setName(name);
+    	flf.setReturn("object");
+    	FunctionLibFunctionArg arg = new FunctionLibFunctionArg(flf);
+        arg.setName("__filename");
+        arg.setRequired(true);
+        arg.setType("string");
+        arg.setHidden(true);
+        arg.setDefaultValue(filename);
+        flf.setArg(arg);
+        
+        arg = new FunctionLibFunctionArg(flf);
+        arg.setName("__name");
+        arg.setRequired(true);
+        arg.setHidden(true);
+        arg.setType("string");
+        arg.setDefaultValue(name);
+        flf.setArg(arg);
+        
+        arg = new FunctionLibFunctionArg(flf);
+        arg.setName("__isweb");
+        arg.setRequired(true);
+        arg.setHidden(true);
+        arg.setType("boolean");
+        arg.setDefaultValue(this instanceof ConfigWeb?"true":"false");
+        flf.setArg(arg);
+    	
+    	
+    	
+    	fl.setFunction(flf);
+    }
     
     
     
-    private void overwrite(TagLib existingTL, TagLib newTL) {
+    
+    
+    private static String toName(String filename) {
+    	int pos=filename.lastIndexOf('.');
+        if(pos==-1)return filename;
+        return filename.substring(0,pos);
+	}
+    
+
+	private void overwrite(TagLib existingTL, TagLib newTL) {
 		Iterator it = newTL.getTags().entrySet().iterator();
 		while(it.hasNext()){
 			existingTL.setTag((TagLibTag) (((Map.Entry)it.next()).getValue()));
@@ -905,9 +1058,7 @@ public abstract class ConfigImpl implements Config {
         		set.put(key,fl);
         	else 
         		overwrite((FunctionLib) set.get(key),fl);
-        	
         }
-        //print.ln("::::::::::::::::::::::::::::::::::::::::::");
         
         // now fill back to array
         flds=new FunctionLib[set.size()];
@@ -917,11 +1068,11 @@ public abstract class ConfigImpl implements Config {
         	flds[index++]=(FunctionLib) ((Map.Entry)it.next()).getValue();
         	//print.ln(fld[index-1]);
         }
-        combinedFLDs=FunctionLibFactory.combineFLDs(flds);
-        //fldsx=new FunctionLib[]{FunctionLibFactory.combineFLDs(set)};
-        
         
     }
+    
+
+    
 
     private void overwrite(FunctionLib existingFL, FunctionLib newFL) {
 		Iterator it = newFL.getFunctions().entrySet().iterator();
@@ -1191,7 +1342,18 @@ public abstract class ConfigImpl implements Config {
      * @param customTagMapping The customTagMapping to set.
      */
     protected void setCustomTagMappings(Mapping[] customTagMappings) {
+    	//print.err("set:"+customTagMappings.length);
+    	//print.dumpStack();
     	this.customTagMappings = customTagMappings;
+    }
+    
+
+    /**
+     * @see railo.runtime.config.Config#getCustomTagMappings()
+     */
+    public Mapping[] getCustomTagMappings() {
+    	//print.err("get:"+customTagMappings.length);
+        return customTagMappings;
     }
     
     /**
@@ -2343,4 +2505,103 @@ public abstract class ConfigImpl implements Config {
 		this.videoExecuterClass=videoExecuterClass;
 	}
 
+	protected void setUseTimeServer(boolean useTimeServer) {
+		this.useTimeServer=useTimeServer;
+	}
+	
+	public boolean getUseTimeServer() {
+		return useTimeServer; 
+	}
+	
+
+	/**
+	 * @return the tagMappings
+	 */
+	public Mapping getTagMapping() {
+		return tagMapping;
+	}
+	
+	public Mapping getFunctionMapping() {
+		return functionMapping;
+	}
+
+	/**
+	 * @return the tagDirectory
+	 */
+	public Resource getTagDirectory() {
+		return tagDirectory;
+	}
+
+	public void setAMFCaster(String strCaster, Map args) {
+
+		amfCasterArguments=args;
+        try{
+			if(StringUtil.isEmpty(strCaster) || "classic".equalsIgnoreCase(strCaster)) 
+	        	amfCasterClass=ClassicAMFCaster.class;
+	        else if("modern".equalsIgnoreCase(strCaster))
+	        	amfCasterClass=ModernAMFCaster.class;
+	        else {
+	        	Class caster = ClassUtil.loadClass(strCaster);
+	        	if((caster.newInstance() instanceof AMFCaster)) {
+	        		amfCasterClass=caster;
+	        	}
+	        	else {
+	        		amfCasterClass=ClassicAMFCaster.class;
+	        		throw new ClassException("object ["+caster.getClass().getName()+"] must implement the interface "+ResourceProvider.class.getName());
+	        	}
+	        }
+        }
+        catch(Exception e){
+        	e.printStackTrace();
+        }
+	}
+	
+	public void setAMFCaster(Class clazz, Map args) {
+		amfCasterArguments=args;
+        amfCasterClass=clazz;
+	}
+
+	public AMFCaster getAMFCaster(ConfigMap properties) throws ClassException {
+		if(amfCaster==null){
+			if(properties!=null){
+				ConfigMap cases = properties.getPropertyAsMap("property-case", null);
+		        if(cases!=null){
+		        	if(!amfCasterArguments.containsKey("force-cfc-lowercase"))
+		        		amfCasterArguments.put("force-cfc-lowercase",Caster.toBoolean(cases.getPropertyAsBoolean("force-cfc-lowercase", false)));
+		        	if(!amfCasterArguments.containsKey("force-query-lowercase"))
+		        		amfCasterArguments.put("force-query-lowercase",Caster.toBoolean(cases.getPropertyAsBoolean("force-query-lowercase", false)));
+		        	if(!amfCasterArguments.containsKey("force-struct-lowercase"))
+		        		amfCasterArguments.put("force-struct-lowercase",Caster.toBoolean(cases.getPropertyAsBoolean("force-struct-lowercase", false)));
+		        	
+		        }
+		        ConfigMap access = properties.getPropertyAsMap("access", null);
+		        if(access!=null){
+		        	if(!amfCasterArguments.containsKey("use-mappings"))
+		        		amfCasterArguments.put("use-mappings",Caster.toBoolean(access.getPropertyAsBoolean("use-mappings", false)));
+		        	if(!amfCasterArguments.containsKey("method-access-level"))
+		        		amfCasterArguments.put("method-access-level",access.getPropertyAsString("method-access-level","remote"));
+		        }
+			}
+			
+			amfCaster=(AMFCaster)ClassUtil.loadInstance(amfCasterClass);
+			amfCaster.init(amfCasterArguments);
+		}
+		return amfCaster;
+	}
+	public Class getAMFCasterClass() {
+		return amfCasterClass;
+	}
+	public Map getAMFCasterArguments() {
+		if(amfCasterArguments==null) amfCasterArguments=new HashMap();
+		return amfCasterArguments;
+	}
+
+	public String getDefaultDataSource() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	protected void setDefaultDataSource(String defaultDataSource) {
+		this.defaultDataSource=defaultDataSource;
+	}
+	
 }

@@ -1,5 +1,3 @@
-
-
 package railo.runtime.search;
 
 // FUTURE dieses klasse ist sinnlos ist in public interface oder

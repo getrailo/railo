@@ -1,5 +1,3 @@
-
-
 package railo.runtime.interpreter.ref.func;
 
 import railo.runtime.PageContext;

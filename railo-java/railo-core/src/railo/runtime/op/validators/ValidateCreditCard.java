@@ -1,5 +1,3 @@
-
-
 package railo.runtime.op.validators;
 
 import railo.commons.lang.StringUtil;

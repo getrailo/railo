@@ -1,5 +1,3 @@
-
-
 package railo.runtime;
 
 import java.util.Iterator;
@@ -351,9 +349,9 @@ public final class ComponentScopeThis extends StructSupport implements Component
     	Member m = component.getMember(access, key, false,false);
 		if(m!=null) {
 			if(m instanceof UDF) return ((UDF)m).call(pc, arguments, false);
-	        throw ComponentUtil.notFunction(component, key, m.getValue());
+	        throw ComponentUtil.notFunction(component, key, m.getValue(),access);
 		}
-		throw ComponentUtil.notFunction(component, key, null);
+		throw ComponentUtil.notFunction(component, key, null,access);
 	}
 
     /**
@@ -367,9 +365,9 @@ public final class ComponentScopeThis extends StructSupport implements Component
     	Member m = component.getMember(access, key, false,false);
 		if(m!=null) {
 			if(m instanceof UDF) return ((UDF)m).callWithNamedValues(pc, args, false);
-	        throw ComponentUtil.notFunction(component, key, m.getValue());
+	        throw ComponentUtil.notFunction(component, key, m.getValue(),access);
 		}
-		throw ComponentUtil.notFunction(component, key, null);
+		throw ComponentUtil.notFunction(component, key, null,access);
 	}
 
     /**

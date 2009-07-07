@@ -1,5 +1,3 @@
-
-
 package railo.runtime.config;
 
 import java.net.URL;
@@ -12,6 +10,8 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.runtime.CFMLFactory;
+import railo.runtime.Mapping;
+import railo.runtime.MappingImpl;
 import railo.runtime.Page;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.compiler.CFMLCompilerImpl;
@@ -35,6 +35,8 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     private Resource rootDir;
     private CFMLCompilerImpl compiler=new CFMLCompilerImpl();
     private Page baseComponentPage;
+	private MappingImpl serverTagMapping;
+	private MappingImpl serverFunctionMapping;
 
     //private File deployDirectory;
 
@@ -189,5 +191,32 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	    public void resetBaseComponentPage() {
 	        baseComponentPage=null;
 	    }
+	    
+
+
+		/*public PageSource getTagPageSource(String filename) {
+			if(serverTagMapping==null){
+				serverTagMapping=((MappingImpl)getConfigServerImpl().tagMapping).cloneReadOnly(this);
+			}
+			PageSource ps = serverTagMapping.getPageSource(filename);
+			print.out("ps+"+ps.getDisplayPath());
+			if(!ps.physcalExists())
+				ps = tagMapping.getPageSource(filename);
+			print.out("ps+"+ps.getDisplayPath());
+			return ps;
+		}*/
+
+	    public Mapping getServerTagMapping() {
+	    	if(serverTagMapping==null){
+	    		serverTagMapping=getConfigServerImpl().tagMapping.cloneReadOnly(this);
+	    	}
+			return serverTagMapping;
+		}
+	    public Mapping getServerFunctionMapping() {
+	    	if(serverFunctionMapping==null){
+	    		serverFunctionMapping=getConfigServerImpl().functionMapping.cloneReadOnly(this);
+	    	}
+			return serverFunctionMapping;
+		}
 
 }

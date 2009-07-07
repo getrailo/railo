@@ -1,11 +1,10 @@
-
-
 package railo.runtime;
 
 import java.util.Iterator;
 import java.util.Set;
 
 import railo.commons.lang.types.RefBoolean;
+import railo.runtime.component.Property;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
@@ -431,5 +430,9 @@ public final class ComponentWrap extends StructSupport implements Component,Obje
 
 	public String getWSDLFile() {
 		return component.getWSDLFile();
+	}
+
+	public Property[] getProperties() {
+		return component.getProperties();
 	}
 }

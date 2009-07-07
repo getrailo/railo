@@ -1,5 +1,3 @@
-
-
 package railo.runtime.interpreter.ref.literal;
 
 import java.util.ArrayList;

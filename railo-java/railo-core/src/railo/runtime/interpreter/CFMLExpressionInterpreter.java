@@ -1,5 +1,3 @@
-
-
 package railo.runtime.interpreter;
 
 import java.util.ArrayList;
@@ -145,6 +143,7 @@ public class CFMLExpressionInterpreter {
     //protected FunctionLib[] fld;
     protected PageContext pc;
     private FunctionLib fld;
+	protected boolean allowNullConstant=false;
     //private Null nulls=Null.getInstance();
     
     
@@ -1168,10 +1167,16 @@ public class CFMLExpressionInterpreter {
             cfml.removeSpace();
             return LBoolean.TRUE;
         }
-        else if(first=='N' && name.equals("NO"))    {
-            cfml.removeSpace();
-            return LBoolean.FALSE;
-        }   
+        else if(first=='N')    {
+        	if(name.equals("NO")){
+        		cfml.removeSpace();
+        		return LBoolean.FALSE;
+        	}
+        	else if(allowNullConstant && name.equals("NULL")){
+        		cfml.removeSpace();
+        		return new  LString("");
+        	}
+        }  
         
         // Extract Scope from the Variable
 
@@ -1240,6 +1245,7 @@ public class CFMLExpressionInterpreter {
         if (cfml.isCurrent('(')) {
             FunctionLibFunction function = fld.getFunction(name);
             Ref[] arguments = functionArg(name,true, function,')');
+        	//print.out(name+":"+(function!=null));
             if(function!=null) return new BIFCall(pc,function,arguments);
 
             Ref ref = new railo.runtime.interpreter.ref.var.Scope(pc,Scope.SCOPE_UNDEFINED);
@@ -1374,7 +1380,7 @@ public class CFMLExpressionInterpreter {
             if (cfml.isCurrent(end))
                 break;
 
-            // to many Attributes
+            // too many Attributes
             boolean isDynamic=false;
             int max=-1;
             if(checkLibrary) {
@@ -1383,12 +1389,12 @@ public class CFMLExpressionInterpreter {
             // Dynamic
                 if(isDynamic) {
                     if(max!=-1 && max <= count)
-                        throw new ExpressionException("to many Attributes in function [" + name + "]");
+                        throw new ExpressionException("too many Attributes in function [" + name + "]");
                 }
             // Fix
                 else {
                     if(libLen <= count)
-                        throw new ExpressionException("to many Attributes in function [" + name + "]");
+                        throw new ExpressionException("too many Attributes in function [" + name + "]");
                 }
             }
 

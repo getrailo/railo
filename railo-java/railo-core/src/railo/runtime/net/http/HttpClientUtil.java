@@ -1,5 +1,3 @@
-
-
 package railo.runtime.net.http;
 
 import java.io.IOException;
@@ -85,7 +83,7 @@ public final class HttpClientUtil {
     }
 
     /**
-     * FUNKTIONIERT NICHT, HOST WIRD NICHT Ôæ?BERNOMMEN
+     * FUNKTIONIERT NICHT, HOST WIRD NICHT ÔæèBERNOMMEN
      * Clones a http method and sets a new url
      * @param src
      * @param url

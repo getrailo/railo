@@ -1,5 +1,3 @@
-
-
 package railo.runtime.op;
 
 import java.util.Date;

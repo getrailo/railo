@@ -1,5 +1,3 @@
-
-
 package railo.runtime.engine;
 
 import java.io.ByteArrayOutputStream;
@@ -127,7 +125,8 @@ public final class AMFEngine {
     	try {
 	    	ServiceRequest request = new ServiceRequest(requestBody);
 	        rsp.getOutputStream();// MUST muss das sein?
-	        return new CFMLProxy().invokeBody(OpenAMFCaster.getInstance(),servlet.getServletContext(),servlet.getServletConfig(), req, rsp, request.getServiceName(), request.getServiceMethodName(), request.getParameters());
+	       
+	        return new CFMLProxy().invokeBody(OpenAMFCaster.getInstance(),null,servlet.getServletContext(),servlet.getServletConfig(), req, rsp, request.getServiceName(), request.getServiceMethodName(), request.getParameters());
 		} 
     	catch (Exception e) {
             e.printStackTrace();

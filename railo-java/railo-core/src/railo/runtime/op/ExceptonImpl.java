@@ -1,5 +1,3 @@
-
-
 package railo.runtime.op;
 
 import railo.runtime.PageContext;
@@ -207,7 +205,24 @@ public final class ExceptonImpl implements Excepton {
     /**
      * @see railo.runtime.util.Excepton#isOfType(int, java.lang.Throwable)
      */
+    
     public boolean isOfType(int type, Throwable t) {
+    	switch(type){
+	    	case TYPE_ABORT:				return t instanceof Abort;
+	    	case TYPE_ABORT_EXP:			return t instanceof AbortException;
+	    	case TYPE_APPLICATION_EXP:		return t instanceof ApplicationException;
+	    	case TYPE_CASTER_EXP:			return t instanceof CasterException;
+	    	case TYPE_CUSTOM_TYPE_EXP:		return t instanceof CustomTypeException;
+	    	case TYPE_DATABASE_EXP:			return t instanceof DatabaseException;
+	    	case TYPE_EXPRESSION_EXP:		return t instanceof ExpressionException;
+	    	case TYPE_FUNCTION_EXP:			return t instanceof FunctionException;
+	    	case TYPE_LOCK_EXP:				return t instanceof LockException;
+	    	case TYPE_MISSING_INCLUDE_EXP:	return t instanceof MissingIncludeException;
+	    	case TYPE_NATIVE_EXP:			return t instanceof NativeException;
+	    	case TYPE_SECURITY_EXP:			return t instanceof SecurityException;
+	    	case TYPE_TEMPLATE_EXP:			return t instanceof TemplateException;
+	    	case TYPE_XML_EXP:				return t instanceof XMLException;
+    	}
         return Reflector.isInstaneOf(t.getClass(),exceptions[type]);
     }
     

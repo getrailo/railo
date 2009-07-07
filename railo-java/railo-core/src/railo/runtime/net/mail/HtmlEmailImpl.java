@@ -1,5 +1,3 @@
-
-
 package railo.runtime.net.mail;
 
 import java.io.IOException;

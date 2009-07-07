@@ -1,6 +1,8 @@
-
-
 package railo.runtime.interpreter.ref.func;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
@@ -10,7 +12,9 @@ import railo.runtime.interpreter.ref.RefSupport;
 import railo.runtime.interpreter.ref.util.RefUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
+import railo.runtime.type.FunctionValueImpl;
 import railo.transformer.library.function.FunctionLibFunction;
+import railo.transformer.library.function.FunctionLibFunctionArg;
 
 /**
  * a Build In Function call
@@ -44,7 +48,24 @@ public final class BIFCall extends RefSupport implements Ref {
         Object[] arguments = RefUtil.getValue(refArgs);
         
         
-        if(isDynamic())arguments=new Object[]{pc,arguments};
+        if(isDynamic()){
+        	if(flf.hasDefaultValues()){
+        		List tmp=new ArrayList();
+        		ArrayList args = flf.getArg();
+        		Iterator it = args.iterator();
+        		FunctionLibFunctionArg arg;
+        		while(it.hasNext()){
+        			arg=(FunctionLibFunctionArg) it.next();
+        			if(arg.getDefaultValue()!=null)
+        				tmp.add(new FunctionValueImpl(arg.getName(),arg.getDefaultValue()));
+        		}
+        		for(int i=0;i<arguments.length;i++){
+        			tmp.add(arguments[i]);
+        		}
+        		arguments=tmp.toArray();
+        	}
+        	arguments=new Object[]{pc,arguments};
+        }
         else {
             Object[] newAttr = new Object[arguments.length+1];
             newAttr[0]=pc;
@@ -55,8 +76,7 @@ public final class BIFCall extends RefSupport implements Ref {
         }
         Class clazz=flf.getCazz();
         if(clazz==null)throw new ExpressionException("class "+clazz+" not found");
-
-        return Caster.castTo(pc,flf.getReturnType(),Reflector.callStaticMethod(clazz,"call",arguments),false);
+        return Caster.castTo(pc,flf.getReturnTypeAsString(),Reflector.callStaticMethod(clazz,"call",arguments),false);
 	}
     
     private boolean isDynamic() {

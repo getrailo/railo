@@ -1,5 +1,3 @@
-
-
 package railo.runtime.services;
 
 import coldfusion.server.ServiceMetaData;

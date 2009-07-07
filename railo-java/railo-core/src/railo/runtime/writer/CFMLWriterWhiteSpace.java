@@ -1,5 +1,3 @@
-
-
 package railo.runtime.writer;
 
 import java.io.IOException;

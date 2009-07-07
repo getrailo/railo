@@ -1,5 +1,3 @@
-
-
 package railo.runtime;
 
 import java.io.IOException;
@@ -19,8 +17,10 @@ import railo.runtime.converter.JSONConverter;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.dump.DumpUtil;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.interpreter.JSONExpressionInterpreter;
 import railo.runtime.net.rpc.server.ComponentController;
 import railo.runtime.net.rpc.server.RPCServer;
 import railo.runtime.op.Caster;
@@ -154,33 +154,49 @@ public abstract class ComponentPage extends Page  {
 	}
 	
 	
-    private void callWDDX(PageContext pc, Component component, String method) throws PageException, IOException, ConverterException {
+    private void callWDDX(PageContext pc, Component component, String method) throws IOException, ConverterException, PageException {
         Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
         
         url.removeEL(FIELDNAMES);
         url.removeEL(METHOD);
         Object args=url.get("argumentCollection",null);
         Object returnFormat=url.get("returnFormat",null);
+        Object queryFormat=url.get("queryFormat",null);
+        
+        
         Object rtn=null;
         if(args==null){
         	args=pc.getHttpServletRequest().getAttribute("argumentCollection");
         }
-        
         
         // call
         if(args==null){
         	url=translate(component,method,url);
         	rtn = component.callWithNamedValues(pc, method, url);
         }
-        else if(Decision.isCastableToArray(args))
-        	rtn = component.call(pc, method.toString(), Caster.toNativeArray(args));
-        else if(Decision.isCastableToStruct(args))
-        	rtn = component.callWithNamedValues(pc, method.toString(), Caster.toStruct(args,false));
-        else {
-        	Object[] ac=new Object[1];
-        	ac[0]=args;
-        	rtn = component.call(pc, method.toString(), ac);
+        else if(args instanceof String){
+        	try {
+				args=new JSONExpressionInterpreter().interpret(pc, (String)args);
+				
+			} catch (PageException e) {}
         }
+        
+        if(args!=null) {
+        	if(Decision.isCastableToStruct(args)){
+	        	rtn = component.callWithNamedValues(pc, method.toString(), Caster.toStruct(args,false));
+	        }
+	        else if(Decision.isCastableToArray(args)){
+	        	rtn = component.call(pc, method.toString(), Caster.toNativeArray(args));
+	        }
+	        else {
+	        	Object[] ac=new Object[1];
+	        	ac[0]=args;
+	        	rtn = component.call(pc, method.toString(), ac);
+	        }
+        }
+        
+        
+        
         
         
         if(rtn!=null){
@@ -203,6 +219,7 @@ public abstract class ComponentPage extends Page  {
         		}
         		if(!StringUtil.isEmpty(returnFormat)){
         			format=UDFImpl.toReturnFormat(Caster.toString(returnFormat));
+        			
         		}
         		
         		// return type XML ignore WDDX
@@ -224,10 +241,18 @@ public abstract class ComponentPage extends Page  {
         		}
         		// JSON
         		else if(UDF.RETURN_FORMAT_JSON==format) {
-	        		JSONConverter converter = new JSONConverter();
+        			boolean byColumn = false;
+	        		if(queryFormat instanceof String){
+	        			String strQF=((String) queryFormat).trim();
+	        			if(strQF.equalsIgnoreCase("row"));
+	        			else if(strQF.equalsIgnoreCase("column"))byColumn=true;
+	        			else throw new ApplicationException("invalid queryformat definition ["+strQF+"], valid formats are [row,column]");
+	        		}
+        			
+        			JSONConverter converter = new JSONConverter();
 	        		if(secureJson)
 	        			pc.forceWrite(pc.getApplicationContext().getSecureJsonPrefix());
-	                pc.forceWrite(converter.serialize(rtn,false));
+	                pc.forceWrite(converter.serialize(rtn,byColumn));
         		}
         		// Serialize
         		else if(UDF.RETURN_FORMAT_SERIALIZE==format) {
@@ -317,5 +342,4 @@ public abstract class ComponentPage extends Page  {
 	public long lastCheck() {
 		return lastCheck;
 	}
-    
 }

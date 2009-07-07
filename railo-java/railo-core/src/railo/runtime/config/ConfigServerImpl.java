@@ -1,5 +1,3 @@
-
-
 package railo.runtime.config;
 
 import java.net.MalformedURLException;
@@ -12,6 +10,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.loader.engine.CFMLEngine;
 import railo.runtime.CFMLFactoryImpl;
+import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 
@@ -20,7 +19,7 @@ import railo.runtime.security.SecurityManagerImpl;
  */
 public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     
-    private CFMLEngine engine;
+    private CFMLEngineImpl engine;
     private Map initContextes;
     private Map contextes;
     private SecurityManager defaultSecurityManager;
@@ -53,7 +52,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
      * @param configDir
      * @param configFile
      */
-    protected ConfigServerImpl(CFMLEngine engine,Map initContextes, Map contextes, Resource configDir, Resource configFile) {
+    protected ConfigServerImpl(CFMLEngineImpl engine,Map initContextes, Map contextes, Resource configDir, Resource configFile) {
     	//super(configDir, configFile, "<root>");
     	super(null,configDir, configFile);
         this.engine=engine;
@@ -209,6 +208,9 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
      * @see railo.runtime.config.ConfigServer#getCFMLEngine()
      */
     public CFMLEngine getCFMLEngine() {
+        return engine;
+    }
+    public CFMLEngineImpl getCFMLEngineImpl() {
         return engine;
     }
 

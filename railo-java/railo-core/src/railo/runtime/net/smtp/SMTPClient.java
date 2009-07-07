@@ -1,10 +1,6 @@
-
-
 package railo.runtime.net.smtp;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -28,7 +24,6 @@ import javax.mail.internet.MimeMultipart;
 
 import railo.commons.activation.ResourceDataSource;
 import railo.commons.collections.HashTable;
-import railo.commons.io.IOUtil;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
@@ -83,7 +78,7 @@ public final class SMTPClient implements Serializable  {
 	private String htmlText;
 	private String htmlTextCharset;
 
-	private MimeBodyPart[] attachments;
+	private Attachment[] attachmentz;
 
 	private String[] host;
 	private String charset="UTF-8";
@@ -344,10 +339,10 @@ public final class SMTPClient implements Serializable  {
 		//}
 	}
 	
-	protected static MimeBodyPart[] add(MimeBodyPart[] oldArr, MimeBodyPart newValue) {
-		if(oldArr==null) return new MimeBodyPart[] {newValue};
+	protected static Attachment[] add(Attachment[] oldArr, Attachment newValue) {
+		if(oldArr==null) return new Attachment[] {newValue};
 		//else {
-			MimeBodyPart[] tmp=new MimeBodyPart[oldArr.length+1];
+		Attachment[] tmp=new Attachment[oldArr.length+1];
 			for(int i=0;i<oldArr.length;i++) {
 				tmp[i]=oldArr[i];
 			}
@@ -366,7 +361,7 @@ public final class SMTPClient implements Serializable  {
 		}
 	}
 	
-	private MimeMessageAndSession createMimeMessage(String hostName, int port, String username, String password,
+	private MimeMessageAndSession createMimeMessage(railo.runtime.config.Config config,String hostName, int port, String username, String password,
 			boolean tls,boolean ssl) throws MessagingException {
 		
 	      Properties props = System.getProperties();
@@ -485,9 +480,9 @@ public final class SMTPClient implements Serializable  {
 		MimeMultipart mp = new MimeMultipart();
 		mp.addBodyPart(content);
 		// Attachments
-		if(attachments!=null) {
-			for(int i=0;i<attachments.length;i++) {
-				mp.addBodyPart(attachments[i]);	
+		if(attachmentz!=null) {
+			for(int i=0;i<attachmentz.length;i++) {
+				mp.addBodyPart(toMimeBodyPart(config,attachmentz[i]));	
 			}	
 		}		
 		msg.setContent(mp);
@@ -555,30 +550,36 @@ public final class SMTPClient implements Serializable  {
 		this.htmlTextCharset=htmlTextCharset;
 	}
 	
-
-	public void addAttachment(Resource file, String type, String disposition, String contentID) throws MessagingException {
-
-		MimeBodyPart mbp = new MimeBodyPart();
-		mbp.setDataHandler(new DataHandler(new ResourceDataSource(file)));
-		mbp.setFileName(file.getName());
-		
-		if(StringUtil.isEmpty(type)) {
-			InputStream is=null;
-			try {
-				type = IOUtil.getMymeType(is=file.getInputStream(),null);
-			} 
-			catch (IOException e) {}
-			finally {
-				IOUtil.closeEL(is);
-			}
-		}
-		if(type != null) mbp.setHeader("Content-Type", type);
-		if(!StringUtil.isEmpty(disposition))mbp.setDisposition(disposition);
-		if(!StringUtil.isEmpty(contentID))mbp.setContentID(contentID);
-			
-		attachments=add(attachments, mbp);
+	public void addAttachment(URL url) {
+		Attachment mbp = new Attachment(url);
+		attachmentz=add(attachmentz, mbp);
 	}
 
+	public void addAttachment(Resource resource, String type, String disposition, String contentID) {
+		Attachment att = new Attachment(resource, type, disposition, contentID);
+		attachmentz=add(attachmentz, att);
+	}
+	
+	public MimeBodyPart toMimeBodyPart(railo.runtime.config.Config config,Attachment att) throws MessagingException  {
+		
+		MimeBodyPart mbp = new MimeBodyPart();
+		
+		// set Data Source
+		String strRes = att.getResource();
+		if(!StringUtil.isEmpty(strRes)){
+			
+			mbp.setDataHandler(new DataHandler(new ResourceDataSource(config.getResource(strRes))));
+		}
+		else mbp.setDataHandler(new DataHandler(new URLDataSource2(att.getURL())));
+		
+		mbp.setFileName(att.getFileName());
+		if(!StringUtil.isEmpty(att.getType())) mbp.setHeader("Content-Type", att.getType());
+		if(!StringUtil.isEmpty(att.getDisposition()))mbp.setDisposition(att.getDisposition());
+		if(!StringUtil.isEmpty(att.getContentID()))mbp.setContentID(att.getContentID());
+			
+		return mbp;
+	}
+	
 	/**
 	 * @param is
 	 * @throws MessagingException
@@ -589,28 +590,7 @@ public final class SMTPClient implements Serializable  {
 	}
 	
 
-	/**
-	 * @param url
-	 * @throws MessagingException
-	 */
-	public void addAttachment(URL url) throws MessagingException {
-		MimeBodyPart mbp = new MimeBodyPart();
-		mbp.setDataHandler(new DataHandler(new URLDataSource2(url)));
-		
-		String fileName=List.last(url.toExternalForm(), '/');
-		if(StringUtil.isEmpty(fileName))fileName = "url.txt";
-		mbp.setFileName(fileName);
-		
-		String type;
-		try {
-			type = IOUtil.getMymeType(url.openStream(), null);
-		} catch (IOException e) {
-			throw new MessagingException(e.getMessage());
-		}
-		if(type != null)
-			mbp.setHeader("Content-Type", type);
-		attachments=add(attachments, mbp);
-	}
+	
 	
 	public void send(ConfigImpl config) throws MailException {
 		if(ArrayUtil.isEmpty(config.getMailServers()) && ArrayUtil.isEmpty(host))
@@ -700,7 +680,7 @@ public final class SMTPClient implements Serializable  {
 			synchronized(LOCK) {
 			
 				try {
-					msgAsess = createMimeMessage(server.getHostName(),server.getPort(),_username,_password,_tls,_ssl);
+					msgAsess = createMimeMessage(config,server.getHostName(),server.getPort(),_username,_password,_tls,_ssl);
 				} catch (MessagingException e) {
 					log.error("mail",LogUtil.toMessage(e));
 					throw new MailException(e.getMessage());

@@ -1,5 +1,3 @@
-
-
 package railo.runtime.net.mail;
 
 import railo.commons.collections.HashTable;

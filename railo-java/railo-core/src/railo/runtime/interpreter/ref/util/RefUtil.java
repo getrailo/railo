@@ -1,5 +1,3 @@
-
-
 package railo.runtime.interpreter.ref.util;
 
 import railo.runtime.exp.PageException;

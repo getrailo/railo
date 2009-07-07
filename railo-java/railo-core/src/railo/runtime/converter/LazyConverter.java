@@ -1,5 +1,3 @@
-
-
 package railo.runtime.converter;
 
 import java.util.Iterator;
