@@ -99,6 +99,8 @@
 		<copy todir="${build.dir}/classes/resource/context">
 			<fileset dir="${build.dir}/admin"/>
 		</copy>
+    	<!-- copy version information inside info.ini into the dist directory -->
+		<copy tofile="${build.dir}/classes/railo/runtime/Info.ini" file="${src.dir}/railo/runtime/Info.ini" overwrite="yes"/>
     </target>
 	
 	<!-- ================================= 
