@@ -749,7 +749,7 @@ public final class DateCaster {
                 
                 if(!ds.fwIfCurrent(':'))return defaultValue;
 
-                // SECOMD
+                // SECOND
                 int second=ds.readDigits();
                 if(second==-1) return defaultValue;
                 if(ds.isAfterLast()) return DateUtil.toDateTime(timeZone,year,month,day,hour,minute,second,defaultValue);//new DateTimeImpl(year,month,day,hour,minute,second);
@@ -1183,10 +1183,11 @@ public final class DateCaster {
             //new DateTimeImpl(year,month,day,hour,minute,second,millis);
     	}
         if((ds.fwIfCurrent('P') || ds.fwIfCurrent('p')) && (ds.fwIfCurrent('M') || ds.fwIfCurrent('m')) && ds.isAfterLast()) {
-            if(hour<12 || (hour==12 && minute==0 && second==0))
+            
+        	if(hour<12)
                 return DateUtil.toDateTime(timeZone,year,month,day,hour+12,minute,second,millis,defaultValue);//new DateTimeImpl(year,month,day,hour+12,minute,second,millis);
             return DateUtil.toDateTime(timeZone,year,month,day,hour,minute,second,millis,defaultValue);//new DateTimeImpl(year,month,day,hour,minute,second,millis);
-        }
+        }	
         return defaultValue;
     }
 

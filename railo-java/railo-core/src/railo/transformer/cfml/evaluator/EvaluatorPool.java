@@ -2,7 +2,6 @@ package railo.transformer.cfml.evaluator;
 
 import java.util.Vector;
 
-import railo.print;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.library.function.FunctionLib;
@@ -53,7 +52,7 @@ public final class EvaluatorPool {
 			try {
 				ec.getLibTag().getEvaluator().evaluate(ec.getTag(),ec.getLibTag(),ec.getFlibs());
 			} catch (EvaluatorException e) {
-			    v.clear();print.printST(e);
+			    v.clear();//print.printST(e);
 				throw new TemplateException(cfml,e);
 			}catch (Throwable e) {
 			    v.clear();

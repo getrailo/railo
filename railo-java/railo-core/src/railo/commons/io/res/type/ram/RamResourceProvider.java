@@ -1,12 +1,8 @@
 package railo.commons.io.res.type.ram;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Map;
 
-import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
@@ -166,50 +162,6 @@ public final class RamResourceProvider implements ResourceProvider,Sizeable {
 	 */
 	public boolean isModeSupported() {
 		return true;
-	}
-
-	/**
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException {
-		ResourceProvider p = new RamResourceProvider().init("ram",new HashMap());
-		Resource r = p.getResource("/susi/test.cfm");
-		r.getParentResource().createDirectory(false);
-		OutputStream os = r.getOutputStream();
-		IOUtil.copy(new ByteArrayInputStream("hallo Welt".getBytes()),os,true,true);
-		
-		print(r);
-		r = r.getParentResource();
-		print(r);
-	}
-
-	private static void print(Resource r) throws IOException {
-		System.out.println("****************************************");
-		System.out.println("path:"+r.getPath());
-		System.out.println("name:"+r.getName());
-		System.out.println("parent:"+r.getParent());
-		System.out.println("parent-res:"+r.getParentResource());
-		System.out.println("exists:"+r.exists());
-		System.out.println("isDirectory:"+r.isDirectory());
-		System.out.println("isFile:"+r.isFile());
-		System.out.println("lastModified:"+r.lastModified());
-		if(r.isFile()) {
-			System.out.println("->"+IOUtil.toString(r,null)+"<-");
-		}
-		if(r.isDirectory()) {
-			System.out.println(" - children");
-			String[] children = r.list();
-			for(int i=0;i<children.length;i++) {
-				System.out.println("   - "+children[i]);
-			}
-			Resource[] ch2 = r.listResources();
-			for(int i=0;i<children.length;i++) {
-				System.out.println("   - "+ch2[i]);
-			}
-			
-		}
-		
 	}
 
 	/**

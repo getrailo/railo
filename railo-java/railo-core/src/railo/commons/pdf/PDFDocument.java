@@ -312,7 +312,7 @@ public final class PDFDocument {
 	}
 
 	private void content(PDF pd4ml, Config config, OutputStream os) throws PageException, IOException {
-		//pd4ml.useTTF("/Users/mic/temp/fonts/", fontembed);
+		pd4ml.useTTF("java:fonts", fontembed);
 		
 		// body
     	if(!StringUtil.isEmpty(body,true)) {

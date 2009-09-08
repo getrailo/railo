@@ -16,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
+import javax.wsdl.Types;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
@@ -32,6 +33,7 @@ import org.apache.axis.MessageContext;
 import org.apache.axis.SimpleChain;
 import org.apache.axis.SimpleTargetedChain;
 import org.apache.axis.components.logger.LogFactory;
+import org.apache.axis.encoding.TypeMapping;
 import org.apache.axis.encoding.TypeMappingRegistry;
 import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
@@ -46,6 +48,7 @@ import org.apache.axis.utils.Messages;
 import org.apache.commons.logging.Log;
 import org.w3c.dom.Element;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
@@ -123,9 +126,10 @@ public final class RPCServer{
                 writer.println("</html>");
 			}
 		} 
-        catch (Exception e) {
+        catch (Throwable e) {
         	if(e instanceof InvocationTargetException)
-        		throw new ServletException(((InvocationTargetException)e).getTargetException());
+        		e= ((InvocationTargetException)e).getTargetException();
+        	e.printStackTrace();
         	throw new ServletException(e);
 		}
     }
@@ -307,10 +311,10 @@ public final class RPCServer{
                     log.debug("Invoking Axis Engine.");
                     //here we run the message by the engine
                 }
-                
-                /*TypeMapping typeMapping = engine.getTypeMappingRegistry().getDefaultTypeMapping();
+                /*
+                javax.xml.rpc.encoding.TypeMapping typeMapping = engine.getTypeMappingRegistry().getDefaultTypeMapping();
                 typeMapping.register(Object.class, 
-                		Types.OBJECT,
+                		org.apache.axis.wsdl.fromJava.Types.OBJECT,
                         new BeanSerializerFactory(QueryBean.class,WSConstants.QUERY_QNAME),
                         new BeanDeserializerFactory(QueryBean.class,WSConstants.QUERY_QNAME));
                 */
@@ -801,7 +805,14 @@ public final class RPCServer{
                     RPCConstants.QUERY_QNAME,
                     new BeanSerializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME),
                     new BeanDeserializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME));
-
+			/*
+			QName addr = new QName("http://rpc.xml.coldfusion","jm.test");
+			tm.register(Pojo.class, 
+					addr,
+                    new BeanSerializerFactory(Pojo.class,addr),
+                    new BeanDeserializerFactory(Pojo.class,addr));
+			*/
+			
 			//QName addr = new QName("http://rpc.xml.coldfusion","Address");
 			/*tm.register(ComponentImpl.class, 
 					addr,

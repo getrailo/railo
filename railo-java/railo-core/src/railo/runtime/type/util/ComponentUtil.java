@@ -3,6 +3,7 @@ package railo.runtime.type.util;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import org.apache.axis.AxisFault;
@@ -13,6 +14,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -20,6 +22,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
@@ -33,6 +36,8 @@ import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.arrays.ArraySort;
+import railo.runtime.functions.list.ListSort;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.net.rpc.server.ComponentController;
 import railo.runtime.net.rpc.server.RPCServer;
@@ -40,8 +45,10 @@ import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.UDF;
+import railo.runtime.type.Collection.Key;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.util.ASMProperty;
 import railo.transformer.bytecode.util.ASMUtil;
@@ -320,7 +327,7 @@ public final class ComponentUtil {
 		}
 		
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, properties,Object.class,null);
+		byte[] barr = ASMUtil.createPojo(real, properties,Object.class,new Class[]{},null);
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
@@ -417,7 +424,7 @@ public final class ComponentUtil {
     	
 		
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component),Object.class,component.getPage().getPageSource().getDisplayPath());
+		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component),Object.class,new Class[]{},component.getPage().getPageSource().getDisplayPath());
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
@@ -493,20 +500,24 @@ public final class ComponentUtil {
 
 
 
-	public static String md5(Component component) throws IOException {
-		Iterator it=component.keyIterator();
+	public static String md5(Component c) throws IOException, ExpressionException {
+		//Iterator it=component.keyIterator();
+		ComponentImpl ci = toComponentImpl(c);
+		ComponentWrap cw = new ComponentWrap(Component.ACCESS_PRIVATE,ci);
+		Key[] keys = cw.keys();
+		Arrays.sort(keys);
+		
 		StringBuffer _interface=new StringBuffer();
 		
 		Object member;
         UDF udf;
         FunctionArgument[] args;
         FunctionArgument arg;
-        while(it.hasNext()) {
-        	String key=Caster.toString(it.next(),"");
-        	member = component.get(key,null);
+        for(int y=0;y<keys.length;y++) {
+        	member = cw.get(keys[y],null);
         	if(member instanceof UDF) {
         		udf=(UDF) member;
-        		
+        		//print.out(udf.);
         		_interface.append(udf.getAccess());
         		_interface.append(udf.getOutput());
         		_interface.append(udf.getFunctionName());
@@ -520,7 +531,15 @@ public final class ComponentUtil {
         		}
         	}
         }
-		return  MD5.getDigestAsString(_interface.toString());
+        // MUST remove this
+        Config config = ThreadLocalPageContext.getConfig();
+        if(config!=null)
+            SystemOut.print(config.getOutWriter(),_interface.toString().toLowerCase());
+        else
+        	SystemOut.print("\n"+_interface.toString().toLowerCase()+"\n");
+        //////////////////
+        
+		return  MD5.getDigestAsString(_interface.toString().toLowerCase());
 	}
 	
 
@@ -556,22 +575,24 @@ public final class ComponentUtil {
      * @throws ExpressionException
      */
     public static String toStringAccess(int access) throws ExpressionException {
+        String res = toStringAccess(access,null);
+        if(res!=null) return res; 
+        throw new ExpressionException("invalid access type ["+access+"], access types are Component.ACCESS_PACKAGE, Component.ACCESS_PRIVATE, Component.ACCESS_PUBLIC, Component.ACCESS_REMOTE");
+    }
+    
+    public static String toStringAccess(int access,String defaultValue)  {
         switch(access) {
             case Component.ACCESS_PACKAGE:      return "package";
             case Component.ACCESS_PRIVATE:      return "private";
             case Component.ACCESS_PUBLIC:       return "public";
             case Component.ACCESS_REMOTE:       return "remote";
         }
-        throw new ExpressionException("invalid access type, access types are Component.ACCESS_PACKAGE, Component.ACCESS_PRIVATE, Component.ACCESS_PUBLIC, Component.ACCESS_REMOTE");
+        return defaultValue;
     }
-
 
 	public static ExpressionException notFunction(Component c,Collection.Key key, Object member,int access) {
 		if(member==null) {
-			String strAccess = "";
-			try {
-				strAccess=toStringAccess(access);
-			} catch (ExpressionException e) {}
+			String strAccess = toStringAccess(access,"");
 			
 			String[] other;
 			if(c instanceof ComponentImpl)
@@ -581,7 +602,7 @@ public final class ComponentUtil {
 			
 			if(other.length==0)
 				return new ExpressionException(
-						"component ["+c.getCallName()+"] has no functions accessible from "+strAccess);
+						"component ["+c.getCallName()+"] has no "+strAccess+" function with name ["+key+"]");
 			
 			return new ExpressionException(
 					"component ["+c.getCallName()+"] has no "+strAccess+" function with name ["+key+"]",
@@ -599,5 +620,12 @@ public final class ComponentUtil {
 			return ((SuperComponent)c).getProperties();
 		
 		throw new RuntimeException("class ["+c.getClass().getName()+"] does not support method [getProperties()]");
+	}
+
+	public static ComponentImpl toComponentImpl(Component comp) throws ExpressionException {
+		if(comp instanceof ComponentImpl) return (ComponentImpl) comp;
+		if(comp instanceof ComponentWrap) return ((ComponentWrap) comp).getComponentImpl();
+		throw new ExpressionException("can't cast class ["+comp.getClass().getName()+"] to a class of type ComponentImpl");
+		
 	}
 }

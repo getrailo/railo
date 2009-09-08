@@ -617,6 +617,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 
 	private void setBackground(JFreeChart chart, Plot plot) {
 		//Color bg = backgroundcolor==null?databackgroundcolor:backgroundcolor;
+
 		chart.setBackgroundPaint(backgroundcolor);
 		plot.setBackgroundPaint(databackgroundcolor);
 		chart.setBorderPaint(databackgroundcolor);
@@ -765,8 +766,9 @@ public final class Chart extends BodyTagImpl implements Serializable {
         	ChartFactory.createBarChart  (title,xaxistitle,yaxistitle,createDatasetCategory(),PlotOrientation.VERTICAL,false,true,false);
         Plot p = chart.getPlot();
         Font _font = getFont();
-        
         // settings
+        
+        
         setBackground(chart,p);
 		setBorder(chart,p);
 		set3d(p);

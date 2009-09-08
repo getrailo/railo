@@ -919,7 +919,13 @@ public final class Page extends BodyBase {
 		
 		// hint
 		attr = component.removeAttribute("hint");
-		if(attr!=null) ExpressionUtil.writeOutSilent(attr.getValue(),bc, Expression.MODE_REF);
+		if(attr!=null) {
+			Expression value = attr.getValue();
+			if(!(value instanceof Literal)){
+				value=LitString.toExprString("[runtime expression]");
+			}
+			ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
+		}
 		else adapter.push("");
 		
 		// dspName

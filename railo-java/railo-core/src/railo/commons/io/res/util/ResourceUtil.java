@@ -1165,7 +1165,7 @@ public final class ResourceUtil {
 		if(!resource.canWrite())throw new IOException("can't delete resource "+resource+", no access");
 		
 	}
-	//30
+	
 	public static void deleteEmptyFolders(Resource res) throws IOException {
 		if(res.isDirectory()){
 			Resource[] children = res.listResources();

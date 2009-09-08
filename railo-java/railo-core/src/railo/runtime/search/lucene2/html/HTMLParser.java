@@ -145,11 +145,10 @@ public final class HTMLParser extends Parser {
     }
     
     private void doMeta(Attributes atts) {
-    	
     	String name=atts.getValue("name");
     	if(name==null) name="";
     	else name=name.toLowerCase().trim();
-
+    	
     	if("description".equals(name))		description=atts.getValue("content");
     	else if("keywords".equals(name))	keywords=atts.getValue("content");
     	else if("author".equals(name))		author=atts.getValue("content");
@@ -157,10 +156,6 @@ public final class HTMLParser extends Parser {
     	else if("custom2".equals(name))		custom2=atts.getValue("content");
     	else if("custom3".equals(name))		custom3=atts.getValue("content");
     	else if("custom4".equals(name))		custom4=atts.getValue("content");
-    	
-    	
-		//print.out(atts.getValue("name"));
-    	
     	
 	}
 	// <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -221,8 +216,8 @@ public final class HTMLParser extends Parser {
      * @return Returns the summary
      */
     public String getSummary() {
-    	if(description!=null) return description;
-        return (strContent.length()<=200)? strContent:strContent.substring(0,200);
+    	return description;
+        
     }
 
 	/**

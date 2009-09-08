@@ -181,7 +181,8 @@ public final class PDFDocument
             // Add the tag-stripped contents as a Reader-valued Text field so it will
             // get tokenized and indexed.
             //document.add( Field.Text( "contents", reader.toString().toLowerCase() ) );
-            
+
+            document.add( FieldUtil.UnIndexed("raw", contents ) );
             document.add( FieldUtil.Text( "contents", contents.toLowerCase() ) );
             
             PDDocumentInformation info = pdfDocument.getDocumentInformation();

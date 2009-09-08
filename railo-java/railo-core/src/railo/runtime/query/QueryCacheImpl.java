@@ -128,6 +128,12 @@ public final class QueryCacheImpl implements QueryCache, Sizeable {
     		}
     	}
     }
+    
+    public int size() {
+    	return entries.size();
+    }
+    
+    
 
     /**
      * @see railo.runtime.type.Sizeable#sizeOf()

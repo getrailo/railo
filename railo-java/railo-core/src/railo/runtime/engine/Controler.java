@@ -161,7 +161,7 @@ public final class Controler extends Thread {
 		try {
 			long date = DateAdd.invoke("d", -90, new DateTimeImpl(config)).getTime();
 			ResourceUtil.deleteFileOlderThan(config.getClientScopeDir(),date,filter);
-			ResourceUtil.deleteEmptyFolders(config.getClientScopeDir());//30
+			ResourceUtil.deleteEmptyFolders(config.getClientScopeDir());
 		
 		} catch (Exception e) {}
 		

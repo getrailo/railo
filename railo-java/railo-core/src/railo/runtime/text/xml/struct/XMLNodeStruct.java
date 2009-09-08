@@ -32,6 +32,7 @@ import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.util.ArrayIterator;
 
@@ -49,6 +50,7 @@ public  class XMLNodeStruct extends StructSupport implements XMLStruct {
 	 * @param caseSensitive
 	 */
 	protected XMLNodeStruct(Node node, boolean caseSensitive) {
+		if(node instanceof XMLStruct)node=((XMLStruct)node).toNode();
 		this.node=node;
 		this.caseSensitive=caseSensitive;
 	}
@@ -379,6 +381,7 @@ public  class XMLNodeStruct extends StructSupport implements XMLStruct {
 	public Node toNode() {
 		return node;
 	}
+	
 	/**
 	 * @return Returns the caseSensitive.
 	 */
@@ -606,7 +609,7 @@ public  class XMLNodeStruct extends StructSupport implements XMLStruct {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = node.getClass().getMethod("getTextContent", new Class[]{});
-			return Caster.toString(m.invoke(node, new Object[]{}));
+			return Caster.toString(m.invoke(node, ArrayUtil.OBJECT_EMPTY));
 		} 
 		catch (Exception e) {
 			throw new PageRuntimeException(Caster.toPageException(e));

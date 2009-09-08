@@ -19,7 +19,7 @@ public final class FunctionException extends ExpressionException {
 	 * @param functionName Name of the function that thorw the Exception
 	 * @param badArgumentPosition Position of the bad argument in the Argument List of the function
 	 * @param badArgumentName Name of the bad Argument
-	 * @param message addional Exception message
+	 * @param message additional Exception message
 	 * /
     public FunctionException(PageContext pc,String functionName, String badArgumentPosition, String badArgumentName, String message) {
         this((PageContext)pc,functionName,badArgumentPosition,badArgumentName,message);
@@ -31,7 +31,7 @@ public final class FunctionException extends ExpressionException {
      * @param functionName Name of the function that thorw the Exception
      * @param badArgumentPosition Position of the bad argument in the Argument List of the function
      * @param badArgumentName Name of the bad Argument
-     * @param message addional Exception message
+     * @param message additional Exception message
      */
 	public FunctionException(PageContext pc,String functionName, int badArgumentPosition, String badArgumentName, String message) {
         this(pc,functionName,toStringBadArgumentPosition(badArgumentPosition),badArgumentName,message);
@@ -58,7 +58,7 @@ public final class FunctionException extends ExpressionException {
 
 	public FunctionException(PageContext pc,String functionName, String badArgumentPosition, String badArgumentName, String message) {
         super("invalid call of the function "+functionName+", "+(badArgumentPosition)+" Argument ("+badArgumentName+") is invalid, "+message);
-        setAddional("function info",getFunctionInfo(pc,functionName));
+        setAdditional("function info",getFunctionInfo(pc,functionName));
     }
     
 	private static String getFunctionInfo(PageContext pc,String functionName) {

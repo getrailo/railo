@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
+import railo.commons.lang.StringUtil;
 import railo.intergral.fusiondebug.server.type.FDVariable;
 import railo.intergral.fusiondebug.server.util.FDCaster;
 import railo.runtime.PageContextImpl;
@@ -109,7 +110,7 @@ public class FDStackFrameImpl implements IFDStackFrame {
 	public String getSourceFilePath() {
 		String name = getSourceFileName();
 		String path=ps.getDisplayPath();
-		if(path.endsWith(name))
+		if(StringUtil.endsWithIgnoreCase(path, name))
 			path=path.substring(0,path.length()-name.length());
 		return path;
 	}

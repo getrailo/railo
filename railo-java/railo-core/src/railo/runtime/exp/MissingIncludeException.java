@@ -1,7 +1,10 @@
 package railo.runtime.exp;
 
+import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 
 /**
@@ -9,6 +12,10 @@ import railo.runtime.type.Struct;
  */
 public final class MissingIncludeException extends PageExceptionImpl {
 
+	private static final Collection.Key MISSING_FILE_NAME = KeyImpl.getInstance("MissingFileName");
+	private static final Collection.Key MISSING_FILE_NAME_REL = KeyImpl.getInstance("MissingFileName_rel");
+	private static final Collection.Key MISSING_FILE_NAME_ABS = KeyImpl.getInstance("MissingFileName_abs");
+	
 	private PageSource pageSource;
 
 	/**
@@ -18,6 +25,7 @@ public final class MissingIncludeException extends PageExceptionImpl {
     public MissingIncludeException(PageSource pageSource) {
         super(createMessage(pageSource),"missinginclude");
         this.pageSource=pageSource;
+        
     }
 
 	/**
@@ -39,9 +47,16 @@ public final class MissingIncludeException extends PageExceptionImpl {
 	 */
 	public Struct getCatchBlock(PageContext pc) {
 		Struct sct=super.getCatchBlock(pc);
-		sct.setEL("MissingFileName",pageSource.getRealpath());
-		sct.setEL("MissingFileName_rel",pageSource.getRealpath());
-		sct.setEL("MissingFileName_abs",pageSource.getDisplayPath());
+		String mapping="";
+		if(StringUtil.startsWith(pageSource.getRealpath(),'/')){
+			mapping = pageSource.getMapping().getVirtual();
+			if(StringUtil.endsWith(mapping, '/'))
+				mapping=mapping.substring(0,mapping.length()-1);
+		}
+		sct.setEL(MISSING_FILE_NAME,mapping+pageSource.getRealpath());
+		
+		sct.setEL(MISSING_FILE_NAME_REL,mapping+pageSource.getRealpath());
+		sct.setEL(MISSING_FILE_NAME_ABS,pageSource.getDisplayPath());
 		return sct;
 	}
 }

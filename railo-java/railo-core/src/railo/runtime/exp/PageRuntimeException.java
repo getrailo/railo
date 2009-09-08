@@ -175,8 +175,11 @@ public class PageRuntimeException extends RuntimeException implements IPageExcep
     }
 
     /**
-     * @see railo.runtime.exp.IPageException#getAddional()
+     * @see railo.runtime.exp.IPageException#getAdditional()
      */
+    public Struct getAdditional() {
+        return pe.getAddional();
+    }
     public Struct getAddional() {
         return pe.getAddional();
     }

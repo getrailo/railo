@@ -1999,9 +1999,14 @@
 			<required>Yes</required>
 		</argument>
 		<argument>
-			<name>members</name>
+			<name>thisData</name>
 			<type>struct</type>
 			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>variablesData</name>
+			<type>struct</type>
+			<required>no</required>
 		</argument>
 		<return>
 			<type>any</type>
@@ -5081,6 +5086,7 @@
 			<type>boolean</type>
 		</return>
 	</function>
+
 	<!-- isNotMap -->
 	<function>
 		<name>isNotMap</name>
@@ -6030,6 +6036,18 @@
 			<type>string</type>
 		</return>
 	</function>
+	
+	<!-- location
+	<function>
+		<name>location</name>
+		<class>railo.runtime.functions.flow.Location</class>
+		<description/>
+		<argument-type>dynamic</argument-type>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function> -->
+	
 	<!-- log -->
 	<function>
 		<name>log</name>
@@ -6612,6 +6630,33 @@
 		</return>
 	</function>
 	
+	<!-- parseNumber -->
+	<function>
+		<name>parseNumber</name>
+		<class>railo.runtime.functions.string.ParseNumber</class>
+		<description>
+		Parses the string argument as a numeric value. 
+		</description>
+		<argument>
+			<name>nummber</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>
+			the String containing the numeric representation to be parsed
+			</description>
+		</argument>
+		<argument>
+			<name>radix</name>
+			<type>string</type>
+			<required>No</required>
+			<description>
+			the radix to be used while parsing (bin,oct,dec,hex)
+			</description>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
 	
 	<!-- PrecisionEvaluate -->
 	<function>
@@ -8640,7 +8685,7 @@
 			<required>Yes</required>
 		</argument>
 		<return>
-			<type>array</type>
+			<type>object</type>
 		</return>
 	</function>
 	<!-- xmlTransform -->

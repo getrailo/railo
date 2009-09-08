@@ -44,6 +44,7 @@ import railo.runtime.search.SearchIndex;
 import railo.runtime.search.SearchResulItem;
 import railo.runtime.search.SearchResulItemImpl;
 import railo.runtime.search.lucene2.docs.CustomDocument;
+import railo.runtime.search.lucene2.highlight.Highlight;
 import railo.runtime.search.lucene2.net.WebCrawler;
 import railo.runtime.search.lucene2.query.Literal;
 import railo.runtime.search.lucene2.query.Op;
@@ -270,13 +271,16 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
      * @see railo.runtime.search.SearchCollection#_indexURL(java.lang.String, java.lang.String, java.net.URL, java.lang.String[], boolean, java.lang.String)
      */
     protected IndexResult _indexURL(String id, String title, URL url,String[] extensions, boolean recurse, String language)throws SearchException {
+    	return _indexURL(id, title, url, extensions, recurse, language,10000L);
+    }
+    public IndexResult _indexURL(String id, String title, URL url,String[] extensions, boolean recurse, String language, long timeout)throws SearchException {
         _checkLanguage(language);
         int before=getDocumentCount(id);
         IndexWriter writer=null;
         synchronized(token){
 	        try {
 	            writer = _getWriter(id,true);
-	            new WebCrawler().parse(writer, url, extensions, recurse);
+	            new WebCrawler().parse(writer, url, extensions, recurse,timeout);
 	            
 	            writer.optimize();
 	        } 
@@ -364,7 +368,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 	                c3=(custom3==null)?null:Caster.toString(custom3.get(i,null),null);
 	                c4=(custom4==null)?null:Caster.toString(custom4.get(i,null),null);
 	                
-	                docs.put(key,CustomDocument.getDocument(t,key.toString(),body.toString(),c1,c2,c3,c4));
+	                docs.put(key.toString(),CustomDocument.getDocument(t,key.toString(),body.toString(),c1,c2,c3,c4));
 	                }
 		        countNew=docs.size();
 		        Iterator it = docs.entrySet().iterator();
@@ -432,16 +436,20 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
         try {
             
             if(type!=SEARCH_TYPE_SIMPLE) throw new SearchException("search type explicit not supported");
-            
+            Analyzer analyzer = SearchUtil.getAnalyzer(language);
             Query query=null;
             Op op=null;
+            Object highlighter=null;
             railo.runtime.search.lucene2.query.QueryParser queryParser=new railo.runtime.search.lucene2.query.QueryParser();
 			if(!criteria.equals("*")) {
 				op=queryParser.parseOp(criteria);
 				if(op==null) criteria="*";
 				else criteria=op.toString();
 				try {
-					query = new QueryParser("contents", SearchUtil.getAnalyzer(language)).parse(criteria);
+					query = new QueryParser("contents",analyzer ).parse(criteria);
+					highlighter = Highlight.createHighlighter(query);
+					
+		            
 				}
 	            catch (ParseException e) {
 					throw new SearchException(e);
@@ -481,7 +489,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 		            	int len=reader.numDocs();
 			            for(int y=0;y<len;y++) {
 			        	    doc = reader.document(y);
-			        	    list.add(createSearchResulItemImpl(doc,id,1,ct,c));
+			        	    list.add(createSearchResulItemImpl(highlighter,analyzer,doc,id,1,ct,c));
 			            }
 		            }
 		            else {
@@ -493,7 +501,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 			            int len=hits.length();
 			            for (int y=0; y<len; y++) {
 			        	    doc = hits.doc(y);
-			        	    list.add(createSearchResulItemImpl(doc,id,hits.score(y),ct,c));
+			        	    list.add(createSearchResulItemImpl(highlighter,analyzer,doc,id,hits.score(y),ct,c));
 			            }  
 		            }
 	            }
@@ -555,14 +563,17 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
     	return false;
 	}
 
-	private static SearchResulItem createSearchResulItemImpl(Document doc, String name, float score, String ct, String c) {
-	    return new SearchResulItemImpl(
+	private static SearchResulItem createSearchResulItemImpl(Object highlighter,Analyzer a,Document doc, String name, float score, String ct, String c) {
+	    String summary=Highlight.createSummary(highlighter,a,doc.get("raw"),doc.get("summary"));
+		
+		
+		return new SearchResulItemImpl(
                 name,
                 doc.get("title"),
                 score,
                 doc.get("key"),
                 doc.get("url"),
-                doc.get("summary"),
+                summary,
                 ct,c,
                 doc.get("custom1"),
                 doc.get("custom2"),

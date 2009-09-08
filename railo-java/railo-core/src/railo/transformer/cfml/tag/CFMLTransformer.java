@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
@@ -32,8 +33,10 @@ import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.evaluator.impl.ProcessingDirectiveException;
 import railo.transformer.cfml.expression.SimpleExprTransformer;
 import railo.transformer.library.function.FunctionLib;
+import railo.transformer.library.tag.CustomTagLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibException;
+import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
 import railo.transformer.util.CFMLString;
@@ -575,18 +578,41 @@ public final class CFMLTransformer {
 	
 	private boolean executeEvaluator(TagLibTag tagLibTag, Tag tag) throws TemplateException {
 		if(tagLibTag.hasTteClass())	{
-            try {	    
-                TagLib lib=tagLibTag.getEvaluator().execute(config,tag,tagLibTag,flibs,cfml);
-                if(lib!=null) {
-                    TagLib[] newTlibs=new TagLib[tlibs[TAG_LIB_PAGE].length+1]; 
+			try {
+				TagLib lib=tagLibTag.getEvaluator().execute(config,tag,tagLibTag,flibs,cfml);
+				if(lib!=null) {
+					// set
+					for(int i=0;i<tlibs[TAG_LIB_PAGE].length;i++) {
+		                print.out(tlibs[TAG_LIB_PAGE][i].getNameSpaceAndSeparator()+":"+(lib.getNameSpaceAndSeparator()));
+		                if(tlibs[TAG_LIB_PAGE][i].getNameSpaceAndSeparator().equalsIgnoreCase(lib.getNameSpaceAndSeparator())){
+		                	boolean extIsCustom=tlibs[TAG_LIB_PAGE][i] instanceof CustomTagLib;
+		                	boolean newIsCustom=lib instanceof CustomTagLib;
+		                	// TagLib + CustomTagLib (visa/versa)
+		                	if(extIsCustom){
+		                		((CustomTagLib)tlibs[TAG_LIB_PAGE][i]).append(lib);
+		                		return true;
+		                	}
+		                	else if(newIsCustom){
+		                		((CustomTagLib)lib).append(tlibs[TAG_LIB_PAGE][i]);
+		                		tlibs[TAG_LIB_PAGE][i]=lib;
+		                		return true;
+		                	}
+		                	
+		                	//tlibs[TAG_LIB_PAGE][i]=TagLibFactory.combineTLDs(new TagLib[]{tlibs[TAG_LIB_PAGE][i],lib});
+		                	//return true;
+		                }
+		            }
+					
+					// insert
+		            TagLib[] newTlibs=new TagLib[tlibs[TAG_LIB_PAGE].length+1]; 
                     for(int i=0;i<tlibs[TAG_LIB_PAGE].length;i++) {
                         newTlibs[i]=tlibs[TAG_LIB_PAGE][i];
                     }
                     newTlibs[tlibs[TAG_LIB_PAGE].length]=lib;
-                    tlibs[TAG_LIB_PAGE]=newTlibs;
-                }
-                
-            } catch (EvaluatorException e) {
+                    tlibs[TAG_LIB_PAGE]=newTlibs;    
+				}
+			} 
+            catch (EvaluatorException e) {
                 throw new TemplateException(cfml,e);
             }
 		}

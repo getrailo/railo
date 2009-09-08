@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.functions.dateTime.Beat;
@@ -80,9 +79,8 @@ public final class TimeFormat implements Format {
 			// h: Hours; no leading zero for single-digit hours (12-hour clock) 
 			// hh: Hours; leading zero for single-digit hours. (12-hour clock) 
 				case 'h':
-					print.out();
 					int hour1=calendar.get(Calendar.HOUR_OF_DAY);
-					if(hour1==0)hour1=12;//30
+					if(hour1==0)hour1=12;
 					if(hour1>12)hour1=hour1-12;
 					if(next=='h') {
 						formated.append(hour1<10?"0"+hour1:""+hour1);

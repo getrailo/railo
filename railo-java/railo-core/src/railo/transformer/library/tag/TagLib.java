@@ -352,6 +352,9 @@ public class TagLib implements Cloneable {
 	public void setUri(String strUri) throws URISyntaxException {
 		this.uri=new URI(strUri);
 	}
+	public void setUri(URI uri) {
+		this.uri=uri;
+	}
 	public void setDescription(String description) {
 		this.description=description;
 	}
@@ -359,4 +362,5 @@ public class TagLib implements Cloneable {
 	public String getDescription() {
 		return description;
 	}
+	
 }

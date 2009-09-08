@@ -96,8 +96,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 	 */
 	public void begin(String isolation) {
 		this.autoCommit=false;
-    	//print.out("begin2:"+autoCommit);
-		
+    	
 		if(isolation.equalsIgnoreCase("read_uncommitted"))
 		    this.isolation=Connection.TRANSACTION_READ_UNCOMMITTED;
 		else if(isolation.equalsIgnoreCase("read_committed"))
@@ -116,7 +115,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 	 */
     public void begin(int isolation) {
     	//print.out("begin:"+autoCommit);
-        this.autoCommit=false;
+    	this.autoCommit=false;
         this.isolation=isolation;
     }
 
@@ -175,7 +174,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
         //print.out("end:"+autoCommit);
         autoCommit=true;
         if(transConn!=null) {
-            try {
+        	try {
             	transConn.getConnection().setAutoCommit(true);
             } 
             catch (SQLException e) {

@@ -21,6 +21,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
+import railo.runtime.type.util.ArrayUtil;
 
 public class CFFunction {
 	
@@ -41,7 +42,7 @@ public class CFFunction {
 		
 		Struct namedArguments=null;
 		Object[] arguments=null;
-		if(objArr.length<=3)arguments=new Object[]{};
+		if(objArr.length<=3)arguments=ArrayUtil.OBJECT_EMPTY;
 		else if(objArr[3] instanceof FunctionValue){
 			FunctionValue fv;
 			namedArguments=new StructImpl();

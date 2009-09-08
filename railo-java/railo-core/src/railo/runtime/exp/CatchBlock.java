@@ -20,7 +20,7 @@ public class CatchBlock extends StructImpl implements Castable{
 	private static final Key TYPE = KeyImpl.getInstance("type");
 	private static final Key TAG_CONTEXT = KeyImpl.getInstance("TagContext");
 	private static final Key STACK_TRACE = KeyImpl.getInstance("StackTrace");
-	private static final Key ADDIONAL = KeyImpl.getInstance("addional");
+	private static final Key ADDITIONAL = KeyImpl.getInstance("additional");
 	
 	private PageContext pc;
 	private PageExceptionImpl pe;
@@ -36,7 +36,7 @@ public class CatchBlock extends StructImpl implements Castable{
 		setEL(TYPE,si);
 		setEL(TAG_CONTEXT,si);
 		setEL(STACK_TRACE,si);
-		setEL(ADDIONAL,si);
+		setEL(ADDITIONAL,si);
         
 		
 	}
@@ -141,8 +141,8 @@ public class CatchBlock extends StructImpl implements Castable{
 		if(EXTENDED_INFO.equals(key)) 	return setEL(key, StringUtil.toStringEmptyIfNull(pe.getExtendedInfo()));
 		if(TYPE.equals(key)) 			return setEL(key, StringUtil.toStringEmptyIfNull(pe.getTypeAsString()));
 		if(STACK_TRACE.equals(key)) 	return setEL(key, StringUtil.toStringEmptyIfNull(pe.getStackTraceAsString()));
-		if(ADDIONAL.equals(key)) 		return setEL(key, pe.getAddional());
-		if(TAG_CONTEXT.equals(key)) 	return setEL(key, pe.getTagContext(pc));	
+		if(ADDITIONAL.equals(key)) 		return setEL(key, pe.getAdditional());
+		if(TAG_CONTEXT.equals(key)) 	return setEL(key, pe.getTagContext(pc)); 	
 		return null;
 	}
 	
@@ -153,7 +153,7 @@ public class CatchBlock extends StructImpl implements Castable{
 		get(EXTENDED_INFO,null);
 		get(TYPE,null);
 		get(STACK_TRACE,null);
-		get(ADDIONAL,null);
+		get(ADDITIONAL,null);
 		get(TAG_CONTEXT,null);
 	}
 	

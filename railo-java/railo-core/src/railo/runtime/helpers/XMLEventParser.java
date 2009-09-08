@@ -19,6 +19,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.util.ArrayUtil;
 
 
 
@@ -143,14 +144,14 @@ public final class XMLEventParser extends DefaultHandler {
 	 * @see org.xml.sax.helpers.DefaultHandler#startDocument()
 	 */
 	public void startDocument() throws SAXException {
-		call(startDocument,new Object[]{});
+		call(startDocument,ArrayUtil.OBJECT_EMPTY);
 	}
 	
 	/**
 	 * @see org.xml.sax.helpers.DefaultHandler#endDocument()
 	 */
 	public void endDocument() throws SAXException {
-		call(endDocument,new Object[]{});
+		call(endDocument,ArrayUtil.OBJECT_EMPTY);
 	}
 	
 	/**

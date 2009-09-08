@@ -19,6 +19,8 @@ import railo.transformer.library.tag.TagLibTag;
 
 public class TagUtil {
 	
+	//private static final String "invalid call of the function ["+tlt.getName()+", you can not mix named on regular arguments]" = "invalid argument for function, only named arguments are allowed like struct(name:\"value\",name2:\"value2\")";
+
 	public static void setAttributeCollection(PageContext pc,Tag tag, MissingAttribute[] missingAttrs, Struct attrs, int attrType) throws PageException {
 		// check missing tags
 		if(!ArrayUtil.isEmpty(missingAttrs)){
@@ -91,4 +93,31 @@ public class TagUtil {
         }
         else attributes.setEL(KeyImpl.init(name), value);
 	}
+
+	/*public static Struct toAttributeStruct(TagLibTag tlt, Object[] attrs) throws PageException {
+		if(ArrayUtil.isEmpty(attrs)) return new StructImpl();
+		FunctionValue fv;
+		Struct sct=new StructImpl();
+		
+		// named arguments
+		if(attrs[0] instanceof FunctionValue){
+			for(int i=0;i<attrs.length;i++) {
+				if(attrs[i] instanceof FunctionValue) {
+					fv=((FunctionValue)attrs[i]);
+					sct.set(fv.getName(),fv.getValue());
+				}
+				else {
+					throw new ExpressionException("invalid call of the function [\"+tlt.getName()+\", you can not mix named on regular arguments]");
+				}
+			}
+			
+		}
+		// named arguments
+		else {
+			throw new ExpressionException("invalid call of the function [\"+tlt.getName()+\", you can not mix named on regular arguments]");
+			
+		}
+		return sct;
+		
+	}*/
 }

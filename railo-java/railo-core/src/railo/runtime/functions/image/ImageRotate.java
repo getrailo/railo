@@ -11,7 +11,7 @@ import railo.runtime.op.Caster;
 public class ImageRotate implements Function {
 
 	public static String call(PageContext pc, Object name) throws PageException {
-		throw new ExpressionException("missing addional argument [angle] or [x,y,angle]");
+		throw new ExpressionException("missing additional argument [angle] or [x,y,angle]");
 	}
 	
 	public static String call(PageContext pc, Object name, String angle) throws PageException {

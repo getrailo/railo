@@ -43,7 +43,6 @@ public final class TimeFormat implements Function {
 	
 	private static String _call(PageContext pc , Object object, String mask,TimeZone tz) throws ExpressionException {
 		Locale locale=Locale.US;//:pc.getConfig().getLocale();
-		
 		DateTime datetime = Caster.toDate(object,true,tz,null);
 		if(datetime==null) {
 		    if(object.toString().trim().length()==0) return "";

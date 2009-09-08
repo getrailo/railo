@@ -807,7 +807,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     private void _doCFCFinally() {
 		if(cfc.contains(pageContext, ON_FINALLY)){
 			try {
-				cfc.call(pageContext, ON_FINALLY, new Object[]{});
+				cfc.call(pageContext, ON_FINALLY, ArrayUtil.OBJECT_EMPTY);
 			} 
 			catch (PageException pe) {
 				throw new PageRuntimeException(pe);

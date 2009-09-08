@@ -1,17 +1,20 @@
 package railo.commons.io.cache;
 
+import java.io.IOException;
 import java.util.List;
 
-import railo.commons.io.cache.exp.CacheException;
 import railo.runtime.type.Struct;
 
 public interface Cache {
+
+	public static final String DEFAULT_CACHE_NAME = "default789575785";
 	
 	/**
 	 * initialize the cache
 	 * @param arguments configuration arguments
+	 * @throws CacheException 
 	 */
-	public void init(Struct arguments);
+	public void init(String cacheName,Struct arguments) throws IOException;
 	
 	/**
 	 * return cache entry that match the key, throws a CacheException when entry does not exists or is stale
@@ -19,7 +22,7 @@ public interface Cache {
 	 * @return cache entry
 	 * @throws CacheException
 	 */
-	public CacheEntry getCacheEntry(String key) throws CacheException;
+	public CacheEntry getCacheEntry(String key) throws IOException;
 	
 	/**
 	 * return value that match the key, throws a CacheException when entry does not exists or is stale
@@ -27,7 +30,7 @@ public interface Cache {
 	 * @return value
 	 * @throws CacheException
 	 */
-	public Object getValue(String key) throws CacheException;
+	public Object getValue(String key) throws IOException;
 	
 	/**
 	 * return cache entry that match the key or the defaultValue when entry does not exist
@@ -106,7 +109,7 @@ public interface Cache {
 	public List keys(CacheEntryFilter filter);
 	
 	/**
-	 * Returns a List of values containing in this cache Each element in the returned set is a CacheEntry. 
+	 * Returns a List of values containing in this cache. 
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
@@ -114,7 +117,6 @@ public interface Cache {
 	
 	/**
 	 * Returns a list of values containing in this cache that match the given filter.
-	 * Each element in the returned set is a CacheEntry. 
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
@@ -122,11 +124,33 @@ public interface Cache {
 	
 	/**
 	 * Returns a list of values containing in this cache that match the given filter.
-	 * Each element in the returned set is a CacheEntry. 
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
 	public List values(CacheEntryFilter filter);
+	
+	/**
+	 * Returns a List of entries containing in this cache Each element in the returned list is a CacheEntry. 
+	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
+	 * @return a set of the entries contained in this cache.
+	 */
+	public List entries();
+	
+	/**
+	 * Returns a list of entries containing in this cache that match the given filter.
+	 * Each element in the returned set is a CacheEntry. 
+	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
+	 * @return a set of the entries contained in this cache.
+	 */
+	public List entries(CacheKeyFilter filter);
+	
+	/**
+	 * Returns a list of entries containing in this cache that match the given filter.
+	 * Each element in the returned set is a CacheEntry. 
+	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
+	 * @return a set of the entries contained in this cache.
+	 */
+	public List entries(CacheEntryFilter filter);
 
 
 	/**
@@ -144,4 +168,10 @@ public interface Cache {
 	 * @return access count
 	 */
 	public long missCount();
+
+	/**
+	 * get all information data available for this cache
+	 */
+	public Struct getCustomInfo();
+
 }

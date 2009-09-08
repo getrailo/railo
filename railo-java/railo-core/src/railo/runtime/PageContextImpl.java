@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -38,6 +39,7 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
+import railo.print;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -49,6 +51,7 @@ import railo.commons.lang.types.RefBooleanImpl;
 import railo.intergral.fusiondebug.server.FDSignal;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.DataSource;
@@ -248,8 +251,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private PageContextImpl parent;
 	private Map conns=new HashMap();
 	private boolean fdEnabled;
-
-	
 
 	public long sizeOf() {
 		
@@ -503,6 +504,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         // Writer
         writer=null;
         forceWriter=null;
+        if(pagesUsed.size()>0)pagesUsed.clear();
         
 	}
 	/**
@@ -860,8 +862,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @return undefined scope, undefined scope is a placeholder for the scopecascading
      */
     public Undefined us() {
-        if(!undefined.isInitalized()) undefined.initialize(this);
-        return undefined;
+    	if(!undefined.isInitalized()) undefined.initialize(this);
+    	return undefined;
     }
     
     /**
@@ -1988,7 +1990,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         undefinedScope().setVariableScope(variables);
         
         if(variables instanceof ComponentScope) {
-            activeComponent=((ComponentScope)variables).getComponent();
+        	activeComponent=((ComponentScope)variables).getComponent();
+            /*if(activeComponent.getAbsName().equals("jm.pixeltex.supersuperApp")){
+            	print.dumpStack();
+            }*/
         }
         else {
             activeComponent=null;
@@ -2457,6 +2462,22 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public int getRequestId() {
 		return requestId;
+	}
+
+	private Set pagesUsed=new HashSet();
+	
+	
+	public boolean isTrusted(Page page) {
+		if(page==null)return false;
+		short it = config.getInspectTemplate();
+		if(it==ConfigImpl.INSPECT_NEVER)return true;
+		if(it==ConfigImpl.INSPECT_ALWAYS)return false;
+		
+		return pagesUsed.contains(""+page.hashCode());
+	}
+	
+	public void setPageUsed(Page page) {
+		pagesUsed.add(""+page.hashCode());
 	}
 	
 }

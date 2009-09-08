@@ -40,7 +40,8 @@ public final class FileDocument {
     doc.add(FieldUtil.UnIndexed("mime-type", "text/plain"));
 
     String content=IOUtil.toString(res,charset);
-    	
+
+    doc.add(FieldUtil.UnIndexed("raw", content));
     doc.add(FieldUtil.Text("contents", content.toLowerCase()));
     doc.add(FieldUtil.UnIndexed("summary",StringUtil.max(content,SUMMERY_SIZE)));
     return doc;

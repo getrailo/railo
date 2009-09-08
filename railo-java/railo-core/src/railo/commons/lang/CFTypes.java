@@ -64,7 +64,7 @@ public final class CFTypes {
     /**
      * Field <code>TYPE_UNKNOW</code>
      */
-    public static final short TYPE_UNKNOW=13;
+    public static final short TYPE_UNKNOW=-1;
     /**
      * Field <code>TYPE_UNKNOW</code>
      */
@@ -118,7 +118,7 @@ public final class CFTypes {
     
 	}
 	
-	public static short toShort(String type) {
+	public static short toShort(String type, short defaultValue) {
 		type=type.toLowerCase().trim();
 	    if(type.length()>2) {
 	        char first=type.charAt(0);
@@ -207,6 +207,6 @@ public final class CFTypes {
                     break;
 		   }
 		}
-		return TYPE_UNKNOW;
+		return defaultValue;
 	}
 }

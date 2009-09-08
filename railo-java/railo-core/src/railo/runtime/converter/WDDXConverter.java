@@ -175,8 +175,8 @@ public final class WDDXConverter {
         try {
 			return goIn()+"<component md5=\""+ComponentUtil.md5(component)+"\" name=\""+component.getAbsName()+"\">"+sb+"</component>";
 		} 
-		catch (IOException e) {
-			throw new ConverterException(e.getMessage());
+		catch (Exception e) {
+			throw new ConverterException(e);
 		}
 	}
 

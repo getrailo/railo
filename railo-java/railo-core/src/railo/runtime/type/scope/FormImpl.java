@@ -156,7 +156,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			        value=IOUtil.toBytes(is);
 			    } 
 			    else {
-			    	
+			    	if(!tempDir.exists())tempDir.mkdirs();
 			    	tempFile=tempDir.getRealResource(getFileName());
 			    	fileItems.put(item.getFieldName().toLowerCase(),
 			    			new Item(tempFile,item.getContentType(),item.getName(),item.getFieldName()));

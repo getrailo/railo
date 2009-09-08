@@ -24,7 +24,7 @@ public final class ResourcesImpl implements Resources {
 	}
 	
 	/**
-	 * adds a addional resource to System
+	 * adds a additional resource to System
 	 * @param provider
 	 */
 	public void registerResourceProvider(ResourceProvider provider) {

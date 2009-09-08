@@ -14,6 +14,7 @@ import javax.wsdl.Port;
 import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.encoding.TypeMapping;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
@@ -30,6 +31,8 @@ import org.apache.axis.wsdl.symbolTable.SymbolTable;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
 import org.apache.axis.wsdl.toJava.Utils;
 
+import railo.print;
+import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
@@ -54,6 +57,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.ObjectsIterator;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.util.ArrayIterator;
 import railo.transformer.bytecode.util.ASMProperty;
@@ -186,6 +190,19 @@ public final class RPCClient implements Objects, Iteratorable{
                 new BeanSerializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME),
                 new BeanDeserializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME));
 		
+		/*try{
+		TypeMapping _tm = axisService.getTypeMappingRegistry().getDefaultTypeMapping();
+		//Class clazz = ClassUtil.loadClass("jm.test");
+		QName _name = new QName("http://rpc.xml.coldfusion","jm.test");
+		_tm.register(Object.class, 
+				_name,
+                    new BeanSerializerFactory(Object.class,_name),
+                    new BeanDeserializerFactory(Object.class,_name));
+		}
+		catch(Throwable t){
+			t.printStackTrace();
+		}*/
+		
 		
 		Port port = getWSDLPort(service);
 		
@@ -277,12 +294,13 @@ public final class RPCClient implements Objects, Iteratorable{
 
         org.apache.axis.encoding.TypeMapping tm = (org.apache.axis.encoding.TypeMapping) 
         	axisService.getTypeMappingRegistry().getDefaultTypeMapping();
-        Vector outNames = new Vector();
-		Vector inNames = new Vector();
+        Vector inNames = new Vector();
 		Vector inTypes = new Vector();
+		Vector outNames = new Vector();
+		Vector outTypes = new Vector();
 		for(int j = 0; j < parameters.list.size(); j++) {
 			p = (Parameter)parameters.list.get(j);
-            map(config,call,tm,p.getType());
+			map(config,call,tm,p.getType());
 			switch(p.getMode()) {
             case Parameter.IN:
                 inNames.add(p.getQName().getLocalPart());
@@ -290,24 +308,29 @@ public final class RPCClient implements Objects, Iteratorable{
             break;
             case Parameter.OUT:
                 outNames.add(p.getQName().getLocalPart());
+                outTypes.add(p);
             break;
             case Parameter.INOUT:
                 inNames.add(p.getQName().getLocalPart());
                 inTypes.add(p);
                 outNames.add(p.getQName().getLocalPart());
+                outTypes.add(p);
             break;
             }
 		}
-
 
 		// set output type
         if (parameters.returnParam != null) {
         	QName rtnQName = parameters.returnParam.getQName();
         	TypeEntry rtnType = parameters.returnParam.getType();
-            map(config,call,tm,rtnType);
+        	map(config,call,tm,rtnType);
             outNames.add(rtnQName.getLocalPart());
+            outTypes.add(parameters.returnParam);
+            
         }
-
+        
+        Iterator it = outTypes.iterator();
+       
         // check arguments
         Object[] inputs = new Object[inNames.size()];
         if(arguments!=null) {
@@ -316,7 +339,7 @@ public final class RPCClient implements Objects, Iteratorable{
     		
             for(int pos = 0; pos < inNames.size(); pos++) {
     			p = (Parameter)inTypes.get(pos);
-                inputs[pos]=getArgumentData(ThreadLocalPageContext.getTimeZone(config), p, arguments[pos]);
+                inputs[pos]=getArgumentData(axisService.getTypeMappingRegistry().getDefaultTypeMapping(),ThreadLocalPageContext.getTimeZone(config), p, arguments[pos]);
     		}
         }
         else {
@@ -334,7 +357,7 @@ public final class RPCClient implements Objects, Iteratorable{
                     throw new RPCException("Invalid arguments for operation " + methodName,
                             getErrorDetailForArguments((String[])inNames.toArray(new String[inNames.size()]),namedArguments.keysAsString()));
                 }
-                inputs[pos]=getArgumentData(ThreadLocalPageContext.getTimeZone(config), p, arg);
+                inputs[pos]=getArgumentData(axisService.getTypeMappingRegistry().getDefaultTypeMapping(),ThreadLocalPageContext.getTimeZone(config), p, arg);
             }
         }
         
@@ -503,9 +526,9 @@ public final class RPCClient implements Objects, Iteratorable{
 		throw new RPCException("Can't locate port entry for service " + service.getQName().toString() + " WSDL");
 	}
 
-	private Object getArgumentData(TimeZone tz, Parameter p, Object arg) throws PageException {
+	private Object getArgumentData(TypeMapping tm,TimeZone tz, Parameter p, Object arg) throws PageException {
 		QName paramType = Utils.getXSIType(p);
-		Object o = AxisCaster.toAxisType(tz,paramType,arg);
+		Object o = AxisCaster.toAxisType(tm,tz,paramType,arg);
         return o;
 	}
 
@@ -513,7 +536,7 @@ public final class RPCClient implements Objects, Iteratorable{
      * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String)
      */
     public Object get(PageContext pc, String propertyName) throws PageException {
-        return call(pc,"get"+propertyName, new Object[]{});
+        return call(pc,"get"+propertyName, ArrayUtil.OBJECT_EMPTY);
     }
 
 	/**
@@ -529,7 +552,7 @@ public final class RPCClient implements Objects, Iteratorable{
      */
     public Object get(PageContext pc, String propertyName, Object defaultValue) {
         try {
-            return call(pc,"get"+StringUtil.ucFirst(propertyName), new Object[]{});
+            return call(pc,"get"+StringUtil.ucFirst(propertyName), ArrayUtil.OBJECT_EMPTY);
         } catch (PageException e) {
             return defaultValue;
         }
@@ -772,7 +795,7 @@ public final class RPCClient implements Objects, Iteratorable{
             port = getWSDLPort(service);
     	}
     	catch(Exception e) {
-    		return new ArrayIterator(new Object[]{});
+    		return new ArrayIterator(ArrayUtil.OBJECT_EMPTY);
     	}
     	
         Binding binding = port.getBinding();

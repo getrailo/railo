@@ -55,7 +55,7 @@ public final class HTMLDocument {
           parser.parse(sr);
       } 
       catch (Throwable t) {
-    	  t.printStackTrace();
+    	  //t.printStackTrace();
           return doc;
       }
       
@@ -67,20 +67,56 @@ public final class HTMLDocument {
 	    
 	    doc.add(FieldUtil.UnIndexed("mime-type", "text/html"));
 	    
-	    String content = parser.getContent().toLowerCase();
+	    String content = parser.getContent();
 	    doc.add(FieldUtil.Text("title", parser.getTitle()));
-	    doc.add(FieldUtil.UnIndexed("summary", parser.getSummary()));
+	    
+	    String summary = parser.getSummary();
+	    if(StringUtil.isEmpty(summary)){
+	    	summary=(content.length()<=200)? content:content.substring(0,200);
+	    }
+	    else{
+	    	content=content+"\n"+summary;
+	    }
+	    doc.add(FieldUtil.UnIndexed("summary",summary ));
+	    
+	    
 	    
 	    doc.add(FieldUtil.UnIndexed("charset", StringUtil.valueOf(parser.getCharset())));
 	    
-	    if(parser.hasKeywords()) content+=" "+parser.getKeywords().toLowerCase();
-	    doc.add(FieldUtil.Text("contents", content));
 	    
-	    if(parser.hasAuthor())doc.add(FieldUtil.Text("author", parser.getAuthor()));
-	    if(parser.hasCustom1())doc.add(FieldUtil.Text("custom1", parser.getCustom1()));
-	    if(parser.hasCustom2())doc.add(FieldUtil.Text("custom2", parser.getCustom2()));
-	    if(parser.hasCustom3())doc.add(FieldUtil.Text("custom3", parser.getCustom3()));
-	    if(parser.hasCustom4())doc.add(FieldUtil.Text("custom4", parser.getCustom4()));
+	    
+	    if(parser.hasKeywords()) {
+	    	doc.add(FieldUtil.Keyword("keywords", parser.getKeywords().toLowerCase()));
+	    	content=content+"\n"+parser.getKeywords();
+	    }
+	    
+
+	    if(parser.hasAuthor()){
+	    	content=content+"\n"+parser.getAuthor();
+	    	doc.add(FieldUtil.Text("author", parser.getAuthor()));
+	    }
+	    if(parser.hasCustom1()){
+	    	content=content+"\n"+parser.getCustom1();
+	    	doc.add(FieldUtil.Text("custom1", parser.getCustom1()));
+	    }
+	    if(parser.hasCustom2()){
+	    	content=content+"\n"+parser.getCustom2();
+	    	doc.add(FieldUtil.Text("custom2", parser.getCustom2()));
+	    }
+	    if(parser.hasCustom3()){
+	    	content=content+"\n"+parser.getCustom3();
+	    	doc.add(FieldUtil.Text("custom3", parser.getCustom3()));
+	    }
+	    if(parser.hasCustom4()){
+	    	content=content+"\n"+parser.getCustom4();
+	    	doc.add(FieldUtil.Text("custom4", parser.getCustom4()));
+	    }
+	    
+	    doc.add(FieldUtil.UnIndexed("raw", content));
+	    doc.add(FieldUtil.Text("contents", content.toLowerCase()));
+	    //print.err("CONTENT");
+	    //print.err(content);
+	    
     
 }
 

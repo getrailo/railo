@@ -103,7 +103,7 @@ public final class DataSourceImpl implements Cloneable, DataSource {
         
         Collection.Key[] keys = custom==null?new Collection.Key[0]:custom.keys();
         for(int i=0;i<keys.length;i++) {
-            dsnTranslated=replace(dsnTranslated,keys[i].getLowerString(),Caster.toString(custom.get(keys[i],null),""),true);
+            dsnTranslated=replace(dsnTranslated,keys[i].getString(),Caster.toString(custom.get(keys[i],null),""),true);
         }
     }
 

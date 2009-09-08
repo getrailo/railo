@@ -19,8 +19,9 @@ import railo.runtime.query.QueryCacheImpl;
 public final class ObjectCache extends TagImpl {
 
 	/** Clears queries from the cache in the Application scope. */
-	private String action="";
+	private String action="clear";
 	private QueryCacheFilter filter;
+	private String result="cfObjectCache";
 
 	/** set the value action
 	*  Clears queries from the cache in the Application scope.
@@ -28,6 +29,9 @@ public final class ObjectCache extends TagImpl {
 	**/
 	public void setAction(String action)	{
 		this.action=action;
+	}
+	public void setResult(String result)	{
+		this.result=result;
 	}
 
 	private void setFilter(String filter,boolean ignoreCase) throws PageException	{
@@ -46,18 +50,27 @@ public final class ObjectCache extends TagImpl {
 
 
 	/**
-	* @throws ApplicationException
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
-	public int doStartTag() throws ApplicationException	{
-	    if(!action.equalsIgnoreCase("clear")) throw new ApplicationException("attribute action has a invalid value ["+action+"], valid is only [clear]");
-	    
-	    
-	    if(filter==null)
-	    	pageContext.getQueryCache().clear();
-	    else
-	    	((QueryCacheImpl)pageContext.getQueryCache()).clear(filter);
+	public int doStartTag() throws PageException	{
+		_doStartTag();
 		return SKIP_BODY;
+	}
+	public void _doStartTag() throws PageException	{
+		QueryCacheImpl qc = ((QueryCacheImpl)pageContext.getQueryCache());
+		if(action.equalsIgnoreCase("clear")) {
+			if(filter==null)
+		    	qc.clear();
+		    else
+		    	qc.clear(filter);
+		}
+		else if(action.equalsIgnoreCase("size")) {
+			pageContext.setVariable(result, Caster.toDouble(qc.size()));
+		}
+		else throw new ApplicationException("attribute action has a invalid value ["+action+"], valid is only [clear,size]");
+		
+	    
+		
 	}
 
 	/**
@@ -72,7 +85,8 @@ public final class ObjectCache extends TagImpl {
 	*/
 	public void release()	{
 		super.release();
-		action="";
+		action="clear";
+		result="cfObjectCache";
 		filter=null;
 	}
 }

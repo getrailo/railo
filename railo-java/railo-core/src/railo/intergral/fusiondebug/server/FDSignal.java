@@ -27,17 +27,19 @@ public class FDSignal {
 			if(Caster.toString(hash.get(),"").equals(id)) return;
 			
 			//print.out("signal");
+			List stack = createExceptionStack(pe);
+			if(stack.size()>0){
+				FDSignalException se = new FDSignalException(); 
+				se.setExceptionStack(stack);
+				se.setRuntimeExceptionCaughtStatus(caught);
+				se.setRuntimeExceptionExpression(createRuntimeExceptionExpression(pe));
+				if(pe instanceof NativeException) se.setRuntimeExceptionType("native");
+				else se.setRuntimeExceptionType(pe.getTypeAsString());
+				se.setStackTrace(pe.getStackTrace());
+				hash.set(id);
+				throw se;
+			}
 			
-			FDSignalException se = new FDSignalException(); 
-			//print.out(createExceptionStack(pe));
-			se.setExceptionStack(createExceptionStack(pe));
-			se.setRuntimeExceptionCaughtStatus(caught);
-			se.setRuntimeExceptionExpression(createRuntimeExceptionExpression(pe));
-			if(pe instanceof NativeException) se.setRuntimeExceptionType("native");
-			else se.setRuntimeExceptionType(pe.getTypeAsString());
-			se.setStackTrace(pe.getStackTrace());
-			hash.set(id);
-			throw se;
 		}
 		catch( FDSignalException fdse){
 			// do nothing - will be processed by JDI and handled by FD
@@ -70,10 +72,7 @@ public class FDSignal {
 			
 			res = ResourceUtil.toResourceNotExisting(pc, template);
 			ps = pc.toPageSource(res, null);
-			//print.err(ps+":"+trace.getLineNumber());
-			//list.add(new FDStackFrameImpl(null,pc,trace,ps));
 			
-
 			frame = new FDStackFrameImpl(null,pc,trace,ps);
 			if(ASMUtil.isOverfowMethod(trace.getMethodName())) list.set(0,frame);
 			else list.add(0,frame);
@@ -84,6 +83,7 @@ public class FDSignal {
 			if(te.getPageSource()!=null)
 				list.add(0,new FDStackFrameImpl(null,pc,te.getPageSource(),te.getLine()));
 		}
+		
 		return list;
 	}
 }

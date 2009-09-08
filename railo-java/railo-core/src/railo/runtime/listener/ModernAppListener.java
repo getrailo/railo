@@ -27,6 +27,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.util.ApplicationContextImpl;
 
 public class ModernAppListener implements ApplicationListener {
@@ -147,7 +148,7 @@ public class ModernAppListener implements ApplicationListener {
 	public boolean onApplicationStart(PageContext pc) throws PageException {
 		ComponentImpl app = (ComponentImpl) apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.contains(pc,ON_APPLICATION_START)) {
-			Object rtn = call(app,pc, ON_APPLICATION_START, new Object[]{});
+			Object rtn = call(app,pc, ON_APPLICATION_START, ArrayUtil.OBJECT_EMPTY);
 			//if(StringUtil.isEmpty(rtn)) return true;
 			return Caster.toBooleanValue(rtn,true);
 		}
@@ -177,7 +178,7 @@ public class ModernAppListener implements ApplicationListener {
 	public void onSessionStart(PageContext pc) throws PageException {
 		ComponentImpl app = (ComponentImpl) apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.contains(pc,ON_SESSION_START)) {
-			call(app,pc, ON_SESSION_START, new Object[]{});
+			call(app,pc, ON_SESSION_START, ArrayUtil.OBJECT_EMPTY);
 		}
 	}
 

@@ -185,7 +185,7 @@ public class Util {
 		if(str==null) return 0;
 		return str.length();
 	}
-    
+	
     /**
      * cast a railo string version to a int version
      * @param version
@@ -229,7 +229,43 @@ public class Util {
         
     }
     
-    /**
+    public static String toStringVersion(int version) {
+        
+    	StringBuffer sb=new StringBuffer();
+
+    	// Major
+    	int tmp=(version/1000000);
+    	version-=tmp*1000000;
+    	sb.append(String.valueOf(tmp));
+    	sb.append(".");
+
+    	// Minor
+    	tmp=(version/10000);
+    	version-=tmp*10000;
+    	sb.append(len(String.valueOf(tmp),2));
+    	sb.append(".");
+
+    	// releases
+    	tmp=(version/100);
+    	version-=tmp*100;
+    	sb.append(len(String.valueOf(tmp),2));
+    	sb.append(".");
+    	
+        // patches
+    	sb.append(len(String.valueOf(version),3));
+    	
+    	return sb.toString();
+        
+    }
+    
+    
+    private static Object len(String str, int i) {
+		while(str.length()<i)
+			str="0"+str;
+		return str;
+	}
+
+	/**
      * @param str String to work with
      * @param sub1 value to replace
      * @param sub2 replacement
@@ -388,9 +424,6 @@ public class Util {
             return file;
         }
     }
-    public static void main(String[] args) {
-        System.out.print(toHTTPTimeString(new Date()));
-    }
     	
 	public static String toHTTPTimeString(Date date) {
 		return replace(HTTP_TIME_STRING_FORMAT.format(date),"+00:00","",true);
@@ -460,4 +493,9 @@ public class Util {
 			rtn= st.nextToken();
 		return rtn;
 	}
+	public static void main(String[] args) {
+		System.out.println(toInVersion("3.1.0.024"));
+		System.out.println(toStringVersion(toInVersion("3.1.0.024")));
+	}
+    
 }

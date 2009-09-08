@@ -56,16 +56,6 @@ public final class FileWrapper extends File implements Resource {
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#compareTo(java.lang.Object)
-	 */
-//	public int compareTo(Object o) {
-//		if(o instanceof File) return compareTo((File)o);
-//		//if(res instanceof File) ((File)res).compareTo(o);
-//		return res.getPath().compareTo(o.toString());
-//	}
-
 
 	/**
 	 *

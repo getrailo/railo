@@ -7,13 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.naming.InitialContext;
-
-import railo.print;
 import railo.commons.lang.StringUtil;
-import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.component.ComponentLoader;
-import railo.runtime.component.Property;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
@@ -29,7 +24,6 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
-import railo.runtime.type.Collection.Key;
 
 /**
  * %**%
@@ -37,6 +31,8 @@ import railo.runtime.type.Collection.Key;
  */ 
 public class InterfaceImpl implements Dumpable {
 
+	private static final InterfaceImpl[] EMPTY = new InterfaceImpl[]{};
+	
 	private InterfacePage page;
 	private String extend;
 	private String hint;
@@ -68,10 +64,11 @@ public class InterfaceImpl implements Dumpable {
     
 
 	private static void init(PageContext pc,InterfaceImpl icfc) throws PageException {
-		print.out(icfc.superInterfaces);
+
 		if(!StringUtil.isEmpty(icfc.extend) && (icfc.superInterfaces==null || icfc.superInterfaces.length==0)) {
 			icfc.superInterfaces=loadImplements(ThreadLocalPageContext.get(pc),icfc.extend,icfc.interfacesUDFs);
 		}
+		else icfc.superInterfaces=EMPTY;
 	}
 
 
@@ -125,7 +122,7 @@ public class InterfaceImpl implements Dumpable {
 			try {
 				init(null,this);
 			} catch (PageException e) {
-				superInterfaces=new InterfaceImpl[]{};
+				superInterfaces=EMPTY;
 			}
 		}
     	for(int i=0;i<superInterfaces.length;i++){
@@ -220,10 +217,10 @@ public class InterfaceImpl implements Dumpable {
         
         if(!StringUtil.isEmpty(icfc.hint))sct.set("hint",icfc.hint);
         if(!StringUtil.isEmpty(icfc.dspName))sct.set("displayname",icfc.dspName);
-        print.out("+++++");
+        //print.out("+++++");
         init(pc,icfc);
-        print.out(icfc.superInterfaces);
-        print.out(icfc.extend);
+        //print.out(icfc.superInterfaces);
+        //print.out(icfc.extend);
         if(icfc.superInterfaces!=null && icfc.superInterfaces.length>0){
         	Struct ex=new StructImpl();
         	sct.set(ComponentImpl.EXTENDS,ex);

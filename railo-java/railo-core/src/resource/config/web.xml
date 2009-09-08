@@ -53,7 +53,7 @@ Path placeholders:
 	<!--
 		deploy-directory - directory where java classes will be deployed
 		custom-tag-directory - directory where the custom tags are
-		tld-directory / fld-directory - directory where addional Function and Tag Library Deskriptor are.
+		tld-directory / fld-directory - directory where additional Function and Tag Library Deskriptor are.
 		temp-directory - directory for temporary files (upload aso.)
 	 -->
 	<file-system

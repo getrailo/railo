@@ -4,11 +4,14 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,6 +21,7 @@ import org.apache.xerces.dom.AttributeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -71,6 +75,22 @@ public class DumpUtil {
 		else if(o instanceof Date) {
 			return new DateTimeImpl((Date) o).toDumpData(pageContext,maxlevel,props);
 		}
+
+		// Calendar
+		else if(o instanceof Calendar) {
+			Calendar c=(Calendar)o;
+			
+			SimpleDateFormat df = new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH);
+			df.setTimeZone(c.getTimeZone());
+			
+			DumpTable table=new DumpTable("#ffb200","#ffcc00","#263300");
+			table.setTitle("java.util.Calendar");
+			table.appendRow(1, new SimpleDumpData("Timezone"), new SimpleDumpData(TimeZoneUtil.toString(c.getTimeZone())));
+			table.appendRow(1, new SimpleDumpData("Time"), new SimpleDumpData(df.format(c.getTime())));
+	        
+			return table;
+		}
+		
 		// List
 		else if(o instanceof List) {
 			List list=(List) o;

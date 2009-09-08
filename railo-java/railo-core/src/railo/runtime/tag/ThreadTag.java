@@ -58,7 +58,7 @@ public final class ThreadTag extends BodyTagImpl {
 	private String name;
 	private String lcName;
 	private int priority=Thread.NORM_PRIORITY;
-	private double timeout=0;
+	private long timeout=0;
 	private PageContext pc;
 	private int type=TYPE_DEAMON;
 	private ExecutionPlan[] plans=EXECUTION_PLAN;
@@ -212,7 +212,7 @@ public final class ThreadTag extends BodyTagImpl {
 	 * @param timeout the timeout to set
 	 */
 	public void setTimeout(double timeout) {
-		this.timeout = timeout;
+		this.timeout = (long)timeout;
 	}
 
 	public void setDynamicAttribute(String uri, String name, Object value) {
@@ -312,7 +312,8 @@ public final class ThreadTag extends BodyTagImpl {
     		
     		if(ct.isAlive()) {
     			try {
-					ct.join();
+					if(timeout>0)ct.join(timeout);
+					else ct.join();
 				} 
     			catch (InterruptedException e) {}
     		}
@@ -321,6 +322,7 @@ public final class ThreadTag extends BodyTagImpl {
     }
 
 	private void doTerminate() throws ApplicationException {
+		
 		Threads ts = pc.getThreadScope(lcName);
 		
 		if(ts==null)

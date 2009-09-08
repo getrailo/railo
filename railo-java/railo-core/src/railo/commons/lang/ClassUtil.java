@@ -17,6 +17,7 @@ import railo.commons.io.FileUtil;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.List;
@@ -24,6 +25,66 @@ import railo.runtime.type.List;
 
 public final class ClassUtil {
 
+	/**
+	 * @param pc
+	 * @param lcType
+	 * @param type
+	 * @return
+	 * @throws ClassException 
+	 * @throws PageException
+	 */
+	public static Class toClass(String className) throws ClassException {
+		className = className.trim();
+		String lcClassName=className.toLowerCase();
+		boolean isRef=false;
+		if(lcClassName.startsWith("java.lang.")){
+			lcClassName=lcClassName.substring(10);
+			isRef=true;
+		}
+
+		if(lcClassName.equals("boolean"))	{
+			if(isRef) return Boolean.class;
+			return boolean.class; 
+		}
+		if(lcClassName.equals("byte"))	{
+			if(isRef) return Byte.class;
+			return byte.class; 
+		}
+		if(lcClassName.equals("int"))	{
+			return int.class; 
+		}
+		if(lcClassName.equals("long"))	{
+			if(isRef) return Long.class;
+			return long.class; 
+		}
+		if(lcClassName.equals("float"))	{
+			if(isRef) return Float.class;
+			return float.class; 
+		}
+		if(lcClassName.equals("double"))	{
+			if(isRef) return Double.class;
+			return double.class; 
+		}
+		if(lcClassName.equals("char"))	{
+			return char.class; 
+		}
+		if(lcClassName.equals("short"))	{
+			if(isRef) return Short.class;
+			return short.class; 
+		}
+		
+		if(lcClassName.equals("integer"))	return Integer.class; 
+		if(lcClassName.equals("character"))	return Character.class; 
+		if(lcClassName.equals("object"))	return Object.class; 
+		if(lcClassName.equals("string"))	return String.class; 
+		if(lcClassName.equals("null"))		return Object.class; 
+		if(lcClassName.equals("numeric"))	return Double.class; 
+		
+		return ClassUtil.loadClass(className);
+	}
+	
+	
+	
 	/**
 	 * loads a class from a String classname
 	 * @param className

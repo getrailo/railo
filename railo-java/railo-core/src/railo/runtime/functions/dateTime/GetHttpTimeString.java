@@ -23,8 +23,10 @@ public final class GetHttpTimeString implements Function {
 	}
 	
 	
-	private static synchronized String toHTTPTimeString(Date date) {
-		return StringUtil.replace(HTTP_TIME_STRING_FORMAT.format(date),"+00:00","",true);
+	private static String toHTTPTimeString(Date date) {
+		synchronized(HTTP_TIME_STRING_FORMAT){
+			return StringUtil.replace(HTTP_TIME_STRING_FORMAT.format(date),"+00:00","",true);
+		}
 	}
 	
 	

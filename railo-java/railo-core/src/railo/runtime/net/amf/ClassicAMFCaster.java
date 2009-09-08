@@ -39,6 +39,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.wrap.ArrayAsList;
 import railo.runtime.type.wrap.ListAsArray;
@@ -141,7 +142,7 @@ public class ClassicAMFCaster implements AMFCaster {
 	            	if(udf.getFunctionArguments().length>0) continue;
 	            	
 	            	try {
-						v=c.call(ThreadLocalPageContext.get(), udf.getFunctionName(), new Object[]{});
+						v=c.call(ThreadLocalPageContext.get(), udf.getFunctionName(), ArrayUtil.OBJECT_EMPTY);
 					} catch (PageException e) {
 						continue;
 					}

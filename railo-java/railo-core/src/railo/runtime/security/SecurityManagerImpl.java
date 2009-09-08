@@ -1,12 +1,14 @@
 package railo.runtime.security;
 
 
+import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
+import railo.runtime.type.util.ArrayUtil;
 
 /**
  * SecurityManager to control access to different services
@@ -19,7 +21,13 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
     
 
     //private ConfigWeb config;
-    private Resource localRoot;
+    //private Resource[] roots;
+
+
+	private Resource rootDirectory;
+
+
+	private Resource[] customFileAccess;
     
     private SecurityManagerImpl() {
         
@@ -279,16 +287,55 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
         // Local
         if(getAccess(TYPE_FILE)==VALUE_LOCAL) {
             if(res==null) return;
-            if(ResourceUtil.isChildOf(res,localRoot)) return;
+            // local 
+            if(rootDirectory!=null)
+            	if(ResourceUtil.isChildOf(res,rootDirectory)) return;
+            // custom
+            if(!ArrayUtil.isEmpty(customFileAccess)){
+            	for(int i=0;i<customFileAccess.length;i++){
+            		if(ResourceUtil.isChildOf(res,customFileAccess[i])) return;
+            	}
+            }
             if(isValid(config,serverPassword)) return;
-            throw new SecurityException("can't access ["+res+"] "+(res.isDirectory()?"directory":"file")+" must be inside ["+localRoot+"]","access is prohibited by security manager");
+            throw new SecurityException(createExceptionMessage(res,true),"access is prohibited by security manager");
         }
         // None
         if( res == null || isValid(config,serverPassword)) return;
-        throw new SecurityException("can't access ["+res+"]","access is prohibited by security manager");
+        
+        // custom
+        if(!ArrayUtil.isEmpty(customFileAccess)){
+        	for(int i=0;i<customFileAccess.length;i++){
+        		if(ResourceUtil.isChildOf(res,customFileAccess[i])) return;
+        	}
+        }
+        
+        throw new SecurityException(createExceptionMessage(res,false),"access is prohibited by security manager");
 	}
     
-    private boolean isValid(Config config, String serverPassword) {
+    private String createExceptionMessage(Resource res, boolean localAllowed) {
+	
+    	
+    	StringBuffer sb=new StringBuffer(localAllowed && rootDirectory!=null?rootDirectory.getAbsolutePath():"");
+    	for(int i=0;i<customFileAccess.length;i++){
+    		if(sb.length()>0)sb.append(" | ");
+        	sb.append(customFileAccess[i].getAbsolutePath());
+        }
+    	
+    	StringBuffer rtn=new StringBuffer("can't access [");
+    	rtn.append(res.getAbsolutePath());
+    	rtn.append("]");
+    	if(sb.length()>0){
+			rtn.append(" ");
+			rtn.append((res.isDirectory()?"directory":"file"));
+			rtn.append(" must be inside [");
+			rtn.append(sb.toString());
+			rtn.append("]");
+    	}
+    	return rtn.toString();
+    	
+	}
+
+	private boolean isValid(Config config, String serverPassword) {
     	if(config==null || StringUtil.isEmpty(serverPassword)) return false;
 		try {
 			config.getConfigServer(serverPassword);
@@ -298,15 +345,6 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
 		}
 	}
 
-	/**
-     * @param rootDir 
-     */
-    public void setConfig(Resource rootDir) {
-        localRoot=rootDir;//new File(config.getServletContext().getRealPath("/"));
-        // Fix for tomcat
-        if(localRoot.getName().equals(".") || localRoot.getName().equals(".."))
-            localRoot=localRoot.getParentResource();
-    }
 
     /**
      * @see railo.runtime.security.ISecurityManager#cloneSecurityManager()
@@ -317,6 +355,8 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
         for(int i=0;i<accesses.length;i++) {
             sm.accesses[i]=accesses[i];
         }
+        if(customFileAccess!=null)sm.customFileAccess=(Resource[]) ArrayUtil.clone(customFileAccess,new Resource[customFileAccess.length]);
+        sm.rootDirectory=rootDirectory;
         return sm;
     }
     
@@ -326,4 +366,31 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
     public Object clone() {
         return cloneSecurityManager();
     }
+
+	public Resource[] getCustomFileAccess() {
+		if(ArrayUtil.isEmpty(customFileAccess)) return new Resource[0];
+		return (Resource[]) ArrayUtil.clone(customFileAccess, new Resource[customFileAccess.length]);
+	}
+
+	public void setCustomFileAccess(Resource[] fileAccess) {
+		this.customFileAccess=merge(this.customFileAccess,fileAccess);
+	}
+    
+	public void setRootDirectory(Resource rootDirectory) {
+		this.rootDirectory=rootDirectory;
+	}
+	
+	private static Resource[] merge(Resource[] first,Resource[] second) {
+		if(ArrayUtil.isEmpty(second)) return first;
+		if(ArrayUtil.isEmpty(first)) return second;
+		
+		Resource[] tmp = new Resource[first.length+second.length];
+		for(int i=0;i<first.length;i++){
+			tmp[i]=first[i];
+		}
+		for(int i=0;i<second.length;i++){
+			tmp[first.length+i]=second[i];
+		}
+		return tmp;
+	}
 }

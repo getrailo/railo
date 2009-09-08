@@ -22,6 +22,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.lock.LockManager;
 import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
@@ -153,7 +154,14 @@ public abstract class SearchCollectionSupport implements SearchCollection {
      * @see railo.runtime.search.SearchCollection#index(railo.runtime.PageContext, java.lang.String, short, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String[], java.lang.String, boolean, java.lang.String, java.lang.String[], java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
     public IndexResult index(PageContext pc, String key, short type, String urlpath, String title, String body, String language, 
-            String[] extensions, String query, boolean recurse,String categoryTree, String[] categories, 
+            String[] extensions, String query, boolean recurse,String categoryTree, String[] categories,
+            String custom1, String custom2, String custom3, String custom4) throws PageException, MalformedURLException, SearchException {
+    	return index(pc, key, type, urlpath, title, body, language, extensions, query, recurse, categoryTree, categories, 10000, custom1, custom2, custom3, custom4);
+    }
+    		
+    // FUTURE add this to interface
+    public IndexResult index(PageContext pc, String key, short type, String urlpath, String title, String body, String language, 
+            String[] extensions, String query, boolean recurse,String categoryTree, String[] categories, long timeout,
             String custom1, String custom2, String custom3, String custom4) throws PageException, MalformedURLException, SearchException {
         language=SearchUtil.translateLanguage(language);
         lock();
@@ -172,12 +180,62 @@ public abstract class SearchCollectionSupport implements SearchCollection {
             ir=indexPath(id,title,dir,extensions,recurse,language);
         }
         else if(type==SearchIndex.TYPE_URL) {
-        	ir=indexURL(id,title,new URL(key),extensions,recurse,language);
+        	ir=indexURL(id,title,new URL(key),extensions,recurse,language,timeout);
         }
         else if(type==SearchIndex.TYPE_CUSTOM) {
+        	Query qv;
+        	if(StringUtil.isEmpty(query)){
             
-            Query qv = Caster.toQuery(pc.getVariable(query));
-            QueryColumn keyColumn=qv.getColumn(key);
+        	// set columns
+        		railo.runtime.type.Array columns=new ArrayImpl();
+            	columns.append("key");
+            	columns.append("body");
+            	if(!StringUtil.isEmpty(title))columns.append("title");
+            	if(!StringUtil.isEmpty(custom1))columns.append("custom1");
+            	if(!StringUtil.isEmpty(custom2))columns.append("custom2");
+            	if(!StringUtil.isEmpty(custom3))columns.append("custom3");
+            	if(!StringUtil.isEmpty(custom4))columns.append("custom4");
+            	
+            // populate query with a single row
+                qv=new QueryImpl(columns,1,"query");
+                // body
+                qv.setAt("key", 1, key);
+                key="key";
+
+                // body
+                qv.setAt("body", 1, body);
+                body="body";
+
+                // title
+                if(!StringUtil.isEmpty(title)){
+                	qv.setAt("title", 1, title);
+                	title="title";
+                }
+
+                // custom1
+                if(!StringUtil.isEmpty(custom1)){
+                	qv.setAt("custom1", 1, custom1);
+                	custom1="custom1";
+                }
+                // custom2
+                if(!StringUtil.isEmpty(custom2)){
+                	qv.setAt("custom2", 1, custom2);
+                	custom2="custom2";
+                }
+                // custom3
+                if(!StringUtil.isEmpty(custom3)){
+                	qv.setAt("custom3", 1, custom3);
+                	custom3="custom3";
+                }
+                // custom4
+                if(!StringUtil.isEmpty(custom4)){
+                	qv.setAt("custom4", 1, custom4);
+                	custom4="custom4";
+                }
+            }
+        	else qv = Caster.toQuery(pc.getVariable(query));
+            
+        	QueryColumn keyColumn=qv.getColumn(key);
             
             String[] strBodies=List.toStringArrayTrim(List.listToArrayRemoveEmpty(body,','));
             QueryColumn[] bodyColumns=new QueryColumn[strBodies.length];
@@ -253,7 +311,11 @@ public abstract class SearchCollectionSupport implements SearchCollection {
      * @see railo.runtime.search.SearchCollection#indexURL(java.lang.String, java.lang.String, java.net.URL, java.lang.String[], boolean, java.lang.String)
      */
     public final IndexResult indexURL(String id,String title, URL url, String[] extensions, boolean recurse, String language) throws SearchException {
-    	IndexResult ir=_indexURL(id,title,url,extensions,recurse,language);
+    	return indexURL(id, title, url, extensions, recurse, language, 10000);
+    }
+        // FUTURE replace this in interface with method above
+    public final IndexResult indexURL(String id,String title, URL url, String[] extensions, boolean recurse, String language,long timeout) throws SearchException {
+    	IndexResult ir=_indexURL(id,title,url,extensions,recurse,language,timeout);
         changeLastUpdate();
         return ir;
     } 
@@ -268,6 +330,8 @@ public abstract class SearchCollectionSupport implements SearchCollection {
      * @param language
      * @throws SearchException
      */
+    protected abstract IndexResult _indexURL(String id,String title, URL url, String[] extensions, boolean recurse, String language,long timeout) throws SearchException ;
+    
     protected abstract IndexResult _indexURL(String id,String title, URL url, String[] extensions, boolean recurse, String language) throws SearchException ;
 
     /**
@@ -611,17 +675,23 @@ public abstract class SearchCollectionSupport implements SearchCollection {
 				url.getPort(),path.substring(0,slashIndex+1))).toExternalForm();
 	}
 
-	private String toURL(String url, String path) {
+	private static String toURL(String url, String path) {
         if(StringUtil.isEmpty(url)) return path;
         if(StringUtil.isEmpty(path)) return url;
+        
         url=url.replace('\\','/');
         path=path.replace('\\','/');
         if(StringUtil.startsWith(path, '/'))path=path.substring(1);
-        if(!StringUtil.endsWith(url, '/'))url='/'+url;
+        if(StringUtil.endsWith(url, '/'))url=url.substring(0,url.length()-1);
         
-        return url+path;
+        if(StringUtil.startsWithIgnoreCase(path, url))
+        	return path;
+        return url+"/"+path;
     }
     
+	
+	
+	
 
     protected SearchIndex[] getIndexes() {
     	Iterator it = indexes.keySet().iterator();

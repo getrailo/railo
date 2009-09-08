@@ -15,6 +15,7 @@ import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -58,7 +59,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
      * @param realPath
 	 */
 	PageSourceImpl(MappingImpl mapping,String realPath) {
-
+		
 		this.mapping=mapping;
         recompileAlways=mapping.getConfig().getCompileType()==Config.RECOMPILE_ALWAYS;
         recompileAfterStartUp=mapping.getConfig().getCompileType()==Config.RECOMPILE_AFTER_STARTUP || recompileAlways;
@@ -153,8 +154,16 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     
     private Page loadPhysical(Page page, ConfigWeb config) throws PageException {
     	if(!mapping.hasPhysical()) return null;
-    	if(mapping.isTrusted() && isLoad(LOAD_PHYSICAL) && !recompileAlways) return page;
-        Resource srcFile = getPhyscalFile();
+    	
+    	// FUTURE change interfave loadPage to PageContext
+    	PageContextImpl pc=(PageContextImpl) ThreadLocalPageContext.get();
+    	//if(pc.isPageAlreadyUsed(page)) return page;
+    	
+    	if((mapping.isTrusted() || 
+    			pc!=null && pc.isTrusted(page)) 
+    		&& isLoad(LOAD_PHYSICAL) && !recompileAlways) return page;
+        
+    	Resource srcFile = getPhyscalFile();
         
         long srcLastModified = srcFile.lastModified();
         
@@ -206,6 +215,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
                     page.setPageSource(this);
     				page.setLoadType(LOAD_PHYSICAL);
 			}
+			if(pc!=null)pc.setPageUsed(page);
 			return page;
     }
 
@@ -236,11 +246,6 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
      * @return source path as String
      */
     public String getDisplayPath() {
-    	
-        String p=_getDisplayPath();
-        return p;
-    }
-    private String _getDisplayPath() {
         if(!mapping.hasArchive())  	return StringUtil.toString(getPhyscalFile(), null);
         else if(isLoad(LOAD_PHYSICAL))	return StringUtil.toString(getPhyscalFile(), null);
         else if(isLoad(LOAD_ARCHIVE))	return StringUtil.toString(getArchiveSourcePath(), null);
@@ -473,6 +478,8 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		
 		
 	}
+	
+	
 
 	private synchronized void createComponentName() {
 		
@@ -497,7 +504,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 			}
 			else compName.append(arr[i]);
 		}
-		this.compName=compName.toString().toLowerCase();
+		this.compName=compName.toString();
 	}
 
     /**

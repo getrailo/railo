@@ -15,8 +15,8 @@ public class FTPException extends ApplicationException {
 
 	public FTPException(String action, FTPClient client) {
 		super("action ["+action+"] from tag ftp failed", client.getReplyString());
-		//setAddional("ReplyCode",Caster.toDouble(client.getReplyCode()));
-		//setAddional("ReplyMessage",client.getReplyString());
+		//setAdditional("ReplyCode",Caster.toDouble(client.getReplyCode()));
+		//setAdditional("ReplyMessage",client.getReplyString());
 		code = client.getReplyCode();
 		msg = client.getReplyString();
 	}

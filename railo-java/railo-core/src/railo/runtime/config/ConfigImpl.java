@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -88,6 +89,9 @@ import flex.messaging.config.ConfigMap;
 public abstract class ConfigImpl implements Config {
 
 
+	public static final short INSPECT_ALWAYS = 0;
+	public static final short INSPECT_ONCE = 1;
+	public static final short INSPECT_NEVER = 2;
 
 	public static final int CLIENT_BOOLEAN_TRUE = 0;
 	public static final int CLIENT_BOOLEAN_FALSE = 1;
@@ -269,7 +273,7 @@ public abstract class ConfigImpl implements Config {
 	private Struct remoteClientUsage;
 	private Class adminSyncClass=AdminSyncNotSupported.class;
 	private AdminSync adminSync;
-	private String[] customTagExtensions=new String[]{"cfm"};
+	private String[] customTagExtensions=new String[]{"cfc","cfm"};
 	private Class videoExecuterClass=VideoExecuterNotSupported.class;
 	
 	protected MappingImpl tagMapping;
@@ -280,6 +284,8 @@ public abstract class ConfigImpl implements Config {
 	private Class amfCasterClass=ClassicAMFCaster.class;
 	private AMFCaster amfCaster;
 	private String defaultDataSource;
+	private short inspectTemplate=INSPECT_ONCE;
+	private String serial="";
 
     /**
 	 * @return the allowURLRequestTimeout
@@ -361,7 +367,8 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	public ConfigImpl(CFMLFactory factory,Resource configDir, Resource configFile, TagLib[] tlds, FunctionLib[] flds) {
-    	this.configDir=configDir;
+		
+		this.configDir=configDir;
         this.configFile=configFile;
         this.factory=factory;
         
@@ -871,7 +878,7 @@ public abstract class ConfigImpl implements Config {
     	
         // now overwrite with new data
         if(tagDirectory.isDirectory()) {
-        	String[] files=tagDirectory.list(new ExtensionResourceFilter(getCustomTagExtensions()));
+        	String[] files=tagDirectory.list(new ExtensionResourceFilter(new String[]{"cfm","cfc"}));
             for(int i=0;i<files.length;i++) {
             	if(tl!=null)createTag(tl, files[i]);
                     
@@ -942,18 +949,6 @@ public abstract class ConfigImpl implements Config {
     
     public void createFunction(FunctionLib fl,String filename) {
     	PageSource ps = functionMapping.getPageSource(filename);
-    	/*if(this instanceof ConfigWeb){
-    		try {
-				Page page = ps.loadPage((ConfigWeb)this);
-				
-			} catch (PageException e) {
-				e.printStackTrace();
-			}
-    	}
-    	PageContextImpl pc=null;
-    	*/
-    	
-    	
     	
     	String name=toName(filename);//filename.substring(0,filename.length()-(getCFMLExtensions().length()+1));
         FunctionLibFunction flf = new FunctionLibFunction(fl);
@@ -2305,6 +2300,7 @@ public abstract class ConfigImpl implements Config {
 
 	protected void setSecurityKey(String securityKey) {
 		this.securityKey=securityKey;
+		this.id=null;
 	}
 
 	public SpoolerEngine getSpoolerEngine() {
@@ -2603,5 +2599,30 @@ public abstract class ConfigImpl implements Config {
 	protected void setDefaultDataSource(String defaultDataSource) {
 		this.defaultDataSource=defaultDataSource;
 	}
+
+	/**
+	 * @return the inspectTemplate 
+	 * FUTURE to interface
+	 */
+	public short getInspectTemplate() {
+		return inspectTemplate;
+	}
+
+	/**
+	 * @param inspectTemplate the inspectTemplate to set
+	 * FUTURE to interface
+	 */
+	protected void setInspectTemplate(short inspectTemplate) {
+		this.inspectTemplate = inspectTemplate;
+	}
+
+	protected void setSerialNumber(String serial) {
+		this.serial=serial;
+	}
+
+	public String getSerialNumber() {
+		return serial;
+	}
+
 	
 }

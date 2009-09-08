@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.type.Struct;
@@ -21,6 +22,7 @@ public final class DatabaseException extends PageExceptionImpl {
 	private SQL sql;
 	private String sqlstate="";
 	private int errorcode=-1;
+	private DataSource datasource;
 
 	/**
 	 * Constructor of the class
@@ -33,7 +35,8 @@ public final class DatabaseException extends PageExceptionImpl {
 	public DatabaseException(String message, String detail, SQLException sqle, SQL sql,DatasourceConnection dc) {
 		super(message,"database");
 		String sqleMessage=sqle!=null?sqle.getMessage():"";
-		
+		this.sql=sql;
+		if(dc!=null)datasource=dc.getDatasource();
 		if(detail!=null){
 			if(!StringUtil.isEmpty(sqleMessage))
 				setDetail(detail+"\n"+sqleMessage);
@@ -50,19 +53,19 @@ public final class DatabaseException extends PageExceptionImpl {
 			this.setStackTrace(sqle.getStackTrace());
 		}
 		if(sql!=null) {
-			setAddional("SQL",sql.toString());
+			setAdditional("SQL",sql.toString());
 		}
 		if(dc!=null) {
 			try {
 				DatabaseMetaData md = dc.getConnection().getMetaData();
 				md.getDatabaseProductName();
-				setAddional("DatabaseName",md.getDatabaseProductName());
-				setAddional("DatabaseVersion",md.getDatabaseProductVersion());
-				setAddional("DriverName",md.getDriverName());
-				setAddional("DriverVersion",md.getDriverVersion());
-				//setAddional("url",md.getURL());
+				setAdditional("DatabaseName",md.getDatabaseProductName());
+				setAdditional("DatabaseVersion",md.getDatabaseProductVersion());
+				setAdditional("DriverName",md.getDriverName());
+				setAdditional("DriverVersion",md.getDriverVersion());
+				//setAdditional("url",md.getURL());
 				
-				setAddional("Datasource",dc.getDatasource().getName());
+				setAdditional("Datasource",dc.getDatasource().getName());
 				
 				
 			} 
@@ -107,6 +110,7 @@ public final class DatabaseException extends PageExceptionImpl {
 	    
 		Struct sct = super.getCatchBlock(pc);
 		sct.setEL("NativeErrorCode",new Double(errorcode));
+		sct.setEL("DataSource",datasource==null?"":datasource.getName());
 		sct.setEL("SQLState",sqlstate);
 		sct.setEL("Sql",strSQL);
 		sct.setEL("queryError",strSQL);

@@ -20,6 +20,7 @@ import org.w3c.dom.Text;
 
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ArrayUtil;
 
 
 /**
@@ -179,7 +180,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = doc.getClass().getMethod("getDocumentURI", new Class[]{});
-			return Caster.toString(m.invoke(doc, new Object[]{}));
+			return Caster.toString(m.invoke(doc, ArrayUtil.OBJECT_EMPTY));
 		} 
 		catch (Exception e) {
 			throw new PageRuntimeException(Caster.toPageException(e));
@@ -194,7 +195,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = doc.getClass().getMethod("getDomConfig", new Class[]{});
-			return (DOMConfiguration) m.invoke(doc, new Object[]{});
+			return (DOMConfiguration) m.invoke(doc, ArrayUtil.OBJECT_EMPTY);
 		} 
 		catch (Exception e) {
 			throw new PageRuntimeException(Caster.toPageException(e));
@@ -209,7 +210,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = doc.getClass().getMethod("getInputEncoding", new Class[]{});
-			return Caster.toString(m.invoke(doc, new Object[]{}));
+			return Caster.toString(m.invoke(doc, ArrayUtil.OBJECT_EMPTY));
 		} 
 		catch (Exception e) {
 			throw new PageRuntimeException(Caster.toPageException(e));
@@ -224,7 +225,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = doc.getClass().getMethod("getStrictErrorChecking", new Class[]{});
-			return Caster.toBooleanValue(m.invoke(doc, new Object[]{}));
+			return Caster.toBooleanValue(m.invoke(doc, ArrayUtil.OBJECT_EMPTY));
 		} 
 		catch (Exception e) {
 			throw new PageRuntimeException(Caster.toPageException(e));
@@ -239,7 +240,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = doc.getClass().getMethod("getXmlEncoding", new Class[]{});
-			return Caster.toString(m.invoke(doc, new Object[]{}));
+			return Caster.toString(m.invoke(doc, ArrayUtil.OBJECT_EMPTY));
 		} 
 		catch (Exception e) {
 			throw new PageRuntimeException(Caster.toPageException(e));
@@ -254,7 +255,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = doc.getClass().getMethod("getXmlStandalone", new Class[]{});
-			return Caster.toBooleanValue(m.invoke(doc, new Object[]{}));
+			return Caster.toBooleanValue(m.invoke(doc, ArrayUtil.OBJECT_EMPTY));
 		} 
 		catch (Exception e) {
 			throw new PageRuntimeException(Caster.toPageException(e));
@@ -269,7 +270,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = doc.getClass().getMethod("getXmlVersion", new Class[]{});
-			return Caster.toString(m.invoke(doc, new Object[]{}));
+			return Caster.toString(m.invoke(doc, ArrayUtil.OBJECT_EMPTY));
 		} 
 		catch (Exception e) {
 			throw new PageRuntimeException(Caster.toPageException(e));
@@ -284,7 +285,7 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = doc.getClass().getMethod("normalizeDocument", new Class[]{});
-			m.invoke(doc, new Object[]{});
+			m.invoke(doc, ArrayUtil.OBJECT_EMPTY);
 		} 
 		catch (Exception e) {
 			throw new PageRuntimeException(Caster.toPageException(e));

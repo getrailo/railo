@@ -7,7 +7,9 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -61,6 +63,7 @@ import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionImpl;
 import railo.runtime.extension.ExtensionProvider;
+import railo.runtime.functions.other.GetAuthUser;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
@@ -445,7 +448,12 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getRemoteClient",       	ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClient();
         else if(check("getRemoteClientUsage",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClientUsage();
         else if(check("getSpoolerTasks",   		ACCESS_FREE) && check2(ACCESS_READ  )) doGetSpoolerTasks();
-        // alias for getSpoolerTasks
+        else if(check("getPerformanceSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetPerformanceSettings();
+        else if(check("updatePerformanceSettings",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdatePerformanceSettings();
+        
+    	
+    	
+    	// alias for getSpoolerTasks
         else if(check("getRemoteClientTasks",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetSpoolerTasks();
         else if(check("getDatasourceDriverList",ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasourceDriverList();
         else if(check("getDebuggingList",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetDebuggingList();
@@ -565,13 +573,18 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("removeUpdate",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doRemoveUpdate();
         else if(check("getUpdate",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doGetUpdate();
         else if(check("updateupdate",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateUpdate();
-        
+        else if(check("getSerial",              ACCESS_FREE) && check2(ACCESS_READ     )) doGetSerial();
+        else if(check("updateSerial",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateSerial();
+       
         else if(check("securitymanager",        ACCESS_FREE) && check2(ACCESS_READ             )) doSecurityManager();
         
         
+    	
         else throw new ApplicationException("invalid action ["+action+"] for tag admin");
             
     }
+
+	
 
 	private boolean check2(short accessRW) throws SecurityException {
     	if(accessRW==ACCESS_READ) ConfigWebUtil.checkGeneralReadAccess(config,password);
@@ -799,6 +812,27 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         store();
         adminSync.broadcast(attributes, config);
     }
+    
+    /**
+     * @throws PageException
+     * 
+     */
+    private void doUpdateSerial() throws PageException {
+        admin.updateSerial(getString("admin",action,"serial"));
+        store();
+        pageContext.serverScope().reload();
+    }
+
+    /**
+     * @throws PageException
+     * 
+     */
+    private void doGetSerial() throws PageException {
+       pageContext.setVariable(
+                getString("admin",action,"returnVariable"),
+                config.getSerialNumber());
+    }
+    
 
     private Resource getPluginDirectory() throws PageException {
     	return config.getConfigDir().getRealResource(config instanceof ConfigServer?"admin/plugin":"context/admin/plugin");//MUST more dynamic
@@ -1025,9 +1059,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
 
     private void doUpdateDefaultSecurityManager() throws  PageException {
-        admin.updateDefaultSecurity(
+    	
+    	admin.updateDefaultSecurity(
                 fb("setting"),
                 SecurityManagerImpl.toShortAccessValue(getString("admin",action,"file")),
+                getFileAcces(),
                 fb("direct_java_access"),
                 fb("mail"),
                 SecurityManagerImpl.toShortAccessValue(getString("admin",action,"datasource")),
@@ -1050,11 +1086,34 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         adminSync.broadcast(attributes, config);
     }
 
-    private void doUpdateSecurityManager() throws  PageException {
+    private Resource[] getFileAcces() throws PageException {
+    	Object value=attributes.get("file_access",null);
+        if(value==null) return null;
+        Array arr = Caster.toArray(value);
+        List rtn = new ArrayList();
+        Iterator it = arr.valueIterator();
+        String path;
+        Resource res;
+        while(it.hasNext()){
+        	path=Caster.toString(it.next());
+        	if(StringUtil.isEmpty(path))continue;
+        	
+        	res=config.getResource(path);
+        	if(!res.exists())
+        		throw new ApplicationException("path ["+path+"] does not exist");
+        	if(!res.isDirectory())
+        		throw new ApplicationException("path ["+path+"] is not a directory");
+        	rtn.add(res);
+        }
+        return (Resource[])rtn.toArray(new Resource[rtn.size()]);
+	}
+
+	private void doUpdateSecurityManager() throws  PageException {
         admin.updateSecurity(
                 getString("admin",action,"id"),
                 fb("setting"),
                 SecurityManagerImpl.toShortAccessValue(getString("admin",action,"file")),
+                getFileAcces(),
                 fb("direct_java_access"),
                 fb("mail"),
                 SecurityManagerImpl.toShortAccessValue(getString("admin",action,"datasource")),
@@ -1115,8 +1174,20 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         sct.set("tag_registry",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_TAG_REGISTRY)==SecurityManager.VALUE_YES));
         sct.set("access_read",SecurityManagerImpl.toStringAccessRWValue(sm.getAccess(SecurityManager.TYPE_ACCESS_READ)));
         sct.set("access_write",SecurityManagerImpl.toStringAccessRWValue(sm.getAccess(SecurityManager.TYPE_ACCESS_WRITE)));
+        short accessFile = sm.getAccess(SecurityManager.TYPE_FILE);
+        String str = SecurityManagerImpl.toStringAccessValue(accessFile);
+        if(str.equals("yes"))str="all";
+        sct.set("file",str);
         
-        sct.set("file",SecurityManagerImpl.toStringAccessValue(sm.getAccess(SecurityManager.TYPE_FILE)));
+    	ArrayImpl arr=new ArrayImpl();
+    	if(accessFile!=SecurityManager.VALUE_ALL){
+        	Resource[] reses = ((SecurityManagerImpl)sm).getCustomFileAccess();
+        	for(int i=0;i<reses.length;i++){
+        		arr.add(reses[i].getAbsolutePath());
+    		}
+    	}
+    	sct.set("file_access",arr);
+    
     }
 
 	private Double _fillSecDataDS(short access) {
@@ -1998,6 +2069,24 @@ private void doGetMappings() throws PageException {
         sct.set("psq",Caster.toBoolean(config.getPSQL()));
     }
 
+    private void doUpdatePerformanceSettings() throws SecurityException, PageException {
+    	admin.updateInspectTemplate(getString("admin",action,"inspectTemplate"));
+        store();
+        adminSync.broadcast(attributes, config);
+	}
+
+	private void doGetPerformanceSettings() throws ApplicationException, PageException {
+		Struct sct=new StructImpl();
+        pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
+        
+        short it = config.getInspectTemplate();
+        String str="once";
+        if(it==ConfigImpl.INSPECT_ALWAYS)str="always";
+        else if(it==ConfigImpl.INSPECT_NEVER)str="never";
+        sct.set("inspectTemplate",str);
+	}
+    
+    
     private void doGetCustomTagSetting() throws PageException {
         Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);

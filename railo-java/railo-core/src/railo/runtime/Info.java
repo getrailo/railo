@@ -3,7 +3,6 @@ package railo.runtime;
 import java.io.InputStream;
 import java.util.Map;
 
-
 import railo.commons.date.TimeZoneConstants;
 import railo.commons.io.IOUtil;
 import railo.commons.io.ini.IniFile;
@@ -150,6 +149,7 @@ public final class Info {
     	state=state.trim().toLowerCase();
     	if("final".equals(state)) return STATE_FINAL;
     	else if("beta".equals(state)) return STATE_BETA;
+    	else if("rc".equals(state)) return STATE_RC;
         else return STATE_ALPHA;
     }
     

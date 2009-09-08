@@ -103,8 +103,6 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		if(parent!=null){
 			pc=parent;
 			ThreadLocalPageContext.register(pc);
-			//output = new ByteArrayOutputStream();
-			//pc=ThreadUtil.clonePageContext(parent, output,false);
 		}
 		else {
 			try {
@@ -116,6 +114,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			DevNullOutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
 			pc=ThreadUtil.createPageContext(config, os, serverName, requestURI, queryString, SerializableCookie.toCookies(cookies), headers, parameters, attributes);
 		}
+		//print.err("ppp;"+ThreadLocalPageContext.get());
 		pc.setThreadScope("thread", new ThreadsImpl(this));
 		pc.setThread(Thread.currentThread());
 		

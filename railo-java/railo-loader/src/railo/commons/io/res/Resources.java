@@ -9,7 +9,7 @@ public interface Resources {
 	public void registerDefaultResourceProvider(ResourceProvider provider);
 	
 	/**
-	 * adds a addional resource to System
+	 * adds a additional resource to System
 	 * @param provider
 	 */
 	public void registerResourceProvider(ResourceProvider provider);

@@ -78,6 +78,7 @@ public class DatasourceConnectionPool {
 	private DatasourceConnectionImpl loadDatasourceConnection(DataSource ds, String user, String pass) throws DatabaseException  {
         Connection conn=null;
         String dsn = ds.getDsnTranslated();
+        //print.out(dsn);
         try {
             if(dsn.indexOf('?')==-1) {
             	conn = DriverManager.getConnection(dsn, user, pass);
@@ -152,17 +153,11 @@ public class DatasourceConnectionPool {
 
 	
 	public static boolean isValid(DatasourceConnection dc,Boolean autoCommit) {
-		
-		
 		try {
 			if(dc.getConnection().isClosed())return false;
-			//dc.getConnection().getAutoCommit();
 			if(autoCommit!=null) dc.getConnection().setAutoCommit(autoCommit.booleanValue());
-			//else dc.getConnection().setAutoCommit(dc.getConnection().getAutoCommit());
-
-			//dc.getConnection().setTransactionIsolation(dc.getConnection().getTransactionIsolation());
 		} 
-		catch (Throwable t) {t.printStackTrace();
+		catch (Throwable t) {
 				return false;
 		}
 		return true;

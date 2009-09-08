@@ -43,12 +43,19 @@ public class BlazeDSImpl implements BlazeDS {
         catch (Exception e) {
         	e.printStackTrace();// TODO
         	String msg=e.getMessage();
-        	if(e instanceof PageException)
-        		msg+="; "+((PageException)e).getDetail();
+        	
         	MessageException me = new MessageException(e.getClass().getName() + " : " + msg);
         	me.setRootCause(e);
             me.setCode("Server.Processing");
             me.setRootCause(e);
+            
+            if(e instanceof PageException){
+            	PageException pe=(PageException) e;
+            	me.setDetails(pe.getDetail());
+            	me.setMessage(pe.getMessage());
+            	me.setCode(pe.getErrorCode());
+            }
+            
             throw me;
 		}
     }

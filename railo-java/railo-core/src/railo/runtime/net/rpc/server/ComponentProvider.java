@@ -2,6 +2,8 @@ package railo.runtime.net.rpc.server;
 
 import java.lang.reflect.Method;
 
+import javax.xml.rpc.encoding.TypeMapping;
+
 import org.apache.axis.MessageContext;
 import org.apache.axis.providers.java.RPCProvider;
 
@@ -23,7 +25,11 @@ public final class ComponentProvider extends RPCProvider {
 		PageContext pc=(PageContext) mc.getProperty(Constants.PAGE_CONTEXT);
 		Component c= (Component) mc.getProperty(Constants.COMPONENT);
         
-		return AxisCaster.toAxisType(c.call(pc,method.getName(),toRailoType(args)));
+		RPCServer server = RPCServer.getInstance(pc.getId(),pc.getServletContext());
+		TypeMapping tm = server.getEngine().getTypeMappingRegistry().getDefaultTypeMapping();
+		
+		
+		return AxisCaster.toAxisType(tm,c.call(pc,method.getName(),toRailoType(args)));
 	}
 
 	private Object[] toRailoType(Object[] args) throws PageException {

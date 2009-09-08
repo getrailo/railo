@@ -79,6 +79,7 @@ public class VideoPlayerJW extends BodyTagSupport {
 	private String overstretch;
 	private boolean download;
 	private String id;
+	private String align;
 	private static int _id=0;
 
 	public VideoPlayerJW()  {
@@ -113,6 +114,8 @@ public class VideoPlayerJW extends BodyTagSupport {
 			playlistThumbnails="300"
 		
 		*/
+		align=null;
+		
 		
 		bgcolor=BG_COLOR;
 		fgcolor=FG_COLOR;
@@ -253,7 +256,7 @@ public class VideoPlayerJW extends BodyTagSupport {
 		}
 		
 		if(params.size()==0)
-			throw new ApplicationException("you have to define at least one source for cfvideo");
+			throw new ApplicationException("you have to define at least one video source");
 		
 		
 		
@@ -296,7 +299,22 @@ public class VideoPlayerJW extends BodyTagSupport {
 		StringBuffer sb=new StringBuffer();
 		
 		write(sb,"<script type=\"text/javascript\" src=\"/railo-context/swfobject.js.cfm\"></script>");
-		write(sb,"<div id=\""+placeholderId+"\"><a href=\"http://www.macromedia.com/go/getflashplayer\">Get the Flash Player</a> to see this player.</a></div>");			
+		write(sb,"<div ");			
+		
+		
+		if(passthrough!=null) {
+			Key[] keys = passthrough.keys();
+			String key;
+			for(int i=0;i<keys.length;i++) {
+				key=keys[i].getString();
+				if(StringUtil.startsWithIgnoreCase(key, "div."))
+					write(sb,key.substring(4)+"=\""+Caster.toString(passthrough.get(keys[i]))+"\" ");
+			}
+		}
+		write(sb,(align!=null?"align=\""+align+"\"":"")+" id=\""+placeholderId+"\"><a href=\"http://www.macromedia.com/go/getflashplayer\">Get the Flash Player</a> to see this player.</a></div>");			
+		
+		
+		
 		write(sb,"<script type=\"text/javascript\">\n");			
 		write(sb,"var so = new SWFObject(\"/railo-context/mediaplayer.swf.cfm\", \""+flashId+"\", \""+width+"\", \""+(height)+"\", \"8\", \""+format("#",bgcolor)+"\");\n");			
 		
@@ -309,7 +327,7 @@ public class VideoPlayerJW extends BodyTagSupport {
 		addVariable(sb,"linktarget",target);
 		addVariable(sb,"linkfromdisplay",Caster.toString(linkfromdisplay));
 		addVariable(sb,"abouttxt","Railo Video Player");
-		addVariable(sb,"aboutlnk","http://www.railo-technologies.com");
+		addVariable(sb,"aboutlnk","http://www.getrailo.org");
 		
 		// control
 		addParam(sb,"allowfullscreen",Caster.toString(allowfullscreen));
@@ -331,8 +349,16 @@ public class VideoPlayerJW extends BodyTagSupport {
 		
 		if(passthrough!=null) {
 			Key[] keys = passthrough.keys();
+			String key;
 			for(int i=0;i<keys.length;i++) {
-				addVariable(sb,keys[i].getString(),Caster.toString(passthrough.get(keys[i])));
+				key=keys[i].getString();
+				if(StringUtil.startsWithIgnoreCase(key, "param."))
+					addParam(sb,key.substring(6),Caster.toString(passthrough.get(keys[i])));
+				else if(StringUtil.startsWithIgnoreCase(key, "variable."))
+					addVariable(sb,key.substring(9),Caster.toString(passthrough.get(keys[i])));
+				else if(StringUtil.startsWithIgnoreCase(key, "div."));
+				else
+					addVariable(sb,key,Caster.toString(passthrough.get(keys[i])));
 			}
 		}
 
@@ -441,7 +467,10 @@ public class VideoPlayerJW extends BodyTagSupport {
 	}
 
 	private void addVariable(StringBuffer sb, String name, String value) {
-		sb.append("so.addVariable('"+JSStringFormat.invoke(name)+"','"+JSStringFormat.invoke(value)+"');\n");
+		value=JSStringFormat.invoke(value);
+		if(!(value.equals("false") || value.equals("true")))
+			value="'"+value+"'";
+		sb.append("so.addVariable('"+JSStringFormat.invoke(name)+"',"+value+");\n");
 	}
 
 	private void addParam(StringBuffer sb,String name, String value) {
@@ -531,6 +560,16 @@ public class VideoPlayerJW extends BodyTagSupport {
 	 */
 	public void setAllowfullscreen(boolean allowfullscreen) {
 		this.allowfullscreen = allowfullscreen;
+	}
+	
+	public void setAlign(String strAlign) throws ApplicationException {
+		if(StringUtil.isEmpty(strAlign)) return;
+		strAlign=strAlign.trim().toLowerCase();
+		if("right".equals(strAlign)) this.align = "right";
+		else if("center".equals(strAlign)) this.align = "center";
+		else if("left".equals(strAlign)) this.align = "left";
+		else 
+			throw new ApplicationException("invalid value for attribute align ["+strAlign+"], valid values are [left,center,right]");
 	}
 
 	/**

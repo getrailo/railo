@@ -49,7 +49,7 @@ public abstract class PageExceptionImpl extends PageException {
 	
 	
 	private ArrayImpl tagContext=new ArrayImpl();
-	private Struct addional=new StructImpl(Struct.TYPE_LINKED);
+	private Struct additional=new StructImpl(Struct.TYPE_LINKED);
 	/**
 	 * Field <code>detail</code>
 	 */
@@ -84,7 +84,7 @@ public abstract class PageExceptionImpl extends PageException {
 		//rootCause=this;
 		this.type=type.toLowerCase().trim();
 		this.customType=customType;
-        //setAddional("customType",getCustomTypeAsString());
+        //setAdditional("customType",getCustomTypeAsString());
 	}
 	
 	/**
@@ -112,7 +112,7 @@ public abstract class PageExceptionImpl extends PageException {
         
 		if(e instanceof IPageException) {
             IPageException pe=(IPageException)e;
-			this.addional=pe.getAddional();
+			this.additional=pe.getAddional();
 			this.setDetail(pe.getDetail());
 			this.setErrorCode(pe.getErrorCode());
 			this.setExtendedInfo(pe.getExtendedInfo());
@@ -287,7 +287,7 @@ public abstract class PageExceptionImpl extends PageException {
 			struct.setEL("ExtendedInfo",getExtendedInfo());
 			struct.setEL("type",getTypeAsString());
 			struct.setEL("TagContext",getTagContext(pc));
-			struct.setEL("addional",addional);
+			struct.setEL("additional",additional);
 			// TODO RootCause,StackTrace
 		
 		return struct;
@@ -374,11 +374,11 @@ public abstract class PageExceptionImpl extends PageException {
 		if(!StringUtil.isEmpty(detail,true))
 			htmlBox.appendRow(1,new SimpleDumpData("Detail"),new SimpleDumpData(detail));
 		
-		// addional
-		Iterator it=addional.keyIterator();
+		// additional
+		Iterator it=additional.keyIterator();
 		while(it.hasNext()) {
 			String key=it.next().toString();
-			htmlBox.appendRow(1,new SimpleDumpData(key),new SimpleDumpData(addional.get(key,"").toString()));
+			htmlBox.appendRow(1,new SimpleDumpData(key),new SimpleDumpData(additional.get(key,"").toString()));
 		}
 		
 		Array tagContext = getTagContext(pageContext);
@@ -526,12 +526,12 @@ public abstract class PageExceptionImpl extends PageException {
     
     
 	/**
-	 * set a addional key value
+	 * set a additional key value
 	 * @param key
 	 * @param value
 	 */
-	protected void setAddional(String key, Object value) {
-		addional.setEL(KeyImpl.init(key),value);
+	protected void setAdditional(String key, Object value) {
+		additional.setEL(KeyImpl.init(key),value);
 	}
 	
 	
@@ -611,10 +611,12 @@ public abstract class PageExceptionImpl extends PageException {
 	}
     
     /**
-     * @see railo.runtime.exp.PageException#getAddional()
+     * @see railo.runtime.exp.PageException#getAdditional()
      */
-    public Struct getAddional() {
-        return addional;
+	public Struct getAdditional() {
+        return additional;
+    }public Struct getAddional() {
+        return additional;
     }
     
     /**

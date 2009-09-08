@@ -29,6 +29,7 @@ import railo.commons.lang.SystemOut;
 import railo.runtime.CFMLFactory;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.exp.PageException;
 import railo.runtime.net.amf.CFMLProxy;
 import railo.runtime.net.amf.OpenAMFCaster;
 import railo.runtime.net.http.HttpServletRequestDummy;
@@ -129,10 +130,19 @@ public final class AMFEngine {
 	        return new CFMLProxy().invokeBody(OpenAMFCaster.getInstance(),null,servlet.getServletContext(),servlet.getServletConfig(), req, rsp, request.getServiceName(), request.getServiceMethodName(), request.getParameters());
 		} 
     	catch (Exception e) {
-            e.printStackTrace();
+    		e.printStackTrace();
             rsp.setStatus(200);
             AMFError error=new AMFError();
-			error.setDescription(e.getMessage());
+            e.setStackTrace(e.getStackTrace());
+            error.setDescription(e.getMessage());
+			
+			if(e instanceof PageException){
+				PageException pe = (PageException)e;
+	            error.setCode(pe.getErrorCode());
+	            error.setCode(pe.getErrorCode());
+	            error.setDetails(pe.getDetail());
+			}
+			
 			return error;
 		} 
     }

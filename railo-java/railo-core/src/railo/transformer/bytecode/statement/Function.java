@@ -11,6 +11,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
 import railo.runtime.type.FunctionArgument;
@@ -79,14 +80,14 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 	private static final ExprString EMPTY = LitString.toExprString("");
 
 
-	private static final Type UDF = Type.getType(railo.runtime.type.UDFImpl.class);
+	//private static final Type UDF = Type.getType(railo.runtime.type.UDFImpl.class);
 	private static final Type UDF_PROPERTIES = Type.getType(railo.runtime.type.UDFProperties.class);
 
 	// <init>(Page,FunctionArgument[],int String,String,boolean);
 	private static final Type FUNCTION_ARGUMENT = Type.getType(FunctionArgument.class);
 	private static final Type FUNCTION_ARGUMENT_IMPL = Type.getType(FunctionArgumentImpl.class);
 	private static final Type FUNCTION_ARGUMENT_ARRAY = Type.getType(FunctionArgument[].class);
-	
+	/*
 	private static final Method INIT_UDF_STRTYPE = new Method(
 			"<init>",
 			Types.VOID,
@@ -108,6 +109,9 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 					Page.STRUCT_IMPL
 				}
     		);
+    		
+    		
+   	*/
 	private static final Method INIT_UDF_IMPL_PROP = new Method(
 			"<init>",
 			Types.VOID,
@@ -116,7 +120,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 				}
     		);
 	
-	
+	/*
 	private static final Method INIT_UDF_SHORTTYPE = new Method(
 			"<init>",
 			Types.VOID,
@@ -140,7 +144,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
     		);
 	
 	
-
+*/
 	private static final Method INIT_UDF_PROPERTIES_STRTYPE = new Method(
 			"<init>",
 			Types.VOID,
@@ -183,16 +187,6 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 					Page.STRUCT_IMPL
 				}
     		);
-	
-	
-	
-
-	
-	
-
-	
-	
-
 
 	// FunctionArgumentImpl(String name,String type,boolean required,int defaultType,String dspName,String hint,StructImpl meta)
 	private static final Method INIT_FAI_STRING = new Method(
@@ -395,10 +389,6 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 		String type = Type.getType(UDFProperties.class).toString();
 		String str="up"+index;
 		
-		
-		//fv = cw.visitField(ACC_PRIVATE + ACC_STATIC, "x", "Lrailo/runtime/type/UDFProperties;", null, null);
-		//fv.visitEnd();
-		
 		// create field
 		FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL  , 
 				str, type, null, null);
@@ -430,8 +420,8 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 		adapter.push(index);
 		//Variable.registerKey(bc, name,false);
 		ExpressionUtil.writeOutSilent(name,bc, Expression.MODE_REF);
-		short type=ExpressionUtil.toShortType(returnType);
-		if(type==-1) ExpressionUtil.writeOutSilent(returnType,bc, Expression.MODE_REF);
+		short type=ExpressionUtil.toShortType(returnType,CFTypes.TYPE_UNKNOW);
+		if(type==CFTypes.TYPE_UNKNOW) ExpressionUtil.writeOutSilent(returnType,bc, Expression.MODE_REF);
 		else adapter.push(type);
 		if(returnFormat!=null)ExpressionUtil.writeOutSilent(returnFormat,bc, Expression.MODE_REF);
 		else ASMConstants.NULL(adapter);
@@ -524,7 +514,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 		expr.writeOut(bc, Expression.MODE_REF);
 		// write short type
 		if(expr instanceof LitString){
-			short type=CFTypes.toShort(((LitString)expr).getString());
+			short type=CFTypes.toShort(((LitString)expr).getString(),CFTypes.TYPE_UNKNOW);
 			bc.getAdapter().push(type);
 		}
 		else bc.getAdapter().push(CFTypes.TYPE_UNKNOW);

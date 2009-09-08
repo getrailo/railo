@@ -4,7 +4,7 @@ import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.library.tag.TagLibTag;
 
 /**
- * to make addional evaluations of the attributes of a tag
+ * to make additional evaluations of the attributes of a tag
  */
 public interface AttributeEvaluator {
 

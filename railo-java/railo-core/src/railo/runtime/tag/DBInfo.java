@@ -312,7 +312,7 @@ public final class DBInfo extends TagImpl {
 		pageContext.setVariable(name, qry);
 	}
 
-	private Map toMap(ResultSet result,String columnName,String[] addional) throws SQLException {
+	private Map toMap(ResultSet result,String columnName,String[] additional) throws SQLException {
 		HashMap map=new HashMap();
 		HashMap inner;
 		String col;
@@ -321,19 +321,19 @@ public final class DBInfo extends TagImpl {
 			col=result.getString(columnName);
 			inner=(HashMap) map.get(col);
 			if(inner!=null) {
-				for(int i=0;i<addional.length;i++) {
-					item=(SVArray) inner.get(addional[i]);
-					item.add(result.getString(addional[i]));
+				for(int i=0;i<additional.length;i++) {
+					item=(SVArray) inner.get(additional[i]);
+					item.add(result.getString(additional[i]));
 					item.setPosition(item.size());
 				}
 			}
 			else {
 				inner=new HashMap();
 				map.put(col, inner);
-				for(int i=0;i<addional.length;i++) {
+				for(int i=0;i<additional.length;i++) {
 					item=new SVArray();
-					item.add(result.getString(addional[i]));
-					inner.put(addional[i], item);
+					item.add(result.getString(additional[i]));
+					inner.put(additional[i], item);
 				}
 			}
 		}

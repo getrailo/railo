@@ -240,8 +240,8 @@ public final class CFMLEngineImpl implements CFMLEngine {
     /**
      * @see railo.loader.engine.CFMLEngine#serviceCFML(javax.servlet.http.HttpServlet, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    public void serviceCFML(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) 
-        throws ServletException, IOException {
+    public void serviceCFML(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
+    	
     	CFMLFactory factory=getCFMLFactory(servlet.getServletContext(), servlet.getServletConfig(), req);
         PageContext pc = factory.getRailoPageContext(servlet,req,rsp,null,false,-1,false);
         try {
@@ -397,7 +397,8 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	 */
 	public Object getFDController() {
 		engine.allowRequestTimeout(false);
-		return new FDControllerImpl(engine);
+		
+		return new FDControllerImpl(engine,engine.getConfigServerImpl().getSerialNumber());
 	}
 
 	public Map getCFMLFactories() {

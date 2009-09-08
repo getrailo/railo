@@ -2,7 +2,9 @@ package railo.intergral.fusiondebug.server.type;
 
 import java.util.List;
 
+import railo.intergral.fusiondebug.server.type.coll.FDUDF;
 import railo.intergral.fusiondebug.server.util.FDCaster;
+import railo.runtime.type.UDF;
 
 import com.intergral.fusiondebug.server.IFDStackFrame;
 
@@ -30,7 +32,9 @@ public abstract class FDNodeValueSupport extends FDValueSupport {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return FDCaster.serialize(getRawValue());
+		Object raw = getRawValue();
+		if(raw instanceof UDF)return FDUDF.toString((UDF)raw);
+		return FDCaster.serialize(raw);
 	}
 	
 	/**

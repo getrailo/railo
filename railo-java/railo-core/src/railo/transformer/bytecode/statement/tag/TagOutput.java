@@ -236,6 +236,13 @@ public final class TagOutput extends TagBase {
 		
 		// current
 		int current=adapter.newLocal(Types.INT_VALUE);
+		adapter.loadLocal(numberIterator);
+		adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
+		adapter.storeLocal(current);
+		
+		
+		// current
+		int icurrent=adapter.newLocal(Types.INT_VALUE);
 		WhileVisitor wv = new WhileVisitor();
 		wv.visitBeforeExpression(bc);
 			
@@ -262,6 +269,7 @@ public final class TagOutput extends TagBase {
 		
 			// NumberIterator oldNi=numberIterator;
 			int oldNi=adapter.newLocal(TagOutput.NUMBER_ITERATOR);
+			
 			adapter.loadLocal(numberIterator);
 			adapter.storeLocal(oldNi);
 			
@@ -277,9 +285,11 @@ public final class TagOutput extends TagBase {
 			// current=oldNi.current();
 			adapter.loadLocal(oldNi);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-			adapter.storeLocal(current);
+			adapter.storeLocal(icurrent);
 			
 			getBody().writeOut(bc);
+			
+			//tmp(adapter,current);
 			
 			
 			// NumberIterator.release(ni);
@@ -292,13 +302,17 @@ public final class TagOutput extends TagBase {
 		
 			// ni.setCurrent(current+1);
 			adapter.loadLocal(numberIterator);
-			adapter.loadLocal(current);
+			adapter.loadLocal(icurrent);
 			adapter.push(1);
 			adapter.visitInsn(Opcodes.IADD);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.SET_CURRENT);
 	
 		wv.visitAfterBody(bc,getEndLine());
 	
+
+		//query.go(ni.current(),pc.getId())
+		resetCurrentrow(adapter,current);
+		
 		// ni.first();
 		adapter.loadLocal(numberIterator);
 		adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.FIRST);
@@ -309,6 +323,16 @@ public final class TagOutput extends TagBase {
 	}
 
 
+	private void resetCurrentrow(GeneratorAdapter adapter, int current) {
+		//query.go(ni.current(),pc.getId())
+		adapter.loadLocal(queryImpl);
+		adapter.loadLocal(current);
+		adapter.loadArg(0);
+		adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
+		adapter.invokeVirtual(Types.QUERY_IMPL, GO);
+		adapter.pop();
+		
+	}
 	private void writeOutTypeInnerGroup(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 
@@ -317,8 +341,14 @@ public final class TagOutput extends TagBase {
 		query = parent.getQuery();
 		queryImpl = parent.getQueryImpl();
 		
-		// current
 		int current=adapter.newLocal(Types.INT_VALUE);
+		adapter.loadLocal(numberIterator);
+		adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
+		adapter.storeLocal(current);
+		
+		
+		// inner current
+		int icurrent=adapter.newLocal(Types.INT_VALUE);
 		WhileVisitor wv = new WhileVisitor();
 		wv.visitBeforeExpression(bc);
 			
@@ -329,6 +359,7 @@ public final class TagOutput extends TagBase {
 		wv.visitAfterExpressionBeforeBody(bc);
 		
 			// if(!query.go(ni.current()))break; 
+			
 			adapter.loadLocal(queryImpl);
 			adapter.loadLocal(numberIterator);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
@@ -348,19 +379,22 @@ public final class TagOutput extends TagBase {
 			// current=ni.current();
 			adapter.loadLocal(numberIterator);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-			adapter.storeLocal(current);
+			adapter.storeLocal(icurrent);
 			
 			getBody().writeOut(bc);
 			
 			// ni.setCurrent(current+1);
 			adapter.loadLocal(numberIterator);
-			adapter.loadLocal(current);
+			adapter.loadLocal(icurrent);
 			adapter.push(1);
 			adapter.visitInsn(Opcodes.IADD);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.SET_CURRENT);
 	
 		wv.visitAfterBody(bc,getEndLine());
 	
+		resetCurrentrow(adapter,current);
+		
+		
 		// ni.first();
 		adapter.loadLocal(numberIterator);
 		adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.FIRST);
@@ -582,6 +616,8 @@ public final class TagOutput extends TagBase {
 						adapter.storeLocal(current);
 						
 						getBody().writeOut(bc);
+						
+						//tmp(adapter,current);
 						
 						// NumberIterator.release(ni);
 						adapter.loadLocal(numberIterator);

@@ -105,8 +105,9 @@ public interface IPageException extends Dumpable {
     public void setExtendedInfo(String extendedInfo);
 
     /**
-     * @return Returns the addional.
+     * @return Returns the additional.
      */
+    // FUTURE public Struct getAdditional();
     public Struct getAddional();
 
     /**

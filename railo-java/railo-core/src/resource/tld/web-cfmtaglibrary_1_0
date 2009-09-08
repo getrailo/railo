@@ -4877,6 +4877,20 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		</attribute>
 		<attribute>
 			<type>string</type>
+			<name>passthrough</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+			HTML attributes that are not explicitly supported by cfimage. 
+				If you specify an attribute and value, 
+				they are passed to the tag "img".
+			</description>
+		</attribute>
+		
+		
+		
+		<attribute>
+			<type>string</type>
 			<name>color</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -5368,6 +5382,20 @@ Permits searching collections by title or displaying a separate title from the k
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description></description>
+		</attribute>
+		<attribute>
+			<type>number</type>
+			<name>timeout</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>the timeout in seconds for a single request of type url</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>throwontimeout</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>YSpecifies how timeout conditions are handled. If the value is true, an exception is enerated to provide notification of the timeout. If the value is No, execution continues. Default is no.</description>
 		</attribute>
 	</tag>
 	
@@ -6281,12 +6309,11 @@ Permits searching collections by title or displaying a separate title from the k
 		connections are anonymous.</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>numeric</type>
 			<name>referral</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Identifies the type of security to employ, CFSSL_BASIC or CFSSL_CLIENT_AUTH, and additional 
-		information that is required by the specified security type.</description>
+			<description>Number of hops allowed in a referral. A value of 0 disables referred addresses for LDAP; no data is returned.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -6323,19 +6350,19 @@ Permits searching collections by title or displaying a separate title from the k
 			<description>The URL of the HTML file or CFML page to open.</description>
 		</attribute>
 		<attribute>
-			<type>number</type>
-			<name>statuscode</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>statuscode used for the redirect (301 or 302)</description>
-		</attribute>
-		<attribute>
 			<type>boolean</type>
 			<name>addToken</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Yes or No. clientManagement must be enabled, see cfapplication. Yes appends client variable 
 		information to the URL you specify in the url.</description>
+		</attribute>
+		<attribute>
+			<type>number</type>
+			<name>statuscode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>statuscode used for the redirect (301 or 302)</description>
 		</attribute>
 	</tag>
 	<!-- Login -->
@@ -6428,7 +6455,7 @@ Permits searching collections by title or displaying a separate title from the k
   released.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
-			<type>number</type>
+			<type>object</type>
 			<name>timeout</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -7206,7 +7233,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<attribute>
 			<type>string</type>
 			<name>action</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Clears queries from the cache in the Application scope.</description>
 		</attribute>
@@ -7223,6 +7250,13 @@ Permits searching collections by title or displaying a separate title from the k
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>filter for the elements to delete</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>result</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>name for variables for action size</description>
 		</attribute>
 	</tag>
 	<!-- Output -->

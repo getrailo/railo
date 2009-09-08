@@ -12,6 +12,8 @@ import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
  * <p><a href="NorwegianAnalyzer.java.html"><i>View Source</i></a></p>
  * <p/>
  *
+ * @author Andrey Grebnev <a href="mailto:andrey.grebnev@blandware.com">&lt;andrey.grebnev@blandware.com&gt;</a>
+ * @version $Revision: 1.3 $ $Date: 2005/02/24 19:51:22 $
  */
 public final class NorwegianAnalyzer extends Analyzer {
 

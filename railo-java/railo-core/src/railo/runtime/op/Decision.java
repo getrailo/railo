@@ -1,5 +1,6 @@
 package railo.runtime.op;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -18,10 +19,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import railo.print;
 import railo.commons.i18n.FormatUtil;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.coder.Base64Util;
 import railo.runtime.coder.Coder;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -87,8 +90,6 @@ public final class Decision {
 	}
 
 	public static boolean isCastableToNumeric(Object o) {
-		//if(isNumeric(value)) return true;
-		//if(isCastableToBoolean(value)) return true;
 		
 		if(isNumeric(o)) return true;
 		else if(isBoolean(o)) return true;
@@ -306,7 +307,6 @@ public final class Decision {
         	String str = (String)value;
 			return isBoolean(str) || isNumeric(str);
 		}
-
         else if(value instanceof Castable) {
             return ((Castable)value).castToBoolean(null)!=null;
             
@@ -523,19 +523,18 @@ public final class Decision {
 	 * @param object
 	 * @return boolean
 	 */
-	public static boolean isCastableToBinary(Object object) {
+	public static boolean isCastableToBinary(Object object,boolean checkBase64String) {
 		if(isBinary(object))return true;
 		if(object instanceof InputStream) return true;
+		if(object instanceof ByteArrayOutputStream) return true;
 		if(object instanceof Blob) return true;
-        try {
-        	String str = Caster.toString(object,null);
-        	if(str==null) return false;
-			Coder.decode(Coder.ENCODING_BASE64,str);
-		} 
-        catch (Exception e) {
-        	return false;
-        }
-        return true;
+        
+		// Base64 String
+		if(!checkBase64String) return false;
+		String str = Caster.toString(object,null);
+        if(str==null) return false;
+        return Base64Util.isBase64(str);
+		
 	}
 
 	/**
@@ -876,7 +875,6 @@ public final class Decision {
 	}
 
 	public static boolean isString(Object o) {
-		
 		if(o instanceof String) 		return true;
         else if(o instanceof Boolean)	return true;
         else if(o instanceof Number) 	return true;
@@ -979,7 +977,8 @@ public final class Decision {
     
     
     public static boolean isCastableTo(String type, Object o, boolean alsoPattern) {
-        type=StringUtil.toLowerCase(type).trim();
+        
+    	type=StringUtil.toLowerCase(type).trim();
         if(type.length()>2) {
             char first=type.charAt(0);
             switch(first) {
@@ -996,7 +995,7 @@ public final class Decision {
                         return isCastableToBoolean(o);
                     }
                     else if(type.equals("binary")) {
-                        return isCastableToBinary(o);
+                        return isCastableToBinary(o,true);
                     }
                     else if(type.equals("base64")) {
                         return Caster.toBase64(o,null)!=null;
@@ -1147,22 +1146,23 @@ public final class Decision {
     
 
 	public static boolean isCastableTo(short type,String strType, Object o) {
-		if(type==CFTypes.TYPE_STRING)				return isCastableToString(o);
-		else if(type==CFTypes.TYPE_ANY)            return true;
-        else if(type==CFTypes.TYPE_BOOLEAN)        return isCastableToBoolean(o);
-        else if(type==CFTypes.TYPE_NUMERIC)        return isCastableToNumeric(o);
-        else if(type==CFTypes.TYPE_STRUCT)         return isCastableToStruct(o);
-        else if(type==CFTypes.TYPE_ARRAY)          return isCastableToArray(o);
-        else if(type==CFTypes.TYPE_QUERY)          return isQuery(o);
-        else if(type==CFTypes.TYPE_DATETIME)       return isDateAdvanced(o, true);
-        else if(type==CFTypes.TYPE_VOID)           return isVoid(o);//Caster.toVoid(o,Boolean.TRUE)!=Boolean.TRUE;
-        else if(type==CFTypes.TYPE_BINARY)         return isCastableToBinary(o);
-        else if(type==CFTypes.TYPE_TIMESPAN)       return Caster.toTimespan(o,null)!=null;
-        else if(type==CFTypes.TYPE_UUID)           return isUUId(o);
-        else if(type==CFTypes.TYPE_GUID)           return isGUId(o);
-        else if(type==CFTypes.TYPE_VARIABLE_NAME)  return isVariableName(o);
-        else if(type==CFTypes.TYPE_XML)            return isXML(o);
-		
+		switch(type){
+		case CFTypes.TYPE_ANY:          return true;
+		case CFTypes.TYPE_STRING:		return isCastableToString(o);
+        case CFTypes.TYPE_BOOLEAN:      return isCastableToBoolean(o);
+        case CFTypes.TYPE_NUMERIC:      return isCastableToNumeric(o);
+        case CFTypes.TYPE_STRUCT:       return isCastableToStruct(o);
+        case CFTypes.TYPE_ARRAY:        return isCastableToArray(o);
+        case CFTypes.TYPE_QUERY:        return isQuery(o);
+        case CFTypes.TYPE_DATETIME:     return isDateAdvanced(o, true);
+        case CFTypes.TYPE_VOID:         return isVoid(o);//Caster.toVoid(o,Boolean.TRUE)!=Boolean.TRUE;
+        case CFTypes.TYPE_BINARY:       return isCastableToBinary(o,true);
+        case CFTypes.TYPE_TIMESPAN:     return Caster.toTimespan(o,null)!=null;
+        case CFTypes.TYPE_UUID:         return isUUId(o);
+        case CFTypes.TYPE_GUID:         return isGUId(o);
+        case CFTypes.TYPE_VARIABLE_NAME:return isVariableName(o);
+        case CFTypes.TYPE_XML:          return isXML(o);
+		}
 		
 		
         if(o instanceof Component) {
@@ -1172,7 +1172,7 @@ public final class Decision {
 		return false;
 	}
 	
-	public static boolean is(short type,String strType, Object o) {
+	/*public static boolean isx(short type,String strType, Object o) {
 		if(type==CFTypes.TYPE_ANY)                 return true;
         else if(type==CFTypes.TYPE_STRING)         return isString(o);
         else if(type==CFTypes.TYPE_ARRAY)          return isArray(o);
@@ -1194,7 +1194,7 @@ public final class Decision {
             return comp.instanceOf(strType);
         }
 		return false;
-	}
+	}*/
 	
 
     public static boolean isDate(String str,Locale locale, TimeZone tz,boolean lenient) {

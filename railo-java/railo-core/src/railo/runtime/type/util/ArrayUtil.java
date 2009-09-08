@@ -2,8 +2,10 @@ package railo.runtime.type.util;
 
 import java.util.ArrayList;
 
+import railo.commons.io.res.Resource;
 import railo.commons.lang.ArrayUtilException;
 import railo.commons.lang.StringUtil;
+import railo.runtime.exp.CasterException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -18,7 +20,8 @@ import railo.runtime.type.comparator.SortRegister;
  */
 public final class ArrayUtil {
     
-    /**
+    public static final Object[] OBJECT_EMPTY = new Object[]{};
+	/**
      * trims all value of a String Array
      * @param arr
      * @return trimmed array
@@ -539,6 +542,70 @@ public final class ArrayUtil {
 	}
 
 
+	public static boolean[] toBooleanArray(Object obj) throws PageException {
+		if(obj instanceof boolean[]) return (boolean[]) obj;
+		
+		Array arr = Caster.toArray(obj);
+		boolean[] tarr=new boolean[arr.size()];
+		for(int i=0;i<tarr.length;i++) {
+			tarr[i]=Caster.toBooleanValue(arr.getE(i+1));
+		}
+		return tarr;
+	}
+
+	public static byte[] toByteArray(Object obj) throws PageException {
+		if(obj instanceof byte[]) return (byte[]) obj;
+		
+		Array arr = Caster.toArray(obj);
+		byte[] tarr=new byte[arr.size()];
+		for(int i=0;i<tarr.length;i++) {
+			tarr[i]=Caster.toByteValue(arr.getE(i+1));
+		}
+		return tarr;
+	}
+	
+	public static short[] toShortArray(Object obj) throws PageException {
+		if(obj instanceof short[]) return (short[]) obj;
+		
+		Array arr = Caster.toArray(obj);
+		short[] tarr=new short[arr.size()];
+		for(int i=0;i<tarr.length;i++) {
+			tarr[i]=Caster.toShortValue(arr.getE(i+1));
+		}
+		return tarr;
+	}
+	
+	public static int[] toIntArray(Object obj) throws PageException {
+		if(obj instanceof int[]) return (int[]) obj;
+		
+		Array arr = Caster.toArray(obj);
+		int[] tarr=new int[arr.size()];
+		for(int i=0;i<tarr.length;i++) {
+			tarr[i]=Caster.toIntValue(arr.getE(i+1));
+		}
+		return tarr;
+	}
+	
+	public static Object[] toNullArray(Object obj) throws PageException {
+		Array arr = Caster.toArray(obj);
+		Object[] tarr=new Object[arr.size()];
+		for(int i=0;i<tarr.length;i++) {
+			tarr[i]=Caster.toNull(arr.getE(i+1));
+		}
+		return tarr;
+	}
+	
+	public static long[] toLongArray(Object obj) throws PageException {
+		if(obj instanceof long[]) return (long[]) obj;
+		
+		Array arr = Caster.toArray(obj);
+		long[] tarr=new long[arr.size()];
+		for(int i=0;i<tarr.length;i++) {
+			tarr[i]=Caster.toLongValue(arr.getE(i+1));
+		}
+		return tarr;
+	}
+
 	public static float[] toFloatArray(Object obj) throws PageException {
 		if(obj instanceof float[]) return (float[]) obj;
 		
@@ -546,6 +613,28 @@ public final class ArrayUtil {
 		float[] tarr=new float[arr.size()];
 		for(int i=0;i<tarr.length;i++) {
 			tarr[i]=Caster.toFloatValue(arr.getE(i+1));
+		}
+		return tarr;
+	}
+	
+	public static double[] toDoubleArray(Object obj) throws PageException {
+		if(obj instanceof double[]) return (double[]) obj;
+		
+		Array arr = Caster.toArray(obj);
+		double[] tarr=new double[arr.size()];
+		for(int i=0;i<tarr.length;i++) {
+			tarr[i]=Caster.toDoubleValue(arr.getE(i+1));
+		}
+		return tarr;
+	}
+	
+	public static char[] toCharArray(Object obj) throws PageException {
+		if(obj instanceof char[]) return (char[]) obj;
+		
+		Array arr = Caster.toArray(obj);
+		char[] tarr=new char[arr.size()];
+		for(int i=0;i<tarr.length;i++) {
+			tarr[i]=Caster.toCharValue(arr.getE(i+1));
 		}
 		return tarr;
 	}
@@ -566,5 +655,33 @@ public final class ArrayUtil {
 			count++;
 		}
 		return -1;
+	}
+
+
+	public static Object[] toReferenceType(Object obj) throws CasterException {
+		Object[] ref = toReferenceType(obj,null);
+		if(ref!=null) return ref;
+		throw new CasterException(obj,Object[].class);
+		
+	}
+	public static Object[] toReferenceType(Object obj,Object[] defaultValue) {
+		if(obj instanceof Object[]) 			return (Object[])obj;
+		else if(obj instanceof boolean[])		return toReferenceType((boolean[])obj);
+		else if(obj instanceof byte[])		return toReferenceType((byte[])obj);
+		else if(obj instanceof char[])		return toReferenceType((char[])obj);
+		else if(obj instanceof short[])		return toReferenceType((short[])obj);
+		else if(obj instanceof int[])			return toReferenceType((int[])obj);
+		else if(obj instanceof long[])		return toReferenceType((long[])obj);
+		else if(obj instanceof float[])		return toReferenceType((float[])obj);
+		else if(obj instanceof double[])		return toReferenceType((double[])obj);
+		return defaultValue;
+	}
+
+
+	public static Object[] clone(Object[] src, Object[] trg) {
+		for(int i=0;i<src.length;i++){
+			trg[i]=src[i];
+		}
+		return trg;
 	}
 }

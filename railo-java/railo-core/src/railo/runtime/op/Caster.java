@@ -1768,6 +1768,7 @@ public final class Caster {
         }
         else if(o instanceof char[]) return new String((char[])o);
         else if(o instanceof ObjectWrap) return toString(((ObjectWrap)o).getEmbededObject());
+        else if(o instanceof Calendar) return toString(((Calendar)o).getTime());
         else if(o == null) return "";
         
         // INFO Collection is new of type Castable 
@@ -2341,6 +2342,9 @@ public final class Caster {
         else if(o instanceof BufferedImage) {
         	return new Image(((BufferedImage)o)).getImageBytes("png");
         }
+        else if(o instanceof ByteArrayOutputStream) {
+        	return ((ByteArrayOutputStream)o).toByteArray();
+        }
         else if(o instanceof Blob) {
         	InputStream is=null;
         	try {
@@ -2551,7 +2555,8 @@ public final class Caster {
      * @throws PageException 
      */
     public static DateTime toDateTime(Locale locale,String str, TimeZone tz,boolean useCommomDateParserAsWell) throws PageException {
-        DateTime dt=toDateTime(locale, str, tz,null,useCommomDateParserAsWell);
+        
+    	DateTime dt=toDateTime(locale, str, tz,null,useCommomDateParserAsWell);
         if(dt==null){
         	if(useCommomDateParserAsWell)return toDateTime(str, tz);
         	throw new ExpressionException("can't cast ["+str+"] to date value");
@@ -2935,6 +2940,7 @@ public final class Caster {
         else if(o instanceof Boolean) return "boolean";
         else if(o instanceof Number) return "int";
         else if(o instanceof Array) return "array";
+        else if(o instanceof Component) return "component";
         else if(o instanceof Struct) return "struct";
         else if(o instanceof Query) return "query";
         else if(o instanceof DateTime) return "datetime";
@@ -3179,6 +3185,9 @@ public final class Caster {
                     }
                     else if(type.equals("number")) {
                         return toDouble(o);
+                    }
+                    else if(type.equals("node")) {
+                        return toXML(o);
                     }
                     break;
                 case 'o':
@@ -4035,6 +4044,36 @@ public final class Caster {
 			throw toPageException(ioe);
 		}
 		throw new CasterException(obj,byte[].class);
+	}
+
+	public static Object castTo(PageContext pc, Class trgClass, Object obj) throws PageException {
+		if(trgClass==null)return Caster.toNull(obj); 
+		else if(obj.getClass()==trgClass)	return obj;
+		
+		else if(trgClass==boolean.class)return Caster.toBoolean(obj); 
+		else if(trgClass==byte.class)return Caster.toByte(obj); 
+		else if(trgClass==short.class)return Caster.toShort(obj); 
+		else if(trgClass==int.class)return Constants.Integer(Caster.toDouble(obj).intValue()); 
+		else if(trgClass==long.class)return new Long(Caster.toDouble(obj).longValue()); 
+		else if(trgClass==float.class)return new Float(Caster.toDouble(obj).floatValue()); 
+		else if(trgClass==double.class)return Caster.toDouble(obj); 
+		else if(trgClass==char.class)return Caster.toCharacter(obj); 
+		
+		else if(trgClass==Boolean.class)return Caster.toBoolean(obj); 
+		else if(trgClass==Byte.class)return Caster.toByte(obj); 
+		else if(trgClass==Short.class)return Caster.toShort(obj); 
+		else if(trgClass==Integer.class)return Constants.Integer(Caster.toDouble(obj).intValue()); 
+		else if(trgClass==Long.class)return new Long(Caster.toDouble(obj).longValue()); 
+		else if(trgClass==Float.class)return new Float(Caster.toDouble(obj).floatValue()); 
+		else if(trgClass==Double.class)return Caster.toDouble(obj); 
+		else if(trgClass==Character.class)return Caster.toCharacter(obj); 
+		
+		else if(trgClass==Object.class)return obj; 
+		else if(trgClass==String.class)return Caster.toString(obj); 
+		
+		if(Reflector.isInstaneOf(obj.getClass(), trgClass)) return obj;
+		
+		return Caster.castTo(pc, trgClass.getName(), obj,false);
 	}
 
 	

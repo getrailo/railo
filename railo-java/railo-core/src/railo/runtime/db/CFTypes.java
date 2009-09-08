@@ -247,4 +247,6 @@ public interface CFTypes {
 	     * @since 1.4
 	     */
 	    public final static int BOOLEAN = 16;
+	    
+		public static final int IDSTAMP = CHAR;//TODO is this right?
 }

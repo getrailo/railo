@@ -451,6 +451,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @throws PageException
      **/
     public abstract Object evaluate(String expression) throws PageException;
+    // FUTURE public abstract String serialize(Object expression) throws PageException;
 
     /**
      * 

@@ -2,17 +2,14 @@ package railo.runtime.tag;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.MappingImpl;
-import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.functions.other.GetComponentMetaData;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.TimeSpan;
-import railo.runtime.type.scope.ScopeContext;
 import railo.runtime.util.ApplicationContextImpl;
 
 /**

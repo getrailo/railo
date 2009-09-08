@@ -9,13 +9,21 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.w3c.dom.Node;
+
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.ComponentImpl;
+import railo.runtime.ComponentScope;
+import railo.runtime.ComponentWrap;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.displayFormatting.DateFormat;
 import railo.runtime.functions.displayFormatting.TimeFormat;
 import railo.runtime.op.Caster;
+import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
+import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
@@ -203,21 +211,31 @@ public final class ScriptConverter {
      * @param sb
      * @throws ConverterException
      */
-    private void _serializeComponent(Component component, StringBuffer sb) throws ConverterException {
+    private void _serializeComponent(Component c, StringBuffer sb) throws ConverterException {
+    	
+    	ComponentImpl ci;
+		try {
+			ci = ComponentUtil.toComponentImpl(c);
+		} catch (ExpressionException ee) {
+			throw new ConverterException(ee.getMessage());
+		}
+		ComponentWrap cw = new ComponentWrap(ComponentImpl.ACCESS_PRIVATE,ci);  
+        
+    	
     	sb.append(goIn());
         try {
-			sb.append("evaluateComponent('"+component.getAbsName()+"','"+ComponentUtil.md5(component)+"',struct(");
-		} catch (IOException e) {
-			throw new ConverterException(e.getMessage());
+        	sb.append("evaluateComponent('"+c.getAbsName()+"','"+ComponentUtil.md5(ci)+"',struct(");
+		} catch (Exception e) {
+			throw new ConverterException(e);
 		}
         
 		boolean doIt=false;
-        Iterator it=component.keyIterator();
+        Iterator it=cw.keyIterator();
         Object member;
         deep++;
         while(it.hasNext()) {
             String key=Caster.toString(it.next(),"");
-            member = component.get(key,null);
+            member = cw.get(key,null);
             if(member instanceof UDF)continue;
             if(doIt)sb.append(',');
             doIt=true;
@@ -227,9 +245,37 @@ public final class ScriptConverter {
             sb.append(':');
             _serialize(member,sb);
         }
+        sb.append(")");
         deep--;
         
-        sb.append("))");
+        if(true){
+        	
+        	ComponentScope scope = ci.getComponentScope();
+        	it=scope.keyIterator();
+            sb.append(",struct(");
+        	deep++;
+        	doIt=false;
+            while(it.hasNext()) {
+                String key=Caster.toString(it.next(),"");
+                if("this".equalsIgnoreCase(key))continue;
+                member = scope.get(key,null);
+                if(member instanceof UDF)continue;
+                if(doIt)sb.append(',');
+                doIt=true;
+                sb.append('\'');
+                sb.append(escape(key));
+                sb.append('\'');
+                sb.append(':');
+                _serialize(member,sb);
+            }
+            sb.append(")");
+            deep--;
+        	
+        	
+        	
+        }
+        
+        sb.append(")");
         //sb.append("");
         //throw new ConverterException("can't serialize a component "+component.getDisplayName());
     }
@@ -319,6 +365,11 @@ public final class ScriptConverter {
         else if(object instanceof Component) {
             _serializeComponent((Component)object,sb);
         }
+
+        // XML
+        else if(object instanceof Node) {
+            _serializeXML((Node)object,sb);
+        }
         // Struct
         else if(object instanceof Struct) {
             _serializeStruct((Struct)object,sb);
@@ -347,6 +398,13 @@ public final class ScriptConverter {
 		else if(object instanceof ScriptConvertable) {
 		    sb.append(((ScriptConvertable)object).serialize());
 		}
+		else if(object instanceof ObjectWrap) {
+			try {
+				_serialize(((ObjectWrap)object).getEmbededObject(), sb);
+			} catch (PageException e) {
+				throw new ConverterException(e);
+			}
+		}
 		else if(object instanceof Serializable) {
 			_serializeSerializable((Serializable)object,sb);
 		}
@@ -354,6 +412,17 @@ public final class ScriptConverter {
 		
 		
 		deep--;
+	}
+	
+
+
+    private void _serializeXML(Node node, StringBuffer sb) {
+    	node=XMLCaster.toRawNode(node);
+    	sb.append(goIn());
+	    sb.append("xmlParse('");
+	    sb.append(escape(XMLCaster.toString(node,"")));
+	    sb.append("')");
+    	
 	}
 
     private void _serializeTimeSpan(TimeSpan span, StringBuffer sb) {

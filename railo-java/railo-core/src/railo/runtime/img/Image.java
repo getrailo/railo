@@ -837,11 +837,9 @@ public class Image extends StructSupport implements Cloneable,Struct {
 			return;
 		}
 		
-		//30
 		if("jpg".equalsIgnoreCase(format)){
 			threeBBger();
 		}
-		
 		
 		// other
 		Iterator it = ImageIO.getImageWritersByFormatName(format);
@@ -859,7 +857,6 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		
 		try {
 			writer.setOutput(ImageIO.createImageOutputStream(os));
-			
 			IIOImage image = new IIOImage(image(), null, null);
 			writer.write(null, image, iwp);
 			os.flush();

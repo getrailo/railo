@@ -1,6 +1,5 @@
 package railo.runtime.type;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -40,7 +39,7 @@ public class StructImpl extends StructSupport {
     	if(type==TYPE_LINKED)		map=new LinkedHashMap();
     	else if(type==TYPE_WEAKED)	map=new java.util.WeakHashMap();
         else if(type==TYPE_SYNC)	map=new HashTable();
-        else 						map=new HashMap();
+        else 						map=new HashTableNotSync();
     }
 	
 	/**

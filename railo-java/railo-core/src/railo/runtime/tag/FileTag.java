@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.ModeUtil;
 import railo.commons.io.SystemUtil;
@@ -22,6 +23,7 @@ import railo.runtime.functions.list.ListFirst;
 import railo.runtime.functions.list.ListLast;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Array;
 import railo.runtime.type.List;
@@ -144,7 +146,8 @@ public final class FileTag extends TagImpl {
 	* @param output value to set
 	**/
 	public void setOutput(Object output)	{
-		this.output=output;
+		if(output==null)this.output="";
+		else this.output=output;
 	}
 
 	/** set the value file
@@ -505,16 +508,26 @@ public final class FileTag extends TagImpl {
         checkFile(true,false,true);
         setACL(file);
         try {
-        	if(output instanceof InputStream)
+        	if(output instanceof InputStream)	{
         		IOUtil.copy(
         				(InputStream)output,
         				file,
         				false);
-        	else if(output instanceof byte[])
+        	}
+        	/*else if(output instanceof byte[])	{
         		IOUtil.copy(
         				new ByteArrayInputStream((byte[])output), 
         				file,
         				true);
+        	}*/
+        	else if(Decision.isCastableToBinary(output,false))	{
+        		//print.out(output.getClass().getName());
+        		
+        		IOUtil.copy(
+        				new ByteArrayInputStream(Caster.toBinary(output)), 
+        				file,
+        				true);
+        	}
         	else {
         		String content=Caster.toString(output);
         		if(fixnewline)content=doFixNewLine(content);

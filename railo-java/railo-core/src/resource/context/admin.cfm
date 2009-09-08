@@ -1,1 +1,1 @@
-<cflocation url="admin/index.cfm" addtoken="no">
+<cflocation url="admin/web.cfm" addtoken="no">

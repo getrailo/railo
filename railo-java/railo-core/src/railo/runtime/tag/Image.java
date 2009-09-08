@@ -65,6 +65,7 @@ public final class Image extends TagImpl {
 	private String structName;
 	private String text;
 	private int thickness=1;
+	private String passthrough;
 	
 
 
@@ -95,6 +96,7 @@ public final class Image extends TagImpl {
 		structName=null;
 		text=null;
 		thickness=1;
+		passthrough=null;
 	}
 
 
@@ -171,6 +173,14 @@ public final class Image extends TagImpl {
 		fonts=ArrayUtil.trim(List.toStringArray(List.listToArray(fontList, ',')));
 	}
 
+	
+
+	/**
+	 * @param passthrough the passthrough to set
+	 */
+	public void setPassthrough(String passthrough) {
+		this.passthrough = passthrough;
+	}
 
 	/**
 	 * @param fontsize the fontsize to set
@@ -353,7 +363,14 @@ public final class Image extends TagImpl {
 	}
 	
 	private void writeLink(String path) throws ExpressionException, IOException {
-		pageContext.write("<img src=\""+path+"\" width=\""+source.getWidth()+"\" height=\""+source.getHeight()+"\" />");
+		String add="";
+		if(passthrough!=null) {
+            add=" "+passthrough;
+        }
+		
+		pageContext.write("<img src=\""+path+"\" width=\""+source.getWidth()+"\" height=\""+source.getHeight()+"\""+add+" />");
+	
+	
 	}
 
 

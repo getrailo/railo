@@ -89,13 +89,13 @@ public class ClassicHTMLDumpWriter implements DumpWriter {
 					(!StringUtil.isEmpty(table.getTitle())?table.getTitle():"")+"</span>"+(!StringUtil.isEmpty(table.getComment())?"<br>"+table.getComment():"")+
                 "</td></tr>");
 		}
-		else id=null;//30
+		else id=null;
 		
 		// items
 		DumpData value;
 		for(int i=0;i<rows.length;i++) {
-			if(id!=null)writer.write("<tr name=\"_"+id+"\">");//30
-			else writer.write("<tr>");//30
+			if(id!=null)writer.write("<tr name=\"_"+id+"\">");
+			else writer.write("<tr>");
 			DumpData[] items=rows[i].getItems();
 			int hType=rows[i].getHighlightType();
 			int comperator=1;

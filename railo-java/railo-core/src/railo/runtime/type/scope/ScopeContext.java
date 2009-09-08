@@ -26,6 +26,7 @@ import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.util.ApplicationContext;
 
 /**
@@ -99,14 +100,14 @@ public final class ScopeContext {
 	    		if(Reflector.isInstaneOf(cs.getClusterClass(), Cluster.class)){
 	    			cluster=(Cluster) ClassUtil.loadInstance(
 							cs.getClusterClass(),
-							new Object[]{}
+							ArrayUtil.OBJECT_EMPTY
 							);
 	    			cluster.init(cs);
 	    		}
 	    		else if(Reflector.isInstaneOf(cs.getClusterClass(), ClusterRemote.class)){
 	    			ClusterRemote cb=(ClusterRemote) ClassUtil.loadInstance(
 							cs.getClusterClass(),
-							new Object[]{}
+							ArrayUtil.OBJECT_EMPTY
 							);
 		    		
 	    			cluster=new ClusterWrap(cs,cb);

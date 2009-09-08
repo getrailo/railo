@@ -62,11 +62,14 @@ public abstract class ComponentPage extends Page  {
                 pc.unsetSilent();
             }
             
-			String qs=pc. getHttpServletRequest().getQueryString();
+			String qs=pc.getHttpServletRequest().getQueryString();
             if(pc.getBasePageSource()==this.getPageSource())
             	pc.getDebugger().setOutput(false);
             boolean isPost=pc. getHttpServletRequest().getMethod().equalsIgnoreCase("POST");
             Object method;
+            
+            
+            //pc.getHttpServletRequest().getHeader("");
             
             // POST
             if(isPost) {

@@ -79,7 +79,7 @@ public final class HTMLUtil {
 				else if(quote==0 && (cfml.isCurrent(' ')||cfml.isCurrent("/>")||cfml.isCurrent('>')||cfml.isCurrent('\t')||cfml.isCurrent('\n'))) {
 					inside=false;
 					try {
-                        urls.add(new URL(url,value.toString()));
+						urls.add(new URL(url,value.toString()));
                     } catch (MalformedURLException e) {}
 					cfml.next();
 				} 
@@ -124,8 +124,11 @@ public final class HTMLUtil {
 		try {
 			if(lcValue.startsWith("http://") || lcValue.startsWith("news://") || lcValue.startsWith("goopher://") || lcValue.startsWith("javascript:"))
 				list.add(HTTPUtil.toURL(value));
-			else 
-			    list.add(new URL(baseURL,value.toString()));
+			else {
+				
+				
+				list.add(new URL(baseURL,value.toString()));
+			}
 		}
 		catch(MalformedURLException mue) {}
 		//print.err(list.get(list.size()-1));

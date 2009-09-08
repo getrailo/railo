@@ -32,6 +32,7 @@ public static Document getDocument(String title, String key, String content,
 
     doc.add(FieldUtil.Text("key", key));
     doc.add(FieldUtil.UnIndexed("mime-type", "text/plain"));
+    doc.add(FieldUtil.Text("raw", content));
     doc.add(FieldUtil.Text("contents", content.toLowerCase()));
     doc.add(FieldUtil.UnIndexed("summary",StringUtil.max(content,SUMMERY_SIZE)));
     doc.add(FieldUtil.UnIndexed("url", ""));

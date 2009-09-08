@@ -21,6 +21,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.UDF;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.wrap.ArrayAsList;
 import flex.messaging.io.amf.ASObject;
 
@@ -87,7 +88,7 @@ public final class ModernAMFCaster extends ClassicAMFCaster {
             	if(udf.getFunctionArguments().length>0) continue;
             	
             	try {
-					v=cfc.call(ThreadLocalPageContext.get(), name, new Object[]{});
+					v=cfc.call(ThreadLocalPageContext.get(), name, ArrayUtil.OBJECT_EMPTY);
 				} catch (PageException e) {
 					continue;
 				}

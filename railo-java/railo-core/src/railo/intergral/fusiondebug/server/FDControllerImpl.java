@@ -16,6 +16,7 @@ import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.op.Caster;
+import railo.runtime.security.SerialNumber;
 import railo.runtime.type.Struct;
 
 import com.intergral.fusiondebug.server.IFDController;
@@ -29,10 +30,11 @@ public class FDControllerImpl implements IFDController {
 
 	private List exceptionTypes;
 	private CFMLEngineImpl engine;
+	private boolean isEnterprise;
 	
 	
-	public FDControllerImpl(CFMLEngineImpl engine){
-		
+	public FDControllerImpl(CFMLEngineImpl engine,String serial){
+		this.isEnterprise=SerialNumber.isEnterprise(serial);
 		this.engine=engine;
 	}
 
@@ -80,6 +82,10 @@ public class FDControllerImpl implements IFDController {
 	 * @see com.intergral.fusiondebug.server.IFDController#getLicenseInformation(java.lang.String)
 	 */
 	public String getLicenseInformation(String key) {
+		if(!isEnterprise) {
+			SystemOut.print(new PrintWriter(System.err),"FD Server Licensing does not work with the Open Source Version of Railo or Enterprise Version of Railo that is not enabled");
+			return null;
+		}
 		return FDLicense.getLicenseInformation(key);
 	}
 

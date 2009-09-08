@@ -117,8 +117,10 @@ public final class TagFunction extends TagBase implements IFunction {
 		attr = tag.removeAttribute("hint");
 		if (attr == null)
 			attr = tag.removeAttribute("description");
-		Expression hint = (attr == null) ? EMPTY : attr.getValue();
-
+		
+		Expression hint;
+		if(attr == null)hint=EMPTY;
+		else hint=attr.getValue();
 		
 		func.addArgument(name, type, required, defaultValue, passByReference,displayName, hint,tag.getAttributes());
 

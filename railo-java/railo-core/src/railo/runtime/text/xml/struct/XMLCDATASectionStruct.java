@@ -8,6 +8,7 @@ import org.w3c.dom.Text;
 
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ArrayUtil;
 
 /**
  * 
@@ -99,7 +100,7 @@ public final class XMLCDATASectionStruct extends XMLNodeStruct implements CDATAS
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = section.getClass().getMethod("getWholeText", new Class[]{});
-			return Caster.toString(m.invoke(section, new Object[]{}));
+			return Caster.toString(m.invoke(section, ArrayUtil.OBJECT_EMPTY));
 		} 
 		catch (Exception e) {
 			throw new PageRuntimeException(Caster.toPageException(e));
@@ -114,7 +115,7 @@ public final class XMLCDATASectionStruct extends XMLNodeStruct implements CDATAS
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = section.getClass().getMethod("isElementContentWhitespace", new Class[]{});
-			return Caster.toBooleanValue(m.invoke(section, new Object[]{}));
+			return Caster.toBooleanValue(m.invoke(section, ArrayUtil.OBJECT_EMPTY));
 		} 
 		catch (Exception e) {
 			throw new PageRuntimeException(Caster.toPageException(e));

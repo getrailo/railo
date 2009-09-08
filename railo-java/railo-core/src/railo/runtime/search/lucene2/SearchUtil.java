@@ -9,11 +9,8 @@ import org.apache.lucene.analysis.cn.ChineseAnalyzer;
 import org.apache.lucene.analysis.cz.CzechAnalyzer;
 import org.apache.lucene.analysis.de.GermanAnalyzer;
 import org.apache.lucene.analysis.el.GreekAnalyzer;
-import org.apache.lucene.analysis.es.SpanishAnalyzer;
 import org.apache.lucene.analysis.fr.FrenchAnalyzer;
 import org.apache.lucene.analysis.nl.DutchAnalyzer;
-import org.apache.lucene.analysis.no.NorwegianAnalyzer;
-import org.apache.lucene.analysis.pt.PortugueseAnalyzer;
 import org.apache.lucene.analysis.ru.RussianAnalyzer;
 import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -25,7 +22,9 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.search.SearchException;
 import railo.runtime.search.lucene2.analyzer.DanishAnalyzer;
 import railo.runtime.search.lucene2.analyzer.ItalianAnalyzer;
-
+import railo.runtime.search.lucene2.analyzer.NorwegianAnalyzer;
+import railo.runtime.search.lucene2.analyzer.PortugueseAnalyzer;
+import railo.runtime.search.lucene2.analyzer.SpanishAnalyzer;
 public final class SearchUtil {
 
 	private static Map analyzers=new HashTable();

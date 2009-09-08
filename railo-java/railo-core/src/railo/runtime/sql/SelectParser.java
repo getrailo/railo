@@ -691,6 +691,12 @@ FROM tableList
 
 
 	public static void main(String[] args) throws SQLParserException {
+		
+		
+		//print.out(new SelectParser().parse("select a, b as c, d e from test limit 3").toString());
+		
+		
+		
 		//String sql="select cast(susi as integer) as y,a=b as x from source";//WHERE (lft BETWEEN 1 AND 4 AND ID = 111)
 		//print.out(new SelectParser().parse(sql).toString());
 		

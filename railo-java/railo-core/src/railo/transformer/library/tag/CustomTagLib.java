@@ -1,8 +1,13 @@
 package railo.transformer.library.tag;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.collections.HashTable;
+import railo.runtime.tag.CFImportTag;
 
 
 /**
@@ -11,6 +16,7 @@ import railo.commons.collections.HashTable;
 public final class CustomTagLib extends TagLib {
     
     private String textTagLib;
+	private TagLib[] taglibs;
     
 
     /**
@@ -35,7 +41,7 @@ public final class CustomTagLib extends TagLib {
         TagLibTag tlt = new TagLibTag(this);
         tlt.setName("");
         tlt.setAppendix(true);
-        tlt.setTagClass("railo.runtime.tag.CFImportTag");
+        tlt.setTagClass(CFImportTag.class.getName());
         tlt.setHandleExceptions(true);
         tlt.setBodyContent("free");
         tlt.setParseBody(false);
@@ -60,6 +66,12 @@ public final class CustomTagLib extends TagLib {
      * @see railo.transformer.library.tag.TagLib#getTag(java.lang.String)
      */
     public TagLibTag getTag(String name) {
+    	if(taglibs!=null){
+    		TagLibTag tag=null;
+    		for(int i=0;i<taglibs.length;i++){
+    			if((tag=taglibs[i].getTag(name))!=null) return tag;
+    		}
+    	}
         return null;
     }
     /**
@@ -73,6 +85,24 @@ public final class CustomTagLib extends TagLib {
      * @see railo.transformer.library.tag.TagLib#setTag(railo.transformer.library.tag.TagLibTag)
      */
     public void setTag(TagLibTag tag) {}
+
+	public void append(TagLib other) {
+		if(other instanceof CustomTagLib)
+			textTagLib+=File.pathSeparatorChar+((CustomTagLib)other).textTagLib;
+		else{
+			if(taglibs==null){
+				taglibs=new TagLib[]{other};
+			}
+			else {
+				TagLib[] tmp = new TagLib[taglibs.length+1];
+				for(int i=0;i<taglibs.length;i++){
+					tmp[i]=taglibs[i];
+				}
+				tmp[taglibs.length]=other;
+			}
+			
+		}
+	}
     
 
 }

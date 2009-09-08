@@ -61,9 +61,10 @@ public final class SQLCaster {
 	    	case Types.BLOB:			
 	    		return BlobImpl.toBlob(value);
 	    	case Types.CHAR:
-	    	    String str = Caster.toString(value);
-	    	    if(str!=null && str.length()==0) str=null;
-	    	    return str;
+	    		return Caster.toString(value);
+	    	    //String str = Caster.toString(value);
+	    	    //if(str!=null && str.length()==0) str=null;
+	    	    //return str;
 	    	case Types.CLOB:			
 	    		return ClobImpl.toClob(value);
 	    	case Types.DATE:			
@@ -162,20 +163,21 @@ public final class SQLCaster {
     	return;
     	case Types.CHAR:
     	    String str = Caster.toString(value);
-    	    if(str!=null && str.length()==0) str=null;
+    	    //if(str!=null && str.length()==0) str=null;
     	    stat.setObject(parameterIndex, str, type);
 			////stat.setString(parameterIndex,str);
     	return;
+    	case Types.DECIMAL:	
     	case Types.NUMERIC:
-    	case Types.DECIMAL:				
     		try {
-    			stat.setObject(parameterIndex, new BigDecimal(Caster.toDoubleValue(value)), type);
+    			stat.setDouble(parameterIndex, (Caster.toDoubleValue(value)));
     		}
     		catch(PageException pe) {
     			if(value instanceof String && StringUtil.isEmpty((String)value))
     				stat.setNull(parameterIndex,item.getType()); 
     		}
-        return;
+    	return;
+    		
     	case Types.DOUBLE:	
     	case Types.FLOAT:			
     		try {
@@ -543,7 +545,7 @@ public final class SQLCaster {
 		else if(strType.equals("CF_SQL_DECIMAL"))	return Types.DECIMAL;
 		else if(strType.equals("CF_SQL_DOUBLE"))	return Types.DOUBLE;
 		else if(strType.equals("CF_SQL_FLOAT"))		return Types.FLOAT;
-		else if(strType.equals("CF_SQL_IDSTAMP"))	return Types.CHAR;
+		else if(strType.equals("CF_SQL_IDSTAMP"))	return CFTypes.IDSTAMP;
 		else if(strType.equals("CF_SQL_INTEGER"))	return Types.INTEGER;
 		else if(strType.equals("CF_SQL_INT"))	return Types.INTEGER;
 		else if(strType.equals("CF_SQL_LONGVARBINARY"))return Types.LONGVARBINARY;
@@ -582,51 +584,79 @@ public final class SQLCaster {
 	    if(strType.startsWith("CF_SQL_")) strType=strType.substring(7);
 	    if(strType.startsWith("SQL_")) strType=strType.substring(4);
 	    
-		if(strType.equals("ARRAY"))			return Types.ARRAY;
-		else if(strType.equals("BIGINT"))	return Types.BIGINT;
-		else if(strType.equals("BINARY"))	return Types.BINARY;
-		else if(strType.equals("BIT"))		return Types.BIT;
-		else if(strType.equals("CHAR"))		return Types.CHAR;
-		else if(strType.equals("BLOB"))		return Types.BLOB;
-		else if(strType.equals("BOOLEAN"))	return Types.BOOLEAN;
-		else if(strType.equals("CLOB"))		return Types.CLOB;
-		else if(strType.equals("DATALINK"))	return Types.DATALINK;
-		else if(strType.equals("DATE"))		return Types.DATE;
-		else if(strType.equals("DISTINCT"))	return Types.DISTINCT;
-		else if(strType.equals("DECIMAL"))	return Types.DECIMAL;
-		else if(strType.equals("DOUBLE"))	return Types.DOUBLE;
-		else if(strType.equals("FLOAT"))	return Types.FLOAT;
-		else if(strType.equals("IDSTAMP"))	return Types.CHAR;
-		else if(strType.equals("INTEGER"))	return Types.INTEGER;
-		else if(strType.equals("INT"))		return Types.INTEGER;
-		else if(strType.equals("LONGVARBINARY"))return Types.LONGVARBINARY;
-		else if(strType.equals("VARBINARY"))	return Types.VARBINARY;
-		else if(strType.equals("LONGVARCHAR"))return Types.LONGVARCHAR;
-		else if(strType.equals("MONEY"))	return Types.DOUBLE;
-		else if(strType.equals("MONEY4"))	return Types.DOUBLE;
-		else if(strType.equals("NUMERIC"))	return Types.NUMERIC;
-		else if(strType.equals("NULL"))		return Types.NULL;
-		else if(strType.equals("REAL"))		return Types.REAL;
-		else if(strType.equals("REF"))		return Types.REF;
-		else if(strType.equals("REFCURSOR"))return CFTypes.CURSOR;
-		else if(strType.equals("OTHER"))	return Types.OTHER;
-		else if(strType.equals("SMALLINT"))	return Types.SMALLINT;
-		else if(strType.equals("STRUCT"))	return Types.STRUCT;
-		else if(strType.equals("TIME"))		return Types.TIME;
-		else if(strType.equals("TIMESTAMP"))return Types.TIMESTAMP;
-		else if(strType.equals("TINYINT"))	return Types.TINYINT;
-		else if(strType.equals("VARBINARY"))return Types.VARBINARY;
-		else if(strType.equals("VARCHAR"))	return Types.VARCHAR;
-		
-		////////// cftypes ////////
-		else if(strType.equals("Number"))	return Types.NUMERIC;
-		else if(strType.equals("BOOL"))		return Types.BOOLEAN;
-		else if(strType.equals("CLOB"))		return Types.CLOB;
-		else if(strType.equals("STRING"))	return Types.VARCHAR;
-		
-		
-		
-		
-		else throw new DatabaseException("invalid CF SQL Type ["+strType+"]",null,null,null);
+	    
+	    if(strType.length()>2) {
+            char first=strType.charAt(0);
+            if(first=='A') {
+        		if(strType.equals("ARRAY"))			return Types.ARRAY;
+            }
+            else if(first=='B') {
+            	if(strType.equals("BIGINT"))	return Types.BIGINT;
+        		else if(strType.equals("BINARY"))	return Types.BINARY;
+        		else if(strType.equals("BIT"))		return Types.BIT;
+        		else if(strType.equals("BLOB"))		return Types.BLOB;
+        		else if(strType.equals("BOOLEAN"))	return Types.BOOLEAN;
+        		else if(strType.equals("BOOL"))		return Types.BOOLEAN;
+            }
+            else if(first=='C') {
+        		if(strType.equals("CLOB"))			return Types.CLOB;
+        		else if(strType.equals("CHAR"))		return Types.CHAR;
+        		else if(strType.equals("CLOB"))		return Types.CLOB;
+        		else if(strType.equals("CURSOR"))		return CFTypes.CURSOR;
+            }
+            else if(first=='D') {
+        		if(strType.equals("DATALINK"))	return Types.DATALINK;
+        		else if(strType.equals("DATE"))		return Types.DATE;
+        		else if(strType.equals("DISTINCT"))	return Types.DISTINCT;
+        		else if(strType.equals("DECIMAL"))	return Types.DECIMAL;
+        		else if(strType.equals("DOUBLE"))	return Types.DOUBLE;
+            }
+            else if(first=='F') {
+        		if(strType.equals("FLOAT"))	return Types.FLOAT;
+            }
+            else if(first=='I') {
+        		if(strType.equals("IDSTAMP"))	return CFTypes.IDSTAMP;
+        		else if(strType.equals("INTEGER"))	return Types.INTEGER;
+        		else if(strType.equals("INT"))		return Types.INTEGER;
+            }
+            else if(first=='L') {
+        		if(strType.equals("LONGVARBINARY"))return Types.LONGVARBINARY;
+        		else if(strType.equals("LONGVARCHAR"))return Types.LONGVARCHAR;
+            }
+            else if(first=='M') {
+        		if(strType.equals("MONEY"))	return Types.DOUBLE;
+        		else if(strType.equals("MONEY4"))	return Types.DOUBLE;
+            }
+            else if(first=='N') {
+        		if(strType.equals("NUMERIC"))	return Types.NUMERIC;
+        		else if(strType.equals("NUMBER"))	return Types.NUMERIC;
+        		else if(strType.equals("NULL"))		return Types.NULL;
+            }
+            else if(first=='O') {
+            	if(strType.equals("OTHER"))	return Types.OTHER;
+            	else if("OBJECT".equals(strType)) return Types.OTHER;
+            }
+            else if(first=='R') {
+				if(strType.equals("REAL"))		return Types.REAL;
+				else if(strType.equals("REF"))		return Types.REF;
+				else if(strType.equals("REFCURSOR"))return CFTypes.CURSOR;
+            }
+            else if(first=='S') {
+				if(strType.equals("SMALLINT"))	return Types.SMALLINT;
+				else if(strType.equals("STRUCT"))	return Types.STRUCT;
+				else if(strType.equals("STRING"))	return Types.VARCHAR;
+            }
+            else if(first=='T') {
+				if(strType.equals("TIME"))		return Types.TIME;
+				else if(strType.equals("TIMESTAMP"))return Types.TIMESTAMP;
+				else if(strType.equals("TINYINT"))	return Types.TINYINT;
+            }
+            else if(first=='V') {
+				if(strType.equals("VARBINARY"))return Types.VARBINARY;
+				else if(strType.equals("VARCHAR"))	return Types.VARCHAR;
+            }
+        }
+	    
+		throw new DatabaseException("invalid CF SQL Type ["+strType+"]",null,null,null);
 	}
 }

@@ -4,6 +4,7 @@
 package railo.runtime.functions.query;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -16,7 +17,7 @@ public final class QuerySlice implements Function {
 		return call(pc , qry, offset,0);
 	}
 	public static Query call(PageContext pc , Query qry,double offset,double length) throws PageException {
-				
+			
 		int len=qry.getRecordcount();
 		if(offset>0) {
 			if(len<offset)throw new FunctionException(pc,"querySlice",2,"offset","offset can be greater than recordcount of the query");

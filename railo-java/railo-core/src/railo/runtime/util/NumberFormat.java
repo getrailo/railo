@@ -75,6 +75,7 @@ public final class NumberFormat  {
 			break;
 
 			case '.':
+				if(i>0 && maskBuffer.charAt(i-1)=='#')maskBuffer.setCharAt(i-1, '0');
 				if(foundDecimal)	removeChar = true;
 				else				foundDecimal = true;
 			break;
@@ -184,8 +185,22 @@ public final class NumberFormat  {
 			}
 			applySymbolics(formattedNumBuffer, number, usePlus, useMinus, useDollar, useBrackets);
 		}
-		formattedNum = formattedNumBuffer.toString();
-		return formattedNum;
+		/*/ TODO better impl, this is just a quick fix
+		formattedNum=formattedNumBuffer.toString();
+		 
+		int index=formattedNum.indexOf('.');
+		if(index==0) {
+			formattedNumBuffer.insert(0, '0');
+			formattedNum=formattedNumBuffer.toString();
+		}
+		else if(index>0){
+			
+		}
+			
+		String tmp=formattedNum.trim();
+		if(tmp.length()>0 && tmp.charAt(0)=='.')
+		*/
+		return formattedNumBuffer.toString();
 	}
 	
 

@@ -295,9 +295,6 @@ public final class SystemUtil {
     	ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
     	
     	
-
-    	
-    	
         if(path==null) return null;
         if(path.indexOf('{')!=-1){
         	if(StringUtil.startsWith(path,'{')){

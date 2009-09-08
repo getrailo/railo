@@ -435,4 +435,8 @@ public final class ComponentWrap extends StructSupport implements Component,Obje
 	public Property[] getProperties() {
 		return component.getProperties();
 	}
+
+	public ComponentImpl getComponentImpl() {
+		return component;
+	}
 }

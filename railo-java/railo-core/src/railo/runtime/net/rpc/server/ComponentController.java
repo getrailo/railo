@@ -1,5 +1,7 @@
 package railo.runtime.net.rpc.server;
 
+import javax.xml.rpc.encoding.TypeMapping;
+
 import org.apache.axis.AxisFault;
 
 import railo.runtime.Component;
@@ -51,8 +53,15 @@ public final class ComponentController {
 			rt=((UDFImpl)udf).getReturnTypeAsString();
 		}
 		Object rv = c.call(p, name, args);
-		return AxisCaster.toAxisType(Caster.castTo(p, rt, rv, false));
 		
+		try {
+			RPCServer server = RPCServer.getInstance(p.getId(),p.getServletContext());
+			TypeMapping tm = server.getEngine().getTypeMappingRegistry().getDefaultTypeMapping();
+			return AxisCaster.toAxisType(tm,Caster.castTo(p, rt, rv, false));
+		} 
+		catch (AxisFault af) {
+			throw Caster.toPageException(af);
+		}
 	}
 
 	/**

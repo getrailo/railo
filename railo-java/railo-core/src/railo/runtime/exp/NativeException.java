@@ -44,9 +44,9 @@ public final class NativeException extends PageExceptionImpl {
     }
 
 	/**
-	 * @see railo.runtime.exp.PageExceptionImpl#setAddional(java.lang.String, java.lang.Object)
+	 * @see railo.runtime.exp.PageExceptionImpl#setAdditional(java.lang.String, java.lang.Object)
 	 */
-	public void setAddional(String key, Object value) {
-		super.setAddional(key, value);
+	public void setAdditional(String key, Object value) {
+		super.setAdditional(key, value);
 	}
 }

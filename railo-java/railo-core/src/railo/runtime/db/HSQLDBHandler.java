@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.db.DBUtil;
 import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
@@ -248,7 +249,6 @@ public final class HSQLDBHandler {
 					return q;
 				} 
 				catch (SQLParserException spe) {
-					//railo.print.printST(spe);
 					//sp
 					//railo.print.out("sql parser crash at:");
 					//railo.print.out("--------------------------------");
@@ -277,7 +277,7 @@ public final class HSQLDBHandler {
 					//print.out("--------------------------------");
 				}
 				//if(true) throw new RuntimeException();
-				
+			
 	// SECOND Chance with hsqldb
 		try {
 			boolean isUnion=false;

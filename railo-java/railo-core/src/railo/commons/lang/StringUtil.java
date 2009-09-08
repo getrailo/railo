@@ -11,7 +11,7 @@ import railo.runtime.type.Collection;
 
 
 /**
- * Util to do some addional String Operations
+ * Util to do some additional String Operations
  */
 public final class StringUtil {
     
@@ -871,5 +871,10 @@ public final class StringUtil {
 
 	public static boolean containsIgnoreCase(String str, String substr) {
 		return indexOfIgnoreCase(str,substr)!=-1;
+	}
+
+	public static String substringEL(String str, int index,String defaultValue) {
+		if(str==null || index<0 || index>str.length()) return defaultValue;
+		return str.substring(index);
 	}
 }

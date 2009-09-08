@@ -5,6 +5,7 @@ package railo.runtime.functions.other;
 
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -17,7 +18,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.scope.UndefinedImpl;
 
 public final class GetMetaData implements Function {
-	public static Object call(PageContext pc ) throws PageException {
+	public static Object call(PageContextImpl pc ) throws PageException {
         Component ac = pc.getActiveComponent();
         if(ac!=null) {
 	        return call(pc , ac);

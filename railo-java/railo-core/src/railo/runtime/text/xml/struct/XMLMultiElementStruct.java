@@ -25,7 +25,7 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
      * @throws PageException
      */
     public XMLMultiElementStruct(Array array, boolean caseSensitive) throws PageException {
-        super(getFirst(array),caseSensitive);
+        super(getFirstRaw(array),caseSensitive);
         this.array=array;
         
         if(array.size()==0)
@@ -40,10 +40,14 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
         }
     }
 
-	private static Element getFirst(Array array) throws PageException {
+	private static Element getFirstRaw(Array array) throws PageException {
         if(array.size()==0)
             throw new ExpressionException("Array must have one Element at least");
-        return (Element)array.getE(1);
+        Element el=(Element) array.getE(1);
+        if(el instanceof XMLElementStruct)
+        	el=(Element) XMLCaster.toRawNode(((XMLElementStruct)el).getElement());
+        return el;
+        //return (Element)XMLCaster.toRawNode(array.getE(1));
     }
 
     /**

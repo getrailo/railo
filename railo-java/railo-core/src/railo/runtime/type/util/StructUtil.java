@@ -1,6 +1,7 @@
 package railo.runtime.type.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -22,6 +23,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.comparator.TextComparator;
 
 /**
  * 
@@ -97,7 +99,7 @@ public final class StructUtil {
 
 	
 	public static DumpData toDumpData(Struct sct,String title,PageContext pageContext, int maxlevel, DumpProperties props) {
-		Key[] keys = sct.keys();
+		Key[] keys = order(sct.keys());
 		//"#5965e4","#9999ff","#000000"
 		
 	    DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");//new DumpTable("#669900","#99cc00","#263300");
@@ -115,6 +117,14 @@ public final class StructUtil {
 			}
 		}
 		return table;
+	}
+	
+	
+
+	private static Key[] order(Key[] keys) {
+		TextComparator comp=new TextComparator(true,true);
+		Arrays.sort(keys,comp);
+		return keys;
 	}
 
 	/**

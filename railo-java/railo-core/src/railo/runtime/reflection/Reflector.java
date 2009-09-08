@@ -33,6 +33,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.Type;
 
 /**
@@ -591,7 +592,7 @@ public final class Reflector {
      */
     public static MethodInstance getGetter(Class clazz, String prop) throws PageException, NoSuchMethodException {
         String getterName = "get"+StringUtil.ucFirst(prop);
-        MethodInstance mi = getMethodInstanceEL(clazz,getterName,new Object[]{});
+        MethodInstance mi = getMethodInstanceEL(clazz,getterName,ArrayUtil.OBJECT_EMPTY);
         if(mi==null)
         	throw new ExpressionException("No matching property ["+prop+"] found in ["+Caster.toTypeName(clazz)+"]");
         Method m=mi.getMethod();
@@ -610,7 +611,7 @@ public final class Reflector {
      */
     public static MethodInstance getGetterEL(Class clazz, String prop) {
         prop="get"+StringUtil.ucFirst(prop);
-        MethodInstance mi = getMethodInstanceEL(clazz,prop,new Object[]{});
+        MethodInstance mi = getMethodInstanceEL(clazz,prop,ArrayUtil.OBJECT_EMPTY);
         if(mi==null) return null;
         if(mi.getMethod().getReturnType()==void.class) return null;
         return mi;
@@ -655,6 +656,8 @@ public final class Reflector {
                 throw new NoSuchMethodException("invalid return Type, method ["+m.getName()+"] must have return type void, now ["+m.getReturnType().getName()+"]");
             return mi;
     }
+    
+    
     
     /**
      * to invoke a setter Method of a Object
@@ -964,5 +967,27 @@ public final class Reflector {
 		}
 		if(list.size()==0) return new Method[0];
 		return (Method[]) list.toArray(new Method[list.size()]);
-	}   
+	}
+
+	public static Method[] getSetters(Class clazz) {
+		Method[] methods = clazz.getMethods();
+		ArrayList list=new ArrayList();
+		for(int i=0;i<methods.length;i++) {
+			if(isSetter(methods[i])) list.add(methods[i]);
+		}
+		if(list.size()==0) return new Method[0];
+		return (Method[]) list.toArray(new Method[list.size()]);
+	}
+	
+	public static Method[] getGetters(Class clazz) {
+		Method[] methods = clazz.getMethods();
+		ArrayList list=new ArrayList();
+		for(int i=0;i<methods.length;i++) {
+			if(isGetter(methods[i])) list.add(methods[i]);
+		}
+		if(list.size()==0) return new Method[0];
+		return (Method[]) list.toArray(new Method[list.size()]);
+	}
+
+	 
 }

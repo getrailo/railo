@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -21,6 +23,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ArrayUtil;
 
 /**
  * Die Klasse TagLibFactory liest die XML Repräsentation einer TLD ein 
@@ -470,6 +473,61 @@ public final class TagLibFactory extends DefaultHandler {
 		throw new TagLibException("can not load tag library descriptor from ["+res+"]");
 	}
 
+	
+	/**
+	 * return one FunctionLib contain content of all given Function Libs
+	 * @param tlds
+	 * @return combined function lib
+	 */
+	public static TagLib combineTLDs(TagLib[] tlds){
+		TagLib tl = new TagLib();
+		if(ArrayUtil.isEmpty(tlds)) return tl;
+
+		setAttributes(tlds[0],tl);
+		
+		// add functions
+		for(int i=0;i<tlds.length;i++){
+			copyTags(tlds[i],tl);
+		}
+		return tl;
+	}
+	
+	public static TagLib combineTLDs(Set tlds){
+		TagLib newTL = new TagLib(),tmp;
+		if(tlds.size()==0) return newTL ;
+
+		Iterator it = tlds.iterator();
+		int count=0;
+		while(it.hasNext()){
+			tmp=(TagLib) it.next();
+			if(count++==0) setAttributes(tmp,newTL);
+			copyTags(tmp,newTL);
+		}
+		return newTL;
+	}
+	
+	private static void setAttributes(TagLib extTL, TagLib newTL) {
+		newTL.setDescription(extTL.getDescription());
+		newTL.setDisplayName(extTL.getDisplayName());
+		newTL.setELClass(extTL.getELClass());
+		newTL.setIsCore(extTL.isCore());
+		newTL.setNameSpace(extTL.getNameSpace());
+		newTL.setNameSpaceSeperator(extTL.getNameSpaceSeparator());
+		newTL.setShortName(extTL.getShortName());
+		newTL.setSource(extTL.getSource());
+		newTL.setType(extTL.getType());
+		newTL.setUri(extTL.getUri());
+		
+	}
+	
+	private static void copyTags(TagLib extTL, TagLib newTL) {
+		Iterator it = extTL.getTags().entrySet().iterator();
+		TagLibTag tlt;
+		while(it.hasNext()){
+			tlt= (TagLibTag) ((Map.Entry)it.next()).getValue(); // TODO function must be duplicated because it gets a new FunctionLib assigned
+			newTL.setTag(tlt);
+		}
+	}
 }
 
 

@@ -472,8 +472,9 @@ public final class Zip extends BodyTagImpl {
 			}
 		}
 		finally {
-			if(existing!=null)existing.delete();
 			zos.close();
+			if(existing!=null)existing.delete();
+			
 		}
 		
 	}

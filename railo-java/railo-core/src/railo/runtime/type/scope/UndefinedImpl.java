@@ -483,8 +483,6 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object set(Collection.Key key, Object value) throws PageException {
-		
-		
 		if(checkArguments) {
         	if(localAlways || local.containsKey(key))     return local.set(key,value);
             if(argument.containsKey(key))  return argument.set(key,value);

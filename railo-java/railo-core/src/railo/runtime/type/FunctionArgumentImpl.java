@@ -1,21 +1,27 @@
 package railo.runtime.type;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 import railo.commons.lang.CFTypes;
+import railo.commons.lang.ExternalizableUtil;
 
 /**
  * a single argument of a function
  */
-public final class FunctionArgumentImpl implements FunctionArgument {
+public final class FunctionArgumentImpl implements FunctionArgument,Externalizable {
 	
-	private final String dspName;
-	private final String hint;
-	private final Collection.Key name;
-	private final short type;
-	private final String strType;
-	private final boolean required;
-	private final StructImpl meta;
-	private final int defaultType;
-	private final boolean passByReference;
+	private String dspName;
+	private String hint;
+	private Collection.Key name;
+	private short type;
+	private String strType;
+	private boolean required;
+	private StructImpl meta;
+	private int defaultType;
+	private boolean passByReference;
 	
 
 	/**
@@ -118,6 +124,13 @@ public final class FunctionArgumentImpl implements FunctionArgument {
 	}
 	
 
+	/**
+	 * NEVER USE THIS CONSTRUCTOR, this constructor is only for deserialize this object from stream
+	 */
+	public FunctionArgumentImpl() {
+
+	}
+
 	public FunctionArgumentImpl(String name,String strType,short type,boolean required,int defaultType,boolean passByReference,String dspName,String hint,StructImpl meta) {
 		this(KeyImpl.init(name), strType, type, required, defaultType, passByReference, dspName, hint, meta);
 	}
@@ -138,7 +151,7 @@ public final class FunctionArgumentImpl implements FunctionArgument {
 	public FunctionArgumentImpl(Collection.Key name,String type,boolean required,int defaultType,boolean passByReference,String dspName,String hint,StructImpl meta) {
 		this.name=name;
 		this.strType=(type);
-		this.type=CFTypes.toShort(type);
+		this.type=CFTypes.toShort(type,CFTypes.TYPE_UNKNOW);
 		this.required=required;
 		this.defaultType=defaultType;
 		this.dspName=dspName;
@@ -241,5 +254,31 @@ public final class FunctionArgumentImpl implements FunctionArgument {
 	
 	public boolean isPassByReference() {
 		return passByReference;
+	}
+
+
+	public void readExternal(ObjectInput in) throws IOException,ClassNotFoundException {
+		dspName=ExternalizableUtil.readString(in);
+		hint=ExternalizableUtil.readString(in);
+		name=KeyImpl.init(ExternalizableUtil.readString(in));
+		type=in.readShort();
+		strType=ExternalizableUtil.readString(in);
+		required=in.readBoolean();
+		meta=(StructImpl) in.readObject();
+		defaultType=in.readInt();
+		passByReference=in.readBoolean();
+	}
+
+
+	public void writeExternal(ObjectOutput out) throws IOException {
+		ExternalizableUtil.writeString(out, dspName);
+		ExternalizableUtil.writeString(out, hint);
+		ExternalizableUtil.writeString(out, name.getString());
+		out.writeShort(type);
+		ExternalizableUtil.writeString(out, strType);
+		out.writeBoolean(required);
+		out.writeObject(meta);
+		out.writeInt(defaultType);
+		out.writeBoolean(passByReference);
 	}
 }

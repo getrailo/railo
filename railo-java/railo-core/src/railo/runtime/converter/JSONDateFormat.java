@@ -24,7 +24,7 @@ public class JSONDateFormat {
 		
 		
 		if(format==null){
-			format=new SimpleDateFormat("MMMM, dd yyyy hh:mm:ss",locale);
+			format=new SimpleDateFormat("MMMM, dd yyyy HH:mm:ss",locale);
 			map.put(locale.toString(), format);
 		}
 		

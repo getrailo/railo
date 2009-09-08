@@ -1,7 +1,13 @@
 package railo.runtime.type;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 import javax.servlet.jsp.tagext.BodyContent;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -34,7 +40,7 @@ import railo.runtime.writer.BodyContentUtil;
 /**
  * defines a abstract class for a User defined Functions
  */
-public final class UDFImpl extends MemberSupport implements UDF,Sizeable {
+public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizable {
 	
 	public static final Key ARGUMENT_COLLECTION = KeyImpl.getInstance("argumentCollection");
 	
@@ -58,7 +64,7 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable {
 	private ComponentImpl ownerComponent;
 	//private  InterfaceImpl interfaceImpl;
 	//private boolean componentMember;
-	private final UDFProperties properties;
+	private UDFProperties properties;
     
 
 	/**
@@ -68,6 +74,27 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable {
 		return SizeOf.size(properties);
 	}
     
+	
+	/**
+	 * Constructor of the class
+	 * @param page
+	 * @param arguments
+	 * @param index
+	 * @param functionName
+	 * @param strReturnType
+	 * @param strReturnFormat
+	 * @param output
+	 * @param async
+	 * @param strAccess
+	 * @param displayName
+	 * @param description
+	 * @param hint
+	 * @param secureJson
+	 * @param verifyClient
+	 * @param meta
+	 * @throws ExpressionException
+	 * @deprecated use instead <code>UDFImpl(UDFProperties properties)</code>
+	 */
 	public UDFImpl(
 	        Page page,
 	        FunctionArgument[] arguments,
@@ -85,7 +112,6 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable {
 	        Boolean verifyClient,
 	        StructImpl meta) throws ExpressionException {
 		super(ComponentUtil.toIntAccess(strAccess));
-		
 		properties=new UDFProperties(page,
 		        arguments,
 				index,
@@ -104,6 +130,26 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable {
 		
 	}
     
+	/**
+	 * Constructor of the class
+	 * @param page
+	 * @param arguments
+	 * @param index
+	 * @param functionName
+	 * @param returnType
+	 * @param strReturnFormat
+	 * @param output
+	 * @param async
+	 * @param strAccess
+	 * @param displayName
+	 * @param description
+	 * @param hint
+	 * @param secureJson
+	 * @param verifyClient
+	 * @param meta
+	 * @throws ExpressionException
+	 * @deprecated use instead <code>UDFImpl(UDFProperties properties)</code>
+	 */
 	public UDFImpl(
 	        Page page,
 	        FunctionArgument[] arguments,
@@ -121,7 +167,6 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable {
 	        Boolean verifyClient,
 	        StructImpl meta) throws ExpressionException {
 		super(ComponentUtil.toIntAccess(strAccess));
-		
 		properties=new UDFProperties(
 		        page,
 		        arguments,
@@ -141,11 +186,19 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable {
 		//ownerComponent=null;
 	}
 	
+	/**
+	 * DO NOT USE THIS CONSTRUCTOR!
+	 * this constructor is only for deserialize process
+	 */
+	public UDFImpl(){
+		super(0);
+	}
 	
 	public UDFImpl(UDFProperties properties) {
 		super(properties.getAccess());
 		this.properties=properties;
 	}
+	
 
 
 	public UDF duplicate() {
@@ -176,10 +229,9 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable {
 	private final Object castTo(FunctionArgument arg,Object value, int index) throws PageException {
 		if(Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) return value;
 		throw new UDFCasterException(this,arg,value,index);
-		//REALCAST return Caster.castTo(pc,arg.getType(),arg.getTypeAsString(),value);
 	}
 	
-	private void defineArguments(PageContext pc,FunctionArgument[] funcArgs, Object[] args,Argument newArgs) throws PageException {
+	private void defineArguments(PageContext pc,FunctionArgument[] funcArgs, Object[] args,ArgumentImpl newArgs) throws PageException {
 		// define argument scope
 		for(int i=0;i<funcArgs.length;i++) {
 			// argument defined
@@ -206,7 +258,7 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable {
 	}
 
 	
-    private void defineArguments(PageContext pageContext, FunctionArgument[] funcArgs, Struct values, Argument newArgs) throws PageException {
+    private void defineArguments(PageContext pageContext, FunctionArgument[] funcArgs, Struct values, ArgumentImpl newArgs) throws PageException {
     	// argumentCollection
     	argumentCollection(values,funcArgs);
     	//print.out(values.size());
@@ -668,6 +720,10 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable {
 		return properties.returnFormat;
 	}
 	
+	public final String getReturnFormatAsString() {
+		return properties.strReturnFormat;
+	}
+	
 	
 	public static int toReturnFormat(String returnFormat) throws ExpressionException {
 		if(StringUtil.isEmpty(returnFormat,true))
@@ -700,6 +756,26 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable {
 		else if(RETURN_FORMAT_SERIALIZE==returnFormat)	return "serialize";
 		else return defaultValue;
 	}
+
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		// access
+		setAccess(in.readInt());
+		
+		// properties
+		properties=(UDFProperties) in.readObject();
+	}
+
+
+	public void writeExternal(ObjectOutput out) throws IOException {
+		// access
+		out.writeInt(getAccess());
+		
+		// properties
+		out.writeObject(properties);
+		
+		
+	}
+
 	
 }
 

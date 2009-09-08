@@ -225,7 +225,7 @@ public final class QueryColumnUtil {
     }
 
     private Object reDefineBinary(Object value) {
-    	if(Decision.isCastableToBinary(value))
+    	if(Decision.isCastableToBinary(value,false))
     		return value;
     	
     	resetType();
@@ -240,7 +240,7 @@ public final class QueryColumnUtil {
     }
 
     private Object reDefineBlob(Object value) {
-    	if(Decision.isCastableToBinary(value))
+    	if(Decision.isCastableToBinary(value,false))
     		return value;
     	
     	resetType();

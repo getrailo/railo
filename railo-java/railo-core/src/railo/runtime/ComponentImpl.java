@@ -1,5 +1,9 @@
 package railo.runtime;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -8,6 +12,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -19,6 +24,8 @@ import railo.runtime.component.InterfaceCollection;
 import railo.runtime.component.Member;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.converter.ConverterException;
+import railo.runtime.converter.ScriptConverter;
 import railo.runtime.debug.DebugEntry;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -30,6 +37,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.Operator;
@@ -52,6 +60,7 @@ import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.ArgumentImpl;
 import railo.runtime.type.scope.ArgumentIntKey;
 import railo.runtime.type.scope.Variables;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.util.ArrayIterator;
@@ -60,7 +69,7 @@ import railo.runtime.util.ArrayIterator;
  * %**%
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
-public class ComponentImpl extends StructSupport implements Component,coldfusion.runtime.TemplateProxy,Sizeable {
+public class ComponentImpl extends StructSupport implements Externalizable,Component,coldfusion.runtime.TemplateProxy,Sizeable {
 
 
 	private ComponentProperties properties;
@@ -81,10 +90,6 @@ public class ComponentImpl extends StructSupport implements Component,coldfusion
 	private int threadUsingLock=0;
 	private int threadsWaiting=0;
 	boolean isInit=false;
-
-	//private InterfaceImpl[] interfaces;
-	//private boolean isTop;
-	//private HashMap interfaceUdfs;
 
 	private InterfaceCollection interfaceCollection;
 
@@ -107,6 +112,7 @@ public class ComponentImpl extends StructSupport implements Component,coldfusion
 
 	protected static final Key EXTENDS = KeyImpl.getInstance("extends");
 	protected static final Key FUNCTIONS = KeyImpl.getInstance("functions");
+	protected static final Key FULLNAME = KeyImpl.getInstance("fullname");
 	protected static final Key NAME = KeyImpl.getInstance("name");
 	protected static final Key PATH = KeyImpl.getInstance("path");
 	protected static final Key TYPE = KeyImpl.getInstance("type");
@@ -130,14 +136,27 @@ public class ComponentImpl extends StructSupport implements Component,coldfusion
 	}
 	
     /**
-     * Constructor of the Component
-     * @param output 
-     * @param extend 
-     * @param hint 
-     * @param dspName 
-     * @throws ApplicationException 
+     * Constructor of the Component, USED ONLY FOR DESERIALIZE
      */
+	 public ComponentImpl() {
+		 
+	 }
 	
+    /**
+     * Constructor of the class
+     * @param componentPage
+     * @param output
+     * @param _synchronized
+     * @param extend
+     * @param implement
+     * @param hint
+     * @param dspName
+     * @param callPath
+     * @param realPath
+     * @param style
+     * @param meta
+     * @throws ApplicationException
+     */
     public ComponentImpl(ComponentPage componentPage,Boolean output,boolean _synchronized, 
     		String extend, String implement, String hint, String dspName,String callPath, boolean realPath, 
     		String style,StructImpl meta) throws ApplicationException {
@@ -198,7 +217,7 @@ public class ComponentImpl extends StructSupport implements Component,coldfusion
 			base= ComponentLoader.loadComponentImpl(pageContext,properties.extend);
 		}
 	    else { 
-	    	Page p=((ConfigWebImpl)pageContext.getConfig()).getBaseComponentPage();
+	    	Page p=((ConfigWebImpl)pageContext.getConfig()).getBaseComponentPage(pageContext);
 	    	if(!componentPage.getPageSource().equals(p.getPageSource())) {
             	base=ComponentLoader.loadComponentImpl(pageContext,p,p.getPageSource(),"Component",false);
 	        } 
@@ -618,9 +637,11 @@ public class ComponentImpl extends StructSupport implements Component,coldfusion
     }*/
 
 	public ComponentImpl getUDFComponent(PageContextImpl pc) {
-		if(pc.getActiveUDF()==null) return this; 
-		//return (ComponentImpl) pc.getActiveComponent();
-		return (ComponentImpl) pc.getActiveUDF().getOwnerComponent();//+++
+		if(pc.getActiveComponent()==null) return this; 
+		return (ComponentImpl) pc.getActiveComponent();//+++
+		
+		//if(pc.getActiveUDF()==null) return this; 
+		//return (ComponentImpl) pc.getActiveUDF().getOwnerComponent();//+++
 	}
 
 	/**
@@ -671,7 +692,7 @@ public class ComponentImpl extends StructSupport implements Component,coldfusion
      * @return returns if is private
      */
     private boolean isPrivate(PageContext pc) {
-        Component ac = pc.getActiveComponent();
+    	Component ac = pc.getActiveComponent();
         return (ac!=null && (ac==this || 
                 ((ComponentImpl)ac).top.componentPage==top.componentPage)) ;
     }
@@ -697,7 +718,7 @@ public class ComponentImpl extends StructSupport implements Component,coldfusion
             if(index==-1)my="";
             else my=my.substring(0,index);
             
-            return my.equals(other);
+            return my.equalsIgnoreCase(other);
         }
         return false;
     }
@@ -743,7 +764,7 @@ public class ComponentImpl extends StructSupport implements Component,coldfusion
     public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, int access) {
 	    DumpTable table = new DumpTable("#97C0AB","#EAF2EE","#000000");
         table.setTitle("Component "+getCallPath()+""+(" "+StringUtil.escapeHTML(top.properties.dspName)));
-        table.setComment("Only the function and data member that are accesible from your location are displayed");
+        table.setComment("Only the functions and data members that are accessible from your location are displayed");
         if(top.properties.extend.length()>0)table.appendRow(1,new SimpleDumpData("Extends"),new SimpleDumpData(top.properties.extend));
         if(top.properties.hint.trim().length()>0)table.appendRow(1,new SimpleDumpData("Hint"),new SimpleDumpData(top.properties.hint));
         
@@ -1182,13 +1203,12 @@ public class ComponentImpl extends StructSupport implements Component,coldfusion
             if(ex!=null)sct.set(EXTENDS,ex);
             if(arr.size()!=0)sct.set(FUNCTIONS,arr);
             PageSource ps = comp.componentPage.getPageSource();
-            sct.set(NAME,ps.getComponentName());
             
+            sct.set(FULLNAME,ps.getComponentName());
+            sct.set(NAME,ps.getComponentName());
             sct.set(PATH,ps.getDisplayPath());
             sct.set(TYPE,"component");
             Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),false,false);
-            //print.out("------------------ "+comp.getAbsName()+" ------------");
-            //print.out(skeleton);
             if(skeleton !=null)sct.set(SKELETON, skeleton);
             
             if(comp.properties.properties!=null) {
@@ -1357,7 +1377,7 @@ public class ComponentImpl extends StructSupport implements Component,coldfusion
         if(member instanceof UDF) {
             UDF udf = (UDF)member;
             if(udf.getFunctionArguments().length==0 && udf.getReturnType()!=CFTypes.TYPE_VOID) {
-                return _call(pc,udf,null,new Object[]{});
+                return _call(pc,udf,null,ArrayUtil.OBJECT_EMPTY);
             }
         } 
         throw new ExpressionException("Component ["+getCallName()+"] has no acessible Member with name ["+key+"]");
@@ -1369,7 +1389,7 @@ public class ComponentImpl extends StructSupport implements Component,coldfusion
             UDF udf = (UDF)member;
             if(udf.getFunctionArguments().length==0 && udf.getReturnType()!=CFTypes.TYPE_VOID) {
                 try {
-					return _call(pc,udf,null,new Object[]{});
+					return _call(pc,udf,null,ArrayUtil.OBJECT_EMPTY);
 				} catch (PageException e) {
 					return defaultValue;
 				}
@@ -1634,5 +1654,42 @@ public class ComponentImpl extends StructSupport implements Component,coldfusion
 		if(constructorUDFs==null)
 			constructorUDFs=new HashMap();
 		constructorUDFs.put(key, value);
+	}
+
+// MUST more native impl
+	public void readExternal(ObjectInput in) throws IOException,ClassNotFoundException {
+		try {
+			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(ThreadLocalPageContext.get(),in.readUTF());
+			this._data=other._data;
+			this._udfs=other._udfs;
+			this.afterConstructor=other.afterConstructor;
+			this.base=other.base;
+			this.componentPage=other.componentPage;
+			this.constructorUDFs=other.constructorUDFs;
+			this.dataMemberDefaultAccess=other.dataMemberDefaultAccess;
+			this.interfaceCollection=other.interfaceCollection;
+			this.isInit=other.isInit;
+			this.properties=other.properties;
+			this.scope=other.scope;
+			this.threadsWaiting=other.threadsWaiting;
+			this.threadUsingLock=other.threadUsingLock;
+			this.top=this;
+			this.triggerDataMember=other.triggerDataMember;
+			this.useShadow=other.useShadow;
+			
+			
+		} catch (PageException e) {
+			throw new IOException(e.getMessage());
+		}
+	}
+
+	public void writeExternal(ObjectOutput out) throws IOException {
+        try {
+        	out.writeUTF(new ScriptConverter().serialize(this));
+		} 
+		catch (Throwable t) {
+			//print.printST(t);
+		}
+		
 	}
 }

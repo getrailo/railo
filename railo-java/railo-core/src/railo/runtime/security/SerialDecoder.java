@@ -13,12 +13,6 @@ import railo.runtime.crypt.SHA1;
   */
 public final class SerialDecoder {
 
-
-
-
-
-  // the Blowfish CBC instance
-
   BlowfishCBC m_bfish;
 
 

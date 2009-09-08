@@ -96,7 +96,6 @@ public final class OpenAMFCaster implements AMFCaster {
         	}
     	}
     	return aso;
-    	//throw new ApplicationException("can't send a component ("+c.getAbsName()+") via flash remoting");
     }
     private ASRecordSet toAMFObject(Query qry) throws PageException {
         PageableRecordsetConfig prsc = new PageableRecordsetConfig();

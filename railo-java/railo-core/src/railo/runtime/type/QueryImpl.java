@@ -39,7 +39,6 @@ import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
-import railo.runtime.db.SQLTypeCaster;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpRow;
@@ -168,7 +167,7 @@ public class QueryImpl implements Query,Objects {
 		try {	
 		    SQLItem[] items=sql.getItems();
 		    if(items.length==0) {
-		        stat=dc.getConnection().createStatement();
+		    	stat=dc.getConnection().createStatement();
 		        setAttributes(stat,maxrow,fetchsize,timeout);
 		        //if(stat.execute(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS)) {
 		        if(stat.execute(sql.getSQLString())) {
@@ -184,7 +183,7 @@ public class QueryImpl implements Query,Objects {
 				}
 	        }
 	        else {
-	        	//PreparedStatement preStat = dc.getConnection().prepareStatement(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS);
+	        	
 	        	PreparedStatement preStat = dc.getConnection().prepareStatement(sql.getSQLString());
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
 	            setItems(preStat,items);
@@ -502,7 +501,7 @@ public class QueryImpl implements Query,Objects {
 		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<strColumns.length;i++) {
 			columnNames[i]=KeyImpl.init(strColumns[i].trim());
-			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLTypeCaster.toSQLType(strTypes[i]),recordcount);
+			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(strTypes[i]),recordcount);
 		}
 	}
 	
@@ -541,7 +540,7 @@ public class QueryImpl implements Query,Objects {
 		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<columncount;i++) {
 			columnNames[i]=KeyImpl.init(arrColumns.get(i+1,"").toString().trim());
-			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLTypeCaster.toSQLType(Caster.toString(arrTypes.get(i+1,""))),recordcount);
+			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(Caster.toString(arrTypes.get(i+1,""))),recordcount);
 		}
 	}
 

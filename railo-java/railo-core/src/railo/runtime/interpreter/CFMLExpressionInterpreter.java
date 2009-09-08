@@ -252,7 +252,6 @@ public class CFMLExpressionInterpreter {
     * <br />
     * EBNF:<br />
     * <code>assignOp [":" spaces assignOp];</code>
-     * @param isVariableString
     * @return CFXD Element
     * @throws PageException 
     */
@@ -1402,7 +1401,7 @@ public class CFMLExpressionInterpreter {
             if (checkLibrary && !isDynamic) {
                 // current attribues from library
                 FunctionLibFunctionArg funcLibAtt = (FunctionLibFunctionArg) arrFuncLibAtt.get(count);
-                short type=CFTypes.toShort(funcLibAtt.getType());
+                short type=CFTypes.toShort(funcLibAtt.getType(),CFTypes.TYPE_UNKNOW);
                 if(type==CFTypes.TYPE_VARIABLE_STRING) {
                     arr.add(functionArgDeclarationVarString());
                 }

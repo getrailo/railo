@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ArrayUtil;
 
   
  
@@ -113,7 +114,7 @@ public final class BlobImpl implements java.sql.Blob, Serializable {
 	    	try {
 	    		//BLOB blob = BLOB.getEmptyBLOB();
 				Method getEmptyBLOB = blobClass.getMethod("getEmptyBLOB",new Class[]{});
-	    		Object blob = getEmptyBLOB.invoke(null, new Object[]{});
+	    		Object blob = getEmptyBLOB.invoke(null, ArrayUtil.OBJECT_EMPTY);
 	
 	    		//blob.setBytes(value);
 	    		Method setBytes = blobClass.getMethod("setBytes", new Class[]{byte[].class});

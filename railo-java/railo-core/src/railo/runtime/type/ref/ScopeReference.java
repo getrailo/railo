@@ -36,7 +36,6 @@ public final class ScopeReference implements Reference {
      */
     public ScopeReference(PageContext pc, int scope) throws PageException {
 		this.pc=pc;
-		//this.scopeName=pc.getVariableStringUtil().scopeInt2String(scope);
 		this.scope=pc.scope(scope);
     }
 

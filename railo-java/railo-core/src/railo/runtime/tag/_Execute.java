@@ -61,6 +61,7 @@ public final class _Execute extends Thread {
 				}
 			}
 			catch(Exception ioe){
+				//print.printST(ioe);
 				exception=ioe;
 			}
 			finally {

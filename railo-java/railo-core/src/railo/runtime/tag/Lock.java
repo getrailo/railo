@@ -10,6 +10,7 @@ import railo.runtime.lock.LockTimeoutException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.ApplicationImpl;
 import railo.runtime.type.scope.RequestImpl;
 import railo.runtime.type.scope.ScopeSupport;
@@ -100,8 +101,15 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 	* 		behavior depends on the value of the throwOnTimeout attribute.
 	* @param timeout value to set
 	**/
-	public void setTimeout(double timeout) {
-		this.timeoutInMillis = ((int)timeout)*1000;
+	public void setTimeout(Object oTimeout) throws PageException {
+		if(oTimeout instanceof TimeSpan)
+			this.timeoutInMillis=(int)((TimeSpan)oTimeout).getMillis();
+		else
+			this.timeoutInMillis = (int)(Caster.toDoubleValue(oTimeout)*1000D);
+		//print.out(Caster.toString(timeoutInMillis));
+	}
+	public void setTimeout(double timeout) throws PageException {
+		this.timeoutInMillis = (int)(timeout*1000D);
 	}
 
 	/** set the value type
@@ -174,7 +182,7 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 	 */
 	public int doStartTag() throws PageException {
 		//if(timeoutInMillis==0)timeoutInMillis=30000;
-		
+		//print.out("doStartTag");
 	    manager=pageContext.getConfig().getLockManager();
         // check attributes
 	    if(name!=null && scope!=SCOPE_NONE) {
@@ -221,6 +229,7 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 		    data = manager.lock(type,name,timeoutInMillis,pageContext.getId());
 		} 
 		catch (LockTimeoutException e) {
+			//print.out("LockTimeoutException");
 		    name=null;
 			String errorText=e.getMessage();
 		    if(lockType!=null)errorText=("there is a timeout occurred on ["+lockType+"] scope lock");

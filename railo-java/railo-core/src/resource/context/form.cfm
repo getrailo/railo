@@ -179,7 +179,7 @@ function RailoForms(form) {
 	prv.validate=function(el,value) {
 		var v=el.validate;
 		
-		if(v==pub.VALIDATE_NONE || value.length==0)						return;
+		if(v==pub.VALIDATE_NONE)						return;
 		else if(v==pub.VALIDATE_DATE) 					prv.validateDate(el,value);
 		else if(v==pub.VALIDATE_USDATE) 				prv.validateUSDate(el,value);
 		else if(v==pub.VALIDATE_EURODATE) 				prv.validateEuroDate(el,value);
@@ -225,7 +225,7 @@ function RailoForms(form) {
 		var result=value.match(pattern);
 		if(!result) {
   			if(el.message && el.message.length>0)prv.addError(el,el.message);
-			else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t contain a time value');
+			else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt contain a time value');
 		}
 	}
 	
@@ -251,7 +251,7 @@ function RailoForms(form) {
 			} 
         } 
 		if(el.message && el.message.length>0)prv.addError(el,el.message);
-		else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t contain a euro date value'); 
+		else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt contain a euro date value'); 
 	}
 
 	/*
@@ -276,7 +276,7 @@ function RailoForms(form) {
 			} 
         } 
 		if(el.message && el.message.length>0)prv.addError(el,el.message);
-		else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t contain a date value'); 
+		else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt contain a date value'); 
 	} 
 
 
@@ -297,7 +297,7 @@ function RailoForms(form) {
 		var nbr=Number(value);
 		if(isNaN(nbr) && value!='true' && value!='yes' && value!='false' && value!='no') {
 			if(el.message && el.message.length>0)prv.addError(el,el.message);
-			else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t contain a boolean value');
+			else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt contain a boolean value');
 		
 		}
 	}
@@ -337,7 +337,7 @@ function RailoForms(form) {
 		var nbr=Number(value);
 		if(isNaN(nbr)) {
 			if(el.message && el.message.length>0)prv.addError(el,el.message);
-			else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t contain a number value');
+			else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt contain a number value');
 		}
 		else {
 			if(el.rangeMin && el.rangeMin>nbr || el.rangeMax && el.rangeMax<nbr) {
@@ -356,7 +356,7 @@ function RailoForms(form) {
 		var nbr=Number(value);
 		if(isNaN(nbr) || nbr!=parseInt(nbr)) {
 			if(el.message && el.message.length>0)prv.addError(el,el.message);
-			else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t contain a integer');
+			else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt contain a integer');
 		}
 		else {
 			if(el.rangeMin && el.rangeMin>nbr || el.rangeMax && el.rangeMax<nbr) {
@@ -375,7 +375,7 @@ function RailoForms(form) {
 		//if(!eval(el.pattern).test(value)) {
 		if(!el.pattern.test(value)) {
 			if(el.message && el.message.length>0)prv.addError(el,el.message);
-			else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t match given pattern ('+el.pattern+')');
+			else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt match given pattern ('+el.pattern+')');
 		} 
 	} 
 	
@@ -389,7 +389,7 @@ function RailoForms(form) {
         var pattern=/^\d{8}[ -]\d{4}[ -]\d{4}[ -]\d{16}$/; 
         if(!pattern.test(value))	{
 			if(el.message && el.message.length>0)prv.addError(el,el.message);
-			else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t contain a UUID');
+			else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt contain a UUID');
 		} 
 	} 
 	
@@ -402,7 +402,7 @@ function RailoForms(form) {
         var pattern=/^\d{8}[ -]\d{4}[ -]\d{4}[ -]\d{4}[ -]\d{12}$/; 
         if(!pattern.test(value))	{
 			if(el.message && el.message.length>0)prv.addError(el,el.message);
-			else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t contain a GUID');
+			else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt contain a GUID');
 		} 
 	} 
 	
@@ -415,7 +415,7 @@ function RailoForms(form) {
         var pattern=/^\d{5}([ -]\d{4}){0,1}$/; 
         if(!pattern.test(value))	{
 			if(el.message && el.message.length>0)prv.addError(el,el.message);
-			else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t contain a zip code');
+			else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt contain a zip code');
 		} 
 	}  
 	
@@ -428,7 +428,7 @@ function RailoForms(form) {
         var pattern=/^((([a-z]|[0-9]|!|#|$|%|&|'|\*|\+|\-|\/|=|\?|\^|_|`|\{|\||\}|~)+(\.([a-z]|[0-9]|!|#|$|%|&|'|\*|\+|\-|\/|=|\?|\^|_|`|\{|\||\}|~)+)*)@((((([a-z]|[0-9])([a-z]|[0-9]|\-){0,61}([a-z]|[0-9])\.))*([a-z]|[0-9])([a-z]|[0-9]|\-){0,61}([a-z]|[0-9])\.)[\w]{2,4}|(((([0-9]){1,3}\.){3}([0-9]){1,3}))|(\[((([0-9]){1,3}\.){3}([0-9]){1,3})\])))$/; 
         if(!pattern.test(value))	{
 			if(el.message && el.message.length>0)prv.addError(el,el.message);
-			else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t contain a E-Mail Address');
+			else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt contain a E-Mail Address');
 		} 
 	}    
 	
@@ -441,7 +441,7 @@ function RailoForms(form) {
         var pattern=/^(([\w]+:)?\/\/)?(([\d\w]|%[a-fA-f\d]{2,2})+(:([\d\w]|%[a-fA-f\d]{2,2})+)?@)?([\d\w][-\d\w]{0,253}[\d\w]\.)+[\w]{2,4}(:[\d]+)?(\/([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)*(\?(&?([-+_~.\d\w]|%[a-fA-f\d]{2,2})=?)*)?(#([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)?$/; 
         if(!pattern.test(value))	{
 			if(el.message && el.message.length>0)prv.addError(el,el.message);
-			else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t contain a URL');
+			else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt contain a URL');
 		} 
 	}  
 	
@@ -454,7 +454,7 @@ function RailoForms(form) {
         var pattern=/^(\+\d[ -\.])?\d{3}[ -\.]?\d{3}[ -\.]?\d{4}$/; 
         if(!pattern.test(value))	{
 			if(el.message && el.message.length>0)prv.addError(el,el.message);
-			else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t contain a phone number');
+			else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt contain a phone number');
 		} 
 	} 
 	
@@ -467,7 +467,7 @@ function RailoForms(form) {
         var pattern=/\d{3}[- ]\d{2}[- ]\d{4}/; 
         if(!pattern.test(value))	{
 			if(el.message && el.message.length>0)prv.addError(el,el.message);
-			else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t contain a (us) Social Security Number');
+			else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt contain a (us) Social Security Number');
 		} 
 	}
 	
@@ -479,7 +479,7 @@ function RailoForms(form) {
 	prv.validateCreditCard=function(el,value) {
 		if(!prv._validateCreditCard(value)) {
 			if(el.message && el.message.length>0)prv.addError(el,el.message);
-			else prv.addError(el,'value ('+value+') of field '+el.name+' doesn\'t contain a valid creditcard number');
+			else prv.addError(el,'value ('+value+') of field '+el.name+' doesnt contain a valid creditcard number');
 		}
 	}
 	prv._validateCreditCard=function(s) {

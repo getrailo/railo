@@ -21,11 +21,13 @@ import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
+import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.HttpClientUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.type.List;
 
 /**
  * 
@@ -64,7 +66,7 @@ public final class HTTPUtil {
      * @return
      * @throws IOException
      */
-    public static HttpMethod invoke(URL url, String username, String password, int timeout, 
+    public static HttpMethod invoke(URL url, String username, String password, long timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
             String proxypassword, Header[] headers) throws IOException {
@@ -98,6 +100,7 @@ public final class HTTPUtil {
      * @throws MalformedURLException
      */
     public static URL toURL(String strUrl, int port) throws MalformedURLException {
+    	
         URL url;
         try {
             url=new URL(strUrl);
@@ -105,7 +108,32 @@ public final class HTTPUtil {
         catch(MalformedURLException mue) {
             url=new URL("http://"+strUrl);
         }
-           
+        
+        // file
+        String file=url.getFile();
+        String query = url.getQuery();
+        if(!StringUtil.isEmpty(query)){
+        	StringBuffer res=new StringBuffer(url.getPath());
+        	
+        	StringList list = List.toList(query, '&');
+        	String str;
+        	int index;
+        	char del='?';
+        	while(list.hasNext()){
+        		res.append(del);
+        		del='&';
+        		str=list.next();
+        		index=str.indexOf('=');
+        		if(index==-1)res.append(escapeQSValue(str));
+        		else {
+        			res.append(escapeQSValue(str.substring(0,index)));
+        			res.append('=');
+        			res.append(escapeQSValue(str.substring(index+1)));
+        		}
+        	}
+        	file=res.toString();
+        }
+        
        // port
        if(port<=0) { 
     	   port=url.getPort();
@@ -115,12 +143,17 @@ public final class HTTPUtil {
     	   }
        }
        
-       return new URL(url.getProtocol(),url.getHost(),port,url.getFile());
+       return new URL(url.getProtocol(),url.getHost(),port,file);
        
        		       
     }
     
-    public static HttpMethod put(URL url, String username, String password, int timeout, 
+    private static Object escapeQSValue(String str) {
+    	if(str.indexOf('=')!=-1)str=StringUtil.replace(str, "=", "%3D", false);
+		return str;
+	}
+
+	public static HttpMethod put(URL url, String username, String password, int timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
             String proxypassword, Header[] headers, RequestEntity body) throws IOException {
@@ -221,8 +254,12 @@ public final class HTTPUtil {
             }
 	}
 
-	private static void setTimeout(HttpClient client, int timeout) {
-        if(timeout>0)client.setConnectionTimeout(timeout);
+	private static void setTimeout(HttpClient client, long timeout) {
+        if(timeout>0){
+        	
+        	client.setConnectionTimeout((int)timeout);
+        	client.setTimeout((int)timeout);
+        }
 	}
 
 	private static void setUserAgent(HttpMethod httpMethod, String useragent) {
@@ -245,7 +282,7 @@ public final class HTTPUtil {
     	else if(value instanceof InputStream) {
 			return new InputStreamRequestEntity((InputStream)value,"application/octet-stream");
 		}
-		else if(Decision.isCastableToBinary(value)){
+		else if(Decision.isCastableToBinary(value,false)){
 			return new ByteArrayRequestEntity(Caster.toBinary(value));
 		}
 		else {
@@ -255,7 +292,15 @@ public final class HTTPUtil {
     
 	
 	public static URL removeRef(URL url) throws MalformedURLException{
-		URL u=new URL(url.getProtocol(),url.getHost(),url.getPort(),url.getFile());
+		int port=url.getPort();
+		if(port==80 && url.getProtocol().equalsIgnoreCase("http"))
+			port=-1;
+		else if(port==443 && url.getProtocol().equalsIgnoreCase("https"))
+			port=-1;
+		
+		
+		
+		URL u=new URL(url.getProtocol(),url.getHost(),port,url.getFile());
 		return u;
 	}
 	
@@ -273,7 +318,7 @@ public final class HTTPUtil {
 		return toURL(strUrl,-1);
     }
 
-	public static Object toURL(HttpMethod httpMethod) {
+	public static URL toURL(HttpMethod httpMethod) {
 		HostConfiguration config = httpMethod.getHostConfiguration();
 		
 		try {
@@ -285,4 +330,8 @@ public final class HTTPUtil {
 			return null;
 		}
 	}
+
+	
+	
+	
 }

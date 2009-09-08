@@ -10,6 +10,7 @@ import org.w3c.dom.TypeInfo;
 
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ArrayUtil;
 
 
 /**
@@ -27,6 +28,8 @@ public class XMLElementStruct extends XMLNodeStruct implements Element {
 	 */
 	protected XMLElementStruct(Element element, boolean caseSensitive) {
 		super(element, caseSensitive);
+		if(element instanceof XMLElementStruct)
+			element=((XMLElementStruct)element).getElement();
 		this.element=element;
 	}
 	/**
@@ -179,7 +182,7 @@ public class XMLElementStruct extends XMLNodeStruct implements Element {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
 			Method m = element.getClass().getMethod("getSchemaTypeInfo", new Class[]{});
-			return (TypeInfo) m.invoke(element, new Object[]{});
+			return (TypeInfo) m.invoke(element, ArrayUtil.OBJECT_EMPTY);
 		} 
 		catch (Exception e) {
 			throw new PageRuntimeException(Caster.toPageException(e));

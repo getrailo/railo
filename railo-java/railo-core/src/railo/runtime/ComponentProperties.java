@@ -1,5 +1,6 @@
 package railo.runtime;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import railo.runtime.exp.ExpressionException;
@@ -8,7 +9,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 
 
-public class ComponentProperties {
+public class ComponentProperties implements Serializable {
 	
 
 	private static final Collection.Key WSDL_FILE = KeyImpl.getInstance("wsdlfile");

@@ -6,7 +6,6 @@ import java.util.List;
 import railo.intergral.fusiondebug.server.type.FDValueNotMutability;
 import railo.intergral.fusiondebug.server.type.FDVariable;
 import railo.intergral.fusiondebug.server.type.simple.FDSimpleVariable;
-import railo.intergral.fusiondebug.server.util.FDCaster;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
@@ -15,6 +14,7 @@ import com.intergral.fusiondebug.server.IFDStackFrame;
 
 public class FDQuery extends FDValueNotMutability {
 
+	private static final int INTERVALL = 10;
 	private ArrayList children=new ArrayList();
 	private Query qry;
 	
@@ -37,20 +37,40 @@ public class FDQuery extends FDValueNotMutability {
 		// rows
 		int rowcount=qry.getRowCount();
 		List lstRows=new ArrayList(),values;
-		StringBuffer sb;
-		for(int r=1;r<=rowcount;r++){
-			values=new ArrayList();
-			sb=new StringBuffer();
-			for(int c=0;c<strColumns.length;c++){
-				if(c>0)sb.append(" - ");
-				sb.append(qry.getData(r, c+1));
-				values.add(new FDVariable(frame,strColumns[c],new FDQueryNode(frame,qry,r,strColumns[c])));
-			}
-			lstRows.add(new FDSimpleVariable(frame,"["+r+"]",sb.toString(),values));
-		}
+		fill(frame,qry,lstRows,1,rowcount-1,strColumns);
 		children.add(new FDSimpleVariable(frame,"Rows",Caster.toString(rowcount),lstRows));
 	}
 	
+	private static void fill(IFDStackFrame frame, Query qry, List lstRows, int start,int len, String[] strColumns) {
+		int to=start+len;
+		int intervall = INTERVALL;
+		while(intervall*intervall<len)
+			intervall*=intervall;
+		//print.out("start:"+start+":len:"+len);
+		if(len>intervall){
+			int max;
+			for(int i=start;i<to;i+=intervall)	{
+				max=(i+intervall)<to?(intervall-1):to-i;
+				//print.out("intervall:"+(i+intervall)+";len:"+len+";to-i:"+(to-i));
+				ArrayList group=new ArrayList();
+				lstRows.add(new FDSimpleVariable(frame,"Rows","["+i+"-"+((i+max))+"]",group));
+				//print.out("i:"+i+";max:"+max);
+				fill(frame, qry, group, i, max, strColumns);
+			}
+		}
+		else {
+			ArrayList values;
+			for(int r=start;r<=to;r++){
+				values=new ArrayList();
+				for(int c=0;c<strColumns.length;c++){
+					values.add(new FDVariable(frame,strColumns[c],new FDQueryNode(frame,qry,r,strColumns[c])));
+				}
+				lstRows.add(new FDSimpleVariable(frame,"Row","["+r+"]",values));
+			}
+		}
+	}
+
+
 	/**
 	 * @see com.intergral.fusiondebug.server.IFDValue#getChildren()
 	 */
@@ -69,7 +89,7 @@ public class FDQuery extends FDValueNotMutability {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return FDCaster.serialize(qry);
+		return "Query(Columns:"+qry.getColumns().length+", Rows:"+qry.getRecordcount()+")";
 	}
 
 }

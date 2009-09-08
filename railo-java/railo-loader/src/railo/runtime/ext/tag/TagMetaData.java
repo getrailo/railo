@@ -30,7 +30,7 @@ public interface TagMetaData {
 	public int ATTRIBUTE_TYPE_DYNAMIC=8;
 	
 	/**
-	 *	tag has a fix set of attributes, but is also free in use addional tags 
+	 *	tag has a fix set of attributes, but is also free in use additional tags 
 	 */
 	public int ATTRIBUTE_TYPE_MIXED=16;
 	

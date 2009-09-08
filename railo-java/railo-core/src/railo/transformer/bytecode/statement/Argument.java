@@ -10,6 +10,7 @@ import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitInteger;
+import railo.transformer.bytecode.literal.LitString;
 
 public final class Argument {
 
@@ -46,7 +47,11 @@ public final class Argument {
 		this.required=CastBoolean.toExprBoolean(required);
 		this.defaultValue=defaultValue;
 		this.displayName=CastString.toExprString(displayName);
-		this.hint=CastString.toExprString(hint);
+		
+		if(!(hint instanceof Literal)) {
+			this.hint=LitString.toExprString("[runtime expression]");
+		}
+		else this.hint=CastString.toExprString(hint);
 		this.passByReference=passByReference;
 		this.meta=meta;
 	}

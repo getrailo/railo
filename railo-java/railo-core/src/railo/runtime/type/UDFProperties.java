@@ -1,36 +1,47 @@
 package railo.runtime.type;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
+import railo.commons.lang.ExternalizableUtil;
 import railo.commons.lang.SizeOf;
 import railo.runtime.Page;
+import railo.runtime.PageSource;
+import railo.runtime.PageSourceImpl;
+import railo.runtime.config.ConfigWeb;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.type.util.ComponentUtil;
 
-public class UDFProperties implements Sizeable,Serializable {
+public class UDFProperties implements Sizeable,Serializable,Externalizable {
 
 
-	public final String functionName;
-	public final int returnType;
-	public final String strReturnType;
-	public final boolean output;
-	public final String hint;
-	public final String displayName;
-	public final Page page;
-	public final int index;
-	public final FunctionArgument[] arguments;
-	public final StructImpl meta;
-	public final String description;
-	public final Boolean secureJson;
-	public final Boolean verifyClient;
-	public final boolean async;
-	public final String strReturnFormat;
-	public final int returnFormat;
-	public final Set argumentsSet;
-	public final int access; 
+	public  String functionName;
+	public  int returnType;
+	public  String strReturnType;
+	public  boolean output;
+	public String hint;
+	public String displayName;
+	public Page page;
+	public int index;
+	public FunctionArgument[] arguments;
+	public StructImpl meta;
+	public String description;
+	public Boolean secureJson;
+	public Boolean verifyClient;
+	public boolean async;
+	public String strReturnFormat;
+	public int returnFormat;
+	public Set argumentsSet;
+	public int access; 
 
 
 		public UDFProperties(
@@ -104,7 +115,7 @@ public class UDFProperties implements Sizeable,Serializable {
 		this.page = page;
 		
 		this.strReturnType=strReturnType;
-		this.returnType=CFTypes.toShort(strReturnType);
+		this.returnType=CFTypes.toShort(strReturnType,CFTypes.TYPE_UNKNOW);
 		this.strReturnFormat=strReturnFormat;
 		this.returnFormat=UDFImpl.toReturnFormat(strReturnFormat);
 		
@@ -147,7 +158,12 @@ public class UDFProperties implements Sizeable,Serializable {
 		    meta);
 	}
 		
-	
+	/**
+	 * NEVER USE THIS CONSTRUCTOR, this constructor is only for deserialize this object from stream
+	 */
+	public UDFProperties(){
+		
+	}
 	
 	public UDFProperties(
 	        Page page,
@@ -228,6 +244,70 @@ public class UDFProperties implements Sizeable,Serializable {
 	 */
 	public int getAccess() {
 		return access;
+	}
+
+
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		try {
+			ConfigWeb cw = (ConfigWeb) ThreadLocalPageContext.getConfig();
+			page=cw.getPageSource(null, ExternalizableUtil.readString(in), false).loadPage(cw);
+			
+		} 
+		catch (PageException e) {
+			e.printStackTrace();
+			IOException ioe = new IOException(e.getMessage());
+			ioe.setStackTrace(e.getStackTrace());
+			throw ioe;
+		}
+		
+		arguments=(FunctionArgument[]) in.readObject();
+		access = in.readInt();
+		index = in.readInt();
+		returnFormat = in.readInt();
+		returnType = in.readInt();
+		async = in.readBoolean();
+		description = ExternalizableUtil.readString(in);
+		displayName = ExternalizableUtil.readString(in);
+		functionName = ExternalizableUtil.readString(in);
+		hint = ExternalizableUtil.readString(in);
+		meta = (StructImpl) in.readObject();
+		output = in.readBoolean();
+		secureJson = ExternalizableUtil.readBoolean(in);
+		strReturnFormat = ExternalizableUtil.readString(in);
+		strReturnType = ExternalizableUtil.readString(in);
+		verifyClient = ExternalizableUtil.readBoolean(in);
+		
+		if(arguments!=null && arguments.length>0){
+			this.argumentsSet=new HashSet();
+			for(int i=0;i<arguments.length;i++){
+				argumentsSet.add(arguments[i].getName());
+			}
+		}
+		
+	}
+
+
+	public void writeExternal(ObjectOutput out) throws IOException {
+
+		out.writeObject(page.getPageSource().getFullRealpath());
+		out.writeObject(arguments);
+		out.writeInt(access);
+		out.writeInt(index);
+		out.writeInt(returnFormat);
+		out.writeInt(returnType);
+		out.writeBoolean(async);
+		ExternalizableUtil.writeString(out,description);
+		ExternalizableUtil.writeString(out,displayName);
+		ExternalizableUtil.writeString(out,functionName);
+		ExternalizableUtil.writeString(out,hint);
+		out.writeObject(meta);
+		out.writeBoolean(output);
+		ExternalizableUtil.writeBoolean(out,secureJson);
+		ExternalizableUtil.writeString(out,strReturnFormat);
+		ExternalizableUtil.writeString(out,strReturnType);
+		ExternalizableUtil.writeBoolean(out,verifyClient);
+		
+		
 	}
 
 

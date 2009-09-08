@@ -38,6 +38,7 @@ public final class LockManagerImpl implements LockManager {
         LockData data = new LockDataImpl(type,name,pageContextId);
         LockToken token=touchLookToken(data);
         long start=System.currentTimeMillis();
+        if(timeout<=0)timeout=1;
         synchronized(token) {
         	//print.out("count:"+token.getDataCount()+":"+token.canEnter(data));
 

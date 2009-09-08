@@ -45,8 +45,11 @@ public final class ModernAppListenerException extends PageException {
 
 	/**
 	 *
-	 * @see railo.runtime.exp.IPageException#getAddional()
+	 * @see railo.runtime.exp.IPageException#getAdditional()
 	 */
+	public Struct getAdditional() {
+		return rootCause.getAddional();
+	}
 	public Struct getAddional() {
 		return rootCause.getAddional();
 	}

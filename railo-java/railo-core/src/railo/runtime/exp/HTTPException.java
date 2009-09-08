@@ -1,5 +1,8 @@
 package railo.runtime.exp;
 
+import org.apache.commons.httpclient.HttpMethod;
+
+import railo.commons.net.HTTPUtil;
 import railo.runtime.PageContext;
 import railo.runtime.type.Struct;
 
@@ -10,18 +13,38 @@ public final class HTTPException extends ApplicationException {
 
     private int statusCode;
 
+    
     /**
-     * constructor of the class
+     * Constructor of the class
      * @param message
+     * @param detail
      * @param statusCode
      */
-    public HTTPException(String message, int statusCode) {
-        super(message);
+    public HTTPException(String message, String detail, int statusCode) {
+        super(message,detail);
         this.statusCode=statusCode;
     }
     
+
     
     /**
+     * Constructor of the class
+     * @param httpMethod
+     */
+    public HTTPException(HttpMethod httpMethod) {
+		super(httpMethod.getStatusCode()+" "+httpMethod.getStatusText());
+		setAdditional(httpMethod);
+	}
+    
+
+	private void setAdditional(HttpMethod httpMethod) {
+		this.statusCode=httpMethod.getStatusCode();
+		setAdditional("statuscode", new Double(httpMethod.getStatusCode()));
+		setAdditional("url", HTTPUtil.toURL(httpMethod).toExternalForm());
+	}
+
+
+	/**
      * @return Returns the statusCode.
      */
     public int getStatusCode() {

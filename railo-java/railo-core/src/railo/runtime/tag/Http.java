@@ -158,7 +158,7 @@ public final class Http extends BodyTagImpl {
 	** 		If there is no timeout set on the URL in the browser, no timeout set in the ColdFusion Administrator, 
 	** 		and no timeout set with the timeout attribute, ColdFusion waits indefinitely for the cfhttp request to 
 	** 		process. */
-	private long timeout;
+	private long timeout=-1;
 
 	/** Host name or IP address of a proxy server. */
 	private String proxyserver;
@@ -255,7 +255,7 @@ public final class Http extends BodyTagImpl {
 		password=null;
 		delimiter=',';
 		resolveurl=false;
-		timeout=0L;
+		timeout=-1L;
 		proxyserver=null;
 		proxyport=80;
 		proxyuser=null;
@@ -332,12 +332,16 @@ public final class Http extends BodyTagImpl {
 	* 		and no timeout set with the timeout attribute, ColdFusion waits indefinitely for the cfhttp request to 
 	* 		process.
 	* @param timeout value to set
+	 * @throws ExpressionException 
 	**/
-	public void setTimeout(double timeout)	{
-	    long requestTimeout = pageContext.getRequestTimeout();
-	    long _timeout=(long)timeout*1000;
-	    this.timeout=requestTimeout<_timeout?requestTimeout:_timeout;
+	public void setTimeout(double timeout) throws ExpressionException	{
+		if(timeout<0)
+			throw new ExpressionException("invalid value ["+Caster.toString(timeout)+"] for attribute timeout, value must be a positive integer greater or equal than 0");
 		
+	    long requestTimeout = pageContext.getRequestTimeout();
+	    long _timeout=(long)(timeout*1000D);
+	    this.timeout=requestTimeout<_timeout?requestTimeout:_timeout;
+		//print.out("this.timeout:"+this.timeout);
 	}
 
 	/** set the value proxyserver
@@ -541,7 +545,8 @@ public final class Http extends BodyTagImpl {
 		PrintStream out = System.out;
         try {
         	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
-            return _doEndTag(cfhttp);
+             _doEndTag(cfhttp);
+             return EVAL_PAGE;
         } 
         catch (IOException e) {
             throw Caster.toPageException(e);
@@ -552,32 +557,102 @@ public final class Http extends BodyTagImpl {
 
 	}
 
-	private int _doEndTag(Struct cfhttp) throws PageException, IOException	{
+	class Executor extends Thread {
+		
+		private Http http;
+		private HttpClient client;
+		private HttpMethod httpMethod;
+		private boolean redirect;
+		private PageException pe;
+		private boolean done;
+
+		public Executor(Http http, HttpClient client,HttpMethod httpMethod,boolean redirect) {
+			this.http=http;
+			this.client=client;
+			this.httpMethod=httpMethod;
+			this.redirect=redirect;
+		}
+		
+
+		public void run(){
+			try {
+				execute();
+				done=true;
+				synchronized(http){
+					http.notify();
+				}
+				
+			} catch (PageException pe) {
+				this.pe=pe;
+			}
+		}
+
+		public void execute() throws PageException{
+			try {
+				// Execute Request
+				short count=0;
+		        URL lu;
+		        while(isRedirect(client.executeMethod(httpMethod)) && redirect && count++ < MAX_REDIRECT) { 
+		        	lu=locationURL(httpMethod);
+		        	
+		        	httpMethod=createMethod(http,client,lu.toExternalForm(),-1);
+		        }
+	        } 
+			catch (Throwable e) {
+	        	PageException pe = Caster.toPageException(e);
+				if(pe instanceof NativeException) {
+					((NativeException) pe).setAdditional("url", HTTPUtil.toURL(httpMethod));
+				}
+				throw pe;
+	        }
+		}
+	}
+	
+	private void _doEndTag(Struct cfhttp) throws PageException, IOException	{
 		HttpConnectionManager manager=new SimpleHttpConnectionManager();//MultiThreadedHttpConnectionManager();
 		HttpClient client = new HttpClient(manager);
-		HttpMethod httpMethod=createMethod(client,url,port);
-		
+		HttpMethod httpMethod=createMethod(this,client,url,port);
 		
 		try {
 		
 /////////////////////////////////////////// EXECUTE /////////////////////////////////////////////////
-		try {
-			// Execute Request
-			short count=0;
-	        URL lu;
-	        
-	        while(isRedirect(client.executeMethod(httpMethod)) && redirect && count++ < MAX_REDIRECT) { 
-	        	lu=locationURL(httpMethod);
-	        	httpMethod=createMethod(client,lu.toExternalForm(),-1);
-	        }
-        } 
-		catch (IOException e) {
-        	PageException pe = Caster.toPageException(e);
-			if(pe instanceof NativeException) {
-				((NativeException) pe).setAddional("url", HTTPUtil.toURL(httpMethod));
+		Executor e = new Executor(this,client,httpMethod,redirect);
+		if(timeout<0){
+			e.execute();
+		}
+		else {
+			e.start();
+			try {
+				synchronized(this){//print.err(timeout);
+					this.wait(timeout);
+				}
+			} catch (InterruptedException ie) {
+				throw Caster.toPageException(ie);
 			}
-			throw pe;
-        }
+			if(e.pe!=null){
+				throw e.pe;
+			}
+			if(!e.done){
+				httpMethod.abort();
+				if(throwonerror)
+					throw new HTTPException("408 Request Time-out","there is a timeout occurred in tag http",408);
+					
+				cfhttp.set(CHARSET,"");
+				cfhttp.set(ERROR_DETAIL,"");
+				cfhttp.set(FILE_CONTENT,"Connection Timeout ");
+				cfhttp.set(HEADER,"");
+				cfhttp.set(MIME_TYPE,"Unable to determine MIME type of file. ");
+				cfhttp.set(RESPONSEHEADER,new StructImpl());
+				cfhttp.set(STATUSCODE,"408 Request Time-out");
+				cfhttp.set(STATUS_CODE,new Double(408));
+				cfhttp.set(STATUS_TEXT,"Request Time-out");
+				cfhttp.set(TEXT,Boolean.TRUE);
+				
+				return;
+				//throw new ApplicationException("timeout");	
+			}
+		}
+		httpMethod=e.httpMethod;
 /////////////////////////////////////////// EXECUTE /////////////////////////////////////////////////
 		int status = httpMethod.getStatusCode();
 		
@@ -654,7 +729,7 @@ public final class Http extends BodyTagImpl {
 	                    String tmp=types[types.length-1];
 	                    int index=tmp.indexOf("charset=");
 	                    if(index!=-1) {
-	                        responseCharset=StringUtil.removeQuotes(tmp.substring(index+8),true);
+	                    	responseCharset=StringUtil.removeQuotes(tmp.substring(index+8),true);
 	                        cfhttp.set(CHARSET,responseCharset);
 	                    }
 	                }
@@ -684,11 +759,15 @@ public final class Http extends BodyTagImpl {
 		    String str;
                     try {
                         InputStream stream = httpMethod.getResponseBodyAsStream();
-
-                        str = stream==null?"":IOUtil.toString(stream,responseCharset);
-                    } 
-                    catch (IOException e) {
-                        throw Caster.toPageException(e);
+                        try{
+                        	str = stream==null?"":IOUtil.toString(stream,responseCharset);
+                        }
+                        catch (UnsupportedEncodingException uee) {
+                        	str = stream==null?"":IOUtil.toString(stream,null);
+                        }
+                    }
+                    catch (IOException ioe) {
+                        throw Caster.toPageException(ioe);
                     }
                     
                     if(str==null)str="";
@@ -719,8 +798,8 @@ public final class Http extends BodyTagImpl {
 		                    if(barr!=null)os.write(barr);
 			                cfhttp.set(FILE_CONTENT,os);
                         } 
-                        catch (IOException e) {
-                            throw Caster.toPageException(e);
+                        catch (IOException ioe) {
+                            throw Caster.toPageException(ioe);
                         }
 		            }
 		            else {
@@ -735,8 +814,8 @@ public final class Http extends BodyTagImpl {
                                     true);
                             //new File(file.getAbsolutePath()).write(barr);
                         } 
-                        catch (IOException e) {
-                            throw Caster.toPageException(e);
+                        catch (IOException ioe) {
+                            throw Caster.toPageException(ioe);
                         }
 		            }   
 		        }
@@ -751,16 +830,36 @@ public final class Http extends BodyTagImpl {
 
         if(status!=STATUS_OK){
             cfhttp.setEL(ERROR_DETAIL,httpMethod.getStatusCode()+" "+httpMethod.getStatusText());
-            if(throwonerror)throw new HTTPException(httpMethod.getStatusCode()+" "+httpMethod.getStatusText(),status);
+            if(throwonerror)throw new HTTPException(httpMethod);
         }
 		}
 		finally {
 			releaseConnection(httpMethod,manager);
 		}
 	    
-		return EVAL_PAGE;
 	}
 	
+	private static HttpMethod execute(Http http, HttpClient client, HttpMethod httpMethod, boolean redirect) throws PageException {
+		try {
+			// Execute Request
+			short count=0;
+	        URL lu;
+	        
+	        while(isRedirect(client.executeMethod(httpMethod)) && redirect && count++ < MAX_REDIRECT) { 
+	        	lu=locationURL(httpMethod);
+	        	httpMethod=createMethod(http,client,lu.toExternalForm(),-1);
+	        }
+        } 
+		catch (IOException e) {
+        	PageException pe = Caster.toPageException(e);
+			if(pe instanceof NativeException) {
+				((NativeException) pe).setAdditional("url", HTTPUtil.toURL(httpMethod));
+			}
+			throw pe;
+        }
+		return httpMethod;
+	}
+
 	private void releaseConnection(HttpMethod httpMethod, HttpConnectionManager manager) {
 		httpMethod.releaseConnection();
 		manager.closeIdleConnections(0);
@@ -784,8 +883,10 @@ public final class Http extends BodyTagImpl {
             
         return url;
     }
+	
 
-	private HttpMethod createMethod(HttpClient client, String url, int port) throws PageException, UnsupportedEncodingException {
+	private static HttpMethod createMethod(Http http, HttpClient client, String url, int port) throws PageException, UnsupportedEncodingException {
+
 		HttpMethod httpMethod;
 		HostConfiguration config = client.getHostConfiguration();
 		HttpState state = client.getState();
@@ -793,8 +894,8 @@ public final class Http extends BodyTagImpl {
 		String[] arrQS=new String[0];
 	// check if has fileUploads	
 		boolean doUploadFile=false;
-		for(int i=0;i<params.size();i++) {
-			if(((HttpParamBean)params.get(i)).getType().equals("file")) {
+		for(int i=0;i<http.params.size();i++) {
+			if(((HttpParamBean)http.params.get(i)).getType().equals("file")) {
 				doUploadFile=true;
 				break;
 			}
@@ -805,6 +906,7 @@ public final class Http extends BodyTagImpl {
 		try {
 			_url = HTTPUtil.toURL(url,port);
 			url=_url.toExternalForm();
+			
 		} catch (MalformedURLException mue) {
 			throw Caster.toPageException(mue);
 		}
@@ -815,36 +917,35 @@ public final class Http extends BodyTagImpl {
 			arrQS=List.toStringArray(List.listToArray(List.trim(strQS,"&"),"&"));
 		}
 		
-		
 	// select best matching method (get,post, post multpart (file))
 
 		boolean isBinary = false;
 		PostMethod post=null;
 		EntityEnclosingMethod eem=null;
 		MultipartPostMethod multi=null;
-		if(method==METHOD_GET) {
+		if(http.method==METHOD_GET) {
 			httpMethod=new GetMethod(url);
 		}
-		else if(method==METHOD_HEAD) {
+		else if(http.method==METHOD_HEAD) {
 		    httpMethod=new HeadMethod(url);
 		}
-		else if(method==METHOD_DELETE) {
+		else if(http.method==METHOD_DELETE) {
 			isBinary=true;
 		    httpMethod=new DeleteMethod(url);
 		}
-		else if(method==METHOD_PUT) {
+		else if(http.method==METHOD_PUT) {
 			isBinary=true;
 		    httpMethod=eem=new PutMethod(url);
 		}
-		else if(method==METHOD_TRACE) {
+		else if(http.method==METHOD_TRACE) {
 			isBinary=true;
 		    httpMethod=new TraceMethod(url);
 		}
-		else if(method==METHOD_OPTIONS) {
+		else if(http.method==METHOD_OPTIONS) {
 			isBinary=true;
 		    httpMethod=new OptionsMethod(url);
 		}
-		else if(doUploadFile || multipart) {
+		else if(doUploadFile || http.multipart) {
 			isBinary=true;
 			multi=new MultipartPostMethod(url);
 			httpMethod=multi;
@@ -855,7 +956,7 @@ public final class Http extends BodyTagImpl {
 			httpMethod=eem=post;
 		}
 		// content type
-		if(StringUtil.isEmpty(charset))charset=pageContext.getConfig().getWebCharset();
+		if(StringUtil.isEmpty(http.charset))http.charset=http.pageContext.getConfig().getWebCharset();
 		
 	
 		boolean hasForm=false;
@@ -863,18 +964,18 @@ public final class Http extends BodyTagImpl {
 		boolean hasContentType=false;
 	// Set http params
 		ArrayList listQS=new ArrayList();
-		int len=params.size();
+		int len=http.params.size();
 		for(int i=0;i<len;i++) {
-			HttpParamBean param=(HttpParamBean)params.get(i);
+			HttpParamBean param=(HttpParamBean)http.params.get(i);
 			String type=param.getType();
 		// URL
 			if(type.equals("url")) {
-				listQS.add(new NameValuePair(translateEncoding(param.getName(), charset),translateEncoding(param.getValueAsString(), charset)));
+				listQS.add(new NameValuePair(translateEncoding(param.getName(), http.charset),translateEncoding(param.getValueAsString(), http.charset)));
 			}
 		// Form
 			else if(type.equals("formfield") || type.equals("form")) {
 				hasForm=true;
-				if(method==METHOD_GET) throw new ApplicationException("httpparam type formfield can't only be used, when method of the tag http equal post");
+				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type formfield can't only be used, when method of the tag http equal post");
 				if(post!=null)post.addParameter(new NameValuePair(param.getName(),param.getValueAsString()));
 				else if(multi!=null)multi.addParameter(param.getName(),param.getValueAsString());
 			}
@@ -882,8 +983,8 @@ public final class Http extends BodyTagImpl {
 			else if(type.equals("cgi")) {
 				if(param.isEncoded())
 				    httpMethod.addRequestHeader(
-                            translateEncoding(param.getName(),charset),
-                            translateEncoding(param.getValueAsString(),charset));
+                            translateEncoding(param.getName(),http.charset),
+                            translateEncoding(param.getValueAsString(),http.charset));
                 else
                     httpMethod.addRequestHeader(param.getName(),param.getValueAsString());
 			}
@@ -904,7 +1005,7 @@ public final class Http extends BodyTagImpl {
 		// File
 			else if(type.equals("file")) {
 				hasForm=true;
-				if(method==METHOD_GET) throw new ApplicationException("httpparam type file can't only be used, when method of the tag http equal post");
+				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type file can't only be used, when method of the tag http equal post");
 				if(multi!=null) {
 					try {
 						//multi.addParameter(param.getName(),FileWrapper.toFile(param.getFile()));
@@ -919,7 +1020,7 @@ public final class Http extends BodyTagImpl {
 			else if(type.equals("xml")) {
 				hasBody=true;
 				hasContentType=true;
-				httpMethod.addRequestHeader("Content-type", "text/xml; charset="+charset);
+				httpMethod.addRequestHeader("Content-type", "text/xml; charset="+http.charset);
 			    //post.setRequestBody(new NameValuePair [] {new NameValuePair(translateEncoding(param.getName(), charset),translateEncoding(param.getValue(), charset))});
 				if(eem==null)throw new ApplicationException("type xml is only supported for type post and put");
 			    eem.setRequestBody(param.getValueAsString());
@@ -938,19 +1039,14 @@ public final class Http extends BodyTagImpl {
 					}
 			    }
 			    else */
-			    	if(value instanceof InputStream) {
-					//eem.setRequestBody((InputStream)value);
+			    if(value instanceof InputStream) {
 					eem.setRequestEntity(new InputStreamRequestEntity((InputStream)value,"application/octet-stream"));
 				}
-				else if(Decision.isString(value)){
-					eem.setRequestEntity(new StringRequestEntity(param.getValueAsString()));
-				}
-				else if(Decision.isCastableToBinary(value)){
+				else if(Decision.isCastableToBinary(value,false)){
 					eem.setRequestEntity(new ByteArrayRequestEntity(Caster.toBinary(value)));
 				}
 				else {
 					eem.setRequestEntity(new StringRequestEntity(param.getValueAsString()));
-					//eem.setRequestBody(param.getValueAsString());
 				}
 			}
             else {
@@ -965,20 +1061,20 @@ public final class Http extends BodyTagImpl {
 		if(!hasContentType) {
 			if(isBinary) {
 				if(hasBody) httpMethod.addRequestHeader("Content-type", "application/octet-stream");
-				else httpMethod.addRequestHeader("Content-type", "application/x-www-form-urlencoded; charset="+charset);
+				else httpMethod.addRequestHeader("Content-type", "application/x-www-form-urlencoded; charset="+http.charset);
 			}
 			else {
 				//if(hasBody)
-					httpMethod.addRequestHeader("Content-type", "text/html; charset="+charset ); // DIFF 23
+					httpMethod.addRequestHeader("Content-type", "text/html; charset="+http.charset ); // DIFF 23
 			}
 		}
 		
 		
 		// set User Agent
-			httpMethod.setRequestHeader("User-Agent",useragent);
+			httpMethod.setRequestHeader("User-Agent",http.useragent);
 		
 	// set timeout
-		if(timeout!=0L)client.setConnectionTimeout((int)timeout);
+		if(http.timeout>0L)client.setConnectionTimeout((int)http.timeout);
 		// for 3.0 client.getParams().setConnectionManagerTimeout(timeout);
 		
 	// set Query String
@@ -1010,26 +1106,26 @@ public final class Http extends BodyTagImpl {
 			httpMethod.setQueryString(qs);
 		
 	// set Username and Password
-		if(username!=null) {
-			if(password==null)password="";
+		if(http.username!=null) {
+			if(http.password==null)http.password="";
 			//client.getState().setAuthenticationPreemptive(true);
-			client.getState().setCredentials(null,null,new UsernamePasswordCredentials(username, password));
+			client.getState().setCredentials(null,null,new UsernamePasswordCredentials(http.username, http.password));
 			httpMethod.setDoAuthentication( true );
 			client.getState().setAuthenticationPreemptive(true);
 			
 		}
 	
 	// set Proxy
-		if(StringUtil.isEmpty(proxyserver) && pageContext.getConfig().isProxyEnableFor(_url.getHost())) { 
-			proxyserver=pageContext.getConfig().getProxyServer();
-			proxyport=pageContext.getConfig().getProxyPort();
-			proxyuser=pageContext.getConfig().getProxyUsername();
-			proxypassword=pageContext.getConfig().getProxyPassword();
+		if(StringUtil.isEmpty(http.proxyserver) && http.pageContext.getConfig().isProxyEnableFor(_url.getHost())) { 
+			http.proxyserver=http.pageContext.getConfig().getProxyServer();
+			http.proxyport=http.pageContext.getConfig().getProxyPort();
+			http.proxyuser=http.pageContext.getConfig().getProxyUsername();
+			http.proxypassword=http.pageContext.getConfig().getProxyPassword();
 		}
-		if(!StringUtil.isEmpty(proxyserver)) {
-            config.setProxy(proxyserver,proxyport);
-            if(!StringUtil.isEmpty(proxyuser)) {
-                state.setProxyCredentials(null,null,new UsernamePasswordCredentials(proxyuser,proxypassword));
+		if(!StringUtil.isEmpty(http.proxyserver)) {
+            config.setProxy(http.proxyserver,http.proxyport);
+            if(!StringUtil.isEmpty(http.proxyuser)) {
+                state.setProxyCredentials(null,null,new UsernamePasswordCredentials(http.proxyuser,http.proxypassword));
             }
         }
 
@@ -1039,7 +1135,7 @@ public final class Http extends BodyTagImpl {
 	    return httpMethod;
 	}
 
-	private String toQueryString(NameValuePair[] qsPairs) {
+	private static String toQueryString(NameValuePair[] qsPairs) {
 		StringBuffer sb=new StringBuffer();
         for(int i=0;i<qsPairs.length;i++) {
             if(sb.length()>0)sb.append('&');
@@ -1050,7 +1146,7 @@ public final class Http extends BodyTagImpl {
         return sb.toString();
     }
 
-    private String translateEncoding(String str, String charset) throws UnsupportedEncodingException {
+    private static String translateEncoding(String str, String charset) throws UnsupportedEncodingException {
     	//print.ln(charset+":"+StringUtil.translateString(str,"ISO-8859-1")+"::"+URLEncoder.encode(str,charset));
         return URLEncoder.encode(StringUtil.translateString(str,"ISO-8859-1"),charset);
     }

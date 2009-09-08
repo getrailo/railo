@@ -43,6 +43,7 @@ public final class PlainDocument {
     try {
     	is=IOUtil.toBufferedInputStream(f.getInputStream());
     	String content=IOUtil.toString(is,charset);
+    	doc.add(FieldUtil.Text("raw", content));
     	doc.add(FieldUtil.Text("contents", content.toLowerCase()));
     	doc.add(FieldUtil.UnIndexed("summary",StringUtil.max(content,SUMMERY_SIZE)));
     }

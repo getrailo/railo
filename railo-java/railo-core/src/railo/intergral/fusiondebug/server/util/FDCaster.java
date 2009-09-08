@@ -5,7 +5,6 @@ import railo.intergral.fusiondebug.server.type.coll.FDUDF;
 import railo.intergral.fusiondebug.server.type.nat.FDNative;
 import railo.intergral.fusiondebug.server.type.qry.FDQuery;
 import railo.intergral.fusiondebug.server.type.simple.FDSimpleValue;
-import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -24,6 +23,8 @@ public class FDCaster {
 			return new FDUDF(frame,name, (UDF)value);
 		if(value instanceof Query)
 			return new FDQuery(frame, (Query)value);
+		//if(value instanceof Array)
+		//	return new FDArray(frame,name,(Array)value);
 		if(value instanceof Collection)
 			return new FDCollection(frame,name,(Collection)value);
 		if(Decision.isCastableToString(value))
@@ -45,8 +46,8 @@ public class FDCaster {
 		try {
 			return new ScriptConverter().serialize(object);
 		} 
-		catch (ConverterException e) {
-			return e.getMessage();
+		catch (Throwable t) {
+			return object.toString();
 		}
 	}
 

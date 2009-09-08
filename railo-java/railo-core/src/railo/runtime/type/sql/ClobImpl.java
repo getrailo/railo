@@ -17,6 +17,7 @@ import railo.commons.io.IOUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ArrayUtil;
 
 
 
@@ -73,7 +74,7 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
 	    	try {
 	    		//CLOB clob = CLOB.getEmptyCLOB();
 				Method getEmptyCLOB = clobClass.getMethod("getEmptyCLOB",new Class[]{});
-	    		Object clob = getEmptyCLOB.invoke(null, new Object[]{});
+	    		Object clob = getEmptyCLOB.invoke(null, ArrayUtil.OBJECT_EMPTY);
 	
 	    		//c.setString(0, arg1);
 	    		Method setString = clobClass.getMethod("setString", new Class[]{long.class,String.class});

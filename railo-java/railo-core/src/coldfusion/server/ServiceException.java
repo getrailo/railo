@@ -87,7 +87,7 @@ public class ServiceException extends ApplicationException {
 
 	}
 
-	public Struct getAddional() {
+	public Struct getAdditional() {
 		// TODO Auto-generated method stub
 		return null;
 	}

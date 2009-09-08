@@ -13,6 +13,7 @@ import railo.runtime.CFMLFactory;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.Page;
+import railo.runtime.PageContext;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.compiler.CFMLCompilerImpl;
 import railo.runtime.exp.ExpressionException;
@@ -54,7 +55,9 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
         this.config=config;
         ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
         this.rootDir=frp.getResource(config.getServletContext().getRealPath("/"));
-        
+        // Fix for tomcat
+        if(this.rootDir.getName().equals(".") || this.rootDir.getName().equals(".."))
+        	this.rootDir=this.rootDir.getParentResource();
     }
 
     /**
@@ -133,7 +136,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
      * @param securityManager The accessor to set.
      */
     protected void setSecurityManager(SecurityManager securityManager) {
-        ((SecurityManagerImpl)securityManager).setConfig(rootDir);
+    	((SecurityManagerImpl)securityManager).setRootDirectory(getRootDirectory());
         this.securityManager = securityManager;
     }
     
@@ -181,7 +184,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		return compiler;
 	}
 	
-	 public Page getBaseComponentPage() throws PageException {
+	 public Page getBaseComponentPage(PageContext pc) throws PageException {
 	        if(baseComponentPage==null) {
 	            baseComponentPage=getBaseComponentPageSource().loadPage(this);
 				

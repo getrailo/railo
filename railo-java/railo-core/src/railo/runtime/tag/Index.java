@@ -18,6 +18,7 @@ import railo.runtime.search.SearchCollection;
 import railo.runtime.search.SearchCollectionSupport;
 import railo.runtime.search.SearchException;
 import railo.runtime.search.SearchIndex;
+import railo.runtime.search.lucene2.LuceneSearchCollection;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -72,7 +73,8 @@ public final class Index extends TagImpl {
 
     /** A custom field you can use to store data during an indexing operation. Specify a query column 
     **  name for type and a query name. */
-    private String custom1;
+	private String custom1;
+	private long timeout=10000;
 
     /** A custom field you can use to store data during an indexing operation. Usage is the same as 
     **  for custom1. */
@@ -107,6 +109,9 @@ public final class Index extends TagImpl {
 	private String status;
 	private String prefix;
 
+
+	private boolean throwontimeout=false;
+
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
 	*/
@@ -131,6 +136,8 @@ public final class Index extends TagImpl {
 		categoryTree="";
 		status=null;
 		prefix=null;
+		timeout=10000;
+		throwontimeout=false;
 	}
 
 
@@ -167,6 +174,29 @@ public final class Index extends TagImpl {
             throw Caster.toPageException(e);
         }
 	}
+	
+	/**
+	 * @param timeout the timeout in seconds
+	 * @throws ApplicationException 
+	 */
+	public void setTimeout(double timeout) throws ApplicationException {
+		
+		this.timeout = (long)(timeout*1000D);
+		if(this.timeout<0)
+			throw new ApplicationException("attribute timeout must contain a positive number");
+		if(timeout==0)timeout=1;
+	}
+	
+	/** set the value throwontimeout
+	*  Yes or No. Specifies how   timeout conditions are handled. If the value is Yes, an exception is 
+	* 	generated to provide notification of the timeout. If the value is No, execution continues. Default is Yes.
+	* @param throwontimeout value to set
+	**/
+	public void setThrowontimeout(boolean throwontimeout) {
+		this.throwontimeout = throwontimeout;
+	}
+
+	
 	
 	public void setName(String name){
 		this.name=name;
@@ -439,11 +469,17 @@ public final class Index extends TagImpl {
         if(type==-1) type=(query==null)?SearchIndex.TYPE_FILE:SearchIndex.TYPE_CUSTOM;
         
         if(type==SearchIndex.TYPE_CUSTOM) {
-            required("index",action,"query",query);
             required("index",action,"body",body);
+            //required("index",action,"query",query);
         }
-        IndexResult result = collection.index(pageContext,key,type,urlpath,title,body,language,extensions,query,recurse,categoryTree,category,custom1,custom2,custom3,custom4);
-        if(!StringUtil.isEmpty(status))pageContext.setVariable(status,toStruct(result));
+        IndexResult result;
+        
+        // FUTURE remove this contition
+        if(collection instanceof LuceneSearchCollection)
+        	result = ((LuceneSearchCollection)collection).index(pageContext,key,type,urlpath,title,body,language,extensions,query,recurse,categoryTree,category,timeout,custom1,custom2,custom3,custom4);
+        else
+        	result = collection.index(pageContext,key,type,urlpath,title,body,language,extensions,query,recurse,categoryTree,category,custom1,custom2,custom3,custom4);
+         if(!StringUtil.isEmpty(status))pageContext.setVariable(status,toStruct(result));
     }
 
 

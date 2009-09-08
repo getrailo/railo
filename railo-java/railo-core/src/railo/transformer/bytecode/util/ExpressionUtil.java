@@ -67,10 +67,10 @@ public final class ExpressionUtil {
 		value.writeOut(bc, mode);
 	}
 
-	public static short toShortType(ExprString expr) {
+	public static short toShortType(ExprString expr, short defaultValue) {
 		if(expr instanceof LitString){
-			return CFTypes.toShort(((LitString)expr).getString());
+			return CFTypes.toShort(((LitString)expr).getString(),defaultValue);
 		}
-		return -1;
+		return defaultValue;
 	}
 }

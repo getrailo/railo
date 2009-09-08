@@ -47,6 +47,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
+import railo.runtime.security.SerialNumber;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
@@ -61,6 +62,7 @@ import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterNotSupported;
 import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.scope.ScopeContext;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.util.ApplicationContextImpl;
 import railo.runtime.video.VideoExecuter;
 import railo.runtime.video.VideoExecuterNotSupported;
@@ -442,11 +444,11 @@ public final class ConfigWebAdmin {
         if(!hasAccess)
             throw new SecurityException("no access to update mail server settings");
         
-        try {
+        /*try {
             SMTPVerifier.verify(hostName,username,password,port);
         } catch (SMTPException e) {
             throw Caster.toPageException(e);
-        }
+        }*/
         
         Element mail=_getRootElement("mail");
         if(port<1) port=21;
@@ -464,7 +466,7 @@ public final class ConfigWebAdmin {
       	    String smtp=el.getAttribute("smtp");
   			if(smtp!=null && smtp.equalsIgnoreCase(hostName)) {
 	      		el.setAttribute("username",username);
-	      		el.setAttribute("password",password);
+	      		el.setAttribute("password",ConfigWebFactory.encrypt(password));
 	      		el.setAttribute("port",Caster.toString(port));
 	      		el.setAttribute("tls",Caster.toString(tls));
 	      		el.setAttribute("ssl",Caster.toString(ssl));
@@ -892,7 +894,7 @@ public final class ConfigWebAdmin {
 	      		el.setAttribute("class",clazzName);
 	      		el.setAttribute("dsn",dsn);
 	      		el.setAttribute("username",username);
-	      		el.setAttribute("password",password);
+	      		el.setAttribute("password",ConfigWebFactory.encrypt(password));
 
                 el.setAttribute("host",host);
                 el.setAttribute("database",database);
@@ -1174,8 +1176,20 @@ public final class ConfigWebAdmin {
         Element datasources=_getRootElement("data-sources");
         datasources.setAttribute("preserve-single-quote",Caster.toString(psq));
 
-
     }
+
+
+	public void updateInspectTemplate(String str) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update");
+        
+        Element datasources=_getRootElement("java");
+        datasources.setAttribute("inspect-template",str);
+
+	}
+    
     
     /**
      * sets the scope cascading type
@@ -1674,7 +1688,7 @@ public final class ConfigWebAdmin {
      * @param tagRegistry
      * @throws SecurityException
      */
-    public void updateDefaultSecurity(short setting, short file,short directJavaAccess,
+    public void updateDefaultSecurity(short setting, short file,Resource[] fileAccess,short directJavaAccess,
  	       short mail, short datasource, short mapping, short remote, short customTag,
  	      short cfxSetting, short cfxUsage, short debugging,
          short search, short scheduledTasks,
@@ -1685,6 +1699,7 @@ public final class ConfigWebAdmin {
         
         
         Element security=_getRootElement("security");
+        updateSecurityFileAccess(security,fileAccess,file);
         security.setAttribute("setting",            SecurityManagerImpl.toStringAccessValue(setting));
         security.setAttribute("file",               SecurityManagerImpl.toStringAccessValue(file));
         security.setAttribute("direct_java_access", SecurityManagerImpl.toStringAccessValue(directJavaAccess));
@@ -1706,13 +1721,44 @@ public final class ConfigWebAdmin {
 
         security.setAttribute("access_read",       SecurityManagerImpl.toStringAccessRWValue(accessRead));
         security.setAttribute("access_write",      SecurityManagerImpl.toStringAccessRWValue(accessWrite));
+    
+    
+    
     }
     
-    /**
+    private void removeSecurityFileAccess(Element parent) {
+    	Element[] children = ConfigWebFactory.getChildren(parent,"file-access");
+      	
+    	// remove existing
+    	if(!ArrayUtil.isEmpty(children)){
+    		for(int i=children.length-1;i>=0;i--){
+	    		parent.removeChild(children[i]);
+	    	}
+    	}
+    }
+    
+    private void updateSecurityFileAccess(Element parent,Resource[] fileAccess, short file) {
+    	removeSecurityFileAccess(parent);
+    	
+    	// insert
+    	if(!ArrayUtil.isEmpty(fileAccess) && file!=SecurityManager.VALUE_ALL){
+    		Element fa;
+	    	for(int i=0;i<fileAccess.length;i++){
+	    		fa=doc.createElement("file-access");
+	    		fa.setAttribute("path", fileAccess[i].getAbsolutePath());
+	    		parent.appendChild(fa);
+	    	}
+    	}
+    	
+	}
+
+
+	/**
      * update a security manager that match the given id
      * @param id
      * @param setting
      * @param file
+     * @param file_access 
      * @param directJavaAccess
      * @param mail
      * @param datasource
@@ -1730,7 +1776,7 @@ public final class ConfigWebAdmin {
      * @throws SecurityException
      * @throws ApplicationException
      */
-    public void updateSecurity(String id, short setting, short file,short directJavaAccess,
+    public void updateSecurity(String id, short setting, short file,Resource[] fileAccess, short directJavaAccess,
            short mail, short datasource, short mapping, short remote, short customTag,
           short cfxSetting, short cfxUsage, short debugging,
           short search, short scheduledTasks,
@@ -1750,6 +1796,7 @@ public final class ConfigWebAdmin {
             }
         }
         if(accessor==null) throw new ApplicationException("there is noc Security Manager for id ["+id+"]");
+        updateSecurityFileAccess(accessor,fileAccess,file);
         
         accessor.setAttribute("setting",            SecurityManagerImpl.toStringAccessValue(setting));
         accessor.setAttribute("file",               SecurityManagerImpl.toStringAccessValue(file));
@@ -1858,7 +1905,7 @@ public final class ConfigWebAdmin {
      */
     public void createSecurityManager(String id) throws SecurityException, DOMException {
     	checkWriteAccess();
-        SecurityManager dsm = config.getConfigServerImpl().getDefaultSecurityManager().cloneSecurityManager();
+        SecurityManagerImpl dsm = (SecurityManagerImpl) config.getConfigServerImpl().getDefaultSecurityManager().cloneSecurityManager();
         config.getConfigServerImpl().setSecurityManager(id,dsm);
         
         Element security=_getRootElement("security");
@@ -1874,6 +1921,9 @@ public final class ConfigWebAdmin {
             accessor=doc.createElement("accessor");
             security.appendChild(accessor);
         }
+        
+        updateSecurityFileAccess(accessor,dsm.getCustomFileAccess(),dsm.getAccess(SecurityManager.TYPE_FILE));
+        
         
         accessor.setAttribute("id",id);
         accessor.setAttribute("setting",            SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_SETTING)));
@@ -2294,7 +2344,7 @@ public final class ConfigWebAdmin {
 		}
 		
 		if(method.getStatusCode()!=200){
-			throw new HTTPException(method.getStatusText(),method.getStatusCode());
+			throw new HTTPException(method);
 		}
 		//Object o = 
 			CreateObject.doWebService(null, strUrl+"?wsdl");
@@ -2457,5 +2507,32 @@ public final class ConfigWebAdmin {
 			return name.equals(this.name);
 		}
 	}
+
+	 public void updateSerial(String serial) throws PageException {
+		 	
+	    	checkWriteAccess();
+	        if(!(config instanceof ConfigServer)) {
+	            throw new SecurityException("can't change serial number from this context, access is denied");
+	        }
+	        
+	        Element root=doc.getDocumentElement();
+	        if(!StringUtil.isEmpty(serial)){
+	        	serial=serial.trim();
+	        	if(!new SerialNumber(serial).isValid(serial))
+	        		throw new SecurityException("serial number is invalid");
+	        	root.setAttribute("serial-number",serial);
+	        }
+	        else{
+	        	try{
+	        		root.removeAttribute("serial-number");
+	        	}
+	        	catch(Throwable t){}
+	        }
+        	try{
+        		root.removeAttribute("serial");
+        	}
+        	catch(Throwable t){}
+	    }
+
 	
 }

@@ -295,15 +295,21 @@ public final class ASMUtil {
 			adapter.invokeVirtual(type, method);
 	}
 
-    public static byte[] createPojo(String className, ASMProperty[] properties,Class parent, String srcName) throws PageException {
+    public static byte[] createPojo(String className, ASMProperty[] properties,Class parent,Class[] interfaces, String srcName) throws PageException {
     	className=className.replace('.', '/');
     	className=className.replace('\\', '/');
     	className=railo.runtime.type.List.trim(className, "/");
-    	
+    	String[] inter=null;
+    	if(interfaces!=null){
+    		inter=new String[interfaces.length];
+    		for(int i=0;i<inter.length;i++){
+    			inter[i]=interfaces[i].getName().replace('.', '/');
+    		}
+    	}
     // CREATE CLASS	
 		//ClassWriter cw = new ClassWriter(true);
     	ClassWriter cw = ASMUtil.getClassWriter();
-        cw.visit(Opcodes.V1_2, Opcodes.ACC_PUBLIC, className, null, parent.getName().replace('.', '/'), null);
+        cw.visit(Opcodes.V1_2, Opcodes.ACC_PUBLIC, className, null, parent.getName().replace('.', '/'), inter);
     	
     // Constructor
         GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_OBJECT,null,null,cw);

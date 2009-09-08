@@ -27,6 +27,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.FileUtil;
@@ -97,6 +98,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterRemote;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.util.ApplicationContextImpl;
 import railo.runtime.video.VideoExecuter;
 import railo.transformer.library.function.FunctionLib;
@@ -110,6 +112,7 @@ import railo.transformer.library.tag.TagLibException;
 public final class ConfigWebFactory {
 
 	
+
 
 
 	/**
@@ -568,6 +571,18 @@ public final class ConfigWebFactory {
      */
     private static void loadSecurity(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
     	
+
+    // Serial Number
+        if(config instanceof ConfigServer) {
+            Element railoConfiguration = doc.getDocumentElement();
+    		String serial=railoConfiguration.getAttribute("serial-number");    
+            if(!StringUtil.isEmpty(serial))
+            	config.setSerialNumber(serial);
+        }
+        else if(configServer!=null) {
+            config.setSerialNumber(configServer.getSerialNumber());
+        }
+        
     // Security Manger    
        SecurityManager securityManager=null;
        if(config instanceof ConfigServerImpl) {
@@ -575,13 +590,24 @@ public final class ConfigWebFactory {
            Element security = getChildByName(doc.getDocumentElement(),"security");
            
            //Default SecurityManager
-           	cs.setDefaultSecurityManager(_toSecurityManager(security));
-           
+           	SecurityManagerImpl sm = _toSecurityManager(security);
+           	
+           	// addional file accesss directories
+           	Element[] elFileAccesses=getChildren(security,"file-access");
+           	sm.setCustomFileAccess(_loadFileAccess(config,elFileAccesses));
+
+           	cs.setDefaultSecurityManager(sm);
+           	
            // Web SecurityManager
            	Element[] accessors=getChildren(security,"accessor");
            	for(int i=0;i<accessors.length;i++) {
            	    String id=accessors[i].getAttribute("id");
-           	    if(id!=null)cs.setSecurityManager(id,_toSecurityManager(accessors[i]));
+           	    if(id!=null){
+           	    	sm=_toSecurityManager(accessors[i]);
+           	    	elFileAccesses=getChildren(accessors[i],"file-access");
+                   	sm.setCustomFileAccess(_loadFileAccess(config,elFileAccesses));
+           	    	cs.setSecurityManager(id,sm);
+           	    }
            	}
             
        }
@@ -590,13 +616,30 @@ public final class ConfigWebFactory {
            securityManager=configServer.getSecurityManager(config.getId());
        }
        if(config instanceof ConfigWebImpl) {
-           //print.out(securityManager+"+"+isEnterprise+"+"+configServer);
-    	   if(securityManager==null)securityManager=SecurityManagerImpl.getOpenSecurityManager();
+           if(securityManager==null)securityManager=SecurityManagerImpl.getOpenSecurityManager();
            ((ConfigWebImpl)config).setSecurityManager(securityManager);
        }
     }
 
-    private static SecurityManager _toSecurityManager(Element el) {
+    private static Resource[] _loadFileAccess(Config config,Element[] fileAccesses) {
+    	if(ArrayUtil.isEmpty(fileAccesses))return new Resource[0];
+    	
+    	java.util.List reses=new ArrayList();
+       	String path;
+       	Resource res;
+       	for(int i=0;i<fileAccesses.length;i++) {
+       	    path=fileAccesses[i].getAttribute("path");
+       	    if(!StringUtil.isEmpty(path)){
+       	    	res=config.getResource(path);
+       	    	if(res.isDirectory())
+       	    		reses.add(res);	
+       	    }
+       	}
+		return (Resource[]) reses.toArray(new Resource[reses.size()]);
+	}
+
+
+	private static SecurityManagerImpl _toSecurityManager(Element el) {
         SecurityManagerImpl sm = new SecurityManagerImpl(
                 _attr(el,"setting",SecurityManager.VALUE_YES),
                 _attr(el,"file",SecurityManager.VALUE_ALL),
@@ -862,7 +905,7 @@ public final class ConfigWebFactory {
 	    if(!f.exists())createFileFromResourceEL("/resource/context/form.cfm",f);
 	    
 	    f=contextDir.getRealResource("graph.cfm");
-	    if(!f.exists())createFileFromResourceEL("/resource/context/graph.cfm",f);
+	    if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/graph.cfm",f);
 	    
 	    f=contextDir.getRealResource("wddx.cfm");
 	    if(!f.exists())createFileFromResourceEL("/resource/context/wddx.cfm",f);
@@ -964,6 +1007,9 @@ public final class ConfigWebFactory {
 
         f=dbDir.getRealResource("MSSQL2.cfc");
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/dbdriver/MSSQL2.cfc",f);
+        
+        f=dbDir.getRealResource("DB2.cfc");
+        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/dbdriver/DB2.cfc",f);
         
         f=dbDir.getRealResource("Oracle.cfc");
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/dbdriver/Oracle.cfc",f);
@@ -1386,7 +1432,7 @@ public final class ConfigWebFactory {
                         ,toInt(dataSource.getAttribute("port"),-1)
                         ,dataSource.getAttribute("dsn")
     					,dataSource.getAttribute("username")
-                        ,dataSource.getAttribute("password")
+                        ,decrypt(dataSource.getAttribute("password"))
                         ,toInt(dataSource.getAttribute("connectionLimit"),-1)
                         ,toInt(dataSource.getAttribute("connectionTimeout"),-1)
                         ,toBoolean(dataSource.getAttribute("blob"),true)
@@ -1400,7 +1446,18 @@ public final class ConfigWebFactory {
 		  config.setDataSources(datasources);
 	}
 
-    private static Struct toStruct(String str) {
+    private static String decrypt(String str) {
+		if(StringUtil.isEmpty(str) || !StringUtil.startsWithIgnoreCase(str, "encrypted:")) return str;
+		str=str.substring(10);
+		return new BlowfishEasy("sdfsdfs").decryptString(str);
+	}
+    protected static String encrypt(String str) {
+		if(str==null) str="";
+		return "encrypted:"+new BlowfishEasy("sdfsdfs").encryptString(str);
+	}
+
+
+	private static Struct toStruct(String str) {
         Struct sct=new StructImpl();
         try {
             String[] arr = List.toStringArray(List.listToArrayRemoveEmpty(str,'&'));
@@ -1413,6 +1470,7 @@ public final class ConfigWebFactory {
             }   
         }
         catch(PageException ee) {}
+        
         return sct;
     }
 
@@ -1420,12 +1478,7 @@ public final class ConfigWebFactory {
     private static void setDatasource(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
             String databasename, int port, String dsn, String user, String pass, 
             int connectionLimit, int connectionTimeout, boolean blob, boolean clob, int allow, Struct custom) throws ClassException {
-		/*Class clazz = ClassUtil.loadClass(ClassLoader.getSystemClassLoader(),className);//
-		try {
-			Class.forName(className);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}*/
+		
         
 		datasources.put(datasourceName.toLowerCase(),
           new DataSourceImpl(datasourceName,className, server, dsn, databasename, port, user, pass,connectionLimit,connectionTimeout,blob,clob, allow,custom, false));
@@ -2251,7 +2304,23 @@ public final class ConfigWebFactory {
         boolean hasCS=configServer!=null;
         Element java=getChildByName(doc.getDocumentElement(),"java");
         
-        String strCompileType=java.getAttribute("");
+        //
+        String strInspectTemplate=java.getAttribute("inspect-template");
+        if(!StringUtil.isEmpty(strInspectTemplate)) {
+        	strInspectTemplate=strInspectTemplate.trim().toLowerCase();
+        	if(strInspectTemplate.equals("always")) 
+                config.setInspectTemplate(ConfigImpl.INSPECT_ALWAYS);
+        	else if(strInspectTemplate.equals("never")) 
+                config.setInspectTemplate(ConfigImpl.INSPECT_NEVER);
+        	else
+                config.setInspectTemplate(ConfigImpl.INSPECT_ONCE);
+        }
+        else if(hasCS) {
+            config.setInspectTemplate(configServer.getInspectTemplate());
+        }
+        
+        // 
+        String strCompileType=java.getAttribute("compile-type");
         if(!StringUtil.isEmpty(strCompileType)) {
             strCompileType=strCompileType.trim().toLowerCase();
             if(strCompileType.equals("after-startup")) {
@@ -2264,6 +2333,8 @@ public final class ConfigWebFactory {
         else if(hasCS) {
             config.setCompileType(configServer.getCompileType());
         }
+        
+        
     }
         
     private static void loadConstants(ConfigServerImpl configServer, ConfigImpl config, Document doc)  {
@@ -2356,7 +2427,7 @@ public final class ConfigWebFactory {
 			      			el.getAttribute("smtp"),
 			      			toInt(el.getAttribute("port"),25),
 			      			el.getAttribute("username"),
-			      			el.getAttribute("password"),
+			      			decrypt(el.getAttribute("password")),
 			      			toBoolean(el.getAttribute("tls"),false),
 			      			toBoolean(el.getAttribute("ssl"),false)
 		      		);

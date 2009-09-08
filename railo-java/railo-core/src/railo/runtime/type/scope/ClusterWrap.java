@@ -2,12 +2,15 @@ package railo.runtime.type.scope;
 
 import java.io.Serializable;
 
+import railo.print;
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
@@ -104,6 +107,8 @@ public class ClusterWrap extends ScopeSupport implements Cluster,Sizeable {
 	 * @see railo.runtime.type.StructImpl#set(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object set(Key key, Object value) throws PageException {
+		if(!core.checkValue(value))
+			throw new ExpressionException("object from type ["+Caster.toTypeName(value)+"] are not allowed in cluster scope" );
 		ClusterEntry entry;
 		core.addEntry(entry=new ClusterEntryImpl(key,(Serializable)value,offset));
 		super.setEL (key, entry);

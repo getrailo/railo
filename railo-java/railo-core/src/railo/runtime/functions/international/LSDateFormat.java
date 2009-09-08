@@ -3,22 +3,19 @@
  */
 package railo.runtime.functions.international;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.commons.date.TimeZoneUtil;
-import railo.commons.i18n.FormatUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.i18n.LocaleFactory;
+import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.dt.DateTimeImpl;
 
 public final class LSDateFormat implements Function {
 	
@@ -41,11 +38,14 @@ public final class LSDateFormat implements Function {
 		if(StringUtil.isEmpty(object)) return "";
 		
 		return new railo.runtime.format.DateFormat(locale).
-			format(toDateLS(locale,tz, object),mask,tz);
+			format(toDateLS(pc ,locale,tz, object),mask,tz);
 	}
 
-	private static DateTime toDateLS(Locale locale, TimeZone timeZone, Object object) throws PageException {
-		try{
+	private static DateTime toDateLS(PageContext pc ,Locale locale, TimeZone timeZone, Object object) throws PageException {
+		DateTime res = Caster.toDateTime(locale,Caster.toString(object),pc.getTimeZone(),null,locale.equals(Locale.US));
+		if(res!=null)return res;
+		return DateCaster.toDateAdvanced(object,timeZone);
+		/*try{
 			return DateCaster.toDateAdvanced(object,timeZone);
 		}
 		catch(PageException pe){
@@ -63,7 +63,7 @@ public final class LSDateFormat implements Function {
 				}
 			}
 			throw pe;
-		}
+		}*/
 	}
 	
 	private static long fixYear(TimeZone timezone,long time) {  

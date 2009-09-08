@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -187,7 +188,7 @@ public class CFMLEngineFactory {
            throw new ServletException(e);
         }
         
-        File[] patches=patcheDir.listFiles(new ExtensionFilter(new String[]{".rc",".rcs"}));
+        File[] patches=patcheDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
         File railo=null;
         if(patches!=null) {
             for(int i=0;i<patches.length;i++) {
@@ -345,29 +346,29 @@ public class CFMLEngineFactory {
      * @throws ServletException
      */
     private boolean update() throws IOException, ServletException {
-        
+    	
         URL hostUrl=getEngine().getUpdateLocation();
-        if(hostUrl==null)hostUrl=new URL("http://www.railo.ch");
-        URL infoUrl=new URL(hostUrl,"/railo/remote/version/info.cfm?version="+version);
-        URL secureUrl=new URL(hostUrl,"/railo/remote/version/secure.cfm?version="+version);
+        if(hostUrl==null)hostUrl=new URL("http://www.getrailo.org");
+        URL infoUrl=new URL(hostUrl,"/railo/remote/version/info.cfm?ext="+getCoreExtension()+"&version="+version);
+        //URL secureUrl=new URL(hostUrl,"/railo/remote/version/secure.cfm?ext="+getCoreExtension()+"&version="+version);
         
         tlog("Check for update at "+hostUrl);
         
         String availableVersion = Util.toString((InputStream)infoUrl.getContent()).trim();
-        boolean isSecure = Util.toBooleanValue(Util.toString((InputStream)secureUrl.getContent()).trim());
+        //boolean isSecure = Util.toBooleanValue(Util.toString((InputStream)secureUrl.getContent()).trim());
         
         if(availableVersion.length()!=9) throw new IOException("can't get update info from ["+infoUrl+"]");
         if(!isNewerThan(Util.toInVersion(availableVersion),version)) {
-            tlog("There is no never Version available");
+            tlog("There is no newer Version available");
             return false;
         }
         
-        tlog("Found a never Version \n - current Version "+version+"\n - available Version "+availableVersion);
+        tlog("Found a newer Version \n - current Version "+Util.toStringVersion(version)+"\n - available Version "+availableVersion);
         
-        URL updateUrl=new URL(hostUrl,"/railo/remote/version/update.cfm?version="+availableVersion);
-        
+        URL updateUrl=new URL(hostUrl,"/railo/remote/version/update.cfm?ext="+getCoreExtension()+"&version="+availableVersion);
+        System.out.println("updateurl:"+updateUrl);
         File patchDir=getPatchDirectory();
-        File newRailo=new File(patchDir,availableVersion+(isSecure?".rcs":".rc"));
+        File newRailo=new File(patchDir,availableVersion+("."+getCoreExtension()));//isSecure?".rcs":".rc"
         
         if(newRailo.createNewFile()) {
             Util.copy((InputStream)updateUrl.getContent(),new FileOutputStream(newRailo));  
@@ -409,7 +410,7 @@ public class CFMLEngineFactory {
             return false;
         }
         
-        tlog("Never Version ("+v+")installed");
+        tlog("Version ("+v+")installed");
         return true;
     }
     
@@ -436,7 +437,7 @@ public class CFMLEngineFactory {
      */
     private boolean removeUpdate() throws IOException, ServletException {
         File patchDir=getPatchDirectory();
-        File[] patches=patchDir.listFiles(new ExtensionFilter("railo"));
+        File[] patches=patchDir.listFiles(new ExtensionFilter(new String[]{"railo","rc","rcs"}));
         
         for(int i=0;i<patches.length;i++) {
         	if(!patches[i].delete())patches[i].deleteOnExit();

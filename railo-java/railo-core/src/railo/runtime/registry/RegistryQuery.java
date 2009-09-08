@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 
 import railo.commons.io.IOUtil;
+import railo.commons.lang.StringUtil;
 import railo.runtime.type.List;
 
 
@@ -146,8 +147,10 @@ public final class RegistryQuery {
 				//print.ln(":"+line);
 				//if(la.length==3) {
 				    
-				    String _key=line.substring(0,index).trim();
-				    String _value=line.substring(index+len+1).trim();
+				String _key=line.substring(0,index).trim();
+				//String _key=line.substring(0,index).trim();
+			    String _value=StringUtil.substringEL(line,index+len+1,"");
+				    //String _value=line.substring(index+len+1).trim();
 				    if(_key.equals(NO_NAME)) _key="";
 				    if(_type==RegistryEntry.TYPE_DWORD)_value=String.valueOf(Integer.parseInt(_value.substring(2),16));
 				    RegistryEntry re = new RegistryEntry(_type,_key,_value);

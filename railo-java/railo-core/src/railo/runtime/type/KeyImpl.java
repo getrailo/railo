@@ -14,7 +14,7 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 
-public class KeyImpl implements Collection.Key,Castable {
+public class KeyImpl implements Collection.Key,Castable,Comparable {
 	
 	private String key;
 	private String lcKey;
@@ -22,18 +22,20 @@ public class KeyImpl implements Collection.Key,Castable {
 	private int hashcode;
 	
 	
+	
 	private static Map keys=new HashTableNotSync();//asx//new HashMap();
-	//private static KeyImplMap keys=new KeyImplMap();//new HashMap();
 	
-	
+	//public final int index;
+	//private static int count=0;
 	
 	protected KeyImpl(String key) {
-		//print.dumpStack();
+		//this.index=count++;
+		
 		this.key=key;
 		this.lcKey=StringUtil.toLowerCase(key);
-		hashcode = lcKey.hashCode();
+		hashcode = lcKey.hashCode();//&0x7FFFFFFF;
 		keys.put(key,this);
-		
+		//print.out(key+":"+index+":"+hashcode);
 	}
 
 	
@@ -243,6 +245,19 @@ public class KeyImpl implements Collection.Key,Castable {
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(key, str);
 	}
+	
+
+	public int compareTo(Object o) {
+		try {
+			return Operator.compare(key, o);
+		} catch (PageException e) {
+			ClassCastException cce = new ClassCastException(e.getMessage());
+			cce.setStackTrace(e.getStackTrace());
+			throw cce;
+			
+		}
+	}
+	
 
 	public static Array toUpperCaseArray(Key[] keys) {
 		ArrayImpl arr=new ArrayImpl();

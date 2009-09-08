@@ -201,7 +201,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 			SpoolerTask task=null;
 			long nextExection;
 			ThreadLocalConfig.register(engine.config);
-
+			//ThreadLocalPageContext.register(engine.);
 			while(!engine.openTasks.isEmpty()) {
 				engine.resetAdds();
 				tasks=engine.getOpenTasks();
@@ -317,7 +317,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 			task.setClosed(true);
 			task=null;
 		} 
-		catch(Throwable t) {
+		catch(Throwable t) {t.printStackTrace();
 			task.setLastExecution(System.currentTimeMillis());
 			task.setNextExecution(calculateNextExecution(task));
 			log.error("remote-client", task.subject()+":"+t.getMessage());

@@ -123,6 +123,10 @@ public interface SecurityManager {
      * Field <code>VALUE_ALL</code>
      */
     public final static short VALUE_ALL = 2;
+    
+    
+    
+    
 
     public final static short VALUE_1 = 11;
     public final static short VALUE_2 = 12;

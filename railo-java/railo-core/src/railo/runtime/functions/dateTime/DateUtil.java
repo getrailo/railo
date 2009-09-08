@@ -129,8 +129,8 @@ public final class DateUtil {
      * @param days double value to convert to a number
      * @return DateTime Instance
      */
-    public static DateTimeImpl getDateTimeInstance(double days) {	
-    	long utc=(long)(days*DAY_MILLIS);
+    public static DateTimeImpl getDateTimeInstance(double days) {
+    	long utc=Math.round(days*DAY_MILLIS);
     	utc-=CF_UNIX_OFFSET;
     	utc-=getLocalTimeZoneOffset(utc);
     	return new DateTimeImpl(utc,false);

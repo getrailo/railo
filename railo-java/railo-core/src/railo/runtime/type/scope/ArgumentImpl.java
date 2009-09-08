@@ -45,6 +45,9 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 
 
 	private Set functionArgumentNames;
+
+
+	//private boolean namedArguments;
 	
 	/**
 	 * constructor of the class
@@ -430,4 +433,12 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	public void setFunctionArgumentNames(Set functionArgumentNames) {// future add to interface
 		this.functionArgumentNames=functionArgumentNames;
 	}
+/*
+	public void setNamedArguments(boolean namedArguments) {
+		this.namedArguments=namedArguments;
+	}
+	public boolean isNamedArguments() {
+		return namedArguments;
+	}
+*/
 }
