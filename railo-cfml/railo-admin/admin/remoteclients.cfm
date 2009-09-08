@@ -37,7 +37,7 @@
 <td colspan="#attributes.colspan#" class="tblHead">
 <table class="tbl" width="100%">
 <tr>
-	<td class="tblContent" style="background-color:DFE9F6" onclick="dumpOC('_remoteclient#request.recount#')">
+	<td class="tblContent" style="background-color:white" onclick="dumpOC('_remoteclient#request.recount#')">
 	
 		<script>
 		function dumpOC(name){
@@ -57,9 +57,9 @@
 		</script>
 		<table>
 		<tr>
-			<td valign="top"><img src="/railo-context/admin/resources/img/#request.adminType#-plus.gif.cfm" style="margin:2px 2px 0px 0px;" name="__btn_remoteclient#request.recount#"/></td>
-			<td><span class="comment"><b>#caller.stText.remote.sync.title#</b><br />
-		#caller.stText.remote.sync.desc# <cfif len(attributes.attention)><br /><br /><span style="color:red">#attributes.attention#</span></cfif></span></td>
+			<td valign="top"><img src="resources/img/plus.png.cfm" style="margin:2px 2px 0px 0px;" name="__btn_remoteclient#request.recount#"/></td>
+			<td>#caller.stText.remote.sync.title#<br />
+		<span class="comment">#caller.stText.remote.sync.desc# <cfif len(attributes.attention)><br /><br /><span style="color:red">#attributes.attention#</span></cfif></span></td>
 		</tr>
 		</table>
 	
@@ -68,7 +68,7 @@
 	</td>
 </tr>
 <tr name="__remoteclient#request.recount#" style="display:none;">
-	<td class="tblContent" style="background-color:DFE9F6;">
+	<td class="tblContent" style="background-color:white;">
 		<table class="tbl">
 		<cfloop query="clients"><cfif ListFindNoCase(clients.usage,"synchronisation")>
 		<tr>

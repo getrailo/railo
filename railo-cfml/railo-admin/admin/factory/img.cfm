@@ -1,7 +1,7 @@
 <cfdirectory directory="../factory/img" action="list" name="imgs">
 <cfset bins=struct()>
 <cfloop query="imgs">
-	<cfif findnoCase(".gif",imgs.name) or findnoCase(".swf",imgs.name) >
+	<cfif findnoCase(".png",imgs.name) or findnoCase(".gif",imgs.name) or findnoCase(".swf",imgs.name) >
 		<cffile action="readbinary" file="../factory/img/#imgs.name#" variable="data">
 		
 		

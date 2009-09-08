@@ -34,10 +34,10 @@
 # sttext.remote.securityKeyTitleDesc#
 
 <br /><br /><br /><br />
-<center><h2 style="width:350px;padding:10px;background-color:white;border-color:##595F73;border-style:solid;border-width:1px;" align="center">
-	#getRailoId()[request.adminType].securityKey#
-</h2>
-
+<center><div style="width:400px;padding:10px;background-color:white;border-color:##595F73;border-style:solid;border-width:1px;" align="center">
+	<h2 style="display:inline">#getRailoId()[request.adminType].securityKey#</h2>
+</div>
+<br /><br /><br />
 <cfform action="#request.self#?action=#url.action#" method="post">
 			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.reset#">
 </cfform>

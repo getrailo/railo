@@ -197,3 +197,32 @@
 
 <cfset stText.application.AllowURLRequestTimeout="Request timeout in URL">
 <cfset stText.application.AllowURLRequestTimeoutDesc="When the URL parameter [RequestTimeout] is passed in the URL obey it (behaviour like CFML 5, 7 & 8)">
+
+<cfset stText.setting.cacheDesc="Different Cache and Performance settings to improve overall performance">
+
+<cfset stText.setting.inspectTemplate="Inspect Templates (CFM/CFC)">
+
+
+<cfsavecontent variable="stText.setting.inspectTemplateNeverDesc">
+When checked, any requested found to currently reside in the template cache will not be inspected for potential updates. For sites where templates are not updated during the life of the server, this minimizes file system overhead.
+</cfsavecontent>
+<cfsavecontent variable="stText.setting.inspectTemplateOnceDesc">
+When checked, any requested files will be inspected only once for potential updates within a request. For sites where templates are not expected to reflect updates within the same request, this minimizes file system overhead. 
+</cfsavecontent>
+<cfsavecontent variable="stText.setting.inspectTemplateAlwaysDesc">
+When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.
+</cfsavecontent>
+
+<cfset stText.setting.inspectTemplateOnce="Once ( Good )">
+<cfset stText.setting.inspectTemplateNever="Never ( Best Performance )">
+<cfset stText.setting.inspectTemplateAlways="Always ( Bad )">
+
+
+
+<cfset stText.setting.templateCache="Template Cache">
+<cfset stText.setting.templateCacheClear="Clear Template Cache ( {count} Element(s) )">
+<cfset stText.setting.templateCacheClearDesc="Press the button above to clear the template cache.">
+
+<cfset stText.setting.queryCache="Query Cache">
+<cfset stText.setting.queryCacheClear="Clear Query Cache ( {count} Element(s) )">
+<cfset stText.setting.queryCacheClearDesc="Press the button above to clear the query cache.">

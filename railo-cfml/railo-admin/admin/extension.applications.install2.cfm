@@ -194,7 +194,7 @@
 	</cfif>
 	<cfif len(trim(steps[url.step].getLabel())&trim(steps[url.step].getDescription()))>
     <tr>
-    <td colspan="3"> <cfif len(trim(steps[url.step].getLabel()))><h2 style="margin:0px;margin-bottom:4px;">#steps[url.step].getLabel()#</h2></cfif>#steps[url.step].getDescription()#<br /></td>
+    <td colspan="3"> <cfif len(trim(steps[url.step].getLabel()))><h2>#steps[url.step].getLabel()#</h2></cfif>#steps[url.step].getDescription()#<br /></td>
     </tr>
 </cfif>
 <cfloop array="#groups#" index="group">

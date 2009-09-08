@@ -140,7 +140,7 @@ function checkTheBox(field) {
 				</td>
 				<td>
 <cfif hasAccess><a href="#request.self#?action=#url.action#&action2=create&url=#hash(clients.url)#">
-			<img hspace="2" src="resources/img/#ad#-edit.gif.cfm" border="0"></a></cfif></td>
+			<img hspace="2" src="resources/img/edit.png.cfm" border="0"></a></cfif></td>
 			</tr>
 			</table>
 			</td>

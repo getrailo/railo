@@ -1,3 +1,5 @@
+<cfparam name="stVeritfyMessages" default="#struct()#">
+
 <cffunction name="def" returntype="string" output="false">
 	<cfargument name="key" type="string">
 	<cfreturn "">
@@ -194,27 +196,43 @@
 			<option <cfif access.file EQ "local">selected</cfif>>#stText.Security.FileLocal#</option>
 			<option <cfif access.file EQ "none">selected</cfif>>#stText.Security.FileNone#</option>
 		</select>
-<!--- 
-bessee fehlermeldung
-Message Cant cast Complex Object Type [framework.event_cfc276$1] to a value of type [Struct] 
+	
+    <cfset stText.Security.FilePath="Directory">
+    <cfset stText.Security.FileCustom="Custom Directories">
+    <cfset stText.Security.FileCustomDesc="In Addion you can define some directories where access is allowed">
+   
+<cfif access.file NEQ "all">
+    <br />
+    <br />
+#stText.Security.FileCustom#<br />
+<span class="comment">#stText.Security.FileCustomDesc#</span>
+<table class="tbl" width="400">
+<tr>
+	<td colspan="5"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+</tr>
+<tr>
+	<td width="350" class="tblHead" nowrap>#stText.Security.FilePath#</td>
+</tr>
 
-betroffene Tags
-- directory (alle)
-- file (all)
-- collection (path)
-- content (file)
-- execute (outputfile)
-- ftp (localfile)
-- http (file)
-- index (key)
-- mail (mimeattach)
-- search (path,file)
+	<cfloop index="idx" from="1" to="#arrayLen(access.file_access)#">
+		<tr>
+		<!--- path --->
+			<td class="tblContent" nowrap><cfinput 
+				type="text" name="path_#idx#" 
+				value="#access.file_access[idx]#" required="no"  style="width:400px"></td>
+		
+		</tr>
+	</cfloop>
+	<!--- INSERT --->
+	
+		<tr>
+			<td class="tblContent" nowrap><cfinput type="text" name="path_#arrayLen(access.file_access)+1#" value="" required="no"  style="width:400px"></td>
+		</tr>
+	
+</table>
+    
+    </cfif>
 
-betroffene Functions
-- directoryExists
-- fileExists
-- getTempFile
- --->
 	</td>
 </tr>
 

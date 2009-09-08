@@ -3,6 +3,7 @@
 		struct(
 			action:"server",label:"Einstellungen",
 			children:array(
+				struct(action:"cache",label:"Performance/Caching"),
 				struct(action:"regional",label:"Regionales"),
 				struct(action:"component",label:"Komponenten"),
 				struct(action:"charset",label:"Charset"),
@@ -57,7 +58,7 @@
 			children:array(
 				struct(action:"access",label:"Zugriff",hidden:request.adminType NEQ "server"),
 				struct(action:"password",label:"Passwort",display:true)
-				//struct(action:"serial",label:"Seriennummer",hidden:request.adminType NEQ "server",display:true)
+				,struct(action:"serial",label:"Seriennummer",hidden:request.adminType NEQ "server" or server.ColdFusion.ProductLevel NEQ "enterprise",display:true)
 			)
 		),
 		struct(action:"documentation",label:"Dokumentation",

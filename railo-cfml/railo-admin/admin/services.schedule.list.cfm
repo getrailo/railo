@@ -163,7 +163,7 @@ List --->
 		<tr>
 			<td><input type="checkbox" class="checkbox" name="row_#tasks.currentrow#" value="#tasks.currentrow#"></td>
 			<td><a href="#request.self#?action=#url.action#&action2=edit&task=#hash(tasks.task)#">
-			<img hspace="2" src="resources/img/#ad#-edit.gif.cfm" border="0"></a></td>
+			<img hspace="2" src="resources/img/edit.png.cfm" border="0"></a></td>
 		</tr>
 		</table>
 		</td>

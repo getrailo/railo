@@ -48,7 +48,7 @@ function selectAll(field) {
 		
 		<!--- edit --->
 		<td><cfif not mappings.readOnly><a href="#request.self#?action=#url.action#&action2=create&virtual=#mappings.virtual#">
-		<img src="resources/img/#ad#-edit.gif.cfm" border="0"></a></cfif></td>
+		<img src="resources/img/edit.png.cfm" border="0"></a></cfif></td>
 		
 		
 		

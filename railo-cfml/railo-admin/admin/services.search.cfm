@@ -164,7 +164,7 @@ function selectAll(field) {
 				<table border="0" cellpadding="0" cellspacing="0">
 				<tr>
 					<td><input type="checkbox" class="checkbox" name="name[]" value="#collections.name#"></td>
-					<td><a href="#request.self#?action=#url.action#&collection=#collections.name#"><img hspace="2" src="resources/img/#ad#-edit.gif.cfm" border="0"></a></td>
+					<td><a href="#request.self#?action=#url.action#&collection=#collections.name#"><img hspace="2" src="resources/img/edit.png.cfm" border="0"></a></td>
 				</tr>
 				</table>
 				

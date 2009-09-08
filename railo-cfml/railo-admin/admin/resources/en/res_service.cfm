@@ -37,6 +37,7 @@
 
 <cfset stText.services.update.desc= "You can patch Railo in order to receive the latest bugfixes and improved version.">
 <cfset stText.services.update.infoTitle= "Info">
+<cfset stText.services.update.jira= "For details go to our {a}Bug Tracking System{/a}">
 <cfset stText.services.update.update= "A patch {available} is available for your current version {current}.">
 <cfset stText.services.update.noUpdate= "For your version {current} is no patch available">
 <cfset stText.services.update.setTitle= "Properties">

@@ -1,7 +1,7 @@
 <cfcomponent extends="Driver" output="no" implements="IDriver">
 	
 	<cfset fields=array(
-		field("Charset","CharacterEncording","UTF8",false,"Very important setting, determines the byte value to character mapping for CHAR/VARCHAR/TEXT values."),
+		field("Charset","CharacterEncoding","UTF8",false,"Very important setting, determines the byte value to character mapping for CHAR/VARCHAR/TEXT values."),
 		//field("cache ResultSetMetadata","cacheResultSetMetadata","true,false",false,"Should the driver cache ResultSetMetaData for Statements and PreparedStatements.","radio"),
 		
 		field("Alias Handling","useOldAliasMetadataBehavior","true,false",false,"Should the driver use the legacy behavior for ""AS"" clauses on columns and tables, 

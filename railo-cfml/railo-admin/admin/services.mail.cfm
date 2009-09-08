@@ -271,9 +271,11 @@ Existing Collection --->
 				value="#ms.username#" required="no"  style="width:120px" 
 				message="#stText.Mail.UserNameMissing##ms.currentrow#)"></cfif></td>
 		<!--- password --->
-			<td class="tblContent" nowrap><cfif ms.readonly>#ms.password#&nbsp;<cfelse><cfinput 
-				onKeyDown="checkTheBox(this)" type="text" 
-				name="password_#ms.currentrow#" value="#ms.password#" required="no"  
+			<td class="tblContent" nowrap><cfif ms.readonly>#ms.password#&nbsp;<cfelse>
+            #ms.password#
+            <cfinput 
+				onKeyDown="checkTheBox(this)" type="password"   passthrough='autocomplete="off"'
+				name="password_#ms.currentrow#" value="#ms.password#" required="no"  onClick="this.value='';" 
 				style="width:120px" message="#stText.Mail.PasswordMissing##ms.currentrow#)"></cfif></td>
 		<!--- port --->
 			<td class="tblContent" nowrap><cfif ms.readonly>#ms.port#&nbsp;<cfelse><cfinput onKeyDown="checkTheBox(this)" 

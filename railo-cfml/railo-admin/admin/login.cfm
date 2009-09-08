@@ -36,7 +36,7 @@ var flag=new Flag(new Array('de','en'));
 
 <tr>
 	<td class="tblHead" width="100" align="right">#stText.Login.Password#</td>
-	<td class="tblContent" width="200"><cfinput type="password" name="login_password#request.adminType#" value="" 
+	<td class="tblContent" width="200"><cfinput type="password" name="login_password#request.adminType#" value=""   passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.Login.PasswordMissing#"></td>
 </tr>
 <cfoutput>

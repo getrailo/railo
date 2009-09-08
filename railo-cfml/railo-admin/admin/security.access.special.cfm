@@ -84,7 +84,7 @@ Overview
 				<td><input type="checkbox" class="checkbox" name="ids_#contextes.currentrow#" value="#contextes.id#">
 				</td>
 				<td><a href="#go(url.action,"edit",struct(id:contextes.id))#">
-			<img hspace="2" src="resources/img/#ad#-edit.gif.cfm" border="0"></a></td>
+			<img hspace="2" src="resources/img/edit.png.cfm" border="0"></a></td>
 			</tr>
 			</table>
 			</td>

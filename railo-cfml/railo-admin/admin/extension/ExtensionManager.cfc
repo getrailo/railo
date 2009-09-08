@@ -101,13 +101,29 @@
         
         <cfsetting requesttimeout="1000000">
         <cfset var rtn=struct()>
+        <cfset var serialNumber="">
 		<cfset var destFile=arguments.dest&"/"&arguments.app.version&".rep">
+        <cftry>
+        	<cfadmin 
+                    action="getSerial"
+                    type="#request.adminType#"
+                    password="#session["password"&request.adminType]#"
+                    returnVariable="serialNumber">
+            <cfif len(serialNumber)>
+				<cfset serialNumber=Encrypt(serialNumber,"wfsfr456","cfmx_compat","Hex")>
+			</cfif>
+        	<cfcatch>
+            <cfset serialNumber="">
+            </cfcatch>
+        </cftry>
 		<cfif not FileExists(destFile)>
+        
 			<!--- static download --->
             <cfif isDefined('app.download') and len(trim(app.download))>
                 <cffile action="copy" source="#app.download#" destination="#destFile#" mode="777">
             <cfelse>
-            	<cfset var rtn=request.getDownloadDetails(url.provider,request.admintype,getRailoId()['server'].id,getRailoId()['web'].id,app.id)>
+            	
+            	<cfset var rtn=request.getDownloadDetails(url.provider,request.admintype,getRailoId()['server'].id,getRailoId()['web'].id,app.id,serialNumber)>
                 
                 <cfif isDefined('rtn.url') and len(rtn.url)>
                 

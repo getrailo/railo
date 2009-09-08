@@ -220,8 +220,8 @@ Password --->
 	<td class="tblHead" width="150">#stText.Settings.dbPass#</td>
 	<td class="tblContent" width="300">
 		<span class="comment">#stText.Settings.dbPassDesc#</span><br>
-		<cfinput type="text" name="Password" 
-		value="#datasource.password#" style="width:300px" required="#typePassword EQ TYPE_REQUIRED#"></td>
+		<cfinput type="password" name="Password"  passthrough='autocomplete="off"'
+		value="#datasource.password#" style="width:300px" onClick="this.value='';" required="#typePassword EQ TYPE_REQUIRED#"></td>
 </tr>
 </cfif>
 <tr>

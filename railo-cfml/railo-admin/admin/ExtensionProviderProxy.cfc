@@ -43,8 +43,9 @@
         <cfargument name="serverId" required="yes" type="string">
         <cfargument name="webId" required="yes" type="string">
         <cfargument name="appId" required="yes" type="string">
+    	<cfargument name="serialNumber" required="no" type="string">
     
     	<cfset cfc = createObject('webservice',this.cfcName&"?wsdl")>
-        <cfreturn cfc.getDownloadDetails(type,serverId,webId,appId)>
+        <cfreturn cfc.getDownloadDetails(type,serverId,webId,appId,serialNumber)>
     </cffunction>
 </cfcomponent>

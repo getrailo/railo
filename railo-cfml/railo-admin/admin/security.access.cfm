@@ -9,6 +9,16 @@ function isYes(accessor) {
 function fb(key) {
 	return StructKeyExists(form,key) and form[key];
 }
+
+function getFileAccessPath() {
+	var arr=array();
+	var index=1;
+	while(StructKeyExists(form,'path_'&index)){
+		arr[arrayLen(arr)+1]=form['path_'&index];
+		index++;
+	}
+	return arr;
+}
 </cfscript>
 
 <cfparam name="url.action2" default="list">
@@ -28,6 +38,7 @@ function checkTheBox(field) {
 	<cfswitch expression="#url.action2#">
 	<!--- UPDATE --->
 		<cfcase value="updateDefaultSecurityManager">
+        
 			<cfadmin 
 				action="updateDefaultSecurityManager"
 				type="#request.adminType#"
@@ -35,6 +46,7 @@ function checkTheBox(field) {
 				
 				setting="#fb('defaultSetting')#"
 				file="#form.defaultFile#"
+                file_access="#getFileAccessPath()#"
 				direct_java_access="#fb('defaultDirectJavaAccess')#"
 				mail="#fb('defaultMail')#"
 				datasource="#form.defaultDatasource#"
@@ -64,6 +76,7 @@ function checkTheBox(field) {
 				id="#url.id#"
 				setting="#fb('defaultSetting')#"
 				file="#form.defaultFile#"
+				file_access="#getFileAccessPath()#"
 				direct_java_access="#fb('defaultDirectJavaAccess')#"
 				mail="#fb('defaultMail')#"
 				datasource="#form.defaultDatasource#"
@@ -107,7 +120,7 @@ function checkTheBox(field) {
 		
 		
 	</cfswitch>
-	<cfcatch>
+	<cfcatch><cfrethrow>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>
@@ -145,6 +158,7 @@ Error Output --->
 			type="#request.adminType#"
 			password="#session["password"&request.adminType]#"
 			returnVariable="access">
+            
 		<cfinclude template="security.access.form.cfm">
 	</cfmodule>
 	<cfmodule template="tab.cfm" name="special">

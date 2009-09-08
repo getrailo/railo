@@ -53,7 +53,7 @@ Error Output --->
 	<cfset var http="">
 	<cftry>
 	<cfhttp 
-			url="#update.location#/railo/remote/version/Info.cfc?method=getpatchversionfor&version=#server.railo.version#" 
+			url="#update.location#/railo/remote/version/Info.cfc?method=getpatchversionfor&level=#server.ColdFusion.ProductLevel#&version=#server.railo.version#" 
 		method="get" resolveurl="no" result="http">
 	<cfwddx action="wddx2cfml" input="#http.fileContent#" output="wddx">
 	<cfset session.avaiableVersion=wddx>
@@ -69,7 +69,7 @@ Error Output --->
 	<cfset var http="">
 	<cftry>
 	<cfhttp 
-		url="#update.location#/railo/remote/version/Info.cfc?method=getPatchVersionDocFor&version=#server.railo.version#" 
+		url="#update.location#/railo/remote/version/Info.cfc?method=getPatchVersionDocFor&level=#server.ColdFusion.ProductLevel#&version=#server.railo.version#" 
 		method="get" resolveurl="no" result="http"><!--- #server.railo.version# --->
 	<cfwddx action="wddx2cfml" input="#http.fileContent#" output="wddx">
 	<cfreturn wddx>
@@ -147,9 +147,39 @@ Info --->
 <h2>#stText.services.update.infoTitle#</h2>
 <cfif hasUpdate>
 #replace(replace(replace(stText.services.update.update,'{available}','<b>#avi#</b>'),'{current}','<b>#curr#</b>'),'{avaiable}','<b>#avi#</b>')#
-<form>
-<textarea name="doc" rows="10" cols="90">#getAviableVersionDoc()#</textarea>
-</form>
+<cfscript>
+// Jira
+jira=stText.services.update.jira;
+jira=replace(jira,'{a}','<a href="http://jira.jboss.org/jira/browse/RAILO" target="_blank">');
+jira=replace(jira,'{/a}','</a>');
+try	{
+	// Changelog
+	content=getAviableVersionDoc();
+	start=1;
+	arr=array();
+	
+	while(true){
+		res=REFindNoCase("\[\ *(RAILO-([0-9]*)) *\]",content,start,true);
+		if(arraylen(res.pos) LT 3)break;
+		ArrayAppend(arr,res);
+		start=res.pos[1]+res.len[1];
+	}
+	
+	for(i=arrayLen(arr);i>=1;i--){
+		res=arr[i];
+		label=mid(content,res.pos[2],res.len[2]);
+		nbr=mid(content,res.pos[3],res.len[3]);
+		content=replace(content,label,'<a target="_blank" href="http://jira.jboss.org/jira/browse/RAILO-'&nbr&'">'& label& '</a>');
+	}
+}
+catch(e){}
+
+</cfscript>
+
+
+<div class="tblContent" style="overflow:auto;width:740px;height:200px;border-style:solid;border-width:1px;padding:10px"><pre>#trim(content)#</pre></div>
+#jira#
+
 <cfelse>
 #replace(stText.services.update.noUpdate,'{current}',curr)#
 </cfif>

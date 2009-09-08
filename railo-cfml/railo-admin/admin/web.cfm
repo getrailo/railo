@@ -27,7 +27,7 @@
 <!--- Load Plugins --->
 <cfset plugins=array()>
 <cfif StructKeyExists(session,"password"&request.adminType)>
-<cfadmin 
+<cftry><cfadmin 
     action="getPluginDirectory"
     type="#request.adminType#"
     password="#session["password"&request.adminType]#"
@@ -36,10 +36,10 @@
 <cfset mappings['/railo_plugin_directory/']=pluginDir>
 <cfapplication action="update" mappings="#mappings#">
 
-<cftry>
+
 	<cfdirectory directory="#plugindir#" action="list" name="plugindirs" recurse="no">
     
-	<cfcatch type="security">
+	<cfcatch >
 		<cfset plugindirs=queryNew('name')>
 	</cfcatch>
 </cftry>
@@ -75,6 +75,7 @@ if(arrayLen(plugins))navigation[arrayLen(navigation)+1]=plugin;
 context=''; 
 // write Naviagtion
 strNav='';
+arrow='<img src="resources/img/arrow.gif.cfm"  width="4" height="7" />';
 current.label="Overview";
 if(isDefined("url.action"))current.action=url.action;
 else current.action="overview";
@@ -104,14 +105,14 @@ for(i=1;i lte arrayLen(navigation);i=i+1) {
 				if(structKeyExists(stCld,'_action'))_action=stCld._action;
 				else _action=stNavi.action & '.' & stCld.action;
 				
-				subNav = subNav & '<div class="navsub"><a class="#sClass#" href="' & request.self & '?action=' & _action & '">' & stCld.label & '</a></div>';
+				subNav = subNav & '<div class="navsub">'&arrow&'<a class="#sClass#" href="' & request.self & '?action=' & _action & '"> ' & stCld.label & '</a></div>';
 			}
 		}
 	}
 	strNav = strNav &'';
 	hasChildren=hasChildren and len(subNav) GT 0;
 	if(not hasChildren) {
-		if(toBool(stNavi,"display"))strNav = strNav & '<div class="navtop"><a class="navtop" href="' & request.self & '?action=' & stNavi.action & '">' & stNavi.label & '</a></div>';
+		if(toBool(stNavi,"display"))strNav = strNav & '<div class="navtop">ssssss<a class="navtop" href="' & request.self & '?action=' & stNavi.action & '">' & stNavi.label & '</a></div>';
 	}
 	else {
 		strNav = strNav & '<div class="navtop">' & stNavi.label & '</div>'&subNav& "";

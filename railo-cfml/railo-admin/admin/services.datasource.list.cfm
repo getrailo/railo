@@ -280,7 +280,7 @@ function selectAll(field) {
 				<input type="hidden" name="password_#srcLocal.currentrow#" value="#srcLocal.Password#">
 				</td>
 				<td><a href="#request.self#?action=#url.action#&action2=create&name=#srcLocal.name#">
-			<img hspace="2" src="resources/img/#ad#-edit.gif.cfm" border="0"></a></td>
+			<img hspace="2" src="resources/img/edit.png.cfm" border="0"></a></td>
 			</tr>
 			</table>
 			</td>

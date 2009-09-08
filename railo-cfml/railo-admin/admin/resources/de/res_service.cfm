@@ -41,6 +41,7 @@
 Sie können Railo auf eine neue Version patchen, also bekannte Fehler ausbügeln 
 und Optimierungen innerhalb ihrer Version einspielen.">
 <cfset stText.services.update.infoTitle= "Info">
+<cfset stText.services.update.jira= "Für Details besuchen Sie unser {a}Bug Tracking System{/a}">
 <cfset stText.services.update.update= "Für Ihre Version steht ein Patch zur Verfügung, Sie haben die Version {current} installiert, die aktuell verfügbare Version ist {avaiable}">
 <cfset stText.services.update.noUpdate= "Für Ihre Version {current} steht kein Patch zur Verfügung">
 <cfset stText.services.update.setTitle= "Einstellungen">

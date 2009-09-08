@@ -197,3 +197,30 @@
 <cfset stText.application.AllowURLRequestTimeout="Request timeout via URL">
 <cfset stText.application.AllowURLRequestTimeoutDesc="Angabe des Parameters [RequestTimeout] in der URL berücksichtigen (Verhalten wie CFML 5, 7 & 8)">
 
+<cfset stText.setting.cacheDesc="Verschiedene Cache and Performance Einstellungen um die Ausführung zu verbessern.">
+
+<cfset stText.setting.inspectTemplate="Templates inspizieren (CFM/CFC)">
+
+
+<cfsavecontent variable="stText.setting.inspectTemplateNeverDesc">
+When checked, any requested found to currently reside in the template cache will not be inspected for potential updates. For sites where templates are not updated during the life of the server, this minimizes file system overhead.
+</cfsavecontent>
+<cfsavecontent variable="stText.setting.inspectTemplateOnceDesc">
+When checked, any requested files will be inspected only once for potential updates within a request. For sites where templates are not expected to reflect updates within the same request, this minimizes file system overhead. 
+</cfsavecontent>
+<cfsavecontent variable="stText.setting.inspectTemplateAlwaysDesc">
+When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.
+</cfsavecontent>
+
+<cfset stText.setting.inspectTemplateNever="Nie ( Beste Performance )">
+<cfset stText.setting.inspectTemplateOnce="Einmal ( Gut )">
+<cfset stText.setting.inspectTemplateAlways="Immer ( Schlecht )">
+
+
+<cfset stText.setting.templateCache="Template Cache">
+<cfset stText.setting.templateCacheClear="Template Cache leeren ( {count} Element(s) )">
+<cfset stText.setting.templateCacheClearDesc="Drücken Sie den Button oberhalb um den Template Cache zu leeren.">
+
+<cfset stText.setting.queryCache="Query Cache">
+<cfset stText.setting.queryCacheClear="Query Cache leeren ( {count} Element(s) )">
+<cfset stText.setting.queryCacheClearDesc="Drücken Sie den Button oberhalb um den Query Cache zu leeren.">

@@ -132,12 +132,13 @@
     <cfargument name="serverId" required="yes" type="string">
     <cfargument name="webId" required="yes" type="string">
     <cfargument name="appId" required="yes" type="string">
+    <cfargument name="serialNumber" required="no" type="string">
     
    <cfset providers=request.providers>
 	<cfloop query="providers">
 		<cfif hash(providers.url) EQ arguments.hashProvider>
             <cfset detail.provider= request.loadCFC(providers.url)>
-            <cfreturn detail.provider.getDownloadDetails(type,serverId,webId,appId)>
+            <cfreturn detail.provider.getDownloadDetails(type,serverId,webId,appId,serialNumber)>
         </cfif>
 	</cfloop>
     <cfreturn struct()>
