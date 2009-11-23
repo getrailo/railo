@@ -10,7 +10,7 @@
 		sessionmanagement="yes" 
 		clientmanagement="no" 
 		setclientcookies="yes" 
-		setdomaincookies="no">#chr(60)#cfsetting showdebugoutput="no">#chr(60)#cfcontent type="image/gif" content="###serialize(data)###">
+		setdomaincookies="no">#chr(60)#cfsetting showdebugoutput="no">#chr(60)#cfcontent type="image/gif" variable="###serialize(data)###">
 	</cfsavecontent></cfoutput>
 	<cfdump eval="expandPath('../resources/img/#imgs.name#.cfm')">
 		<cffile action="write" addnewline="no" file="../resources/img/#imgs.name#.cfm" output="#content#" fixnewline="no">

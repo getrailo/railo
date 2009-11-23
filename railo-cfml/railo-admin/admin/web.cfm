@@ -4,17 +4,26 @@
 	clientmanagement="no" 
 	setclientcookies="yes" 
 	setdomaincookies="no">
+<cfset cookieKey="sdfsdf789sdfsd">
 <cfparam name="request.adminType" default="web">
+<cfparam name="form.rememberMe" default="s">
+<cfset ad=request.adminType>
 <!--- Form --->
 <cfif StructKeyExists(form,"login_password"&request.adminType)>
 	<cfset session["password"&request.adminType]=form["login_password"&request.adminType]>
 	<cfset session.railo_admin_lang=form.lang>
 	<cfcookie expires="NEVER" name="railo_admin_lang" value="#session.railo_admin_lang#">
+	<cfif form.rememberMe NEQ "s">
+		<cfcookie expires="#DateAdd(form.rememberMe,1,now())#" name="railo_admin_pw_#ad#" value="#Encrypt(form["login_password"&ad],cookieKey)#">
+        
+    <cfelse>
+		<cfcookie expires="Now" name="railo_admin_pw_#ad#" value="">
+	</cfif>
 	<cfif isDefined("cookie.railoa_dmin_lastpage") and cookie.railo_admin_lastpage neq "logout">
 		<cfset url.action = cookie.railo_admin_lastpage>
 	</cfif>
 </cfif>
-<cfset ad=request.adminType>
+
 <cfinclude template="resources/text.cfm">
 <!--- Includes the Menu --->
 <cfinclude template="resources/#session.railo_admin_lang#/res_menu.cfm">
@@ -131,7 +140,7 @@ function getRemoteClients() {
 request.getRemoteClients=getRemoteClients;
 </cfscript>
 <cfset login_error="">
-<!--- Form --->
+<!--- new pw Form --->
 <cfif StructKeyExists(form,"new_password") and StructKeyExists(form,"new_password_re")>
 	<cfif len(form.new_password) LT 6>
 		<cfset login_error="password is to short, it must have at least 6 chars">
@@ -144,6 +153,16 @@ request.getRemoteClients=getRemoteClients;
 			newPassword="#form.new_password#">
 		<cfset session["password"&request.adminType]=form.new_password>
 	</cfif> 
+</cfif>
+
+<!--- cookie ---->
+<cfset fromCookie=false>
+<cfif not StructKeyExists(session,"password"&request.adminType) and StructKeyExists(cookie,'railo_admin_pw_#ad#')>
+	<cfset fromCookie=true>
+    <cftry>
+		<cfset session["password"&ad]=Decrypt(cookie['railo_admin_pw_#ad#'],cookieKey)>
+    	<cfcatch></cfcatch>
+    </cftry>
 </cfif>
 
 <!--- Session --->

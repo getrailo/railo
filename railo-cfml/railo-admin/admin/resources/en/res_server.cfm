@@ -1,12 +1,13 @@
 <!--- Regional --->
-<cfset stText.Regional.Server                = "Here you can define regional settings that will be used as a <strong>default</strong> for all webs. This settings have no direct effect on the current instance.">
+<cfset stText.Regional.Server                = "You can define regional settings that will be used as a default for all web contexts here. These settings have no direct effect on the current instance. Railo lets you set your own individual locale, timezone and timeserver.">
 <cfset stText.Regional.Web                   = "Railo lets you set your own individual locale, timezone and timeserver.">
 <cfset stText.Regional.Locale                = "Locale">
 <cfset stText.Regional.LocaleDescription    = "Define the desired time locale for Railo, this will change the default locale for the context of the web.">
 <cfset stText.Regional.Other                 = " --- other --- ">
 <cfset stText.Regional.TimeZone              = "Time zone">
 <cfset stText.Regional.TimeZoneDescription   = "Define the desired time zone for Railo, this will also change the time for the context of the web.<br/>">
-<cfset stText.Regional.ServerProp       	 = "Server Default Value">
+<cfset stText.Regional.ServerProp.server     = "Server Value">
+<cfset stText.Regional.ServerProp.web       = "Server Administrator Value">
 <cfset stText.Regional.TimeServer            = "Time server (NTP)">
 <cfset stText.Regional.TimeServerDescription = "Time server that returns the current time. If set, this time will be used within Railo instead of the local server time. (Example: swisstime.ethz.ch, time.nist.gov)<br/>">
 <cfset stText.Regional.TimeServerMissing     = "Please define a value for the field timezone">
@@ -32,7 +33,7 @@
 
 <!--- Components --->
 <cfset stText.Components.Component                        = "Component">
-<cfset stText.Components.Server                           = "Define the component settings that will be used as a <strong>default</strong> for all webs.">
+<cfset stText.Components.Server                           = "Define the component settings that will be used as a default for all web contexts. ">
 <cfset stText.Components.Web                              = "Defines how components will be handled by Railo.">
 <cfset stText.Components.BaseComponent                    = "Base/Root Component">
 <cfset stText.Components.BaseComponentDescription         = "Every component that does not explicitly extend another component (attribute ""extends"") will by default extend this component. This means that every component extends this base component in some way.">
@@ -56,7 +57,7 @@
 <cfset stText.Components.useShadowDescription="Defines whether a component has an independent variables scope parallel to the &quot;this&quot; scope (CFML standard) or not.">
 
 <!--- Scopes --->
-<cfset stText.Scopes.Server                        = "Here you can define the scope settings that will be used as <strong>default</strong> for all webs.<br/>">
+<cfset stText.Scopes.Server                        = "You can define the scope settings that will be used as default for all web contexts here.">
 <cfset stText.Scopes.Web                           = "Here you can define the settings for how Railo handles scopes.">
 <cfset stText.Scopes.Cascading                     = "Cascading">
 <cfset stText.Scopes.CascadingDescription          = "Depending on this setting Railo scans certain scopes to find a variable called from the CFML source. This will only happen, when the variable is called without a scope. (Example: ##myVar## instead of ##variables.myVar##)<br/>- strict: scans only the variables scope<br/>- small: scans the scopes variables,cgi,url,form<br/>- standard (CFML Standard): scans the scopes variables,cgi,url,form,cookie">
@@ -99,7 +100,7 @@
 <cfset stText.Scopes.LocalModeUpdate="update (CFML standard)">
 
 <!--- Application --->
-<cfset stText.application.Server                        = "Defines application settings that represent the default values for all webs">
+<cfset stText.application.Server                        = "Defines application settings that represent the default values for all web contextes">
 <cfset stText.application.Web                           = "Here you can define several default settings for the application context. These settings can be overridden with the tag cfapplication or the Application.cfc.">
 <cfset stText.application.scriptProtect       			= "Script-protect">
 <cfset stText.application.scriptProtectDescription 		= "The configuration of Script protect, secures your system from ""cross-site scripting""">

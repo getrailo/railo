@@ -16,7 +16,14 @@
 <cfset stText.Security.RemoteDescription          = "Es wird erlaubt das der User seine Einstellungen mit einem anderen railo synchronisiern kann">
 
 <cfset stText.Security.CustomTag                   = "Custom Tags">
-<cfset stText.Security.CustomTagDescription        = "Custom tags können 'Web Administrator' hinzugefügt, gelöscht und geändert werden.">
+<cfset stText.Security.CustomTagDescription        = "Custom tags können im 'Web Administrator' hinzugefügt, gelöscht und geändert werden.">
+
+<cfset stText.Security.Cache                   = "Cache">
+<cfset stText.Security.CacheDescription        = "Cache Settings können im 'Web Administrator' hinzugefügt, gelöscht und geändert werden.">
+
+<cfset stText.Security.Gateway                   		= "Gateway">
+<cfset stText.Security.GatewayDescription        = "Gateway Settings können im 'Web Administrator' hinzugefügt, gelöscht und geändert werden.">
+
 <cfset stText.Security.CFX                         = "CFX">
 <cfset stText.Security.CFXDescription              = "Die Einstellungen für die CFX Tags können geändert werden. Im 'Server Administrator' global definierte Tags können auch verwendet werden.">
 <cfset stText.Security.Debugging                   = "Debugging">
@@ -72,3 +79,7 @@
 
 <cfset stText.Security.accessRead="Lesezugriff">
 <cfset stText.Security.accessReadDesc="definiert den Lesezugriff">
+
+<cfset stText.Security.FilePath="Verzeichnis">
+   <cfset stText.Security.FileCustom="Zusätzliche Verzeichnisse">
+   <cfset stText.Security.FileCustomDesc="Sie können zusätzliche Verzeichnisse definieren, wo der Filezugriff erlaubt ist.">

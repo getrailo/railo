@@ -15,6 +15,7 @@
 <cfset stText.General.SecondError = "Der Wert des Feldes Sekunde muss einen positiven Wert enthalten (Wert > 0)">
 
 <!--- Login --->
+<cfset stText.Login.language              = "Sprache">
 <cfset stText.Login.Password              = "Passwort">
 <cfset stText.Login.PasswordMissing       = "Bitte geben Sie ein Passwort ein">
 <cfset stText.Login.RetypePassword        = "Passwort wiederholen">
@@ -40,6 +41,12 @@
 <cfset stText.Login.web                        = "Web">
 <cfset stText.Login.resetWebPW                 = "Passwort zurücksetzen">
 <cfset stText.Login.resetWebPWDescription      = "Passwort für das gewählt Web zurücksetzen">
+<cfset stText.Login.rememberMe="eingeloggt bleiben für">
+<cfset stText.Login.s="diese Session">
+<cfset stText.Login.d="einen Tag">
+<cfset stText.Login.ww="eine Woche">
+<cfset stText.Login.m="einen Monat">
+<cfset stText.Login.yyyy="ein Jahr">
 
 <!--- Overview --->
 <cfset stText.Overview.Info               = "Info">
@@ -49,6 +56,8 @@
 <cfset stText.Overview.ReleaseDate        = "Release Datum">
 <cfset stText.Overview.CFCompatibility    = "Kompatibel zu ColdFusion&reg; Version">
 <cfset stText.Overview.OS                 = "Betriebssystem">
+<cfset stText.Overview.remote_addr        = "Remote IP">
+<cfset stText.Overview.server_name        = "Host Name">
 <cfset stText.Overview.InstalledTLs       = "Installierte Tag<br>Bibliotheken">
 <cfset stText.Overview.InstalledFLs       = "Installierte Funktions<br>Bibliotheken">
 <cfset stText.Overview.DateTime           = "Railo Datum/Zeit">

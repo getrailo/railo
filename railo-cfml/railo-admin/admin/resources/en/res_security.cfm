@@ -16,8 +16,16 @@
 
 <cfset stText.Security.Remote                     = "Remote">
 <cfset stText.Security.RemoteDescription          = "It allows the settings in the administrator to be synchronized with other Railo contexts">
+
 <cfset stText.Security.CustomTag                   = "Custom Tag">
 <cfset stText.Security.CustomTagDescription        = "The custom tag settings can be changed in the ""web administrator""">
+
+<cfset stText.Security.Cache                   = "Cache">
+<cfset stText.Security.CacheDescription        = "The cache settings can be changed in the ""web administrator""">
+
+<cfset stText.Security.Gateway                   = "Gateway">
+<cfset stText.Security.GatewayDescription        = "The gateway settings can be changed in the ""web administrator""">
+
 <cfset stText.Security.CFX                         = "CFX">
 <cfset stText.Security.CFXDescription              = "The settings for the cfx tags can be changed. The globally defined CFX tags defined in the ""server administrator"" can be used as well.">
 <cfset stText.Security.Debugging                   = "Debugging">
@@ -37,7 +45,7 @@
 <cfset stText.Security.JavaAccess                  = "Direct Java access">
 <cfset stText.Security.JavaAccessDescription       = "Allows access to Java methods and properties from the Railo code (Example: stringValue.substring(2,5)). Allowing access to Java methods and properties might be a potential security risk">
 <cfset stText.Security.Functions                   = "Tags &amp; Functions">
-<cfset stText.Security.FunctionsDescription        = "Tags and Functions that might be a potential risk to the hosts system">
+<cfset stText.Security.FunctionsDescription        = "Tags and Functions that might be a potential risk to the host system">
 <cfset stText.Security.TagExecute                  = "Tag CFExecute">
 <cfset stText.Security.TagExecuteDescription       = "This tag is used to execute a process on the local hosts system">
 <cfset stText.Security.TagImport                   = "Tag CFImport">
@@ -50,7 +58,7 @@
 <cfset stText.Security.CFXTagsDescription          = "With CFX tags one can load Java classes which might have full access to the local hosts system. This might be a potential security risk to the hosts system">
 
 
-<cfset stText.Security.desc="Define the access rights for the different web contextes (webapps). Under the ""general"" tab you define default rights for all web contexts that do not have a speficic definition in the ""individual"" tab.">
+<cfset stText.Security.desc="Define the access rights for the different web contexts (webapps). Under the ""general"" tab you can define default rights for all web contexts that do not have a specific definition in the ""individual"" tab.">
 <cfset stText.Security.tabGeneral="General">
 <cfset stText.Security.tabSpecial="Individual">
 <cfset stText.Security.generalDesc="Define the default security settings for web contexts.">
@@ -72,3 +80,7 @@
 
 <cfset stText.Security.accessRead="Access Read">
 <cfset stText.Security.accessReadDesc="define the access for reading data">
+
+<cfset stText.Security.FilePath="Directory">
+   <cfset stText.Security.FileCustom="Custom directories">
+   <cfset stText.Security.FileCustomDesc="You can define additional directories where file access is allowed">

@@ -5,7 +5,7 @@
 <cfset stText.Mail.SpoolInterval          = "Spool interval">
 <cfset stText.Mail.Timeout                = "Timeout">
 <cfset stText.Mail.MailServers            = "Mail servers">
-<cfset stText.Mail.MailServersDescription = "You can define more than one mail server. When sending a mail, Railo tries to send the mail with the first defined mail server. If the send operation fails, Railo will continue using the next mail server in the list.">
+<cfset stText.Mail.MailServersDescription = "You can define more than one mail server. When sending an email, Railo tries to send the mail with the first defined mail server. If the send operation fails, Railo will continue using the next mail server in the list.">
 <cfset stText.Mail.Server                 = "Server (SMTP)">
 <cfset stText.Mail.ServerMissing          = "Please enter a value for the mailserver (row ">
 <cfset stText.Mail.Username               = "Username">

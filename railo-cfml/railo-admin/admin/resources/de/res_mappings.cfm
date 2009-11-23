@@ -19,6 +19,14 @@
 <cfset stText.CustomTags.customTagLocalSearch="Lokales Verzeichnis einbeziehen">
 <cfset stText.CustomTags.customTagLocalSearchDesc="Lokales Verzeichnisse aus welchen der Customtag aufgerufen wird, nach dem Customtag durchsuchen">
 
+<cfset stText.CustomTags.extensions="Extensions">
+<cfset stText.CustomTags.extensionsDesc="Dies sind die Extensions welche für Customtags verwendet werden und die Rheinefolge in welcher sie gesucht werden.">
+
+<cfset stText.CustomTags.mode.classic="Classic (Railo 1.0 - 3.0)">
+<cfset stText.CustomTags.mode.standard="CFML standard">
+<cfset stText.CustomTags.mode.mixed="Mixed">
+<cfset stText.CustomTags.mode.modern="Modern">
+<cfset stText.CustomTags.mode.custom="Custom">
 
 <!--- Mappings --->
 <cfset stText.Mappings.Physical                = "Ressource">
@@ -52,4 +60,4 @@
 
 
 <cfset stText.Mappings.ToplevelHead = "Top Level">
-<cfset stText.Mappings.TopLevelDesc = "">
+<cfset stText.Mappings.TopLevelDesc = "Macht dieses Mapping zugreifbar übers Web (Zugreifbar über Browser oder andere HTTP Zugriffe)">

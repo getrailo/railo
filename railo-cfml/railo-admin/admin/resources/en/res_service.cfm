@@ -5,8 +5,8 @@
 <cfset stText.Settings.DatasourceModify                = "Modify and add datasources">
 <cfset stText.Settings.PreserveSingleQuotes            = "Preserve single quotes">
 <cfset stText.Settings.PreserveSingleQuotesDescription = "Preserve single quotes ("") in the SQL defined with the tag cfquery">
-<cfset stText.Settings.ReadOnlyDatasources             = "Readonly datasources">
-<cfset stText.Settings.ReadOnlyDatasourcesDescription  = "Readonly datasources are generated within the ""server administrator"" for all web instances and can not be modified by the ""web administrator"".">
+<cfset stText.Settings.ReadOnlyDatasources             = "Read-only datasources">
+<cfset stText.Settings.ReadOnlyDatasourcesDescription  = "Read-only datasources are generated within the Server Administrator for all web contexts and cannot be modified by the Web Administrator.">
 <cfset stText.Settings.ListDatasources                 = "Datasources">
 <cfset stText.Settings.DatasourceModify                = "Create new datasource">
 <cfset stText.Settings.Name                            = "Name">
@@ -39,9 +39,9 @@
 <cfset stText.services.update.infoTitle= "Info">
 <cfset stText.services.update.jira= "For details go to our {a}Bug Tracking System{/a}">
 <cfset stText.services.update.update= "A patch {available} is available for your current version {current}.">
-<cfset stText.services.update.noUpdate= "For your version {current} is no patch available">
+<cfset stText.services.update.noUpdate= "There is no patch available for version {current}">
 <cfset stText.services.update.setTitle= "Properties">
-<cfset stText.services.update.setDesc= "Define where Railo gets its patches. You have to restart Railo after the update in order for the changes to take effect.">
+<cfset stText.services.update.setDesc= "Define where Railo gets its patches. Railo will restart automatically after the update in order for the changes to take effect.">
 <cfset stText.services.update.location= "URL">
 <cfset stText.services.update.locDesc= "Define the URL where Railo gets its updates. Typically ""http://www.railo.ch""">
 <cfset stText.services.update.type= "Type">

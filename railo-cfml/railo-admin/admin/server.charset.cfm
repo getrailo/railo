@@ -38,6 +38,20 @@ Defaults --->
 				remoteClients="#request.getRemoteClients()#">
 		
 		</cfcase>
+	<!--- reset to server setting --->
+		<cfcase value="#stText.Buttons.resetServerAdmin#">
+			
+			<cfadmin 
+				action="updateCharset"
+				type="#request.adminType#"
+				password="#session["password"&request.adminType]#"
+				
+				templateCharset=""
+				webCharset=""
+				resourceCharset=""
+				remoteClients="#request.getRemoteClients()#">
+		
+		</cfcase>
 	</cfswitch>
 	<cfcatch>
 	
@@ -74,7 +88,7 @@ Create Datasource --->
 		<span class="comment">#stText.charset.templateCharsetDescription#</span><br />
 		<cfif hasAccess>
 		<cfinput type="text" name="templateCharset" value="#charset.templateCharset#" 
-			style="width:200px" required="yes" message="#stText.charset.missingTemplateCharset#">
+			style="width:200px" required="no" message="#stText.charset.missingTemplateCharset#">
 		
 		<cfelse>
 			<input type="hidden" name="templateCharset" value="#charset.templateCharset#">
@@ -91,7 +105,7 @@ Create Datasource --->
 		<span class="comment">#stText.charset.webCharsetDescription#</span><br />
 		<cfif hasAccess>
 		<cfinput type="text" name="webCharset" value="#charset.webCharset#" 
-			style="width:200px" required="yes" message="#stText.charset.missingWebCharset#">
+			style="width:200px" required="no" message="#stText.charset.missingWebCharset#">
 		
 		<cfelse>
 			<input type="hidden" name="webCharset" value="#charset.webCharset#">
@@ -108,7 +122,7 @@ Create Datasource --->
 		<span class="comment">#stText.charset.resourceCharsetDescription#</span><br />
 		<cfif hasAccess>
 		<cfinput type="text" name="resourceCharset" value="#charset.resourceCharset#" 
-			style="width:200px" required="yes" message="#stText.charset.missingResourceCharset#">
+			style="width:200px" required="no" message="#stText.charset.missingResourceCharset#">
 		
 		<cfelse>
 			<input type="hidden" name="resourceCharset" value="#charset.resourceCharset#">
@@ -125,6 +139,7 @@ Create Datasource --->
 	<td colspan="2">
 		<input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
 		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>

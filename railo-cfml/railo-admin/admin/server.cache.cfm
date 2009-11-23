@@ -26,13 +26,14 @@ Defaults --->
 
 <cftry>
 	<cfswitch expression="#form.mainAction#">
-	<!--- UPDATE --->
+	
 		<cfcase value="#btnClearTemplateCache#">
 			<cfset pagePoolClear()>
 		</cfcase>
         <cfcase value="#btnClearQueryCache#">
         	<cfobjectcache action="clear">
 		</cfcase>
+        <!--- Update ---->
         <cfcase value="#stText.Buttons.Update#">
 			<cfadmin 
 				action="updatePerformanceSettings"
@@ -40,6 +41,19 @@ Defaults --->
 				password="#session["password"&request.adminType]#"
 				
 				inspectTemplate="#form.inspectTemplate#"
+				
+				remoteClients="#request.getRemoteClients()#"
+				>
+		
+		</cfcase>
+	<!--- reset to server setting --->
+		<cfcase value="#stText.Buttons.resetServerAdmin#">
+			<cfadmin 
+				action="updatePerformanceSettings"
+				type="#request.adminType#"
+				password="#session["password"&request.adminType]#"
+				
+				inspectTemplate=""
 				
 				remoteClients="#request.getRemoteClients()#"
 				>
@@ -138,6 +152,7 @@ Create Datasource --->
 		
       <input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.update#">
 		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>

@@ -16,6 +16,7 @@
 <cfset stText.General.Seconds     = "Seconds">
 
 <!--- Login --->
+<cfset stText.Login.language              = "Language">
 <cfset stText.Login.Password              = "Password">
 <cfset stText.Login.PasswordMissing       = "Please enter a value for the field password">
 <cfset stText.Login.RetypePassword        = "Retype Password">
@@ -41,6 +42,12 @@
 <cfset stText.Login.web                        = "Web">
 <cfset stText.Login.resetWebPW                 = "Reset Password">
 <cfset stText.Login.resetWebPWDescription      = "reset the Password of the selected Web">
+<cfset stText.Login.rememberMe="Remember&nbsp;Me for">
+<cfset stText.Login.s="this Session">
+<cfset stText.Login.d="one Day">
+<cfset stText.Login.ww="one Week">
+<cfset stText.Login.m="one Month">
+<cfset stText.Login.yyyy="one Year">
 
 <!--- Overview --->
 <cfset stText.Overview.Info               = "Info">
@@ -50,6 +57,8 @@
 <cfset stText.Overview.ReleaseDate        = "Release date">
 <cfset stText.Overview.CFCompatibility    = "ColdFusion&reg; compatibilty version">
 <cfset stText.Overview.OS                 = "OS">
+<cfset stText.Overview.remote_addr        = "Remote IP">
+<cfset stText.Overview.server_name        = "Host Name">
 <cfset stText.Overview.InstalledTLs       = "Installed tag<br/> libraries">
 <cfset stText.Overview.InstalledFLs       = "Installed function<br/> libraries">
 <cfset stText.Overview.DateTime           = "Railo date/time">
@@ -81,9 +90,10 @@
 <cfset stText.Overview.contexts.config_file="Config file">
 
 <!--- Introduction --->
-<cfset  stText.Overview.introdesc.web="Railo, the CFML engine. Fast, inexpensive and easy to use. By choosing Railo you decided to go the performant and high quality way of CFML. Set up your local web context according to your needs and wishes. For this purpose you can use this Railo web administrator.">
+<cfset  stText.Overview.introdesc.web="
+Railo, the CFML engine - free, open source and easy to use. This Web Administrator is provided in order to customize your web context.">
 
-<cfset  stText.Overview.introdesc.server="The server administrator allows you to install updates and patches for your Railo edition and to restart the engine on mouseclick. If you have the Develop or Enterprise edition you can preconfigure new web contexts and define restrictions and configurations per web context individually.">
+<cfset  stText.Overview.introdesc.server="The Server Administrator allows you to install updates and patches for your Railo installation and to restart the engine with a mouse click. You can preconfigure new web contexts and define restrictions and configurations per web context individually.">
 
 <cfset stText.Overview.Licence="Available Editions">
 <cfset stText.Overview.LicenceDesc="Railo is available in four different editions , adapted to the different areas of application and budgets.">
@@ -96,7 +106,7 @@
 <cfset stText.Overview.LicenceCommunityDesc="Railo Community is intended to be used by low budget business applicants. Except for some few limitations the Community Version offers the entire language range of Railo.">
 
 <cfset stText.Overview.LicenceProfessional="Professional">
-<cfset stText.Overview.LicenceProfessionalDesc="The Professional Version offers the full language range of Railo, no restriction to the use of any feature has to be expected. With the Professional Version several webs can be used on one server, the number of webs however is limited by the licence price.">
+<cfset stText.Overview.LicenceProfessionalDesc="The Professional Version offers the full language range of Railo, no restriction to the use of any feature has to be expected. With the Professional Version several web contextes can be used on one server, the number of web contextes however is limited by the licence price.">
 
 <cfset stText.Overview.LicenceEnterprise="Enterprise">
 <cfset stText.Overview.LicenceEnterpriseDesc="The Enterprise Version of Railo is the biggest and most comprehensive version intended to be used in a larger context.">

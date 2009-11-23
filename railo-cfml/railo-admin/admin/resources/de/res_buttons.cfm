@@ -16,6 +16,7 @@
 <cfset stText.Buttons.Update        = "aktualisieren">
 <cfset stText.Buttons.filter        = "filter">
 <cfset stText.Buttons.reset         = "zurücksetzen">
+<cfset stText.Buttons.refresh         = "neu laden">
 <cfset stText.Buttons.ok         = "OK">
 <cfset stText.Buttons.compileAll = "kompilieren">
 <cfset stText.Buttons.install = "installieren">
@@ -23,3 +24,6 @@
 <cfset stText.Buttons.agree = "einverstanden">
 <cfset stText.Buttons.next="nächste">
 <cfset stText.Buttons.previous="vorangegangene">
+<cfset stText.Buttons.previous="restart">
+<cfset stText.Buttons.stopstart="stop/start">
+<cfset stText.Buttons.resetServerAdmin="Auf Server Administrator Einstellung zurück setzen">

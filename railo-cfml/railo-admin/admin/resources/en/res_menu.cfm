@@ -16,7 +16,9 @@
 		struct(
 			action:"services",label:"Services",
 			children:array(
+				struct(action:"cache",label:"Cache (Beta)"),
 				struct(action:"datasource",label:"Datasource"),
+				//struct(action:"gateway",label:"Gateway (Beta)"),
 				struct(action:"search",label:"Search",hidden: request.adminType NEQ "web"),
 				struct(action:"mail",label:"Mail"),
 				struct(action:"tasks",label:"Tasks",xhidden: server.ColdFusion.ProductLevel eq "community" or server.ColdFusion.ProductLevel eq "professional"),

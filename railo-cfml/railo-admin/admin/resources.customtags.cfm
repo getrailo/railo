@@ -189,14 +189,6 @@ function checkTheRadio(field) {
 	
 </tr>
 
-<cfset stText.CustomTags.extensions="Extensions">
-<cfset stText.CustomTags.extensionsDesc="These are the extensions used for Custom Tags, in the order they are searched.">
-
-<cfset stText.CustomTags.mode.classic="Classic (Railo 1.0 - 3.0)">
-<cfset stText.CustomTags.mode.standard="CFML standard">
-<cfset stText.CustomTags.mode.mixed="Mixed">
-<cfset stText.CustomTags.mode.modern="Modern">
-<cfset stText.CustomTags.mode.custom="Custom">
 
 
 <cfset arrExt=array('cfc','cfm','cfml')>
@@ -208,7 +200,7 @@ function checkTheRadio(field) {
     	<cfset modes=array(
 			struct(mode:'classic',ext:'cfm'),
 			struct(mode:'standard',ext:'cfm,cfml'),
-			struct(mode:'mixed',ext:'cfc,cfm'),
+			struct(mode:'mixed',ext:'cfm,cfc'),
 			struct(mode:'modern',ext:'cfc')
 		
 		)>

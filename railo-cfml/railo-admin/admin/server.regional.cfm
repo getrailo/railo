@@ -26,6 +26,7 @@ Defaults --->
 <cftry>
 	<cfswitch expression="#form.mainAction#">
 	<!--- UPDATE --->
+    
 		<cfcase value="#stText.Buttons.Update#">
 			<cfif form.locale EQ "other">
 				<cfset form.locale=form.locale_other>
@@ -39,6 +40,24 @@ Defaults --->
 				timezone="#form.timezone#"
 				locale="#form.locale#"
 				timeserver="#form.timeserver#"
+				remoteClients="#request.getRemoteClients()#"
+				>
+		
+		</cfcase>
+        <!--- reset to server setting --->
+		<cfcase value="#stText.Buttons.resetServerAdmin#">
+			<cfif form.locale EQ "other">
+				<cfset form.locale=form.locale_other>
+			</cfif>
+			
+			<cfadmin 
+				action="updateRegional"
+				type="#request.adminType#"
+				password="#session["password"&request.adminType]#"
+				
+				timezone=""
+				locale=""
+				timeserver=""
 				remoteClients="#request.getRemoteClients()#"
 				>
 		
@@ -115,6 +134,7 @@ replaced with encoding output
 	</td>
 </tr>
 --->
+
 <tr>
 	<td class="tblHead" width="150">#stText.Regional.Locale#</td>
 	<td class="tblContent">
@@ -122,11 +142,15 @@ replaced with encoding output
 		<cfif hasAccess>
 		<cfset hasFound=false>
 		<cfset keys=structSort(locales,'textnocase')>
-		<select name="locale">
-			<option selected value=""> --- #stText.Regional.ServerProp# --- </option>
+		
+        
+        
+        <select name="locale">
+			<option selected value=""> --- #stText.Regional.ServerProp[request.adminType]# --- </option>
 			 ---><cfloop collection="#keys#" item="i"><cfset key=keys[i]><option value="#key#" <cfif key EQ regional.locale>selected<cfset hasFound=true></cfif>>#locales[key]#</option><!--- 
 			 ---></cfloop>
 		</select>
+        
 		<!--- <input type="text" name="locale_other" value="<cfif not hasFound>#regional.locale#</cfif>" style="width:200px"> --->
 		<cfelse>
 			<b>#regional.locale#</b>
@@ -142,7 +166,7 @@ replaced with encoding output
 		<span class="comment">#stText.Regional.TimeZoneDescription#</span>
 		<cfif hasAccess>
 		<select name="timezone">
-			<option selected value=""> --- #stText.Regional.ServerProp# --- </option>
+			<option selected value=""> --- #stText.Regional.ServerProp[request.adminType]# --- </option>
 			<cfoutput query="timezones">
 				<option value="#timezones.id#"
 				<cfif timezones.id EQ regional.timezone>selected</cfif>>
@@ -185,6 +209,7 @@ replaced with encoding output
 	<td colspan="2">
 		<input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
 		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>

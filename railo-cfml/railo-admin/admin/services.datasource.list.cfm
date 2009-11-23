@@ -47,6 +47,7 @@
 				</cfloop>
 				
 		</cfcase>
+        <!--- update --->
 		<cfcase value="#stText.Buttons.Update#">
 			
 			<cfadmin 
@@ -55,6 +56,16 @@
 				password="#session["password"&request.adminType]#"
 				
 				psq="#structKeyExists(form,"psq") and form.psq#"
+				remoteClients="#request.getRemoteClients()#">
+		</cfcase>
+	<!--- reset to server setting --->
+		<cfcase value="#stText.Buttons.resetServerAdmin#">
+			<cfadmin 
+				action="updatePSQ"
+				type="#request.adminType#"
+				password="#session["password"&request.adminType]#"
+				
+				psq=""
 				remoteClients="#request.getRemoteClients()#">
 		</cfcase>
 	</cfswitch>
@@ -106,6 +117,7 @@ Create Datasource --->
 	<td colspan="2">
 		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr></cfif>
 </cfform>
@@ -292,12 +304,12 @@ function selectAll(field) {
 					<cfif stVeritfyMessages[srcLocal.name].label eq "OK">
 						<span class="CheckOk">#stVeritfyMessages[srcLocal.name].label#</span>
 					<cfelse>
-						<span class="CheckError">#stVeritfyMessages[srcLocal.name].label#</span>
+						<span class="CheckError" title="#stVeritfyMessages[srcLocal.name].message##Chr(13)#">#stVeritfyMessages[srcLocal.name].label#</span>
 						&nbsp;<img src="#cgi.context_path#/railo-context/admin/resources/img/red-info.gif.cfm" 
 							width="9" 
 							height="9" 
 							border="0" 
-							alt="#stVeritfyMessages[srcLocal.name].message##Chr(13)#">
+							title="#stVeritfyMessages[srcLocal.name].message##Chr(13)#">
 					</cfif>
 				<cfelse>
 					&nbsp;				

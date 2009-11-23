@@ -47,6 +47,28 @@ Defaults --->
 				remoteClients="#request.getRemoteClients()#">
 			
 		</cfcase>
+	<!--- reset to server setting --->
+		<cfcase value="#stText.Buttons.resetServerAdmin#">
+			<cfadmin 
+				action="updateScope"
+				type="#request.adminType#"
+				password="#session["password"&request.adminType]#"
+				
+				sessionType=""
+				localMode=""
+				scopeCascadingType=""
+				allowImplicidQueryCall=""
+				mergeFormAndUrl=""
+				sessionTimeout=""
+				applicationTimeout=""
+				sessionManagement=""
+				clientManagement=""
+				clientCookies=""
+				domaincookies=""
+                
+				remoteClients="#request.getRemoteClients()#">
+			
+		</cfcase>
 	</cfswitch>
 	<cfcatch>
 		<cfset error.message=cfcatch.message>
@@ -106,7 +128,7 @@ Error Output --->
 		</cfif><span class="comment">#stText.Scopes.CascadeToResultSetDescription#</span>
 	</td>
 </tr>
-<cfif server.ColdFusion.ProductLevel NEQ "community">
+
 <tr>
 	<td class="tblHead" width="150">#stText.Scopes.SessionType#</td>
 	<td class="tblContent">
@@ -121,9 +143,7 @@ Error Output --->
 		</cfif>
 	</td>
 </tr>
-<cfelse>
-<input type="hidden" name="sessionType" value="cfml">
-</cfif>
+
 
 <!--- 
 Merge URL and Form --->
@@ -272,6 +292,7 @@ Merge URL and Form --->
 	<td colspan="2">
 		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>

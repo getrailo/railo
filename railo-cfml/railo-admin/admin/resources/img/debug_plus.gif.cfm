@@ -3,5 +3,5 @@
 		sessionmanagement="yes" 
 		clientmanagement="no" 
 		setclientcookies="yes" 
-		setdomaincookies="no"><cfsetting showdebugoutput="no"><cfcontent type="image/gif" content="#evaluateJava('rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAA6R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==')#">
+		setdomaincookies="no"><cfsetting showdebugoutput="no"><cfcontent type="image/gif" variable="#evaluateJava('rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAA6R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==')#">
 	

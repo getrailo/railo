@@ -11,13 +11,10 @@
 	<cflocation url="#request.self#" addtoken="no">
 </cfif>
 
-
-
-
 <!--- load language --->
-<cfif  not structKeyExists(application.pluginLanguage[session.railo_admin_lang],url.plugin)>
-	<cfset fileLanguage=getDirectoryFromPath(getCurrentTemplatePath())&"plugin/#url.plugin#/language.xml">
-	<cfset language=struct(
+<cfif true or not structKeyExists(application.pluginLanguage[session.railo_admin_lang],url.plugin)>
+	<cfset fileLanguage="#pluginDir#/#url.plugin#/language.xml">
+    <cfset language=struct(
 			title:ucFirst(url.plugin),
 			text:''
 	)>
@@ -46,7 +43,7 @@
 	<cfset application.plugin[url.plugin].application=struct()>
 </cfif>
 <cfif not structKeyExists(application.plugin[url.plugin],'component') or session.alwaysNew>
-	<cfset application.plugin[url.plugin].component=createObject('component','plugin.'&url.plugin&'.Action')>
+	<cfset application.plugin[url.plugin].component=createObject('component','railo_plugin_directory.'&url.plugin&'.Action')>
 	<cfset application.plugin[url.plugin].component.init(
 		application.pluginLanguage[session.railo_admin_lang][url.plugin],
 		application.plugin[url.plugin].application)>
@@ -54,7 +51,6 @@
 <cfset plugin=application.plugin[url.plugin]>
 
 <cfset plugin.language=application.pluginLanguage[session.railo_admin_lang][url.plugin]>
-
 
 
 <cfset request.subTitle=plugin.language.title>
@@ -76,8 +72,10 @@
 
 <!-- first call the action if exists -->
 <cfset hasAction=structKeyExists(plugin.component,url.pluginAction)>
+
 <cfif hasAction>
 	<cfset rtnAction= plugin.component._action(url.pluginAction,lang,app,req)>
+    
 	<!--- cfset rtnAction= plugin.component[url.pluginAction](lang,app,req)--->
 </cfif>
 <cfif not isDefined('rtnAction')>
@@ -90,7 +88,7 @@
 </cfif>
 
 <!-- then call display -->
-<cfset dspFile="#getDirectoryFromPath(cgi.SCRIPT_NAME)#plugin/#url.plugin#/#rtnAction#.cfm">
+<cfset dspFile="/railo_plugin_directory/#url.plugin#/#rtnAction#.cfm">
 
 <cfset hasDisplay=fileExists(expandPath(dspFile))>
 <cfif rtnAction NEQ "_none" and hasDisplay>
@@ -100,32 +98,5 @@
 </cfif>
 
 <cfif not hasAction and not hasDisplay>
-<cfset printError(struct(message:"there is no action or diplay handler defined for "&url.plugin,detail:''))>
+<cfset printError(struct(message:"there is no action [#url.pluginAction#] or diplay handler [#expandPath(dspFile)#] defined for "&url.plugin,detail:''))>
 </cfif>
-
-<!--- 
-<!-- first call the action if exists -->
-<cfset hasAction=structKeyExists(plugin.component,url.pluginAction)>
-<cfif hasAction>
-	<cfset rtnAction= plugin.component[url.pluginAction](lang,app,req)>
-</cfif>
-<cfif not isDefined('rtnAction')>
-	<cfset rtnAction=url.pluginAction>
-</cfif>
-
-<!-- redirect -->
-<cfif findNoCase('redirect:',rtnAction) EQ 1>
-	<cflocation url="#action(mid(rtnAction,10,len(rtnAction)))#">
-</cfif>
-
-<!-- then call display -->
-<cfset dspFile="plugin/#url.plugin#/#rtnAction#.cfm">
-<cfset hasDisplay=fileExists(getDirectoryFromPath(getCurrentTemplatePath())&dspFile)>
-<cfif rtnAction NEQ "_none" and hasDisplay>
-	<cfinclude template="#dspFile#">
-</cfif>
-
-<cfif not hasAction and not hasDisplay>
-<cfset printError(struct(message:"there is no action or diplay handler defined for "&url.plugin,detail:''))>
-</cfif>
---->

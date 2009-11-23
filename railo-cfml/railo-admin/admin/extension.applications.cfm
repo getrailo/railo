@@ -243,6 +243,7 @@
             </cfif>
 		</cfcase>
 	</cfswitch>
+<cfinclude template="#url.action#.#url.action2#.cfm"/>
 	<cfcatch>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
@@ -257,5 +258,3 @@
 Error Output --->
 <cfset printError(err)>
 <cfset printError(error)>
-
-<cfinclude template="#url.action#.#url.action2#.cfm"/>

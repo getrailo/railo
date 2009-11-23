@@ -215,7 +215,12 @@ a.cfdebuglink {color:blue; background-color:white }
 </pre>
 
 <pre><b>Session Variables:</b><cftry><cfloop index="key" list="#ListSort(StructKeyList(session),"textnocase")#">
-#(key)#=<cftry><cfif IsSimpleValue(session[key])>#session[key]#<cfelse>#serialize(session[key])#</cfif><cfcatch></cfcatch></cftry></cfloop><cfcatch>Session Scope is disabled</cfcatch></cftry>
+#(key)#=<cftry><cfif IsSimpleValue(session[key])>#session[key]#<!--- 
+---><cfelseif isArray(session[key])>Array (#arrayLen(session[key])#)<!--- 
+---><cfelseif isValid('component',session[key])>Component (#GetMetaData(session[key]).name#)<!--- 
+---><cfelseif isStruct(session[key])>Struct (#StructCount(session[key])#)<!--- 
+---><cfelseif IsQuery(session[key])>Query (#session[key].recordcount#)<!--- 
+---><cfelse>Complex type</cfif><cfcatch></cfcatch></cftry></cfloop><cfcatch>Session Scope is disabled</cfcatch></cftry>
 </pre>
 
 <font size="-1" class="cfdebug"><i>Debug Rendering Time: #getTickCount()-time# ms</i></font><br />

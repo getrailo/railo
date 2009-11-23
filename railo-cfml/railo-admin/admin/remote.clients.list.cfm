@@ -1,5 +1,16 @@
+<cfadmin 
+	action="getRemoteClients"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	returnVariable="clients">
 
-
+<cfparam name="url.row" default="0">
+<cfif url.row GT 0 and url.row LTE clients.recordcount>
+	<cfset form.mainAction=stText.Buttons.verify>
+	<cfset form['url_'&row]=clients.url[row]>
+	<cfset form['row_'&row]=row>
+	
+</cfif>
 <cfadmin 
 	action="securityManager"
 	type="#request.adminType#"
@@ -28,9 +39,10 @@
 			</cfloop>
 		</cfcase>
 		<cfcase value="#stText.Buttons.verify#">
+        	
 				<cfset data.urls=toArrayFromForm("url")>
 				<cfset data.rows=toArrayFromForm("row")>
-			
+				
 				<cfloop index="idx" from="1" to="#arrayLen(data.urls)#">
 					<cfif isDefined("data.rows[#idx#]") and data.urls[idx] NEQ "">
 						<cfadmin 
@@ -83,11 +95,6 @@ Error Output --->
 <cfset printError(error)>
 
 
-<cfadmin 
-	action="getRemoteClients"
-	type="#request.adminType#"
-	password="#session["password"&request.adminType]#"
-	returnVariable="clients">
 
 <cfadmin 
     action="getRemoteClientUsage"

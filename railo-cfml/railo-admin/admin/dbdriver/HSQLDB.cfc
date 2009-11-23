@@ -1,6 +1,6 @@
 <cfcomponent extends="Driver" implements="IDriver">
 	<cfset fields=array(
-		field("Path","path","",true,"Path where the database is or should be located")
+		field("Path","path","",true,"Path where the database is or should be located (only Filesystem, virtual Resources like ""ram"" not supported)")
 	)>
 	<cfset this.type.host=this.TYPE_HIDDEN>
 	

@@ -209,7 +209,7 @@ function doEnableProxy(enableProxy) {
 		<span class="comment">#stText.proxy.passwordDescription#</span><br />
 		<cfif hasAccess>
 		<cfinput type="password" name="password" value="#proxy.password#" 
-			style="width:200px" required="no">
+			style="width:200px" required="no" passthrough='autocomplete="off"'>
 		
 		<cfelse>
 			<input type="hidden" name="password" value="#proxy.password#">

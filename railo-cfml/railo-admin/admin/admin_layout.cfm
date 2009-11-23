@@ -44,7 +44,7 @@ other=iif(request.adminType EQ "web","'server'","'web'");
 		.tblContent			{padding-left:5px;padding-right:5px;border:1px solid ##e0e0e0;}
 		.tblContentRed		{padding-left:5px;padding-right:5px;border:1px solid ##cc0000;background-color:##f9e0e0;}
 		.tblContentGreen	{padding-left:5px;padding-right:5px;border:1px solid ##009933;background-color:##e0f3e6;}
-		.tblContentYellow	{padding-left:5px;padding-right:5px;border:1px solid ##e0e0e0;background-color:##FFFF66;}
+		.tblContentYellow	{padding-left:5px;padding-right:5px;border:1px solid ##ccad00;background-color:##fff9da;}
 		
 		td.inactivTab{border-style:solid;border-color:##e0e0e0;padding: 0px 5px 0px 5px;background-color:white;}
 		a.inactivTab{color:##3c3e40;text-decoration:none;}

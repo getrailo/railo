@@ -102,7 +102,7 @@ change password --->
 	<td class="tblHead" width="150">#stText.Login.OldPassword#</td>
 	<td class="tblContent">
 		<span class="comment">#stText.Login.OldPasswordDescription#</span><br>
-		<cfinput type="password" name="_old_password" value="" 
+		<cfinput type="password" name="_old_password" value="" passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.Login.OldPasswordMissing#">
 	</td>
 </tr>
@@ -110,7 +110,7 @@ change password --->
 	<td class="tblHead" width="150">#stText.Login.NewPassword#</td>
 	<td class="tblContent">
 		<span class="comment">#stText.Login.NewPasswordDescription#</span><br>
-		<cfinput type="password" name="_new_password" value="" 
+		<cfinput type="password" name="_new_password" value="" passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.Login.NewPasswordMissing#">
 	</td>
 </tr>
@@ -118,7 +118,7 @@ change password --->
 	<td class="tblHead" width="150">#stText.Login.RetypePassword#</td>
 	<td class="tblContent">
 		<span class="comment">#stText.Login.RetypeNewPassword#</span><br>
-		<cfinput type="password" name="_new_password_re" value="" 
+		<cfinput type="password" name="_new_password_re" value="" passthrough='autocomplete="off"' 
 		style="width:200px" required="yes" message="#stText.Login.RetypeNewPasswordMissing#">
 	</td>
 </tr>

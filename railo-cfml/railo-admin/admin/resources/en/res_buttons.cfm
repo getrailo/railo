@@ -15,6 +15,7 @@
 <cfset stText.Buttons.Search        = "search">
 <cfset stText.Buttons.Update        = "update">
 <cfset stText.Buttons.reset         = "reset">
+<cfset stText.Buttons.refresh         = "refresh">
 <cfset stText.Buttons.filter         = "filter">
 <cfset stText.Buttons.ok         = "OK">
 <cfset stText.Buttons.compileAll = "compile">
@@ -23,3 +24,6 @@
 <cfset stText.Buttons.agree = "agree">
 <cfset stText.Buttons.next="next">
 <cfset stText.Buttons.previous="previous">
+<cfset stText.Buttons.restart="restart">
+<cfset stText.Buttons.stopstart="stop/start">
+<cfset stText.Buttons.resetServerAdmin="Reset to Server Administrator Setting">

@@ -68,7 +68,9 @@ function checkTheBox(field) {
 				tag_execute="#fb('defaultTagExecute')#"
 				tag_import="#fb('defaultTagImport')#"
 				tag_object="#fb('defaultTagObject')#"
-				tag_registry="#fb('defaultTagRegistry')#">
+				tag_registry="#fb('defaultTagRegistry')#"
+				cache="#fb('defaultCache')#"
+				gateway="#fb('defaultGateway')#">
 			
 		</cfcase>
 	</cfswitch>
@@ -98,10 +100,6 @@ Error Output --->
 	returnVariable="access">
 
 <cfset prefix="default">
-<!--- <cfset access.tag_execute=true>
-<cfset access.tag_import=true>
-<cfset access.tag_object=true>
-<cfset access.tag_registry=true> --->
 
 
 

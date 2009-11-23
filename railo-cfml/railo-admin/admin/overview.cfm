@@ -52,6 +52,16 @@
 	<td class="tblContent" width="571">#server.OS.Name# (#server.OS.Version#)</td>
 </tr>
 <tr>
+	<td class="tblHead" width="150">#stText.Overview.remote_addr#</td>
+	<td class="tblContent" width="571">#cgi.remote_addr#</td>
+</tr>
+<tr>
+	<td class="tblHead" width="150">#stText.Overview.server_name#</td>
+	<td class="tblContent" width="571">#cgi.server_name#</td>
+</tr>
+
+
+<tr>
 	<td class="tblHead" width="150">#stText.Overview.InstalledTLs#</td>
 	<td class="tblContent" width="571">
 		<cfloop index="idx" from="1" to="#arrayLen(tlds)#">

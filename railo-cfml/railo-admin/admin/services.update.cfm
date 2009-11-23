@@ -5,6 +5,10 @@
 <cftry>
 <cfswitch expression="#url.action2#">
 	<cfcase value="settings">
+    	<cfif not len(form.location)>
+        	<cfset form.location=form.locationCustom>
+        </cfif>
+        
 		<cfadmin 
 			action="UpdateUpdate"
 			type="#request.adminType#"
@@ -105,15 +109,65 @@ Settings --->
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
 
+
+<cfset stText.services.update.provider="Update Provider">
+<cfset stText.services.update.location_www="Stable releases">
+<cfset stText.services.update.location_wwwDesc="Dieser Update Provider (www.getrailo.org) gibt nur stabile Versionen zurück, welche ausführlich getestet wurden, diese Quelle sollte für produktive Systeme verwendet werden.">
+<cfset stText.services.update.location_preview="Preview releases">
+<cfset stText.services.update.location_previewDesc="Dieser Update Provider (preview.getrailo.org) gibt vorab Versionen zurück, dabei handelt es sich um Versionen die zwar getestet wurden aber noch nicht die Reife einer stable release besitzen, diese Quelle sollte nur bedingt für produktive Systeme verwendet werden.">
+<cfset stText.services.update.location_dev="Develop releases (Bleeding Edge)">
+<cfset stText.services.update.location_devDesc="Dieser Update Provider (dev.getrailo.org) gibt ""Bleeding Edge"" Versionen zurück, dabei handelt es sich um Versionen die wenig bis gar nicht getestet wurden, diese Quelle sollte nicht für produktive Systeme verwendet werden.">
+
+<cfset stText.services.update.location_custom="Custom">
+<cfset stText.services.update.location_customDesc="Hier können Sie ihren eigenen Update Provider definieren, dies ist eine URL in der Form ""http://my.domainname.org""">
+
+
+
+<cfset stText.services.update.provider="Update Provider">
+<cfset stText.services.update.location_www="Stable releases">
+<cfset stText.services.update.location_wwwDesc="This Update Provider (www.getrailo.org ) returns only stable versions. The versions found here are deeply tested. This source is recommended for production environments.">
+
+<cfset stText.services.update.location_preview="Preview releases">
+<cfset stText.services.update.location_previewDesc="This Update Provider (preview.getrailo.org) returns public preview versions. Versions are tested, but not as deeply as stable releases. This source could be used for production environments. Please use caution.">
+<cfset stText.services.update.location_dev="Development releases (Bleeding Edge)">
+<cfset stText.services.update.location_devDesc="This Update Provider (dev.getrailo.org) returns ""Bleeding Edge"" versions. Usually only a small amount of testing has been performed on these versions. This source should NOT be used for production environments.">
+<cfset stText.services.update.location_custom="Custom">
+<cfset stText.services.update.location_customDesc="Here you can define your own Update Provider. This is a URL of the form ""http://my.domainname.org""">
+
+
+
 <cfform action="#go(url.action,"settings")#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.services.update.location#</td>
+	<td class="tblHead" width="150">#stText.services.update.provider#</td>
 	<td class="tblContent">
-	<cfif hasAccess><input type="text" class="text" name="location" size="40" value="#update.location#">
+	<cfif hasAccess>
+    <cfset isCustom=true>
+    <table class="tbl">
+    <tr>
+    	<td valign="top"><input type="radio" name="location" value="http://www.getrailo.org"<cfif update.location EQ 'http://www.getrailo.org'> <cfset isCustom=false>checked="checked"</cfif> /></td>
+        <td>#stText.services.update.location_www#<br /><span class="comment">#stText.services.update.location_wwwdesc#</span></td>
+    </tr>
+    <tr>
+    	<td valign="top"><input type="radio" name="location" value="http://preview.getrailo.org"<cfif update.location EQ 'http://preview.getrailo.org'> <cfset isCustom=false>checked="checked"</cfif> /></td>
+        <td>#stText.services.update.location_preview#<br /><span class="comment">#stText.services.update.location_previewdesc#</span></td>
+    </tr>
+    <tr>
+    	<td valign="top"><input type="radio" name="location" value="http://dev.getrailo.org"<cfif update.location EQ 'http://dev.getrailo.org'> <cfset isCustom=false>checked="checked"</cfif> /></td>
+        <td>#stText.services.update.location_dev#<br /><span class="comment">#stText.services.update.location_devdesc#</span></td>
+    </tr>
+    <tr>
+    	<td valign="top"><input type="radio" name="location"<cfif isCustom> checked="checked"</cfif> value="" /></td>
+        <td>#stText.services.update.location_custom# <input type="text" class="text" name="locationCustom" size="40" value="<cfif isCustom>#update.location#</cfif>"><br />
+        <span class="comment">#stText.services.update.location_customDesc#</span></td>
+    </tr>
+    </table>
+     
+    
+    
+    
 	<cfelse>
 	<b>#update.location#</b>
-	</cfif><br>
-	<span class="comment">#stText.services.update.locdesc#</span></td>
+	</cfif></td>
 	
 </tr>
 <tr>

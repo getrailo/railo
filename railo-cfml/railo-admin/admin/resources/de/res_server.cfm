@@ -7,7 +7,8 @@
 <cfset stText.Regional.Other                 = " --- andere --- ">
 <cfset stText.Regional.TimeZone              = "Zeitzone">
 <cfset stText.Regional.TimeZoneDescription   = "Definiert die gewünschte Zeitzone für Railo. Diese Einstellung ändert die Zeit für den Kontext der Webs.<br>">
-<cfset stText.Regional.ServerProp       	 = "Server Grundeinstellung">
+<cfset stText.Regional.ServerProp.server       	 = "Server Wert">
+<cfset stText.Regional.ServerProp.web       = "Server Administrator Wert">
 <cfset stText.Regional.TimeServer            = "Time server (NTP)">
 <cfset stText.Regional.TimeServerDescription = "Time server der die aktuelle Zeit zürück gibt. Falls gesetzt, wird in Railo diese Zeit anstelle der lokalen Server-Zeit verwendet (Beispiel: swisstime.ethz.ch, time.nist.gov).">
 <cfset stText.Regional.TimeServerMissing     = "Bitte wählen Sie einen Wert für die Zeitzone aus.">

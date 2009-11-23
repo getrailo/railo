@@ -42,13 +42,14 @@ ACTIONS --->
 		<cfset attrColl.proxyport=form.proxyport>
 		<cfset attrColl.proxyusername=form.proxyusername>
 		<cfset attrColl.proxyserver=form.proxyserver>
-        
+        <!--- 
 		<cfadmin 
 			action="verifyRemoteClient"
 			type="#request.adminType#"
 			remotetype="#request.adminType#"
 			password="#session["password"&request.adminType]#"
 			attributeCollection="#attrColl#">
+		--->
 		<cfadmin 
 			action="updateRemoteClient"
 			type="#request.adminType#"
@@ -57,8 +58,18 @@ ACTIONS --->
 			attributeCollection="#attrColl#"
 			>
 	
-	
-		<cflocation url="#request.self#?action=#url.action#" addtoken="no">
+        <cfadmin 
+            action="getRemoteClients"
+            type="#request.adminType#"
+            password="#session["password"&request.adminType]#"
+            returnVariable="clients">
+        <cfset row=0>
+        <cfloop query="clients">
+        	<cfif clients.securityKey EQ attrColl.securityKey and clients.url EQ attrColl.url>
+            	<cfset row=clients.currentrow>
+            </cfif>
+        </cfloop>
+		<cflocation url="#request.self#?action=#url.action#&row=#row#" addtoken="no">
 	</cfif>
 	<cfcatch>
 		<cfset error.message=cfcatch.message>
@@ -230,7 +241,7 @@ function removeStars(field) {
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.serverpasswordDesc#</span><br />
 			<input type="hidden" name="serverpasswordh" value="#rc.serverpasswordh#">
-			<cfinput type="text" name="serverpassword" value="#rc.serverpassword#" onClick="removeStars(this)" style="width:200px">
+			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="serverpassword" value="#rc.serverpassword#" style="width:200px">
 		</td>
 	</tr>
 	<tr>
@@ -241,7 +252,7 @@ function removeStars(field) {
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.adminPasswordDesc[request.adminType]#</span><br />
 			<input type="hidden" name="adminPasswordh" value="#rc.adminPasswordh#">
-			<cfinput type="text" name="adminPassword" value="#rc.adminPassword#" onClick="removeStars(this)" style="width:200px" required="yes" message="#stText.remote.passwordMissing#">
+			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="adminPassword" value="#rc.adminPassword#" style="width:200px" required="yes" message="#stText.remote.passwordMissing#">
 		</td>
 	</tr>
 	<tr>
@@ -279,7 +290,7 @@ function removeStars(field) {
 		<td class="tblHead" width="200">#stText.remote.proxyPassword#</td>
 		<td class="tblContent" width="450">
 			<input type="hidden" name="proxyPasswordh" value="#rc.proxyPasswordh#">
-			<cfinput type="text" name="proxyPassword" value="#rc.proxyPassword#" onClick="removeStars(this)" style="width:200px">
+			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="proxyPassword" value="#rc.proxyPassword#" style="width:200px">
 		</td>
 	</tr>
 

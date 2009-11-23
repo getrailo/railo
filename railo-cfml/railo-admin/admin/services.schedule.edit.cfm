@@ -25,11 +25,13 @@ function translateDateTime(task,dateName,timeName,newName) {
 	if(IsDate(task[timeName])) {
 		d=task[timeName];
 		sct.hour=two(hour(d));
-		sct.minute=two(minute(d));	
+		sct.minute=two(minute(d));
+		sct.second=two(second(d));	
 	}
 	else {
 		sct.hour='';
 		sct.minute='';
+		sct.second='';
 	}
 	task[newName]=sct;
 }
@@ -250,17 +252,17 @@ Error Output--->
 <table class="tbl">
 <tr>
 	<td colspan="2">
-	<table class="tbl" border="0" cellpadding="0" cellspacing="3">
-	<tr>
-		<td><input class="tbl#iif(task.interval EQ 'once',de('Head'),de('Content'))#" 
-			type="submit" class="submit" name="interval" value="once"></td>
-		<td><input class="tbl#iif(task.interval EQ 'daily',de('Head'),de('Content'))#" 
-			type="submit" class="submit" name="interval" value="daily"></td>
-		<td><input class="tbl#iif(task.interval EQ 'weekly',de('Head'),de('Content'))#" 
-			type="submit" class="submit" name="interval" value="weekly"></td>
-		<td><input class="tbl#iif(task.interval EQ 'monthly',de('Head'),de('Content'))#" 
-			type="submit" class="submit" name="interval" value="monthly"></td>
-		<td><input class="tbl#iif(isNumeric(task.interval),de('Head'),de('Content'))#" 
+	<table class="tbl" border="0" cellpadding="0" cellspacing="0">
+	<tr><cfset css="background-color:white;background: url('');">
+		<td><input style="tbl#iif(task.interval EQ 'once','css',de(''))#" 
+			type="submit" class="submit" name="interval" value="once">&nbsp;</td>
+		<td>&nbsp;<input style="tbl#iif(task.interval EQ 'daily','css',de(''))#" 
+			type="submit" class="submit" name="interval" value="daily">&nbsp;</td>
+		<td>&nbsp;<input style="tbl#iif(task.interval EQ 'weekly','css',de(''))#"  
+			type="submit" class="submit" name="interval" value="weekly">&nbsp;</td>
+		<td>&nbsp;<input style="tbl#iif(task.interval EQ 'monthly','css',de(''))#" 
+			type="submit" class="submit" name="interval" value="monthly">&nbsp;</td>
+		<td>&nbsp;<input style="tbl#iif(isNumeric(task.interval),'css',de(''))#" 
 			type="submit" class="submit" name="interval" value="every ..."></td>
 	</tr>
 	</table>
@@ -274,6 +276,7 @@ Error Output--->
 	<input type="hidden" name="_interval" value="#task.interval#">
 	<input type="hidden" name="end_hour" value="#task.end.hour#">
 	<input type="hidden" name="end_minute" value="#task.end.minute#">
+	<input type="hidden" name="end_second" value="#task.end.second#">
 	
 	<input type="hidden" name="end_day" value="#task.end.day#">
 	<input type="hidden" name="end_month" value="#task.end.month#">
@@ -289,6 +292,7 @@ Error Output--->
 			<td class="comment"></td>
 			<td class="comment">#stText.General.Hour#</td>
 			<td class="comment">#stText.General.Minute#</td>
+			<td class="comment">#stText.General.second#</td>
 		</tr>
 		<tr>
 			<td><cfinput type="text" name="start_day" value="#task.start.day#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
@@ -297,6 +301,7 @@ Error Output--->
 			<td>&nbsp;&nbsp;-&nbsp;&nbsp;</td>
 			<td><cfinput type="text" name="start_hour" value="#task.start.hour#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 			<td><cfinput type="text" name="start_minute" value="#task.start.minute#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
+			<td><cfinput type="text" name="start_second" value="#task.start.second#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
 		</table></td>
 </tr>
@@ -305,6 +310,7 @@ Error Output--->
 	<input type="hidden" name="_interval" value="#task.interval#">
 	<input type="hidden" name="end_hour" value="#task.end.hour#">
 	<input type="hidden" name="end_minute" value="#task.end.minute#">
+	<input type="hidden" name="end_second" value="#task.end.second#">
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.StartsAt#</td>
 	<td class="tblContent" width="400">
@@ -328,10 +334,12 @@ Error Output--->
 		<tr>
 			<td class="comment">#stText.General.Hour#</td>
 			<td class="comment">#stText.General.Minute#</td>
+			<td class="comment">#stText.General.second#</td>
 		</tr>
 		<tr>
 			<td><cfinput type="text" name="start_hour" value="#task.start.hour#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 			<td><cfinput type="text" name="start_minute" value="#task.start.minute#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
+			<td><cfinput type="text" name="start_second" value="#task.start.second#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
 		</table></td>
 </tr>
@@ -376,10 +384,12 @@ Error Output--->
 		<tr>
 			<td class="comment">#stText.General.Hour#</td>
 			<td class="comment">#stText.General.Minute#</td>
+			<td class="comment">#stText.General.second#</td>
 		</tr>
 		<tr>
 			<td><cfinput type="text" name="start_hour" value="#task.start.hour#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 			<td><cfinput type="text" name="start_minute" value="#task.start.minute#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
+			<td><cfinput type="text" name="start_second" value="#task.start.second#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
 		</table></td>
 </tr>
@@ -406,10 +416,12 @@ Error Output--->
 		<tr>
 			<td class="comment">#stText.General.Hour#</td>
 			<td class="comment">#stText.General.Minute#</td>
+			<td class="comment">#stText.General.second#</td>
 		</tr>
 		<tr>
 			<td><cfinput type="text" name="end_hour" value="#task.end.hour#" style="width:40px" required="no" validate="integer">&nbsp;</td>
 			<td><cfinput type="text" name="end_minute" value="#task.end.minute#" style="width:40px" required="no" validate="integer">&nbsp;</td>
+			<td><cfinput type="text" name="end_second" value="#task.end.second#" style="width:40px" required="no" validate="integer">&nbsp;</td>
 		</tr>
 		</table></td>
 </tr>

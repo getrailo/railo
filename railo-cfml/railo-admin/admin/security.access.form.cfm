@@ -149,6 +149,24 @@
 		<span class="comment">#stText.Security.CFXDescription#</span>
 	</td>
 </tr>
+
+<!--- Cache --->
+<tr>
+	<td class="tblHead" width="150">#stText.Security.Cache#</td>
+	<td class="tblContent#def('cache')#">
+		<input type="checkbox" class="checkbox" name="#prefix#Cache" value="yes" <cfif access.cache>checked</cfif>>
+		<span class="comment">#stText.Security.CacheDescription#</span>
+	</td>
+</tr>
+
+<!--- Gateway --->
+<tr>
+	<td class="tblHead" width="150">#stText.Security.Gateway#</td>
+	<td class="tblContent#def('gateway')#">
+		<input type="checkbox" class="checkbox" name="#prefix#Gateway" value="yes" <cfif access.gateway>checked</cfif>>
+		<span class="comment">#stText.Security.GatewayDescription#</span>
+	</td>
+</tr>
 <!--- Debugging --->
 <tr>
 	<td class="tblHead" width="150">#stText.Security.Debugging#</td>
@@ -191,31 +209,51 @@
 <!--- File --->
 <tr>
 	<td class="tblHead" width="150">#stText.Security.File#</td>
-	<td class="tblContent"><span class="comment">#stText.Security.FileDescription#</span><select name="#prefix#File" onChange="checkTheBox(this)">
+	<td class="tblContent"><span class="comment">#stText.Security.FileDescription#</span><select name="#prefix#File" onChange="changeFileAccessVisibility('fileAccess',this)">
 			<option <cfif access.file EQ "all">selected</cfif>>#stText.Security.FileAll#</option>
 			<option <cfif access.file EQ "local">selected</cfif>>#stText.Security.FileLocal#</option>
 			<option <cfif access.file EQ "none">selected</cfif>>#stText.Security.FileNone#</option>
 		</select>
 	
-    <cfset stText.Security.FilePath="Directory">
-    <cfset stText.Security.FileCustom="Custom Directories">
-    <cfset stText.Security.FileCustomDesc="In Addion you can define some directories where access is allowed">
+    
+    <script>
+function changeFileAccessVisibility(name,field){
+	var display=0;
+	if(field){
+		display=field.value=='all'?1:2;
+	}
+	
+	var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName(name);
+	var s=null;
+	for(var i=0;i<tds.length;i++) {
+		if(tds[i].name && tds[i].name!=name)continue;
+		s=tds[i].style;
+		if(display==1) s.display='none';
+		else if(display==2) s.display='';
+		else if(s.display=='none') s.display='';
+		else s.display='none';
+	}
+}
+
+</script>
+
    
-<cfif access.file NEQ "all">
-    <br />
-    <br />
-#stText.Security.FileCustom#<br />
-<span class="comment">#stText.Security.FileCustomDesc#</span>
+
+
 <table class="tbl" width="400">
 <tr>
-	<td colspan="5"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+	<td ><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<tr>
+<tr  name="fileAccess">
+	<td colspan="5">#stText.Security.FileCustom#<br />
+<span class="comment">#stText.Security.FileCustomDesc#</span></td>
+</tr>
+<tr name="fileAccess">
 	<td width="350" class="tblHead" nowrap>#stText.Security.FilePath#</td>
 </tr>
 
 	<cfloop index="idx" from="1" to="#arrayLen(access.file_access)#">
-		<tr>
+		<tr name="fileAccess">
 		<!--- path --->
 			<td class="tblContent" nowrap><cfinput 
 				type="text" name="path_#idx#" 
@@ -225,13 +263,12 @@
 	</cfloop>
 	<!--- INSERT --->
 	
-		<tr>
-			<td class="tblContent" nowrap><cfinput type="text" name="path_#arrayLen(access.file_access)+1#" value="" required="no"  style="width:400px"></td>
+		<tr name="fileAccess">
+			<td class="tblContent" nowrap><cfinput type="text" name="path_#arrayLen(access.file_access)+1#" value="" required="no" onclick="changeFileAccessVisibility('fileAccess')"  style="width:400px"></td>
 		</tr>
 	
 </table>
-    
-    </cfif>
+   
 
 	</td>
 </tr>
@@ -318,5 +355,7 @@
 </tr>
 </cfform></cfoutput>
 </table>
+
+<cfif access.file EQ "all"><script>changeFileAccessVisibility('fileAccess');</script></cfif>
 <br><br>
 

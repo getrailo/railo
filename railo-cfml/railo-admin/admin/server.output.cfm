@@ -37,9 +37,22 @@ Defaults --->
 				remoteClients="#request.getRemoteClients()#">
 	
 		</cfcase>
+	<!--- reset to server setting --->
+		<cfcase value="#stText.Buttons.resetServerAdmin#">
+			
+			<cfadmin 
+				action="updateOutputSetting"
+				type="#request.adminType#"
+				password="#session["password"&request.adminType]#"
+				
+				supressWhiteSpace=""
+				showVersion=""
+                
+				remoteClients="#request.getRemoteClients()#">
+	
+		</cfcase>
 	</cfswitch>
 	<cfcatch>
-	
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>
@@ -107,6 +120,7 @@ Create Datasource --->
 	<td colspan="2">
 		<input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
 		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>

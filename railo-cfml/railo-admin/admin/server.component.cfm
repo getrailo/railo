@@ -38,10 +38,22 @@ Defaults --->
 				remoteClients="#request.getRemoteClients()#"
 				>
 		
-			<!--- <cfset admin.updateBaseComponent(form.baseComponent)>
-			<cfset admin.updateComponentDataMemberDefaultAccess(form.dataMemberDefaultAccess)>
-			<cfset admin.updateComponentDumpTemplate(form.componentDumpTemplate)>
-			<cfset admin.store()> --->
+		</cfcase>
+	<!--- reset to server setting --->
+		<cfcase value="#stText.Buttons.resetServerAdmin#">
+			<cfadmin 
+				action="updateComponent"
+				type="#request.adminType#"
+				password="#session["password"&request.adminType]#"
+				
+				baseComponentTemplate=""
+				componentDumpTemplate=""
+				componentDataMemberDefaultAccess=""
+				triggerDataMember=""
+				useShadow=""
+                
+				remoteClients="#request.getRemoteClients()#">
+		
 		</cfcase>
 	</cfswitch>
 	<cfcatch>
@@ -160,6 +172,7 @@ Use Shadow --->
 	<td colspan="2">
 		<input class="submit" type="submit" name="mainAction" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>

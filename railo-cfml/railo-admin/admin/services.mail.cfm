@@ -22,6 +22,19 @@ Defaults --->
 	password="#session["password"&request.adminType]#"
 	returnVariable="ms">
 
+<cfscript>
+stars="*********";
+function toPassword(host,pw){
+	var i=1;
+	if(pw EQ stars){
+		for(i=ms.recordcount;i>0;i--){
+			if(host EQ ms.hostname[i]) return ms.password[i];
+		}
+	}
+	return pw;
+}
+</cfscript>
+
 <!--- 
 ACTIONS --->
 <cftry>
@@ -29,7 +42,7 @@ ACTIONS --->
 
 <!--- Setting --->
 	<cfcase value="#stText.Buttons.Setting#">
-		
+		<cfif form._mainAction EQ stText.Buttons.update>
 		<cfadmin 
 			action="updateMailSetting"
 			type="#request.adminType#"
@@ -42,7 +55,24 @@ ACTIONS --->
 			timeout="#form.timeout#"
 			defaultEncoding="#form.defaultEncoding#"
 			remoteClients="#request.getRemoteClients()#">
+         <cfelseif form._mainAction EQ stText.Buttons.resetServerAdmin>
+		<!--- reset to server setting --->
+        <cfadmin 
+			action="updateMailSetting"
+			type="#request.adminType#"
+			password="#session["password"&request.adminType]#"
+			
+			logfile=""
+			loglevel=""
+			spoolEnable=""
+			spoolInterval=""
+			timeout=""
+			defaultEncoding=""
+            
+			remoteClients="#request.getRemoteClients()#">
+         </cfif>
 	</cfcase>
+        
 
 <!--- UPDATE --->
 	<cfcase value="#stText.Buttons.Update#">
@@ -70,7 +100,7 @@ ACTIONS --->
 						
 						hostname="#data.hosts[idx]#"
 						dbusername="#data.usernames[idx]#"
-						dbpassword="#data.passwords[idx]#"
+						dbpassword="#toPassword(data.hosts[idx],data.passwords[idx])#"
 						port="#data.ports[idx]#"
 						tls="#isDefined("data.tlss[#idx#]") and data.tlss[idx]#"
 						ssl="#isDefined("data.ssls[#idx#]") and data.ssls[idx]#"
@@ -117,7 +147,7 @@ ACTIONS --->
 								hostname="#data.hosts[idx]#"
 								port="#data.ports[idx]#"
 								mailusername="#data.usernames[idx]#"
-								mailpassword="#data.passwords[idx]#">
+								mailpassword="#toPassword(data.hosts[idx],data.passwords[idx])#">
 								<cfset stVeritfyMessages[data.hosts[idx]].Label = "OK">
 							<cfcatch>
 								<cfset stVeritfyMessages[data.hosts[idx]].Label = "Error">
@@ -174,7 +204,7 @@ Mail Settings
 		<span class="comment">#stText.mail.DefaultEncodingDescription#</span>
 		<cfif hasAccess>
 		<cfinput type="text" name="defaultencoding" value="#mail.defaultEncoding#" 
-			style="width:200px" required="yes" message="#stText.mail.missingEncoding#">
+			style="width:200px" required="no" message="#stText.mail.missingEncoding#">
 		
 		<cfelse>
 			<input type="hidden" name="defaultencoding" value="#mail.defaultEncoding#">
@@ -187,7 +217,7 @@ Mail Settings
 	<td class="tblHead" width="100" nowrap>#stText.Mail.LogFile#</td>
 	<td class="tblContent#css#" width="450" height="28" title="#mail.strlogfile#
 #mail.logfile#"><cfif hasAccess><cfinput type="text" name="logFile" 
-	value="#mail.strlogfile#" required="yes"  
+	value="#mail.strlogfile#" required="no"  
 	style="width:450px" message="#stText.Mail.LogFileMissing#"><cfelse><b>#mail.strlogfile#</b></cfif></td>
 </tr>
 <tr>
@@ -208,12 +238,12 @@ Mail Settings
 	<td class="tblHead" width="100" height="28" nowrap>#stText.Mail.SpoolInterval#</td>
 	<td class="tblContent" width="450"><cfif hasAccess><cfinput type="text" name="spoolInterval" 
 	value="#mail.spoolInterval#" validate="integer" style="width:50px" 
-	required="yes"><cfelse><b>#mail.spoolInterval#</b></cfif></td>
+	required="no"><cfelse><b>#mail.spoolInterval#</b></cfif></td>
 </tr>
 <tr>
 	<td class="tblHead" width="100" height="28" nowrap>#stText.Mail.Timeout#</td>
 	<td class="tblContent" width="450"><cfif hasAccess><cfinput type="text" name="timeout" 
-	value="#mail.timeout#" validate="integer" style="width:50px" required="yes"><cfelse><b>#mail.timeout#</b></cfif></td>
+	value="#mail.timeout#" validate="integer" style="width:50px" required="no"><cfelse><b>#mail.timeout#</b></cfif></td>
 </tr>
 <cfif hasAccess>
 <cfmodule template="remoteclients.cfm" colspan="2">
@@ -222,6 +252,7 @@ Mail Settings
 		<input type="hidden" name="mainAction" value="#stText.Buttons.Setting#">
 		<input type="submit" class="submit" name="_mainAction" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="canel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="_mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</cfoutput></td>
 </tr></cfif>
 </cfform>
@@ -271,11 +302,11 @@ Existing Collection --->
 				value="#ms.username#" required="no"  style="width:120px" 
 				message="#stText.Mail.UserNameMissing##ms.currentrow#)"></cfif></td>
 		<!--- password --->
-			<td class="tblContent" nowrap><cfif ms.readonly>#ms.password#&nbsp;<cfelse>
-            #ms.password#
+			<td class="tblContent" nowrap><cfif ms.readonly>***********&nbsp;<cfelse>
+            
             <cfinput 
-				onKeyDown="checkTheBox(this)" type="password"   passthrough='autocomplete="off"'
-				name="password_#ms.currentrow#" value="#ms.password#" required="no"  onClick="this.value='';" 
+				onKeyDown="checkTheBox(this)" type="password" passthrough='autocomplete="off"' onClick="this.value='';"
+				name="password_#ms.currentrow#" value="#stars#" required="no"  
 				style="width:120px" message="#stText.Mail.PasswordMissing##ms.currentrow#)"></cfif></td>
 		<!--- port --->
 			<td class="tblContent" nowrap><cfif ms.readonly>#ms.port#&nbsp;<cfelse><cfinput onKeyDown="checkTheBox(this)" 
@@ -324,7 +355,7 @@ Existing Collection --->
 			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)"  
 			type="text" name="hostName_#ms.recordcount+1#" value="" required="no"  style="width:220px"></td>
 			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="username_#ms.recordcount+1#" value="" required="no"  style="width:120px"></td>
-			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="password_#ms.recordcount+1#" value="" required="no"  style="width:120px"></td>
+			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="password" name="password_#ms.recordcount+1#" passthrough='autocomplete="off"' value="" required="no"  style="width:120px"></td>
 			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" 
 			type="text" name="port_#ms.recordcount+1#" value="" required="no" validate="integer" 
 			message="Value for Port (Row #ms.recordcount+1#) must be of type number" style="width:40px"></td>

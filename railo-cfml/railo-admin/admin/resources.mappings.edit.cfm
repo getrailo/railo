@@ -60,7 +60,8 @@
 	<td class="tblHead" width="150">#stText.Mappings.ToplevelHead#</td>
 	<td class="tblContent" nowrap><cfif mapping.readOnly>#iif(mapping.toplevel,de("Yes"),de("No"))#<cfelse><input 
 	type="checkbox" class="checkbox" name="toplevel_#mapping.id#" 
-	value="yes" <cfif mapping.toplevel>checked</cfif>></cfif></td>
+	value="yes" <cfif mapping.toplevel>checked</cfif>></cfif>
+    <br /><span class="comment">#stText.Mappings.ToplevelDesc#</span></td>
 </tr>
 
 <cfif hasAccess>

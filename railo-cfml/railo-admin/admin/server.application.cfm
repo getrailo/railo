@@ -50,6 +50,21 @@ Defaults --->
 				remoteClients="#request.getRemoteClients()#">
 			
 		</cfcase>
+	<!--- reset to server setting --->
+		<cfcase value="#stText.Buttons.resetServerAdmin#">
+		
+			<cfadmin 
+				action="updateApplicationSetting"
+				type="#request.adminType#"
+				password="#session["password"&request.adminType]#"
+				
+				scriptProtect=""
+				AllowURLRequestTimeout=""
+				requestTimeout=""
+                
+				remoteClients="#request.getRemoteClients()#">
+			
+		</cfcase>
 	</cfswitch>
 
 <!--- listener --->
@@ -64,6 +79,20 @@ Defaults --->
 				
 				listenerType="#form.type#"
 				listenerMode="#form.mode#"
+				remoteClients="#request.getRemoteClients()#">
+			
+		</cfcase>
+	<!--- reset to server setting --->
+		<cfcase value="#stText.Buttons.resetServerAdmin#">
+		
+			<cfadmin 
+				action="updateApplicationListener"
+				type="#request.adminType#"
+				password="#session["password"&request.adminType]#"
+				
+				listenerType=""
+				listenerMode=""
+                
 				remoteClients="#request.getRemoteClients()#">
 			
 		</cfcase>
@@ -230,6 +259,7 @@ function selectCustom(form) {
 	<td colspan="2">
 		<input type="submit" class="submit" name="mainAction1" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction1" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>
@@ -301,6 +331,7 @@ function selectCustom(form) {
 	<td colspan="3">
 		<input type="submit" class="submit" name="mainAction2" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction2" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>

@@ -38,7 +38,7 @@ function checkTheBox(field) {
 	<cfswitch expression="#url.action2#">
 	<!--- UPDATE --->
 		<cfcase value="updateDefaultSecurityManager">
-        
+        	
 			<cfadmin 
 				action="updateDefaultSecurityManager"
 				type="#request.adminType#"
@@ -62,6 +62,8 @@ function checkTheBox(field) {
 				tag_import="#fb('defaultTagImport')#"
 				tag_object="#fb('defaultTagObject')#"
 				tag_registry="#fb('defaultTagRegistry')#"
+				cache="#fb('defaultCache')#"
+				gateway="#fb('defaultGateway')#"
 				access_read="#form.defaultaccess_read#"
 				access_write="#form.defaultaccess_write#"
 			remoteClients="#request.getRemoteClients()#">
@@ -92,6 +94,8 @@ function checkTheBox(field) {
 				tag_import="#fb('defaultTagImport')#"
 				tag_object="#fb('defaultTagObject')#"
 				tag_registry="#fb('defaultTagRegistry')#"
+				cache="#fb('defaultCache')#"
+				gateway="#fb('defaultGateway')#"
 				access_read="#form.defaultaccess_read#"
 				access_write="#form.defaultaccess_write#">
 			
@@ -120,7 +124,7 @@ function checkTheBox(field) {
 		
 		
 	</cfswitch>
-	<cfcatch><cfrethrow>
+	<cfcatch>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>

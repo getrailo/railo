@@ -43,6 +43,19 @@ Defaults --->
 				remoteClients="#request.getRemoteClients()#">
 			
 		</cfcase>
+	<!--- reset to server setting --->
+		<cfcase value="#stText.Buttons.resetServerAdmin#">
+			<cfadmin 
+				action="updateDebug"
+				type="#request.adminType#"
+				password="#session["password"&request.adminType]#"
+				
+                debug=""
+				debugTemplate=""
+                
+				remoteClients="#request.getRemoteClients()#">
+			
+		</cfcase>
 	</cfswitch>
 	<cfcatch>
 		<cfset error.message=cfcatch.message>
@@ -83,7 +96,7 @@ Create Datasource --->
 		<cfif hasAccess>
 			<select name="debug">
 				<cfif request.admintype EQ "web">
-					<option #iif(debug.debugsrc EQ "server",de('selected'),de(''))# value="">#stText.Regional.ServerProp# <cfif debug.debugsrc EQ "server">(#lbl#) </cfif></option>
+					<option #iif(debug.debugsrc EQ "server",de('selected'),de(''))# value="">#stText.Regional.ServerProp[request.adminType]# <cfif debug.debugsrc EQ "server">(#lbl#) </cfif></option>
 					<option #iif(debug.debugsrc EQ "web" and debug.debug,de('selected'),de(''))# value="true">#stText.general.yes#</option>
 					<option #iif(debug.debugsrc EQ "web" and not debug.debug,de('selected'),de(''))# value="false">#stText.general.no#</option>
 				<cfelse>
@@ -167,6 +180,7 @@ Create Datasource --->
 	<td colspan="2">
 		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>

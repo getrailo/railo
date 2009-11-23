@@ -77,6 +77,8 @@ Error Output--->
 	password="#session["password"&request.adminType]#"
 	name="#url.name#"
 	returnVariable="datasource">
+    
+	<cfset datasource._password=datasource.password>
 	<cfset datasource.password="****************">
 	<cfset datasource.type=getType(datasource.classname,datasource.dsn)>
 <cfelse>
@@ -123,8 +125,12 @@ Error Output--->
 
 
 </cfsilent>
-
 <cfoutput>
+
+<cfif structKeyExists(url,'name')>
+<i><b>Class:</b> #datasource.classname#</i><br />
+<i><b>DNS:</b> <cfif len(datasource._password)>#replace(datasource.dsnTranslated,datasource._password,datasource.password,'all')#<cfelse>#datasource.dsnTranslated#</cfif></i>
+</cfif>
 <h2>
 	<cfif actionType EQ "update">
 	#stText.Settings.DatasourceDescriptionUpdate#
