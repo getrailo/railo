@@ -40,7 +40,6 @@ public class CFMLProxy {
 	private static final Collection.Key FLASH = KeyImpl.getInstance("flash");
 	private static final Collection.Key PARAMS = KeyImpl.getInstance("params");
 	private static final Collection.Key RESULT = KeyImpl.getInstance("result");
-	private static final Collection.Key ARGUMENT_COLLECTION = KeyImpl.getInstance("argumentCollection");
 	private static final Collection.Key AMF_FORWARD = KeyImpl.getInstance("AMF-Forward");
 	
 	

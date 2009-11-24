@@ -7,6 +7,7 @@ import org.w3c.dom.Text;
 
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
+import railo.runtime.type.Collection;
 
 /**
  * 
@@ -114,6 +115,23 @@ public final class XMLTextStruct extends XMLNodeStruct implements Text {
         parent.replaceChild(XMLCaster.toRawNode(newText),XMLCaster.toRawNode(oldText));
         return oldText;
     }
+    
+
+	/**
+	 *
+	 * @see railo.runtime.type.Collection#duplicate(boolean)
+	 */
+	public Collection duplicate(boolean deepCopy) {
+		return new XMLTextStruct((Text)text.cloneNode(deepCopy),caseSensitive);
+	}
+	
+
+	/**
+	 * @see org.w3c.dom.Node#cloneNode(boolean)
+	 */
+	public Node cloneNode(boolean deep) {
+		return new XMLTextStruct((Text)text.cloneNode(deep),caseSensitive);
+	}
 
 
 }

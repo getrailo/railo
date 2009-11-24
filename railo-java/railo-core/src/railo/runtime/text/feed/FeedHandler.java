@@ -87,11 +87,13 @@ public final class FeedHandler extends DefaultHandler {
 	}
 	
 	private void init(String saxParser,InputSource is) throws SAXException, IOException	{
+		//print.out("is:"+is);
 		hasDC=false;
 		data=new FeedStruct();
 		xmlReader=XMLReaderFactory.createXMLReader(saxParser);
 		xmlReader.setContentHandler(this);
 		xmlReader.setErrorHandler(this);
+		xmlReader.setDTDHandler(new DummyDTDHandler());
 		xmlReader.parse(is);
     }
 	

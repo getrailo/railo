@@ -96,7 +96,7 @@ public final class XMLCaster {
 		try {
 			return new Text[]{toText(doc,o)};
 		} catch (ExpressionException e) {
-			throw new XMLException("can't cast Object of type "+o.getClass().getName()+" to a XML Text Array");
+			throw new XMLException("can't cast Object of type "+Caster.toClassName(o)+" to a XML Text Array");
 		}
 	}
 	
@@ -117,8 +117,7 @@ public final class XMLCaster {
 			return attr;
 		}
 		
-		String clazz=(o == null)?"null":o.getClass().getName();
-		throw new XMLException("can't cast Object of type "+clazz+" to a XML Attribute");
+		throw new XMLException("can't cast Object of type "+Caster.toClassName(o)+" to a XML Attribute");
 	}
 
 	/**
@@ -159,7 +158,7 @@ public final class XMLCaster {
 		try {
 			return new Attr[]{toAttr(doc,o)};
 		} catch (ExpressionException e) {
-			throw new XMLException("can't cast Object of type "+o.getClass().getName()+" to a XML Attributes Array");
+			throw new XMLException("can't cast Object of type "+Caster.toClassName(o)+" to a XML Attributes Array");
 		}
 	}
 
@@ -212,7 +211,7 @@ public final class XMLCaster {
 		try {
 			return new Comment[]{toComment(doc,o)};
 		} catch (ExpressionException e) {
-			throw new XMLException("can't cast Object of type "+o.getClass().getName()+" to a XML Comment Array");
+			throw new XMLException("can't cast Object of type "+Caster.toClassName(o)+" to a XML Comment Array");
 		}
 	}
 
@@ -225,7 +224,7 @@ public final class XMLCaster {
 	 */
 	public static Element toElement(Document doc,Object o) throws PageException {
 		if(o instanceof Element)return (Element)o;
-		else if(o instanceof Node)throw new ExpressionException("Object "+o.getClass().getName()+" must be a XML Element");
+		else if(o instanceof Node)throw new ExpressionException("Object "+Caster.toClassName(o)+" must be a XML Element");
 		return doc.createElement(Caster.toString(o));
 	}
 	
@@ -265,7 +264,7 @@ public final class XMLCaster {
 		try {
 			return new Element[]{toElement(doc,o)};
 		} catch (ExpressionException e) {
-			throw new XMLException("can't cast Object of type "+o.getClass().getName()+" to a XML Element Array");
+			throw new XMLException("can't cast Object of type "+Caster.toClassName(o)+" to a XML Element Array");
 		}
 	}
 	
@@ -332,7 +331,7 @@ public final class XMLCaster {
 		try {
 			return new Node[]{toNode(doc,o)};
 		} catch (ExpressionException e) {
-			throw new XMLException("can't cast Object of type "+o.getClass().getName()+" to a XML Node Array");
+			throw new XMLException("can't cast Object of type "+Caster.toClassName(o)+" to a XML Node Array");
 		}
 	}
 	

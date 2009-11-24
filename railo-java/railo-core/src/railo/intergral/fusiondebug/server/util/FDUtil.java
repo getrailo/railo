@@ -161,11 +161,4 @@ public class FDUtil {
 		}
 		return javaName.toString().toLowerCase();
 	}
-	
-	
-	/*public static void main(String[] args) {
-		print.out(toClassName("inc.initial.cfm"));
-		print.out(toClassName("/susi/test/inc.initial.cfm"));
-		print.out(toClassName("index.cfm"));
-	}*/
 }

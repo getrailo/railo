@@ -48,14 +48,11 @@ public class FDDump {
 		
 		sb.append(value.toString());
 		sb.append("\n");
-		//print.err(value.getClass().getName());
 		if(value.hasChildren()){ 
 			Iterator it = value.getChildren().iterator();
 			while(it.hasNext()){
 				Object o=it.next();
-				//print.err(o.getClass().getName());
 				dump(sb,(IFDVariable) o,level+1);
-				//dump(sb,(IFDVariable) it.next(),level+1);
 			}
 		}
 	}
@@ -86,7 +83,7 @@ public class FDDump {
 		ArrayImpl arr = new ArrayImpl();
 		arr.setEL(1, "aaa");
 		arr.setEL(2, Boolean.TRUE);
-		arr.setEL(5, Constants.INTEGER_THREE);
+		arr.setEL(5, Constants.INTEGER_3);
 		
 		ArrayImpl sub1 = new ArrayImpl();
 		sub1.setEL(1, "ddd");

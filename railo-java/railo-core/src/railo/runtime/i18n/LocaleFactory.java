@@ -35,7 +35,6 @@ public final class LocaleFactory {
 		for(int i=0;i<ls.length;i++) {
 			key=ls[i].getDisplayName(Locale.US).toLowerCase();
 			locales.put(key, ls[i]);
-			
 			if(key.indexOf(',')!=-1){
 				key=ls[i].toString();
 				//print.ln(key);
@@ -80,7 +79,7 @@ public final class LocaleFactory {
         localeAlias.put("norwegian (nynorsk)",new Locale("no","NO"));
         localeAlias.put("portuguese (brazilian)",new Locale("pt","BR"));
         localeAlias.put("portuguese (brazil)",new Locale("pt","BR"));
-		localeAlias.put("portuguese (standard)",new Locale("pt","PT"));
+		localeAlias.put("portuguese (standard)",new Locale("pt"));
         localeAlias.put("rhaeto-romance (swiss)",new Locale("rm","CH"));
         locales.put("rhaeto-romance (swiss)",new Locale("rm","CH"));
         localeAlias.put("spanish (modern)",new Locale("es","ES"));
@@ -111,7 +110,6 @@ public final class LocaleFactory {
 	 * @throws ExpressionException
 	 */
 	public static Locale getLocale(String strLocale) throws ExpressionException {
-		
 		String strLocaleLC = strLocale.toLowerCase().trim();
 		Locale l=(Locale) locales.get(strLocaleLC);
 		if(l!=null) return l;

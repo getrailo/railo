@@ -1,9 +1,5 @@
 package railo.runtime.engine;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import railo.commons.io.res.ResourceProvider;
 import railo.commons.lang.SizeOf;
 import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
@@ -12,11 +8,10 @@ import railo.runtime.MappingImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
-import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.query.QueryCacheImpl;
+import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.type.Collection;
 import railo.runtime.type.DoubleStruct;
 import railo.runtime.type.KeyImpl;
@@ -62,17 +57,12 @@ public class Surveillance {
 		boolean isConfigWeb=config instanceof ConfigWeb;
 		
 		// server
-		ConfigServer cs=isConfigWeb?
+		/*ConfigServer cs=isConfigWeb?
 				config.getConfigServerImpl():
 				((ConfigServer)config);
-		
-		/*
-		sSize=infoScopes(server,config);
-		sSize+=infoPageContextStack(server,config.getFactory());
-		sSize+=infoQueryCache(server,config.getFactory());
-		
 		*/
-		infoResources(server,cs);
+		
+		//infoResources(server,cs);
 		// web
 		if(isConfigWeb){
 			_getInfoMemory(web, server,config);
@@ -90,7 +80,7 @@ public class Surveillance {
 		//long start=System.currentTimeMillis();
 		infoMapping(sct,config);
 			//print.out(System.currentTimeMillis()-start);
-		infoResources(sct,config);
+		//infoResources(sct,config);
 			//print.out(System.currentTimeMillis()-start);
 		
 		infoScopes(sct,server,config);
@@ -172,7 +162,7 @@ public class Surveillance {
 	}
 
 	private static void infoQueryCache(Struct parent,CFMLFactory factory) throws PageException {
-		long size= ((QueryCacheImpl)factory.getQueryCache()).sizeOf();
+		long size= ((QueryCacheSupport)factory.getQueryCache()).sizeOf();
 		parent.set(QUERY_CACHE, Caster.toDouble(size));
 	}
 	
@@ -181,7 +171,7 @@ public class Surveillance {
 		parent.set(PAGE_CONTEXT_STACK, Caster.toDouble(size));
 	}
 
-	private static void infoResources(Struct parent, Config config) throws PageException {
+	/*private static void infoResources(Struct parent, Config config) throws PageException {
 		// add server proviers ti a set for checking
 		Set set=new HashSet();
 		if(config instanceof ConfigWeb){
@@ -202,5 +192,5 @@ public class Surveillance {
 			}
 		}
 		parent.set("resourceProviders", sct);
-	}
+	}*/
 }

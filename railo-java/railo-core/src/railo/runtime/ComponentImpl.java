@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -24,7 +23,6 @@ import railo.runtime.component.InterfaceCollection;
 import railo.runtime.component.Member;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigWebImpl;
-import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.debug.DebugEntry;
 import railo.runtime.dump.DumpData;
@@ -107,7 +105,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	private static final Key TO_STRING = KeyImpl.getInstance("_toString");
 
 	private static final Key ON_MISSING_METHOD = KeyImpl.getInstance("onmissingmethod");
-	private static final Key MISSING_METHOD_NAME = KeyImpl.getInstance("missingMethodName");
+	private static final Key MISSING_METHOD_NAMEx = KeyImpl.getInstance("missingMethodName");
 	private static final Key MISSING_METHOD_ARGS = KeyImpl.getInstance("missingMethodArguments");
 
 	protected static final Key EXTENDS = KeyImpl.getInstance("extends");
@@ -378,16 +376,19 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         			args.setEL(keys[i],_namedArgs.get(keys[i]));
         		}
         	}
-        	Struct newArgs=new StructImpl(StructImpl.TYPE_SYNC);
-        	newArgs.setEL(MISSING_METHOD_NAME, name);
-        	newArgs.setEL(MISSING_METHOD_ARGS, args); 
-        	return _call(pc,(UDF)ommm,newArgs,null);
+        	
+        	//Struct newArgs=new StructImpl(StructImpl.TYPE_SYNC);
+        	//newArgs.setEL(MISSING_METHOD_NAME, name);
+        	//newArgs.setEL(MISSING_METHOD_ARGS, args); 
+        	Object[] newArgs=new Object[]{name,args};
+        	
+        	return _call(pc,(UDF)ommm,null,newArgs);
         }
         if(member==null)throw ComponentUtil.notFunction(this, KeyImpl.init(name), null,access);
         throw ComponentUtil.notFunction(this, KeyImpl.init(name), member.getValue(),access);
     }
     
-	private Object _call(PageContext pc, UDF udf, Struct namedArgs, Object[] args) throws PageException {
+	Object _call(PageContext pc, UDF udf, Struct namedArgs, Object[] args) throws PageException {
 			
 		Object rtn=null;
 		Variables parent=null;
@@ -637,8 +638,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     }*/
 
 	public ComponentImpl getUDFComponent(PageContextImpl pc) {
-		if(pc.getActiveComponent()==null) return this; 
-		return (ComponentImpl) pc.getActiveComponent();//+++
+		return ComponentUtil.getActiveComponent(pc, this);
 		
 		//if(pc.getActiveUDF()==null) return this; 
 		//return (ComponentImpl) pc.getActiveUDF().getOwnerComponent();//+++
@@ -885,6 +885,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     public String getAbsName() {
     	return top.componentPage.getPageSource().getComponentName();
 	}
+    
 
     /**
      * @see railo.runtime.Component#getOutput()
@@ -939,6 +940,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      */
     public Page getPage() {
         return top.componentPage;
+    }
+    public Page getCurrentPage() {
+        return componentPage;
     }
     
     /**
@@ -1281,6 +1285,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     
     // FUTURE deprecated injected is not used
     public void registerUDF(Collection.Key key, UDFImpl udf,boolean useShadow,boolean injected) {
+    	//print.out("registerUDF("+udf.hashCode()+"):"+key+":"+this.getPage().getPageSource().getDisplayPath());
     	udf.setOwnerComponent(this);//+++
     	///udf.isComponentMember(true);//+++
     	_udfs.put(key,udf);
@@ -1521,7 +1526,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         return _call(pc,KeyImpl.init(name),args,null,false);
     }
 
-	public Object callWithNamedValues(PageContext pc, Collection.Key methodName, Struct args) throws PageException {
+    public Object callWithNamedValues(PageContext pc, Collection.Key methodName, Struct args) throws PageException {
 		return _call(pc,methodName,args,null,false);
 	}
     

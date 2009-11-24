@@ -509,7 +509,7 @@ public final class XMLUtil {
 			} 
             catch (ExpressionException e) {}
 		}
-		throw new SAXException("Attribute ["+k.getString()+"] not found in XML Node ("+node.getClass().getName()+")");
+		throw new SAXException("Attribute ["+k.getString()+"] not found in XML Node ("+Caster.toClassName(node)+")");
 	}
 	
 
@@ -529,7 +529,6 @@ public final class XMLUtil {
 	}
 
 	public static boolean isCaseSensitve(Node node) {
-		//print.out(node.getClass().getName());
 		if(node instanceof XMLStruct) return ((XMLStruct)node).isCaseSensitive();
     	return true;
 	}
@@ -609,34 +608,6 @@ public final class XMLUtil {
 		if(o1==null)return o2;
 		return o1;
 	}
-
-	/*
-	 * Duplicate a Node 
-	 * @param node
-	 * @param initString
-	 * @return
-	 
-	private static Node xduplicate(Node node, String initString) throws ExpressionException {
-		Document doc=node.getOwnerDocument();
-		short type=node.getNodeType();
-		if(Node.ATTRIBUTE_NODE == type) 
-			return copyValues(node,doc.createAttribute(initString));
-		else if(Node.CDATA_SECTION_NODE == type) 
-			return copyValues(node,doc.createCDATASection(initString));
-		else if(Node.COMMENT_NODE == type) 
-			return copyValues(node,doc.createComment(initString));
-		else if(Node.DOCUMENT_FRAGMENT_NODE == type) 
-			return copyValues(node,doc.createDocumentFragment());
-		else if(Node.ELEMENT_NODE == type) 
-			return copyValues(node,doc.createElement(initString));
-		else if(Node.ENTITY_NODE == type) 
-			return copyValues(node,doc.createEntityReference(initString));
-		else if(Node.ENTITY_REFERENCE_NODE == type) 
-			return copyValues(node,doc.createEntityReference(initString));
-		else if(Node.TEXT_NODE == type) 
-			return copyValues(node,doc.createTextNode(initString));
-		throw new ExpressionException("unsupported node type to duplicate "+node.getClass().getName());
-	}*/
 	
 	/**
 	 * return the root Element from a node
@@ -873,7 +844,7 @@ public final class XMLUtil {
 		if(value instanceof byte[]) {
 			return new InputSource(new ByteArrayInputStream((byte[])value));
         }
-		throw new ExpressionException("cat cast object of type ["+value.getClass().getName()+"] to a Input for xml parser");
+		throw new ExpressionException("cat cast object of type ["+Caster.toClassName(value)+"] to a Input for xml parser");
         	
 	}
 	

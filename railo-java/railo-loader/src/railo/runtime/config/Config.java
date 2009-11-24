@@ -380,11 +380,14 @@ public interface Config {
      * @param password
      * @return ConfigServer
      * @throws PageException
-     * @deprecated replaced with <code>getConfigServer()</code>
      */ 
     public abstract ConfigServer getConfigServer(String password) throws PageException;
     
 
+    /**
+     * @deprecated replaced with <code>getConfigServer(String password)</code>
+     * @return
+     */
     public abstract ConfigServer getConfigServer();
     
     /**

@@ -25,6 +25,8 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
 	 */
 	public int getUpdateCount();
 	
+	// FUTURE public Query getGeneratedKeys();
+	
 	/**
 	 * return a value of the resultset by specifed colmn and row
 	 * @param key column to get 

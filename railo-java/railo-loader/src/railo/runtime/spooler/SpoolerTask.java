@@ -3,6 +3,7 @@ package railo.runtime.spooler;
 import java.io.Serializable;
 
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Struct;

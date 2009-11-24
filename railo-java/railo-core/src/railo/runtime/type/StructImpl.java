@@ -1,8 +1,10 @@
 package railo.runtime.type;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import railo.commons.collections.HashTable;
 import railo.commons.collections.HashTableNotSync;
@@ -83,33 +85,68 @@ public class StructImpl extends StructSupport {
 	public int size() {
 		return map.size();
 	}
-
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	
 	public Collection.Key[] keys() {
-		
-		Iterator it = map.keySet().iterator();
-		Collection.Key[] keys = new Collection.Key[size()];
-		int count=0;
-		while(it.hasNext()) {
-			keys[count++]=KeyImpl.toKey(it.next(), null);
+		try	{
+			Collection.Key[] keys = new Collection.Key[size()];
+			Iterator it = map.keySet().iterator();
+			int count=0;
+			while(it.hasNext() && keys.length>count) {
+				keys[count++]=KeyImpl.toKey(it.next(), null);
+			}
+			return keys;
 		}
-		
-		return keys;
+		catch(Throwable t) {
+			Map old = map;
+			try{	
+				map=Collections.synchronizedMap(map);
+				Set set = map.keySet();
+				Collection.Key[] keys = new Collection.Key[size()];
+				synchronized(map){
+					Iterator it = set.iterator();
+					int count=0;
+					while(it.hasNext() && keys.length>count) {
+						keys[count++]=KeyImpl.toKey(it.next(), null);
+					}
+					return keys;
+				}
+			}
+			finally {
+				map=old;
+			}
+		}
 	}
+
 	
 	/**
 	 * @see railo.runtime.type.Collection#keysAsString()
 	 */
 	public String[] keysAsString() {
-		Iterator it = map.keySet().iterator();
-		String[] keys = new String[size()];
-		int count=0;
-		while(it.hasNext()) {
-			keys[count++]=Caster.toString(it.next(), "");
+		try	{
+			if(true)throw new RuntimeException("");
+			String[] keys = new String[size()];
+			Iterator it = map.keySet().iterator();
+			int count=0;
+			while(it.hasNext() && keys.length>count) {
+				keys[count++]=Caster.toString(it.next(), "");
+			}
+			return keys;
 		}
-		return keys;
+		catch(Throwable t) {
+			Map old = map;
+			try{	
+				map=Collections.synchronizedMap(map);
+				Object[] arr = map.keySet().toArray();
+				String[] keys = new String[arr.length];
+				for(int i=0;i<arr.length;i++){
+					keys[i]=Caster.toString(arr[i], "");
+				}	
+				return keys;
+			}
+			finally {
+				map=old;
+			}
+		}
 	}
 
 	/**

@@ -6,6 +6,7 @@ import java.util.List;
 import railo.commons.lang.ParserString;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
+import railo.runtime.op.Caster;
 import railo.runtime.sql.exp.Column;
 import railo.runtime.sql.exp.ColumnExpression;
 import railo.runtime.sql.exp.Expression;
@@ -152,7 +153,7 @@ FROM tableList
 		raw.removeSpace();
 		Expression exp = expression(raw);
 		if(exp==null) throw new SQLParserException("missing where expression");
-		if(!(exp instanceof Operation)) throw new SQLParserException("invalid where expression ("+exp.getClass().getName()+")");
+		if(!(exp instanceof Operation)) throw new SQLParserException("invalid where expression ("+Caster.toClassName(exp)+")");
 		select.setWhereExpression((Operation)exp);
 		raw.removeSpace();
 	}

@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,9 +15,9 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.SystemOut;
 import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.ext.tag.BodyTagImpl;
@@ -186,7 +187,7 @@ public final class Content extends BodyTagImpl {
             	else {
             		//print.out("do part");
             		//print.out(ranges);
-            		int off,len;
+            		long off,len;
             		long to;
             		for(int i=0;i<ranges.length;i++) {
             			off=ranges[i].from;
@@ -255,35 +256,49 @@ public final class Content extends BodyTagImpl {
     
 
 
-	private Range[] getRanges() throws PageException {
+	private Range[] getRanges() {
 		HttpServletRequest req = pageContext.getHttpServletRequest();
 		Enumeration names = req.getHeaderNames();
 		if(names==null) return null;
 		String name;
+		Range[] range;
 		while(names.hasMoreElements()) {
 			name=(String) names.nextElement();
 			//print.out("header:"+name);
-			if("range".equalsIgnoreCase(name))return getRanges(req.getHeader(name));
+			if("range".equalsIgnoreCase(name)){
+				range = getRanges(name,req.getHeader(name));
+				if(range!=null) return range;
+			}
 		}
 		return null;
 	}
-	private static Range[] getRanges(String range) throws PageException {
+	private Range[] getRanges(String name,String range) {
 		if(StringUtil.isEmpty(range, true)) return null;
 		range=StringUtil.removeWhiteSpace(range);
 		if(range.indexOf("bytes=")==0) range=range.substring(6);
-		String[] arr = List.toStringArray(List.listToArrayRemoveEmpty(range, ','));
+		String[] arr=null;
+		try {
+			arr = List.toStringArray(List.listToArrayRemoveEmpty(range, ','));
+		} catch (PageException e) {
+			failRange(name,range);
+			return null;
+		}
 		String item;
-		int index,from,to;
+		int index;
+		long from,to;
 		
 		Range[] ranges=new Range[arr.length];
 		for(int i=0;i<ranges.length;i++) {
 			item=arr[i].trim();
 			index=item.indexOf('-');
 			if(index!=-1) {
-				from = Caster.toIntValue(item.substring(0,index),0);
-				to = Caster.toIntValue(item.substring(index+1),-1);
-				if(to!=-1 && from>to)
-					throw new ExpressionException("invalid range definition, from have to bigger than to ("+from+"-"+to+")");
+				from = Caster.toLongValue(item.substring(0,index),0);
+				to = Caster.toLongValue(item.substring(index+1),-1);
+				if(to!=-1 && from>to){
+					failRange(name,range);
+					return null;
+					//throw new ExpressionException("invalid range definition, from have to bigger than to ("+from+"-"+to+")");
+				}
 			}
 			else {
 				from = Caster.toIntValue(item,0);
@@ -291,17 +306,26 @@ public final class Content extends BodyTagImpl {
 			}
 			ranges[i]=new Range(from,to);
 			
-			if(i>0 && ranges[i-1].to>=from)
-				throw new ExpressionException("there is a overlapping of 2 ranges ("+ranges[i-1]+","+ranges[i]+")");
+			if(i>0 && ranges[i-1].to>=from){
+				PrintWriter err = pageContext.getConfig().getErrWriter();
+				SystemOut.printDate(err,"there is a overlapping of 2 ranges ("+ranges[i-1]+","+ranges[i]+")");
+				//throw new ExpressionException("there is a overlapping of 2 ranges ("+ranges[i-1]+","+ranges[i]+")");
+				return null;
+			}
 			
 		}
 		return ranges;
 	}
+
+	private void failRange(String name, String range) {
+		PrintWriter err = pageContext.getConfig().getErrWriter();
+		SystemOut.printDate(err,"fails to parse the header field ["+name+":"+range+"]");
+	}
 }
 class Range {
-	int from;
-	int to;
-	public Range(int from, int len) {
+	long from;
+	long to;
+	public Range(long from, long len) {
 		this.from = from;
 		this.to = len;
 	}

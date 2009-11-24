@@ -589,9 +589,6 @@ public final class TagLibTag {
 			if(type==null) type = Cast.getType(attr.getType());
 			clazz=ClassUtil.loadClass(getTagClassName());
 			java.lang.reflect.Method m = ClassUtil.getMethodIgnoreCase(clazz,setter,new Class[]{ClassUtil.loadClass(type.getClassName())});
-			/*if(!setter.equals(m.getName())){
-				print.out(setter+":"+m.getName());
-			}*/
 			setter=m.getName();
 		} 
 		catch (Exception e) {

@@ -11,15 +11,21 @@ import railo.commons.lang.StringUtil;
 import railo.loader.engine.CFMLEngine;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.engine.CFMLEngineImpl;
+import railo.runtime.exp.PageException;
+import railo.runtime.net.http.ServletConfigDummy;
+import railo.runtime.net.http.ServletContextDummy;
+import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
+import railo.runtime.type.StructImpl;
 
 /**
  * config server impl
  */
 public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     
-    private CFMLEngineImpl engine;
+
+	private CFMLEngineImpl engine;
     private Map initContextes;
     private Map contextes;
     private SecurityManager defaultSecurityManager;
@@ -29,7 +35,24 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     private URL updateLocation;
     private String updateType="";
 	private ConfigListener configListener;
+	private ConfigWeb configWeb;
 	private static ConfigServerImpl instance;
+	
+	/**
+     * @param engine 
+     * @param initContextes
+     * @param contextes
+     * @param configDir
+     * @param configFile
+     */
+    protected ConfigServerImpl(CFMLEngineImpl engine,Map initContextes, Map contextes, Resource configDir, Resource configFile) {
+    	super(null,configDir, configFile);
+    	this.engine=engine;
+        this.initContextes=initContextes;
+        this.contextes=contextes;
+        this.rootDir=configDir;
+        instance=this;
+    }
 	
     /**
 	 * @return the configListener
@@ -45,27 +68,12 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		this.configListener = configListener;
 	}
 
-	/**
-     * @param engine 
-     * @param initContextes
-     * @param contextes
-     * @param configDir
-     * @param configFile
-     */
-    protected ConfigServerImpl(CFMLEngineImpl engine,Map initContextes, Map contextes, Resource configDir, Resource configFile) {
-    	//super(configDir, configFile, "<root>");
-    	super(null,configDir, configFile);
-        this.engine=engine;
-        this.initContextes=initContextes;
-        this.contextes=contextes;
-        this.rootDir=configDir;
-        instance=this;
-    }
+	
 
     /**
      * @see railo.runtime.config.ConfigImpl#getConfigServerImpl()
      */
-    public ConfigServerImpl getConfigServerImpl() {
+    protected ConfigServerImpl getConfigServerImpl() {
         return this;
     }
 
@@ -286,5 +294,45 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		return instance;
 	}
 
+	/**
+	 * this is a config web that reflect the configServer, this allows to run cfml code on server level
+	 * @return
+	 * @throws PageException
+	 */
+	public ConfigWeb getConfigWeb() {
+		if(configWeb!=null)
+			return configWeb;
+		QueryCacheSupport cqc = QueryCacheSupport.getInstance(this);
+		CFMLEngineImpl engine = (CFMLEngineImpl)getCFMLEngine();
+		CFMLFactoryImpl factory = new CFMLFactoryImpl(engine,cqc);
+		
+		ServletContextDummy sContext = new ServletContextDummy(
+				this,
+				getConfigDir().getRealResource("webroot"),
+				new StructImpl(),
+				new StructImpl(),
+				1,1);
+		ServletConfigDummy sConfig = new ServletConfigDummy(sContext,"CFMLServlet");
+		
+		ConfigWebImpl cwi = new ConfigWebImpl(
+				factory,
+				this,
+				sConfig,
+				getConfigDir(),
+				getConfigFile());
+		cqc.setConfigWeb(cwi);
+		try {
+			ConfigWebFactory.createContextFiles(getConfigDir(),sConfig);
+	        ConfigWebFactory.load(this, cwi, ConfigWebFactory.loadDocument(getConfigFile()));
+	        ConfigWebFactory.createContextFilesPost(getConfigDir(),cwi);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			//throw Caster.toPageException(e);
+		}
+		configWeb=cwi;
+		return cwi;
+	}
+	
 
 }

@@ -14,15 +14,7 @@ public class JSONDateFormat {
 	private static Locale locale=Locale.ENGLISH;
 	
 	public synchronized static  String format(Date date) {
-		/*
-		Locale locale = Locale.ENGLISH;
-		PageContext pc = ThreadLocalPageContext.get();
-		if(pc!=null)locale=pc.getLocale();
-		DateFormat format = (DateFormat) map.get(locale.toString());
-		*/
 		DateFormat format = (DateFormat) map.get(locale);
-		
-		
 		if(format==null){
 			format=new SimpleDateFormat("MMMM, dd yyyy HH:mm:ss",locale);
 			map.put(locale.toString(), format);

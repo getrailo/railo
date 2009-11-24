@@ -111,11 +111,9 @@ public final class Function extends EvaluatorSupport {
 			}
 			else if(stat instanceof Tag) {
 				tlt = ((Tag)stat).getTagLibTag();
-				//print.out(((Tag)stat).getFullname());
 				if(!tlt.getTagClassName().equals("railo.runtime.tag.Argument"))
 					throw new EvaluatorException("tag "+tlt.getFullName()+" is not allowed inside a function declaration");
 			}
-			//else print.out(stat); 
 		}
 	}
 

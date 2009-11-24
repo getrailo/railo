@@ -1,6 +1,7 @@
 package railo.runtime.type.scope;
 
 import railo.runtime.Info;
+import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.i18n.LocaleFactory;
@@ -15,7 +16,10 @@ import railo.runtime.type.dt.DateTimeImpl;
  */
 public final class ServerImpl extends ScopeSupport implements Server {
 
-    private static final Key PRODUCT_NAME = KeyImpl.getInstance("productname");
+    private PageContext pc;
+
+
+	private static final Key PRODUCT_NAME = KeyImpl.getInstance("productname");
 	private static final Key PRODUCT_LEVEL = KeyImpl.getInstance("productlevel");
     private static final Key PRODUCT_CONTEXT_COUNT = KeyImpl.getInstance("productcontextcount");
     private static final Key PRODUCT_VERSION = KeyImpl.getInstance("productversion");
@@ -80,7 +84,7 @@ public final class ServerImpl extends ScopeSupport implements Server {
 			
 			// TODO scope server missing values
 			coldfusion.setEL(APP_SERVER,"");// Jrun
-			coldfusion.setEL(EXPIRATION,new DateTimeImpl(System.currentTimeMillis(),false));// 
+			coldfusion.setEL(EXPIRATION,new DateTimeImpl(pc,System.currentTimeMillis(),false));// 
 			coldfusion.setEL(INSTALL_KIT,"");// 
 			coldfusion.setEL(ROOT_DIR,"");// 
 			
@@ -165,5 +169,22 @@ public final class ServerImpl extends ScopeSupport implements Server {
 				key.equals(OS) || 
 				key.equals(COLDFUSION) || 
 				key.equals(RAILO));
+	}
+	
+
+	/**
+	 * @see railo.runtime.type.scope.ScopeSupport#initialize(railo.runtime.PageContext)
+	 */
+	public void initialize(PageContext pc) {
+		this.pc=pc;
+		super.initialize(pc);
+	}
+
+	/**
+	 * @see railo.runtime.type.scope.ScopeSupport#release()
+	 */
+	public void release() {
+		pc=null;
+		super.release();
 	}
 }

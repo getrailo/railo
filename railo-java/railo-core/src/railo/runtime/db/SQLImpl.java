@@ -1,12 +1,14 @@
 package railo.runtime.db;
 
+import java.io.Serializable;
+
 
 
 
 /**
  * represents a SQL Statement with his defined arguments for a prepared statement
  */
-public final class SQLImpl implements SQL {
+public final class SQLImpl implements SQL,Serializable {
     
     private String strSQL;
     private SQLItem[] items;

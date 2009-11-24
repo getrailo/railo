@@ -18,6 +18,8 @@ public interface PageSource extends SourceFile {
      */
     public abstract Page loadPage(ConfigWeb config) throws PageException;
     
+    // FUTURE public abstract Page loadPage(PageContext pc) throws PageException;
+    
     /**
      * loads the Page from this PageSource
      * @param config
@@ -26,7 +28,8 @@ public interface PageSource extends SourceFile {
      * @throws PageException 
      */
     public abstract Page loadPage(ConfigWeb config, Page defaultValue) throws PageException;
-
+ // FUTURE public abstract Page loadPage(PageContext pc, Page defaultValue) throws PageException;
+    
     /**
      * returns the ralpath without the mapping
      * @return Returns the realpath.

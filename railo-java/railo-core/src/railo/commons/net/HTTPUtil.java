@@ -100,6 +100,9 @@ public final class HTTPUtil {
      * @throws MalformedURLException
      */
     public static URL toURL(String strUrl, int port) throws MalformedURLException {
+    	return toURL(strUrl, port, false);
+    }
+    public static URL toURL(String strUrl, int port,boolean strict) throws MalformedURLException {
     	
         URL url;
         try {
@@ -124,11 +127,11 @@ public final class HTTPUtil {
         		del='&';
         		str=list.next();
         		index=str.indexOf('=');
-        		if(index==-1)res.append(escapeQSValue(str));
+        		if(index==-1)res.append(escapeQSValue(str,strict));
         		else {
-        			res.append(escapeQSValue(str.substring(0,index)));
+        			res.append(escapeQSValue(str.substring(0,index),strict));
         			res.append('=');
-        			res.append(escapeQSValue(str.substring(index+1)));
+        			res.append(escapeQSValue(str.substring(index+1),strict));
         		}
         	}
         	file=res.toString();
@@ -148,9 +151,11 @@ public final class HTTPUtil {
        		       
     }
     
-    private static Object escapeQSValue(String str) {
+    private static Object escapeQSValue(String str, boolean strict) {
+    	
     	if(str.indexOf('=')!=-1)str=StringUtil.replace(str, "=", "%3D", false);
-		return str;
+    	if(strict && str.indexOf('/')!=-1)str=StringUtil.replace(str, "/", "%2F", false);
+    	return str;
 	}
 
 	public static HttpMethod put(URL url, String username, String password, int timeout, 
@@ -314,8 +319,12 @@ public final class HTTPUtil {
      * @return url from string
      * @throws MalformedURLException
      */
-    public static URL toURL(String strUrl) throws MalformedURLException {
-		return toURL(strUrl,-1);
+	 public static URL toURL(String strUrl) throws MalformedURLException {
+		 return toURL(strUrl,false);
+	 }
+			
+    public static URL toURL(String strUrl,boolean strict) throws MalformedURLException {
+		return toURL(strUrl,-1,strict);
     }
 
 	public static URL toURL(HttpMethod httpMethod) {

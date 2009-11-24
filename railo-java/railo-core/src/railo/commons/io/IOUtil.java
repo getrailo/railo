@@ -164,6 +164,41 @@ public final class IOUtil {
     }
     
 
+    public static final void copy(InputStream in, OutputStream out, long offset, long length) throws IOException {
+    	int len;
+        byte[] buffer;
+        int block=0xffff;
+    	
+    	// first offset to start
+    	if(offset>0) {
+    		while(true) {
+            	if(block>offset)block=(int)offset;
+            	buffer = new byte[block];
+            	len = in.read(buffer);
+            	if(len==-1) throw new IOException("reading offset is bigger than input itself");
+            	//dnos.write(buffer, 0, len);
+            	offset-=len;
+            	if(offset<=0) break;
+            }
+    	}
+    	
+    	// write part
+    	if(length<0) {
+    		copy(in, out,block);
+    		return;
+    	}
+    	
+    	while(true) {
+        	if(block>length)block=(int) length;
+        	buffer = new byte[block];
+        	len = in.read(buffer);
+        	if(len==-1) break;
+        	out.write(buffer, 0, len);
+        	length-=len;
+        	if(length<=0) break;
+        }
+    }
+    
     public static final void copy(InputStream in, OutputStream out, int offset, int length, int blockSize) throws IOException {
 
         int len;
@@ -172,8 +207,7 @@ public final class IOUtil {
     	
     	// first offset to start
     	if(offset>0) {
-    		//DevNullOutputStream dnos=DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
-        	block = blockSize;//0xffff;
+    		block = blockSize;//0xffff;
         	while(true) {
             	if(block>offset)block=offset;
             	buffer = new byte[block];
@@ -409,15 +443,11 @@ public final class IOUtil {
 	        int second = is.read();
 	        // FE FF 	UTF-16, big-endian
 	        if (first == 0xFE && second == 0xFF)    {
-	        	//is.reset();
-	        	//print.out("16-be");
-	 			return _getReader(is, "UTF-16BE");
+	        	return _getReader(is, "UTF-16BE");
 	        }
 	        // FF FE 	UTF-16, little-endian
 	        if (first == 0xFF && second == 0xFE)    {
-	        	//is.reset();
-	        	//print.out("16-le");
-	 			return _getReader(is, "UTF-16LE");
+	        	return _getReader(is, "UTF-16LE");
 	        }
 	        
 	        int third=is.read();
@@ -468,8 +498,7 @@ public final class IOUtil {
  		boolean markSupported=is.markSupported();
         if(!markSupported) return _getReader(is, charset);
         
-        //print.out("ms:"+markSupported);
- 		if(markSupported) is.mark(4);
+        if(markSupported) is.mark(4);
         
         int first = is.read();
         int second = is.read();

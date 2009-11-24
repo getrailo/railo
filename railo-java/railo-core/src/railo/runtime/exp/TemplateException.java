@@ -2,6 +2,7 @@ package railo.runtime.exp;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageSource;
+import railo.runtime.op.Caster;
 import railo.transformer.util.CFMLString;
 
 
@@ -87,7 +88,7 @@ public class TemplateException extends PageExceptionImpl {
 		this(
 				cfml,
 				StringUtil.isEmpty(e.getMessage())?
-						(e.getClass().getName()):
+						(Caster.toClassName(e)):
 						e.getMessage());
 	}
 }

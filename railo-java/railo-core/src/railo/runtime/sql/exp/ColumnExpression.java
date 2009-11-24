@@ -1,5 +1,9 @@
 package railo.runtime.sql.exp;
 
+import railo.runtime.exp.PageException;
+import railo.runtime.type.Query;
+import railo.runtime.type.QueryColumn;
+
 
 public class ColumnExpression extends ExpressionSupport implements Column {
 
@@ -7,6 +11,7 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 	private String column;
 	private boolean hasBracked;
 	private int columnIndex;
+	private QueryColumn col;
 
 	public ColumnExpression(String value, int columnIndex) {
 		this.column=value;
@@ -65,6 +70,19 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 	 */
 	public int getColumnIndex() {
 		return columnIndex;
+	}
+	
+	public Object getValue(Query qr, int row) throws PageException {
+		if(col==null)col = qr.getColumn(getColumn());
+		return col.get(row);
+	}
+	
+	public Object getValue(Query qr, int row, Object defaultValue) {
+		if(col==null){
+			col = qr.getColumn(getColumn(),null);
+			if(col==null) return defaultValue;
+		}
+		return col.get(row,defaultValue);
 	}
 
 }

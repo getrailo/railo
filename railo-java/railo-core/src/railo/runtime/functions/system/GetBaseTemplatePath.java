@@ -14,6 +14,7 @@ public final class GetBaseTemplatePath implements Function {
 	    PageSource ps = pc.getBasePageSource();
         Resource file = ps.getPhyscalFile();
         if(ResourceUtil.exists(file)) return file.getAbsolutePath();
+        
         return ps.getDisplayPath();
 	}
 }

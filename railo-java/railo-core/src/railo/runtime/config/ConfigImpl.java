@@ -10,8 +10,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.Map.Entry;
 
-import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -30,11 +30,13 @@ import railo.commons.lang.Md5;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
+import railo.loader.engine.CFMLEngine;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageSource;
+import railo.runtime.cache.CacheConnection;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.cfx.customtag.CFXTagPoolImpl;
 import railo.runtime.db.DataSource;
@@ -50,6 +52,7 @@ import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
+import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.net.amf.AMFCaster;
 import railo.runtime.net.amf.ClassicAMFCaster;
@@ -89,6 +92,7 @@ import flex.messaging.config.ConfigMap;
 public abstract class ConfigImpl implements Config {
 
 
+
 	public static final short INSPECT_ALWAYS = 0;
 	public static final short INSPECT_ONCE = 1;
 	public static final short INSPECT_NEVER = 2;
@@ -102,10 +106,27 @@ public abstract class ConfigImpl implements Config {
 		new ExtensionProviderImpl("http://www.getrailo.org/ExtensionProvider.cfc",true)
 	};
 	private static final Extension[] EXTENSIONS_EMPTY = new Extension[0];
+	public static final int CACHE_DEFAULT_NONE = 0;
+	public static final int CACHE_DEFAULT_OBJECT = 1;
+	public static final int CACHE_DEFAULT_TEMPLATE = 2;
+	public static final int CACHE_DEFAULT_QUERY = 4;
+	public static final int CACHE_DEFAULT_RESOURCE = 8;
 	
 
 	private PhysicalClassLoader rpcClassLoader;
 	private Map datasources=new HashTable();
+	private Map caches=new HashTable();
+	
+	private CacheConnection defaultCacheObject=null;
+	private CacheConnection defaultCacheTemplate=null;
+	private CacheConnection defaultCacheQuery=null;
+	private CacheConnection defaultCacheResource=null;
+	
+	private String cacheDefaultConnectionNameObject=null;
+	private String cacheDefaultConnectionNameTemplate=null;
+	private String cacheDefaultConnectionNameQuery=null;
+	private String cacheDefaultConnectionNameResource=null;
+	
     private TagLib[] tlds=new TagLib[1];
     private FunctionLib[] flds=new FunctionLib[1];
     private FunctionLib combinedFLDs;
@@ -165,7 +186,7 @@ public abstract class ConfigImpl implements Config {
     private Mapping[] mappings=new Mapping[0];
     private Mapping[] customTagMappings=new Mapping[0];
 
-    private Scheduler scheduler;
+    private SchedulerImpl scheduler;
     
     private CFXTagPool cfxTagPool;
 
@@ -175,6 +196,7 @@ public abstract class ConfigImpl implements Config {
     
     
     private LogAndSource mailLogger=new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
+    private LogAndSource gatewayLogger=new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
     private LogAndSource requestTimeoutLogger=mailLogger;
     private LogAndSource applicationLogger=mailLogger;
     private LogAndSource exceptionLogger=mailLogger;
@@ -273,7 +295,7 @@ public abstract class ConfigImpl implements Config {
 	private Struct remoteClientUsage;
 	private Class adminSyncClass=AdminSyncNotSupported.class;
 	private AdminSync adminSync;
-	private String[] customTagExtensions=new String[]{"cfc","cfm"};
+	private String[] customTagExtensions=new String[]{"cfm","cfc"};
 	private Class videoExecuterClass=VideoExecuterNotSupported.class;
 	
 	protected MappingImpl tagMapping;
@@ -286,6 +308,7 @@ public abstract class ConfigImpl implements Config {
 	private String defaultDataSource;
 	private short inspectTemplate=INSPECT_ONCE;
 	private String serial="";
+	private GatewayEngineImpl gatewayEngine;
 
     /**
 	 * @return the allowURLRequestTimeout
@@ -531,6 +554,7 @@ public abstract class ConfigImpl implements Config {
     }
     
     protected void setClassLoader(ClassLoader classLoader) {
+    	Thread.currentThread().setContextClassLoader(classLoader);
     	this.classLoader=classLoader;
     }
 
@@ -570,6 +594,18 @@ public abstract class ConfigImpl implements Config {
      */
     public LogAndSource getMailLogger() {
         return mailLogger;
+    }
+
+    /**
+     * @see railo.runtime.config.Config#getMailLogger()
+     */
+    public LogAndSource getGatewayLogger() {
+        return gatewayLogger;
+    }
+
+
+    public void setGatewayLogger(LogAndSource gatewayLogger) {
+    	this.gatewayLogger=gatewayLogger;
     }
     
     /**
@@ -1241,10 +1277,13 @@ public abstract class ConfigImpl implements Config {
      * @param logger
      * @throws PageException
      */
-    protected void setScheduler(Resource scheduleDirectory, LogAndSource logger) throws PageException {
+    protected void setScheduler(CFMLEngine engine,Resource scheduleDirectory, LogAndSource logger) throws PageException {
         if(!isDirectory(scheduleDirectory)) throw new ExpressionException("schedule task directory "+scheduleDirectory+" doesn't exist or is not a directory");
         try {
-            this.scheduler=new SchedulerImpl(this,scheduleDirectory,logger,SystemUtil.getCharset());
+        	if(this.scheduler==null)
+        		this.scheduler=new SchedulerImpl(engine,this,scheduleDirectory,logger,SystemUtil.getCharset());
+        	//else
+        		//this.scheduler.reinit(scheduleDirectory,logger);
         } 
         catch (Exception e) {
             throw Caster.toPageException(e);
@@ -1279,7 +1318,7 @@ public abstract class ConfigImpl implements Config {
      * @param strLocale
      */
     protected void setLocale(String strLocale) {
-        if(strLocale==null) {
+    	if(strLocale==null) {
             this.locale=Locale.US;
         }
         else {
@@ -1517,7 +1556,7 @@ public abstract class ConfigImpl implements Config {
     /**
      * @return Returns the configServer Implementation.
      */
-    public abstract ConfigServerImpl getConfigServerImpl();
+    protected abstract ConfigServerImpl getConfigServerImpl();
     
     /**
      * @see railo.runtime.config.Config#getId()
@@ -1626,7 +1665,7 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getDeployDirectory()
      */
     public Resource getDeployDirectory() {
-        return deployDirectory;
+    	return deployDirectory;
     }
 
     /**
@@ -1648,8 +1687,7 @@ public abstract class ConfigImpl implements Config {
     	if(!isDirectory(deployDirectory)) {
             throw new ExpressionException("deploy directory "+deployDirectory+" doesn't exist or is not a directory");
         }
-                
-        this.deployDirectory=deployDirectory;
+    	this.deployDirectory=deployDirectory;
     }
     
 
@@ -1804,7 +1842,7 @@ public abstract class ConfigImpl implements Config {
 			setDefaultResourceProvider(rp);
 		}
 		else 
-			throw new ClassException("object ["+o.getClass().getName()+"] must implement the interface "+ResourceProvider.class.getName());
+			throw new ClassException("object ["+Caster.toClassName(o)+"] must implement the interface "+ResourceProvider.class.getName());
 	}
 
 	/**
@@ -1838,7 +1876,7 @@ public abstract class ConfigImpl implements Config {
 			addResourceProvider(rp);
 		}
 		else 
-			throw new ClassException("object ["+o.getClass().getName()+"] must implement the interface "+ResourceProvider.class.getName());
+			throw new ClassException("object ["+Caster.toClassName(o)+"] must implement the interface "+ResourceProvider.class.getName());
 	}
 
 	protected void addResourceProvider(ResourceProvider provider) {
@@ -2042,6 +2080,7 @@ public abstract class ConfigImpl implements Config {
 	 * @see railo.runtime.config.Config#getRPCClassLoader()
 	 */
 	public ClassLoader getRPCClassLoader(boolean reload) throws IOException {
+		
 		if(rpcClassLoader!=null && !reload) return rpcClassLoader;
         
 		Resource dir = getDeployDirectory().getRealResource("RPC");
@@ -2145,7 +2184,9 @@ public abstract class ConfigImpl implements Config {
 	public DataSource getDataSource(String datasource) throws DatabaseException {
 		DataSource ds=(datasource==null)?null:(DataSource) datasources.get(datasource.toLowerCase());
 		if(ds!=null) return ds;
-		throw new DatabaseException("datasource ["+datasource+"] doesn't exist",null,null,null);
+		DatabaseException de = new DatabaseException("datasource ["+datasource+"] doesn't exist",null,null,null);
+		de.setAdditional("Datasource",datasource);
+		throw de;
 	}
 
 	/**
@@ -2426,6 +2467,7 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	protected void setExtensions(Extension[] extensions) {
+		
 		this.extensions=extensions;
 	}
 
@@ -2543,7 +2585,7 @@ public abstract class ConfigImpl implements Config {
 	        	}
 	        	else {
 	        		amfCasterClass=ClassicAMFCaster.class;
-	        		throw new ClassException("object ["+caster.getClass().getName()+"] must implement the interface "+ResourceProvider.class.getName());
+	        		throw new ClassException("object ["+Caster.toClassName(caster)+"] must implement the interface "+ResourceProvider.class.getName());
 	        	}
 	        }
         }
@@ -2624,5 +2666,75 @@ public abstract class ConfigImpl implements Config {
 		return serial;
 	}
 
+	protected void setCaches(HashTable caches) {
+		this.caches=caches;
+		Iterator it = caches.entrySet().iterator();
+		Map.Entry entry;
+		CacheConnection cc;
+		while(it.hasNext()){
+			entry = (Entry) it.next();
+			cc=((CacheConnection)entry.getValue());
+			if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameTemplate)){
+				defaultCacheTemplate=cc;
+			}
+			else if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameQuery)){
+				defaultCacheQuery=cc;
+			}
+			else if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameResource)){
+				defaultCacheResource=cc;
+			}
+			else if(cc.getName().equalsIgnoreCase(cacheDefaultConnectionNameObject)){
+				defaultCacheObject=cc;
+			}
+		}
+	}
+
+	/**
+	 * @return the caches
+	 *FUTURE add o interface
+	 */
+	public Map getCacheConnections() {
+		return caches;
+	}
+
+	/**
+	 * @return the defaultCache
+	 * FUTURE add o interface
+	 */
+	public CacheConnection getCacheDefaultConnection(int type) {
+		if(type==CACHE_DEFAULT_OBJECT)		return defaultCacheObject;
+		if(type==CACHE_DEFAULT_TEMPLATE)	return defaultCacheTemplate;
+		if(type==CACHE_DEFAULT_QUERY)		return defaultCacheQuery;
+		return defaultCacheResource;
+	}
+
+	public void setCacheDefaultConnectionName(int type,String cacheDefaultConnectionName) {
+		if(type==CACHE_DEFAULT_TEMPLATE)	cacheDefaultConnectionNameTemplate=cacheDefaultConnectionName;
+		else if(type==CACHE_DEFAULT_OBJECT)		cacheDefaultConnectionNameObject=cacheDefaultConnectionName;
+		else if(type==CACHE_DEFAULT_QUERY)		cacheDefaultConnectionNameQuery=cacheDefaultConnectionName;
+		else cacheDefaultConnectionNameResource=cacheDefaultConnectionName;
+	}
+	public String getCacheDefaultConnectionName(int type) {
+		if(type==CACHE_DEFAULT_TEMPLATE)	return cacheDefaultConnectionNameTemplate;
+		if(type==CACHE_DEFAULT_OBJECT)		return cacheDefaultConnectionNameObject;
+		if(type==CACHE_DEFAULT_QUERY)		return cacheDefaultConnectionNameQuery;
+		return cacheDefaultConnectionNameResource;
+	}
+
+	protected void setGatewayEntries(Map gatewayEntries,Resource cfcDirectory) {
+		getGatewayEngine().setCFCDirectory(cfcDirectory);
+		
+		try {
+			getGatewayEngine().addEntries(this,gatewayEntries);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+	}
+	public GatewayEngineImpl getGatewayEngine() {
+		if(gatewayEngine==null){
+			gatewayEngine=new GatewayEngineImpl(this);
+		}
+		return gatewayEngine;
+	}
 	
 }

@@ -5,6 +5,7 @@ package railo.runtime.functions.dateTime;
 
 import java.util.TimeZone;
 
+import railo.commons.date.DateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -27,8 +28,10 @@ public final class CreateTime implements Function {
 	
 
 	private static DateTime _call(PageContext pc , double hour, double minute, double second,double millis,TimeZone tz) {
+		// TODO check this looks wrong
+		if(tz==null)tz=ThreadLocalPageContext.getTimeZone(pc);
 		return new TimeImpl(
-				DateUtil.toLong(ThreadLocalPageContext.getTimeZone(tz),1899,12,30,(int)hour,(int)minute,(int)second,0)+((long)millis)
+				DateTimeUtil.getInstance().toTime(tz,1899,12,30,(int)hour,(int)minute,(int)second,(int)millis,0)
 				,false);
 	}
 }

@@ -121,9 +121,6 @@ public final class FTPResourceProvider implements ResourceProvider,Sizeable {
 		
 	}
 	private void connect(FTPResourceClient client, FTPConnectionData data) throws SocketException, IOException {
-		//client.
-		//print.out(">"+data.host+":"+data.port);
-		
 		if(data.port>0)client.connect(data.host,data.port);
 		else client.connect(data.host);
 		if(!StringUtil.isEmpty(data.username))client.login(data.username,data.password);

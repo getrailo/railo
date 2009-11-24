@@ -2,6 +2,7 @@ package railo.runtime.listener;
 
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
+import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
@@ -134,17 +135,17 @@ public final class AppListenerUtil {
 		return "";
 	}
 
-	public static MappingImpl[] toMappings(PageContext pc,Object o) throws PageException {
+	public static Mapping[] toMappings(PageContext pc,Object o) throws PageException {
 		Struct sct = Caster.toStruct(o);
 		Key[] keys = sct.keys();
-		MappingImpl[] mappings=new MappingImpl[keys.length];
+		Mapping[] mappings=new Mapping[keys.length];
 		ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
+		String virtual,physical;
 		for(int i=0;i<keys.length;i++) {
-			mappings[i]=new MappingImpl(
-					config,translateMappingVirtual(keys[i].getString()),
-					Caster.toString(sct.get(keys[i])),
-					null,false,true,false,false,false
-					);
+			virtual=translateMappingVirtual(keys[i].getString());
+			physical=Caster.toString(sct.get(keys[i]));
+			mappings[i]=config.getApplicationMapping(virtual,physical);
+			
 		}
 		return mappings;
 	}

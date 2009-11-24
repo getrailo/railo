@@ -1,8 +1,8 @@
 package railo.runtime.functions.dateTime;
 
-import java.util.Date;
 import java.util.TimeZone;
 
+import railo.commons.date.DateTimeUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
@@ -23,10 +23,9 @@ public final class Beat implements Function {
     	DateTime date = DateCaster.toDateAdvanced(obj,tz);
     	return format(date);
     }
-    public static double format(Date date) {
+    public static double format(DateTime date) {
     	
-        long millisInDay=DateUtil.millisInDay(date,BMD);
-        
+        long millisInDay=DateTimeUtil.getInstance().getMilliSecondsInDay(BMD,date.getTime());
         double res = (millisInDay/day)*1000;
         return ((int)(res*1000))/1000D;
     }

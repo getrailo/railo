@@ -2,7 +2,6 @@ package railo.runtime.type.scope;
 
 import java.io.Serializable;
 
-import railo.print;
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigServer;

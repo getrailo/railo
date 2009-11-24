@@ -1,5 +1,6 @@
 package railo.commons.io.log;
 
+import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.CFTypes;
 import railo.runtime.db.DataSource;
@@ -8,6 +9,7 @@ import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItemImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -39,7 +41,7 @@ public final class LogDataSource implements Log {
      * @param table 
      * @throws PageException 
      */
-    public LogDataSource(int logLevel,ConfigImpl config, DataSource datasource, String username, String password, String table) {
+    public LogDataSource(PageContext pc,int logLevel,ConfigImpl config, DataSource datasource, String username, String password, String table) {
         this.logLevel=logLevel;
         this.config=config;
         this.datasource=datasource;
@@ -51,7 +53,7 @@ public final class LogDataSource implements Log {
         
         DatasourceConnection dc=null;
     	try {
-			dc = pool.getDatasourceConnection(datasource, username, password);
+			dc = pool.getDatasourceConnection(pc,datasource, username, password);
 			try {
 				new QueryImpl(dc,SELECT,-1,-1,-1,"query");
 			}
@@ -76,7 +78,7 @@ public final class LogDataSource implements Log {
     public void log(int level, String application, String message) {
     	DatasourceConnection dc=null;
     	try {
-			dc = pool.getDatasourceConnection(datasource, username, password);
+			dc = pool.getDatasourceConnection(ThreadLocalPageContext.get(),datasource, username, password);
 			SQLImpl sql = new SQLImpl(INSERT);
 			sql.addItems(new SQLItemImpl(application,CFTypes.VARCHAR));
 			sql.addItems(new SQLItemImpl(message,CFTypes.VARCHAR));

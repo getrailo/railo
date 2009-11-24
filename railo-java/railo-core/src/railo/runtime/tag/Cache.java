@@ -12,13 +12,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.oro.text.regex.MalformedPatternException;
 
 import railo.commons.io.IOUtil;
+import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContextImpl;
-import railo.runtime.cache.CacheItem;
-import railo.runtime.cache.MetaData;
+import railo.runtime.cache.legacy.CacheItem;
+import railo.runtime.cache.legacy.MetaData;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DeprecatedException;
@@ -26,8 +28,13 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.ext.tag.BodyTagImpl;
+import railo.runtime.functions.cache.CacheGet;
+import railo.runtime.functions.cache.CachePut;
+import railo.runtime.functions.cache.CacheRemove;
+import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.dateTime.GetHttpTimeString;
 import railo.runtime.op.Caster;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
@@ -44,7 +51,11 @@ import railo.runtime.writer.CFMLWriterImpl;
 **/
 public final class Cache extends BodyTagImpl {
 
+
+
+
 	private static final TimeSpan TIMESPAN_FAR_AWAY = new TimeSpanImpl(1000000000,1000000000,1000000000,1000000000); 
+	private static final TimeSpan TIMESPAN_0 = new TimeSpanImpl(0,0,0,0); 
 
 
 	/**  */
@@ -67,7 +78,9 @@ public final class Cache extends BodyTagImpl {
 	/** When required for basic authentication, a valid password. */
 	private String password;
     
-    private TimeSpan timespan=TIMESPAN_FAR_AWAY;
+	private TimeSpan timespan=TIMESPAN_FAR_AWAY;
+	private TimeSpan idletime=TIMESPAN_0;
+    
 
 	/**  */
 	private int port=-1;
@@ -76,7 +89,9 @@ public final class Cache extends BodyTagImpl {
 
 
 	private String body;
-	private String id;
+	private String _id;
+	private Object id;
+	private String name;
 	private String key;
 
 
@@ -87,12 +102,21 @@ public final class Cache extends BodyTagImpl {
 
 
 	private CacheItem cacheItem;
+
+
+	private String cachename;
+	private Object value;
+	private boolean throwOnError;
+	private String metadata;
     
     private static final int CACHE=0;
     private static final int CACHE_SERVER=1;
     private static final int CACHE_CLIENT=2;
     private static final int FLUSH=3;
     private static final int CONTENT=4;
+
+    private static final int GET=5;
+    private static final int PUT=6;
     
     /**
     * @see javax.servlet.jsp.tagext.Tag#release()
@@ -107,6 +131,7 @@ public final class Cache extends BodyTagImpl {
         action=CACHE;
         port=-1;
         timespan=TIMESPAN_FAR_AWAY;
+        idletime=TIMESPAN_0;
         body=null;
         hasBody=false;
         id=null;
@@ -114,6 +139,11 @@ public final class Cache extends BodyTagImpl {
         body=null;
         doCaching=false;
         cacheItem=null;
+        name=null;
+        cachename=null;
+        throwOnError=false;
+        value=null;
+        metadata=null;
     }
 	
 	/**
@@ -176,7 +206,11 @@ public final class Cache extends BodyTagImpl {
 	**/
 	public void setAction(String action) throws ApplicationException	{
         action=action.toLowerCase().trim();
-        if(action.equals("cache"))              this.action=CACHE; 
+        if(action.equals("get"))              this.action=GET; 
+        else if(action.equals("put"))              this.action=PUT; 
+        
+        
+        else if(action.equals("cache"))         this.action=CACHE; 
         else if(action.equals("clientcache"))   this.action=CACHE_CLIENT;
         else if(action.equals("servercache"))   this.action=CACHE_SERVER;
         else if(action.equals("flush"))         this.action=FLUSH;
@@ -193,7 +227,14 @@ public final class Cache extends BodyTagImpl {
         else if(action.equals("contentcache"))  this.action=CONTENT;
         else if(action.equals("content-cache"))  this.action=CONTENT;
         else throw new ApplicationException("invalid value for attribute action for tag cache ["+action+"], " +
-        		"valid actions are [cache, clientcache, servercache, flush, optimal, contentcache]");
+        		"valid actions are [get,put,cache, clientcache, servercache, flush, optimal, contentcache]");
+        
+        //get: get an object from the cache.
+        //put: Add an object to the cache.
+        
+
+        
+        
 	}
 
 	/** set the value username
@@ -253,6 +294,8 @@ public final class Cache extends BodyTagImpl {
 	        else if(action==CACHE_SERVER)	doServerCache();
 	        else if(action==FLUSH)			doFlush();
 	        else if(action==CONTENT) return doContentCache();
+	        else if(action==GET) doGet();
+	        else if(action==PUT) doPut();
 	    	
 			return EVAL_PAGE;
 		}
@@ -357,22 +400,63 @@ public final class Cache extends BodyTagImpl {
         cacheItem = generateCacheResource(req,key,true);
         // use cache
         if(isOK(cacheItem.getResource())){
-        	//print.out("use cache");
         	pageContext.write(IOUtil.toString(cacheItem.getResource(),"UTF-8"));
         	doCaching=false;
             return SKIP_BODY;
         }
     	doCaching=true;
-    	//print.out("do cache");
-    	//writeMeta(ci.raw, ci.name);
-        return EVAL_BODY_BUFFERED;
+    	return EVAL_BODY_BUFFERED;
+	}
+
+	private void doGet() throws PageException, IOException {
+		required("cache", "id", id);
+		required("cache", "name", name);
+		String id=Caster.toString(this.id);
+		if(metadata==null){
+			pageContext.setVariable(name,CacheGet.call(pageContext, id,throwOnError,cachename));	
+		}
+		else {
+			railo.commons.io.cache.Cache cache = 
+				Util.getCache(pageContext,cachename,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			CacheEntry entry = throwOnError?cache.getCacheEntry(Util.key(id)):cache.getCacheEntry(Util.key(id),null);
+			if(entry!=null){
+				pageContext.setVariable(name,entry.getValue());
+				pageContext.setVariable(metadata,entry.getCustomInfo());
+			}
+			else {
+				pageContext.setVariable(metadata,new StructImpl());
+			}
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+	}
+	private void doPut() throws PageException {
+		required("cache", "id", id);
+		required("cache", "value", value);
+		TimeSpan ts = timespan;
+		TimeSpan it = idletime;
+		if(ts==TIMESPAN_FAR_AWAY)ts=TIMESPAN_0;
+		if(it==TIMESPAN_FAR_AWAY)it=TIMESPAN_0; 
+		CachePut.call(pageContext, Caster.toString(id),value,ts,it,cachename);
 	}
 	
 
 	
 
-	private void doFlush() throws IOException, MalformedPatternException {
-		if(StringUtil.isEmpty(expireurl)) ResourceUtil.removeChildrenEL(getDirectory());
+	private void doFlush() throws IOException, MalformedPatternException, PageException {
+		if(id!=null){
+			required("cache", "id", id);
+			CacheRemove.call(pageContext, id,throwOnError,cachename);
+		}
+		if(StringUtil.isEmpty(expireurl)) {
+			ResourceUtil.removeChildrenEL(getDirectory());
+		}
 		else {
 			
 			Resource dir = getDirectory();
@@ -394,13 +478,13 @@ public final class Cache extends BodyTagImpl {
     	String filename=req.getServletPath();
         if(!StringUtil.isEmpty(req.getQueryString())) {
         	filename+="?"+req.getQueryString();
-        	if(useId)filename+="&cfcache_id="+id;
+        	if(useId)filename+="&cfcache_id="+_id;
         }
         else {
-        	if(useId)filename+="?cfcache_id="+id;
+        	if(useId)filename+="?cfcache_id="+_id;
         }
     	if(useId && !StringUtil.isEmpty(key)) filename=key;
-    	//filename=id+":"+filename;
+    	
     	Resource dir = getDirectory();
     	CacheItem ci=new CacheItem();
     	ci.setDirectory(dir);
@@ -451,9 +535,44 @@ public final class Cache extends BodyTagImpl {
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(String id) {
+	public void set_id(String _id) {
+		this._id = _id;
+	}
+	
+	public void setId(Object id) {
 		this.id = id;
 	}
 	
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void setCachename(String cachename) {
+		this.cachename = cachename;
+	}
+	
+	/**
+	 * @param throwOnError the throwOnError to set
+	 */
+	public void setThrowonerror(boolean throwOnError) {
+		this.throwOnError = throwOnError;
+	}
+	
+	public void setValue(Object value) {
+		this.value = value;
+	}
+	
+	/**
+	 * @param idletime the idletime to set
+	 */
+	public void setIdletime(TimeSpan idletime) {
+		this.idletime = idletime;
+	}
+
+	/**
+	 * @param metadata the metadata to set
+	 */
+	public void setMetadata(String metadata) {
+		this.metadata = metadata;
+	}
 }
 	

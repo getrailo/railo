@@ -55,7 +55,6 @@ public class Interface extends Component {
 				}
 				else throw new EvaluatorException("tag "+libTag.getFullName()+" can only contain function definitions");
 			}
-			//else print.out(stat); 
 		}
 		
 		

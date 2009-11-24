@@ -41,7 +41,6 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
 	private Object component;
 	private String method;
 	private String returnvariable;
-	//private Struct argumentcollection;
 	private String username;
 	private String password;
 	private String webservice;
@@ -59,7 +58,6 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
 		component=null;
 		method=null;
 		returnvariable=null;
-		//argumentcollection=null;
 		username=null;
 		password=null;
 		webservice=null;
@@ -67,13 +65,6 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
 		serviceport=null;
 		proxy.release();
 	}
-
-	/* *
-	 * @param argumentcollection the argumentcollection to set
-	 * /
-	public void setArgumentcollection(Struct argumentcollection) {
-		this.argumentcollection = argumentcollection;
-	}*/
 
 
 	/**
@@ -190,9 +181,15 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
 	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	*/
 	public int doEndTag() throws PageException	{
-		argCollection();
-		if(component!=null)doComponent(component);
-		else if(!StringUtil.isEmpty(webservice))doWebService(webservice);
+		// CFC
+		if(component!=null){
+			doComponent(component);
+		}
+		// Webservice
+		else if(!StringUtil.isEmpty(webservice)){
+			doWebService(webservice);
+		}
+		// call active cfc or component
 		else {
             Component comp = pageContext.getActiveComponent();
             if(comp!=null)doComponent(new ComponentWrap(Component.ACCESS_PRIVATE,(ComponentImpl)comp));
@@ -205,26 +202,6 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
 		return EVAL_PAGE;
 	}
 
-	private void argCollection() {
-		//if(argumentcollection !=null) {
-			//data=attrs;
-			//data.setEL(UDFImpl.ARGUMENT_COLLECTION, argumentcollection);
-	    	/*if(attrs.isEmpty()){
-	    		data=argumentcollection;
-	    	}
-	    	else {
-	    		railo.runtime.type.Collection.Key[] keys=argumentcollection.keys();
-		    	railo.runtime.type.Collection.Key key;
-		    	data=attrs;
-				for(int i=0;i<keys.length;i++) {
-					key=keys[i];
-					if(data.get(key,null)==null)
-						data.setEL(key,argumentcollection.get(key,null));
-				}
-	    	}*/
-		//}
-		//else data=attrs;
-	}
 
 
 	/**
@@ -265,9 +242,7 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
         if(username!=null)   {
             if(password==null)password = "";
         }
-        
         ProxyData pd=StringUtil.isEmpty(proxy.getServer())?null:proxy;
-        
         RPCClient ws = username!=null?new RPCClient(webservice,username,password,pd):new RPCClient(webservice,pd);
         Object rtn = ws.callWithNamedValues(pageContext,method,data);
         

@@ -1,5 +1,6 @@
 package railo.runtime.type.dt;
 
+import railo.commons.date.DateTimeUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -7,7 +8,6 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.dateTime.DateUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
 
@@ -133,15 +133,14 @@ public final class TimeSpanImpl implements TimeSpan {
 	 * @see railo.runtime.op.Castable#castToDateTime()
 	 */
 	public DateTime castToDateTime() throws ExpressionException {
-		return DateUtil.getDateTimeInstance(value);
-	    //throw new ExpressionException("can't cast Timespan to Date Object");
+		return DateTimeUtil.getInstance().toDateTime(value);
 	}
     
     /**
      * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
      */
     public DateTime castToDateTime(DateTime defaultValue) {
-        return DateUtil.getDateTimeInstance(value);
+        return DateTimeUtil.getInstance().toDateTime(value);
     }
 
 

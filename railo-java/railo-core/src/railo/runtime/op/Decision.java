@@ -19,19 +19,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import railo.print;
+import railo.commons.date.DateTimeUtil;
 import railo.commons.i18n.FormatUtil;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.coder.Base64Util;
-import railo.runtime.coder.Coder;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.functions.dateTime.DateUtil;
 import railo.runtime.java.JavaObject;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.op.validators.ValidateCreditCard;
@@ -417,9 +415,9 @@ public final class Decision {
 			Array arr = railo.runtime.type.List.listToArrayRemoveEmpty(str,DATE_DEL[i]);
 			if(arr.size()!=3) continue;
 
-			int month=Caster.toIntValue(	arr.get(isEuro?2:1,Constants.INTEGER_ZERO),Integer.MIN_VALUE);
-			int day=Caster.toIntValue(		arr.get(isEuro?1:2,Constants.INTEGER_ZERO),Integer.MIN_VALUE);
-			int year=Caster.toIntValue(		arr.get(3,Constants.INTEGER_ZERO),Integer.MIN_VALUE);
+			int month=Caster.toIntValue(	arr.get(isEuro?2:1,Constants.INTEGER_0),Integer.MIN_VALUE);
+			int day=Caster.toIntValue(		arr.get(isEuro?1:2,Constants.INTEGER_0),Integer.MIN_VALUE);
+			int year=Caster.toIntValue(		arr.get(3,Constants.INTEGER_0),Integer.MIN_VALUE);
 
 			
 			if(month==Integer.MIN_VALUE) continue;
@@ -427,7 +425,7 @@ public final class Decision {
 			if(day==Integer.MIN_VALUE) continue;
 			if(day>31) continue;
 			if(year==Integer.MIN_VALUE) continue;
-			if(DateUtil.toLong(null,year, month, day, Long.MIN_VALUE)==Long.MIN_VALUE) continue;
+			if(DateTimeUtil.getInstance().toTime(null,year, month, day, 0, 0, 0,0, Long.MIN_VALUE)==Long.MIN_VALUE) continue;
 			return true;
 		}
 		return false;
@@ -585,7 +583,7 @@ public final class Decision {
 	 * @return boolean
 	 */
 	public static final boolean isLeapYear(int year) {
-		return ((year%4 == 0) && ((year%100 != 0) || (year%400 == 0)));
+		return DateTimeUtil.getInstance().isLeapYear(year);
 		//return new GregorianCalendar().isLeapYear(year);
     }
 	
@@ -1163,7 +1161,6 @@ public final class Decision {
         case CFTypes.TYPE_VARIABLE_NAME:return isVariableName(o);
         case CFTypes.TYPE_XML:          return isXML(o);
 		}
-		
 		
         if(o instanceof Component) {
         	Component comp=((Component)o);

@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.encoding.TypeMapping;
 
-import org.apache.axis.AxisFault;
 import org.apache.axis.Constants;
 import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
@@ -35,7 +34,6 @@ import org.apache.axis.types.Year;
 import org.apache.axis.types.YearMonth;
 import org.apache.axis.types.URI.MalformedURIException;
 
-import railo.print;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
@@ -43,26 +41,26 @@ import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
 import railo.runtime.component.Property;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
-import railo.runtime.net.rpc.client.RPCClient;
-import railo.runtime.net.rpc.server.RPCServer;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.scope.Argument;
 import railo.runtime.type.util.ComponentUtil;
 import coldfusion.xml.rpc.QueryBean;
 
@@ -273,7 +271,6 @@ public final class AxisCaster {
     			Reflector.callSetter(obj, p.getName().toLowerCase(), toAxisType(tm,v));	
     		}
     	}
-    	//print.err("classs:"+obj.getClass().getName());
     	return obj;
     }
     
@@ -320,7 +317,7 @@ public final class AxisCaster {
     	if(value instanceof Date) {// not set to Decision.isDate(value)
         	return new Date(((Date)value).getTime());
     	}
-    	if(Decision.isArray(value)) return toNativeArray(tm,value);
+    	if(Decision.isArray(value) && !(value instanceof Argument)) return toNativeArray(tm,value);
         if(Decision.isStruct(value)) {
         	if(value instanceof Component) {
         		Object pojo= toPojo(tm,(Component)value);
@@ -516,8 +513,41 @@ public final class AxisCaster {
         }
     }
 
-    public static Object toRailoType(Object value) throws PageException {
-    	if(value instanceof Date || value instanceof Calendar) {// do not change to caster.isDate
+    public static Object toRailoType(PageContext pc, Object value) throws PageException {
+    	//pc=ThreadLocalPageContext.get(pc);
+    	if(pc!=null && value instanceof Pojo) {
+    		try{
+    			ComponentImpl c = ComponentUtil.toComponentImpl(pc.loadComponent(value.getClass().getName()));
+    			ComponentWrap cw=new ComponentWrap(Component.ACCESS_PRIVATE,c);
+    		
+    			// delete this scope data members
+        		Collection.Key[] keys = cw.keys();
+        		Object member;
+        		for(int i=0;i<keys.length;i++) {
+        			member = cw.get(keys[i]);
+        			if(member instanceof UDF) continue;
+                    cw.removeEL(keys[i]);
+        		}
+        		
+        		
+        		Property[] props = c.getProperties();
+        		Property prop;
+        		for(int i=0;i<props.length;i++){
+        			prop=props[i];
+        			try{
+        				cw.set(pc, prop.getName(), toRailoType(pc,Reflector.callGetter(value, prop.getName())));
+        			}
+        			catch(PageException pe){
+        				pe.printStackTrace();
+        			}
+        		}
+        		return c;
+    		}
+    		catch(Throwable t){
+    			return value;
+    		}
+        }
+        if(value instanceof Date || value instanceof Calendar) {// do not change to caster.isDate
     		return Caster.toDate(value,null);
         }
         if(Decision.isArray(value)) {
@@ -526,7 +556,7 @@ public final class AxisCaster {
             Object o;
             for(int i=1;i<=len;i++) {
                 o=a.get(i,null);
-                if(o!=null)a.setEL(i,toRailoType(o));
+                if(o!=null)a.setEL(i,toRailoType(pc,o));
             }
             return a;
         }
@@ -536,7 +566,7 @@ public final class AxisCaster {
             Map.Entry entry;
             while(it.hasNext()) {
                 entry=(Entry) it.next();
-                sct.setEL(Caster.toString(entry.getKey()),toRailoType(entry.getValue()));
+                sct.setEL(Caster.toString(entry.getKey()),toRailoType(pc,entry.getValue()));
             }
             return sct;
         	
@@ -557,7 +587,7 @@ public final class AxisCaster {
             int row;
             for(row=1;row<=recorcount;row++) {
             	for(int i=0;i<columns.length;i++) {
-            		columns[i].set(row,toRailoType(data[row-1][i]));
+            		columns[i].set(row,toRailoType(pc,data[row-1][i]));
                 }
             }
             return qry;
@@ -572,7 +602,7 @@ public final class AxisCaster {
             for(int i=0;i<strColumns.length;i++) {
                 col=q.getColumn(strColumns[i]);
                 for(row=1;row<=recorcount;row++) {
-                    col.set(row,toRailoType(col.get(row)));
+                    col.set(row,toRailoType(pc,col.get(row)));
                 }
             }
             return q;

@@ -132,7 +132,7 @@ public  class MapAsStruct extends StructSupport implements Struct {
         		if(csKey!=null)o= map.get(csKey);
         		if(o!=null) return o;
         	}
-        	throw new ExpressionException("key "+key.getString()+" doesn't exists in "+map.getClass().getName());
+        	throw new ExpressionException("key "+key.getString()+" doesn't exists in "+Caster.toClassName(map));
         }
         return o;
     }

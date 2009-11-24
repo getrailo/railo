@@ -120,8 +120,6 @@ public class SQLUtil {
 	}
 	
 	public static boolean isOracle(Connection conn) {
-		//DatabaseMetaData md = conn.getMetaData();
-		//print.out(md.getDatabaseProductName());
 		return StringUtil.indexOfIgnoreCase(conn.getClass().getName(), "oracle")!=-1;
 	}
 }

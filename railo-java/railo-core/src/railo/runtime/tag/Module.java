@@ -38,7 +38,7 @@ public final class Module extends CFTag {
             if(StringUtil.startsWith(template,'/'))  source=new InitFile(pageContext.getPageSource(template),template,template.endsWith('.'+pageContext.getConfig().getCFCExtension()));
             else source=new InitFile(pageContext.getCurrentPageSource().getRealPage(template),template,StringUtil.endsWithIgnoreCase(template,'.'+pageContext.getConfig().getCFCExtension()));
     		
-            attributesScope.removeEL(TEMPLATE);
+            //attributesScope.removeEL(TEMPLATE);
 			if(!isOK(source.ps))
 					throw new ExpressionException("could not find template ["+template+"]","file ["+source.ps.getDisplayPath()+"] doesn't exist");
 			setAppendix(source.ps);

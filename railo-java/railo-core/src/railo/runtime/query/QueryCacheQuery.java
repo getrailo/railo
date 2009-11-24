@@ -3,13 +3,18 @@ package railo.runtime.query;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.Ref;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -24,12 +29,11 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
-
-// FUTURE in der bytecode generierung wird QueryImpl verwendet, darum muss diese klasse QueryImpl erben anstelle von Query
 
 public class QueryCacheQuery extends QueryImpl {
 
@@ -38,13 +42,12 @@ public class QueryCacheQuery extends QueryImpl {
 	private Map _columns=new HashMap();
 
 	public QueryCacheQuery(QueryImpl query) {
-		super(query.keys(),0,query.getName()); // FUTURE kann entfernt werden wenn interface query
+		super(query.keys(),0,query.getName());
 		this.query=query;
 	}
 
 	protected void disconnectCache() {
 		if(isCloned) return;
-		//print.out("cloned");
 		this.query=query.cloneQuery(true);
 		isCloned=true;
 	}
@@ -1360,4 +1363,673 @@ public class QueryCacheQuery extends QueryImpl {
 	public boolean wasNull() {
 		return query.wasNull();
 	}
+	
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#absolute(int)
+	 */
+	public boolean absolute(int row) throws SQLException {
+		return query.absolute(row);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#afterLast()
+	 */
+	public void afterLast() throws SQLException {
+		query.afterLast();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#beforeFirst()
+	 */
+	public void beforeFirst() throws SQLException {
+		query.beforeFirst();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#clearWarnings()
+	 */
+	public void clearWarnings() throws SQLException {
+		disconnectCache();
+		query.clearWarnings();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#close()
+	 */
+	public void close() throws SQLException {
+		disconnectCache();
+		query.close();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#findColumn(java.lang.String)
+	 */
+	public int findColumn(String columnName) throws SQLException {
+		return query.findColumn(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#first()
+	 */
+	public boolean first() throws SQLException {
+		return query.first();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getArray(int)
+	 */
+	public java.sql.Array getArray(int i) throws SQLException {
+		return query.getArray(i);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getArray(java.lang.String)
+	 */
+	public java.sql.Array getArray(String colName) throws SQLException {
+		return query.getArray(colName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getAsciiStream(int)
+	 */
+	public InputStream getAsciiStream(int columnIndex) throws SQLException {
+		return query.getAsciiStream(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getAsciiStream(java.lang.String)
+	 */
+	public InputStream getAsciiStream(String columnName) throws SQLException {
+		return query.getAsciiStream(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getBigDecimal(int, int)
+	 */
+	public BigDecimal getBigDecimal(int columnIndex, int scale)
+			throws SQLException {
+		return query.getBigDecimal(columnIndex, scale);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getBigDecimal(int)
+	 */
+	public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
+		return query.getBigDecimal(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getBigDecimal(java.lang.String, int)
+	 */
+	public BigDecimal getBigDecimal(String columnName, int scale)
+			throws SQLException {
+		return query.getBigDecimal(columnName, scale);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getBigDecimal(java.lang.String)
+	 */
+	public BigDecimal getBigDecimal(String columnName) throws SQLException {
+		return query.getBigDecimal(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getBinaryStream(int)
+	 */
+	public InputStream getBinaryStream(int columnIndex) throws SQLException {
+		return query.getBinaryStream(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getBinaryStream(java.lang.String)
+	 */
+	public InputStream getBinaryStream(String columnName) throws SQLException {
+		return query.getBinaryStream(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getBlob(int)
+	 */
+	public Blob getBlob(int i) throws SQLException {
+		return query.getBlob(i);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getBlob(java.lang.String)
+	 */
+	public Blob getBlob(String colName) throws SQLException {
+		return query.getBlob(colName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getByte(int)
+	 */
+	public byte getByte(int columnIndex) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getByte(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getByte(java.lang.String)
+	 */
+	public byte getByte(String columnName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getByte(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getBytes(int)
+	 */
+	public byte[] getBytes(int columnIndex) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getBytes(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getBytes(java.lang.String)
+	 */
+	public byte[] getBytes(String columnName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getBytes(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getCharacterStream(int)
+	 */
+	public Reader getCharacterStream(int columnIndex) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getCharacterStream(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getCharacterStream(java.lang.String)
+	 */
+	public Reader getCharacterStream(String columnName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getCharacterStream(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getClob(int)
+	 */
+	public Clob getClob(int i) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getClob(i);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getClob(java.lang.String)
+	 */
+	public Clob getClob(String colName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getClob(colName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getColumnlist(boolean)
+	 */
+	public String getColumnlist(boolean upperCase) {
+		// TODO Auto-generated method stub
+		return query.getColumnlist(upperCase);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getColumnName(int)
+	 */
+	public Key getColumnName(int columnIndex) {
+		// TODO Auto-generated method stub
+		return query.getColumnName(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getColumnNames()
+	 */
+	public Key[] getColumnNames() {
+		// TODO Auto-generated method stub
+		return query.getColumnNames();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getColumnNamesAsString()
+	 */
+	public String[] getColumnNamesAsString() {
+		// TODO Auto-generated method stub
+		return query.getColumnNamesAsString();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getConcurrency()
+	 */
+	public int getConcurrency() throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getConcurrency();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getCursorName()
+	 */
+	public String getCursorName() throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getCursorName();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getDate(int, java.util.Calendar)
+	 */
+	public Date getDate(int columnIndex, Calendar cal) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getDate(columnIndex, cal);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getDate(int)
+	 */
+	public Date getDate(int columnIndex) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getDate(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getDate(java.lang.String, java.util.Calendar)
+	 */
+	public Date getDate(String columnName, Calendar cal) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getDate(columnName, cal);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getDate(java.lang.String)
+	 */
+	public Date getDate(String columnName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getDate(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getDouble(int)
+	 */
+	public double getDouble(int columnIndex) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getDouble(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getDouble(java.lang.String)
+	 */
+	public double getDouble(String columnName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getDouble(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getFetchDirection()
+	 */
+	public int getFetchDirection() throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getFetchDirection();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getFetchSize()
+	 */
+	public int getFetchSize() throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getFetchSize();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getFloat(int)
+	 */
+	public float getFloat(int columnIndex) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getFloat(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getFloat(java.lang.String)
+	 */
+	public float getFloat(String columnName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getFloat(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getGeneratedKeys()
+	 */
+	public Query getGeneratedKeys() {
+		// TODO Auto-generated method stub
+		return query.getGeneratedKeys();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getInt(int)
+	 */
+	public int getInt(int columnIndex) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getInt(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getInt(java.lang.String)
+	 */
+	public int getInt(String columnName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getInt(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getLong(int)
+	 */
+	public long getLong(int columnIndex) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getLong(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getLong(java.lang.String)
+	 */
+	public long getLong(String columnName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getLong(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getMetaData()
+	 */
+	public ResultSetMetaData getMetaData() throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getMetaData();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getObject(int, java.util.Map)
+	 */
+	public Object getObject(int i, Map map) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getObject(i, map);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getObject(java.lang.String, java.util.Map)
+	 */
+	public Object getObject(String colName, Map map) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getObject(colName, map);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getRef(int)
+	 */
+	public Ref getRef(int i) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getRef(i);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getRef(java.lang.String)
+	 */
+	public Ref getRef(String colName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getRef(colName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getRow()
+	 */
+	public int getRow() throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getRow();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getShort(int)
+	 */
+	public short getShort(int columnIndex) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getShort(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getShort(java.lang.String)
+	 */
+	public short getShort(String columnName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getShort(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getStatement()
+	 */
+	public Statement getStatement() throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getStatement();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getTime(int, java.util.Calendar)
+	 */
+	public Time getTime(int columnIndex, Calendar cal) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getTime(columnIndex, cal);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getTime(int)
+	 */
+	public Time getTime(int columnIndex) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getTime(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getTime(java.lang.String, java.util.Calendar)
+	 */
+	public Time getTime(String columnName, Calendar cal) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getTime(columnName, cal);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getTime(java.lang.String)
+	 */
+	public Time getTime(String columnName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getTime(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getTimestamp(int, java.util.Calendar)
+	 */
+	public Timestamp getTimestamp(int columnIndex, Calendar cal)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getTimestamp(columnIndex, cal);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getTimestamp(int)
+	 */
+	public Timestamp getTimestamp(int columnIndex) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getTimestamp(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getTimestamp(java.lang.String, java.util.Calendar)
+	 */
+	public Timestamp getTimestamp(String columnName, Calendar cal)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getTimestamp(columnName, cal);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getTimestamp(java.lang.String)
+	 */
+	public Timestamp getTimestamp(String columnName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getTimestamp(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getType()
+	 */
+	public int getType() throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getType();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getUnicodeStream(int)
+	 */
+	public InputStream getUnicodeStream(int columnIndex) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getUnicodeStream(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getUnicodeStream(java.lang.String)
+	 */
+	public InputStream getUnicodeStream(String columnName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getUnicodeStream(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getUpdateCount()
+	 */
+	public int getUpdateCount() {
+		// TODO Auto-generated method stub
+		return query.getUpdateCount();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getURL(int)
+	 */
+	public URL getURL(int columnIndex) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getURL(columnIndex);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getURL(java.lang.String)
+	 */
+	public URL getURL(String columnName) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getURL(columnName);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#getWarnings()
+	 */
+	public SQLWarning getWarnings() throws SQLException {
+		// TODO Auto-generated method stub
+		return query.getWarnings();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#isAfterLast()
+	 */
+	public boolean isAfterLast() throws SQLException {
+		// TODO Auto-generated method stub
+		return query.isAfterLast();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#isBeforeFirst()
+	 */
+	public boolean isBeforeFirst() throws SQLException {
+		// TODO Auto-generated method stub
+		return query.isBeforeFirst();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#isFirst()
+	 */
+	public boolean isFirst() throws SQLException {
+		// TODO Auto-generated method stub
+		return query.isFirst();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#isLast()
+	 */
+	public boolean isLast() throws SQLException {
+		// TODO Auto-generated method stub
+		return query.isLast();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#last()
+	 */
+	public boolean last() throws SQLException {
+		// TODO Auto-generated method stub
+		return query.last();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#moveToCurrentRow()
+	 */
+	public void moveToCurrentRow() throws SQLException {
+		// TODO Auto-generated method stub
+		query.moveToCurrentRow();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#moveToInsertRow()
+	 */
+	public void moveToInsertRow() throws SQLException {
+		// TODO Auto-generated method stub
+		query.moveToInsertRow();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#previous()
+	 */
+	public boolean previous() {
+		// TODO Auto-generated method stub
+		return query.previous();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#previous(int)
+	 */
+	public boolean previous(int pid) {
+		// TODO Auto-generated method stub
+		return query.previous(pid);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#refreshRow()
+	 */
+	public void refreshRow() throws SQLException {
+		// TODO Auto-generated method stub
+		query.refreshRow();
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#relative(int)
+	 */
+	public boolean relative(int rows) throws SQLException {
+		// TODO Auto-generated method stub
+		return query.relative(rows);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#setColumnNames(railo.runtime.type.Collection.Key[])
+	 */
+	public void setColumnNames(Key[] trg) throws PageException {
+		// TODO Auto-generated method stub
+		query.setColumnNames(trg);
+	}
+
+	/**
+	 * @see railo.runtime.type.QueryImpl#valueIterator()
+	 */
+	public Iterator valueIterator() {
+		// TODO Auto-generated method stub
+		return query.valueIterator();
+	}
+
 }

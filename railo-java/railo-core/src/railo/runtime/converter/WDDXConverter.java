@@ -321,8 +321,6 @@ public final class WDDXConverter {
 		else  {
 			rtn="<struct type="+_+"L"+object.getClass().getName()+";"+_+"></struct>";
 		}
-		//else throw new ConverterException("can't serialize Object of type ["+object.getClass().getName()+"] to a wddx representation");
-		
 		
 		deep--;
 		return rtn;

@@ -1,8 +1,8 @@
 package railo.runtime.security;
 
 
-import railo.print;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.type.file.FileResourceProvider;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
@@ -17,7 +17,14 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
 
 	
 	
-    private short[] accesses=new short[19];
+    private static final Resource[] EMPTY_RESOURCE_ARRAY = new Resource[0];
+
+// FUTURE move to interface
+	public static final int TYPE_CACHE = 19;
+	public static final int TYPE_GATEWAY = 20;
+
+
+	private short[] accesses=new short[21];
     
 
     //private ConfigWeb config;
@@ -27,8 +34,8 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
 	private Resource rootDirectory;
 
 
-	private Resource[] customFileAccess;
-    
+	private Resource[] customFileAccess=EMPTY_RESOURCE_ARRAY;
+   
     private SecurityManagerImpl() {
         
     }
@@ -58,7 +65,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
 	       short mail, short datasource, short mapping, short remote, short customTag,
 	       short cfxSetting, short cfxUsage, short debugging,
            short search, short scheduledTasks,
-	       short tagExecute, short tagImport, short tagObject, short tagRegistry, short accessRead, short accessWrite) {
+	       short tagExecute, short tagImport, short tagObject, short tagRegistry, short cache, short gateway, short accessRead, short accessWrite) {
         accesses[TYPE_SETTING]=setting;
         accesses[TYPE_FILE]=file;
         accesses[TYPE_DIRECT_JAVA_ACCESS]=directJavaAccess;
@@ -76,6 +83,8 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
         accesses[TYPE_TAG_IMPORT]=tagImport;
         accesses[TYPE_TAG_OBJECT]=tagObject;
         accesses[TYPE_TAG_REGISTRY]=tagRegistry;
+        accesses[TYPE_CACHE]=cache;
+        accesses[TYPE_GATEWAY]=gateway;
         accesses[TYPE_ACCESS_READ]=accessRead;
         accesses[TYPE_ACCESS_WRITE]=accessWrite;
         accesses[TYPE_REMOTE]=remote;
@@ -105,6 +114,8 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
                 VALUE_YES, // Tag Import
                 VALUE_YES, // Tag Object
                 VALUE_YES,  // Tag Registry
+                VALUE_YES,  // Cache
+                VALUE_YES,  // Gateway
               	ACCESS_OPEN,
               	ACCESS_PROTECTED);
         
@@ -153,6 +164,8 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
         else if(accessType.equals("tag_object")) return TYPE_TAG_OBJECT;
         else if(accessType.equals("tag_registry")) return TYPE_TAG_REGISTRY;
         else if(accessType.equals("search")) return TYPE_SEARCH;
+        else if(accessType.equals("cache")) return TYPE_CACHE;
+        else if(accessType.equals("gateway")) return TYPE_GATEWAY;
         else if(accessType.startsWith("scheduled_task")) return TYPE_SCHEDULED_TASK;
         else throw new SecurityException(
                 "invalid access type ["+accessType+"]", 
@@ -282,7 +295,10 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
     }
 
 	public void checkFileLocation(Config config, Resource res, String serverPassword) throws SecurityException {
-		 // All
+		if(res==null || !(res.getResourceProvider() instanceof FileResourceProvider)){
+			return;
+		}
+		// All
         if(getAccess(TYPE_FILE)==VALUE_ALL) return;
         // Local
         if(getAccess(TYPE_FILE)==VALUE_LOCAL) {
@@ -316,10 +332,12 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
 	
     	
     	StringBuffer sb=new StringBuffer(localAllowed && rootDirectory!=null?rootDirectory.getAbsolutePath():"");
-    	for(int i=0;i<customFileAccess.length;i++){
-    		if(sb.length()>0)sb.append(" | ");
-        	sb.append(customFileAccess[i].getAbsolutePath());
-        }
+    	if(customFileAccess!=null){
+    		for(int i=0;i<customFileAccess.length;i++){
+	    		if(sb.length()>0)sb.append(" | ");
+	        	sb.append(customFileAccess[i].getAbsolutePath());
+	        }
+    	}
     	
     	StringBuffer rtn=new StringBuffer("can't access [");
     	rtn.append(res.getAbsolutePath());
@@ -368,7 +386,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
     }
 
 	public Resource[] getCustomFileAccess() {
-		if(ArrayUtil.isEmpty(customFileAccess)) return new Resource[0];
+		if(ArrayUtil.isEmpty(customFileAccess)) return EMPTY_RESOURCE_ARRAY;
 		return (Resource[]) ArrayUtil.clone(customFileAccess, new Resource[customFileAccess.length]);
 	}
 

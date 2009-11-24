@@ -1,11 +1,21 @@
 package railo.runtime.query;
 
+import java.io.Serializable;
 import java.util.Date;
+
+import railo.runtime.PageContext;
+import railo.runtime.dump.DumpData;
+import railo.runtime.dump.DumpProperties;
+import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpUtil;
+import railo.runtime.dump.Dumpable;
+import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.op.Duplicator;
 
 /**
  * a single entry of the query cache
  */
-public final class QueryCacheEntry {
+public final class QueryCacheEntry implements Serializable,Dumpable {
         private Object value;
         private Date cacheBefore;
 
@@ -16,7 +26,7 @@ public final class QueryCacheEntry {
          */
         QueryCacheEntry(Date cacheBefore, Object value) {
             this.cacheBefore=cacheBefore;
-            this.value=value;
+            this.value = Duplicator.duplicate(value,false);
         }
 
         /**
@@ -37,7 +47,7 @@ public final class QueryCacheEntry {
          * @return returns query object in entry
          */
         Object getValue() {
-            return value;
+        	return Duplicator.duplicate(value,false);
         }
         /**
          * @return Returns the cacheBefore.
@@ -46,11 +56,11 @@ public final class QueryCacheEntry {
             return cacheBefore;
         }
 
-        /**
-         * sets the query value.
-         * @param query The query to set.
-         */
-        void setValue(Object value) {
-            this.value = value;
-        }
+		public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties properties) {
+			DumpTable table = new DumpTable("#669999","#ccffff","#000000");
+			table.setTitle("QueryCacheEntry");
+			table.appendRow(1,new SimpleDumpData("Value"),DumpUtil.toDumpData(value, pageContext, maxlevel, properties));
+			table.appendRow(1,new SimpleDumpData("CacheBefore"),DumpUtil.toDumpData(cacheBefore, pageContext, maxlevel, properties));
+			return table;
+		}
     }

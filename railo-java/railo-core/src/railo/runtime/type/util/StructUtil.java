@@ -1,5 +1,6 @@
 package railo.runtime.type.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -101,7 +102,12 @@ public final class StructUtil {
 	public static DumpData toDumpData(Struct sct,String title,PageContext pageContext, int maxlevel, DumpProperties props) {
 		Key[] keys = order(sct.keys());
 		//"#5965e4","#9999ff","#000000"
-		
+		try {
+			pageContext.write(maxlevel+"<br>");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			// e.printStackTrace();
+		}
 	    DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");//new DumpTable("#669900","#99cc00","#263300");
 		if(!StringUtil.isEmpty(title))table.setTitle(title);
 		maxlevel--;

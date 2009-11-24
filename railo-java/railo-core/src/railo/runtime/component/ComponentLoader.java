@@ -12,6 +12,7 @@ import railo.runtime.InterfacePage;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.debug.DebugEntry;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -75,11 +76,11 @@ public class ComponentLoader {
 	    
 	    PageSource ps=pc.getRelativePageSource(path);
 	    if(ps==null) return null;
-	    page=ps.loadPage(pc.getConfig(),null);
+	    page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
     	if(page==null && isRealPath.toBooleanValue()) {
     	    isRealPath.setValue(false);
         	ps=pc.getPageSource('/'+path);
-    	    page=ps.loadPage(pc.getConfig(),null);
+    	    page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
         }
     	return page;
 	}
@@ -98,7 +99,7 @@ public class ComponentLoader {
             try {
             	debugEntry.updateFileLoadTime((int)(System.currentTimeMillis()-time));
             	exeTime=System.currentTimeMillis();
-                if(page==null)page=ps.loadPage(pc.getConfig());
+                if(page==null)page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig());
             	rtn=initComponent(pc,page,callPath,isRealPath);
                 
                 
@@ -114,7 +115,7 @@ public class ComponentLoader {
         else {
             pc.addPageSource(ps,true);
             try {   
-            	if(page==null)page=ps.loadPage(pc.getConfig());
+            	if(page==null)page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig());
             	rtn=initComponent(pc,page,callPath,isRealPath);
             }
             finally {
@@ -151,12 +152,12 @@ public class ComponentLoader {
 	    PageSource res=pc.getRelativePageSource(path);
 	    Page page=null;
 	    //try {
-	    	page=res.loadPage(pc.getConfig(),null);
+	    	page=((PageSourceImpl)res).loadPage(pc,pc.getConfig(),null);
 		    if(page==null && isRealPath) {
 		    	isRealPath=false;
 	        	PageSource resOld = res;
 	        	res=pc.getPageSource('/'+path);
-	    	    page=res.loadPage(pc.getConfig(),null);
+	    	    page=((PageSourceImpl)res).loadPage(pc,pc.getConfig(),null);
 	        	if(page==null) {
 			    	if(hasRemovedExt)return loadInterface(pc,rawPath, false,interfaceUDFs);
 	            	String detail="search for "+res.getDisplayPath();
@@ -179,7 +180,7 @@ public class ComponentLoader {
             try {
                 debugEntry.updateFileLoadTime((int)(System.currentTimeMillis()-time));
                 exeTime=System.currentTimeMillis();
-            	if(page==null)page=ps.loadPage(pc.getConfig());
+            	if(page==null)page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig());
             	rtn=initInterface(pc,page,callPath,isRealPath,interfaceUDFs);
             }
             finally {
@@ -193,7 +194,7 @@ public class ComponentLoader {
         else {
             pc.addPageSource(ps,true);
             try {   
-            	if(page==null)page=ps.loadPage(pc.getConfig());
+            	if(page==null)page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig());
             	rtn=initInterface(pc,page,callPath,isRealPath,interfaceUDFs);
             }
             finally {

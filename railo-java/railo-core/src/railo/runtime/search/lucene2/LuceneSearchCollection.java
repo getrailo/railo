@@ -34,6 +34,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.search.AddionalAttrs;
 import railo.runtime.search.IndexResult;
 import railo.runtime.search.IndexResultImpl;
 import railo.runtime.search.SearchCollectionSupport;
@@ -432,22 +433,26 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
     /**
      * @see railo.runtime.search.SearchCollection#_search(railo.runtime.search.SearchData, java.lang.String, java.lang.String, short, java.lang.String, java.lang.String[])
      */
-    public SearchResulItem[] _search(SearchData data, String criteria, String language,short type, String categoryTree, String[] category) throws SearchException {
+    public SearchResulItem[] _search(SearchData data, String criteria, String language,short type, 
+    		String categoryTree, String[] category) throws SearchException {
         try {
-            
+        	
             if(type!=SEARCH_TYPE_SIMPLE) throw new SearchException("search type explicit not supported");
             Analyzer analyzer = SearchUtil.getAnalyzer(language);
             Query query=null;
             Op op=null;
             Object highlighter=null;
             railo.runtime.search.lucene2.query.QueryParser queryParser=new railo.runtime.search.lucene2.query.QueryParser();
+			AddionalAttrs aa = AddionalAttrs.getAddionlAttrs();
 			if(!criteria.equals("*")) {
+				// FUTURE take this data from calling parameters
 				op=queryParser.parseOp(criteria);
 				if(op==null) criteria="*";
 				else criteria=op.toString();
 				try {
+					
 					query = new QueryParser("contents",analyzer ).parse(criteria);
-					highlighter = Highlight.createHighlighter(query);
+					highlighter = Highlight.createHighlighter(query,aa.getContextHighlightBegin(),aa.getContextHighlightEnd());
 					
 		            
 				}
@@ -489,7 +494,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 		            	int len=reader.numDocs();
 			            for(int y=0;y<len;y++) {
 			        	    doc = reader.document(y);
-			        	    list.add(createSearchResulItemImpl(highlighter,analyzer,doc,id,1,ct,c));
+			        	    list.add(createSearchResulItemImpl(highlighter,analyzer,doc,id,1,ct,c,aa.getContextPassages(),aa.getContextBytes()));
 			            }
 		            }
 		            else {
@@ -501,7 +506,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 			            int len=hits.length();
 			            for (int y=0; y<len; y++) {
 			        	    doc = hits.doc(y);
-			        	    list.add(createSearchResulItemImpl(highlighter,analyzer,doc,id,hits.score(y),ct,c));
+			        	    list.add(createSearchResulItemImpl(highlighter,analyzer,doc,id,hits.score(y),ct,c,aa.getContextPassages(),aa.getContextBytes()));
 			            }  
 		            }
 	            }
@@ -563,8 +568,9 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
     	return false;
 	}
 
-	private static SearchResulItem createSearchResulItemImpl(Object highlighter,Analyzer a,Document doc, String name, float score, String ct, String c) {
-	    String summary=Highlight.createSummary(highlighter,a,doc.get("raw"),doc.get("summary"));
+	private static SearchResulItem createSearchResulItemImpl(Object highlighter,Analyzer a,Document doc, String name, float score, String ct, String c,int maxNumFragments, int maxLength) {
+		String contextSummary=Highlight.createContextSummary(highlighter,a,doc.get("raw"),maxNumFragments,maxLength,doc.get("summary"));
+		String summary = doc.get("summary");
 		
 		
 		return new SearchResulItemImpl(
@@ -573,7 +579,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
                 score,
                 doc.get("key"),
                 doc.get("url"),
-                summary,
+                summary,contextSummary,
                 ct,c,
                 doc.get("custom1"),
                 doc.get("custom2"),

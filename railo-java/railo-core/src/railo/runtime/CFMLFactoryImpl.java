@@ -20,7 +20,7 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.exp.RequestTimeoutException;
 import railo.runtime.lock.LockManager;
 import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.query.QueryCache;
@@ -63,7 +63,6 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	public CFMLFactoryImpl(CFMLEngineImpl engine,QueryCache queryCache) {
 		this.engine=engine; 
 		this.queryCache=queryCache; 
-		//((ConfigImpl)config).setFactory(this);
 	}
     
     /**
@@ -181,20 +180,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 
                 long timeout=pc.getRequestTimeout();
                 if(pc.getStartTime()+timeout<System.currentTimeMillis()) {
-                    Log log = config.getRequestTimeoutLogger();
-                    LockManager manager = pc.getConfig().getLockManager();
-                    String[] locks = manager.getOpenLockNames();
-                    String strLocks=List.arrayToList(locks, ", ");
-                    if(StringUtil.isEmpty(strLocks))strLocks="no open locks";
-                    else //manager.unlock(pc.getId());
-                    strLocks="open locks ("+strLocks+")";
-                    LockManagerImpl.unlockAll(pc.getId());
-                    
-                    if(log!=null)log.error("controler",
-                    		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+". "+strLocks);
-                    pc.getThread().stop(new PageRuntimeException("request ("+getPath(pc)+":"+pc.getId()+") is run into a timeout ("+(timeout/1000)+" seconds) and has been stopped. "+strLocks));
-                    //pc.release();
-                    
+                    terminate(pc);
                 }
                 // after 10 seconds downgrade priority of the thread
                 else if(pc.getStartTime()+10000<System.currentTimeMillis() && pc.getThread().getPriority()!=Thread.MIN_PRIORITY) {
@@ -209,7 +195,23 @@ public final class CFMLFactoryImpl extends CFMLFactory {
         }
 	}
 	
-	private String getPath(PageContext pc) {
+	public static void terminate(PageContext pc) {
+		Log log = pc.getConfig().getRequestTimeoutLogger();
+        LockManager manager = pc.getConfig().getLockManager();
+        String[] locks = manager.getOpenLockNames();
+        String strLocks=List.arrayToList(locks, ", ");
+        if(StringUtil.isEmpty(strLocks))strLocks="no open locks";
+        else //manager.unlock(pc.getId());
+        strLocks="open locks ("+strLocks+")";
+        LockManagerImpl.unlockAll(pc.getId());
+        
+        if(log!=null)log.error("controler",
+        		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+". "+strLocks);
+        pc.getThread().stop(new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") is run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped. "+strLocks));
+        
+	}
+
+	private static String getPath(PageContext pc) {
 		try {
 			String base=pc.getBasePageSource().getPhyscalFile().getAbsolutePath();
 			String current=pc.getCurrentPageSource().getPhyscalFile().getAbsolutePath();

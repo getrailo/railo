@@ -47,6 +47,9 @@ public final class Property extends TagImpl  implements DynamicAttributes{
 	* @param name value to set
 	**/
 	public void setName(String name)	{
+		// Fix for axis 1.4, axis can not handle when first char is upper case
+		//name=StringUtil.lcFirst(name.toLowerCase());
+		
 		property.setName(name);
 		setDynamicAttribute(null, "name", name);
 	}

@@ -8,10 +8,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.map.ReferenceMap;
+
 import railo.commons.color.ColorCaster;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.type.file.FileResource;
-import railo.commons.lang.SoftHashMap;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
@@ -64,7 +65,7 @@ public class VideoPlayerJW extends BodyTagSupport {
 	private boolean allowfullscreen;
 	private String strWidth;
 	private String strHeight;
-	private static Map sizes=new SoftHashMap();
+	private static Map sizes=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 	
 	// JW
 	private Struct passthrough=null;
@@ -246,8 +247,8 @@ public class VideoPlayerJW extends BodyTagSupport {
 		// fill top video to params
 		if(video!=null) {
 			VideoPlayerParamBean vppb = new VideoPlayerParamBean();
-			vppb.setVideo(video);
-			if(!StringUtil.isEmpty(preview))vppb.setImage(preview);
+			vppb.setVideo(pageContext,video);
+			if(!StringUtil.isEmpty(preview))vppb.setImage(pageContext,preview);
 			params.add(vppb);
 		}
 		else {

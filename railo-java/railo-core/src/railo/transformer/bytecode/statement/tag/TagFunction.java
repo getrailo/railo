@@ -80,10 +80,6 @@ public final class TagFunction extends TagBase implements IFunction {
 		Attribute attr;
 		// name
 		Expression name = tag.removeAttribute("name").getValue();
-		//if(name instanceof LitString) {
-			//print.out(((LitString)name).getString());
-			//((LitString)name).upperCase();
-		//}
 		
 		// type
 		attr = tag.removeAttribute("type");

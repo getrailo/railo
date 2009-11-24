@@ -46,7 +46,6 @@ public final class Return extends StatementBase {
 		GeneratorAdapter adapter = bc.getAdapter();
 		
 		Stack tcfs = bc.getTryCatchFinallyDataStack();
-		//print.out("stack:"+tcfs.size());
 		int len=tcfs.size();
 		TryCatchFinallyData data;
 		

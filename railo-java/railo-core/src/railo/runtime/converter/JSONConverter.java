@@ -1,12 +1,7 @@
 package railo.runtime.converter;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.ref.Reference;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Date;
@@ -16,37 +11,26 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
-
-import javax.print.attribute.standard.ReferenceUriSchemesSupported;
 
 import org.w3c.dom.Node;
 
-import railo.print;
-import railo.commons.io.IOUtil;
-import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentWrap;
-import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.CasterException;
+import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.reflection.Reflector;
-import railo.runtime.reflection.pairs.MethodInstance;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
-import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.UDFImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -78,7 +62,7 @@ public final class JSONConverter {
 	 * @throws ConverterException
      */
     
-    private void _serializeClass(Set test,Class clazz,Object obj, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
+    private void _serializeClass(PageContext pc,Set test,Class clazz,Object obj, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
     	Struct sct=new StructImpl(Struct.TYPE_LINKED);
     	if(test==null)test=new HashSet();
     	
@@ -90,7 +74,6 @@ public final class JSONConverter {
     		if(obj!=null || (field.getModifiers()&Modifier.STATIC)>0)
 				try {
 					sct.setEL(field.getName(), testRecusrion(test,field.get(obj)));
-					//sct.setEL((obj!=null?obj.getClass().getName()+".":"")+field.getName(), field.get(obj));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -100,14 +83,13 @@ public final class JSONConverter {
 	    	Method[] setters=Reflector.getSetters(clazz);
 	    	for(int i=0;i<setters.length;i++){
 	    		sct.setEL(setters[i].getName().substring(3), NULL);
-	    		//sct.setEL(obj.getClass().getName()+"."+setters[i].getName().substring(0), NULL);
 	    	}
 	    	// getters
 	    	Method[] getters=Reflector.getGetters(clazz);
 	    	for(int i=0;i<getters.length;i++){
 	    		try {
 	    			sct.setEL(getters[i].getName().substring(3), testRecusrion(test,getters[i].invoke(obj, ArrayUtil.OBJECT_EMPTY)));
-	    			//sct.setEL(obj.getClass().getName()+"."+getters[i].getName().substring(0), getters[i].invoke(obj, ArrayUtil.OBJECT_EMPTY));
+	    			
 				} 
 	    		catch (Exception e) {}
 	    	}
@@ -115,7 +97,7 @@ public final class JSONConverter {
     	test.add(clazz);
     	
     	
-    	_serializeStruct(test,sct, sb, serializeQueryByColumns, true);
+    	_serializeStruct(pc,test,sct, sb, serializeQueryByColumns, true);
     }
     
 	
@@ -169,8 +151,8 @@ public final class JSONConverter {
 	 * @param serializeQueryByColumns 
 	 * @throws ConverterException
 	 */
-	private void _serializeArray(Set test,Array array, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
-		_serializeList(test,array.toList(),sb,serializeQueryByColumns);
+	private void _serializeArray(PageContext pc,Set test,Array array, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
+		_serializeList(pc,test,array.toList(),sb,serializeQueryByColumns);
 	}
 	
 	/**
@@ -180,7 +162,7 @@ public final class JSONConverter {
 	 * @param serializeQueryByColumns 
 	 * @throws ConverterException
 	 */
-	private void _serializeList(Set test,List list, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
+	private void _serializeList(PageContext pc,Set test,List list, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
 		
 	    sb.append(goIn());
 	    sb.append("[");
@@ -189,18 +171,18 @@ public final class JSONConverter {
 		while(it.hasNext()) {
 		    if(doIt)sb.append(',');
 		    doIt=true;
-			_serialize(test,it.next(),sb,serializeQueryByColumns);
+			_serialize(pc,test,it.next(),sb,serializeQueryByColumns);
 		}
 		
 		sb.append(']');
 	}
-	private void _serializeArray(Set test,Object[] arr, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
+	private void _serializeArray(PageContext pc,Set test,Object[] arr, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
 		
 	    sb.append(goIn());
 	    sb.append("[");
 	    for(int i=0;i<arr.length;i++) {
 		    if(i>0)sb.append(',');
-		    _serialize(test,arr[i],sb,serializeQueryByColumns);
+		    _serialize(pc,test,arr[i],sb,serializeQueryByColumns);
 		}
 		sb.append(']');
 	}
@@ -213,7 +195,7 @@ public final class JSONConverter {
      * @param addUDFs 
      * @throws ConverterException
      */
-    public void _serializeStruct(Set test,Struct struct, StringBuffer sb, boolean serializeQueryByColumns, boolean addUDFs) throws ConverterException {
+    public void _serializeStruct(PageContext pc,Set test,Struct struct, StringBuffer sb, boolean serializeQueryByColumns, boolean addUDFs) throws ConverterException {
         sb.append(goIn());
         sb.append("{");
         Key[] keys = struct.keys();
@@ -230,7 +212,7 @@ public final class JSONConverter {
             sb.append(escape(key.getString()));
             sb.append('"');
             sb.append(':');
-            _serialize(test,struct.get(key,null),sb,serializeQueryByColumns);
+            _serialize(pc,test,struct.get(key,null),sb,serializeQueryByColumns);
         }
         sb.append('}');
     }
@@ -243,7 +225,7 @@ public final class JSONConverter {
      * @param serializeQueryByColumns 
      * @throws ConverterException
      */
-    private void _serializeMap(Set test,Map map, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
+    private void _serializeMap(PageContext pc,Set test,Map map, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
         sb.append(goIn());
         sb.append("{");
         
@@ -257,7 +239,7 @@ public final class JSONConverter {
             sb.append(escape(key.toString()));
             sb.append('"');
             sb.append(':');
-            _serialize(test,map.get(key),sb,serializeQueryByColumns);
+            _serialize(pc,test,map.get(key),sb,serializeQueryByColumns);
         }
         
         sb.append('}');
@@ -269,11 +251,11 @@ public final class JSONConverter {
      * @param serializeQueryByColumns 
      * @throws ConverterException
      */
-    private void _serializeComponent(Set test,Component component, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
+    private void _serializeComponent(PageContext pc,Set test,Component component, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
     	try {
 			ComponentImpl ci = ComponentUtil.toComponentImpl(component);
 			ComponentWrap cw = new ComponentWrap(Component.ACCESS_PRIVATE,ci);
-	    	_serializeStruct(test,cw, sb, serializeQueryByColumns,false);
+	    	_serializeStruct(pc,test,cw, sb, serializeQueryByColumns,false);
 		} 
     	catch (ExpressionException e) {
 			throw new ConverterException(e);
@@ -281,11 +263,11 @@ public final class JSONConverter {
     }
     
 
-    private void _serializeUDF(Set test,UDF udf, StringBuffer sb,boolean serializeQueryByColumns) throws ConverterException {
+    private void _serializeUDF(PageContext pc,Set test,UDF udf, StringBuffer sb,boolean serializeQueryByColumns) throws ConverterException {
 		StructImpl sct=new StructImpl();
 		try {
 			// Meta
-			Struct meta = udf.getMetaData(ThreadLocalPageContext.get());
+			Struct meta = udf.getMetaData(pc);
 			sct.setEL("Metadata", meta);
 			
 			// Parameters
@@ -302,7 +284,7 @@ public final class JSONConverter {
 			sct.setEL("PagePath", udf.getPage().getPageSource().getFile().getAbsolutePath());
 		}catch(Throwable t){}
 		
-		_serializeStruct(test,sct, sb, serializeQueryByColumns, true);
+		_serializeStruct(pc,test,sct, sb, serializeQueryByColumns, true);
 		// TODO key SuperScope and next?
 	}
 
@@ -315,7 +297,7 @@ public final class JSONConverter {
 	 * @param serializeQueryByColumns 
 	 * @throws ConverterException
 	 */
-	private void _serializeQuery(Set test,Query query, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
+	private void _serializeQuery(PageContext pc,Set test,Query query, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
 		
 		String[] keys = query.keysAsString();
 		sb.append(goIn());
@@ -363,9 +345,9 @@ public final class JSONConverter {
 					    if(doIt)sb.append(',');
 					    doIt=true;
 					    try {
-							_serialize(test,query.getAt(keys[i],y),sb,serializeQueryByColumns);
+							_serialize(pc,test,query.getAt(keys[i],y),sb,serializeQueryByColumns);
 						} catch (PageException e) {
-							_serialize(test,e.getMessage(),sb,serializeQueryByColumns);
+							_serialize(pc,test,e.getMessage(),sb,serializeQueryByColumns);
 						}
 					}
 				
@@ -388,9 +370,9 @@ public final class JSONConverter {
 					    if(doIt)sb.append(',');
 					    doIt=true;
 					    try {
-							_serialize(test,query.getAt(keys[col],row),sb,serializeQueryByColumns);
+							_serialize(pc,test,query.getAt(keys[col],row),sb,serializeQueryByColumns);
 						} catch (PageException e) {
-							_serialize(test,e.getMessage(),sb,serializeQueryByColumns);
+							_serialize(pc,test,e.getMessage(),sb,serializeQueryByColumns);
 						}
 					}
 				sb.append(']');
@@ -407,7 +389,7 @@ public final class JSONConverter {
 	 * @param serializeQueryByColumns 
 	 * @throws ConverterException
 	 */
-	private void _serialize(Set test,Object object, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
+	private void _serialize(PageContext pc,Set test,Object object, StringBuffer sb, boolean serializeQueryByColumns) throws ConverterException {
 		
 		// NULL
 		if(object==null) {
@@ -452,11 +434,11 @@ public final class JSONConverter {
 		}
         // Component
         else if(object instanceof Component) {
-            _serializeComponent(test,(Component)object,sb,serializeQueryByColumns);
+            _serializeComponent(pc,test,(Component)object,sb,serializeQueryByColumns);
         }
         // UDF
         else if(object instanceof UDF) {
-            _serializeUDF(test,(UDF)object,sb,serializeQueryByColumns);
+            _serializeUDF(pc,test,(UDF)object,sb,serializeQueryByColumns);
         }
         // XML
         else if(object instanceof Node) {
@@ -464,23 +446,23 @@ public final class JSONConverter {
         }
         // Struct
         else if(object instanceof Struct) {
-        	_serializeStruct(test,(Struct)object,sb,serializeQueryByColumns,true);
+        	_serializeStruct(pc,test,(Struct)object,sb,serializeQueryByColumns,true);
         }
         // Map
         else if(object instanceof Map) {
-            _serializeMap(test,(Map)object,sb,serializeQueryByColumns);
+            _serializeMap(pc,test,(Map)object,sb,serializeQueryByColumns);
         }
 		// Array
 		else if(object instanceof Array) {
-			_serializeArray(test,(Array)object,sb,serializeQueryByColumns);
+			_serializeArray(pc,test,(Array)object,sb,serializeQueryByColumns);
 		}
 		// List
 		else if(object instanceof List) {
-			_serializeList(test,(List)object,sb,serializeQueryByColumns);
+			_serializeList(pc,test,(List)object,sb,serializeQueryByColumns);
 		}
         // Query
         else if(object instanceof Query) {
-            _serializeQuery(test,(Query)object,sb,serializeQueryByColumns);
+            _serializeQuery(pc,test,(Query)object,sb,serializeQueryByColumns);
         }
         // Timespan
         else if(object instanceof TimeSpan) {
@@ -492,34 +474,33 @@ public final class JSONConverter {
 		}
 		// File
 		else if(object instanceof File) {
-			_serialize(test, ((File)object).getAbsolutePath(), sb, serializeQueryByColumns);
+			_serialize(pc,test, ((File)object).getAbsolutePath(), sb, serializeQueryByColumns);
 		}
 		// Native Array
 		else if(Decision.isNativeArray(object)){
 			if(object instanceof char[])
-				_serialize(test,new String((char[])object), sb, serializeQueryByColumns);
+				_serialize(pc,test,new String((char[])object), sb, serializeQueryByColumns);
 			else {
-				_serializeArray(test,ArrayUtil.toReferenceType(object,ArrayUtil.OBJECT_EMPTY), sb, serializeQueryByColumns);
+				_serializeArray(pc,test,ArrayUtil.toReferenceType(object,ArrayUtil.OBJECT_EMPTY), sb, serializeQueryByColumns);
 			}
 				
 		}
 		// ObjectWrap
 		else if(object instanceof ObjectWrap) {
 			try {
-				_serialize(test,((ObjectWrap)object).getEmbededObject(), sb, serializeQueryByColumns);
+				_serialize(pc,test,((ObjectWrap)object).getEmbededObject(), sb, serializeQueryByColumns);
 			} catch (PageException e) {
 				if(object instanceof JavaObject){
-					_serializeClass(test,((JavaObject)object).getClazz(),null,sb,serializeQueryByColumns);
+					_serializeClass(pc,test,((JavaObject)object).getClazz(),null,sb,serializeQueryByColumns);
 				}
-				else throw new ConverterException("can't serialize Object of type [ "+object.getClass().getName()+" ]");
+				else throw new ConverterException("can't serialize Object of type [ "+Caster.toClassName(object)+" ]");
 			}
 		}
 		
 		else  {
-			_serializeClass(test,object.getClass(),object,sb,serializeQueryByColumns);
+			_serializeClass(pc,test,object.getClass(),object,sb,serializeQueryByColumns);
 			
 		}
-		//else throw new ConverterException("can't serialize Object of type [ "+object.getClass().getName()+" ]");
 		
 	}
 
@@ -553,15 +534,24 @@ public final class JSONConverter {
 		char[] arr=str.toCharArray();
 		StringBuffer rtn=new StringBuffer(arr.length);
 		for(int i=0;i<arr.length;i++) {
-			switch(arr[i]) {
-				case '\\': rtn.append("\\\\"); break;
-				case '\n': rtn.append("\\n"); break;
-				case '\r': rtn.append("\\r"); break;
-				case '\f': rtn.append("\\f"); break;
-				case '\b': rtn.append("\\b"); break;
-				case '\t': rtn.append("\\t"); break;
-				case '"' : rtn.append("\\\""); break;
-				default : rtn.append(arr[i]); break;
+			if(arr[i] < 128){
+				switch(arr[i]) {
+					case '\\': rtn.append("\\\\"); break;
+					case '\n': rtn.append("\\n"); break;
+					case '\r': rtn.append("\\r"); break;
+					case '\f': rtn.append("\\f"); break;
+					case '\b': rtn.append("\\b"); break;
+					case '\t': rtn.append("\\t"); break;
+					case '"' : rtn.append("\\\""); break;
+					default : rtn.append(arr[i]); break;
+				}
+			}
+			else {
+				if (arr[i] < 0x10)			rtn.append("\\u000");
+			    else if (arr[i] < 0x100) 	rtn.append( "\\u00");
+			    else if (arr[i] < 0x1000) 	rtn.append( "\\u0");
+			    else 						rtn.append( "\\u");
+				rtn.append(Integer.toHexString(arr[i]));
 			}
 		}
 		return rtn.toString();
@@ -574,9 +564,9 @@ public final class JSONConverter {
 	 * @return serialized wddx package
 	 * @throws ConverterException
 	 */
-	public String serialize(Object object, boolean serializeQueryByColumns) throws ConverterException {
+	public String serialize(PageContext pc,Object object, boolean serializeQueryByColumns) throws ConverterException {
 		StringBuffer sb=new StringBuffer();
-		_serialize(null,object,sb,serializeQueryByColumns);
+		_serialize(pc,null,object,sb,serializeQueryByColumns);
 		return sb.toString();
 	}
 	

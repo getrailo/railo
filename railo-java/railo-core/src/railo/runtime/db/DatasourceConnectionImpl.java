@@ -2,6 +2,8 @@ package railo.runtime.db;
 
 import java.sql.Connection;
 
+import railo.runtime.op.Caster;
+
 /**
  * wrap for datasorce and connection from it
  */
@@ -14,6 +16,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 	private String password;
 	private int transactionIsolationLevel=-1;
 	private int requestId=-1;
+	private Boolean supportsGetGeneratedKeys;
 
     /**
      * @param connection
@@ -107,4 +110,17 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 	public void setRequestId(int requestId) {
 		this.requestId=requestId;
 	}
+
+	// FUTURE add to interface, pherhaps a more generic solition like getMeta(SUPPORT_GENERATED_KEYS)
+	public boolean supportsGetGeneratedKeys() {
+		if(supportsGetGeneratedKeys==null){
+			try {
+				supportsGetGeneratedKeys=Caster.toBoolean(getConnection().getMetaData().supportsGetGeneratedKeys());
+			} catch (Throwable t) {
+				return false;
+			}
+		}
+		return supportsGetGeneratedKeys.booleanValue();
+	}
+
 }

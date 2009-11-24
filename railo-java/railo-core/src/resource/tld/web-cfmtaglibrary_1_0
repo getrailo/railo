@@ -464,6 +464,43 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<type>any</type>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>throwOnError</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		
+		<attribute>
+			<type>string</type>
+			<name>name</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>metadata</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<type>any</type>
+			<name>value</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>cacheName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<type>string</type>
 			<name>username</name>
 			<required>false</required>
@@ -488,6 +525,13 @@
 		<attribute>
 			<type>timespan</type>
 			<name>timespan</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>timespan</type>
+			<name>idletime</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description></description>
@@ -519,12 +563,6 @@
 		<attribute>
 			<type>number</type>
 			<name>port</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>id</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
@@ -2232,6 +2270,13 @@
 		and the timeout value is 0, the program output is discarded.</description>
 		</attribute>
 		<attribute>
+			<type>boolean</type>
+			<name>terminateOnTimeout</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>terminate execution of proccess when timeout occur</description>
+		</attribute>
+		<attribute>
 			<type>string</type>
 			<name>variable</name>
 			<required>false</required>
@@ -2240,6 +2285,7 @@
 				If no outputfile or variable attribute is specified, 
 				output is displayed on page from which it was called.</description>
 		</attribute>
+		
 	</tag>
 	<!-- Exit -->
 	<tag>
@@ -7982,6 +8028,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<tte-class>railo.transformer.cfml.evaluator.impl.Query</tte-class>
 		<body-content>must</body-content>
 		<body-rtexprvalue>true</body-rtexprvalue>
+		<handle-exception>true</handle-exception>
 		<description>Passes SQL statements to a data source. Not limited to queries.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>

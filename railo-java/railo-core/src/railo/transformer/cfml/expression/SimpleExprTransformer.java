@@ -11,21 +11,25 @@ import railo.transformer.util.CFMLString;
  * Zum lesen von Attributen bei dem cold fusion expressions nicht geparst werden sollen (cfloop contition) 
  */
 public final class SimpleExprTransformer implements ExprTransformer {
-	char specialChar=0;
+	
+	//char specialChar=0;
+	//protected CFMLString cfml;
 
-	/**
-	 * Field <code>cfml</code>
-	 */
-	protected CFMLString cfml;
-
-	/**
+	/* *
 	 * Setzt welcher Character speziell behandelt werden soll.
 	 * @param c char der speziell behandelt werden soll.
-	 */
+	 * /
 	public void setSpecialChar(char c) {
 		specialChar=c;
-	}
+	}*/
 	
+
+	private char specialChar;
+
+	public SimpleExprTransformer(char specialChar) {
+		this.specialChar=specialChar;
+	}
+
 	/**
 	 * @see railo.transformer.cfml.ExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
 	 */
@@ -37,21 +41,20 @@ public final class SimpleExprTransformer implements ExprTransformer {
 	 * @see railo.transformer.cfml.ExprTransformer#transform(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
 	 */
 	public Expression transform(FunctionLib[] fld, CFMLString cfml) throws TemplateException {
-			this.cfml=cfml;
 			Expression expr=null;
 			// String
-				if((expr=string())!=null) {
+				if((expr=string(cfml))!=null) {
 					return expr;
 				}
 			// Simple
-				return simple();
+				return simple(cfml);
 	}
 	/**
 	 * Liest den String ein
 	 * @return Element 
 	 * @throws TemplateException
 	 */
-	public Expression string()
+	public Expression string(CFMLString cfml)
 		throws TemplateException {
 		cfml.removeSpace();
 		char quoter=cfml.getCurrentLower();
@@ -101,7 +104,7 @@ public final class SimpleExprTransformer implements ExprTransformer {
 	 * @return Element
 	 * @throws TemplateException
 	 */
-	public Expression simple() throws TemplateException {
+	public Expression simple(CFMLString cfml) throws TemplateException {
 		StringBuffer sb=new StringBuffer();
 		int line = cfml.getLine();
 		while(cfml.isValidIndex()) {

@@ -8,11 +8,12 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import railo.commons.date.TimeZoneConstants;
+import railo.commons.date.DateTimeUtil;
+import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.dateTime.DateUtil;
 import railo.runtime.op.Castable;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -26,6 +27,13 @@ import railo.runtime.type.dt.TimeImpl;
  * Class to cast Strings to Date Objects
  */
 public final class DateCaster {
+
+	private static short MODE_DAY_STR=1;
+	private static short MODE_MONTH_STR=2;
+	private static short MODE_NONE=4;
+	private static long DEFAULT_VALUE=Long.MIN_VALUE;
+	
+	private static DateTimeUtil util=DateTimeUtil.getInstance();
 	
     private static SimpleDateFormat[] simpleDateFormatters;
 	static  {
@@ -43,13 +51,14 @@ public final class DateCaster {
 			 ,new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
 			 ,new SimpleDateFormat("EEE d, MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
 			 ,new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH)
-			 ,new SimpleDateFormat("MMMM, dd yyyy hh:mm:ss",Locale.ENGLISH)
+				 ,new SimpleDateFormat("MMMM, dd yyyy hh:mm:ss",Locale.ENGLISH)
+				 ,new SimpleDateFormat("yyyy/MM/dd hh:mm:ss zz",Locale.ENGLISH)
 			 //,new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",Locale.ENGLISH)
 		};
 	}
 
 	
-	/**
+	/**	
 	 * converts a Object to a DateTime Object (Advanced but slower)
 	 * @param o Object to Convert
 	 * @param timezone
@@ -57,22 +66,24 @@ public final class DateCaster {
 	 * @throws PageException
 	 */
 	public static DateTime toDateAdvanced(Object o,TimeZone timezone) throws PageException {
-		if(o instanceof DateTime) 		return (DateTime)o;
-		else if(o instanceof Date) 		return new DateTimeImpl((Date)o);
+		if(o instanceof Date) 		{
+			if(o instanceof DateTime) return (DateTime)o;
+			return new DateTimeImpl((Date)o);
+		}
 		else if(o instanceof Castable) 	return ((Castable)o).castToDateTime();
 		else if(o instanceof String) 	{
-		    DateTime dt=toDateAdvanced(o.toString(),timezone,null);
+		    DateTime dt=toDateAdvanced((String)o,timezone,null);
 		    if(dt==null)
 				throw new ExpressionException("can't cast ["+o+"] to date value");
 		    return dt;
 		}
-		else if(o instanceof Number) 		return DateUtil.getDateTimeInstance(((Number)o).doubleValue());
+		else if(o instanceof Number) 		return util.toDateTime(((Number)o).doubleValue());
 		else if(o instanceof ObjectWrap) return toDateAdvanced(((ObjectWrap)o).getEmbededObject(),timezone);
 		else if(o instanceof Calendar){
 			
 			return new DateTimeImpl((Calendar)o);
 		}
-		throw new ExpressionException("can't cast ["+o.getClass().getName()+"] to date value");
+		throw new ExpressionException("can't cast ["+Caster.toClassName(o)+"] to date value");
 	}
 	
 	/**
@@ -103,7 +114,7 @@ public final class DateCaster {
 		    return ((Castable)o).castToDateTime(defaultValue);
 		}
 		else if(o instanceof String) 	return toDateAdvanced(o.toString(),timeZone,defaultValue);
-		else if(o instanceof Number) 	return DateUtil.getDateTimeInstance(((Number)o).doubleValue());
+		else if(o instanceof Number) 	return util.toDateTime(((Number)o).doubleValue());
 		else if(o instanceof Calendar){
 			return new DateTimeImpl((Calendar)o);
 		}
@@ -189,7 +200,7 @@ public final class DateCaster {
 		else if(o instanceof Date) 		return new DateTimeImpl((Date)o);
 		else if(o instanceof Castable) 	return ((Castable)o).castToDateTime();
 		else if(o instanceof String) 	return toDateSimple(o.toString(),true, timeZone);
-		else if(o instanceof Number) 		return DateUtil.getDateTimeInstance(((Number)o).doubleValue());
+		else if(o instanceof Number) 		return util.toDateTime(((Number)o).doubleValue());
 		else if(o instanceof Calendar) 		return new DateTimeImpl((Calendar)o);
 		else if(o instanceof ObjectWrap) return toDateSimple(((ObjectWrap)o).getEmbededObject(),timeZone);
 		else if(o instanceof Calendar){
@@ -237,7 +248,7 @@ public final class DateCaster {
 			// TODO check timezone offset
 			return new TimeImpl(((Calendar)o).getTimeInMillis(),false);
 		}
-		throw new ExpressionException("can't cast ["+o.getClass().getName()+"] to time value");
+		throw new ExpressionException("can't cast ["+Caster.toClassName(o)+"] to time value");
 	}
 
     /**
@@ -266,7 +277,7 @@ public final class DateCaster {
         	if(advanced)return toDateAdvanced(o.toString(),alsoNumbers, timeZone,defaultValue);
         	return toDateSimple(o.toString(),alsoNumbers, timeZone,defaultValue);
         }
-        else if(alsoNumbers && o instanceof Number)     return DateUtil.getDateTimeInstance(((Number)o).doubleValue());
+        else if(alsoNumbers && o instanceof Number)     return util.toDateTime(((Number)o).doubleValue());
         else if(o instanceof ObjectWrap) {
         	return _toDateAdvanced(((ObjectWrap)o).getEmbededObject(defaultValue),alsoNumbers,timeZone,defaultValue,advanced);
         }
@@ -305,8 +316,10 @@ public final class DateCaster {
 	 * @param str String to convert
 	 * @param defaultValue 
 	 * @return Time Object
+	 * @throws  
 	 */
-	public static Time toTime(TimeZone timeZone,String str, Time defaultValue) {
+	public static Time toTime(TimeZone timeZone,String str, Time defaultValue)  {
+		
 		if(str==null || str.length()<3) {
 		    return defaultValue;
 		}
@@ -340,9 +353,11 @@ public final class DateCaster {
 						
 						if(!(ds.fwIfCurrent('\'') && ds.fwIfCurrent('}')))return defaultValue;
 						
-						if(ds.isAfterLast())return new TimeImpl(
-								DateUtil.toLong(timeZone,1899,12,30,hour,minute,second,0),false
-								);
+						if(ds.isAfterLast()){
+							long time=util.toTime(timeZone,1899,12,30,hour,minute,second,0,DEFAULT_VALUE);
+							if(time==DEFAULT_VALUE)return defaultValue;
+							return new TimeImpl(time,false);
+						}
 						return defaultValue;
 				
 						
@@ -365,26 +380,33 @@ public final class DateCaster {
 				int minutes=ds.readDigits();
 				if(minutes==-1) return defaultValue;
 				
-				if(ds.isAfterLast()) return new TimeImpl(
-						DateUtil.toLong(timeZone,1899,12,30,hour,minutes,0,0),false
-						);
+				if(ds.isAfterLast()) {
+					long time=util.toTime(timeZone,1899,12,30,hour,minutes,0,0,DEFAULT_VALUE);
+					if(time==DEFAULT_VALUE) return defaultValue;
+					
+					return new TimeImpl(time,false);
+				}
 				//else if(!ds.fwIfCurrent(':'))return null;
 				else if(!ds.fwIfCurrent(':')) {
 				    if(!ds.fwIfCurrent(' '))return defaultValue;
 				    
 				    if(ds.fwIfCurrent('a') || ds.fwIfCurrent('A'))	{
 				        if(ds.fwIfCurrent('m') || ds.fwIfCurrent('M')) {
-				            if(ds.isAfterLast()) return new TimeImpl(
-				            		DateUtil.toLong(timeZone,1899,12,30,hour,minutes,0,0),false
-				            		);
+				            if(ds.isAfterLast()) {
+				            	long time=util.toTime(timeZone,1899,12,30,hour,minutes,0,0,DEFAULT_VALUE);
+								if(time==DEFAULT_VALUE) return defaultValue;
+				            	return new TimeImpl(time,false);
+				            }
 				        }
 				        return defaultValue;
 				    }
 				    else if(ds.fwIfCurrent('p') || ds.fwIfCurrent('P'))	{
 				        if(ds.fwIfCurrent('m') || ds.fwIfCurrent('M')) {
-				            if(ds.isAfterLast()) return new TimeImpl(
-				            		DateUtil.toLong(timeZone,1899,12,30,hour<13?hour+12:hour,minutes,0,0),false
-				            		);
+				            if(ds.isAfterLast()) {
+				            	long time=util.toTime(timeZone,1899,12,30,hour<13?hour+12:hour,minutes,0,0,DEFAULT_VALUE);
+								if(time==DEFAULT_VALUE) return defaultValue;
+								return new TimeImpl(time,false);
+				            }
 				        }
 				        return defaultValue;
 				    }
@@ -396,9 +418,11 @@ public final class DateCaster {
 				int seconds=ds.readDigits();
 				if(seconds==-1) return defaultValue;
 				
-				if(ds.isAfterLast()) return new TimeImpl(
-						DateUtil.toLong(timeZone,1899,12,30,hour,minutes,seconds,0),false
-						);
+				if(ds.isAfterLast()) {
+					long time=util.toTime(timeZone,1899,12,30,hour,minutes,seconds,0,DEFAULT_VALUE);
+					if(time==DEFAULT_VALUE) return defaultValue;
+					return new TimeImpl(time,false);
+				}
 								
 		    }
 		}
@@ -420,6 +444,36 @@ public final class DateCaster {
 	    return dt;
 	}
 	
+	public static void main(String[] args) {
+		/*long start=System.currentTimeMillis();
+		String str="01/20";
+		print.out(str);
+		print.out(toDateSimple(str,false, null, null));
+		for(int i=0;i<300000;i++){
+			toDateSimple(str,false, null, null);
+		}
+		print.out(System.currentTimeMillis()-start);
+		start=System.currentTimeMillis();
+		for(int i=0;i<300000;i++){
+			toDateSimple(str,false, null, null);
+		}
+		print.out(System.currentTimeMillis()-start);
+		
+		print.out(toDateSimple("{ts '2006-03-26 03:02:03'}",false, null, null));
+		print.out(toDateSimple("{ts '2006-03-26 01:02:03'}",false, null, null));
+		print.out(toDateSimple("{d '2006-03-26'}",false, null, null));
+		print.out(toDateSimple("{t '01:02:03'}",false, null, null));*/
+		/*print.out(toDateSimple("02/29",false, null, null));
+		print.out(toDateSimple("32/12",false, null, null));
+		print.out(toDateSimple("03/2002",false, null, null));
+		*/
+		
+		//print.out(toDateSimple("2004.01.02",false, null, null));
+		//print.out(toDateSimple("01.Sep.04",false, null, null));
+		//print.out(toDateSimple("Sep.10.04",false, null, null));
+	}
+	
+	
 	/**
 	 * converts a String to a DateTime Object, returns null if invalid string
 	 * @param str String to convert
@@ -429,9 +483,210 @@ public final class DateCaster {
 	 * @return Date Time Object
 	 */
 	
+	private static DateTime parseDateTime(String str,DateString ds,boolean alsoNumbers,TimeZone timeZone, DateTime defaultValue) {
+		int month=0;
+		int first=ds.readDigits();
+		// first
+		if(first==-1) {
+			first=ds.readMonthString();
+			if(first==-1)return defaultValue;
+			month=1;
+		}
+		if(ds.isAfterLast()) return month==1?defaultValue:toNumberDate(str,alsoNumbers,defaultValue);
+		
+		char del=ds.current();
+		if(del!='.' && del!='/' && del!='-') {
+			if(ds.fwIfCurrent(':')){
+				return parseTime(timeZone, new int[]{1899,12,30}, ds, defaultValue,first);
+			}
+			return defaultValue;
+		}
+		ds.next();
+		
+		// second
+		int second=ds.readDigits();
+		if(second==-1){
+			second=ds.readMonthString();
+			if(second==-1)return defaultValue;
+			month=2;
+		}
+		
+		if(ds.isAfterLast()) {
+			return toDate(month,timeZone,first,second,defaultValue);
+		}
+		
+		char del2=ds.current();
+		if(del!=del2) {
+			ds.fwIfCurrent(' ');
+			ds.fwIfCurrent('T');
+			ds.fwIfCurrent(' ');
+			return parseTime(timeZone,_toDate(timeZone,month, first, second),ds,defaultValue,-1);
+		}
+		ds.next();
+		
+		
+		
+		int third=ds.readDigits();
+		if(third==-1){
+			return defaultValue;
+		}
+		
+		if(ds.isAfterLast()) {
+			return toDate(month,timeZone,first,second,third,defaultValue);
+		}
+		ds.fwIfCurrent(' ');
+		ds.fwIfCurrent('T');
+		ds.fwIfCurrent(' ');
+		return parseTime(timeZone,_toDate(month, first, second,third),ds,defaultValue,-1);
+		
+		
+	}
+	
+	private static DateTime parseTime(TimeZone timeZone,int[] date, DateString ds,DateTime defaultValue, int hours) {
+		if(date==null)return defaultValue;
+		// hour
+		boolean next=false;
+		if(hours==-1){
+			hours=ds.readDigits();
+			if(hours==-1) {
+				return parseOffset(ds,timeZone,date,0,0,0,0,defaultValue);
+			}
+		}
+		else next=true;
+		
+		int minutes=0;
+		if(next || ds.fwIfCurrent(':')){
+			minutes=ds.readDigits();
+			if(minutes==-1) return defaultValue;
+		}
+		
+
+		int seconds=0;
+		if(ds.fwIfCurrent(':')){
+			seconds=ds.readDigits();
+			if(seconds==-1) return defaultValue;
+		}
+		
+		int msSeconds=0;
+		if(ds.fwIfCurrent('.')){
+			msSeconds=ds.readDigits();
+			if(msSeconds==-1) return defaultValue;
+		}
+		
+		if(ds.isAfterLast()){
+			return DateTimeUtil.getInstance().toDateTime(timeZone, date[0], date[1], date[2], hours, minutes, seconds, msSeconds, defaultValue);
+		}
+		ds.fwIfCurrent(' ');
+		
+		if(ds.fwIfCurrent('a') || ds.fwIfCurrent('A'))	{
+			if(!ds.fwIfCurrent('m'))ds.fwIfCurrent('M');
+	        if(ds.isAfterLast()) 
+	            return DateTimeUtil.getInstance().toDateTime(timeZone, date[0], date[1], date[2], hours, minutes, seconds, msSeconds, defaultValue);
+	        return defaultValue;
+	    }
+	    else if(ds.fwIfCurrent('p') || ds.fwIfCurrent('P'))	{
+	    	if(!ds.fwIfCurrent('m'))ds.fwIfCurrent('M');
+	        if(hours>24) return defaultValue;
+	        if(ds.isAfterLast()) 
+	        	return DateTimeUtil.getInstance().toDateTime(timeZone, date[0], date[1], date[2], 
+	            			hours<12?hours+12:hours, minutes, seconds, msSeconds,defaultValue);
+	        return defaultValue;
+	    }
+		
+		ds.fwIfCurrent(' ');
+		return parseOffset(ds,timeZone,date,hours,minutes,seconds,msSeconds,defaultValue);
+	    
+	}
+
+	private static DateTime parseOffset(DateString ds, TimeZone timeZone, int[] date,int hours, int minutes, int seconds, int msSeconds,DateTime defaultValue) {
+		
+		if(ds.fwIfCurrent('+')){
+	    	DateTime rtn = util.toDateTime(timeZone, date[0], date[1], date[2], hours, minutes, seconds, msSeconds,defaultValue);
+	    	if(rtn==defaultValue) return rtn;
+       	 	return readOffset(true,timeZone,rtn,ds,defaultValue);
+	    }
+	    else if(ds.fwIfCurrent('-')){
+	    	DateTime rtn = util.toDateTime(timeZone, date[0], date[1], date[2], hours, minutes, seconds, msSeconds, defaultValue);
+	    	if(rtn==defaultValue) return rtn;
+      	 	return readOffset(false,timeZone,rtn,ds,defaultValue);
+	    }
+		return defaultValue;
+	}
+
+	private static DateTime toDate(int month, TimeZone timeZone,int first, int second, DateTime defaultValue) {
+		int[] d = _toDate(timeZone,month, first, second);
+		if(d==null)return defaultValue;
+		return util.toDateTime(timeZone, d[0], d[1], d[2],0,0,0,0,defaultValue);
+	}
+	
+	private static int[] _toDate(TimeZone tz,int month, int first, int second) {
+		int YEAR=year(tz);
+		if(first<=12 && month<2){
+			if(util.daysInMonth(YEAR, first)>=second)
+				return new int[]{YEAR, first, second};
+			return new int[]{util.toYear(second), first, 1};
+		}
+		// first>12
+		if(second<=12){
+			if(util.daysInMonth(YEAR, second)>=first)
+				return new int[]{YEAR, second, first};
+			return new int[]{util.toYear(first), second, 1};
+		}
+		return null;
+	}
+	private static int year(TimeZone tz) {
+		return util.getYear(ThreadLocalPageContext.getTimeZone(tz),new DateTimeImpl());
+	}
+
+	private static DateTime toDate(int month, TimeZone timeZone,int first, int second, int third, DateTime defaultValue) {
+		int[] d = _toDate(month, first, second, third);
+		if(d==null) return defaultValue;
+		return util.toDateTime(timeZone, d[0], d[1], d[2], 0, 0, 0,0,defaultValue);
+	}
+		
+	private static int[] _toDate(int month, int first, int second, int third) {
+		if(first<=12){
+			if(month==2)
+				return new int[]{util.toYear(third), second, first};
+			if(util.daysInMonth(util.toYear(third), first)>=second)
+				return new int[]{util.toYear(third), first, second};
+			return null;
+		}
+		if(second>12)return null;
+		if(month==2){
+			int tmp=first;
+			first=third;
+			third=tmp;
+		}
+		if(util.daysInMonth(util.toYear(first), second)<third) {
+			if(util.daysInMonth(util.toYear(third), second)>=first)
+				return new int[]{util.toYear(third), second, first};
+			return null;
+		}
+		return new int[]{util.toYear(first), second, third};
+	}
+	
 	
 	public static DateTime toDateSimple(String str,boolean alsoNumbers, TimeZone timeZone, DateTime defaultValue) {
-
+		str=StringUtil.trim(str,"");
+		
+		
+		DateString ds=new DateString(str);
+		
+	// Timestamp
+		if(ds.isCurrent('{') && ds.isLast('}')) {
+			return _toDateSimpleTS(ds,timeZone,defaultValue);
+		}
+		DateTime res = parseDateTime(str,ds,alsoNumbers,timeZone,defaultValue);
+		if(alsoNumbers && res==defaultValue && Decision.isNumeric(str)) {
+	        double dbl = Caster.toDoubleValue(str,Double.NaN);
+	        if(!Double.isNaN(dbl))return util.toDateTime(dbl);
+	    }
+		return res;
+	}
+	
+	/*public static DateTime toDateSimple(String str,boolean alsoNumbers, TimeZone timeZone, DateTime defaultValue) {
+		
 		if(str==null || str.length()<3) {
 		    if(alsoNumbers) {
 		        double dbl = Caster.toDoubleValue(str,Double.NaN);
@@ -443,142 +698,41 @@ public final class DateCaster {
 		
 	// Timestamp
 		if(ds.isCurrent('{') && ds.isLast('}')) {
-		    // Date
-			// "^\\{d '([0-9]{2,4})-([0-9]{1,2})-([0-9]{1,2})'\\}$"
-			if(ds.fwIfNext('d')) {
-				if(!(ds.fwIfNext(' ') && ds.fwIfNext('\'')))return defaultValue;
-				ds.next();
-			// year
-				int year=ds.readDigits();
-				if(year==-1) return defaultValue;
-				
-				if(!ds.fwIfCurrent('-'))return defaultValue;
-			
-			// month
-				int month=ds.readDigits();
-				if(month==-1) return defaultValue;
-				
-				if(!ds.fwIfCurrent('-'))return defaultValue;
-			
-			// day
-				int day=ds.readDigits();
-				if(day==-1) return defaultValue;
-				
-				if(!(ds.fwIfCurrent('\'') && ds.fwIfCurrent('}')))return defaultValue;
-				
-				if(ds.isAfterLast()) return DateUtil.toDateTime(timeZone,year, month, day, defaultValue);//new DateTimeImpl(year,month,day);
-				
-				return defaultValue;
-				
-			}
-			
-			// DateTime
-			// "^\\{ts '([0-9]{1,4})-([0-9]{1,2})-([0-9]{1,2}) ([0-9]{2}):([0-9]{1,2}):([0-9]{2})'\\}$"
-			else if(ds.fwIfNext('t')) {
-				if(!(ds.fwIfNext('s') && ds.fwIfNext(' ') && ds.fwIfNext('\''))) {
-					
-				    // Time
-						if(!(ds.fwIfNext(' ') && ds.fwIfNext('\'')))return defaultValue;
-						ds.next();
-					// hour
-						int hour=ds.readDigits();
-						if(hour==-1) return defaultValue;
-						
-						if(!ds.fwIfCurrent(':'))return defaultValue;
-					
-					// minute
-						int minute=ds.readDigits();
-						if(minute==-1) return defaultValue;
-						
-						if(!ds.fwIfCurrent(':'))return defaultValue;
-					
-					// second
-						int second=ds.readDigits();
-						if(second==-1) return defaultValue;
-					
-
-		           // Milli Second
-		                int millis=0;
-		                
-		                if(ds.fwIfCurrent('.')){
-		                    millis=ds.readDigits();
-		                }
-						
-						
-						if(!(ds.fwIfCurrent('\'') && ds.fwIfCurrent('}')))return defaultValue;
-						
-						if(ds.isAfterLast())return new TimeImpl(
-								DateUtil.toLong(timeZone,1899,12,30,hour,minute,second,0)+millis,false
-								);
-						return defaultValue;
-				}
-				ds.next();
-			// year
-				int year=ds.readDigits();
-				if(year==-1) return defaultValue;
-				
-				if(!ds.fwIfCurrent('-'))return defaultValue;
-			
-			// month
-				int month=ds.readDigits();
-				if(month==-1) return defaultValue;
-				
-				if(!ds.fwIfCurrent('-'))return defaultValue;
-			
-			// day
-				int day=ds.readDigits();
-				if(day==-1) return defaultValue;
-				
-				if(!ds.fwIfCurrent(' '))return defaultValue;
-			
-			// hour
-				int hour=ds.readDigits();
-				if(hour==-1) return defaultValue;
-				
-				if(!ds.fwIfCurrent(':'))return defaultValue;
-			
-			// minute
-				int minute=ds.readDigits();
-				if(minute==-1) return defaultValue;
-				
-				if(!ds.fwIfCurrent(':'))return defaultValue;
-			
-			// second
-				int second=ds.readDigits();
-				if(second==-1) return defaultValue;
-				
-
-
-           // Milli Second
-                int millis=0;
-                
-                if(ds.fwIfCurrent('.')){
-                    millis=ds.readDigits();
-                }
-                
-                if(!(ds.fwIfCurrent('\'') && ds.fwIfCurrent('}')))return defaultValue;
-                
-				if(ds.isAfterLast())return DateUtil.toDateTime(timeZone,year, month, day,hour,minute,second,millis,defaultValue);//new DateTimeImpl(year,month,day,hour,minute,second);
-				return defaultValue;
-				
-			}
-			else return defaultValue;
+		    return _toDateSimpleTS(ds,timeZone,defaultValue);
 		}
+		DateTime r = parseDateTime(str,ds,alsoNumbers,timeZone,defaultValue);
+		if(r!=null)return r;
+		ds=new DateString(str);
+		
+		print.out(str);
+		
 	// Date start with int
-		else if(ds.isDigit()) {
+		if(ds.isDigit()) {
+			
+			
+			
 		    char sec=ds.charAt(1);
 		    char third=ds.charAt(2);
 		    // 16.10.2004 (02:15)?
 			if(sec=='.' || third=='.') {
+				
 				// DAY
 				int day=ds.readDigits();
-				if(day==-1) return toNumberDate(str,alsoNumbers,defaultValue);
+				if(day==-1){
+					day=ds.readMonthString();
+				}
+				if(day==-1) {
+					return toNumberDate(str,alsoNumbers,defaultValue);
+				}
 				
 				ds.next();
 				
 				// MONTH
 				int month=ds.readDigits();
-				if(month==-1) return toNumberDate(str,alsoNumbers,defaultValue);
+				if(month==-1) {
+					return toNumberDate(str,alsoNumbers,defaultValue);
+					
+				}
 				
 				if(!ds.fwIfCurrent('.'))return toNumberDate(str,alsoNumbers,defaultValue);
 				
@@ -666,12 +820,14 @@ public final class DateCaster {
             if(sec=='/' || third=='/') {
                 // Month
                 int month=ds.readDigits();
+                //if(month==-1)month=ds.readMonthString();
                 if(month==-1) return defaultValue;
                 
                 ds.next();
                 
                 // DAY
                 int day=ds.readDigits();
+                //if(day==-1)day=ds.readMonthString();
                 if(day==-1) return defaultValue;
                 
                 if(!ds.fwIfCurrent('/')){
@@ -782,12 +938,14 @@ public final class DateCaster {
             if(sec=='-' || third=='-') {
                 // DAY
                 int month=ds.readDigits();
+                //if(month==-1)month=ds.readMonthString();
                 if(month==-1) return defaultValue;
                 
                 ds.next();
                 
                 // MONTH
                 int day=ds.readDigits();
+                //if(day==-1)day=ds.readMonthString();
                 if(day==-1) return defaultValue;
                 
                 if(!ds.fwIfCurrent('-'))return defaultValue;
@@ -882,6 +1040,7 @@ public final class DateCaster {
     				
     				// MONTH
     				int month=ds.readDigits();
+    				//if(month==-1)month=ds.readMonthString();
     				if(month==-1) return defaultValue;
     				
     				if(!ds.fwIfCurrent('/')){
@@ -1057,6 +1216,7 @@ public final class DateCaster {
 				
 				// MONTH
 				int month=ds.readDigits();
+				//if(month==-1)month=ds.readMonthString();
 				if(month==-1) return defaultValue;
 				
 				if(!ds.fwIfCurrent('-'))return defaultValue;
@@ -1152,17 +1312,145 @@ public final class DateCaster {
 		else if(ds.isCurrent('-') || ds.isCurrent('+'))return toNumberDate(str,alsoNumbers,defaultValue);
 		return defaultValue;
 	}
+	*/
 	
 	
+
+	private static DateTime _toDateSimpleTS(DateString ds, TimeZone timeZone, DateTime defaultValue) {
+		// Date
+		// "^\\{d '([0-9]{2,4})-([0-9]{1,2})-([0-9]{1,2})'\\}$"
+		if(ds.fwIfNext('d')) {
+			if(!(ds.fwIfNext(' ') && ds.fwIfNext('\'')))return defaultValue;
+			ds.next();
+		// year
+			int year=ds.readDigits();
+			if(year==-1) return defaultValue;
+			
+			if(!ds.fwIfCurrent('-'))return defaultValue;
+		
+		// month
+			int month=ds.readDigits();
+			if(month==-1) return defaultValue;
+			
+			if(!ds.fwIfCurrent('-'))return defaultValue;
+		
+		// day
+			int day=ds.readDigits();
+			if(day==-1) return defaultValue;
+			
+			if(!(ds.fwIfCurrent('\'') && ds.fwIfCurrent('}')))return defaultValue;
+			
+			if(ds.isAfterLast()) return util.toDateTime(timeZone,year, month, day, 0, 0, 0, 0, defaultValue);//new DateTimeImpl(year,month,day);
+			
+			return defaultValue;
+			
+		}
+		
+		// DateTime
+		// "^\\{ts '([0-9]{1,4})-([0-9]{1,2})-([0-9]{1,2}) ([0-9]{2}):([0-9]{1,2}):([0-9]{2})'\\}$"
+		else if(ds.fwIfNext('t')) {
+			if(!(ds.fwIfNext('s') && ds.fwIfNext(' ') && ds.fwIfNext('\''))) {
+				
+			    // Time
+					if(!(ds.fwIfNext(' ') && ds.fwIfNext('\'')))return defaultValue;
+					ds.next();
+				// hour
+					int hour=ds.readDigits();
+					if(hour==-1) return defaultValue;
+					
+					if(!ds.fwIfCurrent(':'))return defaultValue;
+				
+				// minute
+					int minute=ds.readDigits();
+					if(minute==-1) return defaultValue;
+					
+					if(!ds.fwIfCurrent(':'))return defaultValue;
+				
+				// second
+					int second=ds.readDigits();
+					if(second==-1) return defaultValue;
+				
+
+	           // Milli Second
+	                int millis=0;
+	                
+	                if(ds.fwIfCurrent('.')){
+	                    millis=ds.readDigits();
+	                }
+					
+					
+					if(!(ds.fwIfCurrent('\'') && ds.fwIfCurrent('}')))return defaultValue;
+					
+					
+					
+					if(ds.isAfterLast()){
+						long time=util.toTime(timeZone,1899,12,30,hour,minute,second,millis,DEFAULT_VALUE);
+						if(time==DEFAULT_VALUE)return defaultValue;
+						return new TimeImpl(time,false);
+					}
+					return defaultValue;
+			}
+			ds.next();
+		// year
+			int year=ds.readDigits();
+			if(year==-1) return defaultValue;
+			
+			if(!ds.fwIfCurrent('-'))return defaultValue;
+		
+		// month
+			int month=ds.readDigits();
+			if(month==-1) return defaultValue;
+			
+			if(!ds.fwIfCurrent('-'))return defaultValue;
+		
+		// day
+			int day=ds.readDigits();
+			if(day==-1) return defaultValue;
+			
+			if(!ds.fwIfCurrent(' '))return defaultValue;
+		
+		// hour
+			int hour=ds.readDigits();
+			if(hour==-1) return defaultValue;
+			
+			if(!ds.fwIfCurrent(':'))return defaultValue;
+		
+		// minute
+			int minute=ds.readDigits();
+			if(minute==-1) return defaultValue;
+			
+			if(!ds.fwIfCurrent(':'))return defaultValue;
+		
+		// second
+			int second=ds.readDigits();
+			if(second==-1) return defaultValue;
+			
+
+
+       // Milli Second
+            int millis=0;
+            
+            if(ds.fwIfCurrent('.')){
+                millis=ds.readDigits();
+            }
+            
+            if(!(ds.fwIfCurrent('\'') && ds.fwIfCurrent('}')))return defaultValue;
+            if(ds.isAfterLast())return util.toDateTime(timeZone,year, month, day,hour,minute,second,millis,defaultValue);//new DateTimeImpl(year,month,day,hour,minute,second);
+			return defaultValue;
+			
+		}
+		else return defaultValue;
+	}
+
 	private static DateTime toNumberDate(String str,boolean alsoNumbers, DateTime defaultValue) {
 	    if(!alsoNumbers) return defaultValue;
 		double dbl = Caster.toDoubleValue(str,Double.NaN);
-		if(!Double.isNaN(dbl))return DateUtil.getDateTimeInstance(dbl);
+		if(!Double.isNaN(dbl))return util.toDateTime(dbl);
 	    return defaultValue;
 	}
 	
 
-	/**
+	/* *
 	 * reads a time marker (am/pm) on the end of a string
      * @param ds DateString to parse
 	 * @param year
@@ -1174,22 +1462,22 @@ public final class DateCaster {
 	 * @param millis 
 	 * @param defaultValue 
 	 * @return date Object with offset
-     */
+     * /
     private static DateTime readMarker(TimeZone timeZone, DateString ds, int year, int month, int day, int hour, int minute, int second, int millis,
             DateTime defaultValue) {
         
         if((ds.fwIfCurrent('A') || ds.fwIfCurrent('a')) && (ds.fwIfCurrent('M') || ds.fwIfCurrent('m')) && ds.isAfterLast()) {
-            return DateUtil.toDateTime(timeZone,year,month,day,hour,minute,second,millis,defaultValue);
+            return DateUtil.toDateTime(timeZone,year,month,day,hour,minute,second,millis,true,defaultValue);
             //new DateTimeImpl(year,month,day,hour,minute,second,millis);
     	}
         if((ds.fwIfCurrent('P') || ds.fwIfCurrent('p')) && (ds.fwIfCurrent('M') || ds.fwIfCurrent('m')) && ds.isAfterLast()) {
             
         	if(hour<12)
-                return DateUtil.toDateTime(timeZone,year,month,day,hour+12,minute,second,millis,defaultValue);//new DateTimeImpl(year,month,day,hour+12,minute,second,millis);
-            return DateUtil.toDateTime(timeZone,year,month,day,hour,minute,second,millis,defaultValue);//new DateTimeImpl(year,month,day,hour,minute,second,millis);
+                return DateUtil.toDateTime(timeZone,year,month,day,hour+12,minute,second,millis,true,defaultValue);//new DateTimeImpl(year,month,day,hour+12,minute,second,millis);
+            return DateUtil.toDateTime(timeZone,year,month,day,hour,minute,second,millis,true,defaultValue);//new DateTimeImpl(year,month,day,hour,minute,second,millis);
         }	
         return defaultValue;
-    }
+    }*/
 
     /**
 	 * reads a offset definition at the end of a date string
@@ -1200,8 +1488,10 @@ public final class DateCaster {
 	 * @return date Object with offset
      */
     private static DateTime readOffset(boolean isPlus,TimeZone timeZone,DateTime dt, DateString ds,DateTime defaultValue) {
-        if(timeZone==null) return defaultValue;
+    //timeZone=ThreadLocalPageContext.getTimeZone(timeZone);
+    if(timeZone==null) return defaultValue;
 	// HOUR
+	
 	int hour=ds.readDigits();
 	if(hour==-1) return defaultValue;
 	long offset = hour*60L*60L*1000L;
@@ -1212,7 +1502,7 @@ public final class DateCaster {
 		if(minute==-1) return defaultValue;
 		offset+=minute*60*1000;
 	}
-		
+	
 	if(ds.isAfterLast()) {
 		long time=dt.getTime();
 		time+=timeZone.getOffset(time);

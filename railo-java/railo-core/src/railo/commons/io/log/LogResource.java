@@ -182,4 +182,12 @@ public class LogResource implements Log {
     public void setLogLevel(int level) {
         this.logLevel=level;
     }
+    
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    public String toString(){
+    	return res.getAbsolutePath();
+    }
 }

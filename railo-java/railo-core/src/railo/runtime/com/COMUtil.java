@@ -1,5 +1,7 @@
 package railo.runtime.com;
 
+import java.lang.reflect.Method;
+
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Constants;
@@ -56,7 +58,26 @@ public final class COMUtil {
 		else if(type==Variant.VariantInt) return Constants.Integer(variant.toInt());
 		else if(type==Variant.VariantFloat) return new Float(variant.toFloat());
 		else if(type==Variant.VariantDouble) return new Double(variant.toDouble());
-		else if(type==Variant.VariantCurrency) return new Long(variant.toCurrency());
+		else if(type==Variant.VariantCurrency) {
+			long l;
+			try{
+				l=variant.toCurrency();
+			}
+			// this reflection allows support for old and new jacob version
+			catch(Throwable t){
+				try{
+					Method toCurrency = variant.getClass().getMethod("toCurrency", new Class[0]);
+					Object curreny = toCurrency.invoke(variant, new Object[0]);
+					
+					Method longValue = curreny.getClass().getMethod("longValue", new Class[0]);
+					l=Caster.toLongValue(longValue.invoke(curreny, new Object[0]),0);
+				}
+				catch(Throwable t2){
+					l=0;
+				}
+			}
+			return new Long(l);
+		}
 		else if(type==Variant.VariantObject) return variant.toEnumVariant();
 		else if(type==Variant.VariantDate) return new DateTimeImpl((long)variant.toDate(),true);
 		else if(type==Variant.VariantString) return variant.getString();

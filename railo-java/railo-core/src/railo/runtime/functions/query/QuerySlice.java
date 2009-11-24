@@ -4,7 +4,6 @@
 package railo.runtime.functions.query;
 
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;

@@ -38,6 +38,7 @@ import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebFactory;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
 import railo.runtime.op.CastImpl;
@@ -45,8 +46,7 @@ import railo.runtime.op.CreationImpl;
 import railo.runtime.op.DecisionImpl;
 import railo.runtime.op.ExceptonImpl;
 import railo.runtime.op.OperationImpl;
-import railo.runtime.query.QueryCache;
-import railo.runtime.query.QueryCacheImpl;
+import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.util.BlazeDSImpl;
 import railo.runtime.util.Cast;
 import railo.runtime.util.Creation;
@@ -68,7 +68,7 @@ import com.intergral.fusiondebug.server.FDControllerFactory;
 public final class CFMLEngineImpl implements CFMLEngine {
     
     
-    private static Map initContextes=new HashTable();
+	private static Map initContextes=new HashTable();
     private static Map contextes=new HashTable();
     private static ConfigServerImpl configServer=null;
     private static CFMLEngineImpl engine=null;
@@ -82,6 +82,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 
     private CFMLEngineImpl(CFMLEngineFactory factory) {
     	this.factory=factory; 
+    	
         SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"Start CFML Controller");
         Controler controler = new Controler(getConfigServerImpl(),initContextes,5*1000,controlerState);
         controler.setDaemon(true);
@@ -119,7 +120,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
     public void addServletConfig(ServletConfig config) throws ServletException {
     	String real=config.getServletContext().getRealPath("/");
         if(!initContextes.containsKey(real)) {             
-        	CFMLFactory jspFactory = loadJSPFactory(getConfigServerImpl(),config);
+        	CFMLFactory jspFactory = loadJSPFactory(getConfigServerImpl(),config,initContextes.size());
             initContextes.put(real,jspFactory);
         }        
     }
@@ -143,14 +144,15 @@ public final class CFMLEngineImpl implements CFMLEngine {
         return configServer;
     }
     
-    private  CFMLFactoryImpl loadJSPFactory(ConfigServerImpl configServer, ServletConfig sg) throws ServletException {
+    private  CFMLFactoryImpl loadJSPFactory(ConfigServerImpl configServer, ServletConfig sg, int countExistingContextes) throws ServletException {
     	try {
             // Load Config
-            Resource configDir=getConfigDirectory(sg);
+            Resource configDir=getConfigDirectory(sg,countExistingContextes);
             
-            QueryCache queryCache=new QueryCacheImpl();
+            QueryCacheSupport queryCache=QueryCacheSupport.getInstance(configServer);
             CFMLFactoryImpl factory=new CFMLFactoryImpl(this,queryCache);
             ConfigWebImpl config=ConfigWebFactory.newInstance(factory,configServer,configDir,sg);
+            queryCache.setConfigWeb(config);
             factory.setConfig(config);
             return factory;
         }
@@ -165,15 +167,24 @@ public final class CFMLEngineImpl implements CFMLEngine {
     /**
      * loads Configuration File from System, from init Parameter from web.xml
      * @param sg
+     * @param countExistingContextes 
      * @return return path to directory
      */
-    private Resource getConfigDirectory(ServletConfig sg) {
+    private Resource getConfigDirectory(ServletConfig sg, int countExistingContextes) throws PageServletException {
         ServletContext sc=sg.getServletContext();
         String strConfig=sg.getInitParameter("configuration");
         if(strConfig==null)strConfig=sg.getInitParameter("railo-web-directory");
         if(strConfig==null)strConfig="{web-root-directory}/WEB-INF/railo/";
         
+        // static path is not allowed
+        if(countExistingContextes>1 && strConfig!=null && strConfig.indexOf('{')==-1){
+        	String text="static path ["+strConfig+"] for servlet init param [railo-web-directory] is not allowed, path must use a web-context specific placeholder.";
+        	System.err.println(text);
+        	throw new PageServletException(new ApplicationException(text));
+        }
         strConfig=SystemUtil.parsePlaceHolder(strConfig,sc);
+        
+        
         
         ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
         Resource root = frp.getResource(sc.getRealPath("/"));
@@ -215,7 +226,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
                 factory=(CFMLFactoryImpl) o;
             }
             else {
-                factory=loadJSPFactory(cs,srvConfig);
+                factory=loadJSPFactory(cs,srvConfig,initContextes.size());
                 initContextes.put(real,factory);
             }
             contextes.put(real,factory);
@@ -244,6 +255,8 @@ public final class CFMLEngineImpl implements CFMLEngine {
     	
     	CFMLFactory factory=getCFMLFactory(servlet.getServletContext(), servlet.getServletConfig(), req);
         PageContext pc = factory.getRailoPageContext(servlet,req,rsp,null,false,-1,false);
+       
+        
         try {
         	pc.execute(req.getServletPath(),false);
         } 
@@ -253,7 +266,9 @@ public final class CFMLEngineImpl implements CFMLEngine {
         finally {
             factory.releaseRailoPageContext(pc);
             FDControllerFactory.notifyPageComplete();
-        }   
+        }  
+        
+        
         
     }
 
@@ -454,4 +469,9 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	public boolean allowRequestTimeout() {
 		return allowRequestTimeout;
 	}
+	
+	public boolean isRunning() {
+		return controlerState.toBooleanValue();
+	}
+
 }

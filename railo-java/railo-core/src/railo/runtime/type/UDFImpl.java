@@ -7,7 +7,6 @@ import java.io.ObjectOutput;
 
 import javax.servlet.jsp.tagext.BodyContent;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -58,12 +57,11 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 	private static final Key TYPE = 		KeyImpl.getInstance("type");
 	private static final Key DEFAULT = 		KeyImpl.getInstance("default");
 	private static final Key PARAMETERS = 	KeyImpl.getInstance("parameters");
+	private static final FunctionArgument[] EMPTY = new FunctionArgument[0];
 	
 	
 	
 	private ComponentImpl ownerComponent;
-	//private  InterfaceImpl interfaceImpl;
-	//private boolean componentMember;
 	private UDFProperties properties;
     
 
@@ -206,10 +204,6 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 		udf.ownerComponent=ownerComponent;
 		return udf;
 	}
-	
-	/*public UDFImpl duplicate(ComponentImpl component,boolean injected,int access) {
-		return new UDFImpl(properties,interfaceImpl,access,injected);
-	}*/
 
 	/**
      * @throws Throwable 
@@ -287,6 +281,11 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 		for(int i=0;i<arr.length;i++) {
 			newArgs.set(arr[i],values.get(arr[i],null));
 		}
+	}
+    
+
+	public static void argumentCollection(Struct values) {
+		argumentCollection(values,EMPTY);
 	}
 
 	public static void argumentCollection(Struct values, FunctionArgument[] funcArgs) {
@@ -586,29 +585,24 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 		return this;
 	}
 
-	/**
-	 * @return the componentImpl
-	 */
-	/*public ComponentImpl getComponentImpl() {
-		return componentImpl;
-	}*/
-	
-	/*public InterfaceImpl getInterfaceImpl() {
-		return interfaceImpl;
-	}*/
 
 	/**
 	 * @param componentImpl the componentImpl to set
 	 * @param injected 
 	 */
 	public void setOwnerComponent(ComponentImpl component) {
+		//print.err("setOwnerComponent("+this.hashCode()+"-"+component.hashCode()+"):"+component.getPage().getPageSource().getDisplayPath());
 		this.ownerComponent = component;
 	}
 	
-
-	/*public void setInterfaceImpl(InterfaceImpl interfaceImpl) {
-		this.interfaceImpl = interfaceImpl;
-	}*/
+	/**
+	 * @see railo.runtime.type.UDF#getOwnerComponent()
+	// FUTURE deprecated
+	 */
+	public Component getOwnerComponent() {
+		return ownerComponent;//+++
+	}
+	
 
 	public String toString() {
 		StringBuffer sb=new StringBuffer(properties.functionName);
@@ -653,14 +647,7 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 		return duplicate();
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getOwnerComponent()
-	// FUTURE deprecated
-	 */
-	public Component getOwnerComponent() {
-		///return ThreadLocalPageContext.get().getActiveComponent();
-		return ownerComponent;//+++
-	}
+
 	
 	/**
      * @see railo.runtime.type.UDF#getFunctionArguments()

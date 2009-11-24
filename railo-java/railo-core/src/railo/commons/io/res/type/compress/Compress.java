@@ -63,7 +63,6 @@ public final class Compress {
 	 * @return
 	 */
 	public static Compress getInstance(Resource zipFile, int format, boolean caseSensitive) {
-		//print.out("zip:"+zipFile);
 		Compress compress=(Compress) files.get(zipFile.getPath());
 		if(compress==null) {
 			compress=new Compress(zipFile,format,caseSensitive);
@@ -90,8 +89,6 @@ public final class Compress {
 	
 
 	private void _load() {
-
-		//print.out("load:"+ffile);
 		if(ffile.exists()) {
 			try {
 				CompressUtil.extract(format, ffile, root);
@@ -112,7 +109,6 @@ public final class Compress {
 			
 			lastCheck=t;
 			t=ffile.lastModified();
-			//print.out(t+"+"+lastMod+"="+(t-lastMod));
 			if((lastMod-t)>10 || (t-lastMod)>10){
 				lastMod=t;
 				load(caseSensitive);
@@ -129,17 +125,12 @@ public final class Compress {
 	}
 
 	public synchronized void synchronize(boolean async) {
-		//print.ln("++++++++++sync "+async);
 		if(!async) {
-			//print.out("not async");
 			doSynchronize();
-			//print.ln("sync done");
 			return;
 		}
 		syn=System.currentTimeMillis();
 		if(synchronizer==null || !synchronizer.isRunning()) {
-			//print.ln("++++++++++ new sync "+this);
-			
 			synchronizer=new Synchronizer(this,100);
 			synchronizer.start();
 		}

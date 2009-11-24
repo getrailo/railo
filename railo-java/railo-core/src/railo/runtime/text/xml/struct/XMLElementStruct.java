@@ -5,11 +5,13 @@ import java.lang.reflect.Method;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.TypeInfo;
 
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Collection;
 import railo.runtime.type.util.ArrayUtil;
 
 
@@ -193,5 +195,21 @@ public class XMLElementStruct extends XMLNodeStruct implements Element {
 	 */
 	public Element getElement() {
 		return element;
+	}
+	
+	/**
+	 *
+	 * @see railo.runtime.type.Collection#duplicate(boolean)
+	 */
+	public Collection duplicate(boolean deepCopy) {
+		return new XMLElementStruct((Element)element.cloneNode(deepCopy),caseSensitive);
+	}
+	
+
+	/**
+	 * @see org.w3c.dom.Node#cloneNode(boolean)
+	 */
+	public Node cloneNode(boolean deep) {
+		return new XMLElementStruct((Element)element.cloneNode(deep),caseSensitive);
 	}
 }

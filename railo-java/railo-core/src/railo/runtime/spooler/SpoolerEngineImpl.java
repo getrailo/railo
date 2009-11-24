@@ -119,7 +119,6 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		ObjectOutputStream oos=null;
 		Resource persis = getFile(task);
 		if(persis.exists()) persis.delete();
-        //print.err(task.getClass().getName());
         try {
 	        oos = new ObjectOutputStream(persis.getOutputStream());
 	        oos.writeObject(task);

@@ -244,46 +244,6 @@ public final class StringUtil {
 		return rtn.toString();
 	}
 	
-	/*public static String toJavaIdentifier(String str) {
-		StringBuffer rtn=new StringBuffer();
-		char[] chars=str.toCharArray();
-		boolean doCorrect=true;
-		for(int i=0;i<chars.length;i++) {
-			char c=chars[i];
-			if(i==0 && (c>='0' && c<='9'))rtn.append("_"+c);
-			else if((c>='a' && c<='z') ||(c>='A' && c<='Z') ||(c>='0' && c<='9') || c=='$')
-				rtn.append(c);
-			else {	
-			    doCorrect=false;
-				rtn.append("_"+toHex(c));
-				//if(!(c=='.' && str.substring(i).equals(".cfm")))
-				//changes+=(c*(i+1));
-			}
-		}
-		
-		if(doCorrect)return correctReservedWord(rtn.toString());
-		return rtn.toString();
-	}
-	private static String toHex(char c) {
-		return Integer.toHexString(c);
-	}
-
-	public static void main(String[] args) throws Exception {
-		print(""+((char)1));
-		print("Û");
-		print("Š");
-		print("_2sali");
-	}
-	
-	
-	
-	private static void print(String str) throws Exception {
-		print.out("++++");
-		print.out((str));
-		print.out(toJavaIdentifier(str));
-		//print.out(URLEncoder.encode(str));
-		//print.out(URLDecoder.decode(URLEncoder.encode(str)));
-	}*/
 
 	/**
 	 * if given string is a keyword it will be replaced with none keyword

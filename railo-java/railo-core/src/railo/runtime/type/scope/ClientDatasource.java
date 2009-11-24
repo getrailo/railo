@@ -128,7 +128,7 @@ public final class ClientDatasource extends ClientSupport {
 		//int pid=1000;
 		DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
 		try {
-			dc=pool.getDatasourceConnection(config.getDataSource(datasourceName),null,null);
+			dc=pool.getDatasourceConnection(pc,config.getDataSource(datasourceName),null,null);
 			query = new QueryImpl(dc,sqlSelect,-1,-1,-1,"query");
 		}
 	    catch (DatabaseException de) {
@@ -167,7 +167,7 @@ public final class ClientDatasource extends ClientSupport {
 		//int pid=1000;//pc.getId()+10000;
 		DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
 		try {
-			dc=pool.getDatasourceConnection(config.getDataSource(datasourceName),null,null);
+			dc=pool.getDatasourceConnection(pc,config.getDataSource(datasourceName),null,null);
 			int recordsAffected = executeUpdate(dc.getConnection(),"update railo_client_data set data=? where cfid=? and name=?",false);
 		    if(recordsAffected>1) {
 		    	executeUpdate(dc.getConnection(),"delete from railo_client_data where cfid=? and name=?",true);

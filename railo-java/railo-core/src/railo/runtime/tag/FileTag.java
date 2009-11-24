@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.ModeUtil;
 import railo.commons.io.SystemUtil;
@@ -410,7 +409,7 @@ public final class FileTag extends TagImpl {
             IOUtil.copy(source,destination);			
 		}
 		catch(IOException e) {
-            throw new ApplicationException("can't copy file",e.getMessage());
+            throw new ApplicationException("can't copy file ["+source+"] to ["+destination+"]",e.getMessage());
 		}
         setMode(destination);
         setAttributes(destination);
@@ -514,15 +513,7 @@ public final class FileTag extends TagImpl {
         				file,
         				false);
         	}
-        	/*else if(output instanceof byte[])	{
-        		IOUtil.copy(
-        				new ByteArrayInputStream((byte[])output), 
-        				file,
-        				true);
-        	}*/
         	else if(Decision.isCastableToBinary(output,false))	{
-        		//print.out(output.getClass().getName());
-        		
         		IOUtil.copy(
         				new ByteArrayInputStream(Caster.toBinary(output)), 
         				file,
@@ -623,7 +614,7 @@ public final class FileTag extends TagImpl {
 		sct.setEL("name",file.getName());
 		sct.setEL("size",new Long(file.length()));
 		sct.setEL("type",file.isDirectory()?"Dir":"File");
-		sct.setEL("dateLastModified",new DateTimeImpl(file.lastModified(),false));
+		sct.setEL("dateLastModified",new DateTimeImpl(pageContext,file.lastModified(),false));
 		sct.setEL("attributes",getFileAttribute(file));
 		if(SystemUtil.isUnix())sct.setEL("mode",new ModeObjectWrap(file));
         

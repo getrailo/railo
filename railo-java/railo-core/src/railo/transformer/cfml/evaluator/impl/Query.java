@@ -41,17 +41,6 @@ public final class Query extends EvaluatorSupport {
 				if(!(e instanceof Literal)) {
 					Expression expr=removeCastString(e);
 					
-					/* / do not preserve UDF return value
-					print.ln(expr.getClass().getName());
-					if(expr instanceof CastString) {
-						CastString cs = (CastString)expr;
-						Expression child = cs.getExpr();
-						if(child instanceof Variable) {
-							if(((Variable)child).getLastMember() instanceof UDF)
-								continue;
-						}
-					}*/
-					
 					if(expr instanceof Variable) {
 						// do not preserve BIF PreserveSingleQuotes return value
 						Member member = ((Variable)expr).getFirstMember();

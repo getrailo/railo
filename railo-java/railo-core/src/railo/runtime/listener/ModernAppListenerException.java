@@ -58,7 +58,6 @@ public final class ModernAppListenerException extends PageException {
 	 * @see railo.runtime.exp.IPageException#getCatchBlock()
 	 */
 	public Struct getCatchBlock() {
-		// TLPC
 		return getCatchBlock(ThreadLocalPageContext.get());
 	}
 	
@@ -260,6 +259,13 @@ public final class ModernAppListenerException extends PageException {
 	 */
 	public void printStackTrace(PrintWriter s) {
 		rootCause.printStackTrace(s);
+	}
+
+	/**
+	 * @see railo.runtime.exp.PageExceptionBox#getPageException()
+	 */
+	public PageException getPageException() {
+		return rootCause;
 	}
 
 }

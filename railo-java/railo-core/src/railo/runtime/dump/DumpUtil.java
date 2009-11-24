@@ -63,7 +63,7 @@ public class DumpUtil {
 			Iterator it=map.keySet().iterator();
 
 			DumpTable table = new DumpTable("#ffb200","#ffcc00","#000000");
-			table.setTitle("Map ("+o.getClass().getName()+")");
+			table.setTitle("Map ("+Caster.toClassName(o)+")");
 			
 			while(it.hasNext()) {
 				Object next=it.next();
@@ -115,7 +115,7 @@ public class DumpUtil {
 		else if(o instanceof StringBuffer) {
 			DumpTable dt=(DumpTable)toDumpData(o.toString(), pageContext, maxlevel, props);
 			if(StringUtil.isEmpty(dt.getTitle()))
-				dt.setTitle(o.getClass().getName());
+				dt.setTitle(Caster.toClassName(o));
 			return dt;
 		}
 		// String
@@ -134,13 +134,8 @@ public class DumpUtil {
 					table.appendRow(1,new SimpleDumpData("raw"),new SimpleDumpData(str));
 					return table;
 				}
-				catch(Throwable t) {
-					
-				}
-				
+				catch(Throwable t) {}
 			}
-			
-			
 			DumpTable table = new DumpTable("#ff4400","#ff954f","#000000");
 			table.appendRow(1,new SimpleDumpData("string"),new SimpleDumpData(str));
 			return table;
@@ -156,7 +151,7 @@ public class DumpUtil {
 			try {
 				DumpData dd = new QueryImpl((ResultSet)o,"query").toDumpData(pageContext,maxlevel,props);
 				if(dd instanceof DumpTable)
-					((DumpTable)dd).setTitle(o.getClass().getName());
+					((DumpTable)dd).setTitle(Caster.toClassName(o));
 				return dd;
 			} 
 			catch (PageException e) {
@@ -274,6 +269,15 @@ public class DumpUtil {
 		    }
 		    return htmlBox;
 		}
+		
+		// Collection.Key
+		else if(o instanceof Collection.Key) {
+			Collection.Key key=(Collection.Key) o;
+			DumpTable table = new DumpTable("#ff4400","#ff954f","#000000");
+			table.appendRow(1,new SimpleDumpData("Collection.Key"),new SimpleDumpData(key.getString()));
+			return table;
+		}
+		
 		// reflect
 		//else {
 			DumpTable table = new DumpTable("#90776E","#B2A49B","#000000");
@@ -284,7 +288,7 @@ public class DumpUtil {
 			int pos=fullClassName.lastIndexOf('.');
 			String className=pos==-1?fullClassName:fullClassName.substring(pos+1);
 			
-			table.setTitle("Class "+className);
+			table.setTitle(className);
 			table.appendRow(1,new SimpleDumpData("class"),new SimpleDumpData(fullClassName));
 			
 			// Fields
@@ -295,7 +299,7 @@ public class DumpUtil {
 				Field field = fields[i];
 				DumpData value;
 				try {//print.out(o+":"+maxlevel);
-					value=new SimpleDumpData("");//DumpUtil.toDumpData(field.get(o), pageContext,maxlevel);
+					value=new SimpleDumpData(Caster.toString(field.get(o), ""));
 				} 
 				catch (Exception e) {
 					value=new SimpleDumpData("");
@@ -305,15 +309,51 @@ public class DumpUtil {
 			if(fields.length>0)table.appendRow(1,new SimpleDumpData("fields"),fieldDump);
 			
 			// Methods
+			StringBuffer objMethods=new StringBuffer();
 			Method[] methods=clazz.getMethods();
 			DumpTable methDump = new DumpTable("#90776E","#B2A49B","#000000");
-			methDump.appendRow(7,new SimpleDumpData("name"),new SimpleDumpData("pattern"));
+			methDump.appendRow(7,new SimpleDumpData("return"),new SimpleDumpData("interface"),new SimpleDumpData("exceptions"));
 			for(int i=0;i<methods.length;i++) {
 				Method method = methods[i];
 				
-				methDump.appendRow(0,new SimpleDumpData(method.getName()),new SimpleDumpData(method.toString()));
+				if(Object.class==method.getDeclaringClass()) {
+					if(objMethods.length()>0)objMethods.append(", ");
+					objMethods.append(method.getName());
+					continue;
+				}
+				
+				// exceptions
+				StringBuffer sbExp=new StringBuffer();
+				Class[] exceptions = method.getExceptionTypes();
+				for(int p=0;p<exceptions.length;p++){
+					if(p>0)sbExp.append("\n");
+					sbExp.append(Caster.toClassName(exceptions[p]));
+				}
+				
+				// parameters
+				StringBuffer sbParams=new StringBuffer(method.getName());
+				sbParams.append('(');
+				Class[] parameters = method.getParameterTypes();
+				for(int p=0;p<parameters.length;p++){
+					if(p>0)sbParams.append(", ");
+					sbParams.append(Caster.toClassName(parameters[p]));
+				}
+				sbParams.append(')');
+				
+				methDump.appendRow(0,
+						new SimpleDumpData(Caster.toClassName(method.getReturnType())),
+
+						new SimpleDumpData(sbParams.toString()),
+						new SimpleDumpData(sbExp.toString())
+				);
 			}
 			if(methods.length>0)table.appendRow(1,new SimpleDumpData("methods"),methDump);
+			
+			DumpTable inherited = new DumpTable("#90776E","#B2A49B","#000000");
+			inherited.appendRow(7,new SimpleDumpData("Methods inherited from java.lang.Object"));
+			inherited.appendRow(0,new SimpleDumpData(objMethods.toString()));
+			table.appendRow(1,new SimpleDumpData(""),inherited);
+			
 			
 			return table;
 		//}

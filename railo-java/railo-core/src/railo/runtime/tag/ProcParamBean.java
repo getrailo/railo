@@ -132,7 +132,7 @@ public class ProcParamBean implements SQLItem {
 		return ppb;
 	}
 	public Object getValueForCF() throws PageException {
-		return SQLCaster.toCFType(this);
+		return SQLCaster.toCFTypex(this);
 	}
 	public boolean isNulls() {
 		return getValue()==null || 

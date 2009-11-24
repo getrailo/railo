@@ -1,13 +1,12 @@
 package railo.runtime.db;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import railo.commons.collections.HashTable;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.commons.math.MathUtil;
 import railo.runtime.PageContext;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -60,8 +59,7 @@ public final class QoQ {
     public QueryImpl execute(PageContext pc,SQL sql, Selects selects,int maxrows) throws PageException {
     	Column[] orders=selects.getOrderbys();
     	Select[] arrSelects = selects.getSelects();
-    	//if(arrSelects.length!=1) throw new DatabaseException("only one SQL Statement allowed at time",null,null);
-		
+    	
     	
     	QueryImpl target=new QueryImpl(new String[0],0,"query");
 		target.setSql(sql);
@@ -119,7 +117,7 @@ public final class QoQ {
 		Expression[] expSelects = select.getSelects();
 		int selCount=expSelects.length;
 
-		Map selects=new HashTable();
+		Map selects=new HashMap();
 		Key[] keys;
 	// headers
 		for(int i=0;i<selCount;i++) {
@@ -149,23 +147,30 @@ public final class QoQ {
 		//Column[] orders = select.getOrderbys();
 		Operation where = select.getWhere();
 		
-		boolean hasMaxrow=maxrows>-1 && !hasOrders;//(orders==null || orders.length==0);
+		boolean hasMaxrow=maxrows>-1 && !hasOrders;
+		
+		// get target columns
+		QueryColumn[] trgColumns=new QueryColumn[headers.length];
+		Object[] trgValues=new Object[headers.length];
+		for(int cell=0;cell<headers.length;cell++){
+			trgColumns[cell]=target.getColumn(headers[cell]);
+			trgValues[cell]=selects.get(headers[cell]);
+		}
+		
 		for(int row=1;row<=recCount;row++) {
 		    sql.setPosition(0);
 			if(hasMaxrow && maxrows<=target.getRecordcount())break;
 		    boolean useRow=where==null || Caster.toBooleanValue(executeExp(pc,sql,qr, where, row));
 		    if(useRow) {
-			    
-				target.addRow(1);
-				for(int cell=0;cell<headers.length;cell++){
-					Object value = selects.get(headers[cell]);
-
-						target.setAt(
+			    target.addRow(1);
+			    for(int cell=0;cell<headers.length;cell++){
+					//Object value = selects.get(headers[cell]);
+					trgColumns[cell].set(target.getRecordcount(), getValue(pc,sql,qr,row,headers[cell],trgValues[cell]));
+						/*target.setAt(
 							headers[cell],
 							target.getRecordcount(),
-							getValue(pc,sql,qr,row,headers[cell],value)
-							//executeExp(qr, selects[cell].getExpression(),row)
-						);
+							getValue(pc,sql,qr,row,headers[cell],trgValues[cell])
+						);*/
 				}
 			}
 		}
@@ -180,7 +185,7 @@ public final class QoQ {
 
 	private void queryAddColumn(QueryImpl query, String column) throws DatabaseException {
 		if(!query.containsKey(column)) {
-			query.addColumn(column, array("",query.getRecordcount()));
+			query.addColumn(column, new ArrayImpl());
 		}
 	}
 
@@ -340,27 +345,29 @@ public final class QoQ {
 		
 		if(operation instanceof Operation2) {
 			Operation2 op2=(Operation2) operation;
-			int o = op2.getOperator();
 			
-			if(o==Operation.OPERATION2_AND) 		return executeAnd(pc,sql,qr,op2,row);
-			if(o==Operation.OPERATION2_OR) 			return executeOr(pc,sql,qr,op2,row);
-			if(o==Operation.OPERATION2_XOR) 		return executeXor(pc,sql,qr,op2,row);
-			
-			else if(o==Operation.OPERATION2_EQ) 	return executeEQ(pc,sql,qr,op2,row);
-			else if(o==Operation.OPERATION2_NEQ)	return executeNEQ(pc,sql,qr,op2,row);
-			else if(o==Operation.OPERATION2_LTGT)	return executeNEQ(pc,sql,qr,op2,row);
-			else if(o==Operation.OPERATION2_LT)		return executeLT(pc,sql,qr,op2,row);
-			else if(o==Operation.OPERATION2_LTE)	return executeLTE(pc,sql,qr,op2,row);
-			else if(o==Operation.OPERATION2_GT) 	return executeGT(pc,sql,qr,op2,row);
-			else if(o==Operation.OPERATION2_GTE)	return executeGTE(pc,sql,qr,op2,row);
-			else if(o==Operation.OPERATION2_MINUS)	return executeMinus(pc,sql,qr,op2,row);
-			else if(o==Operation.OPERATION2_PLUS)	return executePlus(pc,sql,qr,op2,row);
-			else if(o==Operation.OPERATION2_DIVIDE) return executeDivide(pc,sql,qr,op2,row);
-			else if(o==Operation.OPERATION2_MULTIPLY)return executeMultiply(pc,sql,qr,op2,row);
-			else if(o==Operation.OPERATION2_EXP)	return executeExponent(pc,sql,qr,op2,row);
-			else if(o==Operation.OPERATION2_LIKE)	return Caster.toBoolean(executeLike(pc,sql,qr,op2,row));
-			else if(o==Operation.OPERATION2_NOT_LIKE)return Caster.toBoolean(!executeLike(pc,sql,qr,op2,row));
-			else if(o==Operation.OPERATION2_MOD)	return executeMod(pc,sql,qr,op2,row);
+			switch(op2.getOperator()){
+			case Operation.OPERATION2_AND:		return executeAnd(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_OR:		return executeOr(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_XOR:		return executeXor(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_EQ:		return executeEQ(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_NEQ:		return executeNEQ(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_LTGT:		return executeNEQ(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_LT:		return executeLT(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_LTE:		return executeLTE(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_GT:		return executeGT(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_GTE:		return executeGTE(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_MINUS:	return executeMinus(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_PLUS:		return executePlus(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_DIVIDE:	return executeDivide(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_MULTIPLY:	return executeMultiply(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_EXP:		return executeExponent(pc,sql,qr,op2,row);
+			case Operation.OPERATION2_LIKE:		return Caster.toBoolean(executeLike(pc,sql,qr,op2,row));
+			case Operation.OPERATION2_NOT_LIKE:	return Caster.toBoolean(!executeLike(pc,sql,qr,op2,row));
+			case Operation.OPERATION2_MOD:		return executeMod(pc,sql,qr,op2,row);
+			}
+				
+				
 		}
 
 		if(operation instanceof Operation1) {
@@ -419,7 +426,7 @@ public final class QoQ {
             case 'c':
                 if(op.equals("ceiling"))return new Double(Math.ceil(Caster.toDoubleValue(value)));
                 if(op.equals("cos"))    return new Double(Math.cos(Caster.toDoubleValue(value)));
-                if(op.equals("cast"))    return Caster.castTo(ThreadLocalPageContext.get(), CFTypes.toShort(operators[0].getAlias(),CFTypes.TYPE_UNKNOW),operators[0].getAlias(), value);
+                if(op.equals("cast"))    return Caster.castTo(pc, CFTypes.toShort(operators[0].getAlias(),CFTypes.TYPE_UNKNOW),operators[0].getAlias(), value);
             break;
             case 'e':
                 if(op.equals("exp"))    return new Double(Math.exp(Caster.toDoubleValue(value)));
@@ -902,12 +909,13 @@ public final class QoQ {
 	 * @throws PageException
 	 */
 	private Object executeColumn(SQL sql,Query qr, Column column, int row) throws PageException {
-	    if(column.getColumn().equals("?")) {
+		if(column.getColumn().equals("?")) {
 		    int pos=column.getColumnIndex();
 		    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statment",null,sql,null);
 		    return sql.getItems()[pos].getValueForCF();
 		}
-        return qr.getAt(column.getColumn(),row);		
+		return column.getValue(qr, row);
+		//return qr.getAt(column.getColumn(),row);	
 	}
 	
 	private Object executeColumn(SQL sql,Query qr, Column column, int row, Object defaultValue) throws PageException {
@@ -916,6 +924,6 @@ public final class QoQ {
 		    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statment",null,sql,null);
 		    return sql.getItems()[pos].getValueForCF();
 		}
-        return qr.getAt(column.getColumn(),row,defaultValue);		
+		return column.getValue(qr, row,defaultValue);	
 	}
 }

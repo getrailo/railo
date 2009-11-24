@@ -184,18 +184,27 @@ public abstract class PageExceptionImpl extends PageException {
 		return new CatchBlock(pc,this);
 	}
 	
-	Array getTagContext(PageContext pc) {
-		
+	public Array getTagContext(PageContext pc) {
 		if(isInitTagContext) return tagContext;
 		_getTagContext(pc,tagContext,this,sources);
 		isInitTagContext=true;
-		
 		return tagContext;
-		
 	}
 	
+
+	public static Array getTagContext(PageContext pc,StackTraceElement[] traces) {
+		ArrayImpl tagContext=new ArrayImpl();
+		_getTagContext(pc,tagContext,traces,new LinkedList());
+		return tagContext;
+	}
+	
+
 	private static void _getTagContext(PageContext pc, ArrayImpl tagContext, Throwable t, LinkedList sources) {
-		StackTraceElement[] traces = getStackTraceElements(t);
+		_getTagContext(pc, tagContext, getStackTraceElements(t), sources);
+	}
+	
+	private static void _getTagContext(PageContext pc, ArrayImpl tagContext, StackTraceElement[] traces, LinkedList sources) {
+		//StackTraceElement[] traces = getStackTraceElements(t);
 		
 		int line=0;
 		String template="",tlast;
@@ -221,9 +230,7 @@ public abstract class PageExceptionImpl extends PageException {
 					if(ps!=null && trace.getClassName().equals(ps.getFullClassName())) {
 						if(ps.physcalExists())
 							content=IOUtil.toStringArray(IOUtil.getReader(ps.getPhyscalFile(), pc.getConfig().getTemplateCharset()));
-						//print.out(template);
 						template=ps.getDisplayPath();
-						//print.out(template);
 					}
 				}	
 			} 
@@ -263,6 +270,27 @@ public abstract class PageExceptionImpl extends PageException {
 			tagContext.appendEL(item);
 		}
 	}
+	
+	
+	
+	public int getPageDeep() {
+		StackTraceElement[] traces = getStackTraceElements(this);
+		
+		String template="",tlast;
+		StackTraceElement trace=null;
+		int index=0;
+		for(int i=0;i<traces.length;i++) {
+			trace=traces[i];
+			tlast=template;
+			template=trace.getFileName();
+			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template).equals("java")) continue;
+			if(!StringUtil.toStringEmptyIfNull(tlast).equals(template))index++;
+			
+		}
+		return index;
+	}
+	
+	
 	/**
      * @see railo.runtime.exp.PageException#getErrorBlock(railo.runtime.PageContext, railo.runtime.err.ErrorPage)
      */
@@ -530,7 +558,7 @@ public abstract class PageExceptionImpl extends PageException {
 	 * @param key
 	 * @param value
 	 */
-	protected void setAdditional(String key, Object value) {
+	public void setAdditional(String key, Object value) {
 		additional.setEL(KeyImpl.init(key),value);
 	}
 	

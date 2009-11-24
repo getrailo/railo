@@ -65,18 +65,18 @@ public interface Scheduler {
 
     /**
      * execute all containing tasks
+     * @deprecated task are self controlled no longer controlled by a controller thread
      */
     public abstract void execute();
 
     /**
      * @return Returns the nextExecutionTime.
+     * @deprecated task are self controlled no longer controlled by a controller thread
      */
     public abstract long getNextExecutionTime();
 
     /**
      * @return Returns the logFile.
      */
-    public abstract LogAndSource getLogger();
-
-	
+    public abstract LogAndSource getLogger();	
 }

@@ -276,7 +276,7 @@ public class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 					throw new ExpressionException("You can only Append an Array with "+(dimension-1)+" Dimension","aray has wron dimension, now is "+(((Array)value).getDimension())+ " but it must be "+(dimension-1));
 			}
 			else 
-				throw new ExpressionException("You can only Append an Array with "+(dimension-1)+" Dimension","now is a object of type "+value.getClass().getName());
+				throw new ExpressionException("You can only Append an Array with "+(dimension-1)+" Dimension","now is a object of type "+Caster.toClassName(value));
 		}
 		return value;
 	}

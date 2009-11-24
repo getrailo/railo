@@ -1,10 +1,10 @@
 package railo.runtime;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import railo.commons.collections.HashTable;
 import railo.commons.collections.LongKeyList;
 import railo.commons.lang.SystemOut;
 import railo.runtime.config.ConfigImpl;
@@ -15,13 +15,14 @@ import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.Dumpable;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.ArrayUtil;
 
 /**
  * pool to handle pages
  */
 public final class PageSourcePool implements Dumpable {
 	
-	private Map pageSources=new HashMap();
+	private Map pageSources=new HashTable();
 	//timeout timeout for files
 	private long timeout;
 	//max size of the pool cache
@@ -75,7 +76,7 @@ public final class PageSourcePool implements Dumpable {
 	 * @return returns a array of all keys in the page pool
 	 */
 	public Object[] keys() {
-		return pageSources.keySet().toArray();
+		return ArrayUtil.keys(pageSources);
 	}
 	
 	/**
@@ -151,11 +152,13 @@ public final class PageSourcePool implements Dumpable {
 	}
 	         
 	public void clearPages() {
-		Iterator it = this.pageSources.entrySet().iterator();
-		PageSourceImpl entry;
-		while(it.hasNext()) {
-			entry = ((PageSourceImpl) ((Entry) it.next()).getValue());
-			entry.clear();
+		synchronized(pageSources){
+			Iterator it = this.pageSources.entrySet().iterator();
+			PageSourceImpl entry;
+			while(it.hasNext()) {
+				entry = ((PageSourceImpl) ((Entry) it.next()).getValue());
+				entry.clear();
+			}
 		}
 	}
 	

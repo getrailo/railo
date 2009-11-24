@@ -58,7 +58,7 @@ public class HTMLDumpWriter implements DumpWriter {
 		if(context==null) context="";
 		//boolean isSetContext=false;
 		
-		writer.write("<table"+(table.getWidth()!=null?" width=\""+table.getWidth()+"\"":"")+""+(table.getHeight()!=null?" height=\""+table.getHeight()+"\"":"")+" cellpadding=\"3\" cellspacing=\"1\" style=\"font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;font-size : 11;color :"+table.getFontColor()+" ;empty-cells:show;\">");
+		writer.write("<table"+(table.getWidth()!=null?" width=\""+table.getWidth()+"\"":"")+""+(table.getHeight()!=null?" height=\""+table.getHeight()+"\"":"")+" cellpadding=\"3\" cellspacing=\"1\" style=\"font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;font-size : 11px;color :"+table.getFontColor()+" ;empty-cells:show;\">");
 		
 		// header
 		if(!StringUtil.isEmpty(table.getTitle())) {

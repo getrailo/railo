@@ -8,6 +8,7 @@ import railo.runtime.PageContext;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 
 
@@ -107,10 +108,14 @@ public final class DatabaseException extends PageExceptionImpl {
 	 */
 	public Struct getCatchBlock(PageContext pc) {
 	    String strSQL=sql==null?"":sql.toString();
-	    
+	    if(StringUtil.isEmpty(strSQL))strSQL=Caster.toString(getAdditional().get("SQL", ""),"");
+		
+	    String datasourceName=datasource==null?"":datasource.getName();
+		if(StringUtil.isEmpty(datasourceName))datasourceName=Caster.toString(getAdditional().get("DataSource", ""),"");
+		
 		Struct sct = super.getCatchBlock(pc);
 		sct.setEL("NativeErrorCode",new Double(errorcode));
-		sct.setEL("DataSource",datasource==null?"":datasource.getName());
+		sct.setEL("DataSource",datasourceName);
 		sct.setEL("SQLState",sqlstate);
 		sct.setEL("Sql",strSQL);
 		sct.setEL("queryError",strSQL);

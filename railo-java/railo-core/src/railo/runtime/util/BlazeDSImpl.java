@@ -2,6 +2,7 @@ package railo.runtime.util;
 
 import railo.runtime.exp.PageException;
 import railo.runtime.net.amf.CFMLProxy;
+import railo.runtime.op.Caster;
 import flex.messaging.FlexContext;
 import flex.messaging.MessageException;
 import flex.messaging.config.ConfigMap;
@@ -44,7 +45,7 @@ public class BlazeDSImpl implements BlazeDS {
         	e.printStackTrace();// TODO
         	String msg=e.getMessage();
         	
-        	MessageException me = new MessageException(e.getClass().getName() + " : " + msg);
+        	MessageException me = new MessageException(Caster.toClassName(e) + " : " + msg);
         	me.setRootCause(e);
             me.setCode("Server.Processing");
             me.setRootCause(e);

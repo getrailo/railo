@@ -16,7 +16,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
-import javax.wsdl.Types;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
@@ -33,7 +32,6 @@ import org.apache.axis.MessageContext;
 import org.apache.axis.SimpleChain;
 import org.apache.axis.SimpleTargetedChain;
 import org.apache.axis.components.logger.LogFactory;
-import org.apache.axis.encoding.TypeMapping;
 import org.apache.axis.encoding.TypeMappingRegistry;
 import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
@@ -48,7 +46,6 @@ import org.apache.axis.utils.Messages;
 import org.apache.commons.logging.Log;
 import org.w3c.dom.Element;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
@@ -881,11 +878,10 @@ public final class RPCServer{
 			tm.removeDeserializer(c, qname);
 			tm.removeSerializer(c, qname);
 		}
-		QName unknow = new QName("http://unknow","unknow");
-		
+		//QName unknow = new QName("http://unknow","unknow");
 		tm.register(clazz, qname, 
 				new BeanSerializerFactory(clazz,qname), 
-				new BeanDeserializerFactory(Unknow.class,unknow));
+				new BeanDeserializerFactory(clazz,qname));
 		//printAllTypeMappings(reg);
 		
 		if(true) return;

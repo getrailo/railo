@@ -3,12 +3,14 @@ package railo.runtime.type.dt;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import railo.commons.date.DateTimeUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.dateTime.DateUtil;
 import railo.runtime.op.Operator;
 import railo.runtime.type.SimpleValue;
 
@@ -68,28 +70,31 @@ public final class DateImpl extends  Date implements SimpleValue,Localized {
      * @see railo.runtime.type.dt.DateTime#toDoubleValue()
      */
     public double toDoubleValue() {
-        return DateUtil.toDoubleValue(this);
+        return DateTimeUtil.getInstance().toDoubleValue(this);
     }
     
     /**
      * @see railo.runtime.op.Castable#castToDoubleValue(double)
      */
     public double castToDoubleValue(double defaultValue) {
-        return DateUtil.toDoubleValue(this);
+        return DateTimeUtil.getInstance().toDoubleValue(this);
     }
 
     /**
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-	    return DateUtil.toDumpData(this);
+		String str=castToString("");
+        DumpTable table=new DumpTable("#ffb200","#ffcc00","#263300");
+        table.appendRow(1, new SimpleDumpData("Date"), new SimpleDumpData(str));
+        return table;
     }
 
     /**
      * @see railo.runtime.op.Castable#castToBooleanValue()
      */
     public boolean castToBooleanValue() throws PageException {
-        return DateUtil.toBooleanValue(this);
+        return DateTimeUtil.getInstance().toBooleanValue(this);
     }
     
     /**
@@ -103,7 +108,7 @@ public final class DateImpl extends  Date implements SimpleValue,Localized {
      * @see railo.runtime.op.Castable#castToDoubleValue()
      */
     public double castToDoubleValue() {
-        return DateUtil.toDoubleValue(this);
+        return DateTimeUtil.getInstance().toDoubleValue(this);
     }
     
     /**

@@ -2,20 +2,25 @@ package railo.runtime.config;
 
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
+import org.apache.commons.collections.map.ReferenceMap;
+
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
-import railo.runtime.CFMLFactory;
+import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.compiler.CFMLCompilerImpl;
+import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
@@ -47,18 +52,44 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
      * @param config
      * @param configDir
      * @param configFile
+     * @param cloneServer 
      */
-    protected ConfigWebImpl(CFMLFactory factory,ConfigServerImpl configServer, ServletConfig config, Resource configDir, Resource configFile) {
+    protected ConfigWebImpl(CFMLFactoryImpl factory,ConfigServerImpl configServer, ServletConfig config, Resource configDir, Resource configFile) {
     	super(factory,configDir, configFile,configServer.getTLDs(),configServer.getFLDs());
-    	//super(configDir, configFile, config.getServletContext().getRealPath("/"));
-        this.configServer=configServer;
+    	this.configServer=configServer;
         this.config=config;
-        ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
+        factory.setConfig(this);
+    	ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
+        
         this.rootDir=frp.getResource(config.getServletContext().getRealPath("/"));
+        
+        
         // Fix for tomcat
         if(this.rootDir.getName().equals(".") || this.rootDir.getName().equals(".."))
         	this.rootDir=this.rootDir.getParentResource();
     }
+    
+    /* *
+     * Constructor of the class, used for configserver dummy instance
+     * @param factory
+     * @param configServer
+     * @param configx
+     * @param configDir
+     * @param configFile
+     * /
+    protected ConfigWebImpl(CFMLFactoryImpl factory,ConfigServerImpl configServer, Resource configDir, Resource configFile,Resource rootDir) {
+    	super(factory,configDir, configFile,configServer.getTLDs(),configServer.getFLDs());
+    	this.configServer=configServer;
+        factory.setConfig(this);
+    	
+        this.rootDir=rootDir;
+        
+        // Fix for tomcat
+        if(this.rootDir.getName().equals(".") || this.rootDir.getName().equals(".."))
+        	this.rootDir=this.rootDir.getParentResource();
+    }*/
+    
+    
 
     /**
      * @see javax.servlet.ServletConfig#getServletName()
@@ -97,6 +128,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     
 
     public ConfigServer getConfigServer() {
+    	//throw new PageRuntimeException(new SecurityException("access on server config without password denied"));
         return configServer;
     }
     
@@ -186,7 +218,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	
 	 public Page getBaseComponentPage(PageContext pc) throws PageException {
 	        if(baseComponentPage==null) {
-	            baseComponentPage=getBaseComponentPageSource().loadPage(this);
+	            baseComponentPage=((PageSourceImpl)getBaseComponentPageSource()).loadPage(pc,this);
 				
 	        }
 	        return baseComponentPage;
@@ -220,6 +252,24 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	    		serverFunctionMapping=getConfigServerImpl().functionMapping.cloneReadOnly(this);
 	    	}
 			return serverFunctionMapping;
+		}
+	    private Map applicationMappings=new ReferenceMap();
+		public Mapping getApplicationMapping(String virtual, String physical) {
+			String key=virtual.toLowerCase()+physical.toLowerCase();
+			Mapping m=(Mapping) applicationMappings.get(key);
+			if(m==null){
+				m=new MappingImpl(this,
+					virtual,
+					physical,
+					null,false,true,false,false,false
+					);
+				applicationMappings.put(key, m);
+			}
+			return m;
+		}
+
+		public CFMLEngineImpl getCFMLEngineImpl() {
+			return getConfigServerImpl().getCFMLEngineImpl();
 		}
 
 }

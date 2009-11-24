@@ -41,7 +41,7 @@ public final class ProcessingDirective extends BodyTagTryCatchFinallyImpl {
 	* @param pageencoding value to set
 	**/
 	public void setPageencoding(String pageencoding)	{
-	    //pageContext. get HttpServletResponse().setContentType("text/html; charset="+pageencoding);
+	    //pageContext. get HttpServletResponse().set ContentType("text/html; charset="+pageencoding);
 		//this.pageencoding=pageencoding;
 	}
 
@@ -109,16 +109,10 @@ public final class ProcessingDirective extends BodyTagTryCatchFinallyImpl {
      * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doFinally()
      */
     public void doFinally() {
-    	//print.out("finally");
-        if(doSuppressWhitespace()) {
+    	if(doSuppressWhitespace()) {
             try {
             	pageContext.forceWrite(StringUtil.suppressWhiteSpace(bodyContent.getString()));
             } catch (IOException e) {}
-        }
-        else {
-        	//JspWriter out = ((PageContextImpl)pageContext).getRootOut();
-        	//if(CFMLWriterWhiteSpace)
-        	//print.out(out.getClass().getName());
         }
     }
 }

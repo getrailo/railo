@@ -161,5 +161,12 @@ public final class Property extends MemberSupport implements ASMProperty {
 		return meta;
 	}
 
+	/**
+	 * @see railo.transformer.bytecode.util.ASMProperty#getClazz()
+	 */
+	public Class getClazz() {
+		return null;
+	}
+
 	
 }

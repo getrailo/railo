@@ -15,7 +15,7 @@ public final class ZipUtil {
 					//Command.execute("unzip "+zip+" -d "+dir);
 					Command.execute("unzip",new String[]{"-o",zip.getAbsolutePath(),"-d",dir.getAbsolutePath()});
 				} 
-				catch (InterruptedException e) {e.printStackTrace();}
+				catch (InterruptedException e) {}
 				return;
 			}
 			

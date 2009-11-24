@@ -1,5 +1,8 @@
 package railo.runtime.net.rpc.client;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,10 +19,14 @@ import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.encoding.TypeMapping;
 
+import org.apache.axis.EngineConfiguration;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
+import org.apache.axis.configuration.EngineConfigurationFactoryFinder;
+import org.apache.axis.configuration.SimpleProvider;
 import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
+import org.apache.axis.transport.http.CommonsHTTPSender;
 import org.apache.axis.wsdl.gen.Parser;
 import org.apache.axis.wsdl.symbolTable.BindingEntry;
 import org.apache.axis.wsdl.symbolTable.ElementDecl;
@@ -31,8 +38,6 @@ import org.apache.axis.wsdl.symbolTable.SymbolTable;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
 import org.apache.axis.wsdl.toJava.Utils;
 
-import railo.print;
-import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
@@ -46,15 +51,16 @@ import railo.runtime.exp.PageException;
 import railo.runtime.net.proxy.Proxy;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.rpc.AxisCaster;
+import railo.runtime.net.rpc.Pojo;
 import railo.runtime.net.rpc.RPCConstants;
 import railo.runtime.net.rpc.RPCException;
 import railo.runtime.op.Caster;
-import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDFImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.ObjectsIterator;
 import railo.runtime.type.util.ArrayUtil;
@@ -79,6 +85,13 @@ public final class RPCClient implements Objects, Iteratorable{
 	private ProxyData proxyData;
 	private String username;
 	private String password;
+	
+	static {
+		EngineConfiguration engine = EngineConfigurationFactoryFinder.newFactory().getClientEngineConfig();
+		SimpleProvider provider = new SimpleProvider(engine);
+		provider.deployTransport("http", new CommonsHTTPSender());	
+	}
+	
 
     /**
      * @param wsdlUrl
@@ -182,26 +195,17 @@ public final class RPCClient implements Objects, Iteratorable{
     private Object _callMethod(Config config,String methodName, Struct namedArguments,Object[] arguments) throws PageException, ServiceException, RemoteException {
         
 		javax.wsdl.Service service = getWSDLService();
+		
+		
 		Service axisService = null;
-		//new URL("").
 		axisService = new Service(parser, service.getQName());
 		axisService.getTypeMappingRegistry().getDefaultTypeMapping().register(QueryBean.class, 
                 RPCConstants.QUERY_QNAME,
                 new BeanSerializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME),
                 new BeanDeserializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME));
 		
-		/*try{
-		TypeMapping _tm = axisService.getTypeMappingRegistry().getDefaultTypeMapping();
-		//Class clazz = ClassUtil.loadClass("jm.test");
-		QName _name = new QName("http://rpc.xml.coldfusion","jm.test");
-		_tm.register(Object.class, 
-				_name,
-                    new BeanSerializerFactory(Object.class,_name),
-                    new BeanDeserializerFactory(Object.class,_name));
-		}
-		catch(Throwable t){
-			t.printStackTrace();
-		}*/
+		
+		
 		
 		
 		Port port = getWSDLPort(service);
@@ -221,13 +225,11 @@ public final class RPCClient implements Objects, Iteratorable{
             if(tmpOp.getName().equalsIgnoreCase(methodName)) {
 				operation = tmpOp;
 				parameters = (Parameters)bEntry.getParameters().get(tmpOp);
-                
-				break;
+                break;
 			}
 		}
 		if(operation == null || parameters == null)
 			throw new RPCException("Cannot locate method " + methodName + " in webservice " + wsdlUrl);
-		
 		
         org.apache.axis.client.Call call = (Call)axisService.createCall(QName.valueOf(port.getName()), QName.valueOf(tmpOp.getName()));
         if(!StringUtil.isEmpty(username,true)){
@@ -343,8 +345,10 @@ public final class RPCClient implements Objects, Iteratorable{
     		}
         }
         else {
+            UDFImpl.argumentCollection(namedArguments);
             if(inNames.size() != namedArguments.size())
                 throw new RPCException("Invalid arguments count for operation " + methodName+" ("+namedArguments.size()+" instead of "+inNames.size()+")");
+            
             
             Object arg;
             String name;
@@ -376,9 +380,10 @@ public final class RPCClient implements Objects, Iteratorable{
         else {
         	//print.out(call.getUsername());
         	ret = call.invoke(inputs);
+        	
         }
 		
-		if(outNames.size()<=1) return AxisCaster.toRailoType(ret);
+		if(outNames.size()<=1) return AxisCaster.toRailoType(null,ret);
         //getParamData((org.apache.axis.client.Call)call,parameters.returnParam,ret);
 		Map outputs = call.getOutputParams();
 		
@@ -388,10 +393,10 @@ public final class RPCClient implements Objects, Iteratorable{
             //print.ln(name);
 			Object value = outputs.get(name);
 			if(value == null && pos == 0) {
-				sct.setEL(name, AxisCaster.toRailoType(ret));
+				sct.setEL(name, AxisCaster.toRailoType(null,ret));
 			}
 			else {
-				sct.setEL(name, AxisCaster.toRailoType(value));
+				sct.setEL(name, AxisCaster.toRailoType(null,value));
 			}
 		}
 		return sct;
@@ -403,12 +408,25 @@ public final class RPCClient implements Objects, Iteratorable{
         else {
         	Class rtnClass=tm.getClassForQName(type.getQName());
         	if(rtnClass!=null && rtnClass.getName().equals(getClientClassName(type))) return;
-    		mapComplex(config,call,tm, type,els);        
+        	ClassLoader clb=null;
+			try {
+				clb = config.getRPCClassLoader(false);
+			} catch (IOException e) {}
+			
+        	Class cls = mapComplex(config,call,tm, type,els);   
+    		
+        	// TODO make a better impl; this is not the fastest way to make sure all pojos use the same classloader
+    		if(cls!=null && clb!=cls.getClassLoader()){
+    			mapComplex(config,call,tm, type,els);  
+        		//print.out("loader1:"+clb);
+        		//print.out("loader2:"+cls.getClassLoader());
+        	}
+    		
         }
 	}
 
 
-	private void mapComplex(Config config,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type, Vector children) throws PageException {
+	private Class mapComplex(Config config,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type, Vector children) throws PageException {
 		Iterator it = children.iterator();
 		ElementDecl el;
 		ArrayList properties=new ArrayList();
@@ -416,38 +434,110 @@ public final class RPCClient implements Objects, Iteratorable{
 		TypeEntry t;
 		String name;
 		while(it.hasNext()){
+			clazz=null;
         	el=(ElementDecl) it.next();
         	t=el.getType();
         	Vector els = t.getContainedElements();
             if(els!=null) {
-            	mapComplex(config, call, tm, t, els);
+            	clazz=mapComplex(config, call, tm, t, els);
             }
         	name=railo.runtime.type.List.last(el.getQName().getLocalPart(), '>');
-        	clazz=tm.getClassForQName(t.getQName());
+        	
+        	if(clazz==null)clazz=tm.getClassForQName(t.getQName());
         	if(clazz==null)clazz=Object.class;
-        	else clazz=Reflector.toReferenceClass(clazz);
+        	
         	properties.add(new ASMPropertyImpl(clazz,name));
         }
-    	Object obj = ComponentUtil.getClientComponentPropertiesObject(config,getClientClassName(type),(ASMProperty[])properties.toArray(new ASMProperty[properties.size()]));
+		
+		String clientClassName=getClientClassName(type);
+    	Pojo obj = (Pojo) ComponentUtil.getClientComponentPropertiesObject(config,clientClassName,(ASMProperty[])properties.toArray(new ASMProperty[properties.size()]));
     	
+    	
+    	// TODO not alwys register
     	call.registerTypeMapping(
         		obj.getClass(), 
         		type.getQName(), 
     			new BeanSerializerFactory(obj.getClass(), type.getQName()), 
-    			new BeanDeserializerFactory(obj.getClass(), type.getQName()));
+    			new BeanDeserializerFactory(obj.getClass(), type.getQName()),false);
+    	return obj.getClass();
 	}
 
 	private String getClientClassName(TypeEntry type) {
-		String url=StringUtil.toVariableName(StringUtil.replaceLast(StringUtil.replaceLast(wsdlUrl,"http://",""),".cfc?wsdl",""));
+		
+		String url=urlToClass(wsdlUrl);
+		
 		String className=type.getQName().getLocalPart();
+		
 		String ns = type.getQName().getNamespaceURI();
+		//print.out("ns:"+ns);
 		if(ns!=null){
 			ns=StringUtil.replace(ns, "http://", "", true);
-			ns=StringUtil.toVariableName(ns);
+			ns=toClassName(ns,true);
 			if(!StringUtil.isEmpty(ns))
 				return url+"."+ns+"."+className;
 		}
 		return url+"."+className;
+	} 
+
+	private static String urlToClass(String wsdlUrl) {
+		
+		StringBuffer sb=new StringBuffer();
+		try {
+			URL url = new URL(wsdlUrl);
+			
+			sb.append(toClassName(url.getHost(), true));
+			if(!StringUtil.isEmpty(url.getPath())){
+				sb.append('.');
+				sb.append(toClassName(url.getPath(), false));
+			}
+			if(!StringUtil.isEmpty(url.getQuery()) && !"wsdl".equals(url.getQuery())){
+				sb.append('.');
+				sb.append(toClassName(url.getQuery(), false));
+			}
+			if("http".equalsIgnoreCase(url.getProtocol())){}
+			else if("https".equalsIgnoreCase(url.getProtocol())){
+				sb.append(".secure");
+			}
+			else{
+				sb.append('.');
+				sb.append(toClassName(url.getProtocol(), false));
+			}
+			
+			if(url.getPort()>0){
+				sb.append(".p");
+				sb.append(url.getPort());
+			}
+			
+			return sb.toString();
+		} 
+		catch (MalformedURLException e) {e.printStackTrace();
+			return StringUtil.toVariableName(wsdlUrl);
+		}
+	}
+
+	private static String toClassName(String raw,boolean reverse) {
+		raw=raw.trim();
+		if(raw.endsWith("/"))raw=raw.substring(0,raw.length()-1);
+		StringBuffer sb=new StringBuffer();
+		String[] arr=null;
+		try {
+			arr = railo.runtime.type.List.toStringArray(railo.runtime.type.List.listToArray(raw, "./&="));
+		} catch (PageException e) {}
+		String el;
+		for(int i=0;i<arr.length;i++){
+			el=arr[i].trim();
+			if(el.length()==0)continue;
+			if(reverse){
+				if(sb.length()>0)sb.insert(0,'.');
+				sb.insert(0,StringUtil.toVariableName(arr[i]));
+				
+			}
+			else {
+				if(sb.length()>0)sb.append('.');
+				sb.append(StringUtil.toVariableName(arr[i]));
+			}
+		}
+		return sb.toString();
 	}
 
 	private void mapSimple(org.apache.axis.encoding.TypeMapping tm, TypeEntry type) {

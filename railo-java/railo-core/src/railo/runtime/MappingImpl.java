@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Map;
 
+import org.apache.commons.collections.map.ReferenceMap;
+
 import railo.commons.io.FileUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ArchiveClassLoader;
 import railo.commons.lang.PhysicalClassLoader;
-import railo.commons.lang.SoftHashMap;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
@@ -51,7 +52,7 @@ public final class MappingImpl implements Mapping {
     
     private String lcVirtualWithSlash;
     //private Resource classRoot;
-	private Map customTagPath=new SoftHashMap();
+	private Map customTagPath=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 
 
     /**
@@ -68,7 +69,7 @@ public final class MappingImpl implements Mapping {
      */
     public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
             boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel) {
-        
+    	
         this.config=config;
         this.hidden=hidden;
         this.readonly=readonly;
@@ -90,7 +91,6 @@ public final class MappingImpl implements Mapping {
         // Physical
         physical=ConfigWebUtil.getExistingResource(cw.getServletContext(),strPhysical,null,config.getConfigDir(),FileUtil.TYPE_DIR,
                 config);
-        
         // Archive
         archive=ConfigWebUtil.getExistingResource(cw.getServletContext(),strArchive,null,config.getConfigDir(),FileUtil.TYPE_FILE,
                 config);
@@ -121,7 +121,8 @@ public final class MappingImpl implements Mapping {
      * @see railo.runtime.Mapping#getClassLoaderForPhysical(boolean)
      */
 	public ClassLoader getClassLoaderForPhysical(boolean reload) throws IOException {
-	    //reload=true;
+		    
+		//reload=true;
 		if(physicalClassLoader!=null && !reload) return physicalClassLoader;
 		config.resetRPCClassLoader();
 		//physicalClassLoader=new PhysicalClassLoader(getClassRootDirectory(),getConfigImpl().getFactory().getServlet().getClass().getClassLoader());
@@ -135,7 +136,7 @@ public final class MappingImpl implements Mapping {
      * @see railo.runtime.Mapping#getPhysical()
      */
     public Resource getPhysical() {
-        return physical;
+    	return physical;
     }
 
     /**
@@ -179,7 +180,8 @@ public final class MappingImpl implements Mapping {
     public Resource getClassRootDirectory() {
         if(classRootDirectory==null) {
         	classRootDirectory=config.getDeployDirectory().getRealResource(
-                                        StringUtil.toIdentityVariableName(getPhysical().getAbsolutePath())
+                                        StringUtil.toIdentityVariableName(
+                                        		getPhysical().getAbsolutePath())
                                 );
         }
         return classRootDirectory;
@@ -218,7 +220,7 @@ public final class MappingImpl implements Mapping {
      * @see railo.runtime.Mapping#getPageSource(java.lang.String)
      */
     public PageSource getPageSource(String realPath) {
-        boolean isOutSide = false;
+    	boolean isOutSide = false;
 		realPath=realPath.replace('\\','/');
 		if(realPath.indexOf('/')!=0) {
 		    if(realPath.startsWith("../")) {
@@ -243,7 +245,7 @@ public final class MappingImpl implements Mapping {
 
         PageSourceImpl newSource = new PageSourceImpl(this,path,isOut);
         pageSourcePool.setPage(path,newSource);
-        //print.out("**: "+(newSource.getDisplayPath()));
+        
         return newSource;//new PageSource(this,path);
     }
     
@@ -349,12 +351,12 @@ public final class MappingImpl implements Mapping {
 		return topLevel;
 	}
 
-	public String getCustomTagPath(String name) {
-		return (String)customTagPath.get(name.toLowerCase());
+	public PageSource getCustomTagPath(String name) {
+		return (PageSource)customTagPath.get(name.toLowerCase());
 	}
 
-	public void setCustomTagPath(String name, String path) {
-		customTagPath.put(name.toLowerCase(),path);
+	public void setCustomTagPath(String name, PageSource ps) {
+		customTagPath.put(name.toLowerCase(),ps);
 	}
 
 	public void removeCustomTagPath(String name) {

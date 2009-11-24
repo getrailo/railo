@@ -2,6 +2,7 @@ package railo.transformer.cfml.tag;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.SourceFile;
+import railo.runtime.op.Caster;
 import railo.transformer.util.CFMLString;
 
 /**
@@ -23,7 +24,7 @@ public final class CFMLTransformerException extends Exception {
 		this(
 				cfml,
 				StringUtil.isEmpty(e.getMessage())?
-						(e.getClass().getName()):
+						(Caster.toClassName(e)):
 						e.getMessage());
 	}
 	

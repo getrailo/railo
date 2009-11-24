@@ -318,7 +318,6 @@ public final class SystemUtil {
         		path=StringUtil.replace(path, "{web-context-hash}", id, false);
         	}
         }
-        //print.out("path:"+path);
         return path;
     }
 

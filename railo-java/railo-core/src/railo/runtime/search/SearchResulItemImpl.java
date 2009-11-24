@@ -6,7 +6,13 @@ package railo.runtime.search;
  */
 public class SearchResulItemImpl implements SearchResulItem {
     
-    private String title;
+    /**
+	 * @return the contextSummary
+	 */
+	public String getContextSummary() {
+		return contextSummary;
+	}
+	private String title;
     private float score;
     private int recordsSearched;
     private String id;
@@ -22,6 +28,7 @@ public class SearchResulItemImpl implements SearchResulItem {
 	private String mimeType;
 	private String author;
 	private String size;
+	private String contextSummary;
     
     /**
      * @param id
@@ -38,7 +45,7 @@ public class SearchResulItemImpl implements SearchResulItem {
      * @param author 
      * @param size 
      */
-    public SearchResulItemImpl(String id,String title, float score, String key, String url,String summary,
+    public SearchResulItemImpl(String id,String title, float score, String key, String url,String summary,String contextSummary,
     		String categoryTree,String category,
             String custom1,String custom2,String custom3,String custom4, String mimeType, String author, String size) {
         this.id = id;
@@ -48,6 +55,7 @@ public class SearchResulItemImpl implements SearchResulItem {
         this.key = key;
         this.url = url;
         this.summary = summary;
+        this.contextSummary = contextSummary;
 
         this.categoryTree = categoryTree;
         this.category = category;

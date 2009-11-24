@@ -217,6 +217,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	 * @throws ExpressionException
 	 */
 	public synchronized Object setE(int key, Object value) throws ExpressionException {
+		if(key<1)throw new ExpressionException("Invalid index ["+key+"] for array. Index must be a positive integer (1, 2, 3, ...)");
 		if(offset+key>arr.length)enlargeCapacity(key);
 		if(key>size)size=key;
 		arr[(offset+key)-1]=checkValue(value);
@@ -277,7 +278,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 					throw new ExpressionException("You can only Append an Array with "+(dimension-1)+" Dimension","aray has wron dimension, now is "+(((Array)value).getDimension())+ " but it must be "+(dimension-1));
 			}
 			else 
-				throw new ExpressionException("You can only Append an Array with "+(dimension-1)+" Dimension","now is a object of type "+value.getClass().getName());
+				throw new ExpressionException("You can only Append an Array with "+(dimension-1)+" Dimension","now is a object of type "+Caster.toClassName(value));
 		}
 		return value;
 	}

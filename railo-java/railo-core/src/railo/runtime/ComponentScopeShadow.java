@@ -3,7 +3,6 @@ package railo.runtime;
 import java.util.Iterator;
 import java.util.Map;
 
-import railo.print;
 import railo.commons.collections.HashTableNotSync;
 import railo.runtime.component.Member;
 import railo.runtime.dump.DumpData;
@@ -14,7 +13,6 @@ import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.other.GetAuthUser;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -123,18 +121,20 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	}
 
 	private ComponentImpl getUDFComponent(PageContext pc) {
-		if(pc.getActiveComponent()==null) return component; 
+		return ComponentUtil.getActiveComponent(pc, component);
 		
-		/*if(pc.getActiveUDF()!=null && pc.getActiveUDF().getOwnerComponent()!=pc.getActiveComponent()){
-			print.out("udf:"+pc.getActiveUDF().getOwnerComponent().getAbsName());
-			print.out("com:"+pc.getActiveComponent().getAbsName());
-		}*/
+		/*if(pc.getActiveComponent()==null) return component; 
+		
+		if(pc.getActiveUDF()!=null ){
+			
+			print.out("udf:"+((ComponentImpl)pc.getActiveUDF().getOwnerComponent()).getCurrentPage().getPageSource().getDisplayPath());
+			print.out("com:"+((ComponentImpl)pc.getActiveComponent()).getCurrentPage().getPageSource().getDisplayPath());
+			return (ComponentImpl) pc.getActiveUDF().getOwnerComponent();
+		}
 		return (ComponentImpl) pc.getActiveComponent();//+++
-		
-		
+		*/
 		//if(pc.getActiveUDF()==null) return component; 
 		//return (ComponentImpl) pc.getActiveUDF().getOwnerComponent();//+++
-		
 	}
 	
 	/**
@@ -144,12 +144,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		//print.out("key:"+key);
     	
 		if(key.equalsIgnoreCase(ComponentImpl.KEY_SUPER)) {
-			//print.out("current:"+component.getAbsName());
-			//print.out("udfcfc:"+getUDFComponent(ThreadLocalPageContext.get()).getAbsName());
-			//print.out("udfcfc.base:"+getUDFComponent(ThreadLocalPageContext.get()).base.getAbsName());
-			
 			return SuperComponent.superInstance(getUDFComponent(ThreadLocalPageContext.get()).base);
-			//return component.base;
 		}
 		if(key.equalsIgnoreCase(ComponentImpl.KEY_THIS)) return component;
 		

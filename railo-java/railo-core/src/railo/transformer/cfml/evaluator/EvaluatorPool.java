@@ -10,10 +10,10 @@ import railo.transformer.util.CFMLString;
 
 /**
  *
- * Wenn der CFMLTransformer während des Übersetzungsprozess auf einen Tag stösst, 
+ * Wenn der CFML Transformer während des Übersetzungsprozess auf einen Tag stösst, 
  * prüft er mithilfe der passenden TagLib, 
  * ob dieses Tag eine Evaluator definiert hat. 
- * Wenn ein Evaluator definiert ist, kann der CFMLTransformer diesen aber nicht sofort aufrufen, 
+ * Wenn ein Evaluator definiert ist, kann der CFML Transformer diesen aber nicht sofort aufrufen, 
  * da zuerst das komplette Dokument übersetzt werden muss, 
  * bevor ein Evaluator aufgerufen werden kann.
  * Hier kommt der EvaluatorPool zum Einsatz, 
@@ -39,7 +39,7 @@ public final class EvaluatorPool {
 	}
 
 	/**
-	 * Die Methode run wird aufgerufen sobald, der CFMLTransformer den Übersetzungsprozess angeschlossen hat.
+	 * Die Methode run wird aufgerufen sobald, der CFML Transformer den Übersetzungsprozess angeschlossen hat.
 	 * Die metode run rauft darauf alle Evaluatoren auf die intern gespeicher wurden und löscht den internen Speicher.
 	 * @throws TemplateException
 	 */

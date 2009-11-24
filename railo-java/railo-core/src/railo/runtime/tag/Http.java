@@ -612,7 +612,6 @@ public final class Http extends BodyTagImpl {
 		HttpConnectionManager manager=new SimpleHttpConnectionManager();//MultiThreadedHttpConnectionManager();
 		HttpClient client = new HttpClient(manager);
 		HttpMethod httpMethod=createMethod(this,client,url,port);
-		
 		try {
 		
 /////////////////////////////////////////// EXECUTE /////////////////////////////////////////////////
@@ -886,7 +885,6 @@ public final class Http extends BodyTagImpl {
 	
 
 	private static HttpMethod createMethod(Http http, HttpClient client, String url, int port) throws PageException, UnsupportedEncodingException {
-
 		HttpMethod httpMethod;
 		HostConfiguration config = client.getHostConfiguration();
 		HttpState state = client.getState();
@@ -907,10 +905,10 @@ public final class Http extends BodyTagImpl {
 			_url = HTTPUtil.toURL(url,port);
 			url=_url.toExternalForm();
 			
+			
 		} catch (MalformedURLException mue) {
 			throw Caster.toPageException(mue);
 		}
-		
 	// QS
 		String strQS=_url.getQuery();
 		if(strQS!=null) {
@@ -1064,8 +1062,8 @@ public final class Http extends BodyTagImpl {
 				else httpMethod.addRequestHeader("Content-type", "application/x-www-form-urlencoded; charset="+http.charset);
 			}
 			else {
-				//if(hasBody)
-					httpMethod.addRequestHeader("Content-type", "text/html; charset="+http.charset ); // DIFF 23
+				if(hasBody)
+					httpMethod.addRequestHeader("Content-type", "text/html; charset="+http.charset ); 
 			}
 		}
 		

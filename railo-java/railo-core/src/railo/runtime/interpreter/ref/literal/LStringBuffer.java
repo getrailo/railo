@@ -62,9 +62,12 @@ public final class LStringBuffer extends RefSupport implements Literal {
         }
         refs.add(ref);
     }
-    
+
     public void append(char c) {
         sb.append(c);
+    }
+    public void append(String str) {
+        sb.append(str);
     }
     
     public boolean isEmpty() {

@@ -63,7 +63,7 @@ public final class JavaCast implements Function {
 	private static Class toClass(PageContext pc,String lcType, String type) throws PageException {
 		 
 		if(lcType.equals("null")){
-			return Object.class; 
+			return null; 
 		}  
 		if(lcType.equals("biginteger")){
 			return BigInteger.class; 

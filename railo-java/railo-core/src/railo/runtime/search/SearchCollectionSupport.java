@@ -578,10 +578,13 @@ public abstract class SearchCollectionSupport implements SearchCollection {
             String url;
             SearchResulItem record;
             SearchIndex si;
+            boolean hasContextSummary=false;
             for(int y=0;y<to;y++) {
+            		
                 int row=len+y+1;
                 record = records[y];
-                si=(SearchIndex)indexes.get(record.getId());
+                if(y==0)hasContextSummary=record instanceof SearchResulItemImpl;
+            	si=(SearchIndex)indexes.get(record.getId());
 
                 title=record.getTitle();
                 custom1=record.getCustom1();
@@ -600,8 +603,9 @@ public abstract class SearchCollectionSupport implements SearchCollection {
                 qry.setAt("type",row,record.getMimeType());
                 qry.setAt("author",row,record.getAuthor());
                 qry.setAt("size",row,record.getSize());
-                
+
                 qry.setAt("summary",row,record.getSummary());
+                if(hasContextSummary)qry.setAt("context",row,((SearchResulItemImpl)record).getContextSummary());
                 qry.setAt("score",row,new Float(record.getScore()));
                 qry.setAt("key",row,record.getKey());
                 qry.setAt("url",row,url);

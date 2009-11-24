@@ -26,7 +26,7 @@ public final class FirstDayOfMonth implements Function {
 	private static double _call(PageContext pc , DateTime date,TimeZone tz) {
         synchronized (calendar) {
         	calendar.clear();
-        	DateUtil.setTimeZone(calendar,date,tz);      
+        	calendar.setTimeZone(tz);   
     		calendar.setTime(date);   
     		calendar.set(Calendar.DATE,1);         
     		return calendar.get(Calendar.DAY_OF_YEAR);

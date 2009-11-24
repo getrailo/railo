@@ -185,8 +185,7 @@ public class CharBuffer {
 	* @see java.lang.Object#toString()
 	*/
 	public String toString() {
-		//print.out(toCharArray().length);
-        return new String(toCharArray());
+		return new String(toCharArray());
 	}
 
 	/**

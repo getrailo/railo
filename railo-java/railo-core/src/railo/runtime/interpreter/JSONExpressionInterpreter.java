@@ -1,5 +1,6 @@
 package railo.runtime.interpreter;
 
+import railo.commons.lang.NumberUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
@@ -62,6 +63,29 @@ public class JSONExpressionInterpreter extends CFMLExpressionInterpreter {
             	else if(cfml.isNext('r')){
                     cfml.next();
                     str.append('\r');
+                }
+            	else if(cfml.isNext('u')){
+                    cfml.next();
+                    StringBuffer sb=new StringBuffer();
+                    int i=0;
+                    
+                    for(;i<4 && cfml.hasNext();i++){
+                    	cfml.next();
+                    	sb.append(cfml.getCurrent());
+                    }
+                    if(i<4){
+                    	str.append("\\u");
+                    	str.append(sb.toString());
+                    }
+                    else{
+                    	int asc = NumberUtil.hexToInt(sb.toString(),-1);
+                    	if(asc!=-1)str.append((char)asc);
+                    	else {
+                    		str.append("\\u");
+                        	str.append(sb.toString());
+                    	}
+                    }   
+                    
                 }
             	else if(cfml.isNext('/')){
                     cfml.next();

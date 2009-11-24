@@ -17,7 +17,11 @@ public final class MD5
      * @throws IOException
      */
     public static String getDigestAsString(String str) throws IOException {
-       return  new MD5(str).getDigest();
+        return  new MD5(str).getDigest();
+     }
+
+    public static String getDigestAsString(byte[] barr) throws IOException {
+       return  new MD5(barr).getDigest();
     }
 
 	
@@ -274,6 +278,28 @@ public MD5(String input) {
      state[2] = 0x98badcfe;
      state[3] = 0x10325476;
  }
+
+public MD5(byte[] bytes) {
+    in = null;
+    //stringp = false;
+    state = null;
+    count = 0L;
+    buffer = null;
+    digest = null;
+    //byte bytes[] = new byte[input.length()];
+    //input.getBytes(0, bytes.length, bytes, 0);
+    //stringp = true;
+    in = new ByteArrayInputStream(bytes);
+    state = new int[4];
+    buffer = new byte[64];
+    count = 0L;
+    state[0] = 0x67452301;
+    state[1] = 0xefcdab89;
+    state[2] = 0x98badcfe;
+    state[3] = 0x10325476;
+}
+
+
 /*
  public static final int DIGEST_CHARS = 32;
  public static final int DIGEST_BYTES = 16;

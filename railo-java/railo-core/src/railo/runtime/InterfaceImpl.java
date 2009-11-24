@@ -217,10 +217,7 @@ public class InterfaceImpl implements Dumpable {
         
         if(!StringUtil.isEmpty(icfc.hint))sct.set("hint",icfc.hint);
         if(!StringUtil.isEmpty(icfc.dspName))sct.set("displayname",icfc.dspName);
-        //print.out("+++++");
         init(pc,icfc);
-        //print.out(icfc.superInterfaces);
-        //print.out(icfc.extend);
         if(icfc.superInterfaces!=null && icfc.superInterfaces.length>0){
         	Struct ex=new StructImpl();
         	sct.set(ComponentImpl.EXTENDS,ex);

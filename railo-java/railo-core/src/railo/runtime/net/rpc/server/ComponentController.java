@@ -42,10 +42,8 @@ public final class ComponentController {
 		if(c==null) throw new ApplicationException("missing component");
 		if(p==null) throw new ApplicationException("missing pagecontext");
 		
-		//print.out(c.getClass().getName()+":"+name);
 		for(int i=0;i<args.length;i++) {
-			//print.out(" - arg"+i+":"+args[i].getClass().getName());
-			args[i]=AxisCaster.toRailoType(args[i]);
+			args[i]=AxisCaster.toRailoType(p,args[i]);
 		}
 		Object udf = c.get(p,name,null);
 		String rt="any";

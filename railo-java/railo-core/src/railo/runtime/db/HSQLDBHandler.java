@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
-import railo.print;
 import railo.commons.db.DBUtil;
 import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
@@ -246,9 +245,11 @@ public final class HSQLDBHandler {
 					
 					QueryImpl q=qoq.execute(pc,sql,selects,maxrows);
 					q.setExecutionTime(stopwatch.time());
+
 					return q;
 				} 
 				catch (SQLParserException spe) {
+					//railo.print.printST(spe);
 					//sp
 					//railo.print.out("sql parser crash at:");
 					//railo.print.out("--------------------------------");
@@ -297,7 +298,9 @@ public final class HSQLDBHandler {
 				return _execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,false);
 			}
 			catch(PageException pe) {
-				if(isUnion)return _execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,true);
+				if(isUnion){
+					return _execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,true);
+				}
 
 				//print.out("hsqldbhandler crash at:");
 				//print.out("--------------------------------");
@@ -319,7 +322,7 @@ public final class HSQLDBHandler {
 			QueryImpl nqr=null;
 			ConfigImpl config = (ConfigImpl)pc.getConfig();
 			DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
-	    	dc=pool.getDatasourceConnection(config.getDataSource("_queryofquerydb"),"sa","");
+	    	dc=pool.getDatasourceConnection(pc,config.getDataSource("_queryofquerydb"),"sa","");
 	    	Connection conn = dc.getConnection();
 	    	try {
 	    		DBUtil.setAutoCommitEL(conn,false);

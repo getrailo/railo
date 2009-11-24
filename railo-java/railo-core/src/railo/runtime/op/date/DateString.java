@@ -1,6 +1,11 @@
 
 package railo.runtime.op.date;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import railo.runtime.op.Constants;
+
 
 /**
  * helper class to convert a string to a Object
@@ -16,6 +21,73 @@ public final class DateString {
 
     private String str;
     private int pos;
+
+	private static Map months=new HashMap();
+	static{
+		months.put("january",Constants.INTEGER_1);
+		months.put("januar",Constants.INTEGER_1);
+		months.put("janua",Constants.INTEGER_1);
+		months.put("janu",Constants.INTEGER_1);
+		months.put("jan",Constants.INTEGER_1);
+		
+		months.put("february",Constants.INTEGER_2);
+		months.put("februar",Constants.INTEGER_2);
+		months.put("februa",Constants.INTEGER_2);
+		months.put("febru",Constants.INTEGER_2);
+		months.put("febr",Constants.INTEGER_2);
+		months.put("feb",Constants.INTEGER_2);
+		
+		months.put("march",Constants.INTEGER_3);
+		months.put("marc",Constants.INTEGER_3);
+		months.put("mar",Constants.INTEGER_3);
+		
+		months.put("april",Constants.INTEGER_4);
+		months.put("apri",Constants.INTEGER_4);
+		months.put("apr",Constants.INTEGER_4);
+		
+		months.put("may",Constants.INTEGER_5);
+
+		months.put("june",Constants.INTEGER_6);
+		months.put("jun",Constants.INTEGER_6);
+		
+		months.put("july",Constants.INTEGER_7);
+		months.put("jul",Constants.INTEGER_7);
+
+		months.put("august",Constants.INTEGER_8);
+		months.put("augus",Constants.INTEGER_8);
+		months.put("augu",Constants.INTEGER_8);
+		months.put("aug",Constants.INTEGER_8);
+
+		months.put("september",Constants.INTEGER_9);
+		months.put("septembe",Constants.INTEGER_9);
+		months.put("septemb",Constants.INTEGER_9);
+		months.put("septem",Constants.INTEGER_9);
+		months.put("septe",Constants.INTEGER_9);
+		months.put("sept",Constants.INTEGER_9);
+		months.put("sep",Constants.INTEGER_9);
+
+		months.put("october",Constants.INTEGER_10);
+		months.put("octobe",Constants.INTEGER_10);
+		months.put("octob",Constants.INTEGER_10);
+		months.put("octo",Constants.INTEGER_10);
+		months.put("oct",Constants.INTEGER_10);
+
+		months.put("november",Constants.INTEGER_11);
+		months.put("novembe",Constants.INTEGER_11);
+		months.put("novemb",Constants.INTEGER_11);
+		months.put("novem",Constants.INTEGER_11);
+		months.put("nove",Constants.INTEGER_11);
+		months.put("nov",Constants.INTEGER_11);
+		
+		months.put("december",Constants.INTEGER_12);
+		months.put("decembe",Constants.INTEGER_12);
+		months.put("decemb",Constants.INTEGER_12);
+		months.put("decem",Constants.INTEGER_12);
+		months.put("dece",Constants.INTEGER_12);
+		months.put("dec",Constants.INTEGER_12);
+		
+
+	}
 
     /**
      * constructor of the class
@@ -166,7 +238,28 @@ public final class DateString {
         return value;
     }
     
-    /**
+    
+
+	public int readMonthString() {
+		char c;
+		int start=pos;
+		StringBuffer sb=new StringBuffer();
+        while(isValidIndex() && isMonthChar(c=str.charAt(pos))) {
+            pos++;
+            sb.append(Character.toLowerCase(c));
+        }
+        Integer month=(Integer) months.get(sb.toString().trim());
+        if(month!=null) return month.intValue();
+        pos=start;
+        return -1;
+	}
+    
+    
+    private boolean isMonthChar(char c) {
+    	return c>='a' && c<='z' || c>='A' && c<='Z';
+	}
+
+	/**
      * returns if c is a digit or not
      * @param c char to check
      * @return is digit
@@ -223,4 +316,9 @@ public final class DateString {
     public boolean isValidIndex() {
        return pos<str.length();
     }
+
+	public char current() {
+		return str.charAt(pos);
+	}
+
 }

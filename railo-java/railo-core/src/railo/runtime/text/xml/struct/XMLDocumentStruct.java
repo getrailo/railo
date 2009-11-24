@@ -20,6 +20,7 @@ import org.w3c.dom.Text;
 
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Collection;
 import railo.runtime.type.util.ArrayUtil;
 
 
@@ -364,5 +365,21 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		catch (Exception e) {
 			throw new PageRuntimeException(Caster.toPageException(e));
 		}
+	}
+	
+	/**
+	 *
+	 * @see railo.runtime.type.Collection#duplicate(boolean)
+	 */
+	public Collection duplicate(boolean deepCopy) {
+		return new XMLDocumentStruct((Document)doc.cloneNode(deepCopy),caseSensitive);
+	}
+	
+
+	/**
+	 * @see org.w3c.dom.Node#cloneNode(boolean)
+	 */
+	public Node cloneNode(boolean deep) {
+		return new XMLDocumentStruct((Document)doc.cloneNode(deep),caseSensitive);
 	}
 }

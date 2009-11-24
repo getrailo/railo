@@ -2,7 +2,6 @@ package railo.runtime.schedule;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -14,29 +13,18 @@ import org.xml.sax.SAXException;
 
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
+import railo.loader.engine.CFMLEngine;
 import railo.runtime.config.Config;
-import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.dateTime.DateUtil;
 import railo.runtime.op.Caster;
-import railo.runtime.type.dt.Date;
-import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.dt.DateTimeImpl;
-import railo.runtime.type.dt.Time;
 
 /**
  * scheduler class to execute the scheduled tasks
  */
 public final class SchedulerImpl implements Scheduler {
 
-    private ScheduleTask[] tasks;
-    private static final long MINUTE=60000;
-    private static final long DAY=24*3600000;
-    
-    private static final long TOLERANCE=10;
-    private Calendar calendar=Calendar.getInstance();
-    private long nextExecutionTime;
-    private long future;
+    private ScheduleTaskImpl[] tasks;
     
     //private File schedulerDir;
     private Resource schedulerFile;
@@ -45,7 +33,10 @@ public final class SchedulerImpl implements Scheduler {
     private StorageUtil su=new StorageUtil();
 	private String charset;
 	private Config config;
-    
+	//private String md5;
+
+	private CFMLEngineImpl engine;
+	
     /**
      * constructor of the sheduler
      * @param config 
@@ -55,65 +46,42 @@ public final class SchedulerImpl implements Scheduler {
      * @throws SAXException
      * @throws PageException
      */
-    public SchedulerImpl(Config config, Resource schedulerDir, LogAndSource log, String charset) throws SAXException, IOException, PageException {
+    public SchedulerImpl(CFMLEngine engine,Config config, Resource schedulerDir, LogAndSource log, String charset) throws SAXException, IOException, PageException {
+    	this.engine=(CFMLEngineImpl) engine;
     	this.charset=charset;
     	this.config=config;
-    // Load File
-        //this.schedulerDir=schedulerDir;
-		this.schedulerFile=schedulerDir.getRealResource("scheduler.xml");
-			//new File(schedulerDir,"scheduler.xml");
-		if(!schedulerFile.exists()) su.loadFile(schedulerFile,"/resource/schedule/default.xml");
-		
-	// Load Document
-		doc=su.loadDocument(schedulerFile);
-    
-	// Load Logger
-    	this.log=log;      
-    
+    	
+    	initFile(schedulerDir,log);
+        doc=su.loadDocument(schedulerFile);
         tasks=readInAllTasks();
         init();
     }
     
-
+	private void initFile(Resource schedulerDir, LogAndSource log) throws IOException {
+		this.schedulerFile=schedulerDir.getRealResource("scheduler.xml");
+		if(!schedulerFile.exists()) su.loadFile(schedulerFile,"/resource/schedule/default.xml");
+		this.log=log;  
+	}
+	
     /**
      * initialize all tasks
      */
-
-    private void init(ScheduleTask task) {
-        calendar.set(Calendar.YEAR,3000);
-        future=calendar.getTimeInMillis();
-        nextExecutionTime=future;
-        initTask(task);
-        for(int i=0;i<tasks.length;i++) {
-            if(tasks[i].isValid()) {
-                long next = tasks[i].getNextExecution();
-                if(nextExecutionTime>next)nextExecutionTime=next;
-            }
-        }
-    	
-    }
-    
     private void init() {
-        calendar.set(Calendar.YEAR,3000);
-        future=calendar.getTimeInMillis();
-        nextExecutionTime=future;
-        
         for(int i=0;i<tasks.length;i++) {
-            initTask(tasks[i]);
-            
-            if(tasks[i].isValid()) {
-                long next = tasks[i].getNextExecution();
-                if(nextExecutionTime>next)nextExecutionTime=next;
-            }
+            init(tasks[i]);
         }
     }
+
+	private void init(ScheduleTask task) {
+		new ScheduledTaskThread(engine,config,log,task,charset).start();
+	}
 
 	/**
 	 * read in all schedule tasks
 	 * @return all schedule tasks
 	 * @throws PageException
      */
-    private ScheduleTask[] readInAllTasks() throws PageException {
+    private ScheduleTaskImpl[] readInAllTasks() throws PageException {
         Element root = doc.getDocumentElement();
         NodeList children = root.getChildNodes();
         ArrayList list=new ArrayList();
@@ -125,8 +93,10 @@ public final class SchedulerImpl implements Scheduler {
                 list.add(readInTask((Element)n));
             } 
         }
-        return (ScheduleTask[]) list.toArray(new ScheduleTask[list.size()]);
+        return (ScheduleTaskImpl[]) list.toArray(new ScheduleTaskImpl[list.size()]);
     }
+    
+    
 
     /**
      * read in a single task element
@@ -134,12 +104,12 @@ public final class SchedulerImpl implements Scheduler {
      * @return matching task to Element
      * @throws PageException
      */
-    private ScheduleTask readInTask(Element el) throws PageException {
+    private ScheduleTaskImpl readInTask(Element el) throws PageException {
         long timeout=su.toLong(el,"timeout");
         if(timeout>0 && timeout<1000)timeout*=1000;
         if(timeout<0)timeout=600000;
         try {
-            ScheduleTask  st = new ScheduleTaskImpl(
+            ScheduleTaskImpl  st = new ScheduleTaskImpl(
                     su.toString(el,"name").trim(),
                     su.toResource(config,el,"file"),
                     su.toDate(config,el,"startDate"),
@@ -164,6 +134,27 @@ public final class SchedulerImpl implements Scheduler {
             throw Caster.toPageException(e);
         }
     }
+    
+
+	private void addTask(ScheduleTaskImpl task) {	
+		for(int i=0;i<tasks.length;i++){
+			if(!tasks[i].getTask().equals(task.getTask())) continue;
+			if(!tasks[i].md5().equals(task.md5())) {
+				tasks[i].setValid(false);
+				tasks[i]=task;
+				init(task);
+			}
+			return;
+		}
+		
+		ScheduleTaskImpl[] tmp = new ScheduleTaskImpl[tasks.length+1];
+		for(int i=0;i<tasks.length;i++){
+			tmp[i]=tasks[i];
+		}
+		tmp[tasks.length]=task;
+		tasks=tmp;
+		init(task);
+	}
     
     /**
      * sets all attributes in XML Element from Schedule Task
@@ -236,7 +227,7 @@ public final class SchedulerImpl implements Scheduler {
 	public ScheduleTask[] getAllScheduleTasks() {
 		ArrayList list=new ArrayList();
 		for(int i=0;i<tasks.length;i++) {
-	        if(!((ScheduleTaskImpl)tasks[i]).isHidden()) list.add(tasks[i]);
+	        if(!tasks[i].isHidden()) list.add(tasks[i]);
 	    }
 	    return (ScheduleTask[]) list.toArray(new ScheduleTask[list.size()]);
 	}
@@ -245,31 +236,14 @@ public final class SchedulerImpl implements Scheduler {
      * @see railo.runtime.schedule.Scheduler#addScheduleTask(railo.runtime.schedule.ScheduleTask, boolean)
      */
 	public void addScheduleTask(ScheduleTask task, boolean allowOverwrite) throws ScheduleException, IOException {
-	    ScheduleTask exTask = getScheduleTask(task.getTask(),null);
+	    //ScheduleTask exTask = getScheduleTask(task.getTask(),null);
 	    NodeList list = doc.getDocumentElement().getChildNodes();
 	    Element el=su.getElement(list,"name", task.getTask());
 	    
 	    if(!allowOverwrite && el!=null)
 		    throw new ScheduleException("there is already a schedule task with name "+task.getTask());
 	    
-	    
-	    // Schedule Task update
-	    if(exTask!=null) {
-	        for(int i=0;i<tasks.length;i++) {
-		        if(tasks[i]!=null && tasks[i].getTask().equalsIgnoreCase(task.getTask())) {
-		            tasks[i]=task;
-		        }
-		    }
-	    }
-	    // Schedule Task insert
-	    else {
-	        ScheduleTask[] newTasks=new ScheduleTask[tasks.length+1]; 
-		    for(int i=0;i<tasks.length;i++) {
-		        newTasks[i]=tasks[i];
-		    }
-		    newTasks[tasks.length]=task;
-		    tasks=newTasks;
-	    }
+	    addTask((ScheduleTaskImpl)task);
 	    
 	    // Element update
 	    if(el!=null) {
@@ -279,7 +253,7 @@ public final class SchedulerImpl implements Scheduler {
 	    else {
 		    doc.getDocumentElement().appendChild(toElement(task));
 	    }
-	    init(task);
+	    
 	    su.store(doc,schedulerFile);
 	}
 	
@@ -289,7 +263,7 @@ public final class SchedulerImpl implements Scheduler {
 
 	    for(int i=0;i<tasks.length;i++) {
 	        if(tasks[i].getTask().equalsIgnoreCase(name)) {
-	        	((ScheduleTaskImpl)tasks[i]).setPaused(pause);
+	        	tasks[i].setPaused(pause);
 	            
 	        }
 	    }
@@ -319,7 +293,7 @@ public final class SchedulerImpl implements Scheduler {
 	        }
 	    }
 	    if(pos!=-1) {
-		    ScheduleTask[] newTasks=new ScheduleTask[tasks.length-1];
+		    ScheduleTaskImpl[] newTasks=new ScheduleTaskImpl[tasks.length-1];
 		    int count=0;
 		    for(int i=0;i<tasks.length;i++) {
 		        if(i!=pos)newTasks[count++]=tasks[i];
@@ -347,222 +321,29 @@ public final class SchedulerImpl implements Scheduler {
 	    ScheduleTask task = getScheduleTask(name);
 	    
 	    if(task!=null) {
-	        ExecutionThread.execute(config, log, task, charset);
-	        //execute(task);
-	        init(task);
+	        execute(task);
 	    }
 	    else if(throwWhenNotExist) throw new ScheduleException("can't run schedule task ["+name+"], task doesn't exist");
 	    
 	    
 	    su.store(doc,schedulerFile);
 	}
-	
-	
-	
-    
-    
-    
-    
     
     /**
-     * initialize a single task, define next execution time
-     * @param task task to init next execution time
-     */
-    private void initTask(ScheduleTask task) {
-        if(task==null) {
-           // task.setValid(false);
-            return;
-        }
-        // start
-        Date startDate = task.getStartDate();
-        long startDateMillis=DateUtil.millisMidnight(startDate,ThreadLocalPageContext.getTimeZone(config));
-        
-        Time startTime = task.getStartTime();
-        long startTimeMillis=DateUtil.millisInDay(startTime,ThreadLocalPageContext.getTimeZone(config));
-        long startMillis=startDateMillis+startTimeMillis;
-        
-        DateTime now = new DateTimeImpl(config);
-        long nowMillis=now.getTime();
-        long nowTimeMillis=DateUtil.millisInDay(now,ThreadLocalPageContext.getTimeZone(config));
-        long nowDateMillis=now.getTime()-nowTimeMillis;
-
-        // end
-        Date endDate = task.getEndDate();
-        if(endDate!=null) {
-	        long endDateMillis=DateUtil.millisMidnight(endDate,ThreadLocalPageContext.getTimeZone(config));
-	        if(endDateMillis<=nowDateMillis) {
-	            task.setValid(false);
-	            return;
-	        }
-        }
-        Time endTime = task.getEndTime();
-        long endTimeMillis=(endTime==null)?DAY:DateUtil.millisInDay(endTime,ThreadLocalPageContext.getTimeZone(config));
-
-        
-        // direct excution
-        if(startDateMillis>nowDateMillis) {
-            task.setValid(setNext(task,(startDateMillis+startTimeMillis)));
-            return ;
-        }
-        if(startDateMillis==nowDateMillis && startTimeMillis>nowTimeMillis) {
-            task.setValid(setNext(task,(startDateMillis+startTimeMillis)));
-            return ;
-        }
-        
-        int interval = task.getInterval();
-        
-        
-        // ONCE
-        if(ScheduleTask.INTERVAL_ONCE == interval)	{
-            if(startMillis+MINUTE+TOLERANCE>=nowMillis) {
-                task.setValid(setNext(task,(nowMillis)));
-                return ;
-            }
-            task.setValid(false);
-            return;
-        }
-        //DAY
-        else if(ScheduleTask.INTERVAL_DAY == interval) {
-            task.setValid(setNext(task,
-               (TOLERANCE+getNextDayExecution(startTimeMillis,nowDateMillis,nowTimeMillis))));
-            return ;
-        }
-        // WEEK
-        else if(ScheduleTask.INTERVAL_WEEK == interval) {
-            long dayExecution = getNextDayExecution(startTimeMillis,nowDateMillis,nowTimeMillis);
-            Calendar start = Caster.toCalendar(dayExecution+TOLERANCE,ThreadLocalPageContext.getTimeZone(config));
-            int startWeekDay=Caster.toCalendar(startDateMillis+1,ThreadLocalPageContext.getTimeZone(config)).get(Calendar.DAY_OF_WEEK);
-            
-            while(startWeekDay!=start.get(Calendar.DAY_OF_WEEK)) {
-                start.set(Calendar.DAY_OF_YEAR,start.get(Calendar.DAY_OF_YEAR)+1);
-                //print.ln(start.getTime());
-            }
-            
-            task.setValid(setNext(task,start.getTimeInMillis()));
-            
-            //while(start.getTimeInMillis()<nowMillis)start.set(Calendar.WEEK_OF_YEAR,start.get(Calendar.WEEK_OF_YEAR)+1);
-            //task.setValid(setNext(task,start));
-            return ;
-        }
-        // MONTH
-        else if(ScheduleTask.INTERVAL_MONTH == interval) {
-            long dayExecution = getNextDayExecution(startTimeMillis,nowDateMillis,nowTimeMillis);
-            Calendar start=Caster.toCalendar(dayExecution+TOLERANCE,null);
-            int startMonthDay=Caster.toCalendar(startDateMillis+1,null).get(Calendar.DAY_OF_MONTH);
-            
-            while(startMonthDay!=start.get(Calendar.DAY_OF_MONTH)) {
-                start.set(Calendar.DAY_OF_YEAR,start.get(Calendar.DAY_OF_YEAR)+1);
-            }
-            task.setValid(setNext(task,start.getTimeInMillis()));
-            return ;
-        }
-        // INTERVAL
-        else if(interval>0) {
-            if(startTimeMillis>=endTimeMillis) {
-                task.setValid(false);
-                return ;
-            }
-            long dayMillis=nowTimeMillis;
-            if(startTimeMillis>dayMillis)dayMillis=startTimeMillis;
-            if(endTimeMillis<dayMillis) {
-                task.setValid(setNext(task,nowDateMillis+DAY+startTimeMillis));
-                return ;
-            }
-            task.setValid(setNext(task,nowDateMillis+dayMillis));
-            return ;
-            
-        }
-        task.setValid(false);
-        return;
-    }
-    
-    private long getNextDayExecution(long startTimeMillis, long nowDateMillis, long nowTimeMillis) {
-        if(startTimeMillis+MINUTE+TOLERANCE>=nowTimeMillis) {
-            return nowDateMillis+startTimeMillis;
-        }
-        return nowDateMillis+startTimeMillis+DAY;
-    }
-    
-    /**
+     * @param task 
      * @see railo.runtime.schedule.Scheduler#execute()
      */
-    public void execute() {
-        long now=System.currentTimeMillis();
-        if(nextExecutionTime>now) return;
-        for(int i=0;i<tasks.length;i++) {
-            ScheduleTask task = tasks[i];
-            
-            if(task==null || !task.isValid() || task.isPaused() || task.getNextExecution()>now) continue;
-            new ExecutionThread(config,log,task,charset).start();
-            
-            Calendar next = Caster.toCalendar(task.getNextExecution(),ThreadLocalPageContext.getTimeZone(config));
-            int interval = task.getInterval();
-            // ONCE
-            if(ScheduleTask.INTERVAL_ONCE == interval) {
-                tasks[i].setValid(false);
-            }
-            // DAY
-            else if(ScheduleTask.INTERVAL_DAY == interval) {
-                next.set(Calendar.DAY_OF_MONTH,next.get(Calendar.DAY_OF_MONTH)+1);
-                if(!setNext(task,next.getTimeInMillis()))tasks[i].setValid(false);
-            }
-            // WEEK
-            else if(ScheduleTask.INTERVAL_WEEK == interval) {
-                next.set(Calendar.WEEK_OF_YEAR,next.get(Calendar.WEEK_OF_YEAR)+1);
-                if(!setNext(task,next.getTimeInMillis()))tasks[i].setValid(false);
-            }
-            // MONTH
-            else if(ScheduleTask.INTERVAL_MONTH == interval) {
-                Date startDate = task.getStartDate();
-                long startDateMillis=DateUtil.millisMidnight(startDate,null);
-                int startMonthDay=Caster.toCalendar(startDateMillis+1,null).get(Calendar.DAY_OF_MONTH);
-
-                next.set(Calendar.DAY_OF_YEAR,next.get(Calendar.DAY_OF_YEAR)+1);
-                while(startMonthDay!=next.get(Calendar.DAY_OF_MONTH)) {
-                    next.set(Calendar.DAY_OF_YEAR,next.get(Calendar.DAY_OF_YEAR)+1);
-                }
-                //next.set(Calendar.MONTH,next.get(Calendar.MONTH)+1);
-                if(!setNext(task,next.getTimeInMillis()))tasks[i].setValid(false);
-            }
-            // INTERVAL
-            else if(interval>0) {
-                //print.out(interval);
-                next.set(Calendar.SECOND,next.get(Calendar.SECOND)+interval);
-                if(!setNext(task,next.getTimeInMillis()))tasks[i].setValid(false);
-                
-            }
-            
-        }
-        nextExecutionTime=future;
-        for(int i=0;i<tasks.length;i++) {
-            ScheduleTask task = tasks[i];
-            if(task!=null && task.isValid()) {
-                //print.ln(task.getTask());
-                //Calendar ne = task.getNextExecution();
-                long nextMillis = task.getNextExecution();
-                if(nextExecutionTime>nextMillis)nextExecutionTime=nextMillis;
-            }
-        }
+    public void execute(ScheduleTask task) {
+    	new ExecutionThread(config,log,task,charset).start();
     } 
     
-    private boolean setNext(ScheduleTask task, long next) {
-        
-        Date end = task.getEndDate();
-        if(end!=null) {
-            long endDateMillis=DateUtil.millisMidnight(task.getEndDate(),null);
-            if(next>endDateMillis) {
-                return false;
-            }
-        }
-        task.setNextExecution(next);
-        return true;
-    }
 
     /**
      * @see railo.runtime.schedule.Scheduler#getNextExecutionTime()
      */
     public long getNextExecutionTime() {
-        return nextExecutionTime;
+    	// no longer called and used
+        return -1;
     }
 
     /**
@@ -572,4 +353,10 @@ public final class SchedulerImpl implements Scheduler {
         return log;
     }
 
+    /*
+     * FUTURE remove
+     * */
+	public void execute() {
+		
+	}
 }

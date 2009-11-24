@@ -105,16 +105,16 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			ThreadLocalPageContext.register(pc);
 		}
 		else {
+			ConfigWebImpl cwi;
 			try {
-				ConfigWebImpl cwi = (ConfigWebImpl)config;
+				cwi = (ConfigWebImpl)config;
 				p=cwi.getPageSource(null, template, false).loadPage(cwi);
 			} catch (PageException e) {
 				return e;
 			}
 			DevNullOutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
-			pc=ThreadUtil.createPageContext(config, os, serverName, requestURI, queryString, SerializableCookie.toCookies(cookies), headers, parameters, attributes);
+			pc=ThreadUtil.createPageContext(cwi, os, serverName, requestURI, queryString, SerializableCookie.toCookies(cookies), headers, parameters, attributes);
 		}
-		//print.err("ppp;"+ThreadLocalPageContext.get());
 		pc.setThreadScope("thread", new ThreadsImpl(this));
 		pc.setThread(Thread.currentThread());
 		

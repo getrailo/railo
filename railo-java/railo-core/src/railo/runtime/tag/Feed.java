@@ -184,7 +184,8 @@ public final class Feed extends TagImpl	{
 	 * @throws ExpressionException 
 	 */
 	public void setSource(String strSource) throws ExpressionException {
-		this.source = ResourceUtil.toResourceExisting(pageContext, strSource);
+		// when using  toExistingResource execution fails because proxy is missed at this time
+		this.source = ResourceUtil.toResourceNotExisting(pageContext, strSource);
 	}
 	/**
 	 * @param timeout the timeout to set
@@ -237,7 +238,6 @@ public final class Feed extends TagImpl	{
 	 * @see railo.runtime.ext.tag.TagImpl#doStartTag()
 	 */
 	public int doStartTag() throws PageException {
-
 		if(source instanceof HTTPResource) {
 			HTTPResource httpSource = (HTTPResource)source;
 			if(!StringUtil.isEmpty(proxyServer,true)){
@@ -736,7 +736,6 @@ public final class Feed extends TagImpl	{
 			strFeed = IOUtil.toString(outputFile!=null?outputFile:source,charset);
 			pageContext.setVariable(xmlVar, strFeed);
 		}
-		
 		// Input Source
 		InputSource is=null;
 		Reader r=null;

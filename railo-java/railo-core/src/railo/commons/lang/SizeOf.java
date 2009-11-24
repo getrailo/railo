@@ -52,13 +52,11 @@ public class SizeOf {
 	public static long size(Object object,int maxDepth) {
     	if (object==null)return 0;
     	boolean wasInside=inside(true);
-    	//print.out(wasInside?" - x":"x");
     	Map instances=get(!wasInside);
     	//IdentityHashMap instances = new IdentityHashMap();
         Map dictionary = new HashMap();
         long size = _size(object, instances, dictionary, maxDepth, Long.MAX_VALUE);
         inside(wasInside);
-        //print.out(wasInside?" - x":"x");
         return size;
     }
 

@@ -31,60 +31,54 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 	 * @param config
 	 */
 	public CFMLCompilerImpl() {
-        cfmlTransformer=new CFMLTransformer();
+		cfmlTransformer=new CFMLTransformer();
 	}
 	
 	/**
 	 * @see railo.runtime.compiler.CFMLCompiler#compile(railo.runtime.config.ConfigImpl, railo.runtime.PageSource, railo.transformer.library.tag.TagLib[], railo.transformer.library.function.FunctionLib[], railo.commons.io.res.Resource, java.lang.String)
 	 */
-	public synchronized byte[] compile(ConfigImpl config,PageSource source, TagLib[] tld, FunctionLib[] fld, 
+	public byte[] compile(ConfigImpl config,PageSource source, TagLib[] tld, FunctionLib[] fld, 
         Resource classRootDir, String className) throws TemplateException, IOException {
-		Resource classFile=classRootDir.getRealResource(className+".class");
-		Resource classFileDirectory=classFile.getParentResource();
-        
-		byte[] barr = null;
-		Page page = null;
-		
-		if(!classFileDirectory.exists()) classFileDirectory.createDirectory(true); 
-		
-        try {
-        	page = cfmlTransformer.transform(config,source,tld,fld);
-        	barr = page.execute();
-			IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
-	        return barr;
-		} 
-        catch (AlreadyClassException ace) {
-        	InputStream is=null;
-        	try{
-        		barr=IOUtil.toBytes(is=ace.getInputStream());
-        		IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
-        	}
-        	finally {
-        		IOUtil.closeEL(is);
-        	}
-        	return barr;
-        }
-        catch (BytecodeException bce) {
-        	bce.addContext(source, bce.getLineAsInt(), bce.getLineAsInt(),null);
-        	throw bce;
-        	//throw new TemplateException(source,e.getLine(),e.getColumn(),e.getMessage());
-		}
-        finally {
-        	
-        }
+		//synchronized(source){
+			Resource classFile=classRootDir.getRealResource(className+".class");
+			Resource classFileDirectory=classFile.getParentResource();
+	        byte[] barr = null;
+			Page page = null;
+			
+			if(!classFileDirectory.exists()) classFileDirectory.mkdirs(); 
+			
+	        try {
+	        	page = cfmlTransformer.transform(config,source,tld,fld);
+	        	barr = page.execute();
+				IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
+		        return barr;
+			} 
+	        catch (AlreadyClassException ace) {
+	        	InputStream is=null;
+	        	try{
+	        		barr=IOUtil.toBytes(is=ace.getInputStream());
+	        		IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
+	        	}
+	        	finally {
+	        		IOUtil.closeEL(is);
+	        	}
+	        	return barr;
+	        }
+	        catch (BytecodeException bce) {
+	        	bce.addContext(source, bce.getLineAsInt(), bce.getLineAsInt(),null);
+	        	throw bce;
+	        	//throw new TemplateException(source,e.getLine(),e.getColumn(),e.getMessage());
+			}
+	        /*finally {
+	        	
+	        }*/
+		//}
 	}
 
-    /**
+    /* *
      * @return Returns the cfmlTransformer.
-     */
+     * /
     public CFMLTransformer getCfmlTransformer() {
         return cfmlTransformer;
-    }
-
-    /* *
-     * @return Returns the cfxdTransformer.
-     * /
-    public CFXDTransformer getCfxdTransformer() {
-        return cfxdTransformer;
     }*/
 }

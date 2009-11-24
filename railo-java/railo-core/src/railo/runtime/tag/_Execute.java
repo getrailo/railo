@@ -21,6 +21,8 @@ public final class _Execute extends Thread {
     private Object monitor;
 	private Exception exception;
 	private String body;
+	private boolean finished;
+	private Process process;
 
     /**
      * @param pageContext
@@ -29,6 +31,7 @@ public final class _Execute extends Thread {
      * @param outputfile
      * @param variable
      * @param body 
+     * @param terminateOnTimeout 
      */
     public _Execute(PageContext pageContext, Object monitor, String command, Resource outputfile, String variable, String body) {
          this.pc=pageContext; 
@@ -51,7 +54,10 @@ public final class _Execute extends Thread {
     	//synchronized(monitor){
 			try {
 				String rst=null;
-				rst=Command.execute(command);
+				
+				process = Command.createProcess(command,true);
+				rst=Command.execute(process);
+				finished = true;
 				if(!aborted) {
 					if(outputfile==null && variable==null) pc.write(rst);
 					else {
@@ -61,7 +67,6 @@ public final class _Execute extends Thread {
 				}
 			}
 			catch(Exception ioe){
-				//print.printST(ioe);
 				exception=ioe;
 			}
 			finally {
@@ -75,12 +80,16 @@ public final class _Execute extends Thread {
     /**
      * define that execution is aborted
      */
-    public void abort() {
+    public void abort(boolean terminateProcess) {
         aborted=true;
+    	if(terminateProcess)process.destroy();
     }
 
 	public boolean hasException() {
 		return exception!=null;
+	}
+	public boolean hasFinished() {
+		return finished;
 	}
 
 	/**

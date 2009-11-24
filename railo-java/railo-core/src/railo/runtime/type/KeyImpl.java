@@ -23,10 +23,10 @@ public class KeyImpl implements Collection.Key,Castable,Comparable {
 	
 	
 	
-	private static Map keys=new HashTableNotSync();//asx//new HashMap();
+	private static Map keys=new HashTableNotSync();
 	
-	//public final int index;
-	//private static int count=0;
+	//public int index;
+	//private static long count=0;
 	
 	protected KeyImpl(String key) {
 		//this.index=count++;
@@ -35,7 +35,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable {
 		this.lcKey=StringUtil.toLowerCase(key);
 		hashcode = lcKey.hashCode();//&0x7FFFFFFF;
 		keys.put(key,this);
-		//print.out(key+":"+index+":"+hashcode);
+		//print.out(key+":"+(count++));
 	}
 
 	

@@ -24,16 +24,10 @@ import railo.runtime.util.ArrayIterator;
 /**
  * implementation of the query column
  */
-public final class QueryColumnImpl implements QueryColumn,Sizeable {
+public final class QueryColumnImpl implements QueryColumn,Sizeable,Objects {
 
-	/**
-	 * Field <code>type</code>
-	 */
 	protected int type;
 	private int size;
-	/**
-	 * Field <code>data</code>
-	 */
 	protected Object[] data;
     private static final int CAPACITY=32;
     private QueryColumnUtil queryColumnUtil;
@@ -66,6 +60,13 @@ public final class QueryColumnImpl implements QueryColumn,Sizeable {
 		this.size=size;
 		this.query=query;
 		this.key=key;
+	}
+
+	/**
+	 * Constructor of the class
+	 * for internal usage only
+	 */
+	public QueryColumnImpl() {
 	}
 
 	/**
@@ -189,8 +190,8 @@ public final class QueryColumnImpl implements QueryColumn,Sizeable {
 	 */
 	public Object get(Collection.Key key) throws PageException {
 		int row=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
-	    if(row==Integer.MIN_VALUE) {
-	    	Object child=getChildElement(key,null);
+		if(row==Integer.MIN_VALUE) {
+			Object child=getChildElement(key,null);
 	    	if(child!=null) return child;
             throw new DatabaseException("key ["+key+"] not found",null,null,null);
         }
@@ -212,7 +213,13 @@ public final class QueryColumnImpl implements QueryColumn,Sizeable {
 			boolean old = undefined.setAllowImplicidQueryCall(false);
 			Object sister = undefined.get(this.key,null);
 			undefined.setAllowImplicidQueryCall(old);
-			if(sister!=null)return pc.get(sister, key,defaultValue);
+			if(sister!=null){
+				try {
+					return pc.get(sister, key);
+				} catch (PageException e) {
+					return defaultValue;
+				}
+			}
 		}
     	return defaultValue;
 	}
@@ -657,12 +664,24 @@ public final class QueryColumnImpl implements QueryColumn,Sizeable {
     }
 
     public synchronized Collection duplicate(boolean deepCopy) {
-        QueryColumnImpl clone=new QueryColumnImpl(query,key,type,size);
-        clone.data=data;
+        return cloneColumn(query,deepCopy);
+    }
+    
+    public synchronized QueryColumnImpl cloneColumn(QueryImpl query, boolean deepCopy) {
+        QueryColumnImpl clone=new QueryColumnImpl();
+
+        clone.key=key;
+        clone.query=query;
+        clone.queryColumnUtil=queryColumnUtil;
+        clone.size=size;
+        clone.type=type;
+        clone.key=key;
+        
+        clone.data=new Object[data.length];
         for(int i=0;i<data.length;i++) {
-            clone.data[i]=Duplicator.duplicate(data[i],deepCopy);
+            clone.data[i]=deepCopy?Duplicator.duplicate(data[i],true):data[i];
         }
-        return clone;
+        return clone;   
     }
 
     /**
@@ -719,4 +738,83 @@ public final class QueryColumnImpl implements QueryColumn,Sizeable {
 	public Iterator valueIterator() {
 		return new ArrayIterator(data,0,size);
 	}
+	
+	/**
+	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Collection.Key, railo.runtime.type.Struct)
+	 */
+	public Object callWithNamedValues(PageContext pc, Key methodName,Struct args) throws PageException {
+		return pc.getFunctionWithNamedValues(get(query.getCurrentrow()), methodName, Caster.toFunctionValues(args));
+	}
+
+	/**
+	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
+	 */
+	public Object call(PageContext pc, Key methodName, Object[] arguments)throws PageException {
+		return pc.getFunction(get(query.getCurrentrow()), methodName, arguments);
+	}
+
+	/**
+	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
+	 */
+	public Object call(PageContext pc, String methodName, Object[] arguments)throws PageException {
+		return call(pc, KeyImpl.init(methodName), arguments);
+	}
+
+	/**
+	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
+	 */
+	public Object callWithNamedValues(PageContext pc, String methodName,Struct args) throws PageException {
+		return callWithNamedValues(pc, KeyImpl.init(methodName), args);
+	}
+
+	/**
+	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
+	 */
+	public Object get(PageContext pc, Key key, Object defaultValue) {
+		return get(key,defaultValue);
+	}
+
+	/**
+	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
+	 */
+	public Object get(PageContext pc, Key key) throws PageException {
+		return get(key);
+	}
+
+	/**
+	 * @see railo.runtime.type.Objects#isInitalized()
+	 */
+	public boolean isInitalized() {
+		return true;
+	}
+
+	/**
+	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
+	 */
+	public Object set(PageContext pc, String propertyName, Object value)throws PageException {
+		return set(propertyName, value);
+	}
+
+	/**
+	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
+	 */
+	public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
+		return set(propertyName, value);
+	}
+
+	/**
+	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
+	 */
+	public Object setEL(PageContext pc, String propertyName, Object value) {
+		return setEL(key, value);
+	}
+
+	/**
+	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
+	 */
+	public Object setEL(PageContext pc, Key propertyName, Object value) {
+		return setEL(propertyName, value);
+	}
+
+	
 }

@@ -15,27 +15,9 @@ public class _OracleOpaqueCast {
 		
 		OPAQUE opaque = ((oracle.sql.OPAQUE)o);
 		if(opaque.getSQLTypeName().equals("SYS.XMLTYPE")){
-			//print.out(oracle.xdb.XMLType.createXML(opaque).getStringVal());
 			return oracle.xdb.XMLType.createXML(opaque).getStringVal();
 		}
 		return o;
-		
-		
-		/*try {
-			//byte[] bv = ((oracle.sql.OPAQUE)o).getBytes();
-			
-			
-			//OpaqueDescriptor desc = ((oracle.sql.OPAQUE)o).getDescriptor();
-			print.out("name:"+op.getClass().getName());
-			print.out(op.toJdbc());
-			
-			//Method getBytesValue = o.getClass().getMethod("getBytesValue", new Class[0]);
-			//byte[] bv = (byte[])getBytesValue.invoke(o, new Object[0]);
-			return new String(bv,"UTF-8");
-		}
-		catch (Exception e) {print.printST(e);}
-		*/
-		//return o;
 	}
 
 	private static void validateClasses() throws IOException {

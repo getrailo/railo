@@ -12,13 +12,14 @@ import railo.runtime.db.SQLItem;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.tag.BodyTagImpl;
+import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
+import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -32,11 +33,12 @@ import railo.runtime.util.ApplicationContextImpl;
 /**
 * Passes SQL statements to a data source. Not limited to queries.
 **/
-public final class Query extends BodyTagImpl {
+public final class Query extends BodyTagTryCatchFinallyImpl {
 
 	private static final Collection.Key SQL_PARAMETERS = KeyImpl.getInstance("sqlparameters");
 	private static final Collection.Key EXECUTION_TIME = KeyImpl.getInstance("executiontime");
 	private static final Collection.Key CFQUERY = KeyImpl.getInstance("cfquery");
+	private static final Collection.Key GENERATEDKEY = KeyImpl.getInstance("generatedKey");
 
 	
 	/** If specified, password overrides the password value specified in the data source setup. */
@@ -52,7 +54,7 @@ public final class Query extends BodyTagImpl {
 	private int timeout=-1;
 
 	/** This is the age of which the query data can be */
-	private DateTime cachedbefore;
+	private TimeSpan cachedWithin;
 
 	/** Specifies the maximum number of rows to fetch at a time from the server. The range is 1, 
 	** 		default to 100. This parameter applies to ORACLE native database drivers and to ODBC drivers. 
@@ -104,7 +106,7 @@ public final class Query extends BodyTagImpl {
 		datasource=null;
 		timeout=-1;
 		clearCache=false;
-		cachedbefore=null;
+		cachedWithin=null;
 		cachedafter=null;
 		cachename="";
 		blockfactor=-1;
@@ -187,7 +189,7 @@ public final class Query extends BodyTagImpl {
 	**/
 	public void setCachedwithin(TimeSpan cachedwithin)	{
 		if(cachedwithin.getMillis()>0)
-			this.cachedbefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedwithin.getMillis(),false);
+			this.cachedWithin=cachedwithin;
 		else clearCache=true;
 	}
 
@@ -326,7 +328,7 @@ public final class Query extends BodyTagImpl {
 		
 		railo.runtime.type.Query query=null;
 		int exe=0;
-		boolean hasCached=cachedbefore!=null || cachedafter!=null;
+		boolean hasCached=cachedWithin!=null || cachedafter!=null;
 		
 		
 		if(clearCache) {
@@ -338,9 +340,11 @@ public final class Query extends BodyTagImpl {
 		}
 		
 		if(query==null) {
-			query=(dbtype!=null && dbtype.equals("query"))?reExecute(sql):execute(sql);
+			query=(dbtype!=null && dbtype.equals("query"))?reExecute(sql):execute(sql,result!=null);
 			if(hasCached) {
-                pageContext.getQueryCache().set(sql,datasource,username,password,query,cachedbefore);
+				DateTimeImpl cachedBefore = null;
+				if(cachedWithin!=null)cachedBefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedWithin.getMillis(),false);
+                pageContext.getQueryCache().set(sql,datasource,username,password,query,cachedBefore);
 			}
 			exe=query.executionTime();
 		}
@@ -357,6 +361,7 @@ public final class Query extends BodyTagImpl {
 		
 		// Result
 		if(result!=null) {
+			
 			Struct sct=new StructImpl();
 			sct.setEL(QueryImpl.CACHED, Caster.toBoolean(query.isCached()));
 			if(!query.isEmpty())sct.setEL(QueryImpl.COLUMNLIST, List.arrayToList(query.getColumns(),","));
@@ -365,13 +370,43 @@ public final class Query extends BodyTagImpl {
 			sct.setEL(QueryImpl.RECORDCOUNT, Caster.toDouble(rc));
 			sct.setEL(QueryImpl.EXECUTION_TIME, Caster.toDouble(query.executionTime()));
 			sct.setEL(QueryImpl.SQL, sql.getSQLString());
+			
+			// GENERATED KEYS
+			// FUTURE when getGeneratedKeys() exist in interface the toQueryImpl can be removed
+			QueryImpl qi = Caster.toQueryImpl(query,null);
+			if(qi !=null){
+				QueryImpl qryKeys = Caster.toQueryImpl(qi.getGeneratedKeys(),null);
+				if(qryKeys!=null){
+					StringBuffer generatedKey=new StringBuffer(),sb;
+					Collection.Key[] columnNames = qryKeys.getColumnNames();
+					QueryColumn column;
+					for(int c=0;c<columnNames.length;c++){
+						column = qryKeys.getColumn(columnNames[c]);
+						sb=new StringBuffer();
+						int size=column.size();
+						for(int r=1;r<=size;r++) {
+							if(r>1)sb.append(',');
+							sb.append(Caster.toString(column.get(r)));
+						}
+						if(sb.length()>0){
+							sct.setEL(columnNames[c], sb.toString());
+							if(generatedKey.length()>0)generatedKey.append(',');
+							generatedKey.append(sb);
+						}
+					}
+					if(generatedKey.length()>0)
+						sct.setEL(GENERATEDKEY, generatedKey.toString());
+				}
+			}
+			
 			// sqlparameters
 			SQLItem[] params = sql.getItems();
 			if(params!=null && params.length>0) {
 				Array arr=new ArrayImpl();
 				sct.setEL(SQL_PARAMETERS, arr); 
 				for(int i=0;i<params.length;i++) {
-					arr.append(params[i].getValueForCF());
+					arr.append(params[i].getValue());
+					
 				}
 			}
 			pageContext.setVariable(result, sct);
@@ -398,7 +433,7 @@ public final class Query extends BodyTagImpl {
 		} 
 		
 	}
-	private QueryImpl execute(SQL sql) throws PageException {
+	private QueryImpl execute(SQL sql,boolean createUpdateData) throws PageException {
 		DataSourceManager manager = pageContext.getDataSourceManager();
 		if(datasource==null){
 			datasource=((ApplicationContextImpl)pageContext.getApplicationContext()).getDefaultDataSource();
@@ -409,7 +444,7 @@ public final class Query extends BodyTagImpl {
 		}
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
 		try {
-			return new QueryImpl(dc,sql,maxrows,blockfactor,timeout,"query");
+			return new QueryImpl(dc,sql,maxrows,blockfactor,timeout,"query",createUpdateData);
 		}
 		finally {
 			manager.releaseConnection(pageContext,dc);

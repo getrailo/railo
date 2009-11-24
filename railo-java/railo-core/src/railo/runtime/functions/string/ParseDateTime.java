@@ -21,8 +21,8 @@ public final class ParseDateTime implements Function {
 	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate, String string2,String strTimezone) throws PageException {
 		return _call(oDate,TimeZoneUtil.toTimeZone(strTimezone));
 	}
-	
 	private static railo.runtime.type.dt.DateTime _call( Object oDate,TimeZone tz) throws PageException {
+		
 		return DateCaster.toDateAdvanced(oDate,tz);
 	}
 }

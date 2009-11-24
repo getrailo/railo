@@ -20,7 +20,6 @@ public final class ThreadLocalPageContext {
 	 */
 	public static void register(PageContext pc) {
 		pcThreadLocal.set(pc);
-		
 	}
 
 	/**

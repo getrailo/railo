@@ -13,8 +13,6 @@ public final class Type {
 	
     public static String getName(Object o) {
         if(o == null) return "null";
-        //String name=o.getClass().getName();
-        ////if(o instanceof String) return "String";
         if(o instanceof UDF) return "user defined function ("+(((UDF)o).getFunctionName())+")";
         else if(o instanceof Boolean) return "Boolean";
         else if(o instanceof Number) return "Number";

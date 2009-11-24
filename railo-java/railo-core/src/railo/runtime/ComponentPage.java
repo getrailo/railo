@@ -146,7 +146,10 @@ public abstract class ComponentPage extends Page  {
 			is=req.getInputStream();
 			
 			String input = IOUtil.toString(is,"iso-8859-1");
-			return StringUtil.indexOfIgnoreCase(input, "soap")!=-1;
+			return 
+			StringUtil.indexOfIgnoreCase(input, "soap:Envelope")!=-1 || 
+			StringUtil.indexOfIgnoreCase(input, "soapenv:Envelope")!=-1 || 
+				StringUtil.indexOfIgnoreCase(input, "SOAP-ENV:Envelope")!=-1;
 		} 
 		catch (IOException e) {
 			return false;
@@ -255,7 +258,7 @@ public abstract class ComponentPage extends Page  {
         			JSONConverter converter = new JSONConverter();
 	        		if(secureJson)
 	        			pc.forceWrite(pc.getApplicationContext().getSecureJsonPrefix());
-	                pc.forceWrite(converter.serialize(rtn,byColumn));
+	                pc.forceWrite(converter.serialize(pc,rtn,byColumn));
         		}
         		// Serialize
         		else if(UDF.RETURN_FORMAT_SERIALIZE==format) {

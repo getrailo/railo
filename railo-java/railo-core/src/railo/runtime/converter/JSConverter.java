@@ -8,8 +8,8 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import railo.commons.lang.StringUtil;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.dateTime.DateUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
@@ -96,7 +96,7 @@ public final class JSConverter {
 		}
 		
 		else 
-			throw new ConverterException("can't serialize Object of type ["+object.getClass().getName()+"] to a js representation");
+			throw new ConverterException("can't serialize Object of type ["+Caster.toClassName(object)+"] to a js representation");
 		//deep--;
 		//return rtn;
 	}
@@ -251,10 +251,10 @@ public final class JSConverter {
 	 * @param sb
 	 * @throws ConverterException
 	 */
-	private void _serializeDateTime(DateTime dateTime, StringBuffer sb) {
+	private synchronized void _serializeDateTime(DateTime dateTime, StringBuffer sb) {
 	   
 		Calendar c = Calendar.getInstance();
-		DateUtil.setTimeZone(c, dateTime,null);
+		c.setTimeZone(ThreadLocalPageContext.getTimeZone()); 
 		c.setTime(dateTime);
 	    sb.append(goIn());
 	    sb.append("new Date(");

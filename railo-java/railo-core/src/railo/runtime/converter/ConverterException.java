@@ -1,6 +1,8 @@
 
 package railo.runtime.converter;
 
+import railo.runtime.op.Caster;
+
 
 /**
  * Exception throwed by a Converter
@@ -20,7 +22,7 @@ public final class ConverterException extends Exception {
 	 * @param e exception to encapsulate
 	 */
 	public ConverterException(Exception e) {
-		super(e.getClass().getName()+":"+e.getMessage());
+		super(Caster.toClassName(e)+":"+e.getMessage());
         setStackTrace(e.getStackTrace());
 	}
 }

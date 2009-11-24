@@ -59,15 +59,6 @@ public class BodyBase extends StatementBase implements Body {
         statement.setParent(null);
         this.statements.remove(statement);
     }
-
-    /*public static void main(String[] args) {
-		List list =new LinkedList();
-		list.add("aaa");
-		list.add("bb");
-		list.add("cc");
-		list.add(0,"xxx");
-		print.out(list);
-	}*/
     
 	/**
 	 *
@@ -192,7 +183,6 @@ public class BodyBase extends StatementBase implements Body {
 	        	}
         		//ExpressionUtil.visitLine(bc, s.getLine());
         		String method= ASMUtil.createOverfowMethod();
-        		//print.out("call:"+method);
         		ExpressionUtil.visitLine(bc, s.getLine());
         		//ExpressionUtil.lastLine(bc);
         		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});
@@ -223,88 +213,7 @@ public class BodyBase extends StatementBase implements Body {
         } 
     }
 
-	/*public static void writeOut2(List keys,List statements,BytecodeContext bc) throws BytecodeException {
-		GeneratorAdapter adapter = bc.getAdapter();
-        	
-        GeneratorAdapter a=null;
-		Method m;
-		BytecodeContext _bc=bc;
-		Iterator it = statements.iterator();
-		while(it.hasNext()) {
-			//print.out(_bc.getClassName()+":"+_bc.getCount()+":"+bc);
-	    	if(bc.doSubFunctions() && _bc.incCount()>MAX_STATEMENTS && bc.getMethod().getReturnType().equals(Types.VOID)) {
-        		if(a!=null){
-        			a.returnValue();
-    				a.endMethod();
-	        	}
-        		String method= "_"+ASMUtil.getId();
-        		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});
-    			a = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , m, null, new Type[]{Types.THROWABLE}, bc.getClassWriter());
-    			_bc=new BytecodeContext(keys,bc,a,m);
-    			adapter.visitVarInsn(Opcodes.ALOAD, 0);
-	        	adapter.visitVarInsn(Opcodes.ALOAD, 1);
-	        	//print.out(m);
-	        	adapter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, bc.getClassName(), method, "(Lrailo/runtime/PageContext;)V");
-        	}
-	    	Statement s = ((Statement)it.next());
-	    	print.out(bc.getMethod().getName()+"::"+s.getClass().getName()+":"+s.hasFlowController());
-        	s.writeOut(_bc);
-        }
-        if(a!=null){
-        	a.returnValue();
-			a.endMethod();
-        }
-		  
-    }*/
 	
-	/*public static void writeOut(List keys,List statements,BytecodeContext bc) throws BytecodeException {
-		
-        print.out(bc.getClassName()+":"+bc.getCount());
-        GeneratorAdapter adapter = bc.getAdapter();
-        if(bc.getCount()>MAX_STATEMENTS) {
-			GeneratorAdapter a=null;
-			Method m;
-			BytecodeContext _bc=null;
-			
-			Iterator it = statements.iterator();
-			//int xcount=MAX_STATEMENTS;
-			int mcount=0;
-			Statement s;
-	        while(it.hasNext()) {
-	        	s=((Statement)it.next());
-	        	bc.setCount(bc.getCount()+1);
-	        	if(bc.getCount()>MAX_STATEMENTS) {
-	        		if(a!=null){
-	        			a.returnValue();
-	    				a.endMethod();
-		        	}
-	        		bc.setCount(0);
-	        		//count=0;
-	        		mcount++;
-	        		String method= "_"+mcount+"_"+((int)(Math.random()*1000));
-	        		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});
-	    			a = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , m, null, new Type[]{Types.THROWABLE}, bc.getClassWriter());
-	    			_bc=new BytecodeContext(keys,bc,a);
-	    			adapter.visitVarInsn(Opcodes.ALOAD, 0);
-		        	adapter.visitVarInsn(Opcodes.ALOAD, 1);
-		        	adapter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, bc.getClassName(), method, "(Lrailo/runtime/PageContext;)V");
-	        	}
-	        	s.writeOut(_bc);
-	        }
-	        if(a!=null){
-	        	a.returnValue();
-				a.endMethod();
-	        }
-		}
-		else {
-			Iterator it = statements.iterator();
-	        while(it.hasNext()) {
-	        	bc.setCount(bc.getCount()+1);
-	        	((Statement)it.next()).writeOut(bc);
-	        }
-		}
-        
-    }*/
 
 
 	/**

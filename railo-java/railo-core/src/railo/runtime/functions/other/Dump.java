@@ -71,6 +71,9 @@ public final class Dump implements Function {
 	}
 		
 	public static String call(PageContext pc , Object object, String label,boolean expand,double maxLevel, String show, String hide,String output,String format,double keys,boolean metainfo, boolean showUDFs) throws PageException {
+		if(show!=null && "all".equalsIgnoreCase(show.trim()))show=null;
+		if(hide!=null && "all".equalsIgnoreCase(hide.trim()))hide=null;
+		
 		
 		String context = getContext();
 		//PageContext pcc = pc;	

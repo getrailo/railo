@@ -8,49 +8,51 @@ public final class Constants {
 	/**
 	 * Field <code>INTEGER_ZERO</code> equals new Integer(0)
 	 */
-	public static final Integer INTEGER_ZERO=new Integer(0);
+	public static final Integer INTEGER_0=new Integer(0);
 	/**
 	 * Field <code>INTEGER_ONE</code> equals new Integer(1)
 	 */
-	public static final Integer INTEGER_ONE=new Integer(1);
+	public static final Integer INTEGER_1=new Integer(1);
 	
 	public static final Integer INTEGER_MINUS_ONE=new Integer(-1);
 	/**
 	 * Field <code>INTEGER_TWO</code> equals new Integer(8)
 	 */
-	public static final Integer INTEGER_TWO=new Integer(2);
+	public static final Integer INTEGER_2=new Integer(2);
 	/**
 	 * Field <code>INTEGER_THREE</code> equals new Integer(3)
 	 */
-	public static final Integer INTEGER_THREE=new Integer(3);
+	public static final Integer INTEGER_3=new Integer(3);
 	/**
 	 * Field <code>INTEGER_FOUR</code> equals new Integer(4)
 	 */
-	public static final Integer INTEGER_FOUR=new Integer(4);
+	public static final Integer INTEGER_4=new Integer(4);
 	/**
 	 * Field <code>INTEGER_FIVE</code> equals new Integer(5)
 	 */
-	public static final Integer INTEGER_FIVE=new Integer(5);
+	public static final Integer INTEGER_5=new Integer(5);
 	/**
 	 * Field <code>INTEGER_SIX</code> equals new Integer(6)
 	 */
-	public static final Integer INTEGER_SIX=new Integer(6);
+	public static final Integer INTEGER_6=new Integer(6);
 	/**
 	 * Field <code>INTEGER_SEVEN</code> equals new Integer(7)
 	 */
-	public static final Integer INTEGER_SEVEN=new Integer(7);
+	public static final Integer INTEGER_7=new Integer(7);
 	/**
 	 * Field <code>INTEGER_EIGHT</code> equals new Integer(8)
 	 */
-	public static final Integer INTEGER_EIGHT=new Integer(8);
+	public static final Integer INTEGER_8=new Integer(8);
 	/**
 	 * Field <code>INTEGER_NINE</code> equals new Integer(9)
 	 */
-	public static final Integer INTEGER_NINE=new Integer(9);
+	public static final Integer INTEGER_9=new Integer(9);
 	/**
 	 * Field <code>INTEGER_NINE</code> equals new Integer(9)
 	 */
-	public static final Integer INTEGER_TEN=new Integer(10);
+	public static final Integer INTEGER_10=new Integer(10);
+	public static final Integer INTEGER_11=new Integer(11);
+	public static final Integer INTEGER_12=new Integer(12);
 	
 
 	public static final Double DOUBLE_ZERO = new Double(0);
@@ -59,16 +61,16 @@ public final class Constants {
      * Field <code>INTEGER</code>
      */
     public static final Integer[] INTEGER=new Integer[]{
-        INTEGER_ZERO,
-        INTEGER_ONE,
-        INTEGER_TWO,
-        INTEGER_THREE,
-        INTEGER_FOUR,
-        INTEGER_FIVE,
-        INTEGER_SIX,
-        INTEGER_SEVEN,
-        INTEGER_EIGHT,
-        INTEGER_NINE,
+        INTEGER_0,
+        INTEGER_1,
+        INTEGER_2,
+        INTEGER_3,
+        INTEGER_4,
+        INTEGER_5,
+        INTEGER_6,
+        INTEGER_7,
+        INTEGER_8,
+        INTEGER_9,
         new Integer(10),
         new Integer(11),
         new Integer(12),

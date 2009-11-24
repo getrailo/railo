@@ -40,7 +40,7 @@ class ExecutionThread extends Thread {
 	}
 	public static void execute(Config config, LogAndSource log, ScheduleTask task, String charset) {
 		boolean hasError=false;
-        String logName="schedule task "+task.getTask();
+        String logName="schedule task:"+task.getTask();
        // init
         HttpClient client = new HttpClient();
         client.setStrictMode(false);

@@ -17,7 +17,7 @@ public final class SerializeJSON implements Function {
 	}
 	public static String call(PageContext pc, Object var,boolean serializeQueryByColumns) throws PageException {
 		try {
-            return new JSONConverter().serialize(var,serializeQueryByColumns);
+            return new JSONConverter().serialize(pc,var,serializeQueryByColumns);
         } catch (ConverterException e) {
             throw Caster.toPageException(e);
         }

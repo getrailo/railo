@@ -597,18 +597,4 @@ public final class TimeZoneConstants {
 	public static final TimeZone PACIFIC_KIRITIMATI = TimeZone.getTimeZone("Pacific/Kiritimati");
 	public static final TimeZone AMERICA_INDIANA_VINCENNES = TimeZone.getTimeZone("America/Indiana/Vincennes");
 	public static final TimeZone AMERICA_INDIANA_PETERSBURG = TimeZone.getTimeZone("America/Indiana/Petersburg");
-	
-	//public static final TimeZone CEST = CET;
-	
-	/*public static void main(String[] args) {
-		print.out(CET.getDSTSavings());
-		print.out(CET.getRawOffset());
-		print.out(CET.useDaylightTime());
-		print.out(CET.getDisplayName());
-		print.out(CET.getID());
-		
-		//TimeZone CEST = new SimpleTimeZone();
-		//print.out(CEST.getDisplayName());
-	}*/
-	
 }

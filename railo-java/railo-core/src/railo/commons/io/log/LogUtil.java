@@ -1,12 +1,14 @@
 package railo.commons.io.log;
 
-import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.format.DateFormat;
 import railo.runtime.format.TimeFormat;
+import railo.runtime.op.Caster;
+import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.dt.DateTimeImpl;
 
 /**
  * Helper class for the logs
@@ -49,7 +51,7 @@ public final class LogUtil {
         
         data.append(',');
         
-        Date date = new Date();
+        DateTime date = new DateTimeImpl();
         // Date
         data.append('"');
         data.append(dateFormat.format(date,"mm/dd/yyyy",TimeZone.getDefault()));
@@ -59,7 +61,7 @@ public final class LogUtil {
         
         // Time
         data.append('"');
-        data.append(timeFormat.format(date,"HH:mm",TimeZone.getDefault()));
+        data.append(timeFormat.format(date,"HH:mm:ss",TimeZone.getDefault()));
         data.append('"');
         
         data.append(',');
@@ -119,7 +121,7 @@ public final class LogUtil {
 	public static String toMessage(Exception e) {
 		if(e==null) return "";
 		String msg = e.getMessage();
-		String clazz=e.getClass().getName();
+		String clazz=Caster.toClassName(e);
 		
 		if(StringUtil.isEmpty(msg)) return clazz;
 		

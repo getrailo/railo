@@ -1,5 +1,6 @@
 package railo.runtime.type;
 
+import java.io.Serializable;
 import java.sql.Types;
 import java.util.Date;
 
@@ -11,7 +12,7 @@ import railo.runtime.type.dt.DateTime;
 /**
  * Helper class for the QueryColumnImpl
  */
-public final class QueryColumnUtil {
+public final class QueryColumnUtil implements Serializable {
     
     private QueryColumnImpl column;
 
@@ -146,13 +147,14 @@ public final class QueryColumnUtil {
     }
 
     private Object reDefineShort(Object value) {
-        double dbl = Caster.toDoubleValue(value,Double.NaN);
+    	
+    	double dbl = Caster.toDoubleValue(value,Double.NaN);
         if(!Double.isNaN(dbl)) {  
             short sht=(short)dbl;
-            if(sht==dbl)return new Short(sht);
+            if(sht==dbl)return value;
             
             column.type=Types.DOUBLE;
-            return new Double(dbl);
+            return value;
         }
         resetType();
         return value;
@@ -188,13 +190,13 @@ public final class QueryColumnUtil {
     }
 
     private Object reDefineDateTime(Object value) {
-    	//!!!!!!!!!!!!!!!if(Decision.isCastableToDateTime(value))
-    	//	return value;
+    	if(Decision.isDateSimple(value,true))
+    		return value;
     	
-    	DateTime dt = Caster.toDate(value,true,null,null);
+    	/*DateTime dt = Caster.toDate(value,true,null,null);
         if(dt!=null) {                
             return dt;
-        }
+        }*/
         resetType();
         return value;
     }
@@ -286,7 +288,7 @@ public final class QueryColumnUtil {
                 //print.out("type:"+QueryImpl.getColumTypeName(column.type));
 
                 // Date
-                if(Types.TIMESTAMP==column.type) {
+                /*if(Types.TIMESTAMP==column.type) {
                     for(int i=0;i<column.size();i++) {
                         column.data[i]=toDate(column.data[i]);
                     }
@@ -308,7 +310,7 @@ public final class QueryColumnUtil {
                     for(int i=0;i<column.size();i++) {
                         column.data[i]=toString(column.data[i]);
                     }
-                }
+                }*/
             }
         }
     }

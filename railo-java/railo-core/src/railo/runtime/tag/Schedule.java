@@ -398,7 +398,7 @@ public final class Schedule extends TagImpl {
         else if(!StringUtil.isEmpty(strPath)) {
             file=ResourceUtil.toResourceNotExisting(pageContext, strPath);
         }
-        pageContext.getConfig().getSecurityManager().checkFileLocation(pageContext.getConfig(),file,serverPassword);
+        if(file!=null)pageContext.getConfig().getSecurityManager().checkFileLocation(pageContext.getConfig(),file,serverPassword);
         
         // missing attributes
         if(startdate==null || starttime==null || url==null || interval==null) 

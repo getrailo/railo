@@ -1,7 +1,6 @@
 package railo.runtime.util;
 
 import railo.runtime.Mapping;
-import railo.runtime.MappingImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
@@ -27,8 +26,8 @@ public final class ApplicationContextImpl implements ApplicationContext {
     private int loginStorage=-1;
     private String clientstorage;
 	private int scriptProtect;
-	private MappingImpl[] mappings;
-	private MappingImpl[] ctmappings;
+	private Mapping[] mappings;
+	private Mapping[] ctmappings;
 	private boolean secureJson;
 	private String secureJsonPrefix="//";
 	private boolean isDefault;
@@ -259,7 +258,7 @@ public final class ApplicationContextImpl implements ApplicationContext {
 		} 
 	}
 
-	public void setMappings(MappingImpl[] mappings) {
+	public void setMappings(Mapping[] mappings) {
 		if(mappings.length>0)this.mappings=mappings;
 	}
 
@@ -270,7 +269,7 @@ public final class ApplicationContextImpl implements ApplicationContext {
 		return mappings;
 	}
 
-	public void setCustomTagMappings(MappingImpl[] ctmappings) {
+	public void setCustomTagMappings(Mapping[] ctmappings) {
 		this.ctmappings=ctmappings;
 	}
 

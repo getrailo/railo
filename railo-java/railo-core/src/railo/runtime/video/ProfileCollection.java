@@ -48,7 +48,7 @@ public class ProfileCollection  {
 		try {
 			video = getVideoXML(xml);
 		} catch (Exception e) {
-			throw new ApplicationException("can not load video xml file ["+xml+"]",e.getClass().getName()+":"+e.getMessage());
+			throw new ApplicationException("can not load video xml file ["+xml+"]",Caster.toClassName(e)+":"+e.getMessage());
 		}
 		
 		// translate form DOM to a List of VideoProfile

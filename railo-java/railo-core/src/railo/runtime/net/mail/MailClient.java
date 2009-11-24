@@ -208,13 +208,6 @@ public abstract class MailClient {
 		folder.open(Folder.READ_ONLY);
 		try {
 			getMessages(qry,folder, uids, messageNumbers, startrow, maxrows,all);
-			/*Iterator iterator = messages.keySet().iterator();
-			Object uid;
-			while(iterator.hasNext()) {
-				uid = iterator.next();
-				Message message = (Message) messages.get(uid);
-				toQuery(qry,message,uid,all);
-			}*/
 		}
 		finally {
 			folder.close(false);
@@ -269,10 +262,10 @@ public abstract class MailClient {
 	 * @throws IOException 
 	 * @throws PageException 
      */
-    private HashTable getMessages(QueryImpl qry, Folder folder, String[] uids, String[] messageNumbers, int startRow, int maxRow, boolean all) throws MessagingException, IOException {
+    private Map getMessages(QueryImpl qry, Folder folder, String[] uids, String[] messageNumbers, int startRow, int maxRow, boolean all) throws MessagingException, IOException {
 		
     	Message[] messages = folder.getMessages();
-		HashTable hashtable = qry==null?new HashTable():null;
+		Map map = qry==null?new HashTable():null;
 		int k = 0;
 		if(uids != null || messageNumbers != null) {
 			startRow = 0;
@@ -287,17 +280,15 @@ public abstract class MailClient {
 			int messageNumber = message.getMessageNumber();
 			String id = getId(folder,message);
 			
-			
-			
 			if(uids == null ? messageNumbers == null || contains(messageNumbers, messageNumber) : contains(uids, id)) {
 				k++;
 				if(qry!=null){
 					toQuery(qry,message,id,all);
 				}
-				else hashtable.put(id, message);
+				else map.put(id, message);
 			}
 		}
-		return hashtable;
+		return map;
 	}
     protected abstract String getId(Folder folder,Message message) throws MessagingException;
 

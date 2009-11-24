@@ -84,4 +84,10 @@ public final class LogAndSourceImpl implements LogAndSource {
         log.setLogLevel(level);    
     }
     
+    /**
+     * @see java.lang.Object#toString()
+     */
+    public String toString(){
+    	return log+":"+source;
+    }
 }

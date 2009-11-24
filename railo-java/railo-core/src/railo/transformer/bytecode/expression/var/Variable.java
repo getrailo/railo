@@ -10,6 +10,7 @@ import org.objectweb.asm.commons.Method;
 
 import railo.runtime.exp.TemplateException;
 import railo.runtime.type.Scope;
+import railo.runtime.util.VariableUtilImpl;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.ExprString;
@@ -18,6 +19,7 @@ import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.expression.Invoker;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.TypeScope;
 import railo.transformer.bytecode.util.Types;
@@ -94,6 +96,18 @@ public final class Variable extends ExpressionBase implements Invoker {
     private final static Method GET_FUNCTION_WITH_NAMED_ARGS_KEY = new Method("getFunctionWithNamedValues",
 			Types.OBJECT,
 			new Type[]{Types.OBJECT,Types.COLLECTION_KEY,Types.OBJECT_ARRAY});
+	
+	private static final Type VARIABLE_UTIL_IMPL = Type.getType(VariableUtilImpl.class);
+	
+    private static final Method RECORDCOUNT = new Method("recordcount",
+			Types.OBJECT,
+			new Type[]{Types.PAGE_CONTEXT,Types.OBJECT});
+	private static final Method CURRENTROW = new Method("currentrow",
+			Types.OBJECT,
+			new Type[]{Types.PAGE_CONTEXT,Types.OBJECT});
+	private static final Method COLUMNLIST = new Method("columnlist",
+			Types.OBJECT,
+			new Type[]{Types.PAGE_CONTEXT,Types.OBJECT});
     
     
 	int scope=Scope.SCOPE_UNDEFINED;
@@ -152,8 +166,26 @@ public final class Variable extends ExpressionBase implements Invoker {
 			if(member instanceof DataMember)	{
 				ExprString name = ((DataMember)member).getName();
 				
-				if(registerKey(bc,name))adapter.invokeVirtual(Types.PAGE_CONTEXT,last?GET_KEY:GET_COLLECTION_KEY);
-				else adapter.invokeVirtual(Types.PAGE_CONTEXT,last?GET:GET_COLLECTION);
+				if(last && ASMUtil.isDotKey(name)){
+					LitString ls = (LitString)name;
+					if(ls.getString().equalsIgnoreCase("RECORDCOUNT")){
+						adapter.invokeStatic(VARIABLE_UTIL_IMPL, RECORDCOUNT);
+					}
+					else if(ls.getString().equalsIgnoreCase("CURRENTROW")){
+						adapter.invokeStatic(VARIABLE_UTIL_IMPL, CURRENTROW);
+					}
+					else if(ls.getString().equalsIgnoreCase("COLUMNLIST")){
+						adapter.invokeStatic(VARIABLE_UTIL_IMPL, COLUMNLIST);
+					}
+					else {
+						if(registerKey(bc,name))adapter.invokeVirtual(Types.PAGE_CONTEXT,last?GET_KEY:GET_COLLECTION_KEY);
+						else adapter.invokeVirtual(Types.PAGE_CONTEXT,last?GET:GET_COLLECTION);
+					}
+				}
+				else{
+					if(registerKey(bc,name))adapter.invokeVirtual(Types.PAGE_CONTEXT,last?GET_KEY:GET_COLLECTION_KEY);
+					else adapter.invokeVirtual(Types.PAGE_CONTEXT,last?GET:GET_COLLECTION);
+				}
 				rtn=Types.OBJECT;
 			}
 
@@ -257,7 +289,7 @@ public final class Variable extends ExpressionBase implements Invoker {
 		// return type
 		Type rtnType=Types.toType(bif.getReturnType());
 		if(rtnType==Types.VOID)rtnType=Types.STRING;
-		adapter.invokeStatic(bifClass,new Method("call",rtnType,argTypes));
+		adapter.	invokeStatic(bifClass,new Method("call",rtnType,argTypes));
 		
 		
 		if(mode==MODE_REF || !last) {

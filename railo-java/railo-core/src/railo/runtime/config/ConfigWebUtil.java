@@ -6,6 +6,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 import railo.commons.io.SystemUtil;
+import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogAndSourceImpl;
 import railo.commons.io.log.LogConsole;
@@ -13,6 +14,7 @@ import railo.commons.io.log.LogResource;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.SystemOut;
 import railo.runtime.Mapping;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.security.SecurityManager;
@@ -286,31 +288,29 @@ public final class ConfigWebUtil {
      * @throws IOException
     */
     public static LogAndSource getLogAndSource( ConfigServer configServer, Config config, String strLogger, boolean hasAccess, int logLevel) throws IOException {
-        boolean isCS=config instanceof ConfigServer;
+        if(logLevel==-1)logLevel=Log.LEVEL_ERROR;
+    	boolean isCS=config instanceof ConfigServer;
         if(!StringUtil.isEmpty(strLogger) && hasAccess) {
-            if(!isCS)return ConfigWebUtil.getLogAndSource(config,strLogger,logLevel);
+            return ConfigWebUtil.getLogAndSource(config,strLogger,logLevel);
         }
-        /*else if(configServer!=null) {
-            LogAndSource ls = configServer.getMailLogger();
-            Log l=ls.getLog();
-            logLevel=l.getLogLevel();
-            return ConfigWebUtil.getLogAndSource(config,ls.getSource(),logLevel);
-        }*/
         return new LogAndSourceImpl(LogConsole.getInstance(logLevel),strLogger);
     }
-    private static LogAndSource getLogAndSource(Config config, String strLogger, int logLevel) throws IOException {
+    private static LogAndSource getLogAndSource(Config config, String strLogger, int logLevel)  {
         if(strLogger==null) return new LogAndSourceImpl(LogConsole.getInstance(logLevel),"");
         
         // File
         strLogger=translateOldPath(strLogger);
         Resource file=ConfigWebUtil.getFile(config, config.getConfigDir(),strLogger, ResourceUtil.TYPE_FILE);
         if(file!=null && ResourceUtil.canRW(file)) {
-            return new LogAndSourceImpl(new LogResource(file,logLevel,config.getResourceCharset()),strLogger);
-            //return new LogAndSourceImpl(new LogFile(file,logLevel,((ConfigImpl)config).get DefaultEncoding()),strLogger);
+            try {
+				return new LogAndSourceImpl(new LogResource(file,logLevel,config.getResourceCharset()),strLogger);
+			} catch (IOException e) {
+				SystemOut.printDate(config.getErrWriter(),e.getMessage());
+			}
         }
         
-        if(file==null)System.err.println("can't create logger from file ["+strLogger+"], invalid path");
-        else System.err.println("can't create logger from file ["+strLogger+"], no write access");
+        if(file==null)SystemOut.printDate(config.getErrWriter(),"can't create logger from file ["+strLogger+"], invalid path");
+        else SystemOut.printDate(config.getErrWriter(),"can't create logger from file ["+strLogger+"], no write access");
     
         return new LogAndSourceImpl(LogConsole.getInstance(logLevel),strLogger);
     
@@ -336,7 +336,7 @@ public final class ConfigWebUtil {
     	short access = sm.getAccess(SecurityManager.TYPE_ACCESS_READ);
     	if(config instanceof ConfigServer)access=SecurityManager.ACCESS_PROTECTED;
     	if(access==SecurityManager.ACCESS_PROTECTED) {
-    		checkPassword(config,password);
+    		checkPassword(config,"read",password);
     	}
     	else if(access==SecurityManager.ACCESS_CLOSE) {
     		throw new SecurityException("can't access, read access is disabled");
@@ -346,25 +346,32 @@ public final class ConfigWebUtil {
 	public static void checkGeneralWriteAccess(ConfigImpl config, String password) throws SecurityException {
     	SecurityManager sm = config.getSecurityManager();
     	short access = sm.getAccess(SecurityManager.TYPE_ACCESS_WRITE);
-    	//print.out(config+":"+SecurityManagerImpl.toStringAccessRWValue(access)+":"+SecurityManagerImpl.toStringAccessRWValue(
-    	//		sm.getAccess(SecurityManager.TYPE_ACCESS_READ)
-    	//));
+    	
     	if(config instanceof ConfigServer)access=SecurityManager.ACCESS_PROTECTED;
     	if(access==SecurityManager.ACCESS_PROTECTED) {
-    		checkPassword(config,password);
+    		checkPassword(config,"write",password);
     	}
     	else if(access==SecurityManager.ACCESS_CLOSE) {
     		throw new SecurityException("can't access, write access is disabled");
     	}
 	}
 
-    public static void checkPassword(ConfigImpl config, String password) throws SecurityException {
+    public static void checkPassword(ConfigImpl config, String type,String password) throws SecurityException {
     	if(!config.hasPassword())
             throw new SecurityException("can't access, no password is defined");
         //print.ln(config.getPassword()+".equalsIgnoreCase("+password+")");
-        if(!config.getPassword().equalsIgnoreCase(password))
+        if(!config.getPassword().equalsIgnoreCase(password)){
+        	if(StringUtil.isEmpty(password)){
+        		if(type==null)
+        			throw new SecurityException("acccess is protected",
+                    		"to access the configuration without a password, you need to change the access to [open] in the Server Administrator");
+        		throw new SecurityException(type +" acccess is protected",
+                		"to access the configuration without a password, you need to change the "+type+" access to [open] in the Server Administrator");
+        	}
             throw new SecurityException("no acccess, password is invalid");
+        }
     }
+
     
     
 }

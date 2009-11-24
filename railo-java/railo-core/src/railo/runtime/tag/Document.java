@@ -580,7 +580,7 @@ public final class Document extends BodyTagImpl {
 			while(it.hasNext()) {
 				pdfDocs[index]=(PDFDocument)it.next();
 				pdfReaders[index]=
-					new PdfReader(pdfDocs[index].render(getDimension(),unitFactor,pageContext.getConfig(),doHtmlBookmarks));
+					new PdfReader(pdfDocs[index].render(getDimension(),unitFactor,pageContext,doHtmlBookmarks));
 				index++;
 			}
 			
@@ -636,10 +636,10 @@ public final class Document extends BodyTagImpl {
 			pdf=baos.toByteArray();
 		}
 		else if(documents.size()==1){
-			pdf=((PDFDocument)documents.get(0)).render(getDimension(),unitFactor,pageContext.getConfig(),doHtmlBookmarks);
+			pdf=((PDFDocument)documents.get(0)).render(getDimension(),unitFactor,pageContext,doHtmlBookmarks);
 		}
 		else {
-			pdf=getDocument().render(getDimension(),unitFactor,pageContext.getConfig(),doHtmlBookmarks);
+			pdf=getDocument().render(getDimension(),unitFactor,pageContext,doHtmlBookmarks);
 		}
 		
 		// permission/encryption

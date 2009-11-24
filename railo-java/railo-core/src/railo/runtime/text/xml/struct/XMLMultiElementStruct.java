@@ -196,17 +196,6 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
     	return array.setE(index,element);
 	}
     
-    /**
-     *
-     * @see railo.runtime.text.xml.struct.XMLNodeStruct#duplicate(boolean)
-     */
-    public Collection duplicate(boolean deepCopy) {
-        try {
-            return new XMLMultiElementStruct((Array) array.duplicate(deepCopy),getCaseSensitive());
-        } catch (PageException e) {
-            return null;
-        }
-    }
 
     /**
      *
@@ -216,12 +205,27 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
         return get(key,null)!=null;
     }
 
-
-
-	
-
-	
 	Array getInnerArray() {
 		return array;
+	}
+	
+
+    public Collection duplicate(boolean deepCopy) {
+        try {
+            return new XMLMultiElementStruct((Array) array.duplicate(deepCopy),getCaseSensitive());
+        } catch (PageException e) {
+            return null;
+        }
+    }
+
+	/**
+	 * @see org.w3c.dom.Node#cloneNode(boolean)
+	 */
+	public Node cloneNode(boolean deep) {
+		try {
+            return new XMLMultiElementStruct((Array) array.duplicate(deep),getCaseSensitive());
+        } catch (PageException e) {
+            return null;
+        }
 	}
 }

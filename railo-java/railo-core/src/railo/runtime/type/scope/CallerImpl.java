@@ -17,8 +17,9 @@ import railo.runtime.type.util.StructSupport;
  */
 public final class CallerImpl extends StructSupport implements Caller  {
     
-    private PageContext pc;
-    private Scope variablesScope;
+
+	private PageContext pc;
+    private Variables variablesScope;
     private Scope localScope;
     private Scope argumentsScope;
     private boolean checkArgs;
@@ -177,7 +178,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
      * @see railo.runtime.type.scope.Caller#setScope(railo.runtime.type.Scope, railo.runtime.type.Scope, railo.runtime.type.Scope, boolean)
      */
     public void setScope(Scope variablesScope, Scope localScope, Scope argumentsScope, boolean checkArgs) {
-        this.variablesScope = variablesScope;
+        this.variablesScope = (Variables)variablesScope;
         this.localScope = localScope;
         this.argumentsScope = argumentsScope;
         this.checkArgs = checkArgs;
@@ -408,4 +409,24 @@ public final class CallerImpl extends StructSupport implements Caller  {
 	}
 
 
+    /** FUTURE add to intrface Caller
+	 * @return the variablesScope
+	 */
+	public Variables getVariablesScope() {
+		return variablesScope;
+	}
+
+	/**FUTURE add to intrface Caller
+	 * @return the localScope
+	 */
+	public Local getLocalScope() {
+		return (Local)localScope;
+	}
+
+	/**FUTURE add to intrface Caller
+	 * @return the argumentsScope
+	 */
+	public Argument getArgumentsScope() {
+		return (Argument)argumentsScope;
+	}
 }

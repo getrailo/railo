@@ -1,6 +1,7 @@
 package railo.runtime;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Enumeration;
@@ -39,7 +40,6 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
-import railo.print;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -72,13 +72,17 @@ import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageExceptionBox;
 import railo.runtime.exp.PageServletException;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.listener.ApplicationListener;
+import railo.runtime.listener.ModernAppListenerException;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.net.ftp.FTPPoolImpl;
 import railo.runtime.net.http.HoldingInputHTTPServletRequest;
+import railo.runtime.net.http.HttpServletRequestMod;
+import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.query.QueryCache;
@@ -309,7 +313,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @param id identity of the pageContext
 	 */
 	public PageContextImpl(ScopeContext scopeContext, ConfigWebImpl config, QueryCache queryCache,int id) {
-        // must be first because is used after
+		// must be first because is used after
         this.id=id;
 		//this.factory=factory;
 		
@@ -353,8 +357,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			 boolean autoFlush) {
 		
 		requestId=counter++;
-		
 		rsp.setContentType("text/html; charset=UTF-8");
+		
         //rsp.setHeader("Connection", "close");
         applicationContext=defaultApplicationContext;
         
@@ -404,7 +408,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		activeComponent=null;
 		activeUDF=null;
 		
-		fdEnabled=!config.getConfigServerImpl().getCFMLEngineImpl().allowRequestTimeout();
+		fdEnabled=!config.getCFMLEngineImpl().allowRequestTimeout();
 		//fdEnabled=true;
         return this;
 	 }
@@ -506,6 +510,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         forceWriter=null;
         if(pagesUsed.size()>0)pagesUsed.clear();
         
+        activeComponent=null;
+        activeUDF=null;
 	}
 	/**
 	 * @see javax.servlet.jsp.PageContext#initialize(javax.servlet.Servlet, javax.servlet.ServletRequest, javax.servlet.ServletResponse, java.lang.String, boolean, int, boolean)
@@ -606,7 +612,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             long exeTime=0;
             long time=System.currentTimeMillis();
             
-            Page currentPage = source.loadPage(config);
+            Page currentPage = ((PageSourceImpl)source).loadPage(this,config);
             try {
                 addPageSource(source,true);
                 debugEntry.updateFileLoadTime((int)(System.currentTimeMillis()-time));
@@ -636,7 +642,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		}
 	// no debug
 		else {
-            Page currentPage = source.loadPage(config);
+            Page currentPage = ((PageSourceImpl)source).loadPage(this,config);
 		    try {
 				addPageSource(source,true);
                 currentPage.call(this);
@@ -1071,7 +1077,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see PageContext#getCollection(java.lang.Object, java.lang.String)
      */
     public Object getCollection(Object coll, String key) throws PageException {
-		return variableUtil.getCollection(this,coll,key);
+    	return variableUtil.getCollection(this,coll,key);
 	}
 
 	/**
@@ -1401,7 +1407,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @see javax.servlet.jsp.PageContext#getSession()
 	 */
 	public HttpSession getSession() {
-		return getHttpServletRequest().getSession();
+		return getHttpServletRequest().getSession(true);
 	}
 
 	/**
@@ -1471,7 +1477,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public void forward(String realPath) throws ServletException, IOException {
 		//RequestDispatcher requestDispatcher = getServletContext().getRequestDispatcher(realPath);
         //requestDispatcher.forward(req,rsp);
-        
+		PageSource ps = getRelativePageSource(realPath);
+		realPath=ps.getFullRealpath();
+		
         
         RequestDispatcher disp = getHttpServletRequest().getRequestDispatcher(realPath);
         disp.forward(getHttpServletRequest(),getHttpServletResponse());
@@ -1484,8 +1492,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public void handlePageException(PageException pe) {
 		if(!(pe instanceof Abort)) {
 			
-			int statusCode=500;
-			if(pe instanceof MissingIncludeException) statusCode=404;
+			int statusCode=getStatusCode(pe);
+			
 			if(getConfig().getErrorStatusCode())rsp.setStatus(statusCode);
 			
 			
@@ -1505,7 +1513,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				
 			}
 			try {
-				forceWrite("<!-- Railo ["+Info.getVersionAsString()+"] Error -->");
+				if(statusCode!=404)
+					forceWrite("<!-- Railo ["+Info.getVersionAsString()+"] Error -->");
 				
 				String template=getConfig().getErrorTemplate(statusCode);
 				if(!StringUtil.isEmpty(template)) {
@@ -1526,6 +1535,26 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			}
 		}
 	}
+
+	private int getStatusCode(PageException pe) {
+		int statusCode=500;
+		int maxDeepFor404=0;
+		if(pe instanceof ModernAppListenerException){
+			pe=((ModernAppListenerException)pe).getPageException();
+			maxDeepFor404=1;
+		}
+		else if(pe instanceof PageExceptionBox)
+			pe=((PageExceptionBox)pe).getPageException();
+		
+		if(pe instanceof MissingIncludeException) {
+			MissingIncludeException mie=(MissingIncludeException) pe;
+			if(mie.getPageDeep()<=maxDeepFor404) statusCode=404;
+		}
+		
+		// TODO Auto-generated method stub
+		return statusCode;
+	}
+
 
 	/**
 	 * @see javax.servlet.jsp.PageContext#handlePageException(java.lang.Exception)
@@ -1724,13 +1753,21 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @see javax.servlet.jsp.PageContext#include(java.lang.String)
 	 */
 	public void include(String realPath) throws ServletException,IOException  {
-		//RequestDispatcher requestDispatcher = getServletContext().getRequestDispatcher(realPath);
-        //requestDispatcher.include(req,rsp);
-        RequestDispatcher disp = getHttpServletRequest().getRequestDispatcher(realPath);
-        disp.include(getHttpServletRequest(),getHttpServletResponse());
+		ServletContext context = config.getServletContext();
+		HttpServletRequestMod dreq=new HttpServletRequestMod(this,realPath);
+		
+		ByteArrayOutputStream baos=new ByteArrayOutputStream();
+		HttpServletResponseDummy drsp=new HttpServletResponseDummy(baos);
+		
+		RequestDispatcher disp = context.getRequestDispatcher(realPath);
+        disp.include(dreq,drsp);
+        write(IOUtil.toString(baos.toByteArray(), drsp.getCharacterEncoding()));
         
 	}
 	
+
+
+
 	/**
 	 * @see railo.runtime.PageContext#include(railo.runtime.PageSource)
 	 */
@@ -2277,7 +2314,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     /**
      * @see railo.runtime.PageContext#compile(railo.runtime.PageSource)
      */
-    public void compile(PageSource pageSource) throws PageException {
+    public synchronized void compile(PageSource pageSource) throws PageException {
         Resource classRootDir = pageSource.getMapping().getClassRootDirectory();
         
         try {
@@ -2437,7 +2474,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		if(dc!=null && DatasourceConnectionPool.isValid(dc,null)){
 			return dc;
 		}
-		dc=config.getDatasourceConnectionPool().getDatasourceConnection(ds, user, pass);
+		dc=config.getDatasourceConnectionPool().getDatasourceConnection(this,ds, user, pass);
 		conns.put(id, dc);
 		return dc;
 	}

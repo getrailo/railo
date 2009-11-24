@@ -85,13 +85,13 @@ public final class ClientCookieOld extends ClientSupport {
 				str = (String)pc.cookieScope().get(cookieName+"_LV",null);
 				if(!StringUtil.isEmpty(str)) {
 					l=Caster.toLongValue(str,0);
-					if(l>0)sct.setEL(LASTVISIT, new DateTimeImpl(l,true));
+					if(l>0)sct.setEL(LASTVISIT, new DateTimeImpl(pc,l,true));
 				}
 				// time created
 				str = (String)pc.cookieScope().get(cookieName+"_TC",null);
 				if(!StringUtil.isEmpty(str)) {
 					l=Caster.toLongValue(str,0);
-					if(l>0)sct.setEL(TIMECREATED, new DateTimeImpl(l,true));
+					if(l>0)sct.setEL(TIMECREATED, new DateTimeImpl(pc,l,true));
 				}
 				
 				// hit count

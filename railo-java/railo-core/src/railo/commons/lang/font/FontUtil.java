@@ -75,9 +75,4 @@ public class FontUtil {
 		}
 		return graphics.getFontMetrics(font);
 	}
-	
-	/*public static void main(String[] args) throws PageException {
-		print.out(getFontMetrics(new Font("Arial",Font.BOLD,17)).stringWidth("Susi"));
-	}*/
-	
 }

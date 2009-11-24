@@ -130,11 +130,11 @@ public class ImageResizer	{
     }
     
     private static int vertical(BufferedImage source, BufferedImage destination, double y_factor, Interpolation ip, double blur, ContributionInfo[] contribution) {
-	if (source.getWidth() == destination.getWidth()
+	/*if (source.getWidth() == destination.getWidth()
 	    && source.getHeight() == destination.getHeight()) {
 	    destination.setData(source.getData());
 	    return destination.getWidth();
-	}
+	}*/
 	double scale = blur * Math.max(1.0 / y_factor, 1.0);
 	double support = Math.max(scale * ip.getSupport(), 0.5);
 	if (support <= 0.5) {
@@ -225,10 +225,11 @@ public class ImageResizer	{
 	if (columns == 0 || rows == 0)
 	    throw new ExpressionException("invalid size for image");
 	BufferedImage resizeImage = createBufferedImage(image, columns, rows);
-	if (columns == image.getWidth() && rows == image.getHeight()) {
+	/*fails
+	 * if (columns == image.getWidth() && rows == image.getHeight()) {
 	    resizeImage.setData(image.getData());
 	    return resizeImage;
-	}
+	}*/
 	Interpolation filter = getInterpolation(interpolation);
 	double x_factor = (double) columns / (double) image.getWidth();
 	double scale = blur * Math.max(1.0 / x_factor, 1.0);

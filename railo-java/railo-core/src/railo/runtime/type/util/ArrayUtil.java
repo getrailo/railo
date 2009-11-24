@@ -1,8 +1,10 @@
 package railo.runtime.type.util;
 
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
-import railo.commons.io.res.Resource;
 import railo.commons.lang.ArrayUtilException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.CasterException;
@@ -52,10 +54,36 @@ public final class ArrayUtil {
 	 */
 	public static SortRegister[] toSortRegisterArray(QueryColumn column) {
 		SortRegister[] arr=new SortRegister[column.size()];
+		int type = column.getType();
 		for(int i=0;i<arr.length;i++) {
-			arr[i]=new SortRegister(i,column.get(i+1,null));
+			arr[i]=new SortRegister(i,toSortRegisterArray(column.get(i+1,null),type));
 		}
 		return arr;
+	}
+	
+	private static Object toSortRegisterArray(Object value, int type) {
+		
+		Object mod=null;
+	    // Date
+	    if(Types.TIMESTAMP==type) {
+	        mod= Caster.toDate(value, true, null,null);
+	    }
+	    // Double
+	    else if(Types.DOUBLE==type) {
+	    	mod= Caster.toDouble(value,null);
+	    }
+	    // Boolean
+	    else if(Types.BOOLEAN==type) {
+	    	mod= Caster.toBoolean(value,null);
+	    }
+	    // Varchar
+	    else if(Types.VARCHAR==type) {
+	    	mod= Caster.toString(value,null);
+	    }
+	    else return value;
+	    
+	    if(mod!=null) return mod;
+	    return value;
 	}
 	
 	/**
@@ -450,7 +478,7 @@ public final class ArrayUtil {
 	        }
 		    throw invalidIndex(index,arr.length);
 		}
-		throw new ArrayUtilException("Object ["+o.getClass().getName()+"] is not a Array");
+		throw new ArrayUtilException("Object ["+Caster.toClassName(o)+"] is not a Array");
 	}
 
 	
@@ -683,5 +711,15 @@ public final class ArrayUtil {
 			trg[i]=src[i];
 		}
 		return trg;
+	}
+
+
+	public static Object[] keys(Map map) {
+		if(map==null) return new Object[0];
+		Set set = map.keySet();
+		if(set==null) return new Object[0];
+		Object[] arr = set.toArray();
+		if(arr==null) return new Object[0];
+		return arr;
 	}
 }

@@ -99,8 +99,8 @@ public final class Perl5Util {
         }
         ArrayImpl posArray = new ArrayImpl();
         ArrayImpl lenArray = new ArrayImpl();
-        posArray.appendEL(Constants.INTEGER_ZERO);
-        lenArray.appendEL(Constants.INTEGER_ZERO);
+        posArray.appendEL(Constants.INTEGER_0);
+        lenArray.appendEL(Constants.INTEGER_0);
         
         Struct struct = new StructImpl();
         struct.setEL("pos", posArray);

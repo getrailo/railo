@@ -5,6 +5,7 @@ package railo.runtime.functions.dateTime;
 
 import java.util.TimeZone;
 
+import railo.commons.date.DateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
@@ -23,6 +24,6 @@ public final class CreateDateTime implements Function {
 		return _call(pc,year,month,day,hour,minute,second,millis,TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	private static DateTime _call(PageContext pc , double year, double month, double day, double hour, double minute, double second,double millis,TimeZone tz) throws ExpressionException {
-		return DateUtil.toDateTime(tz,(int)year,(int)month,(int)day,(int)hour,(int)minute,(int)second,(int)millis);
+		return DateTimeUtil.getInstance().toDateTime(tz,(int)year,(int)month,(int)day,(int)hour,(int)minute,(int)second,(int)millis);
 	}
 }

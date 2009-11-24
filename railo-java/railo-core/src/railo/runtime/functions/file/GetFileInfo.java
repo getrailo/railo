@@ -19,7 +19,7 @@ public class GetFileInfo {
 		sct.set("canRead", Caster.toBoolean(src.isReadable()));
 		sct.set("canWrite", Caster.toBoolean(src.isWriteable()));
 		sct.set("isHidden", Caster.toBoolean(src.getAttribute(Resource.ATTRIBUTE_HIDDEN)));
-		sct.set("lastmodified",new DateTimeImpl(src.lastModified(),false) );
+		sct.set("lastmodified",new DateTimeImpl(pc,src.lastModified(),false) );
 		sct.set("name",src.getName() );
 		sct.set("parent",src.getParent() );
 		sct.set("path",src.getAbsolutePath() );

@@ -18,7 +18,6 @@ import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.functions.dateTime.DateAdd;
-import railo.runtime.schedule.ScheduleThread;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.scope.ClientFile;
 import railo.runtime.type.scope.ScopeContext;
@@ -36,7 +35,7 @@ public final class Controler extends Thread {
 	int maxPoolSize=500;
     private Map contextes;
     private RefBoolean run;
-	private ScheduleThread scheduleThread;
+	//private ScheduleThread scheduleThread;
 	private ConfigServer configServer;
 
 	/**
@@ -49,14 +48,14 @@ public final class Controler extends Thread {
 		this.interval=interval;
         this.run=run;
         this.configServer=configServer;
-        scheduleThread=new ScheduleThread(run,contextes);
+        
 	}
 	
 	/**
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		scheduleThread.start();
+		//scheduleThread.start();
 		boolean firstRun=true;
 		
 		CFMLFactoryImpl factories[]=null;
@@ -86,8 +85,6 @@ public final class Controler extends Thread {
             
             
             for(int i=0;i<factories.length;i++) {
-	            //key=arr[i];
-	            //run((CFMLFactoryImpl)contextes.get(key), doMinute, doHour,firstRun);
 	            run(factories[i], doMinute, doHour,firstRun);
 	        }
 	        if(factories.length>0)

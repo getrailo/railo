@@ -2,6 +2,7 @@ package railo.runtime.db;
 
 import java.sql.SQLException;
 
+import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 
@@ -16,7 +17,7 @@ class DCStack {
 		item=new Item(item,dc);
 	}
 
-	public synchronized DatasourceConnection get(){
+	public synchronized DatasourceConnection get(PageContext pc){
 		if(item==null) return null;
 		DatasourceConnection rtn = item.dc;
 		item=item.prev;

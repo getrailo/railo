@@ -3,6 +3,7 @@ package railo;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -148,6 +149,7 @@ public class aprint {
     }
     
     public static void out(Object o) {
+    	if(o instanceof Enumeration) out((Enumeration)o);
     	if(o instanceof Object[]) out((Object[])o);
     	else if(o instanceof boolean[]) out((boolean[])o);
     	else if(o instanceof byte[]) out((byte[])o);
@@ -181,6 +183,16 @@ public class aprint {
     	t.printStackTrace(System.out);
     }
     
+
+    private static void out(Enumeration en) {
+        
+    	out(en.getClass().getName()+" [");
+        while(en.hasMoreElements()) {
+        	System.out.print(en.nextElement());
+            System.out.println(",");
+        }
+        out("]");
+    }
     
     private static void out(List list) {
         ListIterator it = list.listIterator();

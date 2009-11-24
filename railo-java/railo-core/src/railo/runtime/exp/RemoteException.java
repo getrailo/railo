@@ -1,6 +1,7 @@
 package railo.runtime.exp;
 
 import railo.commons.lang.StringUtil;
+import railo.runtime.op.Caster;
 
 public class RemoteException extends PageExceptionImpl {
 
@@ -17,7 +18,7 @@ public class RemoteException extends PageExceptionImpl {
 			
 		}
 		message.append("; ");
-		message.append(t.getClass().getName());
+		message.append(Caster.toClassName(t));
 		
 		
 		

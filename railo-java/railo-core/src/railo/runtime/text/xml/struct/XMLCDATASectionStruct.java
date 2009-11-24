@@ -4,10 +4,12 @@ import java.lang.reflect.Method;
 
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.DOMException;
+import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Collection;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
@@ -135,6 +137,24 @@ public final class XMLCDATASectionStruct extends XMLNodeStruct implements CDATAS
 		catch (Exception e) {
 			throw new PageRuntimeException(Caster.toPageException(e));
 		}
+	}
+	
+
+	
+	/**
+	 *
+	 * @see railo.runtime.type.Collection#duplicate(boolean)
+	 */
+	public Collection duplicate(boolean deepCopy) {
+		return new XMLCDATASectionStruct((CDATASection)section.cloneNode(deepCopy),caseSensitive);
+	}
+	
+
+	/**
+	 * @see org.w3c.dom.Node#cloneNode(boolean)
+	 */
+	public Node cloneNode(boolean deep) {
+		return new XMLCDATASectionStruct((CDATASection)section.cloneNode(deep),caseSensitive);
 	}
 
 }

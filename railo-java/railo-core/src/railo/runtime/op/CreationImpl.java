@@ -6,6 +6,7 @@ import java.io.Serializable;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import railo.commons.date.DateTimeUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -15,7 +16,6 @@ import railo.runtime.db.SQL;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.dateTime.DateUtil;
 import railo.runtime.spooler.ExecutionPlan;
 import railo.runtime.spooler.SpoolerTask;
 import railo.runtime.spooler.remote.RemoteClientTask;
@@ -144,14 +144,14 @@ public final class CreationImpl implements Creation {
      * @see railo.runtime.util.Creation#createDateTime(int, int, int, int, int, int, int)
      */
     public DateTime createDateTime(int year, int month, int day, int hour, int minute, int second, int millis) throws ExpressionException {
-        return DateUtil.toDateTime(ThreadLocalPageContext.getTimeZone(),year,month,day,hour,minute,second,millis);
+        return DateTimeUtil.getInstance().toDateTime(ThreadLocalPageContext.getTimeZone(),year,month,day,hour,minute,second,millis);
     }
 
     /**
      * @see railo.runtime.util.Creation#createDate(int, int, int)
      */
     public Date createDate(int year, int month, int day) throws ExpressionException {
-        return new DateImpl(DateUtil.toDateTime(null,year,month,day));
+        return new DateImpl(DateTimeUtil.getInstance().toDateTime(null,year,month,day, 0, 0, 0,0));
     }
 
     /**
@@ -159,8 +159,7 @@ public final class CreationImpl implements Creation {
      */
     public Time createTime(int hour, int minute, int second, int millis) {
         return new TimeImpl(
-        		DateUtil.toLong(null,1899,12,30,hour,minute,second,0)+millis,false
-        		);
+        		DateTimeUtil.getInstance().toTime(null,1899,12,30,hour,minute,second,millis,0),false);
     }
 
     /**

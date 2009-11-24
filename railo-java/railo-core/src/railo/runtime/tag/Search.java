@@ -9,6 +9,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.search.AddionalAttrs;
 import railo.runtime.search.SearchCollection;
 import railo.runtime.search.SearchData;
 import railo.runtime.search.SearchDataImpl;
@@ -69,10 +70,10 @@ public final class Search extends TagImpl {
 	private String categoryTree="";
 	private String status;
 	private int suggestions=SUGGESTIONS_NEVER;
-	private int contextPassages=-1;
-	private int contextBytes=-1;
-	private String contextHighlightBegin;
-	private String contextHighlightEnd;
+	private int contextPassages=0;
+	private int contextBytes=300;
+	private String contextHighlightBegin="<b>";
+	private String contextHighlightEnd="</b>";
 	private String previousCriteria;
 
 	private int spellCheckMaxLevel=10;
@@ -93,10 +94,10 @@ public final class Search extends TagImpl {
 		categoryTree="";
 		status=null;
 		suggestions=SUGGESTIONS_NEVER;
-		contextPassages=-1;
-		contextBytes=-1;
-		contextHighlightBegin=null;
-		contextHighlightEnd=null;
+		contextPassages=0;
+		contextBytes=300;
+		contextHighlightBegin="<b>";
+		contextHighlightEnd="</b>";
 		previousCriteria=null;
 		
 
@@ -221,8 +222,6 @@ public final class Search extends TagImpl {
 	 */
 	public void setContextbytes(double contextBytes) throws ApplicationException {
 		this.contextBytes = (int)contextBytes;
-		throw new ApplicationException("attribute contextBytes for tag search is not supported yet");
-		// TODO impl tag attribute
 	}
 
 	/**
@@ -249,8 +248,6 @@ public final class Search extends TagImpl {
 	 */
 	public void setContextpassages(double contextPassages) throws ApplicationException {
 		this.contextPassages = (int)contextPassages;
-		throw new ApplicationException("attribute contextPassages for tag search is not supported yet");
-		// TODO impl tag attribute
 	}
 	
 	
@@ -311,6 +308,7 @@ public final class Search extends TagImpl {
 	    	
 	    SearchCollection collection;
 	    long time=System.currentTimeMillis();
+	    AddionalAttrs.setAddionalAttrs(contextBytes,contextPassages,contextHighlightBegin,contextHighlightEnd);
 	    try {
 		    for(int i=0;i<collections.length;i++) {
 		    	collection=collections[i];
@@ -322,6 +320,9 @@ public final class Search extends TagImpl {
 	    }
 	    catch(SearchException se) {
 	        throw Caster.toPageException(se);
+	    }
+	    finally{
+	    	AddionalAttrs.removeAddionalAttrs();
 	    }
 	    
 	    time=System.currentTimeMillis()-time;
@@ -403,4 +404,5 @@ public final class Search extends TagImpl {
 		this.result = result;
 	}
 
+	
 }

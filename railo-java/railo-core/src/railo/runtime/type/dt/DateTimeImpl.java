@@ -1,20 +1,20 @@
 package railo.runtime.type.dt;
 
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
+import railo.commons.date.DateTimeUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.dateTime.DateUtil;
 import railo.runtime.op.Operator;
 import railo.runtime.type.SimpleValue;
 
@@ -22,18 +22,13 @@ import railo.runtime.type.SimpleValue;
  * Printable and Castable DateTime Object
  */
 public final class DateTimeImpl extends DateTime implements SimpleValue,Localized {
-	private static SimpleDateFormat railoFormatter=	new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
-	//public static SimpleDateFormat javaFormatter=	new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy",Locale.US);
-
-	//private TimeZone timezone;
-
-
+	
 	public DateTimeImpl(PageContext pc) {
 		this(pc,System.currentTimeMillis(),true);
 	}
 	
 	public DateTimeImpl(Config config) {
-		this(config,System.currentTimeMillis());
+		this(config,System.currentTimeMillis(),true);
 	}
 	
 	public DateTimeImpl() {
@@ -42,21 +37,24 @@ public final class DateTimeImpl extends DateTime implements SimpleValue,Localize
 	
 	public DateTimeImpl(PageContext pc, long utcTime, boolean doOffset) {
 		super(doOffset?addOffset(ThreadLocalPageContext.getConfig(pc), utcTime):utcTime);
-		//this.timezone=ThreadLocalPageContext.getTimeZone(pc);
-	}
-	
-	public DateTimeImpl(Config config, long utcTime) {
-		super(addOffset(ThreadLocalPageContext.getConfig(config),utcTime));
-		//this.timezone=ThreadLocalPageContext.getTimeZone(config);
 	}
 
-	public DateTimeImpl(Date date) {
-		this(date.getTime(),false);
+	public DateTimeImpl(Config config, long utcTime, boolean doOffset) {
+		super(doOffset?addOffset(ThreadLocalPageContext.getConfig(config), utcTime):utcTime);
 	}
 	
 	public DateTimeImpl(long utcTime, boolean doOffset) {
 		super(doOffset?addOffset(ThreadLocalPageContext.getConfig(), utcTime):utcTime);
 	}
+	
+	/*public DateTimeImpl(Config config, long utcTime) {
+		super(addOffset(ThreadLocalPageContext.getConfig(config),utcTime));
+	}*/
+
+	public DateTimeImpl(Date date) {
+		this(date.getTime(),false);
+	}
+	
 	
 	public DateTimeImpl(Calendar calendar) {
 		super(calendar.getTimeInMillis());
@@ -73,7 +71,10 @@ public final class DateTimeImpl extends DateTime implements SimpleValue,Localize
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		return DateUtil.toDumpData(this);
+		String str=castToString(pageContext.getTimeZone());
+        DumpTable table=new DumpTable("#ff4400","#ff954f","#000000");
+        table.appendRow(1, new SimpleDumpData("Date Time ("+pageContext.getTimeZone().getID()+")"), new SimpleDumpData(str));
+        return table;
 	}
 
 	/**
@@ -91,18 +92,16 @@ public final class DateTimeImpl extends DateTime implements SimpleValue,Localize
         return castToString((TimeZone)null);
     }
     
-	public String castToString(TimeZone tz) {
-		synchronized (railoFormatter) {
-        	railoFormatter.setTimeZone(ThreadLocalPageContext.getTimeZone(tz));
-            return "{ts '"+railoFormatter.format(this)+"'}";
-        }
+	public String castToString(TimeZone tz) {// MUST move to DateTimeUtil
+		return DateTimeUtil.getInstance().toString(this,tz);
+		
 	}
 	
 	/**
 	 * @see railo.runtime.op.Castable#castToBooleanValue()
 	 */
 	public boolean castToBooleanValue() throws ExpressionException {
-        return DateUtil.toBooleanValue(this);
+        return DateTimeUtil.getInstance().toBooleanValue(this);
 	}
     
     /**
@@ -144,7 +143,7 @@ public final class DateTimeImpl extends DateTime implements SimpleValue,Localize
      * @see railo.runtime.type.dt.DateTime#toDoubleValue()
      */
 	public double toDoubleValue() {
-	    return DateUtil.toDoubleValue(this);
+	    return DateTimeUtil.getInstance().toDoubleValue(this);
 	}
 
 

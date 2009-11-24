@@ -40,7 +40,7 @@ import railo.transformer.util.CFMLString;
 /**	
  * Innerhalb des Tag script kann in Cold Fusion eine eigene Scriptsprache verwendet werden, 
  * welche sich an Javascript orientiert. 
- * Da der CFMLTransformer keine Spezialfälle zulässt, 
+ * Da der data.cfml Transformer keine Spezialfälle zulässt, 
  * also Tags einfach anhand der eingegeben TLD einliest und transformiert, 
  * aus diesem Grund wird der Inhalt des Tag script einfach als Zeichenkette eingelesen.
  * Erst durch den Evaluator (siehe 3.3), der für das Tag script definiert ist, 
@@ -49,55 +49,54 @@ import railo.transformer.util.CFMLString;
  */
 public final class CFMLScriptTransformer extends CFMLExprTransformer implements TagDependentBodyTransformer {
 	
-	private boolean insideFunction=false;
-	private String tagName="";
-	private boolean isCFC;
+	//private boolean insideFunction=false;
+	//private String tagName="";
+	//private boolean isCFC;
 	
 	/**
 	 * Einstiegsmethode für den CFScript Transformer, 
-	 * die Methode erbt sich von der Transform Methode der CFMLExprTransformer Klasse.
-	 * Der einzige Unterschied liegt darin, das der CFMLString der eingegeben wird als vererbte Klasse CFScriptString vorliegen muss.
-	 * Der Parameter ist als CFMLString definiert, so dass er die transform Methode überschreibt.
+	 * die Methode erbt sich von der Transform Methode der data.cfmlExprTransformer Klasse.
+	 * Der einzige Unterschied liegt darin, das der data.cfmlString der eingegeben wird als vererbte Klasse CFScriptString vorliegen muss.
+	 * Der Parameter ist als data.cfmlString definiert, so dass er die transform Methode überschreibt.
 	 * @param fld Array von Function Libraries, 
-	 * Mithilfe dieser Function Libraries kann der Transfomer buil-in Funktionen innerhalb des CFML Codes erkennen 
+	 * Mithilfe dieser Function Libraries kann der Transfomer buil-in Funktionen innerhalb des data.cfml Codes erkennen 
 	 * und validieren.
 	 * <br />
 	 * EBNF:<br />
 	 * <code>statements;</code>
 	 * @param cfxdTag XML Document des aktuellen zu erstellenden CFXD
 	 * @param libTag Definition des aktuellen Tag.
-	 * @param cfml CFML Code 
+	 * @param data.cfml data.cfml Code 
 	 * @param parentTransformer
 	 * @throws TemplateException
 	 */
 	public void transform(CFMLTransformer parentTransformer,FunctionLib[] fld, Tag tag,TagLibTag libTag, CFMLString cfml) 
 						throws TemplateException	{
 		
-		//public Body transform(CFMLTransformer parent, FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag, CFMLString cfml)
-		// Init Parameter
-
-		isCFC=true;
+		
+		boolean isCFC=true;
         try {
 			isCFC = ASMUtil.getAncestorPage(tag).isComponent();
 		} catch (BytecodeException e) {}
 
 		
-		init(fld,cfml,true);
-		insideFunction=false; 
-		tagName=libTag.getFullName();
+		Data data = init(fld,cfml,true);
+		data.insideFunction=false; 
+		data.tagName=libTag.getFullName();
+		data.isCFC=isCFC;
 
-		tag.setBody(statements());
+		tag.setBody(statements(data));
 	}
 
 	/**
 	 * @throws TemplateException 
-	 * @see railo.transformer.cfml.expression.CFMLExprTransformer#transform(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
+	 * @see railo.transformer.data.cfml.expression.data.cfmlExprTransformer#transform(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.data.cfmlString)
 	 */
 	public Expression transform(FunctionLib[] fld,CFMLString cfml) throws TemplateException {
 		throw new TemplateException(cfml,"you can't use Method transform on class CFMLScriptTransformer");
 	}
 	/**
-	 * @see railo.transformer.cfml.expression.CFMLExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
+	 * @see railo.transformer.data.cfml.expression.data.cfmlExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.data.cfmlString)
 	 */
 	public Expression transformAsString(FunctionLib[] fld,CFMLString cfml, boolean allowLowerThan) throws TemplateException {
 		throw new TemplateException(cfml,"you can't use Method transformAsString on class CFMLScriptTransformer");
@@ -112,10 +111,10 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return a statement
 	 * @throws TemplateException
 	 */
-	protected Body statements() throws TemplateException {
+	protected Body statements(Data data) throws TemplateException {
 		ScriptBody body=new ScriptBody();
 		
-		statements(body,true);
+		statements(data,body,true);
 	return body;
 	}
 	
@@ -125,16 +124,16 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * EBNF:<br />
 	 * <code>{statement spaces};</code>
 	 * @param parent Übergeornetes Element dem das Statement zugewiesen wird.
-	 * @param isRoot befindet sich der Parser im root des CFMl Docs
+	 * @param isRoot befindet sich der Parser im root des data.cfml Docs
 	 * @throws TemplateException
 	 */
-	protected void statements(Body body, boolean isRoot) throws TemplateException {
+	protected void statements(Data data,Body body, boolean isRoot) throws TemplateException {
 		do {
-			if(isRoot && isFinish())return;
-			statement(body);
-			comments();
+			if(isRoot && isFinish(data))return;
+			statement(data,body);
+			comments(data.cfml);
 		}
-		while(cfml.isValidIndex() && !cfml.isCurrent('}'));
+		while(data.cfml.isValidIndex() && !data.cfml.isCurrent('}'));
 	}
 	
 	/** 
@@ -147,23 +146,23 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @param parent Übergeornetes Element dem das Statement zugewiesen wird.
 	 * @throws TemplateException
 	 */
-	protected void statement(Body parent) throws TemplateException {
-		comments();
+	protected void statement(Data data,Body parent) throws TemplateException {
+		comments(data.cfml);
 		Statement child=null;
-		if(cfml.forwardIfCurrent(';')){}
-		else if((child=ifStatement())!=null) 		parent.addStatement(child);
-		else if((child=funcStatement(parent))!=null)parent.addStatement(child);
-		else if((child=whileStatement())!=null) 	parent.addStatement(child);
-		else if((child=doStatement())!=null) 		parent.addStatement(child);
-		else if((child=forStatement())!=null) 		parent.addStatement(child);
-		else if((child=returnStatement())!=null) 	parent.addStatement(child);
-		else if((child=switchStatement())!=null) 	parent.addStatement(child);
-		else if((child=tryStatement())!=null) 		parent.addStatement(child);
-		else if((child=breakStatement())!=null) 	parent.addStatement(child);
-		else if((child=continueStatement())!=null)	parent.addStatement(child);
-		else if((child=abortStatement())!=null)		parent.addStatement(child);
-		else if(block(parent)){}
-		else parent.addStatement(expressionStatement());
+		if(data.cfml.forwardIfCurrent(';')){}
+		else if((child=ifStatement(data))!=null) 		parent.addStatement(child);
+		else if((child=funcStatement(data,parent))!=null)parent.addStatement(child);
+		else if((child=whileStatement(data))!=null) 	parent.addStatement(child);
+		else if((child=doStatement(data))!=null) 		parent.addStatement(child);
+		else if((child=forStatement(data))!=null) 		parent.addStatement(child);
+		else if((child=returnStatement(data))!=null) 	parent.addStatement(child);
+		else if((child=switchStatement(data))!=null) 	parent.addStatement(child);
+		else if((child=tryStatement(data))!=null) 		parent.addStatement(child);
+		else if((child=breakStatement(data))!=null) 	parent.addStatement(child);
+		else if((child=continueStatement(data))!=null)	parent.addStatement(child);
+		else if((child=abortStatement(data))!=null)		parent.addStatement(child);
+		else if(block(data,parent)){}
+		else parent.addStatement(expressionStatement(data));
 	}
 	
 	/**
@@ -175,27 +174,27 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return if Statement
 	 * @throws TemplateException
 	 */
-	protected Statement ifStatement() throws TemplateException {
-		if(!cfml.forwardIfCurrent("if",'(')) return null;
+	protected Statement ifStatement(Data data) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("if",'(')) return null;
 		
 		
-		int line=cfml.getLine();
+		int line=data.cfml.getLine();
 		
 		Body body=new BodyBase();
-		Contition cont=new Contition(contition(),body,line);
+		Contition cont=new Contition(contition(data),body,line);
 		
 		
-		if(!cfml.forwardIfCurrent(')')) throw new TemplateException(cfml,"if statement must end with a [)]");
+		if(!data.cfml.forwardIfCurrent(')')) throw new TemplateException(data.cfml,"if statement must end with a [)]");
 		// ex block
-		statement(body);
+		statement(data,body);
 		// else if
-		comments();
-		while(elseifStatement(cont)) {
-			comments();
+		comments(data.cfml);
+		while(elseifStatement(data,cont)) {
+			comments(data.cfml);
 		}
 		// else
-		 if(elseStatement(cont)) {
-			comments();
+		 if(elseStatement(data,cont)) {
+			comments(data.cfml);
 		 }
 		
 		return cont;
@@ -209,24 +208,24 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return else if Statement
 	 * @throws TemplateException
 	 */
-	protected boolean elseifStatement(Contition cont) throws TemplateException {
-		int pos=cfml.getPos();
-		if(!cfml.forwardIfCurrent("else")) return false;
+	protected boolean elseifStatement(Data data,Contition cont) throws TemplateException {
+		int pos=data.cfml.getPos();
+		if(!data.cfml.forwardIfCurrent("else")) return false;
 		
-		comments();
-		if(!cfml.forwardIfCurrent("if",'(')) {
-			cfml.setPos(pos);
+		comments(data.cfml);
+		if(!data.cfml.forwardIfCurrent("if",'(')) {
+			data.cfml.setPos(pos);
 			return false;
 		}
 			
-		int line=cfml.getLine();
+		int line=data.cfml.getLine();
 		Body body=new BodyBase();
-		cont.addElseIf(contition(), body, line);
+		cont.addElseIf(contition(data), body, line);
 
-		if(!cfml.forwardIfCurrent(')'))
-			throw new TemplateException(cfml,"else if statement must end with a [)]");
+		if(!data.cfml.forwardIfCurrent(')'))
+			throw new TemplateException(data.cfml,"else if statement must end with a [)]");
 		// ex block
-		statement(body);
+		statement(data,body);
 		
 		return true;
 	}
@@ -240,31 +239,31 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @throws TemplateException
 	 * 
 	 */
-	protected boolean elseStatement(Contition cont) throws TemplateException {
-		if(!cfml.forwardIfCurrent("else",'{') && !cfml.forwardIfCurrent("else ") && !cfml.forwardIfCurrent("else",'/')) 
+	protected boolean elseStatement(Data data,Contition cont) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("else",'{') && !data.cfml.forwardIfCurrent("else ") && !data.cfml.forwardIfCurrent("else",'/')) 
 			return false;
 
 		// start (
-		cfml.previous();
+		data.cfml.previous();
 		// ex block
 		Body body=new BodyBase();
-		cont.setElse(body, cfml.getLine());
-		statement(body);
+		cont.setElse(body, data.cfml.getLine());
+		statement(data,body);
 		
 		return true;
 	}
 	
 
-	protected boolean finallyStatement(TryCatchFinally tcf) throws TemplateException {
-		if(!cfml.forwardIfCurrent("finally",'{') && !cfml.forwardIfCurrent("finally ") && !cfml.forwardIfCurrent("finally",'/')) 
+	protected boolean finallyStatement(Data data,TryCatchFinally tcf) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("finally",'{') && !data.cfml.forwardIfCurrent("finally ") && !data.cfml.forwardIfCurrent("finally",'/')) 
 			return false;
 
 		// start (
-		cfml.previous();
+		data.cfml.previous();
 		// ex block
 		Body body=new BodyBase();
-		tcf.setFinally(body, cfml.getLine());
-		statement(body);
+		tcf.setFinally(body, data.cfml.getLine());
+		statement(data,body);
 		
 		return true;
 	}
@@ -277,19 +276,19 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return while Statement
 	 * @throws TemplateException
 	 */
-	public While whileStatement() throws TemplateException {
-		if(!cfml.forwardIfCurrent("while",'('))
+	public While whileStatement(Data data) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("while",'('))
 			return null;
 		
-		int line=cfml.getLine();
+		int line=data.cfml.getLine();
 		Body body=new BodyBase();
-		While whil=new While(contition(),body,line,-1);
+		While whil=new While(contition(data),body,line,-1);
 		
-		if(!cfml.forwardIfCurrent(')'))
-			throw new TemplateException(cfml,"while statement must end with a [)]");
+		if(!data.cfml.forwardIfCurrent(')'))
+			throw new TemplateException(data.cfml,"while statement must end with a [)]");
 		
-		statement(body);
-		whil.setEndLine(cfml.getLine());
+		statement(data,body);
+		whil.setEndLine(data.cfml.getLine());
 		return whil;
 	}
 	
@@ -298,45 +297,45 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return switch Statement
 	 * @throws TemplateException
 	 */
-	public Switch switchStatement() throws TemplateException {
-		if(!cfml.forwardIfCurrent("switch",'('))
+	public Switch switchStatement(Data data) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("switch",'('))
 			return null;
 		
-		int line=cfml.getLine();
+		int line=data.cfml.getLine();
 		
-		comments();
-		Expression expr = super.expression();
-		comments();
+		comments(data.cfml);
+		Expression expr = super.expression(data);
+		comments(data.cfml);
 		// end )
-		if(!cfml.forwardIfCurrent(')'))
-			throw new TemplateException(cfml,"switch statement must end with a [)]");
-		comments();
+		if(!data.cfml.forwardIfCurrent(')'))
+			throw new TemplateException(data.cfml,"switch statement must end with a [)]");
+		comments(data.cfml);
 
-		if(!cfml.forwardIfCurrent('{'))
-			throw new TemplateException(cfml,"switch statement must have a starting  [{]");
+		if(!data.cfml.forwardIfCurrent('{'))
+			throw new TemplateException(data.cfml,"switch statement must have a starting  [{]");
 
 		Switch swit=new Switch(expr,line,-1);
 		
 		//	cases
 		 //Node child=null;
-		 comments();
-		 while(caseStatement(swit)) {
-			 comments();
+		 comments(data.cfml);
+		 while(caseStatement(data,swit)) {
+			 comments(data.cfml);
 		 }
 		 // default
-		  if(defaultStatement(swit)) {
-			comments();
+		  if(defaultStatement(data,swit)) {
+			comments(data.cfml);
 		  }
 		  
-		  while(caseStatement(swit)) {
-				 comments();
+		  while(caseStatement(data,swit)) {
+				 comments(data.cfml);
 			 }
 		  
 		  
 		// }
-		if(!cfml.forwardIfCurrent('}'))
-			throw new TemplateException(cfml,"invalid construct in switch statement");
-		swit.setEndLine(cfml.getLine());
+		if(!data.cfml.forwardIfCurrent('}'))
+			throw new TemplateException(data.cfml,"invalid construct in switch statement");
+		swit.setEndLine(data.cfml.getLine());
 		return swit;
 	}
 	
@@ -345,20 +344,20 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return case Statement
 	 * @throws TemplateException
 	 */
-	public boolean caseStatement(Switch swit) throws TemplateException {
-		if(!cfml.forwardIfCurrent("case "))
+	public boolean caseStatement(Data data,Switch swit) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("case "))
 			return false;
 		
-		//int line=cfml.getLine();		
-		comments();
-		Expression expr = super.expression();
-		comments();
+		//int line=data.cfml.getLine();		
+		comments(data.cfml);
+		Expression expr = super.expression(data);
+		comments(data.cfml);
 		
-		if(!cfml.forwardIfCurrent(':'))
-			throw new TemplateException(cfml,"case body must start with [:]");
+		if(!data.cfml.forwardIfCurrent(':'))
+			throw new TemplateException(data.cfml,"case body must start with [:]");
 		
 		Body body=new BodyBase();
-		switchBlock(body);
+		switchBlock(data,body);
 		swit.addCase(expr, body);
 		return true;
 	}
@@ -368,15 +367,15 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return default Statement
 	 * @throws TemplateException
 	 */
-	public boolean defaultStatement(Switch swit) throws TemplateException {
-		if(!cfml.forwardIfCurrent("default",':'))
+	public boolean defaultStatement(Data data,Switch swit) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("default",':'))
 			return false;
 		
-		//int line=cfml.getLine();
+		//int line=data.cfml.getLine();
 		
 		Body body=new BodyBase();
 		swit.setDefaultCase(body);
-		switchBlock(body);
+		switchBlock(data,body);
 		return true;
 	}
 	
@@ -385,12 +384,12 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @param block
 	 * @throws TemplateException
 	 */
-	public void switchBlock(Body body) throws TemplateException {
-		while(cfml.isValidIndex()) {
-			comments();
-			if(cfml.isCurrent("case ") || cfml.isCurrent("default",':') || cfml.isCurrent('}')) 
+	public void switchBlock(Data data,Body body) throws TemplateException {
+		while(data.cfml.isValidIndex()) {
+			comments(data.cfml);
+			if(data.cfml.isCurrent("case ") || data.cfml.isCurrent("default",':') || data.cfml.isCurrent('}')) 
 				return;
-			statement(body);
+			statement(data,body);
 		}
 	}
 	
@@ -403,25 +402,25 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return do Statement
 	 * @throws TemplateException
 	 */
-	public DoWhile doStatement() throws TemplateException {
-		if(!cfml.forwardIfCurrent("do",'{') && !cfml.forwardIfCurrent("do ") && !cfml.forwardIfCurrent("do",'/'))
+	public DoWhile doStatement(Data data) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("do",'{') && !data.cfml.forwardIfCurrent("do ") && !data.cfml.forwardIfCurrent("do",'/'))
 			return null;
 		
-		int line=cfml.getLine();
+		int line=data.cfml.getLine();
 		Body body=new BodyBase();
 		
-		cfml.previous();
-		statement(body);
+		data.cfml.previous();
+		statement(data,body);
 		
 		
-		cfml.removeSpace();
-		if(!cfml.forwardIfCurrent("while",'('))
-			throw new TemplateException(cfml,"do statement must have a while at the end");
+		data.cfml.removeSpace();
+		if(!data.cfml.forwardIfCurrent("while",'('))
+			throw new TemplateException(data.cfml,"do statement must have a while at the end");
 		
-		DoWhile doWhile=new DoWhile(contition(),body,line,cfml.getLine());
+		DoWhile doWhile=new DoWhile(contition(data),body,line,data.cfml.getLine());
 		
-		if(!cfml.forwardIfCurrent(')'))
-			throw new TemplateException(cfml,"do statement must end with a [)]");
+		if(!data.cfml.forwardIfCurrent(')'))
+			throw new TemplateException(data.cfml,"do statement must end with a [)]");
 		
 		
 		return doWhile;
@@ -435,66 +434,66 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return for Statement
 	 * @throws TemplateException
 	 */
-	public Statement forStatement() throws TemplateException {
-		if(!cfml.forwardIfCurrent("for",'(')) 
+	public Statement forStatement(Data data) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("for",'(')) 
 			return null;
 		Expression left=null;
 		Body body=new BodyBase();
-		int line=cfml.getLine();
-		comments();
-		if(!cfml.isCurrent(';')) {
+		int line=data.cfml.getLine();
+		comments(data.cfml);
+		if(!data.cfml.isCurrent(';')) {
 			// left
-			left=expression();
-			comments();
+			left=expression(data);
+			comments(data.cfml);
 		}
 		// middle for
-			if(cfml.forwardIfCurrent(';')) {
+			if(data.cfml.forwardIfCurrent(';')) {
 
 				Expression cont=null;
 				Expression update=null;
 				// contition
-					comments();
-					if(!cfml.isCurrent(';')) {
-						cont=contition();
-						comments();
+					comments(data.cfml);
+					if(!data.cfml.isCurrent(';')) {
+						cont=contition(data);
+						comments(data.cfml);
 					}
 				// middle
-				if(!cfml.forwardIfCurrent(';'))
-					throw new TemplateException(cfml,"invalid syntax in for statement");
+				if(!data.cfml.forwardIfCurrent(';'))
+					throw new TemplateException(data.cfml,"invalid syntax in for statement");
 				// update
-					comments();
-					if(!cfml.isCurrent(')')) {
-						update=expression();
-						comments();
+					comments(data.cfml);
+					if(!data.cfml.isCurrent(')')) {
+						update=expression(data);
+						comments(data.cfml);
 					}
 				// start )
-				if(!cfml.forwardIfCurrent(')'))
-					throw new TemplateException(cfml,"invalid syntax in for statement, for statement must end with a [)]");
+				if(!data.cfml.forwardIfCurrent(')'))
+					throw new TemplateException(data.cfml,"invalid syntax in for statement, for statement must end with a [)]");
 				// ex block
-				statement(body);
+				statement(data,body);
 		
-				return new For(left,cont,update,body,line,cfml.getLine());					
+				return new For(left,cont,update,body,line,data.cfml.getLine());					
 			}
 		// middle foreach
-			else if(cfml.forwardIfCurrent("in")) {
+			else if(data.cfml.forwardIfCurrent("in")) {
 				// contition
-					comments();
-					Expression value = expression();
-					comments();
-				if(!cfml.forwardIfCurrent(')'))
-					throw new TemplateException(cfml,"invalid syntax in for statement, for statement must end with a [)]");
+					comments(data.cfml);
+					Expression value = expression(data);
+					comments(data.cfml);
+				if(!data.cfml.forwardIfCurrent(')'))
+					throw new TemplateException(data.cfml,"invalid syntax in for statement, for statement must end with a [)]");
 				
 				// ex block
-				statement(body);
+				statement(data,body);
 				if(!(left instanceof Variable))
-					throw new TemplateException(cfml,"invalid syntax in for statment, left value is invalid");
+					throw new TemplateException(data.cfml,"invalid syntax in for statment, left value is invalid");
 				
 				if(!(value instanceof Variable))
-					throw new TemplateException(cfml,"invalid syntax in for statment, right value is invalid");
-				return new ForEach((Variable)left,(Variable)value,body,line,cfml.getLine());	
+					throw new TemplateException(data.cfml,"invalid syntax in for statment, right value is invalid");
+				return new ForEach((Variable)left,(Variable)value,body,line,data.cfml.getLine());	
 			}
 			else 
-				throw new TemplateException(cfml,"invalid syntax in for statement");
+				throw new TemplateException(data.cfml,"invalid syntax in for statement");
 	}
 	
 	/**
@@ -505,81 +504,81 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return function Statement
 	 * @throws TemplateException
 	 */
-	public Function funcStatement(Body parent) throws TemplateException {
-		if(!cfml.forwardIfCurrent("function "))
+	public Function funcStatement(Data data,Body parent) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("function "))
 			return null;
 		
-		int line=cfml.getLine();
+		int line=data.cfml.getLine();
 		
-		comments();
+		comments(data.cfml);
 		
 		// Name
-			String id=identifier(false,false);
-			if(id==null) throw new TemplateException(cfml,"invalid name for a function");
+			String id=identifier(data,false,false);
+			if(id==null) throw new TemplateException(data.cfml,"invalid name for a function");
 			
 			
-			if(!isCFC){
-				FunctionLibFunction flf = getFLF(id);
-				if(flf!=null && flf.getCazz()!=CFFunction.class)throw new TemplateException(cfml,"The name ["+id+"] is already used by a Build in Function");
+			if(!data.isCFC){
+				FunctionLibFunction flf = getFLF(data,id);
+				if(flf!=null && flf.getCazz()!=CFFunction.class)throw new TemplateException(data.cfml,"The name ["+id+"] is already used by a Build in Function");
 			}
 				
 			Body body=new FunctionBody();
 			Function func=new Function(id,body,line,-1);
 
 		// start (
-			comments();
-			if(!cfml.forwardIfCurrent('('))
-				throw new TemplateException(cfml,"invalid syntax in function head, missing begin [(]");
+			comments(data.cfml);
+			if(!data.cfml.forwardIfCurrent('('))
+				throw new TemplateException(data.cfml,"invalid syntax in function head, missing begin [(]");
 		
 			// arguments
 			do	{
-				comments();
+				comments(data.cfml);
 				// finish
-				if(cfml.isCurrent(')'))break;
+				if(data.cfml.isCurrent(')'))break;
 				
 				// attribute
 				
 				// name
-				String idName=identifier(false,true);
+				String idName=identifier(data,false,true);
 				String typeName="any";
-				if(idName==null) throw new TemplateException(cfml,"invalid argument definition");
-				comments();
-				if(!cfml.isCurrent(')') && !cfml.isCurrent('=') && !cfml.isCurrent(':') && !cfml.isCurrent(',')) {
+				if(idName==null) throw new TemplateException(data.cfml,"invalid argument definition");
+				comments(data.cfml);
+				if(!data.cfml.isCurrent(')') && !data.cfml.isCurrent('=') && !data.cfml.isCurrent(':') && !data.cfml.isCurrent(',')) {
 					typeName=idName.toLowerCase();
-					idName=identifier(false,true);
+					idName=identifier(data,false,true);
 				}
 				
-				comments();
-				if(cfml.isCurrent('=') || cfml.isCurrent(':')) {
-					cfml.next();
-					comments();
-					func.addArgument(idName,typeName,true,expression());
+				comments(data.cfml);
+				if(data.cfml.isCurrent('=') || data.cfml.isCurrent(':')) {
+					data.cfml.next();
+					comments(data.cfml);
+					func.addArgument(idName,typeName,true,expression(data));
 				}
 				else func.addArgument(idName,typeName,true);
 				
 				
-				comments();
+				comments(data.cfml);
 			}
-			while(cfml.forwardIfCurrent(','));
+			while(data.cfml.forwardIfCurrent(','));
 
 		
 		// end )
-			comments();
-			if(!cfml.forwardIfCurrent(')'))
-				throw new TemplateException(cfml,"invalid syntax in function head, missing begin [(]");
+			comments(data.cfml);
+			if(!data.cfml.forwardIfCurrent(')'))
+				throw new TemplateException(data.cfml,"invalid syntax in function head, missing begin [(]");
 		
 		// body
 			
-		boolean oldInsideFunction=insideFunction;
-		insideFunction=true;
+		boolean oldInsideFunction=data.insideFunction;
+		data.insideFunction=true;
 		try {
 		// ex block
-		statement(body);
+		statement(data,body);
 		}
 		finally{
-			insideFunction=oldInsideFunction;
+			data.insideFunction=oldInsideFunction;
 		}
-		func.setEndLine(cfml.getLine());
+		func.setEndLine(data.cfml.getLine());
 		return func;
 	}
 
@@ -591,24 +590,24 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return return Statement
 	 * @throws TemplateException
 	 */
-	protected Return returnStatement() throws TemplateException {
-	    if(!cfml.forwardIfCurrentAndNoVarExt("return")) return null;
+	protected Return returnStatement(Data data) throws TemplateException {
+	    if(!data.cfml.forwardIfCurrentAndNoVarExt("return")) return null;
 	    
-	    int line=cfml.getLine();
+	    int line=data.cfml.getLine();
 	    Return rtn;
 	    
-	    comments();
-	    if(cfml.getCurrent()==';') rtn=new Return(line);
+	    comments(data.cfml);
+	    if(data.cfml.getCurrent()==';') rtn=new Return(line);
 	    else {
-	    	Expression expr = expression();
+	    	Expression expr = expression(data);
 	    	
-	    	if(!cfml.forwardIfCurrent(';'))
-				throw new TemplateException(cfml,"Missing [;] after expression");
+	    	if(!data.cfml.forwardIfCurrent(';'))
+				throw new TemplateException(data.cfml,"Missing [;] after expression");
 			
 	    	
 	    	rtn=new Return(expr,line);
 	    }
-		comments();
+		comments(data.cfml);
 
 		return rtn;
 	}
@@ -621,21 +620,21 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return break Statement
 	 * @throws TemplateException
 	 */
-	protected Break breakStatement() throws TemplateException {
-		if(!cfml.forwardIfCurrent("break",';')) 
+	protected Break breakStatement(Data data) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("break",';')) 
 			return null;
 		
-		Break brk=new Break(cfml.getLine());
-		comments();
+		Break brk=new Break(data.cfml.getLine());
+		comments(data.cfml);
 		return brk;
 	}
 	
-	protected Abort abortStatement() throws TemplateException {
-		if(!cfml.forwardIfCurrent("abort",';')) 
+	protected Abort abortStatement(Data data) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("abort",';')) 
 			return null;
 		
-		Abort abort=new Abort(cfml.getLine());
-		comments();
+		Abort abort=new Abort(data.cfml.getLine());
+		comments(data.cfml);
 		return abort;
 	}
 
@@ -647,41 +646,41 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return continue Statement
 	 * @throws TemplateException
 	 */
-	protected Continue continueStatement() throws TemplateException {
-		if(!cfml.forwardIfCurrent("continue",';')) 
+	protected Continue continueStatement(Data data) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("continue",';')) 
 		return null;
 		
-		Continue cnt=new Continue(cfml.getLine()); 
-		comments();
+		Continue cnt=new Continue(data.cfml.getLine()); 
+		comments(data.cfml);
 		return cnt;
 	}
 	
 	
 	
 	/**
-	 * List mithilfe des CFMLExprTransformer einen Ausruck ein.
+	 * List mithilfe des data.cfmlExprTransformer einen Ausruck ein.
 	 * <br />
 	 * EBNF:<br />
 	 * <code>expression ";";</code>
 	 * @return Ausdruck
 	 * @throws TemplateException
 	 */
-	public ExpressionStatement expressionStatement() throws TemplateException {
-		Expression expr=expression();
-		if(!cfml.forwardIfCurrent(';')){
-			if(!cfml.hasNLBefore() && !cfml.isCurrent("</",tagName))
-				throw new TemplateException(cfml,"Missing [;] or [line feed] after expression");
+	public ExpressionStatement expressionStatement(Data data) throws TemplateException {
+		Expression expr=expression(data);
+		if(!data.cfml.forwardIfCurrent(';')){
+			if(!data.cfml.hasNLBefore() && !data.cfml.isCurrent("</",data.tagName))
+				throw new TemplateException(data.cfml,"Missing [;] or [line feed] after expression");
 		}
 		return new ExpressionStatement(expr);
 	}
 	
 	/**
-	 * @see railo.transformer.cfml.expression.CFMLExprTransformer#expression()
+	 * @see railo.transformer.data.cfml.expression.data.cfmlExprTransformer#expression()
 	 */
-	public Expression expression() throws TemplateException {
+	public Expression expression(Data data) throws TemplateException {
 		Expression expr;
-		expr = super.expression();
-		comments();
+		expr = super.expression(data);
+		comments(data.cfml);
 		return expr;
 	}
 	
@@ -694,11 +693,11 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return Contition
 	 * @throws TemplateException
 	 */
-	public ExprBoolean contition() throws TemplateException {
+	public ExprBoolean contition(Data data) throws TemplateException {
 		ExprBoolean contition=null;
-		comments();
-		contition=CastBoolean.toExprBoolean(super.expression());
-		comments();
+		comments(data.cfml);
+		contition=CastBoolean.toExprBoolean(super.expression(data));
+		comments(data.cfml);
 		return contition;
 	}
 	
@@ -710,45 +709,45 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return Try Block
 	 * @throws TemplateException
 	*/
-	public TryCatchFinally tryStatement() throws TemplateException {
-		if(!cfml.forwardIfCurrent("try",'{') && !cfml.forwardIfCurrent("try ") && !cfml.forwardIfCurrent("try",'/'))
+	public TryCatchFinally tryStatement(Data data) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("try",'{') && !data.cfml.forwardIfCurrent("try ") && !data.cfml.forwardIfCurrent("try",'/'))
 			return null;
-		cfml.previous();
+		data.cfml.previous();
 
 		Body body=new BodyBase();
-		TryCatchFinally tryCatchFinally=new TryCatchFinally(body,cfml.getLine(),-1);
+		TryCatchFinally tryCatchFinally=new TryCatchFinally(body,data.cfml.getLine(),-1);
 		
-		statement(body);
-		comments();
+		statement(data,body);
+		comments(data.cfml);
 		
 		// catches
 		short catchCount=0;
-		while(cfml.forwardIfCurrent("catch",'(')) {
+		while(data.cfml.forwardIfCurrent("catch",'(')) {
 			catchCount++;
-			comments();
+			comments(data.cfml);
 			
 			// type
-			int pos=cfml.getPos();
-			int line=cfml.getLine();
+			int pos=data.cfml.getPos();
+			int line=data.cfml.getLine();
 			Expression name = null,type = null;
 			
 			StringBuffer sbType=new StringBuffer();
             String tmp;
             while(true) {
-                tmp=identifier(false,false);
+                tmp=identifier(data,false,false);
                 if(tmp==null)break;
                 sbType.append(tmp);
-                cfml.removeSpace();
-                if(!cfml.forwardIfCurrent('.'))break;
+                data.cfml.removeSpace();
+                if(!data.cfml.forwardIfCurrent('.'))break;
                 sbType.append('.');
-                cfml.removeSpace();
+                data.cfml.removeSpace();
             }
 				
             
 			if(sbType.length()==0) {
-			    type=string();
+			    type=string(data);
 			    if(type==null)			    
-			        throw new TemplateException(cfml,"a catch statement must begin with the throwing type (query, application ...).");
+			        throw new TemplateException(data.cfml,"a catch statement must begin with the throwing type (query, application ...).");
 			}
 			else {
 				type=LitString.toExprString(sbType.toString());
@@ -756,43 +755,43 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
             
             
 			//name = expression();
-			comments();
+			comments(data.cfml);
 			
 			// name
-			if(!cfml.isCurrent(')')) {
-				name=expression();
+			if(!data.cfml.isCurrent(')')) {
+				name=expression(data);
 			}
 			else {
-				cfml.setPos(pos);
-				name=expression();
+				data.cfml.setPos(pos);
+				name=expression(data);
 			}
-			comments();
+			comments(data.cfml);
 
             Body b=new BodyBase();
 			try {
 				tryCatchFinally.addCatch(type,name,b,line);
 			} 
 			catch (BytecodeException e) {
-				throw new TemplateException(cfml,e.getMessage());
+				throw new TemplateException(data.cfml,e.getMessage());
 			}
-			comments();
+			comments(data.cfml);
 			
-			if(!cfml.forwardIfCurrent(')')) throw new TemplateException(cfml,"invalid catch statement, missing closing )");
+			if(!data.cfml.forwardIfCurrent(')')) throw new TemplateException(data.cfml,"invalid catch statement, missing closing )");
 			
-            statement(b);
-			comments();	
+            statement(data,b);
+			comments(data.cfml);	
 		}
         
 		
 // finally
-		 if(finallyStatement(tryCatchFinally)) {
-			comments();
+		 if(finallyStatement(data,tryCatchFinally)) {
+			comments(data.cfml);
 		 }
 		 else if(catchCount==0)
-			throw new TemplateException(cfml,"a try statement must have at least one catch statement");
+			throw new TemplateException(data.cfml,"a try statement must have at least one catch statement");
 		
         //if(body.isEmpty()) return null;
-		tryCatchFinally.setEndLine(cfml.getLine());
+		tryCatchFinally.setEndLine(data.cfml.getLine());
 		return tryCatchFinally;
 	}
 	
@@ -801,9 +800,9 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return Ende ScriptBlock?
 	 * @throws TemplateException
 	 */
-	public boolean isFinish() throws TemplateException {
-		comments();
-		return cfml.isCurrent("</",tagName);		
+	public boolean isFinish(Data data) throws TemplateException {
+		comments(data.cfml);
+		return data.cfml.isCurrent("</",data.tagName);		
 	}
 	
 	
@@ -816,18 +815,18 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return was a block
 	 * @throws TemplateException
 	 */
-	private boolean block(Body body) throws TemplateException {
-		if(!cfml.forwardIfCurrent('{'))
+	private boolean block(Data data,Body body) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent('{'))
 			return false;
-		comments();
-		if(cfml.forwardIfCurrent('}')) {
+		comments(data.cfml);
+		if(data.cfml.forwardIfCurrent('}')) {
 			
 			return true;
 		}
-		statements(body,false);
+		statements(data,body,false);
 		
-		if(!cfml.forwardIfCurrent('}'))
-			throw new TemplateException(cfml,"Missing ending [}]");
+		if(!data.cfml.forwardIfCurrent('}'))
+			throw new TemplateException(data.cfml,"Missing ending [}]");
 		return true;
 	}	
 }

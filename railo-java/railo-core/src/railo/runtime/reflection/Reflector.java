@@ -30,6 +30,8 @@ import railo.runtime.reflection.storage.WeakConstructorStorage;
 import railo.runtime.reflection.storage.WeakFieldStorage;
 import railo.runtime.reflection.storage.WeakMethodStorage;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
@@ -200,9 +202,6 @@ public final class Reflector {
 		for(int i=0;i<clazzArgs.length;i++) {
 			if(i>0)sb.append(", ");
 			sb.append(Caster.toTypeName(clazzArgs[i]));
-			
-			
-			
 		}
 		return sb.toString();
 	}
@@ -277,13 +276,13 @@ public final class Reflector {
 		else if(trgClass==Vector.class) return Caster.toVetor(src);
 		else if(trgClass==java.util.Collection.class) return Caster.toJavaCollection(src);
 		else if(trgClass==TimeZone.class && Decision.isString(src)) return Caster.toTimeZone(Caster.toString(src));
+		else if(trgClass==Collection.Key.class) return KeyImpl.toKey(src);
 		else if(trgClass==Locale.class && Decision.isString(src)) return Caster.toLocale(Caster.toString(src));
-		//TODO why not a instanceof in all this cases
 		if(trgClass.isPrimitive()) {
 			//return convert(src,srcClass,toReferenceClass(trgClass));
 			return convert(src,toReferenceClass(trgClass));
 		}
-		throw new ApplicationException("can't convert ["+src.getClass().getName()+"] to ["+trgClass.getName()+"]");
+		throw new ApplicationException("can't convert ["+Caster.toClassName(src)+"] to ["+Caster.toClassName(trgClass)+"]");
 	}
 
 
@@ -431,10 +430,17 @@ public final class Reflector {
 	 * @param name name to search
 	 * @return Matching Field
 	 * @throws NoSuchFieldException
+	 * @deprecated use instead <code>{@link #getFieldsIgnoreCase(Class, String)}</code>
 	 */
     public static Field getFieldIgnoreCase(Class clazz, String name) throws NoSuchFieldException  {
         Field[] fields=fStorage.getFields(clazz,name);
         if(fields!=null) return fields[0];
+        throw new NoSuchFieldException("there is no field with name "+name+" in object ["+Type.getName(clazz)+"]");
+    }
+    
+    public static Field[] getFieldsIgnoreCase(Class clazz, String name) throws NoSuchFieldException  {
+        Field[] fields=fStorage.getFields(clazz,name);
+        if(fields!=null) return fields;
         throw new NoSuchFieldException("there is no field with name "+name+" in object ["+Type.getName(clazz)+"]");
     }
 
@@ -555,9 +561,12 @@ public final class Reflector {
 			throw new NativeException(e);
 		}
 	}
-	
-	private static ExpressionException throwCall(Object obj,String methodName, Object[] args) {
-		return new ExpressionException("No matching Method/Function for "+Type.getName(obj)+"."+methodName.toLowerCase()+"("+getDspMethods(getClasses(args))+") found");
+
+	public static ExpressionException throwCall(Object obj,String methodName, Object[] args) {
+		return new ExpressionException("No matching Method/Function for "+Type.getName(obj)+"."+methodName+"("+getDspMethods(getClasses(args))+") found");
+	}
+	public static ExpressionException throwCall(Object obj,Collection.Key methodName, Object[] args) {
+		return new ExpressionException("No matching Method/Function for "+Type.getName(obj)+"."+methodName+"("+getDspMethods(getClasses(args))+") found");
 	}
 
 	/**
@@ -659,6 +668,7 @@ public final class Reflector {
     
     
     
+    
     /**
      * to invoke a setter Method of a Object
      * @param obj Object to invoke method from
@@ -720,13 +730,36 @@ public final class Reflector {
 	 * @param value Value to assign
 	 * @throws PageException
 	 */
-	public static void setField(Object obj, String prop,Object value) throws PageException {
-	    try {
-            getFieldIgnoreCase(obj.getClass(),prop).set(obj,value);
+	public static boolean setField(Object obj, String prop,Object value) throws PageException {
+	    Class clazz=value.getClass();
+		try {
+	    	Field[] fields = getFieldsIgnoreCase(obj.getClass(),prop);
+	    	// exact comparsion
+			for(int i=0;i<fields.length;i++) {
+				if(toReferenceClass(fields[i].getType())==clazz){
+					fields[i].set(obj,value);
+					return true;
+				}
+			}
+			// like comparsion
+			for(int i=0;i<fields.length;i++) {
+				if(like(fields[i].getType(),clazz)) {
+					fields[i].set(obj,value);
+					return true;
+				}
+			}	
+			// convert comparsion
+			for(int i=0;i<fields.length;i++) {	
+				try {
+					fields[i].set(obj,convert(value,toReferenceClass(fields[i].getType())));
+					return true;
+				} catch (PageException e) {}
+			}
         }
 		catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
+		return false;
 	}
 
 	/**
@@ -776,11 +809,14 @@ public final class Reflector {
 	 * @throws PageException
 	 */
 	public static void setProperty(Object obj, String prop,Object value) throws PageException{
-	    try {
-	        getFieldIgnoreCase(obj.getClass(),prop).set(obj,value);
-	    } catch (Throwable t) {
-            callSetter(obj,prop,value);
+	    boolean done=false;
+		try {
+	    	if(setField(obj,prop,value))done=true;
+	    } 
+		catch (Throwable t) {
+			
         }
+	    if(!done)callSetter(obj,prop,value);
 	}
 	
 	/**

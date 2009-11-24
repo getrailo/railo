@@ -159,7 +159,7 @@ public final class ClassUtil {
 			return clazz.newInstance();
 		}
 		catch (InstantiationException e) {
-			throw new ClassException("the specified class object ["+clazz.getName()+"] cannot be instantiated because it is an interface or is an abstract class");
+			throw new ClassException("the specified class object ["+clazz.getName()+"()] cannot be instantiated");
 		}
 		catch (IllegalAccessException e) {
 			throw new ClassException("can't load class because the currently executing method does not have access to the definition of the specified class");
@@ -264,18 +264,17 @@ public final class ClassUtil {
 	 */
 	public static Object loadInstance(Class clazz, Object[] args, Object defaultValue) {
 		if(args==null || args.length==0) return loadInstance(clazz,defaultValue);
-		
-		Class[] cArgs=new Class[args.length];
-		for(int i=0;i<args.length;i++) {
-			cArgs[i]=args[i].getClass();
-		}
-		
 		try {
+			Class[] cArgs=new Class[args.length];
+			for(int i=0;i<args.length;i++) {
+				if(args[i]==null)cArgs[i]=Object.class;
+				else cArgs[i]=args[i].getClass();
+			}
 			Constructor c = clazz.getConstructor(cArgs);
 			return c.newInstance(args);
 			
 		}
-		catch (Throwable t) {
+		catch (Throwable t) {//print.printST(t);
 			return defaultValue;
 		}
 		

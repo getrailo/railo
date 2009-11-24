@@ -1,6 +1,7 @@
 
 package railo.runtime.exp;
 
+import railo.runtime.op.Caster;
 import railo.runtime.type.util.Type;
 
 
@@ -31,7 +32,7 @@ public class CasterException extends ExpressionException {
     }
     
     private static String createDetail(Object o) {
-        if(o!=null) return "Java type of the object is "+o.getClass().getName();
+        if(o!=null) return "Java type of the object is "+Caster.toClassName(o);
         return "value is null";
     }   
     

@@ -5,8 +5,10 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
-import railo.commons.io.IOUtil;
+import railo.commons.cli.Command;
 import railo.commons.lang.StringUtil;
+import railo.runtime.functions.string.ParseNumber;
+import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 
 
@@ -27,22 +29,8 @@ public final class RegistryQuery {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static String executeQuery(String query) throws IOException, InterruptedException {
-		StreamReader reader=null;
-		try {
-		    Process process = Runtime.getRuntime().exec(query);
-		    reader = new StreamReader(process.getInputStream());
-		
-		    reader.start();
-		    process.waitFor();
-		    reader.join();
-		
-		    return reader.getResult();
-		}
-		finally {
-			IOUtil.closeEL(reader);
-		}
-		
+	public static String executeQuery(String[] cmd) throws IOException, InterruptedException {
+		return Command.execute(cmd);
 	}  
   
 	  /**
@@ -56,7 +44,8 @@ public final class RegistryQuery {
 	 * @throws InterruptedException
 	 */
 	public static RegistryEntry getValue(String branch, String entry, short type) throws RegistryException, IOException, InterruptedException {
-	    RegistryEntry[] rst = filter(executeQuery("reg query "+DQ+branch+DQ+" /v "+entry),branch,type);
+	    String[] cmd = new String[]{"reg","query",cleanBrunch(branch),"/v",entry};
+		RegistryEntry[] rst = filter(executeQuery(cmd),branch,type);
 	    if(rst.length==1) {
 	        return rst[0];
 	        //if(type==RegistryEntry.TYPE_ANY || type==r.getType()) return r;
@@ -74,7 +63,8 @@ public final class RegistryQuery {
 	 * @throws InterruptedException
 	 */
 	public static RegistryEntry[] getValues(String branch, short type) throws RegistryException, IOException, InterruptedException {
-	    return filter(executeQuery("reg query "+DQ+branch+DQ),branch,type);
+		String[] cmd = new String[]{"reg","query",branch};
+		return filter(executeQuery(cmd),cleanBrunch(branch),type);
 	}
 
 	/**
@@ -88,16 +78,17 @@ public final class RegistryQuery {
 	 * @throws InterruptedException
 	 */
 	public static void setValue(String branch, String entry, short type, String value) throws RegistryException, IOException, InterruptedException {
-	    //String fullKey=List.trim(branch,"\\")+"\\"+List.trim(entry,"\\")+"\\";
-	    //String query="reg add "+DQ+fullKey+DQ+" /v "+value+" /t "+RegistryEntry.toStringType(type)+" /f";
-	    //executeQuery(query);
 	    
 	    if(type==RegistryEntry.TYPE_KEY) {
 	        String fullKey=List.trim(branch,"\\")+"\\"+List.trim(entry,"\\");
-	        executeQuery("reg add \""+fullKey+"\" /ve /d \""+value+"\" /f");
-	    }
+	        //String[] cmd = new String[]{"reg","add",cleanBrunch(fullKey),"/ve","/f"};
+	        String[] cmd = new String[]{"reg","add",cleanBrunch(fullKey),"/f"};
+	        executeQuery(cmd);
+		}
 	    else {
-	        executeQuery("reg add \""+List.trim(branch,"\\")+"\" /v "+entry+" /t "+RegistryEntry.toStringType(type)+" /d \""+value+"\" /f");
+	    	if(type==RegistryEntry.TYPE_DWORD)value=Caster.toString(Caster.toIntValue(value,0));
+	    	String[] cmd = new String[]{"reg","add",cleanBrunch(branch),"/v",entry,"/t",RegistryEntry.toStringType(type),"/d",value,"/f"};
+	    	executeQuery(cmd);
 	    }
 	}
 	
@@ -110,13 +101,25 @@ public final class RegistryQuery {
 	 */
 	public static void deleteValue(String branch, String entry) throws IOException, InterruptedException {
 	    if(entry==null) {
-	        executeQuery("reg delete \""+List.trim(branch,"\\")+"\"  /f");
+	    	String[] cmd = new String[]{"reg","delete",cleanBrunch(branch),"/f"};
+	    	executeQuery(cmd);
+	        //executeQuery("reg delete \""+List.trim(branch,"\\")+"\"  /f");
 	    }
 	    else {
-	        executeQuery("reg delete \""+List.trim(branch,"\\")+"\" /v "+entry+" /f");
+	    	String[] cmd = new String[]{"reg","delete",cleanBrunch(branch),"/v",entry,"/f"};
+	    	executeQuery(cmd);
+	        //executeQuery("reg delete \""+List.trim(branch,"\\")+"\" /v "+entry+" /f");
 	    }
 	}
 	
+	private static String cleanBrunch(String branch) {
+		branch=branch.replace('/', '\\');
+		branch=List.trim(branch,"\\");
+		if(branch.length()==0) return "\\";
+		return branch;
+	}
+	
+
 	/**
 	 * filter registry entries from the raw result
 	 * @param string plain result to filter regisry entries
@@ -126,8 +129,7 @@ public final class RegistryQuery {
 	 * @throws RegistryException
 	 */
 	private static RegistryEntry[] filter(String string,String branch, short type) throws RegistryException {
-		//print.ln(">>>>>>>>>>>>>>"+string+"<<<<<<<<<<");
-	    branch=List.trim(branch,"\\");
+		branch=List.trim(branch,"\\");
 	    StringBuffer result=new StringBuffer();
 		ArrayList array=new ArrayList();
 	  	String[] arr=string.split("\n");
@@ -143,16 +145,12 @@ public final class RegistryQuery {
 			    short _type=(indexDWORD==-1)?RegistryEntry.TYPE_STRING:RegistryEntry.TYPE_DWORD;
 			    
 				if(result.length()>0)result.append("\n");
-				//String[] la = line.split("\\s");
-				//print.ln(":"+line);
-				//if(la.length==3) {
-				    
+				 
 				String _key=line.substring(0,index).trim();
-				//String _key=line.substring(0,index).trim();
-			    String _value=StringUtil.substringEL(line,index+len+1,"");
-				    //String _value=line.substring(index+len+1).trim();
-				    if(_key.equals(NO_NAME)) _key="";
-				    if(_type==RegistryEntry.TYPE_DWORD)_value=String.valueOf(Integer.parseInt(_value.substring(2),16));
+				String _value=StringUtil.substringEL(line,index+len+1,"").trim();
+				
+				if(_key.equals(NO_NAME)) _key="";
+				    if(_type==RegistryEntry.TYPE_DWORD)_value=String.valueOf(ParseNumber.invoke(_value.substring(2),"hex",0));
 				    RegistryEntry re = new RegistryEntry(_type,_key,_value);
 				    if(type==RegistryEntry.TYPE_ANY || type==re.getType()) array.add(re);
 				//}
@@ -201,9 +199,7 @@ static class StreamReader extends Thread {
     String getResult() {
       return sw.toString();
     }
-  }
-
-  
+  }  
 }
 
 

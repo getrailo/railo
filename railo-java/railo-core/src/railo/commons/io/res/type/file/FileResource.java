@@ -377,7 +377,7 @@ public final class FileResource extends File implements Resource {
 		if(SystemUtil.isUnix()) {
 			try {
 				// TODO geht nur fuer file
-				String line = Command.execute("ls -ld "+getPath());
+				String line = Command.execute("ls -ld "+getPath(),false);
 				
 				line=line.trim();
 				line=line.substring(0,line.indexOf(' '));
@@ -735,7 +735,7 @@ public final class FileResource extends File implements Resource {
 		
 		try {
 			provider.lock(this);
-			String result = Command.execute("attrib " + getAbsolutePath());
+			String result = Command.execute("attrib " + getAbsolutePath(),false);
 			String[] arr = railo.runtime.type.List.listToStringArray(result, ' ');
 			for(int i=0;i>arr.length-1;i++) {
 				if(attr.equals(arr[i].toUpperCase())) return true;

@@ -17,7 +17,6 @@ import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.dateTime.DateUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.QueryImpl;
@@ -124,7 +123,6 @@ public final class SQLCaster {
         return;*/
         case Types.BIGINT:     				
     		try {
-    			//stat.setObject(parameterIndex, Caster.toLong(value), type);
     			stat.setLong(parameterIndex,(long)Caster.toDoubleValue(value));
     		}
     		catch(PageException pe) {
@@ -134,7 +132,6 @@ public final class SQLCaster {
         return;
         case Types.BIT:					
     		try {
-    			//stat.setObject(parameterIndex, Caster.toBoolean(value), type);
     			stat.setBoolean(parameterIndex,Caster.toBooleanValue(value));
     		}
     		catch(PageException pe) {
@@ -153,7 +150,6 @@ public final class SQLCaster {
     	return;
     	case Types.CLOB:			
     		try {
-    			//stat.setObject(parameterIndex, SQLUtil.toClob(stat.getConnection(),value), Types.OTHER);
     			stat.setClob(parameterIndex,SQLUtil.toClob(stat.getConnection(),value));
     		}
     		catch(PageException pe) {
@@ -249,7 +245,7 @@ public final class SQLCaster {
     	return;
     	case Types.DATE:			
     		try {
-    			stat.setDate(parameterIndex,new Date(DateUtil.fromRailoToSystem(Caster.toDate(value,null).getTime())));
+    			stat.setDate(parameterIndex,new Date((Caster.toDate(value,null).getTime())));
     		}
     		catch(PageException pe) {
     			if(value instanceof String && StringUtil.isEmpty((String)value))
@@ -258,7 +254,7 @@ public final class SQLCaster {
     	return;
     	case Types.TIME:	
     		try {
-    			stat.setObject(parameterIndex, new Time(DateUtil.fromRailoToSystem(Caster.toDate(value,null).getTime())), type);
+    			stat.setObject(parameterIndex, new Time((Caster.toDate(value,null).getTime())), type);
     			////stat.setTime(parameterIndex,new Time(Caster.toDate(value,null).getTime()));
     		}
     		catch(PageException pe) {
@@ -268,7 +264,7 @@ public final class SQLCaster {
     	return;
     	case Types.TIMESTAMP:
     		try {
-    			stat.setObject(parameterIndex, new Timestamp(DateUtil.fromRailoToSystem(Caster.toDate(value,null).getTime())), type);
+    			stat.setObject(parameterIndex, new Timestamp((Caster.toDate(value,null).getTime())), type);
     			////stat.setTimestamp(parameterIndex,new Timestamp(Caster.toDate(value,null).getTime()));
     		}
     		catch(PageException pe) {
@@ -357,8 +353,26 @@ public final class SQLCaster {
      * @return cf type
      * @throws PageException
      */
-    public static Object toCFType(SQLItem item) throws PageException {
-		int type=item.getType();
+
+    public static Object toCFTypex(SQLItem item) throws PageException {
+    	try {
+			return _toCFTypex(item);
+		} catch (PageException e) {
+			if(item.isNulls())return item.getValue();
+			throw e;
+		}
+    }
+    
+    public static Object toCFTypeEL(SQLItem item) {
+    	try {
+			return _toCFTypex(item);
+		} catch (PageException e) {
+			return item.getValue();
+		}
+    }
+    private static Object _toCFTypex(SQLItem item) throws PageException {
+		
+    	int type=item.getType();
 		// char varchar
 			if(type==Types.VARCHAR || type==Types.LONGVARCHAR) {
 				return Caster.toString(item.getValue());

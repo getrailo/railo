@@ -15,4 +15,11 @@ public interface ASMProperty {
 	 * @return the type
 	 */
 	public Type getASMType() throws PageException;
+	
+
+
+	/**
+	 * @return the clazz
+	 */
+	public Class getClazz() ;
 }

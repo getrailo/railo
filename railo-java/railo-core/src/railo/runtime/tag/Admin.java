@@ -13,11 +13,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.Map.Entry;
 
 import javax.servlet.jsp.tagext.Tag;
 
+import org.opencfml.eventgateway.Gateway;
+
 import railo.commons.collections.HashTable;
 import railo.commons.io.CompressUtil;
+import railo.commons.io.SystemUtil;
+import railo.commons.io.cache.Cache;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogResource;
 import railo.commons.io.log.LogUtil;
@@ -30,11 +35,13 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
+import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
+import railo.runtime.cache.CacheConnection;
 import railo.runtime.cfx.customtag.CFXTagClass;
 import railo.runtime.cfx.customtag.JavaCFXTagClass;
 import railo.runtime.config.AdminSync;
@@ -42,6 +49,7 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigServerImpl;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebAdmin;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.ConfigWebUtil;
@@ -57,13 +65,17 @@ import railo.runtime.engine.Surveillance;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.ext.tag.DynamicAttributes;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionImpl;
 import railo.runtime.extension.ExtensionProvider;
-import railo.runtime.functions.other.GetAuthUser;
+import railo.runtime.functions.cache.Util;
+import railo.runtime.gateway.GatewayEngineImpl;
+import railo.runtime.gateway.GatewayEntry;
+import railo.runtime.gateway.GatewayEntryImpl;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
@@ -86,6 +98,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -118,13 +131,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private static final short ACCESS_WRITE=11;
     private static final short CHECK_PW=12;
 
-	private static final Collection.Key TYPE = KeyImpl.getInstance("type");
-	private static final Collection.Key PASSWORD = KeyImpl.getInstance("password");
-	//private static final Collection.Key ATTRIBUTE_COLLECTION = KeyImpl.getInstance("attributeCollection");
-	private static final Collection.Key RETURN_VARIABLE = KeyImpl.getInstance("returnvariable");
-	private static final Collection.Key CALLER_ID = KeyImpl.getInstance("callerId");
-	private static final Collection.Key PROVIDED_CALLER_IDS = KeyImpl.getInstance("providedCallerIds");
-	
 	//private static final String USAGE_SYNC = "synchronisation";
 	//private static final String USAGE_CLUSTER = "cluster";
 	private static final Collection.Key ACTION = KeyImpl.getInstance("action");
@@ -234,12 +240,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 config=(ConfigImpl)config.getConfigServer(password);
             
             adminSync = config.getAdminSync();
-        	
-            
-            
-            //config=(type==TYPE_WEB)?((ConfigImpl)pageContext.getConfig()):((ConfigImpl)pageContext.getConfig()).getConfigServer(password);
-            // Admin
-            admin = ConfigWebAdmin.newInstance(config,password);
+        	admin = ConfigWebAdmin.newInstance(config,password);
         } 
         catch (Exception e) {
             throw Caster.toPageException(e);
@@ -263,9 +264,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private short toType(String strType, boolean throwError) throws ApplicationException {
     	strType=StringUtil.toLowerCase(strType).trim();
     	if("web".equals(strType))return TYPE_WEB;
-        else if("server".equals(strType))return TYPE_SERVER;
-        if(throwError)
-        	throw new ApplicationException("invalid value for attribute type ["+strType+"] of tag admin","valid values are web, server");
+    	else if("server".equals(strType))return TYPE_SERVER;
+    	if(throwError)
+        	throw new ApplicationException("invalid value for attribute type ["+strType+"] of tag admin","valid values are web, server, all");
         return TYPE_WEB;
 	}
 
@@ -443,6 +444,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getDatasourceSetting",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasourceSetting();
         else if(check("getCustomTagSetting",	ACCESS_FREE) && check2(ACCESS_READ  )) doGetCustomTagSetting();
         else if(check("getDatasource",          ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasource();
+        else if(check("getCacheConnections",    ACCESS_FREE) && check2(ACCESS_READ  )) doGetCacheConnections();
+        else if(check("getCacheConnection",     ACCESS_FREE) && check2(ACCESS_READ  )) doGetCacheConnection();
+        else if(check("getCacheDefaultConnection",ACCESS_FREE) && check2(ACCESS_READ  )) doGetCacheDefaultConnection();
         else if(check("getDatasources",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasources();
         else if(check("getRemoteClients",       ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClients();
         else if(check("getRemoteClient",       	ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClient();
@@ -450,6 +454,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getSpoolerTasks",   		ACCESS_FREE) && check2(ACCESS_READ  )) doGetSpoolerTasks();
         else if(check("getPerformanceSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetPerformanceSettings();
         else if(check("updatePerformanceSettings",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdatePerformanceSettings();
+        else if(check("getGatewayentries",    ACCESS_FREE) && check2(ACCESS_READ  )) doGetGatewayEntries();
+        else if(check("getGatewayentry",     ACCESS_FREE) && check2(ACCESS_READ  )) doGetGatewayEntry();
+        else if(check("getRunningThreads",     ACCESS_FREE) && check2(ACCESS_READ  )) doGetRunningThreads();
+        else if(check("gateway",     ACCESS_FREE) && check2(ACCESS_READ  )) doGateway();
         
     	
     	
@@ -457,10 +465,15 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getRemoteClientTasks",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetSpoolerTasks();
         else if(check("getDatasourceDriverList",ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasourceDriverList();
         else if(check("getDebuggingList",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetDebuggingList();
+        
         else if(check("getPluginDirectory",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetPluginDirectory();
         else if(check("getPlugins",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetPlugins();
         else if(check("updatePlugin",		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdatePlugin();
         else if(check("removePlugin",		ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemovePlugin();
+        
+        else if(check("getContextDirectory",ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ  )) getContextDirectory();
+        else if(check("updateContext",		ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateContext();
+        else if(check("removeContext",		ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doRemoveContext();
         
         else if(check("getJars",                ACCESS_FREE) && check2(ACCESS_READ  )) doGetJars();
         else if(check("getFlds",                ACCESS_FREE) && check2(ACCESS_READ  )) doGetFLDs();
@@ -480,6 +493,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getError",               ACCESS_FREE) && check2(ACCESS_READ  )) doGetError();
         else if(check("verifyremoteclient",     ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyRemoteClient();
         else if(check("verifyDatasource",       ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyDatasource();
+        else if(check("verifyCacheConnection",  ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyCacheConnection();
         else if(check("verifyMailServer",       ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyMailServer();
         else if(check("verifyExtensionProvider",ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyExtensionProvider();
         else if(check("verifyJavaCFX",			ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyJavaCFX();
@@ -498,6 +512,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateOutputSetting",	ACCESS_FREE) && check2(ACCESS_WRITE  ))doUpdateOutputSettings();
         else if(check("updatepsq",              ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdatePSQ();
         else if(check("updatedatasource",       ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateDatasource();
+        else if(check("updateCacheDefaultConnection",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCacheDefaultConnection();
+        else if(check("updateCacheConnection",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCacheConnection();
         else if(check("updateremoteclient",     ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateRemoteClient();
         else if(check("updateRemoteClientUsage",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateRemoteClientUsage();
     	else if(check("updatemailsetting",      ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateMailSetting();
@@ -511,6 +527,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateExtension",		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtension();
         else if(check("updateExtensionProvider",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionProvider();
         else if(check("updateExtensionInfo",	ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionInfo();
+        else if(check("updateGatewayEntry",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateGatewayEntry();
         
     	
         //else if(check("removeproxy",       		ACCESS_NOT_WHEN_SERVER  )) doRemoveProxy();
@@ -518,6 +535,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("removeTLD",       		ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveTLD();
         else if(check("removeFLD",       		ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveFLD();
         else if(check("removedatasource",       ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveDatasource();
+        else if(check("removeCacheConnection",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveCacheConnection();
         else if(check("removeremoteclient",     ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveRemoteClient();
         else if(check("removeRemoteClientUsage",ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveRemoteClientUsage();
     	else if(check("removeSpoolerTask", 		ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveSpoolerTask();
@@ -533,6 +551,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("removeExtension",        ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveExtension();
         else if(check("removeExtensionProvider",ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveExtensionProvider();
         else if(check("removeDefaultPassword",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveDefaultPassword();
+        else if(check("removeGatewayEntry",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveGatewayEntry();
+        else if(check("removeCacheDefaultConnection",ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveCacheDefaultConnection();
         
         else if(check("storageGet",             ACCESS_FREE) && check2(ACCESS_READ  )) doStorageGet();
         else if(check("storageSet",             ACCESS_FREE) && check2(ACCESS_WRITE  )) doStorageSet();
@@ -567,6 +587,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         else if(check("getVideoExecuterClass",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetVideoExecuterClass();
         else if(check("updateVideoExecuterClass",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateVideoExecuterClass();
+        else if(check("terminateRunningThread",ACCESS_FREE) && check2(ACCESS_WRITE  )) doTerminateRunningThread();
         
         else if(check("restart",                ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doRestart();
         else if(check("runUpdate",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doRunUpdate();
@@ -591,7 +612,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		else if(accessRW==ACCESS_WRITE) ConfigWebUtil.checkGeneralWriteAccess(config,password);
 		else if(accessRW==CHECK_PW) {
 			ConfigWebUtil.checkGeneralReadAccess(config,password);
-			ConfigWebUtil.checkPassword(config,password);
+			ConfigWebUtil.checkPassword(config,null,password);
 		}
     	return true;
     }
@@ -731,12 +752,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 }
             }
             else if(file.isFile()) {
-                PageSource ps=mapping.getPageSource(path);
+                PageSourceImpl ps=(PageSourceImpl) mapping.getPageSource(path);
                 
                 
                 try {
-                    ((PageSourceImpl)ps).clear();
-                    ps.loadPage(pageContext.getConfig()); 
+                	
+                    ps.clear();
+                    ps.loadPage(pageContext,pageContext.getConfig()); 
                     //pageContext.compile(ps);
                 } catch (PageException pe) {
                 	//PageException pe = pse.getPageException();
@@ -834,9 +856,17 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
     
 
-    private Resource getPluginDirectory() throws PageException {
+    private Resource getPluginDirectory() {
     	return config.getConfigDir().getRealResource(config instanceof ConfigServer?"admin/plugin":"context/admin/plugin");//MUST more dynamic
     }
+
+    private Resource getContextDirectory() throws PageException  {
+    	ConfigServer cs = config.getConfigServer(password);
+    	Resource dist = cs.getConfigDir().getRealResource("distribution");
+    	dist.mkdirs();
+    	return dist;
+    }
+    
     private void doGetPluginDirectory() throws PageException {
         pageContext.setVariable(
                  getString("admin",action,"returnVariable"),
@@ -848,7 +878,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         Resource src = ResourceUtil.toResourceExisting(pageContext, strSrc);
         Resource srcDir = ResourceUtil.toResourceExisting(pageContext, "zip://"+src.getAbsolutePath());
         String name=ResourceUtil.getName(src.getName());
-        
         if(!PluginFilter.doAccept(srcDir))
         	throw new ApplicationException("plugin ["+srcDir.getName()+"] is invalid, missing one of the following files [Action.cfc,language.xml] in root");
         
@@ -858,10 +887,54 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	trgDir.remove(true);
         }
         
-        ResourceUtil.copyRecursive(srcDir, trgDir);
-        
+        ResourceUtil.copyRecursive(srcDir, trgDir);    
         store();
     }
+    
+    private void doUpdateContext() throws PageException, IOException {
+    	String strSrc = getString("admin",action,"source");
+    	String strRealpath = getString("admin",action,"destination");
+        Resource src = ResourceUtil.toResourceExisting(pageContext, strSrc);
+        
+        ConfigServerImpl server = (ConfigServerImpl) config.getConfigServer(password);
+        ConfigWeb[] webs = server.getConfigWebs();
+        ConfigWeb web;
+        Resource trg,p;
+        for(int i=0;i<webs.length;i++){
+        	web=webs[i];
+        	trg=web.getConfigDir().getRealResource("context").getRealResource(strRealpath);
+        	if(trg.exists()) trg.remove(true);
+        	p = trg.getParentResource();
+            if(!p.isDirectory())p.createDirectory(true);
+            src.copyTo(trg, false);
+        }
+        store();
+    }
+    
+    private void doRemoveContext() throws PageException, IOException {
+    	String strRealpath = getString("admin",action,"destination");
+        
+        ConfigServerImpl server = (ConfigServerImpl) config.getConfigServer(password);
+        ConfigWeb[] webs = server.getConfigWebs();
+        ConfigWeb web;
+        Resource trg,p,dsStore;
+        for(int i=0;i<webs.length;i++){
+        	web=webs[i];
+        	trg=web.getConfigDir().getRealResource("context").getRealResource(strRealpath);
+        	if(trg.exists()) trg.remove(true);
+        	p=trg.getParentResource();
+            dsStore=p.getRealResource(".DS_Store");
+            dsStore.delete();
+            while(p.isDirectory() && ResourceUtil.isEmptyDirectory(p)) {
+            	p.remove(false);
+            	p=p.getParentResource();
+            	dsStore=p.getRealResource(".DS_Store");
+                dsStore.delete();
+            }
+        }
+    	store();
+    }
+    
     private void doRemovePlugin() throws PageException, IOException {
         Resource dir = getPluginDirectory();
         String name = getString("admin",action,"name");
@@ -1079,6 +1152,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 fb("tag_import"),
                 fb("tag_object"),
                 fb("tag_registry"),
+                fb("cache"),
+                fb("gateway"),
                 fb2("access_read"),
                 fb2("access_write")
         );
@@ -1129,6 +1204,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 fb("tag_import"),
                 fb("tag_object"),
                 fb("tag_registry"),
+                fb("cache"),
+                fb("gateway"),
                 fb2("access_read"),
                 fb2("access_write")
         );
@@ -1167,6 +1244,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         sct.set("setting",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_SETTING)==SecurityManager.VALUE_YES));
         sct.set("search",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_SEARCH)==SecurityManager.VALUE_YES));
         sct.set("scheduled_task",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_SCHEDULED_TASK)==SecurityManager.VALUE_YES));
+        sct.set("cache",Caster.toBoolean(sm.getAccess(SecurityManagerImpl.TYPE_CACHE)==SecurityManager.VALUE_YES));
+        sct.set("gateway",Caster.toBoolean(sm.getAccess(SecurityManagerImpl.TYPE_GATEWAY)==SecurityManager.VALUE_YES));
         
         sct.set("tag_execute",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_TAG_EXECUTE)==SecurityManager.VALUE_YES));
         sct.set("tag_import",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_TAG_IMPORT)==SecurityManager.VALUE_YES));
@@ -1222,7 +1301,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
         admin.updateErrorTemplate(500,getString("admin",action,"template500"));
         admin.updateErrorTemplate(404,getString("admin",action,"template404"));
-        admin.updateErrorStatusCode(getBool("admin",action,"statuscode"));
+        admin.updateErrorStatusCode(getBoolObject("admin",action,"statuscode"));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -1470,8 +1549,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         		"type","provider","id","config","version","category","description","image","label","name",
         		"author","codename","video","support","documentation","forum","mailinglist","network","created"},0,"query");
         
-        
-        
         String provider=getString("provider",null);
         String id=getString("id",null);
     	Extension extension;
@@ -1479,8 +1556,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         int row=0;
         for(int i=0;i<extensions.length;i++) {
         	extension=extensions[i];
-        	
-        	if(toType(extension.getType(), false)!=type)
+        	if(!extension.getType().equalsIgnoreCase("all") && toType(extension.getType(), false)!=type)
         		continue;
 
         	extProvider=extension.getProvider();
@@ -1614,10 +1690,20 @@ private void doGetMappings() throws PageException {
         admin.setMailLog(getString("admin",action,"logfile"),getString("loglevel","ERROR"));
         
         //print.ln("----------------------------------");
-        admin.setMailSpoolEnable(getBool("admin",action,"spoolenable"));
-        admin.setMailSpoolInterval(Caster.toIntValue(getString("admin",action,"spoolinterval")));
-        admin.setMailTimeout(Caster.toIntValue(getString("admin",action,"timeout")));
-		admin.setMailDefaultCharset(getString("admin", action, "defaultencoding"));
+        admin.setMailSpoolEnable(getBoolObject("admin",action,"spoolenable"));
+        // spool intervall
+        String str=getString("admin",action,"spoolinterval");
+        Integer i=null;
+        if(!StringUtil.isEmpty(str))i=Caster.toInteger(str);
+        admin.setMailSpoolInterval(i);
+        
+     // timeout
+        str=getString("admin",action,"timeout");
+        i=null;
+        if(!StringUtil.isEmpty(str))i=Caster.toInteger(str);
+        admin.setMailTimeout(i);
+		
+        admin.setMailDefaultCharset(getString("admin", action, "defaultencoding"));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -1651,6 +1737,67 @@ private void doGetMappings() throws PageException {
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     }
+    
+    private void doGetRunningThreads() throws PageException {
+        QueryImpl qry=new QueryImpl(new String[]{"Id","Start","Timeout","ThreadType","StackTrace","TagContext",
+        		"Label","RootPath","ConfigFile","URL"},0,"query");
+        
+        
+        if(type==TYPE_WEB){
+        	fillGetRunningThreads(qry,pageContext.getConfig());
+        }
+        else {
+        	ConfigServer cs = pageContext.getConfig().getConfigServer(password);
+        	ConfigWeb[] webs = cs.getConfigWebs();
+        	for(int i=0;i<webs.length;i++){
+        		fillGetRunningThreads(qry,webs[i]);
+        	}
+        }
+        pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+    }
+    
+    private static void fillGetRunningThreads(QueryImpl qry, ConfigWeb configWeb) throws PageException {
+    	CFMLFactoryImpl factory = ((CFMLFactoryImpl)configWeb.getFactory());
+    	Struct pcs =factory.getRunningPageContextes();
+    	Iterator it = pcs.keyIterator();
+        PageContextImpl pc;
+        Collection.Key key;
+        int row=0;
+        while(it.hasNext()) {
+        	key=KeyImpl.toKey(it.next(),null);
+            pc=(PageContextImpl) pcs.get(key,null);
+            qry.addRow();
+            row++;
+            StackTraceElement[] st = pc.getThread().getStackTrace();
+            configWeb.getConfigDir();
+            configWeb.getId();
+            configWeb.getConfigDir();
+            qry.setAt("Id",row,new Double(pc.getId()));
+            qry.setAt("Start",row,new DateTimeImpl(pc.getStartTime(),false));
+            qry.setAt("Timeout",row,new Double(pc.getRequestTimeout()/1000));
+            qry.setAt("ThreadType",row,pc.getParentPageContext()==null?"main":"child");
+            qry.setAt("StackTrace",row,toString(st));
+            qry.setAt("TagContext",row,PageExceptionImpl.getTagContext(pc, st));
+            
+            qry.setAt("label",row,factory.getLabel());
+            qry.setAt("RootPath",row,((ConfigWebImpl)configWeb).getServletContext().getRealPath("/"));
+            qry.setAt("ConfigFile",row,configWeb.getConfigFile().getAbsolutePath());
+            if(factory.getURL()!=null)qry.setAt("url",row,factory.getURL().toExternalForm());
+            
+        }
+        
+	}
+
+	private static String toString(StackTraceElement[] traces) {
+    	StackTraceElement trace;
+        StringBuffer sb=new StringBuffer();
+        for(int i=0;i<traces.length;i++){
+            trace=traces[i];
+            sb.append("\tat "+trace+":"+trace.getLineNumber()+"\n");
+        }
+        return sb.toString();
+    }
+    
 
     /**
      * @throws PageException
@@ -1830,6 +1977,70 @@ private void doGetMappings() throws PageException {
                 custom
                 
         );
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+
+    private void doUpdateCacheConnection() throws PageException {
+        admin.updateCacheConnection(
+        		getString("admin",action,"name"),
+                getString("admin",action,"class"),
+                toCacheConstant("default"),
+                getStruct("admin", action, "custom"),
+                getBool("readOnly", false)
+                
+        );
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+
+    private void doUpdateGatewayEntry() throws PageException {
+    	String strStartupMode=getString("admin",action,"startupMode");
+    	int startup=GatewayEntryImpl.toStartup(strStartupMode,-1);
+    	if(startup==-1)
+    		throw new ApplicationException("invalid startup mode ["+strStartupMode+"], valid values are [automatic,manual,disabled]");
+        //print.out("doUpdateGatewayEntry");
+    	admin.updateGatewayEntry(
+        		getString("admin",action,"id"),
+                getString("admin",action,"class"),
+        		getString("admin",action,"cfcPath"),
+        		getString("admin",action,"listenerCfcPath"),
+                startup,
+                getStruct("admin", action, "custom"),
+                getBool("readOnly", false)
+                
+        );
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+    
+    private int toCacheConstant(String name) throws ApplicationException {
+		String def = getString(name, null);
+		if(StringUtil.isEmpty(def)) return ConfigImpl.CACHE_DEFAULT_NONE;
+		def=def.trim().toLowerCase();
+
+		if(def.equals("object")) return ConfigImpl.CACHE_DEFAULT_OBJECT;
+		if(def.equals("template")) return ConfigImpl.CACHE_DEFAULT_TEMPLATE;
+		if(def.equals("query")) return ConfigImpl.CACHE_DEFAULT_QUERY;
+		if(def.equals("resource")) return ConfigImpl.CACHE_DEFAULT_RESOURCE;
+    	
+		throw new ApplicationException("invalid default type ["+def+"], valid default types are [object,template]");
+	}
+
+	private void doUpdateCacheDefaultConnection() throws PageException {
+		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_OBJECT,getString("admin",action,"object"));
+		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_TEMPLATE,getString("admin",action,"template"));
+		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY,getString("admin",action,"query"));
+		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE,getString("admin",action,"resource"));
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+
+	private void doRemoveCacheDefaultConnection() throws PageException {
+		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_OBJECT);
+		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_TEMPLATE);
+		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY);
+		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE);
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -2029,7 +2240,7 @@ private void doGetMappings() throws PageException {
      * 
      */
     private void doUpdatePSQ() throws PageException {
-        admin.updatePSQ(getBool("admin",action,"psq"));
+        admin.updatePSQ(getBoolObject("admin",action,"psq"));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -2047,7 +2258,44 @@ private void doGetMappings() throws PageException {
         store();
         adminSync.broadcast(attributes, config);
     }
-    private void doRemoveRemoteClient() throws PageException {
+    
+    private void doTerminateRunningThread() throws PageException {
+    	int id = getInt("admin", "RemoveRunningThread", "id");
+    	
+    	if(type==TYPE_WEB){
+    		terminateRunningThread(pageContext.getConfig(),id);
+        }
+        else {
+        	ConfigServer cs = pageContext.getConfig().getConfigServer(password);
+        	ConfigWeb[] webs = cs.getConfigWebs();
+        	for(int i=0;i<webs.length;i++){
+        		if(terminateRunningThread(webs[i],id))break;
+        	}
+        }
+    }
+    
+    
+    
+    
+    private static boolean terminateRunningThread(ConfigWeb configWeb,int id) {
+
+    	Struct pcs = ((CFMLFactoryImpl)configWeb.getFactory()).getRunningPageContextes();
+        
+        Iterator it = pcs.keyIterator();
+        PageContextImpl pc;
+        Collection.Key key;
+        while(it.hasNext()) {
+        	key=KeyImpl.toKey(it.next(),null);
+            pc=(PageContextImpl) pcs.get(key,null);
+            if(pc.getId()==id){
+            	CFMLFactoryImpl.terminate(pc);
+            	return true;
+            }
+        }
+        return false;
+	}
+
+	private void doRemoveRemoteClient() throws PageException {
         admin.removeRemoteClient(getString("admin",action,"url"));
         store();
     }
@@ -2133,7 +2381,197 @@ private void doGetMappings() throws PageException {
     	pageContext.setVariable(rtnVar,qry);
         
     }
-    
+	
+	private void doGetGatewayEntries() throws PageException  {
+		Map entries = config.getGatewayEngine().getEntries();
+		Iterator it = entries.entrySet().iterator();
+		Query qry=CFMLEngineFactory.getInstance().getCreationUtil().
+        	createQuery(new String[]{"class","id","custom","cfcPath","listenerCfcPath","startupMode","state","readOnly"}, 0, "entries");
+        Map.Entry entry;
+        GatewayEntry ge;
+        Gateway g;
+        int row=0;
+        while(it.hasNext()){
+			row++;
+		    entry=(Entry) it.next();
+			ge=(GatewayEntry) entry.getValue();
+			g=ge.getGateway();
+        	qry.addRow();
+        	qry.setAtEL("class", row, ge.getClassName());
+        	qry.setAtEL("id", row, ge.getId());
+        	qry.setAtEL("listenerCfcPath", row, ge.getListenerCfcPath());
+        	qry.setAtEL("cfcPath", row, ge.getCfcPath());
+        	qry.setAtEL("startupMode", row, GatewayEntryImpl.toStartup(ge.getStartupMode(),"automatic"));
+        	qry.setAtEL("custom", row, ge.getCustom());
+        	qry.setAtEL("readOnly", row, Caster.toBoolean(ge.isReadOnly()));
+        	qry.setAtEL("state",row,GatewayEngineImpl.toStringState(g.getState(), "failed"));
+        	
+        }
+        pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+	}
+	
+	private void doGetGatewayEntry() throws PageException {
+        
+        String id=getString("admin",action,"id");
+        Map entries = config.getGatewayEngine().getEntries();
+		Iterator it = entries.keySet().iterator();
+		GatewayEntry ge;
+		Gateway g;
+		Struct sct;
+		while(it.hasNext()) {
+            String key=(String)it.next();
+            if(key.equalsIgnoreCase(id)) {
+                ge=(GatewayEntry) entries.get(key);
+                g=ge.getGateway();
+                sct=new StructImpl();
+                sct.setEL("id",ge.getId());
+                sct.setEL("class",ge.getClassName());
+                sct.setEL("listenerCfcPath", ge.getListenerCfcPath());
+            	sct.setEL("cfcPath",ge.getCfcPath());
+                sct.setEL("startupMode",GatewayEntryImpl.toStartup(ge.getStartupMode(),"automatic"));
+                sct.setEL("custom",ge.getCustom());
+                sct.setEL("readOnly",Caster.toBoolean(ge.isReadOnly()));
+                sct.setEL("state",GatewayEngineImpl.toStringState(g.getState(), "failed"));
+                
+                pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
+                return;
+            }
+        }
+        throw new ApplicationException("there is no gateway entry with id ["+id+"]");
+    }
+	
+	private void doGateway() throws PageException {
+        
+		String id=getString("admin",action,"id");
+		String act=getString("admin",action,"gatewayAction").trim().toLowerCase();
+		if("restart".equals(act))	config.getGatewayEngine().restart(id);
+		else if("start".equals(act))config.getGatewayEngine().start(id);
+		else if("stop".equals(act))	config.getGatewayEngine().stop(id);
+		else throw new ApplicationException("invalid gateway action ["+act+"], valid actions are [start,stop,restart]");
+    }
+	
+	
+	
+	private void doGetCacheConnections() throws PageException  {
+		Map conns = config.getCacheConnections();
+		Iterator it = conns.entrySet().iterator();
+		Query qry=CFMLEngineFactory.getInstance().getCreationUtil().
+        	createQuery(new String[]{"class","name","custom","default","readOnly"}, 0, "connections");
+        Map.Entry entry;
+        CacheConnection cc;
+        CacheConnection defObj=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_OBJECT);
+        CacheConnection defTmp=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_TEMPLATE);
+        CacheConnection defQry=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY);
+        CacheConnection defRes=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE);
+        int row=0;
+        String def;
+		while(it.hasNext()){
+			row++;
+		    entry=(Entry) it.next();
+			cc=(CacheConnection) entry.getValue();
+        	qry.addRow();
+        	def="";
+        	if(cc==defObj)def="object";
+        	if(cc==defTmp)def="template";
+        	if(cc==defQry)def="query";
+        	if(cc==defRes)def="resource";
+        	qry.setAtEL("class", row, cc.getClazz().getName());
+        	qry.setAtEL("name", row, cc.getName());
+        	qry.setAtEL("custom", row, cc.getCustom());
+        	qry.setAtEL("default", row, def);
+        	qry.setAtEL("readOnly", row, Caster.toBoolean(cc.isReadOnly()));
+        	
+        }
+        pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+	}
+
+	
+	private void doGetCacheDefaultConnection() throws PageException {
+		int type;
+        String strType=getString("admin", "GetCacheDefaultConnection", "type");
+        strType=strType.toLowerCase().trim();
+        if(strType.equals("object"))
+        	type=ConfigImpl.CACHE_DEFAULT_OBJECT;
+        else if(strType.equals("template"))
+        	type=ConfigImpl.CACHE_DEFAULT_TEMPLATE;
+        else if(strType.equals("query"))
+        	type=ConfigImpl.CACHE_DEFAULT_QUERY;
+        else if(strType.equals("resource"))
+        	type=ConfigImpl.CACHE_DEFAULT_RESOURCE;
+        else
+        	throw new ApplicationException("invalid type defintion, valid values are [object, template]");
+		
+        CacheConnection cc = config.getCacheDefaultConnection(type);
+        if(cc!=null){
+        	Struct sct=new StructImpl();
+            
+            sct.setEL("name",cc.getName());
+            sct.setEL("class",cc.getClazz().getName());
+            sct.setEL("custom",cc.getCustom());
+            sct.setEL("default",Caster.toBoolean(true));
+            sct.setEL("readOnly",Caster.toBoolean(cc.isReadOnly()));
+            
+        	pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
+        }
+        else throw new ApplicationException("there is no cache default connection");
+    }
+	
+	private void doGetCacheConnection() throws PageException {
+        
+        String name=getString("admin",action,"name");
+        Map conns = config.getCacheConnections();
+		Iterator it = conns.keySet().iterator();
+		CacheConnection cc;
+		CacheConnection dObj=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_OBJECT);
+		CacheConnection dTmp=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_TEMPLATE);
+		CacheConnection dQry=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY);
+		CacheConnection dRes=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE);
+		
+		Struct sct;
+		String d;
+        while(it.hasNext()) {
+            String key=(String)it.next();
+            if(key.equalsIgnoreCase(name)) {
+                cc=(CacheConnection) conns.get(key);
+                sct=new StructImpl();
+                d="";
+                if(cc==dObj)d="object";
+                else if(cc==dTmp)d="template";
+                else if(cc==dQry)d="query";
+                else if(cc==dRes)d="resource";
+                sct.setEL("name",cc.getName());
+                sct.setEL("class",cc.getClazz().getName());
+                sct.setEL("custom",cc.getCustom());
+                sct.setEL("default",d);
+                sct.setEL("readOnly",Caster.toBoolean(cc.isReadOnly()));
+                
+                pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
+                return;
+            }
+        }
+        throw new ApplicationException("there is no cache connection with name ["+name+"]");
+    }
+
+	private void doRemoveCacheConnection() throws PageException {
+		admin.removeCacheConnection(getString("admin",action,"name"));
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+	
+	private void doRemoveGatewayEntry() throws PageException {
+		admin.removeCacheGatewayEntry(getString("admin",action,"id"));
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+	
+	private void doVerifyCacheConnection() throws PageException {
+        try {
+			Cache cache = Util.getCache(pageContext, getString("admin",action,"name"));
+			cache.keys();
+		} catch (IOException e) {
+			throw Caster.toPageException(e);
+		}
+    }
 
     /**
      * @throws PageException
@@ -2320,7 +2758,6 @@ private void doGetMappings() throws PageException {
 		Cluster cluster = pageContext.clusterScope();
 		for(int i=0;i<keys.length;i++) {
 			entry=Caster.toStruct(entries.get(keys[i]));
-			
 			cluster.setEntry(
 				new ClusterEntryImpl(
 						KeyImpl.init(Caster.toString(entry.get(KEY))),
@@ -2329,9 +2766,8 @@ private void doGetMappings() throws PageException {
 				)
 			);
 		}
+
 		cluster.broadcast();
-		
-		//updateRemote(USAGE_CLUSTER);
 	}
 	
 	
@@ -2411,12 +2847,12 @@ private void doGetMappings() throws PageException {
     private void doUpdateScope() throws PageException {
         
         admin.updateScopeCascadingType(getString("admin",action,"scopeCascadingType"));
-        admin.updateAllowImplicidQueryCall(getBool("admin",action,"allowImplicidQueryCall"));
-        admin.updateMergeFormAndUrl(getBool("admin",action,"mergeFormAndUrl"));
-        admin.updateSessionManagement(getBool("admin",action,"sessionManagement"));
-        admin.updateClientManagement(getBool("admin",action,"clientManagement"));
-        admin.updateDomaincookies(getBool("admin",action,"domainCookies"));
-        admin.updateClientCookies(getBool("admin",action,"clientCookies"));
+        admin.updateAllowImplicidQueryCall(getBoolObject("admin",action,"allowImplicidQueryCall"));
+        admin.updateMergeFormAndUrl(getBoolObject("admin",action,"mergeFormAndUrl"));
+        admin.updateSessionManagement(getBoolObject("admin",action,"sessionManagement"));
+        admin.updateClientManagement(getBoolObject("admin",action,"clientManagement"));
+        admin.updateDomaincookies(getBoolObject("admin",action,"domainCookies"));
+        admin.updateClientCookies(getBoolObject("admin",action,"clientCookies"));
         //admin.updateRequestTimeout(getTimespan("admin",action,"requestTimeout"));
         admin.updateSessionTimeout(getTimespan("admin",action,"sessionTimeout"));
         admin.updateApplicationTimeout(getTimespan("admin",action,"applicationTimeout"));
@@ -2429,14 +2865,14 @@ private void doGetMappings() throws PageException {
     private void doUpdateApplicationSettings() throws PageException {
         admin.updateRequestTimeout(getTimespan("admin",action,"requestTimeout"));
     	admin.updateScriptProtect(getString("admin",action,"scriptProtect"));
-    	admin.updateAllowURLRequestTimeout(getBool("admin",action,"allowURLRequestTimeout")); // DIFF 23
+    	admin.updateAllowURLRequestTimeout(getBoolObject("admin",action,"allowURLRequestTimeout")); // DIFF 23
         store();
         adminSync.broadcast(attributes, config);
     }
 
     private void doUpdateOutputSettings() throws PageException {
-        admin.updateSupressWhitespace(getBool("admin",action, "supressWhitespace"));
-        admin.updateShowVersion(getBool("admin",action, "showVersion"));
+        admin.updateSupressWhitespace(getBoolObject("admin",action, "supressWhitespace"));
+        admin.updateShowVersion(getBoolObject("admin",action, "showVersion"));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -2590,9 +3026,9 @@ private void doGetMappings() throws PageException {
     private void doUpdateComponent() throws PageException {
         admin.updateBaseComponent(getString("admin",action,"baseComponentTemplate"));
         admin.updateComponentDumpTemplate(getString("admin",action,"componentDumpTemplate"));
-        admin.updateComponentDataMemberDefaultAccess(ComponentUtil.toIntAccess(getString("admin",action,"componentDataMemberDefaultAccess")));
-        admin.updateTriggerDataMember(getBool("admin",action,"triggerDataMember"));
-        admin.updateComponentUseShadow(getBool("admin",action,"useShadow"));
+        admin.updateComponentDataMemberDefaultAccess(getString("admin",action,"componentDataMemberDefaultAccess"));
+        admin.updateTriggerDataMember(getBoolObject("admin",action,"triggerDataMember"));
+        admin.updateComponentUseShadow(getBoolObject("admin",action,"useShadow"));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -2764,74 +3200,6 @@ private void doGetMappings() throws PageException {
          );
          store();
      }
-    
-    /*private void updateRemote(String usage) throws PageException {
-    	RemoteClient[] clients=config.getRemoteClients();
-		if(clients.length==0) return;
-    	
-		long start=System.currentTimeMillis();
-	    
-    	// create attribute collection struct
-    	Struct attrColl=(Struct) attributes.duplicate(false);
-    	attrColl.removeEL(PASSWORD);
-    	attrColl.removeEL(TYPE);
-    	attrColl.removeEL(RETURN_VARIABLE);
-    	
-    	String callerId;
-    	String providedCallerId=(String) attrColl.removeEL(PROVIDED_CALLER_IDS);
-    	if(StringUtil.isEmpty(providedCallerId))providedCallerId=(String) attrColl.removeEL(CALLER_ID);
-    	Set setProvidedCallerId=null;
-    	print.out(System.currentTimeMillis()-start);
-	    
-    	try{
-	    	if(StringUtil.isEmpty(providedCallerId))callerId=getCallerId();
-	    	else {
-	    		callerId=providedCallerId+","+getCallerId();
-	    		setProvidedCallerId = List.listToSet(providedCallerId, ",",true);
-	    	}
-    	}
-    	catch(IOException ioe){
-    		throw Caster.toPageException(ioe);
-    	}
-    	if(setProvidedCallerId==null)setProvidedCallerId=new HashSet();
-    	print.out(System.currentTimeMillis()-start);
-	    
-    	if(setProvidedCallerId.isEmpty())return;
-    		
-    	SpoolerEngine spoolerEngine= config.getSpoolerEngine();
-		String cid;
-    	for(int i=0;i<clients.length;i++) {
-    		if(clients[i].hasUsage(usage)){
-    			cid=clients[i].getId(config);
-	    		if(!StringUtil.isEmpty(cid) && !setProvidedCallerId.contains(cid))	{
-	    			spoolerEngine.add(
-    					new RemoteClientTask(
-    							new ExecutionPlan[]{new ExecutionPlanImpl(3,5),new ExecutionPlanImpl(3,60),new ExecutionPlanImpl(24,60*60)},
-    							clients[i],
-    							attrColl,
-    							callerId+getSisterCallerId(config,clients,clients[i]),
-    							"synchronisation"));
-	    		}
-    		}
-    		print.out(clients[i].getLabel()+":"+(System.currentTimeMillis()-start));
-    	}
-    	print.out((System.currentTimeMillis()-start));
-	}*/
-
-
-	/*public static String getSisterCallerId(Config config,RemoteClient[] others, RemoteClient client) {
-		StringBuffer sb=new StringBuffer();
-		String id;
-		for(int i=0;i<others.length;i++) {
-			if(others[i]==client) continue;
-			id=others[i].getId(config);
-			if(StringUtil.isEmpty(id)) continue;
-			
-    		sb.append(',');
-    		sb.append(id);
-    	}
-    	return sb.toString();
-	}*/
 
 	private String getCallerId() throws IOException {
 		if(type==TYPE_WEB) {
@@ -3008,6 +3376,7 @@ private void doGetMappings() throws PageException {
         sct.set("resourceCharset",config.getResourceCharset());
         sct.set("templateCharset",config.getTemplateCharset());
         sct.set("webCharset",config.getWebCharset());
+        sct.set("jreCharset",SystemUtil.getCharset());
 	}
 
     /**
@@ -3078,6 +3447,13 @@ private void doGetMappings() throws PageException {
             throw new ApplicationException("Attribute ["+attributeName+"] for tag ["+tagName+"] is required if attribute action has the value ["+actionName+"]");
         return Caster.toBooleanValue(value);
     }
+    private Boolean getBoolObject(String tagName, String actionName, String attributeName) throws PageException {
+        Object value=attributes.get(attributeName,null);
+        if(value==null)
+            throw new ApplicationException("Attribute ["+attributeName+"] for tag ["+tagName+"] is required if attribute action has the value ["+actionName+"]");
+        if(StringUtil.isEmpty(value)) return null;
+        return Caster.toBoolean(value);
+    }
     
     private Object getObject(String tagName, String actionName, String attributeName) throws PageException {
         Object value=attributes.get(attributeName,null);
@@ -3102,6 +3478,13 @@ private void doGetMappings() throws PageException {
         }
     }
    
+    private Struct getStruct(String tagName, String actionName, String attributeName) throws PageException {
+        Object value=attributes.get(attributeName,null);
+        if(value==null)
+            throw new ApplicationException("Attribute ["+attributeName+"] for tag ["+tagName+"] is required if attribute action has the value ["+actionName+"]");
+        return Caster.toStruct(value);
+    }
+    
     private int getInt(String tagName, String actionName, String attributeName) throws PageException {
         Object value=attributes.get(attributeName,null);
         if(value==null)
@@ -3125,6 +3508,7 @@ private void doGetMappings() throws PageException {
         Object value=attributes.get(attributeName,null);
         if(value==null)
             throw new ApplicationException("Attribute ["+attributeName+"] for tag ["+tagName+"] is required if attribute action has the value ["+actionName+"]");
+        if(StringUtil.isEmpty(value))return null;
         return Caster.toTimespan(value);
     }
 
@@ -3160,7 +3544,7 @@ final class PluginFilter implements ResourceFilter {
     }
 	
 	public static boolean doAccept(Resource res) {
-    	return res.isDirectory() && res.getRealResource("/Action.cfc").isFile() && res.getRealResource("/language.xml").isFile();
+		return res.isDirectory() && res.getRealResource("/Action.cfc").isFile() && res.getRealResource("/language.xml").isFile();
     }
 
 }

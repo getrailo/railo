@@ -28,10 +28,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.collections.map.ReferenceMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -44,11 +46,11 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
-import railo.commons.lang.SoftHashMap;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.cfx.QueryWrap;
 import railo.runtime.coder.Coder;
 import railo.runtime.coder.CoderException;
 import railo.runtime.converter.ConverterException;
@@ -77,6 +79,7 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.CollectionStruct;
 import railo.runtime.type.FunctionValue;
+import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
@@ -84,6 +87,7 @@ import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
@@ -106,15 +110,7 @@ import railo.runtime.util.IteratorWrapper;
 public final class Caster { 
     private Caster(){
     }
-    //private static DateFormat[] dateformats;
-    /*
-    private static Map dateTimeFormatterMap=new SoftHashMap();
-    private static int FORMATS_DATE_TIME=0;
-    private static int FORMATS_DATE=1;
-    private static int FORMATS_TIME=2;
-    */
-    
-    static Map calendarsMap=new SoftHashMap();
+    static Map calendarsMap=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
     
     private static final int NUMBERS_MIN=0;
     private static final int NUMBERS_MAX=999;
@@ -1881,7 +1877,7 @@ public final class Caster {
     private static DecimalFormat df=(DecimalFormat) DecimalFormat.getInstance(Locale.US);//("#.###########");
 	//public static int count;
     static {
-    	df.applyLocalizedPattern("#.###########");
+    	df.applyLocalizedPattern("#.############");
     }
     public static String toString(double d) {
     	long l = (long)d;
@@ -2048,6 +2044,10 @@ public final class Caster {
         else if(o instanceof List) {
             return ListAsArray.toArray((List)o);//new ArrayImpl(((List) o).toArray());
         }
+        else if(o instanceof Set) {
+        	
+            return toArray(((Set)o).toArray());//new ArrayImpl(((List) o).toArray());
+        }
         else if(o instanceof XMLStruct) {
             XMLStruct sct=((XMLStruct)o);
             if(sct instanceof XMLMultiElementStruct) return new XMLMultiElementArray((XMLMultiElementStruct)sct);
@@ -2059,17 +2059,14 @@ public final class Caster {
             return toArray(((ObjectWrap)o).getEmbededObject());
         }
         else if(o instanceof Struct) {
-            //print.ln(">>"+o.getClass().getName());
             Struct sct=(Struct) o;
             Array arr=new ArrayImpl();
             
             Collection.Key[] keys=sct.keys();
-            //print.ln("len:"+keys.length);
             Collection.Key key=null;
             try {
                 for(int i=0;i<keys.length;i++) {
                     key=keys[i];
-                    //print.ln(key);
                     arr.setE(toIntValue(key.getString()),sct.get(key));
                 }
             } 
@@ -2583,6 +2580,7 @@ public final class Caster {
             calendarsMap.put(locale,c);
         }
         synchronized(c){
+        	
 	        // datetime
 	        df=FormatUtil.getDateTimeFormats(locale,false);//dfc[FORMATS_DATE_TIME];
 	    	for(int i=0;i<df.length;i++) {
@@ -2700,6 +2698,31 @@ public final class Caster {
         }
         throw new CasterException(o,"query");
     }
+    
+    public static QueryImpl toQueryImpl(Query q) throws CasterException {
+		while(q instanceof QueryWrap){
+			q=((QueryWrap)q).getQuery();
+		}
+		
+		if(q instanceof QueryImpl)return (QueryImpl) q;
+		throw new CasterException(q,"QueryImpl");
+	}
+    
+
+    /**
+     * cast a query to a QueryImpl Object
+     * @param q query to cast
+     * @return casted Query Object
+     * @throws CasterException 
+     */
+    public static QueryImpl toQueryImpl(Query q,QueryImpl defaultValue) {
+		while(q instanceof QueryWrap){
+			q=((QueryWrap)q).getQuery();
+		}
+		
+		if(q instanceof QueryImpl)return (QueryImpl) q;
+		return defaultValue;
+	}
 
     /**
      * cast a Object to a Query Object
@@ -2949,12 +2972,12 @@ public final class Caster {
             return toTypeName(((ObjectWrap)o).getEmbededObject(null));
         }
         
-
-        String className=o.getClass().getName();
+        Class clazz=o.getClass();
+        String className=clazz.getName();
 		if(className.startsWith("java.lang.")) {
 			return className.substring(10);
 		}
-        return className;
+		return toClassName(clazz);
     }
     public static String toTypeName(Class clazz) {
         if(Reflector.isInstaneOf(clazz,String.class))	return "string";
@@ -2970,7 +2993,18 @@ public final class Caster {
 		if(className.startsWith("java.lang.")) {
 			return className.substring(10);
 		}
-        return className;
+        return toClassName(clazz);
+    }
+
+    public static String toClassName(Object o) {
+    	if(o==null)return "null";
+    	return toClassName(o.getClass());
+    }
+    public static String toClassName(Class clazz) {
+    	if(clazz.isArray()){
+    		return toClassName(clazz.getComponentType())+"[]";
+    	}
+    	return clazz.getName();
     }
     
     public static Class cfTypeToClass(String type) throws PageException {
@@ -3679,6 +3713,15 @@ public final class Caster {
         
         return sct;
     }
+    public static Object[] toFunctionValues(Struct args) {
+    	// TODO nicht sehr optimal 
+    	Key[] keys = args.keys();
+        FunctionValue[] fvalues=new FunctionValue[args.size()];
+        for(int i=0;i<keys.length;i++) {
+        	fvalues[i]=new FunctionValueImpl(keys[i].getString(),args.get(keys[i],null));
+        }
+        return fvalues;
+    }
 
     /**
      * casts a string to a Locale
@@ -3809,7 +3852,7 @@ public final class Caster {
      * @return Integer from boolean
      */
     public static Integer toInteger(boolean b) {
-        return b?Constants.INTEGER_ONE:Constants.INTEGER_ZERO;
+        return b?Constants.INTEGER_1:Constants.INTEGER_0;
     }
 
     /**
@@ -4075,6 +4118,7 @@ public final class Caster {
 		
 		return Caster.castTo(pc, trgClass.getName(), obj,false);
 	}
+
 
 	
 	

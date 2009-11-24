@@ -27,14 +27,14 @@ public class VideoPlayerParam extends TagSupport {
 	 * @throws PageException 
 	 */
 	public void setVideo(String video) throws PageException {
-		param.setVideo(video);
+		param.setVideo(pageContext,video);
 	}
 
 	/**
 	 * @param flash the flash to set
 	 */
 	public void setFlash(String flash) throws PageException {
-		param.setFlash(flash);
+		param.setFlash(pageContext,flash);
 	}
 
 	/**
@@ -63,10 +63,10 @@ public class VideoPlayerParam extends TagSupport {
 	 * @throws PageException 
 	 */
 	public void setPreview(String preview) throws PageException {
-		param.setImage(preview);
+		param.setImage(pageContext,preview);
 	}
 	public void setImage(String preview) throws PageException {
-		param.setImage(preview);
+		param.setImage(pageContext,preview);
 	}
 	public void setLink(String link) {
 		param.setLink(link);

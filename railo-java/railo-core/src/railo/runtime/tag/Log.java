@@ -157,6 +157,7 @@ public final class Log extends TagImpl {
 	    if(file==null) {
 	        if(log==LOG_SCHEDULER)logger=config.getScheduleLogger();
 	        else logger=config.getApplicationLogger();
+	        
 	    }
 	    else {
 	    	Resource logDir=config.getConfigDir().getRealResource("logs");
@@ -168,6 +169,7 @@ public final class Log extends TagImpl {
                 throw Caster.toPageException(e);
             }
 	    }
+	    
 	    
 	    String contextName = pageContext.getApplicationContext().getName();
 	    if(contextName==null || !application)contextName="";

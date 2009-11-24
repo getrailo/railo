@@ -32,8 +32,8 @@ public final class DateDiff implements Function {
 	private static final int DATEPART_WW = DATEPART_W;
 	private static final int DATEPART_Q = 20;
 	
-	private static Calendar cRight;
-	private static Calendar cLeft;
+	private static Calendar _cRight;
+	private static Calendar _cLeft;
 
 
 	/**
@@ -45,31 +45,16 @@ public final class DateDiff implements Function {
 	 * @throws ExpressionException
 	 */
 	public synchronized static double call(PageContext pc , String datePart, DateTime left, DateTime right) throws ExpressionException	{
-		
+		long msLeft = left.getTime();
+		long msRight = right.getTime();
 		TimeZone tz = pc.getTimeZone();
-		
-		// dates
-		if(cLeft==null) cLeft = Calendar.getInstance(tz);
-		else cLeft.clear();
-		cLeft.setTimeInMillis(left.getTime());
-		cLeft.setTimeZone(tz);
-		long msLeft = cLeft.getTimeInMillis();
-		/*if(cLeft.get(Calendar.DST_OFFSET) > 0) {
-			msLeft+=3600000;
-		}*/
-
-		if(cRight==null) cRight = Calendar.getInstance();
-		else cRight.clear();
-		cRight.setTimeInMillis(right.getTime());
-		cRight.setTimeZone(tz);
-		long msRight = cRight.getTimeInMillis();
-		
-		// datepart
+		//if(true)return 0;
+		// Date Part
 		datePart=datePart.toLowerCase().trim();
 		int dp;
-		if("s".equals(datePart))		dp=DATEPART_S;
-		else if("n".equals(datePart))	dp=DATEPART_N;
-		else if("h".equals(datePart))	dp=DATEPART_H;
+		if("s".equals(datePart))		return diffSeconds(msLeft, msRight);
+		else if("n".equals(datePart))	return diffSeconds(msLeft, msRight)/60L;
+		else if("h".equals(datePart))	return diffSeconds(msLeft, msRight)/3600L;
 		else if("d".equals(datePart))	dp=DATEPART_D;
 		else if("y".equals(datePart))	dp=DATEPART_Y;
 		else if("yyyy".equals(datePart))dp=DATEPART_YYYY;
@@ -79,16 +64,39 @@ public final class DateDiff implements Function {
 		else if("q".equals(datePart))	dp=DATEPART_Q;
 		else throw new FunctionException(pc,"dateDiff",3,"datePart","invalid value ["+datePart+"], valid values has to be [q,s,n,h,d,m,y,yyyy,w,ww]");
 		
-		if(msLeft>msRight) 
-			return -_call(pc,dp, cRight, msRight, cLeft, msLeft);
 		
-		return _call(pc,dp, cLeft, msLeft, cRight, msRight);
-        
+		
+		// dates
+		if(_cLeft==null) _cLeft = Calendar.getInstance(tz);
+		//synchronized(_cLeft){
+			_cLeft.clear();
+			_cLeft.setTimeZone(tz);
+			_cLeft.setTimeInMillis(msLeft);
+			//long msLeft = _cLeft.getTimeInMillis();
+			
+			if(_cRight==null) _cRight = Calendar.getInstance(tz);
+			else {
+				_cRight.clear();
+				_cRight.setTimeZone(tz);
+			}
+			_cRight.setTimeInMillis(msRight);
+			//long msRight = _cRight.getTimeInMillis();
+			
+			
+			if(msLeft>msRight) 
+				return -_call(pc,dp, _cRight, msRight, _cLeft, msLeft);
+			
+			return _call(pc,dp, _cLeft, msLeft, _cRight, msRight);
+		//}
 	}
 	
-
+	public static long diffSeconds(long msLeft, long msRight) {
+		if(msLeft>msRight)
+			return -(long)((msLeft-msRight)/1000D);
+		return (long)((msRight-msLeft)/1000D);
+	}
 	
-	private static long _call(PageContext pc , int datepart, Calendar cLeft, long msLeft, Calendar cRight, long msRight) throws ExpressionException {
+	/*private static long _call(int datepart, long msLeft, long msRight) throws ExpressionException {
 		
 		long msDiff = msRight-msLeft;
 		double diff = msDiff/1000D;
@@ -101,6 +109,22 @@ public final class DateDiff implements Function {
 		if(DATEPART_H==datepart)	{
 			return (long)(diff/3600D);
 		}
+		return 0;
+	}*/
+	
+	private static long _call(PageContext pc , int datepart, Calendar cLeft, long msLeft, Calendar cRight, long msRight) throws ExpressionException {
+		
+		//long msDiff = msRight-msLeft;
+		//double diff = msDiff/1000D;
+		/*if(DATEPART_S==datepart)	{
+			return (long) diff;
+		}
+		if(DATEPART_N==datepart)	{
+			return (long)(diff/60D);
+		}
+		if(DATEPART_H==datepart)	{
+			return (long)(diff/3600D);
+		}*/
 		
 		long dDiff = cRight.get(Calendar.DATE)-cLeft.get(Calendar.DATE);
 		long hDiff = cRight.get(Calendar.HOUR_OF_DAY)-cLeft.get(Calendar.HOUR_OF_DAY);

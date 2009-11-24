@@ -165,9 +165,6 @@ public final class QueryParam extends TagImpl {
             if(str.length()>maxlength)
                 throw new DatabaseException("value ["+value+"] is to large, defined maxlength is ["+Caster.toString(maxlength)+"] but length of value is ["+str.length()+"]",null,null,null);
         }
-        /*if(item.getType()==SQLCaster.CF_SQL_NUMERIC || item.getType()==SQLCaster.CF_SQL_DECIMAL) {
-            DecimalFormat.;
-        }*/
 	    return value;
 	}
 	

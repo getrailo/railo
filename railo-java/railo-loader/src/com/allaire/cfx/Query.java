@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 
 
 
+
 /**
  * Alternative Implementation of Jeremy Allaire's Query Interface
  */
@@ -23,8 +24,13 @@ public interface Query extends ResultSet {
 
 	/**
 	 * @return All column Names of resultset as string
+	 * FUTURE change to getColumnNamesAsString();
 	 */
 	public String[] getColumns();
+	
+	// FUTURE public String[] getColumnNamesAsString();
+	// FUTURE public Collection.Key[] getColumnNames();
+
 
 	/**
 	 * returns one field of a Query as String

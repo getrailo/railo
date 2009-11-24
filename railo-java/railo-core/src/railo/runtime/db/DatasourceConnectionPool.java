@@ -9,6 +9,8 @@ import java.util.Map;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
+import railo.runtime.PageContext;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -34,7 +36,8 @@ public class DatasourceConnectionPool {
 		return getDatasourceConnection(datasource, user, pass);
 	}*/
 
-	public DatasourceConnection getDatasourceConnection(DataSource datasource, String user, String pass) throws PageException {
+	public DatasourceConnection getDatasourceConnection(PageContext pc,DataSource datasource, String user, String pass) throws PageException {
+		pc=ThreadLocalPageContext.get(pc);
 		if(StringUtil.isEmpty(user)) {
             user=datasource.getUsername();
             pass=datasource.getPassword();
@@ -61,7 +64,7 @@ public class DatasourceConnectionPool {
 				
 			}
 			while(!stack.isEmpty()) {
-				DatasourceConnectionImpl dc=(DatasourceConnectionImpl) stack.get();
+				DatasourceConnectionImpl dc=(DatasourceConnectionImpl) stack.get(pc);
 					if(dc!=null && isValid(dc,Boolean.TRUE)){
 						_inc(datasource);
 						return dc.using();
@@ -69,7 +72,6 @@ public class DatasourceConnectionPool {
 				
 			}
 			_inc(datasource);
-			//print.out("getDatasourceConnection- counter.size:"+_size(datasource)+";");
 			return loadDatasourceConnection(datasource, user, pass).using();
 		}
 		
@@ -78,7 +80,6 @@ public class DatasourceConnectionPool {
 	private DatasourceConnectionImpl loadDatasourceConnection(DataSource ds, String user, String pass) throws DatabaseException  {
         Connection conn=null;
         String dsn = ds.getDsnTranslated();
-        //print.out(dsn);
         try {
             if(dsn.indexOf('?')==-1) {
             	conn = DriverManager.getConnection(dsn, user, pass);

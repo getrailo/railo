@@ -47,8 +47,7 @@ public final class ConfigServerFactory {
     			"===================================================================\n"
     			
     			);
-    	
-    	
+
         
     	Resource configFile=configDir.getRealResource("railo-server.xml");
         if(!configFile.exists()) {
@@ -75,6 +74,7 @@ public final class ConfigServerFactory {
         ConfigServerImpl config=new ConfigServerImpl(engine,initContextes,contextes,configDir,configFile);
 		load(config,doc);
 	    
+		createContextFiles(configDir,config);
 	    return config;
     }
     /**
@@ -123,4 +123,13 @@ public final class ConfigServerFactory {
     static void load(ConfigServerImpl configServer, Document doc) throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
         ConfigWebFactory.load(null,configServer,doc);
     }
+    
+
+	public static void createContextFiles(Resource configDir, ConfigServer config) throws IOException {
+		//Resource tagDir = configDir.getRealResource("library/tag/");
+		//if()
+		//f=cDir.getRealResource("Cache.cfc");
+        //if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/cdriver/Cache.cfc",f);
+
+	}
 }

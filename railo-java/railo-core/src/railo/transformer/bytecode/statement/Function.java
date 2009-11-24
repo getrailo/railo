@@ -11,7 +11,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
 import railo.runtime.type.FunctionArgument;

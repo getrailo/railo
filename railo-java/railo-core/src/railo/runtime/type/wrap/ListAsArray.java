@@ -408,7 +408,7 @@ public class ListAsArray implements Array,List {
      * @see railo.runtime.op.Castable#castToString()
      */
     public String castToString() throws PageException {
-        throw new ExpressionException("Can't cast Complex Object Type "+list.getClass().getName()+" to String",
+        throw new ExpressionException("Can't cast Complex Object Type "+Caster.toClassName(list)+" to String",
           "Use Build-In-Function \"serialize(Array):String\" to create a String from Array");
     }
 
@@ -424,7 +424,7 @@ public class ListAsArray implements Array,List {
      * @see railo.runtime.op.Castable#castToBooleanValue()
      */
     public boolean castToBooleanValue() throws PageException {
-        throw new ExpressionException("Can't cast Complex Object Type "+list.getClass().getName()+" to a boolean value");
+        throw new ExpressionException("Can't cast Complex Object Type "+Caster.toClassName(list)+" to a boolean value");
     }
     
     /**
@@ -439,7 +439,7 @@ public class ListAsArray implements Array,List {
      * @see railo.runtime.op.Castable#castToDoubleValue()
      */
     public double castToDoubleValue() throws PageException {
-        throw new ExpressionException("Can't cast Complex Object Type "+list.getClass().getName()+" to a number value");
+        throw new ExpressionException("Can't cast Complex Object Type "+Caster.toClassName(list)+" to a number value");
     }
     
     /**
@@ -454,7 +454,7 @@ public class ListAsArray implements Array,List {
      * @see railo.runtime.op.Castable#castToDateTime()
      */
     public DateTime castToDateTime() throws PageException {
-        throw new ExpressionException("Can't cast Complex Object Type "+list.getClass().getName()+" to a Date");
+        throw new ExpressionException("Can't cast Complex Object Type "+Caster.toClassName(list)+" to a Date");
     }
     
     /**
@@ -468,28 +468,28 @@ public class ListAsArray implements Array,List {
 	 * @see railo.runtime.op.Castable#compare(boolean)
 	 */
 	public int compareTo(boolean b) throws PageException {
-		throw new ExpressionException("can't compare Complex Object Type "+list.getClass().getName()+" with a boolean value");
+		throw new ExpressionException("can't compare Complex Object Type "+Caster.toClassName(list)+" with a boolean value");
 	}
 
 	/**
 	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
 	 */
 	public int compareTo(DateTime dt) throws PageException {
-		throw new ExpressionException("can't compare Complex Object Type "+list.getClass().getName()+" with a DateTime Object");
+		throw new ExpressionException("can't compare Complex Object Type "+Caster.toClassName(list)+" with a DateTime Object");
 	}
 
 	/**
 	 * @see railo.runtime.op.Castable#compareTo(double)
 	 */
 	public int compareTo(double d) throws PageException {
-		throw new ExpressionException("can't compare Complex Object Type "+list.getClass().getName()+" with a numeric value");
+		throw new ExpressionException("can't compare Complex Object Type "+Caster.toClassName(list)+" with a numeric value");
 	}
 
 	/**
 	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
 	 */
 	public int compareTo(String str) throws PageException {
-		throw new ExpressionException("can't compare Complex Object Type "+list.getClass().getName()+" with a String");
+		throw new ExpressionException("can't compare Complex Object Type "+Caster.toClassName(list)+" with a String");
 	}
 
 	/**

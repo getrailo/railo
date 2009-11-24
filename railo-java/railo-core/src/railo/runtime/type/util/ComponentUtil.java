@@ -2,9 +2,10 @@ package railo.runtime.type.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.HashSet;
 
 import org.apache.axis.AxisFault;
 import org.objectweb.asm.ClassWriter;
@@ -14,7 +15,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -36,16 +36,14 @@ import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.arrays.ArraySort;
-import railo.runtime.functions.list.ListSort;
 import railo.runtime.net.rpc.AxisCaster;
+import railo.runtime.net.rpc.Pojo;
 import railo.runtime.net.rpc.server.ComponentController;
 import railo.runtime.net.rpc.server.RPCServer;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.UDF;
 import railo.runtime.type.Collection.Key;
@@ -151,7 +149,9 @@ public final class ComponentUtil {
         	ResourceUtil.touch(classFile);
 	        IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
 	        //PhysicalClassLoader cl=(PhysicalClassLoader) mapping.getClassLoaderForPhysical(true); 
+	        
 	        cl = (PhysicalClassLoader) mapping.getConfig().getRPCClassLoader(true);
+	        
 	        return registerTypeMapping(cl.loadClass(className, barr));
         }
         catch(Throwable t) {
@@ -317,7 +317,9 @@ public final class ComponentUtil {
 		if(classFile.exists()) {
 			try {
 				Class clazz = cl.loadClass(className);
-				if(equalInterface(properties,clazz)) {
+				Field field = clazz.getField("_md5_");
+				if(ASMUtil.createMD5(properties).equals(field.get(null))){
+				//if(equalInterface(properties,clazz)) {
 					return ClassUtil.loadInstance(clazz);
 				}
 			}
@@ -327,38 +329,42 @@ public final class ComponentUtil {
 		}
 		
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, properties,Object.class,new Class[]{},null);
-    	ResourceUtil.touch(classFile);
+		byte[] barr = ASMUtil.createPojo(real, properties,Object.class,new Class[]{Pojo.class},null);
+    	boolean exist=classFile.exists();
+		ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
-    	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
+    	
+    	cl = (PhysicalClassLoader)config.getRPCClassLoader(exist);
+    	
 		return ClassUtil.loadInstance(cl.loadClass(real));
 
 	}
 
-	
-	private static boolean equalInterface(ASMProperty[] properties, Class clazz) {
+	private static boolean OLDequalInterface(ASMProperty[] properties, Class clazz) {
 		java.lang.reflect.Method[] methods=Reflector.getDeclaredMethods(clazz);
 		java.lang.reflect.Method method;
 		String propName;
+		HashSet existingProps=new HashSet();
 		try {
 			outer:for(int i=0;i<methods.length;i++) {
 				method=methods[i];
-				propName=method.getName().substring(3);
-	
+				propName=StringUtil.lcFirst(method.getName().substring(3));
+				existingProps.add(propName);
 			// check existing
 				if(Reflector.isGetter(method)) {
+						
 					for(int y=0;y<properties.length;y++) {
-						if(propName.equalsIgnoreCase(properties[y].getName())) {
+						if(propName.equals(properties[y].getName())) {
 							if(!properties[y].getASMType().getClassName().equals(method.getReturnType().getName()))
 								return false;
 							continue outer;
 						}
 					}
-					return false;
+					return true;
 				}
 				else if(Reflector.isSetter(method)) {
 					for(int y=0;y<properties.length;y++) {
-						if(propName.equalsIgnoreCase(properties[y].getName())) {
+						if(propName.equals(properties[y].getName())) {
 							if(!properties[y].getASMType().getClassName().equals(method.getParameterTypes()[0].getName()))
 								return false;
 							continue outer;
@@ -372,6 +378,11 @@ public final class ComponentUtil {
 			return false;
 		}
 		
+		for(int i=0;i<properties.length;i++){
+			if(!existingProps.contains(properties[i].getName())){
+				return false;
+			}
+		}
 		return true;
 	}
 
@@ -424,7 +435,7 @@ public final class ComponentUtil {
     	
 		
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component),Object.class,new Class[]{},component.getPage().getPageSource().getDisplayPath());
+		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component),Object.class,new Class[]{Pojo.class},component.getPage().getPageSource().getDisplayPath());
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
@@ -619,13 +630,34 @@ public final class ComponentUtil {
 		if(c instanceof SuperComponent)
 			return ((SuperComponent)c).getProperties();
 		
-		throw new RuntimeException("class ["+c.getClass().getName()+"] does not support method [getProperties()]");
+		throw new RuntimeException("class ["+Caster.toClassName(c)+"] does not support method [getProperties()]");
 	}
 
 	public static ComponentImpl toComponentImpl(Component comp) throws ExpressionException {
 		if(comp instanceof ComponentImpl) return (ComponentImpl) comp;
 		if(comp instanceof ComponentWrap) return ((ComponentWrap) comp).getComponentImpl();
-		throw new ExpressionException("can't cast class ["+comp.getClass().getName()+"] to a class of type ComponentImpl");
+		throw new ExpressionException("can't cast class ["+Caster.toClassName(comp)+"] to a class of type ComponentImpl");
+		
+	}
+
+	public static ComponentImpl getActiveComponent(PageContext pc, ComponentImpl current) {
+		if(pc.getActiveComponent()==null) return current; 
+		if(pc.getActiveUDF()!=null && pc.getActiveComponent().getPage()==pc.getActiveUDF().getOwnerComponent().getPage()){
+			/*
+			print.out(">>>"+pc.getActiveComponent().hashCode());
+			print.out(">>>"+pc.getActiveUDF().getOwnerComponent().hashCode());
+			print.out(">>>"+pc.getActiveComponent().getPage().hashCode());
+			print.out(">>>"+pc.getActiveUDF().getOwnerComponent().getPage().hashCode());
+			print.out(">>>"+pc.getActiveComponent().getAbsName());
+			print.out(">>>"+pc.getActiveUDF().getOwnerComponent().getAbsName());
+			print.out(">>>"+((ComponentImpl)pc.getActiveComponent()).getCurrentPage().getPageSource().getComponentName());
+			print.out(">>>"+((ComponentImpl)pc.getActiveUDF().getOwnerComponent()).getCurrentPage().getPageSource().getComponentName());
+			print.out(">>>"+pc.getActiveUDF().getFunctionName());
+			*/
+			return (ComponentImpl) pc.getActiveUDF().getOwnerComponent();
+		}
+		return (ComponentImpl) pc.getActiveComponent();//+++
+		
 		
 	}
 }

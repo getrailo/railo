@@ -29,13 +29,13 @@ public final class ComponentProvider extends RPCProvider {
 		TypeMapping tm = server.getEngine().getTypeMappingRegistry().getDefaultTypeMapping();
 		
 		
-		return AxisCaster.toAxisType(tm,c.call(pc,method.getName(),toRailoType(args)));
+		return AxisCaster.toAxisType(tm,c.call(pc,method.getName(),toRailoType(pc,args)));
 	}
 
-	private Object[] toRailoType(Object[] args) throws PageException {
+	private Object[] toRailoType(PageContext pc,Object[] args) throws PageException {
 		Object[] trgs=new Object[args.length];
 		for(int i=0;i<trgs.length;i++) {
-			trgs[i]=AxisCaster.toRailoType(args[i]);
+			trgs[i]=AxisCaster.toRailoType(pc,args[i]);
 		}
 		return trgs;
 	}

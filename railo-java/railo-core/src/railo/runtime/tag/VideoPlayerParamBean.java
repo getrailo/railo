@@ -3,7 +3,7 @@ package railo.runtime.tag;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
-import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 
@@ -62,8 +62,8 @@ public class VideoPlayerParamBean {
 		this.pathVideo = pathVideo;
 	}
 
-	public void setVideo(String video) throws PageException {
-		setVideo(toResource(video),video);
+	public void setVideo(PageContext pc,String video) throws PageException {
+		setVideo(toResource(pc,video),video);
 	}
 
 	/**
@@ -88,8 +88,8 @@ public class VideoPlayerParamBean {
 	 * @param flash the flash to set
 	 * @throws PageException 
 	 */
-	public void setFlash(String flash) throws PageException {
-		setFlash(toResource(flash),flash);
+	public void setFlash(PageContext pc,String flash) throws PageException {
+		setFlash(toResource(pc,flash),flash);
 	}
 
 	/**
@@ -124,8 +124,8 @@ public class VideoPlayerParamBean {
 	}
 	
 
-	private Resource toResource(String str ) throws PageException {
-		Resource res=ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get() ,str);
+	private Resource toResource(PageContext pc,String str) throws PageException {
+		Resource res=ResourceUtil.toResourceNotExisting(pc ,str);
         
 		//Resource res = Caster.toResource(str,false);
 		//print.out(res);
@@ -196,8 +196,8 @@ public class VideoPlayerParamBean {
 		this.title = title;
 	}
 
-	public void setImage(String image) throws PageException {
-		this.image=toResource(image);
+	public void setImage(PageContext pc,String image) throws PageException {
+		this.image=toResource(pc,image);
 	}
 
 	/**

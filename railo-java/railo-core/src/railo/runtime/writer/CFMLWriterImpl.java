@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
-import railo.runtime.cache.CacheItem;
-import railo.runtime.cache.MetaData;
+import railo.runtime.cache.legacy.CacheItem;
+import railo.runtime.cache.legacy.MetaData;
 
 /**
  * Implementation of a JSpWriter
@@ -460,7 +460,7 @@ public class CFMLWriterImpl extends CFMLWriter {
 		return out;
 	}
 
-	public void doCache(railo.runtime.cache.CacheItem ci) {
+	public void doCache(railo.runtime.cache.legacy.CacheItem ci) {
 		this.cacheItem=ci;
 	}
 

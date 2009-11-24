@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-import railo.runtime.functions.dateTime.DateUtil;
 import railo.runtime.type.dt.DateTimeImpl;
 
 public class TimestampCast implements Cast{
@@ -16,11 +15,7 @@ public class TimestampCast implements Cast{
 	public Object toCFType(int type, ResultSet rst, int columnIndex) throws SQLException, IOException {
 		Timestamp ts = rst.getTimestamp(columnIndex);
 		if(ts==null) return null;
-		
-		return new DateTimeImpl(
-				DateUtil.fromSystemToRailo(ts.getTime()),
-				false);
-		
+		return new DateTimeImpl(ts.getTime(),false);
 	}
 
 }

@@ -2,12 +2,13 @@ package railo.runtime.video;
 
 import java.util.Map;
 
+import org.apache.commons.collections.map.ReferenceMap;
+
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.type.file.FileResource;
 import railo.commons.io.res.type.http.HTTPResource;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
-import railo.commons.lang.SoftHashMap;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
@@ -20,7 +21,7 @@ import railo.runtime.op.Caster;
 public class VideoUtilImpl implements VideoUtil {
 
 
-	private static Map sizes=new SoftHashMap();
+	private static Map sizes=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 	private static VideoUtilImpl instance=new VideoUtilImpl();
 
 	private VideoUtilImpl(){		}

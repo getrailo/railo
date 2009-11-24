@@ -1,5 +1,10 @@
 package railo.commons.io.log;
 
+import java.io.PrintWriter;
+
+import railo.commons.lang.SystemOut;
+
+
 /**
  * log for Console
  */
@@ -14,13 +19,21 @@ public final class LogConsole implements Log {
     };
     
     private int logLevel;
+
+	private PrintWriter writer;
     
     /**
      * Constructor of the class
      * @param logLevel
      */
-    private LogConsole(int logLevel) {
+    public LogConsole(int logLevel) {
         this.logLevel=logLevel;
+        writer=new PrintWriter(System.out);
+    }
+    
+    public LogConsole(int logLevel, PrintWriter writer) {
+        this.logLevel=logLevel;
+        this.writer=writer;
     }
 
     /**
@@ -35,7 +48,7 @@ public final class LogConsole implements Log {
      * @see railo.commons.io.log.Log#log(int, java.lang.String, java.lang.String)
      */
     public void log(int level, String application, String message) {
-        if(level>=logLevel)System.out.print(LogUtil.getLine(level,application,message));
+    	if(level>=logLevel)SystemOut.print(writer, LogUtil.getLine(level,application,message));
     }
 
     /**

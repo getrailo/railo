@@ -1,10 +1,12 @@
 package railo.transformer.bytecode.util;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
 
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -12,6 +14,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.commons.digest.MD5;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -24,7 +27,9 @@ import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.ExprDouble;
+import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.tag.Attribute;
@@ -310,7 +315,19 @@ public final class ASMUtil {
 		//ClassWriter cw = new ClassWriter(true);
     	ClassWriter cw = ASMUtil.getClassWriter();
         cw.visit(Opcodes.V1_2, Opcodes.ACC_PUBLIC, className, null, parent.getName().replace('.', '/'), inter);
-    	
+        String md5;
+        try{
+    		md5=createMD5(properties);
+    	}
+    	catch(Throwable t){
+    		md5="";
+    		t.printStackTrace();
+    	}
+        
+        FieldVisitor fv = cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, "_md5_", "Ljava/lang/String;", null, md5);
+        fv.visitEnd();
+        
+        
     // Constructor
         GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_OBJECT,null,null,cw);
         adapter.loadThis();
@@ -341,14 +358,15 @@ public final class ASMUtil {
     }
     
     private static void createProperty(ClassWriter cw,String classType, ASMProperty property) throws PageException {
-		String name = property.getName().toLowerCase();
+		String name = property.getName();
 		Type type = property.getASMType();
+		Class clazz = property.getClazz();
 		cw.visitField(Opcodes.ACC_PRIVATE, name, type.toString(), null, null).visitEnd();
 		
     	// get<PropertyName>():object
     		Type[] types=new Type[0];
-    		Method method = new Method("get"+StringUtil.ucFirst(name),type,types);
-            GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , method, null, null, cw);
+    		Method method = new Method((clazz==boolean.class?"get":"get")+StringUtil.ucFirst(name),type,types);
+            GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC , method, null, null, cw);
             
             Label start = new Label();
             adapter.visitLabel(start);
@@ -367,21 +385,34 @@ public final class ASMUtil {
 	    	
 			types=new Type[]{type};
 			method = new Method("set"+StringUtil.ucFirst(name),Types.VOID,types);
-            adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , method, null, null, cw);
+            adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC , method, null, null, cw);
             
             Label l0 = new Label();
             adapter.visitLabel(l0);
             adapter.visitVarInsn(Opcodes.ALOAD, 0);
-            adapter.visitVarInsn(Opcodes.ALOAD, 1);
+            if(clazz==boolean.class || clazz==int.class || clazz==char.class || clazz==short.class)
+            	adapter.visitVarInsn(Opcodes.ILOAD, 1);
+            else if(clazz==float.class)
+            	adapter.visitVarInsn(Opcodes.FLOAD, 1);
+            else if(clazz==long.class)
+            	adapter.visitVarInsn(Opcodes.LLOAD, 1);
+            else if(clazz==double.class)
+            	adapter.visitVarInsn(Opcodes.DLOAD, 1);
+            else 
+            	adapter.visitVarInsn(Opcodes.ALOAD, 1);
+            
             adapter.visitFieldInsn(Opcodes.PUTFIELD, classType, name, type.toString());
 			Label l1 = new Label();
 			adapter.visitLabel(l1);
+			
 			adapter.visitInsn(Opcodes.RETURN);
 			Label l2 = new Label();
 			adapter.visitLabel(l2);
 			adapter.visitLocalVariable("this", "L"+classType+";", null, l0, l2, 0);
 			adapter.visitLocalVariable(name, type.toString(), null, l0, l2, 1);
 			adapter.visitMaxs(2, 2);
+			
+			
 			adapter.visitEnd();
         
 	}
@@ -408,6 +439,26 @@ public final class ASMUtil {
 		if(axistype)type=AxisCaster.toAxisTypeClass(type);
 		return Type.getType(type);	
 	}
+    
+
+	public static String createMD5(ASMProperty[] props) {
+		
+		StringBuffer sb=new StringBuffer();
+		for(int i=0;i<props.length;i++){
+			sb.append("name:"+props[i].getName()+";");
+			try {
+				sb.append("type:"+props[i].getASMType()+";");
+				
+			} catch (PageException e) {
+			}
+		}
+		try {
+			return MD5.getDigestAsString(sb.toString());
+		} catch (IOException e) {
+			return "";
+		}
+	}
+
 
 
 	public static void removeLiterlChildren(Tag tag, boolean recursive) {
@@ -527,6 +578,11 @@ public final class ASMUtil {
 	// FUTURE add to loader, same method is also in FD Extension railo.intergral.fusiondebug.server.util.FDUtil
 	public static boolean isOverfowMethod(String name) {
 		return name.startsWith("_call") && name.length()>=11;
+	}
+
+
+	public static boolean isDotKey(ExprString expr) {
+		return expr instanceof LitString && !((LitString)expr).fromBracket();
 	}
 	
 }

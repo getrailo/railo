@@ -27,6 +27,7 @@ import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.wrap.MapAsStruct;
 import railo.runtime.util.ApplicationContext;
 
 /**
@@ -113,13 +114,10 @@ public final class ScopeContext {
 	    			cluster=new ClusterWrap(cs,cb);
 		    		//cluster.init(cs);
 	    		}
-	    		
-	    		
-	    		
-			} catch (Exception e) {
+			} 
+	    	catch (Exception e) {
 				throw Caster.toPageException(e);
 			} 
-	    	//new Cluster Impl(pc);
 	    }
 		return cluster;
 	}
@@ -245,6 +243,12 @@ public final class ScopeContext {
 		return getAllSessionScopes(pc, pc.getApplicationContext().getName());
 	}
 	
+	public Struct getAllApplicationScopes() {
+		Struct trg=new StructImpl();
+		StructImpl.copy(MapAsStruct.toStruct(applicationContextes, true), trg, false);
+		return trg;
+	}
+	
 	/**
 	 * return the size in bytes of all session contextes
 	 * @return size in bytes
@@ -268,7 +272,6 @@ public final class ScopeContext {
 	 */
 	public Struct getAllSessionScopes(PageContext pc, String appName) {
         if(pc.getConfig().getSessionType()==Config.SESSION_TYPE_J2EE)return new StructImpl();
-		
 		return getAllSessionScopes(getSubMap(cfSessionContextes,appName),appName);
 	}
 	
@@ -449,7 +452,6 @@ public final class ScopeContext {
                 	cfid=arrClients[y];
     				Client client=(Client) fhm.get(cfid);
     				if(client.lastVisit()+CLIENT_MEMORY_TIMESPAN<now) {
-    					//SystemOut.printDate(jspFactory.getConfigWebImpl().getOut(),"Store client scope ("+client.getClass().getName()+") :"+applicationName+"-"+cfid);
     					if(client instanceof ClientSupport)((ClientSupport)client).store();
     					fhm.remove(arrClients[y]);
         				count--;

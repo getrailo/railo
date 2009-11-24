@@ -46,15 +46,12 @@ public class FDQuery extends FDValueNotMutability {
 		int intervall = INTERVALL;
 		while(intervall*intervall<len)
 			intervall*=intervall;
-		//print.out("start:"+start+":len:"+len);
 		if(len>intervall){
 			int max;
 			for(int i=start;i<to;i+=intervall)	{
 				max=(i+intervall)<to?(intervall-1):to-i;
-				//print.out("intervall:"+(i+intervall)+";len:"+len+";to-i:"+(to-i));
 				ArrayList group=new ArrayList();
 				lstRows.add(new FDSimpleVariable(frame,"Rows","["+i+"-"+((i+max))+"]",group));
-				//print.out("i:"+i+";max:"+max);
 				fill(frame, qry, group, i, max, strColumns);
 			}
 		}

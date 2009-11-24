@@ -460,7 +460,6 @@ public final class Page extends BodyBase {
 
      // threadCall
              TagThread[] threads=getThreads();
-             //print.out("threads:"+threads.length);
              if(threads.length>0) {
              	adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , THREAD_CALL, null, new Type[]{Types.THROWABLE}, cw);
          			writeOutThreadCallInner(new BytecodeContext(statConstr,constr,keys,cw,name,adapter,THREAD_CALL),threads,0,threads.length);

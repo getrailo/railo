@@ -8,12 +8,11 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExternalizableUtil;
 import railo.commons.lang.SizeOf;
 import railo.runtime.Page;
-import railo.runtime.PageSource;
+import railo.runtime.PageContext;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -246,11 +245,11 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		return access;
 	}
 
-
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		try {
-			ConfigWeb cw = (ConfigWeb) ThreadLocalPageContext.getConfig();
-			page=cw.getPageSource(null, ExternalizableUtil.readString(in), false).loadPage(cw);
+			PageContext pc = ThreadLocalPageContext.get();
+			ConfigWeb cw = (ConfigWeb) ThreadLocalPageContext.getConfig(pc);
+			page=((PageSourceImpl)cw.getPageSource(null, ExternalizableUtil.readString(in), false)).loadPage(pc,cw);
 			
 		} 
 		catch (PageException e) {

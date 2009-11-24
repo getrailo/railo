@@ -6,7 +6,8 @@ import java.util.List;
 import railo.runtime.type.Struct;
 
 public interface Cache {
-
+	
+	// FUTURE remove
 	public static final String DEFAULT_CACHE_NAME = "default789575785";
 	
 	/**
@@ -15,6 +16,8 @@ public interface Cache {
 	 * @throws CacheException 
 	 */
 	public void init(String cacheName,Struct arguments) throws IOException;
+	
+	//FUTURE public void init(Config config,String cacheName,Struct arguments) throws IOException;
 	
 	/**
 	 * return cache entry that match the key, throws a CacheException when entry does not exists or is stale
@@ -50,7 +53,7 @@ public interface Cache {
 	 * puts a cache entry to the cache, overwrite existing entries that already exists inside the cache with the same key
 	 * @param value
 	 */
-	public void put(String key, Object value,Long idleTime,Long until);
+	public void put(String key, Object value,Long idleTime,Long until);//FUTURE throws IOException;
 	
 	/**
 	 * check if there is a entry inside the cache that match the given key
@@ -65,21 +68,21 @@ public interface Cache {
 	 * @param key
 	 * @return returns if there was a removal
 	 */
-	public boolean remove(String key);
+	public boolean remove(String key);//FUTURE throws IOException;
 	
 	/**
 	 * remove all entries that match the given filter
 	 * @param filter 
 	 * @return returns the count of the removal or -1 if this information is not available
 	 */
-	public int remove(CacheKeyFilter filter);
+	public int remove(CacheKeyFilter filter);//FUTURE throws IOException;
 	
 	/**
 	 * remove all entries that match the given filter
 	 * @param filter 
 	 * @return returns the count of the removal or -1 if this information is not available
 	 */
-	public int remove(CacheEntryFilter filter);
+	public int remove(CacheEntryFilter filter);//FUTURE throws IOException;
 
 
 	/**
@@ -88,7 +91,7 @@ public interface Cache {
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the keys contained in this cache.
 	 */
-	public List keys();
+	public List keys();//FUTURE throws IOException;
 	
 	/**
 	 * 
@@ -97,7 +100,7 @@ public interface Cache {
 	 * @param filter 
 	 * @return a set of the keys contained in this cache.
 	 */
-	public List keys(CacheKeyFilter filter);
+	public List keys(CacheKeyFilter filter);//FUTURE throws IOException;
 	
 	/**
 	 * 
@@ -106,28 +109,28 @@ public interface Cache {
 	 * @param filter 
 	 * @return a set of the keys contained in this cache.
 	 */
-	public List keys(CacheEntryFilter filter);
+	public List keys(CacheEntryFilter filter);//FUTURE throws IOException;
 	
 	/**
 	 * Returns a List of values containing in this cache. 
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List values();
+	public List values();//FUTURE throws IOException;
 	
 	/**
 	 * Returns a list of values containing in this cache that match the given filter.
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List values(CacheKeyFilter filter);
+	public List values(CacheKeyFilter filter);//FUTURE throws IOException;
 	
 	/**
 	 * Returns a list of values containing in this cache that match the given filter.
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List values(CacheEntryFilter filter);
+	public List values(CacheEntryFilter filter);//FUTURE throws IOException;
 	
 	/**
 	 * Returns a List of entries containing in this cache Each element in the returned list is a CacheEntry. 
@@ -173,5 +176,10 @@ public interface Cache {
 	 * get all information data available for this cache
 	 */
 	public Struct getCustomInfo();
+
+	/**
+	 * removes the cache coplitly
+	 */
+	// FUTURE public void remove() throws IOException;
 
 }

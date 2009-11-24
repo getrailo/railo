@@ -12,6 +12,18 @@ public class CFTagCore extends CFTag {
 	private boolean isweb;
 
 
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+	/**
+	 * @return the filename
+	 */
+	public String getFilename() {
+		return filename;
+	}
 
 	
 	public void set__name(String name){

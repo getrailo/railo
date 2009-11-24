@@ -21,6 +21,7 @@ public final class LitString extends ExpressionBase implements Literal,ExprStrin
 	public static final int TYPE_UPPER = 1;
 	public static final int TYPE_LOWER = 2;
 	private String str;
+	private boolean fromBracket;
 
 
 	public static ExprString toExprString(String str, int line) {
@@ -124,6 +125,13 @@ public final class LitString extends ExpressionBase implements Literal,ExprStrin
 
 	public LitString duplicate() {
 		return new LitString(str,this.getLine());
+	}
+
+	public void fromBracket(boolean fromBracket) {
+		this.fromBracket=fromBracket;
+	}
+	public boolean fromBracket() {
+		return fromBracket;
 	}
 
 

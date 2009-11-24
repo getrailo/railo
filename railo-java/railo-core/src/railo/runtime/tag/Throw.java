@@ -6,6 +6,7 @@ import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.CustomTypeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.op.Caster;
 import railo.runtime.type.ObjectWrap;
 
 /**
@@ -126,7 +127,7 @@ public final class Throw extends TagImpl {
 				Throwable t=(Throwable)object;
 				throw new CustomTypeException(t.getMessage(),"","",t.getClass().getName());
 			}
-			throw new ApplicationException("attribute object of type cfthrow must define a Exception Object, now ("+object.getClass().getName()+")");
+			throw new ApplicationException("attribute object of type cfthrow must define a Exception Object, now ("+Caster.toClassName(object)+")");
 			
 			
 			

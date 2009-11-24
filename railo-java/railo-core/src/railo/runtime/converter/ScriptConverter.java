@@ -329,89 +329,91 @@ public final class ScriptConverter {
 	 * @throws ConverterException
 	 */
 	private void _serialize(Object object, StringBuffer sb) throws ConverterException {
-		
-		deep++;
-		// NULL
-		if(object==null) {
-		    sb.append(goIn());
-		    sb.append("''");
-		}
-		// String
-		else if(object instanceof String) {
-		    sb.append(goIn());
-		    sb.append("'");
-		    sb.append(escape(object.toString()));
-		    sb.append("'");
-		}
-		// Number
-		else if(object instanceof Number) {
-		    sb.append(goIn());
-		    sb.append(Caster.toString(((Number)object).doubleValue()));
-		}
-		// Boolean
-		else if(object instanceof Boolean) {
-		    sb.append(goIn());
-		    sb.append(Caster.toString(((Boolean)object).booleanValue()));
-		}
-		// DateTime
-		else if(object instanceof DateTime) {
-			_serializeDateTime((DateTime)object,sb);
-		}
-		// Date
-		else if(object instanceof Date) {
-			_serializeDate((Date)object,sb);
-		}
-        // Component
-        else if(object instanceof Component) {
-            _serializeComponent((Component)object,sb);
-        }
-
-        // XML
-        else if(object instanceof Node) {
-            _serializeXML((Node)object,sb);
-        }
-        // Struct
-        else if(object instanceof Struct) {
-            _serializeStruct((Struct)object,sb);
-        }
-        // Map
-        else if(object instanceof Map) {
-            _serializeMap((Map)object,sb);
-        }
-		// Array
-		else if(object instanceof Array) {
-			_serializeArray((Array)object,sb);
-		}
-		// List
-		else if(object instanceof List) {
-			_serializeList((List)object,sb);
-		}
-        // Query
-        else if(object instanceof Query) {
-            _serializeQuery((Query)object,sb);
-        }
-        // Timespan
-        else if(object instanceof TimeSpan) {
-        	_serializeTimeSpan((TimeSpan) object,sb);
-        }
-		// String Converter
-		else if(object instanceof ScriptConvertable) {
-		    sb.append(((ScriptConvertable)object).serialize());
-		}
-		else if(object instanceof ObjectWrap) {
-			try {
-				_serialize(((ObjectWrap)object).getEmbededObject(), sb);
-			} catch (PageException e) {
-				throw new ConverterException(e);
+		//try	{
+			deep++;
+			// NULL
+			if(object==null) {
+			    sb.append(goIn());
+			    sb.append("''");
 			}
-		}
-		else if(object instanceof Serializable) {
-			_serializeSerializable((Serializable)object,sb);
-		}
-		else throw new ConverterException("can't serialize Object of type [ "+object.getClass().getName()+" ]");
-		
-		
-		deep--;
+			// String
+			else if(object instanceof String) {
+			    sb.append(goIn());
+			    sb.append("'");
+			    sb.append(escape(object.toString()));
+			    sb.append("'");
+			}
+			// Number
+			else if(object instanceof Number) {
+			    sb.append(goIn());
+			    sb.append(Caster.toString(((Number)object).doubleValue()));
+			}
+			// Boolean
+			else if(object instanceof Boolean) {
+			    sb.append(goIn());
+			    sb.append(Caster.toString(((Boolean)object).booleanValue()));
+			}
+			// DateTime
+			else if(object instanceof DateTime) {
+				_serializeDateTime((DateTime)object,sb);
+			}
+			// Date
+			else if(object instanceof Date) {
+				_serializeDate((Date)object,sb);
+			}
+	        // Component
+	        else if(object instanceof Component) {
+	            _serializeComponent((Component)object,sb);
+	        }
+	
+	        // XML
+	        else if(object instanceof Node) {
+	            _serializeXML((Node)object,sb);
+	        }
+	        // Struct
+	        else if(object instanceof Struct) {
+	            _serializeStruct((Struct)object,sb);
+	        }
+	        // Map
+	        else if(object instanceof Map) {
+	            _serializeMap((Map)object,sb);
+	        }
+			// Array
+			else if(object instanceof Array) {
+				_serializeArray((Array)object,sb);
+			}
+			// List
+			else if(object instanceof List) {
+				_serializeList((List)object,sb);
+			}
+	        // Query
+	        else if(object instanceof Query) {
+	            _serializeQuery((Query)object,sb);
+	        }
+	        // Timespan
+	        else if(object instanceof TimeSpan) {
+	        	_serializeTimeSpan((TimeSpan) object,sb);
+	        }
+			// String Converter
+			else if(object instanceof ScriptConvertable) {
+			    sb.append(((ScriptConvertable)object).serialize());
+			}
+			else if(object instanceof ObjectWrap) {
+				try {
+					_serialize(((ObjectWrap)object).getEmbededObject(), sb);
+				} catch (PageException e) {
+					throw new ConverterException(e);
+				}
+			}
+			else if(object instanceof Serializable) {
+				_serializeSerializable((Serializable)object,sb);
+			}
+			else throw new ConverterException("can't serialize Object of type [ "+Caster.toClassName(object)+" ]");
+			deep--;
+		/*}
+		catch(StackOverflowError soe){
+			throw soe;
+		}*/
 	}
 	
 

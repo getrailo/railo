@@ -1,5 +1,6 @@
 package railo.runtime.type;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import railo.commons.lang.SizeOf;
@@ -11,7 +12,7 @@ import railo.runtime.op.Constants;
 /**
  * cold fusion array object
  */
-public class ArrayInt implements Sizeable {
+public class ArrayInt implements Sizeable,Serializable {
 	
 	private static final int NULL = 0;
 	private int[] arr;
@@ -79,7 +80,7 @@ public class ArrayInt implements Sizeable {
 	 * enlarge the inner array to given size
 	 * @param key min size of the array
 	 */
-	private void enlargeCapacity(int key) {
+	private synchronized void enlargeCapacity(int key) {
 		int diff=offCount-offset;
 		
 		int newSize=arr.length;

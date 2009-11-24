@@ -203,7 +203,7 @@ public final class Registry extends TagImpl {
         if(type==RegistryEntry.TYPE_ANY)type=RegistryEntry.TYPE_STRING;
         if(value==null) {
             if(type==RegistryEntry.TYPE_DWORD)value="0";
-            else if(type==RegistryEntry.TYPE_STRING)value="";
+            else value="";
         }
         
         try {

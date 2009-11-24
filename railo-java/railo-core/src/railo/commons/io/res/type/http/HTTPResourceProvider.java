@@ -64,6 +64,15 @@ public class HTTPResourceProvider implements ResourceProvider {
 	 * @see railo.commons.io.res.ResourceProvider#getResource(java.lang.String)
 	 */
 	public Resource getResource(String path) {
+		
+		int indexQ=path.indexOf('?');
+		if(indexQ!=-1){
+			int indexS=path.lastIndexOf('/');
+			while((indexS=path.lastIndexOf('/'))>indexQ){
+				path=path.substring(0,indexS)+"%2F"+path.substring(indexS+1);	
+			}
+		}
+		
 		path=ResourceUtil.translatePath(ResourceUtil.removeScheme(scheme,path),false,false);
 		
 		return new HTTPResource(this,new HTTPConnectionData(path,getSocketTimeout()));

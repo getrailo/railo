@@ -8,7 +8,7 @@ import org.apache.commons.collections.ReferenceMap;
 import railo.runtime.Mapping;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
-import railo.runtime.PageSource;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -75,8 +75,8 @@ public class CFFunction {
 		
 		
 		Mapping mapping=isweb?config.getFunctionMapping():config.getServerFunctionMapping();
-    	PageSource ps = mapping.getPageSource(filename);
-    	Page p = ps.loadPage(pc.getConfig());	
+    	PageSourceImpl ps = (PageSourceImpl) mapping.getPageSource(filename);
+    	Page p = ps.loadPage(pc,pc.getConfig());	
 		
     	
     	// execute page

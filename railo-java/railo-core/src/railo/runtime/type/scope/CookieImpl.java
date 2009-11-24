@@ -33,13 +33,13 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	
 	
 	public static final int NEVER = 946626690;
+	private static URLCodec codec=new URLCodec();
 	
 	
 	
-	private javax.servlet.http.Cookie[] cookies;
-	private HttpServletRequest req;
+	//private javax.servlet.http.Cookie[] cookies;
+	//private HttpServletRequest req;
 	private HttpServletResponse rsp;
-	private URLCodec codec=new URLCodec();
     private String charset;
     private int scriptProtected=ScriptProtected.UNDEFINED;
 	private Map raw=new HashMap();
@@ -153,7 +153,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 			
 		}
 		else {
-			throw new ExpressionException("invalid type ["+expires.getClass().getName()+"] for expires");
+			throw new ExpressionException("invalid type ["+Caster.toClassName(expires)+"] for expires");
 		}
 		
 		setCookie(key, value, exp, secure, path, domain);
@@ -255,9 +255,9 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 		}
         super.initialize(pc);
 		
-		this.req=pc. getHttpServletRequest();
+		HttpServletRequest req = pc. getHttpServletRequest();
 		this.rsp=pc. getHttpServletResponse();
-		cookies=req.getCookies();
+		javax.servlet.http.Cookie[] cookies=req.getCookies();
 		try {
 			for(int i=0;i<cookies.length;i++) {
 				set(cookies[i]);

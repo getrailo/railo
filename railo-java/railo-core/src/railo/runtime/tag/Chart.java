@@ -54,7 +54,6 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
-import railo.runtime.PageContextImpl;
 import railo.runtime.chart.BarRenderer3DWrap;
 import railo.runtime.chart.CategoryToolTipGeneratorImpl;
 import railo.runtime.chart.EmptyURLTagFragmentGenerator;
@@ -693,14 +692,8 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		
 		try {
 			String map=ImageMapUtilities.getImageMap(mapName, info,tttfg,utfg).trim();
-			try {
-				((PageContextImpl)pageContext).getRootOut().setToHTMLHead(map); 
-			} 
-			catch (IOException e) {
-				pageContext.write(map);
-			}
-			
-			pageContext.write("<img border=\"0\"   usemap=\"#"+mapName+"\" src=\"/railo-context/graph.cfm?img="+id+"&type="+formatToString(format)+"\">");
+			pageContext.write(map);
+			pageContext.write("<img border=\"0\" usemap=\"#"+mapName+"\" src=\"/railo-context/graph.cfm?img="+id+"&type="+formatToString(format)+"\">");
 		} 
 		catch (IOException e) {
 			throw Caster.toPageException(e);
@@ -891,7 +884,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 				upper=biggest;
 				try	{
 					DateTime d = Caster.toDate(Caster.toDouble(lower),true,null,null);
-					lower = DateAdd.invoke("yyyy", -1, d).castToDoubleValue(lower);	
+					lower = DateAdd.call(pageContext,"yyyy", -1, d).castToDoubleValue(lower);	
 				}
 				catch (PageException e) {}
 			}

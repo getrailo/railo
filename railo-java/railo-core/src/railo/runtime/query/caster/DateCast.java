@@ -5,7 +5,6 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import railo.runtime.functions.dateTime.DateUtil;
 import railo.runtime.type.dt.DateTimeImpl;
 
 public class DateCast implements Cast{
@@ -17,9 +16,7 @@ public class DateCast implements Cast{
 		Date d = rst.getDate(columnIndex);
 		if(d==null) return null; 
 		
-		return new DateTimeImpl(
-				DateUtil.fromSystemToRailo(d.getTime()),
-				false);
+		return new DateTimeImpl(d.getTime(),false);
 		
 	}
 

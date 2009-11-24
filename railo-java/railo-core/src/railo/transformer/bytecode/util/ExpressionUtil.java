@@ -38,7 +38,6 @@ public final class ExpressionUtil {
      */
     public static synchronized void visitLine(BytecodeContext bc, int line) {
     	if(line>0 && !(""+line).equals(last.get(bc.getClassName()+":"+bc.getId()))){
-    		//print.out(bc.getClassName()+"."+bc.getMethod().getName()+":"+line);
     		bc.visitLineNumber(line);
     		last.put(bc.getClassName()+":"+bc.getId(),""+line);
     		last.put(bc.getClassName(),""+line);

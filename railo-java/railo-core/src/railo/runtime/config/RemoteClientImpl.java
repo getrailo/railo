@@ -120,15 +120,13 @@ public class RemoteClientImpl implements RemoteClient {
 		
 		
 		
-		
 		try {
 			RPCClient rpc = RemoteClientTask.getRPCClient(this);
 			Object result = rpc.callWithNamedValues(config, "invoke", args);
-			//print.out("token:"+result);
-
 			return id=ConfigImpl.getId(securityKey, Caster.toString(result,null), null);
+			
 		} 
-		catch (PageException e) {e.printStackTrace();
+		catch (Throwable t) {t.printStackTrace();
 			return null;
 		}
 	}

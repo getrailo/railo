@@ -4,9 +4,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import railo.commons.date.DateTimeUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.dateTime.DateUtil;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
@@ -132,7 +132,7 @@ public final class Operator {
 		else if(left==null) 				return -1;
 		else if(left instanceof Character)	return compare(((Character)left).toString(),right);
 		else if(left instanceof Calendar)	return compare( ((Calendar)left).getTime() , right ); 
-		else {//print.out(left.getClass().getName());
+		else {
 			return error(false,true); 
 		}
 	} 
@@ -371,7 +371,7 @@ public final class Operator {
 	 * @return difference as int
 	 */ 
 	public static int compare(double left, Date right) { 
-			return compare(DateUtil.getDateTimeInstance(left).getTime()/1000,right.getTime()/1000); 
+			return compare(DateTimeUtil.getInstance().toDateTime(left).getTime()/1000,right.getTime()/1000); 
 	} 
 
 	/** 
@@ -438,7 +438,7 @@ public final class Operator {
 	 * @return difference as int
 	 */ 
 	public static int compare(Date left, double right) { 
-			return compare(left.getTime()/1000, DateUtil.getDateTimeInstance(right).getTime()/1000); 
+			return compare(left.getTime()/1000, DateTimeUtil.getInstance().toDateTime(right).getTime()/1000); 
 	} 
 
 	/** 
@@ -462,7 +462,7 @@ public final class Operator {
 	}        
 
 	private static int error(boolean leftIsOk, boolean rightIsOk, Object left, Object right) throws ExpressionException { 
-		throw new ExpressionException("can't compare complex object types ("+left.getClass().getName()+" - "+right.getClass().getName()+") as simple value");
+		throw new ExpressionException("can't compare complex object types ("+Caster.toClassName(left)+" - "+Caster.toClassName(right)+") as simple value");
 	}
 	private static int error(boolean leftIsOk, boolean rightIsOk) throws ExpressionException { 
 		// TODO remove this method

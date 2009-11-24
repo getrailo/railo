@@ -4,6 +4,7 @@ package railo.runtime.type.comparator;
  * a value of a array with information of old position in array
  */
 public final class SortRegister {
+	
 	private Object value;
 	private int oldPosition;
 	
@@ -39,5 +40,12 @@ public final class SortRegister {
 	 */
 	public void setValue(Object value) {
 		this.value = value;
+	}
+	
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return value.toString();
 	}
 }

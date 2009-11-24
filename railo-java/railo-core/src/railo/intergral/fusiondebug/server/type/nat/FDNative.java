@@ -132,7 +132,6 @@ public class FDNative extends FDValueNotMutability {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		if(value==null) return "null";
-		return value.getClass().getName();
+		return Caster.toClassName(value);
 	}
 }

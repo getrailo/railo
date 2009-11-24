@@ -1,5 +1,6 @@
 package railo.runtime.db;
 
+import java.io.Serializable;
 import java.sql.Types;
 
 import railo.runtime.exp.PageException;
@@ -9,7 +10,7 @@ import railo.runtime.op.Caster;
 /**
  * 
  */
-public final class SQLItemImpl implements SQLItem {
+public final class SQLItemImpl implements SQLItem,Serializable {
 
 	/** Yes or No. Indicates whether the parameter is passed as a null. If Yes, the tag ignores the 
 	** 	value attribute. The default is No. */
@@ -120,7 +121,7 @@ public final class SQLItemImpl implements SQLItem {
      */
     public Object getValueForCF() throws PageException {
         if(cfValue==null) {
-            cfValue=SQLCaster.toCFType(this);
+            cfValue=SQLCaster.toCFTypex(this);
         }
         return cfValue;
     }

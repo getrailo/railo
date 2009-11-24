@@ -52,7 +52,7 @@ public final class HttpServletRequestDummy implements HttpServletRequest,Seriali
 	private String requestedSessionId;
 	private String requestURI;
 
-	private String protocol="http";
+	private String protocol="HTTP/1.1";
 	private String serverName="localhost";
 	private int port=80;
 
@@ -438,7 +438,7 @@ public final class HttpServletRequestDummy implements HttpServletRequest,Seriali
 	 * @see javax.servlet.http.HttpServletRequest#getRequestURL()
 	 */
 	public StringBuffer getRequestURL() {
-		return new StringBuffer(protocol).
+		return new StringBuffer(isSecure()?"https":"http").
 			append("://").
 			append(serverName).
 			append(':').

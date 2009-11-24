@@ -42,7 +42,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		if(pc!=null && !autoCommit)
 			dc=((PageContextImpl)pc).getConnection(_datasource,user,pass);
 		else
-			dc=config.getDatasourceConnectionPool().getDatasourceConnection(config.getDataSource(_datasource),user,pass);
+			dc=config.getDatasourceConnectionPool().getDatasourceConnection(pc,config.getDataSource(_datasource),user,pass);
 		// transaction
 		if(!autoCommit) {
             try {

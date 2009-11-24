@@ -950,6 +950,262 @@
 			<type>number</type>
 		</return>
 	</function>
+		
+	<!-- CacheClear -->
+	<function>
+		<name>CacheClear</name>
+		<class>railo.runtime.functions.cache.CacheClear</class>
+		<description>remove all elements from cache</description>
+		<argument>
+			<name>filter</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>cacheName</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
+	
+		
+	<!-- CacheCount -->
+	<function>
+		<name>CacheCount</name>
+		<class>railo.runtime.functions.cache.CacheCount</class>
+		<description></description>
+		<argument>
+			<name>cacheName</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
+	
+	<!-- CacheDelete -->
+	<function>
+		<name>CacheDelete</name>
+		<class>railo.runtime.functions.cache.CacheDelete</class>
+		<description>delete a single entry from cache</description>
+		<argument>
+			<name>id</name>
+			<type>string</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>throwOnError</name>
+			<type>boolean</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>cacheName</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	<!-- cacheGet -->
+	<function>
+		<name>cacheGet</name>
+		<class>railo.runtime.functions.cache.CacheGet</class>
+		<description/>
+		<argument>
+			<name>id</name>
+			<type>string</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>throwWhenNotExist</name>
+			<type>boolean</type>
+			<required>no</required>
+		</argument>
+		<argument>
+			<name>cacheName</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>object</type>
+		</return>
+	</function>
+	
+	<!-- CacheGetAll -->
+	<function>
+		<name>CacheGetAll</name>
+		<class>railo.runtime.functions.cache.CacheGetAll</class>
+		<description>Gets all entries as struct.</description>
+		<argument>
+			<name>filter</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>cacheName</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
+	
+	<!-- CacheGetAllIds -->
+	<function>
+		<name>CacheGetAllIds</name>
+		<class>railo.runtime.functions.cache.CacheGetAllIds</class>
+		<description>Gets the IDs of all objects stored in the cache.</description>
+		<argument>
+			<name>filter</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>cacheName</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
+	
+	<!-- CacheGetMetadata -->
+	<function>
+		<name>CacheGetMetadata</name>
+		<class>railo.runtime.functions.cache.CacheGetMetadata</class>
+		<description>Gets the metadata values for a cached object.</description>
+		<argument>
+			<name>id</name>
+			<type>string</type>
+			<required>yes</required>
+		</argument>
+		<argument>
+			<name>cacheName</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
+	<!-- CacheGetProperties -->
+	<function>
+		<name>CacheGetProperties</name>
+		<class>railo.runtime.functions.cache.CacheGetProperties</class>
+		<description>Gets the cache properties for the object cache, the page cache, or both. The information is application-specific</description>
+		<argument>
+			<name>type</name>
+			<type>string</type>
+			<required>no</required>
+		</argument>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
+	
+	<!-- CacheKeyExists -->
+	<function>
+		<name>CacheKeyExists</name>
+		<class>railo.runtime.functions.cache.CacheKeyExists</class>
+		<description>return if given key exist</description>
+		<argument>
+			<name>key</name>
+			<type>string</type>
+			<required>yes</required>
+		</argument>
+		<argument>
+			<name>cacheName</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+	
+	<!-- CacheSetProperties -->
+	<function>
+		<name>CacheSetProperties</name>
+		<class>railo.runtime.functions.cache.CacheSetProperties</class>
+		<description>Sets the cache properties for the object cache, the page cache, or both. If a cache does not yet exist, creates it. The cache and properties are application-specific.</description>
+		<argument>
+			<name>type</name>
+			<type>struct</type>
+			<required>yes</required>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	<!-- cachePut -->
+	<function>
+		<name>cachePut</name>
+		<class>railo.runtime.functions.cache.CachePut</class>
+		<description/>
+		<argument>
+			<name>id</name>
+			<type>string</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>value</name>
+			<type>object</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>timeSpan</name>
+			<type>timespan</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>idleTime</name>
+			<type>timespan</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>cacheName</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	<!-- cacheRemove -->
+	<function>
+		<name>cacheRemove</name>
+		<class>railo.runtime.functions.cache.CacheRemove</class>
+		<description/>
+		<argument>
+			<name>ids</name>
+			<type>object</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>throwOnError</name>
+			<type>boolean</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>cacheName</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 	<!-- ceiling -->
 	<function>
 		<name>ceiling</name>
@@ -1851,6 +2107,58 @@
 			<type>void</type>
 		</return>
 	</function>
+	
+	
+	<!-- dumpStruct -->
+	<function>
+		<name>dumpStruct</name>
+		<class>railo.runtime.functions.other.DumpStruct</class>
+		<description/>
+		<argument>
+			<name>value</name>
+			<type>any</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>top</name>
+			<type>number</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>show</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>hide</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>keys</name>
+			<type>number</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>metainfo</name>
+			<type>boolean</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>showUDFs</name>
+			<type>boolean</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>label</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
+	
 	<!-- duplicate -->
 	<function>
 		<name>duplicate</name>
@@ -5023,7 +5331,7 @@
 		<class>railo.runtime.functions.decision.IsDefined</class>
 		<description/>
 		<argument>
-			<name>"variable"</name>
+			<name>variable</name>
 			<type>string</type>
 			<required>Yes</required>
 		</argument>
@@ -7502,7 +7810,7 @@
 		</argument>
 		<argument>
 			<name>data</name>
-			<type>any</type>
+			<type>struct</type>
 			<required>Yes</required>
 		</argument>
 		<return>
@@ -7743,6 +8051,44 @@
 			<name>duration</name>
 			<type>number</type>
 			<required>Yes</required>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- SSLCertificateList -->
+	<function>
+		<name>SSLCertificateList</name>
+		<class>railo.runtime.functions.other.SSLCertificateList</class>
+		<description/>
+		<argument>
+			<name>host</name>
+			<type>string</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>port</name>
+			<type>number</type>
+			<required>no</required>
+		</argument>
+		<return>
+			<type>query</type>
+		</return>
+	</function>
+	<!-- SSLCertificateInstall -->
+	<function>
+		<name>SSLCertificateInstall</name>
+		<class>railo.runtime.functions.other.SSLCertificateInstall</class>
+		<description/>
+		<argument>
+			<name>host</name>
+			<type>string</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>port</name>
+			<type>number</type>
+			<required>no</required>
 		</argument>
 		<return>
 			<type>void</type>

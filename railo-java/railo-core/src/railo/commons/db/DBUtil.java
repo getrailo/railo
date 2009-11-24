@@ -1,8 +1,13 @@
 package railo.commons.db;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+
+import railo.runtime.db.DatasourceConnection;
+import railo.runtime.db.SQL;
 
 /**
  * Utility for db
@@ -73,6 +78,11 @@ public final class DBUtil {
                 rs.close();
             } catch (Throwable t) {}
         }
+	}
+	
+	public static PreparedStatement getPreparedStatement(DatasourceConnection dc, SQL sql, boolean createGeneratedKeys) throws SQLException {
+		if(createGeneratedKeys)	return dc.getConnection().prepareStatement(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS);
+    	return dc.getConnection().prepareStatement(sql.getSQLString());
 	}
 
 }

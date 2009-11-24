@@ -44,7 +44,7 @@ public class ServiceSupport implements Service {
 	}
 
 	protected ConfigImpl config() {
-		return (ConfigImpl) pc().getConfig();
+		return (ConfigImpl) ThreadLocalPageContext.getConfig();
 	}
 
 	protected PageContext pc() {

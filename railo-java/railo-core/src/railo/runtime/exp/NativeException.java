@@ -5,6 +5,7 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
 
 
@@ -30,7 +31,7 @@ public final class NativeException extends PageExceptionImpl {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 	    DumpData data = super.toDumpData(pageContext, maxlevel,dp);
 	    if(data instanceof DumpTable)
-        ((DumpTable)data).setTitle("Railo ["+Info.getVersionAsString()+"] - Error ("+t.getClass().getName()+")");
+        ((DumpTable)data).setTitle("Railo ["+Info.getVersionAsString()+"] - Error ("+Caster.toClassName(t)+")");
         
         return data;
     }

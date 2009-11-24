@@ -8,6 +8,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.ext.tag.BodyTagImpl;
+import railo.runtime.op.Caster;
 import railo.runtime.security.SecurityManager;
 
 /**
@@ -41,6 +42,8 @@ public final class Execute extends BodyTagImpl {
 
 	private String body;
 
+	private boolean terminateOnTimeout=false;
+
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
 	*/
@@ -52,6 +55,7 @@ public final class Execute extends BodyTagImpl {
 		outputfile=null;
 		variable=null;
 		body=null;
+		terminateOnTimeout=false;
 	}
 
 	/** set the value arguments
@@ -83,11 +87,18 @@ public final class Execute extends BodyTagImpl {
 	* 		a process and returns without waiting for the process to terminate.If no output file is specified, 
 	* 		and the timeout value is 0, the program output is discarded.
 	* @param timeout value to set
+	 * @throws ApplicationException 
 	**/
-	public void setTimeout(double timeout)	{
+	public void setTimeout(double timeout) throws ApplicationException	{
+		if(timeout<0) 
+			throw new ApplicationException("value must be a positive number now ["+Caster.toString(timeout)+"]");
 		this.timeout=(long)(timeout*1000L);
 	}
 
+	public void setTerminateontimeout(boolean terminateontimeout)	{
+		this.terminateOnTimeout=terminateontimeout;
+	}
+	
 	/** set the value name
 	*  The full pathname of the application to execute.
 	* 		Note: On Windows, you must specify the extension as part of the application's name. For example, 
@@ -165,22 +176,26 @@ public final class Execute extends BodyTagImpl {
 	    
 	    
 	    _Execute execute=new _Execute(pageContext,monitor,command,outputfile,variable,body);
-	    if(timeout<=0)execute._run();
-	    else {
-	    	execute.start();
+	    
+	    //if(timeout<=0)execute._run();
+	    //else {
+    	execute.start();
+    	if(timeout>0){
 	    	try {
 	            synchronized(monitor) {
 	            	monitor.wait(timeout);
 	            }
 	        } 
 		    finally {
-		    	execute.abort();
+		    	execute.abort(terminateOnTimeout);
 	        }
-	    }
-	    if(execute.hasException()) {
-	    	throw execute.getException();
-	    }
-	    
+		    if(execute.hasException()) {
+		    	throw execute.getException();
+		    }
+		    if(!execute.hasFinished())
+		    	throw new ApplicationException("timeout ["+(timeout)+" ms] expired while executing ["+command+"]");
+		    //}
+    	}
 	    
 	}
 
@@ -197,7 +212,7 @@ public final class Execute extends BodyTagImpl {
 	    catch (PageException pe) {
            throw pe;
         }
-        catch (Exception e) {
+        catch (Exception e) {e.printStackTrace();
            throw new ApplicationException("Error invoking external process",e.getMessage());
         }
 	    return EVAL_PAGE;

@@ -67,9 +67,6 @@ public final class Argument {
 		if(defaultValue==null) return DEFAULT_TYPE_NULL;
 		if(defaultValue instanceof Literal) return DEFAULT_TYPE_LITERAL;
 		return DEFAULT_TYPE_RUNTIME_EXPRESSION;
-		
-		//if(defaultValue!=null)print.out(defaultValue.getClass().getName());
-		//return LitBoolean.toExprBoolean(defaultValue!=null);
 	}
 
 	/**

@@ -702,7 +702,7 @@ public final class SMTPClient implements Serializable  {
 					log.error("mail spooler",me.getMessage());
 					if(i+1==servers.length) {
 						String msg=me.getMessage();
-						if(StringUtil.isEmpty(msg))msg=me.getClass().getName();
+						if(StringUtil.isEmpty(msg))msg=Caster.toClassName(me);
 	                    throw new MailException(server.getHostName()+" "+msg);
 	                }
 				}

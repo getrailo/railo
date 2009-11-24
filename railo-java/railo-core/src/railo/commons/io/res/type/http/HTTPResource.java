@@ -46,7 +46,6 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 			// TODO Support for proxy
 			ProxyData pd=data.hasProxyData()?data.proxyData:ProxyDataImpl.NO_PROXY;
 				
-			
 			http = HTTPUtil.invoke(url, data.username, data.password, data.timeout,null, data.userAgent, 
 					pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),
 					null);

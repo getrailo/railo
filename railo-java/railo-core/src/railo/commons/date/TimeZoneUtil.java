@@ -54,22 +54,4 @@ public class TimeZoneUtil {
 		if(tz!=null) return tz;
 		throw new ExpressionException("can't cast value ("+strTimezone+") to a TimeZone","supported TimeZones are:"+getSupportedTimeZonesAsString());
 	}
-	
-	
-	
-
-	/*public static void main(String[] args) throws ExpressionException {
-		
-		
-		print.out(toTimeZone("Cet ").getDisplayName());
-		print.out(toTimeZone("cet").getDisplayName());
-		print.out(toTimeZone("CET").getDisplayName());
-		print.out(toTimeZone("pacific / enderburyx").getDisplayName());
-		//print.out(TimeZoneConstants.CET.getDisplayName());
-		
-		//CET
-		// Africa/Douala
-
-		
-	}*/
 }

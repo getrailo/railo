@@ -1,7 +1,7 @@
 package railo.runtime.tag;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.MappingImpl;
+import railo.runtime.Mapping;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
@@ -35,8 +35,8 @@ public final class Application extends TagImpl {
 	private Boolean setClientManagement;
 	private TimeSpan sessionTimeout;
 	private TimeSpan applicationTimeout;
-	private MappingImpl[] mappings;
-	private MappingImpl[] customTagMappings;
+	private Mapping[] mappings;
+	private Mapping[] customTagMappings;
 	private String secureJsonPrefix;
 	private Boolean secureJson;
 	private String scriptrotect;

@@ -28,8 +28,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
-import railo.runtime.config.Config;
-import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.system.ContractPath;
@@ -271,7 +270,8 @@ public final class PDFDocument {
 		this.body=body;
 	}
 
-	public byte[] render(Dimension dimension,double unitFactor, Config config,boolean generateOutlines) throws PageException, IOException {
+	public byte[] render(Dimension dimension,double unitFactor, PageContext pc,boolean generateOutlines) throws PageException, IOException {
+		ConfigWeb config = pc.getConfig();
 		PDF pd4ml = new PDF(config);
 		pd4ml.generateOutlines(generateOutlines);
 		pd4ml.enableTableBreaks(true);
@@ -302,7 +302,7 @@ public final class PDFDocument {
 		// content
 		ByteArrayOutputStream baos=new ByteArrayOutputStream();
 		try {
-			content(pd4ml,config,baos);
+			content(pd4ml,pc,baos);
 			
 		}
 		finally {
@@ -311,13 +311,14 @@ public final class PDFDocument {
 		return baos.toByteArray();
 	}
 
-	private void content(PDF pd4ml, Config config, OutputStream os) throws PageException, IOException {
+	private void content(PDF pd4ml, PageContext pc, OutputStream os) throws PageException, IOException {
+		ConfigWeb config = pc.getConfig();
 		pd4ml.useTTF("java:fonts", fontembed);
 		
 		// body
     	if(!StringUtil.isEmpty(body,true)) {
     		// optimize html
-    		URL base = getBase();
+    		URL base = getBase(pc);
     		try {
     			body=beautifyHTML(new InputSource(new StringReader(body)),base);
 			}catch (Throwable t) {}
@@ -326,7 +327,7 @@ public final class PDFDocument {
     	}
     	// srcfile
     	else if(srcfile!=null) {
-    		if(StringUtil.isEmpty(strCharset))strCharset=config.getResourceCharset();
+    		if(StringUtil.isEmpty(strCharset))strCharset=pc.getConfig().getResourceCharset();
     		
 			// mimetype
 			if(StringUtil.isEmpty(strMimetype)) {
@@ -338,7 +339,7 @@ public final class PDFDocument {
     			
     			URL base = new URL("file://"+srcfile);
     			if(!localUrl){
-    				PageContext pc = ThreadLocalPageContext.get();
+    				//PageContext pc = Thread LocalPageContext.get();
     				if(pc!=null) {
 	    				String abs = srcfile.getAbsolutePath();
 	    				String contract = ContractPath.call(pc, abs);
@@ -420,8 +421,8 @@ public final class PDFDocument {
 	}
 
 
-	private static URL getBase() throws MalformedURLException {
-		PageContext pc = ThreadLocalPageContext.get();
+	private static URL getBase(PageContext pc) throws MalformedURLException {
+		//PageContext pc = Thread LocalPageContext.get();
 		if(pc==null)return null;
 		
 		String userAgent = pc.getHttpServletRequest().getHeader("User-Agent");

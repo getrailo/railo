@@ -62,7 +62,6 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -240,7 +239,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	public Struct info()  throws ExpressionException{
 		if(sctInfo!=null) return sctInfo;
 		
-		sctInfo=new StructImpl();
+		StructImpl sctInfo=new StructImpl();
 		Struct sctCM=new StructImpl();
 		sctInfo.setEL("height",new Double(getHeight()));
 		sctInfo.setEL("width",new Double(getWidth()));
@@ -272,9 +271,9 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		else if (cm instanceof IndexColorModel)		sctCM.setEL("colormodel_type", "IndexColorModel");
 		else if (cm instanceof PackedColorModel)	sctCM.setEL("colormodel_type", "PackedColorModel");
 		else sctCM.setEL("colormodel_type", List.last(cm.getClass().getName(), '.'));
-		
+
 		metadata(sctInfo);
-		
+		this.sctInfo=sctInfo;
 		return sctInfo;
 	}
 	
@@ -467,7 +466,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
     		//float alpha=Caster.toFloatValue(attr.get("alpha",null),1F);
     	    
     	 // size
-    	    int size=Caster.toIntValue(attr.get("size", Constants.INTEGER_TEN));
+    	    int size=Caster.toIntValue(attr.get("size", Constants.INTEGER_10));
 
     	 // style
     	    int style=Font.PLAIN;
@@ -700,6 +699,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	public void image(BufferedImage image) {
 		this._image=image;
 		graphics=null;
+		
 		sctInfo=null;
 	}
 	
@@ -1074,7 +1074,6 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	    	}
 	    }
 	    if (interpolation<=IPC_MAX)	{
-	    	//print.out("+++++++++++++");
 	    	resizeImage(width, height, interpolation);
 	    }
 	    else {
@@ -1613,12 +1612,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		}
 		catch(Throwable t) {
 			throw new PageRuntimeException("the JAI extension is missing, please download [railo-x.x.x.xxx-jars.zip] on http://www.railo-technologies.com/en/download and copy it into the railo lib directory");
-		}
-		
-		PageContext pc = ThreadLocalPageContext.get();
-		if(pc==null) return;
-		
-		
+		}	
 	}
 	
 	public static int toInterpolation(String strInterpolation) throws ExpressionException {

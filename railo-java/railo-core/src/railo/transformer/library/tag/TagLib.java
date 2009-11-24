@@ -158,22 +158,12 @@ public class TagLib implements Cloneable {
 			return exprTransformer;
 		
 		try {
-			exprTransformer = (ExprTransformer)ClassUtil.loadInstance(ELClass);
+			exprTransformer =  (ExprTransformer)ClassUtil.loadInstance(ELClass);
 			//exprTransformer = (ExprTransformer) cls.newInstance();
 		} 
 		catch (ClassException e) {
 			throw new TagLibException(e);
 		}
-		/*try {
-			cls = Class.orName(ELClass);
-			exprTransformer = (ExprTransformer) cls.newInstance();
-		} catch (ClassNotFoundException e) {
-			throw new TagLibException(e);
-		} catch (InstantiationException e) {
-			throw new TagLibException(e);
-		} catch (IllegalAccessException e) {
-			throw new TagLibException(e);
-		}*/
 		return exprTransformer;
 	}
 	

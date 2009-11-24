@@ -4,8 +4,10 @@
 package railo.runtime.functions.dateTime;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import railo.runtime.PageContext;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.ext.function.Function;
@@ -20,13 +22,13 @@ public final class DateCompare implements Function {
 	
 	public static double call(PageContext pc , DateTime left, DateTime right, String datepart) throws ExpressionException {
 		datepart=datepart.toLowerCase().trim();
-
+		TimeZone tz=ThreadLocalPageContext.getTimeZone(pc);
 		Calendar cLeft=Calendar.getInstance();
-		DateUtil.setTimeZone(cLeft, left,null);
+		cLeft.setTimeZone(tz);
 		cLeft.setTime(left);
 		
 		Calendar cRight=Calendar.getInstance();
-		DateUtil.setTimeZone(cRight, right,null);
+		cRight.setTimeZone(tz);
 		cRight.setTime(right);
 		
 		// TODO WEEEK

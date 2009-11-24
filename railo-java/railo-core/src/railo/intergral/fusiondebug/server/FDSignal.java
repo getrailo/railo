@@ -23,10 +23,8 @@ public class FDSignal {
 	public static void signal(PageException pe, boolean caught) {
 		try {
 			String id = pe.hashCode()+":"+caught;
-			//print.out(id);
 			if(Caster.toString(hash.get(),"").equals(id)) return;
 			
-			//print.out("signal");
 			List stack = createExceptionStack(pe);
 			if(stack.size()>0){
 				FDSignalException se = new FDSignalException(); 

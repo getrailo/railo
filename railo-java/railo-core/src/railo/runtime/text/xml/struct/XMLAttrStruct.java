@@ -3,7 +3,10 @@ package railo.runtime.text.xml.struct;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.TypeInfo;
+
+import railo.runtime.type.Collection;
 
 /**
  * 
@@ -71,4 +74,19 @@ public final class XMLAttrStruct extends XMLNodeStruct implements Attr {
 		return false;
 	}
 
+	/**
+	 *
+	 * @see railo.runtime.type.Collection#duplicate(boolean)
+	 */
+	public Collection duplicate(boolean deepCopy) {
+		return new XMLAttrStruct((Attr)attr.cloneNode(deepCopy),caseSensitive);
+	}
+	
+
+	/**
+	 * @see org.w3c.dom.Node#cloneNode(boolean)
+	 */
+	public Node cloneNode(boolean deep) {
+		return new XMLAttrStruct((Attr)attr.cloneNode(deep),caseSensitive);
+	}
 }

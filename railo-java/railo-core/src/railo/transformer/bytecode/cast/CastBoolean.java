@@ -73,11 +73,9 @@ public final class CastBoolean extends ExpressionBase implements ExprBoolean {
         		}
         		else if(Types.BOOLEAN_VALUE.equals(rtn))	{}
         		else if(Types.DOUBLE_VALUE.equals(rtn))	{
-        			//print.out("DOUBLE_VALUE");
         			adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_BOOLEAN_VALUE_FROM_DOUBLE);
         		}
         		else {
-        			//print.out("TO_REF");
         			adapter.invokeStatic(Types.CASTER,new Method("toRef",Types.toRefType(rtn),new Type[]{rtn}));
         			adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_BOOLEAN_VALUE);
         		}

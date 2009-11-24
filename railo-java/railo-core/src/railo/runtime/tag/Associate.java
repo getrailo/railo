@@ -2,10 +2,10 @@ package railo.runtime.tag;
 
 import javax.servlet.jsp.tagext.Tag;
 
-import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.functions.other.GetBaseTagData;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
@@ -66,13 +66,14 @@ public final class Associate extends TagImpl {
 	public int doStartTag() throws PageException	{
 
         CFTag current=getCFTag();
-        CFTag parent=getParentCFTag();
+        //CFTag parentx=getParentCFTag(this, basetag);
+        CFTag parent=GetBaseTagData.getParentCFTag(this.getParent(), basetag, 1);
+        
         if(parent==null) throw new ApplicationException("there is no parent tag with name ["+basetag+"]");
         Struct thisTag=parent.getThis();
         
         
         
-      //Struct value=Caster.toStruct(pageContext.variablesScope().get(ATTRIBUTES,null));
         Struct value=current.getAttributesScope();//Caster.toStruct(pageContext.undefinedScope().get(ATTRIBUTES,null));
         if(value==null) throw new ApplicationException("invalid context, tag is no inside a custom tag");
 	    
@@ -94,27 +95,33 @@ public final class Associate extends TagImpl {
 		return SKIP_BODY; 
 	}
 
-	private CFTag getParentCFTag() {
-        String pureName=basetag;
+	/*private static CFTag getParentCFTag(Tag srcTag,String trgTagName) {
+        String pureName=trgTagName;
         CFTag cfTag;
         if(StringUtil.startsWithIgnoreCase(pureName,"cf_")) {
             pureName=pureName.substring(3);
         }
-        
-        Tag tag=this;
+        if(StringUtil.startsWithIgnoreCase(pureName,"cf")) {
+            pureName=pureName.substring(2);
+        }
         int count=0;
-        while((tag=tag.getParent())!=null) {
-            if(tag instanceof CFTag) {
+        while((srcTag=srcTag.getParent())!=null) {
+        	if(srcTag instanceof CFTag) {
                 if(count++==0)continue;
-                cfTag=(CFTag)tag;
+                cfTag=(CFTag)srcTag;
+                if(cfTag instanceof CFTagCore){
+                	CFTagCore tc=(CFTagCore) cfTag;
+                	if(tc.getName().equalsIgnoreCase(pureName))
+                		return cfTag;
+                	continue;
+                }
                 if(cfTag.getAppendix().equalsIgnoreCase(pureName)) {
-                	//print.out(cfTag.getAppendix()+"::"+pureName+"->"+count);
                     return cfTag;
                 }
             }
         }
         return null;
-    }
+    }*/
 	
 	private CFTag getCFTag() {
         Tag tag=this;

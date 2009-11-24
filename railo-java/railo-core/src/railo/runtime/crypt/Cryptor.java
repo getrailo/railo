@@ -27,10 +27,8 @@ import railo.runtime.coder.CoderException;
    	}
   	public static byte[] encrypt(String type, String key, byte[] message) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
   		type=type.toUpperCase();
-  		
-  		Cipher c = Cipher.getInstance(type);
-  		
-        Key k = new SecretKeySpec( decodeKey(key), type );
+  		Key k = new SecretKeySpec( decodeKey(key), type );
+        Cipher c = Cipher.getInstance(type);
         c.init( Cipher.ENCRYPT_MODE, k );
         return c.doFinal(message);
   	}

@@ -8,7 +8,7 @@ import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.query.QueryCacheFilter;
 import railo.runtime.query.QueryCacheFilterImpl;
-import railo.runtime.query.QueryCacheImpl;
+import railo.runtime.query.QueryCacheSupport;
 
 /**
 * Flushes the query cache
@@ -57,7 +57,7 @@ public final class ObjectCache extends TagImpl {
 		return SKIP_BODY;
 	}
 	public void _doStartTag() throws PageException	{
-		QueryCacheImpl qc = ((QueryCacheImpl)pageContext.getQueryCache());
+		QueryCacheSupport qc = ((QueryCacheSupport)pageContext.getQueryCache());
 		if(action.equalsIgnoreCase("clear")) {
 			if(filter==null)
 		    	qc.clear();

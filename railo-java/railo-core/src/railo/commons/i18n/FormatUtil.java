@@ -4,11 +4,12 @@ import java.text.DateFormat;
 import java.util.Locale;
 import java.util.Map;
 
-import railo.commons.lang.SoftHashMap;
+import org.apache.commons.collections.map.ReferenceMap;
+
 
 public class FormatUtil {
 
-	private final static Map formats=new SoftHashMap();
+	private final static Map formats=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 	
 	public static DateFormat[] getDateTimeFormats(Locale locale,boolean lenient) {
 

@@ -14,6 +14,7 @@ import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.net.http.HoldingInputHTTPServletRequest;
 import railo.runtime.net.http.HttpServletRequestDummy;
 import railo.runtime.net.http.HttpServletResponseDummy;
@@ -36,7 +37,7 @@ public class ThreadUtil {
 		return dest;
 	}
 
-	public static  PageContextImpl createPageContext(Config config,OutputStream os,String serverName,String requestURI,String queryString,Cookie[] cookies,Pair[] headers,Pair[] parameters,Struct attributes)  {
+	public static  PageContextImpl createPageContext(ConfigWeb config,OutputStream os,String serverName,String requestURI,String queryString,Cookie[] cookies,Pair[] headers,Pair[] parameters,Struct attributes)  {
 		CFMLFactory factory = ((ConfigImpl)config).getFactory();
         HttpServletRequest	req = new HttpServletRequestDummy(
 				config.getRootDirectory(),

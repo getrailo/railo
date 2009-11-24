@@ -10,6 +10,8 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.functions.dateTime.Beat;
 import railo.runtime.op.Caster;
+import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.dt.DateTimeImpl;
 
 public final class TimeFormat implements Format {
 	
@@ -43,11 +45,12 @@ public final class TimeFormat implements Format {
 	 * @return formated date
 	 */
 	public String format(Date date,String mask) {
-		return format(date,mask,null);
+		DateTime dt=(date instanceof DateTime)?(DateTime)date:new DateTimeImpl(date.getTime(),false);
+		return format(dt,mask,null);
 	}
 	
 	
-	public String format(Date date,String mask, TimeZone tz) {
+	public String format(DateTime date,String mask, TimeZone tz) {
 		//DateUtil.setTimeZone(null,calendar,date); 
 		calendar.setTimeZone(tz=ThreadLocalPageContext.getTimeZone(tz));  
 		calendar.setTime(date);     

@@ -8,6 +8,7 @@ import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 
 import railo.commons.io.res.Resource;
+import railo.commons.lang.Md5;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.dt.Date;
@@ -18,6 +19,8 @@ import railo.runtime.type.dt.Time;
  */
 public final class ScheduleTaskImpl implements ScheduleTask {
     
+	public static int INTERVAL_EVEREY=-1;
+	
     private String task;
     private short operation = OPERATION_HTTP_REQUEST;
     private Resource file;
@@ -43,6 +46,7 @@ public final class ScheduleTaskImpl implements ScheduleTask {
 	private boolean hidden;
 	private boolean readonly;
 	private boolean paused;
+	private String md5;
 
     
     
@@ -73,6 +77,12 @@ public final class ScheduleTaskImpl implements ScheduleTask {
             long timeout, Credentials credentials, String proxyHost, int proxyPort, 
             Credentials proxyCredentials, boolean resolveURL, boolean publish,boolean hidden, 
             boolean readonly,boolean paused) throws IOException, ScheduleException {
+    	
+    	
+    	String md5=task.toLowerCase()+file+startDate+startTime+endDate+endTime+url+port+interval+timeout+
+    	credentials+proxyHost+proxyPort+proxyCredentials+resolveURL+publish+hidden+readonly+paused;
+    	md5=Md5.getDigestAsString(md5);
+    	this.md5=md5;
         
         if(file!=null && file.toString().trim().length()>0) {
         	Resource parent = file.getParentResource();
@@ -124,12 +134,15 @@ public final class ScheduleTaskImpl implements ScheduleTask {
             interval=interval.trim();
             if(interval.equals("once")) return INTERVAL_ONCE;
             else if(interval.equals("daily")) return INTERVAL_DAY;
+            else if(interval.equals("day")) return INTERVAL_DAY;
             else if(interval.equals("monthly")) return INTERVAL_MONTH;
+            else if(interval.equals("month")) return INTERVAL_MONTH;
             else if(interval.equals("weekly")) return INTERVAL_WEEK;
-            throw new ScheduleException("invalid interval definition ["+interval+"]");
+            else if(interval.equals("week")) return INTERVAL_WEEK;
+            throw new ScheduleException("invalid interval definition ["+interval+"], valid values are [once,daily,monthly,weekly or number]");
         }
-        if(i<60) {
-            throw new ScheduleException("interval must be at least 60");
+        if(i<10) {
+            throw new ScheduleException("interval must be at least 10");
         }
         return i;
     }
@@ -334,5 +347,11 @@ public final class ScheduleTaskImpl implements ScheduleTask {
 
 	public void setPaused(boolean paused) {
 		this.paused=paused;
+	}
+
+
+
+	public String md5() {
+		return md5;
 	}
 }
