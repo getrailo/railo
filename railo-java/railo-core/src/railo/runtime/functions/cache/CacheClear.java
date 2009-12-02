@@ -1,8 +1,8 @@
 package railo.runtime.functions.cache;
 
 import railo.commons.io.cache.CacheKeyFilter;
-import railo.extension.io.cache.util.WildCardFilter;
 import railo.runtime.PageContext;
+import railo.runtime.cache.util.WildCardFilter;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;

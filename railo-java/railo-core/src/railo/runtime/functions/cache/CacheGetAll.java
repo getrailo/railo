@@ -5,8 +5,8 @@ import java.util.List;
 
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
-import railo.extension.io.cache.util.WildCardFilter;
 import railo.runtime.PageContext;
+import railo.runtime.cache.util.WildCardFilter;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;

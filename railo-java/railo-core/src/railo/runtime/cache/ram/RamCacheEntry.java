@@ -3,7 +3,7 @@ package railo.runtime.cache.ram;
 import java.util.Date;
 
 import railo.commons.io.cache.CacheEntry;
-import railo.extension.io.cache.CacheUtil;
+import railo.runtime.cache.CacheUtil;
 import railo.runtime.type.Struct;
 
 public class RamCacheEntry implements CacheEntry {
