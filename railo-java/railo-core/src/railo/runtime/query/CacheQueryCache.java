@@ -23,11 +23,11 @@ import railo.runtime.type.Query;
 	
 
 	private Config config;
-	private RamCache cache;
+	private final RamCache DEFAULT_CACHE=new RamCache();
 
 	public CacheQueryCache(Config config){
 		this.config=config;
-		this.cache=new RamCache();
+		
 	}
 
 	/**
@@ -98,7 +98,7 @@ import railo.runtime.type.Query;
 
 	private Cache getCache() {
 		try {
-			Cache c = Util.getDefault(config,ConfigImpl.CACHE_DEFAULT_QUERY,cache);	
+			Cache c = Util.getDefault(config,ConfigImpl.CACHE_DEFAULT_QUERY,DEFAULT_CACHE);	
 			return c;
 		} 
 		catch (IOException e) {
@@ -109,8 +109,9 @@ import railo.runtime.type.Query;
 
     private String key(SQL sql, String datasource, String username,String password) {
     	try {
-			return Md5.getDigestAsString(sql.toHashString()+datasource+username+password);
-		} catch (IOException e) {
+    		return Util.key(Md5.getDigestAsString(sql.toHashString()+datasource+username+password));
+		} 
+    	catch (IOException e) {
 			return null;
 		}
 	}

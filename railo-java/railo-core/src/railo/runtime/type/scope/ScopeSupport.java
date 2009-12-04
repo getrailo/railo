@@ -90,14 +90,18 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
     /**
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
+
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
+		return toDumpData(pageContext, maxlevel, dp, this, dspName);
+	}
+	public static DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, Struct sct,String dspName) {
 		maxlevel--;
 		DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");//new DumpTable("#99cc00","#669900","#263300");
-		if(dspName!=null)table.setTitle(dspName);
+		if(dspName!=null)table.setTitle(StringUtil.ucFirst(dspName)+" Scope");
         else table.setTitle("Scope");
         
 		//Map mapx=getMap();
-		Iterator it=keyIterator();//mapx.keySet().iterator();
+		Iterator it=sct.keyIterator();//mapx.keySet().iterator();
 		String key;
 		int maxkeys=dp.getMaxKeys();
 		int index=0;
@@ -107,7 +111,7 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
 				if(maxkeys<=index++)break;
 				table.appendRow(1,
 					new SimpleDumpData(key),
-					DumpUtil.toDumpData(get(key,null), pageContext,maxlevel,dp));
+					DumpUtil.toDumpData(sct.get(key,null), pageContext,maxlevel,dp));
 			}
 		}
 		return table;

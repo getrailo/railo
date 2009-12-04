@@ -284,7 +284,6 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 		if(attr!=null) return attr;
 		try {
 			return _getAttr(data, fullPathHash,path, name);
-			
 		} 
 		catch (PageException pe) {
 			throw new PageRuntimeException(pe);
@@ -309,14 +308,6 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 		return putToCache(data,path,name,Attr.notExists(name,path));
 	}
 
-	/*public Attr[] _getAttrs(ConnectionData data, int pathHash,String path)  {
-		try {
-			return _getAttrs(data, pathHash, path);
-		} 
-		catch (PageException pe) {
-			throw new PageRuntimeException(pe);
-		}
-	}*/
 	public Attr[] getAttrs(ConnectionData data, int pathHash,String path) throws PageException {
 		if(StringUtil.isEmpty(data.getDatasourceName()))
 			return null;

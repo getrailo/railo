@@ -15,7 +15,7 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
-import railo.runtime.net.http.HoldingInputHTTPServletRequest;
+import railo.runtime.net.http.HTTPServletRequestWrap;
 import railo.runtime.net.http.HttpServletRequestDummy;
 import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.type.Struct;
@@ -26,7 +26,7 @@ public class ThreadUtil {
 	public static  PageContextImpl clonePageContext(PageContext pc, OutputStream os, boolean stateless,boolean registerPC)  {
 		// TODO stateless
 		CFMLFactoryImpl factory = (CFMLFactoryImpl) ((ConfigImpl)pc.getConfig()).getFactory();
-        HttpServletRequest	req=new HoldingInputHTTPServletRequest(cloneHttpServletRequest(pc));
+        HttpServletRequest	req=new HTTPServletRequestWrap(cloneHttpServletRequest(pc));
         HttpServletResponse	rsp=createHttpServletResponse(os);
         
         
@@ -52,7 +52,7 @@ public class ThreadUtil {
 			);
 		
 		
-		req=new HoldingInputHTTPServletRequest(req);
+		req=new HTTPServletRequestWrap(req);
         HttpServletResponse	rsp=createHttpServletResponse(os);
         
         return (PageContextImpl) factory.getRailoPageContext(

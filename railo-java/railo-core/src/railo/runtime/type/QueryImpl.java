@@ -2079,7 +2079,8 @@ public class QueryImpl implements Query,Objects {
 	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(PageContext pc, Key key, Object defaultValue) {
-		return getAt(key,arrCurrentRow.get(pc.getId(),1),defaultValue);
+		return getAt(key,arrCurrentRow.get(
+				pc.getId(),1),defaultValue);
 	}
 
 	/**

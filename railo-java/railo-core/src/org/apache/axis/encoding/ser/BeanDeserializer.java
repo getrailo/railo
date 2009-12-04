@@ -276,7 +276,6 @@ public class BeanDeserializer extends DeserializerImpl implements Serializable
         QName childXMLType = context.getTypeFromAttributes(namespace, 
                                                             localName,
                                                             attributes);
-
         String href = attributes.getValue(soapConstants.getAttrHref());
         Class fieldType = propDesc.getType();
 

@@ -46,7 +46,7 @@ public final class QueryCacheEntry implements Serializable,Dumpable {
         /**
          * @return returns query object in entry
          */
-        Object getValue() {
+        public Object getValue() {
         	return Duplicator.duplicate(value,false);
         }
         /**

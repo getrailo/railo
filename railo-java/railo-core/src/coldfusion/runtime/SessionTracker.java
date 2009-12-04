@@ -17,7 +17,7 @@ public class SessionTracker {
 	public static Struct getSessionCollection(String appName){
 		PageContext pc = ThreadLocalPageContext.get();
 		ScopeContext sc = ((CFMLFactoryImpl)pc.getCFMLFactory()).getScopeContext();
-		return sc.getAllSessionScopes(pc, appName);
+		return sc.getAllSessionScopes(pc.getConfig(), appName);
 	}
 	
 	

@@ -325,7 +325,7 @@ public final class ConfigWebFactory {
         settings(config);
         loadListener(cs,config,doc);
     	loadDumpWriter(cs, config, doc);
-    	//loadGateway(configServer,config,doc);
+    	loadGateway(configServer,config,doc);
     	config.setLoadTime(System.currentTimeMillis());
     	
     	ThreadLocalConfig.release();

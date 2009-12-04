@@ -6,9 +6,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.objectweb.asm.ClassAdapter;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
@@ -44,6 +47,7 @@ import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
  * represent a single Page like "index.cfm"
  */
 public final class Page extends BodyBase {
+
 
 	private static final Type KEY_IMPL = Type.getType(KeyImpl.class);
 	private static final Method GET_INSTANCE = new Method(
@@ -86,7 +90,7 @@ public final class Page extends BodyBase {
     		);
     
     // long getSourceLastModified()
-    private final static Method LAST_MODX = new Method(
+    private final static Method LAST_MOD = new Method(
 			"getSourceLastModified",
 			Types.LONG_VALUE,
 			new Type[]{}
@@ -366,7 +370,7 @@ public final class Page extends BodyBase {
          adapter.endMethod();
 
 // getSourceLastModified
-        adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , LAST_MODX, null, null, cw);
+        adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , LAST_MOD, null, null, cw);
         adapter.push(lastModifed);
         adapter.returnValue();
         adapter.endMethod();
@@ -1187,4 +1191,42 @@ public final class Page extends BodyBase {
 		return threads.size()-1;
 	}
 
+	public static byte[] setSourceLastModified(byte[] barr,  long lastModified) {
+		ClassReader cr = new ClassReader(barr);
+		ClassWriter cw = new ClassWriter(true);
+		ClassAdapter ca = new SourceLastModifiedClassAdapter(cw,lastModified);
+		cr.accept(ca, true);
+		/*
+		ClassWriter cw=new ClassWriter(barr,true);
+		
+        adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , LAST_MOD, null, null, cw);
+        adapter.push(lastModifed);
+        adapter.returnValue();
+        adapter.endMethod();
+        */
+        return cw.toByteArray();
+	}
+	
+
+
 }
+	class SourceLastModifiedClassAdapter extends ClassAdapter {
+
+		private long lastModified;
+		public SourceLastModifiedClassAdapter(ClassWriter cw, long lastModified) {
+			super(cw);
+			this.lastModified=lastModified;
+		}
+		public MethodVisitor visitMethod(int access,String name, String desc,  String signature, String[] exceptions) {
+			
+			if(!name.equals("getSourceLastModified"))return super.visitMethod(access,name, desc, signature, exceptions);
+			
+			MethodVisitor mv = cv.visitMethod(access,name, desc, signature, exceptions);
+			mv.visitCode();
+			mv.visitLdcInsn(new Long(lastModified));
+			mv.visitInsn(Opcodes.LRETURN);
+			mv.visitEnd();
+			return mv;
+		}
+
+	}

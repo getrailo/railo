@@ -8,7 +8,7 @@ import railo.runtime.PageSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 
-public final class NoneAppListener implements ApplicationListener {
+public final class NoneAppListener  extends AppListenerSupport {
 
 	private int mode;
 	private String type;

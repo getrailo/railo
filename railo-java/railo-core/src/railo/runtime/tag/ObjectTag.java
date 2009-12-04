@@ -6,6 +6,8 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.functions.other.CreateObject;
+import railo.runtime.net.proxy.ProxyData;
+import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.security.SecurityManager;
 
 /**
@@ -68,6 +70,8 @@ locale
 webservice
 */
 	
+
+
 	private String name;
 	private String component;
 	private String type="";
@@ -78,6 +82,13 @@ webservice
 	private String locale;
 	private String webservice;
 	private String delimiters=",";
+	
+	private String username;
+	private String password;
+	private String proxyServer;
+	private int proxyPort;
+	private String proxyUser;
+	private String proxyPassword;
 
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
@@ -94,6 +105,14 @@ webservice
 		locale=null;
 		webservice=null;
 		delimiters=",";
+		
+
+		username=null;
+		password=null;
+		proxyServer=null;
+		proxyPort=-1;
+		proxyUser=null;
+		proxyPassword=null;
 	}
 	
 	
@@ -120,7 +139,11 @@ webservice
         else if(type.equals("webservice")) {
             checkAccess(pageContext,type);
             checkWebservice();
-            pageContext.setVariable(name,CreateObject.doWebService(pageContext,webservice));
+            ProxyData proxy=null;
+            if(proxyServer!=null){
+            	proxy=new ProxyDataImpl(proxyServer,proxyPort,proxyUser,proxyPassword);
+            }
+            pageContext.setVariable(name,CreateObject.doWebService(pageContext,webservice,username,password,proxy));
         }
 		else {
 			if(type==null) throw new ApplicationException("to less attributes defined for tag object");
@@ -216,9 +239,42 @@ webservice
 	public void setContext(String context) {
 		this.context = context;
 	}
+	
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
+	/**
+	 * @param proxyServer the proxyServer to set
+	 */
+	public void setProxyServer(String proxyServer) {
+		this.proxyServer = proxyServer;
+	}
 
+	/**
+	 * @param proxyPort the proxyPort to set
+	 */
+	public void setProxyPort(double proxyPort) {
+		this.proxyPort = (int)proxyPort;
+	}
 
+	/**
+	 * @param proxyUser the proxyUser to set
+	 */
+	public void setProxyUser(String proxyUser) {
+		this.proxyUser = proxyUser;
+	}
+
+	/**
+	 * @param proxyPassword the proxyPassword to set
+	 */
+	public void setProxyPassword(String proxyPassword) {
+		this.proxyPassword = proxyPassword;
+	}
 
 	/**
 	 * @param delimiters the delimiters to set

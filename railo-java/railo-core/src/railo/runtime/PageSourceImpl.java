@@ -188,9 +188,12 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 			if(page!=null && !recompileAlways) {
 				// java file is newer !mapping.isTrusted() && 
 				if(srcLastModified!=page.getSourceLastModified()) {
-					this.page=page=compile(config,mapping.getClassRootDirectory(),true);
+                	this.page=page=compile(config,mapping.getClassRootDirectory(),true);
 					page.setPageSource(this);
 					page.setLoadType(LOAD_PHYSICAL);
+					/*if(srcLastModified!=page.getSourceLastModified()){
+						srcFile.setLastModified(page.getSourceLastModified());// Future da class files die nach cfm unbenannt sind nicht den gleichen zeitstempel haben wie page.getSourceLastModified, kopiert railo die files immer wider, die klasse page braucht eine methode setSourceLastModified, dann kann dies hier entfernt werden
+					}*/
 				}
 		    	
 			}
@@ -222,7 +225,6 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
                     }
                     
                     // check if there is a newwer version
-                    //if(!isNew && !mapping.isTrusted() && srcLastModified!=page.getSourceLastModified()) {
                     if(!isNew && srcLastModified!=page.getSourceLastModified()) {
                     	this.page=page=compile(config,classRootDir,isNew=true);
     				}

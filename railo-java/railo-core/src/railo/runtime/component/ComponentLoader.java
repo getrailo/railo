@@ -20,36 +20,36 @@ import railo.runtime.exp.PageException;
 
 public class ComponentLoader {
 	
-    public static ComponentImpl loadComponentImpl(PageContext pc,String rawPath) throws PageException  {
+    public static ComponentImpl loadComponentImpl(PageContext pc,String rawPath, boolean searchLocal) throws PageException  {
     	rawPath=rawPath.trim().replace('\\','/');
     	
-    	//try{
-	    	RefBoolean isRealPath=new RefBooleanImpl(false);
-    		String path=getPath(rawPath, true, true);
-	    	Page page=getPage(pc, path.concat(".cfc"),isRealPath);
-	    	if(page==null)	{
-		    	path=getPath(rawPath, false, true);
+    	RefBoolean isRealPath=new RefBooleanImpl(false);
+    	
+    	String path=(rawPath.indexOf("./")==-1)?rawPath.replace('.','/'):rawPath;
+    	Page page=getPage(pc, path.concat(".cfc"),isRealPath,searchLocal);
+	    
+    	/*String path=getPath(rawPath, true, true);
+    	Page page=getPage(pc, path.concat(".cfc"),isRealPath);
+	    if(page==null)	{
+	    	path=getPath(rawPath, false, true);
+	    	page=getPage(pc, path.concat(".cfc"),isRealPath);
+		    if(page==null)	{
+		    	path=getPath(rawPath, true, false);
 		    	page=getPage(pc, path.concat(".cfc"),isRealPath);
-		    	if(page==null)	{
-		    		path=getPath(rawPath, true, false);
-			    	page=getPage(pc, path.concat(".cfc"),isRealPath);
-			    	if(page==null)	{
-			    		path=getPath(rawPath, false, false);
-			    		page=getPage(pc, path.concat(".cfc"),isRealPath);
-			    		
-			    	}
+			    if(page==null)	{
+			    	path=getPath(rawPath, false, false);
+			    	page=getPage(pc, path.concat(".cfc"),isRealPath);		
 			    }
-		    }
+			}
+	    }*/
 		    
-		    // test
-		    if(page==null){
+		// test
+		if(page==null){
 		    	//String detail="search for "+ps.getDisplayPath();
 		        //if(psRel!=null)detail+=" and "+psRel.getDisplayPath();
-		    	throw new ExpressionException("invalid component definition, can't find "+rawPath);
-		    }
-	    	return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath.toBooleanValue());
-	
-	    
+			throw new ExpressionException("invalid component definition, can't find "+rawPath);
+		}
+	    return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath.toBooleanValue());
 	}
     
     private static String trim(String str) {
@@ -57,29 +57,47 @@ public class ComponentLoader {
 		return str;
 	}
 
-	private static String getPath(String path, boolean allowRemovingExt,boolean replacePoint) {
+	/*private static String getPath(String path, boolean allowRemovingExt,boolean replacePoint) {
     	// remove extension
     	if(allowRemovingExt && StringUtil.endsWithIgnoreCase(path, ".cfc")){
     		path=path.substring(0,path.length()-4);
     	}
-    	
     	// replace point
     	if(replacePoint && path.indexOf("./")==-1)
     		path=path.replace('.','/');
 	    
     	return path;
-	}
+	}*/
+	
 
-	private static Page getPage(PageContext pc,String path, RefBoolean isRealPath) throws PageException  {
+	/*private static String optimizePath(String path) {
+    	// replace point
+    	if(path.indexOf("./")==-1)
+    		path=path.replace('.','/');
+	    
+    	return path;
+	}*/
+	
+
+	private static Page getPage(PageContext pc,String path, RefBoolean isRealPath, boolean searchLocal) throws PageException  {
     	Page page=null;
 	    isRealPath.setValue(!StringUtil.startsWith(path,'/'));
-	    
-	    PageSource ps=pc.getRelativePageSource(path);
-	    if(ps==null) return null;
-	    page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
-    	if(page==null && isRealPath.toBooleanValue()) {
-    	    isRealPath.setValue(false);
-        	ps=pc.getPageSource('/'+path);
+	    PageSource ps;
+	    // search from local
+	    if(searchLocal && isRealPath.toBooleanValue()){
+		    ps=pc.getRelativePageSource(path);
+		    if(ps==null) return null;
+		    page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+	    }
+	    // search from root
+	    if(page==null) {
+	    	if(isRealPath.toBooleanValue()){
+	    		isRealPath.setValue(false);
+	    		ps=pc.getPageSource('/'+path);
+	    	}
+	    	else {
+	    		ps=pc.getPageSource(path);
+	    	}
     	    page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
         }
     	return page;

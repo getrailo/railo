@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -41,6 +42,7 @@ import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
+import railo.runtime.net.http.HTTPServletRequestWrap;
 import railo.runtime.op.CastImpl;
 import railo.runtime.op.CreationImpl;
 import railo.runtime.op.DecisionImpl;
@@ -208,9 +210,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
      */
     
     public CFMLFactory getCFMLFactory(ServletContext srvContext, ServletConfig srvConfig,HttpServletRequest req) throws ServletException {
-    	//SystemOut.printDate("Call:"+req.getServletPath());
-	    
-        String real=srvContext.getRealPath("/");
+    	String real=srvContext.getRealPath("/");
         ConfigServerImpl cs = getConfigServerImpl();
     	
         
@@ -255,10 +255,27 @@ public final class CFMLEngineImpl implements CFMLEngine {
     	
     	CFMLFactory factory=getCFMLFactory(servlet.getServletContext(), servlet.getServletConfig(), req);
         PageContext pc = factory.getRailoPageContext(servlet,req,rsp,null,false,-1,false);
-       
-        
         try {
-        	pc.execute(req.getServletPath(),false);
+        	/*print.out("INCLUDE");
+        	print.out("servlet_path:"+req.getAttribute("javax.servlet.include.servlet_path"));
+        	print.out("request_uri:"+req.getAttribute("javax.servlet.include.request_uri"));
+        	print.out("context_path:"+req.getAttribute("javax.servlet.include.context_path"));
+        	print.out("path_info:"+req.getAttribute("javax.servlet.include.path_info"));
+        	print.out("query_string:"+req.getAttribute("javax.servlet.include.query_string"));
+        	print.out("FORWARD");
+        	print.out("servlet_path:"+req.getAttribute("javax.servlet.forward.servlet_path"));
+        	print.out("request_uri:"+req.getAttribute("javax.servlet.forward.request_uri"));
+        	print.out("context_path:"+req.getAttribute("javax.servlet.forward.context_path"));
+        	print.out("path_info:"+req.getAttribute("javax.servlet.forward.path_info"));
+        	print.out("query_string:"+req.getAttribute("javax.servlet.forward.query_string"));
+        	print.out("---");
+        	print.out(req.getServletPath());
+        	print.out(pc.getHttpServletRequest().getServletPath());
+        	*/
+        	
+        	
+        	
+        	pc.execute(pc.getHttpServletRequest().getServletPath(),false);
         } 
         catch (PageException pe) {
 			throw new PageServletException(pe);
@@ -266,19 +283,16 @@ public final class CFMLEngineImpl implements CFMLEngine {
         finally {
             factory.releaseRailoPageContext(pc);
             FDControllerFactory.notifyPageComplete();
-        }  
-        
-        
-        
+        }
     }
 
 	public void serviceFile(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
+		req=new HTTPServletRequestWrap(req);
 		CFMLFactory factory=getCFMLFactory(servlet.getServletContext(), servlet.getServletConfig(), req);
         ConfigWeb config = factory.getConfig();
         Resource res = ((ConfigWebImpl)config).getPhysical(null,req.getServletPath(),true);
         
-		//print.out(req.getServletPath()+":"+res+":"+res.exists());
-    	if(!res.exists()) {
+		if(!res.exists()) {
     		rsp.sendError(404);
     	}
     	else {
@@ -327,7 +341,8 @@ public final class CFMLEngineImpl implements CFMLEngine {
     }
 
     public void serviceAMF(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
-        amfEngine.service(servlet,req,rsp);
+    	req=new HTTPServletRequestWrap(req);
+		amfEngine.service(servlet,req,rsp);
     }
 
     /**

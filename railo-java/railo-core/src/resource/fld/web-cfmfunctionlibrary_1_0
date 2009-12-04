@@ -408,7 +408,7 @@
 		<argument>
 			<name>dimension</name>
 			<type>number</type>
-			<required>Yes</required>
+			<required>no</required>
 		</argument>
 		<return>
 			<type>array</type>
@@ -1037,6 +1037,21 @@
 		</return>
 	</function>
 	
+	<!-- CacheGetDefaultCacheName -->
+	<function>
+		<name>CacheGetDefaultCacheName</name>
+		<class>railo.runtime.functions.cache.CacheGetDefaultCacheName</class>
+		<description>return the default cache name for a specific type</description>
+		<argument>
+			<name>type</name>
+			<type>string</type>
+			<required>yes</required>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
 	<!-- CacheGetAll -->
 	<function>
 		<name>CacheGetAll</name>
@@ -1463,12 +1478,12 @@
 		</argument>
 		<argument>
 			<name>arg3</name>
-			<type>string</type>
+			<type>object</type>
 			<required>No</required>
 		</argument>
 		<argument>
 			<name>arg4</name>
-			<type>string</type>
+			<type>object</type>
 			<required>No</required>
 		</argument>
 		<return>

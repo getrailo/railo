@@ -46,9 +46,20 @@
 		field("RMI Urls","manual_rmiUrls","",false,"specify a pipe separated list of rmiUrls, in the form ""//hostname:port""","textarea"),
 		field("Host Name","manual_hostName","",false,"the hostname is the hostname of the remote CacheManager peer. The port is the listening
       port of the RMICacheManagerPeerListener of the remote CacheManager peer","text"),
+		field("Addional","manual_addional","",true,"addional properties","textarea"),
 		
-		field("Addional","manual_addional","",true,"addional properties","textarea","true")
+		group("Listener","",3),
 		
+		field("Host Name","listener_hostName","",false,"the hostName of the host the listener is running on. Specify
+      where the host is multihomed and you want to control the interface over which cluster
+      messages are received. Defaults to the host name of the default interface if not
+      specified.","text"),
+		field("Port","listener_port","",false,"the port the RMI Registry listener listens on. This defaults to a free port if not specified.","text"),
+		field("Remote Object Port","listener_remoteObjectPort","",false,"the port number on which the remote objects bound in the registry receive calls.
+                         This defaults to a free port if not specified.","text"),
+		field("Socket Timeout (ms)","listener_socketTimeoutMillis","120000",false,"the number of ms client sockets will stay open when sending
+      messages to the listener. This should be long enough for the slowest message.","text")
+			
 		
 		
 		,group("Bootstrap","When you startup the Railo server and EHCache is to be synchronized with another instance, the local EHCache will fetch the data from the other EHCache instance. (these settings has no impact when Distribution type is set to ""off"")",3)

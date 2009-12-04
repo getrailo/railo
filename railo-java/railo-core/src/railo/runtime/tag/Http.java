@@ -861,7 +861,7 @@ public final class Http extends BodyTagImpl {
 
 	private void releaseConnection(HttpMethod httpMethod, HttpConnectionManager manager) {
 		httpMethod.releaseConnection();
-		manager.closeIdleConnections(0);
+		//manager.closeIdleConnections(0);
 	}
 
 	private static URL locationURL(HttpMethod method) throws MalformedURLException, ExpressionException {

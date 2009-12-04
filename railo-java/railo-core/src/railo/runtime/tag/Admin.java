@@ -2488,7 +2488,7 @@ private void doGetMappings() throws PageException {
 	
 	private void doGetCacheDefaultConnection() throws PageException {
 		int type;
-        String strType=getString("admin", "GetCacheDefaultConnection", "type");
+        String strType=getString("admin", "GetCacheDefaultConnection", "cacheType");
         strType=strType.toLowerCase().trim();
         if(strType.equals("object"))
         	type=ConfigImpl.CACHE_DEFAULT_OBJECT;
@@ -2499,7 +2499,7 @@ private void doGetMappings() throws PageException {
         else if(strType.equals("resource"))
         	type=ConfigImpl.CACHE_DEFAULT_RESOURCE;
         else
-        	throw new ApplicationException("invalid type defintion, valid values are [object, template]");
+        	throw new ApplicationException("inv,query,resourcealid type defintion, valid values are [object, template]");
 		
         CacheConnection cc = config.getCacheDefaultConnection(type);
         if(cc!=null){

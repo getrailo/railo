@@ -10,6 +10,9 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 
 public final class ArrayNew implements Function {
+	public static Array call(PageContext pc) throws ExpressionException  {
+		return new ArrayImpl(1);
+	}
 	public static Array call(PageContext pc , double number) throws ExpressionException {
 		return new ArrayImpl((int)number);
 	}

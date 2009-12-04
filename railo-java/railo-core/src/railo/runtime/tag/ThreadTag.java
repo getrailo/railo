@@ -13,6 +13,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.ext.tag.BodyTagImpl;
+import railo.runtime.ext.tag.DynamicAttributes;
 import railo.runtime.op.Caster;
 import railo.runtime.spooler.ExecutionPlan;
 import railo.runtime.spooler.ExecutionPlanImpl;
@@ -26,6 +27,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.scope.Threads;
 
 // MUST change behavor of mltiple headers now is a array, it das so?
@@ -39,7 +41,7 @@ import railo.runtime.type.scope.Threads;
 *
 * 
 **/
-public final class ThreadTag extends BodyTagImpl {
+public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 	
 	private static final int ACTION_JOIN = 0;
 	private static final int ACTION_RUN = 1;
@@ -49,6 +51,9 @@ public final class ThreadTag extends BodyTagImpl {
 	private static final int TYPE_DEAMON = 0;
 	private static final int TYPE_TASK = 1;
 	private static final ExecutionPlan[] EXECUTION_PLAN = new ExecutionPlan[0];
+	
+	private static final Key DURATION = KeyImpl.getInstance("duration");
+	private static final Key NAME = KeyImpl.getInstance("name");
 	
 	
 	
@@ -217,7 +222,18 @@ public final class ThreadTag extends BodyTagImpl {
 
 	public void setDynamicAttribute(String uri, String name, Object value) {
 		if(attrs==null)attrs=new StructImpl();
-		attrs.setEL(KeyImpl.init(name),value);
+		Key key = KeyImpl.init(name=StringUtil.trim(name,""));
+		
+		/*if(key.equals(NAME))	setName(name);
+		else if(key.equals(DURATION)){
+			try {
+				setDuration(Caster.toDoubleValue(name));
+			} catch (PageException pe) {
+				throw new PageRuntimeException(pe);
+			}
+		}
+		else*/ 
+			attrs.setEL(key,value);
 	}
 
 	/**

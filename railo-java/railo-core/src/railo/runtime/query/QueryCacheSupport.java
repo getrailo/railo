@@ -14,8 +14,8 @@ public abstract class QueryCacheSupport implements QueryCache,Sizeable,Serializa
 	public  abstract void clear(QueryCacheFilter filter);
 	
 	public static QueryCacheSupport getInstance(Config config){
-		//return new CacheQueryCache(config);
-		return new MemoryQueryCache();
+		return new CacheQueryCache(config);
+		//return new MemoryQueryCache();
 	}
 	public abstract void setConfigWeb(ConfigWeb config);
 }

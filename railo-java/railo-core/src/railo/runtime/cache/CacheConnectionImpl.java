@@ -54,7 +54,9 @@ public class CacheConnectionImpl implements CacheConnection  {
 					Throwable target = e.getTargetException();
 					if(target instanceof IOException) throw ((IOException)target);
 					target.printStackTrace();
-					throw new IOException(Caster.toClassName(target)+":"+target.getMessage());
+					IOException ioe = new IOException(Caster.toClassName(target)+":"+target.getMessage());
+					ioe.setStackTrace(target.getStackTrace());
+					throw ioe;
 				} 
 				catch (Exception e) {
 					

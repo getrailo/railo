@@ -12,6 +12,8 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 
+import railo.commons.io.log.Log;
+import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.HTMLUtil;
 import railo.commons.lang.StringUtil;
@@ -29,40 +31,20 @@ import railo.runtime.type.util.ArrayUtil;
 public final class WebCrawler {
     
     private static HTMLUtil htmlUtil=new HTMLUtil();
+	private LogAndSource log;
 	
     
     
-    public static void main(String[] args) throws MalformedURLException, IOException {
-    	String[] ex=new String[]{".cfm",".pdf",".html"};
-    	long start=System.currentTimeMillis();
-		WebCrawler wc = new WebCrawler();
-		try{
-		/*
-		wc.parse(null, new URL("http://localhost:8888/susi"), ex,false);
-		wc.parse(null, new URL("http://localhost:8888/susi/"), ex,false);
-		wc.parse(null, new URL("http://localhost:8888/susi/index.cfm"), ex,false);
-		wc.parse(null, new URL("http://localhost:8888/susi/index.cfm?a=1"), ex,false);
-		wc.parse(null, new URL("http://localhost:8888/susi/?x=1"), ex,false);
-		wc.parse(null, new URL("http://localhost:8888/susi/index.cfm;sss"), ex,false);*/
-			//wc.parse(null, new URL("http://localhost:8888/test1.cfm"), ex,true,1000L);
-			wc.parse(null, new URL("http://hcc.weblinedesigns.com/"), ex,true,10000L);
-			//
-		
-		
-		}
-		catch(IOException e){
-			//print.err("IOE");
-			//print.printST(e);
-		}
-		//print.err(System.currentTimeMillis()-start);
-		//wc.parse(null, new URL("http://www.jmuffin.ch/de/index.cfm/treeID/35"), ex,true,10000L);
-		
+    public WebCrawler(LogAndSource log) {
+    	this.log=log;
 	}
+
+	
     
     public void parse(IndexWriter writer, URL current, String[] extensions, boolean recurse, long timeout) throws IOException {
     	translateExtension(extensions);
     	if(ArrayUtil.isEmpty(extensions))extensions=Index.EXTENSIONS;
-        _parse(writer,null,current,new ArrayList(), extensions,recurse,0,timeout);
+        _parse(log,writer,null,current,new ArrayList(), extensions,recurse,0,timeout);
     }
     
 
@@ -112,30 +94,42 @@ public final class WebCrawler {
 		return doc;
 	}
 
-    protected static void _parse(IndexWriter writer, String root, URL current, List urlsDone, String[] extensions, boolean recurse,int deep,long timeout) throws IOException  {
+    protected static void _parse(Log log,IndexWriter writer, String root, URL current, List urlsDone, String[] extensions, boolean recurse,int deep,long timeout) throws IOException  {
     	
-    	StringBuffer content = _parseItem(writer, root, current, urlsDone, extensions, recurse, deep,timeout);
-        if(content!=null)_parseChildren(content,writer, root, current, urlsDone, extensions, recurse, deep,timeout);
+    	StringBuffer content = _parseItem(log,writer, root, current, urlsDone, extensions, recurse, deep,timeout);
+        if(content!=null)_parseChildren(log,content,writer, root, current, urlsDone, extensions, recurse, deep,timeout);
     }
     
-    public static StringBuffer _parseItem(IndexWriter writer, String root, URL url, List urlsDone, String[] extensions, boolean recurse,int deep,long timeout) throws IOException{
-    	url=translateURL(url);
-    	if(urlsDone.contains(url.toExternalForm())) return null;
-        urlsDone.add(url.toExternalForm());
-    	
-    	StringBuffer content=new StringBuffer();            
-    	Document doc=toDocument(content,writer, root, url,timeout);
-    	
-        if(doc==null) return null;
-        //print.out("WRITE:"+url);
-        if(writer!=null)writer.addDocument(doc);
-        //print.out("index-end:"+url);
-        return content;
+    public static StringBuffer _parseItem(Log log,IndexWriter writer, String root, URL url, List urlsDone, String[] extensions, boolean recurse,int deep,long timeout) throws IOException{
+    	try{
+	    	url=translateURL(url);
+	    	if(urlsDone.contains(url.toExternalForm())) return null;
+	        urlsDone.add(url.toExternalForm());
+	    	
+	    	StringBuffer content=new StringBuffer();            
+	    	Document doc=toDocument(content,writer, root, url,timeout);
+	    	
+	        if(doc==null) return null;
+	        if(writer!=null)writer.addDocument(doc);
+	        
+	        // Test
+	        /*Resource dir = ResourcesImpl.getFileResourceProvider().getResource("/Users/mic/Temp/leeway3/");
+	        if(!dir.isDirectory())dir.mkdirs();
+	        Resource file=dir.getRealResource(url.toExternalForm().replace("/", "_"));
+	        IOUtil.write(file, content.toString(), "UTF-8", false);*/
+	        
+	        info(log,url.toExternalForm());
+	        return content;
+    	}
+    	catch(IOException ioe){
+    		error(log,url.toExternalForm(),ioe);
+    		throw ioe;
+    	}
     }
     
 
 
-	protected static void _parseChildren(StringBuffer content,IndexWriter writer, String root, URL base, List urlsDone, String[] extensions, boolean recurse,int deep,long timeout) throws IOException  {
+	protected static void _parseChildren(Log log,StringBuffer content,IndexWriter writer, String root, URL base, List urlsDone, String[] extensions, boolean recurse,int deep,long timeout) throws IOException  {
     	
 
 		
@@ -165,7 +159,7 @@ public final class WebCrawler {
                 if((protocol.equals("http") || protocol.equals("https")) && validExtension(extensions,file) &&
                    base.getHost().equalsIgnoreCase(url.getHost())) {
                 	try {
-                		ci=new ChildrenIndexer(writer,root,url,urlsDone,extensions,recurse,deep+1,timeout);
+                		ci=new ChildrenIndexer(log,writer,root,url,urlsDone,extensions,recurse,deep+1,timeout);
                 		
                 		childIndexer.add(ci);
                 		ci.start();
@@ -204,7 +198,7 @@ public final class WebCrawler {
 	    			ci=(ChildrenIndexer) it.next();
 	    			//print.out("exec-child:"+ci.url);
 	    			//print.out(content);
-	    			if(ci.content!=null)_parseChildren(ci.content,writer, root, ci.url, urlsDone, extensions, recurse, deep,timeout);
+	    			if(ci.content!=null)_parseChildren(log,ci.content,writer, root, ci.url, urlsDone, extensions, recurse, deep,timeout);
 	    		}
 	    		
     		}
@@ -293,6 +287,17 @@ public final class WebCrawler {
 		}
 		return false;
 	}
+
+
+    private static void info(Log log,String doc) {
+		if(log==null) return;
+		log.info("Webcrawler", "invoke "+doc);
+	}
+
+    private static void error(Log log,String doc, Exception e) {
+		if(log==null) return;
+		log.error("Webcrawler", "invoke "+doc+":"+e.getMessage());
+	}
 }
 
 
@@ -306,8 +311,9 @@ class ChildrenIndexer extends Thread {
 	protected int deep;
 	protected StringBuffer content;
 	private long timeout;
+	private Log log;
 
-	public ChildrenIndexer(IndexWriter writer, String root, URL url,List urlsDone, String[] extensions,boolean recurse, int deep,long timeout) {
+	public ChildrenIndexer(Log log,IndexWriter writer, String root, URL url,List urlsDone, String[] extensions,boolean recurse, int deep,long timeout) {
 		this.writer=writer;
 		this.root=root;
 		this.url=url;
@@ -316,14 +322,17 @@ class ChildrenIndexer extends Thread {
 		this.recurse=recurse;
 		this.deep=deep;
 		this.timeout=timeout;
+		this.log=log;
 	}
 
 	public void run(){
 		try {
 			//WebCrawler._parse(writer, root, url, urlsDone, extensions, recurse, deep);
 			
-			this.content=WebCrawler._parseItem(writer, root, url, urlsDone, extensions, recurse, deep,timeout+1);
+			this.content=WebCrawler._parseItem(log,writer, root, url, urlsDone, extensions, recurse, deep,timeout+1);
 			
 		} catch (IOException e) {}
 	}
+	
+	
 }

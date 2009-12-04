@@ -1,9 +1,12 @@
 package railo.runtime.reflection.storage;
 
 import java.lang.reflect.Method;
-import java.util.WeakHashMap;
+import java.util.Map;
+
+import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.Collection.Key;
@@ -12,7 +15,7 @@ import railo.runtime.type.Collection.Key;
  * Method Storage Class
  */
 public final class WeakMethodStorage {
-	private WeakHashMap map=new WeakHashMap();
+	private Map map=new ReferenceMap();
 	
 	/**
 	 * returns a methods matching given criteria or null if method doesn't exist
@@ -21,7 +24,7 @@ public final class WeakMethodStorage {
 	 * @param count wished count of arguments
 	 * @return matching Methods as Array
 	 */
-	public Method[] getMethods(Class clazz,String methodName, int count) {
+	public Method[] getMethods(Class clazz,Collection.Key methodName, int count) {
 		Object o=map.get(clazz);
 		StructImpl methodsMap;
 		if(o==null) {

@@ -231,7 +231,6 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	 */
 	private void enlargeCapacity(int key) {
 		int diff=offCount-offset;
-		
 		int newSize=arr.length;
 		if(newSize<1) newSize=1;
 		while(newSize<key+offset+diff) {

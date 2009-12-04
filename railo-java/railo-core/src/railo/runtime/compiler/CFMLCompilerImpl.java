@@ -40,6 +40,8 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 	public byte[] compile(ConfigImpl config,PageSource source, TagLib[] tld, FunctionLib[] fld, 
         Resource classRootDir, String className) throws TemplateException, IOException {
 		//synchronized(source){
+			//print.out("src:"+source.getDisplayPath());
+    		//print.dumpStack();
 			Resource classFile=classRootDir.getRealResource(className+".class");
 			Resource classFileDirectory=classFile.getParentResource();
 	        byte[] barr = null;
@@ -57,6 +59,7 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 	        	InputStream is=null;
 	        	try{
 	        		barr=IOUtil.toBytes(is=ace.getInputStream());
+	        		barr=Page.setSourceLastModified(barr,source.getPhyscalFile().lastModified());
 	        		IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
 	        	}
 	        	finally {

@@ -341,9 +341,10 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		
 		if(query==null) {
 			query=(dbtype!=null && dbtype.equals("query"))?reExecute(sql):execute(sql,result!=null);
-			if(hasCached) {
+			if(cachedWithin!=null) {
 				DateTimeImpl cachedBefore = null;
-				if(cachedWithin!=null)cachedBefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedWithin.getMillis(),false);
+				//if(cachedWithin!=null)
+					cachedBefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedWithin.getMillis(),false);
                 pageContext.getQueryCache().set(sql,datasource,username,password,query,cachedBefore);
 			}
 			exe=query.executionTime();

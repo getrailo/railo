@@ -17,6 +17,7 @@ import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigServer;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -240,12 +241,18 @@ public final class ScopeContext {
 	 * @return
 	 */
 	public Struct getAllSessionScopes(PageContext pc) {
-		return getAllSessionScopes(pc, pc.getApplicationContext().getName());
+		return getAllSessionScopes(pc.getConfig(), pc.getApplicationContext().getName());
 	}
 	
 	public Struct getAllApplicationScopes() {
 		Struct trg=new StructImpl();
 		StructImpl.copy(MapAsStruct.toStruct(applicationContextes, true), trg, false);
+		return trg;
+	}
+	
+	public Struct getAllCFSessionScopes() {
+		Struct trg=new StructImpl();
+		StructImpl.copy(MapAsStruct.toStruct(this.cfSessionContextes, true), trg, false);
 		return trg;
 	}
 	
@@ -270,8 +277,8 @@ public final class ScopeContext {
 	 * @param appName
 	 * @return
 	 */
-	public Struct getAllSessionScopes(PageContext pc, String appName) {
-        if(pc.getConfig().getSessionType()==Config.SESSION_TYPE_J2EE)return new StructImpl();
+	public Struct getAllSessionScopes(ConfigWeb config, String appName) {
+        if(config.getSessionType()==Config.SESSION_TYPE_J2EE)return new StructImpl();
 		return getAllSessionScopes(getSubMap(cfSessionContextes,appName),appName);
 	}
 	
@@ -307,7 +314,7 @@ public final class ScopeContext {
 	 * @return cf session matching the context
 	 * @throws PageException 
 	 */
-	private Session getCFSessionScope(PageContext pc, RefBoolean isNew) {
+	private synchronized Session getCFSessionScope(PageContext pc, RefBoolean isNew) {
 		
 		ApplicationContext appContext = pc.getApplicationContext(); 
 		// get Context
@@ -336,7 +343,7 @@ public final class ScopeContext {
 	 * @return j session matching the context
 	 * @throws PageException
 	 */
-	private Session getJSessionScope(PageContext pc, RefBoolean isNew) {
+	private synchronized Session getJSessionScope(PageContext pc, RefBoolean isNew) {
         HttpSession httpSession=pc.getSession();
         ApplicationContext appContext = pc.getApplicationContext(); 
         Session session=null;
@@ -385,7 +392,7 @@ public final class ScopeContext {
 	 * @return session matching the context
 	 * @throws PageException 
 	 */
-	public Application getApplicationScope(PageContext pc, RefBoolean isNew) {
+	public synchronized Application getApplicationScope(PageContext pc, RefBoolean isNew) {
 		ApplicationContext appContext = pc.getApplicationContext(); 
 		// getApplication Scope from Context
 			Application application;

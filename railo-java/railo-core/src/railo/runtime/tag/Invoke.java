@@ -1,9 +1,6 @@
 package railo.runtime.tag;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
-import railo.runtime.ComponentWrap;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
@@ -191,13 +188,11 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
 		}
 		// call active cfc or component
 		else {
-            Component comp = pageContext.getActiveComponent();
-            if(comp!=null)doComponent(new ComponentWrap(Component.ACCESS_PRIVATE,(ComponentImpl)comp));
-            else {
+            //Component comp = pageContext.getActiveComponent();
+            //if(comp!=null)doComponent(new ComponentWrap(Component.ACCESS_PRIVATE,(ComponentImpl)comp));
+            //else {
             	doFunction(pageContext.undefinedScope());
-            	//doComponent(new ComponentWrap(Component.ACCESS_PRIVATE,(ComponentImpl)comp));
-            	//throw new ApplicationException("tag invoke must have attribute component or attribute webservice");
-            }
+            //}
         }
 		return EVAL_PAGE;
 	}

@@ -55,7 +55,6 @@ public class GatewayEntryImpl implements GatewayEntry {
 			if(!StringUtil.isEmpty(className)){
 				Class clazz = ClassUtil.loadClass(config.getClassLoader(),className);
 				gateway=(Gateway) ClassUtil.loadInstance(clazz);
-				//SystemOut.print(config.getErrWriter(), ce.getMessage());
 			}
 			else if(!StringUtil.isEmpty(cfcPath)){
 				gateway=new CFCGateway(cfcPath);

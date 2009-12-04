@@ -37,6 +37,10 @@ import org.apache.axis.wsdl.symbolTable.SymTabEntry;
 import org.apache.axis.wsdl.symbolTable.SymbolTable;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
 import org.apache.axis.wsdl.toJava.Utils;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -55,6 +59,7 @@ import railo.runtime.net.rpc.Pojo;
 import railo.runtime.net.rpc.RPCConstants;
 import railo.runtime.net.rpc.RPCException;
 import railo.runtime.op.Caster;
+import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.Objects;
@@ -331,7 +336,9 @@ public final class RPCClient implements Objects, Iteratorable{
             
         }
         
-        Iterator it = outTypes.iterator();
+        
+        
+        //Iterator it = outTypes.iterator();
        
         // check arguments
         Object[] inputs = new Object[inNames.size()];
@@ -729,17 +736,28 @@ public final class RPCClient implements Objects, Iteratorable{
         //Operation operation = null;
         while(itr.hasNext())  {
             tmpOp = (Operation)itr.next();
+            Element el = tmpOp.getDocumentationElement();
+            StringBuffer doc=new StringBuffer();
+            if(el!=null){
+            	NodeList children = XMLUtil.getChildNodes(el, Node.TEXT_NODE);
+            	int len=children.getLength();
+            	Text text;
+            	for(int i=0;i<len;i++){
+            		text=(Text) children.item(i);
+            		doc.append(text.getData());
+            	}
+            }
             //parameters = (Parameters)bEntry.getParameters().get(tmpOp);
             functions.appendRow(1,
             		new SimpleDumpData(tmpOp.getName()),
-            		_toHTMLOperation((Parameters)bEntry.getParameters().get(tmpOp)));
+            		_toHTMLOperation(doc.toString(),(Parameters)bEntry.getParameters().get(tmpOp)));
         }
         
         box.appendRow(1,new SimpleDumpData(""),functions);
         return box;
     }
 
-    private DumpData _toHTMLOperation(Parameters parameters) {
+    private DumpData _toHTMLOperation(String doc, Parameters parameters) {
     	DumpTable table = new DumpTable("#BEDAFD","#E1E97C","#000000");
     	DumpTable attributes = new DumpTable("#BEDAFD","#E1E97C","#000000");
         String returns = "void";
@@ -773,6 +791,7 @@ public final class RPCClient implements Objects, Iteratorable{
         }
         table.appendRow(1,new SimpleDumpData("arguments"),attributes);
         table.appendRow(1,new SimpleDumpData("return type"),new SimpleDumpData(returns));
+        if(doc.length()>0)table.appendRow(1,new SimpleDumpData("hint"),new SimpleDumpData(doc));
         
         
         return table;

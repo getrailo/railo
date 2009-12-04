@@ -1,7 +1,6 @@
 package railo.runtime;
 
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Enumeration;
@@ -15,7 +14,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.Map.Entry;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -48,6 +46,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
+import railo.commons.net.HTTPUtil;
 import railo.intergral.fusiondebug.server.FDSignal;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.Config;
@@ -76,13 +75,12 @@ import railo.runtime.exp.PageExceptionBox;
 import railo.runtime.exp.PageServletException;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.VariableInterpreter;
+import railo.runtime.listener.AppListenerSupport;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ModernAppListenerException;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.net.ftp.FTPPoolImpl;
-import railo.runtime.net.http.HoldingInputHTTPServletRequest;
-import railo.runtime.net.http.HttpServletRequestMod;
-import railo.runtime.net.http.HttpServletResponseDummy;
+import railo.runtime.net.http.HTTPServletRequestWrap;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.query.QueryCache;
@@ -166,7 +164,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	protected int executionTime=0;
 	
-	private HoldingInputHTTPServletRequest req;
+	private HTTPServletRequestWrap req;
 	private HttpServletResponse rsp;
 	private HttpServlet servlet;
 	
@@ -367,7 +365,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         
         isCFCRequest = StringUtil.endsWithIgnoreCase(req.getServletPath(),".cfc");
         
-        this.req=new HoldingInputHTTPServletRequest(req);
+        this.req=new HTTPServletRequestWrap(req);
         this.rsp=rsp;
         this.servlet=servlet;
 
@@ -389,7 +387,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	 
         	 hasFamily=false;
          }
-         
+         request.initialize(this);
          
 		 if(config.mergeFormAndURL()) {
 			 url=urlForm;
@@ -1471,20 +1469,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return servlet.getServletContext();
 	}
 
-	/**
-	 * @see javax.servlet.jsp.PageContext#forward(java.lang.String)
-	 */
-	public void forward(String realPath) throws ServletException, IOException {
-		//RequestDispatcher requestDispatcher = getServletContext().getRequestDispatcher(realPath);
-        //requestDispatcher.forward(req,rsp);
-		PageSource ps = getRelativePageSource(realPath);
-		realPath=ps.getFullRealpath();
-		
-        
-        RequestDispatcher disp = getHttpServletRequest().getRequestDispatcher(realPath);
-        disp.forward(getHttpServletRequest(),getHttpServletResponse());
-        
-	}
 	
 	/**
 	 * @see railo.runtime.PageContext#handlePageException(railo.runtime.exp.PageException)
@@ -1753,20 +1737,16 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @see javax.servlet.jsp.PageContext#include(java.lang.String)
 	 */
 	public void include(String realPath) throws ServletException,IOException  {
-		ServletContext context = config.getServletContext();
-		HttpServletRequestMod dreq=new HttpServletRequestMod(this,realPath);
-		
-		ByteArrayOutputStream baos=new ByteArrayOutputStream();
-		HttpServletResponseDummy drsp=new HttpServletResponseDummy(baos);
-		
-		RequestDispatcher disp = context.getRequestDispatcher(realPath);
-        disp.include(dreq,drsp);
-        write(IOUtil.toString(baos.toByteArray(), drsp.getCharacterEncoding()));
-        
+		HTTPUtil.include(this, realPath);
 	}
 	
 
-
+	/**
+	 * @see javax.servlet.jsp.PageContext#forward(java.lang.String)
+	 */
+	public void forward(String realPath) throws ServletException, IOException {
+		HTTPUtil.forward(this, realPath);
+	}
 
 	/**
 	 * @see railo.runtime.PageContext#include(railo.runtime.PageSource)
@@ -2236,9 +2216,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	// init application
 	    RefBoolean isNew=new RefBooleanImpl(false);
 	    application=scopeContext.getApplicationScope(this,isNew);
-	    ApplicationListener listener = config.getApplicationListener();
+	    
+	    AppListenerSupport listener = (AppListenerSupport) config.getApplicationListener();
+	    // FUTURE ApplicationListener listener = config.getApplicationListener();
+	    
+	    
 	    if(isNew.toBooleanValue()) {
-	    	try {
+		    try {
 				if(!listener.onApplicationStart(this)) {
 					scopeContext.removeApplicationScope(this);
 					return false;
@@ -2250,8 +2234,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    }
 	    
 	    // init session
-	    isNew=new RefBooleanImpl(false);
-	    if(applicationContext.isSetSessionManagement()) {
+	    isNew.setValue(false);
+	    if(applicationContext.isSetSessionManagement() && listener.hasOnSessionStart(this)) {
 	    	session=scopeContext.getSessionScope(this,isNew);
 	    	if(isNew.toBooleanValue()) {
 		    	listener.onSessionStart(this);
@@ -2346,7 +2330,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#loadComponent(java.lang.String)
      */
     public railo.runtime.Component loadComponent(String compPath) throws PageException {
-        return ComponentLoader.loadComponentImpl(this,compPath);
+        return ComponentLoader.loadComponentImpl(this,compPath,true);
     }
 
 	/**

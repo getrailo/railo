@@ -24,6 +24,7 @@ import org.apache.lucene.store.FSDirectory;
 
 import railo.commons.collections.HashTable;
 import railo.commons.io.SystemUtil;
+import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.DirectoryResourceFilter;
@@ -64,6 +65,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 
 	private Resource collectionDir;
 	private boolean spellcheck;
+	private LogAndSource log;
     private static final SerializableObject token=new SerializableObject();
 	
 	
@@ -80,6 +82,9 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
         super(searchEngine, name, path, language, lastUpdate,created);
         this.spellcheck=spellcheck;
         collectionDir=getPath().getRealResource(StringUtil.toIdentityVariableName(getName()));
+        
+        log=searchEngine.getLogger();
+        
     }
     
     public LuceneSearchCollection(SearchEngineSupport searchEngine, String name, Resource path, String language, //int count, 
@@ -131,6 +136,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
      * @see railo.runtime.search.SearchCollectionSupport#_indexFile(java.lang.String, java.lang.String, railo.commons.io.res.Resource, java.lang.String)
      */
     protected IndexResult _indexFile(String id, String title, Resource res,String language) throws SearchException {
+    	info(res.getAbsolutePath());
         _checkLanguage(language);
         int before=getDocumentCount(id);
         IndexWriter writer=null;
@@ -152,11 +158,14 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
         return new IndexResultImpl(0,1,0);
     }
 
-    /**
+    
+
+	/**
      * @see railo.runtime.search.SearchCollectionSupport#_indexPath(java.lang.String, java.lang.String, railo.commons.io.res.Resource, java.lang.String[], boolean, java.lang.String)
      */
     protected IndexResult _indexPath(String id, String title, Resource dir,String[] extensions, boolean recurse, String language) throws SearchException {
-        _checkLanguage(language);
+    	info(dir.getAbsolutePath());
+    	_checkLanguage(language);
     	int doccount=0;
         IndexWriter writer=null;
         synchronized(token){
@@ -272,16 +281,18 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
      * @see railo.runtime.search.SearchCollection#_indexURL(java.lang.String, java.lang.String, java.net.URL, java.lang.String[], boolean, java.lang.String)
      */
     protected IndexResult _indexURL(String id, String title, URL url,String[] extensions, boolean recurse, String language)throws SearchException {
-    	return _indexURL(id, title, url, extensions, recurse, language,10000L);
+    	//timeout=ThreadLocalPageContext.getConfig().getRequestTimeout().getMillis();
+    	return _indexURL(id, title, url, extensions, recurse, language,50000L);
     }
     public IndexResult _indexURL(String id, String title, URL url,String[] extensions, boolean recurse, String language, long timeout)throws SearchException {
         _checkLanguage(language);
+        info(url.toExternalForm());
         int before=getDocumentCount(id);
         IndexWriter writer=null;
         synchronized(token){
 	        try {
 	            writer = _getWriter(id,true);
-	            new WebCrawler().parse(writer, url, extensions, recurse,timeout);
+	            new WebCrawler(log).parse(writer, url, extensions, recurse,timeout);
 	            
 	            writer.optimize();
 	        } 
@@ -634,6 +645,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
             } 
             else {
                 try {
+                	info(res.getAbsolutePath());
                     _index(writer,res,url);
                     doccount++;
                 } catch (Exception e) {}
@@ -899,6 +911,11 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
     	}
     	return max;
     }
+    
+    private void info(String doc) {
+		if(log==null) return;
+		log.info("Collection:"+getName(), "indexing "+doc);
+	}
 	
 	public class SpellDirFilter implements ResourceNameFilter {
 

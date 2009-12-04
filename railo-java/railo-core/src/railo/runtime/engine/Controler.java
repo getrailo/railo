@@ -1,5 +1,6 @@
 package railo.runtime.engine;
 
+import java.io.PrintWriter;
 import java.util.Map;
 
 import railo.commons.io.res.Resource;
@@ -115,6 +116,8 @@ public final class Controler extends Thread {
 					config.reloadTimeServerOffset();
 					checkOldClientFile(config);
 				}
+				
+				
 				if(doMinute) {
 					if(config==null) {
 						config = cfmlFactory.getConfig();
@@ -141,6 +144,7 @@ public final class Controler extends Thread {
 				
 					try{config.reloadTimeServerOffset();}catch(Throwable t){}
 					try{checkClientFileSize(config);}catch(Throwable t){}
+					try{checkTempDirectorySize(config);}catch(Throwable t){}
 					try{checkCacheFileSize(config);}catch(Throwable t){}
 				}
 			}
@@ -197,17 +201,24 @@ public final class Controler extends Thread {
 	}
 	
 	private void checkCacheFileSize(ConfigWeb config) {
-		checkSize(config.getCacheDir(),config.getCacheDirSize(),new ExtensionResourceFilter(".cache"));
+		checkSize(config,config.getCacheDir(),config.getCacheDirSize(),new ExtensionResourceFilter(".cache"));
 	}
 	
-	private void checkSize(Resource dir,long maxSize, ResourceFilter filter) {
+	private void checkTempDirectorySize(ConfigWeb config) {
+		checkSize(config,config.getTempDirectory(),1024*1024*100,null);
+	}
+	
+	private void checkSize(ConfigWeb config,Resource dir,long maxSize, ResourceFilter filter) {
 		if(!dir.exists()) return;
 		Resource res=null;
-		int count=ArrayUtil.size(dir.list(filter));
+		int count=ArrayUtil.size(filter==null?dir.list():dir.list(filter));
 		long size=ResourceUtil.getRealSize(dir,filter);
-		// TODO scheiss impl ruft immer wieder grﾚsse ab
+		PrintWriter out = config.getOutWriter();
+		SystemOut.printDate(out,"check size of directory ["+dir+"]");
+		SystemOut.printDate(out,"- current size	["+size+"]");
+		SystemOut.printDate(out,"- max size 	["+maxSize+"]");
 		while(count>100000 || size>maxSize) {
-			Resource[] files = dir.listResources(filter);
+			Resource[] files = filter==null?dir.listResources():dir.listResources(filter);
 			for(int i=0;i<files.length;i++) {
 				if(res==null || res.lastModified()>files[i].lastModified()) {
 					res=files[i];
@@ -219,6 +230,7 @@ public final class Controler extends Thread {
 			}
 			res=null;
 		}
+		
 	}
 
 	private void doCheckMappings(ConfigWeb config) {

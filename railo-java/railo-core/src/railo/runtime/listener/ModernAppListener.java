@@ -30,7 +30,8 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.util.ApplicationContextImpl;
 
-public class ModernAppListener implements ApplicationListener {
+public class ModernAppListener extends AppListenerSupport {
+
 
 
 	private static final Collection.Key NAME = KeyImpl.getInstance("name");
@@ -68,6 +69,7 @@ public class ModernAppListener implements ApplicationListener {
 	private Map apps=new HashMap();
 	protected int mode=MODE_CURRENT2ROOT;
 	private String type;
+	private Boolean hasOnSessionStart;
 
 
 	/**
@@ -177,7 +179,7 @@ public class ModernAppListener implements ApplicationListener {
 	 */
 	public void onSessionStart(PageContext pc) throws PageException {
 		ComponentImpl app = (ComponentImpl) apps.get(pc.getApplicationContext().getName());
-		if(app!=null && app.contains(pc,ON_SESSION_START)) {
+		if(hasOnSessionStart(pc,app)) {
 			call(app,pc, ON_SESSION_START, ArrayUtil.OBJECT_EMPTY);
 		}
 	}
@@ -225,12 +227,12 @@ public class ModernAppListener implements ApplicationListener {
 		
 		// PageContext
 		PageContextImpl pc = (PageContextImpl) factory.getRailoPageContext(factory.getServlet(), req, rsp, null, false, -1, false);
-		
 		// ApplicationContext
 		ApplicationContextImpl ap = new ApplicationContextImpl(factory.getConfig(),false);
 		initApplicationContext(pc, app);
 		ap.setName(applicationName);
-		
+		ap.setSetSessionManagement(true);
+		//if(!ap.hasName())ap.setName("Controler")
 		// Base
 		pc.setBase(app.getPage().getPageSource());
 		
@@ -402,5 +404,15 @@ public class ModernAppListener implements ApplicationListener {
 	 */
 	public void setType(String type) {
 		this.type = type;
+	}
+	
+	/**
+	 * @see railo.runtime.listener.AppListenerSupport#hasOnSessionStart(railo.runtime.PageContext)
+	 */
+	public boolean hasOnSessionStart(PageContext pc) {
+		return hasOnSessionStart(pc,(ComponentImpl) apps.get(pc.getApplicationContext().getName()));
+	}
+	private boolean hasOnSessionStart(PageContext pc,ComponentImpl app) {
+		return app.contains(pc,ON_SESSION_START);
 	}
 }

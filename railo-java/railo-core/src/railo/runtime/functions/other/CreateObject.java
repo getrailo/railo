@@ -18,27 +18,30 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.java.JavaObject;
+import railo.runtime.net.proxy.ProxyData;
+import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.net.rpc.client.RPCClient;
 import railo.runtime.op.Caster;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Array;
 import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 public final class CreateObject implements Function {
 	public static Object call(PageContext pc , String type, String className) throws PageException {
 		return call(pc,type,className,null,null);
 	}
-	public static Object call(PageContext pc , String type, String className, String context) throws PageException {
+	public static Object call(PageContext pc , String type, String className, Object context) throws PageException {
 		return call(pc,type,className,context,null);
 	}
-	public static Object call(PageContext pc , String type, String className, String context, String serverName) throws PageException {
+	public static Object call(PageContext pc , String type, String className, Object context, Object serverName) throws PageException {
 		type=StringUtil.toLowerCase(type);
 		
 		
 		// JAVA
 			if(type.equals("java")) {
 			    checkAccess(pc,type);
-				return doJava(pc, className,context,serverName);
+				return doJava(pc, className,Caster.toString(context),Caster.toString(serverName));
 			}
 		// COM
 			if(type.equals("com")) {
@@ -50,7 +53,28 @@ public final class CreateObject implements Function {
             }
         // Webservice
             if(type.equals("webservice") || type.equals("wsdl")) {
-                return doWebService(pc,className);
+            	String user=null;
+            	String pass=null;
+            	ProxyDataImpl proxy=null;
+            	if(context!=null){
+            		Struct args=(serverName!=null)?Caster.toStruct(serverName):Caster.toStruct(context);
+            		// basic security
+            		user=Caster.toString(args.get("username",null));
+            		pass=Caster.toString(args.get("password",null));
+            		
+            		// proxy
+            		String proxyServer=Caster.toString(args.get("proxyServer",null));
+            		String proxyPort=Caster.toString(args.get("proxyPort",null));
+            		String proxyUser=Caster.toString(args.get("proxyUser",null));
+            		if(StringUtil.isEmpty(proxyUser)) proxyUser=Caster.toString(args.get("proxyUsername",null));
+            		String proxyPassword=Caster.toString(args.get("proxyPassword",null));
+            		
+            		if(!StringUtil.isEmpty(proxyServer)){
+            			proxy=new ProxyDataImpl(proxyServer,Caster.toIntValue(proxyPort,-1),proxyUser,proxyPassword);
+            		}            		
+            		
+            	}
+                return doWebService(pc,className,user,pass,proxy);
             }
         // .net
             if(type.equals(".net") || type.equals("dotnet")) {
@@ -114,5 +138,10 @@ public final class CreateObject implements Function {
     public static Object doWebService(PageContext pc,String wsdlUrl) throws PageException {
     	// TODO CF8 impl. alle neuen attribute für wsdl
     	return new RPCClient(wsdlUrl);
+    } 
+    
+    public static Object doWebService(PageContext pc,String wsdlUrl,String username,String password, ProxyData proxy) throws PageException {
+    	// TODO CF8 impl. alle neuen attribute für wsdl
+    	return new RPCClient(wsdlUrl,username,password,proxy);
     } 
 }

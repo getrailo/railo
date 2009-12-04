@@ -19,7 +19,6 @@ public final class Break extends EvaluatorSupport {
 	 * @see railo.transformer.cfml.evaluator.EvaluatorSupport#evaluate(org.w3c.dom.Element, railo.transformer.library.tag.TagLibTag)
 	 */
 	public void evaluate(Tag tag,TagLibTag libTag) throws EvaluatorException { 
-		//print.ln("start"+tag);
 		String ns=libTag.getTagLib().getNameSpaceAndSeparator();
 		String loopName=ns+"loop";
 		String whileName=ns+"while";

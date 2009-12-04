@@ -10,7 +10,6 @@ import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.CacheEntryFilter;
 import railo.commons.io.cache.CacheKeyFilter;
 import railo.commons.io.cache.exp.CacheException;
-import railo.extension.io.cache.CacheUtil;
 import railo.runtime.type.Struct;
 
 public abstract class CacheSupport implements Cache {

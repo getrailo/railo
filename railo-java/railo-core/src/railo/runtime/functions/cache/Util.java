@@ -28,6 +28,7 @@ public class Util {
 	
 	public static Cache getDefault(Config config, int type,Cache defaultValue) throws IOException {
 		CacheConnection cc= ((ConfigImpl)config).getCacheDefaultConnection(type);
+		
 		if(cc==null) return defaultValue;
 		return cc.getInstance(config);
 	}
@@ -87,5 +88,22 @@ public class Util {
 		catch (InvocationTargetException e) {
 			throw e.getTargetException();
 		}
+	}
+
+	public static int toType(String type, int defaultValue) {
+		type=type.trim().toLowerCase();
+		if("object".equals(type)) return ConfigImpl.CACHE_DEFAULT_OBJECT;
+		if("query".equals(type)) return ConfigImpl.CACHE_DEFAULT_QUERY;
+		if("resource".equals(type)) return ConfigImpl.CACHE_DEFAULT_RESOURCE;
+		if("template".equals(type)) return ConfigImpl.CACHE_DEFAULT_TEMPLATE;
+		return defaultValue;
+	}
+
+	public static String toType(int type, String defaultValue) {
+		if(ConfigImpl.CACHE_DEFAULT_OBJECT==type) return "object";
+		if(ConfigImpl.CACHE_DEFAULT_QUERY==type) return "query";
+		if(ConfigImpl.CACHE_DEFAULT_RESOURCE==type) return "resource";
+		if(ConfigImpl.CACHE_DEFAULT_TEMPLATE==type) return "template";
+		return defaultValue;
 	}
 }

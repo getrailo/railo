@@ -358,7 +358,7 @@ public final class Reflector {
 	 * @return return Matching Method
      * @throws  
 	 */
-	public static MethodInstance getMethodInstanceEL(Class clazz, String methodName, Object[] args) {
+	public static MethodInstance getMethodInstanceEL(Class clazz, Collection.Key methodName, Object[] args) {
 	    args=cleanArgs(args);
 		
 		Method[] methods = mStorage.getMethods(clazz,methodName,args.length);//getDeclaredMethods(clazz);
@@ -418,7 +418,7 @@ public final class Reflector {
      */
     public static MethodInstance getMethodInstance(Class clazz, String methodName, Object[] args) 
         throws NoSuchMethodException {
-        MethodInstance mi=getMethodInstanceEL(clazz, methodName, args);
+        MethodInstance mi=getMethodInstanceEL(clazz, KeyImpl.init(methodName), args);
         if(mi!=null) return mi;
         throw new NoSuchMethodException("No matching Method for "+methodName+"("+getDspMethods(getClasses(args))+") found for "+
         		Caster.toTypeName(clazz));
@@ -545,7 +545,7 @@ public final class Reflector {
 		if(obj==null) {
 			throw new ExpressionException("can't call method ["+methodName+"] on object, object is null");
 		}
-		MethodInstance mi=getMethodInstanceEL(obj.getClass(), methodName, args);
+		MethodInstance mi=getMethodInstanceEL(obj.getClass(), KeyImpl.init(methodName), args);
 		if(mi==null)
 		    throw throwCall(obj,methodName,args);
 	    try {
@@ -601,7 +601,7 @@ public final class Reflector {
      */
     public static MethodInstance getGetter(Class clazz, String prop) throws PageException, NoSuchMethodException {
         String getterName = "get"+StringUtil.ucFirst(prop);
-        MethodInstance mi = getMethodInstanceEL(clazz,getterName,ArrayUtil.OBJECT_EMPTY);
+        MethodInstance mi = getMethodInstanceEL(clazz,KeyImpl.init(getterName),ArrayUtil.OBJECT_EMPTY);
         if(mi==null)
         	throw new ExpressionException("No matching property ["+prop+"] found in ["+Caster.toTypeName(clazz)+"]");
         Method m=mi.getMethod();
@@ -620,7 +620,7 @@ public final class Reflector {
      */
     public static MethodInstance getGetterEL(Class clazz, String prop) {
         prop="get"+StringUtil.ucFirst(prop);
-        MethodInstance mi = getMethodInstanceEL(clazz,prop,ArrayUtil.OBJECT_EMPTY);
+        MethodInstance mi = getMethodInstanceEL(clazz,KeyImpl.init(prop),ArrayUtil.OBJECT_EMPTY);
         if(mi==null) return null;
         if(mi.getMethod().getReturnType()==void.class) return null;
         return mi;
@@ -678,7 +678,7 @@ public final class Reflector {
      */
     public static MethodInstance getSetterEL(Object obj, String prop,Object value)  {
             prop="set"+StringUtil.ucFirst(prop);
-            MethodInstance mi = getMethodInstanceEL(obj.getClass(),prop,new Object[]{value});
+            MethodInstance mi = getMethodInstanceEL(obj.getClass(),KeyImpl.init(prop),new Object[]{value});
             if(mi==null) return null;
             Method m=mi.getMethod();
             

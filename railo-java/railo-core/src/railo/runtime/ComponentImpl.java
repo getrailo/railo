@@ -212,7 +212,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
         // extends
 	    if(!StringUtil.isEmpty(properties.extend)) {
-			base= ComponentLoader.loadComponentImpl(pageContext,properties.extend);
+			base= ComponentLoader.loadComponentImpl(pageContext,properties.extend,true);
 		}
 	    else { 
 	    	Page p=((ConfigWebImpl)pageContext.getConfig()).getBaseComponentPage(pageContext);

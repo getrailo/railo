@@ -8,7 +8,7 @@ import railo.runtime.PageSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 
-public final class ClassicAppListener implements ApplicationListener {
+public final class ClassicAppListener extends AppListenerSupport {
 
 	private int mode=MODE_CURRENT2ROOT;
 	private String type;

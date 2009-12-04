@@ -1,9 +1,15 @@
 package railo.commons.net;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
@@ -21,10 +27,16 @@ import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
+import railo.commons.io.IOUtil;
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
+import railo.runtime.PageSource;
+import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.HttpClientUtil;
+import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.List;
@@ -340,7 +352,49 @@ public final class HTTPUtil {
 		}
 	}
 
+	public static String optimizeRealPath(PageContext pc,String realPath) {
+		int index;
+		String requestURI=realPath,queryString=null;
+		if((index=realPath.indexOf('?'))!=-1){
+			requestURI=realPath.substring(0,index);
+			queryString=realPath.substring(index+1);
+		}
+		PageSource ps = pc.getRelativePageSource(requestURI);
+		requestURI=ps.getFullRealpath();
+		if(queryString!=null) return requestURI+"?"+queryString;
+		return requestURI;
+	}
+
+	public static void forward(PageContext pc,String realPath) throws ServletException, IOException {
+		realPath=HTTPUtil.optimizeRealPath(pc,realPath);
+		
+		try{
+        	RequestDispatcher disp = pc.getHttpServletRequest().getRequestDispatcher(realPath);
+        	//populateRequestAttributes();
+        	disp.forward(pc.getHttpServletRequest(),pc.getHttpServletResponse());
+		}
+        finally{
+        	ThreadLocalPageContext.register(pc);
+        }
+	}
 	
+	public static void include(PageContext pc,String realPath) throws ServletException,IOException  {
+		ServletContext context = ((ConfigWebImpl)pc.getConfig()).getServletContext();
+		HttpServletRequest dreq = pc.getHttpServletRequest();
+		realPath=optimizeRealPath(pc,realPath);
+		
+		ByteArrayOutputStream baos=new ByteArrayOutputStream();
+		HttpServletResponseDummy drsp=new HttpServletResponseDummy(baos);
+		
+		RequestDispatcher disp = context.getRequestDispatcher(realPath);
+        try{
+        	disp.include(dreq,drsp);
+        	pc.write(IOUtil.toString(baos.toByteArray(), drsp.getCharacterEncoding()));
+        }
+        finally{
+        	ThreadLocalPageContext.register(pc);
+        }
+	}
 	
 	
 }
