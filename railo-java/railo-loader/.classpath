@@ -62,7 +62,6 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/org.mortbay.jetty.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/PDFBox.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/postgresql.jar"/>
-	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/railo-loader.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/serializer.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/ss_css2.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/sun-activation.jar"/>
