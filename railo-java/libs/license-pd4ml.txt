@@ -1,0 +1,35 @@
+PD4ML SOFTWARE VOLUME LICENSE AGREEMENT
+
+
+LIMITED LICENSE GRANT
+
+This License applies to all versions of the PD4ML software and its accompanying files, data and materials (collectively "Software"). You should carefully read the following terms and conditions before using, installing, copying, or distributing this software. Unless you have a different license agreement signed by zefer.org, your use, installation, copying, or distribution of PD4ML indicates your acceptance of this agreement ("License").
+
+If you do not agree to all of the terms and conditions of this License, then do not use, install, copy, or distribute any copy of PD4ML with which this License is included.
+
+LICENSE TO USE. zefer.org grants you a non-exclusive and non-transferable license for the use of the accompanying software and documentation and any error corrections provided by zefer.org, by the following conditions:
+
+Licensed Copy of PD4ML may be used installed on an unlimited number of development workstations and/or bundled and distributed as integral part of your Programs.
+
+RESTRICTIONS. Software is copyrighted. Title to Software and all associated intellectual property rights are hereby retained by zefer.org. Unless enforcement is prohibited by applicable law, you may not modify, decompile, or reverse engineer Software. You acknowledge that Software is not designed, licensed or intended for use in the design, construction, operation or maintenance of any nuclear facility.
+
+In addition to these license terms set, zefer.org grants you a non-exclusive, non-transferable, limited license to reproduce and distribute the Software in binary code form only, provided that you:
+
+    * distribute the Software complete and unmodified and only bundled as integral part of your Programs,
+    * do not distribute additional software intended to replace any component(s) of the Software,
+    * do not remove or alter any proprietary legends or notices contained in the Software,
+    * only distribute the Software subject to a license agreement that protects zefer.org interests consistent with the terms contained in license. THIS EXPRESSLY INCLUDES THAT YOU MAY NOT DISTRIBUTE SOFTWARE WITH ADDITIONAL COMPONENTS AS A LIBRARY OR EQUIVALENT.
+
+ALL CONDITIONS MUST BE MET ALTOGETHER.
+
+SOFTWARE UPDATES. Upon licensing, zefer.org grants you non-exclusive, non-transferable right to incorporate updates of the Software. You are eligible for receiving such updates under the terms of this license during the complete Software life-time period.
+
+TERMINATION. This Agreement is effective until terminated. You may terminate this Agreement at any time by destroying all copies of Software. This Agreement will terminate immediately without notice from zefer.org if you fail to comply with any provision of this Agreement. Upon Termination, you must destroy all copies of Software.
+
+DISCLAIMER OF WARRANTY. THE SOFTWARE IS PROVIDED "AS IS," WITHOUT A WARRANTY OF ANY KIND.
+
+ALL EXPRESS OR IMPLIED REPRESENTATIONS AND WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE HEREBY EXCLUDED.
+
+LIMITATION OF LIABILITY. TO THE EXTENT NOT PROHIBITED BY LAW, IN NO EVENT WILL ZEFER.ORG BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES HOWEVER CAUSED AND REGARDLESS OF THEORY OF LIABILITY ARISING OUT OF THE USE OF, INABILITY TO USE OR DOWNLOADING OF THE SOFTWARE, EVEN IF ZEFER.ORG HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+IF THIS LIMITATION IS NOT ALLOWED BY YOUR RESPECTIVE LAW THEN CONTACT ZEFER.ORG TO CHECK IF THE LIMITATION CAN BE RELAXED IN YOUR CASE. THE RELAXATION CAN ONLY BE GIVEN BY WRITTEN CONSENT.
