@@ -282,6 +282,8 @@ public final class VariableUtilImpl implements VariableUtil {
             return ((HttpSession)coll).getAttribute(key.getString());
         }*/
         
+        
+        
         // Direct Object Access
 		if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
 			return Reflector.getProperty(coll,key.getString());
