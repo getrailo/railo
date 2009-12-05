@@ -279,6 +279,11 @@ public final class Caster {
         throw new CasterException(o,"boolean");
     }
     
+    /**
+     * tranlate a Boolean object to a boolean value
+     * @param b
+     * @return
+     */
     public static boolean toBooleanValue(Boolean b) {
         return b.booleanValue();
     }
