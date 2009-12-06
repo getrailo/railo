@@ -17,5 +17,4 @@ public class TimestampCast implements Cast{
 		if(ts==null) return null;
 		return new DateTimeImpl(ts.getTime(),false);
 	}
-
 }
