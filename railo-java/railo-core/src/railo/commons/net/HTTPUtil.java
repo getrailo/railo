@@ -27,10 +27,12 @@ import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -366,10 +368,11 @@ public final class HTTPUtil {
 	}
 
 	public static void forward(PageContext pc,String realPath) throws ServletException, IOException {
+		ServletContext context = pc.getServletContext();
 		realPath=HTTPUtil.optimizeRealPath(pc,realPath);
 		
 		try{
-        	RequestDispatcher disp = pc.getHttpServletRequest().getRequestDispatcher(realPath);
+        	RequestDispatcher disp = context.getRequestDispatcher(realPath);
         	//populateRequestAttributes();
         	disp.forward(pc.getHttpServletRequest(),pc.getHttpServletResponse());
 		}
@@ -378,9 +381,28 @@ public final class HTTPUtil {
         }
 	}
 	
+	/*public static void include(PageContext pc,String realPath) throws ServletException,IOException  {
+		HttpServletRequest req = pc.getHttpServletRequest();
+		HttpServletResponse rsp = pc.getHttpServletResponse();
+		realPath=optimizeRealPath(pc,realPath);
+		
+		RequestDispatcher disp = pc.getHttpServletRequest().getRequestDispatcher(realPath);
+        try{
+        	((PageContextImpl)pc).getRootOut().getServletOutputStream();
+        	print.out("include:"+realPath);
+        	disp.include(req,rsp);
+        }
+        finally{
+        	ThreadLocalPageContext.register(pc);
+        }
+	}*/
+	
+
+	
 	public static void include(PageContext pc,String realPath) throws ServletException,IOException  {
-		ServletContext context = ((ConfigWebImpl)pc.getConfig()).getServletContext();
-		HttpServletRequest dreq = pc.getHttpServletRequest();
+		ServletContext context = pc.getServletContext();
+		
+		HttpServletRequest req = pc.getHttpServletRequest();
 		realPath=optimizeRealPath(pc,realPath);
 		
 		ByteArrayOutputStream baos=new ByteArrayOutputStream();
@@ -388,7 +410,7 @@ public final class HTTPUtil {
 		
 		RequestDispatcher disp = context.getRequestDispatcher(realPath);
         try{
-        	disp.include(dreq,drsp);
+        	disp.include(req,drsp);
         	pc.write(IOUtil.toString(baos.toByteArray(), drsp.getCharacterEncoding()));
         }
         finally{
