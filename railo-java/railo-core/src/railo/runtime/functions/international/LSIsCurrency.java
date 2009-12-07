@@ -16,4 +16,12 @@ public final class LSIsCurrency implements Function {
 			return false;
 		}
 	}
+	public static boolean call(PageContext pc , String string,String strLocale) {
+		try {
+			LSParseCurrency.call(pc,string,strLocale);
+			return true;
+		} catch (PageException e) {
+			return false;
+		}
+	}
 }

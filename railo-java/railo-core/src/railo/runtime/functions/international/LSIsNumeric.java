@@ -16,4 +16,12 @@ public final class LSIsNumeric implements Function {
 			return false;
 		}
 	}
+	public static boolean call(PageContext pc , String string,String strLocale) {
+		try {
+			LSParseNumber.call(pc,string,strLocale);
+			return true;
+		} catch (PageException e) {
+			return false;
+		}
+	}
 }

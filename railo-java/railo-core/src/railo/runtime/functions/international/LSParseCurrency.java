@@ -11,6 +11,7 @@ import java.util.WeakHashMap;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.Caster;
 
 
@@ -18,9 +19,12 @@ public final class LSParseCurrency implements Function {
 	
 	private static WeakHashMap currFormatter=new WeakHashMap();
 	private static WeakHashMap numbFormatter=new WeakHashMap();
-	
+
 	public static String call(PageContext pc , String string) throws PageException {
 		return Caster.toString(toDoubleValue(pc.getLocale(),string));
+	}
+	public static String call(PageContext pc , String string,String strLocale) throws PageException {
+		return Caster.toString(toDoubleValue(LocaleFactory.getLocale(strLocale),string));
 	}
 	
 	public static synchronized double toDoubleValue(Locale locale,String str) throws PageException {
