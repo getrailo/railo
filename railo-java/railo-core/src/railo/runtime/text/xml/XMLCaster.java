@@ -11,6 +11,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Attr;
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -58,6 +59,12 @@ public final class XMLCaster {
 		if(o instanceof Text) return (Text)o;
 		else if(o instanceof CharacterData) return doc.createTextNode(((CharacterData)o).getData());
 		return doc.createTextNode(Caster.toString(o));
+	}
+	
+	public static Text toCDATASection(Document doc, Object o) throws PageException {
+		if(o instanceof CDATASection) return (CDATASection)o;
+		else if(o instanceof CharacterData) return doc.createCDATASection(((CharacterData)o).getData());
+		return doc.createCDATASection(Caster.toString(o));
 	}
 	
 	/**

@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;

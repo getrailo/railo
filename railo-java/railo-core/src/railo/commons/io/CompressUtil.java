@@ -499,6 +499,7 @@ public final class CompressUtil {
             IOUtil.closeEL(zos);
         }
     }
+    
     public static void compressZip( Resource[] sources, ZipOutputStream zos, ResourceFilter filter) throws IOException {
         compressZip("",sources, zos, filter);
     }

@@ -1,6 +1,9 @@
 package railo.runtime.tag;
 
+import java.io.IOException;
+
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
@@ -27,13 +30,20 @@ public final class Forward extends TagImpl {
      * @see javax.servlet.jsp.tagext.Tag#doStartTag()
     */
     public int doStartTag() throws PageException {
-        RequestDispatcher disp = pageContext. getHttpServletRequest().getRequestDispatcher(template);
+    	try {
+			pageContext.forward(template);
+		} 
+    	catch (Exception e) {
+            throw Caster.toPageException(e);
+		} 
+		
+        /*RequestDispatcher disp = pageContext. getHttpServletRequest().getRequestDispatcher(template);
         try {
             disp.forward(pageContext. getHttpServletRequest(),pageContext. getHttpServletResponse());
         } 
         catch (Exception e) {
             throw Caster.toPageException(e);
-        }
+        }*/
         return SKIP_BODY;
     }
 

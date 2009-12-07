@@ -1196,15 +1196,7 @@ public final class Page extends BodyBase {
 		ClassWriter cw = new ClassWriter(true);
 		ClassAdapter ca = new SourceLastModifiedClassAdapter(cw,lastModified);
 		cr.accept(ca, true);
-		/*
-		ClassWriter cw=new ClassWriter(barr,true);
-		
-        adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , LAST_MOD, null, null, cw);
-        adapter.push(lastModifed);
-        adapter.returnValue();
-        adapter.endMethod();
-        */
-        return cw.toByteArray();
+		return cw.toByteArray();
 	}
 	
 

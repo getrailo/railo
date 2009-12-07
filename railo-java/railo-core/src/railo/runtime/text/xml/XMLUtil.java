@@ -61,6 +61,7 @@ import railo.runtime.type.Struct;
 public final class XMLUtil {
     public static final Collection.Key XMLCOMMENT = KeyImpl.getInstance("xmlcomment");
     public static final Collection.Key XMLTEXT = KeyImpl.getInstance("xmltext");
+    public static final Collection.Key XMLCDATA = KeyImpl.getInstance("xmlcdata");
     public static final Collection.Key XMLCHILDREN = KeyImpl.getInstance("xmlchildren");
     public static final Collection.Key XMLNSURI = KeyImpl.getInstance("xmlnsuri");
     public static final Collection.Key XMLNSPREFIX = KeyImpl.getInstance("xmlnsprefix");
@@ -341,6 +342,11 @@ public final class XMLUtil {
 			else if(k.equals(XMLTEXT)) {
 				removeChilds(XMLCaster.toRawNode(node),Node.TEXT_NODE,false);
 				node.appendChild(XMLCaster.toRawNode(XMLCaster.toText(doc,value)));
+			}
+		// CData	
+			else if(k.equals(XMLCDATA)) {
+				removeChilds(XMLCaster.toRawNode(node),Node.CDATA_SECTION_NODE,false);
+				node.appendChild(XMLCaster.toRawNode(XMLCaster.toCDATASection(doc,value)));
 			}
 		// Children	
 			else if(k.equals(XMLCHILDREN)) {

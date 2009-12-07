@@ -25,6 +25,12 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 
 	public void forward(ServletRequest req, ServletResponse rsp)throws ServletException, IOException {
 		PageContext pc = ThreadLocalPageContext.get();
+		if(pc==null){
+			this.req.getOriginalRequestDispatcher(realPath).forward(req, rsp);
+			return;
+		}
+		
+		
 		if(pc!=null)realPath=HTTPUtil.optimizeRealPath(pc,realPath);
 		
 		try{
@@ -35,6 +41,22 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 	        if(pc!=null)ThreadLocalPageContext.register(pc);
 		}
 	}
+
+	/*public void include(ServletRequest req, ServletResponse rsp)throws ServletException, IOException {
+		PageContext pc = ThreadLocalPageContext.get();
+		if(pc==null){
+			this.req.getOriginalRequestDispatcher(realPath).include(req, rsp);
+			return;
+		}
+		try{
+			realPath=HTTPUtil.optimizeRealPath(pc,realPath);
+			RequestDispatcher disp = this.req.getOriginalRequestDispatcher(realPath);
+	        disp.include(req,rsp);
+		}
+		finally{
+	        ThreadLocalPageContext.register(pc);
+		}
+	}*/
 
 	public void include(ServletRequest req, ServletResponse rsp)throws ServletException, IOException {
 		PageContext pc = ThreadLocalPageContext.get();
@@ -47,7 +69,7 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 			ByteArrayOutputStream baos=new ByteArrayOutputStream();
 			HttpServletResponseDummy drsp=new HttpServletResponseDummy(baos);
 			
-			RequestDispatcher disp = this.req.getOriginalRequestDispatcher(realPath);
+			RequestDispatcher disp = pc.getServletContext().getRequestDispatcher(realPath);
 	        disp.include(req,drsp);
 	        pc.write(IOUtil.toString(baos.toByteArray(), drsp.getCharacterEncoding()));
 		}
