@@ -18,7 +18,6 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
 
 public final class LSDateFormat implements Function {
-	
 	private static Calendar calendar;
 	public static String call(PageContext pc , Object object) throws PageException {
 		return _call(pc, object, "medium", pc.getLocale(),pc.getTimeZone());
