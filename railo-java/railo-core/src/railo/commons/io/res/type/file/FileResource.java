@@ -23,7 +23,6 @@ import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.util.ResourceOutputStream;
 import railo.commons.io.res.util.ResourceUtil;
 
-
 /**
  * Implementation og Resource for the local filesystem (java.io.File)
  */

@@ -20,7 +20,6 @@ import railo.runtime.op.Caster;
 
 public final class Compress {
 	
-
 	public static final int FORMAT_ZIP = CompressUtil.FORMAT_ZIP;
 	public static final int FORMAT_TAR = CompressUtil.FORMAT_TAR;
 	public static final int FORMAT_TGZ = CompressUtil.FORMAT_TGZ;

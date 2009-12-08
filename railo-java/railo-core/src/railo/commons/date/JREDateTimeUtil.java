@@ -10,7 +10,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.dt.DateTime;
 
 public class JREDateTimeUtil extends DateTimeUtil {
-
 	
 	private Calendar year;
 	private Calendar month;

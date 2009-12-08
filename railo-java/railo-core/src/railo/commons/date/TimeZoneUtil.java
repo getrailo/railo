@@ -20,7 +20,6 @@ public class TimeZoneUtil {
 		IDS.put("jvm", TimeZone.getDefault());
 		IDS.put("default", TimeZone.getDefault());
 		IDS.put("", TimeZone.getDefault());
-		//IDS.put(TimeZoneConstants.CEST.getID().toLowerCase(), TimeZoneConstants.CEST);
 	}
 	
 	

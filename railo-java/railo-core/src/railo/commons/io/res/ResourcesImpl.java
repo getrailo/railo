@@ -22,7 +22,7 @@ public final class ResourcesImpl implements Resources {
 		provider.setResources(this);
 		this.defaultResource=provider;
 	}
-	
+
 	/**
 	 * adds a additional resource to System
 	 * @param provider

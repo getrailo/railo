@@ -1,7 +1,5 @@
 package org.opencfml.cfx;
 
-
-
 /**
  * Alternative Implementation of Jeremy Allaire's Request Interface
  */

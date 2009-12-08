@@ -22,13 +22,10 @@ public class LogResource implements Log {
      */
     public static final int MAX_FILES=10;
 
-    
-
     private long maxFileSize;
     private int maxFiles;
     private int count=0;
     private int logLevel;
-
 	private String charset;
     
     

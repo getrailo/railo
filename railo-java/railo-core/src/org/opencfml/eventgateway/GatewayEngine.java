@@ -20,13 +20,6 @@ public interface GatewayEngine {
 	 */
 	public boolean invokeListener(Gateway gateway,String method,Map data);
 	
-	
-	/**
-	 * @param cfcPath
-	 * @return
-	 */
-	//public String toRequestURI(String cfcPath);
-	
 	/**
 	 * logs message with defined logger for gateways
 	 * @param gateway

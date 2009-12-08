@@ -8,8 +8,7 @@ import java.io.InputStream;
 /**
  * 
  */
-public final class MD5
-{
+public final class MD5	{
     /**
      * return md5 from string as string
      * @param str plain string to get md5 from

@@ -13,8 +13,7 @@ public class JodaDateTimeUtil extends DateTimeUtil {
 	public static Map zones=new HashMap();
 	public static JREDateTimeUtil jreUtil=new JREDateTimeUtil();
 	
-	JodaDateTimeUtil() {
-		
+	JodaDateTimeUtil() {	
 	}
 	
 	long _toTime(TimeZone tz, int year, int month, int day, int hour,int minute, int second, int milliSecond) {

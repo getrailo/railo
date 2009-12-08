@@ -27,7 +27,6 @@ import railo.runtime.type.List;
 
 public final class ResourceUtil {
 	
-	
 	/**
      * Field <code>FILE_SEPERATOR</code>
      */

@@ -4,7 +4,6 @@ import java.util.TimeZone;
 
 public final class TimeZoneConstants {
 	
-	
 	public static final TimeZone ETC_GMT_PLUS_12 = TimeZone.getTimeZone("Etc/GMT+12");
 	public static final TimeZone ETC_GMT_PLUS_11 = TimeZone.getTimeZone("Etc/GMT+11");
 	public static final TimeZone MIT = TimeZone.getTimeZone("MIT");

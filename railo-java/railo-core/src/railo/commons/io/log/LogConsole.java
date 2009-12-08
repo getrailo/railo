@@ -17,7 +17,7 @@ public final class LogConsole implements Log {
         new LogConsole(Log.LEVEL_ERROR),
         new LogConsole(Log.LEVEL_FATAL)
     };
-    
+
     private int logLevel;
 
 	private PrintWriter writer;

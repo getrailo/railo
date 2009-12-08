@@ -19,7 +19,7 @@ import railo.runtime.type.dt.DateTimeImpl;
  * TODO impl
  */
 public final class LogDataSource implements Log {
-
+ 
     private static final SQL SELECT = new SQLImpl("select for checking if table exists");//TODO
     private static final String INSERT = "insert into cflog(application,message,created) values(?,?,?)";//TODO
     private static final SQL CREATE = new SQLImpl("create table");//TODO

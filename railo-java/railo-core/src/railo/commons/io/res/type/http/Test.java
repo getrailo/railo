@@ -17,7 +17,6 @@ public class Test {
 		aprint.out(res.isFile());
 		aprint.out("4");
 		aprint.out(IOUtil.toString(res,null).length());
-		//print.out(IOUtil.toString(res,null));
 		
 	}
 }

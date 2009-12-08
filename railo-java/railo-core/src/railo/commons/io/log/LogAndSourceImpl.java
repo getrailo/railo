@@ -16,7 +16,7 @@ public final class LogAndSourceImpl implements LogAndSource {
         this.log=log;
         this.source=source;
     }
-    
+ 
     /**
      * @see railo.commons.io.log.Log#log(int, java.lang.String, java.lang.String)
      */

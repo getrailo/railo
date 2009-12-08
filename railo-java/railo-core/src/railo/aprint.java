@@ -24,6 +24,7 @@ public class aprint {
 	public static void dumpStack() {
 		Thread.dumpStack();
 	}
+	
 	public static void dumpStack(String label) {
 		err(label);
 		Thread.dumpStack();

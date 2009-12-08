@@ -26,7 +26,7 @@ public final class FTPResourceProvider implements ResourceProvider,Sizeable {
 	private int socketTimeout=-1;
 	private int lockTimeout=20000;
 	private int cache=20000;
-	
+
 	private FTPResourceClientCloser closer=null;
 	private final ResourceLockImpl lock=new ResourceLockImpl(lockTimeout,true);
 	private Map arguments;

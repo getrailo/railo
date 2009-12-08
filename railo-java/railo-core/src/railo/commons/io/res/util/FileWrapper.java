@@ -18,7 +18,7 @@ import railo.commons.io.res.filter.ResourceNameFilter;
 public final class FileWrapper extends File implements Resource {
 
 	private final Resource res;
-	
+
 	/**
 	 * Constructor of the class
 	 * @param res

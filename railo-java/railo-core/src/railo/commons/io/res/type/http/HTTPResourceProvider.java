@@ -21,7 +21,6 @@ public class HTTPResourceProvider implements ResourceProvider {
 	private int socketTimeout=20000;
 	private Map arguments;
 
-
 	public String getScheme() {
 		return scheme;
 	}

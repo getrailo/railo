@@ -20,7 +20,6 @@ public final class LogUtil {
 
     private static final String LINE_SEPARATOR=System.getProperty("line.separator");
 
-    // 
     /**
      * return log header line
      * @return header

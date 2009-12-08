@@ -18,7 +18,7 @@ public interface Gateway {
      * @param config the configuration as map
      */
     public void init(GatewayEngine engine,String id, String cfcPath,Map config) throws GatewayException;
-    
+
     /**
      * returns the id of the gateway
      * @return the id of the gateway

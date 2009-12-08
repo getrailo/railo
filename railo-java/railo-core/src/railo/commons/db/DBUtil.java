@@ -13,7 +13,7 @@ import railo.runtime.db.SQL;
  * Utility for db
  */
 public final class DBUtil {
-	
+
 	// TODO impl. this class, not used at the moment
 	/**
 	 * returns label matching className

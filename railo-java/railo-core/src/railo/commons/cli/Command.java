@@ -10,7 +10,6 @@ import railo.commons.lang.StringUtil;
 
 public class Command {
     
-
     public static Process createProcess(String cmdline,boolean translate) throws IOException {
     	if(!translate)return Runtime.getRuntime().exec(cmdline);
     	return Runtime.getRuntime().exec(toArray(cmdline));

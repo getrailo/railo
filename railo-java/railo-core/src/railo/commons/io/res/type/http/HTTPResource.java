@@ -21,7 +21,6 @@ import railo.runtime.op.Caster;
 
 public class HTTPResource extends ReadOnlyResourceSupport {
 	
-	
 	private final HTTPResourceProvider provider;
 	private final HTTPConnectionData data;
 	private final String path;

@@ -86,7 +86,6 @@ public class BeanDeserializerFactory extends BaseDeserializerFactory {
         if (deserClass == EnumDeserializer.class) {
            return super.getGeneralPurpose(mechanismType);
         }
-
         return new BeanDeserializer(javaType, xmlType, typeDesc, propertyMap);
     }
 

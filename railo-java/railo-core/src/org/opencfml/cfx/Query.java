@@ -2,9 +2,6 @@ package org.opencfml.cfx;
 
 import java.sql.ResultSet;
 
-
-
-
 /**
  * Alternative Implementation of Jeremy Allaire's Query Interface
  */

@@ -14,7 +14,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
 
-
 /**
  * Resource Provider for ram resource
  */

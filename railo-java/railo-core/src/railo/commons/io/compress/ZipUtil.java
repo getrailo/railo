@@ -18,7 +18,6 @@ public final class ZipUtil {
 				catch (InterruptedException e) {}
 				return;
 			}
-			
 			CompressUtil.extract(CompressUtil.FORMAT_ZIP, zip, dir);
 		}
 	}

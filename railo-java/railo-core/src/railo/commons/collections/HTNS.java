@@ -168,7 +168,7 @@ public final class HTNS extends Dictionary implements Map, Cloneable,
      * and load factor, which is <tt>0.75</tt>. 
      */
     public HTNS() {
-    this(11, 0.75f);
+    	this(11, 0.75f);
     }
 
     /**
