@@ -39,7 +39,6 @@ public final class OldSchedulerImpl implements Scheduler {
     private long nextExecutionTime;
     private long future;
     
-    //private File schedulerDir;
     private Resource schedulerFile;
     private Document doc;
     private LogAndSource log;

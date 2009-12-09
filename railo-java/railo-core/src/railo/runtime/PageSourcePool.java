@@ -27,8 +27,7 @@ public final class PageSourcePool implements Dumpable {
 	private long timeout;
 	//max size of the pool cache
 	private int maxSize;
-	
-	
+		
 	/**
 	 * constructor of the class
 	 */

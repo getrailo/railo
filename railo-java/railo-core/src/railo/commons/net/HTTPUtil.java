@@ -10,6 +10,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
@@ -36,9 +37,13 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageServletException;
 import railo.runtime.net.http.HttpClientUtil;
 import railo.runtime.net.http.HttpServletResponseDummy;
+import railo.runtime.net.http.HttpServletResponseWrap;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.List;
@@ -373,6 +378,9 @@ public final class HTTPUtil {
 		
 		try{
         	RequestDispatcher disp = context.getRequestDispatcher(realPath);
+        	if(disp==null)
+    			throw new PageServletException(new ApplicationException("Page "+realPath+" not found"));
+            
         	//populateRequestAttributes();
         	disp.forward(pc.getHttpServletRequest(),pc.getHttpServletResponse());
 		}
@@ -406,11 +414,14 @@ public final class HTTPUtil {
 		realPath=optimizeRealPath(pc,realPath);
 		
 		ByteArrayOutputStream baos=new ByteArrayOutputStream();
-		HttpServletResponseDummy drsp=new HttpServletResponseDummy(baos);
+		HttpServletResponseWrap drsp=new HttpServletResponseWrap(pc.getHttpServletResponse(),baos);
 		
-		RequestDispatcher disp = context.getRequestDispatcher(realPath);
-        try{
+		try{
+        	RequestDispatcher disp = context.getRequestDispatcher(realPath);
+        	if(disp==null)
+        		throw new PageServletException(new ApplicationException("Page "+realPath+" not found"));
         	disp.include(req,drsp);
+        	if(!drsp.isCommitted())drsp.flushBuffer();
         	pc.write(IOUtil.toString(baos.toByteArray(), drsp.getCharacterEncoding()));
         }
         finally{

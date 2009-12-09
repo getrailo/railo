@@ -65,14 +65,6 @@ public final class LSParseNumber implements Function {
 		return sb.toString();
 	}
 
-	public static void main(String[] args) throws PageException {
-		//print.out(toDoubleValue(Locale.GERMAN, "1,3"));
-		print.out(toDoubleValue(Locale.GERMAN, "10 10"));
-		print.out(toDoubleValue(Locale.GERMAN, "10+10"));
-		print.out(toDoubleValue(Locale.GERMAN, "1,3susi"));
-		print.out(toDoubleValue(Locale.GERMAN, "1,3susi"));
-		print.out(toDoubleValue(Locale.GERMAN, "susi"));
-	}
 	
 	
 }

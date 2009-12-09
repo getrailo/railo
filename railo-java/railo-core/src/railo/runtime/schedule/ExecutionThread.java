@@ -22,7 +22,7 @@ import railo.runtime.net.http.HttpClientUtil;
 import railo.runtime.util.URLResolver;
 
 class ExecutionThread extends Thread {
-	
+
 	private Config config;
 	private LogAndSource log;
 	private ScheduleTask task;

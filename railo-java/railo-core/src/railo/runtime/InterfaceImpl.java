@@ -26,7 +26,7 @@ import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
 
 /**
- * %**%
+ * 
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
 public class InterfaceImpl implements Dumpable {

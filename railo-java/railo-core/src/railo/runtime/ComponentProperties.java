@@ -11,7 +11,6 @@ import railo.runtime.type.Struct;
 
 public class ComponentProperties implements Serializable {
 	
-
 	private static final Collection.Key WSDL_FILE = KeyImpl.getInstance("wsdlfile");
 	final String dspName;
 	final String extend;

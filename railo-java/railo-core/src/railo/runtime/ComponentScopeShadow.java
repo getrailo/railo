@@ -24,12 +24,9 @@ import railo.runtime.type.util.StructSupport;
 
 public class ComponentScopeShadow extends StructSupport implements ComponentScope {
 
-	
 	private ComponentImpl component;
     private static final int access=Component.ACCESS_PRIVATE;
     private Map shadow=newMap();
-    
-
 
 	public static Map newMap() {
 		return new HashTableNotSync();//asx

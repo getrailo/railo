@@ -23,7 +23,7 @@ import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.op.Caster;
 
-/**
+/**  
  * Mapping class
  */
 public final class MappingImpl implements Mapping {

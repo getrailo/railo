@@ -15,8 +15,8 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 
-public final class ComponentWrap extends StructSupport implements Component,Objects {
-    
+public final class ComponentWrap extends StructSupport implements Component, Objects {
+   
     private int access;
     private ComponentImpl component;
 

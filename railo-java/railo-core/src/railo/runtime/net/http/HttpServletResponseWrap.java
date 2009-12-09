@@ -185,7 +185,6 @@ public final class HttpServletResponseWrap extends HttpServletResponseWrapper im
 	 * @see javax.servlet.ServletResponse#getOutputStream()
 	 */
 	public ServletOutputStream getOutputStream() throws IOException {
-		print.dumpStack();
 		if(outInit) throw new IOException("output already initallised");
 		outInit=true;
 		return outputStream=new ServletOutputStreamDummy(out);
@@ -199,7 +198,6 @@ public final class HttpServletResponseWrap extends HttpServletResponseWrapper im
 	 * @see javax.servlet.ServletResponse#getWriter()
 	 */
 	public PrintWriter getWriter() throws IOException {
-		print.dumpStack();
 		if(outInit) throw new IOException("output already initallised");
 		outInit=true;
 		return writer= new PrintWriter(out);
@@ -240,6 +238,8 @@ public final class HttpServletResponseWrap extends HttpServletResponseWrapper im
 	 * @see javax.servlet.ServletResponse#flushBuffer()
 	 */
 	public void flushBuffer() throws IOException {
+		if(writer!=null)writer.flush();
+		else if(outputStream!=null)outputStream.flush();
 		commited = true;
 	}
 	/**

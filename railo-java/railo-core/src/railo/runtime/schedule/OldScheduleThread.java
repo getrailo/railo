@@ -6,7 +6,7 @@ import railo.commons.io.SystemUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.config.ConfigWeb;
-
+ 
 public class OldScheduleThread extends Thread {
 	
 	private RefBoolean run;

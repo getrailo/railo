@@ -7,6 +7,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.io.IOUtil;
 import railo.commons.net.HTTPUtil;
@@ -67,7 +68,7 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 		try{
 			realPath=HTTPUtil.optimizeRealPath(pc,realPath);
 			ByteArrayOutputStream baos=new ByteArrayOutputStream();
-			HttpServletResponseDummy drsp=new HttpServletResponseDummy(baos);
+			HttpServletResponse drsp=new HttpServletResponseWrap(pc.getHttpServletResponse(),baos);
 			
 			RequestDispatcher disp = pc.getServletContext().getRequestDispatcher(realPath);
 	        disp.include(req,drsp);

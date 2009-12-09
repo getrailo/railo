@@ -9,6 +9,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 
 public class MethodSL implements Method {
+
 	private ComponentImpl component;
 	private UDF udf;
 

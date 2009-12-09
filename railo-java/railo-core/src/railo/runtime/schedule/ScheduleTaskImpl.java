@@ -20,7 +20,6 @@ import railo.runtime.type.dt.Time;
 public final class ScheduleTaskImpl implements ScheduleTask {
     
 	public static int INTERVAL_EVEREY=-1;
-	
     private String task;
     private short operation = OPERATION_HTTP_REQUEST;
     private Resource file;

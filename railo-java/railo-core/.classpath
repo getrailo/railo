@@ -88,5 +88,6 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-lucene-similarity.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/fonts.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/joda-time.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/libs/railo-extension-example-tld-1-0-0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -25,8 +25,6 @@ import railo.runtime.op.Caster;
 public final class SchedulerImpl implements Scheduler {
 
     private ScheduleTaskImpl[] tasks;
-    
-    //private File schedulerDir;
     private Resource schedulerFile;
     private Document doc;
     private LogAndSource log;
