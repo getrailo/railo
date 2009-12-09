@@ -189,14 +189,22 @@ replaced with encoding output
 	<cfelse>
 		<b>#regional.timeserver#</b>
 	</cfif>
-	<br />
+	</td>
+</tr>
+<tr>
+	<td colspan="2">
 	<span class="comment">
 		#stText.Overview.ServerTime#
+		#stText.Overview.DateTime#
 		#dateFormat(nowServer(),"mm/dd/yyyy")#
 		#timeFormat(nowServer(),"HH:mm:ss")#<br>
-		Railo time (mm/dd/yyyy HH:mm:ss): 
+        
+		#stText.Overview.DateTime#
 		#dateFormat(now(),"mm/dd/yyyy")#
 		#timeFormat(now(),"HH:mm:ss")#<br>
+        
+        
+        
 	</span>
 	</td>
 </tr>

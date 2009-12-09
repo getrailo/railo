@@ -80,6 +80,7 @@
 <cfset stText.Overview.Forum="Forum">
 <cfset stText.Overview.Mailinglist_de="Mailinglist (german)">
 <cfset stText.Overview.Mailinglist_en="Mailinglist (english)">
+<cfset stText.Overview.Professional="Professional Support">
 <cfset stText.Overview.issueTracker="Issue Tracker">
 <cfset stText.Overview.blog="Blog">
 

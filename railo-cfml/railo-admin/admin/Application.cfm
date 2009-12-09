@@ -1,0 +1,10 @@
+<cfapplication 
+	name="railo_context" 
+    clientmanagement="no" 
+    clientstorage="file" 
+    scriptprotect="none" 
+    sessionmanagement="yes"
+    sessiontimeout="#createTimeSpan(0,0,30,0)#"
+    setclientcookies="yes" 
+    setdomaincookies="no" 
+    applicationtimeout="#createTimeSpan(1,0,0,0)#">

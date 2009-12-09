@@ -23,18 +23,21 @@
 <cfset stText.Schedule.StartTime           = "Startzeit">
 <cfset stText.Schedule.Port                = "Port">
 <cfset stText.Schedule.PortDescription     = "Port der aufzurufenden URL (HTTP Standard: 80)">
-<cfset stText.Schedule.Timeout             = "Timeout">
+<cfset stText.Schedule.Timeout             = "Timeout (in Sekunden)">
 <cfset stText.Schedule.TimeoutDescription  = "Timeout in Sekunden. Definiert wie lange der Task auf eine Antwort von der aufgerufenen URL warten soll.">
 <cfset stText.Schedule.Username            = "Username">
-<cfset stText.Schedule.UserNameDescription = "Username, um auf die geschützte URL zuzugreifen.">
+<cfset stText.Schedule.UserNameDescription = "Username, um auf eine geschützte URL zuzugreifen.">
 <cfset stText.Schedule.Password            = "Passwort">
-<cfset stText.Schedule.PasswordDescription = "Passwort, um auf die geschützte URL zuzugreifen.">
+<cfset stText.Schedule.PasswordDescription = "Passwort, um auf eine geschützte URL zuzugreifen.">
 <cfset stText.Schedule.Proxy               = "Proxy Einstellungen">
+<cfset stText.Schedule.ProxyDesc           = "Wenn zwischen dem Railo Server und der aufzurufenden URL ein Proxy liegt, können sie hier dessen Einstelllungen definieren.">
 <cfset stText.Schedule.Server              = "Server">
-<cfset stText.Schedule.ProxyPort           = "Port des Proxys">
-<cfset stText.Schedule.ProxyUserName       = "Username, um auf den geschützten Proxy zuzugreifen.">
-<cfset stText.Schedule.ProxyPassword       = "Passwort, um auf den geschützten Proxy zuzugreifen.">
-<cfset stText.Schedule.Output              = "Ausgabe">
+<cfset stText.Schedule.ProxyServerDesc     = "Die Adresse des Proxy Servers (Beispiel: my.proxy.com)">
+<cfset stText.Schedule.ProxyPort           = "Port des Proxy Server">
+<cfset stText.Schedule.ProxyUserName       = "Username, um auf einen geschützten Proxy zuzugreifen.">
+<cfset stText.Schedule.ProxyPassword       = "Passwort, um auf einen geschützten Proxy zuzugreifen.">
+<cfset stText.Schedule.Output              = "Logging">
+<cfset stText.Schedule.OutputDesc          = "Mit den folgenden Einstellungen können Sie defineren ob Railo die generierte Ausgabe speichern soll und wo sie gespeichert werden soll.">
 <cfset stText.Schedule.Publish             = "Speichern">
 <cfset stText.Schedule.StoreResponse       = "Legt fest, ob die Ausgabe in einer Datei gespeichert werden soll oder nicht.">
 <cfset stText.Schedule.File                = "Datei">
@@ -52,3 +55,29 @@
 <cfset stText.Schedule.paused="Pausiert">
 <cfset stText.Schedule.pause="pause">
 <cfset stText.Schedule.resume="pause beenden">
+
+
+
+
+<cfset stText.Schedule.ExecutionDescOnce       = "Dieser Task wird nur einmal zu einer bestimmten Zeit ausgeführt.">
+<cfset stText.Schedule.ExecutionDescDaily       = "Dieser Task wird täglich ausgeführt.">
+<cfset stText.Schedule.ExecutionDescWeekly      = "Dieser Task wird wöchentlich ausgeführt.">
+<cfset stText.Schedule.ExecutionDescMonthly       = "Dieser Task wird monatlich ausgeführt.">
+<cfset stText.Schedule.ExecutionDescEvery       = "Dieser Task wird in einem bestimmten intervall ausgeführt.">
+
+
+<cfset stText.Schedule.ExecuteAtDesc           = "Definert Tag und Zeit wann der Task ausgeführt werden soll.">
+<cfset stText.Schedule.StartsAtDesc           = "Definert den Tag an welchem der Task zu ersten mal ausgeführt werden soll.">
+<cfset stText.Schedule.EndsAtDescDaily           = "Definert den Tag an welchem der Task zum letzten mal ausgeführt werden soll.">
+<cfset stText.Schedule.EndsAtDescMonthly           = "Definert den Tag bis zu welchem der Task ausgeführt werden soll.">
+<cfset stText.Schedule.EndsAtDescWeekly           = "Definert den Tag bis zu welchem der Task ausgeführt werden soll.">
+
+<cfset stText.Schedule.ExecutionTimeDescDaily       = "Definert die Zeit bei welcher der Task täglich ausgeführt werden soll.">
+<cfset stText.Schedule.ExecutionTimeDescMonthly       = "Definert die Zeit bei welcher der Task monatlich ausgeführt werden soll.">
+<cfset stText.Schedule.ExecutionTimeDescWeekly       = "Definert die Zeit bei welcher der Task wöchentlich ausgeführt werden soll.">
+<cfset stText.Schedule.pauseDesc="Dieses setting stoppt die Ausführung des Task">
+
+<cfset stText.Schedule.StartDateDesc=stText.Schedule.StartsAtDesc>
+<cfset stText.Schedule.StartTimeDesc="Definert die Zeit bei welcher Railo die tägliche Ausführung beginnt.">
+<cfset stText.Schedule.endDateDesc="Definiert den Tag, bis zu welchem der Task ausgeführt werden soll.">
+<cfset stText.Schedule.endTimeDesc="Definert die Zeit bei welcher Railo die tägliche Ausführung stoppt.">

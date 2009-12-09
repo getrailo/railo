@@ -236,9 +236,10 @@ Error Output --->
             	<td><b>#stText.Settings.cache.default#</b><br />
                 <select name="default">
                 	<option value="">------</option>
-                	<option <cfif connection.default EQ "object">selected="selected"</cfif> value="object">#stText.Settings.cache.defaultTypeObject#</option>
-                	<option <cfif connection.default EQ "template">selected="selected"</cfif> value="template">#stText.Settings.cache.defaultTypeTemplate#</option>
-                </select><br />
+                    <cfloop index="type" list="object,template,query,resource">
+                	<option <cfif connection.default EQ type>selected="selected"</cfif> value="#type#">#stText.Settings.cache['defaultType'& type]#</option>
+                    </cfloop>
+                	</select><br />
                 <span class="comment">#stText.Settings.cache.defaultDesc#</span></td>
             </tr>
             </table>

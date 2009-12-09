@@ -1,4 +1,12 @@
 
+<cffunction name="deleteExtension" returntype="void">
+	<cfargument name="file">
+    <cftry>
+    	<cffile action="delete" file="#file#">
+    	<cfcatch></cfcatch>
+    </cftry>
+</cffunction>
+
 <cftry>
 
 	<!---- load ExtensionManager ---->
@@ -30,6 +38,7 @@
     <cfset zip="zip://"&destFile&"!/">
     <cfset configFile=zip&"config.xml">
     <cfif not FileExists(configFile)>
+        <cfset deleteExtension(destFile)>
         <cfthrow message="missing config file in extension package">
     </cfif>
     
@@ -42,6 +51,7 @@
 
 	<cfcatch>
     	<cfset display=false>
+        <cfset deleteExtension(destFile)>
     	<cfset printError(cfcatch,true)>
     </cfcatch>
 </cftry>
@@ -83,6 +93,7 @@
 
 	<cfcatch>
     	<cfset display=false>
+        <cfset deleteExtension(destFile)>
     	<cfset printError(cfcatch,true)>
     </cfcatch>
 </cftry>

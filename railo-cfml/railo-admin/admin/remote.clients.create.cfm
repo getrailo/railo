@@ -57,7 +57,6 @@ ACTIONS --->
 			password="#session["password"&request.adminType]#"
 			attributeCollection="#attrColl#"
 			>
-	
         <cfadmin 
             action="getRemoteClients"
             type="#request.adminType#"

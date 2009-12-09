@@ -154,6 +154,10 @@
 <h2>#stText.Overview.Support#</h2>
 <table class="tbl">
 <tr>
+	<td class="tblHead" width="150">#stText.Overview.Professional#</td>
+	<td class="tblContent" width="571"><a href="http://www.getrailo.com/index.cfm/services/support/" target="_blank">Support by Railo Technologies</a></td>
+</tr>
+<tr>
 	<td class="tblHead" width="150">#stText.Overview.Mailinglist_en#</td>
 	<td class="tblContent" width="571"><a href="http://groups.google.com/group/railo" target="_blank">groups.google.com.railo</a></td>
 </tr>

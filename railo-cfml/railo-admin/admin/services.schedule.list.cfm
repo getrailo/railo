@@ -268,11 +268,12 @@ Create Task --->
 			<td class="comment">#stText.General.Minute#</td>
 			<td class="comment">#stText.General.second#</td>
 		</tr>
-		<tr>
-			<td><cfinput type="text" name="start_hour" value="#two(hour(now()))#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
-			<td><cfinput type="text" name="start_minute" value="#two(minute(now()))#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
+        <tr>
+			<td><cfinput type="text" name="start_hour" value="00" style="width:40px" required="yes" validate="integer">&nbsp;</td>
+			<td><cfinput type="text" name="start_minute" value="00" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 			<td><cfinput type="text" name="start_second" value="00" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
+        
 		</table></td>
 </tr>
 <tr>

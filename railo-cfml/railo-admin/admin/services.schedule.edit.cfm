@@ -177,61 +177,72 @@ Error Output--->
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.URL#</td>
 	<td class="tblContent" width="400">
-		<span class="comment">#stText.Schedule.NameDescEdit#</span><br>
+		
 		<cfinput type="text" name="url" value="#task.url#" style="width:400px" required="yes" 
-		message="#stText.Schedule.URLMissing#"></td>
+		message="#stText.Schedule.URLMissing#"><br><span class="comment">#stText.Schedule.NameDescEdit#</span></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.Port#</td>
 	<td class="tblContent" width="400">
-		<span class="comment">#stText.Schedule.PortDescription#</span><br><cfinput type="text" name="port" value="#task.port#" style="width:40px" required="no" validate="integer"></td>
+		<cfinput type="text" name="port" value="#task.port#" style="width:40px" required="no" validate="integer"><br><span class="comment">#stText.Schedule.PortDescription#</span></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.Timeout#</td>
-	<td class="tblContent" width="400"><span class="comment">#stText.Schedule.TimeoutDescription#</span><br>
-		<cfinput type="text" name="timeout" value="#task.timeout#" style="width:40px" required="no" validate="integer">&nbsp;<span class="comment">#stText.General.Seconds#</span></td>
+	<td class="tblContent" width="400"><br>
+		<cfinput type="text" name="timeout" value="#task.timeout#" style="width:40px" required="no" validate="integer">&nbsp;<br />
+        <span class="comment">#stText.Schedule.TimeoutDescription#</span></td>
 </tr>
 
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.Username#</td>
 	<td class="tblContent" width="400">
-		<span class="comment">#stText.Schedule.UserNameDescription#</span><br>
+		
 		<cfinput type="text" name="username" value="#task.username#" style="width:150px" 
-		required="no"></td>
+		required="no"><br><span class="comment">#stText.Schedule.UserNameDescription#</span></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.Password#</td>
 	<td class="tblContent" width="400">
-		<span class="comment">#stText.Schedule.PasswordDescription#</span><br />
+		
 		<cfinput type="text" name="password" value="#task.password#" style="width:150px" 
-		required="no"></td>
+		required="no"><br /><span class="comment">#stText.Schedule.PasswordDescription#</span></td>
 </tr>
 </table>
 <br><h2>#stText.Schedule.Proxy#</h2>
 <table class="tbl">
 <tr>
+	<td colspan="2">#stText.Schedule.ProxyDesc#</td>
+</tr>
+<tr>
 	<td class="tblHead" width="150">#stText.Schedule.Server#</td>
-	<td class="tblContent" width="400"><cfinput type="text" name="proxyserver" value="#task.proxyserver#" style="width:300px" 
-		required="no"></td>
+	<td class="tblContent" width="400">
+    	<cfinput type="text" name="proxyserver" value="#task.proxyserver#" style="width:300px" 
+		required="no">
+        <br /><span class="comment">#stText.Schedule.ProxyServerDesc#</span></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.Port#</td>
-	<td class="tblContent" width="400"><span class="comment">#stText.Schedule.ProxyPort#</span><br><cfinput type="text" name="proxyport" value="#task.proxyport#" style="width:40px" validate="integer"
-		required="no"></td>
+	<td class="tblContent" width="400"><cfinput type="text" name="proxyport" value="#task.proxyport#" style="width:40px" validate="integer"
+		required="no"><br>
+        <span class="comment">#stText.Schedule.ProxyPort#</span></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.Username#</td>
-	<td class="tblContent" width="400"><span class="comment">#stText.Schedule.ProxyUserName#</span><br><cfinput type="text" name="proxyuser" value="#task.proxyuser#" style="width:150px" 
-		required="no"></td>
+	<td class="tblContent" width="400"><cfinput type="text" name="proxyuser" value="#task.proxyuser#" style="width:150px" 
+		required="no"><br><span class="comment">#stText.Schedule.ProxyUserName#</span></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.Password#</td>
-	<td class="tblContent" width="400"><span class="comment">#stText.Schedule.ProxyPassword#</span><br><cfinput type="text" name="proxypassword" value="#task.proxypassword#" style="width:150px" 
-		required="no"></td>
+	<td class="tblContent" width="400"><cfinput type="text" name="proxypassword" value="#task.proxypassword#" style="width:150px" 
+		required="no"><br><span class="comment">#stText.Schedule.ProxyPassword#</span></td>
 </tr>
 </table>
 <br><h2>#stText.Schedule.Output#</h2>
+
 <table class="tbl">
+<tr>
+	<td colspan="2">#stText.Schedule.OutputDesc#</td>
+</tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.Publish#</td>
 	<td class="tblContent" width="400"><input type="checkbox" class="checkbox" name="publish" value="yes" <cfif task.publish>checked</cfif>>
@@ -248,8 +259,11 @@ Error Output--->
 		<span class="comment">#stText.Schedule.ResolveDescription#</span></td>
 </tr>
 </table>
-<br><h2>#stText.Schedule.ExecutionDate#</h2>
+<br><h2>#stText.Schedule.ExecutionDate# <cfif isNumeric(task.interval)>(Every...)<cfelse>(#ucFirst(task.interval)#)</cfif></h2>
 <table class="tbl">
+<tr>
+	<td colspan="2"><cfif isNumeric(task.interval)>#stText.Schedule['ExecutionDescEvery']#<cfelse>#stText.Schedule['ExecutionDesc'& task.interval]#</cfif></td>
+</tr>
 <tr>
 	<td colspan="2">
 	<table class="tbl" border="0" cellpadding="0" cellspacing="0">
@@ -270,7 +284,6 @@ Error Output--->
 	
 	</td>
 </tr>
-
 <cfswitch expression="#task.interval#">
 	<cfcase value="once">
 	<input type="hidden" name="_interval" value="#task.interval#">
@@ -281,6 +294,7 @@ Error Output--->
 	<input type="hidden" name="end_day" value="#task.end.day#">
 	<input type="hidden" name="end_month" value="#task.end.month#">
 	<input type="hidden" name="end_year" value="#task.end.year#">
+
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.ExecuteAt#</td>
 	<td class="tblContent" width="400">
@@ -303,7 +317,8 @@ Error Output--->
 			<td><cfinput type="text" name="start_minute" value="#task.start.minute#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 			<td><cfinput type="text" name="start_second" value="#task.start.second#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
-		</table></td>
+		</table>
+        <span class="comment">#stText.Schedule.ExecuteAtDesc#</span></td>
 </tr>
 	</cfcase>
 	<cfcase value="daily,weekly,monthly">
@@ -325,7 +340,8 @@ Error Output--->
 			<td><cfinput type="text" name="start_month" value="#task.start.month#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 			<td><cfinput type="text" name="start_year" value="#task.start.year#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
-		</table></td>
+		</table>
+        <span class="comment">#stText.Schedule.StartsAtDesc#</span></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.ExecutionTime#</td>	
@@ -341,7 +357,8 @@ Error Output--->
 			<td><cfinput type="text" name="start_minute" value="#task.start.minute#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 			<td><cfinput type="text" name="start_second" value="#task.start.second#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
-		</table></td>
+		</table>
+        <span class="comment">#stText.Schedule['ExecutionTimeDesc'& task.interval ]#</td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.EndsAt#</td>
@@ -357,7 +374,9 @@ Error Output--->
 			<td><cfinput type="text" name="end_month" value="#task.end.month#" style="width:40px" required="no" validate="integer">&nbsp;</td>
 			<td><cfinput type="text" name="end_year" value="#task.end.year#" style="width:40px" required="no" validate="integer">&nbsp;</td>
 		</tr>
-		</table></td>
+		</table>
+        <span class="comment">#stText.Schedule['EndsAtDesc'& task.interval ]#</span>
+        </td>
 </tr>
 	</cfcase>
 	<cfdefaultcase>
@@ -375,7 +394,9 @@ Error Output--->
 			<td><cfinput type="text" name="start_month" value="#task.start.month#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 			<td><cfinput type="text" name="start_year" value="#task.start.year#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
-		</table></td>
+		</table>
+        <span class="comment">#stText.Schedule.StartDateDesc#</span>
+         </td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.StartTime#</td>	
@@ -391,7 +412,8 @@ Error Output--->
 			<td><cfinput type="text" name="start_minute" value="#task.start.minute#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 			<td><cfinput type="text" name="start_second" value="#task.start.second#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
-		</table></td>
+		</table>
+        <span class="comment" style="color:red">#stText.Schedule.StartTimeDesc#</span></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.EndDate#</td>
@@ -407,7 +429,8 @@ Error Output--->
 			<td><cfinput type="text" name="end_month" value="#task.end.month#" style="width:40px" required="no" validate="integer">&nbsp;</td>
 			<td><cfinput type="text" name="end_year" value="#task.end.year#" style="width:40px" required="no" validate="integer">&nbsp;</td>
 		</tr>
-		</table></td>
+		</table>
+        <span class="comment">#stText.Schedule.endDateDesc#</span></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.EndTime#</td>
@@ -423,7 +446,8 @@ Error Output--->
 			<td><cfinput type="text" name="end_minute" value="#task.end.minute#" style="width:40px" required="no" validate="integer">&nbsp;</td>
 			<td><cfinput type="text" name="end_second" value="#task.end.second#" style="width:40px" required="no" validate="integer">&nbsp;</td>
 		</tr>
-		</table></td>
+		</table>
+        <span class="comment" style="color:red">#stText.Schedule.endTimeDesc#</span></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.Interval#</td>
@@ -446,7 +470,7 @@ Error Output--->
 		required="no" validate="integer"
 		message="#stText.General.SecondError#"></td>
 		</tr>
-		</table>#stText.Schedule.IntervalDesc#</td>
+		</table> <span class="comment">#stText.Schedule.IntervalDesc#</span></td>
 </tr>
 
 
@@ -456,7 +480,8 @@ Error Output--->
 
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.paused#</td>	
-	<td class="tblContent" width="400"><input type="checkbox" name="paused" value="true"<cfif task.paused> checked="checked"</cfif> /></td>
+	<td class="tblContent" width="400"><input type="checkbox" name="paused" value="true"<cfif task.paused> checked="checked"</cfif> />
+    <br /><span class="comment">#stText.Schedule.pauseDesc#</span></td>
 </tr>
 
 <tr>
