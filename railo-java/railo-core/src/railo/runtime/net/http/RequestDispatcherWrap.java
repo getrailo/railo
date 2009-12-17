@@ -72,6 +72,7 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 			
 			RequestDispatcher disp = pc.getServletContext().getRequestDispatcher(realPath);
 	        disp.include(req,drsp);
+        	if(!drsp.isCommitted())drsp.flushBuffer();
 	        pc.write(IOUtil.toString(baos.toByteArray(), drsp.getCharacterEncoding()));
 		}
 		finally{

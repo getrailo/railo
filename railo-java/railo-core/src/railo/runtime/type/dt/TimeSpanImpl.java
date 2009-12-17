@@ -26,17 +26,31 @@ public final class TimeSpanImpl implements TimeSpan {
 	private int milli;
 	
 
+	public static TimeSpan fromDays(double value){
+		return new TimeSpanImpl(value);
+	}
+	public static TimeSpan fromMillis(long value){
+		return new TimeSpanImpl(value);
+	}
 
-	/**
-     * constructor of the timespan class
-	 * @param value
-     */
-    public TimeSpanImpl(double value) {
-    	valueMillis=(long)(value*86400000D);
-    	
+    private TimeSpanImpl(double valueDays) {
+    	this((long)(valueDays*86400000D));
+    }
+	
+    private TimeSpanImpl(long valueMillis) {
+    	value=valueMillis/86400000D;
+    	long tmp=valueMillis;
+    	day=(int) (valueMillis/86400000L);
+		tmp-=day*86400000;
+		hour=(int) (tmp/3600000);
+		tmp-=hour*3600000;
+		minute=(int) (tmp/60000);
+		tmp-=minute*60000;
+		second=(int) (tmp/1000);
+		tmp-=second*1000;
+		milli=(int) tmp;
 		
-		
-		day=(int)value;
+		/*day=(int)value;
 		double diff=value-day;
 		diff*=24;
 		hour=(int)diff;
@@ -48,6 +62,9 @@ public final class TimeSpanImpl implements TimeSpan {
 		second=(int)diff;
 		this.value=value;
 		milli=(int)(valueMillis-((second+(minute*60L)+(hour*3600L)+(day*3600L*24L))*1000));
+		*/
+		//print.out("a("+hashCode()+"):"+day+":"+hour+":"+minute+":"+second+"+"+milli);
+		
 		
 		//total=(second+(minute*60L)+(hour*3600L)+(day*3600L*24L))*1000;
 		//total=(second+(minute*60L)+(hour*3600L)+(day*3600L*24L))*1000;
@@ -62,6 +79,7 @@ public final class TimeSpanImpl implements TimeSpan {
 	 * @param second
 	 */
 	public TimeSpanImpl(int day, int hour, int minute, int second) {
+		
 		this.day=day;
 		this.hour=hour;
 		this.minute=minute;
@@ -177,14 +195,6 @@ public final class TimeSpanImpl implements TimeSpan {
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		DumpTable table=new DumpTable("#ffb200","#ffcc00","#263300");
-		/*
-		table.setTitle("Timespan");
-		table.appendRow(1, new SimpleDumpData("day"), new SimpleDumpData(day));
-		table.appendRow(1, new SimpleDumpData("hour"), new SimpleDumpData(hour));
-		table.appendRow(1, new SimpleDumpData("minute"), new SimpleDumpData(minute));
-		table.appendRow(1, new SimpleDumpData("second"), new SimpleDumpData(second));
-		if(milli>0)table.appendRow(1, new SimpleDumpData("millisecond"), new SimpleDumpData(milli));
-		*/
 		if(milli>0)table.appendRow(1, new SimpleDumpData("Timespan"), new SimpleDumpData("createTimeSpan("+day+","+hour+","+minute+","+second+","+milli+")"));
 		else table.appendRow(1, new SimpleDumpData("Timespan"), new SimpleDumpData("createTimeSpan("+day+","+hour+","+minute+","+second+")"));
 		

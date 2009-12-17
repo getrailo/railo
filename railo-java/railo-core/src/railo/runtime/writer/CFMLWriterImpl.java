@@ -6,12 +6,12 @@ import java.io.IOException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.cache.legacy.CacheItem;
 import railo.runtime.cache.legacy.MetaData;
+import railo.runtime.net.http.ReqRspUtil;
 
 /**
  * Implementation of a JSpWriter
@@ -237,7 +237,7 @@ public class CFMLWriterImpl extends CFMLWriter {
         	
         	if(closeConn)response.setHeader("connection", "close");
         	if(showVersion)response.setHeader("Railo-Version", VERSION);
-            if(contentLength)response.setContentLength(barr.length);
+            if(contentLength)ReqRspUtil.setContentLength(response,barr.length);
             
             out = response.getOutputStream();
             out.write(barr);

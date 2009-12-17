@@ -5,11 +5,13 @@ import railo.commons.io.cache.CacheEntry;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.dt.TimeSpanImpl;
 
 public class CacheUtil {
 
 	public static Struct getInfo(CacheEntry ce) {
 		Struct info=CFMLEngineFactory.getInstance().getCreationUtil().createStruct();
+		info.setEL("key", ce.getKey());
 		info.setEL("created", ce.created());
 		info.setEL("last_hit", ce.lastHit());
 		info.setEL("last_modified", ce.lastModified());
@@ -40,7 +42,8 @@ public class CacheUtil {
 	
 	public static Object toTimespan(long timespan) {
 		if(timespan==0)return "";
-		TimeSpan ts = CFMLEngineFactory.getInstance().getCastUtil().toTimespan(new Double(timespan/(24D*60D*60D*1000)),null);
+		
+		TimeSpan ts = TimeSpanImpl.fromMillis(timespan);//CFMLEngineFactory.getInstance().getCastUtil().toTimespan(new Double(timespan/(24D*60D*60D*1000)),null);
 		if(ts==null)return "";
 		return ts;
 	}

@@ -55,6 +55,7 @@ public final class Constants {
 	public static final Integer INTEGER_12=new Integer(12);
 	
 
+	public static final Long LONG_ZERO = new Long(0);
 	public static final Double DOUBLE_ZERO = new Double(0);
     
     /**

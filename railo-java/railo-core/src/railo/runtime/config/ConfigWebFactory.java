@@ -30,6 +30,7 @@ import org.xml.sax.SAXException;
 
 import railo.aprint;
 import railo.commons.collections.HashTable;
+import railo.commons.digest.MD5;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -98,6 +99,7 @@ import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.spooler.SpoolerEngineImpl;
+import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -909,7 +911,7 @@ public final class ConfigWebFactory {
 	    if(!f.exists())createFileFromResourceEL("/resource/context/application.cfm",f);
 	    
 	    f=contextDir.getRealResource("form.cfm");
-	    if(!f.exists())createFileFromResourceEL("/resource/context/form.cfm",f);
+	    if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/form.cfm",f);
 	    
 	    f=contextDir.getRealResource("graph.cfm");
 	    if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/graph.cfm",f);
@@ -1280,8 +1282,9 @@ public final class ConfigWebFactory {
             
                 if(!sm[i].isHidden()) {
                     if(sm[i] instanceof MappingImpl) {
-                        tmp = ((MappingImpl)sm[i]).cloneReadOnly(config);
+                    	tmp = ((MappingImpl)sm[i]).cloneReadOnly(config);
                         mappings.put(tmp.getVirtualLowerCase(),tmp);
+                        
                     }
                     else {
                         tmp = sm[i];
@@ -1309,11 +1312,11 @@ public final class ConfigWebFactory {
 	           if(virtual.equalsIgnoreCase("/railo-context/"))toplevel=true;
 	           
 	           
+	           
 	           // physical!=null && 
 	           if(virtual!=null && (physical!=null || archive!=null)) { 
 	               boolean trusted=toBoolean(el.getAttribute("trusted"),false);
 	               String primary=el.getAttribute("primary");
-	               
 	               boolean physicalFirst=primary==null || !primary.equalsIgnoreCase("archive");
 	               
 	               tmp=new MappingImpl(config,virtual,physical,archive,trusted,physicalFirst,hidden,readonly,toplevel);
@@ -1507,65 +1510,68 @@ public final class ConfigWebFactory {
 	  	
         
         Element eCache=getChildByName(doc.getDocumentElement(),"cache");
-
-	     	// default query
-	    	String defaultResource=eCache.getAttribute("default-resource");
-	        if(hasAccess && !StringUtil.isEmpty(defaultResource)){
-	        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_RESOURCE,defaultResource);
-	        }
-	        else if(hasCS){
-	        	if(eCache.hasAttribute("default-resource"))
-	        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_RESOURCE,"");
-	        	else
-	        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_RESOURCE,configServer.getCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_RESOURCE));
-	        }
-	        else 
-	        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_RESOURCE,"");
+        
+        // has changes
+        String md5=getMD5(eCache);
+        if(md5.equals(config.getCacheMD5())) return;
+        config.setCacheMD5(md5);
+        
+     	// default query
+    	String defaultResource=eCache.getAttribute("default-resource");
+        if(hasAccess && !StringUtil.isEmpty(defaultResource)){
+        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_RESOURCE,defaultResource);
+        }
+        else if(hasCS){
+        	if(eCache.hasAttribute("default-resource"))
+        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_RESOURCE,"");
+        	else
+        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_RESOURCE,configServer.getCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_RESOURCE));
+        }
+        else 
+        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_RESOURCE,"");
     
+     	// default query
+    	String defaultQuery=eCache.getAttribute("default-query");
+        if(hasAccess && !StringUtil.isEmpty(defaultQuery)){
+        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_QUERY,defaultQuery);
+        }
+        else if(hasCS){
+        	if(eCache.hasAttribute("default-query"))
+        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_QUERY,"");
+        	else
+        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_QUERY,configServer.getCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_QUERY));
+        }
+        else 
+        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_QUERY,"");
         
         
-	     	// default query
-	    	String defaultQuery=eCache.getAttribute("default-query");
-	        if(hasAccess && !StringUtil.isEmpty(defaultQuery)){
-	        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_QUERY,defaultQuery);
-	        }
-	        else if(hasCS){
-	        	if(eCache.hasAttribute("default-query"))
-	        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_QUERY,"");
-	        	else
-	        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_QUERY,configServer.getCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_QUERY));
-	        }
-	        else 
-	        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_QUERY,"");
-        
-        
-    		// default template
-        	String defaultTemplate=eCache.getAttribute("default-template");
-            if(hasAccess && !StringUtil.isEmpty(defaultTemplate)){
-            	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_TEMPLATE,defaultTemplate);
-            }
-            else if(hasCS){
-            	if(eCache.hasAttribute("default-template"))
-            		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_TEMPLATE,"");
-            	else
-            		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_TEMPLATE,configServer.getCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_TEMPLATE));
-            }
-            else 
-            	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_TEMPLATE,"");
+		// default template
+    	String defaultTemplate=eCache.getAttribute("default-template");
+        if(hasAccess && !StringUtil.isEmpty(defaultTemplate)){
+        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_TEMPLATE,defaultTemplate);
+        }
+        else if(hasCS){
+        	if(eCache.hasAttribute("default-template"))
+        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_TEMPLATE,"");
+        	else
+        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_TEMPLATE,configServer.getCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_TEMPLATE));
+        }
+        else 
+        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_TEMPLATE,"");
             
-            // default object
-            String defaultObject=eCache.getAttribute("default-object");
-            if(hasAccess && !StringUtil.isEmpty(defaultObject)){
-            	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_OBJECT,defaultObject);
-            }
-            else if(hasCS){
-            	if(eCache.hasAttribute("default-object"))
-            		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_OBJECT,"");
-            	else
-            		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_OBJECT,configServer.getCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_OBJECT));
-            }
-            else	
-            	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_OBJECT,"");
+        // default object
+        String defaultObject=eCache.getAttribute("default-object");
+        if(hasAccess && !StringUtil.isEmpty(defaultObject)){
+        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_OBJECT,defaultObject);
+        }
+        else if(hasCS){
+        	if(eCache.hasAttribute("default-object"))
+        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_OBJECT,"");
+        	else
+        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_OBJECT,configServer.getCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_OBJECT));
+        }
+        else	
+        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_OBJECT,"");
              
             
         
@@ -1659,7 +1665,16 @@ public final class ConfigWebFactory {
 	}
 
 
-    private static void loadGateway(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException  {
+    private static String getMD5(Node node) {
+		try {
+			return MD5.getDigestAsString(XMLCaster.toString(node,""));
+		} catch (IOException e) {
+			return "";
+		}
+	}
+
+
+	private static void loadGateway(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException  {
         boolean hasCS=configServer!=null;
         HashTable mapGateways=new HashTable();
         

@@ -10665,7 +10665,7 @@ dWord: creates a value of 0 (zero)</description>
 		<name>Transaction</name>
 		<tag-class>railo.runtime.tag.Transaction</tag-class>
 		<allow-removing-literal>yes</allow-removing-literal>
-		<body-content>free</body-content>
+		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<handle-exception>true</handle-exception>
 		<description>Groups multiple queries into a single unit. The cftransaction 

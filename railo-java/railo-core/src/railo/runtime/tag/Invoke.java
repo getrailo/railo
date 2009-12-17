@@ -1,6 +1,7 @@
 package railo.runtime.tag;
 
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
@@ -9,7 +10,6 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.net.rpc.client.RPCClient;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -191,7 +191,7 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
             //Component comp = pageContext.getActiveComponent();
             //if(comp!=null)doComponent(new ComponentWrap(Component.ACCESS_PRIVATE,(ComponentImpl)comp));
             //else {
-            	doFunction(pageContext.undefinedScope());
+            	doFunction(pageContext);
             //}
         }
 		return EVAL_PAGE;
@@ -217,10 +217,10 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
 		if(!StringUtil.isEmpty(returnvariable)) pageContext.setVariable(returnvariable,rtn);
 	}
 	
-	private void doFunction(Scope scope) throws PageException {
+	private void doFunction(PageContext pc) throws PageException {
 			
 		// execute
-		Object oUDF=scope.get(method);
+		Object oUDF=pc.getVariable(method);
 		if(!(oUDF instanceof UDF))throw new ApplicationException("there is no function with name "+method); 
 		Object rtn = ((UDF)oUDF).callWithNamedValues(pageContext, data, false);
 		

@@ -2930,8 +2930,9 @@ public final class Caster {
         else if(o instanceof ObjectWrap) {
             return toTimespan(((ObjectWrap)o).getEmbededObject());
         }
+        
         double dbl = toDoubleValue(o,Double.NaN);
-        if(!Double.isNaN(dbl))return new TimeSpanImpl(dbl);
+        if(!Double.isNaN(dbl))return TimeSpanImpl.fromDays(dbl);
         
         throw new CasterException(o,"timespan");
     }

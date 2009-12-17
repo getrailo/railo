@@ -59,8 +59,7 @@ public class DatSourceDefImpl implements DataSourceDef {
 	}
 
 	public String getDriver() {
-		// TODO Auto-generated method stub
-		return null;
+		return "";
 	}
 
 	public String getDsn() {
@@ -107,18 +106,15 @@ public class DatSourceDefImpl implements DataSourceDef {
 	}
 
 	public String getIfxSrv() {
-		// TODO Auto-generated method stub
-		return null;
+		return "";
 	}
 
 	public int getInterval() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	public String getJNDIName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "";
 	}
 
 	/**
@@ -129,13 +125,11 @@ public class DatSourceDefImpl implements DataSourceDef {
 	}
 
 	public Struct getJndienv() {
-		// TODO Auto-generated method stub
-		return null;
+		return new StructImpl();
 	}
 
 	public int getLoginTimeout() {
-		// TODO Auto-generated method stub
-		return 0;
+		return ds.getConnectionTimeout();
 	}
 
 	/**
@@ -146,28 +140,23 @@ public class DatSourceDefImpl implements DataSourceDef {
 	}
 
 	public int getMaxBlobSize() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 64000;
 	}
 
 	public int getMaxClobSize() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 64000;
 	}
 
 	public int getMaxConnections() {
-		// TODO Auto-generated method stub
-		return 0;
+		return ds.getConnectionLimit();
 	}
 
 	public int getMaxPooledStatements() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	public int getMaxconnections() {
-		// TODO Auto-generated method stub
-		return 0;
+		return getMaxConnections();
 	}
 
 	/**
@@ -178,27 +167,22 @@ public class DatSourceDefImpl implements DataSourceDef {
 	}
 
 	public String getSelectMethod() {
-		// TODO Auto-generated method stub
-		return null;
+		return "";
 	}
 
 	public String getSid() {
-		// TODO Auto-generated method stub
-		return null;
+		return "";
 	}
 
 	public boolean getStrPrmUni() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public int getTimeout() {
-		// TODO Auto-generated method stub
-		return 0;
+		return ds.getConnectionTimeout();
 	}
 
 	public int getType() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -222,7 +206,7 @@ public class DatSourceDefImpl implements DataSourceDef {
 	 * @see coldfusion.sql.DataSourceDef#getVendor()
 	 */
 	public String getVendor() {
-		return ds.getPassword();
+		return "";
 	}
 
 	/**
@@ -253,12 +237,10 @@ public class DatSourceDefImpl implements DataSourceDef {
 	}
 
 	public boolean isRemoveOnPageEnd() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public boolean isSQLRestricted() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

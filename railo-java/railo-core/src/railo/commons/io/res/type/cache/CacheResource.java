@@ -9,15 +9,17 @@ import java.io.OutputStream;
 import railo.commons.io.ModeUtil;
 import railo.commons.io.res.ContentType;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.ResourceMetaData;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.util.ResourceSupport;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.runtime.type.Struct;
 
 
 /**
  * a ram resource
  */
-public final class CacheResource extends ResourceSupport {
+public final class CacheResource extends ResourceSupport implements ResourceMetaData {
 	
 	private final CacheResourceProvider provider;
 	
@@ -43,25 +45,23 @@ public final class CacheResource extends ResourceSupport {
 		this.parent=parent ;
 		this.name=name;
 	}
-	
-	CacheResourceCore getCore() {
-		return provider.getCore(parent,name);
-		/*if(_core==null || _core.getType()==0) {
-			_core=provider.getCore(parent,name);
-		}
-		return _core;*/
-	}
-	
 
-	void removeCore() {
+	private CacheResourceCore getCore() {
+		return provider.getCore(parent,name);
+	}
+
+	private void removeCore() {
 		provider.removeCore(parent,name);
-		//_core=null;
 	}
 	
 	private CacheResourceCore createCore(int type) throws IOException {
 		return provider.createCore(parent,name,type);
 	}
 	
+
+	private void touch() {
+		provider.touch(parent,name);
+	}
 
 	/**
 	 * @see res.Resource#getPath()
@@ -342,8 +342,9 @@ public final class CacheResource extends ResourceSupport {
 				super.close();
 				CacheResourceCore core = res.getCore();
 				if(core==null)core=res.createCore(CacheResourceCore.TYPE_FILE);
-				
+				else core.setLastModified(System.currentTimeMillis());
 				core.setData(this.toByteArray(),append);
+				touch();
 			}
 			finally {
 				res.getResourceProvider().unlock(res);
@@ -413,6 +414,10 @@ public final class CacheResource extends ResourceSupport {
 			if((attr&attribute)>0) attr-=attribute;
 		}
 		getCore().setAttributes(attr);
+	}
+
+	public Struct getMetaData() {
+		return provider.getMeta(parent,name);
 	}
 	
 }

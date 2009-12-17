@@ -81,6 +81,13 @@ import railo.runtime.type.util.ArrayUtil;
  */
 public class QueryImpl implements Query,Objects {
 
+	/**
+	 * @return the template
+	 */
+	public String getTemplate() {
+		return template;
+	}
+
 	public static final Collection.Key NAME = KeyImpl.getInstance("NAME");
 	public static final Collection.Key COLUMNS = KeyImpl.getInstance("COLUMNS");
 	public static final Collection.Key SQL = KeyImpl.getInstance("SQL");
@@ -105,6 +112,7 @@ public class QueryImpl implements Query,Objects {
     private String name;
 	private int updateCount;
     private QueryImpl generatedKeys;
+	private String template;
 	
 	
 	/**
@@ -166,12 +174,20 @@ public class QueryImpl implements Query,Objects {
 	 * @throws PageException
 	 */	
     public QueryImpl(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name) throws PageException {
-    	this(dc, sql, maxrow, fetchsize, timeout, name,false);
+    	this(dc, sql, maxrow, fetchsize, timeout, name,null,false);
     }
-	public QueryImpl(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,boolean createUpdateData) throws PageException {
-	    this.name=name;
+    
+
+    public QueryImpl(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template) throws PageException {
+    	this(dc, sql, maxrow, fetchsize, timeout, name,template,false);
+    }
+    
+	public QueryImpl(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template,boolean createUpdateData) throws PageException {
+		this.name=name;
+		this.template=template;
         this.sql=sql;
-		//ResultSet result=null;
+		
+        //ResultSet result=null;
 		Statement stat=null;
 		// check SQL Restrictions
 		if(dc.getDatasource().hasSQLRestriction()) {
@@ -1192,7 +1208,10 @@ public class QueryImpl implements Query,Objects {
 		//DumpTable table=new DumpTable("#83CB5C","#CAFF92","#000000");
 		DumpTable table=new DumpTable("#aa66aa","#ffddff","#000000");
 		table.setTitle("Query");
-		if(sql!=null)table.appendRow(1, new SimpleDumpData("SQL"), new SimpleDumpData(sql.toString()));
+		if(sql!=null)
+			table.appendRow(1, new SimpleDumpData("SQL"), new SimpleDumpData(sql.toString()));
+		if(!StringUtil.isEmpty(template))
+			table.appendRow(1, new SimpleDumpData("Template"), new SimpleDumpData(template));
 		table.appendRow(1, new SimpleDumpData("Execution Time (ms)"), new SimpleDumpData(exeTime));
 		table.appendRow(1, new SimpleDumpData("recordcount"), new SimpleDumpData(getRecordcount()));
 		table.appendRow(1, new SimpleDumpData("cached"), new SimpleDumpData(isCached()?"Yes":"No"));
@@ -1403,6 +1422,7 @@ public class QueryImpl implements Query,Objects {
 	        }
         }
         newResult.sql=sql;
+        newResult.template=template;
         newResult.recordcount=recordcount;
         newResult.columncount=columncount;
         newResult.isCached=isCached;

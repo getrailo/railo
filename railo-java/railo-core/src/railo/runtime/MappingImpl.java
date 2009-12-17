@@ -32,7 +32,7 @@ public final class MappingImpl implements Mapping {
     private String lcVirtual;
     private boolean topLevel;
     private boolean trusted;
-    private boolean physicalFirst;
+    private final boolean physicalFirst;
     private ArchiveClassLoader archiveClassLoader;
     private PhysicalClassLoader physicalClassLoader;
     private Resource archive;
@@ -69,14 +69,14 @@ public final class MappingImpl implements Mapping {
      */
     public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
             boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel) {
-    	
-        this.config=config;
+    	this.config=config;
         this.hidden=hidden;
         this.readonly=readonly;
         this.strPhysical=strPhysical;
-        this.strArchive=strArchive;
+        this.strArchive=StringUtil.isEmpty(strArchive)?null:strArchive;
         this.trusted=trusted;
         this.topLevel=topLevel;
+        this.physicalFirst=physicalFirst;
         
         // virtual
         if(virtual.length()==0)virtual="/";
@@ -105,8 +105,6 @@ public final class MappingImpl implements Mapping {
         }
         hasArchive=archive!=null;
         
-       this.physicalFirst=physicalFirst;
-       
        //if(!hasArchive && !hasPhysical) throw new IOException("missing physical and archive path, one of them must be defined");
     }
     
@@ -194,7 +192,7 @@ public final class MappingImpl implements Mapping {
      * @throws IOException
      */
     public MappingImpl cloneReadOnly(ConfigImpl config) {
-        return new MappingImpl(config,virtual,strPhysical,strArchive,trusted,physicalFirst,hidden,true,topLevel);
+    	return new MappingImpl(config,virtual,strPhysical,strArchive,trusted,physicalFirst,hidden,true,topLevel);
     }
     
     /**

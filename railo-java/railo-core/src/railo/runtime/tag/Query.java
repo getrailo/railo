@@ -298,6 +298,12 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		this.name=name;
 	}
 	
+	public String getName()	{
+		return name==null? "query":name;
+	}
+	
+	
+	
 
 
     /**
@@ -445,7 +451,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		}
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
 		try {
-			return new QueryImpl(dc,sql,maxrows,blockfactor,timeout,"query",createUpdateData);
+			return new QueryImpl(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),createUpdateData);
 		}
 		finally {
 			manager.releaseConnection(pageContext,dc);

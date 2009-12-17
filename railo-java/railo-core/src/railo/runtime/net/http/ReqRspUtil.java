@@ -1,6 +1,7 @@
 package railo.runtime.net.http;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
@@ -44,5 +45,17 @@ public final class ReqRspUtil {
 		String qs=req.getQueryString();
 		if(!StringUtil.isEmpty(qs))sb.append('?').append(qs);
 		return sb.toString();
+	}
+
+	public static void setContentLength(HttpServletResponse rsp, int length) {
+		rsp.setContentLength(length);
+	}
+	public static void setContentLength(HttpServletResponse rsp, long length) {
+		if(length <= Integer.MAX_VALUE){
+			setContentLength(rsp,(int)length);
+		}
+		else{
+			rsp.addHeader("Content-Length", Caster.toString(length));
+		}
 	}
 }

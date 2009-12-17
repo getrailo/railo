@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import railo.commons.io.cache.Cache;
+import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
@@ -18,6 +19,8 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Constants;
+import railo.runtime.type.Struct;
 
 
 /**
@@ -74,6 +77,7 @@ public final class CacheResourceProvider implements ResourceProvider {
 	 */
 	public Resource getResource(String path) {
 		path=ResourceUtil.removeScheme(scheme,path);
+		if(!StringUtil.startsWith(path,'/'))path="/"+path;
 		return new CacheResource(this,path);
 	}
 	
@@ -83,8 +87,23 @@ public final class CacheResourceProvider implements ResourceProvider {
 	 * @return core or null
 	 */
 	CacheResourceCore getCore(String path,String name) {
-		Object obj = getCache().getValue(path+":"+name,null);
+		Object obj = getCache().getValue(toKey(path,name),null);
 		if(obj instanceof CacheResourceCore) return (CacheResourceCore) obj;
+		return null;
+	}
+
+	void touch(String path,String name) {
+		Cache cache = getCache();
+		CacheEntry ce = cache.getCacheEntry(toKey(path,name),null);
+		if(ce!=null){
+			cache.put(ce.getKey(), ce.getValue(), ce.idleTimeSpan(), ce.liveTimeSpan());
+		}
+	}
+	
+
+	Struct getMeta(String path,String name) {
+		CacheEntry ce = getCache().getCacheEntry(toKey(path,name),null);
+		if(ce!=null) return ce.getCustomInfo();
 		return null;
 	}
 
@@ -123,20 +142,22 @@ public final class CacheResourceProvider implements ResourceProvider {
 	 */
 	CacheResourceCore createCore(String path, String name, int type) throws IOException {
 		CacheResourceCore value = new CacheResourceCore(type,path,name);
-		getCache().put(path+":"+name,value,null,null);
+		getCache().put(toKey(path,name),value,null,null);
 		return value;
 	}
-	
+
+
+
 	CacheResourceCore createRoot() {
 		CacheResourceCore value = new CacheResourceCore(CacheResourceCore.TYPE_DIRECTORY,null,"");
-		getCache().put("null:",value,null,null);
+		getCache().put(toKey("null",""),value,Constants.LONG_ZERO,Constants.LONG_ZERO);
 		return value;
 	}
 	
 
 
 	void removeCore(String path, String name) {
-		getCache().remove(path+":"+name);
+		getCache().remove(toKey(path,name));
 	}
 
 
@@ -221,6 +242,11 @@ public final class CacheResourceProvider implements ResourceProvider {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	private String toKey(String path, String name) {
+		if(caseSensitive) return path+":"+name;
+		return (path+":"+name).toLowerCase();
 	}
 
 

@@ -309,6 +309,7 @@ public abstract class ConfigImpl implements Config {
 	private short inspectTemplate=INSPECT_ONCE;
 	private String serial="";
 	private GatewayEngineImpl gatewayEngine;
+	private String cacheMD5;
 
     /**
 	 * @return the allowURLRequestTimeout
@@ -2735,6 +2736,14 @@ public abstract class ConfigImpl implements Config {
 			gatewayEngine=new GatewayEngineImpl(this);
 		}
 		return gatewayEngine;
+	}
+
+	public String getCacheMD5() { 
+		return cacheMD5;
+	}
+
+	public void setCacheMD5(String cacheMD5) { 
+		this.cacheMD5 = cacheMD5;
 	}
 	
 }

@@ -2,24 +2,37 @@ package railo.runtime.cache.ram;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.map.ReferenceMap;
-
 import railo.commons.io.cache.CacheEntry;
 import railo.runtime.cache.CacheSupport;
+import railo.runtime.config.Config;
+import railo.runtime.op.Caster;
+import railo.runtime.op.Constants;
 import railo.runtime.type.Struct;
 
 public class RamCache extends CacheSupport {
 
-	private Map entries= new ReferenceMap();
+	private Map<String, RamCacheEntry> entries= new HashMap<String, RamCacheEntry>();
 	private long missCount;
 	private int hitCount;
 	
+	private long idleTime;
+	private long until;
+	
 
+	public static void init(Config config,String[] cacheNames,Struct[] arguments) throws IOException {
+		
+	}
+	
 	public void init(String cacheName, Struct arguments) throws IOException {
+
+		until=Caster.toLongValue(arguments.get("timeToLiveSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
+		idleTime=Caster.toLongValue(arguments.get("timeToIdleSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
+		
 		//Caster.toBooleanValue(arguments.get("caseSensitive"),'');
 	}
 	
@@ -27,14 +40,14 @@ public class RamCache extends CacheSupport {
 	 * @see railo.commons.io.cache.Cache#contains(java.lang.String)
 	 */
 	public boolean contains(String key) {
-		return entries.containsKey(key);
+		return getQuiet(key,null)!=null;
 	}
 
 	
 	
 
 	public CacheEntry getQuiet(String key, CacheEntry defaultValue) {
-		RamCacheEntry entry = (RamCacheEntry)entries.get(key);
+		RamCacheEntry entry = entries.get(key);
 		if(entry==null) {
 			return defaultValue;
 		}
@@ -85,15 +98,24 @@ public class RamCache extends CacheSupport {
 	}
 
 	public void put(String key, Object value, Long idleTime, Long until) {
-		RamCacheEntry entry=(RamCacheEntry) entries.get(key);
-		if(entry==null)
-			entries.put(key, new RamCacheEntry(key,value,idleTime,until));
+		
+		RamCacheEntry entry= entries.get(key);
+		if(entry==null){
+			entries.put(key, new RamCacheEntry(key,value,
+					idleTime==null?this.idleTime:idleTime.longValue(),
+					until==null?this.until:until.longValue()));
+		}
 		else
 			entry.update(value);
 	}
 
 	public boolean remove(String key) {
-		return entries.remove(key)!=null;
+		RamCacheEntry entry = entries.remove(key);
+		if(entry==null) {
+			return false;
+		}
+		return valid(entry);
+		
 	}
 
 

@@ -502,9 +502,6 @@ public final class RPCServer{
             res.setStatus(HttpServletResponse.SC_NO_CONTENT);
             if (isDebug) {
                 log.debug("NO AXIS MESSAGE TO RETURN!");
-                //String resp = Messages.getMessage("noData00");
-                //res.setContentLength((int) resp.getBytes().length);
-                //res.getWriter().print(resp);
             }
         } else {
             if (isDebug) {

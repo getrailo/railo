@@ -8,6 +8,7 @@ import org.apache.oro.text.regex.MalformedPatternException;
 
 import railo.commons.io.ModeUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.ResourceMetaData;
 import railo.commons.io.res.filter.AndResourceFilter;
 import railo.commons.io.res.filter.DirectoryResourceFilter;
 import railo.commons.io.res.filter.FileResourceFilter;
@@ -48,6 +49,7 @@ public final class Directory extends TagImpl  {
 	private static final Key SIZE = KeyImpl.getInstance("size");
 	private static final Key TYPE = KeyImpl.getInstance("type");
 	private static final Key MODE = KeyImpl.getInstance("mode");
+	private static final Key META = KeyImpl.getInstance("meta");
 	private static final Key DATE_LAST_MODIFIED = KeyImpl.getInstance("dateLastModified");
 	private static final Key ATTRIBUTES = KeyImpl.getInstance("attributes");
 	private static final Key DIRECTORY = KeyImpl.getInstance("directory");
@@ -294,17 +296,25 @@ public final class Directory extends TagImpl  {
 	    
 	    
 		// create query Object
+	    String[] names = new String[]{"name","size","type","dateLastModified","attributes","mode","directory"};
+	    String[] types=new String[]{"VARCHAR","DOUBLE","VARCHAR","DATE","VARCHAR","VARCHAR","VARCHAR"};
+	    
+	    boolean hasMeta=directory instanceof ResourceMetaData;
+	    if(hasMeta){
+	    	names = new String[]{"name","size","type","dateLastModified","attributes","mode","directory","meta"};
+		    types=new String[]{"VARCHAR","DOUBLE","VARCHAR","DATE","VARCHAR","VARCHAR","VARCHAR","OBJECT"};
+	    }
+	    
 	    QueryImpl query=new QueryImpl(
-				listOnlyNames?new String[]{"name"}:new String[]{"name","size","type","dateLastModified","attributes","mode","directory"},
-				listOnlyNames?new String[]{"VARCHAR"}:new String[]{"VARCHAR","DOUBLE","VARCHAR","DATE","VARCHAR","VARCHAR","VARCHAR"},
-				           //new String[]{"VARCHAR","DOUBLE","VARCHAR","DATE","VARCHAR","VARCHAR","VARCHAR"},
-                0,"query");
+				listOnlyNames?new String[]{"name"}:names,
+				listOnlyNames?new String[]{"VARCHAR"}:types,
+				0,"query");
 		
 		
 		
 		if(!StringUtil.isEmpty(name))pageContext.setVariable(name,query);
 	    if(!directory.exists()){
-			if(directory instanceof FileResource) return;
+	    	if(directory instanceof FileResource) return;
 			throw new ApplicationException("directory ["+directory.toString()+"] doesn't exist");
 		}
 		if(!directory.isDirectory()){
@@ -324,7 +334,7 @@ public final class Directory extends TagImpl  {
         	   if(recurse || type!=TYPE_ALL)_fillNamesRec("",query, directory, filter, 0);
         	   else _fillNames(query, directory, wdf, 0);
            }
-           else _fill(query,directory,filter,0);
+           else _fill(query,directory,filter,0,hasMeta);
         } catch (IOException e) {
             throw Caster.toPageException(e);
         }
@@ -356,7 +366,7 @@ public final class Directory extends TagImpl  {
 	
 
 
-    private int _fill(Query query, Resource directory, ResourceFilter filter, int count) throws PageException, IOException {
+    private int _fill(Query query, Resource directory, ResourceFilter filter, int count, boolean hasMeta) throws PageException, IOException {
     	//long start=System.currentTimeMillis();
     	Resource[] list=directory.listResources();
     	
@@ -373,20 +383,21 @@ public final class Directory extends TagImpl  {
                 isDir=list[i].isDirectory();
                 query.setAt(SIZE,count,new Double(isDir?0:list[i].length()));
                 query.setAt(TYPE,count,isDir?"Dir":"File");
-                //if(SystemUtil.isUnix())query.setAt("mode",count,ModeUtil.toStringMode(list[i].getMode()));
-                //if(SystemUtil.isUnix())query.setAt("mode",count,new ModeObjectWrap(list[i]));
-                //if(directory.getResourceProvider().isModeSupported() && !(directory instanceof FileResource)){
                 if(directory.getResourceProvider().isModeSupported()){
                         	
                 	query.setAt(MODE,count,new ModeObjectWrap(list[i]));
                 }
                 query.setAt(DATE_LAST_MODIFIED,count,new Date(list[i].lastModified()));
                 query.setAt(ATTRIBUTES,count,getFileAttribute(list[i],true));
-
+                
+                if(hasMeta){
+                	query.setAt(META,count,((ResourceMetaData)list[i]).getMetaData());
+                }
+                
         		query.setAt(DIRECTORY,count,dir);
             }   
             if(recurse && list[i].isDirectory())
-                count=_fill(query,list[i],filter,count);
+                count=_fill(query,list[i],filter,count,hasMeta);
         }
         return count;
     }

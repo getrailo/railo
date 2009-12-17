@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.io.IOUtil;
 import railo.commons.lang.ByteBuffer;
+import railo.runtime.net.http.ReqRspUtil;
 
 /**
  * Implementation of a JSpWriter
@@ -173,12 +174,12 @@ public class JspWriterImplByteBuffer extends CFMLWriter {
     
     private void _writeOut(OutputStream os,boolean writeLength) throws IOException {
         if(headData==null) {
-        	if(writeLength)response.setContentLength(buffer.size());
+        	if(writeLength)ReqRspUtil.setContentLength(response,buffer.size());
             buffer.writeOut(os);
             return;
             //return buffer.toString();
         }
-        if(writeLength)response.setContentLength(buffer.size()+headData.getBytes(charset).length);
+        if(writeLength)ReqRspUtil.setContentLength(response,buffer.size()+headData.getBytes(charset).length);
         
         String str=buffer.toString();
         Writer writer = IOUtil.getWriter(os, charset);

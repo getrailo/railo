@@ -15,7 +15,7 @@ import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
  */
 public final class Transaction extends BodyTagTryCatchFinallyImpl {
         
-    private boolean hasBody;
+    //private boolean hasBody;
     private int isolation=Connection.TRANSACTION_NONE;
     private String action=null;
     private boolean innerTag=false;
@@ -24,7 +24,7 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
      * @see railo.runtime.ext.tag.BodyTagImpl#release()
      */
     public void release() {
-        hasBody=false;
+        //hasBody=false;
         isolation=Connection.TRANSACTION_NONE;
         action=null;
         innerTag=false;
@@ -59,7 +59,7 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
     	DataSourceManager manager = pageContext.getDataSourceManager();
         // first transaction
         if(manager.isAutoCommit()) {
-            if(!hasBody)throw new DatabaseException("transcation tag with no end Tag can only be used inside a transaction tag",null,null,null);
+            //if(!hasBody)throw new DatabaseException("transaction tag with no end Tag can only be used inside a transaction tag",null,null,null);
             manager.begin(isolation);
             return EVAL_BODY_INCLUDE;
         }
@@ -99,8 +99,8 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
     /**
      * @param hasBody
      */
-    public void hasBody(boolean hasBody) {
-        this.hasBody=hasBody;
+    public void hasBody(boolean hasBody) {//print.out("hasBody"+hasBody);
+        //this.hasBody=hasBody;
     }
 
     /**

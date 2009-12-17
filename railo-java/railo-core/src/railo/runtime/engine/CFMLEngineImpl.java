@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -43,6 +42,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
 import railo.runtime.net.http.HTTPServletRequestWrap;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.CastImpl;
 import railo.runtime.op.CreationImpl;
 import railo.runtime.op.DecisionImpl;
@@ -296,7 +296,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
     		rsp.sendError(404);
     	}
     	else {
-    		rsp.setContentLength((int)res.length());
+    		ReqRspUtil.setContentLength(rsp,res.length());
     		String mt = servlet.getServletContext().getMimeType(req.getServletPath());
     		if(!StringUtil.isEmpty(mt))rsp.setContentType(mt);
     		IOUtil.copy(res, rsp.getOutputStream(), true);

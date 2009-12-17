@@ -6,6 +6,8 @@ import java.io.Writer;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import railo.runtime.net.http.ReqRspUtil;
+
 /**
  * Implementation of a JSpWriter
  */
@@ -197,7 +199,7 @@ public class JspWriterImplStringBuffer extends CFMLWriter {
         if(out==null) { 
         	out=response.getWriter();
         	byte[] barr = _toString().getBytes(response.getCharacterEncoding());
-            response.setContentLength(barr.length);
+        	ReqRspUtil.setContentLength(response,barr.length);
             ServletOutputStream os = response.getOutputStream();
             os.write(barr);
             out.flush();

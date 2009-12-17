@@ -17,11 +17,11 @@ public class RamCacheEntry implements CacheEntry {
 	private long accessed;
 	private int hitCount;
 
-	public RamCacheEntry(String key, Object value, Long idleTime, Long until) {
+	public RamCacheEntry(String key, Object value, long idleTime, long until) {
 		this.key=key;
 		this.value=value;
-		this.idleTime=idleTime==null?Long.MIN_VALUE:idleTime.longValue();
-		this.until=until==null?Long.MIN_VALUE:until.longValue();
+		this.idleTime=idleTime;
+		this.until=until;
 		created=modifed=accessed=System.currentTimeMillis();
 		hitCount=1;
 	}

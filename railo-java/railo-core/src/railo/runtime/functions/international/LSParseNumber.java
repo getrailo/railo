@@ -1,19 +1,15 @@
 package railo.runtime.functions.international;
 
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.Locale;
 import java.util.WeakHashMap;
 
-import railo.print;
-import railo.commons.lang.ParserString;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.i18n.LocaleFactory;
-import railo.runtime.op.Caster;
 
 /**
  * Implements the Cold Fusion Function lsparsecurrency
