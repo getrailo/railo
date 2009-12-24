@@ -26,7 +26,7 @@ import railo.transformer.bytecode.util.Types;
 import railo.transformer.library.function.FunctionLibFunction;
 
 public final class Variable extends ExpressionBase implements Invoker {
-	
+	 
 
 
 	// java.lang.Object get(java.lang.String)

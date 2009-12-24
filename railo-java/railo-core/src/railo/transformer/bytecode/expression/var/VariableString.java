@@ -24,7 +24,7 @@ public final class VariableString extends ExpressionBase implements ExprString {
 		super(expr.getLine());
 		this.expr=expr;
 	}
-
+ 
 	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
 		return translateVariableToExprString(expr).writeOut(bc, mode);
 	}
