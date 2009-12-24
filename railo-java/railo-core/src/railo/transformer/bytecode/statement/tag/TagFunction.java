@@ -19,7 +19,7 @@ import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.Function;
 import railo.transformer.bytecode.statement.IFunction;
-
+ 
 public final class TagFunction extends TagBase implements IFunction {
 
 	private static final ExprString ANY = LitString.toExprString("any", -1);
