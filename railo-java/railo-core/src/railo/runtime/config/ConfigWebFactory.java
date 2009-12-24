@@ -29,6 +29,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.digest.MD5;
 import railo.commons.io.DevNullOutputStream;
@@ -39,6 +40,7 @@ import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
@@ -71,6 +73,9 @@ import railo.runtime.dump.DumpWriterEntry;
 import railo.runtime.dump.HTMLDumpWriter;
 import railo.runtime.dump.SimpleHTMLDumpWriter;
 import railo.runtime.dump.TextDumpWriter;
+import railo.runtime.engine.ConsoleExecutionLog;
+import railo.runtime.engine.ExecutionLog;
+import railo.runtime.engine.ExecutionLogFactory;
 import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -88,6 +93,9 @@ import railo.runtime.listener.ClassicAppListener;
 import railo.runtime.listener.MixedAppListener;
 import railo.runtime.listener.ModernAppListener;
 import railo.runtime.listener.NoneAppListener;
+import railo.runtime.net.amf.AMFCaster;
+import railo.runtime.net.amf.ClassicAMFCaster;
+import railo.runtime.net.amf.ModernAMFCaster;
 import railo.runtime.net.mail.Server;
 import railo.runtime.net.mail.ServerImpl;
 import railo.runtime.net.proxy.ProxyData;
@@ -328,6 +336,7 @@ public final class ConfigWebFactory {
         loadListener(cs,config,doc);
     	loadDumpWriter(cs, config, doc);
     	loadGateway(configServer,config,doc);
+    	loadExeLog(configServer,config,doc);
     	config.setLoadTime(System.currentTimeMillis());
     	
     	ThreadLocalConfig.release();
@@ -527,6 +536,14 @@ public final class ConfigWebFactory {
         config.setSecurityKey(securityKey);
     }
 
+
+    public static void reloadLib(ConfigImpl config) throws IOException {
+    	if(config instanceof ConfigWebImpl)
+    		loadLib(((ConfigWebImpl)config).getConfigServerImpl(), config);
+    	else 
+    		loadLib(null, config);
+    }
+    
     private static void loadLib(ConfigServerImpl configServer, ConfigImpl config) throws IOException {
     	Resource lib = config.getConfigDir().getRealResource("lib");
     	lib.mkdir();
@@ -547,19 +564,31 @@ public final class ConfigWebFactory {
     		trgs[libs.length]=classes;
     		
     		ResourceClassLoader cl = (ResourceClassLoader) config.getClassLoader();
-    		if(cl!=null){
+    		
+    		// are files removed
+    		if(cl==null){
+    			config.setClassLoader(new ResourceClassLoader(trgs,pcl));
+    		}
+    		else {
     			Resource[] srcs = cl.getResources();
     			if(equal(srcs,trgs))return;	
+
+    			Resource[] removed = getNewResources(trgs,srcs);
+	    		if(removed.length>0){
+	    			config.setClassLoader(new ResourceClassLoader(trgs,pcl));
+	    		}
+	    		else{
+	    			cl.addResources(getNewResources(srcs,trgs));
+	    		}
     		}
-    		//print.out(trgs);
-    		config.setClassLoader(new ResourceClassLoader(trgs,pcl));
+    		
     	}
-    	else
+    	else{
     		config.setClassLoader(new ResourceClassLoader(new Resource[0],pcl));
-    	
+    	}
     }
     
-	private static boolean equal(Resource[] srcs, Resource[] trgs) {
+    private static boolean equal(Resource[] srcs, Resource[] trgs) {
 		if(srcs.length!=trgs.length) return false;
 		Resource src;
 		outer:for(int i=0;i<srcs.length;i++){
@@ -570,6 +599,19 @@ public final class ConfigWebFactory {
 			return false;
 		}
 		return true;
+	}
+    
+    private static Resource[] getNewResources(Resource[] srcs, Resource[] trgs) {
+    	Resource trg;
+		java.util.List<Resource> list=new ArrayList<Resource>();
+		outer:for(int i=0;i<trgs.length;i++){
+			trg=trgs[i];
+			for(int y=0;y<srcs.length;y++){
+				if(trg.equals(srcs[y]))continue outer;
+			}
+			list.add(trg);
+		}
+		return list.toArray(new Resource[list.size()]);
 	}
 
 
@@ -1364,6 +1406,87 @@ public final class ConfigWebFactory {
         else if(configServer!=null)config.setAMFCaster(config.getAMFCasterClass(), config.getAMFCasterArguments());
         
         
+    }
+    
+    private static void loadExeLog(ConfigServerImpl configServer, ConfigImpl config,Document doc) {
+        
+    	boolean hasServer=configServer!=null;
+    	
+        Element el= getChildByName(doc.getDocumentElement(),"execution-log");
+        
+        // enabled
+        Boolean bEnabled = Caster.toBoolean(el.getAttribute("enabled"),null);
+        if(bEnabled==null){
+        	if(hasServer)config.setExecutionLogEnabled(configServer.getExecutionLogEnabled());
+        }
+        else 
+        	config.setExecutionLogEnabled(bEnabled.booleanValue());
+       
+        boolean hasChanged=false;
+        String val=Caster.toString(config.getExecutionLogEnabled());
+        try {
+			Resource contextDir = config.getConfigDir();
+			Resource exeLog=contextDir.getRealResource("exe-log");
+			
+	        if(!exeLog.exists()) {
+	        	exeLog.createNewFile();
+	            IOUtil.write(exeLog,val,SystemUtil.getCharset(),false);
+	            hasChanged= true;
+	        }
+	        else if(!IOUtil.toString(exeLog,SystemUtil.getCharset()).equals(val)) {
+	            IOUtil.write(exeLog,val,SystemUtil.getCharset(),false);
+	            hasChanged= true;
+	        }
+		} 
+		catch (IOException e) {}
+        
+        
+		if(hasChanged) {
+        	try {
+				config.getDeployDirectory().remove(true);
+			} 
+        	catch (IOException e) {
+				e.printStackTrace(config.getErrWriter());
+			}
+        }
+        
+        
+        
+        
+        // class
+        String strClass = el.getAttribute("class");
+        Class clazz;
+        if(!StringUtil.isEmpty(strClass)){
+	        try{
+				if("console".equalsIgnoreCase(strClass)) 
+					clazz=ConsoleExecutionLog.class;
+		        else {
+		        	Class c = ClassUtil.loadClass(strClass);
+		        	if((c.newInstance() instanceof ExecutionLog)) {
+		        		clazz=c;
+		        	}
+		        	else {
+		        		clazz=ConsoleExecutionLog.class;
+		        		SystemOut.printDate(config.getErrWriter(),"class ["+strClass+"] must implement the interface "+ExecutionLog.class.getName());
+		        	}
+		        }
+	        }
+	        catch(Exception e){
+	        	clazz=ConsoleExecutionLog.class;
+	        }
+	     // arguments
+	        String strArgs = el.getAttribute("arguments");
+	        if(StringUtil.isEmpty(strArgs))strArgs = el.getAttribute("class-arguments");
+	        Map<String, String> args = toArguments(strArgs);
+
+	        config.setExecutionLogFactory(new ExecutionLogFactory(clazz,args));
+        }
+        else {
+        	if(hasServer)
+        		config.setExecutionLogFactory(configServer.getExecutionLogFactory());
+        	else
+        		config.setExecutionLogFactory(new ExecutionLogFactory(ConsoleExecutionLog.class,new HashMap<String, String>()));
+        }
     }
     
     

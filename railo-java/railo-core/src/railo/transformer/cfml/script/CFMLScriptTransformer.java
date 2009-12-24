@@ -1,7 +1,13 @@
 package railo.transformer.cfml.script;
 
+import javax.swing.plaf.ComponentUI;
+
+
+import railo.print;
+import railo.runtime.Component;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.system.CFFunction;
+import railo.runtime.type.util.ComponentUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeException;
@@ -29,6 +35,7 @@ import railo.transformer.bytecode.statement.While;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.expression.CFMLExprTransformer;
+import railo.transformer.cfml.expression.CFMLExprTransformer.Data;
 import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.cfml.tag.TagDependentBodyTransformer;
 import railo.transformer.library.function.FunctionLib;
@@ -505,8 +512,66 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @throws TemplateException
 	 */
 	public Function funcStatement(Data data,Body parent) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent("function "))
+		int pos=data.cfml.getPos();
+		
+		// access modifier
+		String strAccess=variableDeclaration(data, false, false);
+		if(strAccess==null) {
+			data.cfml.setPos(pos);
 			return null;
+		}
+		
+		String rtnType=null;
+		
+		if(strAccess.equalsIgnoreCase("FUNCTION")){
+			/*if(!data.cfml.forwardIfCurrent(' ')){
+				data.cfml.setPos(pos);
+				return null;
+			}*/
+			strAccess=null;
+		}
+		else{
+			comments(data.cfml);
+			rtnType=variableDeclaration(data, false, false);
+			
+			if(rtnType==null){
+				data.cfml.setPos(pos);
+				return null;
+			}
+			if(rtnType.equalsIgnoreCase("FUNCTION")){
+				/*if(!data.cfml.forwardIfCurrent(' ')){
+					data.cfml.setPos(pos);
+					return null;
+				}*/
+				rtnType=null;
+			}
+			comments(data.cfml);
+			
+			if(rtnType!=null && !data.cfml.forwardIfCurrent("function ")){
+				data.cfml.setPos(pos);
+				return null;
+			}
+			comments(data.cfml);
+		}
+		
+		
+		// check access returntype
+		int access=Component.ACCESS_PUBLIC;
+		if(strAccess!=null && rtnType!=null){
+			access = ComponentUtil.toIntAccess(strAccess,-1);
+			if(access==-1)
+				throw new TemplateException(data.cfml,"invalid access type ["+strAccess+"], access types are remote, public, package, private");
+		}
+		if(strAccess!=null && rtnType==null){
+			access = ComponentUtil.toIntAccess(strAccess,-1);
+			if(access==-1){
+				rtnType=strAccess;
+				strAccess=null;
+				access=Component.ACCESS_PUBLIC;
+			}
+		}
+		
+		
 		
 		int line=data.cfml.getLine();
 		
@@ -515,15 +580,14 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		// Name
 			String id=identifier(data,false,false);
 			if(id==null) throw new TemplateException(data.cfml,"invalid name for a function");
-			
-			
+						
 			if(!data.isCFC){
 				FunctionLibFunction flf = getFLF(data,id);
 				if(flf!=null && flf.getCazz()!=CFFunction.class)throw new TemplateException(data.cfml,"The name ["+id+"] is already used by a Build in Function");
 			}
 				
 			Body body=new FunctionBody();
-			Function func=new Function(id,body,line,-1);
+			Function func=new Function(id,access,rtnType,body,line,-1);
 
 		// start (
 			comments(data.cfml);
@@ -582,6 +646,162 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		return func;
 	}
 
+	protected String variableDeclaration(Data data,boolean firstCanBeNumber,boolean upper) {
+		
+		String id=identifier(data, firstCanBeNumber, upper);
+		if(id==null) return null;
+		
+		StringBuffer rtn=new StringBuffer(id);
+		data.cfml.removeSpace();
+		
+		while(data.cfml.forwardIfCurrent('.')){
+			data.cfml.removeSpace();
+			rtn.append('.');
+			id=identifier(data, firstCanBeNumber, upper);
+			if(id==null)return null;
+			rtn.append(id);
+			data.cfml.removeSpace();
+		}
+		
+		while(data.cfml.forwardIfCurrent("[]")){
+			data.cfml.removeSpace();
+			rtn.append("[]");
+		}
+		return rtn.toString();
+	}
+
+	public Function funcStatementOld(Data data,Body parent) throws TemplateException {
+		// access modifier
+		int pos=data.cfml.getPos();
+		
+		
+		String strAccess=identifier(data,false,false);
+		if(strAccess==null) return null;
+		
+		String rtnType=null;
+		
+		if(strAccess.equals("function")){
+			if(!data.cfml.forwardIfCurrent(' ')){
+				data.cfml.setPos(pos);
+				return null;
+			}
+			strAccess=null;
+		}
+		else{
+			comments(data.cfml);
+			rtnType=identifier(data,false,false);
+			
+			if(rtnType==null){
+				data.cfml.setPos(pos);
+				return null;
+			}
+			if(rtnType.equals("function")){
+				if(!data.cfml.forwardIfCurrent(' ')){
+					data.cfml.setPos(pos);
+					return null;
+				}
+				rtnType=null;
+			}
+			comments(data.cfml);
+			
+			if(rtnType!=null && !data.cfml.forwardIfCurrent("function ")){
+				data.cfml.setPos(pos);
+				return null;
+			}
+			comments(data.cfml);
+		}
+
+		// check access returntype
+		int access=Component.ACCESS_PUBLIC;
+		if(strAccess!=null && rtnType!=null){
+			access = ComponentUtil.toIntAccess(strAccess,-1);
+			if(access==-1)
+				throw new TemplateException(data.cfml,"invalid access type ["+strAccess+"], access types are remote, public, package, private");
+		}
+		if(strAccess!=null && rtnType==null){
+			access = ComponentUtil.toIntAccess(strAccess,-1);
+			if(access==-1){
+				rtnType=strAccess;
+				strAccess=null;
+				access=Component.ACCESS_PUBLIC;
+			}
+		}
+		
+		
+		
+		int line=data.cfml.getLine();
+		
+		comments(data.cfml);
+		
+		// Name
+			String id=identifier(data,false,false);
+			if(id==null) throw new TemplateException(data.cfml,"invalid name for a function");
+						
+			if(!data.isCFC){
+				FunctionLibFunction flf = getFLF(data,id);
+				if(flf!=null && flf.getCazz()!=CFFunction.class)throw new TemplateException(data.cfml,"The name ["+id+"] is already used by a Build in Function");
+			}
+				
+			Body body=new FunctionBody();
+			Function func=new Function(id,access,rtnType,body,line,-1);
+
+		// start (
+			comments(data.cfml);
+			if(!data.cfml.forwardIfCurrent('('))
+				throw new TemplateException(data.cfml,"invalid syntax in function head, missing begin [(]");
+		
+			// arguments
+			do	{
+				comments(data.cfml);
+				// finish
+				if(data.cfml.isCurrent(')'))break;
+				
+				// attribute
+				
+				// name
+				String idName=identifier(data,false,true);
+				String typeName="any";
+				if(idName==null) throw new TemplateException(data.cfml,"invalid argument definition");
+				comments(data.cfml);
+				if(!data.cfml.isCurrent(')') && !data.cfml.isCurrent('=') && !data.cfml.isCurrent(':') && !data.cfml.isCurrent(',')) {
+					typeName=idName.toLowerCase();
+					idName=identifier(data,false,true);
+				}
+				
+				comments(data.cfml);
+				if(data.cfml.isCurrent('=') || data.cfml.isCurrent(':')) {
+					data.cfml.next();
+					comments(data.cfml);
+					func.addArgument(idName,typeName,true,expression(data));
+				}
+				else func.addArgument(idName,typeName,true);
+				
+				
+				comments(data.cfml);
+			}
+			while(data.cfml.forwardIfCurrent(','));
+
+		
+		// end )
+			comments(data.cfml);
+			if(!data.cfml.forwardIfCurrent(')'))
+				throw new TemplateException(data.cfml,"invalid syntax in function head, missing begin [(]");
+		
+		// body
+			
+		boolean oldInsideFunction=data.insideFunction;
+		data.insideFunction=true;
+		try {
+		// ex block
+		statement(data,body);
+		}
+		finally{
+			data.insideFunction=oldInsideFunction;
+		}
+		func.setEndLine(data.cfml.getLine());
+		return func;
+	}
+	
 	/**
 	 * Liest ein return Statement ein.
 	 * <br />

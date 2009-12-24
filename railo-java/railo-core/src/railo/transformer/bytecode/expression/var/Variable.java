@@ -338,35 +338,7 @@ public final class Variable extends ExpressionBase implements Invoker {
     	return Types.OBJECT;
 	}
 	
-	/* *
-	 * outputs variable without function call and less than 7 elements
-	 * example: pc.undefinedScope().get("a","b");
-	 * @param adapter
-	 * @throws TemplateException
-	 * /
-	private Type _writeOutDataOnlyShort(BytecodeContext bc) throws BytecodeException {
-		//	only a single data member called
-    	// pc.scope().get(k1)
-    	//if(countDM==1)	{
-    		adapter.loadArg(0);
-    		adapter.invokeVirtual(Types.PAGE_CONTEXT,TypeScope.METHODS[scope]);
-    		((DataMember)members.get(0)).getName().writeOut(bc, MODE_REF);
-    		adapter.invokeInterface(TypeScope.SCOPES[scope],METHODS_SCOPE_GET[0]);
-    		
-    	/ *}
-    	// more than one and less than 7 called
-    	// pc.get(pc.scope(),k1,k2,..., kn)
-    	else {
-    		adapter.loadArg(0);
-    		adapter.loadArg(0);
-    		adapter.invokeVirtual(Types.PAGE_CONTEXT,TypeScope.METHODS[scope]);
-    		for(int i=0;i<countDM;i++) {
-    			((DataMember)members.get(i)).getName().writeOut(bc, MODE_REF);
-    		}
-    		adapter.invokeVirtual(Types.PAGE_CONTEXT,METHODS_SCOPE_GET[countDM-1]);
-    	}* /
-    	return Types.OBJECT;
-	}*/
+	
 
 	/**
 	 * @return the members
@@ -390,23 +362,6 @@ public final class Variable extends ExpressionBase implements Invoker {
 		if(members.isEmpty()) return null;
 		return (Member) members.get(members.size()-1);
 	}
-
-	/*public int getType() {
-		return Types._OBJECT;
-	}*/
-
-	
-	
-	
-	
-	
-	
-
-	
-
-	
-	
-
 	
 	
 }

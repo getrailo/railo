@@ -50,6 +50,7 @@ public final class TimeSpanImpl implements TimeSpan {
 		tmp-=second*1000;
 		milli=(int) tmp;
 		
+		this.valueMillis=valueMillis;
 		/*day=(int)value;
 		double diff=value-day;
 		diff*=24;

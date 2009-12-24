@@ -836,6 +836,18 @@ public class CFMLExprTransformer implements ExprTransformer {
 			throw new TemplateException(data.cfml,"Syntax Error, Invalid Construct");	
 	}
 	
+	protected Expression variable(Data data) throws TemplateException {
+		Expression expr=null;
+		
+		// Dynamic
+		if((expr=dynamic(data))!=null) {
+			expr = subDynamic(data,expr);
+			data.mode=DYNAMIC;
+			return expr;
+		} 
+		return null;
+	}
+	
 	/**
 	* Transfomiert einen lierale Zeichenkette.
 	* <br />
@@ -1280,7 +1292,6 @@ public class CFMLExprTransformer implements ExprTransformer {
 			return data.cfml.substring(start,data.cfml.getPos()-start).toUpperCase();
 		
 		return data.cfml.substring(start,data.cfml.getPos()-start);
-		
 	}
 
 	/**

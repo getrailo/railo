@@ -7895,6 +7895,13 @@ Permits searching collections by title or displaying a separate title from the k
 		CFML tags within the cfprocessingdirective block.</description>
 		</attribute>
 		<attribute>
+			<type>boolean</type>
+			<name>executionlog</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Boolean indicating whether to write execution log or not.</description>
+		</attribute>
+		<attribute>
 			<type>string</type>
 			<name>pageEncoding</name>
 			<required>false</required>

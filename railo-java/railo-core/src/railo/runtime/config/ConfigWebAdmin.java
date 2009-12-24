@@ -1,5 +1,6 @@
 package railo.runtime.config;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -2694,8 +2695,9 @@ public final class ConfigWebAdmin {
 		Resource fileLib = lib.getRealResource(resJar.getName());
 		
 		if(fileLib.length()!=resJar.length()){
+			IOUtil.closeEL(config.getClassLoader());
 			ResourceUtil.copy(resJar, fileLib);
-			new ResourceClassLoader(new Resource[]{fileLib},config.getClass().getClassLoader());
+			ConfigWebFactory.reloadLib(this.config);
 		}
 	}
 	
@@ -2782,18 +2784,35 @@ public final class ConfigWebAdmin {
 		
 	}
 
-	public void removeJar(String name) throws IOException {
+	public void removeJar(String strNames) throws IOException {
+		
+		
 		Resource lib = config.getConfigDir().getRealResource("lib");
 		boolean changed=false;
 		if(lib.isDirectory()){
-			Resource[] children = lib.listResources(new MyResourceNameFilter(name));
-			for(int i=0;i<children.length;i++){
-				children[i].remove(false);
-				changed=true;
+			String[] names = List.listToStringArray(strNames, ',');
+			for(int n=0;n<names.length;n++){
+				Resource[] children = lib.listResources(new MyResourceNameFilter(names[n].trim()));
+				for(int i=0;i<children.length;i++){
+					try {
+						changed=true;
+						IOUtil.closeEL(config.getClassLoader());
+						children[i].remove(false);
+					} 
+					catch (IOException ioe) {
+						if(children[i] instanceof File)
+							((File)children[i]).deleteOnExit();
+						else{
+							ConfigWebFactory.reloadLib(this.config);
+							throw ioe;
+						}
+					}
+				}
 			}
 		}
 		if(changed){
-			new ResourceClassLoader(lib.listResources(),config.getClass().getClassLoader());
+			ConfigWebFactory.reloadLib(this.config);
+			//new ResourceClassLoader(lib.listResources(),config.getClass().getClassLoader());
 		}
 	}
 

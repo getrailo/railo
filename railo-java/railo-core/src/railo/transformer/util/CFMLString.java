@@ -50,6 +50,8 @@ public final class CFMLString {
 	protected SourceFile sf;
 
 	private String charset;
+
+	private boolean writeLog;
 	
 	private static final String NL=System.getProperty("line.separator");
 
@@ -58,8 +60,8 @@ public final class CFMLString {
 	 * @param sf CFML Source File
 	 * @throws IOException 
 	 */
-	public CFMLString(SourceFile sf,String charset) throws IOException {
-
+	public CFMLString(SourceFile sf,String charset,boolean writeLog) throws IOException {
+		this.writeLog=writeLog;
 		this.charset=charset;
 		this.sf=sf;
 		String line;
@@ -98,15 +100,13 @@ public final class CFMLString {
 	public CFMLString(String text,String charset) {
 		init(text.toCharArray());
 		this.charset=charset;
+		this.writeLog=false;
 	}
-	
-	/**
-	 * Diesen Konstruktor kann er CFML Code als char[] übergeben werden.
-	 * @param text CFML Code
-	 * /
-	public CFMLString(char[] text) {
-		init(text);
-	}*/
+	public CFMLString(String text,String charset,boolean writeLog) {
+		init(text.toCharArray());
+		this.charset=charset;
+		this.writeLog=writeLog;
+	}
 	
 	/**
 	 * Gemeinsame Initialmethode der drei Konstruktoren, diese erhält den CFML Code als 
@@ -609,7 +609,7 @@ public final class CFMLString {
 	* @return Untermenge als CFMLString
 	*/
    public CFMLString subCFMLString(int start, int count) {
-   		return new CFMLString(String.valueOf(text,start,count),charset);
+   		return new CFMLString(String.valueOf(text,start,count),charset,writeLog);
    		
    }
 	
@@ -786,5 +786,10 @@ public final class CFMLString {
 
 	public String getCharset() {
 		return charset;
+	}
+
+
+	public boolean getWriteLog() {
+		return writeLog;
 	}
 }

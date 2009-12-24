@@ -96,7 +96,6 @@ public final class MappingImpl implements Mapping {
                 config);
         if(archive!=null) {
             try {
-                //archiveClassLoader = new URLClassLoader(new URL[]{archive.toURL()},getClass().getClassLoader());
                 archiveClassLoader = new ArchiveClassLoader(archive,getClass().getClassLoader());
             } 
             catch (Throwable t) {
@@ -273,7 +272,6 @@ public final class MappingImpl implements Mapping {
                 if(archive!=null) {
                     try {
                         archiveClassLoader = new ArchiveClassLoader(archive,getClass().getClassLoader());
-                        //archiveClassLoader = new URLClassLoader(new URL[]{archive.toURL()},getClass().getClassLoader());
                     } 
                     catch (MalformedURLException e) {
                         archive=null;

@@ -32,9 +32,10 @@ public class BytecodeContext {
 	
 	private String id=id();
 
-	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,List keys,ClassWriter classWriter,String className, GeneratorAdapter adapter,Method method) {
+	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,List keys,ClassWriter classWriter,String className, GeneratorAdapter adapter,Method method,boolean writeLog) {
 		this.classWriter = classWriter;
 		this.className = className;
+		this.writeLog = writeLog;
 		this.adapter = adapter;
 		this.keys = keys;
 		this.method=method;
@@ -45,6 +46,8 @@ public class BytecodeContext {
 	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,List keys,BytecodeContext bc, GeneratorAdapter adapter,Method method) {
 		this.classWriter = bc.getClassWriter();
 		this.className = bc.getClassName();
+		this.writeLog = bc.writeLog();
+		
 		this.adapter = adapter;
 		this.keys = keys;
 		this.method=method;
@@ -130,6 +133,7 @@ public class BytecodeContext {
 	private int currentTag;
 	private int line;
 	private BytecodeContext root;
+	private boolean writeLog;
 	//private static BytecodeContext staticConstr;
 	public void pushTryCatchFinallyData(TryCatchFinallyData data) {
 		tcf.push(data);
@@ -201,6 +205,10 @@ public class BytecodeContext {
 	}
 	public void setRoot(BytecodeContext root) {
 		this.root= root;
+	}
+
+	public boolean writeLog() {
+		return this.writeLog;
 	}
 
 }

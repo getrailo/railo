@@ -38,6 +38,7 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
+import railo.print;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -62,6 +63,7 @@ import railo.runtime.debug.DebugEntry;
 import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.dump.DumpUtil;
+import railo.runtime.engine.ExecutionLog;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.err.ErrorPagePool;
 import railo.runtime.exp.Abort;
@@ -253,6 +255,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private PageContextImpl parent;
 	private Map conns=new HashMap();
 	private boolean fdEnabled;
+	private ExecutionLog execLog;
 
 	public long sizeOf() {
 		
@@ -407,7 +410,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		activeUDF=null;
 		
 		fdEnabled=!config.getCFMLEngineImpl().allowRequestTimeout();
-		//fdEnabled=true;
+		
+		if(config.getExecutionLogEnabled())
+			this.execLog=config.getExecutionLogFactory().getInstance(this);
+		
         return this;
 	 }
 	
@@ -510,6 +516,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         
         activeComponent=null;
         activeUDF=null;
+        execLog=null;
 	}
 	/**
 	 * @see javax.servlet.jsp.PageContext#initialize(javax.servlet.Servlet, javax.servlet.ServletRequest, javax.servlet.ServletResponse, java.lang.String, boolean, int, boolean)
@@ -2499,6 +2506,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	
 	public void setPageUsed(Page page) {
 		pagesUsed.add(""+page.hashCode());
+	}
+
+	public void exeLogEndline(int line){
+		execLog.endline(line);
+	}
+	public void exeLogStart(){
+		execLog.start();
 	}
 	
 }

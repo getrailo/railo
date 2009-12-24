@@ -5,6 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.TemplateException;
+import railo.runtime.type.util.ComponentUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
@@ -122,7 +125,7 @@ public final class TagFunction extends TagBase implements IFunction {
 
 	}
 
-	private Function createFunction(Body body) {
+	private Function createFunction(Body body) throws BytecodeException {
 		Attribute attr;
 
 		// name
@@ -171,9 +174,13 @@ public final class TagFunction extends TagBase implements IFunction {
 		// verifyClient
 		attr = removeAttribute("verifyclient");
 		Expression verifyClient = (attr == null) ? null : attr.getValue();
-
-
-		Function func = new Function(name, returnType,returnFormat, output,abstr, access, displayname,description,
+		
+		String strAccess = ((LitString)access).getString();
+		int acc = ComponentUtil.toIntAccess(strAccess,-1);
+		if(acc==-1)
+			throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getLine());
+        
+		Function func = new Function(name, returnType,returnFormat, output,abstr, acc, displayname,description,
 				hint,secureJson,verifyClient, body, getStartLine(),getEndLine());
 		
 //		 %**%

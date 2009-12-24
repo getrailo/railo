@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -368,6 +369,19 @@ public final class IOUtil {
          //catch (AlwaysThrow at) {throw at;}
          catch (Throwable e) {}
        }
+
+     
+     /**
+      * close Closeable without a Exception
+      * @param r 
+      */
+     public static void closeEL(Closeable c ) {
+           try {
+               if(c!=null)c.close();
+         } 
+         //catch (AlwaysThrow at) {throw at;}
+         catch (Throwable e) {}
+       }
      
      /**
       * close Writer without a Exception
@@ -411,6 +425,7 @@ public final class IOUtil {
          else if(obj instanceof OutputStream)   IOUtil.closeEL((OutputStream)obj);
          else if(obj instanceof Writer)         IOUtil.closeEL((Writer)obj);
          else if(obj instanceof Reader)         IOUtil.closeEL((Reader)obj);
+         else if(obj instanceof Closeable)         IOUtil.closeEL((Closeable)obj);
          else if(obj instanceof ZipFile)        {
         	 try {
                  ((ZipFile)obj).close();

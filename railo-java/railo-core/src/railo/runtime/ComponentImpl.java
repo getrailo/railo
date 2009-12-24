@@ -22,6 +22,7 @@ import railo.runtime.component.DataMember;
 import railo.runtime.component.InterfaceCollection;
 import railo.runtime.component.Member;
 import railo.runtime.component.Property;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.debug.DebugEntry;
@@ -1212,7 +1213,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             sct.set(NAME,ps.getComponentName());
             sct.set(PATH,ps.getDisplayPath());
             sct.set(TYPE,"component");
-            Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),false,false);
+            Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false);
             if(skeleton !=null)sct.set(SKELETON, skeleton);
             
             if(comp.properties.properties!=null) {
@@ -1593,14 +1594,14 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @throws PageException
      */
     public Class getJavaAccessClass(RefBoolean isNew) throws PageException {
-    	return getJavaAccessClass(isNew, true,true);
+    	return getJavaAccessClass(isNew, false,true,true);
     }
 
-    public Class getJavaAccessClass(RefBoolean isNew, boolean takeTop, boolean create) throws PageException {
+    public Class getJavaAccessClass(RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create) throws PageException {
     	isNew.setValue(false);
     	ComponentProperties props =(takeTop)?top.properties:properties;
     	if(props.javaAccessClass==null) {
-    		props.javaAccessClass=ComponentUtil.getComponentJavaAccess(this,isNew,create);
+    		props.javaAccessClass=ComponentUtil.getComponentJavaAccess(this,isNew,create,writeLog);
 		}
     	return props.javaAccessClass;
     }

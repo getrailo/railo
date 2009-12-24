@@ -6,7 +6,9 @@ import java.util.Map;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
+import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.BytecodeContext;
@@ -16,6 +18,16 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
 
 public final class ExpressionUtil {
+
+	public static final Method END_LINE = new Method(
+			"exeLogEndline",
+			Types.VOID,
+			new Type[]{Types.INT_VALUE});
+	public static final Method START = new Method(
+			"exeLogStart",
+			Types.VOID,
+			new Type[]{});
+	
 
 	private static Map last=new HashMap();
 
@@ -37,14 +49,17 @@ public final class ExpressionUtil {
      * @param line
      */
     public static synchronized void visitLine(BytecodeContext bc, int line) {
-    	if(line>0 && !(""+line).equals(last.get(bc.getClassName()+":"+bc.getId()))){
-    		bc.visitLineNumber(line);
-    		last.put(bc.getClassName()+":"+bc.getId(),""+line);
-    		last.put(bc.getClassName(),""+line);
+    	if(line>0){
+	    	if(!(""+line).equals(last.get(bc.getClassName()+":"+bc.getId()))){
+	    		writeLog(bc,line-1);
+	    		bc.visitLineNumber(line);
+	    		last.put(bc.getClassName()+":"+bc.getId(),""+line);
+	    		last.put(bc.getClassName(),""+line);
+	    	}
     	}
    }
-   
-    public static synchronized void lastLine(BytecodeContext bc) {
+
+	public static synchronized void lastLine(BytecodeContext bc) {
     	int line = Caster.toIntValue(last.get(bc.getClassName()),-1);
     	visitLine(bc, line);
     }
@@ -71,5 +86,21 @@ public final class ExpressionUtil {
 			return CFTypes.toShort(((LitString)expr).getString(),defaultValue);
 		}
 		return defaultValue;
+	}
+  
+    public static void writeLog(BytecodeContext bc, int line) {
+    	if(!bc.writeLog() || line<0)return;
+		
+    	GeneratorAdapter adapter = bc.getAdapter();
+    	adapter.loadArg(0);
+        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
+        if(line==0){
+            adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, START);
+		}	
+		else{
+			adapter.push(line);
+	        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, END_LINE);
+		}
+		
 	}
 }

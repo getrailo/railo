@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.objectweb.asm.Type;
 
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Scope;
 import railo.runtime.type.scope.ScopeFactory;
 import railo.transformer.bytecode.BytecodeContext;
@@ -32,9 +33,12 @@ public final class VariableString extends ExpressionBase implements ExprString {
 		if(expr instanceof ExprString) return (ExprString) expr;
 		return new VariableString(expr);
 	}
-
+	
 	private static ExprString translateVariableToExprString(Expression expr) throws BytecodeException {
 		if(expr instanceof ExprString) return (ExprString) expr;
+		return LitString.toExprString(translateVariableToString(expr), expr.getLine());
+	}
+	private static String translateVariableToString(Expression expr) throws BytecodeException {
 		if(!(expr instanceof Variable)) throw new BytecodeException("can't translate value to a string",expr.getLine());
 		Variable var=(Variable) expr;
 		List members = var.getMembers();
@@ -57,6 +61,10 @@ public final class VariableString extends ExpressionBase implements ExprString {
 			}
 			else throw new BytecodeException("argument name must be a constant value",var.getLine());
 		}
-		return LitString.toExprString(sb.toString(), var.getLine());
+		return sb.toString();
+	}
+	
+	public String castToString() throws BytecodeException{
+		return translateVariableToString(expr);
 	}
 }

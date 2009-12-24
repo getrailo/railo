@@ -2,6 +2,7 @@ package railo.transformer.cfml.evaluator.impl;
 
 import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
+import railo.runtime.op.Caster;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.evaluator.EvaluatorSupport;
@@ -17,17 +18,34 @@ import railo.transformer.util.CFMLString;
 public final class ProcessingDirective extends EvaluatorSupport {
     
     public TagLib execute(Config config, Tag tag, TagLibTag libTag, FunctionLib[] flibs, CFMLString cfml) throws TemplateException {
-    	//print.ln("im here");
+    	String encoding=null;
+    	Boolean exeLog=null;
+    	
     	if(tag.containsAttribute("pageencoding")) {
-            String encoding=ASMUtil.getAttributeString(tag, "pageencoding",null);
+            encoding=ASMUtil.getAttributeString(tag, "pageencoding",null);
             if(encoding==null)
-            	throw new TemplateException(cfml,"attribute [pageencoding] must be a constant value");
+            	throw new TemplateException(cfml,"attribute [pageencoding] of the tag [processingdirective] must be a constant value");
             
-            if(!encoding.equalsIgnoreCase(cfml.getCharset()) && !"UTF-8".equalsIgnoreCase(cfml.getCharset())) {
-            	throw new ProcessingDirectiveException(cfml,encoding);
-            }
-            // TODO remove supresswhitespace wenn 
+            if(encoding.equalsIgnoreCase(cfml.getCharset()) || "UTF-8".equalsIgnoreCase(cfml.getCharset())) {
+	        	encoding=null;
+	        }
         }
+    	if(tag.containsAttribute("executionlog")) {
+    		String strExeLog=ASMUtil.getAttributeString(tag, "executionlog",null);
+            exeLog=Caster.toBoolean(strExeLog,null);
+            if(exeLog==null)
+            	throw new TemplateException(cfml,"attribute [executionlog] of the tag [processingdirective] must be a constant boolean value");
+            if(exeLog.booleanValue()==cfml.getWriteLog())
+            	exeLog=null;
+        }
+    	
+    	if(encoding!=null || exeLog!=null){
+    		if(encoding==null)	encoding=cfml.getCharset();
+    		if(exeLog==null)exeLog=cfml.getWriteLog()?Boolean.TRUE:Boolean.FALSE;
+	    	throw new ProcessingDirectiveException(cfml,encoding,exeLog);
+    	}
+    	
+    	
     	return null;	
 	}
 }

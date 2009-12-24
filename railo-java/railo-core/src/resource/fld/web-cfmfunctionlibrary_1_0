@@ -169,6 +169,34 @@
 			<type>number</type>
 		</return>
 	</function>
+	<!-- arrayDelete -->
+	<function>
+		<name>arrayDelete</name>
+		<class>railo.runtime.functions.arrays.ArrayDelete</class>
+		<description/>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>value</name>
+			<type>object</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>scope</name>
+			<type>string</type>
+			<required>No</required>
+			<description>
+				one: replaces the first occurrence (default)
+				all: replaces all occurrences
+			</description>
+		</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
 	<!-- arrayDeleteAt -->
 	<function>
 		<name>arrayDeleteAt</name>
@@ -5865,6 +5893,25 @@
 			<type>string</type>
 		</return>
 	</function>
+	<!-- ListCompact -->
+	<function>
+		<name>ListCompact</name>
+		<class>railo.runtime.functions.list.ListCompact</class>
+		<description>remove empty items at the and and at the start of the list</description>
+		<argument>
+			<name>list</name>
+			<type>string</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>delimiters</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
 	<!-- listContains -->
 	<function>
 		<name>listContains</name>
@@ -6079,6 +6126,25 @@
 		</argument>
 		<return>
 			<type>boolean</type>
+		</return>
+	</function>
+	<!-- ListItemTrim -->
+	<function>
+		<name>ListItemTrim</name>
+		<class>railo.runtime.functions.list.ListItemTrim</class>
+		<description/>
+		<argument>
+			<name>list</name>
+			<type>string</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>delimiters</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>string</type>
 		</return>
 	</function>
 	<!-- listLast -->

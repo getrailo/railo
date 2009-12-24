@@ -1,6 +1,7 @@
 package railo.commons.lang;
 
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +18,7 @@ import railo.runtime.type.Sizeable;
 
 // FUTURE hat nichts mit dem hier zutun, es braucht eine methode die mir ein Key Object erzeugt beim casterUtil
 
-public final class ArchiveClassLoader extends ClassLoader implements Sizeable {
+public final class ArchiveClassLoader extends ClassLoader implements Sizeable,Closeable {
     
     private final ZipFile zip;
     private final ClassLoader pcl;
@@ -173,4 +174,8 @@ public final class ArchiveClassLoader extends ClassLoader implements Sizeable {
 	public long sizeOf() {
 		return SizeOf.size(zip);
 	}
+
+	public void close() throws IOException {
+		zip.close();
+	} 
 }

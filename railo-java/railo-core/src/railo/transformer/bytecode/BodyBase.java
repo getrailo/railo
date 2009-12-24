@@ -9,6 +9,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.PrintOut;
@@ -172,6 +173,7 @@ public class BodyBase extends StatementBase implements Body {
 		Method m;
 		BytecodeContext _bc=bc;
 		Iterator it = statements.iterator();
+		int lastLine=-1;
 		while(it.hasNext()) {
 			isOutsideMethod=bc.getMethod().getReturnType().equals(Types.VOID);
 	    	Statement s = ((Statement)it.next());
@@ -206,15 +208,17 @@ public class BodyBase extends StatementBase implements Body {
 				a=null;
 			}
         	s.writeOut(_bc);
+        	if(s.getLine()>0)lastLine=s.getLine();
         }
+		ExpressionUtil.writeLog(bc, lastLine);	
         if(a!=null){
         	a.returnValue();
 			a.endMethod();
         } 
     }
 
-	
 
+    
 
 	/**
 	 *

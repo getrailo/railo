@@ -107,7 +107,6 @@ public final class CreateObject implements Function {
         			reses[i]=ResourceUtil.toResourceExisting(pc,Caster.toString(arrPathes.getE(i+1)));
         		}
         		try {
-        			//ClassLoader cl = new ResourceClassLoader(reses,pc.getClass().getClassLoader());
         			ClassLoader cl = new ResourceClassLoader(reses,parent);
         			Class clazz = ClassUtil.loadClass(cl,className);
 					return new JavaObject((pc).getVariableUtil(),clazz);

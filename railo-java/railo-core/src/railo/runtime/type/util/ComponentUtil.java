@@ -72,11 +72,11 @@ public final class ComponentUtil {
      * @return
      * @throws PageException
      */
-	public static Class getComponentJavaAccess(ComponentImpl component, RefBoolean isNew,boolean create) throws PageException {
-		return _getComponentJavaAccess(component, isNew,create);
+	public static Class getComponentJavaAccess(ComponentImpl component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
+		return _getComponentJavaAccess(component, isNew,create,writeLog);
 	}
 	    
-    private static Class _getComponentJavaAccess(ComponentImpl component, RefBoolean isNew,boolean create) throws PageException {
+    private static Class _getComponentJavaAccess(ComponentImpl component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
     	isNew.setValue(false);
     	String classNameOriginal=component.getPage().getPageSource().getFullClassName();
     	String className=getClassname(component).concat("_wrap");
@@ -128,7 +128,7 @@ public final class ComponentUtil {
         int max;
         for(int i=0;i<keys.length;i++){
         	max=-1;
-        	while((max=createMethod(statConstr,constr,_keys,cw,real,component.get(keys[i]),max))!=-1){
+        	while((max=createMethod(statConstr,constr,_keys,cw,real,component.get(keys[i]),max, writeLog))!=-1){
         		break;// for overload remove this
         	}
         }
@@ -137,7 +137,7 @@ public final class ComponentUtil {
         GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_OBJECT,null,null,cw);
         adapter.loadThis();
         adapter.invokeConstructor(Types.OBJECT, CONSTRUCTOR_OBJECT);
-        railo.transformer.bytecode.Page.registerFields(new BytecodeContext(statConstr,constr,_keys,cw,real,adapter,CONSTRUCTOR_OBJECT), _keys);
+        railo.transformer.bytecode.Page.registerFields(new BytecodeContext(statConstr,constr,_keys,cw,real,adapter,CONSTRUCTOR_OBJECT,writeLog), _keys);
         adapter.returnValue();
         adapter.endMethod();
         
@@ -442,7 +442,7 @@ public final class ComponentUtil {
 		return cl.loadClass(className); //ClassUtil.loadInstance(cl.loadClass(className));
     }
 
-	private static int createMethod(BytecodeContext statConstr,BytecodeContext constr, java.util.List keys,ClassWriter cw,String className, Object member,int max) throws PageException {
+	private static int createMethod(BytecodeContext statConstr,BytecodeContext constr, java.util.List keys,ClassWriter cw,String className, Object member,int max,boolean writeLog) throws PageException {
 		
 		boolean hasOptionalArgs=false;
 		
@@ -461,7 +461,7 @@ public final class ComponentUtil {
         			types
             		);
             GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , method, null, null, cw);
-            BytecodeContext bc = new BytecodeContext(statConstr,constr,keys,cw,className,adapter,method);
+            BytecodeContext bc = new BytecodeContext(statConstr,constr,keys,cw,className,adapter,method,writeLog);
             Label start=adapter.newLabel();
             adapter.visitLabel(start);
             

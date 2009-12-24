@@ -1,5 +1,6 @@
 package railo.runtime.config;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
@@ -13,6 +14,7 @@ import java.util.TimeZone;
 import java.util.Map.Entry;
 
 import railo.commons.collections.HashTable;
+import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
@@ -23,6 +25,7 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
+import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
@@ -44,6 +47,7 @@ import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.dump.DumpWriter;
 import railo.runtime.dump.DumpWriterEntry;
 import railo.runtime.dump.HTMLDumpWriter;
+import railo.runtime.engine.ExecutionLogFactory;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExpressionException;
@@ -310,6 +314,8 @@ public abstract class ConfigImpl implements Config {
 	private String serial="";
 	private GatewayEngineImpl gatewayEngine;
 	private String cacheMD5;
+	private boolean executionLogEnabled;
+	private ExecutionLogFactory executionLogFactory;
 
     /**
 	 * @return the allowURLRequestTimeout
@@ -556,6 +562,9 @@ public abstract class ConfigImpl implements Config {
     
     protected void setClassLoader(ClassLoader classLoader) {
     	Thread.currentThread().setContextClassLoader(classLoader);
+    	if(this.classLoader instanceof ResourceClassLoader)
+    		IOUtil.closeEL(this.classLoader);
+    	
     	this.classLoader=classLoader;
     }
 
@@ -2745,5 +2754,18 @@ public abstract class ConfigImpl implements Config {
 	public void setCacheMD5(String cacheMD5) { 
 		this.cacheMD5 = cacheMD5;
 	}
-	
+
+	public boolean getExecutionLogEnabled() {
+		return executionLogEnabled;
+	}
+	protected void setExecutionLogEnabled(boolean executionLogEnabled) {
+		this.executionLogEnabled= executionLogEnabled;
+	}
+
+	public ExecutionLogFactory getExecutionLogFactory() {
+		return executionLogFactory;
+	}
+	protected void setExecutionLogFactory(ExecutionLogFactory executionLogFactory) {
+		this.executionLogFactory= executionLogFactory;
+	}
 }

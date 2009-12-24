@@ -264,7 +264,8 @@ public final class CFMLFactoryImpl extends CFMLFactory {
      */
     public Object getLabel() {
     	if(label==null){
-    		return "";
+    		return getConfig().getId();
+    		//return "";
     	}
         return label;
     }

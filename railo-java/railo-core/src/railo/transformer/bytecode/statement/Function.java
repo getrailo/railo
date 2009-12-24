@@ -11,7 +11,9 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
+import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.FunctionArgumentImpl;
@@ -205,7 +207,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 	private ExprString returnType=ANY;
 	private ExprBoolean output=LitBoolean.TRUE;
 	private ExprBoolean abstr=LitBoolean.FALSE;
-	private ExprString access=PUBLIC;
+	private int access=Component.ACCESS_PUBLIC;
 	private ExprString displayName=EMPTY;
 	private ExprString hint=EMPTY;
 	private Body body;
@@ -227,16 +229,20 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 
 	private ExprBoolean verifyClient;
 
-	public Function(String name,Body body,int startline,int endline) {
+	public Function(String name,int access,String returnType,Body body,int startline,int endline) {
 		super(startline,endline);
 		this.name=LitString.toExprString(name, -1);
+		this.access=access;
+		if(!StringUtil.isEmpty(returnType))this.returnType=LitString.toExprString(returnType);
+		
 		this.body=body;
 		body.setParent(this);
+		
 		
 	}
 	
 	public Function(Expression name,Expression returnType,Expression returnFormat,Expression output,Expression abstr,
-			Expression access,Expression displayName,Expression description,Expression hint,Expression secureJson,
+			int access,Expression displayName,Expression description,Expression hint,Expression secureJson,
 			Expression verifyClient,Body body,int startline,int endline) {
 		super(startline,endline);
 		this.name=CastString.toExprString(name);
@@ -244,14 +250,14 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 		this.returnFormat=returnFormat!=null?CastString.toExprString(returnFormat):null;
 		this.output=CastBoolean.toExprBoolean(output);
 		this.abstr=CastBoolean.toExprBoolean(abstr);
-		this.access=CastString.toExprString(access);
+		this.access=access;
 		this.description=description!=null?CastString.toExprString(description):null;
 		this.displayName=CastString.toExprString(displayName);
 		this.hint=CastString.toExprString(hint);
 		this.secureJson=secureJson!=null?CastBoolean.toExprBoolean(secureJson):null;
 		this.verifyClient=verifyClient!=null?CastBoolean.toExprBoolean(verifyClient):null;
 		//checkNameConflict(this.name);
-		
+
 		
 		this.body=body;
 		body.setParent(this);
@@ -526,6 +532,9 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 			bc.getAdapter().push(access);
 		}
 		else bc.getAdapter().push(Component.ACCESS_PUBLIC);
+	}
+	private void writeOutAccess(BytecodeContext bc,int access) {
+		bc.getAdapter().push(access);
 	}
 
 	public void addArgument(String name, String type, boolean required, Expression defaultValue) {

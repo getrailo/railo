@@ -128,11 +128,11 @@ public final class CFMLTransformer {
 	 */
 	public Page transform(ConfigImpl config,SourceFile sf, TagLib[] tlibs, FunctionLib[] flibs) throws TemplateException, IOException	{
 		try {
-			return transform(config,new CFMLString(sf,config.getTemplateCharset()),tlibs,flibs,sf.getFile().lastModified());
+			return transform(config,new CFMLString(sf,config.getTemplateCharset(),config.getExecutionLogEnabled()),tlibs,flibs,sf.getFile().lastModified());
 			//return transform(config,new CFMLString(sf,SystemUtil.get Charset()),tlibs,flibs,sf.getFile().lastModified());
 		}
 		catch(ProcessingDirectiveException pde) {
-			return transform(config,new CFMLString(sf,pde.getTargetCharset()),tlibs,flibs,sf.getFile().lastModified());
+			return transform(config,new CFMLString(sf,pde.getCharset(),pde.getWriteLog()),tlibs,flibs,sf.getFile().lastModified());
 		}
 	}
 	
@@ -164,7 +164,7 @@ public final class CFMLTransformer {
 
 		SourceFile source=data.cfml.getSourceFile(); 
 		
-		Page page=new Page(source.getPhyscalFile().getAbsolutePath(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified);
+		Page page=new Page(source.getPhyscalFile().getAbsolutePath(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog());
 		//Body body=page;
 		try {
 			do {

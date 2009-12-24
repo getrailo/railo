@@ -14,6 +14,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
@@ -26,9 +27,12 @@ import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Statement;
+import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ExprDouble;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.expression.var.Variable;
+import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.statement.PrintOut;
@@ -583,6 +587,26 @@ public final class ASMUtil {
 
 	public static boolean isDotKey(ExprString expr) {
 		return expr instanceof LitString && !((LitString)expr).fromBracket();
+	}
+
+	public static String toString(Expression exp,String defaultValue) {
+		try {
+			return toString(exp);
+		} catch (BytecodeException e) {
+			return defaultValue;
+		}
+	}
+	public static String toString(Expression exp) throws BytecodeException {
+		if(exp instanceof Variable) {
+			return toString(VariableString.toExprString(exp));
+		}
+		else if(exp instanceof VariableString) {
+			return ((VariableString)exp).castToString();
+		}
+		else if(exp instanceof Literal) {
+			return ((Literal)exp).toString();
+		}
+		return null;
 	}
 	
 }
