@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import railo.runtime.exp.ExpressionException;
-import railo.runtime.exp.TemplateException;
 import railo.runtime.type.util.ComponentUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
