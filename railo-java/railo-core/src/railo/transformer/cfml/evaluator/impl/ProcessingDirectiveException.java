@@ -1,6 +1,5 @@
 package railo.transformer.cfml.evaluator.impl;
 
-import railo.commons.lang.StringUtil;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.util.CFMLString;
 
@@ -13,7 +12,6 @@ public final class ProcessingDirectiveException extends TemplateException {
 		super(cfml, createMessage(cfml,charset,writeLog));
 		this.charset=charset;
 		this.writeLog=writeLog;
-		
 	}
 
 	private static String createMessage(CFMLString cfml, String charset,boolean writeLog) {
