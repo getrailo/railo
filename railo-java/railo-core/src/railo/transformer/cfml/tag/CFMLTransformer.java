@@ -178,7 +178,7 @@ public final class CFMLTransformer {
 						page.addPrintOut("</", data.cfml.getLine());
 					}
 					else {
-						throw new TemplateException(cfml,"no matching start tag for end tag ["+tagLib.getNameSpaceAndSeparator()+identifier(data,true)+"]");
+						throw new TemplateException(cfml,"no matching start tag for end tag ["+tagLib.getNameSpaceAndSeparator()+identifier(data.cfml,true)+"]");
 			
 					}
 				}
@@ -217,7 +217,7 @@ public final class CFMLTransformer {
 		boolean parseLiteral=true;
 		
 	// Comment 
-        comment(data,false);
+        comment(data.cfml,false);
 	// Tag
 		// is Tag Beginning
 		if(data.cfml.isCurrent('<'))	{
@@ -246,16 +246,17 @@ public final class CFMLTransformer {
 	 * @throws TemplateException
 	 */
 
-	private void comment(Data data,boolean removeSpace) throws TemplateException {
+	public static void comment(CFMLString cfml,boolean removeSpace) throws TemplateException {
 		if(!removeSpace) {
-			comment(data.cfml);
+			comment(cfml);
 		}
 		else {
-			data.cfml.removeSpace();
-			if(comment(data.cfml))data.cfml.removeSpace();
+			cfml.removeSpace();
+			if(comment(cfml))cfml.removeSpace();
 		}
 		
 	}
+	
 	public static boolean comment(CFMLString cfml) throws TemplateException {
 		if(!cfml.forwardIfCurrent("<!---"))
 			return false;
@@ -384,7 +385,7 @@ public final class CFMLTransformer {
 		}
 				
 		// Get matching tag from tag lib
-		String strNameNormal=identifier(data,false);
+		String strNameNormal=identifier(data.cfml,false);
 		if(strNameNormal==null) {
 			data.cfml.setPos((data.cfml.getPos()-tagLib.getNameSpaceAndSeparator().length())-1);
 			return false;
@@ -423,7 +424,7 @@ public final class CFMLTransformer {
 		 
 		 
 		tag.setTagLibTag(tagLibTag);
-		comment(data,true);
+		comment(data.cfml,true);
 		
 		// Tag Translator Evaluator
 		if(tagLibTag.hasTteClass())	{
@@ -483,7 +484,7 @@ public final class CFMLTransformer {
 				if(!(tagLibEnd!=null && tagLibEnd.getNameSpaceAndSeparator().equals(tagLib.getNameSpaceAndSeparator())))
 					throw new TemplateException(data.cfml,"invalid construct");
 				// get end Tag
-				String strNameEnd=identifier(data,true).toLowerCase();
+				String strNameEnd=identifier(data.cfml,true).toLowerCase();
 
 				// not the same name Tag
 				if(!strName.equals(strNameEnd)) {
@@ -542,7 +543,7 @@ public final class CFMLTransformer {
 					    if(tagLibEnd.getNameSpaceAndSeparator().equals(tagLib.getNameSpaceAndSeparator())) {
 					        
 						    // get end Tag
-							strNameEnd=identifier(data,true).toLowerCase();
+							strNameEnd=identifier(data.cfml,true).toLowerCase();
 							// not the same name Tag
 							
 							// new part
@@ -680,7 +681,7 @@ public final class CFMLTransformer {
 	 * @param parent
 	 * @throws TemplateException
 	 */
-	private void attributes(Data data,TagLibTag tag, Tag parent) throws TemplateException {
+	public static void attributes(Data data,TagLibTag tag, Tag parent) throws TemplateException {
 		int type=tag.getAttributeType();
 		
 	// Tag with attribute names
@@ -688,7 +689,7 @@ public final class CFMLTransformer {
 			int min=tag.getMin();
 			int max=tag.getMax();
 			int count=0;
-			ArrayList args=new ArrayList();
+			ArrayList<String> args=new ArrayList<String>();
 			while(data.cfml.isValidIndex())	{
 				data.cfml.removeSpace();
 				// if no more attributes break
@@ -767,7 +768,7 @@ public final class CFMLTransformer {
      * @return Element Attribute Element.
      * @throws TemplateException
      */
-    private Attribute attribute(Data data,TagLibTag tag, ArrayList args) throws TemplateException {
+    private static Attribute attribute(Data data,TagLibTag tag, ArrayList<String> args) throws TemplateException {
     	
     	// Name
     	StringBuffer sbType=new StringBuffer();
@@ -775,13 +776,13 @@ public final class CFMLTransformer {
     	parseExpression[0]=true;
     	parseExpression[1]=false;
     	RefBoolean dynamic=new RefBooleanImpl(false);
-    	String name=attributeName(data,dynamic,args,tag,sbType,parseExpression);
+    	String name=attributeName(data.cfml,dynamic,args,tag,sbType,parseExpression);
     	Expression value=null;
     	
-    	comment(data,true);
+    	comment(data.cfml,true);
     	
     	if(data.cfml.forwardIfCurrent('='))	{
-    		comment(data,true);
+    		comment(data.cfml,true);
     		// Value
     		value=attributeValue(data,tag,sbType.toString(),parseExpression[0],false,LitString.toExprString("",-1));	
     	}
@@ -792,7 +793,7 @@ public final class CFMLTransformer {
     			value=Cast.toExpression(value, sbType.toString());
     		}
     	}		
-    	comment(data,true);
+    	comment(data.cfml,true);
     	
     	return new Attribute(dynamic.toBooleanValue(),name,value,sbType.toString());
     }
@@ -815,11 +816,11 @@ public final class CFMLTransformer {
 	 * @return Attribute Name
 	 * @throws TemplateException
 	 */
-	private String attributeName(Data data,RefBoolean dynamic, ArrayList args, TagLibTag tag, StringBuffer sbType, boolean[] parseExpression) throws TemplateException {
+	private static String attributeName(CFMLString cfml,RefBoolean dynamic, ArrayList<String> args, TagLibTag tag, StringBuffer sbType, boolean[] parseExpression) throws TemplateException {
 		
 		int typeDef=tag.getAttributeType();
-		String id=StringUtil.toLowerCase(identifier(data,true));
-        if(args.contains(id)) throw new TemplateException(data.cfml,"you can't use the same tag attribute ["+id+"] twice");
+		String id=StringUtil.toLowerCase(identifier(cfml,true));
+        if(args.contains(id)) throw new TemplateException(cfml,"you can't use the same tag attribute ["+id+"] twice");
 		args.add(id);
 		
 		if("attributecollection".equals(id)){
@@ -834,10 +835,10 @@ public final class CFMLTransformer {
 				if(typeDef==TagLibTag.ATTRIBUTE_TYPE_FIXED) {
 					String names=tag.getAttributeNames();
 					if(StringUtil.isEmpty(names))
-						throw new TemplateException(data.cfml,
+						throw new TemplateException(cfml,
 								"Attribute "+id+" is not allowed for tag "+tag.getFullName());
 					
-						throw new TemplateException(data.cfml,
+						throw new TemplateException(cfml,
 							"Attribute "+id+" is not allowed for tag "+tag.getFullName(),
 							"valid attribute names are ["+names+"]");
 				}
@@ -866,7 +867,7 @@ public final class CFMLTransformer {
 	 * @return Element Eingelesener ￼bersetzer Wert des Attributes.
 	 * @throws TemplateException
 	 */
-	private Expression attributeValue(Data data,TagLibTag tag, String type,boolean parseExpression,boolean isNonName, Expression noExpression) throws TemplateException {
+	private static Expression attributeValue(Data data,TagLibTag tag, String type,boolean parseExpression,boolean isNonName, Expression noExpression) throws TemplateException {
 		Expression expr;
 		try {
 			ExprTransformer transfomer=null;
@@ -909,26 +910,24 @@ public final class CFMLTransformer {
 	 * @return Identifier String.
 	 * @throws TemplateException
 	 */
-	private String identifier(Data data,boolean throwError) throws TemplateException  {
-				int start = data.cfml.getPos();
-		
-		if(!data.cfml.isCurrentBetween('a','z') && !data.cfml.isCurrent('_')) {
-			if(throwError)throw new TemplateException(data.cfml,"Invalid Identifer.");
+	public static String identifier(CFMLString cfml,boolean throwError) throws TemplateException  {
+		int start = cfml.getPos();
+		if(!cfml.isCurrentBetween('a','z') && !cfml.isCurrent('_')) {
+			if(throwError)throw new TemplateException(cfml,"Invalid Identifer.");
 			return null;
 		}
-		
 		do {
-			data.cfml.next();
-			if(!(data.cfml.isCurrentBetween('a','z')
-				|| data.cfml.isCurrentBetween('0','9')
-				|| data.cfml.isCurrent('_')
-				|| data.cfml.isCurrent(':')
-				|| data.cfml.isCurrent('-'))) {
+			cfml.next();
+			if(!(cfml.isCurrentBetween('a','z')
+				|| cfml.isCurrentBetween('0','9')
+				|| cfml.isCurrent('_')
+				|| cfml.isCurrent(':')
+				|| cfml.isCurrent('-'))) {
 					break;
 				}
 		}
-		while (data.cfml.isValidIndex());
-		return data.cfml.substring(start,data.cfml.getPos()-start);
+		while (cfml.isValidIndex());
+		return cfml.substring(start,cfml.getPos()-start);
 	}
 }
 

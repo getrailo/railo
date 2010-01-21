@@ -12,6 +12,7 @@ import java.util.Set;
 import org.jpedal.PdfDecoder;
 import org.jpedal.exception.PdfException;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
@@ -250,9 +251,8 @@ public class PDFUtil {
 			if(!overwrite)throw new ExpressionException("can't overwrite existing image ["+destination+"], attribute [overwrite] is false");
 		}
 		Image img = new Image(transparent?dec.getPageAsTransparentImage(page):dec.getPageAsImage(page));
-		
+		if(scale!=100)
 			img.resize(scale, goodQuality?"highestquality":"highperformance", 1);
-		
 		img.writeOut(destination,format, overwrite, 1f);
 	}
 

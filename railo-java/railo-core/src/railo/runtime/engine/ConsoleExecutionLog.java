@@ -22,22 +22,27 @@ public class ConsoleExecutionLog implements ExecutionLog {
 			pw=new PrintWriter(System.err);
 		else
 			pw=new PrintWriter(System.out);
+		last=System.nanoTime();
+	}
+	
+	public void release() {
 		
 	}
 	
 
-	/**
+	/* *
 	 * @see railo.runtime.engine.ExecutionLog#start()
-	 */
+	 * /
 	public void start() {
-		last=System.nanoTime();
-	}
+	}*/
 	
 	/**
-	 * @see railo.runtime.engine.ExecutionLog#endline(int)
+	 * @see railo.runtime.engine.ExecutionLog#line(int)
 	 */
-	public void endline(int line) {
+	public void line(int line) {
 		SystemOut.print(pw, pc.getId()+":"+pc.getCurrentPageSource().getDisplayPath()+":"+line+" > "+(System.nanoTime()-last)+" ns");
 		last=System.nanoTime();
 	}
+
+
 }

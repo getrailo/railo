@@ -112,7 +112,8 @@ public final class HTMLDocument {
 	    	doc.add(FieldUtil.Text("custom4", parser.getCustom4()));
 	    }
 	    
-	    doc.add(FieldUtil.UnIndexed("raw", content));
+	    FieldUtil.addRaw(doc,content);
+	    //doc.add(FieldUtil.UnIndexed("raw", content));
 	    doc.add(FieldUtil.Text("contents", content.toLowerCase()));
 	    //print.err("CONTENT");
 	    //print.err(content);

@@ -27,7 +27,10 @@ public final class EmailNamePair {
 	private static short[] pairType=new short[8];
 	
 	static {
-		String email="([\\w\\._\\-\\%\\+]*@[\\w\\._\\-]*)";
+		String email="([\\w\\._\\-\\%\\+\\'\\!\\#\\$\\%\\&]*@[\\w\\._\\-]*)";
+		
+		//^((?>[a-zA-Z\d!#$%&'*+\-/=?^_`{|}~]+\x20*|"((?=[\x01-\x7f])[^"\\]|\\[\x01-\x7f])*"\x20*)*(?<angle><))?((?!\.)(?>\.?[a-zA-Z\d!#$%&'*+\-/=?^_`{|}~]+)+|"((?=[\x01-\x7f])[^"\\]|\\[\x01-\x7f])*")@(((?!-)[a-zA-Z\d\-]+(?<!-)\.)+[a-zA-Z]{2,}|\[(((?(?<!\[)\.)(25[0-5]|2[0-4]\d|[01]?\d?\d)){4}|[a-zA-Z\d\-]*[a-zA-Z\d]:((?=[\x01-\x7f])[^\\\[\]]|\\[\x01-\x7f])+)\])(?(angle)>)$
+		
 		patterns[0]=Pattern.compile("^"+email+"\\s*\\(([^\\)]+)\\)$");
 		patterns[1]=Pattern.compile("^"+email+"\\s*:\\s*(.+)$");
 		patterns[2]=Pattern.compile("^([^:]+)\\s*:\\s*"+email+"$");
@@ -37,6 +40,9 @@ public final class EmailNamePair {
 		patterns[6]=Pattern.compile("^<[\\s]*"+email+"[\\s]*>$");
 		patterns[7]=Pattern.compile("^"+email+"$");
 
+		
+		
+		
 		pairType[0]=EMAIL_NAME;
 		pairType[1]=EMAIL_NAME;
 		pairType[2]=NAME_EMAIL;

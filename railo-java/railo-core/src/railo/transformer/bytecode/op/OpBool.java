@@ -133,5 +133,18 @@ public final class OpBool extends ExpressionBase implements ExprBoolean {
         }
         return new OpBool(left,right,operation);
     }
+    
+    public String toString(){
+    	return left+" "+toStringOperation()+" "+right;
+    }
+
+	private String toStringOperation() {
+		if(AND==operation)	return "and";
+		if(OR==operation) 	return "or";
+		if(XOR==operation) 	return "xor";
+		if(EQV==operation) 	return "eqv";
+		if(IMP==operation) 	return "imp";
+		return operation+"";
+	}
 }
 

@@ -8,7 +8,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.BytecodeContext;
@@ -23,11 +22,16 @@ public final class ExpressionUtil {
 			"exeLogEndline",
 			Types.VOID,
 			new Type[]{Types.INT_VALUE});
-	public static final Method START = new Method(
+	
+	/*public static final Method START = new Method(
 			"exeLogStart",
 			Types.VOID,
 			new Type[]{});
-	
+	public static final Method END = new Method(
+			"exeLogEnd",
+			Types.VOID,
+			new Type[]{});
+	*/
 
 	private static Map last=new HashMap();
 
@@ -89,18 +93,35 @@ public final class ExpressionUtil {
 	}
   
     public static void writeLog(BytecodeContext bc, int line) {
+    	
     	if(!bc.writeLog() || line<0)return;
-		
-    	GeneratorAdapter adapter = bc.getAdapter();
-    	adapter.loadArg(0);
-        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
-        if(line==0){
-            adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, START);
-		}	
-		else{
-			adapter.push(line);
-	        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, END_LINE);
+    	try{
+	    	GeneratorAdapter adapter = bc.getAdapter();
+	    	adapter.loadArg(0);
+	        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
+	        if(false){
+	            //adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, START);
+			}	
+			else{
+				adapter.push(line);
+		        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, END_LINE);
+			}
 		}
-		
+		catch(Throwable t) {
+			t.printStackTrace();
+		}		
 	}
+  
+    /*public static void writeLogEnd(BytecodeContext bc) {
+    	if(!bc.writeLog())return;
+		try{
+	    	GeneratorAdapter adapter = bc.getAdapter();
+	    	adapter.loadArg(0);
+	        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
+	        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, END);
+		}
+		catch(Throwable t) {
+			t.printStackTrace();
+		}		
+	}*/
 }

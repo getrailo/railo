@@ -14,7 +14,6 @@ import railo.commons.lang.ParserString;
  * Verity treats each comma as a logical OR. If you omit the commas, Verity treats the expression as a phrase.
  */
 public final class QueryParser {
-    //private static QueryParser queryParser = new QueryParser("contents", new SimpleAnalyzer());
     private static final String OR="or";
     private static final String AND="and";
     private static final String NOT="not";

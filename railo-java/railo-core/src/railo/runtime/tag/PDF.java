@@ -656,9 +656,6 @@ public class PDF extends BodyTagImpl  {
 		
 		
 		
-		/*
-		password = "PDF source file password">
-	    >*/
 	}
 	
 	

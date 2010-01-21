@@ -17,6 +17,14 @@ import railo.transformer.bytecode.util.Types;
  */
 public final class LitBoolean extends ExpressionBase implements Literal,ExprBoolean {
     
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return b+"";
+	}
+
 	private boolean b;
 
 	public static final LitBoolean TRUE=new LitBoolean(true,-1);

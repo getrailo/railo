@@ -11,7 +11,6 @@ import java.util.zip.ZipFile;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.util.FileWrapper;
 import railo.commons.lang.SizeOf;
 import railo.runtime.type.Sizeable;
 

@@ -38,7 +38,6 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
-import railo.print;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -516,7 +515,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         
         activeComponent=null;
         activeUDF=null;
-        execLog=null;
+        
+        if(config.getExecutionLogEnabled()){
+        	execLog.release();
+			execLog=null;
+        }
 	}
 	/**
 	 * @see javax.servlet.jsp.PageContext#initialize(javax.servlet.Servlet, javax.servlet.ServletRequest, javax.servlet.ServletResponse, java.lang.String, boolean, int, boolean)
@@ -2509,10 +2512,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 
 	public void exeLogEndline(int line){
-		execLog.endline(line);
-	}
-	public void exeLogStart(){
-		execLog.start();
+		execLog.line(line);
 	}
 	
 }

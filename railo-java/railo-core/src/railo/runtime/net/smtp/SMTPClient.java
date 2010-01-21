@@ -21,6 +21,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimePart;
 
 import railo.commons.activation.ResourceDataSource;
 import railo.commons.collections.HashTable;
@@ -458,29 +459,43 @@ public final class SMTPClient implements Serializable  {
 	    	key = (String)it.next();
 	    	msg.setHeader(key, (String)headers.get(key));
 	    }
-	    MimeBodyPart content=null;
-		
+	    Multipart mp=null;
+	    
 		// Only HTML
 		if(plainText==null) {
-			content=getHTMLText();
+			if(ArrayUtil.isEmpty(attachmentz)){
+				fillHTMLText(msg);
+				return new MimeMessageAndSession(msg,session);
+			}
+			mp = new MimeMultipart();
+			mp.addBodyPart(getHTMLText());
 		}
 		// only Plain
 		else if(htmlText==null) {
-			content=getPlainText();
+			if(ArrayUtil.isEmpty(attachmentz)){
+				fillPlainText(msg);
+				return new MimeMessageAndSession(msg,session);
+			}
+			mp = new MimeMultipart();
+			mp.addBodyPart(getPlainText());
 		}
 		// Plain and HTML
 		else {
-			Multipart mp=new MimeMultipart("alternative");
+			mp=new MimeMultipart("alternative");
 			mp.addBodyPart(getPlainText());
 			mp.addBodyPart(getHTMLText());
-			content=new MimeBodyPart();
-			content.setContent(mp);
+			
+			if(!ArrayUtil.isEmpty(attachmentz)){
+				MimeBodyPart content = new MimeBodyPart();
+				content.setContent(mp);
+				mp = new MimeMultipart();
+				mp.addBodyPart(content);
+			}
 		}
-
-		MimeMultipart mp = new MimeMultipart();
-		mp.addBodyPart(content);
+		
+		
 		// Attachments
-		if(attachmentz!=null) {
+		if(!ArrayUtil.isEmpty(attachmentz)){
 			for(int i=0;i<attachmentz.length;i++) {
 				mp.addBodyPart(toMimeBodyPart(config,attachmentz[i]));	
 			}	
@@ -491,6 +506,7 @@ public final class SMTPClient implements Serializable  {
 	}
 	
 	
+
 	private void checkAddress(InternetAddress[] ias,String charset) { // DIFF 23
 		for(int i=0;i<ias.length;i++) {
 			checkAddress(ias[i], charset);
@@ -716,18 +732,25 @@ public final class SMTPClient implements Serializable  {
 
 	private MimeBodyPart getHTMLText() throws MessagingException {
 		MimeBodyPart html = new MimeBodyPart();
-		html.setDataHandler(new DataHandler(new StringDataSource(htmlText,TEXT_HTML ,htmlTextCharset)));
-		html.setHeader("Content-Transfer-Encoding", "quoted-printable");
-		html.setHeader("Content-Type", TEXT_HTML+"; charset="+htmlTextCharset);
+		fillHTMLText(html);
 		return html;
+	}
+	
+	private void fillHTMLText(MimePart mp) throws MessagingException {
+		mp.setDataHandler(new DataHandler(new StringDataSource(htmlText,TEXT_HTML ,htmlTextCharset)));
+		mp.setHeader("Content-Transfer-Encoding", "quoted-printable");
+		mp.setHeader("Content-Type", TEXT_HTML+"; charset="+htmlTextCharset);
 	}
 
 	private MimeBodyPart getPlainText() throws MessagingException {
 		MimeBodyPart plain = new MimeBodyPart();
-		plain.setDataHandler(new DataHandler(new StringDataSource(plainText,TEXT_PLAIN ,plainTextCharset)));
-		plain.setHeader("Content-Transfer-Encoding", "quoted-printable");
-		plain.setHeader("Content-Type", TEXT_PLAIN+"; charset="+plainTextCharset);
+		fillPlainText(plain);
 		return plain;
+	}
+	private void fillPlainText(MimePart mp) throws MessagingException {
+		mp.setDataHandler(new DataHandler(new StringDataSource(plainText,TEXT_PLAIN ,plainTextCharset)));
+		mp.setHeader("Content-Transfer-Encoding", "quoted-printable");
+		mp.setHeader("Content-Type", TEXT_PLAIN+"; charset="+plainTextCharset);
 	}
 
 	/**

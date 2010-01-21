@@ -1776,6 +1776,11 @@
 			<type>datetime</type>
 			<required>Yes</required>
 		</argument>
+		<argument>
+			<name>timezone</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
 		<return>
 			<type>number</type>
 		</return>

@@ -466,8 +466,6 @@ public final class Mail extends BodyTagImpl {
 		getPart().setBody(bodyContent.getString());
 		smtp.setCharset(getCharset());
 		getPart().setCharset(getCharset());
-		//print.ln(getCharset());
-		//print.ln(MimeUtility.javaCharset(getCharset()));
 		addBody(getPart());
 		return SKIP_BODY;
 	}

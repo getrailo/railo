@@ -63,7 +63,7 @@ class LikeCompareJRE  {
     }
     
     public static boolean like(SQL sql, String haystack, String needle,String escape) throws PageException {
-    	
+    	haystack=StringUtil.toLowerCase(haystack);
     	Pattern p = createPattern(sql,StringUtil.toLowerCase(needle),escape==null?null:StringUtil.toLowerCase(escape));
     	return p.matcher(haystack).matches();
     }

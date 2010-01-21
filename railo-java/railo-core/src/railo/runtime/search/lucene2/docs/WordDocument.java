@@ -69,7 +69,8 @@ public final class WordDocument {
 			throw new IOException(e.getMessage());
 		}
   	    doc.add(FieldUtil.Text("size", Caster.toString(contents.length())));
-  	    doc.add(FieldUtil.Text("raw", contents));
+  	    FieldUtil.addRaw(doc,contents);
+	    //doc.add(FieldUtil.Text("raw", contents));
   	    doc.add(FieldUtil.Text("contents", contents.toLowerCase()));
   	    doc.add(FieldUtil.UnIndexed("summary",StringUtil.max(contents,SUMMERY_SIZE)));
 	}

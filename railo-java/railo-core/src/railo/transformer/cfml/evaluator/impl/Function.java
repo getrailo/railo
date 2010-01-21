@@ -119,7 +119,7 @@ public final class Function extends EvaluatorSupport {
 
 	private void checkAttributeValue(Attribute attr) throws EvaluatorException {
         if(!(attr.getValue() instanceof Literal))
-            throw new EvaluatorException("value of attribute ["+attr.getName()+"] must have a literal value");
+            throw new EvaluatorException("value of attribute ["+attr.getName()+"] must have a literal/constant value");
         
     }
 }

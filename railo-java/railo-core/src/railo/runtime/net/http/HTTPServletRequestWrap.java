@@ -35,6 +35,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	private String context_path;
 	private String path_info;
 	private String query_string;
+	private HttpServletRequest req;
 
 	/**
 	 * Constructor of the class
@@ -43,8 +44,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	 */
 	public HTTPServletRequestWrap(HttpServletRequest req) {
 		super(req);
-		
-		// include
+		this.req=pure(req);
 		
 		if((servlet_path=attr("javax.servlet.include.servlet_path"))!=null){
 			request_uri=attr("javax.servlet.include.request_uri");
@@ -71,6 +71,16 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		
 	}
 	
+	private static HttpServletRequest pure(HttpServletRequest req) {
+		HttpServletRequest req2;
+		while(req instanceof HTTPServletRequestWrap){
+			req2 = (HttpServletRequest) ((HTTPServletRequestWrap)req).getRequest();
+			if(req2==req) break;
+			req=req2;
+		}
+		return req;
+	}
+
 	/**
 	 * @see javax.servlet.http.HttpServletRequestWrapper#getContextPath()
 	 */
@@ -83,13 +93,6 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	 */
 	public String getPathInfo() {
 		return path_info;
-	}
-	/**
-	 * @see javax.servlet.http.HttpServletRequestWrapper#getPathTranslated()
-	 */
-	public String getPathTranslated() {
-		// TODO Auto-generated method stub
-		return super.getPathTranslated();
 	}
 	
 	/**
@@ -132,29 +135,22 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	}
 	
 	public RequestDispatcher getOriginalRequestDispatcher(String realpath) {
-		return super.getRequestDispatcher(realpath);
+		return req.getRequestDispatcher(realpath);
 	}
 
 	/**
 	 * @see javax.servlet.ServletRequestWrapper#removeAttribute(java.lang.String)
 	 */
 	public void removeAttribute(String name) {
-		/*PageContext pc = ThreadLocalPageContext.get();
-		if(pc!=null){
-			pc.requestScope().removeEL(KeyImpl.init(name));
-		}*/
-		super.removeAttribute(name);
+		req.removeAttribute(name);
+		
 	}
 
 	/**
 	 * @see javax.servlet.ServletRequestWrapper#setAttribute(java.lang.String, java.lang.Object)
 	 */
 	public void setAttribute(String name, Object o) {
-		/*PageContext pc = ThreadLocalPageContext.get();
-		if(pc!=null){
-			pc.requestScope().setEL(name, o);
-		}*/
-		super.setAttribute(name, o);
+		req.setAttribute(name, o);
 	}
 
 
@@ -233,6 +229,6 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	
 
 	private String attr(String key) {
-		return (String) super.getAttribute(key);
+		return (String) req.getAttribute(key);
 	}
 }

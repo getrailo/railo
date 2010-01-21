@@ -1,6 +1,5 @@
 package railo.runtime.functions.cache;
 
-import railo.print;
 import railo.commons.io.cache.Cache;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
@@ -8,7 +7,6 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.type.dt.TimeSpan;
-import railo.runtime.type.dt.TimeSpanImpl;
 
 /**
  * 

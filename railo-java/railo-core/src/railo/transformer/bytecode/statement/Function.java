@@ -1,6 +1,7 @@
 package railo.transformer.bytecode.statement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,10 +12,10 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.exp.TemplateException;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.FunctionArgumentImpl;
 import railo.runtime.type.UDFProperties;
@@ -31,6 +32,7 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
@@ -212,21 +214,10 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 	private ExprString hint=EMPTY;
 	private Body body;
 	private List arguments=new ArrayList();
-
-
-	
 	private Map metadata;
-
-
 	private ExprString returnFormat;
-
-
 	private ExprString description;
-
-
 	private ExprBoolean secureJson;
-
-
 	private ExprBoolean verifyClient;
 
 	public Function(String name,int access,String returnType,Body body,int startline,int endline) {
@@ -580,6 +571,55 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 
 	public void setMetaData(Map metadata) {
 		this.metadata=metadata;
+	}
+
+	public void addAttribute(Attribute attr) throws TemplateException {
+		String name=attr.getName().toLowerCase();
+		// name
+		if("name".equals(name))	{
+			throw new BytecodeException("name cannot be defined twice",getLine());
+			//this.name=CastString.toExprString(attr.getValue());
+		}
+		else if("returntype".equals(name))	{
+			this.returnType=toLitString(name,attr.getValue());
+		}
+		else if("access".equals(name))	{
+			LitString ls = toLitString(name,attr.getValue());
+			String strAccess = ls.getString();
+			int acc = ComponentUtil.toIntAccess(strAccess,-1);
+			if(acc==-1)
+				throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getLine());
+	        
+			
+		}
+		
+		else if("output".equals(name))		this.output=toLitBoolean(name,attr.getValue());
+		else if("abstract".equals(name))	this.abstr=toLitBoolean(name,attr.getValue());
+		else if("displayname".equals(name))	this.displayName=toLitString(name,attr.getValue());
+		else if("hint".equals(name))		this.hint=toLitString(name,attr.getValue());
+		else if("description".equals(name))	this.description=toLitString(name,attr.getValue());
+		else if("returnformat".equals(name))this.returnFormat=toLitString(name,attr.getValue());
+		else if("securejson".equals(name))	this.secureJson=toLitBoolean(name,attr.getValue());
+		else if("verifyclient".equals(name))	this.verifyClient=toLitBoolean(name,attr.getValue());
+		else {
+			toLitString(name,attr.getValue());// needed for testing
+			if(metadata==null)metadata=new HashMap();
+			metadata.put(attr.getName(), attr);
+		}
+	}
+
+	private LitString toLitString(String name, Expression value) throws BytecodeException {
+		ExprString es = CastString.toExprString(value);
+		if(!(es instanceof LitString))
+			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getLine());
+		return (LitString) es;
+	}
+	
+	private LitBoolean toLitBoolean(String name, Expression value) throws BytecodeException {
+		 ExprBoolean eb = CastBoolean.toExprBoolean(value);
+		if(!(eb instanceof LitBoolean))
+			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getLine());
+		return (LitBoolean) eb;
 	}
 
 }

@@ -38,6 +38,7 @@ public class CFCGateway implements Gateway {
 		
 		//requestURI=engine.toRequestURI(cfcPath);
 		Struct args=new StructImpl(StructImpl.TYPE_LINKED);
+		args.setEL("id", id);
 		args.setEL("config", Caster.toStruct(config,null,false));
 		if(!StringUtil.isEmpty(cfcPath)){
 			try {

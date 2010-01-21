@@ -1,5 +1,6 @@
 package railo.runtime.search.lucene2.docs;
 
+import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
 public class FieldUtil {
@@ -19,4 +20,9 @@ public class FieldUtil {
 	public static Field Keyword(String name, String value) {
 		return new Field(name,value,Field.Store.YES,Field.Index.TOKENIZED);
 	}
+
+	public static void addRaw(Document doc, String content) {
+		doc.add(FieldUtil.UnIndexed("raw", content));
+	}
+	
 }

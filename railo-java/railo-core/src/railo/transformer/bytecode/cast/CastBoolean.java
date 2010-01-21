@@ -22,7 +22,14 @@ import railo.transformer.bytecode.util.Types;
  */
 public final class CastBoolean extends ExpressionBase implements ExprBoolean {
     
-    private Expression expr;
+    /**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return "(boolean)"+expr;
+	}
+
+	private Expression expr;
 
     /**
      * constructor of the class

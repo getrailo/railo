@@ -1,9 +1,8 @@
 package railo.transformer.cfml.script;
 
-import javax.swing.plaf.ComponentUI;
+import java.util.ArrayList;
 
-
-import railo.print;
+import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.system.CFFunction;
@@ -18,6 +17,7 @@ import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
+import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.Abort;
 import railo.transformer.bytecode.statement.Break;
@@ -32,10 +32,10 @@ import railo.transformer.bytecode.statement.Return;
 import railo.transformer.bytecode.statement.Switch;
 import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.statement.While;
+import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.expression.CFMLExprTransformer;
-import railo.transformer.cfml.expression.CFMLExprTransformer.Data;
 import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.cfml.tag.TagDependentBodyTransformer;
 import railo.transformer.library.function.FunctionLib;
@@ -524,10 +524,6 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		String rtnType=null;
 		
 		if(strAccess.equalsIgnoreCase("FUNCTION")){
-			/*if(!data.cfml.forwardIfCurrent(' ')){
-				data.cfml.setPos(pos);
-				return null;
-			}*/
 			strAccess=null;
 		}
 		else{
@@ -539,10 +535,6 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 				return null;
 			}
 			if(rtnType.equalsIgnoreCase("FUNCTION")){
-				/*if(!data.cfml.forwardIfCurrent(' ')){
-					data.cfml.setPos(pos);
-					return null;
-				}*/
 				rtnType=null;
 			}
 			comments(data.cfml);
@@ -603,13 +595,17 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 				// attribute
 				
 				// name
-				String idName=identifier(data,false,true);
+				//String idName=identifier(data,false,true);
+				String idName=variableDeclaration(data, false, false);
 				String typeName="any";
 				if(idName==null) throw new TemplateException(data.cfml,"invalid argument definition");
 				comments(data.cfml);
 				if(!data.cfml.isCurrent(')') && !data.cfml.isCurrent('=') && !data.cfml.isCurrent(':') && !data.cfml.isCurrent(',')) {
 					typeName=idName.toLowerCase();
 					idName=identifier(data,false,true);
+				}
+				else if(idName.indexOf('.')!=-1 || idName.indexOf('[')!=-1) {
+					throw new TemplateException(data.cfml,"invalid argument name ["+idName+"] definition");
 				}
 				
 				comments(data.cfml);
@@ -629,10 +625,12 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		// end )
 			comments(data.cfml);
 			if(!data.cfml.forwardIfCurrent(')'))
-				throw new TemplateException(data.cfml,"invalid syntax in function head, missing begin [(]");
+				throw new TemplateException(data.cfml,"invalid syntax in function head, missing ending [)]");
 		
-		// body
+		// attributes
+		attributes(func,data);
 			
+		// body
 		boolean oldInsideFunction=data.insideFunction;
 		data.insideFunction=true;
 		try {
@@ -1049,4 +1047,63 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 			throw new TemplateException(data.cfml,"Missing ending [}]");
 		return true;
 	}	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public void attributes(Function func,Data data) throws TemplateException {
+		
+		ArrayList<String> ids=new ArrayList<String>();
+		while(data.cfml.isValidIndex())	{
+			data.cfml.removeSpace();
+			// if no more attributes break
+			if(data.cfml.isCurrent('{')) break;
+			Attribute attr = attribute(data,ids);
+			//print.out(attr.getName()+":"+attr.getValue());
+			func.addAttribute(attr);
+			//args.add(attr);		
+		}
+		
+	}
+	
+	private Attribute attribute(Data data, ArrayList<String> args) throws TemplateException {
+    	// Name
+    	String name=attributeName(data.cfml,args);
+    	Expression value=null;
+    	
+    	CFMLTransformer.comment(data.cfml,true);
+    	
+    	if(data.cfml.forwardIfCurrent('='))	{
+    		CFMLTransformer.comment(data.cfml,true);
+    		value=attributeValue(data);	
+    	}
+    	else {
+    		value=LitBoolean.toExprBoolean(true, -1);
+    	}		
+    	CFMLTransformer.comment(data.cfml,true);
+    	return new Attribute(false,name,value,"string");
+    }
+	
+	private String attributeName(CFMLString cfml, ArrayList<String> args) throws TemplateException {
+		String id=StringUtil.toLowerCase(CFMLTransformer.identifier(cfml,true));
+        if(args.contains(id)) throw new TemplateException(cfml,"you can't use the same attribute ["+id+"] twice");
+		args.add(id);
+		return id;
+	}
+		
+	private Expression attributeValue(Data data) throws TemplateException {
+		Expression expr=super.expression(data);
+		return expr;
+	}
 }

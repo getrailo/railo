@@ -1,6 +1,5 @@
 package railo.runtime.config;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;

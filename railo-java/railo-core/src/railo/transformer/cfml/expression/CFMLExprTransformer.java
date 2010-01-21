@@ -124,7 +124,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	public class Data {
 		private short mode=0;
 		public CFMLString cfml;
-		protected FunctionLib[] fld;
+		public FunctionLib[] fld;
 		private boolean ignoreScopes=false;
 		private boolean allowLowerThan;
 		public boolean insideFunction;
@@ -271,7 +271,9 @@ public class CFMLExprTransformer implements ExprTransformer {
         	
             comments(data.cfml);
             if(data.mode==STATIC) expr=new DynAssign(expr,assignOp(data));
-			else expr=new Assign((Variable)expr,assignOp(data));
+			else {
+				expr=new Assign((Variable)expr,assignOp(data));
+			}
 		}
 		return expr;
 	}
