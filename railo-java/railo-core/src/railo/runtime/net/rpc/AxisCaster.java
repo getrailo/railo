@@ -61,6 +61,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Argument;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import coldfusion.xml.rpc.QueryBean;
 
@@ -313,11 +314,13 @@ public final class AxisCaster {
     }
 
     public static Object toAxisType(TypeMapping tm,Object value) throws PageException {
-    	
     	if(value instanceof Date) {// not set to Decision.isDate(value)
         	return new Date(((Date)value).getTime());
     	}
-    	if(Decision.isArray(value) && !(value instanceof Argument)) return toNativeArray(tm,value);
+    	if(Decision.isArray(value) && !(value instanceof Argument)) {
+    		if(value instanceof byte[]) return value;
+    		return toNativeArray(tm,value);
+    	}
         if(Decision.isStruct(value)) {
         	if(value instanceof Component) {
         		Object pojo= toPojo(tm,(Component)value);
@@ -514,7 +517,7 @@ public final class AxisCaster {
     }
 
     public static Object toRailoType(PageContext pc, Object value) throws PageException {
-    	//pc=ThreadLocalPageContext.get(pc);
+    	pc=ThreadLocalPageContext.get(pc);
     	if(pc!=null && value instanceof Pojo) {
     		try{
     			ComponentImpl c = ComponentUtil.toComponentImpl(pc.loadComponent(value.getClass().getName()));
@@ -549,6 +552,41 @@ public final class AxisCaster {
         }
         if(value instanceof Date || value instanceof Calendar) {// do not change to caster.isDate
     		return Caster.toDate(value,null);
+        }
+        if(value instanceof Object[]) {
+        	Object[] arr=(Object[]) value;
+        	if(!ArrayUtil.isEmpty(arr)){
+        		boolean allTheSame=true;
+        		// byte
+        		if(arr[0] instanceof Byte){
+        			for(int i=1;i<arr.length;i++){
+        				if(!(arr[i] instanceof Byte)){
+        					allTheSame=false;
+        					break;
+        				}
+        			}
+        			if(allTheSame){
+        				byte[] bytes=new byte[arr.length];
+        				for(int i=0;i<arr.length;i++){
+            				bytes[i]=Caster.toByteValue(arr[i]);
+            			}
+        				return bytes;
+        			}
+        		}
+        	}
+        }
+        if(value instanceof Byte[]) {
+        	Byte[] arr=(Byte[]) value;
+        	if(!ArrayUtil.isEmpty(arr)){
+				byte[] bytes=new byte[arr.length];
+				for(int i=0;i<arr.length;i++){
+    				bytes[i]=arr[i].byteValue();
+    			}
+				return bytes;
+        	}
+        }
+        if(value instanceof byte[]) {
+        	return value;
         }
         if(Decision.isArray(value)) {
             Array a = Caster.toArray(value);

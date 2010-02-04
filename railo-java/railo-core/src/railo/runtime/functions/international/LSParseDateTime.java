@@ -26,6 +26,7 @@ public final class LSParseDateTime implements Function {
 	}
 	private static railo.runtime.type.dt.DateTime _call(PageContext pc , Object oDate,Locale locale,TimeZone tz) throws PageException {
 		if(oDate instanceof Date) return Caster.toDate(oDate, tz);
-		return Caster.toDateTime(locale,Caster.toString(oDate),tz,locale.equals(Locale.US));
+		//return Caster.toDateTime(locale,Caster.toString(oDate),tz,locale.equals(Locale.US));
+		return Caster.toDateTime(locale,Caster.toString(oDate),tz,false);
 	}
 }

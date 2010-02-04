@@ -326,7 +326,16 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	*/
 	public int doEndTag() throws PageException	{
-
+		
+		if(datasource==null && (dbtype==null || !dbtype.equals("query"))){
+			datasource=((ApplicationContextImpl)pageContext.getApplicationContext()).getDefaultDataSource();
+			if(StringUtil.isEmpty(datasource))
+				throw new ApplicationException(
+						"attribute [datasource] is required, when attribute [dptype] has not value [query] and no default datasource is defined",
+						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+		}
+		
+		
 		if(hasChangedPSQ)pageContext.setPsq(orgPSQ);
 		String strSQL=bodyContent.getString();
 		if(strSQL.length()==0) throw new DatabaseException("no sql string defined, inside query tag",null,null,null);
@@ -344,6 +353,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		else if(hasCached) {
 			query=pageContext.getQueryCache().getQuery(sql,datasource,username,password,cachedafter);
 		}
+		
 		
 		if(query==null) {
 			query=(dbtype!=null && dbtype.equals("query"))?reExecute(sql):execute(sql,result!=null);
@@ -442,13 +452,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	}
 	private QueryImpl execute(SQL sql,boolean createUpdateData) throws PageException {
 		DataSourceManager manager = pageContext.getDataSourceManager();
-		if(datasource==null){
-			datasource=((ApplicationContextImpl)pageContext.getApplicationContext()).getDefaultDataSource();
-			if(StringUtil.isEmpty(datasource))
-				throw new ApplicationException(
-						"attribute [datasource] is required, when attribute [dptype] has not value [query] and no default datasource is defined",
-						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
-		}
+		
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
 		try {
 			return new QueryImpl(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),createUpdateData);

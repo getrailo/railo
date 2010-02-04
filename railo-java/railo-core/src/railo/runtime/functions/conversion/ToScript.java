@@ -3,11 +3,9 @@ package railo.runtime.functions.conversion;
 import railo.runtime.PageContext;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.JSConverter;
-import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Decision;
 
 /**
  * 
@@ -21,8 +19,8 @@ public final class ToScript implements Function {
 		return call(pc,var,jsName,outputFormat,false);
 	}
 	public static String call(PageContext pc, Object var, String jsName,boolean outputFormat, boolean asFormat) throws PageException {
-		if(!Decision.isVariableName(jsName))
-			throw new FunctionException(pc,"toScript",2,"jsName","value does not contain a valid variable String");
+		//if(!Decision.isVariableName(jsName))
+		//	throw new FunctionException(pc,"toScript",2,"jsName","value does not contain a valid variable String");
 		
 		JSConverter converter = new JSConverter();
 		converter.useShortcuts(asFormat); 

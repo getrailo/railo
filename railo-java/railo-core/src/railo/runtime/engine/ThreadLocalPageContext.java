@@ -12,7 +12,7 @@ import railo.runtime.config.Config;
 public final class ThreadLocalPageContext {
 
 	private static final TimeZone DEFAULT_TIMEZONE = TimeZone.getDefault();
-	private static ThreadLocal pcThreadLocal=new ThreadLocal();
+	private static ThreadLocal<PageContext> pcThreadLocal=new ThreadLocal<PageContext>();
 
 	/**
 	 * register a pagecontext for he current thread
@@ -28,7 +28,7 @@ public final class ThreadLocalPageContext {
 	 * if no pagecontext is regisred for the current thread
 	 */
 	public static PageContext get() {//print.dumpStack();
-		return (PageContext) pcThreadLocal.get();
+		return pcThreadLocal.get();
 	}
 	
 	public static Config getConfig() {

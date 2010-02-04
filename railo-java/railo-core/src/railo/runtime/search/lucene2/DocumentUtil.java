@@ -197,7 +197,7 @@ public final class DocumentUtil {
 	    doc.add(FieldUtil.UnIndexed("key", strPath));
 	    doc.add(FieldUtil.UnIndexed("path", file.getPath()));
 	    doc.add(FieldUtil.UnIndexed("size", Caster.toString(file.length())));
-	    doc.add(FieldUtil.Keyword("modified",DateField.timeToString(file.lastModified())));
+	    doc.add(FieldUtil.UnIndexed("modified",DateField.timeToString(file.lastModified())));
         
         
         return doc;

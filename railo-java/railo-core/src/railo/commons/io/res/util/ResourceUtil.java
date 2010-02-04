@@ -946,7 +946,9 @@ public final class ResourceUtil {
 	 * @return
 	 */
 	public static long getRealSize(Resource res, ResourceFilter filter) {
-		if(res.isFile()) return res.length();
+		if(res.isFile()) {
+			return res.length();
+		}
 		else if(res.isDirectory()) {
 			long size=0;
 			Resource[] children = filter==null?res.listResources():res.listResources(filter);

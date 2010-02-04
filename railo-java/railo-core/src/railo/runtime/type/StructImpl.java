@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections.map.ReferenceMap;
+
 import railo.commons.collections.HashTable;
 import railo.commons.collections.HashTableNotSync;
 import railo.runtime.exp.ExpressionException;
@@ -20,6 +22,8 @@ import railo.runtime.type.util.StructSupport;
  */
 public class StructImpl extends StructSupport {
 
+
+	public static final int TYPE_SOFT=4;//FUTURE move to Struct interface
 	
 	private Map map;
 	
@@ -39,7 +43,8 @@ public class StructImpl extends StructSupport {
      */
     public StructImpl(int type) {
     	if(type==TYPE_LINKED)		map=new LinkedHashMap();
-    	else if(type==TYPE_WEAKED)	map=new java.util.WeakHashMap();
+    	else if(type==TYPE_WEAKED)	map=new java.util.WeakHashMap(); 
+    	else if(type==TYPE_SOFT)	map=new ReferenceMap();
         else if(type==TYPE_SYNC)	map=new HashTable();
         else 						map=new HashTableNotSync();
     }

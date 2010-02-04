@@ -65,58 +65,47 @@ public final class HTMLDocument {
   
   	private static void addContent(Document doc, HTMLParser parser) {
 	    
-	    doc.add(FieldUtil.UnIndexed("mime-type", "text/html"));
+  		FieldUtil.setMimeType(doc,"text/html");
+	    //doc.add(FieldUtil.UnIndexed("mime-type", "text/html"));
 	    
 	    String content = parser.getContent();
-	    doc.add(FieldUtil.Text("title", parser.getTitle()));
+
+	    FieldUtil.setTitle(doc,parser.getTitle());
 	    
 	    String summary = parser.getSummary();
 	    if(StringUtil.isEmpty(summary)){
 	    	summary=(content.length()<=200)? content:content.substring(0,200);
+		    FieldUtil.setSummary(doc,summary,false);
 	    }
 	    else{
-	    	content=content+"\n"+summary;
+	    	FieldUtil.setSummary(doc,summary,true);
 	    }
-	    doc.add(FieldUtil.UnIndexed("summary",summary ));
+	    FieldUtil.setRaw(doc,content);
+	    FieldUtil.setContent(doc,content);
 	    
-	    
-	    
-	    doc.add(FieldUtil.UnIndexed("charset", StringUtil.valueOf(parser.getCharset())));
-	    
-	    
+	    //doc.add(FieldUtil.UnIndexed("charset", StringUtil.valueOf(parser.getCharset())));
 	    
 	    if(parser.hasKeywords()) {
-	    	doc.add(FieldUtil.Keyword("keywords", parser.getKeywords().toLowerCase()));
-	    	content=content+"\n"+parser.getKeywords();
+	    	FieldUtil.setKeywords(doc,parser.getKeywords());
 	    }
 	    
 
 	    if(parser.hasAuthor()){
-	    	content=content+"\n"+parser.getAuthor();
-	    	doc.add(FieldUtil.Text("author", parser.getAuthor()));
+	    	FieldUtil.setAuthor(doc,parser.getAuthor());
 	    }
 	    if(parser.hasCustom1()){
-	    	content=content+"\n"+parser.getCustom1();
-	    	doc.add(FieldUtil.Text("custom1", parser.getCustom1()));
+	    	FieldUtil.setCustom(doc,parser.getCustom1(),1);
 	    }
 	    if(parser.hasCustom2()){
-	    	content=content+"\n"+parser.getCustom2();
-	    	doc.add(FieldUtil.Text("custom2", parser.getCustom2()));
+	    	FieldUtil.setCustom(doc,parser.getCustom2(),2);
 	    }
 	    if(parser.hasCustom3()){
-	    	content=content+"\n"+parser.getCustom3();
-	    	doc.add(FieldUtil.Text("custom3", parser.getCustom3()));
+	    	FieldUtil.setCustom(doc,parser.getCustom3(),3);
 	    }
 	    if(parser.hasCustom4()){
-	    	content=content+"\n"+parser.getCustom4();
-	    	doc.add(FieldUtil.Text("custom4", parser.getCustom4()));
+	    	FieldUtil.setCustom(doc,parser.getCustom4(),4);
 	    }
 	    
-	    FieldUtil.addRaw(doc,content);
-	    //doc.add(FieldUtil.UnIndexed("raw", content));
-	    doc.add(FieldUtil.Text("contents", content.toLowerCase()));
-	    //print.err("CONTENT");
-	    //print.err(content);
 	    
     
 }

@@ -166,6 +166,12 @@ Path placeholders:
 			
 		merge-url-form:yes|no
 			when yes all form and url scope are synonym for both data
+		
+		client-directory-max-size
+			maximal size in bytes of the client scope directory (used for default type file)
+		
+		client-max-age
+			the max age of the client scope in days
 	-->
 	<scope 
 		cascading="standard"
@@ -182,6 +188,10 @@ Path placeholders:
 		clientmanagement="no" 
 		setclientcookies="yes" 
 		setdomaincookies="no"
+		
+		client-directory-max-size="10mb"
+		client-max-age="90"
+		
 		/>
 		
 	<mail spool-interval="5" log="{railo-config}/logs/mail.log" spool-enable="yes" timeout="30">

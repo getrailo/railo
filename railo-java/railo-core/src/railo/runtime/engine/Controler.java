@@ -112,9 +112,14 @@ public final class Controler extends Thread {
 					if(config==null) {
 						config = cfmlFactory.getConfig();
 						ThreadLocalConfig.register(config);
+						
 					}
 					config.reloadTimeServerOffset();
 					checkOldClientFile(config);
+					try{checkClientFileSize(config);}catch(Throwable t){}
+					try{config.reloadTimeServerOffset();}catch(Throwable t){}
+					try{checkTempDirectorySize(config);}catch(Throwable t){}
+					try{checkCacheFileSize(config);}catch(Throwable t){}
 				}
 				
 				
@@ -160,17 +165,13 @@ public final class Controler extends Thread {
 		ExtensionResourceFilter filter = new ExtensionResourceFilter(".script",true);
 		
 		try {
-			long date = DateAdd.invoke("d", -90, new DateTimeImpl(config)).getTime();
+			long date = DateAdd.invoke("d", -((ConfigWebImpl)config).getClientScopeMaxAge(), new DateTimeImpl(config)).getTime();
 			ResourceUtil.deleteFileOlderThan(config.getClientScopeDir(),date,filter);
 			ResourceUtil.deleteEmptyFolders(config.getClientScopeDir());
 		
 		} catch (Exception e) {}
-		
 
-		
-		
-		//checkSize(config.getClientScopeDir(),config.getClientScopeDirSize(),filter);
-		
+		checkSize(config,config.getClientScopeDir(),config.getClientScopeDirSize(),new ExtensionResourceFilter(".script",true));
 	}
 	
 	private void checkOldClientFile(ConfigWeb config) {
@@ -197,8 +198,8 @@ public final class Controler extends Thread {
 				
 			}
 		} catch (Throwable t) {}
-		
 	}
+	
 	
 	private void checkCacheFileSize(ConfigWeb config) {
 		checkSize(config,config.getCacheDir(),config.getCacheDirSize(),new ExtensionResourceFilter(".cache"));

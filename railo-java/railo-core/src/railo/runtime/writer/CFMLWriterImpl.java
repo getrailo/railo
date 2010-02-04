@@ -125,8 +125,7 @@ public class CFMLWriterImpl extends CFMLWriter {
      * @see javax.servlet.jsp.JspWriter#clearBuffer() 
      */ 
     public void clearBuffer() { 
-    	//buffer.clear();
-        buffer=new StringBuffer(BUFFER_SIZE);
+    	buffer=new StringBuffer(BUFFER_SIZE);
     } 
 
     /** 
@@ -169,9 +168,7 @@ public class CFMLWriterImpl extends CFMLWriter {
         flushed = true;
         out.write(barr);
         
-        
-        
-        clearBuffer();
+        buffer=new StringBuffer(BUFFER_SIZE); // to not change to clearBuffer, produce problem with CFMLWriterWhiteSpace.clearBuffer 
     } 
     
     

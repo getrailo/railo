@@ -17,7 +17,7 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl {
 	private static final char CHAR_BS='\b'; // \x0B\
 	private static final char CHAR_FW='\f';
 	private static final char CHAR_RETURN='\r';
-	char buffer=CHAR_EMPTY;
+	char charBuffer=CHAR_EMPTY;
 	
 	/**
 	 * constructor of the class
@@ -91,14 +91,14 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl {
 	public void print(char c) throws IOException {
 		switch(c) {
 		case CHAR_NL:
-			if(buffer!=CHAR_NL)buffer=c;
+			if(charBuffer!=CHAR_NL)charBuffer=c;
 		break;
 		case CHAR_BS:
 		case CHAR_FW:
 		case CHAR_RETURN:
 		case CHAR_SPACE:
 		case CHAR_TAB:
-			if(buffer==CHAR_EMPTY)buffer=c;
+			if(charBuffer==CHAR_EMPTY)charBuffer=c;
 		break;
 		
 		default:
@@ -288,18 +288,18 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl {
 
 
 	private synchronized void printBuffer() throws IOException {
-		if(buffer!=CHAR_EMPTY) {
-			char b = buffer;// muss so bleiben!
-			buffer=CHAR_EMPTY;
+		if(charBuffer!=CHAR_EMPTY) {
+			char b = charBuffer;// muss so bleiben!
+			charBuffer=CHAR_EMPTY;
 			super.print(b);
 		}
 	}
 
 	private void printBufferEL() {
-		if(buffer!=CHAR_EMPTY) {
+		if(charBuffer!=CHAR_EMPTY) {
 			try {
-				char b = buffer;
-				buffer=CHAR_EMPTY;
+				char b = charBuffer;
+				charBuffer=CHAR_EMPTY;
 				super.print(b);
 			} 
 			catch (IOException e) {}

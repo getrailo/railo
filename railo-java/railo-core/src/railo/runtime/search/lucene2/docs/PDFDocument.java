@@ -13,6 +13,7 @@ import org.pdfbox.util.PDFTextStripper;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.StringUtil;
 
 /**
  * This class is used to create a document for the lucene search engine.
@@ -81,7 +82,7 @@ import railo.commons.io.res.Resource;
 public final class PDFDocument
 {
     private static final char FILE_SEPARATOR = System.getProperty("file.separator").charAt(0);
-    
+    private static final int SUMMERY_SIZE=200;
 
     /**
      * private constructor because there are only static methods.
@@ -111,16 +112,17 @@ public final class PDFDocument
      */
     public static Document getDocument( Resource res ) {
         Document document = new Document();
-        document.add(FieldUtil.UnIndexed("mime-type", "application/pdf"));
+        FieldUtil.setMimeType(document, "application/pdf");
+        //document.add(FieldUtil.UnIndexed("mime-type", "application/pdf"));
         document.add( FieldUtil.UnIndexed("path", res.getPath() ) );
         
         String uid = res.getPath().replace(FILE_SEPARATOR, '\u0000') + "\u0000" +
                DateField.timeToString(res.lastModified() );
-
+        document.add(FieldUtil.Text("uid", uid, false));
+        
         // Add the uid as a field, so that index can be incrementally maintained.
         // This field is not stored with document, it is indexed, but it is not
         // tokenized prior to indexing.
-        document.add(FieldUtil.Text("uid", uid, false));
         //document.add(new Field("uid", uid, Field.Store.NO,Field.Index.UN_TOKENIZED));
         //document.add(new Field("uid", uid, false, true, false));
 
@@ -176,74 +178,47 @@ public final class PDFDocument
             // not occur here.
             String contents = writer.getBuffer().toString();
             if(content!=null)content.append(contents);
-            //StringReader reader = new StringReader( contents );
-
-            // Add the tag-stripped contents as a Reader-valued Text field so it will
-            // get tokenized and indexed.
-            //document.add( Field.Text( "contents", reader.toString().toLowerCase() ) );
-
-            FieldUtil.addRaw(document,contents);
-    	    //document.add( FieldUtil.UnIndexed("raw", contents ) );
-            document.add( FieldUtil.Text( "contents", contents.toLowerCase() ) );
             
+            FieldUtil.setRaw(document,contents);
+    	    FieldUtil.setContent(document, contents);
+            FieldUtil.setSummary(document, StringUtil.max(contents,SUMMERY_SIZE),false);
+    	    
+    	    
             PDDocumentInformation info = pdfDocument.getDocumentInformation();
-            if( info.getAuthor() != null )
-            {
-                document.add(FieldUtil.Text( "Author", info.getAuthor() ) );
-                
+            if( info.getAuthor() != null)	{
+                FieldUtil.setAuthor(document, info.getAuthor());
             }
             if( info.getCreationDate() != null )
             {
                 Date date = info.getCreationDate().getTime();
-                //for some reason lucene cannot handle dates before the epoch
-                //and throws a nasty RuntimeException, so we will check and
-                //verify that this does not happen
-                if( date.getTime() >= 0 )
-                {
+                if( date.getTime() >= 0 )	{
                     document.add(FieldUtil.Text("CreationDate", DateField.dateToString( date ) ) );
                 }
             }
-            if( info.getCreator() != null )
-            {
+            if( info.getCreator() != null ){
                 document.add( FieldUtil.Text( "Creator", info.getCreator() ) );
             }
-            if( info.getKeywords() != null )
-            {
-                document.add( FieldUtil.Text( "Keywords", info.getKeywords() ) );
+            if( info.getKeywords() != null ){
+                FieldUtil.setKeywords(document, info.getKeywords());
             }
-            if( info.getModificationDate() != null )
-            {
+            if( info.getModificationDate() != null)	{
                 Date date = info.getModificationDate().getTime();
-                //for some reason lucene cannot handle dates before the epoch
-                //and throws a nasty RuntimeException, so we will check and
-                //verify that this does not happen
-                if( date.getTime() >= 0 )
-                {
+                if( date.getTime() >= 0 ){
                     document.add(FieldUtil.Text("ModificationDate", DateField.dateToString( date ) ) );
                 }
             }
-            if( info.getProducer() != null )
-            {
+            if( info.getProducer() != null ){
                 document.add( FieldUtil.Text( "Producer", info.getProducer() ) );
             }
-            if( info.getSubject() != null )
-            {
-                document.add( FieldUtil.Text( "Subject", info.getSubject() ) );
+            if( info.getSubject() != null ){
+            	document.add( FieldUtil.Text( "Subject", info.getSubject() ) );
             }
-            if( info.getTitle() != null )
-            {
-                document.add( FieldUtil.Text( "Title", info.getTitle() ) );
+            if( info.getTitle() != null ){
+            	FieldUtil.setTitle(document, info.getTitle());
             }
-            if( info.getTrapped() != null )
-            {
+            if( info.getTrapped() != null ) {
                 document.add( FieldUtil.Text( "Trapped", info.getTrapped() ) );
             }
-
-            int summarySize = Math.min( contents.length(), 500 );
-            String summary = contents.substring( 0, summarySize );
-            // Add the summary as an UnIndexed field, so that it is stored and returned
-            // with hit documents for display.
-            document.add( FieldUtil.UnIndexed( "summary", summary ) );
         }
         catch(Throwable t) {}
         finally {

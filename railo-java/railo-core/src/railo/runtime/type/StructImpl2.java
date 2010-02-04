@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.collections.map.ReferenceMap;
+
 import railo.commons.collections.HashTable;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ExpressionException;
@@ -39,6 +41,7 @@ public class StructImpl2 extends StructSupport {
     public StructImpl2(int type) {
     	if(type==TYPE_LINKED)		map=new LinkedHashMap();
     	else if(type==TYPE_WEAKED)	map=new java.util.WeakHashMap();
+    	else if(type==StructImpl.TYPE_SOFT)	map=new ReferenceMap();
         else if(type==TYPE_SYNC)	map=new HashTable();
         else 						map=new HashMap();
     }

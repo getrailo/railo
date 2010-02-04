@@ -149,6 +149,8 @@ public final class ConfigWebFactory {
     	catch(Throwable t){
     		
     	}
+    	
+    	
 		
     	SystemOut.print(SystemUtil.PRINTWRITER_OUT,
     			"===================================================================\n"+
@@ -1306,7 +1308,6 @@ public final class ConfigWebFactory {
      */
     private static void loadMappings(ConfigServerImpl configServer, ConfigImpl config,Document doc) {
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_MAPPING);
-        
         Element el= getChildByName(doc.getDocumentElement(),"mappings");
         Element[] _mappings=getChildren(el,"mapping");
         
@@ -2746,6 +2747,15 @@ public final class ConfigWebFactory {
 	    }
   	    else if(hasCS) config.setClientScopeDirSize(configServer.getClientScopeDirSize());
 
+  	    
+
+	    strMax=scope.getAttribute("client-max-age");
+  	    if(hasAccess && !StringUtil.isEmpty(strMax)) {
+  	    	config.setClientScopeMaxAge(Caster.toIntValue(strMax,90));
+	    }
+  	    else if(hasCS) config.setClientScopeMaxAge(configServer.getClientScopeMaxAge());
+
+  	    
   	    
       	// Session Management
   	  	String strSessionManagement=scope.getAttribute("sessionmanagement");

@@ -47,8 +47,8 @@ public final class ConfigServerFactory {
     			"===================================================================\n"
     			
     			);
-
-        
+    	
+    	
     	Resource configFile=configDir.getRealResource("railo-server.xml");
         if(!configFile.exists()) {
 		    configFile.createFile(true);

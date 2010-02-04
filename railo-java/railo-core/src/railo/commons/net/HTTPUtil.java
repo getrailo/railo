@@ -9,7 +9,7 @@ import java.net.URL;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.ServletRequest;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
@@ -36,6 +36,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
+import railo.runtime.net.http.HTTPServletRequestWrap;
 import railo.runtime.net.http.HttpClientUtil;
 import railo.runtime.net.http.HttpServletResponseWrap;
 import railo.runtime.op.Caster;
@@ -371,12 +372,14 @@ public final class HTTPUtil {
 		realPath=HTTPUtil.optimizeRealPath(pc,realPath);
 		
 		try{
+			pc.getHttpServletRequest().setAttribute("railo.forward.request_uri", realPath);
+			
         	RequestDispatcher disp = context.getRequestDispatcher(realPath);
         	if(disp==null)
     			throw new PageServletException(new ApplicationException("Page "+realPath+" not found"));
             
         	//populateRequestAttributes();
-        	disp.forward(pc.getHttpServletRequest(),pc.getHttpServletResponse());
+        	disp.forward(removeWrap(pc.getHttpServletRequest()),pc.getHttpServletResponse());
 		}
         finally{
         	ThreadLocalPageContext.register(pc);
@@ -401,24 +404,40 @@ public final class HTTPUtil {
 	
 
 	
+	public static ServletRequest removeWrap(ServletRequest req) {
+		while(req instanceof HTTPServletRequestWrap)
+			return ((HTTPServletRequestWrap)req).getOriginalRequest();
+		return req;
+	}
+	
+
 	public static void include(PageContext pc,String realPath) throws ServletException,IOException  {
-		ServletContext context = pc.getServletContext();
-		
-		HttpServletRequest req = pc.getHttpServletRequest();
+		include(pc, pc.getHttpServletRequest(),realPath);
+	}
+
+	public static void include(PageContext pc,ServletRequest req, String realPath) throws ServletException,IOException  {
 		realPath=optimizeRealPath(pc,realPath);
-		
 		ByteArrayOutputStream baos=new ByteArrayOutputStream();
-		HttpServletResponseWrap drsp=new HttpServletResponseWrap(pc.getHttpServletResponse(),baos);
-		
+		boolean inline=true;
 		try{
-        	RequestDispatcher disp = context.getRequestDispatcher(realPath);
+			HttpServletResponseWrap drsp=HttpServletResponseWrap.get();
+			
+			if(drsp==null){
+				drsp=new HttpServletResponseWrap(pc.getHttpServletResponse(),baos);
+				HttpServletResponseWrap.set(drsp);
+				inline=false;
+			}
+        	RequestDispatcher disp = pc.getServletContext().getRequestDispatcher(realPath);
         	if(disp==null)
         		throw new PageServletException(new ApplicationException("Page "+realPath+" not found"));
         	disp.include(req,drsp);
-        	if(!drsp.isCommitted())drsp.flushBuffer();
-        	pc.write(IOUtil.toString(baos.toByteArray(), drsp.getCharacterEncoding()));
+        	if(!inline){
+        		if(!drsp.isCommitted())drsp.flushBuffer();
+        		pc.write(IOUtil.toString(baos.toByteArray(), drsp.getCharacterEncoding()));
+        	}
         }
         finally{
+        	if(!inline)HttpServletResponseWrap.release();
         	ThreadLocalPageContext.register(pc);
         }
 	}

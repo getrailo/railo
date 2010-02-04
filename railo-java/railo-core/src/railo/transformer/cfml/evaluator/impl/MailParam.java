@@ -17,14 +17,12 @@ public final class MailParam extends ChildEvaluator {
 		return "mail";
 	}
 
-
+//ç
 	/**
 	 * @see railo.transformer.cfml.evaluator.EvaluatorSupport#evaluate(org.w3c.dom.Element, railo.transformer.library.tag.TagLibTag)
 	 */
 	public void evaluate(Tag tag,TagLibTag libTag) throws EvaluatorException { 
-		// check parent
-		//super.evaluate(tag, libTag);
-		
+		/*
 		// check attributes
 		boolean hasFile=tag.containsAttribute("file");
 		boolean hasName=tag.containsAttribute("name");
@@ -35,28 +33,6 @@ public final class MailParam extends ChildEvaluator {
 		// no attributes
 		if(!hasName && !hasFile) {
 			throw new EvaluatorException("Wrong Context for tag "+libTag.getFullName()+", you must use attribute file or name for this tag");
-		}
+		}*/
 	}
-	/*public void evaluate(Tag tag,TagLibTag libTag) throws EvaluatorException { 
-	
-	// check parent
-		String ns=libTag.getTagLib().getNameSpaceAndSeperator();
-		String mailName=ns+"mail";
-		
-		if(!ASMUtil.hasAncestorTag(tag,mailName))
-			throw new EvaluatorException("Wrong Context, tag "+libTag.getFullName()+" must be inside a "+mailName+" tag");
-		
-	// check attributes
-		boolean hasFile=tag.containsAttribute("file");
-		boolean hasName=tag.containsAttribute("name");
-		// both attributes
-		if(hasName && hasFile) {
-			throw new EvaluatorException("Wrong Context for tag "+libTag.getFullName()+", when you use attribute file you can't also use attribute name");
-		}
-		// no attributes
-		if(!hasName && !hasFile) {
-			throw new EvaluatorException("Wrong Context for tag "+libTag.getFullName()+", you must use attribute file or name for this tag");
-		}
-	}*/
-
 }

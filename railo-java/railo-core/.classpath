@@ -20,7 +20,6 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-lucene-analyzers.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-lucene-snowball.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-lucene-spellchecker.jar"/>
-	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-lucene.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-poi-tm-extractors.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-tomcat-jasper-dummy.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-ws-axis-ant.jar"/>
@@ -46,7 +45,6 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/jfreechart-patch.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/jfreechart.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/jmimemagic.jar"/>
-	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/jpedal_gpl.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/jtds.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/jug.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/lowagie.itext.jar"/>
@@ -90,5 +88,9 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/joda-time.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/libs/railo-extension-example-tld-1-0-0.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/libs/activemq-all-5.3.0.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Deploy-Source/jars-3-1/jpedal_gpl.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/libs/PDFRenderer.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/libs/icepdf-core.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-lucene.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

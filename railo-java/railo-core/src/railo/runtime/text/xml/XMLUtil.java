@@ -471,6 +471,18 @@ public final class XMLUtil {
 				}
                 return sb.toString();
 			}
+			else if(k.equals(XMLCDATA)) {
+				StringBuffer sb=new StringBuffer();
+				NodeList list = node.getChildNodes();
+				int len=list.getLength();
+				for(int i=0;i<len;i++) {
+					Node n=list.item(i);
+                    if(n instanceof Text || n instanceof CDATASection) {
+                        sb.append(((CharacterData)n).getData());
+					}
+				}
+                return sb.toString();
+			}
 			// children	
 			else if(k.equals(XMLCHILDREN)) {
 				return new XMLNodeList(node,caseSensitive);

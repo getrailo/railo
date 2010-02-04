@@ -29,6 +29,7 @@ import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.ArrayUtil;
 
 /**
  * represent a single Collection
@@ -541,20 +542,33 @@ public abstract class SearchCollectionSupport implements SearchCollection {
     public final int search(SearchData data, Query qry,String criteria, String language, short type,int startrow,int maxrow,String categoryTree, String[] categories) throws SearchException, PageException {
         int len=qry.getRecordcount();
         SearchResulItem[] records;
+        
+        AddionalAttrs aa = AddionalAttrs.getAddionlAttrs();
+        boolean hasRowHandling=false;
+        aa.setStartrow(startrow);
+        if(maxrow!=-1)aa.setMaxrows(maxrow-len);
+        
         lock();
         try {
         	records = _search(data, criteria,language,type,categoryTree,categories);
         }
         finally {
         	unlock();
+        	if(hasRowHandling=aa.hasRowHandling())
+        		startrow = aa.getStartrow();
+        	
         }
+        
+        
+        
         // Startrow
-        if(startrow>1) {
-            if(startrow>records.length) {
+        if(!hasRowHandling && startrow>1) {
+            
+        	if(startrow>records.length) {
                 return startrow-records.length;
             }
-            
             int start=startrow-1;
+            
             SearchResulItem[] tmpRecords=new SearchResulItem[records.length-start];
             for(int i=start;i<records.length;i++) {
                 tmpRecords[i-start]=records[i];
@@ -564,10 +578,9 @@ public abstract class SearchCollectionSupport implements SearchCollection {
         }
         
         
-        
-        if(records!=null && records.length>0) {
+        if(!ArrayUtil.isEmpty(records)) {
             
-            int to=(maxrow>-1 && len+records.length>maxrow)?maxrow-len:records.length;
+            int to=(!hasRowHandling && maxrow>-1 && len+records.length>maxrow)?maxrow-len:records.length;
             qry.addRow(to);
             
             String title;
@@ -583,7 +596,7 @@ public abstract class SearchCollectionSupport implements SearchCollection {
             		
                 int row=len+y+1;
                 record = records[y];
-                if(y==0)hasContextSummary=record instanceof SearchResulItemImpl;
+                if(y==0)hasContextSummary=record instanceof SearchResultItemPro;
             	si=(SearchIndex)indexes.get(record.getId());
 
                 title=record.getTitle();
@@ -605,7 +618,7 @@ public abstract class SearchCollectionSupport implements SearchCollection {
                 qry.setAt("size",row,record.getSize());
 
                 qry.setAt("summary",row,record.getSummary());
-                if(hasContextSummary)qry.setAt("context",row,((SearchResulItemImpl)record).getContextSummary());
+                if(hasContextSummary)qry.setAt("context",row,((SearchResultItemPro)record).getContextSummary());
                 qry.setAt("score",row,new Float(record.getScore()));
                 qry.setAt("key",row,record.getKey());
                 qry.setAt("url",row,url);

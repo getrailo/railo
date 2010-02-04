@@ -38,6 +38,20 @@ public final class HttpServletResponseWrap extends HttpServletResponseWrapper im
 	private boolean outInit=false;
 	private PrintWriter writer;
 	private ServletOutputStreamDummy outputStream;
+	
+
+	private static ThreadLocal<HttpServletResponseWrap> local=new ThreadLocal<HttpServletResponseWrap>();
+
+
+	public static void set(HttpServletResponseWrap value) {
+		local.set(value);
+	}
+	public static HttpServletResponseWrap get() {
+		return local.get();
+	}
+	public static void release() {
+		local.set(null);
+	}
 
 	/**
 	 * Constructor of the class
@@ -184,8 +198,8 @@ public final class HttpServletResponseWrap extends HttpServletResponseWrapper im
 	 * @see javax.servlet.ServletResponse#getOutputStream()
 	 */
 	public ServletOutputStream getOutputStream() throws IOException {
-		if(outInit) throw new IOException("output already initallised");
-		outInit=true;
+		//if(writer!=null) throw new IOException("output already initallised as Writer");
+		if(outputStream!=null) return outputStream;
 		return outputStream=new ServletOutputStreamDummy(out);
 	}
 	
@@ -197,9 +211,10 @@ public final class HttpServletResponseWrap extends HttpServletResponseWrapper im
 	 * @see javax.servlet.ServletResponse#getWriter()
 	 */
 	public PrintWriter getWriter() throws IOException {
-		if(outInit) throw new IOException("output already initallised");
-		outInit=true;
-		return writer= new PrintWriter(out);
+		//if(outputStream!=null) throw new IOException("output already initallised as OutputStream");
+		if(writer!=null) return writer;
+		return writer= new PrintWriter(getOutputStream());
+		
 	}
 	
 	public PrintWriter getExistingWriter() {
@@ -338,5 +353,7 @@ public final class HttpServletResponseWrap extends HttpServletResponseWrapper im
 	public String getStatusCode() {
 		return statusCode;
 	}
+
+	
 	
 }

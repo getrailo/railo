@@ -40,7 +40,7 @@ public final class FileDocument {
     doc.add(FieldUtil.UnIndexed("mime-type", "text/plain"));
 
     String content=IOUtil.toString(res,charset);
-    FieldUtil.addRaw(doc,content);
+    FieldUtil.setRaw(doc,content);
     //doc.add(FieldUtil.UnIndexed("raw", content));
     doc.add(FieldUtil.Text("contents", content.toLowerCase()));
     doc.add(FieldUtil.UnIndexed("summary",StringUtil.max(content,SUMMERY_SIZE)));
@@ -52,15 +52,14 @@ public final class FileDocument {
 	 
     // make a new, empty document
     Document doc = new Document();
-    doc.add(FieldUtil.UnIndexed("mime-type", "text/plain"));
-
+    FieldUtil.setMimeType(doc, "text/plain");
     //
     String contents=IOUtil.toString(r);
     if(content!=null)content.append(contents);
     doc.add(FieldUtil.UnIndexed("size", Caster.toString(contents.length())));
-    	
-    doc.add(FieldUtil.Text("contents", contents.toLowerCase()));
-    doc.add(FieldUtil.UnIndexed("summary",StringUtil.max(contents,SUMMERY_SIZE)));
+    FieldUtil.setContent(doc, contents);
+    FieldUtil.setRaw(doc, contents);
+    FieldUtil.setSummary(doc, StringUtil.max(contents,SUMMERY_SIZE),false);
     return doc;
   }
 

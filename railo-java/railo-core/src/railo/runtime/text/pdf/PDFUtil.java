@@ -9,16 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jpedal.PdfDecoder;
-import org.jpedal.exception.PdfException;
-
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.CasterException;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.Image;
 import railo.runtime.op.Caster;
@@ -228,50 +223,7 @@ public class PDFUtil {
 	
 	
 
-	 public static void writeImages(byte[] input,Set pages,Resource outputDirectory, String prefix,String format, int scale,
-			 boolean overwrite, boolean goodQuality,boolean transparent) throws PdfException, PageException, IOException {
-		 PdfDecoder dec = createPdfDecoder(input);
-		 Resource res;
-		 int count = dec.getPageCount();
-		 
-		 for(int page=1;page<=count;page++) {
-			 if(pages!=null && !pages.contains(Constants.Integer(page)))continue;
-			 res=outputDirectory.getRealResource(prefix+"_page_"+page+"."+format);
-			 writeImage(dec,page,res,format,scale,overwrite,goodQuality, transparent);
-		 }
-
-	 }
-
-
-
-	private static void writeImage(PdfDecoder dec, int page, Resource destination,String format, int scale,
-			boolean overwrite, boolean goodQuality, boolean transparent) throws PdfException, PageException, IOException {
-		if(scale<1) throw new ExpressionException("scale ["+scale+"] should be at least 1");
-		if(destination.exists()) {
-			if(!overwrite)throw new ExpressionException("can't overwrite existing image ["+destination+"], attribute [overwrite] is false");
-		}
-		Image img = new Image(transparent?dec.getPageAsTransparentImage(page):dec.getPageAsImage(page));
-		if(scale!=100)
-			img.resize(scale, goodQuality?"highestquality":"highperformance", 1);
-		img.writeOut(destination,format, overwrite, 1f);
-	}
-
-
-	public static Image toImage(byte[] input,int page) throws PdfException {
-		 return new Image(createPdfDecoder(input).getPageAsImage(page));
-	}
-
-	public static PdfDecoder createPdfDecoder(Resource res) throws PdfException, IOException {
-		return createPdfDecoder(IOUtil.toBytes(res));
-	}
 	 
-	public static PdfDecoder createPdfDecoder(byte[] input) throws PdfException {
-		 PdfDecoder decoder = new PdfDecoder(true);
-		 decoder.useHiResScreenDisplay(true);
-		 decoder.openPdfArray(input);
-		 return decoder;
-	}
-
 	public static void encrypt(PDFDocument doc, OutputStream os, String newUserPassword, String newOwnerPassword, int permissions, int encryption) throws ApplicationException, DocumentException, IOException {
 		byte[] user = newUserPassword==null?null:newUserPassword.getBytes();
 		byte[] owner = newOwnerPassword==null?null:newOwnerPassword.getBytes();
@@ -355,4 +307,12 @@ public class PDFUtil {
 		print.out(IOUtil.toString(os.toByteArray(), "UTF-8"));
 	}*/
 	
+	public static Image toImage(byte[] input,int page) throws PageException, IOException  {
+		 return PDF2Image.getInstance().toImage(input, page);
+	}
+
+	public static void writeImages(byte[] input,Set pages,Resource outputDirectory, String prefix,
+			String format, int scale, boolean overwrite, boolean goodQuality,boolean transparent) throws PageException, IOException {
+		PDF2Image.getInstance().writeImages(input, pages, outputDirectory, prefix, format, scale, overwrite, goodQuality, transparent);
+	}
 }

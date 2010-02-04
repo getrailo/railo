@@ -956,17 +956,13 @@ public final class ConfigWebAdmin {
         id=id.trim();
     	if(StringUtil.isEmpty(id))
             throw new ExpressionException("id can't be a empty value");
-    	//else if(name.equals("template") || name.equals("object"))
-    		//throw new ExpressionException("name ["+name+"] is not allowed for a cache connection, the following names are reserved words [object,template]");	
-        
+    	
     	if(StringUtil.isEmpty(className) && StringUtil.isEmpty(cfcPath))
     		throw new ExpressionException("you must define className or cfcPath");
     	
         try {
         	if(!StringUtil.isEmpty(className)){
 	        	Class clazz = ClassUtil.loadClass(className);
-				//if(!Reflector.isInstaneOf(clazz, Gateway.class))
-				//	throw new ExpressionException("class ["+clazz.getName()+"] is not of type ["+Gateway.class.getName()+"]");
         	}
 		}
         catch (ClassException e) {
@@ -991,9 +987,6 @@ public final class ConfigWebAdmin {
   			}
       	  
       	}
-      	//if(isUpdate) return;
-      	
-      	
       	// Insert
       	Element el=doc.createElement("gateway");
       	parent.appendChild(el);

@@ -34,7 +34,7 @@ public final class LSIsDate implements Function {
 		    String str=object.toString();
 		    if(str.length()<2) return false;
 		    //print.out(Caster.toDateTime(locale,str,pc.getTimeZone(),null));
-			return Decision.isDate(str,locale,tz,locale.equals(Locale.US));
+			return Decision.isDate(str,locale,tz,false);
 			//return Caster.toDateTime(locale,str,pc.getTimeZone(),null)!=null;
 		}
 		return false;

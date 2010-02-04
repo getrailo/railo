@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -22,7 +23,6 @@ import org.apache.lucene.search.spell.LuceneDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.FSDirectory;
 
-import railo.commons.collections.HashTable;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
@@ -337,7 +337,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
         int countAdd=keyColumn.size();
         int countNew=0;
         
-    	Map docs=new HashTable();
+    	Map<String,Document> docs=new HashMap<String,Document>();
     	IndexWriter writer=null;
     	synchronized(token){
 	    	try {
@@ -455,6 +455,11 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
             Object highlighter=null;
             railo.runtime.search.lucene2.query.QueryParser queryParser=new railo.runtime.search.lucene2.query.QueryParser();
 			AddionalAttrs aa = AddionalAttrs.getAddionlAttrs();
+			aa.setHasRowHandling(true);
+			int startrow=aa.getStartrow();
+			int maxrows=aa.getMaxrows();
+			
+			
 			if(!criteria.equals("*")) {
 				// FUTURE take this data from calling parameters
 				op=queryParser.parseOp(criteria);
@@ -475,57 +480,64 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 			Resource[] files = _getIndexDirectories();
 			
             if(files==null) return new SearchResulItem[0];
-            ArrayList list=new ArrayList();
+            ArrayList<SearchResulItem> list=new ArrayList<SearchResulItem>();
             String ct,c;
             
-            ArrayList spellCheckIndex=spellcheck?new ArrayList():null;
+            ArrayList<String> spellCheckIndex=spellcheck?new ArrayList<String>():null;
             
-            for(int i=0;i<files.length;i++) {
-	        	if(removeCorrupt(files[i]))continue;
-            	String strFile=files[i].toString();
-	            SearchIndex si = (SearchIndex)indexes.get(files[i].getName());
-	            
-	            if(si==null)continue;
-	            ct=si.getCategoryTree();
-	            c=List.arrayToList(si.getCategories(), ",");
-	            
-	            // check category tree
-	            if(!matchCategoryTree(ct,categoryTree))continue;
-	            if(!matchCategories(si.getCategories(),category))continue;
-	            
-	            Document doc;
-	            String id=files[i].getName();
-	            data.addRecordsSearched(_countDocs(strFile));
-	            IndexReader reader = null;
-	            Searcher searcher = null;
-            	try {
+            int count=0;
+            IndexReader reader = null;
+            Searcher searcher = null;
+            try {
+	            outer:for(int i=0;i<files.length;i++) {
+		        	if(removeCorrupt(files[i]))continue;
+	            	String strFile=files[i].toString();
+		            SearchIndex si = (SearchIndex)indexes.get(files[i].getName());
+		            
+		            if(si==null)continue;
+		            ct=si.getCategoryTree();
+		            c=List.arrayToList(si.getCategories(), ",");
+		            
+		            // check category tree
+		            if(!matchCategoryTree(ct,categoryTree))continue;
+		            if(!matchCategories(si.getCategories(),category))continue;
+		            
+		            Document doc;
+		            String id=files[i].getName();
+		            data.addRecordsSearched(_countDocs(strFile));
+		            
             		reader = _getReader(id,false);
             		if(query==null && "*".equals(criteria)) {
-		            	// get all records
 		            	int len=reader.numDocs();
 			            for(int y=0;y<len;y++) {
-			        	    doc = reader.document(y);
-			        	    list.add(createSearchResulItemImpl(highlighter,analyzer,doc,id,1,ct,c,aa.getContextPassages(),aa.getContextBytes()));
+			            	if(startrow>++count)continue;
+			            	if(maxrows>-1 && list.size()>=maxrows) break outer;
+			            	doc = reader.document(y);
+			        	    list.add(createSearchResulItem(highlighter,analyzer,doc,id,1,ct,c,aa.getContextPassages(),aa.getContextBytes()));
 			            }
 		            }
 		            else {
-
 			            if(spellcheck)spellCheckIndex.add(id);
 		            	// search
 			            searcher = new IndexSearcher(reader);
 		                Hits hits = searcher.search(query);
 			            int len=hits.length();
 			            for (int y=0; y<len; y++) {
-			        	    doc = hits.doc(y);
-			        	    list.add(createSearchResulItemImpl(highlighter,analyzer,doc,id,hits.score(y),ct,c,aa.getContextPassages(),aa.getContextBytes()));
+			            	if(startrow>++count)continue;
+			            	if(maxrows>-1 && list.size()>=maxrows) break outer;
+			            	//list.add(new SearchResulItemHits(hits,y,highlighter,analyzer,id,ct,c,aa.getContextPassages(),aa.getContextBytes()));
+			            	doc = hits.doc(y);
+			        	    list.add(createSearchResulItem(highlighter,analyzer,doc,id,hits.score(y),ct,c,aa.getContextPassages(),aa.getContextBytes()));
 			            }  
+			           
 		            }
-	            }
-            	finally {
-            		close(reader);
-            		close(searcher);
-            	}    
-	        }
+	             
+	        	}
+            }
+        	finally {
+        		close(reader);
+        		close(searcher);
+        	}   
             
             // spellcheck
             //SearchData data=ThreadLocalSearchData.get();
@@ -559,7 +571,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
             	}
             }
             
-	        return (SearchResulItem[])list.toArray(new SearchResulItem[list.size()]);
+	        return list.toArray(new SearchResulItem[list.size()]);
         } 
         catch (IOException e) 		{ throw new SearchException(e); }
         
@@ -579,10 +591,11 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
     	return false;
 	}
 
-	private static SearchResulItem createSearchResulItemImpl(Object highlighter,Analyzer a,Document doc, String name, float score, String ct, String c,int maxNumFragments, int maxLength) {
-		String contextSummary=Highlight.createContextSummary(highlighter,a,doc.get("raw"),maxNumFragments,maxLength,doc.get("summary"));
+	private static SearchResulItem createSearchResulItem(Object highlighter,Analyzer a,Document doc, String name, float score, String ct, String c,int maxNumFragments, int maxLength) {
+		String contextSummary="";
+		if(maxNumFragments>0)
+			contextSummary=Highlight.createContextSummary(highlighter,a,doc.get("contents"),maxNumFragments,maxLength,doc.get("summary"));
 		String summary = doc.get("summary");
-		
 		
 		return new SearchResulItemImpl(
                 name,

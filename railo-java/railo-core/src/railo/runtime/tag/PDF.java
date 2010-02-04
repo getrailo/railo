@@ -469,8 +469,8 @@ public class PDF extends BodyTagImpl  {
 	 * @throws ApplicationException 
 	 */
 	public void setScale(double scale) throws ApplicationException {
-		if(scale<1 || scale>100) 
-			throw new ApplicationException("invalid scale definition ["+Caster.toString(scale)+"], value should be in range from 1 to 100");
+		//if(scale<1 || scale>1000)  this check is now done inside PDF2IMage implementation
+		//	throw new ApplicationException("invalid scale definition ["+Caster.toString(scale)+"], value should be in range from 1 to 100");
 		this.scale = (int) scale;
 	}
 	

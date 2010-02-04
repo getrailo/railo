@@ -84,7 +84,8 @@ public final class CFMLEngineImpl implements CFMLEngine {
 
     private CFMLEngineImpl(CFMLEngineFactory factory) {
     	this.factory=factory; 
-    	
+    	CFMLEngineFactory.registerInstance(this);// patch, not really good but it works
+        
         SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"Start CFML Controller");
         Controler controler = new Controler(getConfigServerImpl(),initContextes,5*1000,controlerState);
         controler.setDaemon(true);
@@ -102,6 +103,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
     public static synchronized CFMLEngine getInstance(CFMLEngineFactory factory) {
     	if(engine==null) {
     		engine=new CFMLEngineImpl(factory);
+    		
         }
         return engine;
     }
@@ -128,12 +130,12 @@ public final class CFMLEngineImpl implements CFMLEngine {
     }
     
     private ConfigServerImpl getConfigServerImpl() {
-        if(configServer==null) {
+    	if(configServer==null) {
             try {
             	ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
             	
             	Resource context = frp.getResource(factory.getResourceRoot().getAbsolutePath()).getRealResource("context");
-            	
+            	//CFMLEngineFactory.registerInstance(this);// patch, not really good but it works
                 configServer=ConfigServerFactory.newInstance(
                         this,
                         initContextes,

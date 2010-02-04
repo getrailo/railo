@@ -7,6 +7,7 @@ import org.apache.commons.mail.EmailAttachment;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
@@ -117,6 +118,19 @@ public final class MailParam extends TagImpl {
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws PageException	{
+		
+		// check attributes
+		boolean hasFile=!StringUtil.isEmpty(file);
+		boolean hasName=!StringUtil.isEmpty(name);
+		// both attributes
+		if(hasName && hasFile) {
+			throw new ApplicationException("Wrong Context for tag MailParam, you cannot use attribute file and name together");
+		}
+		// no attributes
+		if(!hasName && !hasFile) {
+			throw new ApplicationException("Wrong Context for tag MailParam, you must use attribute file or attribute name for this tag");
+		}
+		
 		// get Mail Tag
 		Tag parent=getParent();
 		while(parent!=null && !(parent instanceof Mail)) {

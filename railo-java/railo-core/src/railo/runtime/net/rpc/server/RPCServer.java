@@ -32,6 +32,7 @@ import org.apache.axis.MessageContext;
 import org.apache.axis.SimpleChain;
 import org.apache.axis.SimpleTargetedChain;
 import org.apache.axis.components.logger.LogFactory;
+import org.apache.axis.encoding.TypeMapping;
 import org.apache.axis.encoding.TypeMappingRegistry;
 import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
@@ -308,8 +309,8 @@ public final class RPCServer{
                     log.debug("Invoking Axis Engine.");
                     //here we run the message by the engine
                 }
-                /*
-                javax.xml.rpc.encoding.TypeMapping typeMapping = engine.getTypeMappingRegistry().getDefaultTypeMapping();
+                
+                /*javax.xml.rpc.encoding.TypeMapping typeMapping = engine.getTypeMappingRegistry().getDefaultTypeMapping();
                 typeMapping.register(Object.class, 
                 		org.apache.axis.wsdl.fromJava.Types.OBJECT,
                         new BeanSerializerFactory(QueryBean.class,WSConstants.QUERY_QNAME),
@@ -799,39 +800,6 @@ public final class RPCServer{
                     RPCConstants.QUERY_QNAME,
                     new BeanSerializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME),
                     new BeanDeserializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME));
-			/*
-			QName addr = new QName("http://rpc.xml.coldfusion","jm.test");
-			tm.register(Pojo.class, 
-					addr,
-                    new BeanSerializerFactory(Pojo.class,addr),
-                    new BeanDeserializerFactory(Pojo.class,addr));
-			*/
-			
-			//QName addr = new QName("http://rpc.xml.coldfusion","Address");
-			/*tm.register(ComponentImpl.class, 
-					addr,
-                    new ComponentSerializerFactory(ComponentImpl.class,addr),
-                    new BeanDeserializerFactory(ComponentImpl.class,addr));
-            */
-			/*QName addr = new QName("http://rpc.xml.coldfusion","Address");
-			tm.register(Address.class, 
-					addr,
-                    new BeanSerializerFactory(Address.class,addr),
-                    new BeanDeserializerFactory(Address.class,addr));
-            */
-			/*QName addr = new QName("http://rpc.xml.coldfusion","ComplexType");
-			tm.register(ComplexType.class, 
-					addr,
-                    new BeanSerializerFactory(ComplexType.class,addr),
-                    new BeanDeserializerFactory(ComplexType.class,addr));
-            */
-			
-			
-            /*Class[] classes = tm.getAllClasses();
-            for(int i=0;i<classes.length;i++){
-            	print.ln(":::	"+classes[i].getName());
-            }*/
-            
             
         }
         return axisServer;
@@ -864,12 +832,12 @@ public final class RPCServer{
 		
 		registerTypeMapping(clazz, qname);
 	}
+	
 	public void registerTypeMapping(Class clazz,QName qname) {
-		
 		TypeMappingRegistry reg = axisServer.getTypeMappingRegistry();
 		org.apache.axis.encoding.TypeMapping tm;
 		tm=reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
-		// TODO es werden immer neu angehŠngt und alte bleiben
+		// TODO es werden immer neu angehï¾Šngt und alte bleiben
 		Class c = tm.getClassForQName(qname);
 		if(c!=null && c!=clazz) {
 			tm.removeDeserializer(c, qname);

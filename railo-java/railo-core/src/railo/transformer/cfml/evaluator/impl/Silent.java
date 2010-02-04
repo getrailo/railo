@@ -18,28 +18,5 @@ public final class Silent extends EvaluatorSupport {
 	 */
 	public void evaluate(Tag tag) throws EvaluatorException {
 		ASMUtil.removeLiterlChildren(tag,true);
-		/*Body body=tag.getBody();
-        
-		//tag.getTagLibTag().
-        // count catch tag and other in body
-        if(body!=null) {
-        	List stats = body.getStatements();
-    		Iterator it = stats.iterator();
-        	Statement stat;
-        	Tag t;
-            
-            while(it.hasNext()) {
-            	stat=(Statement) it.next();
-            	if(stat instanceof Tag) {
-                	t=(Tag) stat;
-                	if(t.getTagLibTag().getName().equals("catch"))catchCount++;
-                    else noCatchCount++;
-                }
-                else noCatchCount++;
-            }
-        }*/
-        
-        
-		
 	}
 }

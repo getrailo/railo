@@ -238,10 +238,8 @@ public final class RPCClient implements Objects, Iteratorable{
 		
         org.apache.axis.client.Call call = (Call)axisService.createCall(QName.valueOf(port.getName()), QName.valueOf(tmpOp.getName()));
         if(!StringUtil.isEmpty(username,true)){
-        	//print.out(username+":"+password);
         	call.setUsername(username);
 	        call.setPassword(password);
-	       	        
         }
         /*/ Array
         call.registerTypeMapping(
@@ -298,7 +296,7 @@ public final class RPCClient implements Objects, Iteratorable{
                 new ElementSerializerFactory(),
                 new ElementDeserializerFactory());
         */
-
+        
         org.apache.axis.encoding.TypeMapping tm = (org.apache.axis.encoding.TypeMapping) 
         	axisService.getTypeMappingRegistry().getDefaultTypeMapping();
         Vector inNames = new Vector();
@@ -327,7 +325,7 @@ public final class RPCClient implements Objects, Iteratorable{
 		}
 
 		// set output type
-        if (parameters.returnParam != null) {
+		if (parameters.returnParam != null) {
         	QName rtnQName = parameters.returnParam.getQName();
         	TypeEntry rtnType = parameters.returnParam.getType();
         	map(config,call,tm,rtnType);
@@ -411,7 +409,7 @@ public final class RPCClient implements Objects, Iteratorable{
     
 	private void map(Config config,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
 		Vector els = type.getContainedElements();
-        if(els==null) mapSimple(tm, type);
+		if(els==null) mapSimple(tm, type);
         else {
         	Class rtnClass=tm.getClassForQName(type.getQName());
         	if(rtnClass!=null && rtnClass.getName().equals(getClientClassName(type))) return;
@@ -421,7 +419,6 @@ public final class RPCClient implements Objects, Iteratorable{
 			} catch (IOException e) {}
 			
         	Class cls = mapComplex(config,call,tm, type,els);   
-    		
         	// TODO make a better impl; this is not the fastest way to make sure all pojos use the same classloader
     		if(cls!=null && clb!=cls.getClassLoader()){
     			mapComplex(config,call,tm, type,els);  

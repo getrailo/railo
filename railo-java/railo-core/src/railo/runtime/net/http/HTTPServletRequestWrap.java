@@ -53,8 +53,8 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 			query_string = attr("javax.servlet.include.query_string");
 		}
 		
-		/*/forward
-		else if((servlet_path=attr("javax.servlet.forward.servlet_path"))!=null){
+		//forward
+		/*else if((servlet_path=attr("javax.servlet.forward.servlet_path"))!=null){
 			request_uri=attr("javax.servlet.forward.request_uri");
 			context_path=attr("javax.servlet.forward.context_path");
 			path_info=attr("javax.servlet.forward.path_info");
@@ -68,7 +68,24 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 			path_info=super.getPathInfo();
 			query_string = super.getQueryString();
 		}
+		/*Enumeration names = req.getAttributeNames();
+		while(names.hasMoreElements()){
+			String key=(String)names.nextElement();
+			print.out(key+"+"+req.getAttribute(key));
+		}
 		
+
+		print.out("super:"+req.getClass().getName());
+		print.out("servlet_path:"+servlet_path);
+		print.out("request_uri:"+request_uri);
+		print.out("path_info:"+path_info);
+		print.out("query_string:"+query_string);
+		
+		print.out("servlet_path."+req.getServletPath());
+		print.out("request_uri."+req.getRequestURI());
+		print.out("path_info."+req.getPathInfo());
+		print.out("query_string."+req.getQueryString());
+		*/
 	}
 	
 	private static HttpServletRequest pure(HttpServletRequest req) {
@@ -143,7 +160,6 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	 */
 	public void removeAttribute(String name) {
 		req.removeAttribute(name);
-		
 	}
 
 	/**
@@ -230,5 +246,9 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 
 	private String attr(String key) {
 		return (String) req.getAttribute(key);
+	}
+
+	public HttpServletRequest getOriginalRequest() {
+		return req;
 	}
 }

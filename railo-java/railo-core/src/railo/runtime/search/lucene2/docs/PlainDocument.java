@@ -43,10 +43,11 @@ public final class PlainDocument {
     try {
     	is=IOUtil.toBufferedInputStream(f.getInputStream());
     	String content=IOUtil.toString(is,charset);
-    	FieldUtil.addRaw(doc,content);
-	    //doc.add(FieldUtil.Text("raw", content));
-    	doc.add(FieldUtil.Text("contents", content.toLowerCase()));
-    	doc.add(FieldUtil.UnIndexed("summary",StringUtil.max(content,SUMMERY_SIZE)));
+    	FieldUtil.setMimeType(doc, "text/plain");
+    	FieldUtil.setRaw(doc,content);
+    	FieldUtil.setContent(doc, content);
+    	//doc.add(FieldUtil.Text("contents", content.toLowerCase()));
+    	FieldUtil.setSummary(doc, StringUtil.max(content,SUMMERY_SIZE),false);
     }
     finally {
     	IOUtil.closeEL(is);

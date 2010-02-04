@@ -21,6 +21,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.ext.tag.BodyTagImpl;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 
@@ -169,13 +170,13 @@ public final class Content extends BodyTagImpl {
             	os=getOutputStream();
             	
             	if(content!=null) {
-                    rsp.setContentLength(content.length);
+            		ReqRspUtil.setContentLength(rsp,content.length);
                     length=content.length;
                      is=new BufferedInputStream(new ByteArrayInputStream(content));  
                 }
                 else {
                     file = ResourceUtil.toResourceExisting(pageContext,strFile);
-                    rsp.setContentLength((int) file.length());
+                    ReqRspUtil.setContentLength(rsp,file.length());
                     pageContext.getConfig().getSecurityManager().checkFileLocation(file);
                     length=file.length();
                     is=IOUtil.toBufferedInputStream(file.getInputStream());
@@ -301,7 +302,7 @@ public final class Content extends BodyTagImpl {
 				}
 			}
 			else {
-				from = Caster.toIntValue(item,0);
+				from = Caster.toLongValue(item,0);
 				to=-1;
 			}
 			ranges[i]=new Range(from,to);

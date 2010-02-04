@@ -107,15 +107,16 @@ public abstract class ComponentPage extends Page  {
             
             // Include MUST
             Array path = pc.getTemplatePath();
-            
             if(path.size()>1) {
-            	Key[] keys = component.keys();
+            	ComponentWrap c = new ComponentWrap(Component.ACCESS_PRIVATE,component.getComponentImpl());
+            	Key[] keys = c.keys();
             	Object el;
             	Scope var = pc.variablesScope();
             	for(int i=0;i<keys.length;i++) {
-            		el=component.get(keys[i]);
+            		el=c.get(keys[i],null);
             		if(el instanceof UDF) 
             			var.set(keys[i], el);
+            		
             	}
             	return;
             }

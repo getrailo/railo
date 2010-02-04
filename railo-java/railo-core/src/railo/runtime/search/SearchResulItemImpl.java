@@ -4,14 +4,8 @@ package railo.runtime.search;
 /**
  * A Single Record of a Search Result
  */
-public class SearchResulItemImpl implements SearchResulItem {
+public class SearchResulItemImpl implements SearchResultItemPro {
     
-    /**
-	 * @return the contextSummary
-	 */
-	public String getContextSummary() {
-		return contextSummary;
-	}
 	private String title;
     private float score;
     private int recordsSearched;
@@ -165,5 +159,13 @@ public class SearchResulItemImpl implements SearchResulItem {
 	 */
 	public String getSize() {
 		return size;
+	}
+	
+
+    /**
+	 * @return the contextSummary
+	 */
+	public String getContextSummary() {
+		return contextSummary;
 	}
 }

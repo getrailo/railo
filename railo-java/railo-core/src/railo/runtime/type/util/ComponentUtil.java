@@ -267,7 +267,6 @@ public final class ComponentUtil {
 	 */
 	private static void _registerTypeMapping(RPCServer server, Class clazz) {
 		if(!isComplexType(clazz)) return;
-		// possible that a child of the Cmplex Object is also a complex object
 		server.registerTypeMapping(clazz);
 		registerTypeMapping(server,clazz);
 	}

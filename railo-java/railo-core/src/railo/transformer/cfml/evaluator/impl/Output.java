@@ -35,7 +35,7 @@ public final class Output extends EvaluatorSupport {
             if(hasParentWithQuery && hasParentWithGroup)break;
 		}
         
-        
+        //ç
         
         if(hasQuery && hasParentWithQuery) 
 			throw new EvaluatorException("Nesting of tags cfoutput with attribut query is not allowed");

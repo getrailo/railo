@@ -29,19 +29,19 @@ public static Document getDocument(String title, String key, String content,
     // make a new, empty document
     Document doc = new Document();
     doc.add(FieldUtil.UnIndexed("size", Caster.toString(content.length())));
-
+    
     doc.add(FieldUtil.Text("key", key));
-    doc.add(FieldUtil.UnIndexed("mime-type", "text/plain"));
-    FieldUtil.addRaw(doc,content);
-    //doc.add(FieldUtil.Text("raw", content));
-    doc.add(FieldUtil.Text("contents", content.toLowerCase()));
-    doc.add(FieldUtil.UnIndexed("summary",StringUtil.max(content,SUMMERY_SIZE)));
+    FieldUtil.setMimeType(doc, "text/plain");
+    FieldUtil.setRaw(doc,content);
+    FieldUtil.setContent(doc, content);
+    FieldUtil.setSummary(doc, StringUtil.max(content,SUMMERY_SIZE),false);
     doc.add(FieldUtil.UnIndexed("url", ""));
-    if(title!=null)doc.add(FieldUtil.Text("title", title));
-    if(custom1!=null)doc.add(FieldUtil.UnIndexed("custom1", custom1));
-    if(custom2!=null)doc.add(FieldUtil.UnIndexed("custom2", custom2));
-    if(custom3!=null)doc.add(FieldUtil.UnIndexed("custom3", custom3));
-    if(custom4!=null)doc.add(FieldUtil.UnIndexed("custom4", custom4));
+    
+    FieldUtil.setTitle(doc, title);
+    FieldUtil.setCustom(doc, custom1, 1);
+    FieldUtil.setCustom(doc, custom2, 2);
+    FieldUtil.setCustom(doc, custom3, 3);
+    FieldUtil.setCustom(doc, custom4, 4);
     return doc;
   }
 

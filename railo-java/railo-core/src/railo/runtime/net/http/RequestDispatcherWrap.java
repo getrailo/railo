@@ -1,15 +1,12 @@
 package railo.runtime.net.http;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
 
-import railo.commons.io.IOUtil;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -26,6 +23,7 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 
 	public void forward(ServletRequest req, ServletResponse rsp)throws ServletException, IOException {
 		PageContext pc = ThreadLocalPageContext.get();
+		req=HTTPUtil.removeWrap(req);
 		if(pc==null){
 			this.req.getOriginalRequestDispatcher(realPath).forward(req, rsp);
 			return;
@@ -58,6 +56,8 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 	        ThreadLocalPageContext.register(pc);
 		}
 	}*/
+	
+	
 
 	public void include(ServletRequest req, ServletResponse rsp)throws ServletException, IOException {
 		PageContext pc = ThreadLocalPageContext.get();
@@ -65,18 +65,23 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 			this.req.getOriginalRequestDispatcher(realPath).include(req, rsp);
 			return;
 		}
-		try{
-			realPath=HTTPUtil.optimizeRealPath(pc,realPath);
-			ByteArrayOutputStream baos=new ByteArrayOutputStream();
-			HttpServletResponse drsp=new HttpServletResponseWrap(pc.getHttpServletResponse(),baos);
+		HTTPUtil.include(pc,req, realPath);
+		
+		/*
+		realPath=HTTPUtil.optimizeRealPath(pc,realPath);
+		ByteArrayOutputStream baos=new ByteArrayOutputStream();
 			
+		try{
+			HttpServletResponse drsp=new HttpServletResponseWrap(pc.getHttpServletResponse(),baos);
 			RequestDispatcher disp = pc.getServletContext().getRequestDispatcher(realPath);
-	        disp.include(req,drsp);
+			if(disp==null)
+        		throw new PageServletException(new ApplicationException("Page "+realPath+" not found"));
+        	disp.include(req,drsp);
         	if(!drsp.isCommitted())drsp.flushBuffer();
 	        pc.write(IOUtil.toString(baos.toByteArray(), drsp.getCharacterEncoding()));
 		}
 		finally{
 	        ThreadLocalPageContext.register(pc);
-		}
+		}*/
 	}
 }

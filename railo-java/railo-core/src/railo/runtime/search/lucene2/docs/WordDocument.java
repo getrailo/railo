@@ -57,8 +57,7 @@ public final class WordDocument {
   
 
   	private static void addContent(StringBuffer content, Document doc, InputStream is) throws IOException {
-    	doc.add(FieldUtil.UnIndexed("mime-type", "application/msword"));
-    	
+    	FieldUtil.setMimeType(doc, "application/msword");
   		WordExtractor extractor = new WordExtractor();
   	    String contents;
 		try {
@@ -69,10 +68,11 @@ public final class WordDocument {
 			throw new IOException(e.getMessage());
 		}
   	    doc.add(FieldUtil.Text("size", Caster.toString(contents.length())));
-  	    FieldUtil.addRaw(doc,contents);
-	    //doc.add(FieldUtil.Text("raw", contents));
-  	    doc.add(FieldUtil.Text("contents", contents.toLowerCase()));
-  	    doc.add(FieldUtil.UnIndexed("summary",StringUtil.max(contents,SUMMERY_SIZE)));
+  	    FieldUtil.setRaw(doc,contents);
+  	    FieldUtil.setContent(doc, contents);
+  	    //doc.add(FieldUtil.Text("contents", contents.toLowerCase()));
+  	    FieldUtil.setSummary(doc, StringUtil.max(contents,SUMMERY_SIZE),false);
+  	    //doc.add(FieldUtil.UnIndexed("summary",));
 	}
 
 

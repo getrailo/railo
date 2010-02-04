@@ -245,10 +245,10 @@ public abstract class ConfigImpl implements Config {
 
 
 	private Resource clientScopeDir;
-	private long clientScopeDirSize=1024*1024*100;
+	private long clientScopeDirSize=1024*1024*10;
 
 	private Resource cacheDir;
-	private long cacheDirSize=1024*1024*100;
+	private long cacheDirSize=1024*1024*10;
 
 
 	private boolean useComponentShadow=true;
@@ -315,6 +315,7 @@ public abstract class ConfigImpl implements Config {
 	private String cacheMD5;
 	private boolean executionLogEnabled;
 	private ExecutionLogFactory executionLogFactory;
+	private int clientScopeMaxAge=90;
 
     /**
 	 * @return the allowURLRequestTimeout
@@ -2062,6 +2063,18 @@ public abstract class ConfigImpl implements Config {
 		if(clientScopeDir==null) return getConfigDir().getRealResource("client");
 		return clientScopeDir;
 	}
+	
+	
+
+	public int getClientScopeMaxAge() {
+		return clientScopeMaxAge;
+	}
+	
+	public void setClientScopeMaxAge(int age) {
+		this. clientScopeMaxAge=age;
+	}
+	
+	
 
 	/**
 	 *
