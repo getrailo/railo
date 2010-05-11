@@ -16,7 +16,6 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-jakarta-oro.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-logging-log4j.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-poi-tm-extractors.jar"/>
-	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-tomcat-jasper-dummy.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-ws-axis-ant.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-ws-axis.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-xml-xalan.jar"/>
@@ -33,7 +32,6 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/h2.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/hypersonic-hsqldb.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/jacob.jar"/>
-	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/javax.servlet.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/jcommon.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/jencrypt.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/jffmpeg.jar"/>
@@ -49,10 +47,8 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/microsoft-sqljdbc.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/mysql-connector-java-bin.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/objectweb-asm-all.jar"/>
-	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/ojdbc14.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/openamf-astranslator.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/openamf.jar"/>
-	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/org.mortbay.jetty.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/PDFBox.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/postgresql.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/serializer.jar"/>
@@ -71,9 +67,7 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/sun-xml.saaj.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/tagsoup.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/w3c-dom.jar"/>
-	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/xdb.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/xml-apis.jar"/>
-	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/xmlparserv2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Railo-Loader"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-jakarta-commons-net-ftp.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/fonts.jar"/>
@@ -81,7 +75,6 @@
 	<classpathentry kind="lib" path="/Users/mic/libs/railo-extension-example-tld-1-0-0.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/libs/activemq-all-5.3.0.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Deploy-Source/jars-3-1/jpedal_gpl.jar"/>
-	<classpathentry kind="lib" path="/Users/mic/libs/PDFRenderer.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/libs/icepdf-core.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/X-CFXCPP"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/apache-lucene-analyzers.jar"/>
@@ -100,5 +93,11 @@
 	<classpathentry kind="lib" path="/Users/mic/Downloads/hibernate-distribution-3.3.2.GA/lib/required/slf4j-api-1.5.8.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Downloads/slf4j-1.5.10/slf4j-simple-1.5.10.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Deploy-Source/jars-3-1/apache-jakarta-commons-codec.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Deploy-Source/jars-3-1/PDFRenderer.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/xdb.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/xmlparserv2.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/ojdbc14.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/org.mortbay.jetty.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source/Railo-SVN/libs/javax.servlet.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
