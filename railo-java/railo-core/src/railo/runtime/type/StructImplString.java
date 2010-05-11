@@ -10,13 +10,11 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
-import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpUtil;
-import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.StructUtil;
 
 /**
  * cold fusion data type struct
@@ -158,9 +156,10 @@ public class StructImplString extends StructImpl implements Struct {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-	    Iterator it=map.keySet().iterator();
+	    return StructUtil.toDumpTable(this, "struct", pageContext, maxlevel, dp);
+		/*Iterator it=map.keySet().iterator();
 		
-		DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");
+		DumpTable table = new DumpTablePro("struct","#5965e4","#9999ff","#000000");
 		table.setTitle("Struct");
 		maxlevel--;
 		while(it.hasNext()) {
@@ -168,7 +167,7 @@ public class StructImplString extends StructImpl implements Struct {
 			if(DumpUtil.keyValid(dp, maxlevel,key.toString()))
 				table.appendRow(1,new SimpleDumpData(key.toString()),DumpUtil.toDumpData(map.get(key), pageContext,maxlevel,dp));
 		}
-		return table;
+		return table;*/
 	}
 
 	/**

@@ -20,7 +20,7 @@ import railo.runtime.exp.PageException;
 
 public class ComponentLoader {
 	
-    public static ComponentImpl loadComponentImpl(PageContext pc,String rawPath, boolean searchLocal) throws PageException  {
+    public static ComponentImpl loadComponentImpl(PageContext pc,String rawPath, boolean searchLocal) throws PageException  {//, boolean isInterfaces
     	rawPath=rawPath.trim().replace('\\','/');
     	
     	RefBoolean isRealPath=new RefBooleanImpl(false);
@@ -84,8 +84,9 @@ public class ComponentLoader {
 	    isRealPath.setValue(!StringUtil.startsWith(path,'/'));
 	    PageSource ps;
 	    // search from local
+	    
 	    if(searchLocal && isRealPath.toBooleanValue()){
-		    ps=pc.getRelativePageSource(path);
+	    	ps=pc.getRelativePageSource(path);
 		    if(ps==null) return null;
 		    page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
 	    }

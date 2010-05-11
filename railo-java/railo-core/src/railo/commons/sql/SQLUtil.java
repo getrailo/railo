@@ -3,6 +3,8 @@ package railo.commons.sql;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.regex.Pattern;
 
 import railo.commons.lang.ParserString;
@@ -121,5 +123,13 @@ public class SQLUtil {
 	
 	public static boolean isOracle(Connection conn) {
 		return StringUtil.indexOfIgnoreCase(conn.getClass().getName(), "oracle")!=-1;
+	}
+
+	public static void closeEL(Statement stat) {
+		if(stat!=null){
+			try {
+				stat.close();
+			} catch (SQLException e) {}
+		}
 	}
 }

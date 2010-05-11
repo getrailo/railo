@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPFile;
 
+import railo.commons.date.JREDateTimeUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.ModeUtil;
 import railo.commons.io.res.Resource;
@@ -392,8 +393,8 @@ public final class FTPResource extends ResourceSupport {
 			
 			PageContext pc = ThreadLocalPageContext.get();
 			Calendar c;
-			if(pc==null) c=Calendar.getInstance();
-			else c=Calendar.getInstance(pc.getTimeZone());
+			if(pc==null) c=JREDateTimeUtil.getCalendar();
+			else c=JREDateTimeUtil.getCalendar(pc.getTimeZone());
 			c.setTimeInMillis(time);
 			FTPFile file = client.getFTPFile(this);
 			if(file==null) return false;

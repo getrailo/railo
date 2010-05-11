@@ -3,6 +3,7 @@
  */
 package railo.runtime.functions.dateTime;
 
+import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.commons.date.DateTimeUtil;
@@ -23,6 +24,6 @@ public final class DayOfWeek implements Function {
 	}
 
 	private static double _call(PageContext pc , DateTime date,TimeZone tz) {
-		return DateTimeUtil.getInstance().getDayOfWeek(tz, date);
+		return DateTimeUtil.getInstance().getDayOfWeek(Locale.US,tz, date);
 	}
 }

@@ -10,9 +10,11 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.QueryColumn;
+import railo.runtime.type.Sizeable;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.QueryUtil;
 
-public class QueryCacheQueryColumn implements QueryColumn {
+public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 
 	private QueryCacheQuery qcq;
 	private QueryColumn column;
@@ -535,5 +537,14 @@ public class QueryCacheQueryColumn implements QueryColumn {
 	 */
 	public Iterator valueIterator() {
 		return column.valueIterator();
+	}
+	
+
+
+	/**
+	 * @see railo.runtime.type.Sizeable#sizeOf()
+	 */
+	public long sizeOf() {
+		return QueryUtil.sizeOf(column);
 	}
 }

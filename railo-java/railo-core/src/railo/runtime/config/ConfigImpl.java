@@ -1,16 +1,22 @@
 package railo.runtime.config;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.Map.Entry;
+
+import javax.servlet.ServletException;
 
 import railo.commons.collections.HashTable;
 import railo.commons.io.IOUtil;
@@ -25,6 +31,7 @@ import railo.commons.io.res.Resources;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceClassLoader;
+import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
@@ -32,11 +39,16 @@ import railo.commons.lang.Md5;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
+import railo.loader.TP;
 import railo.loader.engine.CFMLEngine;
+import railo.loader.engine.CFMLEngineFactory;
+import railo.loader.util.ExtensionFilter;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
+import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.cfx.CFXTagPool;
@@ -47,6 +59,7 @@ import railo.runtime.dump.DumpWriter;
 import railo.runtime.dump.DumpWriterEntry;
 import railo.runtime.dump.HTMLDumpWriter;
 import railo.runtime.engine.ExecutionLogFactory;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExpressionException;
@@ -63,6 +76,8 @@ import railo.runtime.net.amf.ModernAMFCaster;
 import railo.runtime.net.mail.Server;
 import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.op.Caster;
+import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.orm.ORMEngine;
 import railo.runtime.schedule.Scheduler;
 import railo.runtime.schedule.SchedulerImpl;
 import railo.runtime.search.SearchEngine;
@@ -145,6 +160,7 @@ public abstract class ConfigImpl implements Config {
     private boolean showVersion = true;
     
 	private Resource tempDirectory;
+    private TimeSpan clientTimeout=new TimeSpanImpl(90,0,0,0);
     private TimeSpan sessionTimeout=new TimeSpanImpl(0,0,30,0);
     private TimeSpan applicationTimeout=new TimeSpanImpl(1,0,0,0);
     private TimeSpan requestTimeout=new TimeSpanImpl(0,0,0,30);
@@ -291,7 +307,7 @@ public abstract class ConfigImpl implements Config {
 	private Extension[] extensions=EXTENSIONS_EMPTY;
 	private boolean extensionEnabled;
 	private boolean allowRealPath=true;
-	private ClassLoader classLoader;
+	//private ClassLoader classLoader;
 
 	private DumpWriterEntry[] dmpWriterEntries;
 	private Class clusterClass=ClusterNotSupported.class;//ClusterRemoteNotSupported.class;//
@@ -315,7 +331,11 @@ public abstract class ConfigImpl implements Config {
 	private String cacheMD5;
 	private boolean executionLogEnabled;
 	private ExecutionLogFactory executionLogFactory;
-	private int clientScopeMaxAge=90;
+	//private int clientScopeMaxAge=90;
+	private Map<String, ORMEngine> ormengines=new HashMap<String, ORMEngine>();
+	private Class<ORMEngine> ormEngineClass;
+	private ORMConfiguration ormConfig;
+	private ResourceClassLoaderFactory classLoaderFactory;
 
     /**
 	 * @return the allowURLRequestTimeout
@@ -347,6 +367,7 @@ public abstract class ConfigImpl implements Config {
         componentDumpTemplate="";
         factory.resetPageContext();
         //resources.reset();
+        ormengines.clear();
     }
     
     /**
@@ -491,6 +512,13 @@ public abstract class ConfigImpl implements Config {
     public TimeSpan getSessionTimeout() {
         return sessionTimeout;
     }
+
+    /**
+     * @see railo.runtime.config.Config#getSessionTimeout()
+     */
+    public TimeSpan getClientTimeout() {
+        return clientTimeout;
+    }
     
     /**
      * @see railo.runtime.config.Config#getRequestTimeout()
@@ -556,17 +584,34 @@ public abstract class ConfigImpl implements Config {
         return psq;   
     }
 
+    /**
+     * @see railo.runtime.config.Config#getClassLoader()
+     */
     public ClassLoader getClassLoader() {
-    	return classLoader;   
+    	return classLoaderFactory.getResourceClassLoader();   
+    }
+
+    // FUTURE add to interface
+    public ClassLoader getClassLoader(Resource[] reses) throws IOException {
+    	return classLoaderFactory.getResourceClassLoader(reses);   
     }
     
-    protected void setClassLoader(ClassLoader classLoader) {
-    	Thread.currentThread().setContextClassLoader(classLoader);
-    	if(this.classLoader instanceof ResourceClassLoader)
-    		IOUtil.closeEL(this.classLoader);
-    	
-    	this.classLoader=classLoader;
-    }
+	/* *
+	 * @return the classLoaderFactory
+	
+	public ResourceClassLoaderFactory getClassLoaderFactory() {
+		return classLoaderFactory;
+	} */
+
+	/**
+	 * @param classLoaderFactory the classLoaderFactory to set
+	 */
+	protected void setClassLoaderFactory(ResourceClassLoaderFactory classLoaderFactory) {
+		if(this.classLoaderFactory!=null){
+			classLoaderFactory.reset();
+		}
+		this.classLoaderFactory = classLoaderFactory;
+	}
 
     /**
      * @see railo.runtime.config.Config#getLocale()
@@ -688,7 +733,12 @@ public abstract class ConfigImpl implements Config {
         return mappings;
     }
 
+
     public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel) {
+    	return getPageSource(mappings, realPath, onlyTopLevel, ((PageContextImpl)ThreadLocalPageContext.get()).useSpecialMappings());
+    }
+    
+    public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings) {
         realPath=realPath.replace('\\','/');
         
         String lcRealPath = StringUtil.toLowerCase(realPath)+'/';
@@ -704,6 +754,37 @@ public abstract class ConfigImpl implements Config {
 	            }
 	        }
         }
+        
+        /// special mappings
+        if(useSpecialMappings && lcRealPath.startsWith("/mapping-",0)){
+        	PageSource ps;
+        	String virtual="/mapping-tag";
+        	// tag mappings
+        	Mapping[] tagMappings=(this instanceof ConfigWebImpl)?new Mapping[]{((ConfigWebImpl)this).getServerTagMapping(),getTagMapping()}:new Mapping[]{getTagMapping()};
+        	if(lcRealPath.startsWith(virtual,0)){
+	        	for(int i=0;i<tagMappings.length;i++) {
+		            mapping = tagMappings[i];
+		            //if(lcRealPath.startsWith(mapping.getVirtualLowerCaseWithSlash(),0)) {
+		            	ps = mapping.getPageSource(realPath.substring(virtual.length()));
+		            	if(ps.exists()) return ps;
+		            //}
+		        }
+        	}
+        	
+        	// customtag mappings
+        	tagMappings=getCustomTagMappings();
+        	virtual="/mapping-customtag";
+        	if(lcRealPath.startsWith(virtual,0)){
+	        	for(int i=0;i<tagMappings.length;i++) {
+		            mapping = tagMappings[i];
+		            //if(lcRealPath.startsWith(mapping.getVirtualLowerCaseWithSlash(),0)) {
+		            	ps = mapping.getPageSource(realPath.substring(virtual.length()));
+		            	if(ps.exists()) return ps;
+		            //}
+		        }
+        	}
+        }
+        
         
         // config mappings
         for(int i=0;i<this.mappings.length-1;i++) {
@@ -778,6 +859,7 @@ public abstract class ConfigImpl implements Config {
             mapping = this.mappings[i];
             root=mapping.getPhysical();
             path=ResourceUtil.getPathToChild(res, root);
+            //print.out(path+"==="+res+"="+root);
             if(path!=null) {
             	return mapping.getPageSource(path);
             }
@@ -1172,6 +1254,17 @@ public abstract class ConfigImpl implements Config {
         this.sessionTimeout = sessionTimeout;
     }
     
+    protected void setClientTimeout(String strClientTimeout) throws PageException {
+    	setClientTimeout(Caster.toTimespan(strClientTimeout));
+    }
+    
+    /**
+     * @param sessionTimeout The sessionTimeout to set.
+     */
+    protected void setClientTimeout(TimeSpan clientTimeout) {
+        this.clientTimeout = clientTimeout;
+    }
+    
     /**
      * @param strRequestTimeout The requestTimeout to set.
      * @throws PageException
@@ -1277,7 +1370,13 @@ public abstract class ConfigImpl implements Config {
      * @throws ExpressionException
      */
     protected void setTempDirectory(Resource tempDirectory) throws ExpressionException {
-        if(!isDirectory(tempDirectory)) throw new ExpressionException("temp directory "+tempDirectory+" doesn't exist or is not a directory");
+        if(!isDirectory(tempDirectory) || !tempDirectory.isWriteable()) {
+        	SystemOut.printDate(getErrWriter(), "temp directory ["+tempDirectory+"] is not writable or can not be created, using directory ["+SystemUtil.getTempDirectory()+"] instead");
+        	tempDirectory=SystemUtil.getTempDirectory();
+        	if(!tempDirectory.isWriteable()){
+        		SystemOut.printDate(getErrWriter(), "temp directory ["+tempDirectory+"] is not writable");
+        	}
+        }
         this.tempDirectory=tempDirectory;
     }
 
@@ -1474,7 +1573,7 @@ public abstract class ConfigImpl implements Config {
      */
     public PageSource getBaseComponentPageSource() {
         if(baseComponentPageSource==null) {
-            baseComponentPageSource=getPageSource(null,getBaseComponentTemplate(),false);
+            baseComponentPageSource=getPageSource(null,getBaseComponentTemplate(),false,false);
         }
         return baseComponentPageSource;
     }
@@ -2066,13 +2165,13 @@ public abstract class ConfigImpl implements Config {
 	
 	
 
-	public int getClientScopeMaxAge() {
+	/*public int getClientScopeMaxAge() {
 		return clientScopeMaxAge;
 	}
 	
 	public void setClientScopeMaxAge(int age) {
 		this. clientScopeMaxAge=age;
-	}
+	}*/
 	
 	
 
@@ -2780,4 +2879,99 @@ public abstract class ConfigImpl implements Config {
 	protected void setExecutionLogFactory(ExecutionLogFactory executionLogFactory) {
 		this.executionLogFactory= executionLogFactory;
 	}
+	
+	public ORMEngine resetORMEngine(PageContext pc) throws PageException {
+		String name = pc.getApplicationContext().getName();
+		ormengines.remove(name);
+		return getORMEngine(pc);
+	}
+	
+	public ORMEngine getORMEngine(PageContext pc) throws PageException {
+		String name = pc.getApplicationContext().getName();
+		
+		ORMEngine engine = ormengines.get(name);
+		if(engine==null){
+			try {
+				engine=(ORMEngine)ClassUtil.loadInstance(ormEngineClass);
+				engine.init(pc);
+				ormengines.put(name,engine);
+			}
+			catch (ClassException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return engine; 
+	}
+	
+	public Class<ORMEngine> getORMEngineClass() {
+		return ormEngineClass; 
+	}
+
+	public String[] getInstalledPatches() throws PageException {
+		CFMLEngineFactory factory = getConfigServerImpl().getCFMLEngine().getCFMLEngineFactory();
+    	
+		// FUTURE make direct call
+		//String[] patches = factory.getInstalledPatches();
+		
+		try{
+			Method getInstalledPatches = factory.getClass().getMethod("getInstalledPatches", new Class[]{});
+			return (String[]) getInstalledPatches.invoke(factory, new Object[]{});
+		}
+		catch(NoSuchMethodException e){
+			try {
+				return getInstalledPatches(factory);
+			} catch (Exception e1) {
+				throw Caster.toPageException(e1);
+			}
+		}
+		catch(Throwable t){
+			throw Caster.toPageException(t);
+		}
+	}
+	
+	// FUTURE remove this
+	private String getCoreExtension() throws ServletException {
+    	URL res = new TP().getClass().getResource("/core/core.rcs");
+        if(res!=null) return "rcs";
+        
+        res = new TP().getClass().getResource("/core/core.rc");
+        if(res!=null) return "rc";
+        
+        throw new ServletException("missing core file");
+	}
+	
+	// FUTURE remove this
+	private String[] getInstalledPatches(CFMLEngineFactory factory) throws ServletException, IOException {
+		File patchDir = new File(factory.getResourceRoot(),"patches");
+        if(!patchDir.exists())patchDir.mkdirs();
+        
+		File[] patches=patchDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
+        
+        List<String> list=new ArrayList<String>();
+        String name;
+        int extLen=getCoreExtension().length()+1;
+        for(int i=0;i<patches.length;i++) {
+        	name=patches[i].getName();
+        	name=name.substring(0, name.length()-extLen);
+        	 list.add(name);
+        }
+        String[] arr = list.toArray(new String[list.size()]);
+    	Arrays.sort(arr);
+        return arr;
+	}
+
+	protected void setORMEngineClass(Class<ORMEngine> ormEngineClass) {
+		this.ormEngineClass=ormEngineClass;
+	}
+
+	protected void setORMConfig(ORMConfiguration ormConfig) {
+		this.ormConfig=ormConfig;
+	}
+
+	public ORMConfiguration getORMConfig() {
+		return ormConfig;
+	}
+
+	
 }

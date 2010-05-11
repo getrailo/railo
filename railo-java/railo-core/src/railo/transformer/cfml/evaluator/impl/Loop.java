@@ -65,7 +65,7 @@ public final class Loop extends EvaluatorSupport {
 
 			try {
 				transformer = tagLib.getExprTransfomer();
-				Expression expr=transformer.transform(flibs,new CFMLString(text,"UTF-8"));
+				Expression expr=transformer.transform(null,flibs,new CFMLString(text,"UTF-8"));
 				tag.addAttribute(new Attribute(false,"condition",CastBoolean.toExprBoolean(expr),"boolean"));
 			}
 			catch (Exception e) {

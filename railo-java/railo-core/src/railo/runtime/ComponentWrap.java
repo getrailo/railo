@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import railo.commons.lang.types.RefBoolean;
+import railo.runtime.component.Member;
 import railo.runtime.component.Property;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -15,7 +16,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 
-public final class ComponentWrap extends StructSupport implements Component, Objects {
+public final class ComponentWrap extends StructSupport implements ComponentPro, Objects {
    
     private int access;
     private ComponentImpl component;
@@ -432,11 +433,42 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
 		return component.getWSDLFile();
 	}
 
+	/**
+	 * @see railo.runtime.ComponentPro#getProperties()
+	 */
 	public Property[] getProperties() {
 		return component.getProperties();
+	}
+	
+	/**
+	 * @see railo.runtime.ComponentPro#getComponentScope()
+	 */
+	public ComponentScope getComponentScope(){
+		return component.getComponentScope();
 	}
 
 	public ComponentImpl getComponentImpl() {
 		return component;
+	}
+
+	/**
+	 * @see railo.runtime.ComponentPro#contains(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
+	 */
+	public boolean contains(PageContext pc, Key key) {
+		return component.contains(access,key);
+	}
+
+	/**
+	 * @see railo.runtime.ComponentPro#getMember(int, railo.runtime.type.Collection.Key, boolean, boolean)
+	 */
+	public Member getMember(int access, Key key, boolean dataMember,boolean superAccess) {
+		return component.getMember(access, key, dataMember, superAccess);
+	}
+
+	/**
+	 * @see railo.runtime.ComponentPro#setProperty(railo.runtime.component.Property)
+	 */
+	public void setProperty(Property property) {
+		component.setProperty(property);
 	}
 }

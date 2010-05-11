@@ -597,6 +597,12 @@ public final class Operator {
 		return ((int)left)/((int)right);
 	} 
 	
+	public static double div(double left, double right) {
+		if(right==0d)
+			throw new ArithmeticException("Division by zero is not possible");
+		return left/right;
+	} 
+	
 	public static float exponent(float left, float right) {
 		return (float) StrictMath.pow(left,right);
 	} 

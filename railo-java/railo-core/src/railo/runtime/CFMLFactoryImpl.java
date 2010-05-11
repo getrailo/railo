@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspEngineInfo;
 
 import railo.commons.io.log.Log;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
@@ -149,10 +150,10 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	 * @param pc
 	 */
 	public void releaseRailoPageContext(PageContext pc) {
-		ThreadLocalPageContext.release();
 		if(pc.getId()<0)return;
         pc.release();
-        synchronized (pcs) {
+        ThreadLocalPageContext.release();
+		synchronized (pcs) {
             runningPcs.removeEL(ArgumentIntKey.init(pc.getId()));
             pcs.push(pc);
             SystemOut.printDate(config.getOutWriter(),"Release: ("+pc.getId()+")");
@@ -213,8 +214,8 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 
 	private static String getPath(PageContext pc) {
 		try {
-			String base=pc.getBasePageSource().getPhyscalFile().getAbsolutePath();
-			String current=pc.getCurrentPageSource().getPhyscalFile().getAbsolutePath();
+			String base=ResourceUtil.getResource(pc, pc.getBasePageSource()).getAbsolutePath();
+			String current=ResourceUtil.getResource(pc, pc.getCurrentPageSource()).getAbsolutePath();
 			if(base.equals(current)) return "path: "+base;
 			return "path: "+base+" ("+current+")";
 		}

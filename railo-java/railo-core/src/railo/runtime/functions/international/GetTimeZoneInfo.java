@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import railo.commons.date.JREDateTimeUtil;
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 import railo.runtime.type.Struct;
@@ -26,7 +27,7 @@ public final class GetTimeZoneInfo implements Function {
         synchronized(id) {
         	if(!id.equals(timezone.getID())) {
         		id=timezone.getID();
-        		calendar = Calendar.getInstance(timezone);
+        		calendar = JREDateTimeUtil.newInstance(timezone);
         	}
             else calendar.clear();
         	

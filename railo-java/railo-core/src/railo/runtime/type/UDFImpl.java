@@ -20,6 +20,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpRow;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -29,8 +30,8 @@ import railo.runtime.op.Decision;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.scope.Argument;
-import railo.runtime.type.scope.ArgumentImpl;
 import railo.runtime.type.scope.ArgumentIntKey;
+import railo.runtime.type.scope.ArgumentPro;
 import railo.runtime.type.scope.LocalImpl;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ComponentUtil;
@@ -39,7 +40,7 @@ import railo.runtime.writer.BodyContentUtil;
 /**
  * defines a abstract class for a User defined Functions
  */
-public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizable {
+public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizable {
 	
 	public static final Key ARGUMENT_COLLECTION = KeyImpl.getInstance("argumentCollection");
 	
@@ -199,10 +200,16 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 	
 
 
-	public UDF duplicate() {
+	public UDF duplicate(ComponentImpl c) {
 		UDFImpl udf = new UDFImpl(properties);
-		udf.ownerComponent=ownerComponent;
+		udf.ownerComponent=c;
 		return udf;
+	}
+	
+	public UDF duplicate() {
+		//UDFImpl udf = new UDFImpl(properties);
+		//udf.ownerComponent=ownerComponent;
+		return duplicate(ownerComponent);
 	}
 
 	/**
@@ -225,7 +232,7 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 		throw new UDFCasterException(this,arg,value,index);
 	}
 	
-	private void defineArguments(PageContext pc,FunctionArgument[] funcArgs, Object[] args,ArgumentImpl newArgs) throws PageException {
+	private void defineArguments(PageContext pc,FunctionArgument[] funcArgs, Object[] args,ArgumentPro newArgs) throws PageException {
 		// define argument scope
 		for(int i=0;i<funcArgs.length;i++) {
 			// argument defined
@@ -239,7 +246,7 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 					if(funcArgs[i].isRequired()) {
 						throw new ExpressionException("The parameter "+funcArgs[i].getName()+" to function "+getFunctionName()+" is required but was not passed in.");
 					}
-					newArgs.setEL(funcArgs[i].getName(),ArgumentImpl.NULL);
+					newArgs.setEL(funcArgs[i].getName(),ArgumentPro.NULL);
 				}
 				else {
 					newArgs.setEL(funcArgs[i].getName(),castTo(funcArgs[i],d,i+1));
@@ -252,7 +259,7 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 	}
 
 	
-    private void defineArguments(PageContext pageContext, FunctionArgument[] funcArgs, Struct values, ArgumentImpl newArgs) throws PageException {
+    private void defineArguments(PageContext pageContext, FunctionArgument[] funcArgs, Struct values, ArgumentPro newArgs) throws PageException {
     	// argumentCollection
     	argumentCollection(values,funcArgs);
     	//print.out(values.size());
@@ -272,7 +279,7 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 					if(funcArgs[i].isRequired()) {
 						throw new ExpressionException("The parameter "+funcArgs[i].getName()+" to function "+getFunctionName()+" is required but was not passed in.");
 					}
-					newArgs.set(name,ArgumentImpl.NULL);
+					newArgs.set(name,ArgumentPro.NULL);
 				}
 				else newArgs.set(name,castTo(funcArgs[i],defaultValue,i+1));
 			}
@@ -298,12 +305,12 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 			    for(int i=0;i<keys.length;i++) {
 			    	if(funcArgs.length>i && keys[i] instanceof ArgumentIntKey) {
 	            		if(!values.containsKey(funcArgs[i].getName()))
-	            			values.setEL(funcArgs[i].getName(),argColl.get(keys[i],ArgumentImpl.NULL));
+	            			values.setEL(funcArgs[i].getName(),argColl.get(keys[i],ArgumentPro.NULL));
 	            		else 
-	            			values.setEL(keys[i],argColl.get(keys[i],ArgumentImpl.NULL));
+	            			values.setEL(keys[i],argColl.get(keys[i],ArgumentPro.NULL));
 			    	}
 	            	else if(!values.containsKey(keys[i])){
-	            		values.setEL(keys[i],argColl.get(keys[i],ArgumentImpl.NULL));
+	            		values.setEL(keys[i],argColl.get(keys[i],ArgumentPro.NULL));
 	            	}
 	            }
 		    }
@@ -312,7 +319,7 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 			    Collection.Key[] keys = argColl.keys();
 			    for(int i=0;i<keys.length;i++) {
 			    	if(!values.containsKey(keys[i])){
-	            		values.setEL(keys[i],argColl.get(keys[i],ArgumentImpl.NULL));
+	            		values.setEL(keys[i],argColl.get(keys[i],ArgumentPro.NULL));
 	            	}
 	            }
 		    }
@@ -339,7 +346,7 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
     private Object _call(PageContext pc, Object[] args, Struct values,boolean doIncludePath) throws PageException {
     	//print.out(count++);
     	PageContextImpl pci=(PageContextImpl) pc;
-        ArgumentImpl newArgs=pci.getScopeFactory().getArgumentInstance();// FUTURE
+        ArgumentPro newArgs=(ArgumentPro) pci.getScopeFactory().getArgumentInstance();// FUTURE
         newArgs.setFunctionArgumentNames(properties.argumentsSet);
         LocalImpl newLocal=pci.getScopeFactory().getLocalInstance();
         
@@ -399,15 +406,19 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
     /**
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
+
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
+		return toDumpData(pageContext, maxlevel, dp,this);
+	}
+	public static DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp,UDF udf) {
 	
 		if(!dp.getShowUDFs())
 			return new SimpleDumpData("<UDF>");
 		
 		// arguments
-		FunctionArgument[] args = getFunctionArguments();
+		FunctionArgument[] args = udf.getFunctionArguments();
         
-        DumpTable atts = new DumpTable("#8399AF","#CDCEE6","#000000");
+        DumpTable atts = new DumpTablePro("udf","#8399AF","#CDCEE6","#000000");
         
 		atts.appendRow(new DumpRow(63,new DumpData[]{new SimpleDumpData("label"),new SimpleDumpData("name"),new SimpleDumpData("required"),new SimpleDumpData("type"),new SimpleDumpData("default"),new SimpleDumpData("hint")}));
 		for(int i=0;i<args.length;i++) {
@@ -416,7 +427,7 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 			try {
 				Object oa=null;
                 try {
-                    oa = getDefaultValue(pageContext,i);
+                    oa = udf.getDefaultValue(pageContext,i);
                 } catch (PageException e1) {
                 }
                 if(oa==null)oa="null";
@@ -438,26 +449,26 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 		DumpTable func = new DumpTable("#8399AF","#CDCEE6","#000000");
 		String f="Function ";
 		try {
-			f=StringUtil.ucFirst(ComponentUtil.toStringAccess(getAccess()).toLowerCase())+" "+f;
+			f=StringUtil.ucFirst(ComponentUtil.toStringAccess(udf.getAccess()).toLowerCase())+" "+f;
 		} 
 		catch (ExpressionException e) {}
-		func.setTitle(f+getFunctionName());
+		func.setTitle(f+udf.getFunctionName());
 		
 		
-		if(!StringUtil.isEmpty(properties.description))func.setComment(properties.description);
+		if(!StringUtil.isEmpty(udf.getDescription()))func.setComment(udf.getDescription());
 		
 		
 		
 		func.appendRow(1,new SimpleDumpData("arguments"),atts);
-		func.appendRow(1,new SimpleDumpData("return type"),new SimpleDumpData(getReturnTypeAsString()));
+		func.appendRow(1,new SimpleDumpData("return type"),new SimpleDumpData(udf.getReturnTypeAsString()));
 		
-		boolean hasLabel=!StringUtil.isEmpty(properties.displayName);//displayName!=null && !displayName.equals("");
-		boolean hasHint=!StringUtil.isEmpty(properties.hint);//hint!=null && !hint.equals("");
+		boolean hasLabel=!StringUtil.isEmpty(udf.getDisplayName());//displayName!=null && !displayName.equals("");
+		boolean hasHint=!StringUtil.isEmpty(udf.getHint());//hint!=null && !hint.equals("");
 		
 		if(hasLabel || hasHint) {
 			DumpTable box = new DumpTable("#eeeeee","#cccccc","#000000");
-			box.setTitle(hasLabel?properties.displayName:properties.functionName);
-			if(hasHint)box.appendRow(0,new SimpleDumpData(properties.hint));
+			box.setTitle(hasLabel?udf.getDisplayName():udf.getFunctionName());
+			if(hasHint)box.appendRow(0,new SimpleDumpData(udf.getHint()));
 			box.appendRow(0,func);
 			return box;
 		}
@@ -467,63 +478,72 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 	/**
      * @see railo.runtime.type.UDF#getDisplayName()
      */
-	public final String getDisplayName() {
+	public String getDisplayName() {
 		return properties.displayName;
 	}
 	/**
      * @see railo.runtime.type.UDF#getHint()
      */
-	public final String getHint() {
+	public String getHint() {
 		return properties.hint;
 	}
     /**
      * @see railo.runtime.type.UDF#getPage()
      */
-    public final Page getPage() {
+    public Page getPage() {
         return properties.page;
     }
 
+	public Struct getMeta() {
+		return properties.meta;
+	}
+	
 	public Struct getMetaData(PageContext pc) throws PageException {
+		return getMetaData(pc, this);
+	}
+	
+	public static Struct getMetaData(PageContext pc,UDFImpl udf) throws PageException {
 		
         StructImpl func=new StructImpl();
-        func.set(ACCESS,ComponentUtil.toStringAccess(getAccess()));
-        String hint=getHint();
+        func.set(ACCESS,ComponentUtil.toStringAccess(udf.getAccess()));
+        String hint=udf.getHint();
         if(!StringUtil.isEmpty(hint))func.set(HINT,hint);
-        String displayname=getDisplayName();
+        String displayname=udf.getDisplayName();
         if(!StringUtil.isEmpty(displayname))func.set(DISPLAY_NAME,displayname);
-        func.set(NAME,getFunctionName());
-        func.set(OUTPUT,Caster.toBoolean(getOutput()));
-        func.set(RETURN_TYPE, getReturnTypeAsString());
-        func.set(DESCRIPTION, properties.description);
+        func.set(NAME,udf.getFunctionName());
+        func.set(OUTPUT,Caster.toBoolean(udf.getOutput()));
+        func.set(RETURN_TYPE, udf.getReturnTypeAsString());
+        func.set(DESCRIPTION, udf.getDescription());
         
         //try{
         	
 	        //Component c = getOwnerComponent();
 	        //if(c!=null)
-	        	func.set(OWNER, properties.page.getPageSource().getDisplayPath());
+	        	func.set(OWNER, udf.getPage().getPageSource().getDisplayPath());
         //}catch(Throwable t){}
-        	
-        
-        if(properties.returnFormat==UDF.RETURN_FORMAT_WDDX)			func.set(RETURN_FORMAT, "wddx");
-        else if(properties.returnFormat==UDF.RETURN_FORMAT_PLAIN)	func.set(RETURN_FORMAT, "plain");
-        else if(properties.returnFormat==UDF.RETURN_FORMAT_JSON)	func.set(RETURN_FORMAT, "json");
-        else if(properties.returnFormat==UDF.RETURN_FORMAT_SERIALIZE)func.set(RETURN_FORMAT, "serialize");
+
+	    	   
+	    int format = udf.getReturnFormat();
+        if(format==UDF.RETURN_FORMAT_WDDX)			func.set(RETURN_FORMAT, "wddx");
+        else if(format==UDF.RETURN_FORMAT_PLAIN)	func.set(RETURN_FORMAT, "plain");
+        else if(format==UDF.RETURN_FORMAT_JSON)	func.set(RETURN_FORMAT, "json");
+        else if(format==UDF.RETURN_FORMAT_SERIALIZE)func.set(RETURN_FORMAT, "serialize");
         
         
         // TODO func.set("roles", value);
-        // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche attr, die dann hier ausgebenen werden blﾚdsinn
-        
+        // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche a
         // meta data
-        if(properties.meta!=null) {
-        	Key[] keys = properties.meta.keys();
+        Struct meta = udf.getMeta();
+        if(meta!=null) {
+        	Key[] keys = meta.keys();
         	for(int i=0;i<keys.length;i++) {
-        		func.setEL(keys[i],properties.meta.get(keys[i],null));
+        		func.setEL(keys[i],meta.get(keys[i],null));
         	}
         }
         
         
         
-        FunctionArgument[] args =  getFunctionArguments();
+        FunctionArgument[] args =  udf.getFunctionArguments();
         ArrayImpl params=new ArrayImpl();
         //Object defaultValue;
         Struct m;
@@ -543,7 +563,7 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
             	//print.err(args[y].getName()+":re");
             }
             else if(defType==FunctionArgument.DEFAULT_TYPE_LITERAL){
-            	param.set(DEFAULT, getDefaultValue(pc,y));
+            	param.set(DEFAULT, udf.getDefaultValue(pc,y));
             }
             /*
              try {
@@ -668,42 +688,42 @@ public final class UDFImpl extends MemberSupport implements UDF,Sizeable,Externa
 	/**
      * @see railo.runtime.type.UDF#getFunctionName()
      */
-	public final String getFunctionName() {
+	public String getFunctionName() {
 		return properties.functionName;
 	}
 
 	/**
      * @see railo.runtime.type.UDF#getOutput()
      */
-	public final boolean getOutput() {
+	public boolean getOutput() {
 		return properties.output;
 	}
 
 	/**
      * @see railo.runtime.type.UDF#getReturnType()
      */
-	public final int getReturnType() {
+	public int getReturnType() {
 		return properties.returnType;
 	}
 	
 	/**
 	 * @see railo.runtime.type.UDF#getReturnTypeAsString()
 	 */
-	public final String getReturnTypeAsString() {
+	public String getReturnTypeAsString() {
 		return properties.strReturnType;
 	}
 	
 	/**
 	 * @see railo.runtime.type.UDF#getDescription()
 	 */
-	public final String getDescription() {
+	public String getDescription() {
 		return properties.description;
 	}
 	
 	/**
 	 * @see railo.runtime.type.UDF#getReturnFormat()
 	 */
-	public final int getReturnFormat() {
+	public int getReturnFormat() {
 		return properties.returnFormat;
 	}
 	

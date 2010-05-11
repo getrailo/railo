@@ -12,6 +12,7 @@ import railo.runtime.component.ComponentLoader;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.Dumpable;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
@@ -175,7 +176,7 @@ public class InterfaceImpl implements Dumpable {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-	    DumpTable table = new DumpTable("#97C0AB","#EAF2EE","#000000");
+	    DumpTable table = new DumpTablePro("interface","#97C0AB","#EAF2EE","#000000");
         table.setTitle("Interface "+callPath+""+(" "+StringUtil.escapeHTML(dspName)));
         table.setComment("Interface can not directly invoked as a object");
         //if(top.properties.extend.length()>0)table.appendRow(1,new SimpleDumpData("Extends"),new SimpleDumpData(top.properties.extend));

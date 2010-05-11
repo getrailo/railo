@@ -8,6 +8,7 @@ import railo.runtime.type.Scope;
 import railo.runtime.type.scope.Application;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.ArgumentImpl;
+import railo.runtime.type.scope.ArgumentPro;
 import railo.runtime.type.scope.CGI;
 import railo.runtime.type.scope.Client;
 import railo.runtime.type.scope.Cluster;
@@ -59,8 +60,9 @@ public final class TypeScope {
     }
     // Argument argumentsScope (boolean)
     public final static Method METHOD_ARGUMENT_BIND=new Method("argumentsScope",Type.getType(Argument.class),new Type[]{Types.BOOLEAN_VALUE});
+    public final static Type SCOPE_ARGUMENT=		Type.getType(ArgumentPro.class);
     public final static Type SCOPE_ARGUMENT_IMPL=		Type.getType(ArgumentImpl.class);
- 
+    
     
     public static void invokeScope(GeneratorAdapter adapter, int scope) {
 		invokeScope(adapter, scope,TypeScope.METHODS[scope]);

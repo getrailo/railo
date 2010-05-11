@@ -2,13 +2,16 @@ package railo.runtime.db;
 
 import java.io.Serializable;
 
+import railo.commons.lang.SizeOf;
+import railo.runtime.type.Sizeable;
+
 
 
 
 /**
  * represents a SQL Statement with his defined arguments for a prepared statement
  */
-public final class SQLImpl implements SQL,Serializable {
+public final class SQLImpl implements SQL,Serializable,Sizeable {
     
     private String strSQL;
     private SQLItem[] items;
@@ -114,5 +117,9 @@ public final class SQLImpl implements SQL,Serializable {
         }
         return sb.toString();
     }
+
+	public long sizeOf() {
+		return SizeOf.size(strSQL)+SizeOf.size(position)+SizeOf.size(items);
+	}
 
 }

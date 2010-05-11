@@ -14,17 +14,18 @@ public class Attachment implements Serializable {
 	
 
 
-	private String resource;
+	private Resource resource;
 	private URL url;
 	private String type;
 	private String disposition;
 	private String contentID;
 	private String fileName;
+	private boolean removeAfterSend;
 
-	public Attachment(Resource resource, String type, String disposition,String contentID) {
-		this.resource=resource.getAbsolutePath();
+	public Attachment(Resource resource, String type, String disposition,String contentID, boolean removeAfterSend) {
+		this.resource=resource;
 		this.fileName=resource.getName();
-		
+		this.removeAfterSend=removeAfterSend;
 		this.disposition=disposition;
 		this.contentID=contentID;
 		
@@ -80,9 +81,25 @@ public class Attachment implements Serializable {
 	/**
 	 * @return the resource
 	 */
-	public String getResource() {
+	public Resource getResource() {
 		return resource;
-	}	
+	}
+	
+	/**
+	 * @return the removeAfterSend
+	 */
+	public boolean isRemoveAfterSend() {
+		return removeAfterSend;
+	}
+
+	/**
+	 * @param removeAfterSend the removeAfterSend to set
+	 */
+	public void setRemoveAfterSend(boolean removeAfterSend) {
+		this.removeAfterSend = removeAfterSend;
+	}
+
+	//resource.getAbsolutePath()
 	/**
 	 * @return the type
 	 */

@@ -492,16 +492,18 @@ public final class DateCaster {
 			if(first==-1)return defaultValue;
 			month=1;
 		}
+		
 		if(ds.isAfterLast()) return month==1?defaultValue:toNumberDate(str,alsoNumbers,defaultValue);
 		
 		char del=ds.current();
-		if(del!='.' && del!='/' && del!='-') {
+		if(del!='.' && del!='/' && del!='-' && del!=' ' && del!='\t') {
 			if(ds.fwIfCurrent(':')){
 				return parseTime(timeZone, new int[]{1899,12,30}, ds, defaultValue,first);
 			}
 			return defaultValue;
 		}
 		ds.next();
+		ds.removeWhitespace();
 		
 		// second
 		int second=ds.readDigits();
@@ -523,6 +525,7 @@ public final class DateCaster {
 			return parseTime(timeZone,_toDate(timeZone,month, first, second),ds,defaultValue,-1);
 		}
 		ds.next();
+		ds.removeWhitespace();
 		
 		
 		
@@ -544,10 +547,16 @@ public final class DateCaster {
 	
 	private static DateTime parseTime(TimeZone timeZone,int[] date, DateString ds,DateTime defaultValue, int hours) {
 		if(date==null)return defaultValue;
+		
+
+		ds.removeWhitespace();
+		
 		// hour
 		boolean next=false;
 		if(hours==-1){
+			ds.removeWhitespace();
 			hours=ds.readDigits();
+			ds.removeWhitespace();
 			if(hours==-1) {
 				return parseOffset(ds,timeZone,date,0,0,0,0,defaultValue);
 			}
@@ -556,20 +565,26 @@ public final class DateCaster {
 		
 		int minutes=0;
 		if(next || ds.fwIfCurrent(':')){
+			ds.removeWhitespace();
 			minutes=ds.readDigits();
+			ds.removeWhitespace();
 			if(minutes==-1) return defaultValue;
 		}
 		
 
 		int seconds=0;
 		if(ds.fwIfCurrent(':')){
+			ds.removeWhitespace();
 			seconds=ds.readDigits();
+			ds.removeWhitespace();
 			if(seconds==-1) return defaultValue;
 		}
 		
 		int msSeconds=0;
 		if(ds.fwIfCurrent('.')){
+			ds.removeWhitespace();
 			msSeconds=ds.readDigits();
+			ds.removeWhitespace();
 			if(msSeconds==-1) return defaultValue;
 		}
 		
@@ -680,7 +695,7 @@ public final class DateCaster {
 		DateTime res = parseDateTime(str,ds,alsoNumbers,timeZone,defaultValue);
 		if(alsoNumbers && res==defaultValue && Decision.isNumeric(str)) {
 	        double dbl = Caster.toDoubleValue(str,Double.NaN);
-	        if(!Double.isNaN(dbl))return util.toDateTime(dbl);
+	        if(Decision.isValid(dbl))return util.toDateTime(dbl);
 	    }
 		return res;
 	}
@@ -1445,7 +1460,7 @@ public final class DateCaster {
 	private static DateTime toNumberDate(String str,boolean alsoNumbers, DateTime defaultValue) {
 	    if(!alsoNumbers) return defaultValue;
 		double dbl = Caster.toDoubleValue(str,Double.NaN);
-		if(!Double.isNaN(dbl))return util.toDateTime(dbl);
+		if(Decision.isValid(dbl))return util.toDateTime(dbl);
 	    return defaultValue;
 	}
 	

@@ -9,6 +9,7 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -100,7 +101,7 @@ public final class TimeImpl extends Time implements SimpleValue,Localized {
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		String str=castToString("");
-        DumpTable table=new DumpTable("#ffb200","#ffcc00","#263300");
+        DumpTable table=new DumpTablePro("date","#ffb200","#ffcc00","#263300");
         table.appendRow(1, new SimpleDumpData("Time"), new SimpleDumpData(str));
         return table;
     }

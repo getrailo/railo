@@ -32,6 +32,7 @@ import java.util.Map;
 
 import railo.commons.db.DBUtil;
 import railo.commons.io.IOUtil;
+import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.PageContext;
@@ -48,6 +49,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpRow;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -79,7 +81,7 @@ import railo.runtime.type.util.ArrayUtil;
 /**
  * 
  */
-public class QueryImpl implements Query,Objects {
+public class QueryImpl implements Query,Objects,Sizeable {
 
 	/**
 	 * @return the template
@@ -443,6 +445,7 @@ public class QueryImpl implements Query,Objects {
             else if(types[i]==Types.BLOB)	casts[i]=Cast.BLOB;
             else if(types[i]==Types.BIT)	casts[i]=Cast.BIT;
             else if(types[i]==Types.ARRAY)	casts[i]=Cast.ARRAY;
+            //else if(types[i]==Types.TINYINT)	casts[i]=Cast.ARRAY;
             
             else if(types[i]==CFTypes.OPAQUE){
             	if(SQLUtil.isOracle(result.getStatement().getConnection()))
@@ -1198,50 +1201,64 @@ public class QueryImpl implements Query,Objects {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		maxlevel--;
 		String[] keys=keysAsString();
-		DumpData[] heads=new DumpData[keys.length];
+		DumpData[] heads=new DumpData[keys.length+1];
 		//int tmp=1;
+		heads[0]=new SimpleDumpData("");
 		for(int i=0;i<keys.length;i++) {
-			//hhl+=tmp;tmp*=2;
-			heads[i]=new SimpleDumpData(keys[i]);
+			heads[i+1]=new SimpleDumpData(keys[i]);
 		}
 		
-		//DumpTable table=new DumpTable("#83CB5C","#CAFF92","#000000");
-		DumpTable table=new DumpTable("#aa66aa","#ffddff","#000000");
-		table.setTitle("Query");
-		if(sql!=null)
-			table.appendRow(1, new SimpleDumpData("SQL"), new SimpleDumpData(sql.toString()));
+		///DumpTable table=new DumpTable("#aa66aa","#ffddff","#000000");
+		//table.setTitle("Query");
+		StringBuilder comment=new StringBuilder(); 
+		
+		//table.appendRow(1, new SimpleDumpData("SQL"), new SimpleDumpData(sql.toString()));
 		if(!StringUtil.isEmpty(template))
-			table.appendRow(1, new SimpleDumpData("Template"), new SimpleDumpData(template));
-		table.appendRow(1, new SimpleDumpData("Execution Time (ms)"), new SimpleDumpData(exeTime));
-		table.appendRow(1, new SimpleDumpData("recordcount"), new SimpleDumpData(getRecordcount()));
-		table.appendRow(1, new SimpleDumpData("cached"), new SimpleDumpData(isCached()?"Yes":"No"));
+			comment.append("Template:").append(template).append("\n");
+		//table.appendRow(1, new SimpleDumpData("Template"), new SimpleDumpData(template));
+		
+		comment.append("Execution Time (ms):").append(Caster.toString(exeTime)).append("\n");
+		comment.append("Recordcount:").append(Caster.toString(getRecordcount())).append("\n");
+		comment.append("Cached:").append(isCached()?"Yes\n":"No\n");
+		if(sql!=null)
+			comment.append("SQL:").append("\n").append(sql.toString().trim()).append("\n");
+		
+		//table.appendRow(1, new SimpleDumpData("Execution Time (ms)"), new SimpleDumpData(exeTime));
+		//table.appendRow(1, new SimpleDumpData("recordcount"), new SimpleDumpData(getRecordcount()));
+		//table.appendRow(1, new SimpleDumpData("cached"), new SimpleDumpData(isCached()?"Yes":"No"));
+		
+		
 		
 		//DumpTable recs=new DumpTable("#83CB5C","#CAFF92","#000000");
-		DumpTable recs=new DumpTable("#aa66aa","#ffddff","#000000");
+		DumpTable recs=new DumpTablePro("query","#aa66aa","#ffddff","#000000");
+		recs.setTitle("Query");
+		recs.setComment(comment.toString());
 		recs.appendRow(new DumpRow(-1,heads));
 		
 		// body
+		DumpData[] items;
 		for(int i=0;i<recordcount;i++) {
-			DumpData[] items=new DumpData[columncount];
+			items=new DumpData[columncount+1];
+			items[0]=new SimpleDumpData(i+1);
 			for(int y=0;y<keys.length;y++) {
 				try {
 					Object o=getAt(keys[y],i+1);
-					if(o instanceof String)items[y]=new SimpleDumpData(o.toString());
-                    else if(o instanceof Number) items[y]=new SimpleDumpData(Caster.toString(((Number)o).doubleValue()));
-                    else if(o instanceof Boolean) items[y]=new SimpleDumpData(((Boolean)o).booleanValue());
-                    else if(o instanceof Date) items[y]=new SimpleDumpData(Caster.toString(o));
-                    else if(o instanceof Clob) items[y]=new SimpleDumpData(Caster.toString(o));								
-					else items[y]=DumpUtil.toDumpData(o, pageContext,maxlevel,dp);
+					if(o instanceof String)items[y+1]=new SimpleDumpData(o.toString());
+                    else if(o instanceof Number) items[y+1]=new SimpleDumpData(Caster.toString(((Number)o).doubleValue()));
+                    else if(o instanceof Boolean) items[y+1]=new SimpleDumpData(((Boolean)o).booleanValue());
+                    else if(o instanceof Date) items[y+1]=new SimpleDumpData(Caster.toString(o));
+                    else if(o instanceof Clob) items[y+1]=new SimpleDumpData(Caster.toString(o));								
+					else items[y+1]=DumpUtil.toDumpData(o, pageContext,maxlevel,dp);
 				} catch (PageException e) {
-					items[y]=new SimpleDumpData("[empty]");
+					items[y+1]=new SimpleDumpData("[empty]");
 				}
 			}
-			recs.appendRow(new DumpRow(0,items));
+			recs.appendRow(new DumpRow(1,items));
 		}
 		if(!dp.getMetainfo()) return recs;
 		
-		table.appendRow(1, new SimpleDumpData("result"), recs);
-		return table;
+		//table.appendRow(1, new SimpleDumpData("result"), recs);
+		return recs;
 	}
 
 	/**
@@ -3317,6 +3334,27 @@ public class QueryImpl implements Query,Objects {
 			out.writeUTF(new ScriptConverter().serialize(this));
 		} 
 		catch (Throwable t) {}
+	}
+	
+	/**
+	 * @see railo.runtime.type.Sizeable#sizeOf()
+	 */
+	public long sizeOf(){
+		long size=SizeOf.size(this.exeTime)+
+		SizeOf.size(this.isCached)+
+		SizeOf.size(this.arrCurrentRow)+
+		SizeOf.size(this.columncount)+
+		SizeOf.size(this.generatedKeys)+
+		SizeOf.size(this.name)+
+		SizeOf.size(this.recordcount)+
+		SizeOf.size(this.sql)+
+		SizeOf.size(this.template)+
+		SizeOf.size(this.updateCount);
+		
+		for(int i=0;i<columns.length;i++){
+			size+=this.columns[i].sizeOf();
+		}
+		return size;
 	}
 
 }

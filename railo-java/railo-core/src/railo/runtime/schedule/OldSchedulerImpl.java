@@ -14,6 +14,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import railo.commons.date.DateTimeUtil;
+import railo.commons.date.JREDateTimeUtil;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.runtime.config.Config;
@@ -35,7 +36,7 @@ public final class OldSchedulerImpl implements Scheduler {
     private static final long DAY=24*3600000;
     
     private static final long TOLERANCE=10;
-    private Calendar calendar=Calendar.getInstance();
+    private Calendar calendar=JREDateTimeUtil.newInstance();
     private long nextExecutionTime;
     private long future;
     

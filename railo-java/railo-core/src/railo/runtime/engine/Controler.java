@@ -18,7 +18,6 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
-import railo.runtime.functions.dateTime.DateAdd;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.scope.ClientFile;
 import railo.runtime.type.scope.ScopeContext;
@@ -165,7 +164,9 @@ public final class Controler extends Thread {
 		ExtensionResourceFilter filter = new ExtensionResourceFilter(".script",true);
 		
 		try {
-			long date = DateAdd.invoke("d", -((ConfigWebImpl)config).getClientScopeMaxAge(), new DateTimeImpl(config)).getTime();
+			long date = new DateTimeImpl(config).getTime()-((ConfigWebImpl)config).getClientTimeout().getMillis();
+			
+			//long date = DateAdd.invoke("d", -((ConfigWebImpl)config).getClientScopeMaxAge(), new DateTimeImpl(config)).getTime();
 			ResourceUtil.deleteFileOlderThan(config.getClientScopeDir(),date,filter);
 			ResourceUtil.deleteEmptyFolders(config.getClientScopeDir());
 		

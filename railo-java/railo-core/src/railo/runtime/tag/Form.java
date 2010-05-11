@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -14,6 +15,7 @@ import railo.runtime.functions.dynamicEvaluation.DE;
 import railo.runtime.functions.string.JSStringFormat;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -34,8 +36,9 @@ public final class Form extends BodyTagImpl {
 
 	private static final railo.runtime.type.Collection.Key NAME = KeyImpl.getInstance("name");
 	private static final railo.runtime.type.Collection.Key ACTION = KeyImpl.getInstance("action");
-    
-	private static int count=0;
+
+	//private static int _count=0;
+	private int count=0;
     private String name;
     private String action;
     private boolean preserveData;
@@ -369,6 +372,7 @@ public final class Form extends BodyTagImpl {
      * @see javax.servlet.jsp.tagext.Tag#doStartTag()
      */
     public int doStartTag() throws PageException {
+    	
         try {
             return _doStartTag();
         } 
@@ -382,9 +386,7 @@ public final class Form extends BodyTagImpl {
         if(archive==null) {
 	    	archive=contextPath+DEFAULT_ARCHIVE;
         }
-        
-    	count++;
-        if(count>100000)count=0;
+        count=IDGenerator.intId();
         
         if(name==null) {
             name="CFForm_"+count;
@@ -485,7 +487,7 @@ public final class Form extends BodyTagImpl {
     }
     
     private String range(double range) {
-        if(Double.isNaN(range)) return "null";
+        if(!Decision.isValid(range)) return "null";
         return Caster.toString(range);
     }
 

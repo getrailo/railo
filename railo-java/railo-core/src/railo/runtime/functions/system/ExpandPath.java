@@ -11,10 +11,11 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWebUtil;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
 
 public final class ExpandPath implements Function {
-	public static String call(PageContext pc , String realPath) {
+	public static String call(PageContext pc , String realPath) throws ExpressionException {
 		
 		Config config=pc.getConfig();
 		realPath=realPath.replace('\\','/');
@@ -29,8 +30,10 @@ public final class ExpandPath implements Function {
         realPath=ConfigWebUtil.replacePlaceholder(realPath, config);
         res=pc.getConfig().getResource(realPath);
         if(res.isAbsolute()) return toReturnValue(realPath,res);
-        return toReturnValue(realPath,
-        		pc.getBasePageSource().getPhyscalFile().getParentResource().getRealResource(realPath));
+        
+        res=ResourceUtil.getResource(pc,pc.getBasePageSource());
+        res = res.getParentResource().getRealResource(realPath);
+        return toReturnValue(realPath,res);
         
 	}
 

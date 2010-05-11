@@ -14,11 +14,12 @@ import railo.runtime.op.Operator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.util.QueryUtil;
 
 /**
  * Recordcount Query Column
  */
-public final class QueryColumnRef implements QueryColumn {
+public final class QueryColumnRef implements QueryColumn,Sizeable {
     
     private Query query;
     private Collection.Key columnName;
@@ -484,5 +485,12 @@ public final class QueryColumnRef implements QueryColumn {
         QueryColumn clone=new QueryColumnRef(query,columnName,type);
         return clone;
     }
+
+	/**
+	 * @see railo.runtime.type.Sizeable#sizeOf()
+	 */
+	public long sizeOf() {
+		return QueryUtil.sizeOf(this);
+	}
 
 }

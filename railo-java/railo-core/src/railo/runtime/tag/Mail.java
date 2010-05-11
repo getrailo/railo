@@ -3,6 +3,7 @@ package railo.runtime.tag;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.StringUtil;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -54,6 +55,8 @@ public final class Mail extends BodyTagImpl {
 	private String charset;
 
 	private int priority;
+
+	private boolean remove;
 	
 	
 
@@ -72,8 +75,18 @@ public final class Mail extends BodyTagImpl {
 		maxrows=0d;
 		startrow=0d;
 		charset=null;
+		remove=false;
 	}
 	
+	
+	/**
+	 * @param remove the remove to set
+	 */
+	public void setRemove(boolean remove) {
+		this.remove = remove;
+	}
+
+
 	/**
      * @param proxyserver The proxyserver to set.
 	 * @throws ApplicationException 
@@ -133,13 +146,13 @@ public final class Mail extends BodyTagImpl {
 	/** set the value from
 	*  The sender of the e-mail message.
 	* @param strForm value to set
-	 * @throws ApplicationException
+	 * @throws PageException 
 	**/
-	public void setFrom(String strForm) throws ApplicationException	{
+	public void setFrom(Object from) throws PageException	{
 		try {
-			smtp.setFrom(strForm);
+			smtp.setFrom(from);
 		} catch (Exception e) {
-			throw new ApplicationException("invalid definition for attribute from at tag mail",e.getMessage());
+			throw Caster.toPageException(e);
 		}
 	}
 
@@ -148,9 +161,9 @@ public final class Mail extends BodyTagImpl {
 	* @param strTo value to set
 	 * @throws ApplicationException
 	**/
-	public void setTo(String strTo) throws ApplicationException	{
+	public void setTo(Object to) throws ApplicationException	{
 		try {
-			smtp.addTo(strTo);
+			smtp.addTo(to);
 		} catch (Exception e) {
 			throw new ApplicationException("invalid definition for attribute to at tag mail",e.getMessage());
 		}
@@ -161,9 +174,9 @@ public final class Mail extends BodyTagImpl {
 	* @param strCc value to set
 	 * @throws ApplicationException
 	**/
-	public void setCc(String strCc) throws ApplicationException	{
+	public void setCc(Object cc) throws ApplicationException	{
 		try {
-			smtp.addCC(strCc);
+			smtp.addCC(cc);
 		} catch (Exception e) {
 			throw new ApplicationException("invalid definition for attribute cc at tag mail",e.getMessage());
 		}
@@ -175,9 +188,9 @@ public final class Mail extends BodyTagImpl {
 	* @param strBcc value to set
 	 * @throws ApplicationException
 	**/
-	public void setBcc(String strBcc) throws ApplicationException	{
+	public void setBcc(Object bcc) throws ApplicationException	{
 		try {
-			smtp.addBCC(strBcc);
+			smtp.addBCC(bcc);
 		} catch (Exception e) {
 			throw new ApplicationException("invalid definition for attribute bcc at tag mail",e.getMessage());
 		}
@@ -187,9 +200,9 @@ public final class Mail extends BodyTagImpl {
 	 * @param strFailto The failto to set.
 	 * @throws ApplicationException
 	 */
-	public void setFailto(String strFailto) throws ApplicationException {
+	public void setFailto(Object failto) throws ApplicationException {
 		try {
-			smtp.addFailTo(strFailto);
+			smtp.addFailTo(failto);
 		} catch (Exception e) {
 			throw new ApplicationException("invalid definition for attribute failto at tag mail",e.getMessage());
 		}
@@ -198,9 +211,9 @@ public final class Mail extends BodyTagImpl {
 	 * @param strReplyto The replyto to set.
 	 * @throws ApplicationException
 	 */
-	public void setReplyto(String strReplyto) throws ApplicationException {
+	public void setReplyto(Object replyto) throws ApplicationException {
 		try {
-			smtp.addReplyTo(strReplyto);
+			smtp.addReplyTo(replyto);
 		} catch (Exception e) {
 			throw new ApplicationException("invalid definition for attribute replyto at tag mail",e.getMessage());
 		}
@@ -253,22 +266,18 @@ public final class Mail extends BodyTagImpl {
 	 * @param disposition 
 	 * @throws PageException 
 	**/
-	public void setMimeattach(String strMimeattach, String type, String disposition, String contentID) throws PageException	{
+	public void setMimeattach(String strMimeattach, String type, String disposition, String contentID,boolean removeAfterSend) throws PageException	{
 		Resource file=ResourceUtil.toResourceNotExisting(pageContext,strMimeattach);
         pageContext.getConfig().getSecurityManager().checkFileLocation(file);
 		if(!file.exists())
 			throw new ApplicationException("can't attach file "+strMimeattach+", this file doesn't exist");
 		
 
-        //try {
-			smtp.addAttachment(file,type,disposition,contentID);
-		/*} catch (MessagingException e) {
-			throw new ApplicationException("there is a problem with the attachment",e.getMessage());
-		}*/
-        
+        smtp.addAttachment(file,type,disposition,contentID,removeAfterSend);
+		
 	}
 	public void setMimeattach(String strMimeattach) throws PageException	{
-		setMimeattach(strMimeattach, "", null, null);
+		setMimeattach(strMimeattach, "", null, null,false);
 	}
 	
 	/**
@@ -427,15 +436,31 @@ public final class Mail extends BodyTagImpl {
     /**
      * @param part
      */
-    public void setBodyPart(MailPart part) {
-        if(part.getCharset()==null) part.setCharset(getCharset());
-        addBody(part);
+    public void addPart(MailPart part) {
+    	String type = part.getType();
+		if(StringUtil.isEmpty(part.getCharset())) part.setCharset(getCharset());
+		if(type!=null && (type.equals("text/plain") || type.equals("plain") || type.equals("text"))){
+			part.isHTML(false);
+			addClassicBodyPart(part);
+		}
+		else if(type!=null && (type.equals("text/html") || type.equals("html") || type.equals("htm"))){
+			part.isHTML(true);
+			addClassicBodyPart(part);
+		}   
+		else {
+			addBodyPart(part);
+		}
     }
 	
+    // this was not supported in prior releases
+	private void addBodyPart(MailPart part) {
+		smtp.setPart(part);
+	}
+
 	/**
      * @param part
      */
-    private void addBody(MailPart part) {
+    private void addClassicBodyPart(MailPart part) {
         if(part.isHTML()) {
             if(!smtp.hasHTMLText())smtp.setHTMLText(part.getBody(), part.getCharset());
         }
@@ -466,7 +491,7 @@ public final class Mail extends BodyTagImpl {
 		getPart().setBody(bodyContent.getString());
 		smtp.setCharset(getCharset());
 		getPart().setCharset(getCharset());
-		addBody(getPart());
+		addClassicBodyPart(getPart());
 		return SKIP_BODY;
 	}
 	
@@ -494,9 +519,27 @@ public final class Mail extends BodyTagImpl {
 	 * @param disposition 
 	 * @throws PageException 
 	 */
-	public void setParam(String type, String file, String name, String value, String disposition, String contentID) throws PageException {
-		if(file!=null)setMimeattach(file,type,disposition,contentID);
-		else smtp.addHeader(name,value);
+	public void setParam(String type, String file, String name, String value, String disposition, String contentID,Boolean oRemoveAfterSend) throws PageException {
+		if(file!=null){
+			boolean removeAfterSend=(oRemoveAfterSend==null)?remove:oRemoveAfterSend.booleanValue();
+				
+			setMimeattach(file,type,disposition,contentID,removeAfterSend);
+		}
+		else {
+			if(name.equalsIgnoreCase("bcc"))			setBcc(value);
+			else if(name.equalsIgnoreCase("cc"))		setCc(value);
+			else if(name.equalsIgnoreCase("charset"))	setCharset(value);
+			else if(name.equalsIgnoreCase("failto"))	setFailto(value);
+			else if(name.equalsIgnoreCase("from"))		setFrom(value);
+			else if(name.equalsIgnoreCase("mailerid"))	setMailerid(value);
+			else if(name.equalsIgnoreCase("mimeattach"))setMimeattach(value);
+			else if(name.equalsIgnoreCase("priority"))	setPriority(value);
+			else if(name.equalsIgnoreCase("replyto"))	setReplyto(value);
+			else if(name.equalsIgnoreCase("subject"))	setSubject(value);
+			else if(name.equalsIgnoreCase("to"))		setTo(value);
+			
+			else smtp.addHeader(name,value);
+		}
 	}	
 	
 	private railo.runtime.net.mail.MailPart getPart() {

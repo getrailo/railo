@@ -103,10 +103,6 @@ public final class QueryColumnUtil implements Serializable {
     private Object reDefineDouble(Object value) {
     	if(Decision.isCastableToNumeric(value))
     		return value;
-    	/*double dbl = Caster.toDoubleValue(value,Double.NaN);
-        if(!Double.isNaN(dbl)) {                
-            return new Double(dbl);
-        }*/
     	
         resetType();
         return value;
@@ -116,15 +112,7 @@ public final class QueryColumnUtil implements Serializable {
     	if(Decision.isCastableToNumeric(value))
     		return value;
     	
-    	/*double dbl = Caster.toDoubleValue(value,Double.NaN);
-        if(!Double.isNaN(dbl)) {  
-            float flt=(float)dbl;
-            if(flt==dbl)return new Float(flt);
-            
-            column.type=Types.DOUBLE;
-            return new Double(dbl);
-            
-        }*/
+    	
         resetType();
         return value;
     }
@@ -133,15 +121,7 @@ public final class QueryColumnUtil implements Serializable {
     	if(Decision.isCastableToNumeric(value))
     		return value;
     	
-    	/*double dbl = Caster.toDoubleValue(value,Double.NaN);
-        if(!Double.isNaN(dbl)) {  
-            int ints=(int)dbl;
-            if(ints==dbl)return Constants.Integer(ints);
-            
-            column.type=Types.DOUBLE;
-            return new Double(dbl);
-            
-        }*/
+    	
         resetType();
         return value;
     }
@@ -149,7 +129,7 @@ public final class QueryColumnUtil implements Serializable {
     private Object reDefineShort(Object value) {
     	
     	double dbl = Caster.toDoubleValue(value,Double.NaN);
-        if(!Double.isNaN(dbl)) {  
+        if(Decision.isValid(dbl)) {  
             short sht=(short)dbl;
             if(sht==dbl)return value;
             
@@ -164,15 +144,7 @@ public final class QueryColumnUtil implements Serializable {
     	if(Decision.isCastableToNumeric(value))
     		return value;
     	
-    	/*double dbl = Caster.toDoubleValue(value,Double.NaN);
-        if(!Double.isNaN(dbl)) {  
-            int ints=(int)dbl;
-            if(ints==dbl)return Constants.Integer(ints);
-            
-            column.type=Types.DOUBLE;
-            return new Double(ints);
-            
-        }*/
+    	
         resetType();
         return value;
     }
@@ -181,10 +153,6 @@ public final class QueryColumnUtil implements Serializable {
     	if(Decision.isCastableToNumeric(value))
     		return value;
     	
-    	/*double dbl = Caster.toDoubleValue(value,Double.NaN);
-        if(!Double.isNaN(dbl)) {                
-            return new BigDecimal(dbl);
-        }*/
         resetType();
         return value;
     }
@@ -193,10 +161,6 @@ public final class QueryColumnUtil implements Serializable {
     	if(Decision.isDateSimple(value,true))
     		return value;
     	
-    	/*DateTime dt = Caster.toDate(value,true,null,null);
-        if(dt!=null) {                
-            return dt;
-        }*/
         resetType();
         return value;
     }
@@ -205,10 +169,6 @@ public final class QueryColumnUtil implements Serializable {
     	if(Decision.isCastableToString(value))
     		return value;
     	
-    	/*String str=Caster.toString(value,null);
-        if(str!=null) {
-            return str;
-        }*/
         resetType();
         return value;
     }
@@ -217,10 +177,6 @@ public final class QueryColumnUtil implements Serializable {
     	if(Decision.isCastableToString(value))
     		return value;
     	
-    	/*String str=Caster.toString(value,null);
-        if(str!=null) {
-            return ClobImpl.toClob(str);
-        }*/
     	
         resetType();
         return value;
@@ -233,12 +189,7 @@ public final class QueryColumnUtil implements Serializable {
     	resetType();
         return value;
     	
-    	/*try {
-            return Caster.toBinary(value);
-        } catch (ExpressionException e) {
-            resetType();
-            return value;
-        }*/
+    	
     }
 
     private Object reDefineBlob(Object value) {
@@ -248,12 +199,7 @@ public final class QueryColumnUtil implements Serializable {
     	resetType();
         return value;
         
-    	/*try {
-            return BlobImpl.toBlob(Caster.toBinary(value));
-        } catch (ExpressionException e) {
-            resetType();
-            return value;
-        }*/
+    
     }
     
     private Object reDefineOther(Object value) {

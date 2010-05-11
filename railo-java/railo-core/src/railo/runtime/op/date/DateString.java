@@ -237,6 +237,13 @@ public final class DateString {
         }
         return value;
     }
+    public boolean removeWhitespace() {
+        boolean rtn=false;
+        while(isValidIndex() && Character.isWhitespace(str.charAt(pos))) {
+            pos++;
+        }
+        return rtn;
+    }
     
     
 
@@ -267,6 +274,7 @@ public final class DateString {
     public boolean isDigit(char c) {
         return c>='0' && c<='9';
 	}
+    
 
     /**
      * returns if value at cursor position is a digit or not

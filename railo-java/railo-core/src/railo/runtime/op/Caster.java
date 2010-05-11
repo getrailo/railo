@@ -33,10 +33,10 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.collections.map.ReferenceMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import railo.commons.date.JREDateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.i18n.FormatUtil;
 import railo.commons.io.FileUtil;
@@ -53,6 +53,7 @@ import railo.runtime.PageContext;
 import railo.runtime.cfx.QueryWrap;
 import railo.runtime.coder.Coder;
 import railo.runtime.coder.CoderException;
+import railo.runtime.config.Config;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -110,7 +111,7 @@ import railo.runtime.util.IteratorWrapper;
 public final class Caster { 
     private Caster(){
     }
-    static Map calendarsMap=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
+    //static Map calendarsMap=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
     
     private static final int NUMBERS_MIN=0;
     private static final int NUMBERS_MAX=999;
@@ -797,11 +798,11 @@ public final class Caster {
      * @return casted decimal value
      */
     public static String toDecimal(double value) {
-    	return toDecimal(value,'.','\'');
+    	return toDecimal(value,'.',',');
     }
     
     
-    public static String toDecimal(double value,char decDel,char thsDel) {
+    private static String toDecimal(double value,char decDel,char thsDel) {
         // TODO Caster toDecimal bessere impl.
         String str=new BigDecimal((StrictMath.round(value*100)/100D)).toString();
         //str=toDouble(value).toString();
@@ -1831,7 +1832,7 @@ public final class Caster {
         else if(o instanceof Node) {
             try {
                 return XMLCaster.toString((Node)o);
-            } catch (ExpressionException e) {
+            } catch (PageException e) {
                 return defaultValue;
             }
         }
@@ -2573,18 +2574,14 @@ public final class Caster {
      * @param defaultValue 
      * @return datetime object
      */
-    public static DateTime toDateTime(Locale locale,String str, TimeZone tz, DateTime defaultValue,boolean useCommomDateParserAsWell) {
+    public synchronized static DateTime toDateTime(Locale locale,String str, TimeZone tz, DateTime defaultValue,boolean useCommomDateParserAsWell) {
     	str=str.trim();
     	tz=ThreadLocalPageContext.getTimeZone(tz);
     	DateFormat[] df;
 
     	// get Calendar
-        Calendar c=(Calendar) calendarsMap.get(locale);
-        if(c == null) {
-            c=Calendar.getInstance(locale);
-            calendarsMap.put(locale,c);
-        }
-        synchronized(c){
+        Calendar c=JREDateTimeUtil.getCalendar(locale);
+        //synchronized(c){
         	
 	        // datetime
 	        df=FormatUtil.getDateTimeFormats(locale,false);//dfc[FORMATS_DATE_TIME];
@@ -2631,7 +2628,7 @@ public final class Caster {
 	            } 
 	            catch (ParseException e) {}
 	        }
-        }
+        //}
         if(useCommomDateParserAsWell)return toDate(str, false, tz, defaultValue);
         return defaultValue;
     }
@@ -2954,7 +2951,7 @@ public final class Caster {
             return new NativeException(((ExceptionInInitializerError)t).getCause());
         }
         else {
-            return new NativeException(t);
+        	return new NativeException(t);
         }
     }
     
@@ -3650,6 +3647,14 @@ public final class Caster {
         throw new CasterException(o,"Component");
     }
     
+    public static Component toComponent(Object o , Component defaultValue) {
+        if(o instanceof Component) return (Component)o;
+        else if(o instanceof ObjectWrap) {
+            return toComponent(((ObjectWrap)o).getEmbededObject(defaultValue),defaultValue);
+        }
+        return defaultValue;
+    }
+    
     /**
      * cast a Object to a Collection, if not returns null
      * @param o Object to cast
@@ -3706,19 +3711,25 @@ public final class Caster {
      * @throws ExpressionException
      */
     public static Struct toFunctionValues(Object[] args) throws ExpressionException {
+    	return toFunctionValues(args, 0, args.length);
+    }
+    
+    public static Struct toFunctionValues(Object[] args, int offset, int len) throws ExpressionException {
     	// TODO nicht sehr optimal 
         Struct sct=new StructImpl(StructImpl.TYPE_LINKED);
-        for(int i=0;i<args.length;i++) {
-            if(args[i] instanceof FunctionValue){
-                FunctionValue value = (FunctionValue) args[i];
-                sct.setEL(value.getName(),value.getValue());
+        for(int i=offset;i<offset+len;i++) {
+            if(args[i] instanceof FunctionValueImpl){
+                FunctionValueImpl value = (FunctionValueImpl) args[i];
+                sct.setEL(value.getNameAsKey(),value.getValue());
             }
-            else throw new ExpressionException("Missing argument name","When using named parameters to a function, every parameter must have a name.");
+            else throw new ExpressionException("Missing argument name, when using named parameters to a function, every parameter must have a name ["+i+":"+args[i].getClass().getName()+"].");
         }
-        
-        
         return sct;
     }
+    
+    
+    
+    
     public static Object[] toFunctionValues(Struct args) {
     	// TODO nicht sehr optimal 
     	Key[] keys = args.keys();
@@ -4015,6 +4026,20 @@ public final class Caster {
 		if(src instanceof FileStreamWrapper) return ((FileStreamWrapper)src).getResource();
         throw new CasterException(src,"Resource");
 	}
+	
+
+	public static Resource toResource(Config config,Object src, boolean existing) throws ExpressionException {
+		if(src instanceof Resource) return (Resource) src;
+		if(src instanceof File) src=src.toString();
+		if(src instanceof String) {
+			if(existing)
+				return ResourceUtil.toResourceExisting(config, (String)src);
+			return ResourceUtil.toResourceNotExisting(config, (String)src);
+		}
+		if(src instanceof FileStreamWrapper) return ((FileStreamWrapper)src).getResource();
+        throw new CasterException(src,"Resource");
+	}
+	
 
 	public static Hashtable toHashtable(Object obj) throws PageException {
 		if(obj instanceof Hashtable) return (Hashtable) obj;
@@ -4028,14 +4053,14 @@ public final class Caster {
 
 	public static Calendar toCalendar(Date date, TimeZone tz) {
 		tz=ThreadLocalPageContext.getTimeZone(tz);
-		Calendar c = tz==null?Calendar.getInstance():Calendar.getInstance(tz);
+		Calendar c = tz==null?JREDateTimeUtil.newInstance():JREDateTimeUtil.newInstance(tz);
 		c.setTime(date);
 		return c;
 	}
 	
 	public static Calendar toCalendar(long time, TimeZone tz) {
 		tz=ThreadLocalPageContext.getTimeZone(tz);
-		Calendar c = tz==null?Calendar.getInstance():Calendar.getInstance(tz);
+		Calendar c = tz==null?JREDateTimeUtil.newInstance():JREDateTimeUtil.newInstance(tz);
 		c.setTimeInMillis(time);
 		return c;
 	}

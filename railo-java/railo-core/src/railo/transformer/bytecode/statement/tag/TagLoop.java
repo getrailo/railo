@@ -40,18 +40,25 @@ public final class TagLoop extends TagBase implements FlowControl {
 	public static final int TYPE_ARRAY = 6;
 	
 
+	
+
 	// VariableReference getVariableReference(PageContext pc,String var)
 	private static final Method GET_VARIABLE_REFERENCE = new Method(
 			"getVariableReference",
 			Types.VARIABLE_REFERENCE,
 			new Type[]{Types.PAGE_CONTEXT,Types.STRING});
 
-	
+
 	// Object set(PageContext pc, Object value)
 	private static final Method SET = new Method(
 			"set",
 			Types.OBJECT,
 			new Type[]{Types.PAGE_CONTEXT,Types.OBJECT});
+	// Object set(double value)
+	private static final Method SET_DOUBLE = new Method(
+			"set",
+			Types.VOID,
+			new Type[]{Types.DOUBLE_VALUE});
 
 	// Iterator toIterator(Object o)
 	private static final Method TO_ITERATOR = new Method(
@@ -543,21 +550,45 @@ public final class TagLoop extends TagBase implements FlowControl {
 			adapter.storeLocal(index);
 			
 
-			// index.set(pc,from);
+			// index.set(from);
 			adapter.loadLocal(index);
-			adapter.loadArg(0);
-			
-			adapter.visitTypeInsn(Opcodes.NEW, "java/lang/Double");
-			adapter.visitInsn(Opcodes.DUP);
 			adapter.loadLocal(from);
-			adapter.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Double", "<init>", "(D)V");
-
-			adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
-			adapter.pop();		
+			adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET_DOUBLE);
 			
 			// for
 				
-			int i=forContitionVisitor.visitBeforeExpression(adapter,from,step,true);
+			//int i=forContitionVisitor.visitBeforeExpression(adapter,from,step,true);
+			
+			// init
+			adapter.visitLabel(forContitionVisitor.beforeInit);
+			forContitionVisitor.forInit(adapter, from, true);
+			adapter.goTo(forContitionVisitor.beforeExpr);
+			
+			// update
+			adapter.visitLabel(forContitionVisitor.beforeUpdate);
+			adapter.loadLocal(index);
+			//forContitionVisitor.forUpdate(adapter, step, true);
+			adapter.visitVarInsn(Opcodes.DLOAD, forContitionVisitor.i);
+			adapter.loadLocal(step);
+			adapter.visitInsn(Opcodes.DADD);
+			adapter.visitInsn(Opcodes.DUP2);
+			adapter.visitVarInsn(Opcodes.DSTORE, forContitionVisitor.i);
+			
+			
+			
+			adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET_DOUBLE);
+			
+			
+			
+			
+			// expression
+			adapter.visitLabel(forContitionVisitor.beforeExpr);
+			int i=forContitionVisitor.i;
+			
+			
+			
+			
+			
 				adapter.loadLocal(dirPlus);
 				Label l1 = new Label();
 				adapter.visitJumpInsn(Opcodes.IFEQ, l1);
@@ -582,16 +613,10 @@ public final class TagLoop extends TagBase implements FlowControl {
 				
 				adapter.visitLabel(l2);
 			forContitionVisitor.visitAfterExpressionBeginBody(adapter);
-				adapter.loadLocal(index);
-				adapter.loadArg(0);
 				
-				adapter.visitTypeInsn(Opcodes.NEW, "java/lang/Double");
-				adapter.visitInsn(Opcodes.DUP);
-				adapter.visitVarInsn(Opcodes.DLOAD, i);
-				adapter.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Double", "<init>", "(D)V");
-
-				adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
-				adapter.pop();
+				//adapter.loadLocal(index);
+				//adapter.visitVarInsn(Opcodes.DLOAD, i);
+				//adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET_DOUBLE);
 				
 				getBody().writeOut(bc);
 			
@@ -600,16 +625,9 @@ public final class TagLoop extends TagBase implements FlowControl {
 			
 			
 			////// set i after usage
-			adapter.loadLocal(index);
-			adapter.loadArg(0);
-			
-			adapter.visitTypeInsn(Opcodes.NEW, "java/lang/Double");
-			adapter.visitInsn(Opcodes.DUP);
-			adapter.visitVarInsn(Opcodes.DLOAD, i);
-			adapter.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Double", "<init>", "(D)V");
-
-			adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
-			adapter.pop();
+			//adapter.loadLocal(index);
+			//adapter.visitVarInsn(Opcodes.DLOAD, i);
+			//adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET_DOUBLE);
 			
 		adapter.visitLabel(ifEnd);
 		

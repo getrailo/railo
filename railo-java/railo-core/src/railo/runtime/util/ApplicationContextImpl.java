@@ -4,16 +4,15 @@ import railo.runtime.Mapping;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
-import railo.runtime.exp.PageException;
-import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.List;
+import railo.runtime.listener.ApplicationContextUtil;
+import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.type.Scope;
 import railo.runtime.type.dt.TimeSpan;
 
 /**
  * 
  */
-public final class ApplicationContextImpl implements ApplicationContext {
+public class ApplicationContextImpl implements ApplicationContextPro {
    
 
 	private String name;
@@ -32,6 +31,9 @@ public final class ApplicationContextImpl implements ApplicationContext {
 	private String secureJsonPrefix="//";
 	private boolean isDefault;
 	private String defaultDataSource;
+	private boolean ormEnabled;
+	private String ormdatasource;
+	private ORMConfiguration config;
     
     /**
      * constructor of the class
@@ -50,6 +52,41 @@ public final class ApplicationContextImpl implements ApplicationContext {
         this.defaultDataSource=((ConfigImpl)config).getDefaultDataSource();
         
     }
+    
+    /**
+     * Constructor of the class, only used by duplicate method
+     */
+    private ApplicationContextImpl() {
+    	
+    }
+    
+
+	public ApplicationContext duplicate() {
+		ApplicationContextImpl dbl = new ApplicationContextImpl();
+		dbl.name=name;
+		dbl.setClientCookies=setClientCookies;
+		dbl.setDomainCookies=setDomainCookies;
+		dbl.setSessionManagement=setSessionManagement;
+		dbl.setClientManagement=setClientManagement;
+		dbl.sessionTimeout=sessionTimeout;
+		dbl.applicationTimeout=applicationTimeout;
+		dbl.loginStorage=loginStorage;
+		dbl.clientstorage=clientstorage;
+		dbl.scriptProtect=scriptProtect;
+		dbl.mappings=mappings;
+		dbl.ctmappings=ctmappings;
+		dbl.secureJson=secureJson;
+		dbl.secureJsonPrefix=secureJsonPrefix;
+		dbl.isDefault=isDefault;
+		dbl.defaultDataSource=defaultDataSource;
+		
+		dbl.ormEnabled=ormEnabled;
+		dbl.config=config;
+		dbl.ormdatasource=ormdatasource;
+
+		return dbl;
+	}
+    
     
     /**
      * @see railo.runtime.util.IApplicationContext#getApplicationTimeout()
@@ -181,7 +218,7 @@ public final class ApplicationContextImpl implements ApplicationContext {
      * @param scriptProtect The scriptProtect to set.
      */
     public void setScriptProtect(String strScriptProtect) {
-		this.scriptProtect=translateScriptProtect(strScriptProtect);
+		this.scriptProtect=ApplicationContextUtil.translateScriptProtect(strScriptProtect);
 	}
     
     /**
@@ -199,64 +236,8 @@ public final class ApplicationContextImpl implements ApplicationContext {
 		return scriptProtect;
 	}
 
-	/**
-	 * translate string definition of script protect to int definition
-	 * @param scriptProtect
-	 * @return
-	 */
-	public static int translateScriptProtect(String strScriptProtect) {
-		strScriptProtect=strScriptProtect.toLowerCase().trim();
-		
-		if("none".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_NONE;
-		if("no".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_NONE;
-		if("false".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_NONE;
-		
-		if("all".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_ALL;
-		if("true".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_ALL;
-		if("yes".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_ALL;
-		
-		String[] arr = List.listToStringArray(strScriptProtect, ',');
-		String item;
-		int scriptProtect=0;
-		for(int i=0;i<arr.length;i++) {
-			item=arr[i].trim();
-			if("cgi".equals(item) && (scriptProtect&ApplicationContext.SCRIPT_PROTECT_CGI)==0)
-				scriptProtect+=ApplicationContext.SCRIPT_PROTECT_CGI;
-			else if("cookie".equals(item) && (scriptProtect&ApplicationContext.SCRIPT_PROTECT_COOKIE)==0)
-				scriptProtect+=ApplicationContext.SCRIPT_PROTECT_COOKIE;
-			else if("form".equals(item) && (scriptProtect&ApplicationContext.SCRIPT_PROTECT_FORM)==0)
-				scriptProtect+=ApplicationContext.SCRIPT_PROTECT_FORM;
-			else if("url".equals(item) && (scriptProtect&ApplicationContext.SCRIPT_PROTECT_URL)==0)
-				scriptProtect+=ApplicationContext.SCRIPT_PROTECT_URL;
-			
-		}
-		
-		return scriptProtect;
-	}
 	
-	/**
-	 * translate int definition of script protect to string definition
-	 * @param scriptProtect
-	 * @return
-	 */
-	public static String translateScriptProtect(int scriptProtect) {
-		if(scriptProtect==ApplicationContext.SCRIPT_PROTECT_NONE) return "none";
-		if(scriptProtect==ApplicationContext.SCRIPT_PROTECT_ALL) return "all";
-		
-		ArrayImpl arr=new ArrayImpl();
-		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_CGI)>0) arr.add("cgi");
-		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_COOKIE)>0) arr.add("cookie");
-		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_FORM)>0) arr.add("form");
-		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_URL)>0) arr.add("url");
-		
-		
-		
-		try {
-			return List.arrayToList(arr, ",");
-		} catch (PageException e) {
-			return "none";
-		} 
-	}
+
 
 	public void setMappings(Mapping[] mappings) {
 		if(mappings.length>0)this.mappings=mappings;
@@ -312,5 +293,30 @@ public final class ApplicationContextImpl implements ApplicationContext {
 	public void setDefaultDataSource(String defaultDataSource) {
 		this.defaultDataSource = defaultDataSource;
 	}
+	
+	public void setORMDataSource(String ormdatasource) {
+		this.ormdatasource = ormdatasource;
+	}
+
+	public boolean isORMEnabled() {
+		return ormEnabled;
+	}
+
+	public String getORMDatasource() {
+		return ormdatasource;
+	}
+
+	public ORMConfiguration getORMConfiguration() {
+		return config;
+	}
+	public void setORMConfiguration(ORMConfiguration config) {
+		//if(config==null)print.dumpStack();
+		this.config= config;
+	}
+
+	public void setORMEnabled(boolean ormEnabled) {
+		this.ormEnabled=ormEnabled;
+	}
+
 
 }

@@ -1,6 +1,7 @@
 package railo;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
@@ -12,9 +13,11 @@ import java.util.Set;
 
 import javax.servlet.http.Cookie;
 
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import railo.commons.io.IOUtil;
+import railo.runtime.op.Caster;
 
 /**
  *  
@@ -161,6 +164,7 @@ public class aprint {
     	else if(o instanceof Set) out((Set)o);
     	else if(o instanceof List) out((List)o);
     	else if(o instanceof Map) out((Map)o);
+    	else if(o instanceof Node) out((Node)o);
     	else if(o instanceof Throwable) out((Throwable)o);
     	else if(o instanceof Cookie) {
     		Cookie c=(Cookie) o;
@@ -237,10 +241,13 @@ public class aprint {
         }
         out("}");
     }
-    
+
 	public static void out(Object o,long l) {
 		System.out.print(o);
 		System.out.println(l);
+	}
+	public static void out(Node n) {
+		System.out.print(Caster.toString(n,null));
 	}
 	
 	public static void out(Object o,double d) {
@@ -277,6 +284,15 @@ public class aprint {
 		}
 		err(t.getClass().getName());
 		t.printStackTrace();
+		
+	}
+	
+	public static void printST(Throwable t,PrintStream ps) {
+		if(t instanceof InvocationTargetException){
+			t=((InvocationTargetException)t).getTargetException();
+		}
+		err(t.getClass().getName());
+		t.printStackTrace(ps);
 		
 	}
 }

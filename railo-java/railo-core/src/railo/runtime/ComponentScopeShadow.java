@@ -7,9 +7,6 @@ import railo.commons.collections.HashTableNotSync;
 import railo.runtime.component.Member;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
-import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpUtil;
-import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -21,6 +18,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructSupport;
+import railo.runtime.type.util.StructUtil;
 
 public class ComponentScopeShadow extends StructSupport implements ComponentScope {
 
@@ -57,7 +55,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	/**
 	 * @see railo.runtime.ComponentScope#getComponent()
 	 */
-	public ComponentImpl getComponent() {
+	public ComponentPro getComponent() {
 		return component;
 	}
 
@@ -236,7 +234,8 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");
+		return StructUtil.toDumpTable(this, "Variable Scope (of Component)", pageContext, maxlevel, dp);
+		/*DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");
 		table.setTitle("Variable Scope (of Component)");
 		String[] keys = keysAsString();
 		String key;
@@ -246,7 +245,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 			if(DumpUtil.keyValid(dp,maxlevel, key))
 				table.appendRow(1,new SimpleDumpData(key),DumpUtil.toDumpData(get(key,null), pageContext,maxlevel,dp));
 		}
-		return table;
+		return table;*/
 	}
 
 	/**

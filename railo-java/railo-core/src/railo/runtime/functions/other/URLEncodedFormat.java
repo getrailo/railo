@@ -19,21 +19,29 @@ public final class URLEncodedFormat implements Function {
 	
 	
 	public static String call(PageContext pc , String str) throws PageException {
-		try {
-			return URLEncoder.encode(str, "UTF-8");
-		} 
-		catch (UnsupportedEncodingException e) {
-			throw Caster.toPageException(e);
-		}
+		return call(pc,str, "UTF-8");
 	}
 	
 	public static String call(PageContext pc , String str, String encoding) throws PageException {
 		try {
+			String enc=java.net.URLEncoder.encode(str, encoding);
+			return enc;
+		} 
+		catch (Throwable t) {
+			try {
+				return URLEncoder.encode(str, encoding);
+			} 
+			catch (UnsupportedEncodingException e) {
+				throw Caster.toPageException(e);
+			}
+		}
+		
+		/*try {
 			return URLEncoder.encode(str, encoding);
 		} 
 		catch (UnsupportedEncodingException e) {
 			throw Caster.toPageException(e);
-		}
+		}*/
 	}
 	
 	

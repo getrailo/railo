@@ -26,6 +26,11 @@ import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 public final class TagTry extends TagBase {
 
 	private static final ExprString ANY=LitString.toExprString("any", -1);
+
+	private static final Method GET_VARIABLE = new Method(
+			"getVariable",
+			Types.OBJECT,
+			new Type[]{Types.STRING});
 	
 	private static final Method TO_PAGE_EXCEPTION = new Method(
 			"toPageException",
@@ -134,6 +139,12 @@ public final class TagTry extends TagBase {
 	        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
 	        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, GET_CATCH);
 			adapter.storeLocal(old);
+			
+			/*int obj=adapter.newLocal(Types.OBJECT);
+	        adapter.loadArg(0);
+	        adapter.push("cfcatch");
+	        adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_VARIABLE);
+			adapter.storeLocal(obj);*/
 			
 	        
 	        // PageException pe=Caster.toPageEception(e);

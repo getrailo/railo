@@ -20,6 +20,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import railo.commons.date.DateTimeUtil;
+import railo.commons.date.JREDateTimeUtil;
 import railo.commons.i18n.FormatUtil;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
@@ -96,7 +97,7 @@ public final class Decision {
         else if(o instanceof ObjectWrap) return isCastableToNumeric(((ObjectWrap)o).getEmbededObject("notanumber"));
 
         else if(o instanceof Castable) {
-        	return !Double.isNaN(((Castable)o).castToDoubleValue(Double.NaN));
+        	return Decision.isValid(((Castable)o).castToDoubleValue(Double.NaN));
 	        
         }
 		return false;
@@ -184,7 +185,7 @@ public final class Decision {
 	public static boolean isInteger(Object value,boolean alsoBooleans) {
 		if(!alsoBooleans && value instanceof Boolean) return false;
 		double dbl = Caster.toDoubleValue(value,Double.NaN);
-		if(Double.isNaN(dbl)) return false;
+		if(!Decision.isValid(dbl)) return false;
 		int i=(int)dbl;
 		return i==dbl;		
 	}
@@ -1194,18 +1195,14 @@ public final class Decision {
 	}*/
 	
 
-    public static boolean isDate(String str,Locale locale, TimeZone tz,boolean lenient) {
+    public synchronized static boolean isDate(String str,Locale locale, TimeZone tz,boolean lenient) {
     	str=str.trim();
     	tz=ThreadLocalPageContext.getTimeZone(tz);
     	DateFormat[] df;
 
     	// get Calendar
-        Calendar c=(Calendar) Caster.calendarsMap.get(locale);
-        if(c == null) {
-            c=Calendar.getInstance(locale);
-            Caster.calendarsMap.put(locale,c);
-        }
-        synchronized(c){
+        Calendar c=JREDateTimeUtil.getCalendar(locale);
+        //synchronized(c){
 	        // datetime
 	        df=FormatUtil.getDateTimeFormats(locale,false);//dfc[FORMATS_DATE_TIME];
 	    	for(int i=0;i<df.length;i++) {
@@ -1242,8 +1239,17 @@ public final class Decision {
 	            } 
 	            catch (ParseException e) {}
 	        }
-        } 
+        //} 
         if(lenient) return isDateSimple(str, false);
         return false;
     }
+
+	/**
+	 * Checks if number is valid (not infinity or NaN)
+	 * @param dbl
+	 * @return
+	 */
+	public static boolean isValid(double dbl) {
+		return !Double.isNaN(dbl) && !Double.isInfinite(dbl);
+	}
 }

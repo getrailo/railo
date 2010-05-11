@@ -142,7 +142,7 @@ public final class Page extends BodyBase {
 
 	
 
-	// void init(PageContext pc,ComponentImpl c) throws PageException
+	// void init(PageContext pc,Component Impl c) throws PageException
 	private static final Method INIT_COMPONENT = new Method(
 			"initComponent",
 			Types.VOID,
@@ -266,8 +266,8 @@ public final class Page extends BodyBase {
 					}
     		);*/
 	
-	// ComponentImpl(ComponentPage,boolean, String, String, String, String) WS==With Style
-	private static final Method CONSTR_COMPONENT_IMPLX = new Method(
+	// Component Impl(ComponentPage,boolean, String, String, String, String) WS==With Style
+	private static final Method CONSTR_COMPONENT_IMPL = new Method(
 			"<init>",
 			Types.VOID,
 			new Type[]{
@@ -281,6 +281,8 @@ public final class Page extends BodyBase {
 					Types.STRING,
 					Types.BOOLEAN_VALUE,
 					Types.STRING,
+					Types.BOOLEAN_VALUE,
+					Types.BOOLEAN_VALUE,
 					STRUCT_IMPL
 				}
     		);
@@ -952,21 +954,39 @@ public final class Page extends BodyBase {
 		// realpath
 		adapter.visitVarInsn(Opcodes.ILOAD, 3);
 		
-		
+
 		// style
 		attr = component.removeAttribute("style");
 		if(attr!=null) ExpressionUtil.writeOutSilent(attr.getValue(),bc, Expression.MODE_REF);
 		else adapter.push("");
+
+		// persistent
+		attr = component.removeAttribute("persistent");
+		boolean persistent=false;
+		if(attr!=null) {
+			persistent=ASMUtil.toBoolean(attr,component.getStartLine()).booleanValue();
+		}
+		
+		// persistent
+		attr = component.removeAttribute("accessors");
+		boolean accessors=false;
+		if(attr!=null) {
+			accessors=ASMUtil.toBoolean(attr,component.getStartLine()).booleanValue();
+		}
+
+		adapter.push(persistent);
+		adapter.push(accessors);
+		//ExpressionUtil.writeOutSilent(attr.getValue(),bc, Expression.MODE_VALUE);
 		
 		//adapter.visitVarInsn(Opcodes.ALOAD, 4);
 		
 		createMetaDataStruct(bc,component.getAttributes());
 		
-		adapter.invokeConstructor(Types.COMPONENT_IMPL, CONSTR_COMPONENT_IMPLX);
+		adapter.invokeConstructor(Types.COMPONENT_IMPL, CONSTR_COMPONENT_IMPL);
 		
 		adapter.storeLocal(comp);
 		
-		//ComponentImpl(ComponentPage componentPage,boolean output, String extend, String hint, String dspName)
+		//Component Impl(ComponentPage componentPage,boolean output, String extend, String hint, String dspName)
 		
 		
 		// initComponent(pc,c);
@@ -1181,6 +1201,11 @@ public final class Page extends BodyBase {
 	 */
 	public boolean isInterface() {
 		return isInterface;
+	}
+	
+
+	public boolean isPage() {
+		return !isInterface && !isComponent;
 	}
 	
 	/**

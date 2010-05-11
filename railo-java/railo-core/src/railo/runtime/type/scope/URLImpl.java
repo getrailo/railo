@@ -2,7 +2,7 @@ package railo.runtime.type.scope;
 
 import java.io.UnsupportedEncodingException;
 
-import railo.commons.lang.ByteNameValuePair;
+import railo.commons.net.URLItem;
 import railo.runtime.PageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
@@ -16,9 +16,9 @@ public final class URLImpl extends ScopeSupport implements URL,ScriptProtected {
 
 	private String encoding=null;
     private int scriptProtected=ScriptProtected.UNDEFINED;
-    private static final ByteNameValuePair[] empty=new ByteNameValuePair[0];
+    private static final URLItem[] empty=new URLItem[0];
 	private static final Collection.Key REQUEST_TIMEOUT = KeyImpl.getInstance("RequestTimeout"); 
-    private ByteNameValuePair[] raw=empty;
+    private URLItem[] raw=empty;
     
 	/**
 	 * Standart Constructor
@@ -115,7 +115,7 @@ public final class URLImpl extends ScopeSupport implements URL,ScriptProtected {
 	/**
 	 * @return the raw
 	 */
-	public ByteNameValuePair[] getRaw() {
+	public URLItem[] getRaw() {
 		return raw;
 	}
 }

@@ -1,17 +1,26 @@
 package railo.transformer.cfml.evaluator.impl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
+import railo.runtime.functions.list.ListQualify;
+import railo.runtime.functions.other.PreserveSingleQuotes;
+import railo.runtime.functions.other.QuotedValueList;
+import railo.runtime.functions.query.ValueList;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.Cast;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.BIF;
 import railo.transformer.bytecode.expression.var.Member;
 import railo.transformer.bytecode.expression.var.UDF;
 import railo.transformer.bytecode.expression.var.Variable;
+import railo.transformer.bytecode.literal.LitBoolean;
+import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.cfml.evaluator.EvaluatorException;
@@ -32,7 +41,7 @@ public final class Query extends EvaluatorSupport {
 	
 	private void translateChildren(Iterator it) {
 		Statement stat;
-		
+		 
 		while(it.hasNext()) {
 			stat=(Statement) it.next();
 			if(stat instanceof PrintOut) {
@@ -46,8 +55,29 @@ public final class Query extends EvaluatorSupport {
 						Member member = ((Variable)expr).getFirstMember();
 						if(member instanceof BIF) {
 							BIF bif=(BIF) member;
-							if(bif.getClassName().equals("railo.runtime.functions.other.PreserveSingleQuotes")) {
+
+							if(bif.getClassName().equals(PreserveSingleQuotes.class.getName())) {
 								printOut.setExpr(bif.getArguments()[0].getValue());
+								continue;
+							}
+							else if(bif.getClassName().equals(ListQualify.class.getName())) {
+								Argument[] args = bif.getArguments();
+								List<Argument> arr=new ArrayList<Argument>();
+								arr.add(args[0]);
+								arr.add(args[1]);
+								if(args.length>=3)arr.add(args[2]);
+								else arr.add(new Argument(LitString.toExprString(","),"string"));
+								if(args.length>=4)arr.add(args[3]);
+								else arr.add(new Argument(LitString.toExprString("all"),"string"));
+								arr.add(new Argument(LitBoolean.toExprBoolean(true),"boolean"));
+								bif.setArguments(arr.toArray(new Argument[arr.size()]));
+								continue;
+							}
+							else if(
+								bif.getClassName().equals(QuotedValueList.class.getName()) ||
+								bif.getClassName().equals(ValueList.class.getName())
+								) {
+								//printOut.setPreserveSingleQuote(false);
 								continue;
 							}
 						}

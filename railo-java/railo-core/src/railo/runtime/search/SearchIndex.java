@@ -5,6 +5,7 @@ import java.io.IOException;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.runtime.type.List;
+import railo.runtime.type.util.ArrayUtil;
 
 
 
@@ -74,7 +75,7 @@ public final class SearchIndex {
         this.language = SearchUtil.translateLanguage(language);
         this.urlpath = urlpath;
         this.categoryTree = categoryTree;
-        this.categories = categories;
+        this.categories = ArrayUtil.trim(categories);
         this.custom1 = custom1;
         this.custom2 = custom2;
         this.custom3 = custom3;
@@ -271,6 +272,8 @@ public final class SearchIndex {
      */
     public static String toId(short type, String key, String queryName) {
     	if(type==SearchIndex.TYPE_CUSTOM) return "custom";
+    	//if(type==SearchIndex.TYPE_FILE) return "file";//P504
+    	//if(type==SearchIndex.TYPE_PATH) return "file";//P504
     	
         try {
 			return SearchIndex.toStringTypeEL(type)+"-"+Md5.getDigestAsString(key+queryName);

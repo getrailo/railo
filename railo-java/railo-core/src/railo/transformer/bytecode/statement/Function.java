@@ -510,7 +510,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 		expr.writeOut(bc, Expression.MODE_REF);
 		// write short type
 		if(expr instanceof LitString){
-			short type=CFTypes.toShort(((LitString)expr).getString(),CFTypes.TYPE_UNKNOW);
+			short type=CFTypes.toShortStrict(((LitString)expr).getString(),CFTypes.TYPE_UNKNOW);
 			bc.getAdapter().push(type);
 		}
 		else bc.getAdapter().push(CFTypes.TYPE_UNKNOW);

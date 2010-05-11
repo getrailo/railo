@@ -2,6 +2,7 @@ package railo.commons.date;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -11,6 +12,8 @@ import railo.runtime.type.dt.DateTime;
 
 public class JREDateTimeUtil extends DateTimeUtil {
 	
+	private static CalendarThreadLocal calendar=new CalendarThreadLocal();
+	
 	private Calendar year;
 	private Calendar month;
 	private Calendar day;
@@ -18,15 +21,19 @@ public class JREDateTimeUtil extends DateTimeUtil {
 	private Calendar minute;
 	private Calendar second;
 	private Calendar milliSecond;
-	private Calendar dayOfYear;
-	private Calendar dayOfWeek;
-	private Calendar week;
+	//private Calendar dayOfYear;
+	//private Calendar dayOfWeek;
+	//private Calendar week;
 	//private Calendar time;
 	private Calendar milliSecondsInDay;
 	private Calendar daysInMonth;
-	
-	private static Map tzCalendars=new HashMap();
+	Calendar string;
 
+	//private static Map tzCalendars=new HashMap();
+	private static Map<Locale,Calendar> localeCalendars=new HashMap<Locale,Calendar>();
+	
+	
+	
 	JREDateTimeUtil() {
 		
 	}
@@ -35,9 +42,6 @@ public class JREDateTimeUtil extends DateTimeUtil {
 		tz=ThreadLocalPageContext.getTimeZone(tz);
 		Calendar time = getCalendar(tz);
 		synchronized(time){
-			//time = Calendar.getInstance();
-			//time.setTimeZone(tz);
-			//time.set(Calendar.MONTH, month-1);
 			time.set(year,month-1,day,hour,minute,second);
 			time.set(Calendar.MILLISECOND,milliSecond);  
 	        return time.getTimeInMillis();
@@ -46,116 +50,126 @@ public class JREDateTimeUtil extends DateTimeUtil {
 	}
 
 	private static int get(Calendar calendar,TimeZone tz, DateTime dt, int field) {
-		synchronized (calendar) {
-			//calendar.clear();
-        	calendar.setTimeZone(tz); 
+		//synchronized (calendar) {
+			calendar.setTimeZone(tz); 
         	calendar.setTimeInMillis(dt.getTime());         
     		return calendar.get(field);
-        }
+        //}
 	}
 
 	/**
 	 * @see railo.commons.date.DateTimeUtil#getYear(java.util.TimeZone, railo.runtime.type.dt.DateTime)
 	 */
-	public  int getYear(TimeZone tz, DateTime dt) {
-		if(year==null)year=Calendar.getInstance();
+	public synchronized int getYear(TimeZone tz, DateTime dt) {
+		if(year==null)year=newInstance();
 		return get(year,tz,dt,Calendar.YEAR);
-		
 	}
 
 	/**
 	 * @see railo.commons.date.DateTimeUtil#getMonth(java.util.TimeZone, railo.runtime.type.dt.DateTime)
 	 */
-	public int getMonth(TimeZone tz, DateTime dt) {
-		if(month==null)month=Calendar.getInstance();
+	public synchronized int getMonth(TimeZone tz, DateTime dt) {
+		if(month==null)month=newInstance();
 		return get(month,tz,dt,Calendar.MONTH)+1;
-	}
-
-	/**
-	 * @see railo.commons.date.DateTimeUtil#getWeek(java.util.TimeZone, railo.runtime.type.dt.DateTime)
-	 */
-	public int getWeek(TimeZone tz, DateTime dt) {
-		if(week==null)week=Calendar.getInstance();
-		return get(week,tz,dt,Calendar.WEEK_OF_YEAR);
 	}
 
 	/**
 	 * @see railo.commons.date.DateTimeUtil#getDay(java.util.TimeZone, railo.runtime.type.dt.DateTime)
 	 */
-	public int getDay(TimeZone tz, DateTime dt) {
-		if(day==null)day=Calendar.getInstance();
+	public synchronized int getDay(TimeZone tz, DateTime dt) {
+		if(day==null)day=newInstance();
 		return get(day,tz,dt,Calendar.DAY_OF_MONTH);
 	}
 
 	/**
 	 * @see railo.commons.date.DateTimeUtil#getHour(java.util.TimeZone, railo.runtime.type.dt.DateTime)
 	 */
-	public int getHour(TimeZone tz, DateTime dt) {
-		if(hour==null)hour=Calendar.getInstance();
+	public synchronized int getHour(TimeZone tz, DateTime dt) {
+		if(hour==null)hour=newInstance();
 		return get(hour,tz,dt,Calendar.HOUR_OF_DAY);
 	}
 
 	/**
 	 * @see railo.commons.date.DateTimeUtil#getMinute(java.util.TimeZone, railo.runtime.type.dt.DateTime)
 	 */
-	public int getMinute(TimeZone tz, DateTime dt) {
-		if(minute==null)minute=Calendar.getInstance();
+	public synchronized int getMinute(TimeZone tz, DateTime dt) {
+		if(minute==null)minute=newInstance();
 		return get(minute,tz,dt,Calendar.MINUTE);
 	}
 
 	/**
 	 * @see railo.commons.date.DateTimeUtil#getSecond(java.util.TimeZone, railo.runtime.type.dt.DateTime)
 	 */
-	public int getSecond(TimeZone tz, DateTime dt) {
-		if(second==null)second=Calendar.getInstance();
+	public synchronized int getSecond(TimeZone tz, DateTime dt) {
+		if(second==null)second=newInstance();
 		return get(second,tz,dt,Calendar.SECOND);
 	}
 
 	/**
 	 * @see railo.commons.date.DateTimeUtil#getMilliSecond(java.util.TimeZone, railo.runtime.type.dt.DateTime)
 	 */
-	public int getMilliSecond(TimeZone tz, DateTime dt) {
-		if(milliSecond==null)milliSecond=Calendar.getInstance();
+	public synchronized int getMilliSecond(TimeZone tz, DateTime dt) {
+		if(milliSecond==null)milliSecond=newInstance();
 		return get(milliSecond,tz,dt,Calendar.MILLISECOND);
 	}
 
 	/**
-	 * @see railo.commons.date.DateTimeUtil#getDayOfYear(java.util.TimeZone, railo.runtime.type.dt.DateTime)
+	 * @see railo.commons.date.DateTimeUtil#getWeek(java.util.TimeZone, railo.runtime.type.dt.DateTime)
 	 */
-	public int getDayOfYear(TimeZone tz, DateTime dt) {
-		if(dayOfYear==null)dayOfYear=Calendar.getInstance();
-		return get(dayOfYear,tz,dt,Calendar.DAY_OF_YEAR);
+	public synchronized int getWeekOfYear(Locale locale,TimeZone tz, DateTime dt) {
+		Calendar c=getCalendar(locale);
+		synchronized (c) {
+			c.setTimeZone(tz); 
+        	c.setTimeInMillis(dt.getTime());         
+    		int week=c.get(Calendar.WEEK_OF_YEAR);
+			
+			if(week==1 && c.get(Calendar.MONTH)==Calendar.DECEMBER) {
+				if(isLeapYear(c.get(Calendar.YEAR)) && c.get(Calendar.DAY_OF_WEEK)==1){
+					return 54;
+				}
+				return 53;
+			}
+			return week;
+		}
 	}
 
 	/**
 	 * @see railo.commons.date.DateTimeUtil#getDayOfYear(java.util.TimeZone, railo.runtime.type.dt.DateTime)
 	 */
-	public int getDayOfWeek(TimeZone tz, DateTime dt) {
-		if(dayOfWeek==null)dayOfWeek=Calendar.getInstance();
-		return get(dayOfWeek,tz,dt,Calendar.DAY_OF_WEEK);
+	public synchronized int getDayOfYear(Locale locale,TimeZone tz, DateTime dt) {
+		Calendar c=getCalendar(locale);
+		synchronized (c) {
+			return get(c,tz,dt,Calendar.DAY_OF_YEAR);
+		}
 	}
 
-	public long getMilliSecondsInDay(TimeZone tz,long time) {
-		if(milliSecondsInDay==null)milliSecondsInDay=Calendar.getInstance();
-		synchronized (milliSecondsInDay) {
-			milliSecondsInDay.clear();
-			milliSecondsInDay.setTimeZone(ThreadLocalPageContext.getTimeZone(tz));
-			milliSecondsInDay.setTimeInMillis(time);         
-            return  (milliSecondsInDay.get(Calendar.HOUR_OF_DAY)*3600000)+
-                    (milliSecondsInDay.get(Calendar.MINUTE)*60000)+
-                    (milliSecondsInDay.get(Calendar.SECOND)*1000)+
-                    (milliSecondsInDay.get(Calendar.MILLISECOND));
-        }
+	/**
+	 * @see railo.commons.date.DateTimeUtil#getDayOfYear(java.util.TimeZone, railo.runtime.type.dt.DateTime)
+	 */
+	public synchronized int getDayOfWeek(Locale locale,TimeZone tz, DateTime dt) {
+		Calendar c=getCalendar(locale);
+		synchronized (c) {
+			return get(c,tz,dt,Calendar.DAY_OF_WEEK);
+		}
+	}
+
+	public synchronized long getMilliSecondsInDay(TimeZone tz,long time) {
+		if(milliSecondsInDay==null)milliSecondsInDay=newInstance();
+		milliSecondsInDay.clear();
+		milliSecondsInDay.setTimeZone(ThreadLocalPageContext.getTimeZone(tz));
+		milliSecondsInDay.setTimeInMillis(time);         
+        return  (milliSecondsInDay.get(Calendar.HOUR_OF_DAY)*3600000)+
+                (milliSecondsInDay.get(Calendar.MINUTE)*60000)+
+                (milliSecondsInDay.get(Calendar.SECOND)*1000)+
+                (milliSecondsInDay.get(Calendar.MILLISECOND));
     }
 
-	public int getDaysInMonth(TimeZone tz, DateTime dt) {
-		if(daysInMonth==null)daysInMonth=Calendar.getInstance(); 
-		synchronized (daysInMonth) {
-			daysInMonth.clear();
-			daysInMonth.setTimeZone(tz); 
-			daysInMonth.setTime(dt);         
-    		return daysInMonth(daysInMonth.get(Calendar.YEAR), daysInMonth.get(Calendar.MONTH)+1);
-        }
+	public synchronized int getDaysInMonth(TimeZone tz, DateTime dt) {
+		if(daysInMonth==null)daysInMonth=newInstance();
+		daysInMonth.clear();
+		daysInMonth.setTimeZone(tz); 
+		daysInMonth.setTime(dt);         
+		return daysInMonth(daysInMonth.get(Calendar.YEAR), daysInMonth.get(Calendar.MONTH)+1);
 	}
 
 	public long getDiff(TimeZone tz, int datePart, DateTime left, DateTime right) {
@@ -163,40 +177,70 @@ public class JREDateTimeUtil extends DateTimeUtil {
 		return 0;
 	}
 
-	public String toString(DateTime dt, TimeZone tz) {
-		tz=ThreadLocalPageContext.getTimeZone(tz);
-		Calendar c=getCalendar(tz);
-		synchronized (c) {
-        	c.setTimeInMillis(dt.getTime());
+	public synchronized String toString(DateTime dt, TimeZone tz) {
+		if(string==null)string=newInstance();
+		//synchronized (string) {
+			tz=ThreadLocalPageContext.getTimeZone(tz);
+			string.setTimeZone(tz);
+			string.setTimeInMillis(dt.getTime());
 			//"HH:mm:ss"
         	StringBuffer sb=new StringBuffer();
     		
         	sb.append("{ts '");
-        	toString(sb,c.get(Calendar.YEAR),4);
+        	toString(sb,string.get(Calendar.YEAR),4);
         	sb.append("-");
-        	toString(sb,c.get(Calendar.MONTH)+1,2);
+        	toString(sb,string.get(Calendar.MONTH)+1,2);
         	sb.append("-");
-        	toString(sb,c.get(Calendar.DATE),2);
+        	toString(sb,string.get(Calendar.DATE),2);
         	sb.append(" ");
-        	toString(sb,c.get(Calendar.HOUR_OF_DAY),2);
+        	toString(sb,string.get(Calendar.HOUR_OF_DAY),2);
         	sb.append(":");
-        	toString(sb,c.get(Calendar.MINUTE),2);
+        	toString(sb,string.get(Calendar.MINUTE),2);
         	sb.append(":");
-        	toString(sb,c.get(Calendar.SECOND),2);
+        	toString(sb,string.get(Calendar.SECOND),2);
         	sb.append("'}");
         	 
         	return sb.toString();
-        }
+        //}
 	}
 
-	private Calendar getCalendar(TimeZone tz) {
-		Calendar c=(Calendar) tzCalendars.get(tz.getID());
+
+	public static Calendar newInstance() {
+		return Calendar.getInstance(Locale.US);
+	}
+	
+	public static Calendar newInstance(Locale l) {
+		return Calendar.getInstance(l);
+	}
+
+	public static Calendar newInstance(TimeZone tz) {
+		return Calendar.getInstance(tz,Locale.US);
+	}
+
+	public static Calendar getCalendar(Locale l) {
+		Calendar c=localeCalendars.get(l);
 		if(c==null){
-			c=Calendar.getInstance(tz);
-			tzCalendars.put(tz.getID(), c);
+			c=Calendar.getInstance(l);
+			localeCalendars.put(l, c);
 		}
 		return c;
 	}
+	
+	public static Calendar getCalendar(){
+		return calendar.get();
+	}
+	
+	public static Calendar getCalendar(TimeZone tz){
+		Calendar c=getCalendar();
+		c.setTimeZone(tz);
+		return c;
+	}
+	
+	
+	/*public  static Calendar newInstance(Locale l) {
+		Calendar c=Calendar.getInstance(l);
+		return c;
+	}*/
 
 	void toString(StringBuffer sb,int i, int amount) {
 		String str = Caster.toString(i);
@@ -205,5 +249,11 @@ public class JREDateTimeUtil extends DateTimeUtil {
 		}
 		sb.append(str);
 	}
+}
 
+
+class CalendarThreadLocal extends ThreadLocal<Calendar> {
+	protected synchronized Calendar initialValue() {
+        return Calendar.getInstance();
+    }
 }

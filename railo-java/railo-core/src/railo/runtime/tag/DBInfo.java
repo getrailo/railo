@@ -508,7 +508,7 @@ public final class DBInfo extends TagImpl {
 		QueryImpl qry=new QueryImpl(columns,types,1,"query");
 
 		qry.setAt(dbproductname,1,metaData.getDatabaseProductName());
-		qry.setAt(dbproductname,1,metaData.getDatabaseProductVersion());
+		qry.setAt(dbversion,1,metaData.getDatabaseProductVersion());
 		qry.setAt(drname,1,metaData.getDriverName());
 		qry.setAt(drversion,1,metaData.getDriverVersion());
 		qry.setAt(major,1,new Double(metaData.getJDBCMajorVersion()));

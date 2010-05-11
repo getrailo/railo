@@ -2,6 +2,7 @@ package railo.runtime.text.xml;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -11,6 +12,7 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
@@ -21,6 +23,7 @@ import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ArraySupport;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.StructUtil;
 import railo.runtime.util.ArrayIterator;
 
@@ -301,7 +304,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		maxlevel--;
-		DumpTable table = new DumpTable("#D3B06C","#D3B06C","#000000");
+		DumpTable table = new DumpTablePro("xml","#D3B06C","#D3B06C","#000000");
 		table.setTitle("Array (XML Node List)");
 		int len=size();
 		
@@ -573,5 +576,12 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	 */
 	public int compareTo(String str) throws PageException {
 		throw new ExpressionException("can't compare XML NodeList with a String");
+	}
+
+	/**
+	 * @see railo.runtime.type.Sizeable#sizeOf()
+	 */
+	public long sizeOf() {
+		return ArrayUtil.sizeOf((List)this);
 	}
 }

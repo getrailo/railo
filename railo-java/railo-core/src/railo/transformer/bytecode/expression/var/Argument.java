@@ -27,6 +27,9 @@ public class Argument extends ExpressionBase {
 		public Expression getValue() {
 			return value;
 		}
+		public void setValue(Expression value) {
+			this.value= value;
+		}
 
 		/**
 		 *
@@ -48,5 +51,8 @@ public class Argument extends ExpressionBase {
 		 */
 		public String getStringType() {
 			return type;
+		}
+		public void setStringType(String type) {
+			this.type= type;
 		}
 	}

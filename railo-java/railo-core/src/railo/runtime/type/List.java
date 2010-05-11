@@ -20,6 +20,53 @@ import railo.runtime.type.comparator.TextComparator;
 public final class List {
 
 	/**
+	 * casts a list to Array object, the list can be have quoted (",') arguments and delimter in this arguments are ignored. quotes are not removed
+	 * example:
+	 *  listWithQuotesToArray("aab,a'a,b',a\"a,b\"",",","\"'") will be translated to ["aab","a'a,b'","a\"a,b\""]
+	 * 
+	 * 
+	 * 
+	 * @param list list to cast
+	 * @param delimeter delimter of the list
+	 * @param quotes quotes of the list
+	 * @return Array Object
+	 */
+	public static Array listWithQuotesToArray(String list, String delimeter,String quotes) {
+		if(list.length()==0) return new ArrayImpl();
+		
+		int len=list.length();
+		int last=0;
+		char[] del=delimeter.toCharArray();
+		char[] quo=quotes.toCharArray();
+		char c;
+		char inside=0;
+		
+		ArrayImpl array=new ArrayImpl();
+		try{
+			for(int i=0;i<len;i++) {
+			    c=list.charAt(i);
+			    for(int y=0;y<quo.length;y++){
+			    	if(c==quo[y]) {
+						if(c==inside)inside=0;
+						else if(inside==0)inside=c;
+						continue;
+					}
+			    }
+			    
+			    for(int y=0;y<del.length;y++) {
+					if(inside==0 && c==del[y]) {
+						array._append(list.substring(last,i));
+						last=i+1;
+					}
+			    }
+			}
+			if(last<=len)array.append(list.substring(last));
+		}
+		catch(ExpressionException e){}
+		return array;
+	}
+	
+	/**
 	 * casts a list to Array object
 	 * @param list list to cast
 	 * @param delimeter delimter of the list
@@ -49,6 +96,8 @@ public final class List {
 		catch(ExpressionException e){}
 		return array;
 	}
+	
+	
 
 	/**
 	 * casts a list to Array object

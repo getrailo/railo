@@ -1,6 +1,7 @@
 package railo.runtime.search;
 
 
+
 /**
  * A Single Record of a Search Result
  */
@@ -62,31 +63,31 @@ public class SearchResulItemImpl implements SearchResultItemPro {
         this.size = size;
     }
     /**
-     * @see railo.runtime.search.SearchResulItem#getRecordsSearched()
+     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getRecordsSearched()
      */
     public int getRecordsSearched() {
         return recordsSearched;
     }
     /**
-     * @see railo.runtime.search.SearchResulItem#getScore()
+     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getScore()
      */
     public float getScore() {
         return score;
     }
     /**
-     * @see railo.runtime.search.SearchResulItem#getSummary()
+     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getSummary()
      */
     public String getSummary() {
         return summary;
     }
     /**
-     * @see railo.runtime.search.SearchResulItem#getTitle()
+     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getTitle()
      */
     public String getTitle() {
         return title;
     }
     /**
-     * @see railo.runtime.search.SearchResulItem#getId()
+     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getId()
      */
     public String getId() {
         return id;
@@ -94,38 +95,38 @@ public class SearchResulItemImpl implements SearchResultItemPro {
     
     
     /**
-     * @see railo.runtime.search.SearchResulItem#getKey()
+     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getKey()
      */
     public String getKey() {
         return key;
     }
     
     /**
-     * @see railo.runtime.search.SearchResulItem#getUrl()
+     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getUrl()
      */
     public String getUrl() {
     	return url;
     }
     /**
-     * @see railo.runtime.search.SearchResulItem#getCustom1()
+     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom1()
      */
     public String getCustom1() {
         return custom1;
     }
     /**
-     * @see railo.runtime.search.SearchResulItem#getCustom2()
+     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom2()
      */
     public String getCustom2() {
         return custom2;
     }
     /**
-     * @see railo.runtime.search.SearchResulItem#getCustom3()
+     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom3()
      */
     public String getCustom3() {
         return custom3;
     }
     /**
-     * @see railo.runtime.search.SearchResulItem#getCustom4()
+     * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom4()
      */
     public String getCustom4() {
         return custom4;

@@ -725,6 +725,13 @@
 		<attribute-min>0</attribute-min>
 		<attribute>
 			<type>string</type>
+			<name>name</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>name for variable, by default it is cfcatch</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
 			<name>type</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -1221,6 +1228,13 @@
 			<description></description>
 		</attribute>
 		<attribute>
+			<type>boolean</type>
+			<name>persistent</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
 			<type>string</type>
 			<name>extends</name>
 			<required>false</required>
@@ -1577,7 +1591,7 @@
 		listing.</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>any</type>
 			<name>filter</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -4592,10 +4606,25 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<attribute>
 			<type>string</type>
 			<name>text</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The text to add to the 'head' area of an HTML page. Everything inside the quotation marks is 
 		placed in the 'head' section</description>
+		</attribute>
+		
+		<attribute>
+			<type>string</type>
+			<name>variable</name>
+			<required>no</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Name of variable to contain the text for htmlhead.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>action</name>
+			<required>no</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Type of file manipulation that the tag performs.</description>
 		</attribute>
 	</tag>
 	<!-- Http -->
@@ -6782,33 +6811,47 @@ Permits searching collections by title or displaying a separate title from the k
 		<description>Sends e-mail messages by an SMTP server.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
-			<type>string</type>
-			<name>to</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>The name of the e-mail message recipient.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>from</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The sender of the e-mail message.</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
+			<name>to</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The name of the e-mail message recipient.</description>
+		</attribute>
+		<attribute>
+			<type>object</type>
 			<name>cc</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Indicates addresses to copy the e-mail message to; "cc" stands for "carbon copy."</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>bcc</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Indicates addresses to copy the e-mail message to, without listing them in the message header. 
 		"bcc" stands for "blind carbon copy."</description>
+		</attribute>
+		<attribute>
+			<type>object</type>
+			<name>replyto</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Address(es) to which the recipient is directed to send replies.</description>
+		</attribute>
+		<attribute>
+			<type>object</type>
+			<name>failto</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Address to which mailing systems should send delivery failure notifications. Sets the mail envelope reverse-path value.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -6904,20 +6947,6 @@ Permits searching collections by title or displaying a separate title from the k
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The number of seconds to wait before timing out the connection to the SMTP server.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>replyto</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Address(es) to which the recipient is directed to send replies.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>failto</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Address to which mailing systems should send delivery failure notifications. Sets the mail envelope reverse-path value.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -7033,6 +7062,13 @@ Permits searching collections by title or displaying a separate title from the k
 			<rtexprvalue>true</rtexprvalue>
 			<description>When required by a proxy server, a valid password.</description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>remove</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>remove all attachments from filesystem after the mail is sucessful sended</description>
+		</attribute>
 	</tag>
 	<!-- MailPart -->
 	<tag>
@@ -7122,6 +7158,20 @@ Permits searching collections by title or displaying a separate title from the k
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The Identifier for the attached file. This ID should be globally unique and is used to identify the file in an IMG or other tag in the mail body that references the file content. </description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>remove</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>remove attachment from filesystem after the mail is sucessful sended</description>
+		</attribute>
+		<attribute>
+			<type>any</type>
+			<name>content</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>send given value as attachment</description>
 		</attribute>
 	</tag>
 	<!-- Module -->
@@ -8073,6 +8123,160 @@ Permits searching collections by title or displaying a separate title from the k
 			<rtexprvalue>true</rtexprvalue>
 			<description>The client security context from which the method can be invoked</description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>getter</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>setter</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		
+<!-- 
+		<attribute>
+			<type>number</type>
+			<name>batchsize</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>cascade</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>catalog</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>cfc</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>collectiontype</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>column</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>constrained</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>datatype</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>dynamicinsert</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>dynamicupdate</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>elementColumn</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>elementType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>entityname</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>number</type>
+			<name>fetchbatchsize</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>fieldType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>fkcolumn</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>formula</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>generator</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>getter</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+ -->
+		
+		
+		
+		
 	</tag>
 	<!-- Query -->
 	<tag>
@@ -8229,6 +8433,20 @@ Permits searching collections by title or displaying a separate title from the k
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>preserve single quote or not</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>unique</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Specifies if the object parameter is unique, used only for dbtype=orm</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>unique</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
 		</attribute>
 	</tag>
 	<!-- QueryParam -->

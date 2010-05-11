@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import railo.commons.date.JREDateTimeUtil;
 import railo.commons.io.res.type.datasource.Attr;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -27,7 +28,7 @@ public abstract class CoreSupport implements Core {
 	}
 
 	public static Calendar getCalendar() {
-		return Calendar.getInstance(ThreadLocalPageContext.getTimeZone());
+		return JREDateTimeUtil.newInstance(ThreadLocalPageContext.getTimeZone());
 	}
 
 	public static void log(String s1) {

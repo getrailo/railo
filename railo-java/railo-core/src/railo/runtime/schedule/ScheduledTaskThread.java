@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import railo.commons.date.DateTimeUtil;
+import railo.commons.date.JREDateTimeUtil;
 import railo.commons.date.TimeZoneConstants;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
@@ -174,7 +175,7 @@ public class ScheduledTaskThread extends Thread {
 		
 		// init calendar
 		if(calendar==null){
-			calendar=Calendar.getInstance(timeZone);
+			calendar=JREDateTimeUtil.newInstance(timeZone);
 			calendar.setTimeInMillis(startDate+startTime);
 		}
 		long time;

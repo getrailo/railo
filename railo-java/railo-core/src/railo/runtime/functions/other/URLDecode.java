@@ -16,9 +16,18 @@ public final class URLDecode implements Function {
 	}
 	public static String call(PageContext pc , String str, String encoding) throws ExpressionException {
 		try {
+			return java.net.URLDecoder.decode(str,encoding);
+		} catch (Throwable t) {
+			try {
+				return URLDecoder.decode(str,encoding);
+			} catch (UnsupportedEncodingException uee) {
+				throw new ExpressionException(uee.getMessage());
+			}
+		}
+		/*try {
 			return URLDecoder.decode(str,encoding);
 		} catch (UnsupportedEncodingException e) {
 			throw new ExpressionException(e.getMessage());
-		}
+		}*/
 	}
 }

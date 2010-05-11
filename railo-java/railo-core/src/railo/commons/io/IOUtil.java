@@ -735,6 +735,13 @@ public final class IOUtil {
         }
     }
     
+
+    public static void write(Resource res, byte[] barr) throws IOException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(barr);
+    	OutputStream os=IOUtil.toBufferedOutputStream(res.getOutputStream());
+        IOUtil.copy(bais, os, true, true);
+    }
+    
     /**
      * @param file 
      * @return returns the Content of the file as byte array

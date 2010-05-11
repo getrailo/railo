@@ -40,11 +40,11 @@ public final class CFXTagPoolImpl implements CFXTagPool {
 		name=name.toLowerCase();
 		
 		Object o=classes.get(name);
-		if(o==null) throw new CFXTagException("there is not Custom Tag (CFX) with name ["+name+"]");
+		if(o==null) throw new CFXTagException("there is no Custom Tag (CFX) with name ["+name+"]");
 		CFXTagClass ctc=(CFXTagClass) o;
-		o=ctc.newInstance();
-		if(!(o instanceof CustomTag))throw new CFXTagException("["+name+"] is not of type ["+CustomTag.class.getName()+"]");
-		return (CustomTag) o;
+		CustomTag ct = ctc.newInstance();
+		//if(!(o instanceof CustomTag))throw new CFXTagException("["+name+"] is not of type ["+CustomTag.class.getName()+"]");
+		return ct;
 	}
 	
 	// FUTURE add to interface

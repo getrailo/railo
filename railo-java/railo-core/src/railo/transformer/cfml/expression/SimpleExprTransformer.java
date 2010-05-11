@@ -4,6 +4,7 @@ import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.cfml.ExprTransformer;
+import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.util.CFMLString;
 
@@ -33,14 +34,14 @@ public final class SimpleExprTransformer implements ExprTransformer {
 	/**
 	 * @see railo.transformer.cfml.ExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
 	 */
-	public Expression transformAsString(FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) throws TemplateException {
-		return transform(fld, cfml);
+	public Expression transformAsString(EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) throws TemplateException {
+		return transform(ep,fld, cfml);
 	}
 	
 	/**
 	 * @see railo.transformer.cfml.ExprTransformer#transform(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
 	 */
-	public Expression transform(FunctionLib[] fld, CFMLString cfml) throws TemplateException {
+	public Expression transform(EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml) throws TemplateException {
 			Expression expr=null;
 			// String
 				if((expr=string(cfml))!=null) {

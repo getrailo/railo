@@ -16,12 +16,15 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.other.CreateObject;
+import railo.runtime.functions.string.JavaCast;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.reflection.pairs.ConstructorInstance;
@@ -43,7 +46,11 @@ import railo.runtime.type.util.Type;
  */
 public final class Reflector {
 
-    private static WeakConstructorStorage cStorage=new WeakConstructorStorage();
+	
+    private static final Object NULL = new Object();
+    
+    
+	private static WeakConstructorStorage cStorage=new WeakConstructorStorage();
     private static WeakFieldStorage fStorage=new WeakFieldStorage();
     private static WeakMethodStorage mStorage=new WeakMethodStorage();
 
@@ -362,13 +369,11 @@ public final class Reflector {
 	    args=cleanArgs(args);
 		
 		Method[] methods = mStorage.getMethods(clazz,methodName,args.length);//getDeclaredMethods(clazz);
-		
 		if(methods!=null) {
 		    Class[] clazzArgs = getClasses(args);
 			// exact comparsion
-			outer:for(int i=0;i<methods.length;i++) {
+		    outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
-					
 					Class[] parameterTypes = methods[i].getParameterTypes();
 					for(int y=0;y<parameterTypes.length;y++) {
 						if(toReferenceClass(parameterTypes[y])!=clazzArgs[y]) continue outer;
@@ -377,7 +382,7 @@ public final class Reflector {
 				}
 			}
 			// like comparsion
-			outer:for(int i=0;i<methods.length;i++) {
+		    outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
 					Class[] parameterTypes = methods[i].getParameterTypes();
 					for(int y=0;y<parameterTypes.length;y++) {
@@ -430,18 +435,20 @@ public final class Reflector {
 	 * @param name name to search
 	 * @return Matching Field
 	 * @throws NoSuchFieldException
-	 * @deprecated use instead <code>{@link #getFieldsIgnoreCase(Class, String)}</code>
+	 
 	 */
-    public static Field getFieldIgnoreCase(Class clazz, String name) throws NoSuchFieldException  {
-        Field[] fields=fStorage.getFields(clazz,name);
-        if(fields!=null) return fields[0];
-        throw new NoSuchFieldException("there is no field with name "+name+" in object ["+Type.getName(clazz)+"]");
-    }
-    
     public static Field[] getFieldsIgnoreCase(Class clazz, String name) throws NoSuchFieldException  {
         Field[] fields=fStorage.getFields(clazz,name);
         if(fields!=null) return fields;
         throw new NoSuchFieldException("there is no field with name "+name+" in object ["+Type.getName(clazz)+"]");
+    }
+    
+    public static Field[] getFieldsIgnoreCase(Class clazz, String name, Field[] defaultValue)  {
+        Field[] fields=fStorage.getFields(clazz,name);
+        if(fields!=null) return fields;
+        return defaultValue;
+        
+        
     }
 
     public static String[] getPropertyKeys(Class clazz)  {
@@ -496,20 +503,10 @@ public final class Reflector {
     
     
     public static boolean hasFieldIgnoreCase(Class clazz, String name)  {
-        return getFieldIgnoreCaseEL(clazz, name)!=null;
+        return !ArrayUtil.isEmpty(getFieldsIgnoreCase(clazz, name, null));
+        //getFieldIgnoreCaseEL(clazz, name)!=null;
     }
     
-    /**
-     * same like method getField from Class but ignore case from field name
-     * @param clazz class to search the field
-     * @param name name to search
-     * @return Matching Field
-     */
-    public static Field getFieldIgnoreCaseEL(Class clazz, String name)  {
-        Field[] fields=fStorage.getFields(clazz,name);
-        if(fields!=null) return fields[0];
-        return null;
-    }
 
 	/**
 	 * call constructor of a class with matching arguments
@@ -716,10 +713,21 @@ public final class Reflector {
 	 */
 	public static Object getField(Object obj, String prop) throws PageException  {
 	    try {
-            return getFieldIgnoreCase(obj.getClass(),prop).get(obj);
+	    	return getFieldsIgnoreCase(obj.getClass(),prop)[0].get(obj);
         }
 		catch (Throwable e) {
             throw Caster.toPageException(e);
+		}
+	}
+	
+	public static Object getField(Object obj, String prop, Object defaultValue) {
+	    Field[] fields = getFieldsIgnoreCase(obj.getClass(),prop,null);
+		if(ArrayUtil.isEmpty(fields)) return defaultValue;
+		
+		try {
+			return fields[0].get(obj);
+		} catch (Throwable t) {
+			return defaultValue;
 		}
 	}
 	
@@ -770,14 +778,13 @@ public final class Reflector {
 	 * @throws PageException
 	 */
 	public static Object getProperty(Object obj, String prop) throws PageException  {
-	    try {
-            return getField(obj,prop);
-        } 
-	    catch (PageException e1) {
-            char first=prop.charAt(0);
-            if(first>='0' && first<='9') throw e1;
-            return callGetter(obj,prop);
-        }
+	    Object rtn=getField(obj,prop,NULL);// NULL is used because the field can contain null as well
+		if(rtn!=NULL) return rtn;
+		
+		char first=prop.charAt(0);
+        if(first>='0' && first<='9') throw new ApplicationException("there os no property with name ["+prop+"]");
+        return callGetter(obj,prop);
+        
 	}
 
 	/**
@@ -787,18 +794,23 @@ public final class Reflector {
 	 * @return property value
 	 */
 	public static Object getProperty(Object obj, String prop, Object defaultValue)  {
-	    try {
-            return getFieldIgnoreCase(obj.getClass(),prop).get(obj);
+		
+		// first try field
+		Field[] fields = getFieldsIgnoreCase(obj.getClass(),prop,null);
+		if(!ArrayUtil.isEmpty(fields)) {
+			try {
+				return fields[0].get(obj);
+			} catch (Throwable t) {}
+		}
+		
+		// then getter
+        try {
+            char first=prop.charAt(0);
+            if(first>='0' && first<='9') return defaultValue;
+            return getGetter(obj.getClass(), prop).invoke(obj);
+        } catch (Throwable e1) {
+            return defaultValue;
         } 
-	    catch (Throwable e) {
-            try {
-                char first=prop.charAt(0);
-                if(first>='0' && first<='9') return defaultValue;
-                return getGetter(obj.getClass(), prop).invoke(obj);
-            } catch (Throwable e1) {
-                return defaultValue;
-            } 
-        }
 	}
 	
 	/**
@@ -826,14 +838,22 @@ public final class Reflector {
 	 * @param value Value to assign
 	 */
 	public static void setPropertyEL(Object obj, String prop,Object value) {
-	    try {
-	        getFieldIgnoreCase(obj.getClass(),prop).set(obj,value);
-	    } catch (Throwable t) {
-	        try {
-                getSetter(obj, prop, value).invoke(obj);
-            } 
-	        catch (Exception e1) {} 
-        }
+		
+		// first check for field
+		Field[] fields = getFieldsIgnoreCase(obj.getClass(),prop,null);
+		if(!ArrayUtil.isEmpty(fields)){
+			try {
+				fields[0].set(obj,value);
+				return;
+			} catch (Throwable t) {}
+		}
+		
+		// then check for setter
+        try {
+            getSetter(obj, prop, value).invoke(obj);
+        } 
+        catch (Throwable t) {} 
+        
 	}
 	
 	/**

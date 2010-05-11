@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
@@ -31,10 +32,12 @@ import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.evaluator.impl.ProcessingDirectiveException;
 import railo.transformer.cfml.expression.SimpleExprTransformer;
+import railo.transformer.cfml.script.CFMLScriptTransformer.ComponentBodyException;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.CustomTagLib;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibException;
+import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
 import railo.transformer.util.CFMLString;
@@ -92,8 +95,8 @@ import railo.transformer.util.CFMLString;
  */
 public final class CFMLTransformer {
 	
-    private static short TAG_LIB_GLOBAL=0;
-    private static short TAG_LIB_PAGE=1;
+    public static short TAG_LIB_GLOBAL=0;
+    public static short TAG_LIB_PAGE=1;
     
     public class Data {
 		
@@ -127,15 +130,71 @@ public final class CFMLTransformer {
 	 * @throws IOException
 	 */
 	public Page transform(ConfigImpl config,SourceFile sf, TagLib[] tlibs, FunctionLib[] flibs) throws TemplateException, IOException	{
+		Page p;
+		CFMLString cfml;
+		String charset;
+		boolean writeLog;
 		try {
-			return transform(config,new CFMLString(sf,config.getTemplateCharset(),config.getExecutionLogEnabled()),tlibs,flibs,sf.getFile().lastModified());
-			//return transform(config,new CFMLString(sf,SystemUtil.get Charset()),tlibs,flibs,sf.getFile().lastModified());
+			writeLog=config.getExecutionLogEnabled();
+			charset=config.getTemplateCharset();
+			cfml=new CFMLString(sf,charset,writeLog);
+			p = transform(config,cfml,tlibs,flibs,sf.getFile().lastModified());
 		}
 		catch(ProcessingDirectiveException pde) {
-			return transform(config,new CFMLString(sf,pde.getCharset(),pde.getWriteLog()),tlibs,flibs,sf.getFile().lastModified());
+			writeLog=pde.getWriteLog();
+			charset=pde.getCharset();
+			cfml=new CFMLString(sf,charset,writeLog);
+			p= transform(config,cfml,tlibs,flibs,sf.getFile().lastModified());
+		}
+		
+		// if cfc has no component tag or is script without cfscript
+		if(p.isPage() && ResourceUtil.getExtension(sf.getFile()).equalsIgnoreCase(config.getCFCExtension())){
+			cfml.setPos(0);
+			TagLibTag tlt;
+			CFMLString original = cfml; 
+			
+			// try inside a cfscript
+			tlt = CFMLTransformer.getTLT(original,"script");
+			String text="<"+tlt.getFullName()+">"+original.getText()+"</"+tlt.getFullName()+">";
+			cfml=new CFMLString(text,charset,writeLog,sf);
+			try {
+				p= transform(config,cfml,tlibs,flibs,sf.getFile().lastModified());
+			}
+			catch (ComponentBodyException e) {
+				throw e.getTemplateException();
+			}
+			catch (TemplateException e) {
+				//throw e;
+			}
+			
+			// try inside a component
+			if(p.isPage()){
+				tlt = CFMLTransformer.getTLT(original,"component");
+				text="<"+tlt.getFullName()+">"+original.getText()+"</"+tlt.getFullName()+">";
+				cfml=new CFMLString(text,charset,writeLog,sf);
+				p= transform(config,cfml,tlibs,flibs,sf.getFile().lastModified());
+			}
+			
+		}
+		
+		
+		return p;
+	}
+	
+
+	public static TagLibTag getTLT(CFMLString cfml,String name) throws TemplateException {
+		TagLib tl;
+		try {
+			// this is already loaded, oherwise we where not here
+			tl = TagLibFactory.loadFromSystem();
+			return tl.getTag(name);
+		} 
+		catch (TagLibException e) {
+			throw new TemplateException(cfml,e);
 		}
 	}
 	
+
 	/**
 	 * Startmethode zum transfomieren einer CFMLString.
 	 * <br />
@@ -150,7 +209,6 @@ public final class CFMLTransformer {
 	 * @throws TemplateException
 	 */
 	public Page transform(ConfigImpl config,CFMLString cfml,TagLib[] tlibs,FunctionLib[] flibs, long sourceLastModified) throws TemplateException {
-		
 		
 		TagLib[][] _tlibs=new TagLib[][]{null,new TagLib[0]};
 		_tlibs[TAG_LIB_GLOBAL]=tlibs;
@@ -321,7 +379,7 @@ public final class CFMLTransformer {
 							text=new StringBuffer();
 						}
                         int line=data.cfml.getLine();
-						parent.addStatement(new PrintOut(transformer.transform(data.flibs,data.cfml),line));
+						parent.addStatement(new PrintOut(transformer.transform(data.ep,data.flibs,data.cfml),line));
 							
 						if(!data.cfml.isCurrent('#'))
 							throw new TemplateException(data.cfml,"missing terminating [#] for expression");
@@ -472,7 +530,7 @@ public final class CFMLTransformer {
 					throw new TemplateException(data.cfml,e);
 				}
 				if(tdbt==null) throw new TemplateException(data.cfml,"Tag dependent body Transformer is invalid for Tag ["+tagLibTag.getFullName()+"]");
-				tdbt.transform(this,data.flibs,tag,tagLibTag,data.cfml);
+				tdbt.transform(this,data.ep,data.flibs,tag,tagLibTag,data.cfml);
 				
 				
 				//	get TagLib of end Tag
@@ -884,14 +942,14 @@ public final class CFMLTransformer {
 			if(isNonName) {
 			    int pos=data.cfml.getPos();
 			    try {
-			    expr=transfomer.transform(data.flibs,data.cfml);
+			    expr=transfomer.transform(data.ep,data.flibs,data.cfml);
 			    }
 			    catch(TemplateException ete) {
 			       if(data.cfml.getPos()==pos)expr=noExpression;
 			       else throw ete;
 			    }
 			}
-			else expr=transfomer.transformAsString(data.flibs,data.cfml,true);
+			else expr=transfomer.transformAsString(data.ep,data.flibs,data.cfml,true);
 			if(type.length()>0) {
 				expr=Cast.toExpression(expr, type);
 			}

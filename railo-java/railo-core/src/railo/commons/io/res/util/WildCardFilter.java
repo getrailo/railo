@@ -8,14 +8,12 @@ import org.apache.oro.text.regex.Perl5Matcher;
 
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.filter.ResourceFilter;
-import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.lang.StringUtil;
 
 /**
  * Wildcard Filter
  */
-public class WildCardFilter implements ResourceFilter,ResourceNameFilter {
+public class WildCardFilter implements ResourceAndResourceNameFilter {
     
     private static final String specials="{}[]().+\\^$";
     private static final boolean IS_WIN=SystemUtil.isWindows();

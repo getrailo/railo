@@ -3,6 +3,7 @@ package railo.runtime.tag;
 import java.util.ArrayList;
 
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.HSQLDBHandler;
@@ -14,6 +15,9 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
+import railo.runtime.orm.ORMSession;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
@@ -26,7 +30,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
-import railo.runtime.util.ApplicationContextImpl;
+import railo.runtime.util.ApplicationContextPro;
 
 
 
@@ -95,6 +99,9 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	ArrayList items=new ArrayList();
 	
 	private boolean clearCache;
+	private boolean unique;
+	
+	
 	
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
@@ -119,9 +126,13 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 
 		orgPSQ=false;
 		hasChangedPSQ=false;
+		unique=false;
 	}
 	
-
+	
+	public void setUnique(boolean unique) {
+		this.unique = unique;
+	}
 	/**
 	 * @param result the result to set
 	 */
@@ -328,10 +339,10 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	public int doEndTag() throws PageException	{
 		
 		if(datasource==null && (dbtype==null || !dbtype.equals("query"))){
-			datasource=((ApplicationContextImpl)pageContext.getApplicationContext()).getDefaultDataSource();
+			datasource=((ApplicationContextPro)pageContext.getApplicationContext()).getDefaultDataSource();
 			if(StringUtil.isEmpty(datasource))
 				throw new ApplicationException(
-						"attribute [datasource] is required, when attribute [dptype] has not value [query] and no default datasource is defined",
+						"attribute [datasource] is required, when attribute [dbtype] has not value [query] and no default datasource is defined",
 						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
 		}
 		
@@ -356,7 +367,12 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		
 		
 		if(query==null) {
-			query=(dbtype!=null && dbtype.equals("query"))?reExecute(sql):execute(sql,result!=null);
+			if("query".equals(dbtype)) 		query=executeQoQ(sql);
+			else if("orm".equals(dbtype)) 	query=executeORM(sql);
+			else 							query=executeDatasoure(sql,result!=null);
+			//query=(dbtype!=null && dbtype.equals("query"))?executeQoQ(sql):executeDatasoure(sql,result!=null);
+			
+			
 			if(cachedWithin!=null) {
 				DateTimeImpl cachedBefore = null;
 				//if(cachedWithin!=null)
@@ -440,17 +456,53 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		
 		return EVAL_PAGE;
 	}
+
+	private QueryImpl executeORM(SQL sql) throws PageException {
+		ORMSession session=ORMUtil.getSession(pageContext);
+		
+		// params
+		SQLItem[] _items = sql.getItems();
+		Array params=new ArrayImpl();
+		for(int i=0;i<_items.length;i++){
+			params.appendEL(_items[i]);
+		}
+		
+		// query options
+		Struct options=new StructImpl();
+		if(maxrows!=-1) options.setEL("maxResults", new Double(maxrows));
+		if(timeout!=-1) options.setEL("timeout", new Double(timeout));
+		/* MUST
+offset: Specifies the start index of the resultset from where it has to start the retrieval.
+cacheable: Whether the result of this query is to be cached in the secondary cache. Default is false.
+cachename: Name of the cache in secondary cache.
+		 */
+		Object res = session.executeQuery(pageContext,sql.getSQLString(),params,unique,options);
+		return (QueryImpl) session.toQuery(pageContext, res, null);
+		
+	}
 	
-	private QueryImpl reExecute(SQL sql) throws PageException {
+	public static Object _call(PageContext pc,String hql, Object params, boolean unique, Struct queryOptions) throws PageException {
+		ORMSession session=ORMUtil.getSession(pc);
+		//ORMEngine engine= ORMUtil.getEngine(pc);
+		if(Decision.isCastableToArray(params))
+			return session.executeQuery(pc,hql,Caster.toArray(params),unique,queryOptions);
+		else if(Decision.isCastableToStruct(params))
+			return session.executeQuery(pc,hql,Caster.toStruct(params),unique,queryOptions);
+		else
+			return session.executeQuery(pc,hql,(Array)params,unique,queryOptions);
+	}
+	
+
+	private QueryImpl executeQoQ(SQL sql) throws PageException {
 		try {
 			return new HSQLDBHandler().execute(pageContext,sql,maxrows,blockfactor,timeout);
 		} 
 		catch (Exception e) {
 			throw Caster.toPageException(e);
 		} 
-		
 	}
-	private QueryImpl execute(SQL sql,boolean createUpdateData) throws PageException {
+	
+	private QueryImpl executeDatasoure(SQL sql,boolean createUpdateData) throws PageException {
 		DataSourceManager manager = pageContext.getDataSourceManager();
 		
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);

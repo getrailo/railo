@@ -234,9 +234,9 @@ Path placeholders:
 			physical="{railo-config}/customtags/"/>
 	</custom-tag>
 	
-	<cfx-tags>
-		<cfx-tag type="java" name="HelloWorld" class="railo.cfx.example.HelloWorld"/>
-	</cfx-tags>
+	<ext-tags>
+		<ext-tag type="java" name="HelloWorld" class="railo.cfx.example.HelloWorld"/>
+	</ext-tags>
 	
 	<!--
 	component:
@@ -265,6 +265,21 @@ Path placeholders:
 	-->
 	<regional
 		timeserver="pool.ntp.org"/>
+	
+	<!--
+	orm configuration:
+		
+		engine-class: class that implements interface railo.runtime.orm.ORMEngine
+		
+		
+		timezone: default:maschine configuration
+			the ID for a TimeZone, either an abbreviation such as "PST", 
+			a full name such as "America/Los_Angeles", or a custom ID such as "GMT-8:00". 
+		timeserver: [example: swisstime.ethz.ch] default:local time
+			dns of a ntp time server
+	-->
+	<orm
+		engine-class="railo.runtime.orm.hibernate.HibernateORMEngine"/>
 	
 	<!--
 		enable and disable debugging

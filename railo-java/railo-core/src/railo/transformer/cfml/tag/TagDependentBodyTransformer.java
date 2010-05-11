@@ -2,6 +2,7 @@ package railo.transformer.cfml.tag;
 
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.statement.tag.Tag;
+import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.util.CFMLString;
@@ -19,7 +20,7 @@ public interface TagDependentBodyTransformer {
 	 * @param cfml
 	 * @throws TemplateException
 	 */
-	public void transform(CFMLTransformer parent, FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag, CFMLString cfml)
+	public void transform(CFMLTransformer parent, EvaluatorPool ep,FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag, CFMLString cfml)
 		throws TemplateException;
 
 }

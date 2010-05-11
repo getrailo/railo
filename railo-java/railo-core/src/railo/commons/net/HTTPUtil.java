@@ -10,6 +10,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
@@ -412,34 +413,42 @@ public final class HTTPUtil {
 	
 
 	public static void include(PageContext pc,String realPath) throws ServletException,IOException  {
-		include(pc, pc.getHttpServletRequest(),realPath);
+		include(pc, pc.getHttpServletRequest(),pc.getHttpServletResponse(),realPath);
 	}
 
-	public static void include(PageContext pc,ServletRequest req, String realPath) throws ServletException,IOException  {
+	public static void include(PageContext pc,ServletRequest req, ServletResponse rsp, String realPath) throws ServletException,IOException  {
 		realPath=optimizeRealPath(pc,realPath);
-		ByteArrayOutputStream baos=new ByteArrayOutputStream();
-		boolean inline=true;
-		try{
-			HttpServletResponseWrap drsp=HttpServletResponseWrap.get();
+		boolean inline=HttpServletResponseWrap.get();
+		//print.out(rsp+":"+pc.getResponse());
+		RequestDispatcher disp = getRequestDispatcher(pc,realPath);
+		
+		if(inline)	{
+			//RequestDispatcher disp = getRequestDispatcher(pc,realPath);
+			disp.include(req,rsp);
+			return;
+		}
+		
+		try	{
+			ByteArrayOutputStream baos=new ByteArrayOutputStream();
+			HttpServletResponseWrap hsrw=new HttpServletResponseWrap(pc.getHttpServletResponse(),baos);
+			HttpServletResponseWrap.set(true);
 			
-			if(drsp==null){
-				drsp=new HttpServletResponseWrap(pc.getHttpServletResponse(),baos);
-				HttpServletResponseWrap.set(drsp);
-				inline=false;
-			}
-        	RequestDispatcher disp = pc.getServletContext().getRequestDispatcher(realPath);
-        	if(disp==null)
-        		throw new PageServletException(new ApplicationException("Page "+realPath+" not found"));
-        	disp.include(req,drsp);
-        	if(!inline){
-        		if(!drsp.isCommitted())drsp.flushBuffer();
-        		pc.write(IOUtil.toString(baos.toByteArray(), drsp.getCharacterEncoding()));
-        	}
+			//RequestDispatcher disp = getRequestDispatcher(pc,realPath);
+			
+        	disp.include(req,hsrw);
+	        if(!hsrw.isCommitted())hsrw.flushBuffer();
+	        pc.write(IOUtil.toString(baos.toByteArray(), hsrw.getCharacterEncoding()));
         }
         finally{
-        	if(!inline)HttpServletResponseWrap.release();
+        	HttpServletResponseWrap.release();
         	ThreadLocalPageContext.register(pc);
         }
+	}
+
+	private static RequestDispatcher getRequestDispatcher(PageContext pc,String realPath) throws PageServletException {
+		RequestDispatcher disp = pc.getServletContext().getRequestDispatcher(realPath);
+    	if(disp==null) throw new PageServletException(new ApplicationException("Page "+realPath+" not found"));
+    	return disp;
 	}
 	
 	

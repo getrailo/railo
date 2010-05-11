@@ -21,6 +21,8 @@ import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageSource;
+import railo.runtime.config.Config;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.List;
@@ -102,6 +104,22 @@ public final class ResourceUtil {
         
         throw new ExpressionException("file or directory "+path+" not exist");      
     }
+    
+    public static Resource toResourceExisting(Config config ,String path) throws ExpressionException {
+    	path=path.replace('\\','/');
+    	Resource res = config.getResource(path);
+        
+        if(res.exists()) return res;
+        throw new ExpressionException("file or directory "+path+" not exist");   
+    }
+    
+    public static Resource toResourceNotExisting(Config config ,String path) {
+    	Resource res;
+        path=path.replace('\\','/');  
+    	res=config.getResource(path);
+    	return res;
+    }
+    
     
 
     /**
@@ -695,10 +713,15 @@ public final class ResourceUtil {
 	 * @param dir directory to search
 	 */
 	public static String getPathToChild(Resource file, Resource dir) {
+		boolean isFile=file.isFile();
 		String str="/";
 		while(file!=null) {
 			//print.out("- "+file+".equals("+dir+"):"+file.equals(dir));
-			if(file.equals(dir)) return str;
+			if(file.equals(dir)) {
+				if(isFile)
+					return str.substring(0,str.length()-1);
+				return str;
+			}
 			str="/"+file.getName()+str;
 			file=file.getParentResource();
 		}
@@ -1177,6 +1200,20 @@ public final class ResourceUtil {
 				res.remove(false);
 			}
 		}
+	}
+	
+	// FUTURE this method should be part of pagesource in a more proper way, there should be a method getResource() inside PageSource
+	public static Resource getResource(PageContext pc,PageSource ps) throws ExpressionException {
+		Resource res = ps.getPhyscalFile();
+		
+		// there is no physical resource
+		if(res==null){
+        	String path=ps.getDisplayPath();
+        	if(path.startsWith("ra://"))
+        		path="zip://"+path.substring(5);
+        	res=ResourceUtil.toResourceExisting(pc, path,false);
+        }
+		return res;
 	}
 
 }

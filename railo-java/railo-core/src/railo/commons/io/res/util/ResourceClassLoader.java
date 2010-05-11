@@ -1,11 +1,13 @@
 package railo.commons.io.res.util;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.type.file.FileResource;
 import railo.runtime.exp.PageException;
@@ -13,18 +15,18 @@ import railo.runtime.exp.PageException;
 /**
  * Classloader that load classes from resources
  */
-public final class ResourceClassLoader extends URLClassLoader {
+public final class ResourceClassLoader extends URLClassLoader implements Closeable {
 
-	private Resource[] resources;
+	private List<Resource> resources=new ArrayList<Resource>();
 
-	/**
+	/* *
 	 * Constructor of the class
 	 * @param resources
 	 * @throws PageException
-	 */
-	public ResourceClassLoader(Resource[] resources) throws IOException {
+	 
+	ResourceClassLoader(Resource[] resources) throws IOException {
 		super(doURLs(resources));
-	}
+	}*/
 	
 	/**
 	 * Constructor of the class
@@ -32,16 +34,23 @@ public final class ResourceClassLoader extends URLClassLoader {
 	 * @param parent
 	 * @throws PageException
 	 */
-	public ResourceClassLoader(Resource[] resources, ClassLoader parent) throws IOException {
+	ResourceClassLoader(Resource[] resources, ClassLoader parent) throws IOException {
 		super(doURLs(resources), parent);
-		this.resources=resources;
+		for(int i=0;i<resources.length;i++){
+			this.resources.add(resources[i]);
+			print.out("add:"+resources[i]);
+		}
+	}
+	
+	ResourceClassLoader(ClassLoader parent) {
+		super(new URL[0], parent);
 	}
 
 	/**
 	 * @return the resources
 	 */
 	public Resource[] getResources() {
-		return resources;
+		return resources.toArray(new Resource[resources.size()]);
 	}
 
 	/**
@@ -50,7 +59,7 @@ public final class ResourceClassLoader extends URLClassLoader {
 	 * @return
 	 * @throws PageException
 	 */
-	private static URL[] doURLs(Resource[] reses) throws IOException {
+	public static URL[] doURLs(Resource[] reses) throws IOException {
 		List<URL> list=new ArrayList<URL>();
 		for(int i=0;i<reses.length;i++) {
 			if(reses[i].isDirectory() || "jar".equalsIgnoreCase(ResourceUtil.getExtension(reses[i])))
@@ -65,11 +74,22 @@ public final class ResourceClassLoader extends URLClassLoader {
 			return ((FileResource)res).toURL();
 	}
 	
+	/**
+	 * @see java.io.Closeable#close()
+	 */
 	public void close(){}
 
-	public void addResources(Resource[] reses) throws IOException {
+	public synchronized void addResources(Resource[] reses) throws IOException {
+		
 		for(int i=0;i<reses.length;i++){
-			addURL(doURL(reses[i]));
+			if(!this.resources.contains(reses[i])){
+				this.resources.add(reses[i]);
+				addURL(doURL(reses[i]));
+				print.out("add:"+reses[i]);
+			}
+			else {
+				print.out("already:"+reses[i]);
+			}
 		}
 	}
 

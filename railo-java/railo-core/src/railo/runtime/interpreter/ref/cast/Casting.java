@@ -24,6 +24,7 @@ public final class Casting extends RefSupport implements Ref {
      * @param ref
      */
     public Casting(PageContext pc,String strType,short type, Ref ref) {
+    	//if(strType.equalsIgnoreCase("node"))print.dumpStack();
         this.pc=pc;
         this.type=type;
         this.strType=strType;

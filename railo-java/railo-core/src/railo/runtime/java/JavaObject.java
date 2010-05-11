@@ -21,6 +21,7 @@ import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.util.VariableUtil;
 
 
@@ -62,10 +63,10 @@ public class JavaObject implements Objects,ObjectWrap {
         }
             
         // Check Field
-            Field field = Reflector.getFieldIgnoreCaseEL(clazz,propertyName);
-            if(field!=null && Modifier.isStatic(field.getModifiers())) {
+            Field[] fields = Reflector.getFieldsIgnoreCase(clazz,propertyName,null);
+            if(!ArrayUtil.isEmpty(fields) && Modifier.isStatic(fields[0].getModifiers())) {
     			try {
-                    return field.get(null);
+                    return fields[0].get(null);
                 } 
                 catch (Exception e) {
                     throw Caster.toPageException(e);
@@ -103,10 +104,10 @@ public class JavaObject implements Objects,ObjectWrap {
             return variableUtil.get(pc,object,propertyName,defaultValue);  
         }
         // Field
-        Field field = Reflector.getFieldIgnoreCaseEL(clazz,propertyName);
-        if(field!=null && Modifier.isStatic(field.getModifiers())) {
+        Field[] fields = Reflector.getFieldsIgnoreCase(clazz,propertyName,null);
+        if(!ArrayUtil.isEmpty(fields) && Modifier.isStatic(fields[0].getModifiers())) {
 			try {
-                return field.get(null);
+                return fields[0].get(null);
             } catch (Exception e) {}
 		}
         // Getter
@@ -142,10 +143,10 @@ public class JavaObject implements Objects,ObjectWrap {
 		    return variableUtil.set(pc,object,propertyName,value);
 		}
 	    // Field
-		Field field=Reflector.getFieldIgnoreCaseEL(clazz,propertyName);
-		if(field!=null && Modifier.isStatic(field.getModifiers())) {
+		Field[] fields=Reflector.getFieldsIgnoreCase(clazz,propertyName,null);
+		if(!ArrayUtil.isEmpty(fields) && Modifier.isStatic(fields[0].getModifiers())) {
 			try {
-                field.set(null,value);
+                fields[0].set(null,value);
                 return value;
             } catch (Exception e) {
                 Caster.toPageException(e);
@@ -187,10 +188,10 @@ public class JavaObject implements Objects,ObjectWrap {
 		    return variableUtil.setEL(pc,object,propertyName,value);
 		}
 	    // Field
-		Field field=Reflector.getFieldIgnoreCaseEL(clazz,propertyName);
-		if(field!=null && Modifier.isStatic(field.getModifiers())) {
+		Field[] fields=Reflector.getFieldsIgnoreCase(clazz,propertyName,null);
+		if(!ArrayUtil.isEmpty(fields) && Modifier.isStatic(fields[0].getModifiers())) {
 			try {
-                field.set(null,value);
+                fields[0].set(null,value);
             } catch (Exception e) {}
 			return value;
 		}

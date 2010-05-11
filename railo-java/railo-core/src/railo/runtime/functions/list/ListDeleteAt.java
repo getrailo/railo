@@ -3,49 +3,113 @@
  */
 package railo.runtime.functions.list;
 
-import java.util.StringTokenizer;
-
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.FunctionException;
 import railo.runtime.ext.function.Function;
 
 public final class ListDeleteAt implements Function {
+	
+	private static char[] DEFAULT_DELIMETER=new char[]{','};
+	
 	public static String call(PageContext pc , String list, double pos) throws ExpressionException {
-		return call(pc,list,pos,",");
+		return _call(pc,list,(int)pos,DEFAULT_DELIMETER);
 	}
-    public static String call(PageContext pc, String list, double posNumber, String delimeter) throws ExpressionException {
-        
-    	int pos=(int)posNumber;
-    	StringTokenizer stringtokenizer = new StringTokenizer(list, delimeter, true);
-        StringTokenizer stringtokenizer1 = new StringTokenizer(list, delimeter);
-        String rtn = "";
-        int j = 0;
-        int k = stringtokenizer1.countTokens();
-        boolean flag = false;
-        boolean flag1 = pos == k;
-        if(pos > stringtokenizer1.countTokens() || pos < 1)
-            throw new ExpressionException("invalid string list index ["+pos+"]");
-        
-        while(stringtokenizer.hasMoreTokens()) 
-        {
-            String s3 = stringtokenizer.nextToken();
-            if(s3.length() != 1 || delimeter.indexOf(s3) <= -1)
-            {
-                if(++j != pos)
-                {
-                    rtn = rtn + s3;
-                    flag = false;
-                } else
-                {
-                    flag = true;
-                }
-            } else
-            if(!flag && (!flag1 || j < pos - 1 && flag1))
-                rtn = rtn + s3;
-        }
-        return rtn;
+	
+
+	public static String call(PageContext pc, String list, double posNumber, String del) throws ExpressionException {
+		return _call(pc, list, (int)posNumber, del.toCharArray());
+	}
+	
+	
+	/*public static void main(String[] args) throws ExpressionException {
+		
+		print( ",,,.;;,,bbb,ccc,,,",2,",.;");
+		print(",,,.;;,,aaa,,,",1,",.;");
+		
+		
+	}
+	
+
+    private static void print(String str, int pos,String del) throws ExpressionException {
+    	print.out("--------------");
+    	print.out(_call(null, str, pos,del.toCharArray()));
+    	print.out(_call(null, str, pos,del));
+		
+	}*/
+
+
+	public static String _call(PageContext pc, String list, int pos, char[] del) throws ExpressionException {
+    	
+    	StringBuilder sb = new StringBuilder();
+    	int len=list.length();
+    	int index=0;
+    	char last=0,c;
+    	
+    	if(pos<1) throw new FunctionException(pc,"ListDeleteAt",2,"index","index must be greater than 0");
+    	
+    	pos--;
+    	
+    	int i=0;
+    	
+    	// ignore all delimeter at start
+    	for(;i<len;i++){
+    		c=list.charAt(i);
+    		if(!equal(del,c)) break;
+    		sb.append(c);
+    	}
+    	
+    	// before
+    	for(;i<len;i++){
+    		
+    		c=list.charAt(i);
+    		if(index==pos && !equal(del,c)) break;
+    		if(equal(del,c)) {
+    			if(!equal(del,last))index++;
+    		}
+    		sb.append(c);
+    		last=c;
+    	}
+    	
+    	
+    	// supress item
+    	for(;i<len;i++){
+    		if(equal(del,list.charAt(i))) break;
+    	}
+    	
+    	// ignore following delimeter
+    	for(;i<len;i++){
+    		if(!equal(del,list.charAt(i))) break;
+    	}
+    	
+    	if(i==len){
+    		
+    		while(sb.length()>0 && equal(del,sb.charAt(sb.length()-1))) {
+    			sb.delete(sb.length()-1, sb.length());
+    		}
+    		if(pos>index) throw new FunctionException(pc,"ListDeleteAt",2,"index","index must be a integer between 1 and "+index);
+        	
+    		return sb.toString();
+    	}
+    	
+    	
+    	// fill the rest
+    	for(;i<len;i++){
+    		sb.append(list.charAt(i));
+    	}
+    	
+    	return sb.toString();
     }
 	
+	
+    private static boolean equal(char[] del, char c) {
+    	for(int i=0;i<del.length;i++){
+    		if(del[i]==c) return true;
+    	}
+		return false;
+	}
+
+
 	
 	
 }

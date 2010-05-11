@@ -241,6 +241,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	 */
 	public int doStartTag() throws PageException	{
+		pc=pageContext;
 		switch(action) {
 			case ACTION_JOIN:	
 				required("thread", "join", "name", name);	
@@ -314,16 +315,16 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 	}
 
     private void doJoin() throws ApplicationException {
-    	String[] names=List.listToStringArray(name, ',');
-    	String lcName;
+    	String[] names=List.listToStringArray(lcName, ',');
     	
     	ChildThread ct;
     	Threads ts;
     	for(int i=0;i<names.length;i++) {
     		if(StringUtil.isEmpty(names[i],true))continue;
-    		ts = pc.getThreadScope(names[i]);
+    		PageContextImpl mpc=(PageContextImpl)getMainPageContext(pc);
+    		ts = mpc.getThreadScope(names[i]);
     		if(ts==null)
-    			throw new ApplicationException("there is no thread running with the name ["+name+"]");
+    			throw new ApplicationException("there is no thread running with the name ["+names[i]+"]");
     		ct=ts.getChildThread();
     		
     		if(ct.isAlive()) {
@@ -336,10 +337,10 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
     	}
     	
     }
-
 	private void doTerminate() throws ApplicationException {
+		PageContextImpl mpc=(PageContextImpl)getMainPageContext(pc);
 		
-		Threads ts = pc.getThreadScope(lcName);
+		Threads ts = mpc.getThreadScope(lcName);
 		
 		if(ts==null)
 			throw new ApplicationException("there is no thread running with the name ["+name+"]");
@@ -350,6 +351,12 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 			ct.stop();
 		}
 		
+	}
+
+	private PageContext getMainPageContext(PageContext pc) {
+		if(pc==null)pc=pageContext;
+		if(pc.getParentPageContext()==null) return pc;
+		return pc.getParentPageContext();
 	}
 
 	/**

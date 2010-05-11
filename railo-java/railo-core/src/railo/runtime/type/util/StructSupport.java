@@ -11,11 +11,21 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 
-public abstract class StructSupport implements Map,Struct {
+public abstract class StructSupport implements Map,Struct,Sizeable {
 
+
+
+	/**
+	 * @see railo.runtime.type.Sizeable#sizeOf()
+	 */
+	public long sizeOf() {
+		return StructUtil.sizeOf(this);
+	}
+	
 	/**
 	 * @see java.util.Map#entrySet()
 	 */
@@ -119,7 +129,7 @@ public abstract class StructSupport implements Map,Struct {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int, railo.runtime.dump.DumpProperties)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties properties) {
-		return StructUtil.toDumpData(this,"Struct",pageContext,maxlevel,properties);
+		return StructUtil.toDumpTable(this,"Struct",pageContext,maxlevel,properties);
 	}
 
 	/**

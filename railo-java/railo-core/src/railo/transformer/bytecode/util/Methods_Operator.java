@@ -40,6 +40,7 @@ public final class Methods_Operator {
 											);
 	
 	// double exponent(double left, double right)
+	public static final Method OPERATOR_DIV=new Method("div",Types.DOUBLE_VALUE,new Type[]{Types.DOUBLE_VALUE,Types.DOUBLE_VALUE});
 	public static final Method OPERATOR_INTDIV_DOUBLE=new Method("intdiv",Types.DOUBLE_VALUE,new Type[]{Types.DOUBLE_VALUE,Types.DOUBLE_VALUE});
 	public static final Method OPERATOR_EXP_DOUBLE=new Method("exponent",Types.DOUBLE_VALUE,new Type[]{Types.DOUBLE_VALUE,Types.DOUBLE_VALUE});
 	public static final Method OPERATOR_EXP_FLOAT=new Method("exponent",Types.FLOAT_VALUE,new Type[]{Types.FLOAT_VALUE,Types.FLOAT_VALUE});

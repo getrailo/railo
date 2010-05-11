@@ -119,19 +119,26 @@ public final class ClassUtil {
 			ConfigImpl config = (ConfigImpl) ThreadLocalPageContext.getConfig();
 			if(config!=null)cl=config.getClassLoader();
 		}
+		
 		try {
 			if(cl==null)return Class.forName(className.trim());
 			return cl.loadClass(className.trim());
+			
 		}
 		catch (ClassNotFoundException e) {
-			if("boolean".equals(className)) return boolean.class;
-			if("char".equals(className)) return char.class;
-			if("float".equals(className)) return float.class;
-			if("short".equals(className)) return short.class;
-			if("int".equals(className)) return int.class;
-			if("long".equals(className)) return long.class;
-			if("double".equals(className)) return double.class;
-			return defaultValue;
+			try {
+				return Class.forName(className, false, cl);
+			} 
+			catch (ClassNotFoundException e1) {
+				if("boolean".equals(className)) return boolean.class;
+				if("char".equals(className)) return char.class;
+				if("float".equals(className)) return float.class;
+				if("short".equals(className)) return short.class;
+				if("int".equals(className)) return int.class;
+				if("long".equals(className)) return long.class;
+				if("double".equals(className)) return double.class;
+				return defaultValue;
+			}
 		}
 	}
 

@@ -34,7 +34,7 @@ import railo.runtime.type.util.ArrayUtil;
 /**
  * represent a single Collection
  */
-public abstract class SearchCollectionSupport implements SearchCollection {
+public abstract class SearchCollectionSupport implements SearchCollectionPlus {
 
     private static final int LOCK_TIMEOUT = 10*60*1000; // ten minutes
     private String name;
@@ -192,6 +192,7 @@ public abstract class SearchCollectionSupport implements SearchCollection {
             	columns.append("key");
             	columns.append("body");
             	if(!StringUtil.isEmpty(title))columns.append("title");
+            	if(!StringUtil.isEmpty(urlpath))columns.append("urlpath");
             	if(!StringUtil.isEmpty(custom1))columns.append("custom1");
             	if(!StringUtil.isEmpty(custom2))columns.append("custom2");
             	if(!StringUtil.isEmpty(custom3))columns.append("custom3");
@@ -211,6 +212,12 @@ public abstract class SearchCollectionSupport implements SearchCollection {
                 if(!StringUtil.isEmpty(title)){
                 	qv.setAt("title", 1, title);
                 	title="title";
+                }
+
+                // urlpath
+                if(!StringUtil.isEmpty(urlpath)){
+                	qv.setAt("urlpath", 1, urlpath);
+                	urlpath="urlpath";
                 }
 
                 // custom1
@@ -245,14 +252,15 @@ public abstract class SearchCollectionSupport implements SearchCollection {
             }
             
             ir= indexCustom(id,
-                    getColumnEL(qv,title),
+            		getValue(qv,title),
                     keyColumn,
                     bodyColumns,
                     language,
-                    getColumnEL(qv,custom1),
-                    getColumnEL(qv,custom2),
-                    getColumnEL(qv,custom3),
-                    getColumnEL(qv,custom4));
+                    getValue(qv,urlpath),
+                    getValue(qv,custom1),
+                    getValue(qv,custom2),
+                    getValue(qv,custom3),
+                    getValue(qv,custom4));
         }
         createIndex(si);
         return ir;
@@ -263,8 +271,17 @@ public abstract class SearchCollectionSupport implements SearchCollection {
     }
  
     private QueryColumn getColumnEL(Query query, String column) {
-        if(column==null || column.length()==0) return null;
-        return query.getColumn(column,null);
+        if(StringUtil.isEmpty(column)) return null;
+        QueryColumn c = query.getColumn(column,null);
+        
+        return c;
+    }
+ 
+    private Object getValue(Query query, String column) {
+        if(StringUtil.isEmpty(column)) return null;
+        QueryColumn c = query.getColumn(column,null);
+        if(c==null) return column;
+        return c;
     }
 
     /**
@@ -340,7 +357,19 @@ public abstract class SearchCollectionSupport implements SearchCollection {
      */
     public final IndexResult indexCustom(String id, QueryColumn title, QueryColumn keyColumn, QueryColumn[] bodyColumns, String language, 
     		QueryColumn custom1, QueryColumn custom2, QueryColumn custom3, QueryColumn custom4) throws SearchException {
-    	IndexResult ir=_indexCustom(id,title,keyColumn,bodyColumns,language,custom1,custom2,custom3,custom4);
+    	IndexResult ir=_indexCustom(id,title,keyColumn,bodyColumns,language,null,custom1,custom2,custom3,custom4);
+        changeLastUpdate();
+        return ir;
+    }
+    /*public final IndexResult indexCustom(String id, QueryColumn title, QueryColumn keyColumn, QueryColumn[] bodyColumns, String language, 
+    		QueryColumn urlpath,QueryColumn custom1, QueryColumn custom2, QueryColumn custom3, QueryColumn custom4) throws SearchException {
+    	IndexResult ir=_indexCustom(id,title,keyColumn,bodyColumns,language,urlpath,custom1,custom2,custom3,custom4);
+        changeLastUpdate();
+        return ir;
+    }*/
+    public final IndexResult indexCustom(String id, Object title, QueryColumn keyColumn, QueryColumn[] bodyColumns, String language, 
+    		Object urlpath,Object custom1, Object custom2, Object custom3, Object custom4) throws SearchException {
+    	IndexResult ir=_indexCustom(id,title,keyColumn,bodyColumns,language,urlpath,custom1,custom2,custom3,custom4);
         changeLastUpdate();
         return ir;
     }
@@ -358,7 +387,10 @@ public abstract class SearchCollectionSupport implements SearchCollection {
      * @param custom4 
      * @throws SearchException
      */
-    protected abstract IndexResult _indexCustom(String id,QueryColumn title, QueryColumn keyColumn, QueryColumn[] bodyColumns, String language, QueryColumn custom1, QueryColumn custom2, QueryColumn custom3, QueryColumn custom4) throws SearchException;
+    //protected abstract IndexResult _indexCustom(String id,QueryColumn title, QueryColumn keyColumn, QueryColumn[] bodyColumns, String language, QueryColumn custom1, QueryColumn custom2, QueryColumn custom3, QueryColumn custom4) throws SearchException;
+    protected abstract IndexResult _indexCustom(
+    		String id,Object title, QueryColumn keyColumn, QueryColumn[] bodyColumns, String language, Object urlpath
+    		, Object custom1, Object custom2, Object custom3, Object custom4) throws SearchException;
 
     /**
      * @param index
@@ -395,7 +427,7 @@ public abstract class SearchCollectionSupport implements SearchCollection {
     /**
      * @param index
      */
-    protected void addIndex(SearchIndex index) {
+    public void addIndex(SearchIndex index) {
         indexes.put(index.getId(),index);
     }
 

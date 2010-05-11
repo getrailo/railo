@@ -4,14 +4,19 @@
  */
 package railo.runtime.functions.other;
 
+import java.net.URLClassLoader;
+
+import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
+import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.com.COMObject;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionNotSupported;
 import railo.runtime.exp.PageException;
@@ -93,30 +98,27 @@ public final class CreateObject implements Function {
 			throw new SecurityException("can't access function [createObject] with type ["+type+"]","access is prohibited by security manager");
 		
     }
-    
+	
+	 
     public static Object doJava(PageContext pc,String className, String pathes, String delimeter) throws PageException {
         if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
-        	ClassLoader parent = pc.getConfig().getClassLoader();
+        	ConfigImpl ci = ((ConfigImpl)pc.getConfig());
         	
-//        	 load classPath
+        	// load resources
+        	Resource[] reses=null;
         	if(!StringUtil.isEmpty(pathes, true)) {
         		if(StringUtil.isEmpty(delimeter))delimeter=",";
         		Array arrPathes = List.listToArrayRemoveEmpty(pathes.trim(),delimeter);
-        		Resource[] reses=new Resource[arrPathes.size()];
+        		reses=new Resource[arrPathes.size()];
         		for(int i=0;i<reses.length;i++) {
         			reses[i]=ResourceUtil.toResourceExisting(pc,Caster.toString(arrPathes.getE(i+1)));
         		}
-        		try {
-        			ClassLoader cl = new ResourceClassLoader(reses,parent);
-        			Class clazz = ClassUtil.loadClass(cl,className);
-					return new JavaObject((pc).getVariableUtil(),clazz);
-				} 
-        		catch (Exception e) {
-					throw Caster.toPageException(e);
-				}
         	}
+        	
+        	// load class
         	try	{
-        		Class clazz = ClassUtil.loadClass(parent,className);
+        		ClassLoader cl = reses==null?ci.getClassLoader():ci.getClassLoader(reses);
+    			Class clazz = ClassUtil.loadClass(cl,className);
         		return new JavaObject((pc).getVariableUtil(),clazz);
 	        } 
 			catch (Exception e) {

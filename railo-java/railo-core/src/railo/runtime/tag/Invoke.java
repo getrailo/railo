@@ -189,7 +189,7 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
 		// call active cfc or component
 		else {
             //Component comp = pageContext.getActiveComponent();
-            //if(comp!=null)doComponent(new ComponentWrap(Component.ACCESS_PRIVATE,(ComponentImpl)comp));
+            //if(comp!=null)doComponent(new ComponentWrap(Component.ACCESS_PRIVATE,comp));
             //else {
             	doFunction(pageContext);
             //}

@@ -118,6 +118,62 @@ public final class CFTypes {
     
 	}
 	
+	public static short toShortStrict(String type, short defaultValue) {
+		type=type.toLowerCase().trim();
+	    if(type.length()>2) {
+	        char first=type.charAt(0);
+	        switch(first) {
+	        	case 'a':
+	        	    if(type.equals("any")) return TYPE_ANY;
+	        	    if(type.equals("array")) return TYPE_ARRAY;
+	        	break;
+	        	case 'b':
+	        	    if(type.equals("boolean") || type.equals("bool")) return TYPE_BOOLEAN;
+	        	    if(type.equals("binary")) return TYPE_BINARY;
+	        	    
+	        	break;	           	
+	        	case 'd':
+	                if(type.equals("date") || type.equals("datetime"))	return TYPE_DATETIME;
+	        	break; 
+	        	case 'g':
+	                if("guid".equals(type)) 							return TYPE_GUID;
+	            break;
+	            case 'n':
+	        	    if(type.equals("numeric")) return TYPE_NUMERIC;
+	        	    else if(type.equals("number")) return TYPE_NUMERIC;
+	        	    break;
+	        	case 'o':
+	        	    if(type.equals("object")) return TYPE_ANY;
+	        	    break;
+	        	case 'q':
+	        	    if(type.equals("query")) return TYPE_QUERY;
+	        	    break;
+	        	case 's':
+	        	    if(type.equals("string")) return TYPE_STRING;
+	        	    else if(type.equals("struct")) return TYPE_STRUCT;
+	        	break;
+	        	case 't':
+	        	    if(type.equals("timespan")) return TYPE_TIMESPAN;
+	        	    if(type.equals("time")) return TYPE_DATETIME;
+	        	    break;
+	        	case 'u':
+	        	    if(type.equals("uuid")) return TYPE_UUID;
+	                break;
+	        	case 'v':
+	        	    if(type.equals("variablename")) return TYPE_VARIABLE_NAME;
+	        	    if(type.equals("variable_name")) return TYPE_VARIABLE_NAME;
+	        	    if(type.equals("variablestring")) return TYPE_VARIABLE_STRING;
+	        	    if(type.equals("variable_string")) return TYPE_VARIABLE_STRING;
+	        	    if(type.equals("void")) return TYPE_VOID;
+	        	    break;
+                case 'x':
+                    if(type.equals("xml")) return TYPE_XML;
+                    break;
+		   }
+		}
+		return defaultValue;
+	}
+	
 	public static short toShort(String type, short defaultValue) {
 		type=type.toLowerCase().trim();
 	    if(type.length()>2) {

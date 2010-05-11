@@ -46,7 +46,7 @@ public class DumpUtil {
 		}
 		// null
 		if(o == null) {
-			DumpTable table=new DumpTable("#ff4400","#ff954f","#000000");
+			DumpTable table=new DumpTablePro("null","#ff4400","#ff954f","#000000");
 			table.appendRow(new DumpRow(0,new SimpleDumpData("Empty:null")));
 			return table;
 		}
@@ -62,7 +62,7 @@ public class DumpUtil {
 			Map map=(Map) o;
 			Iterator it=map.keySet().iterator();
 
-			DumpTable table = new DumpTable("#ffb200","#ffcc00","#000000");
+			DumpTable table = new DumpTablePro("struct","#ffb200","#ffcc00","#000000");
 			table.setTitle("Map ("+Caster.toClassName(o)+")");
 			
 			while(it.hasNext()) {
@@ -83,7 +83,7 @@ public class DumpUtil {
 			SimpleDateFormat df = new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH);
 			df.setTimeZone(c.getTimeZone());
 			
-			DumpTable table=new DumpTable("#ffb200","#ffcc00","#263300");
+			DumpTable table=new DumpTablePro("date","#ffb200","#ffcc00","#263300");
 			table.setTitle("java.util.Calendar");
 			table.appendRow(1, new SimpleDumpData("Timezone"), new SimpleDumpData(TimeZoneUtil.toString(c.getTimeZone())));
 			table.appendRow(1, new SimpleDumpData("Time"), new SimpleDumpData(df.format(c.getTime())));
@@ -96,7 +96,7 @@ public class DumpUtil {
 			List list=(List) o;
 			ListIterator it=list.listIterator();
 			
-			DumpTable table = new DumpTable("#ffb200","#ffcc00","#000000");
+			DumpTable table = new DumpTablePro("array","#ffb200","#ffcc00","#000000");
 			table.setTitle("Array (List)");
 			
 			while(it.hasNext()) {
@@ -106,7 +106,7 @@ public class DumpUtil {
 		}
 		// Number
 		else if(o instanceof Number) {
-			DumpTable table = new DumpTable("#ff4400","#ff954f","#000000");
+			DumpTable table = new DumpTablePro("numeric","#ff4400","#ff954f","#000000");
 			table.appendRow(1,new SimpleDumpData("number"),new SimpleDumpData(Caster.toString(((Number)o).doubleValue())));
 			return table;
 		}
@@ -128,7 +128,7 @@ public class DumpUtil {
 					Object rst = converter.deserialize(str,false);
 					DumpData data = toDumpData(rst, pageContext, maxlevel, props);
 					
-					DumpTable table = new DumpTable("#C2AF94","#F3EFEA","#000000");
+					DumpTable table = new DumpTablePro("string","#C2AF94","#F3EFEA","#000000");
 					table.setTitle("WDDX");
 					table.appendRow(1,new SimpleDumpData("encoded"),data);
 					table.appendRow(1,new SimpleDumpData("raw"),new SimpleDumpData(str));
@@ -136,13 +136,13 @@ public class DumpUtil {
 				}
 				catch(Throwable t) {}
 			}
-			DumpTable table = new DumpTable("#ff4400","#ff954f","#000000");
+			DumpTable table = new DumpTablePro("string","#ff4400","#ff954f","#000000");
 			table.appendRow(1,new SimpleDumpData("string"),new SimpleDumpData(str));
 			return table;
 		}
 		// Character
 		else if(o instanceof Character) {
-			DumpTable table = new DumpTable("#ff4400","#ff954f","#000000");
+			DumpTable table = new DumpTablePro("character","#ff4400","#ff954f","#000000");
 			table.appendRow(1,new SimpleDumpData("character"),new SimpleDumpData(o.toString()));
 			return table;
 		}
@@ -160,19 +160,19 @@ public class DumpUtil {
 		}
 		// Boolean
 		else if(o instanceof Boolean) {
-			DumpTable table = new DumpTable("#ff4400","#ff954f","#000000");
+			DumpTable table = new DumpTablePro("boolean","#ff4400","#ff954f","#000000");
 			table.appendRow(1,new SimpleDumpData("boolean"),new SimpleDumpData(((Boolean)o).booleanValue()));
 			return table;
 		}
 		// File
 		else if(o instanceof File) {
-			DumpTable table = new DumpTable("#979EAA","#DEE9FB","#000000");
+			DumpTable table = new DumpTablePro("file","#979EAA","#DEE9FB","#000000");
 			table.appendRow(1,new SimpleDumpData("File"),new SimpleDumpData(o.toString()));
 			return table;
 		}
 		// Resource
 		else if(o instanceof Resource) {
-			DumpTable table = new DumpTable("#979EAA","#DEE9FB","#000000");
+			DumpTable table = new DumpTablePro("resource","#979EAA","#DEE9FB","#000000");
 			table.appendRow(1,new SimpleDumpData("Resource"),new SimpleDumpData(o.toString()));
 			return table;
 		}
@@ -180,7 +180,7 @@ public class DumpUtil {
 		else if(o instanceof Enumeration) {
 			Enumeration e=(Enumeration)o;
 			
-			DumpTable table = new DumpTable("#ffb200","#ffcc00","#000000");
+			DumpTable table = new DumpTablePro("enumeration","#ffb200","#ffcc00","#000000");
 			table.setTitle("Enumeration");
 			
 			while(e.hasMoreElements()) {
@@ -192,7 +192,7 @@ public class DumpUtil {
 		else if(o instanceof byte[]) {
 			byte[] bytes=(byte[]) o;
 			
-			DumpTable table = new DumpTable("#ffb200","#ffcc00","#000000");
+			DumpTable table = new DumpTablePro("array","#ffb200","#ffcc00","#000000");
 			table.setTitle("Native Array");
 			
 			StringBuffer sb=new StringBuffer();
@@ -214,7 +214,7 @@ public class DumpUtil {
 			Array arr;
 			try {
 				arr = Caster.toArray(o);
-				DumpTable htmlBox = new DumpTable("#ffb200","#ffcc00","#000000");
+				DumpTable htmlBox = new DumpTablePro("array","#ffb200","#ffcc00","#000000");
 				htmlBox.setTitle("Native Array");
 			
 				int length=arr.size();
@@ -245,7 +245,7 @@ public class DumpUtil {
 		if(o instanceof NodeList) {
 			NodeList list=(NodeList)o;
 			int len=list.getLength();
-			DumpTable table = new DumpTable("#C2AF94","#F3EFEA","#000000");
+			DumpTable table = new DumpTablePro("xml","#C2AF94","#F3EFEA","#000000");
 			for(int i=0;i<len;i++) {
 				table.appendRow(1,new SimpleDumpData(i),toDumpData(list.item(i),pageContext,maxlevel,props));
 			}
@@ -261,7 +261,7 @@ public class DumpUtil {
 		    HttpSession hs = (HttpSession)o;
 		    Enumeration e = hs.getAttributeNames();
 		    
-		    DumpTable htmlBox = new DumpTable("#5965e4","#9999ff","#000000");
+		    DumpTable htmlBox = new DumpTablePro("httpsession","#5965e4","#9999ff","#000000");
 			htmlBox.setTitle("HttpSession");
 		    while(e.hasMoreElements()) {
 		        String key=e.nextElement().toString();
@@ -273,14 +273,14 @@ public class DumpUtil {
 		// Collection.Key
 		else if(o instanceof Collection.Key) {
 			Collection.Key key=(Collection.Key) o;
-			DumpTable table = new DumpTable("#ff4400","#ff954f","#000000");
+			DumpTable table = new DumpTablePro("string","#ff4400","#ff954f","#000000");
 			table.appendRow(1,new SimpleDumpData("Collection.Key"),new SimpleDumpData(key.getString()));
 			return table;
 		}
 		
 		// reflect
 		//else {
-			DumpTable table = new DumpTable("#90776E","#B2A49B","#000000");
+			DumpTable table = new DumpTablePro(o.getClass().getName(),"#90776E","#B2A49B","#000000");
 			
 			Class clazz=o.getClass();
 			if(o instanceof Class) clazz=(Class) o;

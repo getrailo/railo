@@ -19,6 +19,7 @@ import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.op.Caster;
@@ -118,7 +119,6 @@ public final class MappingImpl implements Mapping {
      * @see railo.runtime.Mapping#getClassLoaderForPhysical(boolean)
      */
 	public ClassLoader getClassLoaderForPhysical(boolean reload) throws IOException {
-		    
 		//reload=true;
 		if(physicalClassLoader!=null && !reload) return physicalClassLoader;
 		config.resetRPCClassLoader();
@@ -200,7 +200,7 @@ public final class MappingImpl implements Mapping {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		maxlevel--;
         
-		DumpTable htmlBox = new DumpTable("#ff4400","#ff954f","#4f1500");
+		DumpTable htmlBox = new DumpTablePro("mapping","#ff4400","#ff954f","#4f1500");
 		htmlBox.setTitle("Mapping");
 		htmlBox.appendRow(1,new SimpleDumpData("virtual"),new SimpleDumpData(virtual));
 		htmlBox.appendRow(1,new SimpleDumpData("physical"),DumpUtil.toDumpData(strPhysical,pageContext,maxlevel,dp));

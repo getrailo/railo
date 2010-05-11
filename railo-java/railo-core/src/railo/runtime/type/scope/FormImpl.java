@@ -19,7 +19,9 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ByteNameValuePair;
 import railo.commons.lang.StringUtil;
+import railo.commons.net.URLItem;
 import railo.runtime.PageContext;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.ServletInputStreamDummy;
 import railo.runtime.op.Caster;
@@ -45,10 +47,9 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 
     private String encoding=null;
     private int scriptProtected=ScriptProtected.UNDEFINED;
-    private static final ByteNameValuePair[] empty=new ByteNameValuePair[0];
+    private static final URLItem[] empty=new URLItem[0];
 	//private static final ResourceFilter FILTER = new ExtensionResourceFilter(".upload",false);
-    private ByteNameValuePair[] raw=empty;
-	private Resource tempDir;
+    private URLItem[] raw=empty;
     private static int count=1;
 
     private static final int HEADER_TEXT_PLAIN=0;
@@ -123,8 +124,8 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 
 
     private void initializeMultiPart(PageContext pc, boolean scriptProteced) {
-
-    	tempDir = pc.getConfig().getTempDirectory();
+    	// get temp directory
+    	Resource tempDir = ((ConfigImpl)pc.getConfig()).getTempDirectory();
     	Resource tempFile;
     	
     	// Create a new file upload handler
@@ -134,38 +135,36 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
     	
     	
     	// Parse the request
-    	
     	try {
     		FileItemIterator iter = upload.getItemIterator(pc.getHttpServletRequest());
-        	byte[] value;
+        	//byte[] value;
         	InputStream is;
         	ArrayList list=new ArrayList();
 			while (iter.hasNext()) {
 			    FileItemStream item = iter.next();
-			    is=IOUtil.toBufferedInputStream(item.openStream());
 			    
+			    
+			    is=IOUtil.toBufferedInputStream(item.openStream());
 			    if (item.getContentType()==null || StringUtil.isEmpty(item.getName())) {
-			        value=IOUtil.toBytes(is);
+			    	list.add(new URLItem(item.getFieldName(),new String(IOUtil.toBytes(is),encoding),true));	     
 			    } 
 			    else {
-			    	if(!tempDir.exists())tempDir.mkdirs();
 			    	tempFile=tempDir.getRealResource(getFileName());
 			    	fileItems.put(item.getFieldName().toLowerCase(),
 			    			new Item(tempFile,item.getContentType(),item.getName(),item.getFieldName()));
-					value=tempFile.toString().getBytes(encoding);
+					String value=tempFile.toString();
 			    	IOUtil.copy(is, tempFile,true);
-			    	
-			    }
-			    list.add(new ByteNameValuePair(getBytes(item.getFieldName()),value,false));	            
+				    list.add(new URLItem(item.getFieldName(),value,true));	     
+			    }       
 			}
 			
-			raw=(ByteNameValuePair[]) list.toArray(new ByteNameValuePair[list.size()]);
+			raw=(URLItem[]) list.toArray(new URLItem[list.size()]);
 			fillDecoded(raw,encoding,scriptProteced);
 		} 
     	catch (Exception e) {
 			
         	//throw new PageRuntimeException(Caster.toPageException(e));
-        	fillDecodedEL(new ByteNameValuePair[0],encoding,scriptProteced);
+        	fillDecodedEL(new URLItem[0],encoding,scriptProteced);
 			initException=e;
 		}
 	}
@@ -230,7 +229,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		} 
         catch (Exception e) {
         	
-        	fillDecodedEL(new ByteNameValuePair[0],encoding,scriptProteced);
+        	fillDecodedEL(new URLItem[0],encoding,scriptProteced);
 			initException=e;
         }
         finally {
@@ -350,12 +349,12 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 	/**
 	 * @return the raw
 	 */
-	public ByteNameValuePair[] getRaw() {
+	public URLItem[] getRaw() {
 		return raw;
 	}
 
-	public void addRaw(ByteNameValuePair[] raw) {
-		ByteNameValuePair[] nr=new ByteNameValuePair[this.raw.length+raw.length];
+	public void addRaw(URLItem[] raw) {
+		URLItem[] nr=new URLItem[this.raw.length+raw.length];
 		for(int i=0;i<this.raw.length;i++) {
 			nr[i]=this.raw[i];
 		}
@@ -424,7 +423,15 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		return new ServletInputStreamDummy(new byte[]{});
 	}
 
-	private byte[] toBarr(ByteNameValuePair[] raw, byte del) {
+	private byte[] toBarr(URLItem[] items, byte del) {
+		
+		ByteNameValuePair[] raw=new ByteNameValuePair[items.length];
+		for(int i=0;i<raw.length;i++) {
+			try {
+				raw[i]=new ByteNameValuePair(items[i].getName().getBytes("iso-8859-1"),items[i].getValue().getBytes("iso-8859-1"),items[i].isUrlEncoded());
+			} catch (UnsupportedEncodingException e) {}
+		}
+		
 		int size=0;
 		for(int i=0;i<raw.length;i++) {
 			size+=raw[i].getName().length;

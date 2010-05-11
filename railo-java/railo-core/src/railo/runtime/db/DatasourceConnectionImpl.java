@@ -88,13 +88,27 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 	 */
 	public boolean equals(Object obj) {
 		if(this==obj) return true;
+		
 		if(!(obj instanceof DatasourceConnectionImpl)) return false;
+		return equals(this, (DatasourceConnection) obj);
+		
+		
+		/*if(!(obj instanceof DatasourceConnectionImpl)) return false;
 		DatasourceConnectionImpl other=(DatasourceConnectionImpl) obj;
 		
 		if(!datasource.equals(other.datasource)) return false;
 		//print.out(username+".equals("+other.username+") && "+password+".equals("+other.password+")");
-		return username.equals(other.username) && password.equals(other.password);
+		return username.equals(other.username) && password.equals(other.password);*/
 	}
+	
+	public static boolean equals(DatasourceConnection left,DatasourceConnection right) {
+		
+		if(!left.getDatasource().equals(right.getDatasource())) return false;
+		return left.getUsername().equals(right.getUsername()) && left.getPassword().equals(right.getPassword());
+		
+	}
+	
+	
 
 	/**
 	 * @return the transactionIsolationLevel

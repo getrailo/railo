@@ -1,19 +1,14 @@
 package railo.runtime.type.scope;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
 
-import railo.commons.lang.ByteNameValuePair;
-import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.URLDecoder;
+import railo.commons.net.URLItem;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
-import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpUtil;
-import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.op.Caster;
 import railo.runtime.security.ScriptProtect;
@@ -27,6 +22,7 @@ import railo.runtime.type.Scope;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.StructUtil;
 
 
 
@@ -94,12 +90,17 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return toDumpData(pageContext, maxlevel, dp, this, dspName);
 	}
+	
 	public static DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, Struct sct,String dspName) {
-		maxlevel--;
+		if(StringUtil.isEmpty(dspName))dspName="Scope";
+		
+		return StructUtil.toDumpTable(sct, dspName, pageContext, maxlevel, dp);
+		/*maxlevel--;
 		DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");//new DumpTable("#99cc00","#669900","#263300");
 		if(dspName!=null)table.setTitle(StringUtil.ucFirst(dspName)+" Scope");
         else table.setTitle("Scope");
-        
+		if(sct.size()>10)table.setComment("Records:"+sct.size());
+	    
 		//Map mapx=getMap();
 		Iterator it=sct.keyIterator();//mapx.keySet().iterator();
 		String key;
@@ -114,7 +115,7 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
 					DumpUtil.toDumpData(sct.get(key,null), pageContext,maxlevel,dp));
 			}
 		}
-		return table;
+		return table;*/
 	}
 		
 	/**
@@ -129,17 +130,17 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
      * @param qs Query String
      * @return parsed name value pair
      */
-	protected static ByteNameValuePair[] setFromQueryString(String str) {
+	protected static URLItem[] setFromQueryString(String str) {
 		return setFrom___(str, '&');
 	}
 
-	protected static ByteNameValuePair[] setFromTextPlain(String str) {
+	protected static URLItem[] setFromTextPlain(String str) {
 		return setFrom___(str, '\n');
 	}
-	protected static ByteNameValuePair[] setFrom___(String tp,char delimeter) {
-        if(tp==null) return new ByteNameValuePair[0];
+	protected static URLItem[] setFrom___(String tp,char delimeter) {
+        if(tp==null) return new URLItem[0];
         Array arr=List.listToArrayRemoveEmpty(tp,delimeter);
-        ByteNameValuePair[] pairs=new ByteNameValuePair[arr.size()];
+        URLItem[] pairs=new URLItem[arr.size()];
         
         //Array item;
         int index;
@@ -150,8 +151,8 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
             //if(name.length()==0) continue;
             
             index=name.indexOf('=');
-            if(index!=-1) pairs[i-1]=new ByteNameValuePair(getBytes(name.substring(0,index),"ISO-8859-1"),getBytes(name.substring(index+1),"ISO-8859-1"),true);
-            else pairs[i-1]=new ByteNameValuePair(getBytes(name,"ISO-8859-1"),EMPTY,true);
+            if(index!=-1) pairs[i-1]=new URLItem(name.substring(0,index),name.substring(index+1),true);
+            else pairs[i-1]=new URLItem(name,"",true);
           
         }
         return pairs;
@@ -168,7 +169,7 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
         }
     }
     
-    protected void fillDecodedEL(ByteNameValuePair[] raw, String encoding, boolean scriptProteced) {
+    protected void fillDecodedEL(URLItem[] raw, String encoding, boolean scriptProteced) {
     	try {
 			fillDecoded(raw, encoding,scriptProteced);
 		} catch (UnsupportedEncodingException e) {
@@ -185,13 +186,13 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
      * @param encoding
      * @throws UnsupportedEncodingException
      */
-    protected void fillDecoded(ByteNameValuePair[] raw, String encoding, boolean scriptProteced) throws UnsupportedEncodingException {
+    protected void fillDecoded(URLItem[] raw, String encoding, boolean scriptProteced) throws UnsupportedEncodingException {
     	clear();
     	String name,value;
         //Object curr;
         for(int i=0;i<raw.length;i++) {
-            name=raw[i].getName(encoding);
-            value=raw[i].getValue(encoding);
+            name=raw[i].getName();
+            value=raw[i].getValue();
             if(raw[i].isUrlEncoded()) {
             	name=URLDecoder.decode(name,encoding);
             	value=URLDecoder.decode(value,encoding);
@@ -333,7 +334,7 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
         return name;
     }
 	public long sizeOf() {
-		return SizeOf.size(getMap());
+		return StructUtil.sizeOf(this);
 	}
     
 }

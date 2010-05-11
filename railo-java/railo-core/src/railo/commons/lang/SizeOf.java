@@ -5,21 +5,42 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Sizeable;
 
 /**
  * Calculation of object size.
  */
 public class SizeOf {
+	
+
+    private static final int OBJECT_GRANULARITY_IN_BYTES = 8;
+    private static final int WORD_SIZE = Architecture.getVMArchitecture().getWordSize();
+    private static final int HEADER_SIZE = 2 * WORD_SIZE;
+
+    public static final int LONG_SIZE = 8;
+    public static final int INT_SIZE = 4;
+    public static final int SHORT_SIZE = 2;
+    public static final int BYTE_SIZE = 1;
+    public static final int BOOLEAN_SIZE = 1;
+    public static final int CHAR_SIZE = 2;
+    public static final int REF_SIZE = WORD_SIZE;
+
   
 	private static ThreadLocal _inside=new ThreadLocal();
 	private static ThreadLocal map=new ThreadLocal();
 
+
+	private static ThreadLocal<Set<Integer>> done=new ThreadLocal<Set<Integer>>();
 
 
 	private static boolean inside(boolean inside) {
@@ -45,7 +66,79 @@ public class SizeOf {
      * @param object the object that we want to have the size calculated.
      * @return the size of the object or 0 if null.
      */
-    public static long size(Object object) {
+
+    public static long size2(Object o) {
+    	Set<Integer> d = done.get();
+    	boolean inside=true;
+    	if(d==null){
+    		inside=false;
+    		d=new HashSet<Integer>();
+    		done.set(d);
+    	}
+    	try{
+    		return size(o,d);
+    	}
+    	finally{
+    		if(!inside) done.set(null);
+    	}
+    }
+    
+    private static long size(Object o,Set<Integer> done) {
+    	if(o == null) return 0;
+    	if(done.contains(o.hashCode())) return 0;
+    	done.add(o.hashCode());
+    	
+    	if(o instanceof Sizeable){
+    		return ((Sizeable)o).sizeOf();
+    	}
+    	Class clazz = o.getClass();
+    	long size=0;
+    	
+    	// Native ARRAY
+    	// TODO how big is the array itself
+    	if (clazz.isArray()) {
+    		Class ct = clazz.getComponentType();
+    		
+    		if(ct.isPrimitive())return primSize(ct)*Array.getLength(o);
+    		
+    		size=REF_SIZE*Array.getLength(o);
+    		for (int i=Array.getLength(o)-1; i>=0;i--) {
+                size += size(Array.get(o, i),done);
+            }
+        	return size;
+        }
+    	
+    	if(o instanceof Boolean) return REF_SIZE+BOOLEAN_SIZE;
+    	if(o instanceof Character) return REF_SIZE+CHAR_SIZE;
+    	
+    	if(o instanceof Number){
+    		if(o instanceof Double || o instanceof Long) return REF_SIZE+LONG_SIZE;
+    		if(o instanceof Byte) return REF_SIZE+BYTE_SIZE;
+    		if(o instanceof Short) return REF_SIZE+SHORT_SIZE;
+    		return REF_SIZE+INT_SIZE;// float,int
+    	}
+    	if(o instanceof String){
+    		int len=((String)o).length();
+    		return (REF_SIZE*len)+(REF_SIZE*CHAR_SIZE);
+    	}
+    	
+    	
+    	throw new PageRuntimeException(new ExpressionException("can not terminate the size of a object of type ["+Caster.toTypeName(o)+":"+o.getClass().getName()+"]"));
+    }
+    
+    
+    private static int primSize(Class ct) {
+    	if(ct==double.class) return LONG_SIZE;
+    	if(ct==long.class) return LONG_SIZE;
+    	if(ct==float.class) return INT_SIZE;
+    	if(ct==short.class) return SHORT_SIZE;
+    	if(ct==int.class) return INT_SIZE;
+    	if(ct==byte.class) return BYTE_SIZE;
+    	if(ct==boolean.class) return BOOLEAN_SIZE;
+    	return CHAR_SIZE;
+	}
+
+	public static long size(Object object) {
     	return size(object, Integer.MAX_VALUE);
     }
 	
@@ -107,6 +200,7 @@ class Meta {
     public static final int SHORT_SIZE = 2;
     public static final int BYTE_SIZE = 1;
     public static final int BOOLEAN_SIZE = 1;
+    public static final int CHAR_SIZE = 2;
     public static final int REF_SIZE = WORD_SIZE;
 
     /** Class for which this metadata applies */

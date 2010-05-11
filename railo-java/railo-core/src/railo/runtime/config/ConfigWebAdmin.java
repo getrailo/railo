@@ -3,10 +3,13 @@ package railo.runtime.config;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.servlet.ServletException;
 
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.xerces.parsers.DOMParser;
@@ -30,6 +33,9 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
 import railo.commons.net.URLEncoder;
+import railo.loader.TP;
+import railo.loader.engine.CFMLEngineFactory;
+import railo.loader.util.ExtensionFilter;
 import railo.runtime.Info;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.converter.ConverterException;
@@ -46,6 +52,7 @@ import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.other.CreateObject;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
+import railo.runtime.listener.ApplicationContextUtil;
 import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
@@ -68,7 +75,6 @@ import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.scope.ScopeContext;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
-import railo.runtime.util.ApplicationContextImpl;
 import railo.runtime.video.VideoExecuter;
 import railo.runtime.video.VideoExecuterNotSupported;
 import railo.transformer.library.function.FunctionLibException;
@@ -81,7 +87,8 @@ import com.allaire.cfx.CustomTag;
  */
 public final class ConfigWebAdmin {
     
-    private ConfigImpl config;
+    private static final Object NULL = new Object();
+	private ConfigImpl config;
     private Document doc;
 	private String password;
     //private SecurityManager accessorx;
@@ -316,10 +323,11 @@ public final class ConfigWebAdmin {
     }
     
     private synchronized void store(ConfigImpl config) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
-        checkWriteAccess();
+    	renameOldstyleJavaCFX();
+    	checkWriteAccess();
         createAbort();
         if(config instanceof ConfigServerImpl) {
-        	XMLCaster.writeToResource(doc,config.getConfigFile());
+        	XMLCaster.writeTo(doc,config.getConfigFile());
             //SystemUtil.sleep(10);
             
             ConfigServerImpl cs=(ConfigServerImpl) config;
@@ -330,7 +338,7 @@ public final class ConfigWebAdmin {
             }
         }
         else {
-            XMLCaster.writeToResource(doc,config.getConfigFile());
+            XMLCaster.writeTo(doc,config.getConfigFile());
             //SystemUtil.sleep(10);
             
             ConfigWebFactory.reloadInstance(config,false);
@@ -484,7 +492,7 @@ public final class ConfigWebAdmin {
       	Element server = doc.createElement("server");
       	server.setAttribute("smtp",hostName);
       	server.setAttribute("username",username);
-      	server.setAttribute("password",password);
+      	server.setAttribute("password",ConfigWebFactory.encrypt(password));
       	server.setAttribute("port",Caster.toString(port));
       	server.setAttribute("tls",Caster.toString(tls));
       	server.setAttribute("ssl",Caster.toString(ssl));
@@ -760,12 +768,13 @@ public final class ConfigWebAdmin {
         if(name==null || name.length()==0)
             throw new ExpressionException("class name can't be a empty value");
         
+        renameOldstyleJavaCFX();
         
         
-        Element tags=_getRootElement("cfx-tags");
+        Element tags=_getRootElement("ext-tags");
         
         // Update
-        Element[] children = ConfigWebFactory.getChildren(tags,"cfx-tag");
+        Element[] children = ConfigWebFactory.getChildren(tags,"ext-tag");
       	for(int i=0;i<children.length;i++) {
       	    String n=children[i].getAttribute("name");
       	    
@@ -779,14 +788,60 @@ public final class ConfigWebAdmin {
       	}
       	
       	// Insert
-      	Element el=doc.createElement("cfx-tag");
+      	Element el=doc.createElement("ext-tag");
       	tags.appendChild(el);
       	el.setAttribute("class",strClass);
       	el.setAttribute("name",name);
   		el.setAttribute("type","java");  		
     }
     
-    public void verifyJavaCFX(String name,String strClass) throws PageException {
+    private void renameOldstyleJavaCFX() {
+    	
+        Element tags=_getRootElement("ext-tags",false,true);
+        if(tags!=null) return;
+        tags=_getRootElement("cfx-tags",false,true);
+        if(tags==null) return;
+        
+        
+        //if(oldStyle){
+        	Element newTags = _getRootElement("ext-tags");
+        	Element[] children = ConfigWebFactory.getChildren(tags,"cfx-tag");
+        	String type;
+          	// copy
+        	for(int i=0;i<children.length;i++) {
+          	    Element el=doc.createElement("ext-tag");
+          	    newTags.appendChild(el);
+          	    type=children[i].getAttribute("type");
+          	    // java
+          	    if(type.equalsIgnoreCase("java")){
+          	    	el.setAttribute("class",children[i].getAttribute("class"));
+          	    }
+          	    // c++
+          	    else {
+          	    	el.setAttribute("server-library",children[i].getAttribute("server-library"));
+          	    	el.setAttribute("procedure",children[i].getAttribute("procedure"));
+          	    	el.setAttribute("keep-alive",children[i].getAttribute("keep-alive"));
+          	    	
+          	    }
+              	el.setAttribute("name",children[i].getAttribute("name"));
+          		el.setAttribute("type",children[i].getAttribute("type"));  
+          	}
+        	
+        	// remove old
+        	for(int i=0;i<children.length;i++) {
+        		tags.removeChild(children[i]);
+        	}
+        	tags.getParentNode().removeChild(tags);
+        //} 
+	}
+    
+    
+  
+    
+    
+
+
+	public void verifyJavaCFX(String name,String strClass) throws PageException {
     	try {
     		Class clazz = ClassUtil.loadClass(config.getClassLoader(),strClass);
 			if(!Reflector.isInstaneOf(clazz, CustomTag.class))
@@ -814,10 +869,11 @@ public final class ConfigWebAdmin {
         if(name==null || name.length()==0)
             throw new ExpressionException("name for CFX Tag can be a empty value");
         
+        renameOldstyleJavaCFX();
         
-        Element mappings=_getRootElement("cfx-tags");
+        Element mappings=_getRootElement("ext-tags");
 
-        Element[] children = ConfigWebFactory.getChildren(mappings,"cfx-tag");
+        Element[] children = ConfigWebFactory.getChildren(mappings,"ext-tag");
       	for(int i=0;i<children.length;i++) {
       	    String n=children[i].getAttribute("name"); 
   	    	if(n!=null && n.equalsIgnoreCase(name)) {
@@ -924,7 +980,7 @@ public final class ConfigWebAdmin {
   		el.setAttribute("class",clazzName);
   		el.setAttribute("dsn",dsn);
   		if(username.length()>0)el.setAttribute("username",username);
-  		if(password.length()>0)el.setAttribute("password",password);
+  		if(password.length()>0)el.setAttribute("password",ConfigWebFactory.encrypt(password));
         
         el.setAttribute("host",host);
         el.setAttribute("database",database);
@@ -1550,6 +1606,29 @@ public final class ConfigWebAdmin {
         else scope.removeAttribute("sessiontimeout");
     }
     
+    /**
+     * updates session timeout value
+     * @param span
+     * @throws SecurityException
+     */
+    public void updateClientTimeout(TimeSpan span) throws SecurityException {
+    	checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        
+        Element scope=_getRootElement("scope");
+        if(span!=null)scope.setAttribute("clienttimeout",span.getDay()+","+span.getHour()+","+span.getMinute()+","+span.getSecond());
+        else scope.removeAttribute("clienttimeout");
+        
+        // deprecated
+        if(scope.hasAttribute("client-max-age"))scope.removeAttribute("client-max-age");
+       
+        
+    }
+    
+    
+    
     public void updateSupressWhitespace(Boolean value) throws SecurityException {
     	checkWriteAccess();
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
@@ -1721,7 +1800,7 @@ public final class ConfigWebAdmin {
     
     
     public void updateScriptProtect(int scriptProtect) throws SecurityException { 
-    	updateScriptProtect(ApplicationContextImpl.translateScriptProtect(scriptProtect));
+    	updateScriptProtect(ApplicationContextUtil.translateScriptProtect(scriptProtect));
     }
     
     /**
@@ -1928,7 +2007,7 @@ public final class ConfigWebAdmin {
         Element debugging=_getRootElement("debugging");
         if(memoryLogger.trim().length()>0)debugging.setAttribute("memory-log",memoryLogger);
     }*/
-    
+
     private Element _getRootElement(String name) {
         Element el=ConfigWebFactory.getChildByName(doc.getDocumentElement(),name);
         if(el==null) {
@@ -1936,6 +2015,10 @@ public final class ConfigWebAdmin {
             doc.getDocumentElement().appendChild(el);
         }
         return el;
+    }
+
+    private Element _getRootElement(String name, boolean insertBefore,boolean doNotCreate) {
+        return ConfigWebFactory.getChildByName(doc.getDocumentElement(),name,insertBefore,doNotCreate);
     }
     
     /**
@@ -2260,16 +2343,77 @@ public final class ConfigWebAdmin {
      * run update from cfml engine
      * @throws PageException
      */
+    public void removeLatestUpdate() throws PageException {
+    	_removeUpdate(true);
+    }
+    
     public void removeUpdate() throws PageException {
+    	_removeUpdate(false);
+    }
+    
+    private void _removeUpdate(boolean onlyLatest) throws PageException {
     	checkWriteAccess();
     	ConfigServerImpl cs = config.getConfigServerImpl();
         try {
-        	cs.getCFMLEngine().getCFMLEngineFactory().removeUpdate(cs.getPassword());
+        	CFMLEngineFactory factory = cs.getCFMLEngine().getCFMLEngineFactory();
+        	
+        	if(onlyLatest){
+        		// FUTURE make direct call (see below)
+        		//factory.removeLatestUpdate(cs.getPassword());
+        		try{
+        			Method removeLatestUpdate = factory.getClass().getMethod("removeLatestUpdate", new Class[]{String.class});
+        			removeLatestUpdate.invoke(factory, new Object[]{cs.getPassword()});
+        		}
+        		catch(NoSuchMethodException e)	{
+        			removeLatestUpdate(factory,cs.getPassword());
+        			//throw new SecurityException("this feature is not supported by your version, you have to update your railo.jar first");
+        		}
+        		catch(Throwable t){
+        			throw Caster.toPageException(t);
+        		}
+        	}
+        	else factory.removeUpdate(cs.getPassword());
+        	
+        	
         } 
         catch (Exception e) {
             throw Caster.toPageException(e);
         }
     }
+    
+    // FUTURE remove this
+	private String getCoreExtension() throws ServletException {
+    	URL res = new TP().getClass().getResource("/core/core.rcs");
+        if(res!=null) return "rcs";
+        
+        res = new TP().getClass().getResource("/core/core.rc");
+        if(res!=null) return "rc";
+        
+        throw new ServletException("missing core file");
+	}
+	
+	// FUTURE remove this
+	private boolean isNewerThan(int left, int right) {
+        return left>right;
+    }
+	
+    // FUTURE remove this
+    private boolean removeLatestUpdate(CFMLEngineFactory factory, String password) throws IOException, ServletException {
+    	File patchDir = new File(factory.getResourceRoot(),"patches");
+        if(!patchDir.exists())patchDir.mkdirs();
+        
+    	File[] patches=patchDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
+        File patch=null;
+        for(int i=0;i<patches.length;i++) {
+        	 if(patch==null || isNewerThan(railo.loader.util.Util.toInVersion(patches[i].getName()),railo.loader.util.Util.toInVersion(patch.getName()))) {
+                 patch=patches[i];
+             }
+        }
+    	if(patch!=null && !patch.delete())patch.deleteOnExit();
+        factory.restart(password);
+        return true;
+    }
+    
     
     /*private Resource getPatchDirectory(CFMLEngine engine) throws IOException {
     	//File f=engine.getCFMLEngineFactory().getResourceRoot();

@@ -19,10 +19,24 @@ import railo.runtime.type.dt.DateTime;
 public final class FunctionValueImpl implements FunctionValue,Dumpable {
 	
 
-	private String name;
+	private Collection.Key name;
+	private String[] names;
 	private Object value;
 
+	/**
+	 * @param name
+	 * @param value
+	 * @return
+	 */
 	public static FunctionValue newInstance(String name,Object value) {
+		return new FunctionValueImpl(name,value);
+	}
+	
+	public static FunctionValue newInstance(String[] name,Object value) {
+		return new FunctionValueImpl(name,value);
+	}
+
+	public static FunctionValue newInstance(Collection.Key name,Object value) {
 		return new FunctionValueImpl(name,value);
 	}
 	
@@ -32,21 +46,53 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
 	 * @param value value himself
 	 */
 	public FunctionValueImpl(String name,Object value) {
+        this.name=KeyImpl.init(name);
+		this.value=value;
+	} 
+
+	public FunctionValueImpl(Collection.Key name,Object value) {
         this.name=name;
 		this.value=value;
 	} 
+	
+	public FunctionValueImpl(String[] names,Object value) {
+        this.names=names;
+		this.value=value;
+	} 
+	
 	/**
      * @see railo.runtime.type.FunctionValue#getName()
      */
 	public String getName() {
+		return getNameAsString();
+	}
+	//FUTURE replace geName with this
+	public String getNameAsString() {
+		if(name==null){
+			return List.arrayToList(names, ".");
+		}
+		return name.getString();
+	}
+	public Collection.Key getNameAsKey() {
+		if(name==null){
+			return KeyImpl.init(List.arrayToList(names, "."));
+		}
 		return name;
 	}
+	
+	
+	
+	public String[] getNames() {
+		return names;
+	}
+	
 	/**
      * @see railo.runtime.type.FunctionValue#getValue()
      */
 	public Object getValue() {
 		return value;
 	}
+
 	/**
 	 * @see railo.runtime.op.Castable#castToString()
 	 */
@@ -141,4 +187,32 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
 	public String toString() {
 		return name+":"+value;
 	}
+
+	public static Struct toStruct(FunctionValueImpl fv1){
+		StructImpl sct = new StructImpl(StructImpl.TYPE_LINKED);
+		sct.setEL(fv1.getNameAsKey(), fv1);
+		return sct;
+	}
+	public static Struct toStruct(FunctionValueImpl fv1,FunctionValueImpl fv2){
+		StructImpl sct = new StructImpl(StructImpl.TYPE_LINKED);
+		sct.setEL(fv1.getNameAsKey(), fv1);
+		sct.setEL(fv2.getNameAsKey(), fv2);
+		return sct;
+	}
+	public static Struct toStruct(FunctionValueImpl fv1,FunctionValueImpl fv2,FunctionValueImpl fv3){
+		StructImpl sct = new StructImpl(StructImpl.TYPE_LINKED);
+		sct.setEL(fv1.getNameAsKey(), fv1);
+		sct.setEL(fv2.getNameAsKey(), fv2);
+		sct.setEL(fv3.getNameAsKey(), fv3);
+		return sct;
+	}
+	public static Struct toStruct(FunctionValueImpl fv1,FunctionValueImpl fv2,FunctionValueImpl fv3,FunctionValueImpl fv4){
+		StructImpl sct = new StructImpl(StructImpl.TYPE_LINKED);
+		sct.setEL(fv1.getNameAsKey(), fv1);
+		sct.setEL(fv2.getNameAsKey(), fv2);
+		sct.setEL(fv3.getNameAsKey(), fv3);
+		sct.setEL(fv4.getNameAsKey(), fv4);
+		return sct;
+	}
+	
 }

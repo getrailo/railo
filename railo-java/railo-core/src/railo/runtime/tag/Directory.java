@@ -17,7 +17,9 @@ import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.type.file.FileResource;
 import railo.commons.io.res.type.s3.S3Constants;
 import railo.commons.io.res.util.ModeObjectWrap;
+import railo.commons.io.res.util.ResourceAndResourceNameFilter;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.io.res.util.UDFFilter;
 import railo.commons.io.res.util.WildCardFilter;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
@@ -29,6 +31,7 @@ import railo.runtime.security.SecurityManager;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.UDF;
 import railo.runtime.type.Collection.Key;
 
 /**
@@ -57,7 +60,7 @@ public final class Directory extends TagImpl  {
 	/** Optional for action = "list". Ignored by all other actions. File extension filter applied to
 	** 		returned names. For example: *m. Only one mask filter can be applied at a time. */
 	private ResourceFilter filter;
-	private WildCardFilter wdf;
+	private ResourceAndResourceNameFilter nameFilter;
 
 	/** The name of the directory to perform the action against. */
 	private Resource directory;
@@ -107,7 +110,7 @@ public final class Directory extends TagImpl  {
 		
 		type=TYPE_ALL; 
 		filter=null;
-		wdf=null;
+		nameFilter=null;
 		directory=null;
 		action="list";
 		sort=null;
@@ -122,6 +125,24 @@ public final class Directory extends TagImpl  {
 	
 	
 	/** 
+	*  sets a filter
+	* @param pattern
+	 * @throws PageException 
+	**/
+
+	public void setFilter(Object filter) throws PageException	{
+	   if(filter instanceof UDF)
+		   setFilter((UDF)filter);
+	   else
+		   setFilter(Caster.toString(filter));
+	}
+	
+	public void setFilter(UDF filter) throws PageException	{
+		this.nameFilter=new UDFFilter(filter);
+		this.filter=nameFilter;
+	}
+	
+	/** 
 	*  sets a filter pattern
 	* @param pattern
 	 * @throws PageException 
@@ -129,8 +150,8 @@ public final class Directory extends TagImpl  {
 	public void setFilter(String pattern) throws PageException	{
 	    if(pattern.trim().length()>0) {
             try {
-            	wdf=new WildCardFilter(pattern);
-                this.filter=wdf;
+            	nameFilter=new WildCardFilter(pattern);
+                this.filter=nameFilter;
             } catch (MalformedPatternException e) {
                 throw Caster.toPageException(e);
             }
@@ -332,7 +353,7 @@ public final class Directory extends TagImpl  {
 		try {
            if(listOnlyNames) {
         	   if(recurse || type!=TYPE_ALL)_fillNamesRec("",query, directory, filter, 0);
-        	   else _fillNames(query, directory, wdf, 0);
+        	   else _fillNames(query, directory, nameFilter, 0);
            }
            else _fill(query,directory,filter,0,hasMeta);
         } catch (IOException e) {

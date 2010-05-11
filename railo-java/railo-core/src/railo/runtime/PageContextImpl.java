@@ -41,6 +41,7 @@ import org.apache.oro.text.regex.Perl5Matcher;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
@@ -84,6 +85,10 @@ import railo.runtime.net.ftp.FTPPoolImpl;
 import railo.runtime.net.http.HTTPServletRequestWrap;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.orm.ORMEngine;
+import railo.runtime.orm.ORMSession;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.query.QueryCache;
 import railo.runtime.security.Credential;
 import railo.runtime.security.CredentialImpl;
@@ -255,6 +260,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private Map conns=new HashMap();
 	private boolean fdEnabled;
 	private ExecutionLog execLog;
+	private boolean useSpecialMappings;
+	
+
+	private ORMSession ormSession;
 
 	public long sizeOf() {
 		
@@ -298,7 +307,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		SizeOf.size(currentTag)+
 		SizeOf.size(startTime)+
 		SizeOf.size(isCFCRequest)+
-		SizeOf.size(conns);
+		SizeOf.size(conns)+
+		SizeOf.size(ormSession);
 	}
 	
 	
@@ -426,6 +436,30 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	client.release();
         	client=null;
         }
+		
+		// ORM
+        if(ormSession!=null){
+        	// flush orm session
+        	try {
+				ORMEngine engine=ormSession.getEngine();
+        		ORMConfiguration config=engine.getConfiguration(this);
+				if(config==null || config.flushAtRequestEnd()){
+					ormSession.flush(this);
+					//ormSession.close(this);
+					//print.err("2orm flush:"+Thread.currentThread().getId());
+				}
+			} 
+        	catch (Throwable t) {
+        		//print.printST(t);
+        	}	
+			
+        	// release connection
+			DatasourceConnectionPool pool = this.config.getDatasourceConnectionPool();
+			DatasourceConnection dc=ormSession.getDatasourceConnection();
+			if(dc!=null)pool.releaseDatasourceConnection(dc);
+	       
+        	ormSession=null;
+        }
         
 		
 		close();
@@ -520,6 +554,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	execLog.release();
 			execLog=null;
         }
+        
+        
+        
 	}
 	/**
 	 * @see javax.servlet.jsp.PageContext#initialize(javax.servlet.Servlet, javax.servlet.ServletRequest, javax.servlet.ServletResponse, java.lang.String, boolean, int, boolean)
@@ -589,7 +626,16 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
     
     public PageSource getPageSource(String realPath) {
-    	return config.getPageSource(applicationContext.getMappings(),realPath,false);
+    	return config.getPageSource(applicationContext.getMappings(),realPath,false,useSpecialMappings);
+	}
+
+    public boolean useSpecialMappings(boolean useTagMappings) {
+		boolean b=this.useSpecialMappings;
+		this.useSpecialMappings=useTagMappings;
+		return b;
+	}
+    public boolean useSpecialMappings() {
+		return useSpecialMappings;
 	}
     
 
@@ -683,9 +729,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	ps=(PageSource)includePathList.get(i);
         	if(i==0) {
         		if(!ps.equals(getBasePageSource()))
-        			sva.append(getBasePageSource().getPhyscalFile().getAbsolutePath());
+        			sva.append(ResourceUtil.getResource(this,getBasePageSource()).getAbsolutePath());
         	}
-        	sva.append(ps.getPhyscalFile().getAbsolutePath());
+        	sva.append(ResourceUtil.getResource(this, ps).getAbsolutePath());
         }
         //sva.setPosition(sva.size());
         return sva;
@@ -701,6 +747,19 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         return (PageSource) includePathList.get(index-1);
     }
     public synchronized void copyStateTo(PageContextImpl other) {
+    	
+    	
+    	
+    	
+    	// private Debugger debugger=new DebuggerImpl();
+    	other.requestTimeout=requestTimeout;
+    	other.locale=locale;
+    	other.timeZone=timeZone;
+    	other.fdEnabled=fdEnabled;
+    	other.useSpecialMappings=useSpecialMappings;
+    	
+    	
+    	
     	hasFamily=true;
     	other.hasFamily=true;
     	other.parent=this;
@@ -708,6 +767,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		other.thread=Thread.currentThread();
 		other.startTime=System.currentTimeMillis();
         other.isCFCRequest = isCFCRequest;
+        
+        
         
     	// path
     	other.base=base;
@@ -962,7 +1023,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @param local sets the current local scope
      * @param argument sets the current argument scope
      */
-    public void setFunctionScopes(Scope local,Argument argument) {// FUTURE setFunctionScopes(Local local,Argument argument)
+    public void setFunctionScopes(Scope local,Argument argument) {
+    	// FUTURE setFunctionScopes(Local local,Argument argument)
 		this.argument=argument;
 		this.local=local;
 		undefined.setFunctionScopes(local,argument);
@@ -1206,8 +1268,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			// range
 			if("range".equals(type)) {
 				double number = Caster.toDoubleValue(value);
-				if(Double.isNaN(min)) throw new ExpressionException("Missing attribute [min]");
-				if(Double.isNaN(max)) throw new ExpressionException("Missing attribute [max]");
+				if(!Decision.isValid(min)) throw new ExpressionException("Missing attribute [min]");
+				if(!Decision.isValid(max)) throw new ExpressionException("Missing attribute [max]");
 				if(number<min || number>max)
 					throw new ExpressionException("The number ["+Caster.toString(number)+"] is out of range [min:"+Caster.toString(min)+";max:"+Caster.toString(max)+"]");
 				setVariable(name,Caster.toDouble(number));
@@ -1694,10 +1756,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    					);
 	    		}
 	    	}
-	    	if(base==null) base=config.getPageSource(null,realPath,true);
+	    	if(base==null) base=config.getPageSource(null,realPath,true,false);
 	    	
 	    }
-	    else base=config.getPageSource(null,realPath,true);
+	    else base=config.getPageSource(null,realPath,true,false);
 	    
 	    try {
 	    	listener.onRequest(this,base);
@@ -2513,6 +2575,22 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	public void exeLogEndline(int line){
 		execLog.line(line);
+	}
+
+	
+	public ORMSession getORMSession() throws PageException {
+		ORMUtil.checkRestriction(this);
+		
+		if(ormSession==null || !ormSession.isValid())	{
+			ormSession=config.getORMEngine(this).createSession(this);
+		}
+		
+		DatasourceManagerImpl manager = (DatasourceManagerImpl) getDataSourceManager();
+		manager.add(this,ormSession);
+		
+		return ormSession;
+		
+		
 	}
 	
 }

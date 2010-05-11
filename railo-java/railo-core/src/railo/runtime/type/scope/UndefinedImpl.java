@@ -38,10 +38,10 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	private boolean allowImplicidQueryCall;
 	private boolean checkArguments;
 	private boolean localAlways;
-	private ArgumentImpl argument;
 	private short type;
 	private boolean isInit;
 	private Scope local;
+	private ArgumentPro argument;
 	private PageContextImpl pc;
 	
 	/**
@@ -93,7 +93,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
      */
 	public void setFunctionScopes(Scope local, Scope argument) {// FUTURE setFunctionScopes(Local local,Argument argument)
 		this.local=local;
-		this.argument=(ArgumentImpl) argument;
+		this.argument=(ArgumentPro) argument;
 	}
 
 	/**
@@ -206,13 +206,10 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		Object rtn=null;
 		if(checkArguments) {
 		    rtn=local.get(key,null);
-		    if(rtn!=null) {
-		    	return rtn;
-		    }
+		    if(rtn!=null) return rtn;
+
 		    rtn=argument.getFunctionArgument(key,null);
-		    if(rtn!=null) {
-		    	return rtn;
-		    }
+		    if(rtn!=null) return rtn;
 		}
 		
 		// get data from queries
@@ -395,7 +392,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 
     public Object get(Collection.Key key, Object defaultValue) {
 		Object rtn=null;
-            
+        
         if(checkArguments) {
             rtn=local.get(key,null);
             if(rtn!=null) return rtn;
@@ -472,7 +469,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public Object setEL(Collection.Key key, Object value) {
 		if(checkArguments) {
             if(localAlways || local.containsKey(key))     return local.setEL(key,value);
-            if(argument.containsKey(key))  return argument.setEL(key,value);
+            if(argument.containsFunctionArgumentKey(key))  return argument.setEL(key,value);
         }
 			
 		return variable.setEL(key,value);
@@ -485,7 +482,8 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public Object set(Collection.Key key, Object value) throws PageException {
 		if(checkArguments) {
         	if(localAlways || local.containsKey(key))     return local.set(key,value);
-            if(argument.containsKey(key))  return argument.set(key,value);
+            if(argument.containsFunctionArgumentKey(key))  return argument.set(key,value);
+            
         }
 		return variable.set(key,value);
 	}
@@ -518,7 +516,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		if(isInitalized()) return;
 		isInit=true;
 		variable=pc.variablesScope();
-        argument=(ArgumentImpl) pc.argumentsScope();
+        argument=(ArgumentPro) pc.argumentsScope();
 		local=pc.localScope();
 		allowImplicidQueryCall=pc.getConfig().allowImplicidQueryCall();
         type=pc.getConfig().getScopeCascadingType();

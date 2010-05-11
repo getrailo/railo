@@ -6,6 +6,7 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.PageException;
@@ -166,7 +167,7 @@ public class CastableStruct extends StructImpl  {
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		if(value==null) return super.toDumpData(pageContext, maxlevel,dp);
-		DumpTable table = new DumpTable("#009900","#33cc00","#263300");
+		DumpTable table = new DumpTablePro("struct","#009900","#33cc00","#263300");
 		table.setTitle("Value Struct");
 		maxlevel--;
 		table.appendRow(1,new SimpleDumpData("value"),DumpUtil.toDumpData(value, pageContext,maxlevel,dp));

@@ -7,13 +7,12 @@ import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
-import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpUtil;
-import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.op.Caster;
 import railo.runtime.security.ScriptProtect;
 import railo.runtime.type.Collection;
@@ -172,7 +171,13 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
             }
             else if(first=='c')	{
             	if(key.equals(CONTEXT_PATH))return toString(req.getContextPath());
-            	if(key.equals(CF_TEMPLATE_PATH))return toString(pc.getBasePageSource().getPhyscalFile());
+            	if(key.equals(CF_TEMPLATE_PATH)) {
+					try {
+						return toString(ResourceUtil.getResource(pc, pc.getBasePageSource()));
+					} catch (ExpressionException e) {
+						return "";
+					}
+            	}
             }
             else if(first=='h')	{
             	if(lkey.startsWith("http_")){
@@ -210,7 +215,13 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
         					"", true);
             }
                 //if(lkey.equals(PATH_INFO))		return toString(req.getAttribute("javax.servlet.include.path_info"));
-            	if(key.equals(PATH_TRANSLATED))	return toString(pc.getBasePageSource().getPhyscalFile());//toString(req.getServletPath());
+            	if(key.equals(PATH_TRANSLATED))	{
+            		try {
+						return toString(ResourceUtil.getResource(pc, pc.getBasePageSource()));
+					} catch (ExpressionException e) {
+						return "";
+					}//toString(req.getServletPath());
+            	}
             }
             else if(first=='q') {
             	if(key.equals(QUERY_STRING))return doScriptProtect(toString(req.getQueryString()));
@@ -288,11 +299,13 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		Iterator it=keyIterator();
+		return StructUtil.toDumpTable(this, "CGI Scope", pageContext, maxlevel, dp);
+		/*Iterator it=keyIterator();
 		maxlevel--;
 		DumpTable htmlBox = new DumpTable("#5965e4","#9999ff","#000000");
 		htmlBox.setTitle("CGI");
-
+		if(size()>10)htmlBox.setComment("Records:"+size());
+	    
 		int maxkeys=dp.getMaxKeys();
 		int index=0;
 		String key;
@@ -303,7 +316,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 				htmlBox.appendRow(1,new SimpleDumpData(key),DumpUtil.toDumpData(get(key,null), pageContext,maxlevel,dp));
 			}
 		}
-		return htmlBox;
+		return htmlBox;*/
 	}
     
     /**

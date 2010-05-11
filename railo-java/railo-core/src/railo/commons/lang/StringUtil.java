@@ -2,6 +2,7 @@ package railo.commons.lang;
 
 import java.io.UnsupportedEncodingException;
 
+import railo.print;
 import railo.commons.io.SystemUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
@@ -837,4 +838,55 @@ public final class StringUtil {
 		if(str==null || index<0 || index>str.length()) return defaultValue;
 		return str.substring(index);
 	}
+
+	/**
+	 * translate a string in camel notation to a string in hypen notation
+	 * example:
+	 * helloWorld -> hello-world
+	 * @param str
+	 * @return
+	 */
+	public static String camelToHypenNotation(String str) {
+		if(isEmpty(str)) return str;
+		
+		StringBuilder sb=new StringBuilder();
+		int len=str.length();
+		char c;
+		
+		sb.append(Character.toLowerCase(str.charAt(0)));
+		for(int i=1;i<str.length();i++){
+			c=str.charAt(i);
+			if(Character.isUpperCase(c)){
+				sb.append('-');
+				sb.append(Character.toLowerCase(c));
+			}
+			else sb.append(c);
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * translate a string in hypen notation to a string in camel notation
+	 * example:
+	 * hello-world -> helloWorld
+	 * @param str
+	 * @return
+	 */
+	public static String hypenToCamelNotation(String str) {
+		if(isEmpty(str)) return str;
+		
+		StringBuilder sb=new StringBuilder();
+		int len=str.length();
+		char c;
+		
+		for(int i=0;i<str.length();i++){
+			c=str.charAt(i);
+			if(c=='-'){
+				if(len>++i) sb.append(Character.toUpperCase(str.charAt(i)));
+			}
+			else sb.append(c);
+		}
+		return sb.toString();
+	}
+	
 }

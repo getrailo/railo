@@ -44,4 +44,12 @@ public final class Attribute {
 	public boolean isDynamicType() {
 		return dynamicType;
 	}
+	
+	public String toString(){
+		return "name:"+this.name
+		+";value:"+this.value
+		+";type:"+this.type
+		+";dynamicType:"+this.dynamicType
+		+";setterName:"+this.setterName;
+	}
 }

@@ -170,48 +170,4 @@ public class CFCGateway implements Gateway {
 	private Object call(String methodName,Struct arguments, Object defaultValue) throws PageException  {
 		return engine.call(cfcPath,id, methodName, arguments, true, defaultValue);
 	}
-
-	/*private Object callEL(String methodName,Struct arguments, Object defaultValue)  {
-		try {
-			return call(methodName, arguments, defaultValue);
-		} catch (PageException e) {
-			return defaultValue;
-		}
-	}
-	
-	private boolean callOneWay(String methodName,Struct arguments) throws PageException {
-		return call(methodName, arguments, OBJ)!=OBJ;
-	}
-
-	private Object call(String methodName,Struct arguments, Object defaultValue) throws PageException  {
-		DevNullOutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
-
-		PageContext oldPC = ThreadLocalPageContext.get();
-		PageContextImpl pc = ThreadUtil.createPageContext(config, os, "localhost", requestURI, "", null, null, null, null);
-		pc.setRequestTimeout(999999999999999999L);       
-		try {
-			ThreadLocalPageContext.register(pc);
-			if(getCFC(pc).containsKey(methodName)){
-				return getCFC(pc).callWithNamedValues(pc, methodName, arguments);
-			}
-		}
-		finally{
-			ThreadLocalPageContext.register(oldPC);
-		}
-		return defaultValue;
-	}
-	
-	
-	private Component getCFC(PageContextImpl pc) throws PageException{
-		if(_cfc==null){
-			Mapping m=new MappingImpl((ConfigImpl)config,"/",cfcDirectory.getAbsolutePath(),null,false,true,false,false,false);
-			
-			
-			PageSource ps = m.getPageSource(requestURI);
-			Page p = ps.loadPage((ConfigWeb)config);
-			_cfc=ComponentLoader.loadComponentImpl(pc, p, ps, cfcPath, false);
-			//pc.loadComponent(cfcPath);
-		}
-		return _cfc;
-	}*/
 }

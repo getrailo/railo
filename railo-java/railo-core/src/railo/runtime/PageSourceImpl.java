@@ -91,6 +91,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         this.mapping=mapping;
 	    this.isOutSide=isOutSide;
 		this.realPath=realPath;
+		
 	}
 
 	
@@ -325,7 +326,6 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	 * @return merged realpath
 	 */
 	private static String mergeRealPathes(Mapping mapping,String parentRealPath, String newRealPath, RefBoolean isOutSide) {
-
 		parentRealPath=pathRemoveLast(parentRealPath,isOutSide);
 		while(newRealPath.startsWith("../")) {
 			parentRealPath=pathRemoveLast(parentRealPath,isOutSide);

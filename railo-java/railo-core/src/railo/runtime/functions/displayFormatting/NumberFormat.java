@@ -11,6 +11,7 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.util.InvalidMaskException;
 
 /**
@@ -56,7 +57,7 @@ public final class NumberFormat implements Function {
     
     public static double toNumber(PageContext pc, Object object) throws PageException {
         double d=Caster.toDoubleValue(object,Double.NaN);
-        if(!Double.isNaN(d)) return d;
+        if(Decision.isValid(d)) return d;
         
         String str=Caster.toString(object);
         if(str.length()==0) return 0;

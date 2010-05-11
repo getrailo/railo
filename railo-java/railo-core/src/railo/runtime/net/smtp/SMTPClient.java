@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Properties;
 
 import javax.activation.DataHandler;
 import javax.mail.Authenticator;
+import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -28,6 +30,7 @@ import railo.commons.collections.HashTable;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.ConfigImpl;
@@ -35,6 +38,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.mail.EmailNamePair;
 import railo.runtime.net.mail.MailException;
+import railo.runtime.net.mail.MailPart;
 import railo.runtime.net.mail.MailUtil;
 import railo.runtime.net.mail.Server;
 import railo.runtime.net.mail.ServerImpl;
@@ -104,6 +108,7 @@ public final class SMTPClient implements Serializable  {
 	private int tls=TLS_NONE;
 	
 	ProxyData proxyData=new ProxyDataImpl();
+	private ArrayList<MailPart> parts;
 	
 	public void setSpoolenable(boolean spoolenable) {
 		spool=spoolenable?SPOOL_YES:SPOOL_NO;
@@ -192,13 +197,14 @@ public final class SMTPClient implements Serializable  {
 		tos=add(tos,to);
 	}
 
-	/**
-	 * @throws MailException 
+	/** 
 	 * @throws UnsupportedEncodingException 
 	 * @throws AddressException 
+	 * @throws PageException 
+	 * @throws MailException 
 	 * @see mail.Mail#addTo(java.lang.String)
 	 */
-	public void addTo(String to) throws AddressException, UnsupportedEncodingException, MailException {
+	public void addTo(Object to) throws AddressException, UnsupportedEncodingException, PageException, MailException {
 		InternetAddress[] tmp = EmailNamePair.toInternetAddress(to);
 		for(int i=0;i<tmp.length;i++) {
 			addTo(tmp[i]);
@@ -216,9 +222,10 @@ public final class SMTPClient implements Serializable  {
 	 * @throws MailException 
 	 * @throws UnsupportedEncodingException 
 	 * @throws AddressException 
+	 * @throws PageException 
 	 * @see mail.Mail#setFrom(java.lang.String)
 	 */
-	public void setFrom(String from) throws AddressException, UnsupportedEncodingException, MailException {
+	public void setFrom(Object from) throws AddressException, UnsupportedEncodingException, MailException, PageException {
 		setFrom(EmailNamePair.toInternetAddress(from)[0]);
 	}
 	/**
@@ -232,9 +239,10 @@ public final class SMTPClient implements Serializable  {
 	 * @throws MailException 
 	 * @throws UnsupportedEncodingException 
 	 * @throws AddressException 
+	 * @throws PageException 
 	 * @see mail.Mail#addBCC(java.lang.String)
 	 */
-	public void addBCC(String bcc) throws AddressException, UnsupportedEncodingException, MailException {
+	public void addBCC(Object bcc) throws AddressException, UnsupportedEncodingException, MailException, PageException {
 		InternetAddress[] tmp = EmailNamePair.toInternetAddress(bcc);
 		for(int i=0;i<tmp.length;i++) {
 			addBCC(tmp[i]);
@@ -252,9 +260,10 @@ public final class SMTPClient implements Serializable  {
 	 * @throws MailException 
 	 * @throws UnsupportedEncodingException 
 	 * @throws AddressException 
+	 * @throws PageException 
 	 * @see mail.Mail#addCC(java.lang.String)
 	 */
-	public void addCC(String cc) throws AddressException, UnsupportedEncodingException, MailException {
+	public void addCC(Object cc) throws AddressException, UnsupportedEncodingException, MailException, PageException {
 		InternetAddress[] tmp = EmailNamePair.toInternetAddress(cc);
 		for(int i=0;i<tmp.length;i++) {
 			addCC(tmp[i]);
@@ -272,9 +281,10 @@ public final class SMTPClient implements Serializable  {
 	 * @throws MailException 
 	 * @throws UnsupportedEncodingException 
 	 * @throws AddressException 
+	 * @throws PageException 
 	 * @see mail.Mail#addReplyTo(java.lang.String)
 	 */
-	public void addReplyTo(String rt) throws AddressException, UnsupportedEncodingException, MailException {
+	public void addReplyTo(Object rt) throws AddressException, UnsupportedEncodingException, MailException, PageException {
 		InternetAddress[] tmp = EmailNamePair.toInternetAddress(rt);
 		for(int i=0;i<tmp.length;i++) {
 			addReplyTo(tmp[i]);
@@ -292,9 +302,10 @@ public final class SMTPClient implements Serializable  {
 	 * @throws MailException 
 	 * @throws UnsupportedEncodingException 
 	 * @throws AddressException 
+	 * @throws PageException 
 	 * @see mail.Mail#addFailTo(java.lang.String)
 	 */
-	public void addFailTo(String ft) throws AddressException, UnsupportedEncodingException, MailException {
+	public void addFailTo(Object ft) throws AddressException, UnsupportedEncodingException, MailException, PageException {
 		InternetAddress[] tmp = EmailNamePair.toInternetAddress(ft);
 		for(int i=0;i<tmp.length;i++) {
 			addFailTo(tmp[i]);
@@ -452,19 +463,13 @@ public final class SMTPClient implements Serializable  {
 	    msg.setHeader("X-Mailer", xmailer);
 	    msg.setSentDate(new Date());
 			
-	// Headers
-	    Iterator it = headers.keySet().iterator();
-	    String key;
-	    while(it.hasNext()) {
-	    	key = (String)it.next();
-	    	msg.setHeader(key, (String)headers.get(key));
-	    }
 	    Multipart mp=null;
 	    
 		// Only HTML
 		if(plainText==null) {
-			if(ArrayUtil.isEmpty(attachmentz)){
+			if(ArrayUtil.isEmpty(attachmentz) && ArrayUtil.isEmpty(parts)){
 				fillHTMLText(msg);
+				setHeaders(msg,headers);
 				return new MimeMessageAndSession(msg,session);
 			}
 			mp = new MimeMultipart();
@@ -472,8 +477,9 @@ public final class SMTPClient implements Serializable  {
 		}
 		// only Plain
 		else if(htmlText==null) {
-			if(ArrayUtil.isEmpty(attachmentz)){
+			if(ArrayUtil.isEmpty(attachmentz) && ArrayUtil.isEmpty(parts)){
 				fillPlainText(msg);
+				setHeaders(msg,headers);
 				return new MimeMessageAndSession(msg,session);
 			}
 			mp = new MimeMultipart();
@@ -485,7 +491,7 @@ public final class SMTPClient implements Serializable  {
 			mp.addBodyPart(getPlainText());
 			mp.addBodyPart(getHTMLText());
 			
-			if(!ArrayUtil.isEmpty(attachmentz)){
+			if(!ArrayUtil.isEmpty(attachmentz) || !ArrayUtil.isEmpty(parts)){
 				MimeBodyPart content = new MimeBodyPart();
 				content.setContent(mp);
 				mp = new MimeMultipart();
@@ -493,19 +499,40 @@ public final class SMTPClient implements Serializable  {
 			}
 		}
 		
+		// parts
+		if(!ArrayUtil.isEmpty(parts)){
+			Iterator<MailPart> it = parts.iterator();
+			if(mp instanceof MimeMultipart)
+				((MimeMultipart)mp).setSubType("alternative");
+			while(it.hasNext()){
+				mp.addBodyPart(toMimeBodyPart(it.next()));	
+			}
+		}
 		
 		// Attachments
 		if(!ArrayUtil.isEmpty(attachmentz)){
 			for(int i=0;i<attachmentz.length;i++) {
-				mp.addBodyPart(toMimeBodyPart(config,attachmentz[i]));	
+				mp.addBodyPart(toMimeBodyPart(mp,config,attachmentz[i]));	
 			}	
 		}		
 		msg.setContent(mp);
+		setHeaders(msg,headers);
 	    
 		return new MimeMessageAndSession(msg,session);
 	}
 	
 	
+
+	
+
+	private static void setHeaders(SMTPMessage msg, Map headers) throws MessagingException {
+		Iterator it = headers.keySet().iterator();
+	    String key;
+	    while(it.hasNext()) {
+	    	key = (String)it.next();
+	    	msg.setHeader(key, (String)headers.get(key));
+	    }
+	}
 
 	private void checkAddress(InternetAddress[] ias,String charset) { // DIFF 23
 		for(int i=0;i<ias.length;i++) {
@@ -571,17 +598,17 @@ public final class SMTPClient implements Serializable  {
 		attachmentz=add(attachmentz, mbp);
 	}
 
-	public void addAttachment(Resource resource, String type, String disposition, String contentID) {
-		Attachment att = new Attachment(resource, type, disposition, contentID);
+	public void addAttachment(Resource resource, String type, String disposition, String contentID,boolean removeAfterSend) {
+		Attachment att = new Attachment(resource, type, disposition, contentID,removeAfterSend);
 		attachmentz=add(attachmentz, att);
 	}
 	
-	public MimeBodyPart toMimeBodyPart(railo.runtime.config.Config config,Attachment att) throws MessagingException  {
+	public MimeBodyPart toMimeBodyPart(Multipart mp, railo.runtime.config.Config config,Attachment att) throws MessagingException  {
 		
 		MimeBodyPart mbp = new MimeBodyPart();
 		
 		// set Data Source
-		String strRes = att.getResource();
+		String strRes = att.getResource().getAbsolutePath();
 		if(!StringUtil.isEmpty(strRes)){
 			
 			mbp.setDataHandler(new DataHandler(new ResourceDataSource(config.getResource(strRes))));
@@ -590,7 +617,12 @@ public final class SMTPClient implements Serializable  {
 		
 		mbp.setFileName(att.getFileName());
 		if(!StringUtil.isEmpty(att.getType())) mbp.setHeader("Content-Type", att.getType());
-		if(!StringUtil.isEmpty(att.getDisposition()))mbp.setDisposition(att.getDisposition());
+		if(!StringUtil.isEmpty(att.getDisposition())){
+			mbp.setDisposition(att.getDisposition());
+			if(mp instanceof MimeMultipart)
+				((MimeMultipart)mp).setSubType("related");
+			
+		}
 		if(!StringUtil.isEmpty(att.getContentID()))mbp.setContentID(att.getContentID());
 			
 		return mbp;
@@ -602,7 +634,7 @@ public final class SMTPClient implements Serializable  {
 	 * @throws FileNotFoundException 
 	 */
 	public void addAttachment(Resource file) throws MessagingException {
-		addAttachment(file,null,null,null);
+		addAttachment(file,null,null,null,false);
 	}
 	
 
@@ -708,18 +740,25 @@ public final class SMTPClient implements Serializable  {
             		sender.start();
             		LOCK.wait(timeout);
                 	if(!sender.hasSended()) {
+                		try{
+                			sender.stop();
+                		}
+                		catch(Throwable t){}
                 		if(sender.hasError()) throw sender.getMessageExpection();
                 		throw new MessagingException("timeout occurred after "+(timeout/1000)+" seconds while sending mail message");
                 	}
+                	clean();
 	            	log.info("mail","send mail");
 					break;
 				} 
 	            catch (Exception me) {
-					log.error("mail spooler",me.getMessage());
 					if(i+1==servers.length) {
 						String msg=me.getMessage();
 						if(StringUtil.isEmpty(msg))msg=Caster.toClassName(me);
-	                    throw new MailException(server.getHostName()+" "+msg);
+						
+						log.error("mail spooler",msg);
+						throw new MailException(
+	                    		server.getHostName()+" "+msg+":"+i);
 	                }
 				}
 			}
@@ -727,6 +766,14 @@ public final class SMTPClient implements Serializable  {
 		}
 		finally {
         	Proxy.end();
+		}
+	}
+
+	// remove all atttachements that are marked to remove
+	private void clean() {
+		if(attachmentz!=null)for(int i=0;i<attachmentz.length;i++){
+			if(attachmentz[i].isRemoveAfterSend())
+				ResourceUtil.removeEL(attachmentz[i].getResource(),true);
 		}
 	}
 
@@ -738,7 +785,7 @@ public final class SMTPClient implements Serializable  {
 	
 	private void fillHTMLText(MimePart mp) throws MessagingException {
 		mp.setDataHandler(new DataHandler(new StringDataSource(htmlText,TEXT_HTML ,htmlTextCharset)));
-		mp.setHeader("Content-Transfer-Encoding", "quoted-printable");
+		mp.setHeader("Content-Transfer-Encoding", "7bit");
 		mp.setHeader("Content-Type", TEXT_HTML+"; charset="+htmlTextCharset);
 	}
 
@@ -749,8 +796,16 @@ public final class SMTPClient implements Serializable  {
 	}
 	private void fillPlainText(MimePart mp) throws MessagingException {
 		mp.setDataHandler(new DataHandler(new StringDataSource(plainText,TEXT_PLAIN ,plainTextCharset)));
-		mp.setHeader("Content-Transfer-Encoding", "quoted-printable");
+		mp.setHeader("Content-Transfer-Encoding", "7bit");
 		mp.setHeader("Content-Type", TEXT_PLAIN+"; charset="+plainTextCharset);
+	}
+	
+	private BodyPart toMimeBodyPart(MailPart part) throws MessagingException {
+		MimeBodyPart mbp = new MimeBodyPart();
+		mbp.setDataHandler(new DataHandler(new StringDataSource(part.getBody(),part.getType() ,part.getCharset())));
+		//mbp.setHeader("Content-Transfer-Encoding", "7bit");
+		//mbp.setHeader("Content-Type", TEXT_PLAIN+"; charset="+plainTextCharset);
+		return mbp;
 	}
 
 	/**
@@ -814,5 +869,10 @@ public final class SMTPClient implements Serializable  {
 	 */
 	public InternetAddress[] getCcs() {
 		return ccs;
+	}
+
+	public void setPart(MailPart part) {
+		if(parts==null) parts=new ArrayList<MailPart>();
+		parts.add(part);
 	}
 }

@@ -41,9 +41,11 @@
    		---><cfargument name="caller" type="struct"><!---
 		---><cfsilent>
         <!--- eval --->
+        <cfset var attributes=arguments.attributes>
+        
         <cfif not StructKeyExists(attributes,'var') and StructKeyExists(attributes,'eval')>
         	<cfif not len(attributes.label)><cfset attributes.label=attributes.eval></cfif>
-            <cfset attributes.var=evaluate(attributes.eval,caller)>
+            <cfset attributes.var=evaluate(attributes.eval,arguments.caller)>
         </cfif>
         
         <!--- context --->
@@ -94,7 +96,7 @@
 	<cfargument name="expand" type="string" required="no" default="">
 	<cfargument name="output" type="string" required="no" default="">
 	<cfargument name="inside" type="boolean" required="no" default="#false#">
-    <cfset var columncount=StructKeyExists(meta,'data')?listLen(meta.data.columnlist):0>
+    <cfset var columncount=StructKeyExists(arguments.meta,'data')?listLen(arguments.meta.data.columnlist):0>
     <cfset var rtn="">
     <cfset var id="_dump"&hash(CreateUUID())>
    
@@ -114,13 +116,13 @@ function dumpOC(name){
 </script>
 
 <table cellpadding="3" cellspacing="1"
-    style="font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;font-size : 11px;color :#meta.fontColor# ;empty-cells:show;"
-	#structKeyExists(meta,'width')?' width="'&meta.width&'"':''##structKeyExists(meta,'height')?' height="'&meta.height&'"':''#>
+    style="font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;font-size : 11px;color :#arguments.meta.fontColor# ;empty-cells:show;"
+	#structKeyExists(arguments.meta,'width')?' width="'&arguments.meta.width&'"':''##structKeyExists(arguments.meta,'height')?' height="'&arguments.meta.height&'"':''#>
 <!--- title --->
-<cfif structKeyExists(meta,'title')><tr>
-	<td title="#context#" onclick="dumpOC('#id#');" colspan="#columncount#" bgcolor="#meta.highLightColor#" style="border : 1px solid #meta.borderColor#; empty-cells:show;">
-		<span style="font-weight:bold;">#meta.title#</span>
-        <cfif structKeyExists(meta,'comment')><br />#meta.comment#</cfif>
+<cfif structKeyExists(arguments.meta,'title')><tr>
+	<td title="#arguments.context#" onclick="dumpOC('#id#');" colspan="#columncount#" bgcolor="#arguments.meta.highLightColor#" style="border : 1px solid #arguments.meta.borderColor#; empty-cells:show;">
+		<span style="font-weight:bold;">#arguments.meta.title#</span>
+        <cfif structKeyExists(arguments.meta,'comment')><br /> #replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all')#</cfif>
     </td>
 </tr>
 <cfelse>
@@ -129,10 +131,10 @@ function dumpOC(name){
 <!--- data --->
 <cfset var value="">
 <cfset var c=1>
-<cfif columncount><cfloop query="meta.data">
-<tr #len(id)?'name="_#id#"':''#<cfif len(id)> name="_#id#"<cfif not expand> style="display:none"</cfif></cfif>>
-<cfset c=1><cfloop index="col" from="1" to="#columncount-1#"><cfset value=meta.data["data"&col]>
-	<td valign="top" #!inside?'title="#context#"':''# bgcolor="#bgColor(meta,c)#" style="border : 1px solid #meta.borderColor#;empty-cells:show;"><cfif isStruct(value)>#html(value,"",expand,output,false)#<cfelse>#HTMLEditFormat(value)#</cfif></td><cfset c*=2>
+<cfif columncount><cfloop query="arguments.meta.data">
+<tr #len(id)?'name="_#id#"':''#<cfif len(id)> name="_#id#"<cfif not arguments.expand> style="display:none"</cfif></cfif>>
+<cfset c=1><cfloop index="col" from="1" to="#columncount-1#"><cfset value=arguments.meta.data["data"&col]>
+	<td valign="top" #!arguments.inside?'title="#arguments.context#"':''# bgcolor="#bgColor(arguments.meta,c)#" style="border : 1px solid #arguments.meta.borderColor#;empty-cells:show;"><cfif isStruct(value)>#this.html(value,"",arguments.expand,arguments.output,false)#<cfelse>#HTMLEditFormat(value)#</cfif></td><cfset c*=2>
 </cfloop>
 </tr>
 </cfloop></cfif>
@@ -153,15 +155,15 @@ function dumpOC(name){
 	<cfargument name="expand" type="string" required="no" default="">
 	<cfargument name="output" type="string" required="no" default="">
 	<cfargument name="inside" type="boolean" required="no" default="#false#">
-    <cfset var columncount=StructKeyExists(meta,'data')?listLen(meta.data.columnlist):0>
+    <cfset var columncount=StructKeyExists(arguments.meta,'data')?listLen(arguments.meta.data.columnlist):0>
     <cfset var rtn="">
 	<cfset var id="_dump"&(this.indexCount++)>
     
     <!--- deine colors --->
-    <cfset var h1Color=meta.highLightColor>
-    <cfset var h2Color=meta.normalColor>
-    <cfset meta.normalColor="white">
-    <cfset borderColor=meta.highLightColor>
+    <cfset var h1Color=arguments.meta.highLightColor>
+    <cfset var h2Color=arguments.meta.normalColor>
+    <cfset arguments.meta.normalColor="white">
+    <cfset borderColor=arguments.meta.highLightColor>
 	<cftry>
     	<cfset borderColor=ColorCaster.toHexString(ColorCaster.toColor(h1Color).darker().darker())>
         <cfcatch></cfcatch>
@@ -184,13 +186,13 @@ function dumpOC(name){
 </script>
 
 <table cellpadding="3" cellspacing="0"
-    style="font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;font-size : 10;color :#meta.fontColor# ;empty-cells:show; border : 1px solid #borderColor#;"
-	#structKeyExists(meta,'width')?' width="'&meta.width&'"':''##structKeyExists(meta,'height')?' height="'&meta.height&'"':''#>
+    style="font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;font-size : 10;color :#arguments.meta.fontColor# ;empty-cells:show; border : 1px solid #borderColor#;"
+	#structKeyExists(arguments.meta,'width')?' width="'&arguments.meta.width&'"':''##structKeyExists(arguments.meta,'height')?' height="'&arguments.meta.height&'"':''#>
 <!--- title --->
-<cfif structKeyExists(meta,'title')><tr>
-	<td title="#context#" onclick="dumpOC('#id#');" colspan="#columncount#" bgcolor="#h1Color#" style="color:white;border : 1px solid #borderColor#; empty-cells:show;">
-		<span style="font-weight:bold;">#meta.title#</span>
-        <cfif structKeyExists(meta,'comment')><br />#meta.comment#</cfif>
+<cfif structKeyExists(arguments.meta,'title')><tr>
+	<td title="#arguments.context#" onclick="dumpOC('#id#');" colspan="#columncount#" bgcolor="#h1Color#" style="color:white;border : 1px solid #borderColor#; empty-cells:show;">
+		<span style="font-weight:bold;">#arguments.meta.title#</span>
+        <cfif structKeyExists(arguments.meta,'comment')><br />#replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all')#</cfif>
     </td>
 </tr>
 <cfelse>
@@ -199,15 +201,15 @@ function dumpOC(name){
 <!--- data --->
 <cfset var value="">
 <cfset var c=1>
-<cfif columncount><cfloop query="meta.data">
+<cfif columncount><cfloop query="arguments.meta.data">
 <tr #len(id)?'name="_#id#"':''#>
-<cfset c=1><cfloop index="col" from="1" to="#columncount-1#"><cfset value=meta.data["data"&col]>
-	<td valign="top" #!inside?'title="#context#"':''# bgcolor="#bgColor(meta,c,h2Color)#" style="border : 1px solid #borderColor#;empty-cells:show;"><cfif isStruct(value)>#classic(value,"",expand,output,false)#<cfelse>#HTMLEditFormat(value)#</cfif></td><cfset c*=2>
+<cfset c=1><cfloop index="col" from="1" to="#columncount-1#"><cfset value=arguments.meta.data["data"&col]>
+	<td valign="top" #!arguments.inside?'title="#arguments.context#"':''# bgcolor="#bgColor(arguments.meta,c,h2Color)#" style="border : 1px solid #borderColor#;empty-cells:show;"><cfif isStruct(value)>#this.classic(value,"",arguments.expand,arguments.output,false)#<cfelse>#HTMLEditFormat(value)#</cfif></td><cfset c*=2>
 </cfloop>
 </tr>
 </cfloop></cfif>
 </table>    
-<cfif not expand><script>dumpOC('#id#');</script></cfif>
+<cfif not arguments.expand><script>dumpOC('#id#');</script></cfif>
 </cfoutput></cfsavecontent>
 <cfreturn rtn>
 </cffunction>
@@ -220,27 +222,27 @@ function dumpOC(name){
 	<cfargument name="context" type="string" required="no" default="">
 	<cfargument name="expand" type="string" required="no" default="">
 	<cfargument name="output" type="string" required="no" default="">
-    <cfset var columncount=StructKeyExists(meta,'data')?listLen(meta.data.columnlist):0>
+    <cfset var columncount=StructKeyExists(arguments.meta,'data')?listLen(arguments.meta.data.columnlist):0>
     <cfset var rtn="">
 	
 <cfsavecontent variable="rtn"><cfoutput>
-<table  cellpadding="1" cellspacing="0"#structKeyExists(meta,'width')?' width="'&meta.width&'"':''##structKeyExists(meta,'height')?' height="'&meta.height&'"':''# border="1">
+<table  cellpadding="1" cellspacing="0"#structKeyExists(arguments.meta,'width')?' width="'&arguments.meta.width&'"':''##structKeyExists(arguments.meta,'height')?' height="'&arguments.meta.height&'"':''# border="1">
 <!--- title --->
-<cfif structKeyExists(meta,'title')>
+<cfif structKeyExists(arguments.meta,'title')>
 <tr>
-	<td title="#context#" colspan="#columncount#" bgcolor="#meta.highLightColor#">
-		<b>#meta.title#</b>
-        <cfif structKeyExists(meta,'comment')><br />#meta.comment#</cfif>
+	<td title="#arguments.context#" colspan="#columncount#" bgcolor="#arguments.meta.highLightColor#">
+		<b>#arguments.meta.title#</b>
+        <cfif structKeyExists(arguments.meta,'comment')><br />#replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all')#</cfif>
     </td>
 </tr>
 </cfif>
 <!--- data --->
 <cfset var value="">
 <cfset var c=1>
-<cfif columncount><cfloop query="meta.data">
+<cfif columncount><cfloop query="arguments.meta.data">
 <tr><cfset c=1><cfloop index="col" from="1" to="#columncount-1#">
-	<cfset value=meta.data["data"&col]><!---
-	---><td title="#context#" bgcolor="#bgColor(meta,c)#"><cfif isStruct(value)>#simple(value,"",expand)#<cfelseif len(value)>#HTMLEditFormat(value)#<cfelse>&nbsp;</cfif></td><!---
+	<cfset value=arguments.meta.data["data"&col]><!---
+	---><td title="#arguments.context#" bgcolor="#bgColor(arguments.meta,c)#"><cfif isStruct(value)>#this.simple(value,"",arguments.expand)#<cfelseif len(value)>#HTMLEditFormat(value)#<cfelse>&nbsp;</cfif></td><!---
     ---><cfset c*=2><!---
 ---></cfloop>
 </tr>
@@ -262,13 +264,13 @@ function dumpOC(name){
 	<cfargument name="level" type="numeric" required="no" default="0">
     
     
-    <cfset var columncount=StructKeyExists(meta,'data')?listLen(meta.data.columnlist):0>
+    <cfset var columncount=StructKeyExists(arguments.meta,'data')?listLen(arguments.meta.data.columnlist):0>
     <cfset var rtn="">
 	<cfset var bq=RepeatString("	",level)>
 
 	<!--- title --->
-	<cfif structKeyExists(meta,'title')>
-		<cfset rtn=meta.title><cfif structKeyExists(meta,'comment')><cfset rtn&=NL&meta.comment></cfif>
+	<cfif structKeyExists(arguments.meta,'title')>
+		<cfset rtn=arguments.meta.title><cfif structKeyExists(arguments.meta,'comment')><cfset rtn&=NL&arguments.meta.comment></cfif>
         <cfset rtn&=NL&bq>
 	</cfif>
 	<!--- data --->
@@ -276,11 +278,11 @@ function dumpOC(name){
     <cfset var value="">
     <cfset var c=1>
     <cfif columncount>
-    	<cfloop query="meta.data">
+    	<cfloop query="arguments.meta.data">
 			<cfset c=1>
             <cfloop index="col" from="1" to="#columncount-1#">
-                <cfset value=meta.data["data"&col]>
-                <cfif isStruct(value)><cfset rtn&=text(value,"",expand,"console",level+1)><cfelse><cfset rtn&=value></cfif>
+                <cfset value=arguments.meta.data["data"&col]>
+                <cfif isStruct(value)><cfset rtn&=this.text(value,"",arguments.expand,"console",level+1)><cfelse><cfset rtn&=value></cfif>
                 <cfset rtn&=" ">
 				<cfset c*=2>
             </cfloop>
@@ -289,21 +291,21 @@ function dumpOC(name){
         </cfloop>
 	</cfif>
       
-    <cfif output NEQ "console"><cfreturn "<pre>"&rtn&"</pre>"></cfif>
+    <cfif arguments.output NEQ "console"><cfreturn "<pre>"&rtn&"</pre>"></cfif>
     <cfreturn rtn>
 </cffunction>
 
     <cffunction name="bgColor" output="no" returntype="string" access="private">
         <cfargument name="meta" type="struct" required="yes">
         <cfargument name="c" type="numeric" required="yes">
-        <cfargument name="highLightColor" type="string" required="no" default="#meta.highLightColor#">
+        <cfargument name="highLightColor" type="string" required="no" default="#arguments.meta.highLightColor#">
         
-		<cfif meta.data.highlight EQ -1>
+		<cfif arguments.meta.data.highlight EQ -1>
             <cfreturn highLightColor>
-        <cfelseif meta.data.highlight EQ 0>
-            <cfreturn meta.normalColor>
+        <cfelseif arguments.meta.data.highlight EQ 0>
+            <cfreturn arguments.meta.normalColor>
         <cfelse>
-            <cfreturn bitand(meta.data.highlight,c)?highLightColor:meta.normalColor>
+            <cfreturn bitand(arguments.meta.data.highlight,c)?highLightColor:arguments.meta.normalColor>
         </cfif>
     </cffunction>
 </cfcomponent>

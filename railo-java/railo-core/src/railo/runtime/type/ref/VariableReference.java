@@ -94,6 +94,9 @@ public final class VariableReference implements Reference {
 		public Object set(PageContext pc, Object value) throws PageException { 
 			return coll.set(key,value); 
 		} 
+		public void set(double value) throws PageException { 
+			coll.set(key,Caster.toDouble(value)); 
+		} 
 
 		/**
 		 * @see railo.runtime.type.ref.Reference#setEL(railo.runtime.PageContext, java.lang.Object)

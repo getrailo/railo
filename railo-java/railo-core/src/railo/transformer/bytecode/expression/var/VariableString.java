@@ -1,5 +1,6 @@
 package railo.transformer.bytecode.expression.var;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,17 +34,25 @@ public final class VariableString extends ExpressionBase implements ExprString {
 		return new VariableString(expr);
 	}
 	
-	private static ExprString translateVariableToExprString(Expression expr) throws BytecodeException {
+	public static ExprString translateVariableToExprString(Expression expr) throws BytecodeException {
 		if(expr instanceof ExprString) return (ExprString) expr;
 		return LitString.toExprString(translateVariableToString(expr), expr.getLine());
 	}
+	
 	private static String translateVariableToString(Expression expr) throws BytecodeException {
 		if(!(expr instanceof Variable)) throw new BytecodeException("can't translate value to a string",expr.getLine());
-		Variable var=(Variable) expr;
+		return variableToString((Variable) expr);
+	}
+		
+
+	public static String variableToString(Variable var) throws BytecodeException {
+		return railo.runtime.type.List.arrayToList(variableToStringArray(var),".");
+	}
+	public static String[] variableToStringArray(Variable var) throws BytecodeException {
 		List members = var.getMembers();
 			
-		StringBuffer sb=new StringBuffer();
-		if(var.getScope()!=Scope.SCOPE_UNDEFINED)sb.append(ScopeFactory.toStringScope(var.getScope()));
+		List<String> arr=new ArrayList<String>();
+		if(var.getScope()!=Scope.SCOPE_UNDEFINED)arr.add(ScopeFactory.toStringScope(var.getScope()));
 		Iterator it = members.iterator();
 		DataMember dm;
 		Expression n;
@@ -55,12 +64,11 @@ public final class VariableString extends ExpressionBase implements ExprString {
 			n=dm.getName();
 			if(n instanceof Literal) {
 				l=(Literal) n;
-				if(sb.length()>0)sb.append('.');
-				sb.append(l.getString());
+				arr.add(l.getString());
 			}
 			else throw new BytecodeException("argument name must be a constant value",var.getLine());
 		}
-		return sb.toString();
+		return arr.toArray(new String[arr.size()]);
 	}
 	
 	public String castToString() throws BytecodeException{

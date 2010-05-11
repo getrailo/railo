@@ -94,30 +94,5 @@ public class TagUtil {
         else attributes.setEL(KeyImpl.init(name), value);
 	}
 
-	/*public static Struct toAttributeStruct(TagLibTag tlt, Object[] attrs) throws PageException {
-		if(ArrayUtil.isEmpty(attrs)) return new StructImpl();
-		FunctionValue fv;
-		Struct sct=new StructImpl();
-		
-		// named arguments
-		if(attrs[0] instanceof FunctionValue){
-			for(int i=0;i<attrs.length;i++) {
-				if(attrs[i] instanceof FunctionValue) {
-					fv=((FunctionValue)attrs[i]);
-					sct.set(fv.getName(),fv.getValue());
-				}
-				else {
-					throw new ExpressionException("invalid call of the function [\"+tlt.getName()+\", you can not mix named on regular arguments]");
-				}
-			}
-			
-		}
-		// named arguments
-		else {
-			throw new ExpressionException("invalid call of the function [\"+tlt.getName()+\", you can not mix named on regular arguments]");
-			
-		}
-		return sct;
-		
-	}*/
+	
 }

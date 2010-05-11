@@ -96,12 +96,35 @@ public class CFMLWriterImpl extends CFMLWriter {
      * @param headData
      * @throws IOException
      */
-    public void setToHTMLHead(String headData) throws IOException {
+    public void appendHTMLHead(String headData) throws IOException {
         if(!flushed) {
             if(this.headData==null)this.headData=headData;
             else this.headData+=headData;
         }
         else throw new IOException("page already flushed");
+    }
+    
+    public void writeHTMLHead(String headData) throws IOException {
+        if(!flushed) {
+            this.headData=headData;
+        }
+        else throw new IOException("page already flushed");
+    }
+    
+    /** 
+     * @see railo.runtime.writer.CFMLWriter#getHTMLHead()
+     */
+    public String getHTMLHead() throws IOException {
+    	if(flushed) throw new IOException("page already flushed");
+        return headData==null?"":headData;
+    }
+    
+    /** 
+     * @see railo.runtime.writer.CFMLWriter#resetHTMLHead()
+     */
+    public void resetHTMLHead() throws IOException {
+    	if(flushed) throw new IOException("page already flushed");
+        headData=null;
     }
 
 

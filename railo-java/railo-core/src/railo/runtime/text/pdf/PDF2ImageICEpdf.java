@@ -21,6 +21,10 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Constants;
 
 public class PDF2ImageICEpdf extends PDF2Image {
+	
+	public PDF2ImageICEpdf(){
+		Document.class.getName();// this is needed, that the class throws a error when the PDFRenderer.jar is not in the enviroment
+	}
 
 	/**
 	 * @see railo.runtime.text.pdf.PDF2Image#toImage(byte[], int)

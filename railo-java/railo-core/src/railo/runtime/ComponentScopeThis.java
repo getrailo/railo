@@ -6,11 +6,7 @@ import java.util.Set;
 import railo.runtime.component.Member;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
-import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpUtil;
-import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
 import railo.runtime.type.ClonedComponent;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -161,7 +157,8 @@ public final class ComponentScopeThis extends StructSupport implements Component
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-	    DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");
+		return StructUtil.toDumpTable(this, "Variable Scope (of Component)", pageContext, maxlevel, dp);
+		/*DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");
 		table.setTitle("Variable Scope (of Component)");
         
         
@@ -171,7 +168,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
             String key=Caster.toString(it.next(),"");
             table.appendRow(1,new SimpleDumpData(key.toString()),DumpUtil.toDumpData(get(key,null), pageContext,maxlevel,dp));
         }
-        return table;
+        return table;*/
     }
 
     /**
@@ -272,7 +269,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
      * Returns the value of component.
      * @return value component
      */
-    public ComponentImpl getComponent() {
+    public ComponentPro getComponent() {
         return component;
     }
 

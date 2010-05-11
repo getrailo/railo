@@ -1489,6 +1489,19 @@
 			<type>datetime</type>
 		</return>
 	</function>
+	
+	
+	<!-- _createComponent -->
+	<function>
+		<name>_createComponent</name>
+		<class>railo.runtime.functions.other._CreateComponent</class>
+		<description/>
+		<argument-type>dynamic</argument-type>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
 	<!-- createObject -->
 	<function>
 		<name>createObject</name>
@@ -1813,6 +1826,30 @@
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>timezone</name>
+			<type>string</type>
+			<required>no</required>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
+	<!-- lsdayOfWeek -->
+	<function>
+		<name>lsdayOfWeek</name>
+		<class>railo.runtime.functions.international.LSDayOfWeek</class>
+		<description/>
+		<argument>
+			<name>date</name>
+			<type>datetime</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>locale</name>
+			<type>string</type>
+			<required>no</required>
 		</argument>
 		<argument>
 			<name>timezone</name>
@@ -2319,6 +2356,185 @@
 			<type>any</type>
 		</return>
 	</function>
+	
+	<!-- EntityDelete -->
+	<function>
+		<name>EntityDelete</name>
+		<class>railo.runtime.functions.orm.EntityDelete</class>
+		<description/>
+		<argument>
+			<name>name</name>
+			<type>object</type>
+			<required>Yes</required>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	<!-- EntityLoad -->
+	<function>
+		<name>entityLoad</name>
+		<class>railo.runtime.functions.orm.EntityLoad</class>
+		<description/>
+		<argument>
+			<name>name</name>
+			<type>string</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>idOrFilter</name>
+			<type>any</type>
+			<required>no</required>
+		</argument>
+		<argument>
+			<name>uniqueOrOrder</name>
+			<type>any</type>
+			<required>no</required>
+		</argument>
+		<argument>
+			<name>options</name>
+			<type>any</type>
+			<required>no</required>
+		</argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	<!-- EntityLoadByPK -->
+	<function>
+		<name>EntityLoadByPK</name>
+		<class>railo.runtime.functions.orm.EntityLoadByPK</class>
+		<description/>
+		<argument>
+			<name>name</name>
+			<type>string</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>id</name>
+			<type>string</type>
+			<required>yes</required>
+		</argument>
+		<argument>
+			<name>unique</name>
+			<type>boolean</type>
+			<required>no</required>
+		</argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	<!-- EntityLoadByExample -->
+	<function>
+		<name>EntityLoadByExample</name>
+		<class>railo.runtime.functions.orm.EntityLoadByExample</class>
+		<description/>
+		<argument>
+			<name>sampleEntity</name>
+			<type>object</type>
+			<required>yes</required>
+		</argument>
+		<argument>
+			<name>unique</name>
+			<type>boolean</type>
+			<required>no</required>
+		</argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	<!-- EntityMerge -->
+	<function>
+		<name>EntityMerge</name>
+		<class>railo.runtime.functions.orm.EntityMerge</class>
+		<description/>
+		<argument>
+			<name>entity</name>
+			<type>any</type>
+			<required>yes</required>
+		</argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	<!-- EntityNew -->
+	<function>
+		<name>EntityNew</name>
+		<class>railo.runtime.functions.orm.EntityNew</class>
+		<description/>
+		<argument>
+			<name>entityName</name>
+			<type>string</type>
+			<required>yes</required>
+		</argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	<!-- EntityReload -->
+	<function>
+		<name>EntityReload</name>
+		<class>railo.runtime.functions.orm.EntityReload</class>
+		<description/>
+		<argument>
+			<name>entity</name>
+			<type>object</type>
+			<required>yes</required>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	<!-- EntitySave -->
+	<function>
+		<name>EntitySave</name>
+		<class>railo.runtime.functions.orm.EntitySave</class>
+		<description/>
+		<argument>
+			<name>entity</name>
+			<type>object</type>
+			<required>yes</required>
+		</argument>
+		<argument>
+			<name>forceInsert</name>
+			<type>boolean</type>
+			<required>no</required>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	<!-- EntityToQuery -->
+	<function>
+		<name>EntityToQuery</name>
+		<class>railo.runtime.functions.orm.EntityToQuery</class>
+		<description/>
+		<argument>
+			<name>entity</name>
+			<type>object</type>
+			<required>yes</required>
+		</argument>
+		<argument>
+			<name>name</name>
+			<type>string</type>
+			<required>no</required>
+		</argument>
+		<return>
+			<type>query</type>
+		</return>
+	</function>
+	
+	
+	
+	
 	<!-- evaluate -->
 	<function>
 		<name>evaluate</name>
@@ -5377,6 +5593,7 @@
 	<function>
 		<name>isDefined</name>
 		<class>railo.runtime.functions.decision.IsDefined</class>
+		<tte-class>railo.transformer.cfml.evaluator.func.impl.IsDefined</tte-class>
 		<description/>
 		<argument>
 			<name>variable</name>
@@ -5461,6 +5678,7 @@
 	<function>
 		<name>isNull</name>
 		<class>railo.runtime.functions.other.IsNull</class>
+		<tte-class>railo.transformer.cfml.evaluator.func.impl.IsNull</tte-class>
 		<description/>
 		<argument>
 			<name>object</name>
@@ -6978,6 +7196,153 @@
 			<type>any</type>
 		</return>
 	</function>
+	
+	<!-- ORMExecuteQuery -->
+	<function>
+		<name>ORMExecuteQuery</name>
+		<class>railo.runtime.functions.orm.ORMExecuteQuery</class>
+		<description></description>
+		<argument>
+			<name>hql</name>
+			<type>string</type>
+			<required>yes</required>
+		</argument>
+		<argument>
+			<name>paramsOrUnique</name>
+			<type>any</type>
+			<required>no</required>
+		</argument>
+		<argument>
+			<name>uniqueOrQueryOptions</name>
+			<type>any</type>
+			<required>no</required>
+		</argument>
+		<argument>
+			<name>queryOptions</name>
+			<type>any</type>
+			<required>no</required>
+		</argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	<!-- ORMClearSession -->
+	<function>
+		<name>ORMClearSession</name>
+		<class>railo.runtime.functions.orm.ORMClearSession</class>
+		<description></description>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- ORMCloseSession -->
+	<function>
+		<name>ORMCloseSession</name>
+		<class>railo.runtime.functions.orm.ORMCloseSession</class>
+		<description></description>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- ORMEvictCollection -->
+	<function>
+		<name>ORMEvictCollection</name>
+		<class>railo.runtime.functions.orm.ORMEvictCollection</class>
+		<description></description>
+		
+		<argument>
+			<name>entityName</name>
+			<type>String</type>
+			<required>yes</required>
+		</argument>
+		<argument>
+			<name>collectionName</name>
+			<type>String</type>
+			<required>yes</required>
+		</argument>
+		<argument>
+			<name>primaryKey</name>
+			<type>String</type>
+			<required>no</required>
+		</argument>
+		
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- ORMEvictEntity -->
+	<function>
+		<name>ORMEvictEntity</name>
+		<class>railo.runtime.functions.orm.ORMEvictEntity</class>
+		<description></description>
+		
+		<argument>
+			<name>entityName</name>
+			<type>String</type>
+			<required>yes</required>
+		</argument>
+		<argument>
+			<name>primaryKey</name>
+			<type>String</type>
+			<required>no</required>
+		</argument>
+		
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- ORMEvictQueries -->
+	<function>
+		<name>ORMEvictQueries</name>
+		<class>railo.runtime.functions.orm.ORMEvictQueries</class>
+		<description></description>
+		<argument>
+			<name>cacheName</name>
+			<type>String</type>
+			<required>no</required>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- ORMFlush -->
+	<function>
+		<name>ORMFlush</name>
+		<class>railo.runtime.functions.orm.ORMFlush</class>
+		<description></description>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- ORMGetSession -->
+	<function>
+		<name>ORMGetSession</name>
+		<class>railo.runtime.functions.orm.ORMGetSession</class>
+		<description></description>
+		<return>
+			<type>object</type>
+		</return>
+	</function>
+	<!-- ORMGetSessionFactory -->
+	<function>
+		<name>ORMGetSessionFactory</name>
+		<class>railo.runtime.functions.orm.ORMGetSessionFactory</class>
+		<description></description>
+		<return>
+			<type>object</type>
+		</return>
+	</function>
+	<!-- ORMReload -->
+	<function>
+		<name>ORMReload</name>
+		<class>railo.runtime.functions.orm.ORMReload</class>
+		<description></description>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	
 	<!-- pagePoolClear -->
 	<function>
 		<name>pagePoolClear</name>
@@ -8487,6 +8852,7 @@
 	<function>
 		<name>structKeyExists</name>
 		<class>railo.runtime.functions.struct.StructKeyExists</class>
+		<tte-class>railo.transformer.cfml.evaluator.func.impl.StructKeyExists</tte-class>
 		<description/>
 		<argument>
 			<name>structure</name>
@@ -8635,6 +9001,11 @@
 		</argument>
 		<argument>
 			<name>addNewLine</name>
+			<type>boolean</type>
+			<required>no</required>
+		</argument>
+		<argument>
+			<name>doErrorStream</name>
 			<type>boolean</type>
 			<required>no</required>
 		</argument>
@@ -8936,6 +9307,31 @@
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>timezone</name>
+			<type>string</type>
+			<required>no</required>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
+	
+	<!-- lsweek -->
+	<function>
+		<name>lsweek</name>
+		<class>railo.runtime.functions.international.LSWeek</class>
+		<description/>
+		<argument>
+			<name>date</name>
+			<type>datetime</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>locale</name>
+			<type>string</type>
+			<required>no</required>
 		</argument>
 		<argument>
 			<name>timezone</name>

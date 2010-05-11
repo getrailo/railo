@@ -20,15 +20,17 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Sizeable;
 import railo.runtime.type.comparator.NumberComparator;
 import railo.runtime.type.comparator.TextComparator;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.util.ArrayUtil;
 
 /**
  * 
  */
-public class ListAsArray implements Array,List {
+public class ListAsArray implements Array,List,Sizeable {
 
 	protected List list;
 	
@@ -650,5 +652,12 @@ public class ListAsArray implements Array,List {
 
 	public Iterator valueIterator() {
 		return list.iterator();
+	}
+
+	/**
+	 * @see railo.runtime.type.Sizeable#sizeOf()
+	 */
+	public long sizeOf() {
+		return ArrayUtil.sizeOf(list);
 	}
 }

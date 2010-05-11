@@ -11,6 +11,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -493,21 +494,21 @@ public class Input extends TagImpl {
         
         if(arr.size()==1) {
             double from=Caster.toDoubleValue(arr.get(1,null),Double.NaN);
-            if(Double.isNaN(from))throw new ApplicationException(errMessage,errDetail);
+            if(!Decision.isValid(from))throw new ApplicationException(errMessage,errDetail);
             input.setRangeMin(from);
             input.setRangeMax(Double.NaN);
         }
         else if(arr.size()==2) {
             String strFrom=arr.get(1,"").toString().trim();
             double from=Caster.toDoubleValue(strFrom,Double.NaN);
-            if(Double.isNaN(from) && strFrom.length()>0) {
+            if(!Decision.isValid(from) && strFrom.length()>0) {
                 throw new ApplicationException(errMessage,errDetail);
             }
             input.setRangeMin(from);
             
             String strTo=arr.get(2,"").toString().trim();
             double to=Caster.toDoubleValue(strTo,Double.NaN);
-            if(Double.isNaN(to) && strTo.length()>0) {
+            if(!Decision.isValid(to) && strTo.length()>0) {
                 throw new ApplicationException(errMessage,errDetail);
             }
             input.setRangeMax(to);

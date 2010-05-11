@@ -44,6 +44,8 @@ public class URLDecoder {
      */
     public static String decode(String s, String enc) throws UnsupportedEncodingException {
 	
+    	//if(true) return java.net.URLDecoder.decode(s, enc);
+    	
 	boolean needToChange = false;
 	StringBuffer sb = new StringBuffer();
 	int numChars = s.length();

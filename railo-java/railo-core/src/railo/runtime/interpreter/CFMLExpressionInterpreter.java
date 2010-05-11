@@ -2,12 +2,14 @@ package railo.runtime.interpreter;
 
 import java.util.ArrayList;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ParserString;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.TemplateException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.Set;
 import railo.runtime.interpreter.ref.cast.Casting;
@@ -50,6 +52,14 @@ import railo.runtime.interpreter.ref.var.Assign;
 import railo.runtime.interpreter.ref.var.DynAssign;
 import railo.runtime.interpreter.ref.var.Variable;
 import railo.runtime.type.Scope;
+import railo.transformer.bytecode.cast.CastString;
+import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.expression.var.Argument;
+import railo.transformer.bytecode.expression.var.DataMember;
+import railo.transformer.bytecode.expression.var.FunctionMember;
+import railo.transformer.bytecode.expression.var.Member;
+import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.cfml.expression.CFMLExprTransformer.Data;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
@@ -1175,7 +1185,13 @@ public class CFMLExpressionInterpreter {
         		cfml.removeSpace();
         		return new  LString("");
         	}
+        	else if(name.equals("NEW")){
+        		Ref res = newOp();
+        		if(res!=null) return res;
+        	}
         }  
+        
+        
         
         // Extract Scope from the Variable
 
@@ -1253,6 +1269,63 @@ public class CFMLExpressionInterpreter {
         //check scope
         return scope(name);
     }
+    
+	private Ref newOp() throws PageException {
+		
+		int start=cfml.getPos();
+	    String name=null;
+	    cfml.removeSpace();
+	    
+	    // first identifier
+	    name = identifier(true);
+		Ref refName=null;
+		if(name!=null) {
+			StringBuilder fullName=new StringBuilder();
+			fullName.append(name);
+			// Loop over addional identifier
+			while (cfml.isValidIndex()) {
+				if (cfml.forwardIfCurrent('.')) {
+	                cfml.removeSpace();
+	                name = identifier(true);
+	                if(name==null) throw new ExpressionException("invalid Component declaration");
+	                cfml.removeSpace();
+					fullName.append('.');
+					fullName.append(name);
+	            }
+				else break;
+			}
+			refName=new LString(fullName.toString());
+		}
+		else {
+			if(cfml.isCurrentQuoter())refName=string();
+			if(refName==null){
+				cfml.setPos(start);
+				return null;
+			}
+		}
+		cfml.removeSpace();
+        
+        if (cfml.isCurrent('(')) {
+        	FunctionLibFunction function = fld.getFunction("_createComponent");
+            Ref[] arguments = functionArg("_createComponent",true, function,')');
+            Ref[] args=new Ref[arguments.length+1];
+            for(int i=0;i<arguments.length;i++){
+            	args[i]=arguments[i];
+            }
+            args[args.length-1]=refName;
+            BIFCall bif = new BIFCall(pc,function,args);
+        	cfml.removeSpace();
+        	return bif;
+        	
+			
+			
+		} 
+        throw new ExpressionException("invalid Component declaration ");
+		
+	}
+    
+    
+    
     
     /**
     * Liest einen CFML Scope aus, 

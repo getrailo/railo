@@ -12,10 +12,10 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpRow;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.ext.function.Function;
-import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
@@ -85,8 +85,11 @@ public final class DumpStruct implements Function {
 		sct.setEL("highLightColor", dt.getHighLightColor());
 		sct.setEL("normalColor", dt.getNormalColor());
 		sct.setEL("title", dt.getTitle());
+		
 		sct.setEL("width", dt.getWidth());
-		if(object!=null)sct.setEL("class", Caster.toClassName(object));
+		if(dt instanceof DumpTablePro){
+			sct.setEL("type", ((DumpTablePro)dt).getType());
+		}
 		
 		DumpRow[] drs = dt.getRows();
 		DumpRow dr;

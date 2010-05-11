@@ -9,6 +9,7 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
 import railo.commons.collections.HashTable;
+import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
 
 /**
@@ -40,27 +41,13 @@ public final class FTPPoolImpl implements FTPPool {
     protected FTPWrap _get(FTPConnection conn) throws IOException, ApplicationException {
         FTPWrap wrap=null;
         
-        /* / get Existing Conn
-        if(!conn.hasLoginData()) {
-            if(!conn.hasName())
-                throw new ApplicationException(
-                        "invalid attribute constelation for the tag ftp",
-                        "you must define the attribute connection or the attributes server, username and password");
-            wrap=(FTPWrap) wraps.get(conn.getName());
-            if(wrap==null) {
-                //print.ln("_get(no existing conn)");
-                throw new ApplicationException(
-                        "invalid attribute constelation for the tag ftp",
-                        "can't connect ftp server, missing connection ["+conn.getName()+"]");
-            }
-            else if(!wrap.getClient().isConnected()) {
-                //print.ln("_get(reconnect)");
-                wrap.reConnect();
-            }
-            return wrap;
-        }*/
+      
         
         if(!conn.hasLoginData()) {
+        	if(StringUtil.isEmpty(conn.getName())){
+        		throw new ApplicationException("can't connect ftp server, missing connection defintion");
+        	}
+        	
         	wrap=(FTPWrap) wraps.get(conn.getName());
             if(wrap==null) {
                 throw new ApplicationException("can't connect ftp server, missing connection ["+conn.getName()+"]");

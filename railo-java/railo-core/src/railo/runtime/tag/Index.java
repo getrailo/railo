@@ -36,7 +36,6 @@ import railo.runtime.type.StructImpl;
 public final class Index extends TagImpl {
     
 
-
     private static final String[] EMPTY = new String[0];
 
 
@@ -121,11 +120,15 @@ public final class Index extends TagImpl {
 		urlpath=null;
 		type=-1;
 		title=null;
-		custom1=null;
 		language=null;
 		extensions=EXTENSIONS;
 		key=null;
+		
+		custom1=null;
 		custom2=null;
+		custom3=null;
+		custom4=null;
+		
 		query=null;
 		collection=null;
 		recurse=false;

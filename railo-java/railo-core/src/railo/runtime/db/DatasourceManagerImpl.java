@@ -10,6 +10,8 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.exp.PageException;
+import railo.runtime.orm.ORMDatasourceConnection;
+import railo.runtime.orm.ORMSession;
 
 /**
  * this class handle multible db connection, transaction and logging
@@ -43,6 +45,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 			dc=((PageContextImpl)pc).getConnection(_datasource,user,pass);
 		else
 			dc=config.getDatasourceConnectionPool().getDatasourceConnection(pc,config.getDataSource(_datasource),user,pass);
+		
 		// transaction
 		if(!autoCommit) {
             try {
@@ -69,6 +72,36 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 	}
 	
 
+	public void add(PageContext pc,ORMSession session) throws PageException {
+		
+		// transaction
+		if(!autoCommit) {
+            try {
+                if(transConn==null) {
+                	ORMDatasourceConnection dc=new ORMDatasourceConnection(pc,session);
+                	
+                    if(isolation!=Connection.TRANSACTION_NONE)
+					    dc.getConnection().setTransactionIsolation(isolation);
+                    transConn=dc;
+    			}
+    			else if(!(transConn instanceof ORMDatasourceConnection)){
+    				if(transConn.getDatasource().equals(session.getEngine().getDataSource())){
+    					ORMDatasourceConnection dc=new ORMDatasourceConnection(pc,session);
+                    	
+                        if(isolation!=Connection.TRANSACTION_NONE)
+    					    dc.getConnection().setTransactionIsolation(isolation);
+                        transConn=dc;
+    				}
+    				else
+    					throw new DatabaseException(
+    						"can't use transaction for datasource and orm at the same time",null,null,null);
+    			}
+            } catch (SQLException e) {
+               ExceptionHandler.printStackTrace(e);
+            }
+		}
+	}
+	
 	/**
 	 * @see railo.runtime.db.DataSourceManager#releaseConnection(railo.runtime.db.DatasourceConnection)
 	 */
@@ -171,7 +204,6 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 	 * @see DataSourceManager#end()
 	 */
     public void end() {
-        //print.out("end:"+autoCommit);
         autoCommit=true;
         if(transConn!=null) {
         	try {

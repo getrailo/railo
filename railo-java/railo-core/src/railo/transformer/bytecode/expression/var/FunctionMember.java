@@ -21,6 +21,9 @@ public abstract class FunctionMember implements Member{
 	public Argument[] getArguments() {
 		return arguments;
 	}
+	public void setArguments(Argument[] arguments) {
+		this.arguments= arguments;
+	}
 	
 
 	public boolean hasNamedArgs() {

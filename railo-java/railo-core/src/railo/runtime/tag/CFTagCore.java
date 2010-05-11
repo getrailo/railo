@@ -49,4 +49,31 @@ public class CFTagCore extends CFTag {
         //throw new ExpressionException("custom tag ["+name+"] is not defined in directory ["+mapping.getStrPhysical()+"]");
      
     }
+
+	/* *
+	 * @see railo.runtime.tag.CFTag#doEndTag()
+	 * /
+	public int doEndTag() {
+		PageContextImpl pci=(PageContextImpl) pageContext;
+		boolean old=pci.useSpecialMappings(true);
+		try{
+			return super.doEndTag();
+		}
+		finally{
+			pci.useSpecialMappings(old);
+		}
+	}*/
+	/* *
+	 * @see railo.runtime.tag.CFTag#doStartTag()
+	 * /
+	public int doStartTag() throws PageException {
+		PageContextImpl pci=(PageContextImpl) pageContext;
+		boolean old=pci.useSpecialMappings(true);
+		try{
+			return super.doStartTag();
+		}
+		finally{
+			pci.useSpecialMappings(old);
+		}
+	}*/
 }

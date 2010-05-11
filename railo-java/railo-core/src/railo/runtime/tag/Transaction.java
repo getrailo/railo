@@ -92,7 +92,9 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
         if(innerTag) throw t;
         try {
             manager.rollback();
-        } catch (DatabaseException e) {}
+        } catch (DatabaseException e) {
+        	//print.printST(e);
+        }
         throw t;
     }
 

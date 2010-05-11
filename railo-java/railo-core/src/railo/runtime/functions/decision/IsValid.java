@@ -83,14 +83,14 @@ public final class IsValid implements Function {
 			throw new FunctionException(pc,"isValid",1,"type","wrong attribute count for type ["+type+"]");
 
 		double number=Caster.toDoubleValue(value,Double.NaN);
-		if(Double.isNaN(number)) return false;
+		if(!Decision.isValid(number)) return false;
 		
 		double min=Caster.toDoubleValue(objMin,Double.NaN);
-		if(Double.isNaN(min))
+		if(!Decision.isValid(min))
 			throw new FunctionException(pc,"isValid",3,"min","value must be numeric");
 
 		double max=Caster.toDoubleValue(objMax,Double.NaN);
-		if(Double.isNaN(max))
+		if(!Decision.isValid(max))
 			throw new FunctionException(pc,"isValid",4,"max","value must be numeric");
 
 		return number>=min && number<=max;

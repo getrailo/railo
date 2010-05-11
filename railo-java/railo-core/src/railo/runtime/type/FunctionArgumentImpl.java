@@ -151,7 +151,7 @@ public final class FunctionArgumentImpl implements FunctionArgument,Externalizab
 	public FunctionArgumentImpl(Collection.Key name,String type,boolean required,int defaultType,boolean passByReference,String dspName,String hint,StructImpl meta) {
 		this.name=name;
 		this.strType=(type);
-		this.type=CFTypes.toShort(type,CFTypes.TYPE_UNKNOW);
+		this.type=CFTypes.toShortStrict(type,CFTypes.TYPE_UNKNOW);
 		this.required=required;
 		this.defaultType=defaultType;
 		this.dspName=dspName;

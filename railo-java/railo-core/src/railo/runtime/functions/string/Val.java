@@ -15,12 +15,12 @@ public final class Val implements Function {
 	    //if(value instanceof Boolean || value instanceof Number) return Caster.toDoubleValue(value);
 	    
         double dbl=Caster.toDoubleValue(value,Double.NaN);
-        if(!Double.isNaN(dbl)) return dbl;
+        if(Decision.isValid(dbl)) return dbl;
         
         String str=Caster.toString(value);
         
 	    int pos=getPos(str);
-		if(pos<=0) {
+	    if(pos<=0) {
 		    if(Decision.isBoolean(str)) return Caster.toDoubleValue(str);
 		    return 0;
 		}
@@ -58,16 +58,16 @@ public final class Val implements Function {
             	else return pos;
             }
             else if(curr>'9') {
-            	if(curr=='e' || curr=='E') { 
+            	/*if(curr=='e' || curr=='E') { 
                     if(pos+1>=len || hasExp) return pos; 
                     hasExp=true; 
                     hasDot=true; 
                 }
-            	else return pos;
+            	else */
+            		return pos;
             }
         } 
         
         return pos; 
     } 
-	
 }

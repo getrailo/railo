@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import railo.commons.date.JREDateTimeUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
@@ -253,8 +254,7 @@ public final class JSConverter {
 	 */
 	private synchronized void _serializeDateTime(DateTime dateTime, StringBuffer sb) {
 	   
-		Calendar c = Calendar.getInstance();
-		c.setTimeZone(ThreadLocalPageContext.getTimeZone()); 
+		Calendar c = JREDateTimeUtil.newInstance(ThreadLocalPageContext.getTimeZone());
 		c.setTime(dateTime);
 	    sb.append(goIn());
 	    sb.append("new Date(");

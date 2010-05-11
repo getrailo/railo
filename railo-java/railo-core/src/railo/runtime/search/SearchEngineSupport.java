@@ -379,7 +379,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
      * @throws SearchException
      */
     private final void readCollection(Config config, Element el) throws SearchException {
-        SearchCollectionSupport sc;
+        SearchCollectionPlus sc;
         //try {
             // Collection
             DateTime last = DateCaster.toDateAdvanced(el.getAttribute("lastUpdate"),ThreadLocalPageContext.getTimeZone(config),null);
@@ -387,7 +387,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
             DateTime cre = DateCaster.toDateAdvanced(el.getAttribute("created"),ThreadLocalPageContext.getTimeZone(config),null);
             if(cre==null)cre=new DateTimeImpl();
             ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
-            sc =(SearchCollectionSupport) _readCollection(
+            sc =(SearchCollectionPlus) _readCollection(
                     el.getAttribute("name"),
                     frp.getResource(el.getAttribute("path")),
                     el.getAttribute("language"),
@@ -417,7 +417,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
      * @throws SearchException
      * @throws PageException
      */
-    protected void readIndex(SearchCollectionSupport sc, Element el) throws SearchException {
+    protected void readIndex(SearchCollectionPlus sc, Element el) throws SearchException {
             // Index
             SearchIndex si=new SearchIndex(
                     _attr(el,"id"),

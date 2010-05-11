@@ -34,7 +34,7 @@ public final class CSVParser {
 		//print.ln("textQualifier:"+textQualifier);
 		String[] first=null;
 		
-		CFMLString cfmlStr = new CFMLString(csv,"UTF-8",false);
+		CFMLString cfmlStr = new CFMLString(csv,"UTF-8");
 		//print.ln(cfmlStr.toString());
 	// no predefined Header
 		if(headers==null) {

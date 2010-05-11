@@ -1,5 +1,8 @@
-package railo.runtime;
 
+import railo.runtime.Component;
+import railo.runtime.ComponentImpl;
+import railo.runtime.Page;
+import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
@@ -33,14 +36,14 @@ public class MethodSL implements Method {
 	 * @see railo.runtime.type.UDF#call(railo.runtime.PageContext, java.lang.Object[], boolean)
 	 */
 	public Object call(PageContext pc, Object[] args,boolean doIncludePath) throws PageException {
-		return component._call(pc, udf, null, args);
+		return null;//component._call(pc, udf, null, args);
 	}
 
 	/**
 	 * @see railo.runtime.type.UDF#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Struct, boolean)
 	 */
 	public Object callWithNamedValues(PageContext pc, Struct values,boolean doIncludePath) throws PageException {
-		return component._call(pc, udf, values, null);
+		return null;//component._call(pc, udf, values, null);
 	}
 
 	/**

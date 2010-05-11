@@ -2,6 +2,8 @@ package railo.runtime.cfx.customtag;
 
 import railo.runtime.cfx.CFXTagException;
 
+import com.allaire.cfx.CustomTag;
+
 /**
  * interface for a CustomTag Class, a CustomTag Class is Base to generate a Custom Tag
  */
@@ -12,7 +14,7 @@ public interface CFXTagClass {
 	 * @return return a New Instance
 	 * @throws CFXTagException
 	 */
-	public Object newInstance() throws CFXTagException;
+	public CustomTag newInstance() throws CFXTagException;
 	
 	/**
 	 * @return returns if Tag is readOnly (for Admin)

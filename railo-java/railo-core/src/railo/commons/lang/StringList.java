@@ -1,5 +1,7 @@
 package railo.commons.lang;
 
+import java.util.ArrayList;
+
 /**
  * a Simple single direction string list
  */
@@ -111,5 +113,13 @@ public final class StringList {
 			this.data=data;
 			this.delimeter=delimeter;
 		}
+	}
+
+	public String[] toArray() {
+		ArrayList<String> list=new ArrayList<String>();
+		while(hasNext()){
+			list.add(next());
+		}
+		return list.toArray(new String[list.size()]);
 	}
 }

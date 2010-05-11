@@ -2,6 +2,7 @@ package railo.runtime.type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 
 import railo.commons.lang.SizeOf;
@@ -9,6 +10,7 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
@@ -544,6 +546,13 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 			
 	}
 	
+	
+	public synchronized void sort(Comparator comp) throws PageException {
+		if(getDimension()>1)
+			throw new ExpressionException("only 1 dimensional arrays can be sorted");
+		Arrays.sort(arr,offset,offset+size,comp);	
+	}
+	
 	/**
 	 * @return return arra as native (Java) Object Array
 	 */
@@ -572,9 +581,9 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable table = new DumpTable("#669900","#99cc00","#000000");//new DumpTable("#ffb200","#ffcc00","#263300");
+		DumpTable table = new DumpTablePro("array","#669900","#99cc00","#000000");//new DumpTable("#ffb200","#ffcc00","#263300");
 		table.setTitle("Array");
-		
+		//if(size()>10)table.setComment("Size:"+size());
 		int length=size();
 		maxlevel--;
 		for(int i=1;i<=length;i++) {

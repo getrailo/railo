@@ -1,4 +1,3 @@
-package railo.runtime;
 
 import railo.runtime.type.UDF;
 

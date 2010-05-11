@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 
 import railo.commons.collections.HashTableNotSync;
+import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageException;
@@ -14,7 +15,7 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 
-public class KeyImpl implements Collection.Key,Castable,Comparable {
+public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable {
 	
 	private String key;
 	private String lcKey;
@@ -354,5 +355,13 @@ public class KeyImpl implements Collection.Key,Castable,Comparable {
 		String str = Caster.toString(obj,null);
 		if(str==null) throw new CasterException(obj,Collection.Key.class);
 		return init(str);
+	}
+
+
+	public long sizeOf() {
+		return SizeOf.size(this.hashcode)+
+		SizeOf.size(this.key)+
+		SizeOf.size(this.lcKey)+
+		SizeOf.size(this.ucKey);
 	}
 }

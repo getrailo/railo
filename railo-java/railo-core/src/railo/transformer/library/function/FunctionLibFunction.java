@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
+import railo.runtime.exp.TemplateException;
+import railo.transformer.cfml.evaluator.FunctionEvaluator;
 
 
 
@@ -39,6 +42,8 @@ public final class FunctionLibFunction {
 	private Class clazz;
 	private String description;
 	private boolean hasDefaultValues;
+	private FunctionEvaluator eval;
+	private String tteClass;
 	
 	/**
 	 * Geschützer Konstruktor ohne Argumente.
@@ -257,5 +262,24 @@ public final class FunctionLibFunction {
 	}
 	public boolean hasDefaultValues() {
 		return hasDefaultValues;
+	}
+
+	public boolean hasTteClass() {
+		return tteClass !=null && tteClass.length()>0;
+	}
+	
+	public FunctionEvaluator getEvaluator() throws TemplateException {
+		if(!hasTteClass()) return null;
+		if(eval!=null) return eval;
+		try {
+			eval = (FunctionEvaluator) ClassUtil.loadInstance(tteClass);
+		} 
+		catch (ClassException e) {
+			throw new TemplateException(e.getMessage());
+		} 
+		return eval;
+	}
+	public void setTteClass(String tteClass) {
+		this.tteClass=tteClass;
 	}
 }

@@ -10,8 +10,6 @@ import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpUtil;
-import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
@@ -22,6 +20,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.StructSupport;
+import railo.runtime.type.util.StructUtil;
 
 public abstract class ClientSupport extends StructSupport implements Client,Sizeable {
 	
@@ -371,6 +370,8 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 	 * @return
 	 */
 	protected DumpTable toDumpTable(PageContext pageContext, int maxlevel, DumpProperties dp) {
+		return StructUtil.toDumpTable(this, "Client Scope", pageContext, maxlevel, dp);
+		/*
 		maxlevel--;
 		Iterator it=keyIterator();
 		
@@ -386,7 +387,7 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 				table.appendRow(1,new SimpleDumpData(key),DumpUtil.toDumpData(get(key,null), pageContext,maxlevel,dp));
 			}
 		}
-		return table;
+		return table;*/
 	}
 	
 	public void store(){

@@ -138,6 +138,7 @@ public final class Types {
     public static final Type COLLECTION = Type.getType(Collection.class);
     
     public static final Type STRING = Type.getType(String.class);
+    public static final Type STRING_ARRAY = Type.getType(String[].class);
     
     public static final Type STRUCT = Type.getType(railo.runtime.type.Struct.class);
     
@@ -175,6 +176,7 @@ public final class Types {
 	public static final Type UDF_PROPERTIES = Type.getType(UDFProperties.class);
 	public static final Type UDF_IMPL = Type.getType(UDFImpl.class);
 	public static final Type COLLECTION_KEY = Type.getType(Collection.Key.class);
+	public static final Type COLLECTION_KEY_ARRAY = Type.getType(Collection.Key[].class);
 	public static final Type UNDEFINED = Type.getType(Undefined.class);
 	public static final Type MAP = Type.getType(Map.class);
 	public static final Type CHAR_ARRAY = Type.getType(char[].class);
@@ -240,11 +242,13 @@ public final class Types {
             if("java.lang.double".equals(lcType))					return DOUBLE;
             if("java.io.file".equals(lcType))						return FILE;
             if("java.lang.string".equals(lcType))					return STRING;
+            if("java.lang.string[]".equals(lcType))					return STRING_ARRAY;
             if("java.util.date".equals(lcType))						return DATE; 
-            if("java.lang.Object".equals(lcType))					return OBJECT; 
+            if("java.lang.object".equals(lcType))					return OBJECT; 
         break;
         case 'l':
             if("long".equals(type))									return LONG_VALUE;
+            if("long".equals(lcType))								return LONG;
             if("long".equals(lcType))								return LONG;
         break;
         case 'n':
@@ -266,6 +270,15 @@ public final class Types {
     	    if("variablestring".equals(lcType)) 					return STRING;
     	    if("variable_string".equals(lcType)) 					return STRING;
         break;
+        case 'x':
+            if("xml".equals(lcType)) 								return NODE;
+        break;
+        case '[':
+            if("[Ljava.lang.String;".equals(lcType)) 				return STRING_ARRAY;
+        break;
+        
+        
+        
         default:
             if("query".equals(lcType))								return QUERY;
             if("timespan".equals(lcType))							return TIMESPAN;

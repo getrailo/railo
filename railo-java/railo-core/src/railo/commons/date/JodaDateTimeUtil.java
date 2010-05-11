@@ -1,6 +1,7 @@
 package railo.commons.date;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -36,7 +37,7 @@ public class JodaDateTimeUtil extends DateTimeUtil {
 	/**
 	 * @see railo.commons.date.DateTimeUtil#getWeek(java.util.TimeZone, railo.runtime.type.dt.DateTime)
 	 */
-	public int getWeek(TimeZone tz,railo.runtime.type.dt.DateTime dt){
+	public int getWeekOfYear(Locale locale,TimeZone tz,railo.runtime.type.dt.DateTime dt){
 		return new DateTime(dt.getTime(),getDateTimeZone(tz)).getWeekOfWeekyear();	
 	}
 
@@ -93,14 +94,14 @@ public class JodaDateTimeUtil extends DateTimeUtil {
 	/**
 	 * @see railo.commons.date.DateTimeUtil#getDayOfYear(java.util.TimeZone, railo.runtime.type.dt.DateTime)
 	 */
-	public int getDayOfYear(TimeZone tz, railo.runtime.type.dt.DateTime dt) {
+	public int getDayOfYear(Locale locale,TimeZone tz, railo.runtime.type.dt.DateTime dt) {
 		return new DateTime(dt.getTime(),getDateTimeZone(tz)).getDayOfYear();
 	}
 
 	/**
 	 * @see railo.commons.date.DateTimeUtil#getDayOfWeek(java.util.TimeZone, railo.runtime.type.dt.DateTime)
 	 */
-	public int getDayOfWeek(TimeZone tz, railo.runtime.type.dt.DateTime dt) {
+	public int getDayOfWeek(Locale locale,TimeZone tz, railo.runtime.type.dt.DateTime dt) {
 		int dow=new DateTime(dt.getTime(),getDateTimeZone(tz)).getDayOfWeek()+1;
 		if(dow==8) return 1;
 		return dow;

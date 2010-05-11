@@ -31,7 +31,7 @@ public class StructImpl extends StructSupport {
 	 * default constructor
 	 */
 	public StructImpl() {
-		map=new HashTableNotSync();//asx
+		this(TYPE_REGULAR);//asx
 	}
 	
     /**
@@ -48,6 +48,15 @@ public class StructImpl extends StructSupport {
         else if(type==TYPE_SYNC)	map=new HashTable();
         else 						map=new HashTableNotSync();
     }
+    
+    private int getType(){
+    	if(map instanceof LinkedHashMap) return TYPE_LINKED;
+    	if(map instanceof java.util.WeakHashMap) return TYPE_WEAKED;
+    	if(map instanceof ReferenceMap) return TYPE_SOFT;
+    	if(map instanceof HashTable) return TYPE_SYNC;
+    	return TYPE_REGULAR;
+    }
+    
 	
 	/**
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
@@ -200,7 +209,7 @@ public class StructImpl extends StructSupport {
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
-		Struct sct=new StructImpl();
+		Struct sct=new StructImpl(getType());
 		copy(this,sct,deepCopy);
 		return sct;
 	}

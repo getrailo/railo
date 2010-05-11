@@ -1,5 +1,7 @@
 package railo.transformer.bytecode.expression.var;
 
+import railo.transformer.library.function.FunctionLibFunction;
+
 
 
 public final class BIF extends FunctionMember {
@@ -9,10 +11,13 @@ public final class BIF extends FunctionMember {
 		private int argType;
 		private String className;
 		private String returnType=ANY;
+		private FunctionLibFunction flf;
 
 
-		public BIF(String name) {
+
+		public BIF(String name, FunctionLibFunction flf) {
 			this.name=name;
+			this.flf=flf;
 		}
 
 		public void setArgType(int argType) {
@@ -53,5 +58,19 @@ public final class BIF extends FunctionMember {
 		 */
 		public String getReturnType() {
 			return returnType;
+		}
+
+		/**
+		 * @return the flf
+		 */
+		public FunctionLibFunction getFlf() {
+			return flf;
+		}
+
+		/**
+		 * @param flf the flf to set
+		 */
+		public void setFlf(FunctionLibFunction flf) {
+			this.flf = flf;
 		}
 	}

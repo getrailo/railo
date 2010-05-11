@@ -9,11 +9,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.PageException;
@@ -99,7 +100,7 @@ public final class StructUtil {
 	}
 
 	
-	public static DumpData toDumpData(Struct sct,String title,PageContext pageContext, int maxlevel, DumpProperties props) {
+	public static DumpTable toDumpTable(Struct sct,String title,PageContext pageContext, int maxlevel, DumpProperties dp) {
 		Key[] keys = order(sct.keys());
 		//"#5965e4","#9999ff","#000000"
 		try {
@@ -108,18 +109,19 @@ public final class StructUtil {
 			// TODO Auto-generated catch block
 			// e.printStackTrace();
 		}
-	    DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");//new DumpTable("#669900","#99cc00","#263300");
-		if(!StringUtil.isEmpty(title))table.setTitle(title);
+	    DumpTable table = new DumpTablePro("struct","#5965e4","#9999ff","#000000");//new DumpTable("#669900","#99cc00","#263300");
+		if(sct.size()>10)table.setComment("Entries:"+sct.size());
+	    if(!StringUtil.isEmpty(title))table.setTitle(title);
 		maxlevel--;
-		int maxkeys=props.getMaxKeys();
+		int maxkeys=dp.getMaxKeys();
 		int index=0;
 		for(int i=0;i<keys.length;i++) {
-			if(DumpUtil.keyValid(props,maxlevel,keys[i])){
+			if(DumpUtil.keyValid(dp,maxlevel,keys[i])){
 				if(maxkeys<=index++)break;
 				table.appendRow(1,
 						new SimpleDumpData(keys[i].toString()),
 						DumpUtil.toDumpData(sct.get(keys[i],null), 
-						pageContext,maxlevel,props));
+						pageContext,maxlevel,dp));
 			}
 		}
 		return table;
@@ -156,5 +158,19 @@ public final class StructUtil {
             sct.setEL(Caster.toString(entry.getKey()),entry.getValue());
         }
         return sct;
+	}
+
+	/**
+	 * return the size of given struct, size of values + keys
+	 * @param sct
+	 * @return
+	 */
+	public static long sizeOf(Struct sct) {
+		Key[] keys = sct.keys();
+		long size = SizeOf.size(keys);
+		for(int i=0;i<keys.length;i++) {
+			size += SizeOf.size(sct.get(keys[i],null));
+		}
+		return size;
 	}
 }

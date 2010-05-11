@@ -13,6 +13,7 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
@@ -67,7 +68,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		String[] keys=keysAsString();
 		maxlevel--;
-		DumpTable table = new DumpTable("#A9A96C","#CDD8AB","#000000");
+		DumpTable table = new DumpTablePro("xml","#A9A96C","#CDD8AB","#000000");
 		table.setTitle("Struct (XML Attributes)");
 
 		int maxkeys=dp.getMaxKeys();

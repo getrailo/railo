@@ -40,7 +40,7 @@ public final class CFImportTag extends CFTag {
 	            	source=new InitFile(ps,filenames[fn],filenames[fn].endsWith('.'+config.getCFCExtension()));
 	            	return;
 	            }
-			}
+			} 
 	    }
 	    
 	// EXCEPTION

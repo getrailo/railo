@@ -48,6 +48,7 @@ import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -470,15 +471,15 @@ public final class RPCClient implements Objects, Iteratorable{
 		
 		String url=urlToClass(wsdlUrl);
 		
-		String className=type.getQName().getLocalPart();
-		
+		String className=StringUtil.toVariableName(type.getQName().getLocalPart());
 		String ns = type.getQName().getNamespaceURI();
 		//print.out("ns:"+ns);
 		if(ns!=null){
 			ns=StringUtil.replace(ns, "http://", "", true);
 			ns=toClassName(ns,true);
-			if(!StringUtil.isEmpty(ns))
+			if(!StringUtil.isEmpty(ns)){
 				return url+"."+ns+"."+className;
+			}
 		}
 		return url+"."+className;
 	} 
@@ -706,14 +707,14 @@ public final class RPCClient implements Objects, Iteratorable{
     	try {
             return _toDumpData(pageContext,maxlevel,dp);
         } catch (Exception e) {
-            DumpTable table = new DumpTable("#BEDAFD","#C6D800","#000000");
+            DumpTable table = new DumpTablePro("webservice","#BEDAFD","#C6D800","#000000");
             table.appendRow(1,new SimpleDumpData("webservice"),new SimpleDumpData(wsdlUrl));
             return table;
         }
     }
     private DumpData _toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) throws RPCException {
                 
-    	DumpTable box = new DumpTable("#BEDAFD","#C6D800","#000000");
+    	DumpTable box = new DumpTablePro("webservice","#BEDAFD","#C6D800","#000000");
         box.setTitle("Web Service");
         box.appendRow(1,new SimpleDumpData("url"),new SimpleDumpData(wsdlUrl));
         DumpTable functions = new DumpTable("#BEDAFD","#C6D800","#000000");

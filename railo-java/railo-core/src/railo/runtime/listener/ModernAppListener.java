@@ -9,6 +9,7 @@ import javax.servlet.http.Cookie;
 
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
@@ -18,14 +19,20 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Member;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.Abort;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.HttpServletRequestDummy;
 import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.op.Caster;
+import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.util.ApplicationContextImpl;
@@ -62,6 +69,8 @@ public class ModernAppListener extends AppListenerSupport {
 	private static final Collection.Key ON_MISSING_TEMPLATE = KeyImpl.getInstance("onMissingTemplate");
 	private static final Collection.Key DEFAULT_DATA_SOURCE = KeyImpl.getInstance("defaultdatasource");
 	private static final Collection.Key DATA_SOURCE = KeyImpl.getInstance("datasource");
+	private static final Collection.Key ORM_ENABLED = KeyImpl.getInstance("ormenabled");
+	private static final Collection.Key ORM_SETTINGS = KeyImpl.getInstance("ormsettings");
 	
 	
 	
@@ -70,6 +79,8 @@ public class ModernAppListener extends AppListenerSupport {
 	protected int mode=MODE_CURRENT2ROOT;
 	private String type;
 	private Boolean hasOnSessionStart;
+	private ApplicationContextImpl appContext;
+	private long cfcCompileTime;
 
 
 	/**
@@ -293,9 +304,20 @@ public class ModernAppListener extends AppListenerSupport {
 	}
 
 	private void initApplicationContext(PageContextImpl pc, ComponentImpl app) {
-		ApplicationContextImpl appContext=new ApplicationContextImpl(pc.getConfig(),false);
-		Object o;
 		
+		// use existing app context
+		if(appContext!=null && cfcCompileTime==app.getPage().getCompileTime()) {
+			pc.setApplicationContext(appContext.duplicate());
+			return;
+			
+		}
+		
+		appContext = new ApplicationContextImpl(pc.getConfig(),false);
+		cfcCompileTime=app.getPage().getCompileTime();
+		
+		
+		Object o;
+		boolean initORM=false;
 		pc.addPageSource(app.getPage().getPageSource(), true);
 		try {
 			
@@ -320,8 +342,15 @@ public class ModernAppListener extends AppListenerSupport {
 			if(o!=null) appContext.setLoginStorage(Caster.toString(o));
 
 			// datasource
+			o = get(app,DATA_SOURCE,null);
+			if(o!=null) {
+				String ds = Caster.toString(o);
+				appContext.setORMDataSource(ds);
+				appContext.setDefaultDataSource(ds);
+			}
+
+			// default datasource
 			o=get(app,DEFAULT_DATA_SOURCE,null);
-			if(o==null) o=get(app,DATA_SOURCE,null);
 			if(o!=null) appContext.setDefaultDataSource(Caster.toString(o));
 			
 			// sessionManagement
@@ -359,13 +388,56 @@ public class ModernAppListener extends AppListenerSupport {
 			// secureJson
 			o=get(app,SECURE_JSON,null);
 			if(o!=null) appContext.setSecureJson(Caster.toBooleanValue(o));
+			
+			
+	///////////////////////////////// ORM /////////////////////////////////
+			// ormenabled
+			o=get(app,ORM_ENABLED,null);
+			if(o!=null){
+				initORM=true;
+				appContext.setORMEnabled(Caster.toBooleanValue(o));
+				
+				// settings
+				o=get(app,ORM_SETTINGS,null);
+				Struct settings;
+				if(!(o instanceof Struct))
+					settings=new StructImpl();
+				else
+					settings=(Struct) o;
+				//if(o instanceof Struct){
+					//Struct settings=(Struct) o;
+					
+					// default cfc location (parent of the application.cfc)
+					Resource res=null;
+					try {
+						res=ResourceUtil.getResource(pc, pc.getCurrentTemplatePageSource()).getParentResource();
+					} catch (ExpressionException e) {
+						e.printStackTrace();
+					}
+					ConfigImpl config=(ConfigImpl) pc.getConfig();
+					ORMConfiguration ormConfig=ORMConfiguration.load(config,settings,res,config.getORMConfig());
+					appContext.setORMConfiguration(ormConfig);
+					
+					// datasource
+					o=settings.get(DATA_SOURCE);
+					if(o!=null) appContext.setORMDataSource(Caster.toString(o));
+				//}
+			}
+			
+			
 		}
 		catch(Throwable t) {
 			pc.removeLastPageSource(true);
 		}
 		
 		pc.setApplicationContext(appContext);
-		
+		if(initORM){
+			try {
+				ORMUtil.resetEngine(pc);
+			} catch (PageException e) {
+				 e.printStackTrace();
+			}
+		}
 	}
 
 

@@ -51,15 +51,21 @@ public final class OpDouble extends ExpressionBase implements ExprDouble {
      * @throws TemplateException 
      */
     public static ExprDouble toExprDouble(Expression left, Expression right,int operation)  {
+    	
         if(left instanceof Literal && right instanceof Literal) {
-            Double l = ((Literal)left).getDouble(null);
+        	Double l = ((Literal)left).getDouble(null);
             Double r = ((Literal)right).getDouble(null);
+        	
             if(l!=null && r !=null) {
                 switch(operation) {
                 case PLUS: return toLitDouble(		l.doubleValue()+r.doubleValue(),left.getLine());
                 case MINUS: return toLitDouble(		l.doubleValue()-r.doubleValue(),left.getLine());
                 case MODULUS: return toLitDouble(	l.doubleValue()%r.doubleValue(),left.getLine());
-                case DIVIDE: return toLitDouble(	l.doubleValue()/r.doubleValue(),left.getLine());
+                case DIVIDE: {
+                	if(r.doubleValue()!=0d)
+                		return toLitDouble(	l.doubleValue()/r.doubleValue(),left.getLine());
+                	break;
+                }
                 case MULTIPLY: return toLitDouble(	l.doubleValue()*r.doubleValue(),left.getLine());
                 case EXP: return new LitDouble(Operator.exponent(l.doubleValue(),r.doubleValue()),left.getLine());
                 case INTDIV: return new LitDouble(l.intValue()/r.intValue(),left.getLine());
@@ -97,6 +103,9 @@ public final class OpDouble extends ExpressionBase implements ExprDouble {
         right.writeOut(bc,MODE_VALUE);
         if(operation==EXP) {
         	adapter.invokeStatic(Types.OPERATOR,Methods_Operator.OPERATOR_EXP_DOUBLE);
+        }
+        else if(operation==DIVIDE) {
+        	adapter.invokeStatic(Types.OPERATOR,Methods_Operator.OPERATOR_DIV);
         }
         else if(operation==INTDIV) {
         	adapter.invokeStatic(Types.OPERATOR,Methods_Operator.OPERATOR_INTDIV_DOUBLE);

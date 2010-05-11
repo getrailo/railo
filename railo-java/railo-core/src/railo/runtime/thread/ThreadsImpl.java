@@ -10,6 +10,7 @@ import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalConfig;
@@ -260,7 +261,7 @@ The current status of the thread; one of the following values:
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		Key[] keys = keys();
-		DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");
+		DumpTable table = new DumpTablePro("struct","#5965e4","#9999ff","#000000");
 		table.setTitle("Struct");
 		maxlevel--;
 		int maxkeys=dp.getMaxKeys();

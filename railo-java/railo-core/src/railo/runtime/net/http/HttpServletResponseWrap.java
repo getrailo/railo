@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.lang.Pair;
 import railo.commons.net.URLEncoder;
+import railo.runtime.op.Caster;
 import railo.runtime.type.dt.DateTimeImpl;
 
 
@@ -40,17 +41,17 @@ public final class HttpServletResponseWrap extends HttpServletResponseWrapper im
 	private ServletOutputStreamDummy outputStream;
 	
 
-	private static ThreadLocal<HttpServletResponseWrap> local=new ThreadLocal<HttpServletResponseWrap>();
+	private static ThreadLocal<Boolean> local=new ThreadLocal<Boolean>();
 
 
-	public static void set(HttpServletResponseWrap value) {
-		local.set(value);
+	public static void set(boolean value) {
+		local.set(Caster.toBoolean(value));
 	}
-	public static HttpServletResponseWrap get() {
-		return local.get();
+	public static boolean get() {
+		return Caster.toBooleanValue(local.get(),false);
 	}
 	public static void release() {
-		local.set(null);
+		local.set(Boolean.FALSE);
 	}
 
 	/**

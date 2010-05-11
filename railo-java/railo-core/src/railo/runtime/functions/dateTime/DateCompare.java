@@ -6,6 +6,7 @@ package railo.runtime.functions.dateTime;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import railo.commons.date.JREDateTimeUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -23,11 +24,11 @@ public final class DateCompare implements Function {
 	public static double call(PageContext pc , DateTime left, DateTime right, String datepart) throws ExpressionException {
 		datepart=datepart.toLowerCase().trim();
 		TimeZone tz=ThreadLocalPageContext.getTimeZone(pc);
-		Calendar cLeft=Calendar.getInstance();
+		Calendar cLeft=JREDateTimeUtil.getCalendar();
 		cLeft.setTimeZone(tz);
 		cLeft.setTime(left);
 		
-		Calendar cRight=Calendar.getInstance();
+		Calendar cRight=JREDateTimeUtil.newInstance();
 		cRight.setTimeZone(tz);
 		cRight.setTime(right);
 		

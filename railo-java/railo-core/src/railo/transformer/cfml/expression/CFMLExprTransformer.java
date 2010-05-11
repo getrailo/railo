@@ -4,8 +4,10 @@ package railo.transformer.cfml.expression;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import railo.print;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.TemplateException;
+import railo.runtime.functions.struct.Struct_;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Scope;
 import railo.transformer.bytecode.BytecodeException;
@@ -22,6 +24,7 @@ import railo.transformer.bytecode.expression.var.BIF;
 import railo.transformer.bytecode.expression.var.DataMember;
 import railo.transformer.bytecode.expression.var.DynAssign;
 import railo.transformer.bytecode.expression.var.FunctionMember;
+import railo.transformer.bytecode.expression.var.Member;
 import railo.transformer.bytecode.expression.var.NamedArgument;
 import railo.transformer.bytecode.expression.var.UDF;
 import railo.transformer.bytecode.expression.var.Variable;
@@ -37,6 +40,7 @@ import railo.transformer.bytecode.op.OpNegateNumber;
 import railo.transformer.bytecode.op.OpString;
 import railo.transformer.bytecode.op.OpVariable;
 import railo.transformer.cfml.ExprTransformer;
+import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
@@ -115,6 +119,23 @@ public class CFMLExprTransformer implements ExprTransformer {
 	private static FunctionLibFunction JSON_ARRAY = null;
 	private static FunctionLibFunction JSON_STRUCT = null;
 	
+	public static final short CTX_NONE = 0;
+	public static final short CTX_IF = 1;
+	public static final short CTX_ELSE_IF = 2;
+	public static final short CTX_ELSE = 3;
+	public static final short CTX_FOR = 4;
+	public static final short CTX_WHILE = 5;
+	public static final short CTX_DO_WHILE = 6;
+	public static final short CTX_CFC = 7;
+	public static final short CTX_INTERFACE = 8;
+	public static final short CTX_FUNCTION = 9;
+	public static final short CTX_BLOCK = 10;
+	public static final short CTX_FINALLY = 11;
+	public static final short CTX_SWITCH = 12;
+	public static final short CTX_TRY = 13;
+	public static final short CTX_CATCH = 14;
+	
+	
 	/*private short mode=0;
 	protected CFMLString cfml;
 	protected FunctionLib[] fld;
@@ -122,6 +143,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	private boolean allowLowerThan;*/
 	
 	public class Data {
+		
 		private short mode=0;
 		public CFMLString cfml;
 		public FunctionLib[] fld;
@@ -130,8 +152,11 @@ public class CFMLExprTransformer implements ExprTransformer {
 		public boolean insideFunction;
 		public String tagName;
 		public boolean isCFC;
+		public EvaluatorPool ep;
+		public short context=CTX_NONE;
 		
-		public Data(CFMLString cfml, FunctionLib[] fld,boolean allowLowerThan) {
+		public Data(EvaluatorPool ep, CFMLString cfml, FunctionLib[] fld,boolean allowLowerThan) {
+			this.ep=ep;
 			this.cfml=cfml;
 			this.fld=fld;
 			this.allowLowerThan=allowLowerThan;
@@ -156,10 +181,10 @@ public class CFMLExprTransformer implements ExprTransformer {
 	 * @return Element CFXD Element
 	 * @throws TemplateException
 	 */
-	public Expression transform(FunctionLib[] fld, CFMLString cfml) throws TemplateException {
+	public Expression transform(EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml) throws TemplateException {
 		
 		// Init Parameter
-		Data data = init(fld, cfml,false);
+		Data data = init(ep,fld, cfml,false);
 
 		// parse the houle Page String
         comments(data.cfml);
@@ -172,11 +197,11 @@ public class CFMLExprTransformer implements ExprTransformer {
 	/**
 	 * @see railo.transformer.data.cfml.ExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
 	 */
-	public Expression transformAsString(FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) throws TemplateException {
+	public Expression transformAsString(EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) throws TemplateException {
 		Expression el=null;
 		
 		// Init Parameter
-		Data data = init(fld, cfml,allowLowerThan);
+		Data data = init(ep,fld, cfml,allowLowerThan);
 
 		// parse the houle Page String
         comments(data.cfml);		
@@ -201,8 +226,8 @@ public class CFMLExprTransformer implements ExprTransformer {
 	 * @param doc XML Document des aktuellen CFXD
 	 * @param cfml CFML Code der transfomiert werden soll.
 	 */
-	protected Data init(FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) {
-		Data data = new Data(cfml,fld,allowLowerThan);
+	protected Data init(EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) {
+		Data data = new Data(ep,cfml,fld,allowLowerThan);
 		if(JSON_ARRAY==null)JSON_ARRAY=getFLF(data,"_jsonArray");
 		if(JSON_STRUCT==null)JSON_STRUCT=getFLF(data,"_jsonStruct");
 		return data;
@@ -816,7 +841,9 @@ public class CFMLExprTransformer implements ExprTransformer {
 			} 
 		// Dynamic
 			if((expr=dynamic(data))!=null) {
-				expr = subDynamic(data,expr);
+				Expression res = newOp(data, expr);
+				if(res==expr)expr = subDynamic(data,expr);
+				else expr=res;
 				data.mode=DYNAMIC;
 				return expr;
 			} 
@@ -1012,8 +1039,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* Wenn es sich um keinen bolschen Wert handelt wird der folgende Wert eingelesen mit seiner ganzen Hirarchie.
 	* <br />
 	* EBNF:<br />
-	* <code>"true" | "false" | "yes" | "no" | startElement  
-	                 {("." identifier | "[" structElement "]" )[function] };</code>
+	* <code>"true" | "false" | "yes" | "no" | startElement {("." identifier | "[" structElement "]" )[function] };</code>
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
@@ -1069,7 +1095,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		if(!data.cfml.forwardIfCurrent(start))return null;
 		
 		int line = data.cfml.getLine();
-		BIF bif=new BIF(flf.getName());
+		BIF bif=new BIF(flf.getName(),flf);
 		bif.setArgType(flf.getArgType());
 		bif.setClassName(flf.getCls());
 		bif.setReturnType(flf.getReturnTypeAsString());
@@ -1174,6 +1200,69 @@ public class CFMLExprTransformer implements ExprTransformer {
 		
 		return expr;  
 	}
+	
+	private Expression newOp(Data data,Expression expr) throws TemplateException {
+		if(!(expr instanceof Variable)) return expr;
+		Variable var=(Variable) expr;
+		Member m= var.getFirstMember();
+		if(!(m instanceof DataMember)) return expr;
+		LitString ls=(LitString) ((DataMember)m).getName();
+		if(!"new".equalsIgnoreCase(ls.getString())) return expr;
+		
+		int start=data.cfml.getPos();
+	    String name=null;
+	    
+	    
+	    // first identifier
+	    name = identifier(data,true,true);
+	    
+		
+		ExprString exprName;
+		if(name!=null)	{
+			StringBuilder fullName=new StringBuilder();
+			fullName.append(name);
+			// Loop over addional identifier
+			while (data.cfml.isValidIndex()) {
+				if (data.cfml.forwardIfCurrent('.')) {
+					comments(data.cfml);
+	                name = identifier(data,true,true);
+					if(name==null) throw new TemplateException(data.cfml,"invalid Component declaration ");
+					fullName.append('.');
+					fullName.append(name);
+					comments(data.cfml);
+				}
+				else break;
+			}
+			exprName=LitString.toExprString(fullName.toString());
+		}
+		else {
+			
+			Expression str=string(data);
+			if(str!=null){
+				exprName=CastString.toExprString(str);
+			}
+			else {
+				data.cfml.setPos(start);
+				return expr;
+			}
+		}
+
+        comments(data.cfml);
+        
+        if (data.cfml.isCurrent('(')) {
+			FunctionMember func = getFunctionMember(data,"_createComponent", true, null);
+			func.addArgument(new Argument(exprName,"string"));
+			Variable v=new Variable(expr.getLine());
+			v.addMember(func);
+            comments(data.cfml);
+			return v;
+		} 
+        throw new TemplateException(data.cfml,"invalid Component declaration ");
+		
+	}
+	
+	
+	
 	
 	
 	/**
@@ -1348,7 +1437,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		// Element Function
 		FunctionMember fm;
 		if(checkLibrary) {
-			BIF bif=new BIF(name);
+			BIF bif=new BIF(name,flf);
 			bif.setArgType(flf.getArgType());
 			bif.setClassName(flf.getCls());
 			bif.setReturnType(flf.getReturnTypeAsString());
@@ -1369,9 +1458,6 @@ public class CFMLExprTransformer implements ExprTransformer {
         								));
         		}
 			}
-			
-			
-			
 		}
 		else {
 			if(exprName==null)fm = new UDF(name);
@@ -1452,6 +1538,12 @@ public class CFMLExprTransformer implements ExprTransformer {
 				"to few Attributes in function [" + name + "]");
 
         comments(data.cfml);
+        
+        // evaluator
+        if(checkLibrary && flf.hasTteClass()){
+        	flf.getEvaluator().evaluate((BIF) fm, flf);
+        }
+        
 		return fm;
 	}
 	

@@ -153,7 +153,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 	 * @throws PageException
 	 */
 	public void start(String gatewayId) throws PageException {
-		executeThread(gatewayId,GatewayEngineThread.START);
+		executeThread(gatewayId,GatewayThread.START);
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 	 * @throws PageException
 	 */
 	public void stop(String gatewayId) throws PageException {
-		executeThread(gatewayId,GatewayEngineThread.STOP);
+		executeThread(gatewayId,GatewayThread.STOP);
 	}
 	
 	/**
@@ -171,7 +171,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 	 * @throws PageException
 	 */
 	public void restart(String gatewayId) throws PageException {
-		executeThread(gatewayId,GatewayEngineThread.RESTART);
+		executeThread(gatewayId,GatewayThread.RESTART);
 	}
 	
 	private Gateway getGateway(String gatewayId) throws PageException {
@@ -211,35 +211,10 @@ public class GatewayEngineImpl implements GatewayEngine {
 
 	private void executeThread(String gatewayId, int action) throws PageException {
 		
-		new GatewayEngineThread(getGateway(gatewayId),action).start();
+		new GatewayThread(this,getGateway(gatewayId),action).start();
 	}
 	
-	class GatewayEngineThread extends Thread {
-
-		public static final int START=0;
-		public static final int STOP=1;
-		public static final int RESTART=2;
-		
-		private Gateway gateway;
-		private int action;
-
-		public GatewayEngineThread(Gateway gateway,int action){
-			this.gateway=gateway;
-			this.action=action;
-		}
-		
-		public void run(){
-			// MUST handle timout
-			try{
-			if(action==START) gateway.doStart();
-			else if(action==STOP) gateway.doStop();
-			else if(action==RESTART) gateway.doRestart();
-			}
-			catch(GatewayException ge){
-				log(gateway,LOGLEVEL_ERROR,ge.getMessage());
-			}
-		}
-	}
+	
 	
 
 	public static int toIntState(String state, int defaultValue) {

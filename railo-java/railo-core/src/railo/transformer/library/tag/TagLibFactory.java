@@ -381,20 +381,15 @@ public final class TagLibFactory extends DefaultHandler {
 	 */
 	public static TagLib[] loadFromDirectory(Resource dir,String saxParser) throws TagLibException	{
 		if(!dir.isDirectory())return new TagLib[0];
-		ArrayList arr=new ArrayList();
-		arr.toArray();
+		ArrayList<TagLib> arr=new ArrayList<TagLib>();
+		
 		Resource[] files=dir.listResources(new ExtensionResourceFilter("tld"));
 		for(int i=0;i<files.length;i++)	{
 			if(files[i].isFile())
 				arr.add(TagLibFactory.loadFromFile(files[i],saxParser));
 				
 		}
-		Object[] obj=arr.toArray();
-		TagLib[] libs=new TagLib[obj.length];
-		for(int i=0;i<obj.length;i++)	{
-			libs[i]=(TagLib)obj[i];
-		}
-		return libs;
+		return arr.toArray(new TagLib[arr.size()]);
 	}
 
 	/**

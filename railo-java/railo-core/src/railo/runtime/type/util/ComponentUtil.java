@@ -26,6 +26,7 @@ import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
+import railo.runtime.ComponentPro;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
@@ -636,6 +637,11 @@ public final class ComponentUtil {
 		if(comp instanceof ComponentImpl) return (ComponentImpl) comp;
 		if(comp instanceof ComponentWrap) return ((ComponentWrap) comp).getComponentImpl();
 		throw new ExpressionException("can't cast class ["+Caster.toClassName(comp)+"] to a class of type ComponentImpl");
+		
+	}
+	public static ComponentPro toComponentPro(Component comp) throws ExpressionException {
+		if(comp instanceof ComponentPro) return (ComponentPro) comp;
+		throw new ExpressionException("can't cast class ["+Caster.toClassName(comp)+"] to a class of type ComponentPro");
 		
 	}
 

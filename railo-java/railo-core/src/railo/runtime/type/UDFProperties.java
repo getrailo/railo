@@ -12,9 +12,9 @@ import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExternalizableUtil;
 import railo.commons.lang.SizeOf;
 import railo.runtime.Page;
-import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSourceImpl;
-import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -114,7 +114,7 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		this.page = page;
 		
 		this.strReturnType=strReturnType;
-		this.returnType=CFTypes.toShort(strReturnType,CFTypes.TYPE_UNKNOW);
+		this.returnType=CFTypes.toShortStrict(strReturnType,CFTypes.TYPE_UNKNOW);
 		this.strReturnFormat=strReturnFormat;
 		this.returnFormat=UDFImpl.toReturnFormat(strReturnFormat);
 		
@@ -247,9 +247,9 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		try {
-			PageContext pc = ThreadLocalPageContext.get();
-			ConfigWeb cw = (ConfigWeb) ThreadLocalPageContext.getConfig(pc);
-			page=((PageSourceImpl)cw.getPageSource(null, ExternalizableUtil.readString(in), false)).loadPage(pc,cw);
+			PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
+			ConfigWebImpl cw = (ConfigWebImpl) ThreadLocalPageContext.getConfig(pc);
+			page=((PageSourceImpl)cw.getPageSource(null, ExternalizableUtil.readString(in), false,pc.useSpecialMappings())).loadPage(pc,cw);
 			
 		} 
 		catch (PageException e) {

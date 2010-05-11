@@ -6,6 +6,7 @@ package railo.runtime.functions.dateTime;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import railo.commons.date.JREDateTimeUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
@@ -67,14 +68,14 @@ public final class DateDiff implements Function {
 		
 		
 		// dates
-		if(_cLeft==null) _cLeft = Calendar.getInstance(tz);
+		if(_cLeft==null) _cLeft = JREDateTimeUtil.newInstance(tz);
 		//synchronized(_cLeft){
 			_cLeft.clear();
 			_cLeft.setTimeZone(tz);
 			_cLeft.setTimeInMillis(msLeft);
 			//long msLeft = _cLeft.getTimeInMillis();
 			
-			if(_cRight==null) _cRight = Calendar.getInstance(tz);
+			if(_cRight==null) _cRight = JREDateTimeUtil.newInstance(tz);
 			else {
 				_cRight.clear();
 				_cRight.setTimeZone(tz);

@@ -2,7 +2,9 @@ package railo.runtime.tag;
 
 import java.io.IOException;
 
+import railo.commons.lang.StringUtil;
 import railo.runtime.PageContextImpl;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
@@ -20,6 +22,39 @@ public final class HtmlHead extends TagImpl {
 	/** The text to add to the 'head' area of an HTML page. Everything inside the quotation marks is 
 	** 		placed in the 'head' section */
 	private String text="";
+	private String variable="cfhtmlhead";
+	private String action=null;
+
+
+
+	/**
+	* @see javax.servlet.jsp.tagext.Tag#release()
+	*/
+	public void release()	{
+		super.release();
+		text="";
+		variable="cfhtmlhead";
+		action=null;
+	}
+	
+	/**
+	 * @param variable the variable to set
+	 */
+	public void setVariable(String variable) {
+		this.variable = variable;
+	}
+
+
+	/**
+	 * @param action the action to set
+	 */
+	public void setAction(String action) {
+		if(!StringUtil.isEmpty(action,true))
+			this.action = action.trim().toLowerCase();
+		
+		
+	}
+
 
 	/** set the value text
 	*  The text to add to the 'head' area of an HTML page. Everything inside the quotation marks is 
@@ -36,25 +71,42 @@ public final class HtmlHead extends TagImpl {
 	*/
 	public int doStartTag()	throws PageException {
 		try {
-            ((PageContextImpl)pageContext).getRootOut().setToHTMLHead(text); 
-		} catch (IOException e) {
+			if(StringUtil.isEmpty(action,true) || action.equals("append")) actionAppend();
+			else if(action.equals("reset")) actionReset();
+			else if(action.equals("write")) actionWrite();
+			else if(action.equals("read")) actionRead();
+	        else throw new ApplicationException("invalid value ["+action+"] for attribute action","values for attribute action are:append,read,reset");
+		} 
+		catch (IOException e) {
 			throw Caster.toPageException(e);
 		}
 		return SKIP_BODY;
 	}
+	
+	public void actionAppend()	throws IOException, ApplicationException {
+		required("htmlhead", "text", text);
+		((PageContextImpl)pageContext).getRootOut().appendHTMLHead(text); 
+	}
+	
+	public void actionWrite()	throws IOException, ApplicationException {
+		required("htmlhead", "text", text);
+		((PageContextImpl)pageContext).getRootOut().writeHTMLHead(text); 
+	}
+	
+	public void actionReset() throws IOException {
+		((PageContextImpl)pageContext).getRootOut().resetHTMLHead(); 
+	}
+	
+	public void actionRead() throws PageException, IOException {
+		String str=((PageContextImpl)pageContext).getRootOut().getHTMLHead(); 
+		pageContext.setVariable(variable, str);
+	}
+	
 
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	*/
 	public int doEndTag()	{
 		return EVAL_PAGE;
-	}
-
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
-	public void release()	{
-		super.release();
-		text="";
 	}
 }

@@ -20,7 +20,7 @@ public final class LSIsNumeric implements Function {
 		try {
 			LSParseNumber.call(pc,string,strLocale);
 			return true;
-		} catch (PageException e) {
+		} catch (Throwable t) {
 			return false;
 		}
 	}

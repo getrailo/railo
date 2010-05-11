@@ -3,8 +3,14 @@ package railo.commons.lang;
 import java.io.PrintWriter;
 import java.util.Date;
 
+import railo.runtime.PageContext;
+import railo.runtime.engine.ThreadLocalPageContext;
+
 public final class SystemOut {
 
+	public static int OUT=1;
+	public static int ERR=2;
+	
     /**
      * logs a value 
      * @param value
@@ -22,21 +28,65 @@ public final class SystemOut {
     	pw.write(value+"\n");
     	pw.flush();
     }
+
+
+	public static void printStack(PrintWriter pw) {
+		new Throwable().printStackTrace(pw);
+	}
+
+	public static void printStack(int type) {
+		PageContext pc=ThreadLocalPageContext.get();
+    	if(pc!=null) {
+    		if(type==ERR)
+    			printStack(pc.getConfig().getErrWriter());
+    		else 
+    			printStack(pc.getConfig().getOutWriter());
+    	}
+    	else {
+    		printStack(new PrintWriter((type==ERR)?System.err:System.out));
+    	}
+	}
+    
     /**
      * logs a value 
      * @param value
      */
     public static void printDate(String value) {
-    	
-    	
-       printDate(new PrintWriter(System.out),value);
+    	printDate(value,OUT);
+    }
+    
+    public static void printDate(String value,int type) {
+    	PageContext pc=ThreadLocalPageContext.get();
+    	if(pc!=null) {
+    		if(type==ERR)
+    			printDate(pc.getConfig().getErrWriter(),value);
+    		else 
+    			printDate(pc.getConfig().getOutWriter(),value);
+    	}
+    	else {
+    		printDate(new PrintWriter((type==ERR)?System.err:System.out),value);
+    	}
     }
     /**
      * logs a value 
      * @param value
      */
+    
     public static void print(String value) {
-        print(new PrintWriter(System.out),value);
+    	print(value, OUT);
+    }
+    
+    public static void print(String value,int type) {
+    	PageContext pc=ThreadLocalPageContext.get();
+    	if(pc!=null) {
+    		if(type==ERR)
+    			print(pc.getConfig().getErrWriter(),value);
+    		else 
+    			print(pc.getConfig().getOutWriter(),value);
+    	}
+    	else {
+    		print(new PrintWriter((type==ERR)?System.err:System.out),value);
+    	}
     }
 
 }

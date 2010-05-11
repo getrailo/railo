@@ -15,7 +15,7 @@
 		</cftry>
 		<cfreturn data>
 	</cffunction>
-
+	
 	<cffunction name="save" returntype="void"
 		hint="save persitent data from admin">
 		<cfargument name="data" type="any">

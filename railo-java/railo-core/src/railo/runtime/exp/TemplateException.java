@@ -90,5 +90,6 @@ public class TemplateException extends PageExceptionImpl {
 				StringUtil.isEmpty(e.getMessage())?
 						(Caster.toClassName(e)):
 						e.getMessage());
+		setStackTrace(e.getStackTrace());
 	}
 }

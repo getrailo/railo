@@ -9,12 +9,14 @@ import javax.servlet.jsp.tagext.Tag;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
+import railo.runtime.ComponentPro;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.component.ComponentLoader;
@@ -43,6 +45,7 @@ import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.Type;
 import railo.runtime.util.QueryStack;
 import railo.runtime.util.QueryStackImpl;
@@ -111,7 +114,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     private String appendix;
 	//private boolean doCustomTagDeepSearch;
 	
-	private ComponentImpl cfc;
+	private ComponentPro cfc;
 	private boolean isEndTag;
 	
 	
@@ -166,18 +169,36 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
     */
     public int doStartTag() throws PageException    {
-    	initFile();
-    	callerScope.initialize(pageContext);
-        if(source.isCFC)return cfcStartTag();
-        return cfmlStartTag();
+    	PageContextImpl pci=(PageContextImpl) pageContext;
+		boolean old=pci.useSpecialMappings(true);
+		try{
+			initFile();
+	    	callerScope.initialize(pageContext);
+	        if(source.isCFC)return cfcStartTag();
+	        return cfmlStartTag();	
+		}
+		finally{
+			pci.useSpecialMappings(old);
+		}
+    	
+    	
+    	
+    	
     }
 
     /**
     * @see javax.servlet.jsp.tagext.Tag#doEndTag()
     */
     public int doEndTag()   {
-    	if(source.isCFC)_doCFCFinally();
-        return EVAL_PAGE;
+    	PageContextImpl pci=(PageContextImpl) pageContext;
+		boolean old=pci.useSpecialMappings(true);
+		try{
+			if(source.isCFC)_doCFCFinally();
+	        return EVAL_PAGE;
+		}
+		finally{
+			pci.useSpecialMappings(old);
+		}
     }
 
     /**
@@ -253,7 +274,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         StringBuffer msg=new StringBuffer("custom tag \"");
         msg.append(getDisplayName(config,appendix));
         msg.append("\" is not defined in directory \"");
-        msg.append(pageContext.getCurrentPageSource().getPhyscalFile().getParent());
+        msg.append(ResourceUtil.getResource(pageContext, pageContext.getCurrentPageSource()).getParent());
         msg.append('"');
         
         if(!ArrayUtil.isEmpty(ctms)){
@@ -418,7 +439,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     }
 
     
-    private void doInclude() throws PageException {
+    void doInclude() throws PageException {
         Variables var=pageContext.variablesScope();
         pageContext.setVariablesScope(ctVariablesScope);
         
@@ -492,7 +513,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         return exeBody?EVAL_BODY_BUFFERED:SKIP_BODY;
     }
     
-    private static void validateAttributes(ComponentImpl cfc,StructImpl attributesScope,String tagName) throws ApplicationException, CasterException {
+    private static void validateAttributes(ComponentPro cfc,StructImpl attributesScope,String tagName) throws ApplicationException, ExpressionException {
 		
 		TagLibTag tag=getAttributeRequirments(cfc,false);
 		if(tag==null) return;
@@ -547,12 +568,12 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     } 
     
 
-	private static TagLibTag getAttributeRequirments(ComponentImpl cfc, boolean runtime) {
+	private static TagLibTag getAttributeRequirments(ComponentPro cfc, boolean runtime) throws ExpressionException {
 		
 		Struct meta=null;
     	//try {
     		//meta = Caster.toStruct(cfc.get(Component.ACCESS_PRIVATE, METADATA),null,false);
-    		Member mem = cfc.getMember(Component.ACCESS_PRIVATE, METADATA,true,false);
+    		Member mem = ComponentUtil.toComponentImpl(cfc).getMember(Component.ACCESS_PRIVATE, METADATA,true,false);
     		if(mem!=null)meta = Caster.toStruct(mem.getValue(),null,false);
 		//}catch (PageException e) {e.printStackTrace();}
     	if(meta==null) return null;

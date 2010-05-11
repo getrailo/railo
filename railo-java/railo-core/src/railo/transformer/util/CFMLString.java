@@ -91,6 +91,22 @@ public final class CFMLString {
 		init(content.toString().toCharArray());
         
 	}
+	
+
+	/**
+	 * Constructor of the class
+	 * in this case source file is just for information
+	 * @param text
+	 * @param charset
+	 * @param writeLog
+	 * @param sf
+	 */
+	public CFMLString(String text,String charset,boolean writeLog,SourceFile sf) {
+		init(text.toCharArray());
+		this.charset=charset;
+		this.writeLog=writeLog;
+		this.sf=sf;
+	}
 
 
 	/**
@@ -101,11 +117,6 @@ public final class CFMLString {
 		init(text.toCharArray());
 		this.charset=charset;
 		this.writeLog=false;
-	}
-	public CFMLString(String text,String charset,boolean writeLog) {
-		init(text.toCharArray());
-		this.charset=charset;
-		this.writeLog=writeLog;
 	}
 	
 	/**
@@ -609,7 +620,7 @@ public final class CFMLString {
 	* @return Untermenge als CFMLString
 	*/
    public CFMLString subCFMLString(int start, int count) {
-   		return new CFMLString(String.valueOf(text,start,count),charset,writeLog);
+   		return new CFMLString(String.valueOf(text,start,count),charset,writeLog,sf);
    		
    }
 	
@@ -791,5 +802,10 @@ public final class CFMLString {
 
 	public boolean getWriteLog() {
 		return writeLog;
+	}
+
+
+	public String getText() {
+		return new String(text);
 	}
 }

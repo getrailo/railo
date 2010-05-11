@@ -1,15 +1,15 @@
 package railo.runtime.text.xml;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.CharacterData;
@@ -23,11 +23,11 @@ import org.w3c.dom.Text;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.CasterException;
@@ -383,16 +383,17 @@ public final class XMLCaster {
 		throw new ExpressionException("invalid node type definition");
 	}
 
-	/**
+	/* *
 	 * cast a xml node to a String
 	 * @param node
 	 * @return xml node as String
 	 * @throws ExpressionException
-	 */
+	 * /
 	public static String toString(Node node) throws ExpressionException  {
         //Transformer tf;
 		try {
 	        OutputFormat format = new OutputFormat();
+	        
 	        StringWriter writer = new StringWriter();
 	        XMLSerializer serializer = new XMLSerializer(writer, format);
 	        if(node instanceof Element)serializer.serialize((Element)node);
@@ -408,6 +409,7 @@ public final class XMLCaster {
         //Transformer tf;
 		try {
 	        OutputFormat format = new OutputFormat();
+	        
 	        StringWriter writer = new StringWriter();
 	        XMLSerializer serializer = new XMLSerializer(writer, format);
 	        if(node instanceof Element)serializer.serialize((Element)node);
@@ -417,7 +419,7 @@ public final class XMLCaster {
 		} catch (Exception e) {
 		    return defaultValue;
 		}
-	}
+	}*/
 	
 	public static String toHTML(Node node) throws ExpressionException  {
 		if(Node.DOCUMENT_NODE==node.getNodeType()) 
@@ -470,67 +472,91 @@ public final class XMLCaster {
         	sb.append(((CharacterData)node).getData());
 		}
 	}
-
 	
-	
-	/**
-	 * write a xml Dom to a file
-	 * @param node
-	 * @param os
-	 * @throws PageException
-	 */
-	public static void writeToFile(Node node, OutputStream os) throws PageException {
-        Transformer tf;
-		try {
-			tf = XMLUtil.getTransformerFactory().newTransformer();
-			
-	        tf.transform(new DOMSource(node), new StreamResult(os));
-	        return;
-		} catch (Exception e) {
-			throw Caster.toPageException(e);
-		}
-	}
 	/**
 	 * write a xml Dom to a file
 	 * @param node
 	 * @param file
 	 * @throws PageException
 	 */
-	public static void writeToFile(Node node, File file) throws PageException {
-		writeToResource(node, ResourceUtil.toResource(file));
-		/*OutputStream os=null;
-        try {
-			Transformer t = XMLUtil.getTransformerFactory().newTransformer();
-	        t.transform(new DOMSource(node), new StreamResult(os=new FileOutputStream(file)));
-	        return;
-		} catch (Exception e) {
-			throw Caster.toPageException(e);
-		}
-		finally {
-			IOUtil.closeEL(os);
-		}*/
-	}
-	/**
-	 * write a xml Dom to a file
-	 * @param node
-	 * @param file
-	 * @throws PageException
-	 */
-	public static void writeToResource(Node node, Resource file) throws PageException {
-        //Transformer tf;
-        
+	public static void writeTo(Node node, Resource file) throws PageException {
         OutputStream os=null;
 		try {
-			Transformer t = XMLUtil.getTransformerFactory().newTransformer();
-	        t.transform(new DOMSource(node), new StreamResult(os=IOUtil.toBufferedOutputStream(file.getOutputStream())));
-	        return;
-		} catch (Exception e) {
-			throw Caster.toPageException(e);
+			os=IOUtil.toBufferedOutputStream(file.getOutputStream());
+			writeTo(node, new StreamResult(os),false);
+		}
+		catch(IOException ioe){
+			throw Caster.toPageException(ioe);
 		}
 		finally {
 			IOUtil.closeEL(os);
 		}
 	}
+	
+
+	public static String toString(Node node) throws PageException {
+		StringWriter sw=new StringWriter();
+		try {
+			writeTo(node, new StreamResult(sw),false);
+		} 
+		finally {
+			IOUtil.closeEL(sw);
+		}
+		return sw.getBuffer().toString();
+	}
+
+	public static String toString(Node node,boolean omitXMLDecl) throws PageException {
+		StringWriter sw=new StringWriter();
+		try {
+			writeTo(node, new StreamResult(sw),omitXMLDecl);
+		} 
+		finally {
+			IOUtil.closeEL(sw);
+		}
+		return sw.getBuffer().toString();
+	}
+	public static String toString(NodeList nodes,boolean omitXMLDecl) throws PageException {
+		StringWriter sw=new StringWriter();
+		try {
+			int len = nodes.getLength();
+			for(int i=0;i<len;i++){
+				writeTo(nodes.item(i), new StreamResult(sw),omitXMLDecl);
+			}
+		} 
+		finally {
+			IOUtil.closeEL(sw);
+		}
+		return sw.getBuffer().toString();
+	}
+	
+	public static String toString(Node node,String defaultValue) {
+		StringWriter sw=new StringWriter();
+		try {
+			writeTo(node, new StreamResult(sw),false);
+		} 
+		catch(Throwable t){
+			return defaultValue;
+		}
+		finally {
+			IOUtil.closeEL(sw);
+		}
+		return sw.getBuffer().toString();
+	}
+	
+	
+	public static void writeTo(Node node,Result res,boolean omitXMLDecl) throws PageException {
+		try {
+			Transformer t = XMLUtil.getTransformerFactory().newTransformer();
+			t.setOutputProperty(OutputKeys.INDENT,"yes");
+			t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,omitXMLDecl?"yes":"no");
+			 
+			t.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2"); 
+			t.transform(new DOMSource(node), res);
+		} catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
+	}
+	
 
     /**
 	 * Casts a XML Node to a HTML Presentation
@@ -545,7 +571,7 @@ public final class XMLCaster {
 		maxlevel--;
 		// Document
 		if(node instanceof Document) {
-			DumpTable table = new DumpTable("#C2AF94","#F3EFEA","#000000");
+			DumpTable table = new DumpTablePro("xml","#C2AF94","#F3EFEA","#000000");
 			table.setTitle("XML Document");
 			table.appendRow(1,new SimpleDumpData("XmlComment"),new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLCOMMENT).toString()));
 			table.appendRow(1,new SimpleDumpData("XmlRoot"),	DumpUtil.toDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLROOT), pageContext,maxlevel,props));
@@ -554,7 +580,7 @@ public final class XMLCaster {
 		}
 		// Element
 		if(node instanceof Element) {
-			DumpTable table = new DumpTable("#C2AF94","#F3EFEA","#000000");
+			DumpTable table = new DumpTablePro("xml","#C2AF94","#F3EFEA","#000000");
 			table.setTitle("XML Element");
 			table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNAME).toString()));
 			table.appendRow(1,new SimpleDumpData("XmlNsPrefix"),	new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNSPREFIX).toString()));
@@ -568,7 +594,7 @@ public final class XMLCaster {
 		}
 		// Attr
 		if(node instanceof Attr) {
-			DumpTable table = new DumpTable("#C2AF94","#F3EFEA","#000000");
+			DumpTable table = new DumpTablePro("xml","#C2AF94","#F3EFEA","#000000");
 			table.setTitle("XML Attr");
 			table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNAME).toString()));
 			table.appendRow(1,new SimpleDumpData("XmlValue"),	DumpUtil.toDumpData(((Attr)node).getValue(), pageContext,maxlevel,props));
@@ -578,7 +604,7 @@ public final class XMLCaster {
 			
 		}
 		// Node
-		DumpTable table = new DumpTable("#C2AF94","#F3EFEA","#000000");
+		DumpTable table = new DumpTablePro("xml","#C2AF94","#F3EFEA","#000000");
 		table.setTitle("XML Node ("+ListLast.call(null,node.getClass().getName(),".")+")");
 		table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNAME).toString()));
 		table.appendRow(1,new SimpleDumpData("XmlNsPrefix"),	new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNSPREFIX).toString()));

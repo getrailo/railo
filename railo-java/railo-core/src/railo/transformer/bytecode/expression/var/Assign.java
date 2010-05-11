@@ -202,9 +202,6 @@ public class Assign extends ExpressionBase {
 			adapter.checkCast(TypeScope.SCOPE_ARGUMENT_IMPL);
 			value.writeOut(bc, MODE_REF);
 			adapter.invokeVirtual(TypeScope.SCOPE_ARGUMENT_IMPL,SET_ARGUMENT);
-			// pagecontext.undefinedScope().set(key1, "");
-		    
-			//((ArgumentImpl)pc.argumentScope()).setArgument(obj);
 		}
 		else {
 			adapter.loadArg(0);

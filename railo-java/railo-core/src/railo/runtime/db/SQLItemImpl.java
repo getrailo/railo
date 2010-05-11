@@ -3,14 +3,16 @@ package railo.runtime.db;
 import java.io.Serializable;
 import java.sql.Types;
 
+import railo.commons.lang.SizeOf;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Sizeable;
 
 
 /**
  * 
  */
-public final class SQLItemImpl implements SQLItem,Serializable {
+public final class SQLItemImpl implements SQLItem,Serializable,Sizeable {
 
 	/** Yes or No. Indicates whether the parameter is passed as a null. If Yes, the tag ignores the 
 	** 	value attribute. The default is No. */
@@ -140,4 +142,11 @@ public final class SQLItemImpl implements SQLItem,Serializable {
 			return Caster.toString(getValue(),"");
 		}
     }
+
+	public long sizeOf() {
+		return SizeOf.size(this.cfValue)+
+		SizeOf.size(this.isValueSet)+
+		SizeOf.size(this.nulls)+
+		SizeOf.size(this.value);
+	}
 }

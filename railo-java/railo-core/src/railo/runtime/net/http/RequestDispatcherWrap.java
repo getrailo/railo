@@ -65,7 +65,9 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 			this.req.getOriginalRequestDispatcher(realPath).include(req, rsp);
 			return;
 		}
-		HTTPUtil.include(pc,req, realPath);
+		//rsp.getWriter().flush();
+		//print.out("abc:"+rsp);
+		HTTPUtil.include(pc,req, rsp,realPath);
 		
 		/*
 		realPath=HTTPUtil.optimizeRealPath(pc,realPath);

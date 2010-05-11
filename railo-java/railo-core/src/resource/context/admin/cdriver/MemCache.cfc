@@ -1,8 +1,8 @@
 <cfcomponent extends="Cache">
 	
     <cfset fields=array(
-		field("Host","host","",true,"Host name or IP address of the memcache service"),
-		field("Port","port","11211",true,"Port of the memcache service")
+		field("Servers","servers","",true,"please define here a list of all Servers you wanna connect, please follow this pattern:<br> Host:Port&lt;new line><br> Host:Port&lt;new line><br>Host:Port","textarea")
+		
 	)>
     
 	<cffunction name="getClass" returntype="string">

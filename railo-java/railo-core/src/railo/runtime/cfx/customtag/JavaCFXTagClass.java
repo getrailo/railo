@@ -33,7 +33,7 @@ public final class JavaCFXTagClass implements CFXTagClass {
 	/**
 	 * @see railo.runtime.cfx.customtag.CFXTagClass#newInstance()
 	 */
-	public Object newInstance() throws CFXTagException {
+	public CustomTag newInstance() throws CFXTagException {
 		try {
 			return _newInstance();
 		} catch (Throwable e) {
@@ -46,16 +46,16 @@ public final class JavaCFXTagClass implements CFXTagClass {
 	 * @throws ClassNotFoundException
 	 * @see railo.runtime.cfx.customtag.CFXTagClass#newInstance()
 	 */
-	public Object _newInstance() throws ClassNotFoundException, InstantiationException, IllegalAccessException  {
+	public CustomTag _newInstance() throws ClassNotFoundException, InstantiationException, IllegalAccessException  {
 		
 		Object o=getClazz().newInstance();
-		return o;
+		return (CustomTag)o;
 	}
     /**
      * @return Returns the clazz.
      * @throws ClassNotFoundException 
      */
-    public Class getClazz() throws ClassNotFoundException {
+    public Class<CustomTag> getClazz() throws ClassNotFoundException {
         if(clazz==null) {
             clazz=this.getClass().getClassLoader().loadClass(strClass);
 		}

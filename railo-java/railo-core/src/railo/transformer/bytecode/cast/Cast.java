@@ -57,7 +57,8 @@ public final class Cast extends ExpressionBase {
         	}
         break;
         case 's':
-            if("string".equals(lcType))							return CastString.toExprString(expr);
+        	if("string".equals(lcType))							return CastString.toExprString(expr);
+        	//if("string_array".equals(lcType))					return StringArray.toExpr(expr);     
         break;
         case 'u':
         	if("uuid".equals(lcType)) 							return  CastString.toExprString(expr);

@@ -8,13 +8,15 @@ package railo.runtime.cfx.customtag;
 
 import railo.runtime.cfx.CFXTagException;
 
+import com.allaire.cfx.CustomTag;
+
 /**
  *
  *
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public final class CCFXTagClass implements CFXTagClass {
+public final class CPPCFXTagClass implements CFXTagClass {
 	
 	private String name;
 	private boolean readonly=false;
@@ -29,7 +31,7 @@ public final class CCFXTagClass implements CFXTagClass {
      * @param procedure
      * @param keepAlive
      */
-    private CCFXTagClass(String name, boolean readonly, String serverLibrary,
+    private CPPCFXTagClass(String name, boolean readonly, String serverLibrary,
             String procedure, boolean keepAlive) {
         super();
         this.name = name;
@@ -39,7 +41,7 @@ public final class CCFXTagClass implements CFXTagClass {
         this.keepAlive = keepAlive;
     }
     
-	public CCFXTagClass(String name, String serverLibrary, String procedure, boolean keepAlive) {
+	public CPPCFXTagClass(String name, String serverLibrary, String procedure, boolean keepAlive) {
 		if(name.startsWith("cfx_"))name=name.substring(4);
 		this.name=name;
 		this.serverLibrary=serverLibrary;
@@ -50,8 +52,9 @@ public final class CCFXTagClass implements CFXTagClass {
 	/**
 	 * @see railo.runtime.cfx.customtag.CFXTagClass#newInstance()
 	 */
-	public Object newInstance() throws CFXTagException {
-		throw new CFXTagException("interface for C++ Custom tag is not implemnted yet");
+	public CustomTag newInstance() throws CFXTagException {
+		return new CPPCustomTag(serverLibrary,procedure,keepAlive);
+		
 	}
 
     /**
@@ -65,7 +68,7 @@ public final class CCFXTagClass implements CFXTagClass {
      * @see railo.runtime.cfx.customtag.CFXTagClass#cloneReadOnly()
      */
     public CFXTagClass cloneReadOnly() {
-        return new CCFXTagClass(name,true,serverLibrary,procedure,keepAlive);
+        return new CPPCFXTagClass(name,true,serverLibrary,procedure,keepAlive);
     }
 
     /**

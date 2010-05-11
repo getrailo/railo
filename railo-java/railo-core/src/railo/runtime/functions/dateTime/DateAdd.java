@@ -6,6 +6,7 @@ package railo.runtime.functions.dateTime;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import railo.commons.date.JREDateTimeUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -14,7 +15,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 
 public final class DateAdd implements Function {
-	private static Calendar c;
+	//private static Calendar c;
 
 	public static DateTime invoke(String datepart, double number, DateTime date) throws ExpressionException {
 		return call(ThreadLocalPageContext.get() , datepart, number, date);
@@ -36,10 +37,9 @@ public final class DateAdd implements Function {
 		else if(first=='h')		return new DateTimeImpl(pc,date.getTime()+(l*3600000),false);
 		
 		
-		
-		if (c == null)
-        	c=Calendar.getInstance();
-        synchronized (c) {
+		Calendar c=JREDateTimeUtil.getCalendar();
+		//if (c == null)c=JREDateTimeUtil.newInstance();
+        //synchronized (c) {
         	//c.clear();
         	c.setTimeZone(tz);
         	c.setTimeInMillis(date.getTime());
@@ -60,6 +60,6 @@ public final class DateAdd implements Function {
 				throw new ExpressionException("invalid datepart identifier ["+datepart+"] for function dateAdd");
 			}
 			return new DateTimeImpl(pc,c.getTimeInMillis(),false);
-        }
+        //}
 	}
 }

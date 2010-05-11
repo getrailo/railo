@@ -12,15 +12,20 @@ import railo.runtime.type.List;
  */
 public final class ListQualify implements Function {
 	public static String call(PageContext pc , String list, String qualifier) {
-		return call(pc,list,qualifier,",","all");
+		return call(pc,list,qualifier,",","all", false);
 	}
 	public static String call(PageContext pc , String list, String qualifier, String delimeter) {
-		return call(pc,list,qualifier,delimeter,"all");
+		return call(pc,list,qualifier,delimeter,"all", false);
 	}
 
+
 	public static String call(PageContext pc , String list, String qualifier, String delimeter, String scope) {
+		return call(pc, list, qualifier, delimeter, scope, false);
+	}
+	
+	public static String call(PageContext pc , String list, String qualifier, String delimeter, String scope, boolean psq) {
 	   		if(list.length()==0) return "";
-		
+		if(psq)list=StringUtil.replace(list, "'", "''", false);
 		Array arr=List.listToArrayRemoveEmpty(list,delimeter);
 		
 		boolean isQChar=qualifier.length()==1;

@@ -12,7 +12,6 @@ Path placeholders:
 	{web-root-directory}: path to the web root
 	{system-directory}: path to thesystem directory
 	{web-context-hash}: hash of the web context
-
 -->
 	
 	
@@ -144,9 +143,9 @@ Path placeholders:
 			physical="{railo-web}/customtags/"/>
 	</custom-tag>
 	
-	<cfx-tags>
-		<cfx-tag type="java" name="HelloWorld" class="railo.cfx.example.HelloWorld"/>
-	</cfx-tags>
+	<ext-tags>
+		<ext-tag type="java" name="HelloWorld" class="railo.cfx.example.HelloWorld"/>
+	</ext-tags>
 	
 	<!--
 	component:

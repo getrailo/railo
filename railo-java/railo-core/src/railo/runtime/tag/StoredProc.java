@@ -88,7 +88,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	private String cachename="";
 	private DateTime cachedafter;
 	private ProcParamBean returnValue=null;
-	private Map procedureColumnCache;
+	private Map<String,ProcMetaCollection> procedureColumnCache;
 	
 	public void release() {
 		params.clear();
@@ -249,7 +249,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				DatabaseMetaData md = conn.getMetaData();
 				
 				if(procedureColumnCache==null)procedureColumnCache=new ReferenceMap();
-				ProcMetaCollection coll=(ProcMetaCollection) procedureColumnCache.get(procedure);
+				ProcMetaCollection coll=procedureColumnCache.get(procedure);
 				if(coll==null || (coll.created+60000)<System.currentTimeMillis()) {
 					ResultSet res = md.getProcedureColumns(pack, null, name, null);
 					coll=createProcMetaCollection(res);
@@ -328,11 +328,11 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 
 	private ProcMetaCollection createProcMetaCollection(ResultSet res) throws SQLException {
 		//print.out(new QueryImpl(res,"qry"));
-		ArrayList list=new ArrayList();
+		ArrayList<ProcMeta> list=new ArrayList<ProcMeta>();
 		while(res.next()) {
 			list.add(new ProcMeta(res.getInt(COLUMN_TYPE),getDataType(res)));
 		}
-		return new ProcMetaCollection((ProcMeta[]) list.toArray(new ProcMeta[list.size()]));
+		return new ProcMetaCollection(list.toArray(new ProcMeta[list.size()]));
 	}
 
 

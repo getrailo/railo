@@ -407,7 +407,7 @@ public  class XMLNodeStruct extends StructSupport implements XMLStruct {
     /**
      * @see railo.runtime.op.Castable#castToString()
      */
-    public String castToString() throws ExpressionException {
+    public String castToString() throws PageException {
         return XMLCaster.toString(this.node);
     }
     
@@ -465,7 +465,7 @@ public  class XMLNodeStruct extends StructSupport implements XMLStruct {
 	/**
 	 * @see railo.runtime.op.Castable#compare(boolean)
 	 */
-	public int compareTo(boolean b) throws ExpressionException {
+	public int compareTo(boolean b) throws PageException {
 		return Operator.compare(castToString(), b);
 	}
 

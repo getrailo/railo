@@ -10,6 +10,7 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
@@ -24,9 +25,19 @@ import railo.runtime.type.wrap.ArrayAsList;
 /**
  * implementation of the argument scope 
  */
-public final class ArgumentImpl extends ScopeSupport implements Argument {
+public class ArgumentImpl extends ScopeSupport implements ArgumentPro {
+		
+	private boolean bind;
+	private Set functionArgumentNames;
+	//private boolean supportFunctionArguments; 
 	
-
+	/**
+	 * constructor of the class
+	 */
+	public ArgumentImpl() {
+		super("arguments",SCOPE_ARGUMENTS,Struct.TYPE_LINKED);
+		//this(true);
+	}
 
 
 	/**
@@ -36,25 +47,8 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		functionArgumentNames=null;
 		super.release();
 	}
-
-	public static final Object NULL = null;
 	
 	
-	//ArrayList keyList=new ArrayList();
-    private boolean bind;
-
-
-	private Set functionArgumentNames;
-
-
-	//private boolean namedArguments;
-	
-	/**
-	 * constructor of the class
-	 */
-	public ArgumentImpl() {
-		super("arguments",SCOPE_ARGUMENTS,Struct.TYPE_LINKED);
-	}
 	
      /**
      * @see railo.runtime.type.scope.Argument#setBind(boolean)
@@ -75,11 +69,21 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 	public Object getFunctionArgument(Collection.Key key, Object defaultValue) {
-		if(functionArgumentNames==null || !functionArgumentNames.contains(key)){
+		if((functionArgumentNames==null || !functionArgumentNames.contains(key))){
 			return defaultValue;
 		}
 		return get(key, defaultValue);
 	}
+	
+
+	/**
+	 * @see railo.runtime.type.scope.ArgumentPro#containsFunctionArgumentKey(railo.runtime.type.Collection.Key)
+	 */
+	public boolean containsFunctionArgumentKey(Key key) {
+		return functionArgumentNames!=null && functionArgumentNames.contains(key);
+	}
+	
+	
 	
 	/**
 	 *
@@ -151,8 +155,10 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable htmlBox = new DumpTable("#5965e4","#9999ff","#000000");
+		DumpTable htmlBox = new DumpTablePro("struct","#5965e4","#9999ff","#000000");
 		htmlBox.setTitle("Scope Arguments");
+		if(size()>10)htmlBox.setComment("Entries:"+size());
+	    
 		maxlevel--;
 		//Map mapx=getMap();
 		Iterator it=keyIterator();//mapx.keySet().iterator();
@@ -426,6 +432,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		ArgumentImpl trg=new ArgumentImpl();
 		trg.bind=false;
 		trg.functionArgumentNames=functionArgumentNames;
+		//trg.supportFunctionArguments=supportFunctionArguments;
 		copy(this,trg,deepCopy);
 		return trg;
 	}
@@ -441,4 +448,6 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		return namedArguments;
 	}
 */
+
+
 }

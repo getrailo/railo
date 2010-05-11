@@ -15,7 +15,7 @@ import railo.runtime.search.SearchData;
 import railo.runtime.search.SearchDataImpl;
 import railo.runtime.search.SearchEngine;
 import railo.runtime.search.SearchException;
-import railo.runtime.search.lucene2.suggest.SuggestionItem;
+import railo.runtime.search.SuggestionItem;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
@@ -303,6 +303,8 @@ public final class Search extends TagImpl {
         // TODO support context
         String[] types = new String[]{v,v,v,d,d,v,v,v,v,v,v,v,v,d,d,v,v,v};
         SearchData data=new SearchDataImpl(suggestions);
+        SuggestionItem item=null;// this is already here to make sure the classloader load this sinstance 
+        
         
         QueryImpl qry=new QueryImpl(cols,types,0,"query");
 	    	
@@ -345,18 +347,38 @@ public final class Search extends TagImpl {
 	    	Map s = data.getSuggestion();
 	    	if(s.size()>0) {
 	    		String key;
-	    		SuggestionItem item;
+	    		
 	    		Iterator it = s.keySet().iterator();
 	    		Struct keywords=new StructImpl();
 	    		Struct keywordScore=new StructImpl();
 	    		sct.set(KEYWORDS, keywords);
 		    	sct.set(KEYWORD_SCORE, keywordScore);
+		    	Object obj;
+		    	
 	    		while(it.hasNext()) {
 	    			key=(String) it.next();
-	    			item=(SuggestionItem) s.get(key);
-	    			keywords.set(key, item.getKeywords());
-	    			keywordScore.set(key, item.getKeywordScore());
+	    			// FUTURE add SuggestionItem as interface to public interface
+	    			
+	    			// the problem is a conflict between the SuggestionItem version from core and extension
+	    			obj=s.get(key);
+	    			if(obj instanceof SuggestionItem){
+	    				item=(SuggestionItem)obj;
+	    				keywords.set(key, item.getKeywords());
+		    			keywordScore.set(key, item.getKeywordScore());
+	    			}
+	    			else {
+	    				Class clazz = obj.getClass();
+	    				try {
+							keywords.set(key, clazz.getMethod("getKeywords", new Class[0]).invoke(obj, new Object[0]));
+							keywordScore.set(key, clazz.getMethod("getKeywordScore", new Class[0]).invoke(obj, new Object[0]));
+						} 
+	    				catch (Exception e) {}
+	    			}
+	    			
+	    			
+	    			
 	    		}
+		    	
 	    		
 	    		String query = data.getSuggestionQuery();
 	    		if(query!=null) {

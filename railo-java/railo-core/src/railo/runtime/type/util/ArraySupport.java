@@ -10,9 +10,10 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Sizeable;
 import railo.runtime.type.dt.DateTime;
 
-public abstract class ArraySupport implements Array,List {
+public abstract class ArraySupport implements Array,List,Sizeable {
 
 
 	/**

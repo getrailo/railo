@@ -1,5 +1,6 @@
 package railo.commons.date;
 
+import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.commons.lang.SystemOut;
@@ -189,8 +190,6 @@ public abstract class DateTimeUtil {
 	public abstract int getYear(TimeZone tz,railo.runtime.type.dt.DateTime dt);
 	
 	public abstract int getMonth(TimeZone tz,DateTime dt);
-
-	public abstract int getWeek(TimeZone tz,DateTime dt);
 	
 	public abstract int getDay(TimeZone tz,DateTime dt);
 
@@ -201,14 +200,16 @@ public abstract class DateTimeUtil {
 	public abstract int getSecond(TimeZone tz,DateTime dt);
 	
 	public abstract int getMilliSecond(TimeZone tz,DateTime dt);
+
+	public abstract long getMilliSecondsInDay(TimeZone tz, long time);
 	
 	public abstract int getDaysInMonth(TimeZone tz,DateTime dt);
 
-	public abstract int getDayOfYear(TimeZone tz, DateTime dt);
+	public abstract int getDayOfYear(Locale locale,TimeZone tz, DateTime dt);
 
-	public abstract int getDayOfWeek(TimeZone tz, DateTime dt);
+	public abstract int getDayOfWeek(Locale locale,TimeZone tz, DateTime dt);
 
-	public abstract long getMilliSecondsInDay(TimeZone tz, long time);
+	public abstract int getWeekOfYear(Locale locale,TimeZone tz,DateTime dt);
 
 	public abstract long getDiff(TimeZone tz, int datePart,DateTime left,DateTime right);
 

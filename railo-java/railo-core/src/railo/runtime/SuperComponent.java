@@ -18,6 +18,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.ClonedComponent;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
@@ -26,7 +27,7 @@ import railo.runtime.type.util.StructUtil;
 /**
  * 
  */
-public class SuperComponent extends MemberSupport implements Component, Member {
+public class SuperComponent extends MemberSupport implements ComponentPro, Member,Sizeable {
 	
 	private ComponentImpl comp;
 
@@ -591,7 +592,47 @@ public class SuperComponent extends MemberSupport implements Component, Member {
 		return comp.valueIterator();
 	}
 
+	/**
+	 * @see railo.runtime.ComponentPro#getProperties()
+	 */
 	public Property[] getProperties() {
 		return comp.getProperties();
 	}
+
+	/**
+	 * @see railo.runtime.ComponentPro#getComponentScope()
+	 */
+	public ComponentScope getComponentScope() {
+		return comp.getComponentScope();
+	}
+
+	/**
+	 * @see railo.runtime.ComponentPro#contains(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
+	 */
+	public boolean contains(PageContext pc, Key key) {
+		return comp.contains(getAccess(),key);
+	}
+
+	/**
+	 * @see railo.runtime.ComponentPro#getMember(int, railo.runtime.type.Collection.Key, boolean, boolean)
+	 */
+	public Member getMember(int access, Key key, boolean dataMember,boolean superAccess) {
+		return comp.getMember(access, key, dataMember, superAccess);
+	}
+
+	/**
+	 * @see railo.runtime.ComponentPro#setProperty(railo.runtime.component.Property)
+	 */
+	public void setProperty(Property property) {
+		comp.setProperty(property);
+	}
+
+
+	/**
+	 * @see railo.runtime.type.Sizeable#sizeOf()
+	 */
+	public long sizeOf() {
+		return StructUtil.sizeOf(this);
+	}
+	
 }

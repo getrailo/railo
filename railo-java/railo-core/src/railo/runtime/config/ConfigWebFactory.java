@@ -29,6 +29,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.digest.MD5;
 import railo.commons.io.DevNullOutputStream;
@@ -41,6 +42,7 @@ import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.util.ResourceClassLoader;
+import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ByteSizeParser;
 import railo.commons.lang.ClassException;
@@ -61,7 +63,9 @@ import railo.runtime.cache.CacheConnection;
 import railo.runtime.cache.CacheConnectionImpl;
 import railo.runtime.cache.ServerCacheConnection;
 import railo.runtime.cfx.customtag.CFXTagClass;
+import railo.runtime.cfx.customtag.CPPCFXTagClass;
 import railo.runtime.cfx.customtag.JavaCFXTagClass;
+import railo.runtime.config.ajax.AjaxFactory;
 import railo.runtime.crypt.BlowfishEasy;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
@@ -83,9 +87,12 @@ import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionImpl;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
+import railo.runtime.functions.other.CreateObject;
+import railo.runtime.functions.system.ExpandPath;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
+import railo.runtime.listener.ApplicationContextUtil;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicAppListener;
 import railo.runtime.listener.MixedAppListener;
@@ -97,6 +104,8 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
+import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.orm.ORMEngine;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
@@ -108,10 +117,10 @@ import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.scope.CGIImpl;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.util.ArrayUtil;
-import railo.runtime.util.ApplicationContextImpl;
 import railo.runtime.video.VideoExecuter;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibException;
@@ -122,6 +131,10 @@ import railo.transformer.library.tag.TagLibException;
  * 
  */
 public final class ConfigWebFactory {
+
+	
+
+
 
 	
 
@@ -299,6 +312,7 @@ public final class ConfigWebFactory {
             if(!hasServerContext)configServer=null;
         }*/
         loadLib(cs,config);
+        loadORM(configServer, config, doc);
     	loadSystem(cs, config, doc);
         loadResourceProvider(cs,config,doc);
         loadCharset(configServer,config,doc);
@@ -548,9 +562,15 @@ public final class ConfigWebFactory {
     	classes.mkdir();
     	Resource[] libs = lib.listResources();
 
-    	ClassLoader pcl;
-    	if(configServer==null)pcl=new ClassLoaderHelper().getClass().getClassLoader();
-    	else pcl=configServer.getClassLoader();
+    	ResourceClassLoaderFactory classLoaderFactory;
+		if(configServer==null){
+    		classLoaderFactory=new ResourceClassLoaderFactory(new ClassLoaderHelper().getClass().getClassLoader());
+    	}
+    	else {
+    		classLoaderFactory=new ResourceClassLoaderFactory(configServer.getClassLoader());
+    	}
+    	config.setClassLoaderFactory(classLoaderFactory);
+    	
     	
     	//ClassLoader pcl = null;
     	if(libs.length>0 || !ResourceUtil.isEmptyDirectory(classes)){
@@ -564,7 +584,7 @@ public final class ConfigWebFactory {
     		
     		// are files removed
     		if(cl==null){
-    			config.setClassLoader(new ResourceClassLoader(trgs,pcl));
+    			classLoaderFactory.addResources(trgs);
     		}
     		else {
     			Resource[] srcs = cl.getResources();
@@ -572,7 +592,7 @@ public final class ConfigWebFactory {
 
     			Resource[] removed = getNewResources(trgs,srcs);
 	    		if(removed.length>0){
-	    			config.setClassLoader(new ResourceClassLoader(trgs,pcl));
+	    			classLoaderFactory.addResources(trgs);
 	    		}
 	    		else{
 	    			cl.addResources(getNewResources(srcs,trgs));
@@ -581,11 +601,13 @@ public final class ConfigWebFactory {
     		
     	}
     	else{
-    		config.setClassLoader(new ResourceClassLoader(new Resource[0],pcl));
+    		classLoaderFactory.addResources(new Resource[0]);
     	}
     }
     
-    private static boolean equal(Resource[] srcs, Resource[] trgs) {
+
+
+	private static boolean equal(Resource[] srcs, Resource[] trgs) {
 		if(srcs.length!=trgs.length) return false;
 		Resource src;
 		outer:for(int i=0;i<srcs.length;i++){
@@ -782,7 +804,7 @@ public final class ConfigWebFactory {
         createFileFromResource(resource,file,null);
     }
 	
-	static void createFileFromResourceEL(String resource,Resource file) {
+	public static void createFileFromResourceEL(String resource,Resource file) {
         try {
 			createFileFromResource(resource,file,null);
 		} 
@@ -1044,7 +1066,19 @@ public final class ConfigWebFactory {
 	        if(!dir.exists())dir.mkdirs();
 
 	        f=dir.getRealResource("DummyGateway.cfc");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/DummyGateway.cfc",f);
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/gateway/DummyGateway.cfc",f);
+
+            f=dir.getRealResource("DirectoryWatcher.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/gateway/DirectoryWatcher.cfc",f);
+	        
+            f=dir.getRealResource("DirectoryWatcherListener.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/gateway/DirectoryWatcherListener.cfc",f);
+
+            f=dir.getRealResource("MailWatcher.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/gateway/MailWatcher.cfc",f);
+	        
+            f=dir.getRealResource("MailWatcherListener.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/gateway/MailWatcherListener.cfc",f);
 	        
 	        
 
@@ -1054,10 +1088,13 @@ public final class ConfigWebFactory {
 
             f=gDir.getRealResource("Gateway.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/gdriver/Gateway.cfc",f);
-            
+
             f=gDir.getRealResource("DirectoryWatcher.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/gdriver/DirectoryWatcher.cfc",f);
-
+            
+            f=gDir.getRealResource("MailWatcher.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/gdriver/MailWatcher.cfc",f);
+            
             f=gDir.getRealResource("Field.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/gdriver/Field.cfc",f);
 
@@ -2243,6 +2280,45 @@ public final class ConfigWebFactory {
     	if(config instanceof ConfigServer){
     		Resource f = dir.getRealResource("Dump.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/Dump.cfc",f);
+
+        // AJAX
+            AjaxFactory.deployTags(dir, doNew);
+            /* // tags
+            f = dir.getRealResource("AjaxImport.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/AjaxImport.cfc",f);
+            f = dir.getRealResource("AjaxProxy.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/AjaxProxy.cfc",f);
+            f = dir.getRealResource("Div.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/Div.cfc",f);
+            
+            // helper files
+            dir=dir.getRealResource("railo/core/ajax/");
+            if(!dir.isDirectory())dir.mkdirs();
+            f = dir.getRealResource("AjaxBase.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/railo/core/ajax/AjaxBase.cfc",f);
+            f = dir.getRealResource("AjaxBinder.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/railo/core/ajax/AjaxBinder.cfc",f);
+            f = dir.getRealResource("AjaxProxyHelper.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/railo/core/ajax/AjaxProxyHelper.cfc",f);
+            f = dir.getRealResource("JSLoader.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/railo/core/ajax/JSLoader.cfc",f);
+            f = dir.getRealResource("RailoJs.cfc");
+            if(f.exists())f.delete();
+           
+            
+            
+            Resource jsDir = dir.getRealResource("js");
+            if(!jsDir.isDirectory())jsDir.mkdirs();
+            f = jsDir.getRealResource("license.txt");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/railo/core/ajax/js/license.txt",f);
+            f = jsDir.getRealResource("RailoAjax.js");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/railo/core/ajax/js/RailoAjax.js",f);
+            
+            dir = dir.getRealResource("loader");
+            if(!dir.isDirectory())dir.mkdirs();
+            f = dir.getRealResource("loading.gif.cfm");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/railo/core/ajax/loader/loading.gif.cfm",f);
+            */
     	}
 	}
 
@@ -2637,6 +2713,43 @@ public final class ConfigWebFactory {
         else config.setLocale(Locale.US);
         
     }
+    
+    
+    private static void loadORM(ConfigServer configServer, ConfigImpl config, Document doc) {
+    	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        Element orm=hasAccess?getChildByName(doc.getDocumentElement(),"orm"):null;
+      	boolean hasCS=configServer!=null;
+      	
+      // engine
+      	String defaulrEngineClass="railo.runtime.orm.hibernate.HibernateORMEngine";
+        String strEngine=null;
+        if(orm!=null)strEngine=orm.getAttribute("engine-class");
+        if(StringUtil.isEmpty(strEngine,true))
+        	strEngine=defaulrEngineClass;
+        
+        // load class
+        Class<ORMEngine> clazz;
+        try{
+        	clazz=ClassUtil.loadClass(strEngine);
+        	// TODO check interface as well
+        }
+        catch(ClassException ce){
+        	ce.printStackTrace();
+        	clazz=ClassUtil.loadClass(defaulrEngineClass,null);
+        }
+        config.setORMEngineClass(clazz);
+        
+        
+    // config
+        if(orm==null) orm = doc.createElement("orm"); // this is just a dummy 
+        ORMConfiguration def=hasCS?((ConfigServerImpl)configServer).getORMConfig():null;
+        ORMConfiguration ormConfig=ORMConfiguration.load(config,orm,config.getRootDirectory(),def);
+        config.setORMConfig(ormConfig);
+        
+    }
+    
+    
 
     /**
      * @param configServer 
@@ -2706,15 +2819,33 @@ public final class ConfigWebFactory {
 	        config.setMergeFormAndURL(toBoolean(strMergeFormAndURL,false));
 	    }
 	    else if(hasCS) config.setMergeFormAndURL(configServer.mergeFormAndURL());
-    
-  	    // Session Timeout
+
+  	    // Client Timeout
+	    String clientTimeout=scope.getAttribute("clienttimeout");
+	    if(StringUtil.isEmpty(clientTimeout,true)){
+	    	// deprecated
+	    	clientTimeout=scope.getAttribute("client-max-age");
+	    	int days=Caster.toIntValue(clientTimeout,-1);
+	    	if(days>0) clientTimeout=days+",0,0,0";
+	    	else clientTimeout="";
+	    }
+	    if(hasAccess && !StringUtil.isEmpty(clientTimeout)) {
+	        config.setClientTimeout(clientTimeout);
+	    }
+	    else if(hasCS) config.setClientTimeout(configServer.getClientTimeout());
+
+  	    
+  	    
+  	    
+  	    
+	    // Session Timeout
 	    String sessionTimeout=scope.getAttribute("sessiontimeout");
   	    if(hasAccess && !StringUtil.isEmpty(sessionTimeout)) {
 	        config.setSessionTimeout(sessionTimeout);
 	    }
 	    else if(hasCS) config.setSessionTimeout(configServer.getSessionTimeout());
 
-	    // App Timeout
+  	    // App Timeout
 	    String appTimeout=scope.getAttribute("applicationtimeout");
   	    if(hasAccess && !StringUtil.isEmpty(appTimeout)) {
 	        config.setApplicationTimeout(appTimeout);
@@ -2748,13 +2879,6 @@ public final class ConfigWebFactory {
   	    else if(hasCS) config.setClientScopeDirSize(configServer.getClientScopeDirSize());
 
   	    
-
-	    strMax=scope.getAttribute("client-max-age");
-  	    if(hasAccess && !StringUtil.isEmpty(strMax)) {
-  	    	config.setClientScopeMaxAge(Caster.toIntValue(strMax,90));
-	    }
-  	    else if(hasCS) config.setClientScopeMaxAge(configServer.getClientScopeMaxAge());
-
   	    
   	    
       	// Session Management
@@ -2764,7 +2888,7 @@ public final class ConfigWebFactory {
   	  	}
   	  	else if(hasCS) config.setSessionManagement(configServer.isSessionManagement());
 
-      	// Client Management
+  	  	// Client Management
   	  	String strClientManagement=scope.getAttribute("clientmanagement");
   	  	if(hasAccess && !StringUtil.isEmpty(strClientManagement)) {
   	  	    config.setClientManagement(toBoolean(strClientManagement,false));
@@ -3054,18 +3178,40 @@ public final class ConfigWebFactory {
         }
         
         if(hasAccess) {
+        	System.setProperty("cfx.bin.path","C:/Temp");
+        	
 	        // Java CFX Tags
-	      	Element cfxTagsParent=getChildByName(doc.getDocumentElement(),"cfx-tags");
+        	Element cfxTagsParent=getChildByName(doc.getDocumentElement(),"ext-tags",false,true);
+        	if(cfxTagsParent==null) cfxTagsParent=getChildByName(doc.getDocumentElement(),"cfx-tags",false,true);
+        	if(cfxTagsParent==null) cfxTagsParent=getChildByName(doc.getDocumentElement(),"ext-tags");
+        	
+        	boolean oldStyle=cfxTagsParent.getNodeName().equals("cfx-tags");
+        	
+        	
 	      	if(cfxTagsParent!=null) {
-	      	    Element[] cfxTags = getChildren(cfxTagsParent,"cfx-tag");
+	      	    Element[] cfxTags = oldStyle?getChildren(cfxTagsParent,"cfx-tag"):getChildren(cfxTagsParent,"ext-tag");  
 	      	    for(int i=0;i<cfxTags.length; i++) {
 	      	        String type=cfxTags[i].getAttribute("type");
-	      	        if(type!=null && type.equalsIgnoreCase("java")) {
-	      	            String name=cfxTags[i].getAttribute("name");
-	      	            String clazz=cfxTags[i].getAttribute("class");
-	      	            if(name!=null && clazz!=null) {
-	      	                map.put(name.toLowerCase(),new JavaCFXTagClass(name,clazz));
-	      	            }
+	      	        if(type!=null){
+		      	        // Java CFX Tags
+		      	        if(type.equalsIgnoreCase("java")) {
+		      	            String name=cfxTags[i].getAttribute("name");
+		      	            String clazz=cfxTags[i].getAttribute("class");
+		      	            if(!StringUtil.isEmpty(name) && !StringUtil.isEmpty(clazz)) {
+		      	                map.put(name.toLowerCase(),new JavaCFXTagClass(name,clazz));
+		      	            }
+		      	        }
+		      	        // C++ CFX Tags
+		      	        else if(type.equalsIgnoreCase("cpp")) {
+		      	        	String name=cfxTags[i].getAttribute("name");
+		      	        	String serverLibrary=cfxTags[i].getAttribute("server-library");
+		      	        	String procedure=cfxTags[i].getAttribute("procedure");
+		      	        	boolean keepAlive=Caster.toBooleanValue(cfxTags[i].getAttribute("keep-alive"),false);
+		      	          
+		      	        	if(!StringUtil.isEmpty(name) && !StringUtil.isEmpty(serverLibrary) && !StringUtil.isEmpty(procedure)) {
+		      	        		map.put(name.toLowerCase(),new CPPCFXTagClass(name,serverLibrary,procedure,keepAlive));
+		      	        	}
+		      	        }
 	      	        }
 	      	    }
 	      	}
@@ -3431,7 +3577,7 @@ public final class ConfigWebFactory {
         
         if(hasAccess && !StringUtil.isEmpty(strScriptProtect)) {
         	//print.err("sp:"+strScriptProtect);
-	        config.setScriptProtect(ApplicationContextImpl.translateScriptProtect(strScriptProtect));
+	        config.setScriptProtect(ApplicationContextUtil.translateScriptProtect(strScriptProtect));
 	    }
 	    else if(hasCS) config.setScriptProtect(configServer.getScriptProtect());
 
@@ -3539,7 +3685,12 @@ public final class ConfigWebFactory {
 	public static Element getChildByName(Node parent, String nodeName) {
 		return getChildByName(parent, nodeName, false);
 	}
+
     public static Element getChildByName(Node parent, String nodeName,boolean insertBefore) {
+    	return getChildByName(parent, nodeName, insertBefore, false);
+    }
+	
+    public static Element getChildByName(Node parent, String nodeName,boolean insertBefore, boolean doNotCreate) {
         if(parent==null) return null;
         NodeList list=parent.getChildNodes();
         int len=list.getLength();
@@ -3551,6 +3702,8 @@ public final class ConfigWebFactory {
                 return (Element) node;
             }
         }
+        if(doNotCreate) return null;
+        
         Element newEl = parent.getOwnerDocument().createElement(nodeName);
         if(insertBefore)parent.insertBefore(newEl, parent.getFirstChild());
         else parent.appendChild(newEl);
@@ -3560,6 +3713,9 @@ public final class ConfigWebFactory {
         
         return newEl;
     }
+    
+    
+    
 
 	/**
 	 * return all direct child Elements of a Element with given Name

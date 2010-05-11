@@ -133,7 +133,32 @@ public final class ASMUtil {
 			}
 		}
 	}
-	
+
+    /**
+     * extract the content of a attribut
+     * @param cfxdTag
+     * @param attrName
+     * @return attribute value
+     * @throws EvaluatorException
+     */
+	public static Boolean getAttributeBoolean(Tag tag,String attrName) throws EvaluatorException {
+		Boolean b= getAttributeLiteral(tag, attrName).getBoolean(null);
+		if(b==null)throw new EvaluatorException("attribute ["+attrName+"] must be a constant boolean value");
+		return b;
+    }
+    
+    /**
+     * extract the content of a attribut
+     * @param cfxdTag
+     * @param attrName
+     * @return attribute value
+     * @throws EvaluatorException
+     */
+	public static Boolean getAttributeBoolean(Tag tag,String attrName, Boolean defaultValue) {
+		Literal lit=getAttributeLiteral(tag, attrName,null);
+		if(lit==null) return defaultValue;
+		return lit.getBoolean(defaultValue); 
+    }
 
 
     /**
@@ -144,9 +169,7 @@ public final class ASMUtil {
      * @throws EvaluatorException
      */
 	public static String getAttributeString(Tag tag,String attrName) throws EvaluatorException {
-		Attribute attr = tag.getAttribute(attrName);
-		if(attr.getValue() instanceof Literal) return ((Literal)attr.getValue()).getString();
-        throw new EvaluatorException("attribute ["+attrName+"] must be a constant value");
+		return getAttributeLiteral(tag, attrName).getString();
     }
     
     /**
@@ -157,10 +180,38 @@ public final class ASMUtil {
      * @throws EvaluatorException
      */
 	public static String getAttributeString(Tag tag,String attrName, String defaultValue) {
+		Literal lit=getAttributeLiteral(tag, attrName,null);
+		if(lit==null) return defaultValue;
+		return lit.getString(); 
+    }
+	
+	/**
+     * extract the content of a attribut
+     * @param cfxdTag
+     * @param attrName
+     * @return attribute value
+     * @throws EvaluatorException
+     */
+	public static Literal getAttributeLiteral(Tag tag,String attrName) throws EvaluatorException {
 		Attribute attr = tag.getAttribute(attrName);
-		if(attr.getValue() instanceof Literal) return ((Literal)attr.getValue()).getString();
+		if(attr!=null && attr.getValue() instanceof Literal) return ((Literal)attr.getValue());
+        throw new EvaluatorException("attribute ["+attrName+"] must be a constant value");
+    }
+    
+    /**
+     * extract the content of a attribut
+     * @param cfxdTag
+     * @param attrName
+     * @return attribute value
+     * @throws EvaluatorException
+     */
+	public static Literal getAttributeLiteral(Tag tag,String attrName, Literal defaultValue) {
+		Attribute attr = tag.getAttribute(attrName);
+		if(attr!=null && attr.getValue() instanceof Literal) return ((Literal)attr.getValue());
         return defaultValue; 
     }
+	
+	
 	
 
 	/**
@@ -605,6 +656,30 @@ public final class ASMUtil {
 			return ((Literal)exp).toString();
 		}
 		return null;
+	}
+
+
+	public static Boolean toBoolean(Attribute attr, int line) throws BytecodeException {
+		if(attr==null)
+			throw new BytecodeException("attribute does not exist",line);
+		
+		if(attr.getValue() instanceof Literal){
+			Boolean b=((Literal)attr.getValue()).getBoolean(null);
+			if(b!=null) return b; 
+		}
+		throw new BytecodeException("attribute ["+attr.getName()+"] must be a constant boolean value",line);
+		
+		
+	}
+	public static Boolean toBoolean(Attribute attr, int line, Boolean defaultValue) {
+		if(attr==null)
+			return defaultValue;
+		
+		if(attr.getValue() instanceof Literal){
+			Boolean b=((Literal)attr.getValue()).getBoolean(null);
+			if(b!=null) return b; 
+		}
+		return defaultValue;	
 	}
 	
 }

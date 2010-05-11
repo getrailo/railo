@@ -1,9 +1,14 @@
 package railo.runtime.interpreter.ref.literal;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
 import railo.runtime.interpreter.ref.Set;
+import railo.runtime.interpreter.ref.var.Variable;
 import railo.runtime.type.FunctionValueImpl;
 
 /**
@@ -21,31 +26,42 @@ public final class LFunctionValue extends RefSupport implements Ref {
      * @param value
      */
     public LFunctionValue(Ref name, Ref value) {
-        this.name=name;
+    	this.name=name;
         this.value=value;
     }
 
     public Object getValue() throws PageException {
         
-        String key=null;
-        Ref ref=name;
-        Set set;
-        
-        while(ref instanceof Set) {
-            set=(Set) ref;
-            if(key==null) key=set.getKeyAsString();
-            else if(set.getKeyAsString()!=null)key=set.getKeyAsString()+'.'+key;
-            ref=set.getParent();
+        if(name instanceof Variable){
+        	return new FunctionValueImpl(toStringArray((Set)name),value.getValue());
         }
-        if(ref instanceof Literal) {
-            if(key==null) key=((Literal)name).getString();
-            else key=((Literal)name).getString()+'.'+key;
+        if(name instanceof Literal) {
+        	return new FunctionValueImpl(((Literal)name).getString(),value.getValue());
         }
         
-        return new FunctionValueImpl(key,value.getValue());
+        // TODO no idea if this is ever used
+        if(name instanceof Set){
+        	return new FunctionValueImpl(railo.runtime.type.List.arrayToList(toStringArray((Set)name),"."),value.getValue());
+        }
+        throw new ExpressionException("invalid syntax in named argument");
+        //return new FunctionValueImpl(key,value.getValue());
     }
 
-    /**
+    private String[] toStringArray(Set set) throws PageException {
+    	Ref ref=set;
+    	String str;
+    	List<String> arr=new ArrayList<String>();
+    	do {
+            set=(Set) ref;
+            str=set.getKeyAsString();
+            if(str!=null)arr.add(0, str);
+            else break;
+            ref=set.getParent();
+        }while(ref instanceof Set);
+        return arr.toArray(new String[arr.size()]);
+	}
+
+	/**
      * @see railo.runtime.interpreter.ref.Ref#getTypeName()
      */
     public String getTypeName() {

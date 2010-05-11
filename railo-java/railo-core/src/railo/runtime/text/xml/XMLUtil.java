@@ -820,6 +820,11 @@ public final class XMLUtil {
 		}
 		return null;
 	}
+	
+	public static InputSource toInputSource(Resource res) throws IOException {
+        	String str = IOUtil.toString((res), null);
+        	return new InputSource(new StringReader(str));
+    }
 
 	public static InputSource toInputSource(PageContext pc, Object value) throws IOException, ExpressionException {
 		if(value instanceof InputSource) {

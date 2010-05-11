@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import railo.runtime.debug.DebugEntry;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -36,6 +38,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.functions.arrays.ArraySort;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
@@ -52,8 +55,12 @@ import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFGetterProperty;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
+import railo.runtime.type.UDFSetterProperty;
+import railo.runtime.type.comparator.ArrayOfStructComparator;
+import railo.runtime.type.comparator.TextComparator;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.ArgumentImpl;
@@ -68,7 +75,7 @@ import railo.runtime.util.ArrayIterator;
  * %**%
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
-public class ComponentImpl extends StructSupport implements Externalizable,Component,coldfusion.runtime.TemplateProxy,Sizeable {
+public class ComponentImpl extends StructSupport implements Externalizable,ComponentPro,coldfusion.runtime.TemplateProxy,Sizeable {
 
 
 	private ComponentProperties properties;
@@ -156,10 +163,27 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @param meta
      * @throws ApplicationException
      */
+
     public ComponentImpl(ComponentPage componentPage,Boolean output,boolean _synchronized, 
     		String extend, String implement, String hint, String dspName,String callPath, boolean realPath, 
     		String style,StructImpl meta) throws ApplicationException {
-    	this.properties=new ComponentProperties(dspName,extend.trim(),implement,hint,output,callPath,realPath,_synchronized,null,meta);
+    	this(componentPage,output,_synchronized, 
+        		extend, implement, hint, dspName,callPath, realPath, style,false, false,meta);
+    }
+    
+    public ComponentImpl(ComponentPage componentPage,Boolean output,boolean _synchronized, 
+    		String extend, String implement, String hint, String dspName,String callPath, boolean realPath, 
+    		String style,boolean persistent,StructImpl meta) throws ApplicationException {
+    	this(componentPage,output,_synchronized, 
+        		extend, implement, hint, dspName,callPath, realPath, style,persistent, false,meta);
+    }
+	 
+	 
+	 
+    public ComponentImpl(ComponentPage componentPage,Boolean output,boolean _synchronized, 
+    		String extend, String implement, String hint, String dspName,String callPath, boolean realPath, 
+    		String style,boolean persistent,boolean accessors,StructImpl meta) throws ApplicationException {
+    	this.properties=new ComponentProperties(dspName,extend.trim(),implement,hint,output,callPath,realPath,_synchronized,null,persistent,accessors,meta);
     	this.componentPage=componentPage;
     	
     	if(!StringUtil.isEmpty(style) && !"rpc".equals(style))
@@ -178,9 +202,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     			setTop(this.base);
     		}
     		
-    		this._data=Duplicator.duplicateMap(ci._data,new HashMap(),deepCopy);
+    		this._data=duplicateMap(this,ci._data,new HashMap(),deepCopy);
     		
-    		this._udfs=Duplicator.duplicateMap(ci._udfs,new HashMap(),deepCopy);
+    		this._udfs=duplicateMap(this,ci._udfs,new HashMap(),deepCopy);
             this.componentPage=ci.componentPage;
     		this.dataMemberDefaultAccess=ci.dataMemberDefaultAccess;
     		this.properties=ci.properties.duplicate();
@@ -190,7 +214,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     		}
     		else if(ci.scope instanceof ComponentScopeShadow) {
     			ComponentScopeShadow css = (ComponentScopeShadow)ci.scope;
-    			this.scope=new ComponentScopeShadow(this,Duplicator.duplicateMap(css.getShadow(),ComponentScopeShadow.newMap(),deepCopy));
+    			this.scope=new ComponentScopeShadow(this,duplicateMap(this,css.getShadow(),ComponentScopeShadow.newMap(),deepCopy));
     		}
     		else this.scope=(ComponentScope) scope.clone();
         	this.threadsWaiting=ci.threadsWaiting;
@@ -201,6 +225,23 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	}
     	else throw new PageRuntimeException(new ApplicationException("can't clone this component "+c.getDisplayName()));
 	}
+    
+
+    public static Map duplicateMap(ComponentImpl c,Map map,Map newMap,boolean deepCopy){
+        Iterator it=map.keySet().iterator();
+        Object key,value;
+        while(it.hasNext()) {
+            key=it.next();
+            value=map.get(key);
+            if(value instanceof UDFImpl)
+            	value=((UDFImpl)value).duplicate(c);
+            else
+            	value=Duplicator.duplicate(value,deepCopy);
+            if(deepCopy)newMap.put(key,value);
+            else newMap.put(key,map.get(key));
+        }
+        return newMap;
+    }
 
 	/**
      * initalize the Component
@@ -763,22 +804,22 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @return html output
      */
     public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, int access) {
-	    DumpTable table = new DumpTable("#97C0AB","#EAF2EE","#000000");
+	    DumpTable table = new DumpTablePro("component","#97C0AB","#EAF2EE","#000000");
         table.setTitle("Component "+getCallPath()+""+(" "+StringUtil.escapeHTML(top.properties.dspName)));
         table.setComment("Only the functions and data members that are accessible from your location are displayed");
         if(top.properties.extend.length()>0)table.appendRow(1,new SimpleDumpData("Extends"),new SimpleDumpData(top.properties.extend));
         if(top.properties.hint.trim().length()>0)table.appendRow(1,new SimpleDumpData("Hint"),new SimpleDumpData(top.properties.hint));
         
-        table.appendRow(1,new SimpleDumpData(""),_toDumpData(top,pageContext,maxlevel,dp,access));
+        DumpTable content = _toDumpData(top,pageContext,maxlevel,dp,access);
+        if(!content.isEmpty())table.appendRow(1,new SimpleDumpData(""),content);
         return table;
     }
     
-	static DumpData _toDumpData(ComponentImpl c,PageContext pc, int maxlevel, DumpProperties dp,int access) {
+	static DumpTable _toDumpData(ComponentImpl c,PageContext pc, int maxlevel, DumpProperties dp,int access) {
 		maxlevel--;
-		
 		Collection.Key[] keys= c.keys(access);
 		
-
+		
 		
 		DumpTable[] accesses=new DumpTable[4];
 		accesses[Component.ACCESS_PRIVATE] = new DumpTable("#AE8E7F","#E8B0AE","#000000");
@@ -806,8 +847,29 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 				box.appendRow(1,new SimpleDumpData(key.getString()),DumpUtil.toDumpData(o,pc,maxlevel,dp));
 		}
 		
-
+		
 		DumpTable table=new DumpTable("#eeeeee","#cccccc","#000000");
+		
+		// properties
+		if(c.top.properties.persistent){
+			Property[] properties=c.getProperties();
+			DumpTable prop = new DumpTable("#8BC893","#C5EBC2","#000000");
+			prop.setTitle("Properties");
+			prop.setWidth("100%");
+			Property p;
+			for(int i=0;i<properties.length;i++) {
+				p=properties[i];
+				prop.appendRow(1, new SimpleDumpData(p.getName()),DumpUtil.toDumpData(c.scope.get(p.getName(),null), pc, maxlevel-1, dp));
+			}
+			
+			if(access>=ACCESS_PUBLIC && !prop.isEmpty()) {
+				table.appendRow(0,prop);
+			}
+		}
+		
+
+		
+
 		if(access>=ACCESS_REMOTE && !accesses[ACCESS_REMOTE].isEmpty()) {
 			table.appendRow(0,accesses[Component.ACCESS_REMOTE]);
 		}
@@ -1193,7 +1255,11 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             String displayname=comp.properties.dspName;
             if(!StringUtil.isEmpty(hint))sct.set("hint",hint);
             if(!StringUtil.isEmpty(displayname))sct.set("displayname",displayname);
-            if(comp.properties.output!=null)sct.set("output",comp.properties.output);
+            
+            sct.set("persistent",comp.properties.persistent);
+            sct.set("accessors",comp.properties.accessors);
+            
+            
             
             if(comp.properties.meta!=null) {
             	Key[] keys = comp.properties.meta.keys();
@@ -1219,11 +1285,14 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             if(comp.properties.properties!=null) {
             	ArrayImpl parr = new ArrayImpl();
             	Property p;
+            	
             	Iterator pit = comp.properties.properties.entrySet().iterator();
             	while(pit.hasNext()){
             		p=(Property) ((Map.Entry)pit.next()).getValue();
             		parr.add(p.getMetaData());
             	}
+            	parr.sort(new ArrayOfStructComparator(NAME));
+            	
             	
             	sct.set(PROPERTIES,parr);
             }
@@ -1544,7 +1613,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     }
 
 	/**
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
+	 * @param pc
+	 * @param key
+	 * @return
 	 */
 	public boolean contains(PageContext pc,Key key) {
 	   	return get(getAccess(pc),key,null)!=null;
@@ -1560,6 +1631,10 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     public boolean contains(int access,String name) {
     	return get(access,name,null)!=null;
    }
+    
+    public boolean contains(int access,Key name) {
+    	return get(access,name,null)!=null;
+    }
 
     /**
      * @see railo.runtime.type.Collection#keyIterator()
@@ -1605,10 +1680,38 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		}
     	return props.javaAccessClass;
     }
+    
+    public boolean isPersistent() {
+    	return top.properties.persistent;
+    }
+    
+    public boolean isAccessors() {
+    	return top.properties.accessors;
+    }
 
 	public void setProperty(Property property) {
 		if(top.properties.properties==null) top.properties.properties=new HashMap();
 		top.properties.properties.put(StringUtil.toLowerCase(property.getName()),property);
+		if(top.properties.persistent || top.properties.accessors){
+			if(property.getDefault()!=null)scope.setEL(property.getName(), property.getDefault());
+			// getter
+			if(property.getGetter()){
+				Member m = getMember(ACCESS_PRIVATE,KeyImpl.init("get"+property.getName()),true,false);
+				if(!(m instanceof UDF)){
+					UDF udf = new UDFGetterProperty(this,property);
+					registerUDF(udf.getFunctionName(), udf);
+				}
+			}
+			// setter
+			if(property.getSetter()){
+				Member m = getMember(ACCESS_PRIVATE,KeyImpl.init("set"+property.getName()),true,false);
+				if(!(m instanceof UDF)){
+					UDF udf = new UDFSetterProperty(this,property);
+					registerUDF(udf.getFunctionName(), udf);
+				}
+			}
+		}
+		
 	}
 
 	// FUTURE add to interface and then search for #321 and change this as well

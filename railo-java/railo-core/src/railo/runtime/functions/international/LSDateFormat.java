@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import railo.commons.date.JREDateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -70,7 +71,7 @@ public final class LSDateFormat implements Function {
 	
 	private static long fixYear(TimeZone timezone,long time) {  
 		if (calendar == null)
-        	calendar=Calendar.getInstance();
+        	calendar=JREDateTimeUtil.newInstance();
         synchronized (calendar) {
         	calendar.clear();
         	calendar.setTimeZone(timezone);

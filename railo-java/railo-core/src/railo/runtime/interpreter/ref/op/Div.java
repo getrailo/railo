@@ -27,7 +27,9 @@ public final class Div extends RefSupport implements Ref {
      * @see railo.runtime.interpreter.ref.Ref#getValue()
      */
     public Object getValue() throws PageException {
-        return new Double(Caster.toDoubleValue(left.getValue())/Caster.toDoubleValue(right.getValue()));
+    	double r=Caster.toDoubleValue(right.getValue());
+    	if(r==0d)throw new ArithmeticException("Division by zero is not possible");
+        return new Double(Caster.toDoubleValue(left.getValue())/r);
     }
 
     /**

@@ -209,6 +209,7 @@ public final class Variable extends ExpressionBase implements Invoker {
 	}
 	
 	public static boolean registerKey(BytecodeContext bc,Expression name,boolean doUpperCase) throws BytecodeException {
+		
 		if(name instanceof LitString) {
 			LitString lit = (LitString)name;
 			if(doUpperCase){

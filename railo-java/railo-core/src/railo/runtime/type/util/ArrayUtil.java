@@ -2,16 +2,21 @@ package railo.runtime.type.util;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
 import railo.commons.lang.ArrayUtilException;
+import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Constants;
+import railo.runtime.op.Decision;
 import railo.runtime.op.Operator;
 import railo.runtime.type.Array;
 import railo.runtime.type.QueryColumn;
@@ -410,7 +415,7 @@ public final class ArrayUtil {
 	        byte[] arr=((byte[])o);
 	        if(arr.length>index) {
 	            double v=Caster.toDoubleValue(value,Double.NaN);
-	            if(!Double.isNaN(v)) {
+	            if(Decision.isValid(v)) {
 	                return new Byte(arr[index]=(byte)v);
 	            }
 	        }
@@ -420,7 +425,7 @@ public final class ArrayUtil {
 	        short[] arr=((short[])o);
 	        if(arr.length>index) {
 	            double v=Caster.toDoubleValue(value,Double.NaN);
-	            if(!Double.isNaN(v)) {
+	            if(Decision.isValid(v)) {
 	                return new Short(arr[index]=(short)v);
 	            }
 	        }
@@ -430,7 +435,7 @@ public final class ArrayUtil {
 	        int[] arr=((int[])o);
 	        if(arr.length>index) {
 	            double v=Caster.toDoubleValue(value,Double.NaN);
-	            if(!Double.isNaN(v)) {
+	            if(Decision.isValid(v)) {
 	                return Constants.Integer(arr[index]=(int)v);
 	            }
 	        }
@@ -440,7 +445,7 @@ public final class ArrayUtil {
 	        long[] arr=((long[])o);
 	        if(arr.length>index) {
 	            double v=Caster.toDoubleValue(value,Double.NaN);
-	            if(!Double.isNaN(v)) {
+	            if(Decision.isValid(v)) {
 	                return new Long(arr[index]=(long)v);
 	            }
 	        }
@@ -450,7 +455,7 @@ public final class ArrayUtil {
 	        float[] arr=((float[])o);
 	        if(arr.length>index) {
 	            double v=Caster.toDoubleValue(value,Double.NaN);
-	            if(!Double.isNaN(v)) {
+	            if(Decision.isValid(v)) {
 	                return new Float(arr[index]=(float)v);
 	            }
 	        }
@@ -460,7 +465,7 @@ public final class ArrayUtil {
 	        double[] arr=((double[])o);
 	        if(arr.length>index) {
 	            double v=Caster.toDoubleValue(value,Double.NaN);
-	            if(!Double.isNaN(v)) {
+	            if(Decision.isValid(v)) {
 	                return new Double(arr[index]=v);
 	            }
 	        }
@@ -501,7 +506,10 @@ public final class ArrayUtil {
         }
 	}
 
-
+	public static boolean isEmpty(List list) {
+		return list==null || list.isEmpty();
+	}
+	
 	public static boolean isEmpty(Object[] array) {
 		return array==null || array.length==0;
 	}
@@ -721,5 +729,24 @@ public final class ArrayUtil {
 		Object[] arr = set.toArray();
 		if(arr==null) return new Object[0];
 		return arr;
+	}
+
+
+	public static long sizeOf(List list) {
+		ListIterator it = list.listIterator();
+		long size=0;
+		while(it.hasNext()){
+			size+=SizeOf.size(it.next());
+		}
+		return size;
+	}
+	
+	public static long sizeOf(Array array) {
+		Iterator it = array.valueIterator();
+		long size=0;
+		while(it.hasNext()){
+			size+=SizeOf.size(it.next());
+		}
+		return size;
 	}
 }

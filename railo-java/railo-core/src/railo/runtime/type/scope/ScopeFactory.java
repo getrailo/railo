@@ -9,7 +9,7 @@ import railo.runtime.type.Scope;
 public final class ScopeFactory {
     
     int argumentCounter=0;
-    ArgumentImpl[] arguments=new ArgumentImpl[]{
+    ArgumentPro[] arguments=new ArgumentPro[]{
             new ArgumentImpl(),
             new ArgumentImpl(),
             new ArgumentImpl(),
@@ -66,7 +66,7 @@ public final class ScopeFactory {
     /**
      * @return returns a Argument scope
      */
-    public ArgumentImpl getArgumentInstance() {
+    public Argument getArgumentInstance() {
         if(argumentCounter<arguments.length) {
         	return arguments[argumentCounter++];
         }
@@ -86,7 +86,7 @@ public final class ScopeFactory {
     /** 
      * @param argument  recycle a Argument scope for reuse
      */
-    public void recycle(ArgumentImpl argument) {
+    public void recycle(ArgumentPro argument) {
         if(argumentCounter<=0 || argument.isBind()) return;
         argument.release();
         arguments[--argumentCounter]=argument;

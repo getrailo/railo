@@ -10,7 +10,8 @@ public interface ComponentScope extends Variables,Objects {
      * Returns the value of component.
      * @return value component
      */
-    public ComponentImpl getComponent();
+    public ComponentPro getComponent();
+    
     public void setComponent(ComponentImpl c);
 
 }

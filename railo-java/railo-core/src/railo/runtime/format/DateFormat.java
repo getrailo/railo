@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import railo.commons.date.JREDateTimeUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.engine.ThreadLocalPageContext;
 
@@ -21,7 +22,7 @@ public final class DateFormat implements Format {
 	public DateFormat(Locale locale) {
 		this.locale=locale;
 		//print.ln(locale);
-		calendar=Calendar.getInstance(locale);
+		calendar=JREDateTimeUtil.newInstance(locale);
 	}
 	
 

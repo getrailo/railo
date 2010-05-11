@@ -61,14 +61,16 @@ public class GatewayEntryImpl implements GatewayEntry {
 			}
 			else throw new ApplicationException("missing gateway source definitions");
 			try{
+				//new GatewayThread(engine,gateway,GatewayThread.START).run();
 				gateway.init(engine,getId(), getListenerCfcPath(),getCustom());
 				if(getStartupMode()==GatewayEntry.STARTUP_MODE_AUTOMATIC){
-					try{
-						gateway.doStart();
+					new GatewayThread(engine,gateway,GatewayThread.START).start();
+					/*try{
+						//gateway.doStart();
 					}
 					catch(GatewayException ge){
 						engine.log(gateway,GatewayEngine.LOGLEVEL_ERROR, ge.getMessage());
-					}
+					}*/
 				}
 			}
 			catch(GatewayException pe){

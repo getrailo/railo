@@ -200,13 +200,13 @@ public final class VariableInterpreter {
 			int scope=scopeString2Int(list.next());
 			Object coll =NULL; 
 			if(scope==Scope.SCOPE_UNDEFINED) {
-				coll=pc.undefinedScope().get(list.current());
+				coll=pc.undefinedScope().get(list.current(),null);
 				if(coll==null)return false;
 			}
 			else coll=pc.scope(scope);
 			
 			while(list.hasNext()) {
-				coll=pc.getVariableUtil().get(pc,coll,list.next());
+				coll=pc.getVariableUtil().getCollection(pc,coll,list.next(),null);
 				if(coll==null)return false;
 			}
 		} catch (PageException e) {
@@ -215,6 +215,8 @@ public final class VariableInterpreter {
 		return true;
     }
 		
+
+	
 	
 	/*
 	public static boolean isDefined(PageContext pc,String var) {
@@ -280,6 +282,26 @@ public final class VariableInterpreter {
         list.reset();
         return list;
     }
+    
+    public static StringList parse(String var) {
+    	ParserString ps = new ParserString(var);
+        String id=readIdentifier(ps);
+        if(id==null)return null;
+        StringList list=new StringList(id);
+        
+        while(true) {
+            if(ps.forwardIfCurrent('.')) {
+	            id=readIdentifier(ps);
+	            if(id==null)return null;
+	            list.add(id);
+            }
+            else break;
+        }
+        if(ps.isValidIndex()) return null;
+        list.reset();
+        return list;
+    }
+    
     
 	/**
 	 * translate a int scope type to String type

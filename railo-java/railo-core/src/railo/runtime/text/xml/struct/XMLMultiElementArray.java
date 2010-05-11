@@ -2,6 +2,7 @@ package railo.runtime.text.xml.struct;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -15,6 +16,7 @@ import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ArraySupport;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.wrap.ArrayAsArrayList;
 import railo.runtime.util.ArrayIterator;
 
@@ -437,6 +439,13 @@ public class XMLMultiElementArray extends ArraySupport {
 	public boolean add(Object o) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	/**
+	 * @see railo.runtime.type.Sizeable#sizeOf()
+	 */
+	public long sizeOf() {
+		return ArrayUtil.sizeOf((List)this);
 	}
 
 }

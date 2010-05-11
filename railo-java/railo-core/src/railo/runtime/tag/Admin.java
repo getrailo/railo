@@ -78,6 +78,7 @@ import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
+import railo.runtime.listener.ApplicationContextUtil;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.net.mail.SMTPException;
 import railo.runtime.net.mail.SMTPVerifier;
@@ -87,6 +88,7 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Constants;
+import railo.runtime.op.Decision;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.security.SecurityManager;
@@ -110,7 +112,6 @@ import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterEntryImpl;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ComponentUtil;
-import railo.runtime.util.ApplicationContextImpl;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 
@@ -434,6 +435,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	if(check("connect",ACCESS_FREE) && check2(CHECK_PW)) {/*do nothing more*/}
     	else if(check("surveillance",           ACCESS_FREE) && check2(ACCESS_READ  )) doSurveillance();
     	else if(check("getRegional",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetRegional();
+    	else if(check("getORMSetting",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetORMSetting();
+    	else if(check("getORMEngine",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetORMEngine();
         else if(check("getApplicationListener", ACCESS_FREE) && check2(ACCESS_READ  )) doGetApplicationListener();
         else if(check("getProxy",            	ACCESS_FREE) && check2(ACCESS_READ  )) doGetProxy();
         else if(check("getCharset",            	ACCESS_FREE) && check2(ACCESS_READ  )) doGetCharset();
@@ -593,6 +596,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("runUpdate",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doRunUpdate();
         else if(check("removeUpdate",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doRemoveUpdate();
         else if(check("getUpdate",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doGetUpdate();
+        else if(check("listPatches",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ     )) listPatches();
         else if(check("updateupdate",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateUpdate();
         else if(check("getSerial",              ACCESS_FREE) && check2(ACCESS_READ     )) doGetSerial();
         else if(check("updateSerial",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateSerial();
@@ -643,7 +647,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
     
     private void doRemoveUpdate() throws PageException {
-        admin.removeUpdate();
+    	boolean onlyLatest = getBool("onlyLatest", false);
+    	
+
+        if(onlyLatest)	admin.removeLatestUpdate();
+        else 			admin.removeUpdate();
         adminSync.broadcast(attributes, config);
     }
     
@@ -1708,10 +1716,18 @@ private void doGetMappings() throws PageException {
         adminSync.broadcast(attributes, config);
     }
 
-    /**
-     * @throws PageException
-     * 
-     */
+    
+
+    private void listPatches() throws PageException  {
+    	try {
+			pageContext.setVariable(getString("admin",action,"returnVariable"),Caster.toArray(config.getInstalledPatches()));
+		} catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
+        
+        
+    }
+    
     private void doGetMailServers() throws PageException {
         
         
@@ -2317,6 +2333,14 @@ private void doGetMappings() throws PageException {
         sct.set("psq",Caster.toBoolean(config.getPSQL()));
     }
 
+    private void doGetORMSetting() throws PageException {
+        pageContext.setVariable(getString("admin",action,"returnVariable"),config.getORMConfig().toStruct());
+    }
+
+    private void doGetORMEngine() throws PageException {
+        pageContext.setVariable(getString("admin",action,"returnVariable"),config.getORMEngineClass().getName());
+    }
+
     private void doUpdatePerformanceSettings() throws SecurityException, PageException {
     	admin.updateInspectTemplate(getString("admin",action,"inspectTemplate"));
         store();
@@ -2678,25 +2702,28 @@ private void doGetMappings() throws PageException {
 		for(int i=0;i<tasks.length;i++) {
 			row++;
 			task=tasks[i];
-			qry.setAt("type", row, task.getType());
-			qry.setAt("name", row, task.subject());
-			qry.setAt("detail", row, task.detail());
-			qry.setAt("id", row, task.getId());//print.out("fill:"+task.getId());
-
-			
-			qry.setAt("lastExecution", row,new DateTimeImpl(pageContext,task.lastExecution(),true));
-			qry.setAt("nextExecution", row,new DateTimeImpl(pageContext,task.nextExecution(),true));
-			qry.setAt("closed", row,Caster.toBoolean(task.closed()));
-			qry.setAt("tries", row,Caster.toDouble(task.tries()));
-			qry.setAt("triesmax", row,Caster.toDouble(task.tries()));
-			qry.setAt("exceptions", row,translateTime(task.getExceptions()));
-			
-			int triesMax=0;
-			ExecutionPlan[] plans = task.getPlans();
-			for(int y=0;y<plans.length;y++) {
-				triesMax+=plans[y].getTries();
+			try{
+				qry.setAt("type", row, task.getType());
+				qry.setAt("name", row, task.subject());
+				qry.setAt("detail", row, task.detail());
+				qry.setAt("id", row, task.getId());
+	
+				
+				qry.setAt("lastExecution", row,new DateTimeImpl(pageContext,task.lastExecution(),true));
+				qry.setAt("nextExecution", row,new DateTimeImpl(pageContext,task.nextExecution(),true));
+				qry.setAt("closed", row,Caster.toBoolean(task.closed()));
+				qry.setAt("tries", row,Caster.toDouble(task.tries()));
+				qry.setAt("triesmax", row,Caster.toDouble(task.tries()));
+				qry.setAt("exceptions", row,translateTime(task.getExceptions()));
+				
+				int triesMax=0;
+				ExecutionPlan[] plans = task.getPlans();
+				for(int y=0;y<plans.length;y++) {
+					triesMax+=plans[y].getTries();
+				}
+				qry.setAt("triesmax", row,Caster.toDouble(triesMax));
 			}
-			qry.setAt("triesmax", row,Caster.toDouble(triesMax));
+			catch(Throwable t){}
 		}
     	return row;
 	}
@@ -2854,6 +2881,7 @@ private void doGetMappings() throws PageException {
         admin.updateDomaincookies(getBoolObject("admin",action,"domainCookies"));
         admin.updateClientCookies(getBoolObject("admin",action,"clientCookies"));
         //admin.updateRequestTimeout(getTimespan("admin",action,"requestTimeout"));
+        admin.updateClientTimeout(getTimespan("admin",action,"clientTimeout"));
         admin.updateSessionTimeout(getTimespan("admin",action,"sessionTimeout"));
         admin.updateApplicationTimeout(getTimespan("admin",action,"applicationTimeout"));
         admin.updateSessionType(getString("admin",action,"sessionType"));
@@ -2955,7 +2983,7 @@ private void doGetMappings() throws PageException {
         
         Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
-        sct.set("scriptProtect",ApplicationContextImpl.translateScriptProtect(config.getScriptProtect()));
+        sct.set("scriptProtect",ApplicationContextUtil.translateScriptProtect(config.getScriptProtect()));
         
         // request timeout
         sct.set("requestTimeout",config.getRequestTimeout());
@@ -3000,17 +3028,26 @@ private void doGetMappings() throws PageException {
         sct.set("domainCookies",Caster.toBoolean(config.isDomainCookies()));
         sct.set("clientCookies",Caster.toBoolean(config.isClientCookies()));
 
-        sct.set("sessionTimeout",config.getSessionTimeout());
-        sct.set("sessionTimeout_day",Caster.toInteger(config.getSessionTimeout().getDay()));
-        sct.set("sessionTimeout_hour",Caster.toInteger(config.getSessionTimeout().getHour()));
-        sct.set("sessionTimeout_minute",Caster.toInteger(config.getSessionTimeout().getMinute()));
-        sct.set("sessionTimeout_second",Caster.toInteger(config.getSessionTimeout().getSecond()));
+        TimeSpan ts=config.getSessionTimeout();
+        sct.set("sessionTimeout",ts);
+        sct.set("sessionTimeout_day",Caster.toInteger(ts.getDay()));
+        sct.set("sessionTimeout_hour",Caster.toInteger(ts.getHour()));
+        sct.set("sessionTimeout_minute",Caster.toInteger(ts.getMinute()));
+        sct.set("sessionTimeout_second",Caster.toInteger(ts.getSecond()));
 
-        sct.set("applicationTimeout",config.getApplicationTimeout());
-        sct.set("applicationTimeout_day",Caster.toInteger(config.getApplicationTimeout().getDay()));
-        sct.set("applicationTimeout_hour",Caster.toInteger(config.getApplicationTimeout().getHour()));
-        sct.set("applicationTimeout_minute",Caster.toInteger(config.getApplicationTimeout().getMinute()));
-        sct.set("applicationTimeout_second",Caster.toInteger(config.getApplicationTimeout().getSecond()));
+        ts=config.getApplicationTimeout();
+        sct.set("applicationTimeout",ts);
+        sct.set("applicationTimeout_day",Caster.toInteger(ts.getDay()));
+        sct.set("applicationTimeout_hour",Caster.toInteger(ts.getHour()));
+        sct.set("applicationTimeout_minute",Caster.toInteger(ts.getMinute()));
+        sct.set("applicationTimeout_second",Caster.toInteger(ts.getSecond()));
+
+        ts=config.getClientTimeout();
+        sct.set("clientTimeout",ts);
+        sct.set("clientTimeout_day",Caster.toInteger(ts.getDay()));
+        sct.set("clientTimeout_hour",Caster.toInteger(ts.getHour()));
+        sct.set("clientTimeout_minute",Caster.toInteger(ts.getMinute()));
+        sct.set("clientTimeout_second",Caster.toInteger(ts.getSecond()));
         
         
         // scope cascading type
@@ -3401,6 +3438,7 @@ private void doGetMappings() throws PageException {
         sct.set("type",type);
         
     }
+    
 
     /**
      * @throws PageException
@@ -3422,7 +3460,7 @@ private void doGetMappings() throws PageException {
 
     private double getDouble(String tagName, String actionName, String attributeName) throws ApplicationException {
         double value=getDouble(attributeName,Double.NaN);
-        if(Double.isNaN(value)) throw new ApplicationException("Attribute ["+attributeName+"] for tag ["+tagName+"] is required if attribute action has the value ["+actionName+"]");
+        if(!Decision.isValid(value)) throw new ApplicationException("Attribute ["+attributeName+"] for tag ["+tagName+"] is required if attribute action has the value ["+actionName+"]");
         return value;
     }
 

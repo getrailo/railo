@@ -1,5 +1,6 @@
 package railo.runtime.search;
 
+
 public final class IndexResultImpl implements IndexResult {
 	
 	private int countDeleted;

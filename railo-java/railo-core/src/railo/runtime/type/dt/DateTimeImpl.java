@@ -11,6 +11,7 @@ import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -72,7 +73,7 @@ public final class DateTimeImpl extends DateTime implements SimpleValue,Localize
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		String str=castToString(pageContext.getTimeZone());
-        DumpTable table=new DumpTable("#ff4400","#ff954f","#000000");
+        DumpTable table=new DumpTablePro("date","#ff4400","#ff954f","#000000");
         table.appendRow(1, new SimpleDumpData("Date Time ("+pageContext.getTimeZone().getID()+")"));
         table.appendRow(0, new SimpleDumpData(str));
         return table;

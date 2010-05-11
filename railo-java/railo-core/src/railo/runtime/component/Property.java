@@ -1,13 +1,13 @@
 package railo.runtime.component;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.objectweb.asm.Type;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.converter.ConverterException;
+import railo.runtime.converter.ScriptConverter;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -19,14 +19,39 @@ import railo.transformer.bytecode.util.ASMUtil;
  */
 public final class Property extends MemberSupport implements ASMProperty {
     
-	
+
 	private String type="any";
 	private String name;
 	private boolean required;
+	private boolean setter=true;
+	private boolean getter=true;
+	
+
 	private String _default;
 	private String displayname="";
 	private String hint="";
-	private Map meta=new HashMap(); 
+	private Struct meta=new StructImpl(); 
+	
+	// ORM Attributes
+	/*private int batchsize;
+	private int cascade=HibernateConstants.CASCADE_NONE;
+	private String catalog=null;
+	private Component cfc=null;
+	private int collectionType=HibernateConstants.COLLECTION_TYPE_ARRAY;
+	private String column=null;
+	private boolean constrained=false;
+	private String dataType=null;
+	private boolean dynamicInsert;
+	private boolean dynamicUpdate;
+	private String elementColumn;
+	private String elementType;
+	private String entityName;
+	private int fetchBatchSize;
+	private String fieldType;
+	private String fkColumn;
+	private String formula;
+	private String generator;
+	private boolean getter;*/
 	
 	public Property() {
 		super(Component.ACCESS_REMOTE);
@@ -115,6 +140,135 @@ public final class Property extends MemberSupport implements ASMProperty {
 	public void setType(String type) {
 		this.type = type;
 	}
+	
+	
+	
+	/*public int getBatchsize() {
+		return batchsize;
+	}
+	public void setBatchsize(int batchsize) {
+		this.batchsize = batchsize;
+	}
+	public int getCascade() {
+		return cascade;
+	}
+	public void setCascade(int cascade) {
+		this.cascade = cascade;
+	}
+	public String getCatalog() {
+		return catalog;
+	}
+	public void setCatalog(String catalog) {
+		this.catalog = catalog;
+	}
+	public Component getCfc() {
+		return cfc;
+	}
+	public void setCfc(Component cfc) {
+		this.cfc = cfc;
+	}
+	public int getCollectionType() {
+		return collectionType;
+	}
+	public void setCollectionType(int collectionType) {
+		this.collectionType = collectionType;
+	}
+	public String getColumn() {
+		if(StringUtil.isEmpty(column)) return getName();
+		return column;
+	}
+	public void setColumn(String column) {
+		this.column = column;
+	}
+	public boolean getConstrained() {
+		return constrained;
+	}
+	public void setConstrained(boolean constrained) {
+		this.constrained = constrained;
+	}
+	public String getDataType() {
+		return dataType;
+	}
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
+	}
+	public boolean getDynamicInsert() {
+		return dynamicInsert;
+	}
+	public void setDynamicInsert(boolean dynamicInsert) {
+		this.dynamicInsert = dynamicInsert;
+	}
+	public boolean getDynamicUpdate() {
+		return dynamicUpdate;
+	}
+	public void setDynamicUpdate(boolean dynamicUpdate) {
+		this.dynamicUpdate = dynamicUpdate;
+	}
+	public String getElementColumn() {
+		return elementColumn;
+	}
+	public void setElementColumn(String elementColumn) {
+		this.elementColumn = elementColumn;
+	}
+	public String getElementType() {
+		return elementType;
+	}
+	public void setElementType(String elementType) {
+		this.elementType = elementType;
+	}
+	public void setEntityName(String entityName) {
+		this.entityName = entityName;
+	}
+	public String getEntityName() {
+		return entityName;
+	}
+	public void setFetchBatchSize(int fetchBatchSize) {
+		this.fetchBatchSize = fetchBatchSize;
+	}
+	public int getFetchBatchSize() {
+		return fetchBatchSize;
+	}
+	public void setFieldType(String fieldType) {
+		this.fieldType = fieldType;
+	}
+	public String getFieldType() {
+		return fieldType;
+	}
+	public void setFormula(String formula) {
+		this.formula = formula;
+	}
+	public String getFormula() {
+		return formula;
+	}
+	public void setGenerator(String generator) {
+		this.generator = generator;
+	}
+	public String getGenerator() {
+		return generator;
+	}
+	public void setGetter(boolean getter) {
+		this.getter = getter;
+	}
+	public boolean getGetter() {
+		return getter;
+	}
+	public void setFkColumn(String fkColumn) {
+		this.fkColumn = fkColumn;
+	}
+	public String getFkColumn() {
+		if(StringUtil.isEmpty(fkColumn))
+			return getColumn();
+		return fkColumn;
+	}*/
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	/**
 	 *
@@ -134,12 +288,46 @@ public final class Property extends MemberSupport implements ASMProperty {
 	}
 	
 	/**
+	 * @return the setter
+	 */
+	public boolean getSetter() {
+		return setter;
+	}
+
+	/**
+	 * @param setter the setter to set
+	 */
+	public void setSetter(boolean setter) {
+		this.setter = setter;
+	}
+
+	/**
+	 * @return the getter
+	 */
+	public boolean getGetter() {
+		return getter;
+	}
+
+	/**
+	 * @param getter the getter to set
+	 */
+	public void setGetter(boolean getter) {
+		this.getter = getter;
+	}
+	
+	/**
 	 *
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
+		String strMeta="";
+		try{
+		strMeta=new ScriptConverter().serialize(meta);
+		}
+		catch(ConverterException ce){}
+		
 		return "default:"+this._default+";displayname:"+this.displayname+";hint:"+this.hint+
-		";name:"+this.name+";type:"+this.type+";";
+		";name:"+this.name+";type:"+this.type+";meta:"+strMeta+";";
 	}
 
 	public Object getMetaData() {
@@ -157,7 +345,7 @@ public final class Property extends MemberSupport implements ASMProperty {
 		return sct;
 	}
 	
-	public Map getMeta() {
+	public Struct getMeta() {
 		return meta;
 	}
 
@@ -167,6 +355,12 @@ public final class Property extends MemberSupport implements ASMProperty {
 	public Class getClazz() {
 		return null;
 	}
+
+	
+
+	
+
+
 
 	
 }
