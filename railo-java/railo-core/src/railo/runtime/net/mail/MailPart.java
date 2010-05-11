@@ -1,5 +1,7 @@
 package railo.runtime.net.mail;
 
+import java.io.Serializable;
+
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.List;
@@ -8,15 +10,15 @@ import railo.runtime.type.List;
 /**
  * 
  */
-public final class MailPart {
+public final class MailPart implements Serializable {
     /**
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        return "railo.runtime.mail.MailPart(wraptext:"+wraptext+";isHTML:"+isHTML+";charset:"+charset+";body:"+body+";)";
+        return "railo.runtime.mail.MailPart(wraptext:"+wraptext+";type:"+type+";charset:"+charset+";body:"+body+";)";
     }
 	/** IThe MIME media type of the part */
-	private boolean isHTML;
+    private boolean isHTML;
 	
 	/** Specifies the maximum line length, in characters of the mail text */
 	private int wraptext=-1;
@@ -25,12 +27,14 @@ public final class MailPart {
 	private String charset;
 
     private String body;
+	private String type;
 
     /**
      * 
      */
     public void clear() {
-        isHTML=false;
+    	isHTML=false;
+    	type=null;
         wraptext=-1;
         charset=null;
         body="null";
@@ -92,7 +96,27 @@ public final class MailPart {
     public int getWraptext() {
         return wraptext;
     }
+    
+    
     /**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+
+
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
+	}
+
+
+
+	/**
      * @param wraptext The wraptext to set.
      */
     public void setWraptext(int wraptext) {
