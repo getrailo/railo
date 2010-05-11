@@ -2,7 +2,7 @@ package railo.runtime.net.mail;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,6 +10,12 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import railo.commons.lang.StringUtil;
+import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
+import railo.runtime.type.Array;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 
 /**
@@ -54,6 +60,11 @@ public final class EmailNamePair {
 		
 	}
 	
+	private EmailNamePair(String email,String name) {
+		this.name=name;
+		this.email=email;
+	}
+	
 	private EmailNamePair(String strEmail) throws MailException {
 		strEmail=strEmail.trim();
 		boolean hasMatch=false;
@@ -64,15 +75,15 @@ public final class EmailNamePair {
 			if(m.matches()) {
 				switch(pairType[i]) {
 					case EMAIL:
-						email=m.group(1).trim();
+						email=clean(m.group(1));
 					break;
 					case EMAIL_NAME:
-						email=m.group(1).trim();
-						name=m.group(2).trim();
+						email=clean(m.group(1));
+						name=clean(m.group(2));
 					break;
 					case NAME_EMAIL:
-						name=m.group(1).trim();
-						email=m.group(2).trim();
+						name=clean(m.group(1));
+						email=clean(m.group(2));
 					break;
 				}
 				hasMatch=true;
@@ -82,26 +93,32 @@ public final class EmailNamePair {
 		if(!hasMatch) throw new MailException("Invalid E-Mail Address definition ("+strEmail+")");
 	}
 		
-	/**
-	 * parse a string with email name pairs and return it as array
-	 * @param strEmails email name pairs a string
-	 * @return parsed email n ame pairs
-	 * @throws MailException
-	 */
-	private static EmailNamePair[] _factory(String strEmails) throws MailException {
-		StringTokenizer tokens=new StringTokenizer(strEmails,",;");
-		ArrayList list=new ArrayList();
+	private static String clean(String str) {
+		if(str==null) return"";
 		
-		while(tokens.hasMoreTokens()) {
-			list.add(new EmailNamePair(tokens.nextToken()));
-		}
-		EmailNamePair[] pairs=(EmailNamePair[])list.toArray(new EmailNamePair[list.size()]);
-		return pairs;
+		str=str.trim();
+		if((str.startsWith("'") && str.endsWith("'")) || (str.startsWith("\"") && str.endsWith("\""))) 
+			return str.substring(1,str.length()-1).trim();
+		return str;
 	}
-	
 
-	public static InternetAddress[] toInternetAddress(String strEmails) throws MailException, AddressException, UnsupportedEncodingException {
-		EmailNamePair[] pairs = _factory(strEmails);
+
+	
+	public static InternetAddress[] toInternetAddress(Object emails) throws MailException, AddressException, UnsupportedEncodingException, PageException {
+		EmailNamePair[] pairs=null;
+		if(emails instanceof String){
+			pairs = _factory((String)emails);
+		}
+		else if(Decision.isArray(emails)) {
+			pairs = _factory(Caster.toArray(emails));
+		}
+		else if(Decision.isStruct(emails)) {
+			pairs = new EmailNamePair[]{_factory(Caster.toStruct(emails))};
+		}
+		else 
+			throw new MailException("e-mail defintions must be one of the following types [string,array,struct], not ["+emails.getClass().getName()+"]");
+
+	
 		InternetAddress[] addresses=new InternetAddress[pairs.length];
 		EmailNamePair pair;
 		for(int i=0;i<pairs.length;i++) {
@@ -111,6 +128,56 @@ public final class EmailNamePair {
 		}
 		return addresses;
 	}
+	
+
+	private static EmailNamePair[] _factory(Array array) throws MailException, PageException {
+		Iterator it = array.valueIterator();
+		Object el;
+		ArrayList<EmailNamePair> pairs=new ArrayList<EmailNamePair>();
+		while(it.hasNext()){
+			el=it.next();
+			if(Decision.isStruct(el))
+				pairs.add(_factory(Caster.toStruct(el)));
+			else
+				pairs.add(new EmailNamePair(Caster.toString(el)));
+		}
+		return pairs.toArray(new EmailNamePair[pairs.size()]);
+	}
+	
+	private static EmailNamePair _factory(Struct sct) throws MailException {
+		String name=Caster.toString(sct.get("label",null),null);
+		if(name==null)name=Caster.toString(sct.get("name",null),null);
+		
+		String email=Caster.toString(sct.get("email",null),null);
+		if(email==null)email=Caster.toString(sct.get("e-mail",null),null);
+		if(email==null)email=Caster.toString(sct.get("mail",null),null);
+		
+		if(name==null) name="";
+		if(StringUtil.isEmpty(email)) throw new MailException("missing e-mail defintion in struct");
+		
+		return new EmailNamePair(email,name);
+	}
+	
+	/**
+	 * parse a string with email name pairs and return it as array
+	 * @param strEmails email name pairs a string
+	 * @return parsed email n ame pairs
+	 * @throws MailException
+	 */
+	private static EmailNamePair[] _factory(String strEmails) throws MailException {
+		Array raw = List.listWithQuotesToArray(strEmails,",;","\"");
+		
+		
+		Iterator<String> it = raw.valueIterator();
+		ArrayList<EmailNamePair> pairs=new ArrayList<EmailNamePair>();
+		
+		while(it.hasNext()) {
+			pairs.add(new EmailNamePair(it.next()));
+		}
+		return pairs.toArray(new EmailNamePair[pairs.size()]);
+	}
+	
+
 	
 	
 	
