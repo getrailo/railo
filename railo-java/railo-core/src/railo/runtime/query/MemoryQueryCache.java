@@ -23,7 +23,7 @@ import railo.runtime.type.Query;
 	/**
      * @see railo.runtime.query.QueryCache#clearUnused()
      */
-	public void clearUnused() {
+	public void clearUnused() { 
 		//print.out("clear unused:"+entries.size());
 		if(entries.size()>100) {
 			//print.out("clear");
