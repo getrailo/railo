@@ -17,8 +17,8 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.runtime.ComponentPage;
-import railo.runtime.InterfacePage;
+import railo.commons.lang.StringUtil;
+import railo.runtime.component.ImportDefintion;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
@@ -34,11 +34,13 @@ import railo.transformer.bytecode.statement.IFunction;
 import railo.transformer.bytecode.statement.NativeSwitch;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
+import railo.transformer.bytecode.statement.tag.TagImport;
 import railo.transformer.bytecode.statement.tag.TagThread;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.bytecode.visitor.ArrayVisitor;
 import railo.transformer.bytecode.visitor.ConditionVisitor;
 import railo.transformer.bytecode.visitor.DecisionIntVisitor;
 import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
@@ -59,10 +61,27 @@ public final class Page extends BodyBase {
 			Types.COLLECTION_KEY,
 			new Type[]{Types.STRING}
     		);
+	
+	// public static ImportDefintion getInstance(String fullname,ImportDefintion defaultValue)
+	private static final Method ID_GET_INSTANCE = new Method(
+			"getInstance",
+			Types.IMPORT_DEFINITIONS,
+			new Type[]{Types.STRING,Types.IMPORT_DEFINITIONS}
+    		);
 
 	public final static Method STATIC_CONSTRUCTOR = Method.getMethod("void <clinit> ()V");
-	public final static Method CONSTRUCTOR = Method.getMethod("void <init> ()V");
-	
+	//public final static Method CONSTRUCTOR = Method.getMethod("void <init> ()V");
+
+	private static final Method CONSTRUCTOR = new Method(
+			"<init>",
+			Types.VOID,
+			new Type[]{}//
+    		);
+	private static final Method CONSTRUCTOR_PS = new Method(
+			"<init>",
+			Types.VOID,
+			new Type[]{Types.PAGE_SOURCE}//
+    		);
 
     public static final Type STRUCT_IMPL = Type.getType(StructImpl.class);
 	private static final Method INIT_STRUCT_IMPL = new Method(
@@ -90,6 +109,19 @@ public final class Page extends BodyBase {
     private final static Method VERSION = new Method(
 			"getVersion",
 			Types.INT_VALUE,
+			new Type[]{}
+    		);
+    
+    private final static Method SET_PAGE_SOURCE = new Method(
+			"setPageSource",
+			Types.VOID,
+			new Type[]{Types.PAGE_SOURCE}
+    		);
+    
+    // public ImportDefintion[] getImportDefintions()
+    private final static Method GET_IMPORT_DEFINITIONS = new Method(
+			"getImportDefintions",
+			Types.IMPORT_DEFINITIONS_ARRAY,
 			new Type[]{}
     		);
     
@@ -164,9 +196,7 @@ public final class Page extends BodyBase {
 	
 	
 
-	private static final Type COMPONENT_PAGE = Type.getType(ComponentPage.class);
 
-	private static final Type INTERFACE_PAGE = Type.getType(InterfacePage.class);
 	
 	
 
@@ -175,7 +205,7 @@ public final class Page extends BodyBase {
 			"<init>",
 			Types.VOID,
 			new Type[]{
-						INTERFACE_PAGE,
+					Types.INTERFACE_PAGE,
 						Types.STRING, // extends
 						Types.STRING, // hind
 						Types.STRING, // display
@@ -190,13 +220,13 @@ public final class Page extends BodyBase {
 	private static final Method INIT = new Method(
 			"init",
 			Types.VOID,
-			new Type[]{Types.PAGE_CONTEXT,COMPONENT_PAGE}
+			new Type[]{Types.PAGE_CONTEXT,Types.COMPONENT_PAGE}
     		);
 	
 	private static final Method CHECK_INTERFACE = new Method(
 			"checkInterface",
 			Types.VOID,
-			new Type[]{Types.PAGE_CONTEXT,COMPONENT_PAGE}
+			new Type[]{Types.PAGE_CONTEXT,Types.COMPONENT_PAGE}
     		);
 	
 	
@@ -250,28 +280,14 @@ public final class Page extends BodyBase {
     		);
 
 	// ComponentImpl(ComponentPage,boolean, String, String, String) NS==No Style
-	/*private static final Method CONSTR_COMPONENT_IMPL_NS = new Method(
-			"<init>",
-			Types.VOID,
-			new Type[]{
-						COMPONENT_PAGE,
-						Types.BOOLEAN,
-						Types.BOOLEAN_VALUE,
-						Types.STRING,
-						Types.STRING,
-						Types.STRING,
-						Types.STRING,
-						Types.BOOLEAN_VALUE,
-						STRUCT_IMPL
-					}
-    		);*/
+	
 	
 	// Component Impl(ComponentPage,boolean, String, String, String, String) WS==With Style
 	private static final Method CONSTR_COMPONENT_IMPL = new Method(
 			"<init>",
 			Types.VOID,
 			new Type[]{
-					COMPONENT_PAGE,
+					Types.COMPONENT_PAGE,
 					Types.BOOLEAN,
 					Types.BOOLEAN_VALUE,
 					Types.STRING,
@@ -345,8 +361,11 @@ public final class Page extends BodyBase {
     	ClassWriter cw = ASMUtil.getClassWriter(); 
     	//ClassWriter cw = new ClassWriter(true);
     	
+    	ArrayList<String> list = new ArrayList<String>();
+        getImports(list, this); 
+    	
     	// parent
-    	String parent="railo/runtime/Page";
+    	String parent="railo/runtime/PagePlus";// FUTURE use Page instead of PagePlus
     	if(isComponent()) parent="railo/runtime/ComponentPage";
     	else if(isInterface()) parent="railo/runtime/InterfacePage";
     	
@@ -358,25 +377,69 @@ public final class Page extends BodyBase {
 		BytecodeContext statConstr = new BytecodeContext(null,null,keys,cw,name,ga,STATIC_CONSTRUCTOR,writeLog());
 		
 		
+		// private static  ImportDefintion[] test=new ImportDefintion[]{...};
+	    if(list.size()>0){
+			FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, 
+					"imports", "[Lrailo/runtime/component/ImportDefintion;", null, null);
+			fv.visitEnd();
+		
+			GeneratorAdapter adapter = statConstr.getAdapter();
+			ArrayVisitor av=new ArrayVisitor();
+			av.visitBegin(adapter,Types.IMPORT_DEFINITIONS,list.size());
+			int index=0;
+			Iterator<String> it = list.iterator();
+			while(it.hasNext()){
+				av.visitBeginItem(adapter,index++);
+				adapter.push(it.next());
+				ASMConstants.NULL(adapter);
+				adapter.invokeStatic(Types.IMPORT_DEFINITIONS, ID_GET_INSTANCE);
+				av.visitEndItem(adapter);
+			}
+			av.visitEnd();
+			adapter.visitFieldInsn(Opcodes.PUTSTATIC, name, "imports", "[Lrailo/runtime/component/ImportDefintion;");
+				
+		}
+		
+		
         // constructor
-        ga = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR,null,null,cw);
-		BytecodeContext constr = new BytecodeContext(null,null,keys,cw,name,ga,CONSTRUCTOR,writeLog());
+        ga = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_PS,null,null,cw);
+		BytecodeContext constr = new BytecodeContext(null,null,keys,cw,name,ga,CONSTRUCTOR_PS,writeLog());
 		ga.loadThis();
-        Type t=Types.PAGE;
-        if(isComponent())t=COMPONENT_PAGE;
-        else if(isInterface())t=INTERFACE_PAGE;
+        Type t=Types.PAGE_PLUS;
+        if(isComponent())t=Types.COMPONENT_PAGE;
+        else if(isInterface())t=Types.INTERFACE_PAGE;
+        
         ga.invokeConstructor(t, CONSTRUCTOR);
+
+        
+        //setPageSource(pageSource);
+        ga.visitVarInsn(Opcodes.ALOAD, 0);
+        ga.visitVarInsn(Opcodes.ALOAD, 1);
+        ga.invokeVirtual(t, SET_PAGE_SOURCE);
+       // mv.visitMethodInsn(INVOKEVIRTUAL, "railo/runtime/PagePlus", "setPageSource", "(Lrailo/runtime/PageSource;)V");
+
         
         
         
-        
+ 
         
      // getVersion
          GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , VERSION, null, null, cw);
          adapter.push(version);
          adapter.returnValue();
          adapter.endMethod();
+         
+         
+    // public ImportDefintion[] getImportDefintions()
+         if(list.size()>0){
+        	 adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , GET_IMPORT_DEFINITIONS, null, null, cw);
+             adapter.visitFieldInsn(Opcodes.GETSTATIC, name, "imports", "[Lrailo/runtime/component/ImportDefintion;");
+        	 adapter.returnValue();
+             adapter.endMethod();
+         }
+         
 
+         
 // getSourceLastModified
         adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , LAST_MOD, null, null, cw);
         adapter.push(lastModifed);
@@ -908,7 +971,7 @@ public final class Page extends BodyBase {
 		Attribute attr;
 		// ComponentPage
 		adapter.visitVarInsn(Opcodes.ALOAD, 0);
-		adapter.checkCast(COMPONENT_PAGE);
+		adapter.checkCast(Types.COMPONENT_PAGE);
 
 		// Output
 		attr = component.removeAttribute("output");
@@ -926,7 +989,7 @@ public final class Page extends BodyBase {
 		attr = component.removeAttribute("extends");
 		if(attr!=null) ExpressionUtil.writeOutSilent(attr.getValue(),bc, Expression.MODE_REF);
 		else adapter.push("");
-
+ 
 		// implements
 		attr = component.removeAttribute("implements");
 		if(attr!=null) ExpressionUtil.writeOutSilent(attr.getValue(),bc, Expression.MODE_REF);
@@ -993,7 +1056,7 @@ public final class Page extends BodyBase {
 		adapter.visitVarInsn(Opcodes.ALOAD, 0);
 		adapter.loadArg(0);
 		adapter.loadLocal(comp);
-		adapter.invokeVirtual(COMPONENT_PAGE, INIT_COMPONENT);
+		adapter.invokeVirtual(Types.COMPONENT_PAGE, INIT_COMPONENT);
 		
         adapter.visitLabel(methodEnd);
         
@@ -1029,7 +1092,7 @@ public final class Page extends BodyBase {
 		Attribute attr;
 		// Interface Page
 		adapter.visitVarInsn(Opcodes.ALOAD, 0);
-		adapter.checkCast(INTERFACE_PAGE);
+		adapter.checkCast(Types.INTERFACE_PAGE);
 
 		// extened
 		attr = interf.removeAttribute("extends");
@@ -1067,7 +1130,7 @@ public final class Page extends BodyBase {
 		adapter.visitVarInsn(Opcodes.ALOAD, 0);
 		//adapter.loadArg(0);
 		adapter.loadLocal(comp);
-		adapter.invokeVirtual(INTERFACE_PAGE, INIT_INTERFACE);
+		adapter.invokeVirtual(Types.INTERFACE_PAGE, INIT_INTERFACE);
 		
 		adapter.visitLabel(methodEnd);
         
@@ -1147,7 +1210,38 @@ public final class Page extends BodyBase {
 		}
 	}
 
+	private static void getImports(List<String> list,Body body) throws BytecodeException {
+		if(ASMUtil.isEmpty(body)) return;
+		Statement stat;
+		List stats = body.getStatements();
+    	int len=stats.size();
+        for(int i=0;i<len;i++) {
+        	stat = (Statement)stats.get(i);
+        	
+        	// IFunction
+        	if(stat instanceof TagImport && !StringUtil.isEmpty(((TagImport)stat).getPath(),true)) {
+        		ImportDefintion id = ImportDefintion.getInstance(((TagImport) stat).getPath(), null);
+        		if(id!=null && (!list.contains(id.toString()) && !list.contains(id.getPackage()+".*"))){
+        			list.add(id.toString());
+        		}
+        		stats.remove(i);
+        		len--;
+        		i--;
+        		
+        	}
+        	else if(stat instanceof HasBody) getImports(list, ((HasBody)stat).getBody());
+        	else if(stat instanceof HasBodies) {
+        		Body[] bodies=((HasBodies)stat).getBodies();
+        		for(int y=0;y<bodies.length;y++) {
+        			getImports(list,bodies[y]);
+        		}
+        	}
+        }
+	}
+	
+	
 	private static void writeOutFunctions(BytecodeContext bc, Body body, int pageType) throws BytecodeException {
+		//writeOutImports(bc, body, pageType);
 		if(ASMUtil.isEmpty(body)) return;
 		Statement stat;
 		List stats = body.getStatements();

@@ -107,62 +107,9 @@ public class BodyBase extends StatementBase implements Body {
 
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
         writeOut(bc.getStaticConstructor(),bc.getConstructor(),bc.getKeys(),statements, bc);
-		/*Iterator it = statements.iterator();
-        //adapter.visitLabel(new Label());
-        while(it.hasNext()) {
-            ((Statement)it.next()).writeOut(bc);
-        }
-        //adapter.visitLabel(new Label());*/
     }
 	
 
-	/*public static void writeOut(BytecodeContext statConstr,BytecodeContext constr,List keys,List statements,BytecodeContext bc) throws BytecodeException {
-		GeneratorAdapter adapter = bc.getAdapter();
-        boolean isOutsideMethod;
-        GeneratorAdapter a=null;
-		Method m;
-		BytecodeContext _bc=bc;
-		Iterator it = statements.iterator();
-		boolean first=true;
-		while(it.hasNext()) {
-			isOutsideMethod=bc.getMethod().getReturnType().equals(Types.VOID);
-	    	Statement s = ((Statement)it.next());
-	    	if(first || (_bc.incCount()>MAX_STATEMENTS && bc.doSubFunctions() && 
-					(isOutsideMethod || !s.hasFlowController()))) {
-        		if(a!=null){
-        			a.returnValue();
-    				a.endMethod();
-	        	}
-        		ExpressionUtil.visitLine(bc, s.getLine());
-        		String method= "_"+ASMUtil.getId();
-        		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});
-    			a = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , m, null, new Type[]{Types.THROWABLE}, bc.getClassWriter());
-    			
-    			
-    			_bc=new BytecodeContext(statConstr,constr,keys,bc,a,m);
-    			if(bc.getRoot()!=null)_bc.setRoot(bc.getRoot());
-    			else _bc.setRoot(bc);
-    			
-    			adapter.visitVarInsn(Opcodes.ALOAD, 0);
-	        	adapter.visitVarInsn(Opcodes.ALOAD, 1);
-	        	adapter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, bc.getClassName(), method, "(Lrailo/runtime/PageContext;)V");
-        	}
-        	if(_bc!=bc && s.hasFlowController()) {
-				if(a!=null){
-        			a.returnValue();
-    				a.endMethod();
-	        	}
-				_bc=bc;
-				a=null;
-			}
-        	s.writeOut(_bc);
-        	first=false;
-        }
-        if(a!=null){
-        	a.returnValue();
-			a.endMethod();
-        } 
-    }*/
 	
 	
 	public static void writeOut(BytecodeContext statConstr,BytecodeContext constr,List keys,List statements,BytecodeContext bc) throws BytecodeException {

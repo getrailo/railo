@@ -6,7 +6,6 @@ import org.objectweb.asm.commons.Method;
 
 import railo.runtime.type.Scope;
 import railo.runtime.type.scope.Application;
-import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.ArgumentImpl;
 import railo.runtime.type.scope.ArgumentPro;
 import railo.runtime.type.scope.CGI;
@@ -59,22 +58,21 @@ public final class TypeScope {
     	METHODS[Scope.SCOPE_CLUSTER]=		new Method("clusterScope",		SCOPES[Scope.SCOPE_CLUSTER],new Type[]{}); 
     }
     // Argument argumentsScope (boolean)
-    public final static Method METHOD_ARGUMENT_BIND=new Method("argumentsScope",Type.getType(Argument.class),new Type[]{Types.BOOLEAN_VALUE});
+    public final static Method METHOD_ARGUMENT_BIND=new Method("argumentsScope",SCOPES[Scope.SCOPE_ARGUMENTS],new Type[]{Types.BOOLEAN_VALUE});
+    public final static Method METHOD_LOCAL_BIND=new Method("localScope",SCOPES[Scope.SCOPE_LOCAL],new Type[]{Types.BOOLEAN_VALUE});
+    
     public final static Type SCOPE_ARGUMENT=		Type.getType(ArgumentPro.class);
     public final static Type SCOPE_ARGUMENT_IMPL=		Type.getType(ArgumentImpl.class);
     
     
     public static void invokeScope(GeneratorAdapter adapter, int scope) {
-		invokeScope(adapter, scope,TypeScope.METHODS[scope]);
+		invokeScope(adapter,TypeScope.METHODS[scope]);
 	}
 	
-	public static void invokeScope(GeneratorAdapter adapter, int scope, Method m) {
-		/*if(scope==ScopeSupport.SCOPE_CLUSTER) {
-			adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
-			adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL,m); 
-		}
-		else */
-		adapter.invokeVirtual(Types.PAGE_CONTEXT,m);
+	public static void invokeScope(GeneratorAdapter adapter, Method m) {
+		if(m==METHOD_LOCAL_BIND) adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL,m);
+		else adapter.invokeVirtual(Types.PAGE_CONTEXT,m);
+		//adapter.invokeVirtual(scope==Scope.SCOPE_LOCAL?Types.PAGE_CONTEXT_IMPL:Types.PAGE_CONTEXT,m);
 	}
     
 }

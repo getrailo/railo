@@ -3,6 +3,7 @@ package railo.commons.io.log;
 import java.io.PrintWriter;
 
 import railo.commons.lang.SystemOut;
+import railo.runtime.config.Config;
 
 
 /**
@@ -10,38 +11,32 @@ import railo.commons.lang.SystemOut;
  */
 public final class LogConsole implements Log {
     
-    private static LogConsole[]  singeltons=new LogConsole[]{
+    private static LogConsole[]  singeltons=new LogConsole[Log.LEVEL_FATAL+1];
+    /*{
         new LogConsole(Log.LEVEL_INFO),
         new LogConsole(Log.LEVEL_DEBUG),
         new LogConsole(Log.LEVEL_WARN),
         new LogConsole(Log.LEVEL_ERROR),
         new LogConsole(Log.LEVEL_FATAL)
-    };
+    };*/
 
     private int logLevel;
 
 	private PrintWriter writer;
     
-    /**
-     * Constructor of the class
-     * @param logLevel
-     */
-    public LogConsole(int logLevel) {
-        this.logLevel=logLevel;
-        writer=new PrintWriter(System.out);
-    }
-    
     public LogConsole(int logLevel, PrintWriter writer) {
         this.logLevel=logLevel;
         this.writer=writer;
     }
-
-    /**
-     * @param logLevel 
-     * @return retuns a singelton instance
-     */
-    public static LogConsole getInstance(int logLevel) {
-        return singeltons[logLevel];
+    
+    public static LogConsole getInstance(Config config,int logLevel) {
+    	if(singeltons[logLevel]==null) {
+    		if(config==null || config.getOutWriter()==null)
+        		return new LogConsole(logLevel,new PrintWriter(System.out));
+        	
+    		singeltons[logLevel]=new LogConsole(logLevel,config.getOutWriter());
+    	}
+    	return singeltons[logLevel];
     }
     
     /**

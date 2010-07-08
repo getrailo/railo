@@ -49,7 +49,7 @@ public final class LogDataSource implements Log {
         this.password=password;
         this.table=table;
         pool = config.getDatasourceConnectionPool();
-        console=LogConsole.getInstance(logLevel);
+        console=LogConsole.getInstance(config,logLevel);
         
         DatasourceConnection dc=null;
     	try {

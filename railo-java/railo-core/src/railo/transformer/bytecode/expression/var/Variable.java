@@ -25,7 +25,7 @@ import railo.transformer.bytecode.util.TypeScope;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.library.function.FunctionLibFunction;
 
-public final class Variable extends ExpressionBase implements Invoker {
+public class Variable extends ExpressionBase implements Invoker {
 	 
 
 
@@ -114,6 +114,7 @@ public final class Variable extends ExpressionBase implements Invoker {
 	List members=new ArrayList();
 	int countDM=0;
 	int countFM=0;
+	private boolean ignoredFirstMember;
 
 	public Variable(int line) {
 		super(line);
@@ -145,9 +146,12 @@ public final class Variable extends ExpressionBase implements Invoker {
 	}
 
 	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+		
+		
 		GeneratorAdapter adapter = bc.getAdapter();
 		int count=countFM+countDM;
-        // count 0
+		
+		// count 0
         if(count==0) 						return _writeOutEmpty(bc);
         
     	Type rtn=Types.OBJECT;
@@ -232,16 +236,25 @@ public final class Variable extends ExpressionBase implements Invoker {
 	 * @throws TemplateException
 	 */
 	private Type _writeOutEmpty(BytecodeContext bc) throws BytecodeException {
-    	GeneratorAdapter adapter = bc.getAdapter();
+		if(ignoredFirstMember && scope==Scope.SCOPE_LOCAL) 
+			return Types.VOID;
+		
+		
+		GeneratorAdapter adapter = bc.getAdapter();
 		adapter.loadArg(0);
 		Method m;
 		if(scope==Scope.SCOPE_ARGUMENTS) {
 			LitBoolean.TRUE.writeOut(bc, MODE_VALUE);
 			 m = TypeScope.METHOD_ARGUMENT_BIND;
 		}
+		else if(scope==Scope.SCOPE_LOCAL) {
+			adapter.checkCast(Types.PAGE_CONTEXT_IMPL);// FUTURE remove when function localScope(boolean) is part of class PageContext
+			LitBoolean.TRUE.writeOut(bc, MODE_VALUE);
+			 m = TypeScope.METHOD_LOCAL_BIND;
+		}
 		else m = TypeScope.METHODS[scope]; 
 		
-		TypeScope.invokeScope(adapter,scope,m);
+		TypeScope.invokeScope(adapter,m);
 		
 		
 		return m.getReturnType();
@@ -363,6 +376,12 @@ public final class Variable extends ExpressionBase implements Invoker {
 		if(members.isEmpty()) return null;
 		return (Member) members.get(members.size()-1);
 	}
-	
+
+	public void ignoredFirstMember(boolean b) {
+		this.ignoredFirstMember=b;
+	}
+	public boolean ignoredFirstMember() {
+		return ignoredFirstMember;
+	}
 	
 }

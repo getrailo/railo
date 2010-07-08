@@ -124,7 +124,9 @@ public interface Component extends Struct,Objects {
      */
     public abstract Object callWithNamedValues(PageContext pc, String key, Struct args) throws PageException;
 
-    public Page getPage();
+    public Page getPage();// FUTURE deprecated
+    
+    // FUTURE public PageSource getPageSource();
     
 
     

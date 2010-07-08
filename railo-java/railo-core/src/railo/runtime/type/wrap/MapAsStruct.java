@@ -179,7 +179,7 @@ public  class MapAsStruct extends StructSupport implements Struct {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-	    return DumpUtil.toDumpData(map, pageContext,maxlevel,dp);
+	    return DumpUtil.toDumpData(map, pageContext,maxlevel,dp); 
     }
    
     /**

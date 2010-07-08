@@ -25,6 +25,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
+import railo.runtime.type.util.ArrayUtil;
 
 /**
  * 
@@ -34,7 +35,8 @@ public class InterfaceImpl implements Dumpable {
 
 	private static final InterfaceImpl[] EMPTY = new InterfaceImpl[]{};
 	
-	private InterfacePage page;
+	//private InterfacePage page;
+	private PageSource pageSource;
 	private String extend;
 	private String hint;
 	private String dspName;
@@ -53,16 +55,19 @@ public class InterfaceImpl implements Dumpable {
      * @param hint 
      * @param dspName 
      */
-    public InterfaceImpl(InterfacePage page,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs) {
-    	this.page=page;
-    	this.extend=extend;
-    	this.hint=hint;
-    	this.dspName=dspName;
-    	this.callPath=callPath;
-    	this.realPath=realPath;
-    	this.interfacesUDFs=interfacesUDFs;
-    }
-    
+	 public InterfaceImpl(InterfacePage page,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs) {
+	    	this(page.getPageSource(),extend, hint, dspName,callPath, realPath,interfacesUDFs);
+	 }
+	 public InterfaceImpl(PageSource pageSource,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs) {
+	    	this.pageSource=pageSource;
+	    	this.extend=extend;
+	    	this.hint=hint;
+	    	this.dspName=dspName;
+	    	this.callPath=callPath;
+	    	this.realPath=realPath;
+	    	this.interfacesUDFs=interfacesUDFs;
+	}
+	    
 
 	private static void init(PageContext pc,InterfaceImpl icfc) throws PageException {
 
@@ -112,7 +117,7 @@ public class InterfaceImpl implements Dumpable {
     public boolean instanceOf(String type) {
 		if(realPath) {
         	if(type.equalsIgnoreCase(callPath)) return true;
-            if(type.equalsIgnoreCase(page.getPageSource().getComponentName())) return true;
+            if(type.equalsIgnoreCase(pageSource.getComponentName())) return true;
             if(type.equalsIgnoreCase(_getName())) return true;       
         }
         else {
@@ -186,20 +191,23 @@ public class InterfaceImpl implements Dumpable {
         return table;
     }
 
-	/**
+	/* *
 	 * @return the page
-	 */
+	 * /
 	public InterfacePage getPage() {
 		return page;
+	}*/
+	
+	public PageSource getPageSource() {
+		return pageSource;
 	}
 
 
 	public Struct getMetaData(PageContext pc) throws PageException {
-		StructImpl sct=new StructImpl();
-		_getMetaData(pc,this,sct);
-		return sct;
+		return _getMetaData(pc,this);
 	}
-	private static void _getMetaData(PageContext pc,InterfaceImpl icfc,Struct sct) throws PageException {
+	private static Struct _getMetaData(PageContext pc,InterfaceImpl icfc) throws PageException {
+		Struct sct=new StructImpl();
 		ArrayImpl arr=new ArrayImpl();
         Set set=icfc.udfs.keySet();
         Iterator it = set.iterator();
@@ -219,20 +227,23 @@ public class InterfaceImpl implements Dumpable {
         if(!StringUtil.isEmpty(icfc.hint))sct.set("hint",icfc.hint);
         if(!StringUtil.isEmpty(icfc.dspName))sct.set("displayname",icfc.dspName);
         init(pc,icfc);
-        if(icfc.superInterfaces!=null && icfc.superInterfaces.length>0){
+        if(!ArrayUtil.isEmpty(icfc.superInterfaces)){
         	Struct ex=new StructImpl();
         	sct.set(ComponentImpl.EXTENDS,ex);
-        	_getMetaData(pc,icfc.superInterfaces[0], ex);
+        	for(int i=0;i<icfc.superInterfaces.length;i++){
+        		ex.setEL(icfc.superInterfaces[i].getCallPath(),_getMetaData(pc,icfc.superInterfaces[i]));
+        	}
+        	
         }
         
         if(arr.size()!=0)sct.set(ComponentImpl.FUNCTIONS,arr);
-        PageSource ps = icfc.page.getPageSource();
+        PageSource ps = icfc.pageSource;
         sct.set(ComponentImpl.NAME,ps.getComponentName());
         sct.set("fullname",ps.getComponentName());
        
         sct.set(ComponentImpl.PATH,ps.getDisplayPath());
         sct.set(ComponentImpl.TYPE,"interface");
-        
+        return sct;
 	}
 
 }

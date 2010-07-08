@@ -50,7 +50,10 @@ public final class EvaluatorPool {
 			CFMLString cfml=ec.getCfml();
 			cfml.setPos(ec.getPos());
 			try {
-				ec.getLibTag().getEvaluator().evaluate(ec.getTag(),ec.getLibTag(),ec.getFlibs());
+				if(ec.getLibTag().getEvaluator()!=null)ec.getLibTag().getEvaluator().evaluate(
+						ec.getTag(),
+						ec.getLibTag(),
+						ec.getFlibs());
 			} catch (EvaluatorException e) {
 			    v.clear();//print.printST(e);
 				throw new TemplateException(cfml,e);
@@ -140,9 +143,9 @@ public final class EvaluatorPool {
         v.clear();
     }
 
-	public static void getPool() {
+	/*public static void getPool() {
 		// TODO Auto-generated method stub
 		
-	}
+	}*/
 
 }

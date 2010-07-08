@@ -1,14 +1,13 @@
-<!--- /*		
-Build:		 368
-*/--->
 <cfcomponent name="ajaxBase">
 		
 	<!--- Instance vars --->
 	<cfset variables.instance = {} />
 	
-	<cfset variables.instance.SCRIPTSRC = "/mapping-tag/railo/commons/html/libs/JSLoader.cfc?method=get&lib=" />
+	<!--- used by UI tags --->
+	<cfset variables.instance.SCRIPTSRC = "/mapping-tag/org/railoajax/libs/JSLoader.cfc?method=get&lib=" />
+	<cfset variables.instance.CSSSRC = "/mapping-tag/org/railoajax/libs/css/" />
+	<!--- used by core tags --->
 	<cfset variables.instance.RAILOJSSRC = "/mapping-tag/railo/core/ajax/JSLoader.cfc?method=get&lib=" />
-	<cfset variables.instance.CSSSRC = "/mapping-tag/railo/commons/html/libs/css/" />
 	<cfset variables.instance.LOADERSRC = "/mapping-tag/railo/core/ajax/loader/loading.gif.cfm" />
 	
 	<!--- Constructor --->
@@ -63,7 +62,7 @@ Build:		 368
             	<cfreturn>
             </cfcatch>
         </cftry>
-        <cfif not find(id,head)>
+       <cfif not find(id,head)>
 			<cfhtmlhead action="append" text="<!-- #id# --> #trim(text)#">
 		</cfif>
     </cffunction>

@@ -52,6 +52,8 @@ public final class HTTPConnectionData {
 		
 		int atIndex=path.indexOf('@');
 		int slashIndex=path.indexOf('/');
+		if(atIndex>slashIndex)atIndex=-1;
+		
 		if(slashIndex==-1){
 			slashIndex=path.length();
 			path+="/";
@@ -86,7 +88,7 @@ public final class HTTPConnectionData {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "username:"+username+";password:"+password+";hostname:"+host+";port:"+port;
+		return "username:"+username+";password:"+password+";hostname:"+host+";port:"+port+";path:"+path;
 	}
 	
 	public String key() {
@@ -127,4 +129,15 @@ public final class HTTPConnectionData {
 		this.proxyData=proxyData;
 	}
 
+	/*public static void main(String[] args) {
+		test("search.twitter.com/search.atom?q=@mktweetup");
+		test("search.twitter.com/search.atom?q=mktweetup");
+		test("u@search.twitter.com/search.atom?q=mktweetup");
+		test("u:p@search.twitter.com/search.atom?q=mktweetup");
+	}
+	private static void test(String string) {
+		print.out(string);
+		HTTPConnectionData data = new HTTPConnectionData(string);
+		print.out(data.toString());
+	}*/
 }

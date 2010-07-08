@@ -5,7 +5,7 @@ import org.objectweb.asm.Type;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.util.Types;
+import railo.transformer.bytecode.util.ASMUtil;
 
 public final class TagSet extends TagBase  {
 
@@ -27,8 +27,9 @@ public final class TagSet extends TagBase  {
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		Type rtn = getAttribute("noname").getValue().writeOut(bc, Expression.MODE_VALUE);
 		// TODO sollte nicht auch long geprüft werden?
-		if(rtn.equals(Types.DOUBLE_VALUE))bc.getAdapter().pop2();
-		else bc.getAdapter().pop();
+		ASMUtil.pop(bc.getAdapter(), rtn);
+		//if(rtn.equals(Types.DOUBLE_VALUE))bc.getAdapter().pop2();
+		//else bc.getAdapter().pop();
 	}
 
 }

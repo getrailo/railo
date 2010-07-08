@@ -1348,6 +1348,24 @@
 			<type>struct</type>
 		</return>
 	</function>
+	<!-- componentCacheClear -->
+	<function>
+		<name>componentCacheClear</name>
+		<class>railo.runtime.functions.component.ComponentCacheClear</class>
+		<description/>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- componentCacheList -->
+	<function>
+		<name>componentCacheList</name>
+		<class>railo.runtime.functions.component.ComponentCacheList</class>
+		<description/>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
 	<!-- compress -->
 	<function>
 		<name>compress</name>
@@ -1515,7 +1533,7 @@
 		<argument>
 			<name>arg2</name>
 			<type>string</type>
-			<required>Yes</required>
+			<required>no</required>
 		</argument>
 		<argument>
 			<name>arg3</name>
@@ -2064,6 +2082,48 @@
 			<type>boolean</type>
 		</return>
 	</function>
+	<!-- DirectoryCreate -->
+	<function>
+		<name>DirectoryCreate</name>
+		<class>railo.runtime.functions.file.DirectoryCreate</class>
+		<description/>
+		<argument>
+			<name>path</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>Absolute path of the directory to be created</description>
+		</argument>
+		<argument>
+			<name>doParent</name>
+			<type>boolean</type>
+			<required>no</required>
+			<description>create parent directory when not exist</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- DirectoryDelete -->
+	<function>
+		<name>DirectoryDelete</name>
+		<class>railo.runtime.functions.file.DirectoryDelete</class>
+		<description/>
+		<argument>
+			<name>path</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>Absolute path of the directory to be deleted</description>
+		</argument>
+		<argument>
+			<name>recurse</name>
+			<type>boolean</type>
+			<required>no</required>
+			<description>delete content of the directory</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
 	<!-- directoryExists -->
 	<function>
 		<name>directoryExists</name>
@@ -2084,6 +2144,67 @@
 			<type>boolean</type>
 		</return>
 	</function>
+	
+	<!-- DirectoryList -->
+	<function>
+		<name>DirectoryList</name>
+		<class>railo.runtime.functions.file.DirectoryList</class>
+		<description/>
+		<argument>
+			<name>absolute_path</name>
+			<type>string</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>recurse</name>
+			<type>boolean</type>
+			<required>no</required>
+			<description></description>
+		</argument>
+		<argument>
+			<name>listInfo</name>
+			<type>string</type>
+			<required>no</required>
+			<description></description>
+		</argument>
+		<argument>
+			<name>filter</name>
+			<type>any</type>
+			<required>no</required>
+			<description></description>
+		</argument>
+		<argument>
+			<name>sort</name>
+			<type>string</type>
+			<required>no</required>
+			<description></description>
+		</argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	<!-- DirectoryRename -->
+	<function>
+		<name>DirectoryRename</name>
+		<class>railo.runtime.functions.file.DirectoryRename</class>
+		<description/>
+		<argument>
+			<name>oldPath</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>Absolute path of the directory to be renamed</description>
+		</argument>
+		<argument>
+			<name>newPath</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>new name for the directory</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 	<!-- DeserializeJSON -->
 	<function>
 		<name>DeserializeJSON</name>
@@ -2477,6 +2598,31 @@
 		</return>
 	</function>
 	
+	<!-- EntityNameArray -->
+	<function>
+		<name>EntityNameArray</name>
+		<class>railo.runtime.functions.orm.EntityNameArray</class>
+		<description/>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
+	
+	<!-- EntityNameList -->
+	<function>
+		<name>EntityNameList</name>
+		<class>railo.runtime.functions.orm.EntityNameList</class>
+		<description/>
+		<argument>
+			<name>delimeter</name>
+			<type>string</type>
+			<required>no</required>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
 	<!-- EntityReload -->
 	<function>
 		<name>EntityReload</name>
@@ -2701,6 +2847,11 @@
 			<type>string</type>
 			<required>No</required>
 		</argument>
+		<argument>
+			<name>seekable</name>
+			<type>boolean</type>
+			<required>No</required>
+		</argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -2738,6 +2889,45 @@
 			<type>string</type>
 		</return>
 	</function>
+	<!-- FileSeek -->
+	<function>
+		<name>FileSeek</name>
+		<class>railo.runtime.functions.file.FileSeek</class>
+		<description/>
+		<argument>
+			<name>fileObj</name>
+			<type>any</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>pos</name>
+			<type>number</type>
+			<required>Yes</required>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- FileSkipBytes -->
+	<function>
+		<name>FileSkipBytes</name>
+		<class>railo.runtime.functions.file.FileSkipBytes</class>
+		<description/>
+		<argument>
+			<name>fileObj</name>
+			<type>any</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>len</name>
+			<type>number</type>
+			<required>Yes</required>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 	<!-- fileClose -->
 	<function>
 		<name>fileClose</name>
@@ -3340,6 +3530,24 @@
 			<type>string</type>
 		</return>
 	</function>
+	
+	<!-- GetVFSMetaData -->
+	<function>
+		<name>GetVFSMetaData</name>
+		<class>railo.runtime.functions.file.GetVFSMetaData</class>
+		<description/>
+		<argument>
+			<name>scheme</name>
+			<type>string</type>
+			<required>yes</required>
+		</argument>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
+	
+	
+	
 	<!-- GetPrinterInfo -->
 	<function>
 		<name>GetPrinterInfo</name>
@@ -5353,6 +5561,23 @@
 			<type>boolean</type>
 		</return>
 	</function>
+	<!-- IsIPv6 -->
+	<function>
+		<name>IsIPv6</name>
+		<class>railo.runtime.functions.decision.IsIPv6</class>
+		<description></description>
+		<argument>
+			<name>hostname</name>
+			<type>string</type>
+			<required>no</required>
+		</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+	
+	
+	
 	<!-- IsPDFFile -->
 	<function>
 		<name>IsPDFFile</name>
@@ -6558,6 +6783,12 @@
 			<type>boolean</type>
 			<required>No</required>
 		</argument>
+		<argument>
+			<name>multiCharacterDelimiter</name>
+			<type>boolean</type>
+			<required>No</required>
+		</argument>
+		
 		<return>
 			<type>array</type>
 		</return>

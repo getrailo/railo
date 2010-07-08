@@ -3,6 +3,7 @@ package railo.runtime.tag;
 import java.io.IOException;
 
 import railo.commons.io.SystemUtil;
+import railo.commons.io.log.LogConsole;
 import railo.commons.io.log.LogResource;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
@@ -22,6 +23,7 @@ public final class Log extends TagImpl {
 
     private final static short LOG_APPLICATION=10;
     private final static short LOG_SCHEDULER=11;
+    private final static short LOG_CONSOLE=12;
     
     
 
@@ -62,8 +64,9 @@ public final class Log extends TagImpl {
 	    log=log.toLowerCase().trim();
 	    if(log.equals("application")) this.log=LOG_APPLICATION;
 	    else if(log.equals("scheduler")) this.log=LOG_SCHEDULER;
+	    else if(log.equals("console")) this.log=LOG_CONSOLE;
 		else 
-		    throw new ApplicationException("invalid value for attribut log ["+log+"]","valid values are [application, scheduler]");
+		    throw new ApplicationException("invalid value for attribut log ["+log+"]","valid values are [application, scheduler,console]");
 	}
 
 	/** set the value text
@@ -155,7 +158,8 @@ public final class Log extends TagImpl {
 	    railo.commons.io.log.Log logger;
 	    Config config =pageContext.getConfig();
 	    if(file==null) {
-	        if(log==LOG_SCHEDULER)logger=config.getScheduleLogger();
+	    	if(log==LOG_SCHEDULER)logger=config.getScheduleLogger();
+	    	else if(log==LOG_CONSOLE)logger=LogConsole.getInstance(config, railo.commons.io.log.Log.LEVEL_INFO);
 	        else logger=config.getApplicationLogger();
 	        
 	    }

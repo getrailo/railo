@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import javax.servlet.jsp.tagext.Tag;
 
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
@@ -18,7 +17,6 @@ import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
-import railo.runtime.PageSourceImpl;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Member;
 import railo.runtime.config.Config;
@@ -246,7 +244,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         if(config.doLocalCustomTag()){
             for(int i=0;i<filenames.length;i++){
                 source=pageContext.getRelativePageSource(filenames[i]);
-                if(isOK(source)) return new InitFile(source,filenames[i],filenames[i].endsWith('.'+config.getCFCExtension()));
+                if(MappingImpl.isOK(source)) return new InitFile(source,filenames[i],filenames[i].endsWith('.'+config.getCFCExtension()));
             }
         }
         
@@ -256,8 +254,9 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         // local mappings
         Mapping[] ctms = pageContext.getApplicationContext().getCustomTagMappings();
         if(ctms!=null){
+        	
             for(int i=0;i<filenames.length;i++){
-                source=getMapping(ctms, filenames[i],doCustomTagDeepSearch);
+            	source=getMapping(ctms, filenames[i],doCustomTagDeepSearch);
                 if(source!=null) return new InitFile(source,filenames[i],filenames[i].endsWith('.'+config.getCFCExtension()));
             }
         }
@@ -324,64 +323,20 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 
 	
     private static PageSource getMapping(Mapping[] ctms, String filename, boolean doCustomTagDeepSearch) {
+    	//print.o("filename:"+filename);
+    	//MappingImpl ctm;
+    	PageSource ps;
     	
-    	Mapping ctm;
     	// first check for cached pathes
 		for(int i=0;i<ctms.length;i++){
-			ctm=ctms[i];
-			if(!ctm.hasPhysical()) continue;
-			
-			PageSource source=((MappingImpl)ctm).getCustomTagPath(filename);
-			if(source==null) continue;
-			if(isOK(source)) return source;
-			((MappingImpl)ctms[i]).removeCustomTagPath(filename);
-        }
-		
-    	// now search for
-		for(int i=0;i<ctms.length;i++){
-			ctm=ctms[i];
-			if(!ctm.hasPhysical()) continue;
-			
-			PageSource source=ctm.getPageSource(filename);
-        	if(isOK(source)) {
-        		//print.out(filename+":"+source);
-        		((MappingImpl)ctm).setCustomTagPath(filename,source);
-        		return source;
-        	}
-        	if(doCustomTagDeepSearch){
-        		String path = _getRecursive(ctms[i].getPhysical(),null, filename);
-            	if(path!=null ) {
-            		//print.out("path:"+path);
-            		source=ctms[i].getPageSource(path);
-            		((MappingImpl)ctms[i]).setCustomTagPath(filename,source);
-            		return source;
-            		//((MappingImpl)ctms[i]).removeCustomTagPath(filename);
-            	}
-        	}
+			//ctm=(MappingImpl) ctms[i];
+			ps = ((MappingImpl) ctms[i]).getCustomTagPath(filename, doCustomTagDeepSearch);
+			if(ps!=null) return ps;
         }
 		return null;
 	}
 
-	protected static boolean isOK(PageSource ps) {
-		return (ps.getMapping().isTrusted() && ((PageSourceImpl)ps).isLoad()) || ps.exists();
-	}
-
-    private static String _getRecursive(Resource res, String path, String filename) {
-    	if(res.isDirectory()) {
-    		Resource[] children = res.listResources(new ExtensionResourceFilter(new String[]{".cfm",".cfc"},true,true));
-    		if(path!=null)path+=res.getName()+"/";
-    		else path="";
-    		String tmp;
-    		for(int i=0;i<children.length;i++){
-    			tmp= _getRecursive(children[i], path, filename);
-    			if(tmp!=null) return tmp;
-    		}
-    	}
-    	else if(res.isFile()) {
-    		if(res.getName().equalsIgnoreCase(filename)) return path+res.getName();
-    	}
-    	return null;    	
-	}
+   
 
 	static String toString(Mapping[] ctms) {
 		if(ctms==null) return "";

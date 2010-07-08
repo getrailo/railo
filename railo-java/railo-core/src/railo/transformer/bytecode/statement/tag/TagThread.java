@@ -43,16 +43,21 @@ public final class TagThread extends TagBase {
 	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(railo.transformer.bytecode.BytecodeContext)
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+		String action=ASMUtil.getAttributeString(this, "action","run");
 		// no body
-		if(
+		if(!"run".equalsIgnoreCase(action)) {
+			super._writeOut(bc);
+			return;
+		}
+		/*if("run".equalsIgnoreCase(action)
 				super.getBody()==null || 
 				super.getBody().getStatements()==null || 
 				super.getBody().getStatements().size()==0) {
 			super._writeOut(bc);
 			return;
-		}
+		}*/
 		
-		
+
 		GeneratorAdapter adapter = bc.getAdapter();
 		Page page = ASMUtil.getAncestorPage(this);
 		

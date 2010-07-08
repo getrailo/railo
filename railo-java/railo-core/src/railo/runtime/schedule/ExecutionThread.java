@@ -18,6 +18,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.other.CreateUUID;
 import railo.runtime.net.http.HttpClientUtil;
 import railo.runtime.util.URLResolver;
 
@@ -63,7 +64,6 @@ class ExecutionThread extends Thread {
 
 		method.setRequestHeader("User-Agent","CFSCHEDULE");
         
-        
        // Userame / Password
         Credentials credentials = task.getCredentials();
         if(credentials!=null) {
@@ -96,11 +96,13 @@ class ExecutionThread extends Thread {
             if(proxyCredentials!=null) {
                 state.setProxyCredentials(null,null,credentials);
             }
-        }        
-        if(task.getTimeout()>0)
-        	//client.setConnectionTimeout((int)task.getTimeout());
-        	client.getParams().setConnectionManagerTimeout(task.getTimeout());
+        } 
         
+        if(task.getTimeout()>0){
+        	client.getParams().setConnectionManagerTimeout(task.getTimeout());
+        	client.getParams().setSoTimeout((int)task.getTimeout());
+        	//client.setConnectionTimeout((int)task.getTimeout());
+        }
         
         // execute
         try {
@@ -113,6 +115,12 @@ class ExecutionThread extends Thread {
         // write file
         Resource file = task.getResource();
         if(!hasError && file!=null && task.isPublish()) {
+        	String n=file.getName();
+        	if(n.indexOf("{id}")!=-1){
+        		n=StringUtil.replace(n, "{id}",CreateUUID.invoke(), false);	
+        		file=file.getParentResource().getRealResource(n);
+        	}
+        	
 	        if(isText(method) && task.isResolveURL()) {
 	        	
         	    String str;

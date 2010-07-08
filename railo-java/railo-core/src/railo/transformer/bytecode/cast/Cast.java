@@ -409,9 +409,8 @@ public final class Cast extends ExpressionBase {
                 return Types.TIMESPAN;
             }
         }
-        
         Type t=getType(type);
-		
+        
         
         expr.writeOut(bc,MODE_REF);
         adapter.checkCast(t);
@@ -426,7 +425,7 @@ public final class Cast extends ExpressionBase {
 	
 
 	public static Type getType(String type) throws BytecodeException {
-		if(type==null) return Types.OBJECT;
+		if(StringUtil.isEmpty(type)) return Types.OBJECT;
     	
     	
     	String lcType=StringUtil.toLowerCase(type);
@@ -481,7 +480,7 @@ public final class Cast extends ExpressionBase {
             if("node".equals(lcType))							return Types.NODE;
             if("null".equals(lcType))							return Types.OBJECT;
             if("number".equals(lcType))							return Types.DOUBLE_VALUE;
-            if("numeric".equals(lcType))							return Types.DOUBLE_VALUE;
+            if("numeric".equals(lcType))						return Types.DOUBLE_VALUE;
         break;
         case 's':
             if("string".equals(lcType))							return Types.STRING;

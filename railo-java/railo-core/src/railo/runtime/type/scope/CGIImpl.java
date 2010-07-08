@@ -300,23 +300,6 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return StructUtil.toDumpTable(this, "CGI Scope", pageContext, maxlevel, dp);
-		/*Iterator it=keyIterator();
-		maxlevel--;
-		DumpTable htmlBox = new DumpTable("#5965e4","#9999ff","#000000");
-		htmlBox.setTitle("CGI");
-		if(size()>10)htmlBox.setComment("Records:"+size());
-	    
-		int maxkeys=dp.getMaxKeys();
-		int index=0;
-		String key;
-		while(it.hasNext()) {
-			 key=it.next().toString();
-			if(DumpUtil.keyValid(dp,maxlevel, key)){
-				if(maxkeys<=index++)break;
-				htmlBox.appendRow(1,new SimpleDumpData(key),DumpUtil.toDumpData(get(key,null), pageContext,maxlevel,dp));
-			}
-		}
-		return htmlBox;*/
 	}
     
     /**

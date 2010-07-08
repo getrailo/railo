@@ -17,8 +17,8 @@ import railo.runtime.type.UDFImpl;
  */
 public final class ComponentController {
 
-	private static ThreadLocal component=new ThreadLocal();
-	private static ThreadLocal pagecontext=new ThreadLocal();
+	private static ThreadLocal<Component> component=new ThreadLocal<Component>();
+	private static ThreadLocal<PageContext> pagecontext=new ThreadLocal<PageContext>();
 
 	/**
 	 * invokes thread local component
@@ -37,8 +37,8 @@ public final class ComponentController {
 		}
 	}
 	public static Object _invoke(String name, Object[] args) throws PageException {
-		Component c=(Component) component.get();
-		PageContext p=(PageContext) pagecontext.get();
+		Component c=component.get();
+		PageContext p=pagecontext.get();
 		if(c==null) throw new ApplicationException("missing component");
 		if(p==null) throw new ApplicationException("missing pagecontext");
 		

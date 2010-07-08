@@ -17,6 +17,8 @@ import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Form;
 import railo.runtime.type.util.ArrayUtil;
 
@@ -64,6 +66,7 @@ public final class Update extends TagImpl {
 		formfields=null;
 		tableowner=null;
 		tablequalifier=null;
+		datasource=null;
 	}
 
 	/** set the value password
@@ -139,11 +142,23 @@ public final class Update extends TagImpl {
 	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	*/
 	public int doEndTag() throws PageException	{
+
+		datasource=Insert.getDatasource(pageContext,datasource);
+		
 		DataSourceManager manager = pageContext.getDataSourceManager();
 	    DatasourceConnection dc=manager.getConnection(pageContext,datasource,username,password);
 		try {
+			
+			Struct meta =null;
+	    	try {
+	    		meta=Insert.getMeta(dc,tablequalifier,tableowner,tablename);
+	    	}
+	    	catch(SQLException se){
+	    		meta=new StructImpl();
+	    	}
+			
 		    String[] pKeys=getPrimaryKeys(dc);
-			SQL sql=createSQL(dc,pKeys);
+			SQL sql=createSQL(dc,pKeys,meta);
 			if(sql!=null) {
 				QueryImpl query = new QueryImpl(dc,sql,-1,-1,-1,"query");
 				
@@ -201,7 +216,7 @@ public final class Update extends TagImpl {
      * @return return SQL String for update
      * @throws PageException
      */
-    private SQL createSQL(DatasourceConnection dc,String[] keys) throws PageException {
+    private SQL createSQL(DatasourceConnection dc,String[] keys, Struct meta) throws PageException {
         String[] fields=null; 
         Form form = pageContext.formScope();
         if(formfields!=null) fields=List.toStringArray(List.listToArrayRemoveEmpty(formfields,','));
@@ -214,13 +229,18 @@ public final class Update extends TagImpl {
         String field;
         for(int i=0;i<fields.length;i++) {
             field = StringUtil.trim(fields[i],null);
+            if(StringUtil.startsWithIgnoreCase(field, "form."))
+            	field=field.substring(5);
+            
             if(!field.equalsIgnoreCase("fieldnames")) {
                 if(ArrayUtil.indexOfIgnoreCase(keys,field)==-1) {
 	                if(set.length()==0) set.append(" set ");
 	                else set.append(",");
 	                set.append(field);
 	                set.append("=?");
-	                setItems.add(new SQLItemImpl(form.get(field,null))); 
+	                ColumnInfo ci=(ColumnInfo) meta.get(field);
+	                if(ci!=null)setItems.add(new SQLItemImpl(form.get(field,null),ci.getType())); 
+	                else setItems.add(new SQLItemImpl(form.get(field,null))); 
                 }
                 else {
 	                if(where.length()==0) where.append(" where ");

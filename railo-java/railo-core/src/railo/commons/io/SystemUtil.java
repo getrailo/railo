@@ -344,6 +344,11 @@ public final class SystemUtil {
 			Thread.sleep(time);
 		} catch (InterruptedException e) {}
 	}
+	public static void join(Thread t) {
+		try {
+			t.join();
+		} catch (InterruptedException e) {}
+	}
 
 
 }

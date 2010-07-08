@@ -13,11 +13,11 @@ import railo.commons.lang.ExternalizableUtil;
 import railo.commons.lang.SizeOf;
 import railo.runtime.Page;
 import railo.runtime.PageContextImpl;
-import railo.runtime.PageSourceImpl;
+import railo.runtime.PageSource;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.engine.ThreadLocalPageSource;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.exp.PageException;
 import railo.runtime.type.util.ComponentUtil;
 
 public class UDFProperties implements Sizeable,Serializable,Externalizable {
@@ -29,7 +29,8 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 	public  boolean output;
 	public String hint;
 	public String displayName;
-	public Page page;
+	//public Page page;
+	public PageSource pageSource;
 	public int index;
 	public FunctionArgument[] arguments;
 	public StructImpl meta;
@@ -39,7 +40,7 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 	public boolean async;
 	public String strReturnFormat;
 	public int returnFormat;
-	public Set argumentsSet;
+	public Set<Collection.Key> argumentsSet;
 	public int access; 
 
 
@@ -59,7 +60,7 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		        Boolean secureJson,
 		        Boolean verifyClient,
 		        StructImpl meta) throws ExpressionException {
-			this(page,
+			this(page.getPageSource(),
 			    arguments,
 				index,
 			    functionName, 
@@ -95,8 +96,50 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 	        Boolean verifyClient,
 	        StructImpl meta) throws ExpressionException {
 		
+		this(
+		        page.getPageSource(),
+		        arguments,
+				index,
+		        functionName, 
+		        strReturnType, 
+		        strReturnFormat, 
+		        output, 
+		        async, 
+		        access, 
+		        displayName, 
+		        description, 
+		        hint, 
+		        secureJson,
+		        verifyClient,
+		        meta);
+		
+	}
+	
+	public UDFProperties(
+	        PageSource pageSource,
+	        FunctionArgument[] arguments,
+			int index,
+	        String functionName, 
+	        String strReturnType, 
+	        String strReturnFormat, 
+	        boolean output, 
+	        boolean async, 
+	        int access, 
+	        String displayName, 
+	        String description, 
+	        String hint, 
+	        Boolean secureJson,
+	        Boolean verifyClient,
+	        StructImpl meta) throws ExpressionException {
+		
+		// this happens when a arcive is based on older source code
+		if(pageSource==null){
+			pageSource = ThreadLocalPageSource.get();
+		}
+		
+		
 		if(arguments.length>0){
-			this.argumentsSet=new HashSet();
+			this.argumentsSet=new HashSet<Collection.Key>();
 			for(int i=0;i<arguments.length;i++){
 				argumentsSet.add(arguments[i].getName());
 			}
@@ -111,7 +154,9 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		this.index = index;
 		this.meta = meta;
 		this.output = output;
-		this.page = page;
+		//this.page = PageProxy.toProxy(page);
+		this.pageSource=pageSource;
+		
 		
 		this.strReturnType=strReturnType;
 		this.returnType=CFTypes.toShortStrict(strReturnType,CFTypes.TYPE_UNKNOW);
@@ -140,7 +185,7 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 	        Boolean secureJson,
 	        Boolean verifyClient,
 	        StructImpl meta) throws ExpressionException {
-		this(page,
+		this(page.getPageSource(),
 		    arguments,
 			index,
 		    functionName, 
@@ -164,8 +209,16 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		
 	}
 	
+	//@deprecated use instead UDFProperties(PageSource pageSource,...
+	public UDFProperties(Page page, FunctionArgument[] arguments, int index, String functionName, short returnType,
+			String strReturnFormat, boolean output, boolean async, int access, String displayName, String description,String hint, 
+			Boolean secureJson,Boolean verifyClient,StructImpl meta) throws ExpressionException {
+		this(page.getPageSource(),arguments,index,functionName, returnType, strReturnFormat, output, async,access, displayName, 
+				description, hint, secureJson,verifyClient,meta);
+	}
+	
 	public UDFProperties(
-	        Page page,
+	        PageSource pageSource,
 	        FunctionArgument[] arguments,
 			int index,
 	        String functionName, 
@@ -181,9 +234,14 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 	        Boolean verifyClient,
 	        StructImpl meta) throws ExpressionException {
 		
+		// this happens when a arcive is based on older source code
+		if(pageSource==null){
+			pageSource = ThreadLocalPageSource.get();
+		}
+		
 		
 		if(arguments.length>0){
-			this.argumentsSet=new HashSet();
+			this.argumentsSet=new HashSet<Collection.Key>();
 			for(int i=0;i<arguments.length;i++){
 				argumentsSet.add(arguments[i].getName());
 			}
@@ -199,7 +257,7 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		this.index = index;
 		this.meta = meta;
 		this.output = output;
-		this.page = page;
+		this.pageSource = pageSource;
 		
 		this.strReturnType=CFTypes.toString(returnType);
 		this.returnType=returnType;
@@ -211,7 +269,6 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		this.access = access;
 		
 	}
-	
 	
 	
 
@@ -249,10 +306,10 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		try {
 			PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
 			ConfigWebImpl cw = (ConfigWebImpl) ThreadLocalPageContext.getConfig(pc);
-			page=((PageSourceImpl)cw.getPageSource(null, ExternalizableUtil.readString(in), false,pc.useSpecialMappings())).loadPage(pc,cw);
+			pageSource=cw.getPageSource(null, ExternalizableUtil.readString(in), false,pc.useSpecialMappings());
 			
 		} 
-		catch (PageException e) {
+		catch (Throwable e) {
 			e.printStackTrace();
 			IOException ioe = new IOException(e.getMessage());
 			ioe.setStackTrace(e.getStackTrace());
@@ -277,7 +334,7 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		verifyClient = ExternalizableUtil.readBoolean(in);
 		
 		if(arguments!=null && arguments.length>0){
-			this.argumentsSet=new HashSet();
+			this.argumentsSet=new HashSet<Collection.Key>();
 			for(int i=0;i<arguments.length;i++){
 				argumentsSet.add(arguments[i].getName());
 			}
@@ -288,7 +345,7 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 
 	public void writeExternal(ObjectOutput out) throws IOException {
 
-		out.writeObject(page.getPageSource().getFullRealpath());
+		out.writeObject(pageSource.getFullRealpath());
 		out.writeObject(arguments);
 		out.writeInt(access);
 		out.writeInt(index);
@@ -308,6 +365,8 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		
 		
 	}
+
+
 
 
 }

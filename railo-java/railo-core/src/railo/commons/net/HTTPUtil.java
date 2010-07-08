@@ -3,6 +3,7 @@ package railo.commons.net;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -33,6 +34,7 @@ import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -108,6 +110,34 @@ public final class HTTPUtil {
         return httpMethod;
     }
     
+
+    /**
+     * cast a string to a url
+     * @param strUrl string represent a url
+     * @return url from string
+     * @throws MalformedURLException
+     */
+	 public static URL toURL(String strUrl) throws MalformedURLException {
+		 return toURL(strUrl,-1);
+	 }
+	 
+	 public static URL toURL(String strUrl,URL defaultValue){
+		 try {
+			return toURL(strUrl,-1);
+		} catch (MalformedURLException e) {
+			return defaultValue;
+		}
+	 }
+	 
+
+	 public static String validateURL(String strUrl,String defaultValue){
+		 try {
+			return toURL(strUrl,-1).toExternalForm();
+		} catch (MalformedURLException e) {
+			return defaultValue;
+		}
+	 }
+    
     /**
      * cast a string to a url
      * @param strUrl string represent a url
@@ -115,9 +145,6 @@ public final class HTTPUtil {
      * @throws MalformedURLException
      */
     public static URL toURL(String strUrl, int port) throws MalformedURLException {
-    	return toURL(strUrl, port, false);
-    }
-    public static URL toURL(String strUrl, int port,boolean strict) throws MalformedURLException {
     	
         URL url;
         try {
@@ -128,10 +155,32 @@ public final class HTTPUtil {
         }
         
         // file
+        String path=url.getPath();
         String file=url.getFile();
         String query = url.getQuery();
-        if(!StringUtil.isEmpty(query)){
-        	StringBuffer res=new StringBuffer(url.getPath());
+       
+        
+        // decode path
+        if(!StringUtil.isEmpty(path)) {
+        	StringBuffer res=new StringBuffer();
+        	
+        	StringList list = List.toListTrim(path, '/');
+        	String str;
+        	
+        	while(list.hasNext()){
+        		str=list.next();
+        		str=URLDecoder.decode(str);
+        		
+        		if(StringUtil.isEmpty(str)) continue;
+        		res.append("/");
+        		res.append(escapeQSValue(str));
+        	}
+        	path=res.toString();
+        }
+        
+        // decode query
+        if(!StringUtil.isEmpty(query)) {
+        	StringBuffer res=new StringBuffer();
         	
         	StringList list = List.toList(query, '&');
         	String str;
@@ -142,22 +191,25 @@ public final class HTTPUtil {
         		del='&';
         		str=list.next();
         		index=str.indexOf('=');
-        		if(index==-1)res.append(escapeQSValue(str,strict));
+        		if(index==-1)res.append(escapeQSValue(str));
         		else {
-        			res.append(escapeQSValue(str.substring(0,index),strict));
+        			res.append(escapeQSValue(str.substring(0,index)));
         			res.append('=');
-        			res.append(escapeQSValue(str.substring(index+1),strict));
+        			res.append(escapeQSValue(str.substring(index+1)));
         		}
         	}
-        	file=res.toString();
+        	query=res.toString();
         }
+        else query="";
+        file=path+query;
         
        // port
        if(port<=0) { 
     	   port=url.getPort();
     	   if(port<=0) {
-    		   if(url.getProtocol().equalsIgnoreCase("https")) port=443;
-    		   else port=80;
+    		   return new URL(url.getProtocol(),url.getHost(),file);
+    		   //if(url.getProtocol().equalsIgnoreCase("https")) port=443;
+    		   //else port=80;
     	   }
        }
        
@@ -166,11 +218,16 @@ public final class HTTPUtil {
        		       
     }
     
-    private static Object escapeQSValue(String str, boolean strict) {
-    	
-    	if(str.indexOf('=')!=-1)str=StringUtil.replace(str, "=", "%3D", false);
-    	if(strict && str.indexOf('/')!=-1)str=StringUtil.replace(str, "/", "%2F", false);
-    	return str;
+    private static Object escapeQSValue(String str) {
+    	Config config = ThreadLocalPageContext.getConfig();
+    	if(config!=null){
+    		try {
+				return URLEncoder.encode(str,config.getWebCharset());
+			} catch (UnsupportedEncodingException e) {}
+    	}
+    	return URLEncoder.encode(str);
+    	//if(str.indexOf('=')!=-1)str=StringUtil.replace(str, "=", "%3D", false);
+    	//return str;
 	}
 
 	public static HttpMethod put(URL url, String username, String password, int timeout, 
@@ -328,19 +385,7 @@ public final class HTTPUtil {
 		return removeRef(new URL(url)).toExternalForm();
 	}
 	
-    /**
-     * cast a string to a url
-     * @param strUrl string represent a url
-     * @return url from string
-     * @throws MalformedURLException
-     */
-	 public static URL toURL(String strUrl) throws MalformedURLException {
-		 return toURL(strUrl,false);
-	 }
 			
-    public static URL toURL(String strUrl,boolean strict) throws MalformedURLException {
-		return toURL(strUrl,-1,strict);
-    }
 
 	public static URL toURL(HttpMethod httpMethod) {
 		HostConfiguration config = httpMethod.getHostConfiguration();
@@ -450,6 +495,42 @@ public final class HTTPUtil {
     	if(disp==null) throw new PageServletException(new ApplicationException("Page "+realPath+" not found"));
     	return disp;
 	}
+	
+	
+	public static String encode(String realpath) {
+    	
+        
+		int qIndex=realpath.indexOf('?');
+		if(qIndex==-1) return realpath;
+		
+		String file=realpath.substring(0,qIndex);
+		String query=realpath.substring(qIndex+1);
+		StringBuffer res=new StringBuffer(file);
+    	
+		
+        // file
+        if(!StringUtil.isEmpty(query)){
+        	
+        	StringList list = List.toList(query, '&');
+        	String str;
+        	int index;
+        	char del='?';
+        	while(list.hasNext()){
+        		res.append(del);
+        		del='&';
+        		str=list.next();
+        		index=str.indexOf('=');
+        		if(index==-1)res.append(escapeQSValue(str));
+        		else {
+        			res.append(escapeQSValue(str.substring(0,index)));
+        			res.append('=');
+        			res.append(escapeQSValue(str.substring(index+1)));
+        		}
+        	}	
+        }
+       return res.toString();		       
+    }
+	
 	
 	
 }

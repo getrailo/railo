@@ -716,7 +716,7 @@ public final class RPCClient implements Objects, Iteratorable{
                 
     	DumpTable box = new DumpTablePro("webservice","#BEDAFD","#C6D800","#000000");
         box.setTitle("Web Service");
-        box.appendRow(1,new SimpleDumpData("url"),new SimpleDumpData(wsdlUrl));
+        if(dp.getMetainfo())box.appendRow(1,new SimpleDumpData("url"),new SimpleDumpData(wsdlUrl));
         DumpTable functions = new DumpTable("#BEDAFD","#C6D800","#000000");
         
         

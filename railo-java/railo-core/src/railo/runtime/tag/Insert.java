@@ -1,19 +1,28 @@
 package railo.runtime.tag;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
+import railo.commons.db.DBUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
 import railo.runtime.db.SQLItemImpl;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Form;
+import railo.runtime.util.ApplicationContextPro;
 
 /**
 * Inserts records in data sources.
@@ -59,6 +68,7 @@ public final class Insert extends TagImpl {
 		formfields=null;
 		tableowner="";
 		tablequalifier="";
+		datasource=null;
 	}
 
 	/** set the value password
@@ -135,10 +145,24 @@ public final class Insert extends TagImpl {
 	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	*/
 	public int doEndTag() throws PageException	{
+		datasource=getDatasource(pageContext,datasource);
+		
+		
+		
 		DataSourceManager manager = pageContext.getDataSourceManager();
 	    DatasourceConnection dc=manager.getConnection(pageContext,datasource,username,password);
 	    try {
-			SQL sql=createSQL();
+	    	
+	    	Struct meta =null;
+	    	try {
+	    		meta=getMeta(dc,tablequalifier,tableowner,tablename);
+	    	}
+	    	catch(SQLException se){
+	    		meta=new StructImpl();
+	    	}
+		    
+	    	
+	    	SQL sql=createSQL(meta);
 			if(sql!=null) {
 				QueryImpl query = new QueryImpl(dc,sql,-1,-1,-1,"query");
 				
@@ -147,17 +171,52 @@ public final class Insert extends TagImpl {
 				}
 			}
 			return EVAL_PAGE;
-	    }
+	    } 
 	    finally {
 	    	manager.releaseConnection(pageContext,dc);
 	    }
 	}
 
-    /**
-     * @return return SQL String for insert
+	
+	
+
+	public static String getDatasource(PageContext pageContext, String datasource) throws ApplicationException {
+		if(StringUtil.isEmpty(datasource)){
+			datasource=((ApplicationContextPro)pageContext.getApplicationContext()).getDefaultDataSource();
+
+			if(StringUtil.isEmpty(datasource))
+				throw new ApplicationException(
+						"attribute [datasource] is required, when no default datasource is defined",
+						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+		}
+		return datasource;
+	}
+
+	public static Struct getMeta(DatasourceConnection dc,String tableQualifier, String tableOwner, String tableName) throws SQLException {
+    	DatabaseMetaData md = dc.getConnection().getMetaData();
+    	Struct  sct=new StructImpl();
+		ResultSet columns = md.getColumns(tableQualifier, tableOwner, tableName, null);
+		
+		try{
+			String name;
+			while(columns.next()) {
+				name=columns.getString("COLUMN_NAME");
+				sct.setEL(name, new ColumnInfo(name,columns.getInt("DATA_TYPE"),columns.getBoolean("IS_NULLABLE")));
+				
+			}
+		}
+		finally {
+			DBUtil.closeEL(columns);
+		}
+		return sct;
+	}
+
+	/**
+     * @param meta 
+	 * @return return SQL String for insert
      * @throws PageException
      */
-    private SQL createSQL() throws PageException {
+    private SQL createSQL(Struct meta) throws PageException {
         String[] fields=null; 
         Form form = pageContext.formScope();
         if(formfields!=null) fields=List.toStringArray(List.listToArrayRemoveEmpty(formfields,','));
@@ -169,6 +228,9 @@ public final class Insert extends TagImpl {
         String field;
         for(int i=0;i<fields.length;i++) {
             field = StringUtil.trim(fields[i],null);
+            if(StringUtil.startsWithIgnoreCase(field, "form."))
+            	field=field.substring(5);
+            
             if(!field.equalsIgnoreCase("fieldnames")) {
                 if(names.length()>0) {
                     names.append(',');
@@ -176,7 +238,9 @@ public final class Insert extends TagImpl {
                 }
                 names.append(field);
                 values.append('?');
-                items.add(new SQLItemImpl(form.get(field,null))); 
+                ColumnInfo ci=(ColumnInfo) meta.get(field,null);
+                if(ci!=null)items.add(new SQLItemImpl(form.get(field,null),ci.getType())); 
+                else items.add(new SQLItemImpl(form.get(field,null))); 
             }
         }
         if(items.size()==0) return null;
@@ -209,4 +273,46 @@ public final class Insert extends TagImpl {
     
     
     
+}
+
+class    ColumnInfo {
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public int getType() {
+		return type;
+	}
+
+	/**
+	 * @return the nullable
+	 */
+	public boolean isNullable() {
+		return nullable;
+	}
+
+	private String name;
+	private int type;
+	private boolean nullable;
+
+	public ColumnInfo(String name, int type, boolean nullable) {
+		this.name=name;
+		this.type=type;
+		this.nullable=nullable;
+	}
+	
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString(){
+		return name+"-"+type+"-"+nullable;
+	}
+	
 }

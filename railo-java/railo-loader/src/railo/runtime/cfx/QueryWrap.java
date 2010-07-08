@@ -1081,4 +1081,5 @@ public class QueryWrap implements Query {
 	public railo.runtime.type.Query getQuery() {
 		return rst;
 	}
+
 }

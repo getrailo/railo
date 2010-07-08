@@ -6,8 +6,10 @@ import java.util.List;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastBoolean;
+import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitBoolean;
+import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
@@ -29,10 +31,7 @@ public class Component extends EvaluatorSupport {
 	 */
 
 	public void evaluate(Tag tag,TagLibTag tlt) throws EvaluatorException { 
-		
-		
-		
-		
+
 		Statement pPage = tag.getParent();
 		String className=tag.getTagLibTag().getTagClassName();
 		
@@ -71,19 +70,39 @@ public class Component extends EvaluatorSupport {
 		if(count>1)
 			throw new EvaluatorException("inside one cfc file only one tag "+tlt.getFullName()+" is allowed, now we have "+count);
 
-		if("railo.runtime.tag.Component".equals(tlt.getTagClassName()))page.setIsComponent(true);
-		if("railo.runtime.tag.Interface".equals(tlt.getTagClassName()))page.setIsInterface(true);
+		boolean isComponent="railo.runtime.tag.Component".equals(tlt.getTagClassName());
+		boolean isInterface="railo.runtime.tag.Interface".equals(tlt.getTagClassName());
+		if(isComponent)page.setIsComponent(true);
+		if(isInterface)page.setIsInterface(true);
 		
-		// Attribute Output
+// Attributes
+		
+		// output
 		// "output=true" wird in "railo.transformer.cfml.attributes.impl.Function" gehändelt
-		Attribute attrOutput = tag.getAttribute("output");
-		if(attrOutput!=null) {
-			Expression expr = CastBoolean.toExprBoolean(attrOutput.getValue());
+		Attribute attr = tag.getAttribute("output");
+		if(attr!=null) {
+			Expression expr = CastBoolean.toExprBoolean(attr.getValue());
 			if(!(expr instanceof LitBoolean))
-				throw new EvaluatorException("Attribute output of the Tag "+tlt.getFullName()+", must be a static boolean value (true or false, yes or no)");
-			boolean output = ((LitBoolean)expr).getBooleanValue();
+				throw new EvaluatorException("Attribute output of the Tag "+tlt.getFullName()+", must contain a static boolean value (true or false, yes or no)");
+			//boolean output = ((LitBoolean)expr).getBooleanValue();
 			//if(!output) ASMUtil.removeLiterlChildren(tag, true);
-		}	
+		}
+		
+		// extends
+		attr = tag.getAttribute("extends");
+		if(attr!=null) {
+			Expression expr = CastString.toExprString(attr.getValue());
+			if(!(expr instanceof LitString)) throw new EvaluatorException("Attribute extends of the Tag "+tlt.getFullName()+", must contain a literal string value");
+		}
+		
+		// implements
+		if(isComponent){
+			attr = tag.getAttribute("implements");
+			if(attr!=null) {
+				Expression expr = CastString.toExprString(attr.getValue());
+				if(!(expr instanceof LitString)) throw new EvaluatorException("Attribute implements of the Tag "+tlt.getFullName()+", must contain a literal string value");
+			}
+		}
 	}
 }
 

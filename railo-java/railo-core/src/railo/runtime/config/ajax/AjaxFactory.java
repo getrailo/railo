@@ -1,6 +1,7 @@
 package railo.runtime.config.ajax;
 
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.config.ConfigWebFactory;
 
 public class AjaxFactory {
@@ -12,7 +13,9 @@ public class AjaxFactory {
 	 * @param doNew redeploy even the file exist, this is set to true when a new version is started
 	 */
 	public static void deployFunctions(Resource dir, boolean doNew) {
-		
+		Resource f = dir.getRealResource("ajaxOnLoad.cfm");
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/function/ajaxOnLoad.cfm",f);
+        
 	}
 	
 	/**
@@ -28,6 +31,10 @@ public class AjaxFactory {
         if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/AjaxProxy.cfc",f);
         f = dir.getRealResource("Div.cfc");
         if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/Div.cfc",f);
+        f = dir.getRealResource("Map.cfc");
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/Map.cfc",f);
+        f = dir.getRealResource("MapItem.cfc");
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/MapItem.cfc",f);
         
         // helper files
         dir=dir.getRealResource("railo/core/ajax/");
@@ -42,15 +49,25 @@ public class AjaxFactory {
         if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/JSLoader.cfc",f);
         f = dir.getRealResource("RailoJs.cfc");
         if(f.exists())f.delete();
-       
-        
-        
         Resource jsDir = dir.getRealResource("js");
         if(!jsDir.isDirectory())jsDir.mkdirs();
-        f = jsDir.getRealResource("license.txt");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/js/license.txt",f);
         f = jsDir.getRealResource("RailoAjax.js");
         if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/js/RailoAjax.js",f);
+        f = jsDir.getRealResource("RailoMap.js");
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/js/RailoMap.js",f);
+        
+        // delete wrong directory comes with 3.1.2.015
+        Resource gDir = dir.getRealResource("google");
+        if(gDir.isDirectory())ResourceUtil.removeEL(gDir, true);
+        
+        // create google/... again
+        gDir = jsDir.getRealResource("google");
+        if(!gDir.isDirectory())gDir.mkdirs();
+        f = gDir.getRealResource("google-map.js");
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/js/google/google-map.js",f);
+        
+        
+        
         
         dir = dir.getRealResource("loader");
         if(!dir.isDirectory())dir.mkdirs();

@@ -324,7 +324,6 @@ public final class DateCaster {
 		    return defaultValue;
 		}
 		DateString ds=new DateString(str);
-		
 	// Timestamp
 		if(ds.isCurrent('{') && ds.isLast('}')) {
 		    
@@ -365,7 +364,7 @@ public final class DateCaster {
 			return defaultValue;
 		}
 	// Time start with int
-		else if(ds.isDigit()) {
+		/*else if(ds.isDigit()) {
 		    char sec=ds.charAt(1);
 		    char third=ds.charAt(2);
 		    // 16.10.2004 (02:15)?
@@ -425,8 +424,17 @@ public final class DateCaster {
 				}
 								
 		    }
-		}
-		return defaultValue;
+		}*/
+		
+		// TODO bessere impl
+		ds.reset();
+		DateTime rtn = parseTime(timeZone, new int[]{1899,12,30}, ds, defaultValue,-1);
+		if(rtn==defaultValue) return defaultValue;
+		return new TimeImpl(rtn);
+		
+		
+		
+		//return defaultValue;
 	}
 	
 	public static DateTime toDateAdvanced(String str,boolean alsoNumbers, TimeZone timeZone, DateTime defaultValue) {

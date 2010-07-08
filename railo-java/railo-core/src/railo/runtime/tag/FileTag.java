@@ -409,7 +409,10 @@ public final class FileTag extends TagImpl {
             IOUtil.copy(source,destination);			
 		}
 		catch(IOException e) {
-            throw new ApplicationException("can't copy file ["+source+"] to ["+destination+"]",e.getMessage());
+			
+            ApplicationException ae = new ApplicationException("can't copy file ["+source+"] to ["+destination+"]",e.getMessage());
+            ae.setStackTrace(e.getStackTrace());
+            throw ae;
 		}
         setMode(destination);
         setAttributes(destination);

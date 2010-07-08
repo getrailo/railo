@@ -9,8 +9,10 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.date.DateCaster;
+import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * class to compare objects and primitive value types
@@ -487,6 +489,26 @@ public final class Operator {
 		}
 		return compare(left,right)==0;
 	}
+
+	public static boolean equals(Object left, Object right, boolean caseSensitive, boolean allowComplexValues) throws PageException {
+		if(!allowComplexValues || (Decision.isSimpleValue(left) && Decision.isSimpleValue(right)))
+			return equals(left, right, caseSensitive);
+		return left.equals(right);
+	}
+	public static boolean equalsEL(Object left, Object right, boolean caseSensitive, boolean allowComplexValues) {
+		if(!allowComplexValues || (Decision.isSimpleValue(left) && Decision.isSimpleValue(right))){
+			try {
+				return equals(left, right, caseSensitive);
+			} catch (PageException e) {
+				return false;
+			}
+		}
+		if(left instanceof Collection && right instanceof Collection)
+			return CollectionUtil.equals((Collection)left, (Collection)right);
+		return left.equals(right);
+	}
+	
+	
 
 	/**
 	 * check if left is inside right (String-> ignore case)

@@ -561,8 +561,14 @@ public interface Config {
     /* *
      * @return returns the ConnectionPool
      */
-    
+
+	
+	/**
+	 * FUTURE deprecated use <code>public Mapping[] getComponentMappings()</code> instead  
+	 */
 	public Mapping getComponentMapping();
+
+	// FUTURE public Mapping[] getComponentMappings();
 
 	public abstract boolean doCustomTagDeepSearch();
 
@@ -640,7 +646,13 @@ public interface Config {
 	 */
 	public Resource getTldFile();
 	
+	
+	// FUTURE set as deprecated
 	public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel);
+	
+	// FUTURE
+	//public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel, boolean useSpecialMappings);
+	
 	
 	/**
      * @param mappings2 

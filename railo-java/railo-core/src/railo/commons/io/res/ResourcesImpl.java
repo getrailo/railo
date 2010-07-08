@@ -3,7 +3,7 @@ package railo.commons.io.res;
 import java.io.IOException;
 
 import railo.commons.io.res.type.file.FileResourceProvider;
-import railo.commons.io.res.type.ram.RamResourceProvider;
+import railo.commons.io.res.type.ram.RamResourceProviderOld;
 import railo.commons.io.res.util.ResourceLockImpl;
 
 
@@ -70,7 +70,7 @@ public final class ResourcesImpl implements Resources {
 
 	public static void main(String[] args) throws IOException {
 		Resources rs=ResourcesImpl.getGlobal();
-		rs.registerResourceProvider(new RamResourceProvider());
+		rs.registerResourceProvider(new RamResourceProviderOld());
 		
 		Resource changes = rs.getResource("d:/changes.txt");
 		changes = rs.getResource("file://d:/changes.txt");

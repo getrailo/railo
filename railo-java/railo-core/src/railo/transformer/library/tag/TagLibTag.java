@@ -80,6 +80,7 @@ public final class TagLibTag {
 	private String tttClass;
 	private Constructor  tttConstructor;
 	private boolean allowRemovingLiteral;
+	private TagLibTagAttr defaultAttribute;
     
 	/**
 	 * Geschützer Konstruktor ohne Argumente.
@@ -107,6 +108,9 @@ public final class TagLibTag {
 		return (TagLibTagAttr)
 			attributes.get(name);
 	}
+	
+
+
 	
 	/**
 	 * Gibt das erste Attribut, welches innerhalb des Tag definiert wurde, zurück.
@@ -623,6 +627,14 @@ public final class TagLibTag {
 		} catch (IOException e) {
 			return "";
 		}
+	}
+
+	public TagLibTagAttr getDefaultAttribute() {
+		return defaultAttribute;
+	}
+	
+	public void setDefaultAttribute(TagLibTagAttr defaultAttribute) {
+		this.defaultAttribute=defaultAttribute;
 	}
 
 }

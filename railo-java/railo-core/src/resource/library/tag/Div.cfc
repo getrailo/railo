@@ -1,6 +1,3 @@
-<!--- /*		
-Build:		 368
-*/--->
 <cfcomponent extends="railo.core.ajax.AjaxBase">
 
 	<cfset variables.instance.ajaxBinder = createObject('component','railo.core.ajax.AjaxBinder').init() />

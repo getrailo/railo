@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.lang.StringUtil;
+import railo.commons.net.HTTPUtil;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.NativeException;
@@ -89,25 +90,27 @@ public final class Location extends TagImpl {
 		}
 		
 		HttpServletResponse rsp = pageContext. getHttpServletResponse();
-		if(addtoken && needId()) {
-				String[] arr=url.split("\\?");
-				
-				// only string_name
-				if(arr.length==1) {
-					url+="?"+pageContext.getURLToken();
-				}
-				// script_name and query_string
-				else if(arr.length>1) {
-					url=arr[0]+"?"+pageContext.getURLToken();
-					for(int i=1;i<arr.length;i++)url+="&"+arr[i]; 
-				}
-			
-		}
-		url=rsp.encodeURL(url);
-
-    	rsp.setHeader("Connection", "close"); // IE unter IIS6, Win2K3 und Resin
-		rsp.setStatus(statuscode);
 		
+		url=HTTPUtil.encode(url);
+		
+		// add token
+		if(addtoken && needId()) {
+			String[] arr=url.split("\\?");
+			
+			// only string_name
+			if(arr.length==1) {
+				url+="?"+pageContext.getURLToken();
+			}
+			// script_name and query_string
+			else if(arr.length>1) {
+				url=arr[0]+"?"+pageContext.getURLToken();
+				for(int i=1;i<arr.length;i++)url+="&"+arr[i]; 
+			}
+			url=rsp.encodeRedirectURL(url);	
+		}
+		
+		rsp.setHeader("Connection", "close"); // IE unter IIS6, Win2K3 und Resin
+		rsp.setStatus(statuscode);
 		rsp.setHeader("location", url);
 		
 		
@@ -122,6 +125,9 @@ public final class Location extends TagImpl {
         pageContext.getDebugger().setOutput(false);
 		throw new Abort(Abort.SCOPE_REQUEST);
 	}
+	
+	
+
 
 	private boolean needId() {
 		ApplicationContext ac = pageContext.getApplicationContext();

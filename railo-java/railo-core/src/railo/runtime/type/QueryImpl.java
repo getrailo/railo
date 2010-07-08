@@ -74,6 +74,7 @@ import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.sql.BlobImpl;
 import railo.runtime.type.sql.ClobImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * implementation of the query interface
@@ -1221,7 +1222,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		comment.append("Recordcount:").append(Caster.toString(getRecordcount())).append("\n");
 		comment.append("Cached:").append(isCached()?"Yes\n":"No\n");
 		if(sql!=null)
-			comment.append("SQL:").append("\n").append(sql.toString().trim()).append("\n");
+			comment.append("SQL:").append("\n").append(StringUtil.suppressWhiteSpace(sql.toString().trim())).append("\n");
 		
 		//table.appendRow(1, new SimpleDumpData("Execution Time (ms)"), new SimpleDumpData(exeTime));
 		//table.appendRow(1, new SimpleDumpData("recordcount"), new SimpleDumpData(getRecordcount()));
@@ -1232,7 +1233,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		//DumpTable recs=new DumpTable("#83CB5C","#CAFF92","#000000");
 		DumpTable recs=new DumpTablePro("query","#aa66aa","#ffddff","#000000");
 		recs.setTitle("Query");
-		recs.setComment(comment.toString());
+		if(dp.getMetainfo())recs.setComment(comment.toString());
 		recs.appendRow(new DumpRow(-1,heads));
 		
 		// body
@@ -3356,5 +3357,11 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 		return size;
 	}
+	
 
+	public boolean equals(Object obj){
+		if(!(obj instanceof Collection)) return false;
+		return CollectionUtil.equals(this,(Collection)obj);
+	}
+	
 }

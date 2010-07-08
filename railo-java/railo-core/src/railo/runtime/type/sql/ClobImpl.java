@@ -68,21 +68,6 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
     }
     
     public static Clob toClob(String value) {
-    	/*Class clobClass = ClassUtil.loadClass("oracle.sql.CLOB",null);
-    	if(clobClass!=null){
-	    	try {
-	    		//CLOB clob = CLOB.getEmptyCLOB();
-				Method getEmptyCLOB = clobClass.getMethod("getEmptyCLOB",new Class[]{});
-	    		Object clob = getEmptyCLOB.invoke(null, ArrayUtil.OBJECT_EMPTY);
-	
-	    		//c.setString(0, arg1);
-	    		Method setString = clobClass.getMethod("setString", new Class[]{long.class,String.class});
-	    		setString.invoke(clob, new Object[]{new Long(0),value});
-	    		
-	    		return (Clob) clob;
-			} 
-	    	catch (Exception e) {}
-    	}*/
     	return new ClobImpl(value);
     }
     
@@ -97,8 +82,7 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * 
    * @param data a <code>String</code> of character data
    */
-  private ClobImpl(String data)
-  {
+  private ClobImpl(String data) {
     stringData = data;
   }
 
@@ -111,9 +95,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @exception SQLException if there is an error accessing the length of the
    *              <code>CLOB</code>
    */
-  public long length() throws SQLException
-  {
-    return stringData.length();
+  public long length() throws SQLException {
+	  return stringData.length();
   }
 
   /**
@@ -124,9 +107,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @exception SQLException if there is an error accessing the
    *              <code>CLOB</code> value
    */
-  public java.io.InputStream getAsciiStream() throws SQLException
-  {
-    return new ByteArrayInputStream(stringData.getBytes());
+  public java.io.InputStream getAsciiStream() throws SQLException	{
+	  return new ByteArrayInputStream(stringData.getBytes());
   }
 
   /**
@@ -138,9 +120,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @exception SQLException if there is an error accessing the
    *              <code>CLOB</code> value
    */
-  public java.io.Reader getCharacterStream() throws SQLException
-  {
-    return new StringReader(stringData);
+  public java.io.Reader getCharacterStream() throws SQLException {
+	  return new StringReader(stringData);
   }
   
   public Reader getCharacterStream(long pos, long len) {
@@ -158,12 +139,11 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @exception SQLException if there is an error accessing the
    *              <code>CLOB</code>
    */
-  public String getSubString(long pos, int length) throws SQLException
-  {
+  public String getSubString(long pos, int length) throws SQLException {
     if (length > stringData.length())
       throw new SQLException("Clob contains only " + stringData.length()
           + " characters (asking for " + length + ").");
-    return stringData.substring((int) pos, length);
+    return stringData.substring((int) pos-1, length);
   }
 
   /**
@@ -179,9 +159,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @exception SQLException if there is an error accessing the
    *              <code>CLOB</code>
    */
-  public long position(String searchstr, long start) throws SQLException
-  {
-    return stringData.indexOf(searchstr, (int) start);
+  public long position(String searchstr, long start) throws SQLException {
+	  return stringData.indexOf(searchstr, (int) start);
   }
 
   /**
@@ -197,9 +176,8 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
    * @exception SQLException if there is an error accessing the
    *              <code>CLOB</code>
    */
-  public long position(java.sql.Clob searchstr, long start) throws SQLException
-  {
-    return position(searchstr.getSubString(0, (int) searchstr.length()),
+  public long position(java.sql.Clob searchstr, long start) throws SQLException {
+	  return position(searchstr.getSubString(0, (int) searchstr.length()),
         (int) start);
   }
 

@@ -322,6 +322,7 @@ public final class VariableInterpreter {
 			case Scope.SCOPE_URL:			return "url";
 			case Scope.SCOPE_VARIABLES:		return "variables";
 			case Scope.SCOPE_CLUSTER:		return "cluster";
+			case Scope.SCOPE_LOCAL:			return "local";// LLL
 		}
 		return null;
 	}
@@ -347,9 +348,9 @@ public final class VariableInterpreter {
 		else if('f'==c) {
 			if("form".equals(type))				return Scope.SCOPE_FORM;
 		}
-		/*else if('l'==c) {
-			if("local".equals(type))				return Scope.SCOPE_LOCAL;
-		}*/
+		else if('l'==c) {
+			if("local".equals(type))				return Scope.SCOPE_LOCAL;// LLL
+		}
 		else if('r'==c) {
 			if("request".equals(type))			return Scope.SCOPE_REQUEST;
 		}

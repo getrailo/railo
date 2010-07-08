@@ -6,6 +6,7 @@ import java.util.Map;
 import railo.runtime.InterfaceImpl;
 import railo.runtime.PageContextImpl;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.util.ComponentUtil;
 
 public class InterfaceCollection {
 
@@ -34,9 +35,11 @@ public class InterfaceCollection {
 	
 	public long lastUpdate() {
 		if(lastUpdate==0){
+			long temp;
 			for(int i=0;i<interfaces.length;i++){
-				if(interfaces[i].getPage().getCompileTime()>lastUpdate)
-					lastUpdate=interfaces[i].getPage().getCompileTime();
+				temp=ComponentUtil.getCompileTime(null,interfaces[i].getPageSource(),0);
+				if(temp>lastUpdate)
+					lastUpdate=temp;
 			}
 		}
 		return lastUpdate;

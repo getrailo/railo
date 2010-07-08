@@ -16,9 +16,10 @@ import railo.runtime.type.util.StructSupport;
 /**
  * 
  */
-public final class LocalNotSupportedScope extends StructSupport implements Scope {
+public final class LocalNotSupportedScope extends StructSupport implements Scope,LocalPro {
 	
 	private static LocalNotSupportedScope instance=new LocalNotSupportedScope();
+	private boolean bind;
 	
 	private LocalNotSupportedScope(){}
 	
@@ -240,5 +241,17 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	public int compareTo(DateTime dt) throws PageException {
         throw new ExpressionException("Unsupported Context for Local Scope");
 	}
+	/**
+	 * @see railo.runtime.type.scope.LocalPro#isBind()
+	 */
+	public boolean isBind() {
+		return bind;
+	}
 
+	/**
+	 * @see railo.runtime.type.scope.LocalPro#setBind(boolean)
+	 */
+	public void setBind(boolean bind) {
+		this.bind=bind;
+	}
 }

@@ -16,6 +16,8 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
     
     private Resource directory;
     private ClassLoader pcl;
+	private int size=0;
+	private int count;
 
     /**
      * Constructor of the class
@@ -44,9 +46,9 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
      * @return    the resulting <code>Class</code> object
      * @exception ClassNotFoundException if the class was not found
      */
-   public Class loadClass(String name) throws ClassNotFoundException   {
+   public Class<?> loadClass(String name) throws ClassNotFoundException   {
        return loadClass(name, false);
-   }
+   }//15075171
 
     /**
      * Loads the class with the specified name.  The default implementation of
@@ -74,9 +76,10 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
      * @return   the resulting <code>Class</code> object
      * @exception ClassNotFoundException if the class could not be found
      */
-    protected synchronized Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        // First, check if the class has already been loaded
-        Class c = findLoadedClass(name);
+    protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+    	// First, check if the class has already been loaded
+        Class<?> c = findLoadedClass(name);
+        //print.o("load:"+name+" -> "+c);
         if (c == null) {
             try {
             	c =pcl.loadClass(name);
@@ -94,7 +97,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
     /**
      * @see java.lang.ClassLoader#findClass(java.lang.String)
      */
-    protected Class findClass(String name) throws ClassNotFoundException {
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
         //File f = getFile(name.replace('.',File.separatorChar).concat(".class"));
     	Resource res=directory.getRealResource(name.replace('.','/').concat(".class"));
         //File f = new File(directory,name.replace('.',File.separatorChar).concat(".class"));
@@ -109,11 +112,15 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
         }
         
         byte[] barr=baos.toByteArray();
-        return defineClass(barr,0,barr.length);
+        size+=barr.length;
+        count++;
+        //print.o(name+":"+count+" -> "+(size/1024));
+        IOUtil.closeEL(baos);
+        return defineClass(name,barr,0,barr.length);
     }
 
-    public Class loadClass(String name, byte[] barr) throws ClassNotFoundException   {
-    	defineClass(barr,0,barr.length);
+    public Class<?> loadClass(String name, byte[] barr) throws ClassNotFoundException   {
+    	defineClass(name,barr,0,barr.length);
         return loadClass(name,false);
     }
     
@@ -167,6 +174,10 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
      */
     public boolean hasClass(String className) {
         return hasResource(className.replace('.','/').concat(".class"));
+    }
+    
+    public boolean isClassLoaded(String className) {
+        return findLoadedClass(className)!=null;
     }
 
     /**

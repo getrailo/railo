@@ -249,7 +249,8 @@ Path placeholders:
 	<component 
         base="/railo-context/Component.cfc"
 		data-member-default-access="public"
-		dump-template="/railo-context/component-dump.cfm"> 
+		dump-template="/railo-context/component-dump.cfm">
+  		<mapping physical="{railo-web}/components/" primary="physical" trusted="true"/>
 	</component>
 	
 	<!--

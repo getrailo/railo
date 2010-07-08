@@ -19,6 +19,10 @@ public final class ArrayVisitor {
 	public void visitEndItem(BytecodeContext bc) {
 		bc.getAdapter().visitInsn(Opcodes.AASTORE);
 	}
+	
+	public void visitEndItem(GeneratorAdapter adapter) {
+		adapter.visitInsn(Opcodes.AASTORE);
+	}
 
 	public void visitEnd() {
 	}

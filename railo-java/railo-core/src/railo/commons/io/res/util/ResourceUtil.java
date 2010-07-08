@@ -883,21 +883,21 @@ public final class ResourceUtil {
 		try {
 			removeChildren(res,filter);
 		}
-		catch(Exception e) {}
+		catch(Throwable e) {}
 	}
 
 	public static void removeChildrenEL(Resource res,ResourceFilter filter) {
 		try {
 			removeChildren(res,filter);
 		}
-		catch(Exception e) {}
+		catch(Throwable e) {}
 	}
 	
 	public static void removeChildrenEL(Resource res) {
 		try {
 			removeChildren(res);
 		}
-		catch(Exception e) {}
+		catch(Throwable e) {}
 	}
 
 	public static void removeEL(Resource res, boolean force) {
@@ -1176,7 +1176,7 @@ public final class ResourceUtil {
 		if(resource.isDirectory())
 			throw new IOException("can't write directory ["+resource.getPath()+"] as a file");
 		if(!resource.getParentResource().exists())
-			throw new IOException("can't write file ["+resource.getPath()+"] as a file, missing parent directory");
+			throw new IOException("can't write file ["+resource.getPath()+"] as a file, missing parent directory ["+resource.getParent()+"]");
 	}
 
 	/**

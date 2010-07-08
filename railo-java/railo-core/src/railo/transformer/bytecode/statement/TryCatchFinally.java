@@ -195,12 +195,12 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 
 
 	        // PageExceptionImpl old=pc.getCatch();
-	        /*int old=adapter.newLocal(Types.PAGE_EXCEPTION);
+	        int old=adapter.newLocal(Types.PAGE_EXCEPTION);
 	        adapter.loadArg(0);
 	        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
 	        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, TagTry.GET_CATCH);
 			adapter.storeLocal(old);
-	        */
+	        
 	        
 			// cast to PageException  Caster.toPagException(t);
 	        adapter.loadLocal(lThrow);
@@ -267,11 +267,11 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 			adapter.visitLabel(endAllIf);
 			
     		// PageExceptionImpl old=pc.setCatch(old);
-            /*adapter.loadArg(0);
+            adapter.loadArg(0);
             adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
             adapter.loadLocal(old);
             adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, TagTry.SET_CATCH_PE);
-			*/
+			
 	}
 
 	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter, Catch ct, int pe, int lRef,boolean caugth) throws BytecodeException {

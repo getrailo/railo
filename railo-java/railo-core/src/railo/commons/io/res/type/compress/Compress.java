@@ -15,7 +15,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
-import railo.commons.io.res.type.ram.RamResourceProvider;
+import railo.commons.io.res.type.ram.RamResourceProviderOld;
 import railo.runtime.op.Caster;
 
 public final class Compress {
@@ -76,7 +76,7 @@ public final class Compress {
 		lastCheck=System.currentTimeMillis();
 		Map args = new HashMap();
 		args.put("case-sensitive", Caster.toBoolean(caseSensitive));
-		ramProvider = new RamResourceProvider().init("ram",args);
+		ramProvider = new RamResourceProviderOld().init("ram",args);
 		root=ramProvider.getResource("/");
 		try {
 			root.setMode(mode);

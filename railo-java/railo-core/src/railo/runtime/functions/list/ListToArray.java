@@ -16,15 +16,18 @@ public final class ListToArray implements Function {
 		return List.listToArrayRemoveEmpty(list,',');
 	}
 	public static Array call(PageContext pc , String list, String delimeter) {
-		return call(pc, list,delimeter,false);
+		return call(pc, list,delimeter,false,false);
+	}
+	public static Array call(PageContext pc , String list, String delimeter,boolean includeEmptyFields) {
+		return call(pc, list,delimeter,includeEmptyFields,false);
 	}
 	
 
-	public static Array call(PageContext pc , String list, String delimeter,boolean includeEmptyFields) {
+	public static Array call(PageContext pc , String list, String delimeter,boolean includeEmptyFields,boolean multiCharacterDelimiter) {
 		if(list.length()==0) 
 			return new ArrayImpl();
-		if(includeEmptyFields)return List.listToArray(list,delimeter);
-		return List.listToArrayRemoveEmpty(list,delimeter);
+		if(includeEmptyFields)return List.listToArray(list,delimeter,multiCharacterDelimiter);
+		return List.listToArrayRemoveEmpty(list,delimeter,multiCharacterDelimiter);
 	}
 	
 	

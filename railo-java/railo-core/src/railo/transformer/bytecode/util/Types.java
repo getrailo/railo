@@ -16,9 +16,13 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.InterfacePage;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.PagePlus;
+import railo.runtime.PageSource;
+import railo.runtime.component.ImportDefintion;
 import railo.runtime.component.Member;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
@@ -98,7 +102,12 @@ public final class Types {
     public static final Type SHORT_VALUE = Type.getType(short.class);
 
     public static final Type COMPONENT=Type.getType(railo.runtime.Component.class);
+
+    public final static Type PAGE=Type.getType(Page.class);
+    public final static Type PAGE_PLUS=Type.getType(PagePlus.class);
+    public final static Type PAGE_SOURCE=Type.getType(PageSource.class);
     public static final Type COMPONENT_PAGE=Type.getType(railo.runtime.ComponentPage.class);
+	public static final Type INTERFACE_PAGE = Type.getType(InterfacePage.class);
 
     public static final Type COMPONENT_IMPL=Type.getType(railo.runtime.ComponentImpl.class);
     public static final Type INTERFACE_IMPL=Type.getType(railo.runtime.InterfaceImpl.class);
@@ -123,8 +132,7 @@ public final class Types {
 
     public static final Type PAGE_CONTEXT=Type.getType(PageContext.class);
     public static final Type PAGE_CONTEXT_IMPL=Type.getType(PageContextImpl.class);
-    
-    public final static Type PAGE=Type.getType(Page.class);
+
 
     public final static Type QUERY=Type.getType(railo.runtime.type.Query.class);
     public final static Type QUERY_IMPL=Type.getType(railo.runtime.type.QueryImpl.class);
@@ -183,6 +191,8 @@ public final class Types {
 	public static final Type IOUTIL = Type.getType(IOUtil.class);
 	public static final Type BODY_CONTENT = Type.getType(BodyContent.class);
 	public static final Type BODY_CONTENT_UTIL = Type.getType(BodyContentUtil.class);
+	public static final Type IMPORT_DEFINITIONS = Type.getType(ImportDefintion.class);
+	public static final Type IMPORT_DEFINITIONS_ARRAY = Type.getType(ImportDefintion[].class);
 	 
 
 	/**

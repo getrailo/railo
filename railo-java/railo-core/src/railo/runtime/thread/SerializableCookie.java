@@ -156,6 +156,7 @@ public class SerializableCookie implements Serializable {
 	}
 
 	public static Cookie[] toCookies(SerializableCookie[] src) {
+		if(src==null)return new Cookie[0];
 		Cookie[] dest=new Cookie[src.length];
 		for(int i=0;i<src.length;i++) {
 			dest[i]=src[i].toCookie();
@@ -164,6 +165,7 @@ public class SerializableCookie implements Serializable {
 	}
 	
 	public static SerializableCookie[] toSerializableCookie(Cookie[] src) {
+		if(src==null)return new SerializableCookie[0];
 		SerializableCookie[] dest=new SerializableCookie[src.length];
 		for(int i=0;i<src.length;i++) {
 			dest[i]=new SerializableCookie(src[i]);

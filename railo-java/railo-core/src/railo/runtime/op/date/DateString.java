@@ -328,5 +328,8 @@ public final class DateString {
 	public char current() {
 		return str.charAt(pos);
 	}
+	public void reset(){
+		pos=0;
+	}
 
 }

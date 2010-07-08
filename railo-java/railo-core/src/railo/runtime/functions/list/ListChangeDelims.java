@@ -13,7 +13,6 @@ public final class ListChangeDelims implements Function {
 		return call(pc , list, newDel, ",");
 	}
 	public static String call(PageContext pc , String list, String newDel, String oldDel) throws PageException {
-		//return List.arrayToList(List.listToArrayRemoveEmptyItem(list,oldDel),newDel);
 		return List.arrayToList(List.listToArrayRemoveEmpty(list,oldDel),newDel);
 	}
 }

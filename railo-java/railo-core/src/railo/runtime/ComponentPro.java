@@ -14,5 +14,6 @@ public interface ComponentPro extends Component {
 	
 	public boolean contains(PageContext pc,Key key);
 	
+	public PageSource getPageSource();
 	//public Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess);
 }

@@ -2,7 +2,6 @@ package railo.commons.io.res.util;
 
 import java.io.IOException;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 

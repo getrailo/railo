@@ -10,13 +10,13 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 
 public abstract class StructSupport implements Map,Struct,Sizeable {
-
 
 
 	/**
@@ -255,5 +255,10 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	 */
 	public Iterator valueIterator() {
 		return values().iterator();
+	}
+	
+	public boolean equals(Object obj){
+		if(!(obj instanceof Collection)) return false;
+		return CollectionUtil.equals(this,(Collection)obj);
 	}
 }

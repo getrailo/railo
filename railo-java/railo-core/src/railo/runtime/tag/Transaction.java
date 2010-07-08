@@ -6,6 +6,7 @@ import java.sql.Connection;
 import javax.servlet.jsp.JspException;
 
 import railo.runtime.db.DataSourceManager;
+import railo.runtime.db.DatasourceManagerImpl;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
@@ -15,9 +16,19 @@ import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
  */
 public final class Transaction extends BodyTagTryCatchFinallyImpl {
         
-    //private boolean hasBody;
+    private static final int ACTION_NONE = 0;
+
+	private static final int ACTION_BEGIN = 1;
+
+	private static final int ACTION_COMMIT = 2;
+
+	private static final int ACTION_ROLLBACK = 4;
+
+	private static final int ACTION_SET_SAVEPOINT = 8;
+    
+	//private boolean hasBody;
     private int isolation=Connection.TRANSACTION_NONE;
-    private String action=null;
+    private int action=ACTION_NONE;
     private boolean innerTag=false;
     
     /**
@@ -26,16 +37,26 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
     public void release() {
         //hasBody=false;
         isolation=Connection.TRANSACTION_NONE;
-        action=null;
+        action=ACTION_NONE;
         innerTag=false;
         super.release();
     }
 
     /**
      * @param action The action to set.
+     * @throws DatabaseException 
      */
-    public void setAction(String action) {
-        this.action = action.trim().toLowerCase();
+    public void setAction(String strAction) throws DatabaseException {
+    	strAction = strAction.trim().toLowerCase();
+    	if(strAction.equals("begin")) action=ACTION_BEGIN;
+        else if(strAction.equals("commit")) action=ACTION_COMMIT;
+        else if(strAction.equals("rollback")) action=ACTION_ROLLBACK;
+        else if(strAction.equals("setsavepoint")) action=ACTION_SET_SAVEPOINT;
+        else {
+            throw new DatabaseException("attribute action has a invalid value, valid values are [begin,commit,setsavepoint and rollback]",null,null,null);
+        }
+    	
+    	
     }
 
     /**
@@ -65,21 +86,22 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
         }
         // inside transaction
         innerTag=true;
-        if(action==null) {
-            throw new DatabaseException("you can't have a nested transaction with no action defined",null,null,null);
-        }
-        else if(action.equals("begin")) {
+        switch(action){
+        case ACTION_NONE:
+        	throw new DatabaseException("you can't have a nested transaction with no action defined",null,null,null);
+        case ACTION_BEGIN:
             throw new DatabaseException("you can't start a transaction inside a transaction tag",null,null,null);
+        case ACTION_COMMIT:
+        	manager.commit();
+        break;
+        case ACTION_ROLLBACK:
+        	manager.rollback();
+        break;
+        case ACTION_SET_SAVEPOINT:
+        	 ((DatasourceManagerImpl)manager).savepoint();
+        break;
         }
-        else if(action.equals("commit")){
-            manager.commit();
-        }
-        else if(action.equals("rollback")){
-            manager.rollback();
-        }
-        else {
-            throw new DatabaseException("attribute action has a invalid value, valid values are [begin,commit, and rollback]",null,null,null);
-        }
+        
         return EVAL_BODY_INCLUDE;
     }
     

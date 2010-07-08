@@ -1,0 +1,602 @@
+package railo.commons.io.res.type.s3;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.xml.sax.SAXException;
+
+import railo.commons.io.res.Resource;
+import railo.commons.io.res.ResourceProvider;
+import railo.commons.io.res.util.ResourceSupport;
+import railo.loader.engine.CFMLEngine;
+import railo.loader.engine.CFMLEngineFactory;
+import railo.loader.util.Util;
+import railo.runtime.type.Array;
+
+public final class S3Resource extends ResourceSupport {
+
+	private static final long FUTURE=50000000000000L;
+	
+	private static final S3Info UNDEFINED=new Dummy("undefined",0,0,false,false,false);
+	private static final S3Info ROOT=new Dummy("root",0,0,true,false,true);
+	private static final S3Info LOCKED = new Dummy("locked",0,0,true,false,false);
+	private static final S3Info UNDEFINED_WITH_CHILDREN = new Dummy("undefined with children 1",0,0,true,false,true);
+	private static final S3Info UNDEFINED_WITH_CHILDREN2 = new Dummy("undefined with children 2",0,0,true,false,true);
+
+
+	private final S3ResourceProvider provider;
+	private final String bucketName;
+	private String objectName;
+	private final S3 s3;
+	long infoLastAccess=0;
+	private int storage=S3.STORAGE_UNKNOW;
+	private int acl=S3.ACL_PUBLIC_READ;
+
+	private S3Resource(S3 s3,int storage, S3ResourceProvider provider, String buckedName,String objectName) {
+		this.s3=s3;
+		this.provider=provider;
+		this.bucketName=buckedName;
+		this.objectName=objectName;
+		this.storage=storage;
+	}
+	
+
+	S3Resource(S3 s3,int storage, S3ResourceProvider provider, String path) {
+		this.s3=s3;
+		this.provider=provider;
+		
+		
+		if(path.equals("/") || Util.isEmpty(path,true)) {
+			this.bucketName=null;
+			this.objectName="";
+		}
+		else {
+			CFMLEngine engine = CFMLEngineFactory.getInstance();
+			path=provider.getResourceUtil().translatePath(path, true, false);
+			String[] arr = toStringArray(engine.getCreationUtil().createArray(path,"/",true,true),engine);
+			bucketName=arr[0];
+			for(int i=1;i<arr.length;i++) {
+				if(Util.isEmpty(objectName))objectName=arr[i];
+				else objectName+="/"+arr[i];
+			}
+			if(objectName==null)objectName="";
+		}
+		this.storage=storage;
+		
+	}
+
+	public  static String[] toStringArray(Array array, CFMLEngine engine) {
+        String[] arr=new String[array.size()];
+        for(int i=0;i<arr.length;i++) {
+            arr[i]=engine.getCastUtil().toString(array.get(i+1,""),"");
+        }
+        return arr;
+    }
+
+
+	public void createDirectory(boolean createParentWhenNotExists) throws IOException {
+		provider.getResourceUtil().checkCreateDirectoryOK(this, createParentWhenNotExists);
+		try {
+			provider.lock(this);
+			if(isBucket()) {
+				s3.putBuckets(bucketName, acl,storage);
+			}
+			else s3.put(bucketName, objectName+"/", acl, new EmptyRequestEntity());	
+		}
+		catch (IOException ioe) {
+			throw ioe;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new IOException(e.getMessage());
+		}
+		finally {
+			provider.unlock(this);
+		}
+		s3.releaseInfo(getInnerPath());
+	}
+
+	public void createFile(boolean createParentWhenNotExists) throws IOException {
+		provider.getResourceUtil().checkCreateFileOK(this, createParentWhenNotExists);
+		if(isBucket()) throw new IOException("can't create file ["+getPath()+"], on this level (Bucket Level) you can only create directories");
+		try {
+			provider.lock(this);
+			s3.put(bucketName, objectName, acl, new EmptyRequestEntity());
+		} 
+		catch (Exception e) {
+			throw new IOException(e.getMessage());
+		}
+		finally {
+			provider.unlock(this);
+		}
+		s3.releaseInfo(getInnerPath());
+	}
+
+	public boolean exists() {
+		
+		return getInfo()
+			.exists();
+	}
+
+	public InputStream getInputStream() throws IOException {
+		provider.getResourceUtil().checkGetInputStreamOK(this);
+		provider.read(this);
+		try {
+			return Util.toBufferedInputStream(s3.getInputStream(bucketName, objectName));
+		} 
+		catch (Exception e) {
+			throw new IOException(e.getMessage());
+		}
+	}
+
+	public int getMode() {
+		return 777;
+	}
+
+	/**
+	 * @see res.Resource#getFullName()
+	 */
+	public String getName() {
+		if(isRoot()) return "";
+		if(isBucket()) return bucketName;
+		return objectName.substring(objectName.lastIndexOf('/')+1);
+	}
+
+	/**
+	 * @see res.Resource#isAbsolute()
+	 */
+	public boolean isAbsolute() {
+		return true;
+	}
+	
+
+	/**
+	 * @see railo.commons.io.res.Resource#getPath()
+	 */
+	public String getPath() {
+		return getPrefix().concat(getInnerPath());
+	}
+	
+	private String getPrefix() {
+		return provider.getScheme()
+			.concat("://")
+			.concat(s3.getAccessKeyId())
+			.concat(":")
+			.concat(s3.getSecretAccessKey())
+			.concat(storage!=S3.STORAGE_UNKNOW?":"+S3.toStringStorage(storage,"us"):"")
+			.concat("@")
+			.concat(s3.getHost());
+	}
+
+
+	/**
+	 * @see res.Resource#getParent()
+	 */
+	public String getParent() {
+		if(isRoot()) return null;
+		return getPrefix().concat(getInnerParent());
+	}
+	
+	private String getInnerPath() {
+		if(isRoot()) return "/";
+		return provider.getResourceUtil().translatePath(bucketName+"/"+objectName, true, false);
+	}
+	
+	private String getInnerParent() {
+		if(isRoot()) return null;
+		if(Util.isEmpty(objectName)) return "/";
+		if(objectName.indexOf('/')==-1) return "/"+bucketName;
+		String tmp=objectName.substring(0,objectName.lastIndexOf('/'));
+		return provider.getResourceUtil().translatePath(bucketName+"/"+tmp, true, false);
+	}
+
+	/**
+	 * @see railo.commons.io.res.Resource#getParentResource()
+	 */
+	public Resource getParentResource() {
+		if(isRoot()) return null;
+		return new S3Resource(s3,isBucket()?S3.STORAGE_UNKNOW:storage,provider,getInnerParent());// MUST direkter machen
+	}
+
+	private boolean isRoot() {
+		return bucketName==null;
+	}
+	
+	private boolean isBucket() {
+		return bucketName!=null && Util.isEmpty(objectName);
+	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return getPath();
+	}
+	
+	public OutputStream getOutputStream(boolean append) throws IOException {
+
+		provider.getResourceUtil().checkGetOutputStreamOK(this);
+		//provider.lock(this);
+		
+		try {
+			byte[] barr = null;
+			if(append){
+				InputStream is=null;
+				OutputStream os=null;
+				try{
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					os=baos;
+					Util.copy(is=getInputStream(), baos);
+					barr=baos.toByteArray();
+				}
+				catch(Throwable t){
+					
+				}
+				finally{
+					Util.closeEL(is);
+					Util.closeEL(os);
+				}
+			}
+			S3ResourceOutputStream os = new S3ResourceOutputStream(s3,bucketName,objectName,acl);
+			if(append && !(barr==null || barr.length==0))
+				Util.copy(new ByteArrayInputStream(barr),os);
+			return os;
+		}
+		catch(Exception e) {
+			//provider.unlock(this);
+			if(e instanceof IOException)throw (IOException)e;
+			throw new IOException(e.getMessage());
+		}
+		finally {
+			s3.releaseInfo(getInnerPath());
+		}
+	}
+
+	/**
+	 * @see railo.commons.io.res.Resource#getRealResource(java.lang.String)
+	 */
+	public Resource getRealResource(String realpath) {
+		realpath=provider.getResourceUtil().merge(getInnerPath(), realpath);
+		if(realpath.startsWith("../"))return null;
+		return new S3Resource(s3,S3.STORAGE_UNKNOW,provider,realpath);
+	}
+
+	/**
+	 * @see railo.commons.io.res.Resource#getResourceProvider()
+	 */
+	public ResourceProvider getResourceProvider() {
+		return provider;
+	}
+
+	/**
+	 * @see railo.commons.io.res.Resource#isDirectory()
+	 */
+	public boolean isDirectory() {
+		return getInfo().isDirectory();
+	}
+
+	/**
+	 * @see railo.commons.io.res.Resource#isFile()
+	 */
+	public boolean isFile() {
+		return getInfo().isFile();
+	}
+
+	public boolean isReadable() {
+		return exists();
+	}
+
+	public boolean isWriteable() {
+		return exists();
+	}
+
+	/**
+	 * @see railo.commons.io.res.Resource#lastModified()
+	 */
+	public long lastModified() {
+		return getInfo().getLastModified();
+	}
+
+	private S3Info getInfo() {
+		S3Info info = s3.getInfo(getInnerPath());
+		
+		if(info==null) {// || System.currentTimeMillis()>infoLastAccess
+			if(isRoot()) {
+				info=ROOT;
+				infoLastAccess=FUTURE;
+			}
+			else {
+				try {
+					provider.read(this);
+				} catch (IOException e) {
+					return LOCKED;
+				}
+				try {	
+					if(isBucket()) {
+						Bucket[] buckets = s3.listBuckets();
+						String name=getName();
+						for(int i=0;i<buckets.length;i++) {
+							if(buckets[i].getName().equals(name)) {
+								info=buckets[i];
+								infoLastAccess=System.currentTimeMillis()+provider.getCache();
+								break;
+							}
+						}
+					}
+					else {
+						try {
+							String path = objectName;
+							Content[] contents = s3.listContents(bucketName, path);
+							
+							if(contents.length>0) {
+								boolean has=false;
+								for(int i=0;i<contents.length;i++) {
+									if(provider.getResourceUtil().translatePath(contents[i].getKey(),false,false).equals(path)) {
+										has=true;
+										info=contents[i];
+										infoLastAccess=System.currentTimeMillis()+provider.getCache();
+										break;
+									}
+								}
+								if(!has){
+									for(int i=0;i<contents.length;i++) {
+										if(provider.getResourceUtil().translatePath(contents[i].getKey(),false,false).startsWith(path)) {
+											info=UNDEFINED_WITH_CHILDREN;
+											infoLastAccess=System.currentTimeMillis()+provider.getCache();
+											break;
+										}
+									}
+								}
+							}
+						}
+						catch(SAXException e) {
+							
+						}
+					}
+
+					if(info==null){
+						info=UNDEFINED;
+						infoLastAccess=System.currentTimeMillis()+provider.getCache();
+					}
+				}
+				catch(Exception t) {
+					return UNDEFINED;
+				}
+			}
+			s3.setInfo(getInnerPath(), info);
+		}
+		return info;
+	}
+
+	/**
+	 * @see railo.commons.io.res.Resource#length()
+	 */
+	public long length() {
+		return getInfo().getSize();
+	}
+
+	public Resource[] listResources() {
+		S3Resource[] children=null;
+		try {
+			if(isRoot()) {
+				Bucket[] buckets = s3.listBuckets();
+				children=new S3Resource[buckets.length];
+				for(int i=0;i<children.length;i++) {
+					children[i]=new S3Resource(s3,storage,provider,buckets[i].getName(),"");
+					s3.setInfo(children[i].getInnerPath(),buckets[i]);
+				}
+			}
+			else if(isDirectory()){
+				Content[] contents = s3.listContents(bucketName, isBucket()?null:objectName+"/");
+				ArrayList tmp = new ArrayList();
+				String key,name,path;
+				int index;
+				Set names=new LinkedHashSet();
+				Set pathes=new LinkedHashSet();
+				S3Resource r;
+				boolean isb=isBucket();
+				for(int i=0;i<contents.length;i++) {
+					key=provider.getResourceUtil().translatePath(contents[i].getKey(), false, false);
+					if(!isb && !key.startsWith(objectName+"/")) continue;
+					if(Util.isEmpty(key)) continue;
+					index=key.indexOf('/',Util.length(objectName)+1);
+					if(index==-1) { 
+						name=key;
+						path=null;
+					}
+					else {
+						name=key.substring(index+1);
+						path=key.substring(0,index);
+					}
+					
+					//print.out("1:"+key);
+					//print.out("path:"+path);
+					//print.out("name:"+name);
+					if(path==null){
+						names.add(name);
+						tmp.add(r=new S3Resource(s3,storage,provider,contents[i].getBucketName(),key));
+						s3.setInfo(r.getInnerPath(),contents[i]);
+					}
+					else {
+						pathes.add(path);
+					}
+				}
+				
+				Iterator it = pathes.iterator();
+				while(it.hasNext()) {
+					path=(String) it.next();
+					if(names.contains(path)) continue;
+					tmp.add(r=new S3Resource(s3,storage,provider,bucketName,path));
+					s3.setInfo(r.getInnerPath(),UNDEFINED_WITH_CHILDREN2);
+				}
+				
+				//if(tmp.size()==0 && !isDirectory()) return null;
+				
+				children=(S3Resource[]) tmp.toArray(new S3Resource[tmp.size()]);
+			}
+		}
+		catch(Exception t) {
+			t.printStackTrace();
+			return null;
+		}
+		return children;
+	}
+
+	/**
+	 * @see railo.commons.io.res.Resource#remove(boolean)
+	 */
+	public void remove(boolean force) throws IOException {
+		if(isRoot()) throw new IOException("can not remove root of S3 Service");
+
+		provider.getResourceUtil().checkRemoveOK(this);
+		
+		
+		boolean isd=isDirectory();
+		if(isd) {
+			Resource[] children = listResources();
+			if(children.length>0) {
+				if(force) {
+					for(int i=0;i<children.length;i++) {
+						children[i].remove(force);
+					}
+				}
+				else {
+					throw new IOException("can not remove directory ["+this+"], directory is not empty");
+				}
+			}
+		}
+		// delete res itself
+		provider.lock(this);
+		try {
+			s3.delete(bucketName, isd?objectName+"/":objectName);
+		} 
+		catch (Exception e) {
+			throw new IOException(e.getMessage());
+		}
+		finally {
+			s3.releaseInfo(getInnerPath());
+			provider.unlock(this);
+		}
+		
+		
+	}
+
+	public boolean setLastModified(long time) {
+		s3.releaseInfo(getInnerPath());
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void setMode(int mode) throws IOException {
+		s3.releaseInfo(getInnerPath());
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean setReadable(boolean readable) {
+		s3.releaseInfo(getInnerPath());
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean setWritable(boolean writable) {
+		s3.releaseInfo(getInnerPath());
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public void setACL(int acl) {
+		this.acl=acl;
+	}
+
+
+	public void setStorage(int storage) {
+		this.storage=storage;
+	}
+	
+
+
+}
+
+
+ class Dummy implements S3Info {
+
+		private long lastModified;
+		private long size;
+		private boolean exists;
+		private boolean file;
+		private boolean directory;
+		private String label;
+	
+	 
+	public Dummy(String label,long lastModified, long size, boolean exists,boolean file, boolean directory) {
+		this.label = label;
+		this.lastModified = lastModified;
+		this.size = size;
+		this.exists = exists;
+		this.file = file;
+		this.directory = directory;
+	}
+
+
+	/**
+	 * @see railo.commons.io.res.type.s3.S3Info#getLastModified()
+	 */
+	public long getLastModified() {
+		return lastModified;
+	}
+
+	/**
+	 * @see railo.commons.io.res.type.s3.S3Info#getSize()
+	 */
+	public long getSize() {
+		return size;
+	}
+
+	/**
+	 *
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return "Dummy:"+getLabel();
+	}
+
+
+	/**
+	 * @return the label
+	 */
+	public String getLabel() {
+		return label;
+	}
+
+
+	/**
+	 * @see railo.commons.io.res.type.s3.S3Info#exists()
+	 */
+	public boolean exists() {
+		return exists;
+	}
+
+	/**
+	 * @see railo.commons.io.res.type.s3.S3Info#isDirectory()
+	 */
+	public boolean isDirectory() {
+		return directory;
+	}
+
+	/**
+	 * @see railo.commons.io.res.type.s3.S3Info#isFile()
+	 */
+	public boolean isFile() {
+		return file;
+	}
+
+}

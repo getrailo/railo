@@ -1,6 +1,6 @@
 package railo.runtime.cfx.customtag;
 
-import org.openbd.extension.cfx.CFXNativeLib;
+//xxximport org.openbd.extension.cfx.CFXNativeLib;
 
 import railo.runtime.cfx.CFXTagException;
 
@@ -20,7 +20,7 @@ public class CPPCustomTag implements CustomTag {
 		this.keepAlive=keepAlive;
 		try{
 			// invoked to make sure jar is available
-			new CFXNativeLib();
+			//xxxnew CFXNativeLib();
 		}
 		catch(Throwable t){
 			throw new CFXTagException("C++ Custom tag library is missing, get the newest jars-zip from getrailo.org download");
@@ -28,7 +28,7 @@ public class CPPCustomTag implements CustomTag {
 	}
 	
 	public void processRequest(Request request, Response response)throws Exception {
-		CFXNativeLib.processRequest(serverLibrary, procedure, request, response, keepAlive);
+		//xxxCFXNativeLib.processRequest(serverLibrary, procedure, request, response, keepAlive);
 	}
 
 }

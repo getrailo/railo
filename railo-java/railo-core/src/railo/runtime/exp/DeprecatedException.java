@@ -1,5 +1,7 @@
 package railo.runtime.exp;
 
+import railo.commons.lang.StringUtil;
+
 
 /**
  * 
@@ -7,9 +9,11 @@ package railo.runtime.exp;
 public final class DeprecatedException extends ApplicationException {
 
 	public DeprecatedException(String tagName, String attrName) {
-		super("the attribute ["+attrName+"] of the tag ["+tagName+"] is no longer supported");
+		super(StringUtil.isEmpty(attrName)?
+				"the tag ["+tagName+"] is longer supported":
+				"the attribute ["+attrName+"] of the tag ["+tagName+"] is no longer supported");
 	}
-	public DeprecatedException(String tagName) {
-		super("the tag ["+tagName+"] is longer supported");
+	public DeprecatedException(String msg) {
+		super(msg);
 	}
 }

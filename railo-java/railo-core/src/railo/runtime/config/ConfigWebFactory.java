@@ -29,7 +29,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
-import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.digest.MD5;
 import railo.commons.io.DevNullOutputStream;
@@ -87,8 +86,6 @@ import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionImpl;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
-import railo.runtime.functions.other.CreateObject;
-import railo.runtime.functions.system.ExpandPath;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
@@ -106,6 +103,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
+import railo.runtime.orm.hibernate.HibernateORMEngine;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
@@ -117,7 +115,6 @@ import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.scope.CGIImpl;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.util.ArrayUtil;
@@ -386,7 +383,7 @@ public final class ConfigWebFactory {
         		if(!StringUtil.isEmpty(strProviderClass) && !StringUtil.isEmpty(strProviderScheme)) {
         			strProviderClass=strProviderClass.trim();
             		strProviderScheme=strProviderScheme.trim().toLowerCase();
-    	        	config.addResourceProvider(strProviderScheme,strProviderClass,toArguments(providers[i].getAttribute("arguments")));
+            		config.addResourceProvider(strProviderScheme,strProviderClass,toArguments(providers[i].getAttribute("arguments")));
             		
     	        	// patch for user not having 
     	        	if(strProviderScheme.equalsIgnoreCase("http"))	{
@@ -828,6 +825,34 @@ public final class ConfigWebFactory {
         );  
     }
     
+    static String createMD5FromResource(String resource) throws IOException {
+    	InputStream is=null;
+    	try{
+    		is=new Info().getClass().getResourceAsStream(resource);	
+    		byte[] barr = IOUtil.toBytes(is);
+    		return MD5.getDigestAsString(barr);
+    	}
+    	finally{
+    		IOUtil.closeEL(is);
+    	}
+    }
+    
+    static String createMD5FromResource(Resource resource) throws IOException {
+    	InputStream is=null;
+    	try{
+    		is=resource.getInputStream();	
+    		byte[] barr = IOUtil.toBytes(is);
+    		return MD5.getDigestAsString(barr);
+    	}
+    	finally{
+    		IOUtil.closeEL(is);
+    	}
+    }
+    
+    static String createContentFromResource(Resource resource) throws IOException {
+    	return IOUtil.toString(resource,null);
+    }
+    
 
     static void createFileFromResourceCheckSizeDiffEL(String resource,Resource file) {
     	try {
@@ -927,6 +952,9 @@ public final class ConfigWebFactory {
         
         Resource storDir = configDir.getRealResource("storage");
         if(!storDir.exists())storDir.mkdirs();
+        
+        Resource cfcDir = configDir.getRealResource("components");
+        if(!cfcDir.exists())cfcDir.mkdirs();
 
         
         /*TrustManager[] trustAllCerts = new TrustManager[]{
@@ -965,8 +993,22 @@ public final class ConfigWebFactory {
         f=contextDir.getRealResource("component-dump.cfm");
 	    if(!f.exists())createFileFromResourceEL("/resource/context/component-dump.cfm",f);
 	    
+	    
+	    // Component.cfc
+	    String badContent="<cfcomponent displayname=\"Component\" hint=\"This is the Base Component\">\n</cfcomponent>";
+	    String badVersion="704b5bd8597be0743b0c99a644b65896";
 	    f=contextDir.getRealResource("Component.cfc");
-	    if(!f.exists())createFileFromResourceEL("/resource/context/Component.cfc",f);
+
+	    
+	    if(!f.exists())
+	    	createFileFromResourceEL("/resource/context/Component.cfc",f);
+	    else if(doNew && badVersion.equals(createMD5FromResource(f))){
+	    	createFileFromResourceEL("/resource/context/Component.cfc",f);
+	    }
+	    else if(doNew && badContent.equals(createContentFromResource(f).trim())){
+	    	createFileFromResourceEL("/resource/context/Component.cfc",f);
+	    }
+	    
 	    
 	    f=contextDir.getRealResource("application.cfm");
 	    if(!f.exists())createFileFromResourceEL("/resource/context/application.cfm",f);
@@ -1657,6 +1699,16 @@ public final class ConfigWebFactory {
 		  config.setDataSources(datasources);
 	}
 
+    /**
+     * @param configServer
+     * @param config
+     * @param doc
+     */
+    /**
+     * @param configServer
+     * @param config
+     * @param doc
+     */
     private static void loadCache(ConfigServerImpl configServer, ConfigImpl config, Document doc)  {
         boolean hasCS=configServer!=null;
         HashTable caches=new HashTable();
@@ -1814,7 +1866,7 @@ public final class ConfigWebFactory {
             while(it.hasNext()) {
 	                entry=(Entry) it.next();
 	                cc=((CacheConnection)entry.getValue());
-	                caches.put(entry.getKey(),new ServerCacheConnection(configServer,cc));
+	                if(!caches.containsKey(entry.getKey()))caches.put(entry.getKey(),new ServerCacheConnection(configServer,cc));
 	        }
 	    }
         config.setCaches(caches);
@@ -1930,18 +1982,20 @@ public final class ConfigWebFactory {
     }
 
 
-	private static String decrypt(String str) {
+	protected static String decrypt(String str) {
 		if(StringUtil.isEmpty(str) || !StringUtil.startsWithIgnoreCase(str, "encrypted:")) return str;
 		str=str.substring(10);
 		return new BlowfishEasy("sdfsdfs").decryptString(str);
 	}
     protected static String encrypt(String str) {
-		if(StringUtil.isEmpty(str)) return "";
+    	if(StringUtil.isEmpty(str)) return "";
+    	if(StringUtil.startsWithIgnoreCase(str, "encrypted:")) return str;
 		return "encrypted:"+new BlowfishEasy("sdfsdfs").encryptString(str);
 	}
 
 
 	private static Struct toStruct(String str) {
+		
         Struct sct=new StructImpl();
         try {
             String[] arr = List.toStringArray(List.listToArrayRemoveEmpty(str,'&'));
@@ -2058,14 +2112,14 @@ public final class ConfigWebFactory {
         	Mapping m;
         	for(int i=0;i<clones.length;i++){
         		m=((MappingImpl)originals[i]).cloneReadOnly(config);
-        		map.put(m.getVirtualLowerCase(), m);
+        		map.put(toKey(m), m);
         		//clones[i]=((MappingImpl)m[i]).cloneReadOnly(config);
         	}
         	
         	if(mappings!=null) {
         		for(int i=0;i<mappings.length;i++){
             		m=mappings[i];
-            		map.put(m.getVirtualLowerCase(), m);
+            		map.put(toKey(m), m);
             	}
         	}
             if(originals.length>0) {
@@ -2086,13 +2140,19 @@ public final class ConfigWebFactory {
         }
         
 	    if(!hasSet) {
-	        MappingImpl m=new MappingImpl(config,"/0/","/WEB-INF/railo/customtags/",null,false,true,false,false,true);
+	        MappingImpl m=new MappingImpl(config,"/0/","{railo-web}/customtags/",null,false,true,false,false,true);
 	        if(m!=null)config.setCustomTagMappings(new Mapping[]{m.cloneReadOnly(config)});
 	    }
         
     }
+    
+    private static Object toKey(Mapping m) {
+		if(!StringUtil.isEmpty(m.getStrPhysical(),true)) return m.getStrPhysical().toLowerCase().trim();
+    	return (m.getStrPhysical()+":"+m.getStrArchive()).toLowerCase();
+	}
 
-    /**
+
+	/**
      * @param configServer 
      * @param config
      * @param doc
@@ -2283,42 +2343,7 @@ public final class ConfigWebFactory {
 
         // AJAX
             AjaxFactory.deployTags(dir, doNew);
-            /* // tags
-            f = dir.getRealResource("AjaxImport.cfc");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/AjaxImport.cfc",f);
-            f = dir.getRealResource("AjaxProxy.cfc");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/AjaxProxy.cfc",f);
-            f = dir.getRealResource("Div.cfc");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/Div.cfc",f);
-            
-            // helper files
-            dir=dir.getRealResource("railo/core/ajax/");
-            if(!dir.isDirectory())dir.mkdirs();
-            f = dir.getRealResource("AjaxBase.cfc");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/railo/core/ajax/AjaxBase.cfc",f);
-            f = dir.getRealResource("AjaxBinder.cfc");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/railo/core/ajax/AjaxBinder.cfc",f);
-            f = dir.getRealResource("AjaxProxyHelper.cfc");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/railo/core/ajax/AjaxProxyHelper.cfc",f);
-            f = dir.getRealResource("JSLoader.cfc");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/railo/core/ajax/JSLoader.cfc",f);
-            f = dir.getRealResource("RailoJs.cfc");
-            if(f.exists())f.delete();
            
-            
-            
-            Resource jsDir = dir.getRealResource("js");
-            if(!jsDir.isDirectory())jsDir.mkdirs();
-            f = jsDir.getRealResource("license.txt");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/railo/core/ajax/js/license.txt",f);
-            f = jsDir.getRealResource("RailoAjax.js");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/railo/core/ajax/js/RailoAjax.js",f);
-            
-            dir = dir.getRealResource("loader");
-            if(!dir.isDirectory())dir.mkdirs();
-            f = dir.getRealResource("loading.gif.cfm");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/railo/core/ajax/loader/loading.gif.cfm",f);
-            */
     	}
 	}
 
@@ -2331,8 +2356,36 @@ public final class ConfigWebFactory {
     	if(config instanceof ConfigServer){
     		Resource f = dir.getRealResource("writeDump.cfm");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/writeDump.cfm",f);
-    		f = dir.getRealResource("dump.cfm");
+    		
+            f = dir.getRealResource("dump.cfm");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/dump.cfm",f);
+    		
+            f = dir.getRealResource("location.cfm");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/location.cfm",f);
+    		
+            f = dir.getRealResource("threadJoin.cfm");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/threadJoin.cfm",f);
+    		
+            f = dir.getRealResource("threadTerminate.cfm");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/threadTerminate.cfm",f);
+    		
+            f = dir.getRealResource("throw.cfm");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/throw.cfm",f);
+    		
+            f = dir.getRealResource("trace.cfm");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/trace.cfm",f);
+    		
+            f = dir.getRealResource("transactionCommit.cfm");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/transactionCommit.cfm",f);
+    		
+            f = dir.getRealResource("transactionRollback.cfm");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/transactionRollback.cfm",f);
+    		
+            f = dir.getRealResource("writeLog.cfm");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/writeLog.cfm",f);
+            
+            AjaxFactory.deployFunctions(dir, doNew);
+            
     	}
 	}
 
@@ -2722,7 +2775,7 @@ public final class ConfigWebFactory {
       	boolean hasCS=configServer!=null;
       	
       // engine
-      	String defaulrEngineClass="railo.runtime.orm.hibernate.HibernateORMEngine";
+      	String defaulrEngineClass=HibernateORMEngine.class.getName();//"railo.runtime.orm.hibernate.HibernateORMEngine";
         String strEngine=null;
         if(orm!=null)strEngine=orm.getAttribute("engine-class");
         if(StringUtil.isEmpty(strEngine,true))
@@ -3298,15 +3351,30 @@ public final class ConfigWebFactory {
       	Element component=getChildByName(doc.getDocumentElement(),"component");
       	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
         boolean hasSet=false;
+        boolean hasCS=configServer!=null;
+        
         //String virtual="/component/";
         
       	if(component!=null && hasAccess) {
-      	    // Base
+      		
+      		// component-default-import
+      	    String strCDI=component.getAttribute("component-default-import");
+      	    if(StringUtil.isEmpty(strCDI,true) && configServer!=null) {
+      	    	strCDI=((ConfigServerImpl)configServer).getComponentDefaultImport().toString();
+      	    }
+      	    if(!StringUtil.isEmpty(strCDI,true))
+      	    	config.setComponentDefaultImport(strCDI);
+      	    
+      		
+      		// Base
       	    String strBase=component.getAttribute("base");
       	    if(StringUtil.isEmpty(strBase,true) && configServer!=null) {
       	        strBase=configServer.getBaseComponentTemplate();
       	    }
       	    config.setBaseComponentTemplate(strBase);
+      	    
+      	    
+      	    
       	    
       	    // Dump-Template
       	    String strDumpRemplate=component.getAttribute("dump-template");
@@ -3335,6 +3403,13 @@ public final class ConfigWebFactory {
           	    config.setTriggerComponentDataMember(configServer.getTriggerComponentDataMember());  
       	    }
 	    	
+	    	// local search
+	    	Boolean ls = Caster.toBoolean(component.getAttribute("local-search"),null);
+	    	if(ls!=null)config.setComponentLocalSearch(ls.booleanValue());
+	    	else if(configServer!=null) {
+	    		config.setComponentLocalSearch(((ConfigServerImpl)configServer).getComponentLocalSearch()); 
+      	    }
+
 	    	// use component shadow
 	    	Boolean ucs = Caster.toBoolean(component.getAttribute("use-shadow"),null);
 	    	if(ucs!=null)config.setUseComponentShadow(ucs.booleanValue());
@@ -3342,35 +3417,6 @@ public final class ConfigWebFactory {
 	    		config.setUseComponentShadow(configServer.useComponentShadow()); 
       	    }
 	    	
-	    	
-	    	
-	    	
-	    	
-	    	Element[] cMappings=getChildren(component,"mapping");
-	        
-	        // Web Mapping
-            for(int i=0;i<cMappings.length;i++) {
-	           Element cMapping=cMappings[i];
-	           String physical=cMapping.getAttribute("physical");
-	           String archive=cMapping.getAttribute("archive");
-	           boolean readonly=toBoolean(cMapping.getAttribute("readonly"),false);
-	           boolean hidden=toBoolean(cMapping.getAttribute("hidden"),false);
-	           boolean trusted=toBoolean(cMapping.getAttribute("trusted"),false);
-	           String primary=cMapping.getAttribute("primary");
-	           
-	           boolean physicalFirst=primary==null || !primary.equalsIgnoreCase("archive");
-	           hasSet=true;
-	           config.setComponentMapping(new MappingImpl(config,"/"+i,physical,archive,trusted,physicalFirst,hidden,readonly,true));
-	        }
-	        
-	        // Server Mapping
-	        if(configServer!=null && cMappings.length==0) {
-	            Mapping m=configServer.getComponentMapping();
-	            if(m!=null) {
-	                hasSet=true;
-	                config.setComponentMapping(((MappingImpl)m).cloneReadOnly(config));
-	            }
-	        }
 	    	
         }
       	else if(configServer!=null) {
@@ -3380,9 +3426,74 @@ public final class ConfigWebFactory {
       	    config.setTriggerComponentDataMember(configServer.getTriggerComponentDataMember());  
       	}
       	
+      	
+      	
+     // Web Mapping
+
+    	Element[] cMappings=getChildren(component,"mapping");
+        hasSet=false;
+        Mapping[] mappings=null;
+        if(hasAccess && cMappings.length>0) {
+        	mappings=new Mapping[cMappings.length];
+	        for(int i=0;i<cMappings.length;i++) {
+	           Element cMapping=cMappings[i];
+	           String physical=cMapping.getAttribute("physical");
+	           String archive=cMapping.getAttribute("archive");
+	           boolean readonly=toBoolean(cMapping.getAttribute("readonly"),false);
+	           boolean hidden=toBoolean(cMapping.getAttribute("hidden"),false);
+	           boolean trusted=toBoolean(cMapping.getAttribute("trusted"),false);
+	           String primary=cMapping.getAttribute("primary");
+	           
+	           boolean physicalFirst=archive==null || !primary.equalsIgnoreCase("archive");
+	           //print.out("xxx:"+physicalFirst);
+	           hasSet=true;
+	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true);
+	           //print.out(mappings[i].isPhysicalFirst());
+	        }
+	        
+	        config.setComponentMappings(mappings);
+	        
+        }
+        
+        // Server Mapping
+        if(hasCS) {
+        	Mapping[] originals=((ConfigServerImpl)configServer).getComponentMappings();
+        	Mapping[] clones=new Mapping[originals.length];
+        	LinkedHashMap map=new LinkedHashMap();
+        	Mapping m;
+        	for(int i=0;i<clones.length;i++){
+        		m=((MappingImpl)originals[i]).cloneReadOnly(config);
+        		map.put(toKey(m), m);
+        		//clones[i]=((MappingImpl)m[i]).cloneReadOnly(config);
+        	}
+        	
+        	if(mappings!=null) {
+        		for(int i=0;i<mappings.length;i++){
+            		m=mappings[i];
+            		map.put(toKey(m), m);
+            	}
+        	}
+            if(originals.length>0) {
+            	clones=new Mapping[map.size()];
+            	Iterator it = map.entrySet().iterator();
+            	Map.Entry entry;
+            	int index=0;
+            	while(it.hasNext()){
+            		entry=(Entry) it.next();
+            		clones[index++]=(Mapping) entry.getValue();
+            		//print.out("c:"+clones[index-1]);
+            	}
+                hasSet=true;
+                //print.err("set:"+clones.length);
+            	
+                config.setComponentMappings(clones);
+            }
+        }
+        
+      	
 	    if(!hasSet) {
-	        MappingImpl m=new MappingImpl(config,"/0","/",null,false,true,false,false,true);
-	        if(m!=null)config.setComponentMapping(m.cloneReadOnly(config));
+	        MappingImpl m=new MappingImpl(config,"/0","{railo-web}/components/",null,false,true,false,false,true);
+	        if(m!=null)config.setComponentMappings(new Mapping[]{m.cloneReadOnly(config)});
 	    }
       	
     }

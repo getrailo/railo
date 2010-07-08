@@ -35,6 +35,9 @@ public class FieldUtil {
 		if(!StringUtil.isEmpty(author))		doc.add(Text("author", author));
 	}
 
+	public static void setURL(Document doc, String urlpath) {
+		if(!StringUtil.isEmpty(urlpath))		doc.add(Text("url", urlpath));
+	}
 	public static void setCustom(Document doc, String custom, int index) {
 		if(!StringUtil.isEmpty(custom))		doc.add(Text("custom"+index, custom));
 	}
@@ -50,5 +53,6 @@ public class FieldUtil {
 	public static void setMimeType(Document doc, String mimeType) {
 		if(!StringUtil.isEmpty(mimeType))	doc.add(FieldUtil.UnIndexed("mime-type", mimeType));
 	}
+
 	
 }

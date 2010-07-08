@@ -4,10 +4,8 @@ package railo.transformer.cfml.expression;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import railo.print;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.TemplateException;
-import railo.runtime.functions.struct.Struct_;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Scope;
 import railo.transformer.bytecode.BytecodeException;
@@ -118,7 +116,8 @@ public class CFMLExprTransformer implements ExprTransformer {
 	private static final short DYNAMIC=1;
 	private static FunctionLibFunction JSON_ARRAY = null;
 	private static FunctionLibFunction JSON_STRUCT = null;
-	
+
+	public static final short CTX_OTHER = -1;
 	public static final short CTX_NONE = 0;
 	public static final short CTX_IF = 1;
 	public static final short CTX_ELSE_IF = 2;
@@ -134,6 +133,13 @@ public class CFMLExprTransformer implements ExprTransformer {
 	public static final short CTX_SWITCH = 12;
 	public static final short CTX_TRY = 13;
 	public static final short CTX_CATCH = 14;
+	public static final short CTX_TRANSACTION = 15;
+	public static final short CTX_THREAD = 16;
+	public static final short CTX_SAVECONTENT = 17;
+	public static final short CTX_LOCK = 18;
+	public static final short CTX_LOOP = 19;
+	public static final short CTX_QUERY = 20;
+	public static final short CTX_ZIP = 21;
 	
 	
 	/*private short mode=0;
@@ -198,11 +204,13 @@ public class CFMLExprTransformer implements ExprTransformer {
 	 * @see railo.transformer.data.cfml.ExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
 	 */
 	public Expression transformAsString(EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) throws TemplateException {
+		
+		return transformAsString(init(ep,fld, cfml,allowLowerThan),new String[]{" ", ">", "/>"});
+	}
+	
+	protected Expression transformAsString(Data data,String[] breakContitions) throws TemplateException {
 		Expression el=null;
 		
-		// Init Parameter
-		Data data = init(ep,fld, cfml,allowLowerThan);
-
 		// parse the houle Page String
         comments(data.cfml);		
 				
@@ -217,8 +225,10 @@ public class CFMLExprTransformer implements ExprTransformer {
 				return el;
 			}  
 		// Simple
-			return simple(data);
+			return simple(data,breakContitions);
 	}
+	
+	
 
 	/**
 	 * Initialmethode, wird aufgerufen um den internen Zustand des Objektes zu setzten.
@@ -423,11 +433,11 @@ public class CFMLExprTransformer implements ExprTransformer {
 		if (data.cfml.isCurrent('!') && !data.cfml.isCurrent("!=")) {
 			data.cfml.next();
 			comments(data.cfml);
-			return OpNegate.toExprBoolean(decsionOp(data),line);
+			return OpNegate.toExprBoolean(notOp(data),line);
 		}
 		else if (data.cfml.forwardIfCurrentAndNoWordAfter("not")) {
 			comments(data.cfml);
-			return OpNegate.toExprBoolean(decsionOp(data),line);
+			return OpNegate.toExprBoolean(notOp(data),line);
 		}
 		return decsionOp(data);
 	}
@@ -1206,7 +1216,13 @@ public class CFMLExprTransformer implements ExprTransformer {
 		Variable var=(Variable) expr;
 		Member m= var.getFirstMember();
 		if(!(m instanceof DataMember)) return expr;
-		LitString ls=(LitString) ((DataMember)m).getName();
+		
+		ExprString n = ((DataMember)m).getName();
+		if(!(n instanceof LitString)) return expr;
+		
+		LitString ls=(LitString) n;
+		
+		
 		if(!"new".equalsIgnoreCase(ls.getString())) return expr;
 		
 		int start=data.cfml.getPos();
@@ -1226,7 +1242,10 @@ public class CFMLExprTransformer implements ExprTransformer {
 				if (data.cfml.forwardIfCurrent('.')) {
 					comments(data.cfml);
 	                name = identifier(data,true,true);
-					if(name==null) throw new TemplateException(data.cfml,"invalid Component declaration ");
+					if(name==null) {
+						data.cfml.setPos(start);
+						return expr;//throw new TemplateException(data.cfml,"invalid Component declaration ");
+					}
 					fullName.append('.');
 					fullName.append(name);
 					comments(data.cfml);
@@ -1257,7 +1276,8 @@ public class CFMLExprTransformer implements ExprTransformer {
             comments(data.cfml);
 			return v;
 		} 
-        throw new TemplateException(data.cfml,"invalid Component declaration ");
+        data.cfml.setPos(start);
+        return expr;//throw new TemplateException(data.cfml,"invalid Component declaration ");
 		
 	}
 	
@@ -1330,30 +1350,21 @@ public class CFMLExprTransformer implements ExprTransformer {
 		else if (idStr.equals("CLIENT"))		return new Variable(Scope.SCOPE_CLIENT,line);
 		else if (idStr.equals("COOKIE"))		return new Variable(Scope.SCOPE_COOKIE,line);
 		else if (idStr.equals("CLUSTER"))		return new Variable(Scope.SCOPE_CLUSTER,line);
+		else if (idStr.equals("LOCAL"))			return new Variable(Scope.SCOPE_LOCAL,line);// LLL
 		else if (idStr.equals("VAR")) {
 			String name=identifier(data,false,true);
 			if(name!=null){
 				comments(data.cfml);
 				Variable local = new Variable(Scope.SCOPE_LOCAL,line);
-				local.addMember(new DataMember(LitString.toExprString(name, data.cfml.getLine())));
+				if(!"LOCAL".equals(name))local.addMember(new DataMember(LitString.toExprString(name, data.cfml.getLine())));
+				else {
+					local.ignoredFirstMember(true);
+				}
 				return local;
 			}
 		} 
 		return null;
 	}
-
-    /* *
-    * Liest einen Identifier aus und gibt diesen als String zur￼ck.
-    * <br />
-    * EBNF:<br />
-    * <code>(letter | "_") {letter | "_"|digit};</code>
-     * @param firstCanBeNumber 
-    * @return Identifier.
-    * @deprecated this method is replaced by <code>identifier(boolean firstCanBeNumber, boolean lowerCase)</code>
-    * /
-    protected String identifier(boolean firstCanBeNumber) {
-        return identifier(firstCanBeNumber,true);
-    }*/
     
 	/**
 	* Liest einen Identifier aus und gibt diesen als String zur￼ck.
@@ -1581,12 +1592,17 @@ public class CFMLExprTransformer implements ExprTransformer {
 	 * @return parsed Element
 	 * @throws TemplateException
 	 */
-	protected Expression simple(Data data) throws TemplateException {
+	private Expression simple(Data data,String[] breakContitions) throws TemplateException {
 		StringBuffer sb=new StringBuffer();
 		int line=data.cfml.getLine();
-		while(data.cfml.isValidIndex()) {
-			if(data.cfml.isCurrent(' ') || data.cfml.isCurrent('>') || data.cfml.isCurrent("/>")) break;
-			else if(data.cfml.isCurrent('"') || data.cfml.isCurrent('#') || data.cfml.isCurrent('\'')) {
+		outer:while(data.cfml.isValidIndex()) {
+			for(int i=0;i<breakContitions.length;i++){
+				if(data.cfml.isCurrent(breakContitions[i]))break outer;
+			}
+			
+			//if(data.cfml.isCurrent(' ') || data.cfml.isCurrent('>') || data.cfml.isCurrent("/>")) break;
+			
+			if(data.cfml.isCurrent('"') || data.cfml.isCurrent('#') || data.cfml.isCurrent('\'')) {
 				throw new TemplateException(data.cfml,"simple attribute value can't contain ["+data.cfml.getCurrent()+"]");
 			}
 			else sb.append(data.cfml.getCurrent());

@@ -293,10 +293,10 @@ public final class ConfigWebUtil {
         if(!StringUtil.isEmpty(strLogger) && hasAccess) {
             return ConfigWebUtil.getLogAndSource(config,strLogger,logLevel);
         }
-        return new LogAndSourceImpl(LogConsole.getInstance(logLevel),strLogger);
+        return new LogAndSourceImpl(LogConsole.getInstance(config,logLevel),strLogger);
     }
     private static LogAndSource getLogAndSource(Config config, String strLogger, int logLevel)  {
-        if(strLogger==null) return new LogAndSourceImpl(LogConsole.getInstance(logLevel),"");
+        if(strLogger==null) return new LogAndSourceImpl(LogConsole.getInstance(config,logLevel),"");
         
         // File
         strLogger=translateOldPath(strLogger);
@@ -312,7 +312,7 @@ public final class ConfigWebUtil {
         if(file==null)SystemOut.printDate(config.getErrWriter(),"can't create logger from file ["+strLogger+"], invalid path");
         else SystemOut.printDate(config.getErrWriter(),"can't create logger from file ["+strLogger+"], no write access");
     
-        return new LogAndSourceImpl(LogConsole.getInstance(logLevel),strLogger);
+        return new LogAndSourceImpl(LogConsole.getInstance(config,logLevel),strLogger);
     
     }
 

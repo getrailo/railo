@@ -90,31 +90,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 	private static final Type FUNCTION_ARGUMENT = Type.getType(FunctionArgument.class);
 	private static final Type FUNCTION_ARGUMENT_IMPL = Type.getType(FunctionArgumentImpl.class);
 	private static final Type FUNCTION_ARGUMENT_ARRAY = Type.getType(FunctionArgument[].class);
-	/*
-	private static final Method INIT_UDF_STRTYPE = new Method(
-			"<init>",
-			Types.VOID,
-			new Type[]{
-					Types.PAGE,
-					FUNCTION_ARGUMENT_ARRAY,
-					Types.INT_VALUE,
-					Types.STRING,
-					Types.STRING,
-					Types.STRING,
-					Types.BOOLEAN_VALUE,
-					Types.BOOLEAN_VALUE,
-					Types.STRING,
-					Types.STRING,
-					Types.STRING,
-					Types.STRING,
-					Types.BOOLEAN,
-					Types.BOOLEAN,
-					Page.STRUCT_IMPL
-				}
-    		);
-    		
-    		
-   	*/
+	
 	private static final Method INIT_UDF_IMPL_PROP = new Method(
 			"<init>",
 			Types.VOID,
@@ -123,31 +99,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 				}
     		);
 	
-	/*
-	private static final Method INIT_UDF_SHORTTYPE = new Method(
-			"<init>",
-			Types.VOID,
-			new Type[]{
-					Types.PAGE,
-					FUNCTION_ARGUMENT_ARRAY,
-					Types.INT_VALUE,
-					Types.STRING,
-					Types.SHORT_VALUE,
-					Types.STRING,
-					Types.BOOLEAN_VALUE,
-					Types.BOOLEAN_VALUE,
-					Types.STRING,
-					Types.STRING,
-					Types.STRING,
-					Types.STRING,
-					Types.BOOLEAN,
-					Types.BOOLEAN,
-					Page.STRUCT_IMPL
-				}
-    		);
 	
-	
-*/
 	private static final Method INIT_UDF_PROPERTIES_STRTYPE = new Method(
 			"<init>",
 			Types.VOID,

@@ -307,6 +307,29 @@ public final class ScopeContext {
 		return getJSessionScope(pc,isNew);
 	}
 	
+	public boolean hasExistingSessionScope(PageContext pc) {
+        if(pc.getConfig().getSessionType()==Config.SESSION_TYPE_CFML)return hasExistingCFSessionScope(pc);
+		return hasExistingJSessionScope(pc);
+	}
+	
+	private synchronized boolean hasExistingCFSessionScope(PageContext pc) {
+		Map context=getSubMap(cfSessionContextes,pc.getApplicationContext().getName());
+		Session session=(Session) context.get(pc.getCFID());
+		return session instanceof CFSession;
+	}
+	
+	private synchronized boolean hasExistingJSessionScope(PageContext pc) {
+		HttpSession httpSession=pc.getSession();
+        if(httpSession==null) return false;
+        
+        Session session=(Session) httpSession.getAttribute(pc.getApplicationContext().getName());
+        return session instanceof JSession;
+	}
+	
+	
+	
+	
+	
 	/**
 	 * return cf session scope
 	 * @param pc PageContext

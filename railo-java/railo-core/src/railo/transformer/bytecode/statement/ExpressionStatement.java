@@ -7,7 +7,7 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.util.Types;
+import railo.transformer.bytecode.util.ASMUtil;
 
 public final class ExpressionStatement extends StatementBase {
 
@@ -30,8 +30,9 @@ public final class ExpressionStatement extends StatementBase {
 		GeneratorAdapter adapter = bc.getAdapter();
 		if(!(expr instanceof Literal)) {
 			Type type = expr.writeOut(bc, Expression.MODE_VALUE);
-			if(type.equals(Types.DOUBLE_VALUE))adapter.pop2();
-			else adapter.pop();
+			ASMUtil.pop(adapter, type);
+			//if(type.equals(Types.DOUBLE_VALUE))adapter.pop2();
+			//else adapter.pop();
 		}
 	}
 }

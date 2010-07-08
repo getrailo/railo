@@ -24,7 +24,7 @@ public final class CustomDocument {
  * @return Document
  */
 public static Document getDocument(String title, String key, String content,
-        String custom1,String custom2,String custom3,String custom4) {
+		String urlpath,String custom1,String custom2,String custom3,String custom4) {
 	 
     // make a new, empty document
     Document doc = new Document();
@@ -35,9 +35,9 @@ public static Document getDocument(String title, String key, String content,
     FieldUtil.setRaw(doc,content);
     FieldUtil.setContent(doc, content);
     FieldUtil.setSummary(doc, StringUtil.max(content,SUMMERY_SIZE),false);
-    doc.add(FieldUtil.UnIndexed("url", ""));
     
     FieldUtil.setTitle(doc, title);
+    FieldUtil.setURL(doc, urlpath);
     FieldUtil.setCustom(doc, custom1, 1);
     FieldUtil.setCustom(doc, custom2, 2);
     FieldUtil.setCustom(doc, custom3, 3);

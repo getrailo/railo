@@ -7,7 +7,6 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.type.file.FileResource;
 import railo.runtime.exp.PageException;
@@ -38,7 +37,6 @@ public final class ResourceClassLoader extends URLClassLoader implements Closeab
 		super(doURLs(resources), parent);
 		for(int i=0;i<resources.length;i++){
 			this.resources.add(resources[i]);
-			print.out("add:"+resources[i]);
 		}
 	}
 	
@@ -85,10 +83,6 @@ public final class ResourceClassLoader extends URLClassLoader implements Closeab
 			if(!this.resources.contains(reses[i])){
 				this.resources.add(reses[i]);
 				addURL(doURL(reses[i]));
-				print.out("add:"+reses[i]);
-			}
-			else {
-				print.out("already:"+reses[i]);
 			}
 		}
 	}

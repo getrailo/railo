@@ -75,15 +75,6 @@ public abstract class Page implements Serializable{
     public void setLoadType(byte loadType) {
         this.loadType = loadType;
     }
-    
-    /* *
-     * this method is only used by genereated code when a return is outside a udf
-     * @param obj 
-     * @return false
-     * /
-    protected boolean set Rtn(Object obj) {
-        return false;
-    }*/
 
     public Object udfCall(PageContext pageContext, UDF udf,int functionIndex) throws Throwable {
     	return null;
@@ -95,4 +86,5 @@ public abstract class Page implements Serializable{
 	public Object udfDefaultValue(PageContext pc, int functionIndex, int argumentIndex) {
 		return null;
 	}
+
 }

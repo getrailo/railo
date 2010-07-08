@@ -170,6 +170,20 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 			//transConn=null;
 		}
 	}
+	
+	// FUTURE add to interface
+	public void savepoint() throws DatabaseException {
+		if(autoCommit)return;
+        //autoCommit=true;
+		if(transConn!=null) {
+			try {
+				transConn.getConnection().setSavepoint();
+			} 
+			catch (SQLException e) {
+				throw new DatabaseException(e,transConn);
+			}
+		}
+	}
 
 	/**
 	 *

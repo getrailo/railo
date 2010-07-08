@@ -19,6 +19,9 @@ public final class CreateUUID implements Function {
 	 * @return UUID String
 	 */
 	public static String call(PageContext pc ) {
+		return invoke();
+	}
+	public static String invoke() {
 		String uuid = generator.generateRandomBasedUUID().toString().toUpperCase();
         return new StringBuffer(uuid.substring(0,23)).append(uuid.substring(24)).toString();
 	}

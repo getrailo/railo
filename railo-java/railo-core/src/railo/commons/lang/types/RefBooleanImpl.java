@@ -3,7 +3,7 @@ package railo.commons.lang.types;
 /**
  * Integer Type that can be modified
  */
-public final class RefBooleanImpl implements RefBoolean {
+public final class RefBooleanImpl implements RefBoolean {//MUST add interface Castable
 
     private boolean value;
 

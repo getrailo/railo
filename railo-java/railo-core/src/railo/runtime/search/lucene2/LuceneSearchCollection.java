@@ -45,12 +45,12 @@ import railo.runtime.search.SearchException;
 import railo.runtime.search.SearchIndex;
 import railo.runtime.search.SearchResulItem;
 import railo.runtime.search.SearchResulItemImpl;
+import railo.runtime.search.SuggestionItem;
 import railo.runtime.search.lucene2.docs.CustomDocument;
 import railo.runtime.search.lucene2.highlight.Highlight;
 import railo.runtime.search.lucene2.net.WebCrawler;
 import railo.runtime.search.lucene2.query.Literal;
 import railo.runtime.search.lucene2.query.Op;
-import railo.runtime.search.lucene2.suggest.SuggestionItem;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.Struct;
@@ -324,10 +324,11 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
      * @return 
      * @throws SearchException
      */
-    protected IndexResult _indexCustom(String id, QueryColumn title, QueryColumn keyColumn, QueryColumn[] bodyColumns, String language,
-            QueryColumn custom1,QueryColumn custom2,QueryColumn custom3,QueryColumn custom4) throws SearchException {
+    protected IndexResult _indexCustom(String id, Object title, QueryColumn keyColumn, QueryColumn[] bodyColumns, String language,
+    		Object urlpath,Object custom1,Object custom2,Object custom3,Object custom4) throws SearchException {
         _checkLanguage(language);
         String t;
+        String url;
         String c1;
         String c2;
         String c3;
@@ -350,13 +351,14 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 	        		for(int i=0;i<len;i++) {
 	        			doc=reader.document(i);
 	        			docs.put(doc.getField("key").stringValue(),doc);
+	        			
 	        		}
 		        }
 		        catch(Exception e) {}
 		        finally {
 		        	close(reader);
 		        	//if(reader!=null)reader.close();
-		        }   
+		        }  
 	
 		        countExisting=docs.size();
 		        
@@ -374,20 +376,26 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 	                        body.append(' ');
 		                }
 		            }
-	                t=(title==null)?null:Caster.toString(title.get(i,null),null);
-	                c1=(custom1==null)?null:Caster.toString(custom1.get(i,null),null);
-	                c2=(custom2==null)?null:Caster.toString(custom2.get(i,null),null);
-	                c3=(custom3==null)?null:Caster.toString(custom3.get(i,null),null);
-	                c4=(custom4==null)?null:Caster.toString(custom4.get(i,null),null);
+	                //t=(title==null)?null:Caster.toString(title.get(i,null),null);
+	                //url=(urlpath==null)?null:Caster.toString(urlpath.get(i,null),null);
 	                
-	                docs.put(key.toString(),CustomDocument.getDocument(t,key.toString(),body.toString(),c1,c2,c3,c4));
+	                t=getRow(title,i);
+	                url=getRow(urlpath,i);
+	                c1=getRow(custom1,i);
+	                c2=getRow(custom2,i);
+	                c3=getRow(custom3,i);
+	                c4=getRow(custom4,i);
+	                
+	                docs.put(key.toString(),CustomDocument.getDocument(t,Caster.toString(key,null),body.toString(),url,c1,c2,c3,c4));
 	                }
 		        countNew=docs.size();
 		        Iterator it = docs.entrySet().iterator();
 		        Map.Entry entry;
+		        Document doc;
 		        while(it.hasNext()) {
 		        	entry = (Map.Entry) it.next();
-		        	writer.addDocument((Document) entry.getValue());
+		        	doc = (Document) entry.getValue();
+		        	writer.addDocument(doc);
 		        }
 		        optimizeEL(writer);
 	            //writer.optimize();
@@ -405,6 +413,14 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 
         return new IndexResultImpl(0,inserts,countAdd-inserts);
     }
+
+	private String getRow(Object column, int row) {
+		if(column instanceof QueryColumn){
+			return Caster.toString(((QueryColumn)column).get(row,null),null);
+		}
+		if(column!=null) return Caster.toString(column,null);
+		return null;
+	}
 
 	/**
      * @see railo.runtime.search.SearchCollection#_purge()
@@ -785,7 +801,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
     }
 
     /** 
-     * check given language against colllection language
+     * check given language against collection language
      * @param language
      * @throws SearchException
      */

@@ -8,6 +8,7 @@ import railo.intergral.fusiondebug.server.type.FDValueSupport;
 import railo.intergral.fusiondebug.server.type.FDVariable;
 import railo.intergral.fusiondebug.server.util.FDCaster;
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
@@ -132,8 +133,8 @@ public class FDCollection extends FDValueSupport {
 		if(coll instanceof Array)
 			return "["+fromto()+"]";
 		if(coll instanceof Component){
-			Component c=(Component) coll;
-			return "Component "+c.getName()+"("+c.getPage().getPageSource().getDisplayPath()+")";
+			ComponentPro c=(ComponentPro) coll;
+			return "Component "+c.getName()+"("+c.getPageSource().getDisplayPath()+")";
 		}
 		if(coll instanceof Struct)
 			return "{"+fromto()+"}";

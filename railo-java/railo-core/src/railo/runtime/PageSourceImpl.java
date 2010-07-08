@@ -3,6 +3,8 @@ package railo.runtime;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -16,6 +18,7 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.engine.ThreadLocalPageSource;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -45,12 +48,18 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     private Resource physcalSource;
     private String fileName;
     private String compName;
-    private Page page;
+    private PagePlus page;
 	private long lastAccess;	
 	private int accessCount=0;
     private boolean recompileAlways;
     private boolean recompileAfterStartUp;
     
+    
+    
+    private PageSourceImpl() {
+    	mapping=null;
+        realPath=null;
+    }
     
     
     /**
@@ -59,7 +68,6 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
      * @param realPath
 	 */
 	PageSourceImpl(MappingImpl mapping,String realPath) {
-		
 		this.mapping=mapping;
         recompileAlways=mapping.getConfig().getCompileType()==Config.RECOMPILE_ALWAYS;
         recompileAfterStartUp=mapping.getConfig().getCompileType()==Config.RECOMPILE_AFTER_STARTUP || recompileAlways;
@@ -102,9 +110,21 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		return loadPage(null,config);
 	}
 	
+	
+	/**
+	 * return page when already loaded, otherwise null
+	 * @param pc
+	 * @param config
+	 * @return
+	 * @throws PageException
+	 */
+	public Page getPage() {
+		return page;
+	}
+	
 	// FUTURE add to interface without config
 	public Page loadPage(PageContext pc,ConfigWeb config) throws PageException {
-		Page page=this.page;
+		PagePlus page=this.page;
 		if(mapping.isPhysicalFirst()) {
 			page=loadPhysical(pc,page,config);
 			if(page==null) page=loadArchive(page); 
@@ -128,7 +148,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	}
 	
 	public Page loadPage(PageContext pc,ConfigWeb config, Page defaultValue) throws PageException {
-		Page page=this.page;
+		PagePlus page=this.page;
 		if(mapping.isPhysicalFirst()) {
 	        page=loadPhysical(pc,page,config);
 	        if(page==null) page=loadArchive(page); 
@@ -142,14 +162,14 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	    return defaultValue;
 	}
 	
-    private Page loadArchive(Page page) {
+    private PagePlus loadArchive(PagePlus page) {
     	if(!mapping.hasArchive()) return null;
 		if(page!=null) return page;
         
         try {
             synchronized(this) {
                 Class clazz=mapping.getClassLoaderForArchive().loadClass(getClazz());
-                this.page=page=(Page) clazz.newInstance();
+                this.page=page=newInstance(clazz);
                 page.setPageSource(this);
                 //page.setTimeCreated(System.currentTimeMillis());
                 page.setLoadType(LOAD_ARCHIVE);
@@ -158,16 +178,13 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
             }
         } 
         catch (Exception e) {
-        	
+        	e.printStackTrace();
             return null;
         }
     }
     
-    
-    
 
-    
-    private Page loadPhysical(PageContext pc,Page page, ConfigWeb config) throws PageException {
+    private PagePlus loadPhysical(PageContext pc,PagePlus page, ConfigWeb config) throws PageException {
     	if(!mapping.hasPhysical()) return null;
     	
     	// FUTURE change interface loadPage to PageContext
@@ -189,7 +206,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 			if(page!=null && !recompileAlways) {
 				// java file is newer !mapping.isTrusted() && 
 				if(srcLastModified!=page.getSourceLastModified()) {
-                	this.page=page=compile(config,mapping.getClassRootDirectory(),true);
+                	this.page=page=compile(config,mapping.getClassRootDirectory(),Boolean.TRUE);
 					page.setPageSource(this);
 					page.setLoadType(LOAD_PHYSICAL);
 					/*if(srcLastModified!=page.getSourceLastModified()){
@@ -207,19 +224,19 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
                     boolean isNew=false;
                     // new class
                     if(!classFile.exists() || recompileAfterStartUp) {
-                    	this.page=page= compile(config,classRootDir,true);
+                    	this.page=page= compile(config,classRootDir,null);
                         isNew=true;
-                        
                     }
                     // load page
                     else {
                     	try {
-                        	this.page=page=(Page) mapping.getClassLoaderForPhysical(isNew).loadClass(getClazz()).newInstance();
+                    		this.page=page=newInstance(mapping.getClassLoaderForPhysical(isNew).loadClass(getClazz()));
+                        	
                         	
                         } 
                         // if there is a problem to load the existing version, it will be recompiled
                         catch (Throwable e) {
-                        	this.page=page=compile(config,classRootDir,true);
+                        	this.page=page=compile(config,classRootDir,null);
                             isNew=true;
                         }
                         
@@ -227,12 +244,14 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
                     
                     // check if there is a newwer version
                     if(!isNew && srcLastModified!=page.getSourceLastModified()) {
-                    	this.page=page=compile(config,classRootDir,isNew=true);
+                    	isNew=true;
+                    	this.page=page=compile(config,classRootDir,null);
     				}
                     
                     // check version
                     if(!isNew && page.getVersion()!=Info.getFullVersionInfo()) {
-                    	this.page=page=compile(config,classRootDir,isNew=true);
+                    	isNew=true;
+                    	this.page=page=compile(config,classRootDir,null);
                     }
                     
                     page.setPageSource(this);
@@ -248,16 +267,25 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	}
     
 
-	private synchronized Page compile(ConfigWeb config,Resource classRootDir, boolean isNew) throws PageException {
+	private synchronized PagePlus compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws PageException {
     	try {
             ConfigWebImpl cwi=(ConfigWebImpl) config;
             byte[] barr = cwi.getCompiler().
             	compile(cwi,this,cwi.getTLDs(),cwi.getFLDs(),classRootDir,getJavaName());
+           
+            PhysicalClassLoader cl;
+            if(resetCL==null){
+            	cl = (PhysicalClassLoader)mapping.getClassLoaderForPhysical();
+                resetCL=Caster.toBoolean(cl!=null && cl.isClassLoaded(getClazz()));
+            }
+            cl = (PhysicalClassLoader)mapping.getClassLoaderForPhysical(resetCL.booleanValue());
+            
             
             try {
-				return (Page) ((PhysicalClassLoader)mapping.getClassLoaderForPhysical(isNew)).loadClass(getClazz(),barr).newInstance();
+				return  newInstance(cl.loadClass(getClazz(),barr));
 			} catch (Throwable t) {
-				return (Page) ((PhysicalClassLoader)mapping.getClassLoaderForPhysical(isNew)).loadClass(getClazz(),barr).newInstance();
+				t.printStackTrace();
+				return newInstance(cl.loadClass(getClazz(),barr));
 			}
         }
         catch(Throwable t) {
@@ -265,7 +293,27 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         }
     }
 
-    /**
+    private PagePlus newInstance(Class clazz) throws SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+    	try{
+			Constructor c = clazz.getConstructor(new Class[]{PageSource.class});
+			return (PagePlus) c.newInstance(new Object[]{this});
+		}
+    	// this only happens with old code from ra files
+		catch(NoSuchMethodException e){
+			ThreadLocalPageSource.register(this);
+			try{
+				return (PagePlus) clazz.newInstance();
+			}
+			finally {
+				ThreadLocalPageSource.release();
+			}
+			
+			
+		}
+	}
+
+
+	/**
      * return source path as String 
      * @return source path as String
      */
@@ -684,13 +732,21 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 
 
     public void clear() {
-    	page=null;
+    	if(page!=null){
+    		//print.o("clear:"+getDisplayPath()+":"+hashCode()+":"+page.hashCode());
+    		page=null;
+    	}
     }
 
 	/**
 	 * @see railo.runtime.SourceFile#getFullClassName()
 	 */
-	public String getFullClassName() {
+    public String getFullClassName() {
+    	String s=_getFullClassName();
+    	return s;
+    }
+    
+	public String _getFullClassName() {
 		String p=getPackageName();
 		if(p.length()==0) return getClassName();
 		return p.concat(".").concat(getClassName());

@@ -63,7 +63,7 @@ public final class NumberFormat  {
 			}
 			//if(maskBuffer.charAt(0) == '.')maskBuffer.insert(0, '0');
 		//print.out(maskBuffer);
-		
+		boolean addZero=false;
 		for(int i = 0; i < maskBuffer.length();) {
 			
 			boolean removeChar = false;
@@ -78,6 +78,7 @@ public final class NumberFormat  {
 				if(i>0 && maskBuffer.charAt(i-1)=='#')maskBuffer.setCharAt(i-1, '0');
 				if(foundDecimal)	removeChar = true;
 				else				foundDecimal = true;
+				if(i==0)addZero=true;
 			break;
 
 			case '(':
@@ -146,7 +147,8 @@ public final class NumberFormat  {
 			}
 		}
 
-		//print.out(maskBuffer);
+		if(addZero)
+			maskBuffer.insert(0, '0');
 		
 		
 		mask = new String(maskBuffer);

@@ -1,5 +1,6 @@
 package railo.runtime.exp;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -14,6 +15,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -31,6 +33,7 @@ import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.writer.CFMLWriter;
 
 /**
  * Railo Runtime Page Exception, all runtime Exception are sub classes of this class
@@ -228,7 +231,8 @@ public abstract class PageExceptionImpl extends PageException {
 				if(res.exists())	
 					content=IOUtil.toStringArray(IOUtil.getReader(res, pc.getConfig().getTemplateCharset()));
 				else {
-					ps=(PageSource) sources.get(index);
+					if(sources.size()>index)ps=(PageSource) sources.get(index);
+					else ps=null;
 					if(ps!=null && trace.getClassName().equals(ps.getFullClassName())) {
 						if(ps.physcalExists())
 							content=IOUtil.toStringArray(IOUtil.getReader(ps.getPhyscalFile(), pc.getConfig().getTemplateCharset()));
@@ -237,7 +241,7 @@ public abstract class PageExceptionImpl extends PageException {
 				}	
 			} 
 			catch (Throwable th) {
-				th.printStackTrace();
+				//th.printStackTrace();
 			}
 			
 			// check last
@@ -247,9 +251,8 @@ public abstract class PageExceptionImpl extends PageException {
 					if(last.get(RAW_TRACE).equals(trace.toString()))continue;
 				} 
 				catch (Exception e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
-				
 			}
 			
 			item=new StructImpl();
@@ -302,7 +305,7 @@ public abstract class PageExceptionImpl extends PageException {
 		struct.setEL("browser",pc.cgiScope().get("HTTP_USER_AGENT",""));
 		struct.setEL("datetime",new DateTimeImpl(pc));
 		struct.setEL("diagnostics",getMessage()+' '+getDetail()+"<br>The error occurred on line "+getLine(pc)+" in file "+getFile(pc)+".");
-		struct.setEL("GeneratedContent","");// TODO content of a custom-tag thistag.GeneratedContent
+		struct.setEL("GeneratedContent",getGeneratedContent(pc));
 		struct.setEL("HTTPReferer",pc.cgiScope().get("HTTP_REFERER",""));
 		struct.setEL("mailto",ep.getMailto());
 		struct.setEL("message",getMessage());
@@ -321,6 +324,18 @@ public abstract class PageExceptionImpl extends PageException {
 			// TODO RootCause,StackTrace
 		
 		return struct;
+	}
+	
+	private String getGeneratedContent(PageContext pc){
+		PageContextImpl pci=(PageContextImpl)pc;
+		CFMLWriter ro=pci.getRootOut();
+		String gc=ro.toString();
+		try{
+			ro.clearBuffer();
+		}
+		catch(IOException ioe){}
+		if(gc==null) return "";
+		return gc;
 	}
 	
 	

@@ -95,27 +95,7 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
 		if(StringUtil.isEmpty(dspName))dspName="Scope";
 		
 		return StructUtil.toDumpTable(sct, dspName, pageContext, maxlevel, dp);
-		/*maxlevel--;
-		DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");//new DumpTable("#99cc00","#669900","#263300");
-		if(dspName!=null)table.setTitle(StringUtil.ucFirst(dspName)+" Scope");
-        else table.setTitle("Scope");
-		if(sct.size()>10)table.setComment("Records:"+sct.size());
-	    
-		//Map mapx=getMap();
-		Iterator it=sct.keyIterator();//mapx.keySet().iterator();
-		String key;
-		int maxkeys=dp.getMaxKeys();
-		int index=0;
-		while(it.hasNext()) {
-			key=it.next().toString();
-			if(DumpUtil.keyValid(dp,maxlevel, key)) {
-				if(maxkeys<=index++)break;
-				table.appendRow(1,
-					new SimpleDumpData(key),
-					DumpUtil.toDumpData(sct.get(key,null), pageContext,maxlevel,dp));
-			}
-		}
-		return table;*/
+		
 	}
 		
 	/**

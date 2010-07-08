@@ -52,6 +52,8 @@ public final class CFMLString {
 	private String charset;
 
 	private boolean writeLog;
+
+	private String source;
 	
 	private static final String NL=System.getProperty("line.separator");
 
@@ -65,7 +67,7 @@ public final class CFMLString {
 		this.charset=charset;
 		this.sf=sf;
 		String line;
-		
+		this.source=sf.getPhyscalFile().getAbsolutePath();
 		//print.ln("-----------------------------------");
 		StringBuffer content=new StringBuffer();
 		InputStream is=null;
@@ -92,6 +94,7 @@ public final class CFMLString {
         
 	}
 	
+
 
 	/**
 	 * Constructor of the class
@@ -807,5 +810,14 @@ public final class CFMLString {
 
 	public String getText() {
 		return new String(text);
+	}
+	
+
+
+	/**
+	 * @return the source
+	 */
+	public String getSource() {
+		return source;
 	}
 }

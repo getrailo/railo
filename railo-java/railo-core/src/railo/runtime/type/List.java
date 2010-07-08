@@ -97,7 +97,24 @@ public final class List {
 		return array;
 	}
 	
-	
+	public static Array listToArray(String list, String delimeter, boolean multiCharDelim) {
+		if(!multiCharDelim) return listToArray(list, delimeter);
+		if(delimeter.length()==1)return listToArray(list, delimeter.charAt(0));
+		int len=list.length();
+		if(len==0) return new ArrayImpl();
+		 
+		ArrayImpl array=new ArrayImpl();
+		int from=0;
+		int index;
+		int dl=delimeter.length();
+		while((index=list.indexOf(delimeter,from))!=-1){
+			array.appendEL(list.substring(from,index));
+			from=index+dl;
+		}
+		array.appendEL(list.substring(from,len));
+		
+		return array;
+	}
 
 	/**
 	 * casts a list to Array object
@@ -130,6 +147,31 @@ public final class List {
 	 * @param delimeter delimter of the list
 	 * @return Array Object
 	 */
+	public static Array listToArrayRemoveEmpty(String list, String delimeter, boolean multiCharDelim) {
+		if(!multiCharDelim) return listToArrayRemoveEmpty(list, delimeter);
+		
+	    if(delimeter.length()==1)return listToArrayRemoveEmpty(list, delimeter.charAt(0));
+		
+	    int len=list.length();
+		if(len==0)  return new ArrayImpl();
+		
+		
+		ArrayImpl array=new ArrayImpl();
+		int from=0;
+		int index;
+		int dl=delimeter.length();
+		while((index=list.indexOf(delimeter,from))!=-1){
+			if(from<index)array.appendEL(list.substring(from,index));
+			from=index+dl;
+		}
+		if(from<len)array.appendEL(list.substring(from,len));
+		return array;
+		
+	}
+	
+	
+	
+	
 	public static Array listToArrayRemoveEmpty(String list, String delimeter) {
 	    if(delimeter.length()==1)return listToArrayRemoveEmpty(list, delimeter.charAt(0));
 		int len=list.length();

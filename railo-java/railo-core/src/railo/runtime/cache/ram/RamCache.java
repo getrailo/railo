@@ -25,15 +25,11 @@ public class RamCache extends CacheSupport {
 	
 
 	public static void init(Config config,String[] cacheNames,Struct[] arguments) throws IOException {
-		
 	}
 	
 	public void init(String cacheName, Struct arguments) throws IOException {
-
 		until=Caster.toLongValue(arguments.get("timeToLiveSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
 		idleTime=Caster.toLongValue(arguments.get("timeToIdleSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
-		
-		//Caster.toBooleanValue(arguments.get("caseSensitive"),'');
 	}
 	
 	/**

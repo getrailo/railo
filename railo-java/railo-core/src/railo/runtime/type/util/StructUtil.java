@@ -110,7 +110,7 @@ public final class StructUtil {
 			// e.printStackTrace();
 		}
 	    DumpTable table = new DumpTablePro("struct","#5965e4","#9999ff","#000000");//new DumpTable("#669900","#99cc00","#263300");
-		if(sct.size()>10)table.setComment("Entries:"+sct.size());
+		if(sct.size()>10 && dp.getMetainfo())table.setComment("Entries:"+sct.size());
 	    if(!StringUtil.isEmpty(title))table.setTitle(title);
 		maxlevel--;
 		int maxkeys=dp.getMaxKeys();

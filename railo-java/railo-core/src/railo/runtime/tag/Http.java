@@ -27,13 +27,17 @@ import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
-import org.apache.commons.httpclient.methods.MultipartPostMethod;
 import org.apache.commons.httpclient.methods.OptionsMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.methods.TraceMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.httpclient.util.EncodingUtil;
 
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.IOUtil;
@@ -127,6 +131,7 @@ public final class Http extends BodyTagImpl {
 	private static final Key EXPLANATION = KeyImpl.getInstance("explanation");
 	private static final Key RESPONSEHEADER = KeyImpl.getInstance("responseheader");
 	private static final Key SET_COOKIE = KeyImpl.getInstance("set-cookie");
+
 	
 	
 	
@@ -239,12 +244,14 @@ public final class Http extends BodyTagImpl {
 
 	private String proxyuser=null;
 	private String proxypassword="";
-	private boolean multipart=false;
+	private boolean multiPart=false;
+	private String multiPartType=MultipartRequestEntityFlex.MULTIPART_FORM_DATA;
 	
 	private short getAsBinary=GET_AS_BINARY_NO;
     private String result="cfhttp";
     
     private boolean addtoken=false;
+
 	
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
@@ -277,7 +284,8 @@ public final class Http extends BodyTagImpl {
 		firstrowasheaders=true;
 		
 		getAsBinary=GET_AS_BINARY_NO;
-		multipart=false;
+		multiPart=false;
+		multiPartType=MultipartRequestEntityFlex.MULTIPART_FORM_DATA;
         result="cfhttp";
         addtoken=false;
 	}
@@ -557,56 +565,7 @@ public final class Http extends BodyTagImpl {
 
 	}
 
-	class Executor extends Thread {
-		
-		private Http http;
-		private HttpClient client;
-		private HttpMethod httpMethod;
-		private boolean redirect;
-		private PageException pe;
-		private boolean done;
-
-		public Executor(Http http, HttpClient client,HttpMethod httpMethod,boolean redirect) {
-			this.http=http;
-			this.client=client;
-			this.httpMethod=httpMethod;
-			this.redirect=redirect;
-		}
-		
-
-		public void run(){
-			try {
-				execute();
-				done=true;
-				synchronized(http){
-					http.notify();
-				}
-				
-			} catch (PageException pe) {
-				this.pe=pe;
-			}
-		}
-
-		public void execute() throws PageException{
-			try {
-				// Execute Request
-				short count=0;
-		        URL lu;
-		        while(isRedirect(client.executeMethod(httpMethod)) && redirect && count++ < MAX_REDIRECT) { 
-		        	lu=locationURL(httpMethod);
-		        	
-		        	httpMethod=createMethod(http,client,lu.toExternalForm(),-1);
-		        }
-	        } 
-			catch (Throwable e) {
-	        	PageException pe = Caster.toPageException(e);
-				if(pe instanceof NativeException) {
-					((NativeException) pe).setAdditional("url", HTTPUtil.toURL(httpMethod));
-				}
-				throw pe;
-	        }
-		}
-	}
+	
 	
 	private void _doEndTag(Struct cfhttp) throws PageException, IOException	{
 		HttpConnectionManager manager=new SimpleHttpConnectionManager();//MultiThreadedHttpConnectionManager();
@@ -617,7 +576,18 @@ public final class Http extends BodyTagImpl {
 /////////////////////////////////////////// EXECUTE /////////////////////////////////////////////////
 		Executor e = new Executor(this,client,httpMethod,redirect);
 		if(timeout<0){
-			e.execute();
+			try{
+				e.execute();
+			}
+			
+			catch(Throwable t){
+				if(!throwonerror){
+					setUnknownHost(cfhttp, t);
+					return;
+				}
+				throw toPageException(t);
+				
+			}
 		}
 		else {
 			e.start();
@@ -628,25 +598,22 @@ public final class Http extends BodyTagImpl {
 			} catch (InterruptedException ie) {
 				throw Caster.toPageException(ie);
 			}
-			if(e.pe!=null){
-				throw e.pe;
+			if(e.t!=null){
+				if(!throwonerror){
+					setUnknownHost(cfhttp,e.t);
+					return;
+				}
+				throw toPageException(e.t);	
 			}
+			
+			
+			
+			
 			if(!e.done){
 				httpMethod.abort();
 				if(throwonerror)
 					throw new HTTPException("408 Request Time-out","there is a timeout occurred in tag http",408);
-					
-				cfhttp.set(CHARSET,"");
-				cfhttp.set(ERROR_DETAIL,"");
-				cfhttp.set(FILE_CONTENT,"Connection Timeout ");
-				cfhttp.set(HEADER,"");
-				cfhttp.set(MIME_TYPE,"Unable to determine MIME type of file. ");
-				cfhttp.set(RESPONSEHEADER,new StructImpl());
-				cfhttp.set(STATUSCODE,"408 Request Time-out");
-				cfhttp.set(STATUS_CODE,new Double(408));
-				cfhttp.set(STATUS_TEXT,"Request Time-out");
-				cfhttp.set(TEXT,Boolean.TRUE);
-				
+				setRequestTimeout(cfhttp);	
 				return;
 				//throw new ApplicationException("timeout");	
 			}
@@ -838,6 +805,38 @@ public final class Http extends BodyTagImpl {
 	    
 	}
 	
+	private PageException toPageException(Throwable t) {
+		PageException pe = Caster.toPageException(t);
+		if(pe instanceof NativeException) {
+			((NativeException) pe).setAdditional("url", url);
+		}
+		return pe;
+	}
+
+	private void setUnknownHost(Struct cfhttp,Throwable t) {
+		cfhttp.setEL(CHARSET,"");
+		cfhttp.setEL(ERROR_DETAIL,"Unknown host: "+t.getMessage());
+		cfhttp.setEL(FILE_CONTENT,"Connection Failure");
+		cfhttp.setEL(HEADER,"");
+		cfhttp.setEL(MIME_TYPE,"Unable to determine MIME type of file.");
+		cfhttp.setEL(RESPONSEHEADER,new StructImpl());
+		cfhttp.setEL(STATUSCODE,"Connection Failure. Status code unavailable.");
+		cfhttp.setEL(TEXT,Boolean.TRUE);
+	}
+
+	private void setRequestTimeout(Struct cfhttp) {
+		cfhttp.setEL(CHARSET,"");
+		cfhttp.setEL(ERROR_DETAIL,"");
+		cfhttp.setEL(FILE_CONTENT,"Connection Timeout");
+		cfhttp.setEL(HEADER,"");
+		cfhttp.setEL(MIME_TYPE,"Unable to determine MIME type of file.");
+		cfhttp.setEL(RESPONSEHEADER,new StructImpl());
+		cfhttp.setEL(STATUSCODE,"408 Request Time-out");
+		cfhttp.setEL(STATUS_CODE,new Double(408));
+		cfhttp.setEL(STATUS_TEXT,"Request Time-out");
+		cfhttp.setEL(TEXT,Boolean.TRUE);
+	}
+
 	private static HttpMethod execute(Http http, HttpClient client, HttpMethod httpMethod, boolean redirect) throws PageException {
 		try {
 			// Execute Request
@@ -864,7 +863,7 @@ public final class Http extends BodyTagImpl {
 		//manager.closeIdleConnections(0);
 	}
 
-	private static URL locationURL(HttpMethod method) throws MalformedURLException, ExpressionException {
+	static URL locationURL(HttpMethod method) throws MalformedURLException, ExpressionException {
         Header location = method.getResponseHeader("location");
         if(location==null) throw new ExpressionException("missing location header definition");
 
@@ -884,7 +883,7 @@ public final class Http extends BodyTagImpl {
     }
 	
 
-	private static HttpMethod createMethod(Http http, HttpClient client, String url, int port) throws PageException, UnsupportedEncodingException {
+	static HttpMethod createMethod(Http http, HttpClient client, String url, int port) throws PageException, UnsupportedEncodingException {
 		HttpMethod httpMethod;
 		HostConfiguration config = client.getHostConfiguration();
 		HttpState state = client.getState();
@@ -900,6 +899,8 @@ public final class Http extends BodyTagImpl {
 		}	
 	
 	// parse url (also query string)
+		
+		
 		URL _url=null;
 		try {
 			_url = HTTPUtil.toURL(url,port);
@@ -909,6 +910,11 @@ public final class Http extends BodyTagImpl {
 		} catch (MalformedURLException mue) {
 			throw Caster.toPageException(mue);
 		}
+
+		
+		
+		
+		
 	// QS
 		String strQS=_url.getQuery();
 		if(strQS!=null) {
@@ -918,9 +924,11 @@ public final class Http extends BodyTagImpl {
 	// select best matching method (get,post, post multpart (file))
 
 		boolean isBinary = false;
+		boolean doMultiPart=doUploadFile || http.multiPart;
 		PostMethod post=null;
 		EntityEnclosingMethod eem=null;
-		MultipartPostMethod multi=null;
+		
+		
 		if(http.method==METHOD_GET) {
 			httpMethod=new GetMethod(url);
 		}
@@ -943,11 +951,6 @@ public final class Http extends BodyTagImpl {
 			isBinary=true;
 		    httpMethod=new OptionsMethod(url);
 		}
-		else if(doUploadFile || http.multipart) {
-			isBinary=true;
-			multi=new MultipartPostMethod(url);
-			httpMethod=multi;
-		}
 		else {
 			isBinary=true;
 			post=new PostMethod(url);
@@ -962,6 +965,7 @@ public final class Http extends BodyTagImpl {
 		boolean hasContentType=false;
 	// Set http params
 		ArrayList listQS=new ArrayList();
+		ArrayList<Part> parts=new ArrayList<Part>();
 		int len=http.params.size();
 		for(int i=0;i<len;i++) {
 			HttpParamBean param=(HttpParamBean)http.params.get(i);
@@ -974,8 +978,13 @@ public final class Http extends BodyTagImpl {
 			else if(type.equals("formfield") || type.equals("form")) {
 				hasForm=true;
 				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type formfield can't only be used, when method of the tag http equal post");
-				if(post!=null)post.addParameter(new NameValuePair(param.getName(),param.getValueAsString()));
-				else if(multi!=null)multi.addParameter(param.getName(),param.getValueAsString());
+				if(post!=null){
+					if(doMultiPart){
+						parts.add(new StringPart(param.getName(),param.getValueAsString()));
+					}
+					else post.addParameter(new NameValuePair(param.getName(),param.getValueAsString()));
+				}
+				//else if(multi!=null)multi.addParameter(param.getName(),param.getValueAsString());
 			}
 		// CGI
 			else if(type.equals("cgi")) {
@@ -1004,10 +1013,9 @@ public final class Http extends BodyTagImpl {
 			else if(type.equals("file")) {
 				hasForm=true;
 				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type file can't only be used, when method of the tag http equal post");
-				if(multi!=null) {
+				if(doMultiPart) {
 					try {
-						//multi.addParameter(param.getName(),FileWrapper.toFile(param.getFile()));
-						multi.addPart(new FilePart(param.getName(),new ResourcePartSource(param.getFile())));
+						parts.add(new FilePart(param.getName(),new ResourcePartSource(param.getFile())));
 					} 
 					catch (FileNotFoundException e) {
 						throw new ApplicationException("can't upload file, path is invalid",e.getMessage());
@@ -1028,15 +1036,7 @@ public final class Http extends BodyTagImpl {
 				hasBody=true;
 				if(eem==null)throw new ApplicationException("type body is only supported for type post and put");
 			    Object value = param.getValue();
-			    /*Resource res = param.getFile();
-			    if(value==null && res!=null) {
-			    	try {
-						eem.setRequestEntity(new InputStreamRequestEntity(res.getInputStream(),"application/octet-stream"));
-					} catch (IOException e) {
-						throw Caster.toPageException(e);
-					}
-			    }
-			    else */
+			    
 			    if(value instanceof InputStream) {
 					eem.setRequestEntity(new InputStreamRequestEntity((InputStream)value,"application/octet-stream"));
 				}
@@ -1052,6 +1052,14 @@ public final class Http extends BodyTagImpl {
             }
 		    
 		}
+		
+		// multipart
+		if(doMultiPart && post!=null) {
+			hasContentType=true;
+			post.setRequestEntity(new MultipartRequestEntityFlex(parts.toArray(new Part[parts.size()]), post.getParams(),http.multiPartType));
+		}
+		
+		
 		
 		if(hasBody && hasForm)
 			throw new ApplicationException("mixing httpparam  type file/formfield and body/XML is not allowed");
@@ -1190,12 +1198,28 @@ public final class Http extends BodyTagImpl {
         else if(getAsBinary.equals("no") || getAsBinary.equals("false")) 	this.getAsBinary=GET_AS_BINARY_NO;
         else if(getAsBinary.equals("auto")) 								this.getAsBinary=GET_AS_BINARY_AUTO;
     }
-    
+
     /**
      * @param multipart The multipart to set.
      */
-    public void setMultipart(boolean multipart) {
-        this.multipart = multipart;
+    public void setMultipart(boolean multiPart) {
+        this.multiPart = multiPart;
+    }
+
+    /**
+     * @param multipart The multipart to set.
+     * @throws ApplicationException 
+     */
+    public void setMultiparttype(String multiPartType) throws ApplicationException {
+    	if(StringUtil.isEmpty(multiPartType))return;
+    	multiPartType=multiPartType.trim().toLowerCase();
+    	
+    	if("form-data".equals(multiPartType)) 	this.multiPartType=MultipartRequestEntityFlex.MULTIPART_FORM_DATA;
+    	//else if("related".equals(multiPartType)) 		this.multiPartType=MultipartRequestEntityFlex.MULTIPART_RELATED;
+    	else
+			throw new ApplicationException("invalid value for attribute multiPartType ["+multiPartType+"]",
+					"attribute must have one of the folloing values [form-data]");
+			
     }
 
     /**
@@ -1217,7 +1241,7 @@ public final class Http extends BodyTagImpl {
      * @param status
      * @return is redirect
      */
-    private static boolean isRedirect(int status) {
+    static boolean isRedirect(int status) {
         return 
         	status==STATUS_REDIRECT_FOUND || 
         	status==STATUS_REDIRECT_MOVED_PERMANENTLY ||
@@ -1257,4 +1281,79 @@ public final class Http extends BodyTagImpl {
         
         return path;
     }
+}
+
+class MultipartRequestEntityFlex extends MultipartRequestEntity {
+	
+	
+	public static final String MULTIPART_RELATED = "multipart/related";
+	public static final String MULTIPART_FORM_DATA = "multipart/form-data";
+	private String multipartType;
+	
+	
+	/**
+	 * Constructor of the class
+	 * @param parts
+	 * @param params
+	 * @param multipartType use constant MultipartRequestEntityFlex.MULTIPART_FORM_DATA or MultipartRequestEntityFlex.MULTIPART_RELATED
+	 */
+	public MultipartRequestEntityFlex(Part[] parts, HttpMethodParams params,String multipartType) {
+		super(parts, params);
+		this.multipartType=multipartType;
+	}
+	
+	/**
+	 * @see org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity#getContentType()
+	 */
+	public String getContentType() {
+	   StringBuilder builder = new StringBuilder(multipartType);
+	   builder.append("; boundary=");
+	   builder.append(EncodingUtil.getAsciiString(getMultipartBoundary()));
+
+	   return builder.toString();
+	   
+	   //return super.getContentType();
+	}
+
+}
+
+class Executor extends Thread {
+	
+	 Http http;
+	 HttpClient client;
+	HttpMethod httpMethod;
+	 boolean redirect;
+	 Throwable t;
+	 boolean done;
+
+	public Executor(Http http, HttpClient client,HttpMethod httpMethod,boolean redirect) {
+		this.http=http;
+		this.client=client;
+		this.httpMethod=httpMethod;
+		this.redirect=redirect;
+	}
+	
+
+	public void run(){
+		try {
+			execute();
+			done=true;
+			synchronized(http){
+				http.notify();
+			}
+		} catch (Throwable t) {
+			this.t=t;
+		}
+	}
+	
+	public void execute() throws IOException, PageException	{
+		// Execute Request 
+		short count=0;
+        URL lu;
+        while(Http.isRedirect(client.executeMethod(httpMethod)) && redirect && count++ < Http.MAX_REDIRECT) { 
+        	lu=Http.locationURL(httpMethod);
+        	
+        	httpMethod=Http.createMethod(http,client,lu.toExternalForm(),-1);
+        }
+	}
 }
