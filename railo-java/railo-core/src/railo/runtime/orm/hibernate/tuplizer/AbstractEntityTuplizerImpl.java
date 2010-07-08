@@ -1,0 +1,132 @@
+package railo.runtime.orm.hibernate.tuplizer;
+
+import org.hibernate.EntityMode;
+import org.hibernate.EntityNameResolver;
+import org.hibernate.HibernateException;
+import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.mapping.PersistentClass;
+import org.hibernate.mapping.Property;
+import org.hibernate.property.Getter;
+import org.hibernate.property.PropertyAccessor;
+import org.hibernate.property.Setter;
+import org.hibernate.proxy.ProxyFactory;
+import org.hibernate.tuple.Instantiator;
+import org.hibernate.tuple.entity.AbstractEntityTuplizer;
+import org.hibernate.tuple.entity.EntityMetamodel;
+
+import railo.runtime.ComponentImpl;
+import railo.runtime.op.Caster;
+import railo.runtime.orm.hibernate.HibernateRuntimeException;
+import railo.runtime.orm.hibernate.tuplizer.accessors.CFCAccessor;
+import railo.runtime.orm.hibernate.tuplizer.proxy.CFCProxyFactory;
+
+public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
+
+	private static CFCAccessor accessor=new CFCAccessor();
+	
+	public AbstractEntityTuplizerImpl(EntityMetamodel entityMetamodel, PersistentClass persistentClass) {
+		super(entityMetamodel, persistentClass);
+	}
+	
+	
+
+	/**
+	 * @see org.hibernate.tuple.entity.AbstractEntityTuplizer#buildInstantiator(org.hibernate.mapping.PersistentClass)
+	 */
+	protected Instantiator buildInstantiator(PersistentClass persistentClass) {
+		return new CFCInstantiator(persistentClass);
+	}
+	
+	/**
+	 * return accessors 
+	 * @param mappedProperty
+	 * @return
+	 */
+	private PropertyAccessor buildPropertyAccessor(Property mappedProperty) {
+		if ( mappedProperty.isBackRef() ) {
+			PropertyAccessor ac = mappedProperty.getPropertyAccessor(null);
+			if(ac!=null) return ac;
+		}
+		return accessor;
+	}
+
+	
+	/**
+	 * @see org.hibernate.tuple.entity.AbstractEntityTuplizer#buildPropertyGetter(org.hibernate.mapping.Property, org.hibernate.mapping.PersistentClass)
+	 */
+	protected Getter buildPropertyGetter(Property mappedProperty, PersistentClass mappedEntity) {
+		return buildPropertyAccessor(mappedProperty).getGetter( null, mappedProperty.getName() );
+	}
+
+	
+	/**
+	 * @see org.hibernate.tuple.entity.AbstractEntityTuplizer#buildPropertySetter(org.hibernate.mapping.Property, org.hibernate.mapping.PersistentClass)
+	 */
+	protected Setter buildPropertySetter(Property mappedProperty, PersistentClass mappedEntity) {
+		return buildPropertyAccessor(mappedProperty).getSetter( null, mappedProperty.getName() );
+	}
+	
+	/**
+	 * @see org.hibernate.tuple.entity.AbstractEntityTuplizer#buildProxyFactory(org.hibernate.mapping.PersistentClass, org.hibernate.property.Getter, org.hibernate.property.Setter)
+	 */
+	protected ProxyFactory buildProxyFactory(PersistentClass pc, Getter arg1,Setter arg2) {
+		CFCProxyFactory pf = new CFCProxyFactory();
+		//print.out("persis:"+pc.getNodeName());
+		try {
+			
+			//TODO: design new lifecycle for ProxyFactory
+			pf.postInstantiate(
+					pc.getNodeName(),//getEntityName(),
+					null,
+					null,
+					null,
+					null,
+					null
+			);
+		}
+		catch ( HibernateException he ) {
+			throw new HibernateRuntimeException(Caster.toPageException(he));
+		}
+		return pf;
+	}
+
+	/**
+	 * @see org.hibernate.tuple.entity.EntityTuplizer#determineConcreteSubclassEntityName(java.lang.Object, org.hibernate.engine.SessionFactoryImplementor)
+	 */
+	public String determineConcreteSubclassEntityName(Object entityInstance, SessionFactoryImplementor factory) {
+		return CFCEntityNameResolver.INSTANCE.resolveEntityName(entityInstance);
+	}
+
+	/**
+	 * @see org.hibernate.tuple.entity.EntityTuplizer#getEntityNameResolvers()
+	 */
+	public EntityNameResolver[] getEntityNameResolvers() {
+		return new EntityNameResolver[] { CFCEntityNameResolver.INSTANCE };
+	}
+
+	/**
+	 * @see org.hibernate.tuple.entity.EntityTuplizer#getConcreteProxyClass()
+	 */
+	public Class getConcreteProxyClass() {
+		return ComponentImpl.class;
+	}
+
+	/**
+	 * @see org.hibernate.tuple.Tuplizer#getMappedClass()
+	 */
+	public Class getMappedClass() {
+		return ComponentImpl.class;
+	}
+
+	public EntityMode getEntityMode() {
+		return EntityMode.MAP;
+	}
+
+	/**
+	 * @see org.hibernate.tuple.entity.EntityTuplizer#isInstrumented()
+	 */
+	public boolean isInstrumented() {
+		return false;
+	}
+
+}
