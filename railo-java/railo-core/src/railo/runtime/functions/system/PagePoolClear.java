@@ -17,7 +17,7 @@ public final class PagePoolClear implements Function {
 		clear(config.getMappings());
 		clear(config.getCustomTagMappings());
 		clear(pc.getApplicationContext().getMappings());
-		clear(config.getComponentMapping());
+		clear(config.getComponentMappings());
 		clear(config.getFunctionMapping());
 		clear(config.getTagMapping());
 		if(config instanceof ConfigWebImpl)clear(((ConfigWebImpl)config).getServerTagMapping());

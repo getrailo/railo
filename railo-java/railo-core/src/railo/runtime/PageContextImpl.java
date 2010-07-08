@@ -120,6 +120,7 @@ import railo.runtime.type.scope.CookieImpl;
 import railo.runtime.type.scope.Form;
 import railo.runtime.type.scope.FormImpl;
 import railo.runtime.type.scope.LocalNotSupportedScope;
+import railo.runtime.type.scope.LocalPro;
 import railo.runtime.type.scope.Request;
 import railo.runtime.type.scope.RequestImpl;
 import railo.runtime.type.scope.ScopeContext;
@@ -576,7 +577,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#write(java.lang.String)
      */
     public void write(String str) throws IOException {
-		writer.write(str);
+    	writer.write(str);
 		//TODO remove
 		//if(str.equalsIgnoreCase("throw"))throw new R untimeException("throw from write");
 	}
@@ -1017,7 +1018,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     /**
      * @see PageContext#localScope()
      */
-    public Scope localScope() { return local; }
+    public Scope localScope() { return local; }// FUTURE remove class from type Local
+    
+
+    public Scope localScope(boolean bind) { // FUTURE remove class from type Local
+    	if(bind && local instanceof LocalPro)((LocalPro)local).setBind(true); 
+    	return local; 
+    }
+    
 	
     /**
      * @param local sets the current local scope
@@ -1039,7 +1047,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				throw new ExpressionException("there is no session context defined for this application","you can define a session context with the tag cfapplication/Application.cfc");
 			if(!applicationContext.isSetSessionManagement())
 				throw new ExpressionException("session scope is not enabled","you can enable session scope with tag cfapplication");
-			
 			session=scopeContext.getSessionScope(this,DUMMY_BOOL);
 		}
 		return session;
@@ -2153,6 +2160,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public void throwCatch() throws PageException {
         if(exception!=null) throw exception;
+        else throw new ApplicationException("invalid context for tag/script expression rethow");
     }
 
     /**
@@ -2185,8 +2193,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	if(fdEnabled){
     		FDSignal.signal(pe, caught);
     	}
+    	exception = pe;
     	if(store){
-	    	exception = pe;
 	    	if(pe==null) {
 	    		undefinedScope().removeEL(CFCATCH);
 	    	}
@@ -2215,6 +2223,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#addPageSource(railo.runtime.PageSource, boolean)
      */
     public void addPageSource(PageSource ps, boolean alsoInclude) {
+    	//print.dumpStack();
     	pathList.add(ps);
         if(alsoInclude) 
             includePathList.add(ps);
@@ -2254,6 +2263,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#setApplicationContext(railo.runtime.util.ApplicationContext)
      */
     public void setApplicationContext(ApplicationContext applicationContext) {
+    	
         session=null;
         application=null;
         
@@ -2284,12 +2294,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @throws PageException
      */
     public boolean initApplicationContext() throws PageException {
+	    AppListenerSupport listener = (AppListenerSupport) config.getApplicationListener();
 	    
+    	boolean initSession = applicationContext.isSetSessionManagement() && listener.hasOnSessionStart(this) && !scopeContext.hasExistingSessionScope(this);
+    	
     	// init application
 	    RefBoolean isNew=new RefBooleanImpl(false);
 	    application=scopeContext.getApplicationScope(this,isNew);
 	    
-	    AppListenerSupport listener = (AppListenerSupport) config.getApplicationListener();
 	    // FUTURE ApplicationListener listener = config.getApplicationListener();
 	    
 	    
@@ -2306,12 +2318,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    }
 	    
 	    // init session
-	    isNew.setValue(false);
-	    if(applicationContext.isSetSessionManagement() && listener.hasOnSessionStart(this)) {
-	    	session=scopeContext.getSessionScope(this,isNew);
-	    	if(isNew.toBooleanValue()) {
+	    if(initSession) {
+	    	//session=scopeContext.getSessionScope(this,isNew);
+	    	//if(initSession) {// isNew i not used in this case, because it is possible that "onApplicationStart" has initilaized the session scope
 		    	listener.onSessionStart(this);
-		    }
+		    //}
 	    }
 	    return true;
     }
@@ -2402,7 +2413,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#loadComponent(java.lang.String)
      */
     public railo.runtime.Component loadComponent(String compPath) throws PageException {
-        return ComponentLoader.loadComponentImpl(this,compPath,true);
+    	return ComponentLoader.loadComponentImpl(this,compPath,null,null);
     }
 
 	/**
@@ -2591,6 +2602,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return ormSession;
 		
 		
+	}
+
+
+
+	public void resetSession() {
+		this.session=null;
 	}
 	
 }

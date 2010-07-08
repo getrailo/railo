@@ -56,7 +56,6 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 		if(http==null) {
 			URL url = new URL(provider.getProtocol(),data.host,data.port,data.path);
 			ProxyData pd=data.hasProxyData()?data.proxyData:ProxyDataImpl.NO_PROXY;
-			
 			return HTTPUtil.head(url, data.username, data.password, provider.getSocketTimeout(), 
 					null, data.userAgent, 
 					pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),

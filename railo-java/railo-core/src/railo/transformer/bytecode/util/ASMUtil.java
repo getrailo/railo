@@ -17,6 +17,7 @@ import org.objectweb.asm.commons.Method;
 import railo.commons.digest.MD5;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
+import railo.runtime.component.Property;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
@@ -34,9 +35,11 @@ import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.statement.PrintOut;
+import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagComponent;
+import railo.transformer.bytecode.statement.tag.TagTry;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 
 public final class ASMUtil {
@@ -111,6 +114,26 @@ public final class ASMUtil {
 			}
 		}
 	}
+	
+	public static boolean hasAncestorTryStatement(Statement stat) {
+		return getAncestorTryStatement(stat)!=null;
+	}
+	
+	public static Statement getAncestorTryStatement(Statement stat) {
+		Statement parent = stat;
+		while(true)	{
+			parent=parent.getParent();
+			if(parent==null)return null;
+			
+			if(parent instanceof TagTry)	{
+				return parent;
+			}
+			else if(parent instanceof TryCatchFinally)	{
+				return parent;
+			}
+		}
+	}
+	
 
 
 	
@@ -197,6 +220,8 @@ public final class ASMUtil {
 		if(attr!=null && attr.getValue() instanceof Literal) return ((Literal)attr.getValue());
         throw new EvaluatorException("attribute ["+attrName+"] must be a constant value");
     }
+	
+	
     
     /**
      * extract the content of a attribut
@@ -412,7 +437,7 @@ public final class ASMUtil {
     
     private static void createProperty(ClassWriter cw,String classType, ASMProperty property) throws PageException {
 		String name = property.getName();
-		Type type = property.getASMType();
+		Type type = Types.OBJECT;//property.getASMType();
 		Class clazz = property.getClazz();
 		cw.visitField(Opcodes.ACC_PRIVATE, name, type.toString(), null, null).visitEnd();
 		
@@ -499,10 +524,15 @@ public final class ASMUtil {
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<props.length;i++){
 			sb.append("name:"+props[i].getName()+";");
-			try {
-				sb.append("type:"+props[i].getASMType()+";");
-				
-			} catch (PageException e) {
+			if(props[i] instanceof Property){
+				sb.append("type:"+((Property)props[i]).getType()+";");
+			}
+			else {
+				try {
+					sb.append("type:"+props[i].getASMType()+";");
+					
+				} 
+				catch (PageException e) {}
 			}
 		}
 		try {
@@ -557,6 +587,11 @@ public final class ASMUtil {
 	 */
 	public static void pop(GeneratorAdapter adapter, Expression expr,int mode) {
 		if(mode==Expression.MODE_VALUE && (expr instanceof ExprDouble))adapter.pop2();
+		else adapter.pop();
+	}
+	public static void pop(GeneratorAdapter adapter, Type type) {
+		if(type.equals(Types.DOUBLE_VALUE))adapter.pop2();
+		else if(type.equals(Types.VOID));
 		else adapter.pop();
 	}
 
@@ -680,6 +715,16 @@ public final class ASMUtil {
 			if(b!=null) return b; 
 		}
 		return defaultValue;	
+	}
+
+
+	public static boolean isCFC(Statement s) {
+		Statement p;
+		while((p=s.getParent())!=null){
+			s=p;
+		}
+		
+		return true;
 	}
 	
 }

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 
 import org.apache.axis.AxisFault;
 import org.objectweb.asm.ClassWriter;
@@ -29,8 +28,10 @@ import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentPro;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
+import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.SuperComponent;
 import railo.runtime.component.Property;
 import railo.runtime.config.Config;
@@ -42,7 +43,6 @@ import railo.runtime.net.rpc.Pojo;
 import railo.runtime.net.rpc.server.ComponentController;
 import railo.runtime.net.rpc.server.RPCServer;
 import railo.runtime.op.Caster;
-import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.List;
@@ -79,11 +79,11 @@ public final class ComponentUtil {
 	    
     private static Class _getComponentJavaAccess(ComponentImpl component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
     	isNew.setValue(false);
-    	String classNameOriginal=component.getPage().getPageSource().getFullClassName();
+    	String classNameOriginal=component.getPageSource().getFullClassName();
     	String className=getClassname(component).concat("_wrap");
     	String real=className.replace('.','/');
     	String realOriginal=classNameOriginal.replace('.','/');
-    	Mapping mapping = component.getPage().getPageSource().getMapping();
+    	Mapping mapping = component.getPageSource().getMapping();
 		PhysicalClassLoader cl=null;
 		try {
 			cl = (PhysicalClassLoader) (mapping.getConfig()).getRPCClassLoader(false);
@@ -272,18 +272,27 @@ public final class ComponentUtil {
 		registerTypeMapping(server,clazz);
 	}
 
-	private static String getClassname(Component component) {
-    	PageSource ps = component.getPage().getPageSource();
+	private static String getClassname(Component component) throws ExpressionException {
+    	PageSource ps = ComponentUtil.toComponentPro(component).getPageSource();
     	//ps.getRealpath()
-    	String path=ps.getMapping().getVirtual()+ps.getRealpath();
+    	//String path=ps.getMapping().getVirtual()+ps.getRealpath();
+    	String path=ps.getDisplayPath();// Must remove webroot
+    	Config config = ps.getMapping().getConfig();
+    	String root = config.getRootDirectory().getAbsolutePath();
+    	if(path.startsWith(root))
+    		path=path.substring(root.length());
+    	
+    	
+    	
+    	
     	path=path.replace('\\', '/').toLowerCase();
     	path=List.trim(path, "/");
     	String[] arr = List.listToStringArray(path, '/');
+    	
     	StringBuffer rtn=new StringBuffer();
     	for(int i=0;i<arr.length;i++) {
     		if(i+1==arr.length) {
     			rtn.append(StringUtil.toVariableName(StringUtil.replaceLast(arr[i],".cfc","")));
-    			
     		}
     		else {
     			rtn.append(StringUtil.toVariableName(arr[i]));
@@ -336,93 +345,38 @@ public final class ComponentUtil {
     	
     	cl = (PhysicalClassLoader)config.getRPCClassLoader(exist);
     	
-		return ClassUtil.loadInstance(cl.loadClass(real));
+		return ClassUtil.loadInstance(cl.loadClass(className));
 
 	}
 
-	private static boolean OLDequalInterface(ASMProperty[] properties, Class clazz) {
-		java.lang.reflect.Method[] methods=Reflector.getDeclaredMethods(clazz);
-		java.lang.reflect.Method method;
-		String propName;
-		HashSet existingProps=new HashSet();
-		try {
-			outer:for(int i=0;i<methods.length;i++) {
-				method=methods[i];
-				propName=StringUtil.lcFirst(method.getName().substring(3));
-				existingProps.add(propName);
-			// check existing
-				if(Reflector.isGetter(method)) {
-						
-					for(int y=0;y<properties.length;y++) {
-						if(propName.equals(properties[y].getName())) {
-							if(!properties[y].getASMType().getClassName().equals(method.getReturnType().getName()))
-								return false;
-							continue outer;
-						}
-					}
-					return true;
-				}
-				else if(Reflector.isSetter(method)) {
-					for(int y=0;y<properties.length;y++) {
-						if(propName.equals(properties[y].getName())) {
-							if(!properties[y].getASMType().getClassName().equals(method.getParameterTypes()[0].getName()))
-								return false;
-							continue outer;
-						}
-					}
-					return false;
-				}
-			}
-		}
-		catch(PageException pe) {
-			return false;
-		}
-		
-		for(int i=0;i<properties.length;i++){
-			if(!existingProps.contains(properties[i].getName())){
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/*private static void registerObject(ComplexType complexType) throws AxisFault {
-    	PageContext pc = ThreadLocalPageContext.get();
-    	if(pc==null) return ;//complexType;
-    	RPCServer server = RPCServer.getInstance(pc.getId(),pc.getServletContext());
-    	server.registerTypeMapping(complexType);
-    	
-    	//return complexType;
-	}*/
+	
     
 	public static Class getServerComponentPropertiesClass(Component component) throws PageException {
-    	try {
-    		//Class clazz =
-    		return _getServerComponentPropertiesClass(component);
-    		//print.out(clazz+":"+clazz.getClassLoader());
-    		//return clazz;
-    	//	return registerServerComponentPropertiesObject(_getServerComponentPropertiesObject(component));
-    	} 
+		try {
+	    	return _getServerComponentPropertiesClass(component);
+		}
     	catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
     }
     
     public static Class _getServerComponentPropertiesClass(Component component) throws PageException, IOException, ClassNotFoundException {
-    	String classNameOriginal=component.getPage().getPageSource().getFullClassName();
     	String className=getClassname(component);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
     	String real=className.replace('.','/');
-    	String realOriginal=classNameOriginal.replace('.','/');
     	
-    	Mapping mapping = component.getPage().getPageSource().getMapping();
+    	ComponentPro cp = ComponentUtil.toComponentPro(component);
+    	
+    	Mapping mapping = cp.getPageSource().getMapping();
 		Config config = mapping.getConfig();
 		PhysicalClassLoader cl = (PhysicalClassLoader)config.getRPCClassLoader(false);
 		
 		Resource classFile = cl.getDirectory().getRealResource(real.concat(".class"));
+		
+    	String classNameOriginal=cp.getPageSource().getFullClassName();
+    	String realOriginal=classNameOriginal.replace('.','/');
 		Resource classFileOriginal = mapping.getClassRootDirectory().getRealResource(realOriginal.concat(".class"));
 		
-		//print.out(className);
-    	
+		
 		// load existing class
 		if(classFile.lastModified()>=classFileOriginal.lastModified()) {
 			try {
@@ -435,7 +389,7 @@ public final class ComponentUtil {
     	
 		
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component),Object.class,new Class[]{Pojo.class},component.getPage().getPageSource().getDisplayPath());
+		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component),Object.class,new Class[]{Pojo.class},cp.getPageSource().getDisplayPath());
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
@@ -647,22 +601,37 @@ public final class ComponentUtil {
 
 	public static ComponentImpl getActiveComponent(PageContext pc, ComponentImpl current) {
 		if(pc.getActiveComponent()==null) return current; 
-		if(pc.getActiveUDF()!=null && pc.getActiveComponent().getPage()==pc.getActiveUDF().getOwnerComponent().getPage()){
-			/*
-			print.out(">>>"+pc.getActiveComponent().hashCode());
-			print.out(">>>"+pc.getActiveUDF().getOwnerComponent().hashCode());
-			print.out(">>>"+pc.getActiveComponent().getPage().hashCode());
-			print.out(">>>"+pc.getActiveUDF().getOwnerComponent().getPage().hashCode());
-			print.out(">>>"+pc.getActiveComponent().getAbsName());
-			print.out(">>>"+pc.getActiveUDF().getOwnerComponent().getAbsName());
-			print.out(">>>"+((ComponentImpl)pc.getActiveComponent()).getCurrentPage().getPageSource().getComponentName());
-			print.out(">>>"+((ComponentImpl)pc.getActiveUDF().getOwnerComponent()).getCurrentPage().getPageSource().getComponentName());
-			print.out(">>>"+pc.getActiveUDF().getFunctionName());
-			*/
+		if(pc.getActiveUDF()!=null && ((ComponentPro)pc.getActiveComponent()).getPageSource()==((ComponentPro)pc.getActiveUDF().getOwnerComponent()).getPageSource()){
+			
 			return (ComponentImpl) pc.getActiveUDF().getOwnerComponent();
 		}
 		return (ComponentImpl) pc.getActiveComponent();//+++
 		
 		
+	}
+
+	public static long getCompileTime(PageContext pc, PageSource ps,long defaultValue) {
+		try {
+			return getCompileTime(pc, ps);
+		} catch (Throwable t) {
+			return defaultValue;
+		}
+	}
+
+	public static long getCompileTime(PageContext pc, PageSource ps) throws PageException {
+		return getPage(pc,ps).getCompileTime();
+	}
+
+	public static Page getPage(PageContext pc, PageSource ps) throws PageException {
+		pc=ThreadLocalPageContext.get(pc);
+		PageSourceImpl psi = (PageSourceImpl)ps;
+		
+		Page p = psi.getPage();
+		if(p!=null){
+			//print.o("getPage(existing):"+ps.getDisplayPath()+":"+psi.hashCode()+":"+p.hashCode());
+			return p;
+		}
+		//print.o("getPage(load):"+ps.getDisplayPath()+":"+psi.hashCode());
+		return psi.loadPage(pc,pc.getConfig());
 	}
 }

@@ -322,4 +322,8 @@ public abstract class FileStreamWrapper extends StructSupport implements Struct 
 	public java.util.Collection values() {
 		return info().values();
 	}
+
+	public abstract void skip(int len) throws PageException;
+
+	public abstract void seek(long pos) throws PageException;
 }

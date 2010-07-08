@@ -15,7 +15,7 @@ import railo.runtime.type.dt.DateTime;
 
 public abstract class ArraySupport implements Array,List,Sizeable {
 
-
+	
 	/**
 	 * @see java.util.List#add(int, E)
 	 */
@@ -365,5 +365,9 @@ public abstract class ArraySupport implements Array,List,Sizeable {
 		return iterator();
 	}
 	
+	public boolean equals(Object obj){
+		if(!(obj instanceof Collection)) return false;
+		return CollectionUtil.equals(this,(Collection)obj);
+	}
 	
 }

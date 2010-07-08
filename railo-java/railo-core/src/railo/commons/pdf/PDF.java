@@ -39,7 +39,7 @@ public class PDF {
 				Resource file=temp.getRealResource(Md5.getDigestAsString(Info.getVersionAsString())+".lmdp");
 		        
 				if(!file.exists()){
-					ResourceUtil.removeChildren(temp, new ExtensionResourceFilter(".lmdp"));
+					ResourceUtil.removeChildrenEL(temp, new ExtensionResourceFilter(".lmdp"));
 					
 		        	file.createFile(true);
 		        	//print.out(new Info().getClass().getResource("/resource/lib/pd4ml.jar"));

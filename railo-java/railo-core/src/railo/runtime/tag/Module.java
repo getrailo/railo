@@ -2,6 +2,7 @@ package railo.runtime.tag;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
+import railo.runtime.MappingImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
@@ -39,7 +40,7 @@ public final class Module extends CFTag {
             else source=new InitFile(pageContext.getCurrentPageSource().getRealPage(template),template,StringUtil.endsWithIgnoreCase(template,'.'+pageContext.getConfig().getCFCExtension()));
     		
             //attributesScope.removeEL(TEMPLATE);
-			if(!isOK(source.ps))
+			if(!MappingImpl.isOK(source.ps))
 					throw new ExpressionException("could not find template ["+template+"]","file ["+source.ps.getDisplayPath()+"] doesn't exist");
 			setAppendix(source.ps);
 	    }
@@ -53,7 +54,7 @@ public final class Module extends CFTag {
 	        	outer:for(int f=0;f<filenames.length;f++){
 		        	for(int i=0;i<ctms.length;i++){
 		            	source=new InitFile(ctms[i].getPageSource(filenames[f]),filenames[f],filenames[f].endsWith('.'+config.getCFCExtension()));
-		            	if(isOK(source.ps)) {
+		            	if(MappingImpl.isOK(source.ps)) {
 		            		exist=true;
 		            		break outer;
 		            	}
@@ -67,7 +68,7 @@ public final class Module extends CFTag {
 	        	outer:for(int f=0;f<filenames.length;f++){ 
 		            for(int i=0;i<ctms.length;i++){// TODO optimieren siehe CFTag
 		            	source=new InitFile(ctms[i].getPageSource(filenames[f]),filenames[f],filenames[f].endsWith('.'+config.getCFCExtension()));
-		            	if(isOK(source.ps)) {
+		            	if(MappingImpl.isOK(source.ps)) {
 		            		exist=true;
 		            		break outer;
 		            	}

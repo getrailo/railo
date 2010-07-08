@@ -17,7 +17,7 @@ public final class LuceneSearchEngine extends SearchEngineSupport {
 	}
 	
     /**
-     * @see railo.runtime.search.SearchEngineSupport#_createCollection(java.lang.String, railo.commons.io.res.Resource, java.lang.String)
+     * @see railo.runtime.search.coreDuplicate.SearchEngineSupport#_createCollection(java.lang.String, railo.commons.io.res.Resource, java.lang.String)
      */
     public SearchCollection _createCollection(String name, Resource path, String language) throws SearchException {
     	//SearchUtil.getAnalyzer(language);
@@ -32,7 +32,7 @@ public final class LuceneSearchEngine extends SearchEngineSupport {
     }
 
     /**
-     * @see railo.runtime.search.SearchEngineSupport#_readCollection(java.lang.String, railo.commons.io.res.Resource, java.lang.String, railo.runtime.type.dt.DateTime, railo.runtime.type.dt.DateTime)
+     * @see railo.runtime.search.coreDuplicate.SearchEngineSupport#_readCollection(java.lang.String, railo.commons.io.res.Resource, java.lang.String, railo.runtime.type.dt.DateTime, railo.runtime.type.dt.DateTime)
      */
     public SearchCollection _readCollection(String name, Resource path, String language, DateTime lastUpdate, DateTime created) throws SearchException {
         //throw new SearchException("Lucene Search Engine not implemeted");

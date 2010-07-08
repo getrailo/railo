@@ -4,10 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import railo.aprint;
 import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
@@ -16,6 +20,7 @@ import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.dt.DateTimeImpl;
 
 public class SpoolerEngineImpl implements SpoolerEngine {
 	
@@ -185,6 +190,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 
 		private SpoolerEngineImpl engine;
 		private boolean sleeping;
+		private int maxThreads=10;
 
 		public SpoolerThread(SpoolerEngineImpl engine) {
 			this.engine=engine;
@@ -201,6 +207,8 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 			long nextExection;
 			ThreadLocalConfig.register(engine.config);
 			//ThreadLocalPageContext.register(engine.);
+			List<TaskThread> runningTasks=new ArrayList<TaskThread>();
+			TaskThread tt;
 			while(!engine.openTasks.isEmpty()) {
 				engine.resetAdds();
 				tasks=engine.getOpenTasks();
@@ -209,23 +217,45 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 					task=tasks[i];
 					
 					if(task.nextExecution()<=System.currentTimeMillis()) {
-						ThreadLocalConfig.register(engine.config);
-						engine.execute(task);
-						ThreadLocalConfig.release();
+						tt=new TaskThread(engine,task);
+						tt.start();
+						runningTasks.add(tt);
+						//ThreadLocalConfig.register(engine.config);
+						//engine.execute(task);
+						//ThreadLocalConfig.release();
 					}
-					if(task!=null && task.nextExecution()<nextExection && !task.closed()) {
-						nextExection=task.nextExecution();
-					}
-					       
+					nextExection=joinTasks(runningTasks,maxThreads,nextExection);
+					
+					     
 				}
+				
+				nextExection=joinTasks(runningTasks,0,nextExection);
 				if(engine.hasAdds()) continue;
-				//print.out(nextExection==Long.MAX_VALUE);
+				
 				if(nextExection==Long.MAX_VALUE)break;
 				long sleep = nextExection-System.currentTimeMillis();
-				//print.out(sleep);
 				if(sleep>0)doWait(sleep);
 				//if(sleep<0)break;
 			}
+		}
+
+		private long joinTasks(List<TaskThread> runningTasks, int maxThreads,long nextExection) {
+			if(runningTasks.size()>=maxThreads){
+				Iterator<TaskThread> it = runningTasks.iterator();
+				TaskThread tt;
+				SpoolerTask task;
+				while(it.hasNext()){
+					tt = it.next();
+					SystemUtil.join(tt);
+					task = tt.getTask();
+
+					if(task!=null && task.nextExecution()<nextExection && !task.closed()) {
+						nextExection=task.nextExecution();
+					}
+				}
+				runningTasks.clear();
+			}
+			return nextExection;
 		}
 
 		private void doWait(long sleep) {
@@ -246,6 +276,30 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		}
 		
 	}
+	
+	
+	class TaskThread extends Thread {
+		
+		private SpoolerEngineImpl engine;
+		private SpoolerTask task;
+
+		public TaskThread(SpoolerEngineImpl engine,SpoolerTask task) {
+			this.engine=engine;
+			this.task=task;
+		}
+		
+		public SpoolerTask getTask() {
+			return task;
+		}
+
+		public void run() {
+			String start=new DateTimeImpl()+"";
+			ThreadLocalConfig.register(engine.config);
+			engine.execute(task);
+			ThreadLocalConfig.release();
+		}
+	}
+	
 
 	/**
 	 * remove that task from Spooler
@@ -261,7 +315,8 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	 * @see railo.runtime.spooler.SpoolerEngine#hasAdds()
 	 */
 	public boolean hasAdds() {
-		return add;
+		return openTasks.size()>0;
+		//return add;
 	}
 	
 	/**

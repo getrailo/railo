@@ -210,6 +210,8 @@ public final class TagLibFactory extends DefaultHandler {
 				else if(inside.equals("default-value")) att.setDefaultValue(value);
 				// Description
 				else if(inside.equals("description")) att.setDescription(value);
+				// Description
+				else if(inside.equals("default")) att.isDefault(Caster.toBooleanValue(value,false));
     		}
     		// Tag Args
     		else	{

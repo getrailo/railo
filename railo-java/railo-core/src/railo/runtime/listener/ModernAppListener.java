@@ -14,6 +14,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
+import railo.runtime.ComponentPage;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
@@ -24,17 +25,21 @@ import railo.runtime.exp.Abort;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
+import railo.runtime.interpreter.JSONExpressionInterpreter;
 import railo.runtime.net.http.HttpServletRequestDummy;
 import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMUtil;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.StructUtil;
 import railo.runtime.util.ApplicationContextImpl;
 
 public class ModernAppListener extends AppListenerSupport {
@@ -58,6 +63,7 @@ public class ModernAppListener extends AppListenerSupport {
 	
 
 	private static final Collection.Key ON_REQUEST_START = KeyImpl.getInstance("onRequestStart");
+	private static final Collection.Key ON_CFCREQUEST = KeyImpl.getInstance("onCFCRequest");
 	private static final Collection.Key ON_REQUEST = KeyImpl.getInstance("onRequest");
 	private static final Collection.Key ON_REQUEST_END = KeyImpl.getInstance("onRequestEnd");
 	private static final Collection.Key ON_APPLICATION_START = KeyImpl.getInstance("onApplicationStart");
@@ -79,8 +85,9 @@ public class ModernAppListener extends AppListenerSupport {
 	protected int mode=MODE_CURRENT2ROOT;
 	private String type;
 	private Boolean hasOnSessionStart;
-	private ApplicationContextImpl appContext;
-	private long cfcCompileTime;
+	
+	//private ApplicationContextImpl appContext;
+	//private long cfcCompileTime;
 
 
 	/**
@@ -119,7 +126,68 @@ public class ModernAppListener extends AppListenerSupport {
 			}
 	    	
 			// onRequest
-			if(app.contains(pc,ON_REQUEST)) {
+			boolean isCFC=ResourceUtil.getExtension(targetPage).equalsIgnoreCase(pc.getConfig().getCFCExtension());
+			Object method;
+			if(isCFC && app.contains(pc,ON_CFCREQUEST) && (method=pc.urlFormScope().get(ComponentPage.METHOD,null))!=null) {
+				
+				Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
+		        
+		        url.removeEL(ComponentPage.FIELDNAMES);
+		        url.removeEL(ComponentPage.METHOD);
+		        Object args=url.get(ComponentPage.ARGUMENT_COLLECTION,null);
+		        Object returnFormat=url.removeEL(ComponentPage.RETURN_FORMAT);
+		        Object queryFormat=url.removeEL(ComponentPage.QUERY_FORMAT);
+		        
+		        if(args==null){
+		        	args=pc.getHttpServletRequest().getAttribute("argumentCollection");
+		        }
+		        
+		        if(args instanceof String){
+		        	args=new JSONExpressionInterpreter().interpret(pc, (String)args);
+		        }
+		        
+		        if(args!=null) {
+		        	if(Decision.isCastableToStruct(args)){
+			        	Struct sct = Caster.toStruct(args,false);
+			        	Key[] keys = url.keys();
+			        	for(int i=0;i<keys.length;i++){
+			        		sct.setEL(keys[i],url.get(keys[i]));
+			        	}
+			        	args=sct;
+		        	}
+			        else if(Decision.isCastableToArray(args)){
+			        	args = Caster.toArray(args);
+			        }
+			        else {
+			        	ArrayImpl arr = new ArrayImpl();
+			        	arr.add(args);
+			        	args=arr;
+			        }
+		        }
+		        else 
+		        	args=url;
+
+		        //print.out("c:"+requestedPage.getComponentName());
+		        //print.out("c:"+requestedPage.getComponentName());
+				Object rtn = call(app,pci, ON_CFCREQUEST, new Object[]{requestedPage.getComponentName(),method,args});
+		        
+		        if(rtn!=null){
+		        	if(pc.getHttpServletRequest().getHeader("AMF-Forward")!=null) {
+		        		pc.variablesScope().setEL("AMF-Forward", rtn);
+		        		//ThreadLocalWDDXResult.set(rtn);
+		        	}
+		        	else {
+		        		try {
+							pc.forceWrite(ComponentPage.convertResult(pc,app,method.toString(),returnFormat,queryFormat,rtn));
+						} catch (Exception e) {
+							throw Caster.toPageException(e);
+						}
+		        	}
+		        }
+				
+				
+			}
+			else if(!isCFC && app.contains(pc,ON_REQUEST)) {
 				call(app,pci, ON_REQUEST, new Object[]{targetPage});
 			}
 			else {
@@ -162,7 +230,10 @@ public class ModernAppListener extends AppListenerSupport {
 		ComponentImpl app = (ComponentImpl) apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.contains(pc,ON_APPLICATION_START)) {
 			Object rtn = call(app,pc, ON_APPLICATION_START, ArrayUtil.OBJECT_EMPTY);
-			//if(StringUtil.isEmpty(rtn)) return true;
+			
+			
+			//print.o("has:"+hasOnSessionStart(pc));
+			//((PageContextImpl)pc).resetSession();
 			return Caster.toBooleanValue(rtn,true);
 		}
 		return true;
@@ -217,7 +288,7 @@ public class ModernAppListener extends AppListenerSupport {
 
 	private PageContext createPageContext(CFMLFactory factory, ComponentImpl app, String applicationName, String cfid,Collection.Key methodName) {
 		Resource root = factory.getConfig().getRootDirectory();
-		String path = app.getPage().getPageSource().getFullRealpath();
+		String path = app.getPageSource().getFullRealpath();
 		
 		// Request
 		HttpServletRequestDummy req = new HttpServletRequestDummy(root,"localhost",path,"",null,null,null,null,null);
@@ -245,7 +316,7 @@ public class ModernAppListener extends AppListenerSupport {
 		ap.setSetSessionManagement(true);
 		//if(!ap.hasName())ap.setName("Controler")
 		// Base
-		pc.setBase(app.getPage().getPageSource());
+		pc.setBase(app.getPageSource());
 		
 		return pc;
 	}
@@ -306,19 +377,13 @@ public class ModernAppListener extends AppListenerSupport {
 	private void initApplicationContext(PageContextImpl pc, ComponentImpl app) {
 		
 		// use existing app context
-		if(appContext!=null && cfcCompileTime==app.getPage().getCompileTime()) {
-			pc.setApplicationContext(appContext.duplicate());
-			return;
-			
-		}
-		
-		appContext = new ApplicationContextImpl(pc.getConfig(),false);
-		cfcCompileTime=app.getPage().getCompileTime();
+		ApplicationContextImpl appContext = new ApplicationContextImpl(pc.getConfig(),false);
+
 		
 		
 		Object o;
 		boolean initORM=false;
-		pc.addPageSource(app.getPage().getPageSource(), true);
+		pc.addPageSource(app.getPageSource(), true);
 		try {
 			
 			// name
@@ -353,6 +418,7 @@ public class ModernAppListener extends AppListenerSupport {
 			o=get(app,DEFAULT_DATA_SOURCE,null);
 			if(o!=null) appContext.setDefaultDataSource(Caster.toString(o));
 			
+
 			// sessionManagement
 			o=get(app,SESSION_MANAGEMENT,null);
 			if(o!=null) appContext.setSetSessionManagement(Caster.toBooleanValue(o));
@@ -393,7 +459,7 @@ public class ModernAppListener extends AppListenerSupport {
 	///////////////////////////////// ORM /////////////////////////////////
 			// ormenabled
 			o=get(app,ORM_ENABLED,null);
-			if(o!=null){
+			if(o!=null && Caster.toBooleanValue(o,false)){
 				initORM=true;
 				appContext.setORMEnabled(Caster.toBooleanValue(o));
 				
@@ -429,7 +495,6 @@ public class ModernAppListener extends AppListenerSupport {
 		catch(Throwable t) {
 			pc.removeLastPageSource(true);
 		}
-		
 		pc.setApplicationContext(appContext);
 		if(initORM){
 			try {
@@ -485,6 +550,6 @@ public class ModernAppListener extends AppListenerSupport {
 		return hasOnSessionStart(pc,(ComponentImpl) apps.get(pc.getApplicationContext().getName()));
 	}
 	private boolean hasOnSessionStart(PageContext pc,ComponentImpl app) {
-		return app.contains(pc,ON_SESSION_START);
+		return app!=null && app.contains(pc,ON_SESSION_START);
 	}
 }

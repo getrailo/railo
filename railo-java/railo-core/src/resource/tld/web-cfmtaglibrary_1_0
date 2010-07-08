@@ -4695,6 +4695,13 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		</attribute>
 		<attribute>
 			<type>string</type>
+			<name>multiparttype</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
 			<name>getAsBinary</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -5214,6 +5221,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<name>Import</name>
 		<tag-class>railo.runtime.tag.ImportTag</tag-class>
 		<tte-class>railo.transformer.cfml.evaluator.impl.Import</tte-class>
+		<ttt-class>railo.transformer.bytecode.statement.tag.TagImport</ttt-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>To import a JSP Taglibrary or a CFML Custom Tag Directory</description>
@@ -5221,19 +5229,27 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<attribute>
 			<type>string</type>
 			<name>taglib</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Path to a custom tag libraray or a jsp tld</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>prefix</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Prefix by which to access the imported custom CFML tags JSP tags. 
 
 If you import a CFML custom tag directory and specify an empty value, "", for this attribute, you can call the custom tags without using a prefix. You must specify and use a prefix for a JSP tag library.
 </description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>path</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+			<default>false</default>
 		</attribute>
 	</tag>
 	
@@ -6051,7 +6067,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<attribute>
 			<type>string</type>
 			<name>dataSource</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Name of the data source that contains your table.</description>
 		</attribute>
@@ -10825,7 +10841,7 @@ dWord: creates a value of 0 (zero)</description>
 		need not specify a type for cfcatch, because the Application type is the default cfcatch type</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>any</type>
 			<name>message</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -11316,7 +11332,7 @@ dWord: creates a value of 0 (zero)</description>
 		<attribute>
 			<type>string</type>
 			<name>dataSource</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Name of the data source that contains a table.</description>
 		</attribute>

@@ -18,6 +18,4 @@ public final class ClonedComponent extends ComponentImpl {
     public ClonedComponent(Component c, boolean deepCopy) {
     	super(c,deepCopy);
     }	
-    
-    
 }

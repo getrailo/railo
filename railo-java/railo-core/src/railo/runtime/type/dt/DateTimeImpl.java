@@ -74,7 +74,10 @@ public final class DateTimeImpl extends DateTime implements SimpleValue,Localize
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		String str=castToString(pageContext.getTimeZone());
         DumpTable table=new DumpTablePro("date","#ff4400","#ff954f","#000000");
-        table.appendRow(1, new SimpleDumpData("Date Time ("+pageContext.getTimeZone().getID()+")"));
+        if(dp.getMetainfo())
+        	table.appendRow(1, new SimpleDumpData("Date Time ("+pageContext.getTimeZone().getID()+")"));
+        else
+        	table.appendRow(1, new SimpleDumpData("Date Time"));
         table.appendRow(0, new SimpleDumpData(str));
         return table;
 	}

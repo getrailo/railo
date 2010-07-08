@@ -1,14 +1,13 @@
 package railo.runtime.net.ftp;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
-import railo.commons.collections.HashTable;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
 
@@ -17,23 +16,25 @@ import railo.runtime.exp.ApplicationException;
  */
 public final class FTPPoolImpl implements FTPPool {
 
-    Map wraps=new HashTable();
-    ArrayList arr=new ArrayList();
+    Map<String,FTPWrap> wraps=new HashMap<String, FTPWrap>();
+    //ArrayList arr=new ArrayList();
 
     /**
      * @see railo.runtime.net.ftp.FTPPool#get(railo.runtime.net.ftp.FTPConnection)
      */
     public FTPClient get(FTPConnection conn) throws IOException, ApplicationException {
-        //return _get(conn).getClient();
-        
         FTPClient client = _get(conn).getClient();
         if(client==null)throw new ApplicationException("can't connect to server ["+conn.getServer()+"]");
+        
+        FTPWrap.setConnectionSettings(client,conn);
+        
         return client;
     }
 
     /**
      * returns a client from given connection
      * @param conn
+     * @return 
      * @return matching wrap
      * @throws IOException
      * @throws ApplicationException
@@ -48,18 +49,18 @@ public final class FTPPoolImpl implements FTPPool {
         		throw new ApplicationException("can't connect ftp server, missing connection defintion");
         	}
         	
-        	wrap=(FTPWrap) wraps.get(conn.getName());
+        	wrap=wraps.get(conn.getName());
             if(wrap==null) {
                 throw new ApplicationException("can't connect ftp server, missing connection ["+conn.getName()+"]");
             }
-            else if(!wrap.getClient().isConnected()) {
-                wrap.reConnect();
+            else if(!wrap.getClient().isConnected() || wrap.getConnection().getTransferMode()!=conn.getTransferMode()) {
+                wrap.reConnect(conn.getTransferMode());
             }
             return wrap;
         }
         String name=conn.hasName()?conn.getName():"__noname__";
         
-        wrap=(FTPWrap) wraps.get(name);
+        wrap=wraps.get(name);
         if(wrap!=null) {
             if(conn.loginEquals(wrap.getConnection())) {
                 return _get(new FTPConnectionImpl(name,null,null,null,conn.getPort(),conn.getTimeout(),conn.getTransferMode(),conn.isPassive(),
@@ -71,9 +72,12 @@ public final class FTPPoolImpl implements FTPPool {
         wrap=new FTPWrap(conn);
         wraps.put(name,wrap);
         
-        if(conn.getTransferMode()==FTPConstant.TRANSFER_MODE_ASCCI) wrap.getClient().setFileType(FTP.ASCII_FILE_TYPE);
-        else if(conn.getTransferMode()==FTPConstant.TRANSFER_MODE_BINARY) wrap.getClient().setFileType(FTP.BINARY_FILE_TYPE);
         
+      
+        	
+        	
+        	
+        	
         return wrap;
     }
 
@@ -102,7 +106,7 @@ public final class FTPPoolImpl implements FTPPool {
      * @see railo.runtime.net.ftp.FTPPool#remove(java.lang.String)
      */
     public FTPClient remove(String name) {
-        FTPWrap wrap=(FTPWrap) wraps.remove(name);
+        FTPWrap wrap=wraps.remove(name);
         if(wrap==null) return null;
         
         FTPClient client = wrap.getClient();
@@ -115,11 +119,11 @@ public final class FTPPoolImpl implements FTPPool {
      */
     public void clear() {
         if(!wraps.isEmpty()) {
-            Iterator it = wraps.entrySet().iterator();
+            Iterator<Entry<String, FTPWrap>> it = wraps.entrySet().iterator();
             while(it.hasNext()) {
                 try {
-                    Map.Entry entry=(Map.Entry)it.next();
-                    FTPWrap wrap=(FTPWrap)entry.getValue();
+                    Entry<String, FTPWrap> entry = it.next();
+                    FTPWrap wrap=entry.getValue();
                     if(wrap!=null && wrap.getClient().isConnected())wrap.getClient().disconnect();
                 } catch (IOException e) {}
             }

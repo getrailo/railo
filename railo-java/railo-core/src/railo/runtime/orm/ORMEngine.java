@@ -36,7 +36,10 @@ public interface ORMEngine {
 
 
 	public DataSource getDataSource();
-	
+
+
+
+	public String[] getEntityNames();
 
 
 }

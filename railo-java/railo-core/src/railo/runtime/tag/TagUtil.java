@@ -33,8 +33,7 @@ public class TagUtil {
 					throw new ApplicationException("attribute "+missingAttrs[i].getName().getString()+" is required but missing");
 					//throw new ApplicationException("attribute "+missingAttrs[i].getName().getString()+" is required for tag "+tag.getFullName());
 				attrs.put(missingAttrs[i].getName(), Caster.castTo(pc, missingAttrs[i].getType(), value, false));
-		}
-			
+			}
 		}
 		
 		
@@ -46,11 +45,11 @@ public class TagUtil {
 			}
 		}
 		else if(TagLibTag.ATTRIBUTE_TYPE_FIXED==attrType) {
+			Object value;
 			for(int i=0;i<keys.length;i++) {
-				try{
-				Reflector.callSetter(tag, keys[i].getString(),attrs.get(keys[i],null));
-				}
-				catch(PageException pe){}
+				value=attrs.get(keys[i],null);
+				if(value!=null)Reflector.callSetterEL(tag, keys[i].getString(),value);
+				//}catch(PageException pe){}
 			}	
 		}
 		else if(TagLibTag.ATTRIBUTE_TYPE_MIXED==attrType) {

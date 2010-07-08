@@ -14,8 +14,10 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -25,6 +27,8 @@ import railo.loader.TP;
 import railo.loader.classloader.RailoClassLoader;
 import railo.loader.util.ExtensionFilter;
 import railo.loader.util.Util;
+import railo.runtime.type.Struct;
+import railo.runtime.util.ResourceUtil;
 
 import com.intergral.fusiondebug.server.FDControllerFactory;
 
@@ -350,12 +354,10 @@ public class CFMLEngineFactory {
         URL hostUrl=getEngine().getUpdateLocation();
         if(hostUrl==null)hostUrl=new URL("http://www.getrailo.org");
         URL infoUrl=new URL(hostUrl,"/railo/remote/version/info.cfm?ext="+getCoreExtension()+"&version="+version);
-        //URL secureUrl=new URL(hostUrl,"/railo/remote/version/secure.cfm?ext="+getCoreExtension()+"&version="+version);
         
         tlog("Check for update at "+hostUrl);
         
         String availableVersion = Util.toString((InputStream)infoUrl.getContent()).trim();
-        //boolean isSecure = Util.toBooleanValue(Util.toString((InputStream)secureUrl.getContent()).trim());
         
         if(availableVersion.length()!=9) throw new IOException("can't get update info from ["+infoUrl+"]");
         if(!isNewerThan(Util.toInVersion(availableVersion),version)) {
@@ -429,6 +431,23 @@ public class CFMLEngineFactory {
         return removeUpdate();
     }
     
+
+    /**
+     * method to initalize a update of the CFML Engine.
+     * checks if there is a new Version and update it whwn a new version is available
+     * @param password
+     * @return has updated
+     * @throws IOException
+     * @throws ServletException 
+     */
+    public boolean removeLatestUpdate(String password) throws IOException, ServletException {
+        if(!engine.can(CFMLEngine.CAN_UPDATE,password))
+            throw new IOException("access denied to update CFMLEngine");
+        return removeLatestUpdate();
+    }
+    
+    
+    
     /**
      * updates the engine when a update is available
      * @return has updated
@@ -445,6 +464,41 @@ public class CFMLEngineFactory {
         _restart();
         return true;
     }
+    
+
+    private boolean removeLatestUpdate() throws IOException, ServletException {
+        File patchDir=getPatchDirectory();
+        File[] patches=patchDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
+        File patch=null;
+        for(int i=0;i<patches.length;i++) {
+        	 if(patch==null || isNewerThan(Util.toInVersion(patches[i].getName()),Util.toInVersion(patch.getName()))) {
+                 patch=patches[i];
+             }
+        }
+    	if(patch!=null && !patch.delete())patch.deleteOnExit();
+        
+        _restart();
+        return true;
+    }
+    
+
+	public String[] getInstalledPatches() throws ServletException, IOException {
+		File patchDir=getPatchDirectory();
+        File[] patches=patchDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
+        
+        List<String> list=new ArrayList<String>();
+        String name;
+        int extLen=getCoreExtension().length()+1;
+        for(int i=0;i<patches.length;i++) {
+        	name=patches[i].getName();
+        	name=name.substring(0, name.length()-extLen);
+        	 list.add(name);
+        }
+        String[] arr = list.toArray(new String[list.size()]);
+    	Arrays.sort(arr);
+        return arr;
+	}
+    
 
     /**
      * call all registred listener for update of the engine
@@ -593,4 +647,5 @@ public class CFMLEngineFactory {
             }
         }
     }
+
 }

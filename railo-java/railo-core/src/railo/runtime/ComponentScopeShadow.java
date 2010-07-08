@@ -117,19 +117,6 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 
 	private ComponentImpl getUDFComponent(PageContext pc) {
 		return ComponentUtil.getActiveComponent(pc, component);
-		
-		/*if(pc.getActiveComponent()==null) return component; 
-		
-		if(pc.getActiveUDF()!=null ){
-			
-			print.out("udf:"+((ComponentImpl)pc.getActiveUDF().getOwnerComponent()).getCurrentPage().getPageSource().getDisplayPath());
-			print.out("com:"+((ComponentImpl)pc.getActiveComponent()).getCurrentPage().getPageSource().getDisplayPath());
-			return (ComponentImpl) pc.getActiveUDF().getOwnerComponent();
-		}
-		return (ComponentImpl) pc.getActiveComponent();//+++
-		*/
-		//if(pc.getActiveUDF()==null) return component; 
-		//return (ComponentImpl) pc.getActiveUDF().getOwnerComponent();//+++
 	}
 	
 	/**

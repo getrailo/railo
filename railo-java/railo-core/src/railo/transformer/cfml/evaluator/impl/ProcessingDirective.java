@@ -20,7 +20,6 @@ public final class ProcessingDirective extends EvaluatorSupport {
     public TagLib execute(Config config, Tag tag, TagLibTag libTag, FunctionLib[] flibs, CFMLString cfml) throws TemplateException {
     	String encoding=null;
     	Boolean exeLog=null;
-    	
     	if(tag.containsAttribute("pageencoding")) {
             encoding=ASMUtil.getAttributeString(tag, "pageencoding",null);
             if(encoding==null)

@@ -118,4 +118,7 @@ public interface Tag extends Statement,HasBody {
      */
     public void setEndLine(int endLine);
 
+	public abstract void setScriptBase(boolean scriptBase);
+	public abstract boolean isScriptBase();
+
 }

@@ -2,14 +2,12 @@ package railo.runtime.interpreter;
 
 import java.util.ArrayList;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ParserString;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.exp.TemplateException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.Set;
 import railo.runtime.interpreter.ref.cast.Casting;
@@ -47,19 +45,11 @@ import railo.runtime.interpreter.ref.op.Not;
 import railo.runtime.interpreter.ref.op.Or;
 import railo.runtime.interpreter.ref.op.Plus;
 import railo.runtime.interpreter.ref.op.Xor;
-import railo.runtime.interpreter.ref.var.ArgumentBind;
 import railo.runtime.interpreter.ref.var.Assign;
+import railo.runtime.interpreter.ref.var.Bind;
 import railo.runtime.interpreter.ref.var.DynAssign;
 import railo.runtime.interpreter.ref.var.Variable;
 import railo.runtime.type.Scope;
-import railo.transformer.bytecode.cast.CastString;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.expression.var.Argument;
-import railo.transformer.bytecode.expression.var.DataMember;
-import railo.transformer.bytecode.expression.var.FunctionMember;
-import railo.transformer.bytecode.expression.var.Member;
-import railo.transformer.bytecode.literal.LitString;
-import railo.transformer.cfml.expression.CFMLExprTransformer.Data;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
@@ -1237,8 +1227,8 @@ public class CFMLExpressionInterpreter {
         }
         if(ref instanceof railo.runtime.interpreter.ref.var.Scope) { 
             railo.runtime.interpreter.ref.var.Scope s=(railo.runtime.interpreter.ref.var.Scope)ref;
-            if(s.getScope()==Scope.SCOPE_ARGUMENTS) {
-                ref=new ArgumentBind(s);
+            if(s.getScope()==Scope.SCOPE_ARGUMENTS || s.getScope()==Scope.SCOPE_LOCAL) {
+                ref=new Bind(s);
             }
         }
         return ref;
@@ -1531,6 +1521,7 @@ public class CFMLExpressionInterpreter {
         cfml.removeSpace();
         if (!cfml.forwardIfCurrent('#'))
             throw new ExpressionException("Syntax Error, Invalid Construct");
+        cfml.removeSpace();
         return ref;
     }
 

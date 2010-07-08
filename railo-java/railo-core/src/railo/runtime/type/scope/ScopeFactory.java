@@ -96,7 +96,7 @@ public final class ScopeFactory {
      * @param local recycle a Local scope for reuse
      */
     public void recycle(LocalImpl local) {
-        if(localCounter<=0) return;
+        if(localCounter<=0  || local.isBind()) return;
         local.release();
         locals[--localCounter]=local;
     }

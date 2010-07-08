@@ -3114,7 +3114,6 @@ public final class Caster {
            }
         }
         
-        
         // check for argument
         PageContext pc = ThreadLocalPageContext.get();
         if(pc!=null)	{
@@ -3123,7 +3122,7 @@ public final class Caster {
         		return ComponentUtil.getServerComponentPropertiesClass(c);
     		} 
             catch (PageException pe) {
-            	
+            	pe.printStackTrace();
             }
         }
         try {

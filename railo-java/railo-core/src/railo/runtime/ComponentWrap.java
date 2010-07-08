@@ -30,9 +30,16 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
     	this.access=access;
         this.component=component;
     }
-    
+
     public Page getPage(){
     	return component.getPage();
+    }
+
+    /**
+     * @see railo.runtime.ComponentPro#getPageSource()
+     */
+    public PageSource getPageSource(){
+    	return component.getPageSource();
     }
     
     /**

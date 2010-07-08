@@ -222,6 +222,26 @@ public final class AxisCaster {
     }*/
 
     private static Object toPojo(TypeMapping tm,Component comp) throws PageException {
+
+    	PageContext pc = ThreadLocalPageContext.get(); 
+    	
+	    try {
+	    	//print.o("++++++++++");
+	    	//print.o(src.getFullClassName());
+	    	//print.o(src.getDisplayPath());
+	    	//pc.addPageSource(src,true);
+			return _toPojo(pc, tm, comp);
+			
+		}
+		catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
+		finally {
+			//pc.removeLastPageSource(true);
+		}
+    }
+    
+    private static Object _toPojo(PageContext pc, TypeMapping tm,Component comp) throws PageException {
     	if(comp instanceof ComponentImpl)comp=new ComponentWrap(ComponentImpl.ACCESS_PRIVATE,(ComponentImpl)comp);
 		
     	
@@ -234,7 +254,7 @@ public final class AxisCaster {
 			throw Caster.toPageException(e);
 		}
     	
-    	PageContext pc = ThreadLocalPageContext.get();
+    	//PageContext pc = ThreadLocalPageContext.get();
     	Property p;
     	Object v;
 		CFMLExpressionInterpreter interpreter = new CFMLExpressionInterpreter();

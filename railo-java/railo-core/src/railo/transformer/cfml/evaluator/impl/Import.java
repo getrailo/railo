@@ -18,7 +18,9 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.TemplateException;
+import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
+import railo.transformer.bytecode.statement.tag.TagImport;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorSupport;
@@ -35,12 +37,45 @@ import railo.transformer.util.CFMLString;
  * 
  */
 public final class Import extends EvaluatorSupport {
+	
+	public void evaluate(Tag tag,TagLibTag libTag) throws EvaluatorException {
+	}
+	
     
 	//ç
     /**
      * @see railo.transformer.cfml.evaluator.Evaluator#execute(railo.runtime.config.Config, org.w3c.dom.Element, railo.transformer.library.tag.TagLibTag, railo.transformer.library.function.FunctionLib[], railo.transformer.util.CFMLString)
      */
-    public TagLib execute(Config config,Tag tag, TagLibTag libTag, FunctionLib[] flibs,CFMLString cfml) throws TemplateException { 
+	public TagLib execute(Config config,Tag tag, TagLibTag libTag, FunctionLib[] flibs,CFMLString cfml) throws TemplateException { 
+		TagImport ti=(TagImport) tag;
+		Attribute p = tag.getAttribute("prefix");
+		Attribute t = tag.getAttribute("taglib");
+		Attribute path = tag.getAttribute("path");
+		
+		if(p!=null || t!=null){
+			if(p==null)
+				throw new TemplateException(cfml,"Wrong Context, missing attribute [prefix] for tag "+tag.getFullname());
+			if(t==null)
+				throw new TemplateException(cfml,"Wrong Context, missing attribute [taglib] for tag "+tag.getFullname());
+			
+			if(path!=null)
+				throw new TemplateException(cfml,"Wrong context, you have an invalid attributes constellation for the tag "+tag.getFullname()+", " +
+						"you cannot mix attribute [path] with attributes [taglib] and [prefix]");
+			
+			return executePT(config, tag, libTag, flibs, cfml);
+		}
+		if(path==null) throw new TemplateException(cfml,"Wrong context, you have an invalid attributes constellation for the tag "+tag.getFullname()+", " +
+				"you need to define the attributes [prefix] and [taglib], the attribute [path] or simply define a attribute value");
+		
+		String strPath=ASMUtil.getAttributeString(tag,"path",null);
+        if(strPath==null) throw new TemplateException(cfml,"attribute [path] must be a constant value");
+        ti.setPath(strPath);
+        
+		return null;
+		
+	}
+	
+    private TagLib executePT(Config config,Tag tag, TagLibTag libTag, FunctionLib[] flibs,CFMLString cfml) throws TemplateException { 
     	
         // Attribute prefix 
         String nameSpace=ASMUtil.getAttributeString(tag,"prefix",null);

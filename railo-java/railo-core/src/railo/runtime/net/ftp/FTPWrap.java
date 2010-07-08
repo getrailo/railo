@@ -2,7 +2,9 @@ package railo.runtime.net.ftp;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
 
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
 import railo.runtime.net.proxy.Proxy;
@@ -74,6 +76,12 @@ public final class FTPWrap {
         catch(IOException ioe) {}
         connect();
     }
+    
+    public void reConnect(short transferMode) throws IOException { 
+    	if(transferMode!=conn.getTransferMode())
+    		((FTPConnectionImpl)conn).setTransferMode(transferMode);
+    	reConnect();
+    }
 
     /**
      * connects the client
@@ -83,22 +91,15 @@ public final class FTPWrap {
         
         client=new FTPClient();
         
-        // timeout
-        client.setDataTimeout(conn.getTimeout()*1000);
+        setConnectionSettings(client,conn);
         
-        // passive/active Mode
-        if(conn.isPassive()) client.enterLocalPassiveMode();
-        else client.enterLocalActiveMode();
+        // transfer mode
+        if(conn.getTransferMode()==FTPConstant.TRANSFER_MODE_ASCCI) getClient().setFileType(FTP.ASCII_FILE_TYPE);
+        else if(conn.getTransferMode()==FTPConstant.TRANSFER_MODE_BINARY) getClient().setFileType(FTP.BINARY_FILE_TYPE);
         
-        // Proxy
-        /*if(connection.getProxyserver()!=null) {
-            //print.ln(System.getProperties().get("socksProxyHost"));
-            System.getProperties().put( "socksProxyPort", Caster.toString(connection.getPort()));
-            System.getProperties().put( "socksProxyHost" ,connection.getProxyserver());
-        }*/
-        //Socket s;
+        
+        
         // Connect
-        
         try {
         	Proxy.start(
             		conn.getProxyServer(), 
@@ -113,4 +114,25 @@ public final class FTPWrap {
         	Proxy.end();
         }
     }
+
+
+
+	static void setConnectionSettings(FTPClient client, FTPConnection conn) {
+		// timeout
+        client.setDataTimeout(conn.getTimeout()*1000);
+        try {
+			client.setSoTimeout(conn.getTimeout()*1000);
+		} catch (SocketException se) {}
+        
+        // passive/active Mode
+		int mode = client.getDataConnectionMode();
+        if(conn.isPassive()) {
+        	if(FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE!=mode)
+        		client.enterLocalPassiveMode();
+        }
+        else {
+        	if(FTPClient.ACTIVE_LOCAL_DATA_CONNECTION_MODE!=mode)
+        		client.enterLocalActiveMode();
+        }
+	}
 }

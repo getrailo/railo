@@ -1,6 +1,5 @@
 package railo.runtime.type;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.ComponentImpl;
@@ -8,7 +7,6 @@ import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.arrays.ArrayNew;
 import railo.runtime.type.Collection.Key;
 
 public class UDFSetterProperty extends UDFGSProperty {
@@ -42,7 +40,6 @@ public class UDFSetterProperty extends UDFGSProperty {
 	public Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException {
 		if(args.length<1)
 			throw new ExpressionException("The parameter "+prop.getName()+" to function "+getFunctionName()+" is required but was not passed in.");
-		
 		component.getComponentScope().set(prop.getName(), args[0]);
 		
 		return null;

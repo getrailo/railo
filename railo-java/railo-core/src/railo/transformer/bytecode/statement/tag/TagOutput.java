@@ -501,6 +501,17 @@ public final class TagOutput extends TagBase {
 		adapter.checkCast(Types.QUERY_IMPL);
 		adapter.storeLocal(queryImpl);
 		
+
+		
+		// int startAt=query.getCurrentrow();
+		int startAt=adapter.newLocal(Types.INT_VALUE);
+		adapter.loadLocal(queryImpl);
+		adapter.loadArg(0);
+		adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
+		adapter.invokeVirtual(Types.QUERY_IMPL, TagLoop.GET_CURRENTROW);
+		adapter.storeLocal(startAt);
+		
+		
 		
 		// if(query.getRecordcount()>0) {
 		DecisionIntVisitor div=new DecisionIntVisitor();
@@ -648,12 +659,22 @@ public final class TagOutput extends TagBase {
 			tfv.visitTryEndFinallyBegin(bc);
 
 	    		// query.reset();
-				adapter.loadLocal(queryImpl);
+				/*adapter.loadLocal(queryImpl);
 				adapter.loadArg(0);
 				adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-				
-				adapter.invokeVirtual(Types.QUERY_IMPL, TagOutput.RESET);
+				adapter.invokeVirtual(Types.QUERY_IMPL, TagOutput.RESET);*/
 	    		
+				// query.go(startAt);
+				adapter.loadLocal(queryImpl);
+				adapter.loadLocal(startAt);
+				adapter.loadArg(0);
+				adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
+				adapter.invokeVirtual(Types.QUERY_IMPL, TagLoop.GO);
+				adapter.pop();
+				
+				
+				
+				
 				// pc.us().removeCollection();
 				adapter.loadArg(0);
 				adapter.invokeVirtual(Types.PAGE_CONTEXT, TagOutput.US);

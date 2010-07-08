@@ -38,70 +38,70 @@ public class SearchResulItemHits implements SearchResultItemPro {
 	}
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getAuthor()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getAuthor()
 	 */
 	public String getAuthor() {
 		return doc("author");
 	}
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getCategory()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCategory()
 	 */
 	public String getCategory() {
 		return category;
 	}
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getCategoryTree()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCategoryTree()
 	 */
 	public String getCategoryTree() {
 		return categoryTree;
 	}
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getCustom1()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom1()
 	 */
 	public String getCustom1() {
 		return doc("custom1");
 	}
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getCustom2()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom2()
 	 */
 	public String getCustom2() {
 		return doc("custom2");
 	}
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getCustom3()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom3()
 	 */
 	public String getCustom3() {
 		return doc("custom3");
 	}
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getCustom4()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getCustom4()
 	 */
 	public String getCustom4() {
 		return doc("custom4");
 	}
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getId()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getId()
 	 */
 	public String getId() {
 		return id;
 	}
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getKey()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getKey()
 	 */
 	public String getKey() {
 		return doc("key");
 	}
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getMimeType()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getMimeType()
 	 */
 	public String getMimeType() {
 		return doc("mime-type");
@@ -114,7 +114,7 @@ public class SearchResulItemHits implements SearchResultItemPro {
     
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getScore()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getScore()
 	 */
 	public float getScore() {
 		try {
@@ -125,28 +125,28 @@ public class SearchResulItemHits implements SearchResultItemPro {
 	}
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getSize()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getSize()
 	 */
 	public String getSize() {
 		return doc("size");
 	}
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getSummary()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getSummary()
 	 */
 	public String getSummary() {
 		return doc("summary");
 	}
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getTitle()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getTitle()
 	 */
 	public String getTitle() {
 		return doc("title");
 	}
 
 	/**
-	 * @see railo.runtime.search.SearchResulItem#getUrl()
+	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getUrl()
 	 */
 	public String getUrl() {
 		return doc("url");

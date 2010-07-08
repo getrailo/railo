@@ -10,6 +10,7 @@ import railo.runtime.ext.function.Function;
 
 /**
  * a user defined function
+ * 
  */
 public interface UDF extends Function,Dumpable,Member,Cloneable {
 
@@ -114,7 +115,10 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
     /**
      * @return Returns the page.
      */
-    public abstract Page getPage();
+    public abstract Page getPage();// FUTURE deprecated
+    //FUTURE public abstract PageSource getPageSource();
+    
+    
 
 	public abstract Struct getMetaData(PageContext pc) throws PageException; 
 	

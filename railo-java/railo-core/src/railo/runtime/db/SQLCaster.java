@@ -61,9 +61,6 @@ public final class SQLCaster {
 	    		return BlobImpl.toBlob(value);
 	    	case Types.CHAR:
 	    		return Caster.toString(value);
-	    	    //String str = Caster.toString(value);
-	    	    //if(str!=null && str.length()==0) str=null;
-	    	    //return str;
 	    	case Types.CLOB:			
 	    		return ClobImpl.toClob(value);
 	    	case Types.DATE:			
@@ -150,7 +147,16 @@ public final class SQLCaster {
     	return;
     	case Types.CLOB:			
     		try {
-    			stat.setClob(parameterIndex,SQLUtil.toClob(stat.getConnection(),value));
+    			if(value instanceof String) {
+    				try{
+    					stat.setString(parameterIndex,Caster.toString(value));
+    				}
+    				catch(Throwable t){
+    					stat.setClob(parameterIndex,SQLUtil.toClob(stat.getConnection(),value));
+    				}
+    				
+    			}
+    			else stat.setClob(parameterIndex,SQLUtil.toClob(stat.getConnection(),value));
     		}
     		catch(PageException pe) {
     			if(value instanceof String && StringUtil.isEmpty((String)value))
@@ -634,6 +640,7 @@ public final class SQLCaster {
         		else if(strType.equals("INT"))		return Types.INTEGER;
             }
             else if(first=='L') {
+        		//if(strType.equals("LONG"))return Types.INTEGER;
         		if(strType.equals("LONGVARBINARY"))return Types.LONGVARBINARY;
         		else if(strType.equals("LONGVARCHAR"))return Types.LONGVARCHAR;
             }

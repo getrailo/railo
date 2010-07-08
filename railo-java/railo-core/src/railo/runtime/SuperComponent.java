@@ -511,6 +511,13 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	public Page getPage() {
 		return comp.getPage();
 	}
+	
+	/**
+	 * @see railo.runtime.ComponentPro#getPageSource()
+	 */
+	public PageSource getPageSource() {
+		return comp.getPageSource();
+	}
 
 
 	/**

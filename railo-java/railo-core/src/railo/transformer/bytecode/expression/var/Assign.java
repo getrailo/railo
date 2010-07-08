@@ -101,7 +101,13 @@ public class Assign extends ExpressionBase {
     	GeneratorAdapter adapter = bc.getAdapter();
 		int count=variable.countFM+variable.countDM;
         // count 0
-        if(count==0) 						return _writeOutEmpty(bc);
+        if(count==0){
+        	if(variable.ignoredFirstMember() && variable.scope==Scope.SCOPE_LOCAL){
+    			//print.dumpStack();
+        		return Types.VOID;
+    		}
+        	return _writeOutEmpty(bc);
+        }
         
     	Type rtn=Types.OBJECT;
     	//boolean last;
@@ -198,7 +204,6 @@ public class Assign extends ExpressionBase {
 		if(variable.scope==Scope.SCOPE_ARGUMENTS) {
 			adapter.loadArg(0);
 			TypeScope.invokeScope(adapter, Scope.SCOPE_ARGUMENTS);
-			//adapter.invokeVirtual(Types.PAGE_CONTEXT,TypeScope.METHODS[Scope.SCOPE_ARGUMENTS]);
 			adapter.checkCast(TypeScope.SCOPE_ARGUMENT_IMPL);
 			value.writeOut(bc, MODE_REF);
 			adapter.invokeVirtual(TypeScope.SCOPE_ARGUMENT_IMPL,SET_ARGUMENT);
@@ -206,9 +211,7 @@ public class Assign extends ExpressionBase {
 		else {
 			adapter.loadArg(0);
 			TypeScope.invokeScope(adapter, Scope.SCOPE_UNDEFINED);
-			//adapter.invokeVirtual(Types.PAGE_CONTEXT,TypeScope.METHODS[Scope.SCOPE_UNDEFINED]);
 			Variable.registerKey(bc,LitString.toExprString(ScopeFactory.toStringScope(variable.scope),-1));
-			//LitString.toExprString(ScopeFactory.toStringScope(variable.scope),-1).writeOut(bc, MODE_REF);
 			value.writeOut(bc, MODE_REF);
 			adapter.invokeInterface(TypeScope.SCOPES[Scope.SCOPE_UNDEFINED],METHOD_SCOPE_SET_KEY);
 		}

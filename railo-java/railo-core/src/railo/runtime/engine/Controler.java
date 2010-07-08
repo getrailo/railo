@@ -121,21 +121,21 @@ public final class Controler extends Thread {
 					try{checkCacheFileSize(config);}catch(Throwable t){}
 				}
 				
-				
+				//every Minute
 				if(doMinute) {
 					if(config==null) {
 						config = cfmlFactory.getConfig();
 						ThreadLocalConfig.register(config);
 					}
 					
-				// clear unused DB Connections
+					// clear unused DB Connections
 					try{((ConfigImpl)config).getDatasourceConnectionPool().clear();}catch(Throwable t){}
-				// clear all unused scopes
+					// clear all unused scopes
 					try{cfmlFactory.getScopeContext().clearUnused(cfmlFactory);}catch(Throwable t){}
-				// Memory usage
-				// clear Query Cache
+					// Memory usage
+					// clear Query Cache
 					try{cfmlFactory.getQueryCache().clearUnused();}catch(Throwable t){}
-				// clear Page Pool
+					// contract Page Pool
 					try{doClearPagePools((ConfigWebImpl) config);}catch(Throwable t){}
 					try{doCheckMappings(config);}catch(Throwable t){}
 				}
@@ -145,10 +145,13 @@ public final class Controler extends Thread {
 						config = cfmlFactory.getConfig();
 						ThreadLocalConfig.register(config);
 					}
-				
+					// time server offset
 					try{config.reloadTimeServerOffset();}catch(Throwable t){}
+					// check file based client scope
 					try{checkClientFileSize(config);}catch(Throwable t){}
+					// check temp directory
 					try{checkTempDirectorySize(config);}catch(Throwable t){}
+					// check cache directory
 					try{checkCacheFileSize(config);}catch(Throwable t){}
 				}
 			}

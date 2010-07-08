@@ -338,7 +338,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	*/
 	public int doEndTag() throws PageException	{
 		
-		if(datasource==null && (dbtype==null || !dbtype.equals("query"))){
+		if(StringUtil.isEmpty(datasource) && (dbtype==null || !dbtype.equals("query"))){
 			datasource=((ApplicationContextPro)pageContext.getApplicationContext()).getDefaultDataSource();
 			if(StringUtil.isEmpty(datasource))
 				throw new ApplicationException(

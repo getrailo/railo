@@ -103,6 +103,12 @@ public final class FTPConnectionImpl implements FTPConnection {
     public short getTransferMode() {
         return transferMode;
     }
+    
+
+	public void setTransferMode(short transferMode) {
+		this.transferMode=transferMode;
+	}
+    
     /**
      * @see railo.runtime.net.ftp.FTPConnection#isPassive()
      */
@@ -146,4 +152,31 @@ public final class FTPConnectionImpl implements FTPConnection {
 	public String getProxyUser() {
 		return proxyuser;
 	}
+	
+	public boolean equal(Object o){
+		if(!(o instanceof FTPConnection)) return false;
+		FTPConnection other=(FTPConnection) o;
+		
+		if(neq(other.getPassword(),getPassword())) return false;
+		if(neq(other.getProxyPassword(),getProxyPassword())) return false;
+		if(neq(other.getProxyServer(),getProxyServer())) return false;
+		if(neq(other.getProxyUser(),getProxyUser())) return false;
+		if(neq(other.getServer(),getServer())) return false;
+		if(neq(other.getUsername(),getUsername())) return false;
+		
+		if(other.getPort()!=getPort()) return false;
+		if(other.getProxyPort()!=getProxyPort()) return false;
+		//if(other.getTimeout()!=getTimeout()) return false;
+		if(other.getTransferMode()!=getTransferMode()) return false;
+		
+		return true;
+	}
+	
+	private boolean neq(String left, String right) {
+		if(left==null) left="";
+		if(right==null) right="";
+		
+		return !left.equals(right);
+	}
+	
 }

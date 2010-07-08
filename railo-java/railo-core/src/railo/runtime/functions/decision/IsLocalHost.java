@@ -15,7 +15,8 @@ public final class IsLocalHost implements Function {
 		
 		if(StringUtil.isEmpty(ip,true)) return false;
 		ip=ip.trim().toLowerCase();
-		if("localhost".equalsIgnoreCase(ip) || "127.0.0.1".equals(ip)) return true;
+		if(ip.equalsIgnoreCase("localhost") || ip.equals("127.0.0.1") || ip.equalsIgnoreCase("0:0:0:0:0:0:0:1") || ip.equalsIgnoreCase("::1"))
+			return true;
 		
 		try {
         	return InetAddress.getLocalHost().equals(InetAddress.getByName(ip));
@@ -24,5 +25,5 @@ public final class IsLocalHost implements Function {
             return false;
         }
 	}
-
+	
 }

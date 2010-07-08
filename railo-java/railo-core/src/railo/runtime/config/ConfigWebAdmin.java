@@ -675,6 +675,17 @@ public final class ConfigWebAdmin {
       	}
     }
     
+    public void removeComponentMapping(String virtual) throws SecurityException {
+    	checkWriteAccess();
+    	
+        Element mappings=_getRootElement("component");
+        Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
+      	for(int i=0;i<children.length;i++) {
+      	    if(virtual.equals("/"+i))mappings.removeChild(children[i]);
+      	}
+    }
+    
+    
 
 
     /**
@@ -708,31 +719,64 @@ public final class ConfigWebAdmin {
         // Update
         Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
         for(int i=0;i<children.length;i++) {
-      	    //String v=children[i].getAttribute("virtual");
-      	    //if(v!=null) {
-      	        //if(!v.equals("/") && v.endsWith("/"))
-      	        //    v=v.substring(0,v.length()-1);
-      			//print.out("virtual:"+virtual+":/"+1);
-	      	    if(("/"+i).equals(virtual)) {
-		      		Element el=children[i];
-		      		el.setAttribute("physical",physical);
-		      		el.setAttribute("archive",archive);
-		      		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
-		      		el.setAttribute("trusted",Caster.toString(trusted));
-		      		return ;
-	  			}
-      	    //}
+      	    if(("/"+i).equals(virtual)) {
+	      		Element el=children[i];
+	      		el.setAttribute("physical",physical);
+	      		el.setAttribute("archive",archive);
+	      		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
+	      		el.setAttribute("trusted",Caster.toString(trusted));
+	      		return ;
+  			}
       	}
       	
       	// Insert
       	Element el=doc.createElement("mapping");
       	mappings.appendChild(el);
-      	//el.setAttribute("virtual",virtual);
       	if(physical.length()>0)el.setAttribute("physical",physical);
   		if(archive.length()>0)el.setAttribute("archive",archive);
   		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
   		el.setAttribute("trusted",Caster.toString(trusted));
-  		
+    }
+    
+
+    public void updateComponentMapping(String virtual,String physical,String archive,String primary, boolean trusted) throws ExpressionException, SecurityException {
+    	checkWriteAccess();
+    	boolean hasAccess=true;// TODO ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_CUSTOM_TAG);
+        //if(!hasAccess)
+        //    throw new SecurityException("no access to change custom tag settings");
+        
+        //virtual="/custom-tag";
+        
+        boolean isArchive=primary.equalsIgnoreCase("archive");
+        if(isArchive && archive.length()==0 ) {
+            throw new ExpressionException("archive must have a value when primary has value archive");
+        }
+        if(!isArchive && physical.length()==0 ) {
+            throw new ExpressionException("physical must have a value when primary has value physical");
+        }
+        
+        Element mappings=_getRootElement("component");
+        
+        // Update
+        Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
+        for(int i=0;i<children.length;i++) {
+      	    if(("/"+i).equals(virtual)) {
+	      		Element el=children[i];
+	      		el.setAttribute("physical",physical);
+	      		el.setAttribute("archive",archive);
+	      		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
+	      		el.setAttribute("trusted",Caster.toString(trusted));
+	      		return ;
+  			}
+      	}
+      	
+      	// Insert
+      	Element el=doc.createElement("mapping");
+      	mappings.appendChild(el);
+      	if(physical.length()>0)el.setAttribute("physical",physical);
+  		if(archive.length()>0)el.setAttribute("archive",archive);
+  		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
+  		el.setAttribute("trusted",Caster.toString(trusted));
     }
 
     
@@ -1858,6 +1902,21 @@ public final class ConfigWebAdmin {
         	scope.setAttribute("base",baseComponent);
     }
     
+
+    public void updateComponentDefaultImport(String componentDefaultImport) throws SecurityException {
+    	checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        if(!hasAccess)
+            throw new SecurityException("no access to update component setting");
+        //config.resetBaseComponentPage();
+        Element scope=_getRootElement("component");
+        //if(baseComponent.trim().length()>0)
+        	scope.setAttribute("component-default-import",componentDefaultImport);
+    }
+    
+    
+    
+    
     /**
      * update the Component Data Member default access type
      * @param access
@@ -1906,7 +1965,20 @@ public final class ConfigWebAdmin {
         Element scope=_getRootElement("component");
         scope.setAttribute("use-shadow",Caster.toString(useShadow,""));
 	}
+
+	public void updateComponentLocalSearch(Boolean componentLocalSearch) throws SecurityException {
+    	checkWriteAccess();
+		boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+		if(!hasAccess)
+            throw new SecurityException("no access to update component Local Search");
+        
+        Element scope=_getRootElement("component");
+        scope.setAttribute("local-search",Caster.toString(componentLocalSearch,""));
+	}
     
+	
+	
+	
     /**
      * updates if debugging or not
      * @param debug if value is null server setting is used

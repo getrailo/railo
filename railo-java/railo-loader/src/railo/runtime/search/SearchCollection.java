@@ -133,9 +133,8 @@ public interface SearchCollection extends Serializable {
      * @throws SearchException
      */
     public abstract IndexResult indexCustom(String id, QueryColumn title,
-            QueryColumn keyColumn, QueryColumn[] bodyColumns, String language,
-            QueryColumn custom1, QueryColumn custom2, QueryColumn custom3,
-            QueryColumn custom4) throws SearchException;
+            QueryColumn keyColumn, QueryColumn[] bodyColumns, String language,// FUTURE,QueryColumn urlpath, 
+            QueryColumn custom1, QueryColumn custom2, QueryColumn custom3,QueryColumn custom4) throws SearchException;
 
     /**
      * @return Returns the language.

@@ -134,17 +134,22 @@ public final class CFMLTransformer {
 		CFMLString cfml;
 		String charset;
 		boolean writeLog;
-		try {
-			writeLog=config.getExecutionLogEnabled();
-			charset=config.getTemplateCharset();
-			cfml=new CFMLString(sf,charset,writeLog);
-			p = transform(config,cfml,tlibs,flibs,sf.getFile().lastModified());
-		}
-		catch(ProcessingDirectiveException pde) {
-			writeLog=pde.getWriteLog();
-			charset=pde.getCharset();
-			cfml=new CFMLString(sf,charset,writeLog);
-			p= transform(config,cfml,tlibs,flibs,sf.getFile().lastModified());
+		
+		writeLog=config.getExecutionLogEnabled();
+		charset=config.getTemplateCharset();
+		
+		
+		
+		while(true){
+			try {
+				cfml=new CFMLString(sf,charset,writeLog);
+				p = transform(config,cfml,tlibs,flibs,sf.getFile().lastModified());
+				break;
+			}
+			catch(ProcessingDirectiveException pde) {
+				writeLog=pde.getWriteLog();
+				charset=pde.getCharset();
+			}
 		}
 		
 		// if cfc has no component tag or is script without cfscript
@@ -157,22 +162,57 @@ public final class CFMLTransformer {
 			tlt = CFMLTransformer.getTLT(original,"script");
 			String text="<"+tlt.getFullName()+">"+original.getText()+"</"+tlt.getFullName()+">";
 			cfml=new CFMLString(text,charset,writeLog,sf);
+			
 			try {
-				p= transform(config,cfml,tlibs,flibs,sf.getFile().lastModified());
+				while(true){
+					if(cfml==null){
+						cfml=new CFMLString(sf,charset,writeLog);
+						text="<"+tlt.getFullName()+">"+cfml.getText()+"</"+tlt.getFullName()+">";
+						cfml=new CFMLString(text,charset,writeLog,sf);
+					}
+					try {
+						p= transform(config,cfml,tlibs,flibs,sf.getFile().lastModified());
+						break;
+					}
+					catch(ProcessingDirectiveException pde) {
+						writeLog=pde.getWriteLog();
+						charset=pde.getCharset();
+						cfml=null;
+					}
+				}
 			}
 			catch (ComponentBodyException e) {
 				throw e.getTemplateException();
 			}
 			catch (TemplateException e) {
-				//throw e;
+				//print.printST(e);
 			}
+			
+			
+			
 			
 			// try inside a component
 			if(p.isPage()){
 				tlt = CFMLTransformer.getTLT(original,"component");
 				text="<"+tlt.getFullName()+">"+original.getText()+"</"+tlt.getFullName()+">";
 				cfml=new CFMLString(text,charset,writeLog,sf);
-				p= transform(config,cfml,tlibs,flibs,sf.getFile().lastModified());
+						
+				while(true){
+					if(cfml==null){
+						cfml=new CFMLString(sf,charset,writeLog);
+						text="<"+tlt.getFullName()+">"+cfml.getText()+"</"+tlt.getFullName()+">";
+						cfml=new CFMLString(text,charset,writeLog,sf);
+					}
+					try {
+						p= transform(config,cfml,tlibs,flibs,sf.getFile().lastModified());
+						break;
+					}
+					catch(ProcessingDirectiveException pde) {
+						writeLog=pde.getWriteLog();
+						charset=pde.getCharset();
+						cfml=null;
+					}
+				}
 			}
 			
 		}
@@ -748,12 +788,13 @@ public final class CFMLTransformer {
 			int max=tag.getMax();
 			int count=0;
 			ArrayList<String> args=new ArrayList<String>();
+			RefBoolean allowDefaultValue=new RefBooleanImpl(tag.getDefaultAttribute()!=null);
 			while(data.cfml.isValidIndex())	{
 				data.cfml.removeSpace();
 				// if no more attributes break
 				if(data.cfml.isCurrent('/') || data.cfml.isCurrent('>')) break;
 				
-				parent.addAttribute(attribute(data,tag,args));
+				parent.addAttribute(attribute(data,tag,args,allowDefaultValue));
 				count++;		
 			} 
             
@@ -826,20 +867,33 @@ public final class CFMLTransformer {
      * @return Element Attribute Element.
      * @throws TemplateException
      */
-    private static Attribute attribute(Data data,TagLibTag tag, ArrayList<String> args) throws TemplateException {
+    private static Attribute attribute(Data data,TagLibTag tag, ArrayList<String> args,RefBoolean allowDefaultValue) throws TemplateException {
+    	Expression value=null;
     	
     	// Name
     	StringBuffer sbType=new StringBuffer();
+    	RefBoolean dynamic=new RefBooleanImpl(false);
+    	boolean isDefaultValue=false;
     	boolean[] parseExpression=new boolean[2];
     	parseExpression[0]=true;
     	parseExpression[1]=false;
-    	RefBoolean dynamic=new RefBooleanImpl(false);
-    	String name=attributeName(data.cfml,dynamic,args,tag,sbType,parseExpression);
-    	Expression value=null;
+    	String name=attributeName(data.cfml,dynamic,args,tag,sbType,parseExpression,allowDefaultValue.toBooleanValue());
+    	
+    	// mixed in a noname attribute
+    	if(StringUtil.isEmpty(name)){
+    		allowDefaultValue.setValue(false);
+    		TagLibTagAttr attr = tag.getDefaultAttribute();
+    		if(attr==null)
+    			throw new TemplateException(data.cfml,"Invalid Identifer.");
+    		name=attr.getName();
+    		sbType.append(attr.getType());
+    		isDefaultValue=true;
+    	}
+    	
     	
     	comment(data.cfml,true);
     	
-    	if(data.cfml.forwardIfCurrent('='))	{
+    	if(isDefaultValue || data.cfml.forwardIfCurrent('='))	{
     		comment(data.cfml,true);
     		// Value
     		value=attributeValue(data,tag,sbType.toString(),parseExpression[0],false,LitString.toExprString("",-1));	
@@ -874,10 +928,16 @@ public final class CFMLTransformer {
 	 * @return Attribute Name
 	 * @throws TemplateException
 	 */
-	private static String attributeName(CFMLString cfml,RefBoolean dynamic, ArrayList<String> args, TagLibTag tag, StringBuffer sbType, boolean[] parseExpression) throws TemplateException {
+	private static String attributeName(CFMLString cfml,RefBoolean dynamic, ArrayList<String> args, TagLibTag tag, 
+			StringBuffer sbType, boolean[] parseExpression,boolean allowDefaultValue) throws TemplateException {
+		
+		String _id = identifier(cfml,!allowDefaultValue);
+		if(StringUtil.isEmpty(_id)){
+			return null;
+		}
 		
 		int typeDef=tag.getAttributeType();
-		String id=StringUtil.toLowerCase(identifier(cfml,true));
+		String id=StringUtil.toLowerCase(_id);
         if(args.contains(id)) throw new TemplateException(cfml,"you can't use the same tag attribute ["+id+"] twice");
 		args.add(id);
 		
@@ -913,6 +973,9 @@ public final class CFMLTransformer {
 		return id;
 	}
 	
+	
+	
+	
 	/**
 	 * Liest den Wert eines Attribut, mithilfe des innerhalb der Tag-Lib definierten Expression Transformer, ein.
 	  * <br />
@@ -925,7 +988,7 @@ public final class CFMLTransformer {
 	 * @return Element Eingelesener ￼bersetzer Wert des Attributes.
 	 * @throws TemplateException
 	 */
-	private static Expression attributeValue(Data data,TagLibTag tag, String type,boolean parseExpression,boolean isNonName, Expression noExpression) throws TemplateException {
+	public static Expression attributeValue(Data data,TagLibTag tag, String type,boolean parseExpression,boolean isNonName, Expression noExpression) throws TemplateException {
 		Expression expr;
 		try {
 			ExprTransformer transfomer=null;

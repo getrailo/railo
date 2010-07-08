@@ -190,7 +190,7 @@ public final class Ftp extends TagImpl {
     private FTPClient actionExists() throws PageException, IOException {
         required("item",item); 
 
-        FTPClient client = pool.get(createConnection());
+        FTPClient client = getClient();
         FTPFile file=existsFile(client,item,false);
         Struct cfftp = writeCfftp(client);
 
@@ -209,7 +209,7 @@ public final class Ftp extends TagImpl {
     private FTPClient actionExistsDir() throws PageException, IOException {
     	required("directory",directory); 
 
-    	FTPClient client = pool.get(createConnection());
+    	FTPClient client = getClient();
     	boolean res = existsDir(client,directory);
         Struct cfftp = writeCfftp(client);
 
@@ -239,7 +239,7 @@ public final class Ftp extends TagImpl {
     private FTPClient actionExistsFile() throws PageException, IOException {
         required("remotefile",remotefile); 
 
-        FTPClient client = pool.get(createConnection());
+        FTPClient client = getClient();
         FTPFile file=existsFile(client,remotefile,true);
         
         Struct cfftp = writeCfftp(client);
@@ -351,7 +351,7 @@ public final class Ftp extends TagImpl {
      */
     private FTPClient actionRemove() throws IOException, PageException {
         required("item",item);
-        FTPClient client = pool.get(createConnection());
+        FTPClient client = getClient();
         client.deleteFile(item);
         writeCfftp(client);
         
@@ -368,7 +368,7 @@ public final class Ftp extends TagImpl {
         required("existing",existing); 
         required("new",_new);
         
-        FTPClient client = pool.get(createConnection());
+        FTPClient client = getClient();
 		client.rename(existing,_new);
         writeCfftp(client);
         
@@ -385,7 +385,7 @@ public final class Ftp extends TagImpl {
         required("remotefile",remotefile); 
         required("localfile",localfile); 
         
-		FTPClient client = pool.get(createConnection());
+		FTPClient client = getClient();
 		Resource local=ResourceUtil.toResourceExisting(pageContext ,localfile);//new File(localfile);
 		//	if(failifexists && local.exists()) throw new ApplicationException("File ["+local+"] already exist, if you want to overwrite, set attribute failIfExists to false");
 		InputStream is=null;
@@ -414,7 +414,7 @@ public final class Ftp extends TagImpl {
         required("localfile",localfile); 
 		
         
-		FTPClient client = pool.get(createConnection());
+		FTPClient client = getClient();
 		Resource local=ResourceUtil.toResourceExistingParent(pageContext ,localfile);//new File(localfile);
         pageContext.getConfig().getSecurityManager().checkFileLocation(local);
 		if(failifexists && local.exists()) throw new ApplicationException("File ["+local+"] already exist, if you want to overwrite, set attribute failIfExists to false");
@@ -439,7 +439,7 @@ public final class Ftp extends TagImpl {
      * @throws PageException
      */
     private FTPClient actionGetCurrentURL() throws PageException, IOException {
-        FTPClient client = pool.get(createConnection());
+        FTPClient client = getClient();
         String pwd=client.printWorkingDirectory();
         Struct cfftp = writeCfftp(client); 
         cfftp.setEL("returnValue","ftp://"+client.getRemoteAddress().getHostName()+pwd);
@@ -453,7 +453,7 @@ public final class Ftp extends TagImpl {
      * @throws PageException
      */
     private FTPClient actionGetCurrentDir() throws PageException, IOException {
-        FTPClient client = pool.get(createConnection());
+        FTPClient client = getClient();
         String pwd=client.printWorkingDirectory();
         Struct cfftp = writeCfftp(client);
         cfftp.setEL("returnValue",pwd);
@@ -469,13 +469,17 @@ public final class Ftp extends TagImpl {
     private FTPClient actionChangeDir() throws IOException, PageException {
         required("directory",directory); 
 
-        FTPClient client = pool.get(createConnection());
+        FTPClient client = getClient();
         client.changeWorkingDirectory(directory);
         writeCfftp(client);
         return client;
     }
 
-    /**
+    private FTPClient getClient() throws PageException, IOException {
+    	return pool.get(_createConnection());
+	}
+
+	/**
      * removes a remote directory on server
      * @return FTPCLient
      * @throws IOException
@@ -484,7 +488,7 @@ public final class Ftp extends TagImpl {
     private FTPClient actionRemoveDir() throws IOException, PageException {
         required("directory",directory); 
 
-        FTPClient client = pool.get(createConnection());
+        FTPClient client = getClient();
         client.removeDirectory(directory);
         writeCfftp(client);
         return client;
@@ -499,7 +503,7 @@ public final class Ftp extends TagImpl {
     private FTPClient actionCreateDir() throws IOException, PageException {
         required("directory",directory); 
 
-        FTPClient client = pool.get(createConnection());
+        FTPClient client = getClient();
         client.makeDirectory(directory);
         writeCfftp(client);
         return client;
@@ -515,7 +519,7 @@ public final class Ftp extends TagImpl {
         required("name",name);
         required("directory",directory);
         
-        FTPClient client = pool.get(createConnection());
+        FTPClient client = getClient();
         FTPFile[] files = client.listFiles(directory);
         if(files==null)files=new FTPFile[0];
         
@@ -567,7 +571,7 @@ public final class Ftp extends TagImpl {
         required("password",password);
         
         
-        FTPClient client = pool.get(createConnection());
+        FTPClient client = getClient();
         writeCfftp(client);
         return client;
     }
@@ -578,7 +582,7 @@ public final class Ftp extends TagImpl {
      * @throws PageException 
      */
     private FTPClient actionClose() throws PageException {
-        FTPConnection conn = createConnection();
+        FTPConnection conn = _createConnection();
         FTPClient client = pool.remove(conn);
         
         Struct cfftp = writeCfftp(client);
@@ -662,7 +666,7 @@ public final class Ftp extends TagImpl {
     /**
      * @return return a new FTP Connection Object
      */
-    private FTPConnection createConnection() {
+    private FTPConnection _createConnection() {
     	
         return new FTPConnectionImpl(connectionName,server,username,password,port,timeout,transferMode,passive,proxyserver,proxyport,proxyuser,proxypassword);
     }

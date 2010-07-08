@@ -18,8 +18,9 @@ import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 
+import org.apache.commons.collections.map.ReferenceMap;
+
 import railo.commons.collections.HashTable;
-import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
@@ -30,7 +31,6 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
-import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
@@ -47,12 +47,15 @@ import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
+import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.cfx.customtag.CFXTagPoolImpl;
+import railo.runtime.component.ImportDefintion;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.dump.DumpWriter;
@@ -60,10 +63,12 @@ import railo.runtime.dump.DumpWriterEntry;
 import railo.runtime.dump.HTMLDumpWriter;
 import railo.runtime.engine.ExecutionLogFactory;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
@@ -204,6 +209,10 @@ public abstract class ConfigImpl implements Config {
 
     private Mapping[] mappings=new Mapping[0];
     private Mapping[] customTagMappings=new Mapping[0];
+    private Mapping[] componentMappings=new Mapping[0];
+    
+    
+	private Map<String,Mapping> customTagAppMappings=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 
     private SchedulerImpl scheduler;
     
@@ -214,12 +223,12 @@ public abstract class ConfigImpl implements Config {
     private String baseComponentTemplate;
     
     
-    private LogAndSource mailLogger=new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
-    private LogAndSource gatewayLogger=new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
-    private LogAndSource requestTimeoutLogger=mailLogger;
-    private LogAndSource applicationLogger=mailLogger;
-    private LogAndSource exceptionLogger=mailLogger;
-	private LogAndSource traceLogger=mailLogger;
+    private LogAndSource mailLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
+    private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
+    private LogAndSource requestTimeoutLogger=null;
+    private LogAndSource applicationLogger=null;
+    private LogAndSource exceptionLogger=null;
+	private LogAndSource traceLogger=null;
 
     
     private short clientType=CLIENT_SCOPE_TYPE_COOKIE;
@@ -269,7 +278,6 @@ public abstract class ConfigImpl implements Config {
 
 	private boolean useComponentShadow=true;
 
-	private Mapping componentMapping;
 	
 	private PrintWriter out=SystemUtil.PRINTWRITER_OUT;
 	private PrintWriter err=SystemUtil.PRINTWRITER_ERR;
@@ -336,8 +344,14 @@ public abstract class ConfigImpl implements Config {
 	private Class<ORMEngine> ormEngineClass;
 	private ORMConfiguration ormConfig;
 	private ResourceClassLoaderFactory classLoaderFactory;
+	
+	private ImportDefintion componentDefaultImport=new ImportDefintion("org.railo.cfml","*");
+	private boolean componentLocalSearch=true;
+	private boolean componentRootSearch=true;
 
-    /**
+	
+	
+	/**
 	 * @return the allowURLRequestTimeout
 	 */
 	public boolean isAllowURLRequestTimeout() {
@@ -648,14 +662,16 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getMailLogger()
      */
     public LogAndSource getMailLogger() {
-        return mailLogger;
+    	if(mailLogger==null)mailLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		return mailLogger;
     }
 
     /**
      * @see railo.runtime.config.Config#getMailLogger()
      */
     public LogAndSource getGatewayLogger() {
-        return gatewayLogger;
+    	if(gatewayLogger==null)gatewayLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		return gatewayLogger;
     }
 
 
@@ -667,7 +683,8 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getRequestTimeoutLogger()
      */
     public LogAndSource getRequestTimeoutLogger() {
-        return requestTimeoutLogger;
+    	if(requestTimeoutLogger==null)requestTimeoutLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		return requestTimeoutLogger;
     }
 
     /**
@@ -893,7 +910,8 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getApplicationLogger()
      */
     public LogAndSource getApplicationLogger() {
-        return applicationLogger;
+    	if(applicationLogger==null)applicationLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		return applicationLogger;
     }
 
     /**
@@ -1485,8 +1503,6 @@ public abstract class ConfigImpl implements Config {
      * @param customTagMapping The customTagMapping to set.
      */
     protected void setCustomTagMappings(Mapping[] customTagMappings) {
-    	//print.err("set:"+customTagMappings.length);
-    	//print.dumpStack();
     	this.customTagMappings = customTagMappings;
     }
     
@@ -1495,8 +1511,7 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getCustomTagMappings()
      */
     public Mapping[] getCustomTagMappings() {
-    	//print.err("get:"+customTagMappings.length);
-        return customTagMappings;
+    	return customTagMappings;
     }
     
     /**
@@ -1973,9 +1988,6 @@ public abstract class ConfigImpl implements Config {
 		
 		
 		Object o=null;
-		if("railo.commons.io.res.type.s3.S3ResourceProvider".equals(strProviderClass)) {
-			return;
-		}
 		
 		o=ClassUtil.loadInstance(strProviderClass);
 		
@@ -2039,6 +2051,7 @@ public abstract class ConfigImpl implements Config {
 	 * @return the exceptionLogger
 	 */
 	public LogAndSource getExceptionLogger() {
+		if(exceptionLogger==null)exceptionLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return exceptionLogger;
 	}
 
@@ -2046,6 +2059,7 @@ public abstract class ConfigImpl implements Config {
 	 * @return the exceptionLogger
 	 */
 	public LogAndSource getTraceLogger() {
+		if(traceLogger==null)traceLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return traceLogger;
 	}
 
@@ -2308,20 +2322,6 @@ public abstract class ConfigImpl implements Config {
 		DatabaseException de = new DatabaseException("datasource ["+datasource+"] doesn't exist",null,null,null);
 		de.setAdditional("Datasource",datasource);
 		throw de;
-	}
-
-	/**
-	 * @return the componentMapping
-	 */
-	public Mapping getComponentMapping() {
-		return componentMapping;
-	}
-
-	/**
-	 * @param componentMapping the componentMapping to set
-	 */
-	protected void setComponentMapping(Mapping componentMapping) {
-		this.componentMapping = componentMapping;
 	}
 
 	/**
@@ -2930,6 +2930,26 @@ public abstract class ConfigImpl implements Config {
 		}
 	}
 	
+	/**
+	 * FUTURE add to interface
+	 * @return the componentMappings
+	 */
+	public Mapping[] getComponentMappings() {
+		return componentMappings;
+	}
+	
+	// FUTURE remove from interface
+	public Mapping getComponentMapping() {
+		throw new PageRuntimeException(new ApplicationException("this method is no longer supported"));
+	}
+
+	/**
+	 * @param componentMappings the componentMappings to set
+	 */
+	protected void setComponentMappings(Mapping[] componentMappings) {
+		this.componentMappings = componentMappings;
+	}
+	
 	// FUTURE remove this
 	private String getCoreExtension() throws ServletException {
     	URL res = new TP().getClass().getResource("/core/core.rcs");
@@ -2973,5 +2993,92 @@ public abstract class ConfigImpl implements Config {
 		return ormConfig;
 	}
 
+	public Mapping createCustomTagAppMappings(String virtual, String physical) {
+		Mapping m=customTagAppMappings.get(physical.toLowerCase());
+		
+		if(m==null){
+			m=new MappingImpl(
+				this,virtual,
+				physical,
+				null,false,true,false,false,false
+				);
+			customTagAppMappings.put(physical.toLowerCase(),m);
+		}
+		
+		return m;
+	}
+
 	
+	
+	private Map<String,PageSource> pages=null;//new ArrayList<Page>();
+	
+	
+	public Page getCachedPage(PageContext pc,String pathWithCFC) throws PageException {
+		if(pages==null) return null; 
+		
+		PageSource ps = pages.get(pathWithCFC.toLowerCase());
+		if(ps==null) return null;
+		return ((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+	}
+	
+	public void putCachedPageSource(String pathWithCFC,PageSource ps) {
+		if(pages==null) pages=new HashMap<String, PageSource>();//new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT); 
+		pages.put(pathWithCFC.toLowerCase(),ps);
+	}
+	
+	public Struct listComponentCache() {
+		Struct sct=new StructImpl();
+		if(pages==null) return sct; 
+		Iterator<Entry<String, PageSource>> it = pages.entrySet().iterator();
+		
+		Entry<String, PageSource> entry;
+		while(it.hasNext()){
+			entry = it.next();
+			sct.setEL(entry.getKey(),entry.getValue().getDisplayPath());
+		}
+		return sct;
+	}
+	
+	public void clearComponentCache() {
+		if(pages==null) return; 
+		pages.clear();
+	}
+	
+	
+
+	public ImportDefintion getComponentDefaultImport() {
+		return componentDefaultImport;
+	}
+	protected void setComponentDefaultImport(String str) {
+		ImportDefintion cdi = ImportDefintion.getInstance(str, null);
+		if(cdi!=null)this.componentDefaultImport= cdi;
+	}
+
+    /**
+	 * @return the componentLocalSearch
+	 */
+	public boolean getComponentLocalSearch() {
+		return componentLocalSearch;
+	}
+
+	/**
+	 * @param componentLocalSearch the componentLocalSearch to set
+	 */
+	protected void setComponentLocalSearch(boolean componentLocalSearch) {
+		this.componentLocalSearch = componentLocalSearch;
+	}
+
+    /**
+	 * @return the componentLocalSearch
+	 */
+	public boolean getComponentRootSearch() {
+		return componentRootSearch;
+	}
+
+	/**
+	 * @param componentLocalSearch the componentLocalSearch to set
+	 */
+	protected void setComponentRootSearch(boolean componentRootSearch) {
+		this.componentRootSearch = componentRootSearch;
+	}
 }

@@ -157,7 +157,7 @@ public class ArgumentImpl extends ScopeSupport implements ArgumentPro {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		DumpTable htmlBox = new DumpTablePro("struct","#5965e4","#9999ff","#000000");
 		htmlBox.setTitle("Scope Arguments");
-		if(size()>10)htmlBox.setComment("Entries:"+size());
+		if(size()>10 && dp.getMetainfo())htmlBox.setComment("Entries:"+size());
 	    
 		maxlevel--;
 		//Map mapx=getMap();

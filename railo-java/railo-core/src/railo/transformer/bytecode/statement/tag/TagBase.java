@@ -23,6 +23,7 @@ public class TagBase extends StatementBase implements Tag {
 	private TagLibTag tagLibTag;
 	Map attributes=new LinkedHashMap();
 	Map missingAttributes=new HashMap();
+	private boolean scriptBase=false;
 
 
 	public TagBase(int startLine,int endLine) {
@@ -161,6 +162,18 @@ public class TagBase extends StatementBase implements Tag {
 		return appendix+":"+fullname+":"+super.toString();
 	}
 	
+	/**
+	 * @return the scriptBase
+	 */
+	public boolean isScriptBase() {
+		return scriptBase;
+	}
+	/**
+	 * @param scriptBase the scriptBase to set
+	 */
+	public void setScriptBase(boolean scriptBase) {
+		this.scriptBase = scriptBase;
+	}
 	/**
 	 * @see railo.transformer.bytecode.statement.tag.Tag#addMissingAttribute(java.lang.String, java.lang.String)
 	 */

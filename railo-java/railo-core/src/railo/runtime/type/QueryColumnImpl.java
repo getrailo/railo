@@ -1,7 +1,9 @@
 package railo.runtime.type;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
@@ -12,13 +14,17 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.Operator;
 import railo.runtime.op.date.DateCaster;
+import railo.runtime.reflection.Reflector;
+import railo.runtime.reflection.pairs.MethodInstance;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.scope.UndefinedImpl;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.util.ArrayIterator;
 
 /**
@@ -743,13 +749,27 @@ public final class QueryColumnImpl implements QueryColumn,Sizeable,Objects {
 	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Collection.Key, railo.runtime.type.Struct)
 	 */
 	public Object callWithNamedValues(PageContext pc, Key methodName,Struct args) throws PageException {
-		return pc.getFunctionWithNamedValues(get(query.getCurrentrow()), methodName, Caster.toFunctionValues(args));
+		
+        throw new ExpressionException("No matching Method/Function for call with named arguments found");
+		//return pc.getFunctionWithNamedValues(get(query.getCurrentrow()), methodName, Caster.toFunctionValues(args));
 	}
 
 	/**
 	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
 	 */
-	public Object call(PageContext pc, Key methodName, Object[] arguments)throws PageException {
+	public Object call(PageContext pc, Key methodName, Object[] arguments) throws PageException {
+		MethodInstance mi = Reflector.getMethodInstanceEL(this.getClass(), methodName, arguments);
+		if(mi!=null) {
+			try {
+				return mi.invoke(this);
+			} catch (Throwable t) {
+				try {
+					return pc.getFunction(get(query.getCurrentrow()), methodName, arguments);
+				} catch (PageException pe) {
+					throw Caster.toPageException(t);
+				}
+			}
+		}
 		return pc.getFunction(get(query.getCurrentrow()), methodName, arguments);
 	}
 
@@ -816,5 +836,171 @@ public final class QueryColumnImpl implements QueryColumn,Sizeable,Objects {
 		return setEL(propertyName, value);
 	}
 
-	
+	/**
+	 * @see java.util.List#add(int, java.lang.Object)
+	 */
+	public void add(int index, Object element) {
+		throwNotAllowedToAlter();
+		//setEL(index+1, element);
+	}
+
+	private void throwNotAllowedToAlter() {
+		throw new PageRuntimeException(new DatabaseException(
+				"Query columns do not support methods that would alter the structure of a query column" 
+				,"you must use an analogous method on the query"
+				,null
+				,null
+				,null));
+		
+	}
+
+	/**
+	 * @see java.util.List#addAll(java.util.Collection)
+	 */
+	public boolean addAll(java.util.Collection<? extends Object> c) {
+		throwNotAllowedToAlter();
+		return false;
+		/*Iterator<? extends Object> it = c.iterator();
+		while(it.hasNext()){
+			add(it.next());
+		}
+		return true;*/
+	}
+
+	/**
+	 * @see java.util.List#addAll(int, java.util.Collection)
+	 */
+	public boolean addAll(int index, java.util.Collection<? extends Object> c) {
+		throwNotAllowedToAlter();
+		return false;
+		/*Iterator<? extends Object> it = c.iterator();
+		while(it.hasNext()){
+			setEL(++index,it.next());
+		}
+		return true;*/
+	}
+
+	/**
+	 * @see java.util.List#contains(java.lang.Object)
+	 */
+	public boolean contains(Object o) {
+		return indexOf(o)!=-1;
+	}
+
+	/**
+	 * @see java.util.List#containsAll(java.util.Collection)
+	 */
+	public boolean containsAll(java.util.Collection<?> c) {
+		Iterator<? extends Object> it = c.iterator();
+		while(it.hasNext()){
+			if(indexOf(it.next())==-1) return false;
+		}
+		return true;
+	}
+
+	/**
+	 * @see java.util.List#indexOf(java.lang.Object)
+	 */
+	public int indexOf(Object o) {
+		for(int i=0;i<size;i++){
+			try {
+				if(Operator.compare(o, data[i])==0) return i;
+			} 
+			catch (PageException e) {}
+		}
+		return -1;
+	}
+
+	/**
+	 * @see java.util.List#lastIndexOf(java.lang.Object)
+	 */
+	public int lastIndexOf(Object o) {
+		for(int i=size-1;i>=0;i--){
+			try {
+				if(Operator.compare(o, data[i])==0) return i;
+			} 
+			catch (PageException e) {}
+		}
+		return -1;
+	}
+
+	/**
+	 * @see java.util.List#isEmpty()
+	 */
+	public boolean isEmpty() {
+		return size()==0;
+	}
+
+	/*public ListIterator<Object> listIterator() {
+		return null;
+	}
+
+	public ListIterator<Object> listIterator(int index) {
+		return null;
+	}*/
+
+	/**
+	 * @see java.util.List#removeAll(java.util.Collection)
+	 */
+	public boolean removeAll(java.util.Collection<?> c) {
+		throwNotAllowedToAlter();
+		return false;
+		/*boolean hasChanged=false;
+		Iterator<? extends Object> it = c.iterator();
+		while(it.hasNext()){
+			if(remove(it.next())) {
+				hasChanged=true;
+			}
+		}
+		return hasChanged;*/
+	}
+
+	/**
+	 * @see java.util.List#retainAll(java.util.Collection)
+	 */
+	public boolean retainAll(java.util.Collection<?> c) {
+		throwNotAllowedToAlter();
+		return false;
+		/*boolean hasChanged=false;
+		Iterator it = valueIterator();
+		while(it.hasNext()){
+			if(!c.contains(it.next())){
+				hasChanged=true;
+				it.remove();
+			}
+		}
+		return hasChanged;*/
+	}
+
+	/**
+	 * @see java.util.List#subList(int, int)
+	 */
+	public List<Object> subList(int fromIndex, int toIndex) {
+		ArrayList<Object> list=new ArrayList<Object>();
+		for(int i=fromIndex;i<toIndex;i++){
+			list.add(data[i]);
+		}
+		return list;
+	}
+
+	/**
+	 * @see java.util.List#toArray()
+	 */
+	public Object[] toArray() {
+		return toArray(new Object[size()]);
+	}
+
+	/**
+	 * @see java.util.List#toArray(T[])
+	 */
+	public  Object[] toArray(Object[] trg) {
+		System.arraycopy(data, 0, trg, 0, data.length>trg.length?trg.length:data.length);
+		return trg;
+	}
+
+
+	public boolean equals(Object obj){
+		if(!(obj instanceof Collection)) return false;
+		return CollectionUtil.equals(this,(Collection)obj);
+	}
 }

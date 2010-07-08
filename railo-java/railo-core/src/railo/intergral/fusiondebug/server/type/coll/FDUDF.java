@@ -29,7 +29,7 @@ public class FDUDF extends FDValueNotMutability {
 		this.udf=udf;
 		
 		// meta
-		List list=new ArrayList();
+		List<FDSimpleVariable> list=new ArrayList<FDSimpleVariable>();
 		children.add(new FDSimpleVariable(frame,"Meta Data","",list));
 		list.add(new FDSimpleVariable(frame,"Function Name",udf.getFunctionName(),null));
 		if(!StringUtil.isEmpty(udf.getDisplayName()))
@@ -40,7 +40,7 @@ public class FDUDF extends FDValueNotMutability {
 			list.add(new FDSimpleVariable(frame,"Hint",udf.getHint(),null));
 		list.add(new FDSimpleVariable(frame,"Return Type",udf.getReturnTypeAsString(),null));
 		list.add(new FDSimpleVariable(frame,"Return Format",UDFImpl.toReturnFormat(udf.getReturnFormat(),"plain"),null));
-		list.add(new FDSimpleVariable(frame,"Source",Caster.toString(udf.getPage().getPageSource().getDisplayPath()),null));
+		list.add(new FDSimpleVariable(frame,"Source",Caster.toString(((UDFImpl)udf).getPageSource().getDisplayPath()),null));
 		list.add(new FDSimpleVariable(frame,"Secure Json",Caster.toString(udf.getSecureJson(),""),null));
 		list.add(new FDSimpleVariable(frame,"Verify Client",Caster.toString(udf.getVerifyClient(),""),null));
 		

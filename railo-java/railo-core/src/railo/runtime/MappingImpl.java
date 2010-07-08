@@ -8,6 +8,7 @@ import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.io.FileUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.lang.ArchiveClassLoader;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
@@ -29,7 +30,8 @@ import railo.runtime.op.Caster;
  */
 public final class MappingImpl implements Mapping {
 
-    private String virtual;
+    private static final Object NULL = new Object();
+	private String virtual;
     private String lcVirtual;
     private boolean topLevel;
     private boolean trusted;
@@ -53,7 +55,8 @@ public final class MappingImpl implements Mapping {
     
     private String lcVirtualWithSlash;
     //private Resource classRoot;
-	private Map customTagPath=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
+    private Map<String,Object> customTagPath=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
+    //private final Map<String,Object> customTagPath=new HashMap<String, Object>();
 
 
     /**
@@ -70,6 +73,8 @@ public final class MappingImpl implements Mapping {
      */
     public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
             boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel) {
+    	//print.dumpStack();
+    	
     	this.config=config;
         this.hidden=hidden;
         this.readonly=readonly;
@@ -122,12 +127,21 @@ public final class MappingImpl implements Mapping {
 		//reload=true;
 		if(physicalClassLoader!=null && !reload) return physicalClassLoader;
 		config.resetRPCClassLoader();
-		//physicalClassLoader=new PhysicalClassLoader(getClassRootDirectory(),getConfigImpl().getFactory().getServlet().getClass().getClassLoader());
-        physicalClassLoader=new PhysicalClassLoader(getClassRootDirectory(),getClass().getClassLoader());
+		physicalClassLoader=new PhysicalClassLoader(getClassRootDirectory(),getClass().getClassLoader());
         if(reload)pageSourcePool.clearPages();
-        
         return physicalClassLoader;
 	}
+	
+	/**
+	 * returns null when classlader is not created, use getClassLoaderForPhysical(boolean) to touch classloader
+	 * @return
+	 * @throws IOException
+	 */
+	public ClassLoader getClassLoaderForPhysical() throws IOException {
+		return physicalClassLoader;
+	}
+	
+	
     
     /**
      * @see railo.runtime.Mapping#getPhysical()
@@ -347,17 +361,76 @@ public final class MappingImpl implements Mapping {
 		return topLevel;
 	}
 
-	public PageSource getCustomTagPath(String name) {
-		return (PageSource)customTagPath.get(name.toLowerCase());
+	public PageSource getCustomTagPath(String name, boolean doCustomTagDeepSearch) {
+		String lcName=name.toLowerCase().trim();
+		Object o = customTagPath.get(lcName);
+		
+		
+		
+		if(o==null){
+			PageSource ps=searchFor(name, lcName, doCustomTagDeepSearch);
+			if(ps!=null){
+				customTagPath.put(lcName,ps);
+				return ps;
+			}
+			
+			customTagPath.put(lcName,NULL);
+			return null;
+			
+		}
+		else if(o==NULL) return null;
+		
+		return (PageSource) o;
+	}
+	
+	
+	private PageSource searchFor(String filename, String lcName, boolean doCustomTagDeepSearch) {
+		if(!hasPhysical()) return null;
+
+		
+		PageSource source=getPageSource(filename);
+		if(isOK(source)) {
+    		return source;
+    	}
+    	customTagPath.remove(lcName);
+    	
+    	if(doCustomTagDeepSearch){
+    		String path = _getRecursive(getPhysical(),null, filename);
+        	if(path!=null ) {
+        		//print.out("path:"+path);
+        		source=getPageSource(path);
+        		if(isOK(source)) {
+            		return source;
+            	}
+        		customTagPath.remove(lcName);
+        	}
+    	}
+    	return null;
 	}
 
-	public void setCustomTagPath(String name, PageSource ps) {
-		customTagPath.put(name.toLowerCase(),ps);
+	public static boolean isOK(PageSource ps) {
+		//return ps!=null;
+		return (ps.getMapping().isTrusted() && ((PageSourceImpl)ps).isLoad()) || ps.exists();
+	} 
+	
+	private static String _getRecursive(Resource res, String path, String filename) {
+    	if(res.isDirectory()) {
+    		Resource[] children = res.listResources(new ExtensionResourceFilter(new String[]{".cfm",".cfc"},true,true));
+    		if(path!=null)path+=res.getName()+"/";
+    		else path="";
+    		String tmp;
+    		for(int i=0;i<children.length;i++){
+    			tmp= _getRecursive(children[i], path, filename);
+    			if(tmp!=null) return tmp;
+    		}
+    	}
+    	else if(res.isFile()) {
+    		if(res.getName().equalsIgnoreCase(filename)) return path+res.getName();
+    	}
+    	return null;    	
 	}
-
-	public void removeCustomTagPath(String name) {
-		customTagPath.remove(name.toLowerCase());
-	}
+	
+	
 
 	/**
 	 *

@@ -6,7 +6,7 @@ import java.util.TimeZone;
 import railo.commons.date.TimeZoneUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.date.DateCaster;
@@ -33,7 +33,10 @@ public final class DateFormat implements Function {
 			//Caster.toDate(object,true,tz,null);
 		if(datetime==null) {
 		    if(object.toString().trim().length()==0) return "";
-		    throw new ExpressionException("can't convert value "+object+" to a datetime value");
+		    throw new CasterException(object,"datetime");
+		    //if(!Decision.isSimpleValue(object))
+		    //    throw new ExpressionException("can't convert object of type "+Type.getName(object)+" to a datetime value");
+		    //throw new ExpressionException("can't convert value "+object+" to a datetime value");
 		}
 		return new railo.runtime.format.DateFormat(locale).format(datetime,mask,tz);
 	}

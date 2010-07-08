@@ -22,12 +22,15 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.io.res.util.UDFFilter;
 import railo.commons.io.res.util.WildCardFilter;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.security.SecurityManager;
+import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
@@ -42,11 +45,12 @@ import railo.runtime.type.Collection.Key;
 **/
 public final class Directory extends TagImpl  {
 
-	private static final int TYPE_ALL = 0;
-	private static final int TYPE_FILE = 1;
-	private static final int TYPE_DIR = 2;
-	private static final ResourceFilter DIRECTORY_FILTER = new DirectoryResourceFilter();
-	private static final ResourceFilter FILE_FILTER = new FileResourceFilter();
+	public static final int TYPE_ALL = 0;
+	public static final int TYPE_FILE = 1;
+	public static final int TYPE_DIR = 2;
+	
+	public static final ResourceFilter DIRECTORY_FILTER = new DirectoryResourceFilter();
+	public static final ResourceFilter FILE_FILTER = new FileResourceFilter();
 	
 	private static final Key NAME = KeyImpl.getInstance("name");
 	private static final Key SIZE = KeyImpl.getInstance("size");
@@ -56,6 +60,11 @@ public final class Directory extends TagImpl  {
 	private static final Key DATE_LAST_MODIFIED = KeyImpl.getInstance("dateLastModified");
 	private static final Key ATTRIBUTES = KeyImpl.getInstance("attributes");
 	private static final Key DIRECTORY = KeyImpl.getInstance("directory");
+	
+	public static final int LIST_INFO_QUERY_ALL = 1;
+	public static final int LIST_INFO_QUERY_NAME = 2;
+	public static final int LIST_INFO_ARRAY_NAME = 4;
+	public static final int LIST_INFO_ARRAY_PATH = 8;
 	
 	/** Optional for action = "list". Ignored by all other actions. File extension filter applied to
 	** 		returned names. For example: *m. Only one mask filter can be applied at a time. */
@@ -93,7 +102,8 @@ public final class Directory extends TagImpl  {
 	private String serverPassword;
 
 	private int type=TYPE_ALL; 
-	private boolean listOnlyNames; 
+	//private boolean listOnlyNames;
+	private int listInfo=LIST_INFO_QUERY_ALL;
 	private int acl=S3Constants.ACL_PUBLIC_READ;
 	private int storage=S3Constants.STORAGE_UNKNOW; 
 
@@ -119,7 +129,7 @@ public final class Directory extends TagImpl  {
 		name=null;
         recurse=false;
         serverPassword=null;
-        listOnlyNames=false;
+        listInfo=LIST_INFO_QUERY_ALL;
 	}
 
 	
@@ -129,33 +139,42 @@ public final class Directory extends TagImpl  {
 	* @param pattern
 	 * @throws PageException 
 	**/
+	
+	
 
-	public void setFilter(Object filter) throws PageException	{
+	public static ResourceAndResourceNameFilter createFilter(Object filter) throws PageException	{
 	   if(filter instanceof UDF)
-		   setFilter((UDF)filter);
-	   else
-		   setFilter(Caster.toString(filter));
+		   return createFilter((UDF)filter);
+	   return createFilter(Caster.toString(filter));
+	}
+
+	
+	public static ResourceAndResourceNameFilter createFilter(UDF filter) throws PageException	{
+		return new UDFFilter(filter);
 	}
 	
-	public void setFilter(UDF filter) throws PageException	{
-		this.nameFilter=new UDFFilter(filter);
-		this.filter=nameFilter;
-	}
-	
-	/** 
-	*  sets a filter pattern
-	* @param pattern
-	 * @throws PageException 
-	**/
-	public void setFilter(String pattern) throws PageException	{
+	public static ResourceAndResourceNameFilter createFilter(String pattern) throws PageException	{
 	    if(pattern.trim().length()>0) {
             try {
-            	nameFilter=new WildCardFilter(pattern);
-                this.filter=nameFilter;
+            	return new WildCardFilter(pattern);
             } catch (MalformedPatternException e) {
                 throw Caster.toPageException(e);
             }
         }
+	    return null;
+	}
+	
+	
+
+	public void setFilter(Object filter) throws PageException	{
+		this.filter=nameFilter=createFilter(filter);
+	}
+	
+	public void setFilter(UDF filter) throws PageException	{
+		this.filter=nameFilter=createFilter(filter);
+	}
+	public void setFilter(String pattern) throws PageException	{
+		this.filter=nameFilter=createFilter(pattern);
 	}
 	
 	/** set the value acl
@@ -196,9 +215,14 @@ public final class Directory extends TagImpl  {
 	}
 
 	
-	public void setListinfo(String listinfo)	{
-		listinfo=listinfo.trim().toLowerCase();
-		listOnlyNames="name".equals(listinfo);
+	public void setListinfo(String strListinfo)	{
+		strListinfo=strListinfo.trim().toLowerCase();
+		this.listInfo="name".equals(strListinfo)?LIST_INFO_QUERY_NAME:LIST_INFO_QUERY_ALL;
+		
+		
+		
+		
+		
 	}
 	
 	
@@ -281,15 +305,16 @@ public final class Directory extends TagImpl  {
 	public int doStartTag() throws PageException	{
 
 	    securityManager = pageContext.getConfig().getSecurityManager();
-		if(action.equals("list")) actionList();
-		else if(action.equals("create")) actionCreate();
-		else if(action.equals("delete")) actionDelete(directory,recurse);
-		else if(action.equals("forcedelete")) actionDelete(directory,true);
-		else if(action.equals("rename")) actionRename();
+		if(action.equals("list")) {
+			Object res=actionList(pageContext,directory,serverPassword,type,filter,nameFilter,listInfo,recurse,sort);
+			if(!StringUtil.isEmpty(name) && res!=null)pageContext.setVariable(name,res);
+		}
+		else if(action.equals("create")) actionCreate(pageContext,directory,serverPassword,true,mode,acl,storage);
+		else if(action.equals("delete")) actionDelete(pageContext,directory,recurse,serverPassword);
+		else if(action.equals("forcedelete")) actionDelete(pageContext,directory,true,serverPassword);
+		else if(action.equals("rename")) actionRename(pageContext,directory,strNewdirectory,serverPassword,acl,storage);
 		else throw new ApplicationException("invalid action ["+action+"] for the tag directory");
 			
-		
-		
 		return SKIP_BODY;
 	}
 
@@ -305,9 +330,11 @@ public final class Directory extends TagImpl  {
 	 * list all files and directories inside a directory
 	 * @throws PageException
 	 */
-	private void actionList() throws PageException {
+	public static Object actionList(PageContext pageContext,Resource directory, String serverPassword, int type,ResourceFilter filter,ResourceAndResourceNameFilter nameFilter, 
+			int listInfo,boolean recurse,String sort) throws PageException {
 		// check directory
-	    securityManager.checkFileLocation(pageContext.getConfig(),directory,serverPassword);
+		SecurityManager securityManager = pageContext.getConfig().getSecurityManager();
+		securityManager.checkFileLocation(pageContext.getConfig(),directory,serverPassword);
 	    
 	    if(type!=TYPE_ALL) {
 	    	ResourceFilter typeFilter = (type==TYPE_DIR)?DIRECTORY_FILTER:FILE_FILTER;
@@ -325,43 +352,59 @@ public final class Directory extends TagImpl  {
 	    	names = new String[]{"name","size","type","dateLastModified","attributes","mode","directory","meta"};
 		    types=new String[]{"VARCHAR","DOUBLE","VARCHAR","DATE","VARCHAR","VARCHAR","VARCHAR","OBJECT"};
 	    }
-	    
-	    QueryImpl query=new QueryImpl(
+	    Array array=null;
+	    QueryImpl query=null;
+	    Object rtn;
+	    if(listInfo==LIST_INFO_QUERY_ALL || listInfo==LIST_INFO_QUERY_NAME){
+	    	boolean listOnlyNames=listInfo==LIST_INFO_QUERY_NAME;
+	    	rtn=query=new QueryImpl(
 				listOnlyNames?new String[]{"name"}:names,
 				listOnlyNames?new String[]{"VARCHAR"}:types,
 				0,"query");
-		
-		
-		
-		if(!StringUtil.isEmpty(name))pageContext.setVariable(name,query);
+	    }
+	    else 
+	    	rtn=array=new ArrayImpl();
+	    
 	    if(!directory.exists()){
-	    	if(directory instanceof FileResource) return;
+	    	if(directory instanceof FileResource) return rtn;
 			throw new ApplicationException("directory ["+directory.toString()+"] doesn't exist");
 		}
 		if(!directory.isDirectory()){
-			if(directory instanceof FileResource) return;
+			if(directory instanceof FileResource) return rtn;
 			throw new ApplicationException("file ["+directory.toString()+"] exists, but is'nt a directory");
 		}
 		if(!directory.isReadable()){
-			if(directory instanceof FileResource) return;
+			if(directory instanceof FileResource) return rtn;
 			throw new ApplicationException("no access to read directory ["+directory.toString()+"]");
 		}
 		
 		long start=System.currentTimeMillis();
 		
-		
 		try {
-           if(listOnlyNames) {
-        	   if(recurse || type!=TYPE_ALL)_fillNamesRec("",query, directory, filter, 0);
-        	   else _fillNames(query, directory, nameFilter, 0);
-           }
-           else _fill(query,directory,filter,0,hasMeta);
+			// Query All
+			if(listInfo==LIST_INFO_QUERY_ALL)
+				_fillQueryAll(query,directory,filter,0,hasMeta,recurse);
+			
+			// Query Name
+			else if(listInfo==LIST_INFO_QUERY_NAME) {
+        	   if(recurse || type!=TYPE_ALL)_fillQueryNamesRec("",query, directory, filter, 0,recurse);
+        	   else _fillQueryNames(query, directory, nameFilter, 0);
+			}
+			
+			//Array Name/Path
+			else if(listInfo==LIST_INFO_ARRAY_NAME || listInfo==LIST_INFO_ARRAY_PATH) {
+				boolean onlyName=listInfo==LIST_INFO_ARRAY_NAME;
+        	   if(!onlyName || recurse || type!=TYPE_ALL)_fillArrayPathOrName(array, directory, nameFilter, 0, recurse, onlyName);//QueryNamesRec("",query, directory, filter, 0,recurse);
+        	   else _fillArrayName(array, directory, nameFilter, 0);
+			}	
+			 
+        	   
         } catch (IOException e) {
             throw Caster.toPageException(e);
         }
 		
 		// sort
-		if(sort!=null) {
+		if(sort!=null && query!=null) {
 			String[] arr=sort.toLowerCase().split(",");
 			for(int i=arr.length-1;i>=0;i--) {
 				try {
@@ -380,14 +423,14 @@ public final class Directory extends TagImpl  {
 				catch(Throwable t) {}
 			}		
 		}
-		query.setExecutionTime(System.currentTimeMillis()-start);
-		
+		if(query!=null)query.setExecutionTime(System.currentTimeMillis()-start);
+		return rtn; 
 	}
 	
 	
 
 
-    private int _fill(Query query, Resource directory, ResourceFilter filter, int count, boolean hasMeta) throws PageException, IOException {
+    private static int _fillQueryAll(Query query, Resource directory, ResourceFilter filter, int count, boolean hasMeta, boolean recurse) throws PageException, IOException {
     	//long start=System.currentTimeMillis();
     	Resource[] list=directory.listResources();
     	
@@ -418,29 +461,26 @@ public final class Directory extends TagImpl  {
         		query.setAt(DIRECTORY,count,dir);
             }   
             if(recurse && list[i].isDirectory())
-                count=_fill(query,list[i],filter,count,hasMeta);
+                count=_fillQueryAll(query,list[i],filter,count,hasMeta,recurse);
         }
         return count;
     }
-    private int _fillNames(Query query, Resource directory, ResourceNameFilter filter, int count) throws PageException {
+ // this method only exists for performance reasion
+    private static int _fillQueryNames(Query query, Resource directory, ResourceNameFilter filter, int count) throws PageException {
     	String[] list=directory.list();
-
     	if(list==null || list.length==0) return count;
         for(int i=0;i<list.length;i++) {
             if(filter==null || filter.accept(directory,list[i])) {
                 query.addRow(1);
                 count++;
-                query.setAt(NAME,count,list[i]);
-                
-            } 
-            
+                query.setAt(NAME,count,list[i]);  
+            }     
         }
         return count;
     }
     
-    private int _fillNamesRec(String parent, Query query, Resource directory, ResourceFilter filter, int count) throws PageException {
+    private static int _fillQueryNamesRec(String parent, Query query, Resource directory, ResourceFilter filter, int count, boolean recurse) throws PageException {
     	Resource[] list=directory.listResources();
-
     	if(list==null || list.length==0) return count;
         for(int i=0;i<list.length;i++) {
             if(filter==null || filter.accept(list[i])) {
@@ -450,7 +490,34 @@ public final class Directory extends TagImpl  {
                 
             } 
             if(recurse && list[i].isDirectory())
-                count=_fillNamesRec(parent+list[i].getName()+"/",query,list[i],filter,count);  
+                count=_fillQueryNamesRec(parent+list[i].getName()+"/",query,list[i],filter,count,recurse);  
+        }
+        return count;
+    }
+    
+    private static int _fillArrayPathOrName(Array arr, Resource directory, ResourceFilter filter, int count, boolean recurse,boolean onlyName) throws PageException {
+    	Resource[] list=directory.listResources();
+    	if(list==null || list.length==0) return count;
+        for(int i=0;i<list.length;i++) {
+            if(filter==null || filter.accept(list[i])) {
+                arr.appendEL(onlyName?list[i].getName():list[i].getAbsolutePath());
+            	count++;
+                
+            } 
+            if(recurse && list[i].isDirectory())
+                count=_fillArrayPathOrName(arr,list[i],filter,count,recurse,onlyName);  
+        }
+        return count;
+    }
+    
+    // this method only exists for performance reasion
+    private static int _fillArrayName(Array arr, Resource directory, ResourceNameFilter filter, int count) {
+    	String[] list=directory.list();
+    	if(list==null || list.length==0) return count;
+        for(int i=0;i<list.length;i++) {
+            if(filter==null || filter.accept(directory,list[i])) {
+            	arr.appendEL(list[i]);  
+            }     
         }
         return count;
     }
@@ -461,11 +528,12 @@ public final class Directory extends TagImpl  {
 	 * create a directory
 	 * @throws PageException 
 	 */
-	private void actionCreate() throws PageException {
+    public static void actionCreate(PageContext pc,Resource directory,String serverPassword, boolean doParent,int mode,int acl,int storage) throws PageException {
 
-	    securityManager.checkFileLocation(pageContext.getConfig(),directory,serverPassword);
+    	SecurityManager securityManager = pc.getConfig().getSecurityManager();
+	    securityManager.checkFileLocation(pc.getConfig(),directory,serverPassword);
 	    
-	    setS3Attrs(directory);
+	    setS3Attrs(directory,acl,storage);
 	    
 		if(directory.exists()) {
 			if(directory.isDirectory())
@@ -475,7 +543,7 @@ public final class Directory extends TagImpl  {
 		}
 		//if(!directory.mkdirs())	throw new ApplicationException("can't create directory ["+directory.toString()+"]");
 		try {
-			directory.createDirectory(true);
+			directory.createDirectory(doParent);
 		} catch (IOException ioe) {
 			throw Caster.toPageException(ioe);
 		}
@@ -491,7 +559,7 @@ public final class Directory extends TagImpl  {
 		}
 	}
 	
-	private void setS3Attrs(Resource res) {
+	private static void setS3Attrs(Resource res,int acl,int storage) {
 		String scheme = res.getResourceProvider().getScheme();
 		
 		if("s3".equalsIgnoreCase(scheme)){
@@ -502,11 +570,6 @@ public final class Directory extends TagImpl  {
 			} 
 			catch (PageException e) {}
 		}
-		/*if(res instanceof S3Resource) {
-			S3Resource s3r=(S3Resource) res;
-			s3r.setACL(acl);
-			if(storage!=S3Constants.STORAGE_UNKNOW)s3r.setStorage(storage);
-		}*/
 	}
 
 
@@ -517,9 +580,9 @@ public final class Directory extends TagImpl  {
 	 * @param forceDelete
 	 * @throws PageException 
 	 */
-	private void actionDelete(Resource dir, boolean forceDelete) throws PageException {
-
-	    securityManager.checkFileLocation(pageContext.getConfig(),dir,serverPassword);
+	public static void actionDelete(PageContext pc,Resource dir, boolean forceDelete,String serverPassword) throws PageException {
+		SecurityManager securityManager = pc.getConfig().getSecurityManager();
+	    securityManager.checkFileLocation(pc.getConfig(),dir,serverPassword);
 	    
 		// directory doesn't exist
 		if(!dir.exists()) {
@@ -539,42 +602,18 @@ public final class Directory extends TagImpl  {
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}
-		/*
-		if(!dir.delete()) {
-			Resource[] arr=dir.listResources();
-			if(arr!=null && arr.length>0) {
-				if(!forceDelete)throw new ApplicationException("can't delete directory ["+dir.toString()+"], directory is'nt empty");
-				//else {
-					for(int i=0;i<arr.length;i++) {
-						if(arr[i].isFile()) arr[i].delete();
-						else if(arr[i].isDirectory()) actionDelete(arr[i],true);
-					}
-				//}
-			}
-		}
-		else return;
-		
-		if(dir.exists()){
-			//&& !dir.delete();
-			try {
-				dir.remove(false);
-			} catch (IOException e) {
-				
-				throw new ApplicationException("can't delete directory ["+dir.toString()+"]",e.getMessage());
-			}
-			
-		}*/
 	}
 
 	/**
 	 * rename a directory to a new Name
 	 * @throws PageException 
 	 */
-	private void actionRename() throws PageException {
+	public static  void actionRename(PageContext pc,Resource directory,String strNewdirectory,String serverPassword, int acl,int storage) throws PageException {
 		// check directory
-	    securityManager.checkFileLocation(pageContext.getConfig(),directory,serverPassword);
+		SecurityManager securityManager = pc.getConfig().getSecurityManager();
+	    securityManager.checkFileLocation(pc.getConfig(),directory,serverPassword);
 		
-	    setS3Attrs(directory);
+	    setS3Attrs(directory,acl,storage);
 	    
 		if(!directory.exists())
 			throw new ApplicationException("directory ["+directory.toString()+"] doesn't exist");
@@ -587,9 +626,9 @@ public final class Directory extends TagImpl  {
 			throw new ApplicationException("attribute newDirectory is not defined");
 		
 		// real to source 
-		Resource newdirectory=toDestination(strNewdirectory,directory);
+		Resource newdirectory=toDestination(pc,strNewdirectory,directory);
 		
-	    securityManager.checkFileLocation(pageContext.getConfig(),newdirectory,serverPassword);
+	    securityManager.checkFileLocation(pc.getConfig(),newdirectory,serverPassword);
 		if(newdirectory.exists())
 			throw new ApplicationException("new directory ["+newdirectory.toString()+"] already exist");
 		try {
@@ -601,7 +640,7 @@ public final class Directory extends TagImpl  {
 	}
 
 	
-	private Resource toDestination(String path, Resource source) {
+	private static Resource toDestination(PageContext pageContext,String path, Resource source) {
 		if(source!=null && path.indexOf(File.separatorChar)==-1 && path.indexOf('/')==-1 && path.indexOf('\\')==-1) {
 			Resource p = source.getParentResource();
 			if(p!=null)return p.getRealResource(path);

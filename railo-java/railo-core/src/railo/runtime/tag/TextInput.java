@@ -6,7 +6,7 @@ import railo.runtime.ext.tag.TagImpl;
 public final class TextInput extends TagImpl {
 
 	public TextInput() throws DeprecatedException {
-		throw new DeprecatedException("textinput");
+		throw new DeprecatedException("textinput",null);
 	}
 	
 	public void setAlign(String align) {}

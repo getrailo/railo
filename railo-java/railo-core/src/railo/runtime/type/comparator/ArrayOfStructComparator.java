@@ -1,12 +1,11 @@
 package railo.runtime.type.comparator;
 
+import java.util.Comparator;
+
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.Collection.Key;
-
-import java.util.Comparator;
 
 public class ArrayOfStructComparator implements Comparator<Struct> {
 

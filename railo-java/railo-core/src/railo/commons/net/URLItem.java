@@ -1,6 +1,7 @@
 package railo.commons.net;
 
 
+
 /**
  * Name Value Pair
  */
@@ -19,7 +20,6 @@ public final class URLItem {
         this.name = name;
         this.value = value;
         this.urlEncoded=urlEncoded;
-        
        
     }
 	/*public URLItem(String name, byte[] value, boolean urlEncoded) {

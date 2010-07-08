@@ -20,13 +20,13 @@ import railo.commons.lang.StringUtil;
  */
 public final class RamResource extends ResourceSupport {
 	
-	private final RamResourceProvider provider;
+	private final RamResourceProviderOld provider;
 	
 	private final String parent;
 	private final String name;
 	private RamResourceCore _core;
 
-	RamResource(RamResourceProvider provider, String path) {
+	RamResource(RamResourceProviderOld provider, String path) {
 		this.provider=provider;
 		if(path.equals("/") || StringUtil.isEmpty(path)) {
 		//if(path.equals("/")) {
@@ -41,7 +41,7 @@ public final class RamResource extends ResourceSupport {
 		
 	}
 	
-	private RamResource(RamResourceProvider provider, String parent,String name) {
+	private RamResource(RamResourceProviderOld provider, String parent,String name) {
 		this.provider=provider;
 		this.parent=parent ;
 		this.name=name;

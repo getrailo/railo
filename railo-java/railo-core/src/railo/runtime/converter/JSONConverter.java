@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.w3c.dom.Node;
 
+import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentWrap;
@@ -26,11 +27,13 @@ import railo.runtime.op.Decision;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -43,8 +46,10 @@ import railo.runtime.type.util.ComponentUtil;
  */
 public final class JSONConverter {
     
-	
+
+	private static final Key TO_JSON = KeyImpl.getInstance("_toJson");
     private static final Object NULL = new Object();
+    private static final String NULL_STRING = "";
 
 
 	/**
@@ -196,7 +201,17 @@ public final class JSONConverter {
      * @throws ConverterException
      */
     public void _serializeStruct(PageContext pc,Set test,Struct struct, StringBuffer sb, boolean serializeQueryByColumns, boolean addUDFs) throws ConverterException {
-        sb.append(goIn());
+        // Component
+    	if(struct instanceof Component){
+        	String res = castToJson(pc, (Component)struct, NULL_STRING);
+        	if(res!=NULL_STRING) {
+        		sb.append(res);
+        		return;
+        	}
+        }
+    	
+    	
+    	sb.append(goIn());
         sb.append("{");
         Key[] keys = struct.keys();
         Key key;
@@ -216,6 +231,22 @@ public final class JSONConverter {
         }
         sb.append('}');
     }
+    
+    private static String castToJson(PageContext pc,Component cfc, String defaultValue) throws ConverterException {
+		Object o=cfc.get(TO_JSON,null);
+		if(!(o instanceof UDF)) return defaultValue;
+		UDF udf=(UDF) o;
+		if(udf.getReturnType()==CFTypes.TYPE_STRING && udf.getFunctionArguments().length==0) {
+			try {
+				return Caster.toString(cfc.call(pc, TO_JSON, new Object[0]));
+			} catch (PageException e) {
+				e.printStackTrace();
+				throw new ConverterException(e);
+			}
+		}
+		return defaultValue;
+    }
+    
     
 
     /**
@@ -281,7 +312,7 @@ public final class JSONConverter {
 		sct.setEL("Output", Caster.toBoolean(udf.getOutput()));
 		sct.setEL("ReturnType", udf.getReturnTypeAsString());
 		try{
-			sct.setEL("PagePath", udf.getPage().getPageSource().getFile().getAbsolutePath());
+			sct.setEL("PagePath", ((UDFImpl)udf).getPageSource().getFile().getAbsolutePath());
 		}catch(Throwable t){}
 		
 		_serializeStruct(pc,test,sct, sb, serializeQueryByColumns, true);

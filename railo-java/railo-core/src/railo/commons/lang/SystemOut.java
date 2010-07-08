@@ -17,7 +17,11 @@ public final class SystemOut {
      */
     public static void printDate(PrintWriter pw,String value) {
     	long millis=System.currentTimeMillis();
-    	pw.write(new Date(millis)+"-"+(millis-(millis/1000*1000))+" "+value+"\n");
+    	pw.write(
+    			new Date(millis)
+    			+"-"
+    			+(millis-(millis/1000*1000))
+    			+" "+value+"\n");
     	pw.flush();
     }
     /**

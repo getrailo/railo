@@ -21,7 +21,7 @@ public class FileWriteLine {
 					close=true;
 					Resource res = Caster.toResource(obj,false);
 					pc.getConfig().getSecurityManager().checkFileLocation(res);
-					fsw=new FileStreamWrapperWrite(res,pc.getConfig().getResourceCharset(),false);
+					fsw=new FileStreamWrapperWrite(res,pc.getConfig().getResourceCharset(),false,false);
 				}
 				fsw.write(text+"\n");
 			}

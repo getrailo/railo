@@ -4,12 +4,7 @@
  */
 package railo.runtime.functions.other;
 
-import java.net.URLClassLoader;
-
-import railo.print;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.util.ResourceClassLoader;
-import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
@@ -33,6 +28,9 @@ import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 
 public final class CreateObject implements Function {
+	public static Object call(PageContext pc , String cfcName) throws PageException {
+		return call(pc,"component",cfcName,null,null);
+	}
 	public static Object call(PageContext pc , String type, String className) throws PageException {
 		return call(pc,type,className,null,null);
 	}
@@ -133,6 +131,7 @@ public final class CreateObject implements Function {
 	} 
     
     public static Component doComponent(PageContext pc,String className) throws PageException {
+    	
     	return pc.loadComponent(className);
     } 
     

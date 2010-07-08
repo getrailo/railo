@@ -6,6 +6,7 @@ import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -174,13 +175,15 @@ public final class AppListenerUtil {
 			array=Caster.toArray(o);
 		}
 		MappingImpl[] mappings=new MappingImpl[array.size()];
-		ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
+		ConfigImpl config=(ConfigImpl) pc.getConfig();
 		for(int i=0;i<mappings.length;i++) {
-			mappings[i]=new MappingImpl(
+			
+			mappings[i]=(MappingImpl) config.createCustomTagAppMappings("/"+i,Caster.toString(array.getE(i+1)).trim());
+			/*mappings[i]=new MappingImpl(
 					config,"/"+i,
 					Caster.toString(array.getE(i+1)).trim(),
 					null,false,true,false,false,false
-					);
+					);*/
 		}
 		return mappings;
 	}

@@ -490,6 +490,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getExtensionInfo",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetExtensionInfo();
         
         else if(check("getCustomTagMappings",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetCustomTagMappings();
+        else if(check("getComponentMappings",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetComponentMappings();
         else if(check("getCfxTags",             ACCESS_FREE) && check2(ACCESS_READ  )) doGetCFXTags();
         else if(check("getJavaCfxTags",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetJavaCFXTags();
         else if(check("getDebug",               ACCESS_FREE) && check2(ACCESS_READ  )) doGetDebug();
@@ -523,6 +524,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updatemailserver",       ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateMailServer();
         else if(check("updatemapping",          ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateMapping();
         else if(check("updatecustomtag",        ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCustomTag();
+        else if(check("updateComponentMapping", ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateComponentMapping();
+    	
+    	
         else if(check("updatejavacfx",          ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateJavaCFX();
         else if(check("updatedebug",            ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateDebug();
         else if(check("updateerror",            ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateError();
@@ -550,6 +554,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("removemailserver",       ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveMailServer();
         else if(check("removemapping",          ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveMapping();
         else if(check("removecustomtag",        ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveCustomTag();
+        else if(check("removecomponentmapping", ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveComponentMapping();
         else if(check("removecfx",              ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveCFX();
         else if(check("removeExtension",        ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveExtension();
         else if(check("removeExtensionProvider",ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveExtensionProvider();
@@ -1409,6 +1414,36 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     } 
+    
+    
+    /**
+     * @throws PageException
+     */
+    private void doUpdateComponentMapping() throws PageException {
+        admin.updateComponentMapping(
+                getString("admin",action,"virtual"),
+                getString("admin",action,"physical"),
+                getString("admin",action,"archive"),
+                getString("admin",action,"primary"),
+                Caster.toBooleanValue(getString("admin",action,"trusted"))
+        );
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+
+    /**
+     * @throws PageException
+     * 
+     */
+    private void doRemoveComponentMapping() throws PageException {
+        admin.removeComponentMapping(
+                getString("admin",action,"virtual")
+        );
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+    
+    
 
     /**
      * @throws PageException
@@ -1461,6 +1496,28 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     }
+    
+    private void doGetComponentMappings() throws PageException {
+        Mapping[] mappings = config.getComponentMappings();
+        QueryImpl qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","trusted"},mappings.length,"query");
+        
+        
+        for(int i=0;i<mappings.length;i++) {
+            Mapping m=mappings[i];
+            int row=i+1;
+            qry.setAt("archive",row,m.getArchive());
+            qry.setAt("strarchive",row,m.getStrArchive());
+            qry.setAt("physical",row,m.getPhysical());
+            qry.setAt("strphysical",row,m.getStrPhysical());
+            qry.setAt("virtual",row,m.getVirtual());
+            qry.setAt("hidden",row,Caster.toBoolean(m.isHidden()));
+            qry.setAt("physicalFirst",row,Caster.toBoolean(m.isPhysicalFirst()));
+            qry.setAt("readonly",row,Caster.toBoolean(m.isReadonly()));
+            qry.setAt("trusted",row,Caster.toBoolean(m.isTrusted()));
+        }
+        pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+    }
+    
 
     /**
      * @throws PageException
@@ -1963,6 +2020,7 @@ private void doGetMappings() throws PageException {
         int connTimeout=getInt("connectionTimeout",-1);
         boolean blob=getBool("blob",false);
         boolean clob=getBool("clob",false);
+        boolean verify=getBool("verify",true);
         Struct custom=getStruct("custom",new StructImpl());
         
         config.getDatasourceConnectionPool().remove(name);
@@ -1974,7 +2032,7 @@ private void doGetMappings() throws PageException {
 			throw new DatabaseException("can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder",e.getMessage(),null,null,null);
 		}
         
-        _doVerifyDatasource(classname,ds.getDsnTranslated(),username,password);
+        if(verify)_doVerifyDatasource(classname,ds.getDsnTranslated(),username,password);
         //print.out("limit:"+connLimit);
         admin.updateDataSource(
                 name,
@@ -3066,6 +3124,8 @@ private void doGetMappings() throws PageException {
         admin.updateComponentDataMemberDefaultAccess(getString("admin",action,"componentDataMemberDefaultAccess"));
         admin.updateTriggerDataMember(getBoolObject("admin",action,"triggerDataMember"));
         admin.updateComponentUseShadow(getBoolObject("admin",action,"useShadow"));
+        admin.updateComponentDefaultImport(getString("admin",action,"componentDefaultImport"));
+        admin.updateComponentLocalSearch(getBoolObject("admin",action,"componentLocalSearch"));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -3101,6 +3161,9 @@ private void doGetMappings() throws PageException {
         sct.set("componentDataMemberDefaultAccess",ComponentUtil.toStringAccess(config.getComponentDataMemberDefaultAccess()));
         sct.set("triggerDataMember",Caster.toBoolean(config.getTriggerComponentDataMember()));
         sct.set("useShadow",Caster.toBoolean(config.useComponentShadow()));
+        sct.set("ComponentDefaultImport",config.getComponentDefaultImport());
+        sct.set("componentLocalSearch",config.getComponentLocalSearch());
+        
     }
 
     /**

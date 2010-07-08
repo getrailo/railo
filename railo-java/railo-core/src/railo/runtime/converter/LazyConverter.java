@@ -10,11 +10,13 @@ import railo.runtime.type.Struct;
 
 public class LazyConverter {
 	 public static String serialize(Object o)  {
-		 if(o==null) return "null";
-		 if(o instanceof Array)return serializeArray((Array)o);
-		 if(o instanceof Struct)return serializeStruct((Struct)o);
-		 if(o instanceof SimpleValue || o instanceof Number || o instanceof Boolean)return Caster.toString(o,null);
-		 return o.toString();
+		  
+			 if(o==null) return "null";
+			 if(o instanceof Array)return serializeArray((Array)o);
+			 if(o instanceof Struct)return serializeStruct((Struct)o);
+			 if(o instanceof SimpleValue || o instanceof Number || o instanceof Boolean)return Caster.toString(o,null);
+			 return o.toString();
+		 
 	 }
 
 	private static String serializeStruct(Struct struct) {

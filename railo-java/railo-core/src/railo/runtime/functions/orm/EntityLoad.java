@@ -6,6 +6,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
+import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
 public class EntityLoad {
@@ -22,7 +23,6 @@ public class EntityLoad {
 	}
 	public static Object call(PageContext pc, String name,Object idOrFilter, Object uniqueOrOptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
-		//ORMEngine engine= ORMUtil.getEngine(pc);
 		
 		// id
 		if(Decision.isSimpleValue(idOrFilter)){
@@ -42,11 +42,16 @@ public class EntityLoad {
 			return session.loadAsArray(pc,name,Caster.toString(idOrFilter));
 		}
 		
-		// filter,unique
+		// filter,[unique|sortorder]
 		if(Decision.isSimpleValue(uniqueOrOptions)){
-			if(Caster.toBooleanValue(uniqueOrOptions))
-				return session.load(pc,name,Caster.toStruct(idOrFilter));
-			return session.loadAsArray(pc,name,Caster.toStruct(idOrFilter));
+			// filter,unique
+			if(Decision.isBoolean(uniqueOrOptions)){
+				if(Caster.toBooleanValue(uniqueOrOptions))
+					return session.load(pc,name,Caster.toStruct(idOrFilter));
+				return session.loadAsArray(pc,name,Caster.toStruct(idOrFilter));
+			}
+			// filter,sortorder
+			return session.loadAsArray(pc,name,Caster.toStruct(idOrFilter),(Struct)null,Caster.toString(uniqueOrOptions));
 		}
 		// filter,options
 		return session.loadAsArray(pc,name,Caster.toStruct(idOrFilter),Caster.toStruct(uniqueOrOptions));

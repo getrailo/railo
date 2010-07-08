@@ -1,6 +1,3 @@
-<!--- /*		
-Build:		 368
-*/--->
 <cfcomponent>
 
 	<cfset variables._RAILO_AJAX_ALLOWED_BINDS = "cfc|javascript|url"/>

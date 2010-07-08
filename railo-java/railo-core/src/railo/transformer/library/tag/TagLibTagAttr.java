@@ -22,6 +22,7 @@ public final class TagLibTagAttr {
 	private String defaultValue;
     private TagLibTag tag;
 	private boolean hidden;
+	private boolean _default;
 
 
 	/**
@@ -179,5 +180,15 @@ public final class TagLibTagAttr {
 		} catch (IOException e) {
 			return "";
 		}
+	}
+
+	public void isDefault(boolean _default) {
+		if(_default)
+			tag.setDefaultAttribute(this);
+		this._default=_default;
+	}
+
+	public boolean isDefault() {
+		return _default;
 	}
 }

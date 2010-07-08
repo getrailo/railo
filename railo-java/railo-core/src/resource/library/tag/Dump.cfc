@@ -2,7 +2,7 @@
 <cfset ColorCaster=createObject('java','railo.commons.color.ColorCaster')>
 <cfset NL="
 ">
-
+<cfset default={}>
 <cfset default.browser="html">
 <cfset default.console="text">
 

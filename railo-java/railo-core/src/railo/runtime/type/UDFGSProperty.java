@@ -5,20 +5,24 @@ import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.PageSource;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.type.util.ComponentUtil;
 
 public abstract class UDFGSProperty extends UDFImpl {
 	
-	protected FunctionArgument[] arguments;
-	protected String name;
-	protected ComponentImpl component;
+	protected final FunctionArgument[] arguments;
+	protected final String name;
+	protected final ComponentImpl component;
 
 	public UDFGSProperty(ComponentImpl component,String name,FunctionArgument[] arguments,short rtnType,String rtnFormat) {
 		super(UDFProperties(
-				component.getPage(),
+				component.getPageSource(),
 				arguments,
 				-1,
 				name,
@@ -41,7 +45,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 		this.component=component;
 	}
 
-	private static UDFProperties UDFProperties(Page page,
+	private static UDFProperties UDFProperties(PageSource pageSource,
 	        FunctionArgument[] arguments,
 			int index,
 	        String functionName, 
@@ -57,7 +61,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 	        Boolean verifyClient,
 	        StructImpl meta) {
 		try {
-			return new UDFProperties( page,
+			return new UDFProperties( pageSource,
 			        arguments,
 					 index,
 			         functionName, 
@@ -65,7 +69,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 			         strReturnFormat, 
 			         output, 
 			         async, 
-			         strAccess, 
+			         ComponentUtil.toIntAccess(strAccess), 
 			         displayName, 
 			         description, 
 			         hint, 
@@ -102,7 +106,8 @@ public abstract class UDFGSProperty extends UDFImpl {
 	 * @see railo.runtime.type.UDF#getPage()
 	 */
 	public Page getPage() {
-		return component.getPage();
+		throw new PageRuntimeException(new DeprecatedException("method getPage():Page is no longer suppoted, use instead getPageSource():PageSource"));
+        //return component.getPage();
 	}
 
 	/**

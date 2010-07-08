@@ -15,6 +15,7 @@ import railo.runtime.ComponentImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.PageSource;
 import railo.runtime.component.MemberSupport;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -22,8 +23,10 @@ import railo.runtime.dump.DumpRow;
 import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.UDFCasterException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -217,7 +220,10 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	 * @see railo.runtime.type.UDF#implementation(railo.runtime.PageContext)
      */
 	public Object implementation(PageContext pageContext) throws Throwable {
-		return properties.page.udfCall(pageContext,this,properties.index);
+		
+		
+		
+		return ComponentUtil.getPage(pageContext, properties.pageSource).udfCall(pageContext,this,properties.index);
 	}
 
 	private final Object castToAndClone(FunctionArgument arg,Object value, int index) throws PageException {
@@ -358,7 +364,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		int oldCheckArgs=undefined.setMode(pc.getConfig().getLocalMode());
 		
 		try {
-			pc.addPageSource(getPage().getPageSource(),doIncludePath);
+			pc.addPageSource(getPageSource(),doIncludePath);
 //////////////////////////////////////////
 			BodyContent bc =  (getOutput()?null:pci.pushBody());
 		    //boolean isC=ownerComponent!=null;
@@ -489,9 +495,16 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	}
     /**
      * @see railo.runtime.type.UDF#getPage()
+     * @deprecated use instead getPageSource()
      */
     public Page getPage() {
-        return properties.page;
+    	throw new PageRuntimeException(new DeprecatedException("method getPage():Page is no longer suppoted, use instead getPageSource():PageSource"));
+        //return properties.page;
+    }
+    
+    // FUTURE add to interface
+    public PageSource getPageSource() {
+        return properties.pageSource;
     }
 
 	public Struct getMeta() {
@@ -519,7 +532,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         	
 	        //Component c = getOwnerComponent();
 	        //if(c!=null)
-	        	func.set(OWNER, udf.getPage().getPageSource().getDisplayPath());
+	        	func.set(OWNER, udf.getPageSource().getDisplayPath());
         //}catch(Throwable t){}
 
 	    	   
@@ -681,7 +694,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
      */
     public Object getDefaultValue(PageContext pc,int index) throws PageException {
     	//return new UDFDefaultValue(properties,index);
-    	return properties.page.udfDefaultValue(pc,properties.index,index);
+    	return ComponentUtil.getPage(pc,properties.pageSource).udfDefaultValue(pc,properties.index,index);
     }
     // public abstract Object getDefaultValue(PageContext pc,int index) throws PageException;
 

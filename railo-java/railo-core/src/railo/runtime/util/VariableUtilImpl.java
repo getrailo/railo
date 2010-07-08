@@ -285,7 +285,7 @@ public final class VariableUtilImpl implements VariableUtil {
         
         
         // Direct Object Access
-		if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
+		if(coll!=null && pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
 			return Reflector.getProperty(coll,key.getString());
 		}
 		throw new ExpressionException("No matching property ["+key.getString()+"] found");

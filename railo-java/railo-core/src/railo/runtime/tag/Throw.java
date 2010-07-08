@@ -32,12 +32,11 @@ public final class Throw extends TagImpl {
 	private String detail="";
 
 	/** A message that describes the exceptional event. */
-	private String message="";
+	private Object message;
 
 	/** A custom error code that you supply. */
 	private String errorcode="";
 
-	/** a native java exception Object, if this attribute is defined all other will be ignored. */
 	private Object object;
 
 	/**
@@ -48,7 +47,7 @@ public final class Throw extends TagImpl {
 		extendedinfo=null;
 		type="application";
 		detail="";
-		message="";
+		message=null;
 		errorcode="";
 		object=null;
 	}
@@ -86,6 +85,13 @@ public final class Throw extends TagImpl {
 	*  A message that describes the exceptional event.
 	* @param message value to set
 	**/
+	public void setMessage(Object message)	{
+		this.message=message;
+	}
+	
+	/*
+	 * @deprecated this metho should no longer be used.
+	 * */
 	public void setMessage(String message)	{
 		this.message=message;
 	}
@@ -104,39 +110,63 @@ public final class Throw extends TagImpl {
 	 * @throws PageException
 	**/
 	public void setObject(Object object) throws PageException	{
-		if((object instanceof ObjectWrap))
-			setObject(((ObjectWrap)object).getEmbededObject());
-		else this.object=object;
+		this.object=object;	
 	}
+
+
+	private PageException toPageException(Object object, PageException defaultValue) throws PageException {
+		if((object instanceof ObjectWrap))
+			return toPageException(((ObjectWrap)object).getEmbededObject(),defaultValue);
+		
+		
+		if(object instanceof CatchBlock) {
+			CatchBlock cb = (CatchBlock)object;
+			return cb.getPageException();
+		}
+		if(object instanceof PageException) return (PageException)object;
+		if(object instanceof Throwable) {
+			Throwable t=(Throwable)object;
+			return new CustomTypeException(t.getMessage(),"","",t.getClass().getName());
+		}
+		return defaultValue;
+		
+	}
+
 
 
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws PageException	{
-		if(object instanceof String && StringUtil.isEmpty(message)) {
-			message=object.toString();
+		
+		if(message instanceof String){
+			CustomTypeException exception = new CustomTypeException( (String)message,detail,errorcode,type);
+			if(extendedinfo!=null)exception.setExtendedInfo(extendedinfo);
+			throw exception;
 		}
-		else if(object!=null) {
-			if(object instanceof CatchBlock) {
-				CatchBlock cb = (CatchBlock)object;
-				throw cb.getPageException();
-			}
-			if(object instanceof PageException) throw (PageException)object;
-			if(object instanceof Throwable) {
-				Throwable t=(Throwable)object;
-				throw new CustomTypeException(t.getMessage(),"","",t.getClass().getName());
-			}
-			throw new ApplicationException("attribute object of type cfthrow must define a Exception Object, now ("+Caster.toClassName(object)+")");
-			
-			
-			
+		else if(message!=null) {
+			PageException pe = toPageException(message,null);
+			if(pe!=null) throw pe;
+
+			throw new ApplicationException("attribute message of type cfthrow must define a String message, now ("+Caster.toClassName(message)+")");
 		}
 		
-		CustomTypeException exception = new CustomTypeException( message,detail,errorcode,type);
-		if(extendedinfo!=null)exception.setExtendedInfo(extendedinfo);
-		throw exception;
-		//return SKIP_BODY;
+		if(object instanceof String && !StringUtil.isEmpty(object)){
+			CustomTypeException exception = new CustomTypeException( (String)object,detail,errorcode,type);
+			if(extendedinfo!=null)exception.setExtendedInfo(extendedinfo);
+			throw exception;
+		}
+		else if(object!=null) {
+			PageException pe = toPageException(object,null);
+			if(pe!=null) throw pe;
+			throw new ApplicationException("attribute object of type cfthrow must define a Exception Object, now ("+Caster.toClassName(object)+")");
+		}
+		
+		throw new CustomTypeException( "",detail,errorcode,type);
+		
+		
+		
+		
 	}
 
 	/**

@@ -146,7 +146,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			    
 			    is=IOUtil.toBufferedInputStream(item.openStream());
 			    if (item.getContentType()==null || StringUtil.isEmpty(item.getName())) {
-			    	list.add(new URLItem(item.getFieldName(),new String(IOUtil.toBytes(is),encoding),true));	     
+			    	list.add(new URLItem(item.getFieldName(),new String(IOUtil.toBytes(is),encoding),false));	     
 			    } 
 			    else {
 			    	tempFile=tempDir.getRealResource(getFileName());
@@ -154,7 +154,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			    			new Item(tempFile,item.getContentType(),item.getName(),item.getFieldName()));
 					String value=tempFile.toString();
 			    	IOUtil.copy(is, tempFile,true);
-				    list.add(new URLItem(item.getFieldName(),value,true));	     
+				    list.add(new URLItem(item.getFieldName(),value,false));	     
 			    }       
 			}
 			
