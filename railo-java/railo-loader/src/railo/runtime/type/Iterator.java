@@ -45,9 +45,11 @@ public interface Iterator {
 	public int getRecordcount();
 	
 	/**
-	* return the actuell position of the internal pointer
+	* return the current position of the internal pointer
 	* @return	int 
+	* 
 	*/
+	// @deprecated use instead getCurrentrow(int pageContextId)
 	public int getCurrentrow();
 
 	/**

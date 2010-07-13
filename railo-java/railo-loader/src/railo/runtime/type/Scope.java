@@ -68,7 +68,14 @@ public interface Scope extends Struct {
 
     public static final int SCOPE_CLUSTER=14;
     
-    public static final int SCOPE_COUNT=15;
+
+    public static final int SCOPE_VAR=15;
+    
+    
+    public static final int SCOPE_COUNT=16;
+    
+    
+    
     
 	/**
 	 * return if the scope is Initialiesd

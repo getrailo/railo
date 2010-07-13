@@ -59,6 +59,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @return scope matching to defined scope definition
      * @param type type of scope (Scope.xx)
      * @throws PageException
+     * FUTURE set to deprecated
      */
 	public abstract Scope scope(int type) throws PageException;
 
