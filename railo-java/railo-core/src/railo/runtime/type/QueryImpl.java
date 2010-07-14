@@ -810,8 +810,12 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 
 	//private static int pidc=0;
 	private int getPid() {
-		PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();//ThreadLocalPageContext.get();
-		if(pc==null) return 0;
+		
+		PageContext pc = ThreadLocalPageContext.get();
+		if(pc==null) {
+			CFMLEngineFactory.getInstance().getThreadPageContext();
+			if(pc==null)throw new RuntimeException("cannot get pid for current thread");
+		}
 		return pc.getId();
 	}
 

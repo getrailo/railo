@@ -6,6 +6,8 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.runtime.type.Collection;
+import railo.runtime.type.util.CollectionUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -23,11 +25,14 @@ public final class ForEach extends StatementBase implements FlowControl,HasBody 
 	private Variable value;
 
 	private final static Method TO_COLLECTION =	new Method("toCollection",Types.COLLECTION,new Type[]{Types.OBJECT});
-	private final static Method KEY_ITERATOR = 		new Method("keyIterator",Types.ITERATOR,new Type[]{});
+	//private final static Method TO_ITERATOR =	new Method("toIterator",Types.ITERATOR,new Type[]{Types.COLLECTION});
+	private final static Method ITERATOR = 	new Method("iterator",Types.ITERATOR,new Type[]{});
+	//private final static Method KEY_ITERATORx = 	new Method("keyIterator",Types.ITERATOR,new Type[]{});
 	private final static Method HAS_NEXT = 		new Method("hasNext",Types.BOOLEAN_VALUE,new Type[]{});
 	private final static Method NEXT = 			new Method("next",Types.OBJECT,new Type[]{});
 	private final static Method SET = 			new Method("set",Types.OBJECT,new Type[]{Types.PAGE_CONTEXT,Types.OBJECT});
-	
+
+    //private static final Type COLLECTION_UTIL = Type.getType(CollectionUtil.class);
 
 	private Label begin = new Label();
 	private Label end = new Label();
@@ -62,7 +67,8 @@ public final class ForEach extends StatementBase implements FlowControl,HasBody 
 			value.writeOut(bc, Expression.MODE_REF);
 			adapter.invokeStatic(Types.CASTER, TO_COLLECTION);
 			// ...iterator()
-			adapter.invokeInterface(Types.COLLECTION, KEY_ITERATOR);
+			adapter.invokeInterface(Types.COLLECTION, ITERATOR);
+			//adapter.invokeStatic(COLLECTION_UTIL, TO_ITERATOR);
 			// Iterator it=...
 			adapter.storeLocal(it);
 		// Key

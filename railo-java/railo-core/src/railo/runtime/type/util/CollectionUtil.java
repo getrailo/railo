@@ -1,8 +1,13 @@
 package railo.runtime.type.util;
 
+import java.util.Iterator;
+
 import railo.runtime.op.Operator;
+import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.StructImpl;
 
 public class CollectionUtil {
 
@@ -21,6 +26,10 @@ public class CollectionUtil {
 			if(!Operator.equalsEL(r, l, false, true)) return false;
 		}
 		return true;
+	}
+	
+	public static Iterator toIterator(Collection c){
+		return c.iterator();
 	}
 
 }
