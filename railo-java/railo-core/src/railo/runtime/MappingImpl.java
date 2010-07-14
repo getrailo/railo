@@ -144,7 +144,6 @@ public final class MappingImpl implements Mapping {
 			if(classLoaderMaxElements>physicalClassLoader.count())
 				return physicalClassLoader;
 			getConfigImpl().getMappingLogger().info(getVirtual(), "max size ["+classLoaderMaxElements+"] for classloader reached");
-		print.out(">>>"+getConfigImpl().getMappingLogger().getSource());
 		}
 		
 		// reset existing classloader

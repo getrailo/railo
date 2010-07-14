@@ -605,7 +605,6 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	
 
 	private static Collection.Key[] _toKeys(String[] strColumnNames) {
-		print.o(strColumnNames);
 		Collection.Key[] columnNames=new Collection.Key[strColumnNames.length];
 		for(int i=0	;i<columnNames.length;i++) {
 			columnNames[i]=KeyImpl.init(strColumnNames[i].trim());
@@ -1196,7 +1195,6 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	}
 	
 	public boolean go(int index, int pid) {
-		print.e("pid:"+pid+";index:"+index);
 		if(index>0 && index<=recordcount) {
 			arrCurrentRow.set(pid, index);
 			return true;

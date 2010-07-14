@@ -425,7 +425,7 @@ public final class JSONConverter {
 		// NULL
 		if(object==null) {
 		    sb.append(goIn());
-		    sb.append("''");
+		    sb.append("null");
 		}
 		else if(object==NULL) {
 		    sb.append(goIn());

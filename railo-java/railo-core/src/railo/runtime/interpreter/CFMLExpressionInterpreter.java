@@ -1174,7 +1174,7 @@ public class CFMLExpressionInterpreter {
         	}
         	else if(allowNullConstant && name.equals("NULL")){
         		cfml.removeSpace();
-        		return new  LString("");
+        		return new  LString(null);
         	}
         	else if(name.equals("NEW")){
         		Ref res = newOp();

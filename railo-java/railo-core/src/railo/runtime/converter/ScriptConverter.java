@@ -18,8 +18,10 @@ import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.conversion.SerializeJSON;
 import railo.runtime.functions.displayFormatting.DateFormat;
 import railo.runtime.functions.displayFormatting.TimeFormat;
+import railo.runtime.functions.dynamicEvaluation.Serialize;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
@@ -334,7 +336,7 @@ public final class ScriptConverter {
 			// NULL
 			if(object==null) {
 			    sb.append(goIn());
-			    sb.append("''");
+			    sb.append("nullValue()");//sb.append("''");
 			}
 			// String
 			else if(object instanceof String) {
