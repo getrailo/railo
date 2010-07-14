@@ -26,9 +26,11 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.QueryPro;
 import railo.runtime.type.Struct;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.QueryUtil;
 
 public class HibernateCaster {
 	
@@ -428,7 +430,9 @@ public class HibernateCaster {
 		}
 		
 		// populate
-		Key[] names = Caster.toQueryImpl(qry).getColumnNames();
+		Key[] names=QueryUtil.getColumnNames(qry);
+		
+		
 		int row=qry.addRow();
 		for(int i=0;i<names.length;i++){
 			qry.setAtEL(names[i], row, scope.get(names[i],null));

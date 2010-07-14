@@ -36,6 +36,8 @@ import railo.commons.io.IOUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
+import railo.loader.engine.CFMLEngineFactory;
+import railo.runtime.CFMLFactory;
 import railo.runtime.PageContext;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.db.CFTypes;
@@ -53,6 +55,7 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
@@ -807,7 +810,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 
 	//private static int pidc=0;
 	private int getPid() {
-		PageContext pc = ThreadLocalPageContext.get();
+		PageContext pc = CFMLEngineFactory.getInstance().getThreadPageContext();//ThreadLocalPageContext.get();
 		if(pc==null) return 0;
 		return pc.getId();
 	}
@@ -1189,7 +1192,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	}
 	
 	public boolean go(int index, int pid) {
-		
+		print.e("pid:"+pid+";index:"+index);
 		if(index>0 && index<=recordcount) {
 			arrCurrentRow.set(pid, index);
 			return true;
@@ -1752,6 +1755,9 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
         return getColumnNamesAsString();
     }
     
+    /**
+     * @see railo.runtime.type.QueryPro#getColumnNames()
+     */
     public Collection.Key[] getColumnNames() {
     	Collection.Key[] keys = keys();
     	Collection.Key[] rtn=new Collection.Key[keys.length];
@@ -1797,6 +1803,9 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
     
 
 
+	/**
+	 * @see railo.runtime.type.QueryPro#getColumnNamesAsString()
+	 */
 	public String[] getColumnNamesAsString() {
 		String[] keys = keysAsString();
 		String[] rtn=new String[keys.length];

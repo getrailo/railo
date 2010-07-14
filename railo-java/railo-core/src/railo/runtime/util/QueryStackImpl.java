@@ -1,25 +1,25 @@
 package railo.runtime.util;
 
+import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
-import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Collection.Key;
 
 /**
  * Stack for Query Objects
  */
 public final class QueryStackImpl implements QueryStack {
-	Query[] queries=new QueryImpl[20];
+	Query[] queries=new Query[20];
 	int start=queries.length;
 	
 	/**
      * @see railo.runtime.util.QueryStack#addQuery(railo.runtime.type.Query)
      */
 	public void addQuery(Query query) {
-        if(start<1)grow();
+		if(start<1)grow();
         queries[--start]= query;
 	}
 	/*public void addQueryImpl(QueryImpl query) {
@@ -80,7 +80,8 @@ public final class QueryStackImpl implements QueryStack {
 		
 		// get data from queries
 		for(int i=start;i<queries.length;i++) {
-			rtn=((QueryImpl)queries[i]).get(pc,key,"");
+			
+			rtn=((Objects)queries[i]).get(pc,key,"");
 			if(rtn!=null) {
 				return rtn;
 			}
@@ -132,7 +133,7 @@ public final class QueryStackImpl implements QueryStack {
 	}
     
     private void grow() {
-        Query[] tmp=new QueryImpl[queries.length+20];
+        Query[] tmp=new Query[queries.length+20];
         for(int i=0;i<queries.length;i++) {
             tmp[i+20]=queries[i];
         }
@@ -144,7 +145,7 @@ public final class QueryStackImpl implements QueryStack {
 	 * @see railo.runtime.util.QueryStack#getQueries()
 	 */
 	public Query[] getQueries() {
-		Query[] tmp=new QueryImpl[queries.length-start];
+		Query[] tmp=new Query[queries.length-start];
 		int count=0;
 		for(int i=start;i<queries.length;i++) {
 			tmp[count++]=queries[i];

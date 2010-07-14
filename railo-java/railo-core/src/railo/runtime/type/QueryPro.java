@@ -17,4 +17,8 @@ public interface QueryPro extends Query {
 	public boolean go(int index, int pid);
 	
 	public void rename(Collection.Key columnName,Collection.Key newColumnName) throws ExpressionException;
+	
+	public Collection.Key[] getColumnNames();
+	
+	public String[] getColumnNamesAsString();
 }

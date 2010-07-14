@@ -88,6 +88,7 @@ import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.QueryPro;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.Collection.Key;
@@ -2708,13 +2709,20 @@ public final class Caster {
         throw new CasterException(o,"query");
     }
     
-    public static QueryImpl toQueryImpl(Query q) throws CasterException {
+
+    public static QueryPro toQueryPro(Query q) throws CasterException {
+		QueryPro rtn = toQueryPro(q, null);
+    	if(rtn!=null) return rtn;
+		throw new CasterException(q,"QueryPro");
+	}
+
+    public static QueryPro toQueryPro(Query q, QueryPro defaultValue)  {
 		while(q instanceof QueryWrap){
 			q=((QueryWrap)q).getQuery();
 		}
 		
-		if(q instanceof QueryImpl)return (QueryImpl) q;
-		throw new CasterException(q,"QueryImpl");
+		if(q instanceof QueryPro)return (QueryPro) q;
+		return defaultValue;
 	}
     
 
