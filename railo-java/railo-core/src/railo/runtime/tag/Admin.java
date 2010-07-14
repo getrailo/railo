@@ -100,7 +100,6 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -1271,11 +1270,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         if(str.equals("yes"))str="all";
         sct.set("file",str);
         
-    	ArrayImpl arr=new ArrayImpl();
+    	Array arr=new ArrayImpl();
     	if(accessFile!=SecurityManager.VALUE_ALL){
         	Resource[] reses = ((SecurityManagerImpl)sm).getCustomFileAccess();
         	for(int i=0;i<reses.length;i++){
-        		arr.add(reses[i].getAbsolutePath());
+        		arr.appendEL(reses[i].getAbsolutePath());
     		}
     	}
     	sct.set("file_access",arr);
@@ -1372,7 +1371,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      */
     private void doGetJavaCFXTags() throws PageException {
         Map map = config.getCFXTagPool().getClasses();
-        QueryImpl qry=new QueryImpl(new String[]{"displayname","sourcename","readonly","class","name","isvalid"},0,"query");
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"displayname","sourcename","readonly","class","name","isvalid"},0,"query");
         Iterator it = map.keySet().iterator();
         
         int row=0;
@@ -1399,7 +1398,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      */
     private void doGetCFXTags() throws PageException {
         Map map = config.getCFXTagPool().getClasses();
-        QueryImpl qry=new QueryImpl(new String[]{"displayname","sourcename","readonly","isvalid"},map.size(),"query");
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"displayname","sourcename","readonly","isvalid"},map.size(),"query");
         Iterator it = map.keySet().iterator();
         
         int row=0;
@@ -1478,7 +1477,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      */
     private void doGetCustomTagMappings() throws PageException {
         Mapping[] mappings = config.getCustomTagMappings();
-        QueryImpl qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","trusted"},mappings.length,"query");
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","trusted"},mappings.length,"query");
         
         
         for(int i=0;i<mappings.length;i++) {
@@ -1499,7 +1498,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     private void doGetComponentMappings() throws PageException {
         Mapping[] mappings = config.getComponentMappings();
-        QueryImpl qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","trusted"},mappings.length,"query");
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","trusted"},mappings.length,"query");
         
         
         for(int i=0;i<mappings.length;i++) {
@@ -1583,7 +1582,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
     private void doGetExtensionProviders() throws PageException {
     	ExtensionProvider[] providers = config.getExtensionProviders();
-        QueryImpl qry=new QueryImpl(new String[]{"url","isReadOnly"},providers.length,"query");
+    	railo.runtime.type.Query qry=new QueryImpl(new String[]{"url","isReadOnly"},providers.length,"query");
         
         ExtensionProvider provider;
         for(int i=0;i<providers.length;i++) {
@@ -1610,7 +1609,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     private void doGetExtensions() throws PageException {
     	Extension[] extensions = config.getExtensions();
-        QueryImpl qry=new QueryImpl(new String[]{
+    	railo.runtime.type.Query qry=new QueryImpl(new String[]{
         		"type","provider","id","config","version","category","description","image","label","name",
         		"author","codename","video","support","documentation","forum","mailinglist","network","created"},0,"query");
         
@@ -1664,7 +1663,7 @@ private void doGetMappings() throws PageException {
         
 
         Mapping[] mappings = config.getMappings();
-        QueryImpl qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","trusted","toplevel"},mappings.length,"query");
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"archive","strarchive","physical","strphysical","virtual","hidden","physicalFirst","readonly","trusted","toplevel"},mappings.length,"query");
         
         
         for(int i=0;i<mappings.length;i++) {
@@ -1790,7 +1789,7 @@ private void doGetMappings() throws PageException {
         
 
         Server[] servers = config.getMailServers();
-        QueryImpl qry=new QueryImpl(new String[]{"hostname","password","username","port","authentication","readonly","tls","ssl"},servers.length,"query");
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"hostname","password","username","port","authentication","readonly","tls","ssl"},servers.length,"query");
         
         
         for(int i=0;i<servers.length;i++) {
@@ -1812,7 +1811,7 @@ private void doGetMappings() throws PageException {
     }
     
     private void doGetRunningThreads() throws PageException {
-        QueryImpl qry=new QueryImpl(new String[]{"Id","Start","Timeout","ThreadType","StackTrace","TagContext",
+    	railo.runtime.type.Query qry=new QueryImpl(new String[]{"Id","Start","Timeout","ThreadType","StackTrace","TagContext",
         		"Label","RootPath","ConfigFile","URL"},0,"query");
         
         
@@ -1829,7 +1828,7 @@ private void doGetMappings() throws PageException {
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     }
     
-    private static void fillGetRunningThreads(QueryImpl qry, ConfigWeb configWeb) throws PageException {
+    private static void fillGetRunningThreads(railo.runtime.type.Query qry, ConfigWeb configWeb) throws PageException {
     	CFMLFactoryImpl factory = ((CFMLFactoryImpl)configWeb.getFactory());
     	Struct pcs =factory.getRunningPageContextes();
     	Iterator it = pcs.keyIterator();
@@ -2433,7 +2432,7 @@ private void doGetMappings() throws PageException {
     	Resource[] children = railoContext.listResources(new ExtensionResourceFilter("cfc"));
     	String rtnVar=getString("admin",action,"returnVariable");
     	
-    	QueryImpl qry=new QueryImpl(new String[]{"name"},children.length,rtnVar);
+    	railo.runtime.type.Query qry=new QueryImpl(new String[]{"name"},children.length,rtnVar);
          
     	
     	for(int i=0;i<children.length;i++) {
@@ -2454,7 +2453,7 @@ private void doGetMappings() throws PageException {
     	Resource[] children = railoContext.listResources(new ExtensionResourceFilter("cfm"));
     	String rtnVar=getString("admin",action,"returnVariable");
     	
-    	QueryImpl qry=new QueryImpl(new String[]{"name"},children.length,rtnVar);
+    	railo.runtime.type.Query qry=new QueryImpl(new String[]{"name"},children.length,rtnVar);
          
     	
     	for(int i=0;i<children.length;i++) {
@@ -2467,7 +2466,7 @@ private void doGetMappings() throws PageException {
 	private void doGetGatewayEntries() throws PageException  {
 		Map entries = config.getGatewayEngine().getEntries();
 		Iterator it = entries.entrySet().iterator();
-		Query qry=CFMLEngineFactory.getInstance().getCreationUtil().
+		railo.runtime.type.Query qry=CFMLEngineFactory.getInstance().getCreationUtil().
         	createQuery(new String[]{"class","id","custom","cfcPath","listenerCfcPath","startupMode","state","readOnly"}, 0, "entries");
         Map.Entry entry;
         GatewayEntry ge;
@@ -2537,7 +2536,7 @@ private void doGetMappings() throws PageException {
 	private void doGetCacheConnections() throws PageException  {
 		Map conns = config.getCacheConnections();
 		Iterator it = conns.entrySet().iterator();
-		Query qry=CFMLEngineFactory.getInstance().getCreationUtil().
+		railo.runtime.type.Query qry=CFMLEngineFactory.getInstance().getCreationUtil().
         	createQuery(new String[]{"class","name","custom","default","readOnly"}, 0, "connections");
         Map.Entry entry;
         CacheConnection cc;
@@ -2742,7 +2741,7 @@ private void doGetMappings() throws PageException {
 			SpoolerTask[] closed = config.getSpoolerEngine().getClosedTasks();
 			String v="VARCHAR";
 			String d="DATE";
-			QueryImpl qry=new QueryImpl(
+			railo.runtime.type.Query qry=new QueryImpl(
 					new String[]{"type","name","detail","id","lastExecution","nextExecution","closed","tries","exceptions","triesmax"},
 					new String[]{v,v,"object",v,d,d,"boolean","int","object","int"},
 					open.length+closed.length,"query");
@@ -2755,7 +2754,7 @@ private void doGetMappings() throws PageException {
     	
     }
     
-    private int doGetRemoteClientTasks(QueryImpl qry, SpoolerTask[] tasks, int row) throws PageException {
+    private int doGetRemoteClientTasks(railo.runtime.type.Query qry, SpoolerTask[] tasks, int row) throws PageException {
     	SpoolerTask task;
 		for(int i=0;i<tasks.length;i++) {
 			row++;
@@ -2801,7 +2800,7 @@ private void doGetMappings() throws PageException {
         RemoteClient[] clients = config.getRemoteClients();
         RemoteClient client;
         ProxyData pd;
-        QueryImpl qry=new QueryImpl(new String[]{"label","usage","securityKey","adminPassword","serverUsername","serverPassword","type","url",
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"label","usage","securityKey","adminPassword","serverUsername","serverPassword","type","url",
         		"proxyServer","proxyUsername","proxyPassword","proxyPort"},clients.length,"query");
         
         int row=0;
@@ -2882,7 +2881,7 @@ private void doGetMappings() throws PageException {
         
         Map ds = config.getDataSourcesAsMap();
         Iterator it = ds.keySet().iterator();
-        QueryImpl qry=new QueryImpl(new String[]{"name","host","classname","dsn","DsnTranslated","database","port",
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"name","host","classname","dsn","DsnTranslated","database","port",
                 "username","password","readonly"
                 ,"grant","drop","create","revoke","alter","select","delete","update","insert"
                 ,"connectionLimit","connectionTimeout","clob","blob","customSettings"},ds.size(),"query");
@@ -3397,7 +3396,7 @@ private void doGetMappings() throws PageException {
         Locale locale = LocaleFactory.getLocale(strLocale);
         
         String[] timeZones = TimeZone.getAvailableIDs();
-        QueryImpl qry=new QueryImpl(new String[]{"id","display"},new String[]{"varchar","varchar"},timeZones.length,"timezones");
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"id","display"},new String[]{"varchar","varchar"},timeZones.length,"timezones");
         
         TimeZone timeZone;
         for(int i=0;i<timeZones.length;i++) {

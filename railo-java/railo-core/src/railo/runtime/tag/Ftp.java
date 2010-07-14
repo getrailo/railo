@@ -528,7 +528,7 @@ public final class Ftp extends TagImpl {
         String[] types = new String[]{"VARCHAR","BOOLEAN","DATE","DOUBLE","VARCHAR","VARCHAR",
                 "VARCHAR","VARCHAR","VARCHAR","VARCHAR"};
         
-        QueryImpl query=new QueryImpl(cols,types,0,"query");
+        railo.runtime.type.Query query=new QueryImpl(cols,types,0,"query");
         
         // translate directory path for display
         if(directory.length()==0)directory="/";

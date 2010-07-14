@@ -3,6 +3,7 @@ package railo.runtime.reflection.storage;
 import java.lang.reflect.Field;
 import java.util.WeakHashMap;
 
+import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
 /**
@@ -19,11 +20,11 @@ public final class WeakFieldStorage {
 	 */
 	public Field[] getFields(Class clazz,String fieldname) {
 		Object o=map.get(clazz);
-		StructImpl fieldMap;
+		Struct fieldMap;
 		if(o==null) {
 			fieldMap=store(clazz);
 		}
-		else fieldMap=(StructImpl) o;
+		else fieldMap=(Struct) o;
 		
 		o=fieldMap.get(fieldname,null);
 		if(o==null) return null;

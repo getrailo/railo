@@ -3,6 +3,7 @@ package railo.runtime.reflection.storage;
 import java.lang.reflect.Constructor;
 import java.util.WeakHashMap;
 
+import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 
 /**
@@ -19,11 +20,11 @@ public final class WeakConstructorStorage {
 	 */
 	public synchronized Constructor[] getConstructors(Class clazz,int count) {
 		Object o=map.get(clazz);
-		ArrayImpl con;
+		Array con;
 		if(o==null) {
 			con=store(clazz);
 		}
-		else con=(ArrayImpl) o;
+		else con=(Array) o;
 
 		o=con.get(count+1,null);
 		if(o==null) return null;
@@ -35,9 +36,9 @@ public final class WeakConstructorStorage {
 	 * @param clazz 
 	 * @return stored structure
 	 */
-	private ArrayImpl store(Class clazz) {
+	private Array store(Class clazz) {
 			Constructor[] conArr=clazz.getConstructors();
-			ArrayImpl args=new ArrayImpl();
+			Array args=new ArrayImpl();
 			for(int i=0;i<conArr.length;i++) {
 				storeArgs(conArr[i],args);
 			}
@@ -51,7 +52,7 @@ public final class WeakConstructorStorage {
 	 * @param constructor
 	 * @param conArgs
 	 */
-	private void storeArgs(Constructor constructor, ArrayImpl conArgs) {
+	private void storeArgs(Constructor constructor, Array conArgs) {
 		Class[] pmt = constructor.getParameterTypes();
 		Object o=conArgs.get(pmt.length+1,null);
 		Constructor[] args;

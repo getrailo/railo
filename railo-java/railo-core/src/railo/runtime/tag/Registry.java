@@ -226,7 +226,7 @@ public final class Registry extends TagImpl {
         try {
             RegistryEntry[] entries = RegistryQuery.getValues(branch,type);
             if(entries!=null) {
-                QueryImpl qry=new QueryImpl(
+            	railo.runtime.type.Query qry=new QueryImpl(
                         new String[]{"entry","type","value"},
                         new String[]{"VARCHAR","VARCHAR","OTHER"},
                         entries.length,"query");

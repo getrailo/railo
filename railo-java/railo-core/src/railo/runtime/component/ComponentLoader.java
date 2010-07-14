@@ -2,6 +2,7 @@ package railo.runtime.component;
 
 import java.util.Map;
 
+import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.ComponentImpl;
@@ -99,6 +100,7 @@ public class ComponentLoader {
     		ImportDefintion impDef = config.getComponentDefaultImport();
 	    	ImportDefintion[] impDefs=pp.getImportDefintions();
 	    	
+    		
 	    	int i=-1;
 	    	do{
 	    		if(impDef.isWildcard() || impDef.getName().equalsIgnoreCase(path)){
@@ -112,9 +114,15 @@ public class ComponentLoader {
 			    			return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
 			        	}
 	    			}
+	    			
+	    			// search mappings and webroot
+	    	    	ps=((PageContextImpl)pc).getPageSource(impDef.getPackageAsPath()+pathWithCFC);
+	    	    	page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+	    	    	if(page!=null){
+	    	    		config.putCachedPageSource("import:"+impDef.getPackageAsPath()+pathWithCFC, page.getPageSource());
+	    				return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
+	    	    	}
 		    		
-	    			
-	    			
 	    			// search component mappings
 		    		Mapping m;
 		        	for(int y=0;y<cMappings.length;y++){

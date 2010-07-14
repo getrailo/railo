@@ -231,32 +231,6 @@ public final class QueryColumnUtil implements Serializable {
                         default:break;
                     }
                 }
-                //print.out("type:"+QueryImpl.getColumTypeName(column.type));
-
-                // Date
-                /*if(Types.TIMESTAMP==column.type) {
-                    for(int i=0;i<column.size();i++) {
-                        column.data[i]=toDate(column.data[i]);
-                    }
-                }
-                // Double
-                else if(Types.DOUBLE==column.type) {
-                    for(int i=0;i<column.size();i++) {
-                        column.data[i]=toDouble(column.data[i]);
-                    }
-                }
-                // Boolean
-                else if(Types.BOOLEAN==column.type) {
-                    for(int i=0;i<column.size();i++) {
-                        column.data[i]=toBoolean(column.data[i]);
-                    }
-                }
-                // Varchar
-                else if(Types.VARCHAR==column.type) {
-                    for(int i=0;i<column.size();i++) {
-                        column.data[i]=toString(column.data[i]);
-                    }
-                }*/
             }
         }
     }

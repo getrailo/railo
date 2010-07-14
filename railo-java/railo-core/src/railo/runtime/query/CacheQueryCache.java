@@ -131,12 +131,10 @@ import railo.runtime.type.Query;
 		Cache c = getCache();
 		Iterator it = c.entries().iterator();
     	String key;
-    	//QueryImpl value;
     	CacheEntry entry;
     	while(it.hasNext()){
 			entry=(CacheEntry) it.next();
     		key=Caster.toString(entry.getKey(),"@@@@@");
-    		//value=(QueryImpl) ((QueryCacheEntry)entry.getValue()).getValue();
     		if(filter.accept(key)){
 				c.remove(key);
     		}

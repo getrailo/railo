@@ -1360,7 +1360,7 @@ public final class ConfigWebAdmin {
         ResourceProvider[] providers = config.getResourceProviders();
         ResourceProvider defaultProvider = config.getDefaultResourceProvider();
 		
-        QueryImpl qry=new QueryImpl(new String[]{"support","scheme","caseSensitive","default","class","arguments"},elProviders.length+elDefaultProviders.length,"resourceproviders");
+        Query qry=new QueryImpl(new String[]{"support","scheme","caseSensitive","default","class","arguments"},elProviders.length+elDefaultProviders.length,"resourceproviders");
         int row=1;
         for(int i=0;i<elDefaultProviders.length;i++) {
       		getResourceProviders(new ResourceProvider[]{defaultProvider},qry,elDefaultProviders[i],row++,Boolean.TRUE);
@@ -1371,8 +1371,8 @@ public final class ConfigWebAdmin {
       	return qry;
     }
     
-    private void getResourceProviders(ResourceProvider[] providers,QueryImpl qry,Element p, int row,Boolean def) throws PageException {
-    	ArrayImpl support=new ArrayImpl();
+    private void getResourceProviders(ResourceProvider[] providers,Query qry,Element p, int row,Boolean def) throws PageException {
+    	Array support=new ArrayImpl();
   	    String clazz=p.getAttribute("class");
   		qry.setAt("scheme",row,p.getAttribute("scheme"));
   		qry.setAt("arguments",row,p.getAttribute("arguments"));

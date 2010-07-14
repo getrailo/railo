@@ -1,0 +1,191 @@
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/system
+END
+GetMetricData.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetMetricData.java
+END
+DotNetToCFType.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/DotNetToCFType.java
+END
+GetCurrentContext.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetCurrentContext.java
+END
+PagePoolList.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/PagePoolList.java
+END
+GetClassPath.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetClassPath.java
+END
+GetTempFile.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetTempFile.java
+END
+GetBaseTemplatePath.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetBaseTemplatePath.java
+END
+GetLocalHostIP.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetLocalHostIP.java
+END
+GetProfileString.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetProfileString.java
+END
+GetTempDirectory.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetTempDirectory.java
+END
+GetCurrentTemplatePath.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetCurrentTemplatePath.java
+END
+Compress.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/Compress.java
+END
+Extract.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/Extract.java
+END
+GetFileFromPath.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetFileFromPath.java
+END
+GetContextRoot.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetContextRoot.java
+END
+CFFunction.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/system/CFFunction.java
+END
+SetProfileString.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/SetProfileString.java
+END
+GetTemplatePath.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetTemplatePath.java
+END
+GetSystemInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetSystemInfo.java
+END
+IsZipFile.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/IsZipFile.java
+END
+DirectoryExists.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/DirectoryExists.java
+END
+GetDirectoryFromPath.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetDirectoryFromPath.java
+END
+PagePoolClear.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/system/PagePoolClear.java
+END
+ExpandPath.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/system/ExpandPath.java
+END
+GetUserRoles.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetUserRoles.java
+END
+GetException.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetException.java
+END
+SizeOf.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/SizeOf.java
+END
+FileExists.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/FileExists.java
+END
+Sleep.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/Sleep.java
+END
+ContractPath.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/ContractPath.java
+END
+GetPrinterInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/system/GetPrinterInfo.java
+END

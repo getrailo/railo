@@ -280,20 +280,22 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
             }
             cl = (PhysicalClassLoader)mapping.getClassLoaderForPhysical(resetCL.booleanValue());
             
-            
+            Class clazz=null;
             try {
-				return  newInstance(cl.loadClass(getClazz(),barr));
+            	clazz = cl.loadClass(getClazz(),barr);
+				
 			} catch (Throwable t) {
 				t.printStackTrace();
-				return newInstance(cl.loadClass(getClazz(),barr));
+				clazz = cl.loadClass(getClazz(),barr);
 			}
+			return  newInstance(clazz);
         }
         catch(Throwable t) {
         	throw Caster.toPageException(t);
         }
     }
 
-    private PagePlus newInstance(Class clazz) throws SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+    private PagePlus newInstance(Class clazz) throws SecurityException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
     	try{
 			Constructor c = clazz.getConstructor(new Class[]{PageSource.class});
 			return (PagePlus) c.newInstance(new Object[]{this});

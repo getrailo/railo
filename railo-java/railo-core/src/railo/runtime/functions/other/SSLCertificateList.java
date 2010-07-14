@@ -29,7 +29,7 @@ public final class SSLCertificateList implements Function {
     	X509Certificate[] certs = installer.getCertificates();
     	X509Certificate cert;
     	
-    	QueryImpl qry=new QueryImpl(new String[]{"subject","issuer"},certs.length,"certificates");
+    	Query qry=new QueryImpl(new String[]{"subject","issuer"},certs.length,"certificates");
     	for(int i=0;i<certs.length;i++){
     		cert=certs[i];
     		qry.setAtEL("subject",i+1, cert.getSubjectDN().getName());

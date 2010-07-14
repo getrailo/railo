@@ -41,7 +41,7 @@ public final class QoQ {
 
 
 
-	public QueryImpl execute(PageContext pc,SQL sql,int maxrows) throws PageException {
+	public Query execute(PageContext pc,SQL sql,int maxrows) throws PageException {
 		try {
 			SelectParser parser=new SelectParser();
 			Selects selects = parser.parse(sql.getSQLString());
@@ -56,7 +56,7 @@ public final class QoQ {
 	/**
 	 * execute a SQL Statement against CFML Scopes
 	 */
-    public QueryImpl execute(PageContext pc,SQL sql, Selects selects,int maxrows) throws PageException {
+    public Query execute(PageContext pc,SQL sql, Selects selects,int maxrows) throws PageException {
     	Column[] orders=selects.getOrderbys();
     	Select[] arrSelects = selects.getSelects();
     	
@@ -190,7 +190,7 @@ public final class QoQ {
 	}
 
 	private Array array(String value, int recordcount) {
-		ArrayImpl array = new ArrayImpl();
+		Array array = new ArrayImpl();
 		if(recordcount==0) return array;
 		for(int i=0;i<recordcount;i++) {
 			array.appendEL(value);

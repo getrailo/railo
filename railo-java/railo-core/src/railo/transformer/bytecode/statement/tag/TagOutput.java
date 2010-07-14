@@ -54,12 +54,7 @@ public final class TagOutput extends TagBase {
 			Types.VOID,
 			new Type[]{});
 
-	// boolean go(int index)
-	public static final Method GO = new Method(
-			"go",
-			Types.BOOLEAN_VALUE,
-			new Type[]{Types.INT_VALUE,Types.INT_VALUE});
-
+	
 
 	// Query getQuery(String key)
 	public static final Method GET_QUERY = new Method(
@@ -99,7 +94,7 @@ public final class TagOutput extends TagBase {
 	public static final Method LOAD_5 = new Method(
 			"load",
 			NUMBER_ITERATOR,
-			new Type[]{Types.PAGE_CONTEXT, NUMBER_ITERATOR,Types.QUERY_IMPL,Types.STRING,Types.BOOLEAN_VALUE});
+			new Type[]{Types.PAGE_CONTEXT, NUMBER_ITERATOR,Types.QUERY,Types.STRING,Types.BOOLEAN_VALUE});
 
 	// boolean isValid()
 	public static final Method IS_VALID = new Method(
@@ -146,7 +141,7 @@ public final class TagOutput extends TagBase {
 	
 	private int numberIterator=-1;
 	private int query=-1;
-	private int queryImpl=-1;
+	//private int queryImpl=-1;
 	private int group=-1;
 
 
@@ -232,7 +227,7 @@ public final class TagOutput extends TagBase {
 		TagOutput parent = TagOutput.getParentTagOutputQuery(this);
 		numberIterator = parent.getNumberIterator();
 		query = parent.getQuery();
-		queryImpl = parent.getQueryImpl();
+		//queryImpl = parent.getQueryImpl();
 		
 		// current
 		int current=adapter.newLocal(Types.INT_VALUE);
@@ -253,14 +248,16 @@ public final class TagOutput extends TagBase {
 		wv.visitAfterExpressionBeforeBody(bc);
 		
 			// if(!query.go(ni.current()))break; 
-			adapter.loadLocal(queryImpl);
+			adapter.loadLocal(query);
 			adapter.loadLocal(numberIterator);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-			
+			/* FUTURE
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
+			adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
+			*/
+			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
 			
-			adapter.invokeVirtual(Types.QUERY_IMPL, TagOutput.GO);
 			NotVisitor.visitNot(bc);
 			Label _if=new Label();
 			adapter.ifZCmp(Opcodes.IFEQ, _if);
@@ -276,7 +273,7 @@ public final class TagOutput extends TagBase {
 			// numberIterator=NumberIterator.load(ni,query,group,grp_case);
 			adapter.loadArg(0);
 			adapter.loadLocal(numberIterator);
-			adapter.loadLocal(queryImpl);
+			adapter.loadLocal(query);
 			adapter.loadLocal(group);
 			adapter.loadLocal(groupCaseSensitive);
 			adapter.invokeStatic(TagOutput.NUMBER_ITERATOR, TagOutput.LOAD_5);
@@ -325,11 +322,15 @@ public final class TagOutput extends TagBase {
 
 	private void resetCurrentrow(GeneratorAdapter adapter, int current) {
 		//query.go(ni.current(),pc.getId())
-		adapter.loadLocal(queryImpl);
+		adapter.loadLocal(query);
 		adapter.loadLocal(current);
+		/* FUTURE
 		adapter.loadArg(0);
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-		adapter.invokeVirtual(Types.QUERY_IMPL, GO);
+		adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
+		*/
+		adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
+		
 		adapter.pop();
 		
 	}
@@ -339,7 +340,7 @@ public final class TagOutput extends TagBase {
 		TagOutput parent = TagOutput.getParentTagOutputQuery(this);
 		numberIterator = parent.getNumberIterator();
 		query = parent.getQuery();
-		queryImpl = parent.getQueryImpl();
+		//queryImpl = parent.getQueryImpl();
 		
 		int current=adapter.newLocal(Types.INT_VALUE);
 		adapter.loadLocal(numberIterator);
@@ -360,16 +361,16 @@ public final class TagOutput extends TagBase {
 		
 			// if(!query.go(ni.current()))break; 
 			
-			adapter.loadLocal(queryImpl);
+			adapter.loadLocal(query);
 			adapter.loadLocal(numberIterator);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-			
-
+			/*FUTURE
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
+			adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
+			*/
+			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
 			
-			
-			adapter.invokeVirtual(Types.QUERY_IMPL, GO);
 			NotVisitor.visitNot(bc);
 			Label _if=new Label();
 			adapter.ifZCmp(Opcodes.IFEQ, _if);
@@ -408,7 +409,7 @@ public final class TagOutput extends TagBase {
 		TagOutput parent = TagOutput.getParentTagOutputQuery(this);
 		numberIterator = parent.getNumberIterator();
 		query = parent.getQuery();
-		queryImpl = parent.getQueryImpl();
+		//queryImpl = parent.getQueryImpl();
 		
 		//int currentOuter=ni.current();
 		int currentOuter=adapter.newLocal(Types.INT_VALUE);
@@ -429,14 +430,16 @@ public final class TagOutput extends TagBase {
 		wv.visitAfterExpressionBeforeBody(bc);
 		
 			// if(!query.go(ni.current()))break; 
-			adapter.loadLocal(queryImpl);
+			adapter.loadLocal(query);
 			adapter.loadLocal(numberIterator);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-
+			/* FUTURE
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
+			adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
+			*/
+			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
 			
-			adapter.invokeVirtual(Types.QUERY_IMPL, GO);
 			NotVisitor.visitNot(bc);
 			Label _if=new Label();
 			adapter.ifZCmp(Opcodes.IFEQ, _if);
@@ -493,22 +496,26 @@ public final class TagOutput extends TagBase {
 		adapter.loadArg(0);
 		getAttribute("query").getValue().writeOut(bc, Expression.MODE_REF);
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, TagOutput.GET_QUERY);
-		adapter.dup();
+		//adapter.dup();
 		adapter.storeLocal(query);
 		
-		queryImpl = adapter.newLocal(Types.QUERY_IMPL);
-		//adapter.loadLocal(query);
-		adapter.checkCast(Types.QUERY_IMPL);
-		adapter.storeLocal(queryImpl);
+		//queryImpl = adapter.newLocal(Types.QUERY_IMPL);
+		//adapter.checkCast(Types.QUERY_IMPL);
+		//adapter.storeLocal(queryImpl);
 		
 
 		
 		// int startAt=query.getCurrentrow();
 		int startAt=adapter.newLocal(Types.INT_VALUE);
-		adapter.loadLocal(queryImpl);
+		adapter.loadLocal(query);
+		
+		/* FUTURE
 		adapter.loadArg(0);
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
-		adapter.invokeVirtual(Types.QUERY_IMPL, TagLoop.GET_CURRENTROW);
+		adapter.invokeInterface(Types.QUERY_IMPL, TagLoop.GET_CURRENTROW_1);
+		*/
+		adapter.invokeInterface(Types.QUERY, TagLoop.GET_CURRENTROW_0);
+		
 		adapter.storeLocal(startAt);
 		
 		
@@ -592,14 +599,16 @@ public final class TagOutput extends TagBase {
 				wv.visitAfterExpressionBeforeBody(bc);
 				
 					// if(!query.go(ni.current()))break; 
-					adapter.loadLocal(queryImpl);
+					adapter.loadLocal(query);
 					adapter.loadLocal(numberIterator);
 					adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-					
+					/* FUTURE
 					adapter.loadArg(0);
 					adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
+					adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
+					*/
+					adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
 					
-					adapter.invokeVirtual(Types.QUERY_IMPL, GO);
 					NotVisitor.visitNot(bc);
 					Label _if=new Label();
 					adapter.ifZCmp(Opcodes.IFEQ, _if);
@@ -615,7 +624,7 @@ public final class TagOutput extends TagBase {
 						// numberIterator=NumberIterator.load(ni,query,group,grp_case);
 						adapter.loadArg(0);
 						adapter.loadLocal(numberIterator);
-						adapter.loadLocal(queryImpl);
+						adapter.loadLocal(query);
 						adapter.loadLocal(group);
 						adapter.loadLocal(groupCaseSensitive);
 						adapter.invokeStatic(TagOutput.NUMBER_ITERATOR, TagOutput.LOAD_5);
@@ -665,11 +674,15 @@ public final class TagOutput extends TagBase {
 				adapter.invokeVirtual(Types.QUERY_IMPL, TagOutput.RESET);*/
 	    		
 				// query.go(startAt);
-				adapter.loadLocal(queryImpl);
+				adapter.loadLocal(query);
 				adapter.loadLocal(startAt);
+				/* FUTURE
 				adapter.loadArg(0);
 				adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
-				adapter.invokeVirtual(Types.QUERY_IMPL, TagLoop.GO);
+				adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
+				*/
+				adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
+				
 				adapter.pop();
 				
 				
@@ -711,9 +724,9 @@ public final class TagOutput extends TagBase {
 		return query;
 	}
 	
-	public int getQueryImpl()	{
+	/*public int getQueryImpl()	{
 		return queryImpl;
-	}
+	}*/
 	
 	/**
 	 * returns query of output

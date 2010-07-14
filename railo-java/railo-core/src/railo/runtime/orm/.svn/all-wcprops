@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/orm
+END
+ORMDatasourceConnection.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/orm/ORMDatasourceConnection.java
+END
+ORMConfiguration.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/orm/ORMConfiguration.java
+END
+ORMEngine.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/orm/ORMEngine.java
+END
+ORMSession.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/orm/ORMSession.java
+END
+ORMUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/orm/ORMUtil.java
+END
+ORMConnection.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/orm/ORMConnection.java
+END
+ORMException.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/orm/ORMException.java
+END
+ORMTransaction.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/orm/ORMTransaction.java
+END

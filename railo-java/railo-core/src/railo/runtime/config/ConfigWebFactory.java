@@ -1385,9 +1385,26 @@ public final class ConfigWebFactory {
      * @param doc
 	 * @throws IOException
      */
-    private static void loadMappings(ConfigServerImpl configServer, ConfigImpl config,Document doc) {
+    private static void loadMappings(ConfigServerImpl configServer, ConfigImpl config,Document doc) throws IOException {
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_MAPPING);
         Element el= getChildByName(doc.getDocumentElement(),"mappings");
+        
+        
+        String strLogger=el.getAttribute("log");
+        int logLevel=LogUtil.toIntType(el.getAttribute("log-level"),Log.LEVEL_ERROR);
+        if(StringUtil.isEmpty(strLogger)){
+        	if(configServer!=null){
+        		LogAndSource log = configServer.getMailLogger();
+        		strLogger=log.getSource();
+        		logLevel=log.getLogLevel();
+        	}
+        	else strLogger="{railo-config}/logs/mapping.log";
+        }
+        
+        config.setMappingLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
+        
+        
+        
         Element[] _mappings=getChildren(el,"mapping");
         
         HashTable mappings=new HashTable();
@@ -1426,6 +1443,8 @@ public final class ConfigWebFactory {
 	           boolean readonly=toBoolean(el.getAttribute("readonly"),false);
 	           boolean hidden=toBoolean(el.getAttribute("hidden"),false);
 	           boolean toplevel=toBoolean(el.getAttribute("toplevel"),true);
+	           int clMaxEl=toInt(el.getAttribute("classloader-max-elements"),5000);
+	           
 	           if(virtual.equalsIgnoreCase("/railo-context/"))toplevel=true;
 	           
 	           
@@ -1436,7 +1455,7 @@ public final class ConfigWebFactory {
 	               String primary=el.getAttribute("primary");
 	               boolean physicalFirst=primary==null || !primary.equalsIgnoreCase("archive");
 	               
-	               tmp=new MappingImpl(config,virtual,physical,archive,trusted,physicalFirst,hidden,readonly,toplevel);
+	               tmp=new MappingImpl(config,virtual,physical,archive,trusted,physicalFirst,hidden,readonly,toplevel,clMaxEl);
 	               mappings.put(tmp.getVirtualLowerCase(),tmp);
 	               if(virtual.equals("/")) {
 	                   finished=true;
@@ -2091,12 +2110,14 @@ public final class ConfigWebFactory {
 	           boolean readonly=toBoolean(ctMapping.getAttribute("readonly"),false);
 	           boolean hidden=toBoolean(ctMapping.getAttribute("hidden"),false);
 	           boolean trusted=toBoolean(ctMapping.getAttribute("trusted"),false);
+	           int clMaxEl=toInt(ctMapping.getAttribute("classloader-max-elements"),5000);
+	           
 	           String primary=ctMapping.getAttribute("primary");
 	           
 	           boolean physicalFirst=archive==null || !primary.equalsIgnoreCase("archive");
 	           //print.out("xxx:"+physicalFirst);
 	           hasSet=true;
-	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true);
+	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,clMaxEl);
 	           //print.out(mappings[i].isPhysicalFirst());
 	        }
 	        
@@ -3442,12 +3463,14 @@ public final class ConfigWebFactory {
 	           boolean readonly=toBoolean(cMapping.getAttribute("readonly"),false);
 	           boolean hidden=toBoolean(cMapping.getAttribute("hidden"),false);
 	           boolean trusted=toBoolean(cMapping.getAttribute("trusted"),false);
+	           int clMaxEl=toInt(cMapping.getAttribute("classloader-max-elements"),5000);
+	           
 	           String primary=cMapping.getAttribute("primary");
 	           
 	           boolean physicalFirst=archive==null || !primary.equalsIgnoreCase("archive");
 	           //print.out("xxx:"+physicalFirst);
 	           hasSet=true;
-	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true);
+	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,clMaxEl);
 	           //print.out(mappings[i].isPhysicalFirst());
 	        }
 	        

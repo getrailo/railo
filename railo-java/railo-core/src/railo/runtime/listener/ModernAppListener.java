@@ -32,6 +32,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMUtil;
+import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -159,8 +160,8 @@ public class ModernAppListener extends AppListenerSupport {
 			        	args = Caster.toArray(args);
 			        }
 			        else {
-			        	ArrayImpl arr = new ArrayImpl();
-			        	arr.add(args);
+			        	Array arr = new ArrayImpl();
+			        	arr.appendEL(args);
 			        	args=arr;
 			        }
 		        }

@@ -37,6 +37,9 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	private Scope variable;
 	private boolean allowImplicidQueryCall;
 	private boolean checkArguments;
+	
+
+
 	private boolean localAlways;
 	private short type;
 	private boolean isInit;
@@ -730,5 +733,12 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		boolean old=this.allowImplicidQueryCall;
 		this.allowImplicidQueryCall = allowImplicidQueryCall;
 		return old;
+	}
+	
+	/**
+	 * @return the checkArguments
+	 */
+	public boolean getCheckArguments() {
+		return checkArguments;
 	}
 }

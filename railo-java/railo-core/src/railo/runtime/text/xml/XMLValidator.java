@@ -11,6 +11,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.XMLException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -28,9 +29,9 @@ public class XMLValidator extends XMLEntityResolverDefaultHandler {
 		return super.resolveEntity(publicID, systemID);
 	}
 
-	private ArrayImpl warnings;
-	private ArrayImpl errors;
-	private ArrayImpl fatals;
+	private Array warnings;
+	private Array errors;
+	private Array fatals;
 	private boolean hasErrors;
 	private String strSchema;
 
@@ -70,7 +71,7 @@ public class XMLValidator extends XMLEntityResolverDefaultHandler {
     	log(spe,"Fatal Error",fatals);
     }
     
-    private void log(SAXParseException spe, String type,ArrayImpl array)	{
+    private void log(SAXParseException spe, String type,Array array)	{
         StringBuffer sb = new StringBuffer("["+type+"] ");
         
         String id = spe.getSystemId();

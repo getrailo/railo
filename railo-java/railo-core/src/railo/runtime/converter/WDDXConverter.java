@@ -511,7 +511,7 @@ public final class WDDXConverter {
 	private Object _deserializeQuery(Element recordset) throws ConverterException {
 		try {
 			// create Query Object
-			QueryImpl query=new QueryImpl(
+			Query query=new QueryImpl(
 					railo.runtime.type.List.listToArray(
 							recordset.getAttribute("fieldNames"),','
 					)
@@ -541,7 +541,7 @@ public final class WDDXConverter {
 	 * @throws ConverterException 
 	 * @throws PageException
 	 */
-	private void _deserializeQueryField(QueryImpl query,Element field) throws PageException, ConverterException {
+	private void _deserializeQueryField(Query query,Element field) throws PageException, ConverterException {
 		String name=field.getAttribute("name");
 		NodeList list = field.getChildNodes();
 		int len=list.getLength();

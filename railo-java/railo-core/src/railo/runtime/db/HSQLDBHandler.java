@@ -232,7 +232,7 @@ public final class HSQLDBHandler {
      * @throws PageException 
      * @throws PageException
      */
-    public QueryImpl execute(PageContext pc, SQL sql, int maxrows, int fetchsize, int timeout) throws PageException {
+    public Query execute(PageContext pc, SQL sql, int maxrows, int fetchsize, int timeout) throws PageException {
         Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
 		String prettySQL =null;
@@ -243,7 +243,7 @@ public final class HSQLDBHandler {
 					SelectParser parser=new SelectParser();
 					selects = parser.parse(sql.getSQLString());
 					
-					QueryImpl q=qoq.execute(pc,sql,selects,maxrows);
+					Query q=qoq.execute(pc,sql,selects,maxrows);
 					q.setExecutionTime(stopwatch.time());
 
 					return q;
@@ -257,7 +257,7 @@ public final class HSQLDBHandler {
 					//railo.print.out("--------------------------------");
 					prettySQL = SQLPrettyfier.prettyfie(sql.getSQLString());
 					try {
-						QueryImpl query=executer.execute(pc,sql,prettySQL,maxrows);
+						Query query=executer.execute(pc,sql,prettySQL,maxrows);
 						query.setExecutionTime(stopwatch.time());
 						return query;
 					} catch (PageException ex) {

@@ -8,8 +8,11 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.type.Scope;
+import railo.runtime.type.scope.ScopeFactory;
+import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.util.VariableUtilImpl;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -153,16 +156,19 @@ public class Variable extends ExpressionBase implements Invoker {
 		
 		// count 0
         if(count==0) 						return _writeOutEmpty(bc);
-        
+       
+    	boolean doOnlyScope=scope==Scope.SCOPE_LOCAL;
+    	
     	Type rtn=Types.OBJECT;
     	//boolean last;
-    	for(int i=1;i<count;i++) {
+    	for(int i=doOnlyScope?0:1;i<count;i++) {
 			adapter.loadArg(0);
     	}
-		rtn=_writeOutFirst(bc, ((Member)members.get(0)),mode,count==1);
+    	
+		rtn=_writeOutFirst(bc, ((Member)members.get(0)),mode,count==1,doOnlyScope);
 
 		// pc.get(
-		for(int i=1;i<count;i++) {
+		for(int i=doOnlyScope?0:1;i<count;i++) {
 			Member member=((Member)members.get(i));
 			boolean last=(i+1)==count;
 			
@@ -236,25 +242,33 @@ public class Variable extends ExpressionBase implements Invoker {
 	 * @throws TemplateException
 	 */
 	private Type _writeOutEmpty(BytecodeContext bc) throws BytecodeException {
-		if(ignoredFirstMember && scope==Scope.SCOPE_LOCAL) 
+		if(ignoredFirstMember && (scope==Scope.SCOPE_LOCAL || scope==ScopeSupport.SCOPE_VAR)) 
 			return Types.VOID;
 		
 		
 		GeneratorAdapter adapter = bc.getAdapter();
 		adapter.loadArg(0);
 		Method m;
+		Type t=Types.PAGE_CONTEXT;
 		if(scope==Scope.SCOPE_ARGUMENTS) {
 			LitBoolean.TRUE.writeOut(bc, MODE_VALUE);
 			 m = TypeScope.METHOD_ARGUMENT_BIND;
 		}
 		else if(scope==Scope.SCOPE_LOCAL) {
 			adapter.checkCast(Types.PAGE_CONTEXT_IMPL);// FUTURE remove when function localScope(boolean) is part of class PageContext
+			t=Types.PAGE_CONTEXT_IMPL;
 			LitBoolean.TRUE.writeOut(bc, MODE_VALUE);
 			 m = TypeScope.METHOD_LOCAL_BIND;
 		}
+		else if(scope==ScopeSupport.SCOPE_VAR) {
+			adapter.checkCast(Types.PAGE_CONTEXT_IMPL);// FUTURE remove when function localScope(boolean) is part of class PageContext
+			t=Types.PAGE_CONTEXT_IMPL;
+			LitBoolean.TRUE.writeOut(bc, MODE_VALUE);
+			 m = TypeScope.METHOD_VAR_BIND;
+		}
 		else m = TypeScope.METHODS[scope]; 
 		
-		TypeScope.invokeScope(adapter,m);
+		TypeScope.invokeScope(adapter,m,t);
 		
 		
 		return m.getReturnType();
@@ -262,11 +276,11 @@ public class Variable extends ExpressionBase implements Invoker {
 	
 	
 
-	private Type _writeOutFirst(BytecodeContext bc, Member member, int mode, boolean last) throws BytecodeException {
+	private Type _writeOutFirst(BytecodeContext bc, Member member, int mode, boolean last, boolean doOnlyScope) throws BytecodeException {
     	if(member instanceof DataMember)
-    		return _writeOutFirstDataMember(bc,(DataMember)member, scope,last);
+    		return _writeOutFirstDataMember(bc,(DataMember)member, scope,last , doOnlyScope);
     	else if(member instanceof UDF)
-    		return _writeOutFirstUDF(bc,(UDF)member,scope);
+    		return _writeOutFirstUDF(bc,(UDF)member,scope,doOnlyScope);
     	else
     		return _writeOutFirstBIF(bc,(BIF)member,mode,last);
 	}
@@ -317,17 +331,15 @@ public class Variable extends ExpressionBase implements Invoker {
 		
 	
 
-	static Type _writeOutFirstUDF(BytecodeContext bc, UDF udf, int scope) throws BytecodeException {
+	static Type _writeOutFirstUDF(BytecodeContext bc, UDF udf, int scope, boolean doOnlyScope) throws BytecodeException {
 
     	GeneratorAdapter adapter = bc.getAdapter();
 		// pc.getFunction (Object,String,Object[])
 	    // pc.getFunctionWithNamedValues (Object,String,Object[])
 		adapter.loadArg(0);
 		adapter.loadArg(0);
-		
-		TypeScope.invokeScope(adapter, scope);
-		//adapter.invokeVirtual(Types.PAGE_CONTEXT,TypeScope.METHODS[scope]);
-		
+		Type rtn = TypeScope.invokeScope(adapter, scope);
+		if(doOnlyScope) return rtn;
 		
 		boolean isKey=registerKey(bc,udf.getName());
 		ExpressionUtil.writeOutExpressionArray(bc, Types.OBJECT, udf.getArguments());
@@ -337,18 +349,16 @@ public class Variable extends ExpressionBase implements Invoker {
 		
 	}
 
-	static Type _writeOutFirstDataMember(BytecodeContext bc, DataMember member, int scope, boolean last) throws BytecodeException {
+	static Type _writeOutFirstDataMember(BytecodeContext bc, DataMember member, int scope, boolean last, boolean doOnlyScope) throws BytecodeException {
     	GeneratorAdapter adapter = bc.getAdapter();
-    	// pc.scope().get(key);	
-			adapter.loadArg(0);
-			TypeScope.invokeScope(adapter, scope);
-			//adapter.invokeVirtual(Types.PAGE_CONTEXT,TypeScope.METHODS[scope]);
-    		
-    		//member.getName().writeOut(bc, MODE_REF);
-    		if(registerKey(bc,member.getName()))
-        		adapter.invokeInterface(TypeScope.SCOPES[scope],!last && scope==Scope.SCOPE_UNDEFINED?METHOD_SCOPE_GET_COLLECTION_KEY:METHOD_SCOPE_GET_KEY);
-    		else
-    			adapter.invokeInterface(TypeScope.SCOPES[scope],!last && scope==Scope.SCOPE_UNDEFINED?METHOD_SCOPE_GET_COLLECTION:METHOD_SCOPE_GET);
+		adapter.loadArg(0);
+		Type rtn = TypeScope.invokeScope(adapter, scope);
+		if(doOnlyScope) return rtn;
+		
+		if(registerKey(bc,member.getName()))
+    		adapter.invokeInterface(TypeScope.SCOPES[scope],!last && scope==Scope.SCOPE_UNDEFINED?METHOD_SCOPE_GET_COLLECTION_KEY:METHOD_SCOPE_GET_KEY);
+		else
+			adapter.invokeInterface(TypeScope.SCOPES[scope],!last && scope==Scope.SCOPE_UNDEFINED?METHOD_SCOPE_GET_COLLECTION:METHOD_SCOPE_GET);
     	return Types.OBJECT;
 	}
 	

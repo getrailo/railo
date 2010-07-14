@@ -1,6 +1,7 @@
 package railo.runtime.listener;
 
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.List;
 import railo.runtime.util.ApplicationContext;
@@ -15,11 +16,11 @@ public class ApplicationContextUtil {
 		if(scriptProtect==ApplicationContext.SCRIPT_PROTECT_NONE) return "none";
 		if(scriptProtect==ApplicationContext.SCRIPT_PROTECT_ALL) return "all";
 		
-		ArrayImpl arr=new ArrayImpl();
-		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_CGI)>0) arr.add("cgi");
-		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_COOKIE)>0) arr.add("cookie");
-		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_FORM)>0) arr.add("form");
-		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_URL)>0) arr.add("url");
+		Array arr=new ArrayImpl();
+		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_CGI)>0) arr.appendEL("cgi");
+		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_COOKIE)>0) arr.appendEL("cookie");
+		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_FORM)>0) arr.appendEL("form");
+		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_URL)>0) arr.appendEL("url");
 		
 		
 		

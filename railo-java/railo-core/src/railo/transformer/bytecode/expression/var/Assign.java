@@ -6,6 +6,7 @@ import org.objectweb.asm.commons.Method;
 
 import railo.runtime.type.Scope;
 import railo.runtime.type.scope.ScopeFactory;
+import railo.runtime.type.scope.ScopeSupport;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.Expression;
@@ -102,22 +103,24 @@ public class Assign extends ExpressionBase {
 		int count=variable.countFM+variable.countDM;
         // count 0
         if(count==0){
-        	if(variable.ignoredFirstMember() && variable.scope==Scope.SCOPE_LOCAL){
+        	if(variable.ignoredFirstMember() && variable.scope==ScopeSupport.SCOPE_VAR){
     			//print.dumpStack();
         		return Types.VOID;
     		}
         	return _writeOutEmpty(bc);
         }
         
+        boolean doOnlyScope=variable.scope==Scope.SCOPE_LOCAL;
+    	
     	Type rtn=Types.OBJECT;
     	//boolean last;
-    	for(int i=1;i<count;i++) {
+    	for(int i=doOnlyScope?0:1;i<count;i++) {
 			adapter.loadArg(0);
     	}
-		rtn=_writeOutFirst(bc, ((Member)variable.members.get(0)),mode,count==1);
+		rtn=_writeOutFirst(bc, ((Member)variable.members.get(0)),mode,count==1,doOnlyScope);
     	
 		// pc.get(
-		for(int i=1;i<count;i++) {
+		for(int i=doOnlyScope?0:1;i<count;i++) {
 			Member member=((Member)variable.members.get(i));
 			boolean last=(i+1)==count;
 			
@@ -149,15 +152,15 @@ public class Assign extends ExpressionBase {
     	return rtn;
 	}
 
-	private Type _writeOutFirst(BytecodeContext bc, Member member, int mode, boolean last) throws BytecodeException {
+	private Type _writeOutFirst(BytecodeContext bc, Member member, int mode, boolean last, boolean doOnlyScope) throws BytecodeException {
 		
 		if(member instanceof DataMember) {
-			return _writeOutOneDataMember(bc,(DataMember)member,last);
+			return _writeOutOneDataMember(bc,(DataMember)member,last,doOnlyScope);
 			//return Variable._writeOutFirstDataMember(adapter,(DataMember)member,variable.scope, last);
 		}
     	else if(member instanceof UDF) {
     		if(last)throw new BytecodeException("can't assign value to a user defined function",getLine());
-    		return Variable._writeOutFirstUDF(bc,(UDF)member,variable.scope);
+    		return Variable._writeOutFirstUDF(bc,(UDF)member,variable.scope,doOnlyScope);
     	}
     	else {
     		if(last)throw new BytecodeException("can't assign value to a build in function",getLine());
@@ -167,16 +170,25 @@ public class Assign extends ExpressionBase {
 
 
 
-	private Type _writeOutOneDataMember(BytecodeContext bc, DataMember member,boolean last) throws BytecodeException {
+	private Type _writeOutOneDataMember(BytecodeContext bc, DataMember member,boolean last, boolean doOnlyScope) throws BytecodeException {
     	GeneratorAdapter adapter = bc.getAdapter();
-		// pc.get
+		
+    	if(doOnlyScope){
+    		adapter.loadArg(0);
+    		if(variable.scope==Scope.SCOPE_LOCAL){
+    			adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
+    			return TypeScope.invokeScope(adapter, TypeScope.METHOD_LOCAL_TOUCH,Types.PAGE_CONTEXT_IMPL);
+    		}
+    		return TypeScope.invokeScope(adapter, variable.scope);
+    	}
+    	
+    	// pc.get
 		adapter.loadArg(0);
 		if(last) {
 			TypeScope.invokeScope(adapter, variable.scope);
 			//adapter.invokeVirtual(Types.PAGE_CONTEXT,TypeScope.METHODS[variable.scope]);
 			
 			boolean isKey=Variable.registerKey(bc, member.getName());
-			//member.getName().writeOut(bc, MODE_REF);
 			value.writeOut(bc, MODE_REF);
 			
 			if(isKey)adapter.invokeInterface(TypeScope.SCOPES[variable.scope],METHOD_SCOPE_SET_KEY);
@@ -186,9 +198,7 @@ public class Assign extends ExpressionBase {
 		else {
 			adapter.loadArg(0);
 			TypeScope.invokeScope(adapter, variable.scope);
-			//adapter.invokeVirtual(Types.PAGE_CONTEXT,TypeScope.METHODS[variable.scope]);
-    		//member.getName().writeOut(bc, MODE_REF);
-    		if(Variable.registerKey(bc, member.getName()))
+			if(Variable.registerKey(bc, member.getName()))
     			adapter.invokeVirtual(Types.PAGE_CONTEXT,TOUCH_KEY);
     		else
     			adapter.invokeVirtual(Types.PAGE_CONTEXT,TOUCH);
@@ -211,7 +221,7 @@ public class Assign extends ExpressionBase {
 		else {
 			adapter.loadArg(0);
 			TypeScope.invokeScope(adapter, Scope.SCOPE_UNDEFINED);
-			Variable.registerKey(bc,LitString.toExprString(ScopeFactory.toStringScope(variable.scope),-1));
+			Variable.registerKey(bc,LitString.toExprString(ScopeFactory.toStringScope(variable.scope,"undefined"),-1));
 			value.writeOut(bc, MODE_REF);
 			adapter.invokeInterface(TypeScope.SCOPES[Scope.SCOPE_UNDEFINED],METHOD_SCOPE_SET_KEY);
 		}

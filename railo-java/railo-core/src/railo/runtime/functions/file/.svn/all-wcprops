@@ -1,0 +1,131 @@
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/file
+END
+FileStreamWrapperReadBinary.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileStreamWrapperReadBinary.java
+END
+FileMove.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileMove.java
+END
+FileSetAccessMode.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileSetAccessMode.java
+END
+FileStreamWrapperRead.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileStreamWrapperRead.java
+END
+FileStreamWrapperWrite.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileStreamWrapperWrite.java
+END
+FileDelete.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileDelete.java
+END
+FileOpen.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileOpen.java
+END
+FileReadLine.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileReadLine.java
+END
+FileSetLastModified.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileSetLastModified.java
+END
+FileWrite.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileWrite.java
+END
+GetFileFromPath.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/GetFileFromPath.java
+END
+GetFileInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/file/GetFileInfo.java
+END
+FileClose.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileClose.java
+END
+FileExists.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileExists.java
+END
+FileWriteLine.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileWriteLine.java
+END
+FileStreamWrapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileStreamWrapper.java
+END
+FileIsEOF.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileIsEOF.java
+END
+FileSetAttribute.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileSetAttribute.java
+END
+FileReadBinary.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileReadBinary.java
+END
+FileRead.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/70/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileRead.java
+END
+FileCopy.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/file/FileCopy.java
+END

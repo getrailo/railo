@@ -164,7 +164,7 @@ public final class Insert extends TagImpl {
 	    	
 	    	SQL sql=createSQL(meta);
 			if(sql!=null) {
-				QueryImpl query = new QueryImpl(dc,sql,-1,-1,-1,"query");
+				railo.runtime.type.Query query = new QueryImpl(dc,sql,-1,-1,-1,"query");
 				
 				if(pageContext.getConfig().debug()) {
 					pageContext.getDebugger().addQueryExecutionTime(datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.executionTime());

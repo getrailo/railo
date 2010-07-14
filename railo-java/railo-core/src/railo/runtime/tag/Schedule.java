@@ -487,7 +487,7 @@ public final class Schedule extends TagImpl {
         String[] types = new String[]{v,v,v,"DATE","OTHER","DATE","OTHER",
                 v,v,v,v,v,v,v,
                 v,v,v,v,"BOOLEAN",v,"BOOLEAN"};
-        QueryImpl query=new QueryImpl(cols,types,tasks.length,"query"
+        railo.runtime.type.Query query=new QueryImpl(cols,types,tasks.length,"query"
         );
         try {
 	        for(int i=0;i<tasks.length;i++) {

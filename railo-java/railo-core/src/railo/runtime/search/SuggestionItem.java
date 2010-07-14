@@ -5,8 +5,8 @@ import railo.runtime.type.ArrayImpl;
 
 public class SuggestionItem {
 
-	ArrayImpl keywords=new ArrayImpl();
-	ArrayImpl keywordsScore=new ArrayImpl();
+	Array keywords=new ArrayImpl();
+	Array keywordsScore=new ArrayImpl();
 	
 	public SuggestionItem(String[] arr) {
 		add(arr);

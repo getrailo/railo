@@ -1,0 +1,365 @@
+package railo.runtime.spooler;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.LinkedList;
+
+import railo.aprint;
+import railo.commons.io.IOUtil;
+import railo.commons.io.log.Log;
+import railo.commons.io.res.Resource;
+import railo.commons.io.res.filter.ExtensionResourceFilter;
+import railo.commons.lang.StringUtil;
+import railo.runtime.config.Config;
+import railo.runtime.engine.ThreadLocalConfig;
+import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
+
+public class SpoolerEngineImpl implements SpoolerEngine {
+	
+	private String label;
+	
+
+	private LinkedList openTasks=new LinkedList();
+	private LinkedList closedTasks=new LinkedList();
+	private SpoolerThread thread;
+	//private ExecutionPlan[] plans;
+	private Resource persisDirectory;
+	private long count=0;
+	private Log log;
+	private Config config; 
+	private boolean add;
+	
+	public SpoolerEngineImpl(Config config,Resource persisDirectory,String label, Log log) throws IOException {
+		this.config=config;
+		this.persisDirectory=persisDirectory;
+		this.label=label;
+		this.log=log;
+		
+		load();
+		
+	}
+
+	/**
+	 * @see railo.runtime.spooler.SpoolerEngine#add(railo.runtime.spooler.SpoolerTask)
+	 */
+	public void add(SpoolerTask task) {
+		openTasks.add(task);
+		add=true;
+		task.setNextExecution(System.currentTimeMillis());
+		task.setId(StringUtil.addZeros(++count, 8));
+		store(task);
+		start();
+	}
+
+	private void start() {
+		if(thread==null || !thread.isAlive()) {
+			thread=new SpoolerThread(this);
+			thread.start();
+		}
+		else if(thread.sleeping) {
+			thread.interrupt();
+		}
+		//else print.out("- existing");
+	}
+
+	private void load() throws IOException {
+		if(persisDirectory==null) return;
+		
+		Resource closed = persisDirectory.getRealResource("closed");
+		Resource open = persisDirectory.getRealResource("open");
+
+		load(open,openTasks);
+		load(closed,closedTasks);
+		if(openTasks.size()>0)start();
+	}
+
+	/**
+	 * @see railo.runtime.spooler.SpoolerEngine#getLabel()
+	 */
+	public String getLabel() {
+		return label;
+	}
+	
+	private void load(Resource dir, LinkedList list) throws IOException {
+		if(!dir.exists()){
+			dir.createDirectory(true);
+			return;
+		}
+		ObjectInputStream ois=null;
+		InputStream is=null;
+		SpoolerTask task=null;
+        Resource[] resTasks = dir.listResources(new ExtensionResourceFilter("tsk"));
+	
+        for(int i=0;i<resTasks.length;i++) {
+        	long name = Caster.toLongValue(StringUtil.replace(resTasks[i].getName(),".tsk","",true),-1);
+        	if(count<name)count=name;
+			try {
+	        	is=resTasks[i].getInputStream();
+		        ois = new ObjectInputStream(is);
+		        task=(SpoolerTask) ois.readObject();
+		        
+		        //print.out(dir.getName()+":"+task.subject());
+		        list.add(task);
+	        } 
+	        catch (Throwable t) {
+	        	//print.printST(t);
+	        	IOUtil.closeEL(is);
+	        	IOUtil.closeEL(ois);
+	        	resTasks[i].delete();
+	        }
+	        IOUtil.closeEL(is);
+	        IOUtil.closeEL(ois);
+		}
+	}
+
+	private void store(SpoolerTask task) {
+		ObjectOutputStream oos=null;
+		Resource persis = getFile(task);
+		if(persis.exists()) persis.delete();
+        try {
+	        oos = new ObjectOutputStream(persis.getOutputStream());
+	        oos.writeObject(task);
+        } 
+        catch (IOException e) {}
+        finally {
+        	IOUtil.closeEL(oos);
+        }
+	}
+	
+
+	private void unstore(SpoolerTask task) {
+		Resource persis = getFile(task);
+		if(persis.exists()) persis.delete();   
+	}
+	private Resource getFile(SpoolerTask task) {
+		Resource dir = persisDirectory.getRealResource(task.closed()?"closed":"open");
+		dir.mkdirs();
+		return dir.getRealResource(task.getId()+".tsk");
+	}
+
+	/**
+	 * @see railo.runtime.spooler.SpoolerEngine#calculateNextExecution(railo.runtime.spooler.SpoolerTask)
+	 */
+	public long calculateNextExecution(SpoolerTask task) {
+		int _tries=0;
+		ExecutionPlan plan=null;
+		ExecutionPlan[] plans=task.getPlans();
+		
+		for(int i=0;i<plans.length;i++) {
+			_tries+=plans[i].getTries();
+			if(_tries>task.tries()) {
+				plan=plans[i];
+				break;
+			}
+		}
+		if(plan==null)return -1;
+		return task.lastExecution()+(plan.getIntervall()*1000);
+	}
+
+	/**
+	 * @see railo.runtime.spooler.SpoolerEngine#getOpenTasks()
+	 */
+	public SpoolerTask[] getOpenTasks() {
+		return (SpoolerTask[]) openTasks.toArray(new SpoolerTask[openTasks.size()]);
+	}
+	
+	/**
+	 * @see railo.runtime.spooler.SpoolerEngine#getClosedTasks()
+	 */
+	public SpoolerTask[] getClosedTasks() {
+		return (SpoolerTask[]) closedTasks.toArray(new SpoolerTask[closedTasks.size()]);
+	}
+
+	public static void list(SpoolerTask[] tasks) {
+		for(int i=0;i<tasks.length;i++) {
+			aprint.out(tasks[i].subject());
+			aprint.out("- last exe:"+tasks[i].lastExecution());
+			aprint.out("- tries:"+tasks[i].tries());
+		}
+	}
+	
+	class SpoolerThread extends Thread {
+
+		private SpoolerEngineImpl engine;
+		private boolean sleeping;
+
+		public SpoolerThread(SpoolerEngineImpl engine) {
+			this.engine=engine;
+			try{
+				this.setPriority(MIN_PRIORITY);
+			}
+			// can throw security exceptions
+			catch(Throwable t){}
+		}
+		
+		public void run() {
+			SpoolerTask[] tasks;
+			SpoolerTask task=null;
+			long nextExection;
+			ThreadLocalConfig.register(engine.config);
+			//ThreadLocalPageContext.register(engine.);
+			while(!engine.openTasks.isEmpty()) {
+				engine.resetAdds();
+				tasks=engine.getOpenTasks();
+				nextExection=Long.MAX_VALUE;
+				for(int i=0;i<tasks.length;i++) {
+					task=tasks[i];
+					
+					if(task.nextExecution()<=System.currentTimeMillis()) {
+						ThreadLocalConfig.register(engine.config);
+						engine.execute(task);
+						ThreadLocalConfig.release();
+					}
+					if(task!=null && task.nextExecution()<nextExection && !task.closed()) {
+						nextExection=task.nextExecution();
+					}
+					       
+				}
+				if(engine.hasAdds()) continue;
+				//print.out(nextExection==Long.MAX_VALUE);
+				if(nextExection==Long.MAX_VALUE)break;
+				long sleep = nextExection-System.currentTimeMillis();
+				//print.out(sleep);
+				if(sleep>0)doWait(sleep);
+				//if(sleep<0)break;
+			}
+		}
+
+		private void doWait(long sleep) {
+			//long start=System.currentTimeMillis();
+			try {
+				sleeping=true;
+				synchronized (this) {
+					wait(sleep);
+				}
+				
+			} catch (Throwable t) {
+				//
+			}
+			finally {
+				sleeping=false;
+			}
+			//print.out(sleep+":"+(System.currentTimeMillis()-start));
+		}
+		
+	}
+
+	/**
+	 * remove that task from Spooler
+	 * @param task
+	 */
+	public void remove(SpoolerTask task) {
+		unstore(task);
+		if(!openTasks.remove(task))closedTasks.remove(task);
+	}
+	
+
+	/**
+	 * @see railo.runtime.spooler.SpoolerEngine#hasAdds()
+	 */
+	public boolean hasAdds() {
+		return add;
+	}
+	
+	/**
+	 * @see railo.runtime.spooler.SpoolerEngine#resetAdds()
+	 */
+	public void resetAdds() {
+		add=false;
+	}
+
+	/**
+	 * @see railo.runtime.spooler.SpoolerEngine#remove(java.lang.String)
+	 */
+	public void remove(String id) {
+		SpoolerTask task = getTaskById(getOpenTasks(),id);
+		if(task==null)task=getTaskById(getClosedTasks(),id);
+		if(task!=null)remove(task);
+	}
+
+	private SpoolerTask getTaskById(SpoolerTask[] tasks, String id) {
+		for(int i=0;i<tasks.length;i++) {
+			if(tasks[i].getId().equals(id)) {
+				return tasks[i];
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * execute task by id and return eror throwd by task
+	 * @param id
+	 * @throws SpoolerException
+	 */
+	public PageException execute(String id) {
+		SpoolerTask task = getTaskById(getOpenTasks(),id);
+		if(task==null)task=getTaskById(getClosedTasks(),id);
+		if(task!=null){
+			return execute(task);
+		}
+		return null;
+	}
+	
+	public PageException execute(SpoolerTask task) {
+		//task.closed();
+		try {
+			((SpoolerTaskSupport)task)._execute(config);
+			if(task.closed())closedTasks.remove(task);
+			else openTasks.remove(task);
+			unstore(task);
+			log.info("remote-client", task.subject());
+			task.setLastExecution(System.currentTimeMillis());
+			task.setNextExecution(-1);
+			task.setClosed(true);
+			task=null;
+		} 
+		catch(Throwable t) {t.printStackTrace();
+			task.setLastExecution(System.currentTimeMillis());
+			task.setNextExecution(calculateNextExecution(task));
+			log.error("remote-client", task.subject()+":"+t.getMessage());
+			if(task.nextExecution()==-1) {
+				openTasks.remove(task);
+				if(!closedTasks.contains(task))closedTasks.add(task);
+				unstore(task);
+				task.setClosed(true);
+				store(task);
+				task=null;
+			}
+			else 
+				store(task);
+			return Caster.toPageException(t);
+		}
+		return null;
+	}
+
+	/**
+	 * @see railo.runtime.spooler.SpoolerEngine#setLabel(java.lang.String)
+	 */
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	/**
+	 * @see railo.runtime.spooler.SpoolerEngine#setPersisDirectory(railo.commons.io.res.Resource)
+	 */
+	public void setPersisDirectory(Resource persisDirectory) {
+		this.persisDirectory = persisDirectory;
+	}
+
+	/**
+	 * @see railo.runtime.spooler.SpoolerEngine#setLog(railo.commons.io.log.Log)
+	 */
+	public void setLog(Log log) {
+		this.log = log;
+	}
+
+	/**
+	 * @see railo.runtime.spooler.SpoolerEngine#setConfig(railo.runtime.config.Config)
+	 */
+	public void setConfig(Config config) {
+		this.config = config;
+	}
+}

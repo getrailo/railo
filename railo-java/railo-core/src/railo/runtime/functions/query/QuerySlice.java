@@ -35,7 +35,7 @@ public final class QuerySlice implements Function {
 	private static Query get(Query qry, int from, int to) throws PageException {
 		String[] columns;
 		//print.out(from+"::"+to);
-		QueryImpl nq=new QueryImpl(columns=qry.getColumns(),0,qry.getName());
+		Query nq=new QueryImpl(columns=qry.getColumns(),0,qry.getName());
 		
 		int row=1;
 		for(int i=from;i<=to;i++) {nq.addRow();

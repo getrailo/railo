@@ -13,12 +13,12 @@ import railo.runtime.type.ArrayImpl;
 
 public class FontUtil {
 
-	private static ArrayImpl fonts;
+	private static Array fonts;
 	private static Graphics2D graphics;
 
 	public synchronized static Array getAvailableFontsAsStringArray() {
 		Iterator it = getAvailableFonts(false).iterator();
-		ArrayImpl arr=new ArrayImpl();
+		Array arr=new ArrayImpl();
 		while(it.hasNext()) {
 			arr.appendEL(((Font)it.next()).getFontName());
 		}

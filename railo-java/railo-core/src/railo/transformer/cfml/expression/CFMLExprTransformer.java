@@ -8,6 +8,7 @@ import railo.runtime.exp.CasterException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Scope;
+import railo.runtime.type.scope.ScopeSupport;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.cast.CastDouble;
 import railo.transformer.bytecode.cast.CastString;
@@ -1350,12 +1351,12 @@ public class CFMLExprTransformer implements ExprTransformer {
 		else if (idStr.equals("CLIENT"))		return new Variable(Scope.SCOPE_CLIENT,line);
 		else if (idStr.equals("COOKIE"))		return new Variable(Scope.SCOPE_COOKIE,line);
 		else if (idStr.equals("CLUSTER"))		return new Variable(Scope.SCOPE_CLUSTER,line);
-		else if (idStr.equals("LOCAL"))			return new Variable(Scope.SCOPE_LOCAL,line);// LLL
+		else if (idStr.equals("LOCAL"))			return new Variable(Scope.SCOPE_LOCAL,line);
 		else if (idStr.equals("VAR")) {
 			String name=identifier(data,false,true);
 			if(name!=null){
 				comments(data.cfml);
-				Variable local = new Variable(Scope.SCOPE_LOCAL,line);
+				Variable local = new Variable(ScopeSupport.SCOPE_VAR,line);
 				if(!"LOCAL".equals(name))local.addMember(new DataMember(LitString.toExprString(name, data.cfml.getLine())));
 				else {
 					local.ignoredFirstMember(true);

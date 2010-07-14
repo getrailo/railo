@@ -51,6 +51,9 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
 	private int id=0;
     private static final byte[] EMPTY="".getBytes();
 	
+    public static final int SCOPE_VAR=15; // FUTURE add to interface Scope
+    public static final int SCOPE_COUNT=16;
+	
 	/**
 	 * Field <code>isInit</code>
 	 */
@@ -213,8 +216,8 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
         
         if(curr==null) {
         	if(isArrayDef) {
-        		ArrayImpl arr = new ArrayImpl();
-        		arr.add(value);
+        		Array arr = new ArrayImpl();
+        		arr.appendEL(value);
         		parent.setEL(key,arr);
         	}
             else parent.setEL(key,value); 
@@ -233,9 +236,9 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
         }
         else if(curr instanceof String){
             if(isArrayDef) {
-            	ArrayImpl arr = new ArrayImpl();
-            	arr.add(curr);
-            	arr.add(value);
+            	Array arr = new ArrayImpl();
+            	arr.appendEL(curr);
+            	arr.appendEL(value);
                 parent.setEL(key,arr);
             }
             else if(value instanceof StructImpl) {

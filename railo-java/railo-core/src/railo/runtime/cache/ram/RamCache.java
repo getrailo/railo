@@ -24,7 +24,7 @@ public class RamCache extends CacheSupport {
 	private long until;
 	
 
-	public static void init(Config config,String[] cacheNames,Struct[] arguments) throws IOException {
+	public static void init(Config config,String[] cacheNames,Struct[] arguments)  {
 	}
 	
 	public void init(String cacheName, Struct arguments) throws IOException {

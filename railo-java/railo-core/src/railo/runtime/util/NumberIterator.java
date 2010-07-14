@@ -3,6 +3,8 @@ package railo.runtime.util;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Operator;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 
 /**
@@ -172,9 +174,12 @@ public final class NumberIterator {
 	 * @return number iterator for group
 	 * @throws PageException
 	 */
-	public static synchronized NumberIterator load(PageContext pc, NumberIterator ni, QueryImpl query, String groupName, boolean caseSensitive) throws PageException {
-        int startIndex=query.getCurrentrow(pc.getId()); 
-        Object startValue=query.get(pc,groupName); 
+	public static synchronized NumberIterator load(PageContext pc, NumberIterator ni, Query query, String groupName, boolean caseSensitive) throws PageException {
+		int startIndex=query.getCurrentrow(); 
+		// FUTURE int startIndex=query.getCurrentrow(pc.getId()); 
+        
+        Object startValue=query.get(KeyImpl.init(groupName)); 
+        // FUTURE Object startValue=query.get(pc,KeyImpl.init(groupName)); 
         while(ni.hasNext()) { 
             if(!Operator.equals(startValue,query.getAt(groupName,ni.next()),caseSensitive)) { 
                         ni.previous();

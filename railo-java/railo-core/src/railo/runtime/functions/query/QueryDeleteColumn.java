@@ -14,7 +14,7 @@ public final class QueryDeleteColumn {
         return toArray(query.removeColumn(strColumn));
     }
     public static Array toArray(QueryColumn column) throws PageException {
-        ArrayImpl clone=new ArrayImpl();
+        Array clone=new ArrayImpl();
         int len=column.size();
         clone.resize(len);
         

@@ -221,7 +221,7 @@ public class ClassicAMFCaster implements AMFCaster {
 		return XMLCaster.toXMLStruct(node, true);
     }
 	protected Object toCFMLObject(Object[] arr) throws PageException {
-		ArrayImpl trg=new ArrayImpl();
+		Array trg=new ArrayImpl();
 		for(int i=0;i<arr.length;i++){
 			trg.setEL(i+1, toCFMLObject(arr[i]));
 		}
@@ -230,7 +230,6 @@ public class ClassicAMFCaster implements AMFCaster {
 	
 	protected Object toCFMLObject(List list) throws PageException {
         ListIterator it = list.listIterator();
-        //ArrayImpl arr=new ArrayImpl();
         while(it.hasNext()) {
         	//arr.setE(it.nextIndex()+1, toCFMLObject(it.next()));
             list.set(it.nextIndex(),toCFMLObject(it.next()));

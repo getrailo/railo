@@ -23,6 +23,7 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -113,7 +114,7 @@ public final class ClientDatasource extends ClientSupport {
 	
 	private static Struct _loadData(PageContext pc, String datasourceName, String appName, boolean mxStyle) throws PageException	{
 		DatasourceConnection dc=null;
-		QueryImpl query=null;
+		Query query=null;
 	    
 	    // select
 	    SQL sqlSelect=mxStyle?

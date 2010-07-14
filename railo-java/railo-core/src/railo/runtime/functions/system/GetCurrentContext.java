@@ -14,12 +14,12 @@ import railo.runtime.type.StructImpl;
 public final class GetCurrentContext implements Function {
 	
 	public static Array call(PageContext pc) {
-		ArrayImpl arr=new ArrayImpl();
+		Array arr=new ArrayImpl();
 		_getTagContext(pc, arr, new Exception("Stack trace"));
 		return arr;
 	}
 	
-	private static void _getTagContext(PageContext pc, ArrayImpl tagContext, Throwable t) {
+	private static void _getTagContext(PageContext pc, Array tagContext, Throwable t) {
 		//Throwable root = t.getRootCause();
 		Throwable cause = t.getCause(); 
 		if(cause!=null)_getTagContext(pc, tagContext, cause);

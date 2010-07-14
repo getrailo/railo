@@ -779,7 +779,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
 		Iterator it = indexes.entrySet().iterator();
 		
 		final String v="VARCHAR";
-        QueryImpl query=null;
+        Query query=null;
         String[] cols = new String[]{
         		"categories","categoryTree","custom1","custom2","custom3","custom4","extensions",
         		"key","language","query","title","urlpath","type"};

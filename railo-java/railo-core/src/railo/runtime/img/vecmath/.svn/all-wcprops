@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/railo/!svn/ver/50/trunk/railo-java/railo-core/src/railo/runtime/img/vecmath
+END
+Tuple3f.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/50/trunk/railo-java/railo-core/src/railo/runtime/img/vecmath/Tuple3f.java
+END
+Tuple4f.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/50/trunk/railo-java/railo-core/src/railo/runtime/img/vecmath/Tuple4f.java
+END
+Quat4f.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/50/trunk/railo-java/railo-core/src/railo/runtime/img/vecmath/Quat4f.java
+END
+Vector3f.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/50/trunk/railo-java/railo-core/src/railo/runtime/img/vecmath/Vector3f.java
+END
+Color4f.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/50/trunk/railo-java/railo-core/src/railo/runtime/img/vecmath/Color4f.java
+END
+Vector4f.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/50/trunk/railo-java/railo-core/src/railo/runtime/img/vecmath/Vector4f.java
+END
+AxisAngle4f.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/50/trunk/railo-java/railo-core/src/railo/runtime/img/vecmath/AxisAngle4f.java
+END
+Point3f.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/50/trunk/railo-java/railo-core/src/railo/runtime/img/vecmath/Point3f.java
+END
+Matrix4f.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/50/trunk/railo-java/railo-core/src/railo/runtime/img/vecmath/Matrix4f.java
+END
+Point4f.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/50/trunk/railo-java/railo-core/src/railo/runtime/img/vecmath/Point4f.java
+END

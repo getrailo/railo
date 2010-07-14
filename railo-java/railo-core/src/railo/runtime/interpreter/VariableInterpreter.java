@@ -4,6 +4,7 @@ import railo.commons.lang.ParserString;
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -11,6 +12,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Scope;
 import railo.runtime.type.ref.VariableReference;
+import railo.runtime.type.scope.ScopeFactory;
 import railo.runtime.type.scope.ScopeSupport;
 
 /**
@@ -36,6 +38,24 @@ public final class VariableInterpreter {
             collection=Caster.toCollection(collection.get(list.next()));
         }
         return collection.get(list.next());
+	}
+	
+	public static String scopeInt2String(int type) {
+		switch(type) {
+			case Scope.SCOPE_APPLICATION:	return "application";
+			case Scope.SCOPE_ARGUMENTS:		return "arguments";
+			case Scope.SCOPE_CGI:			return "cgi";
+			case Scope.SCOPE_COOKIE:		return "cookie";
+			case Scope.SCOPE_CLIENT:		return "client";
+			case Scope.SCOPE_FORM:			return "form";
+			case Scope.SCOPE_REQUEST:		return "request";
+			case Scope.SCOPE_SESSION:		return "session";
+			case Scope.SCOPE_SERVER:		return "server";
+			case Scope.SCOPE_URL:			return "url";
+			case Scope.SCOPE_VARIABLES:		return "variables";
+			case Scope.SCOPE_CLUSTER:		return "cluster";
+		}
+		return null;
 	}
 	
 
@@ -67,7 +87,8 @@ public final class VariableInterpreter {
 		    coll=pc.undefinedScope().get(list.current());
 		}
 		else {
-		    coll=pc.scope(scope);
+			coll=VariableInterpreter.scope(pc, scope, list.hasNext());
+		    //coll=pc.scope(scope);
 		}
 		
 		while(list.hasNext()) {
@@ -94,8 +115,10 @@ public final class VariableInterpreter {
 		}
 		else {
 		    try {
-                coll=pc.scope(scope);
-            } catch (PageException e) {
+                coll=VariableInterpreter.scope(pc, scope, list.hasNext());
+		    	//coll=pc.scope(scope);
+            } 
+		    catch (PageException e) {
                 return null;
             }
 		}
@@ -124,7 +147,16 @@ public final class VariableInterpreter {
 		}
 		int scope=scopeString2Int(list.next());
 		
-		Object coll=(scope==Scope.SCOPE_UNDEFINED)?pc.touch(pc.undefinedScope(),list.current()):pc.scope(scope);
+		Object coll;
+		if(scope==Scope.SCOPE_UNDEFINED){
+			coll=pc.touch(pc.undefinedScope(),list.current());
+		}
+		else{
+			coll=VariableInterpreter.scope(pc, scope, list.hasNext());
+			//coll=pc.scope(scope);
+		}
+		
+		
 		while(list.hasNextNext()) {
 			coll=pc.touch(coll,list.next());
 		}
@@ -152,7 +184,15 @@ public final class VariableInterpreter {
 		
 		// min 2 elements
 		int scope=scopeString2Int(list.next());
-		Object coll=(scope==Scope.SCOPE_UNDEFINED)?pc.touch(pc.undefinedScope(),list.current()):pc.scope(scope);
+		Object coll;
+		if(scope==Scope.SCOPE_UNDEFINED){
+			coll=pc.touch(pc.undefinedScope(),list.current());
+		}
+		else {
+			coll=VariableInterpreter.scope(pc, scope, true);
+			//coll=pc.scope(scope);
+		}
+		
 		
 		while(list.hasNextNext()) {
 		    coll=pc.touch(coll,list.next());
@@ -177,7 +217,15 @@ public final class VariableInterpreter {
 		}
         
 		int scope=scopeString2Int(list.next());
-		Object coll = (scope==Scope.SCOPE_UNDEFINED)?pc.undefinedScope().get(list.current()):pc.scope(scope);
+		
+		Object coll;
+		if(scope==Scope.SCOPE_UNDEFINED){
+			coll=pc.undefinedScope().get(list.current());
+		}
+		else {
+			coll=VariableInterpreter.scope(pc, scope, true);
+			//coll=pc.scope(scope);
+		}
 		
 		while(list.hasNextNext()) {
 		    coll=pc.get(coll,list.next());
@@ -203,7 +251,10 @@ public final class VariableInterpreter {
 				coll=pc.undefinedScope().get(list.current(),null);
 				if(coll==null)return false;
 			}
-			else coll=pc.scope(scope);
+			else {
+				coll=VariableInterpreter.scope(pc, scope, list.hasNext());
+				//coll=pc.scope(scope);
+			}
 			
 			while(list.hasNext()) {
 				coll=pc.getVariableUtil().getCollection(pc,coll,list.next(),null);
@@ -301,31 +352,6 @@ public final class VariableInterpreter {
         list.reset();
         return list;
     }
-    
-    
-	/**
-	 * translate a int scope type to String type
-	 * @param type int type
-	 * @return matching String Type
-	 */
-	public static String scopeInt2String(int type) {
-		switch(type) {
-			case Scope.SCOPE_APPLICATION:	return "application";
-			case Scope.SCOPE_ARGUMENTS:		return "arguments";
-			case Scope.SCOPE_CGI:			return "cgi";
-			case Scope.SCOPE_COOKIE:		return "cookie";
-			case Scope.SCOPE_CLIENT:		return "client";
-			case Scope.SCOPE_FORM:			return "form";
-			case Scope.SCOPE_REQUEST:		return "request";
-			case Scope.SCOPE_SESSION:		return "session";
-			case Scope.SCOPE_SERVER:		return "server";
-			case Scope.SCOPE_URL:			return "url";
-			case Scope.SCOPE_VARIABLES:		return "variables";
-			case Scope.SCOPE_CLUSTER:		return "cluster";
-			case Scope.SCOPE_LOCAL:			return "local";// LLL
-		}
-		return null;
-	}
 
 	/**
 	 * translate a string type definition to its int representation
@@ -422,5 +448,29 @@ public final class VariableInterpreter {
     private static boolean isVarLetter(char c) {
         return (c>='a' && c<='z') || (c>='0' && c<='9') || c=='_' || c=='$';
     }
+
+	public static Object scope(PageContext pc, int scope, boolean touch) throws PageException {
+		switch(scope) {
+	        case Scope.SCOPE_UNDEFINED:     return pc.undefinedScope();
+	        case Scope.SCOPE_URL:           return pc.urlScope();
+	        case Scope.SCOPE_FORM:          return pc.formScope();
+	        case Scope.SCOPE_VARIABLES:     return pc.variablesScope();
+	        case Scope.SCOPE_REQUEST:       return pc.requestScope();
+	        case Scope.SCOPE_CGI:           return pc.cgiScope();
+	        case Scope.SCOPE_APPLICATION:   return pc.applicationScope();
+	        case Scope.SCOPE_ARGUMENTS:     return pc.argumentsScope();
+	        case Scope.SCOPE_SESSION:       return pc.sessionScope();
+	        case Scope.SCOPE_SERVER:        return pc.serverScope();
+	        case Scope.SCOPE_COOKIE:        return pc.cookieScope();
+	        case Scope.SCOPE_CLIENT:        return pc.clientScope();
+	        case ScopeSupport.SCOPE_VAR:         	return pc.localScope();
+	        case Scope.SCOPE_CLUSTER:		return pc.clusterScope();
+	        
+	        case Scope.SCOPE_LOCAL:         
+				if(touch) return ((PageContextImpl)pc).localTouch();
+				return ((PageContextImpl)pc).localGet();
+	    }
+	    return pc.variablesScope();
+	}
     
 }

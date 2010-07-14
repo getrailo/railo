@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import railo.print;
 import railo.commons.io.FileUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
@@ -57,7 +58,13 @@ public final class MappingImpl implements Mapping {
     //private Resource classRoot;
     private Map<String,Object> customTagPath=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
     //private final Map<String,Object> customTagPath=new HashMap<String, Object>();
+	private int classLoaderMaxElements=5000;
 
+
+    public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
+            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel) {
+    	this(config, virtual, strPhysical, strArchive, trusted, physicalFirst, hidden, readonly,topLevel,5000);
+    }
 
     /**
      * @param configServer 
@@ -72,7 +79,7 @@ public final class MappingImpl implements Mapping {
      * @throws IOException
      */
     public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
-            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel) {
+            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, int classLoaderMaxElements) {
     	//print.dumpStack();
     	
     	this.config=config;
@@ -83,6 +90,7 @@ public final class MappingImpl implements Mapping {
         this.trusted=trusted;
         this.topLevel=topLevel;
         this.physicalFirst=physicalFirst;
+        this.classLoaderMaxElements=classLoaderMaxElements;
         
         // virtual
         if(virtual.length()==0)virtual="/";
@@ -124,11 +132,25 @@ public final class MappingImpl implements Mapping {
      * @see railo.runtime.Mapping#getClassLoaderForPhysical(boolean)
      */
 	public ClassLoader getClassLoaderForPhysical(boolean reload) throws IOException {
-		//reload=true;
-		if(physicalClassLoader!=null && !reload) return physicalClassLoader;
+		
+		// first access
+		if(physicalClassLoader==null){
+			physicalClassLoader=new PhysicalClassLoader(getClassRootDirectory(),getClass().getClassLoader());
+			return physicalClassLoader;
+		}
+		
+		// return existing classloader when not to big
+		if(!reload){
+			if(classLoaderMaxElements>physicalClassLoader.count())
+				return physicalClassLoader;
+			getConfigImpl().getMappingLogger().info(getVirtual(), "max size ["+classLoaderMaxElements+"] for classloader reached");
+		print.out(">>>"+getConfigImpl().getMappingLogger().getSource());
+		}
+		
+		// reset existing classloader
 		config.resetRPCClassLoader();
 		physicalClassLoader=new PhysicalClassLoader(getClassRootDirectory(),getClass().getClassLoader());
-        if(reload)pageSourcePool.clearPages();
+        pageSourcePool.clearPages();
         return physicalClassLoader;
 	}
 	
@@ -205,7 +227,7 @@ public final class MappingImpl implements Mapping {
      * @throws IOException
      */
     public MappingImpl cloneReadOnly(ConfigImpl config) {
-    	return new MappingImpl(config,virtual,strPhysical,strArchive,trusted,physicalFirst,hidden,true,topLevel);
+    	return new MappingImpl(config,virtual,strPhysical,strArchive,trusted,physicalFirst,hidden,true,topLevel,classLoaderMaxElements);
     }
     
     /**

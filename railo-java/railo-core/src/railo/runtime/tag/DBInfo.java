@@ -21,6 +21,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.QueryPro;
 import railo.runtime.type.SVArray;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -251,9 +252,8 @@ public final class DBInfo extends TagImpl {
 		
         ResultSet columns = metaData.getColumns(dbname, null, table, pattern);
         //ResultSet primaries = metaData.getPrimaryKeys(dbname, null, null);
-        QueryImpl qry = new QueryImpl(columns,"query");
-        //print.out(new QueryImpl(primaries,"query").toString());
-       
+        QueryPro qry = new QueryImpl(columns,"query");
+        
 		
 		qry.rename(COLUMN_DEF,COLUMN_DEFAULT_VALUE);
         
@@ -301,10 +301,6 @@ public final class DBInfo extends TagImpl {
 		qry.addColumn(REFERENCED_PRIMARYKEY, refPrim);
 		qry.addColumn(REFERENCED_PRIMARYKEY_TABLE, refPrimTbl);
 		
-		// demo
-		//ResultSet fk = metaData.getCrossReference(dbname, null,null, dbname, null, "tbl_post");
-        //print.out(new QueryImpl(fk,"query").toString());
-       
 		
 		qry.setExecutionTime(stopwatch.time());
         
@@ -353,8 +349,8 @@ public final class DBInfo extends TagImpl {
 		Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
         
-        QueryImpl catalogs = new QueryImpl(metaData.getCatalogs(),"query");
-        QueryImpl scheme = new QueryImpl(metaData.getSchemas(),"query");
+        railo.runtime.type.Query catalogs = new QueryImpl(metaData.getCatalogs(),"query");
+        railo.runtime.type.Query scheme = new QueryImpl(metaData.getSchemas(),"query");
         
         Pattern p=null;
         if(pattern!=null && !"%".equals(pattern)) 
@@ -364,7 +360,7 @@ public final class DBInfo extends TagImpl {
         
         String[] columns=new String[]{"database_name","type"};
 		String[] types=new String[]{"VARCHAR","VARCHAR"};
-		QueryImpl qry=new QueryImpl(columns,types,0,"query");
+		railo.runtime.type.Query qry=new QueryImpl(columns,types,0,"query");
 		int row=1,len=catalogs.getRecordcount();
 		String value;
 		// catalog
@@ -402,7 +398,7 @@ public final class DBInfo extends TagImpl {
 		checkTable(metaData);
 		
 		ResultSet columns = metaData.getCrossReference(dbname, null, table, null, null, null);// TODO ist das ok
-		QueryImpl qry = new QueryImpl(columns,"query");
+		railo.runtime.type.Query qry = new QueryImpl(columns,"query");
 		
 		
         qry.setExecutionTime(stopwatch.time());
@@ -431,7 +427,7 @@ public final class DBInfo extends TagImpl {
 		checkTable(metaData);
 		
         ResultSet tables = metaData.getIndexInfo(dbname, null, table, true, true);
-        QueryImpl qry = new QueryImpl(tables,"query");
+        railo.runtime.type.Query qry = new QueryImpl(tables,"query");
         qry.setExecutionTime(stopwatch.time());
         
         
@@ -443,7 +439,7 @@ public final class DBInfo extends TagImpl {
 		stopwatch.start();
         
         ResultSet tables = metaData.getProcedures(dbname, null, pattern);
-        QueryImpl qry = new QueryImpl(tables,"query");
+        railo.runtime.type.Query qry = new QueryImpl(tables,"query");
         qry.setExecutionTime(stopwatch.time());
         
         
@@ -458,7 +454,7 @@ public final class DBInfo extends TagImpl {
 		
 		ResultSet tables = metaData.getProcedureColumns(dbname, null, procedure, pattern);
 		
-        QueryImpl qry = new QueryImpl(tables,"query");
+		railo.runtime.type.Query qry = new QueryImpl(tables,"query");
         qry.setExecutionTime(stopwatch.time());
         
         
@@ -482,7 +478,7 @@ public final class DBInfo extends TagImpl {
 		stopwatch.start();
         
         ResultSet tables = metaData.getTables(dbname, null, pattern, null);
-        QueryImpl qry = new QueryImpl(tables,"query");
+        railo.runtime.type.Query qry = new QueryImpl(tables,"query");
         
         qry.setExecutionTime(stopwatch.time());
         
@@ -505,7 +501,7 @@ public final class DBInfo extends TagImpl {
 		String[] columns=new String[]{dbproductname,dbversion,drname,drversion,major,minor};
 		String[] types=new String[]{"VARCHAR","VARCHAR","VARCHAR","VARCHAR","DOUBLE","DOUBLE"};
 		
-		QueryImpl qry=new QueryImpl(columns,types,1,"query");
+		railo.runtime.type.Query qry=new QueryImpl(columns,types,1,"query");
 
 		qry.setAt(dbproductname,1,metaData.getDatabaseProductName());
 		qry.setAt(dbversion,1,metaData.getDatabaseProductVersion());
@@ -528,7 +524,7 @@ public final class DBInfo extends TagImpl {
         
 		checkTable(metaData);
 		ResultSet result = metaData.getSchemas();
-		QueryImpl qry = new QueryImpl(result,"query");
+		QueryPro qry = new QueryImpl(result,"query");
 		
 		
 		qry.rename(TABLE_SCHEM,USER);

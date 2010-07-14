@@ -105,6 +105,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.ref.Reference;
 import railo.runtime.type.ref.VariableReference;
 import railo.runtime.type.scope.Application;
@@ -119,12 +120,14 @@ import railo.runtime.type.scope.Cookie;
 import railo.runtime.type.scope.CookieImpl;
 import railo.runtime.type.scope.Form;
 import railo.runtime.type.scope.FormImpl;
+import railo.runtime.type.scope.LocalImpl;
 import railo.runtime.type.scope.LocalNotSupportedScope;
 import railo.runtime.type.scope.LocalPro;
 import railo.runtime.type.scope.Request;
 import railo.runtime.type.scope.RequestImpl;
 import railo.runtime.type.scope.ScopeContext;
 import railo.runtime.type.scope.ScopeFactory;
+import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.scope.Server;
 import railo.runtime.type.scope.Session;
 import railo.runtime.type.scope.Threads;
@@ -157,6 +160,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private static final Key CFTHREAD = KeyImpl.getInstance("cfthread");
 	private static final Key CFID = KeyImpl.getInstance("cfid");
 	private static final Key CFTOKEN = KeyImpl.getInstance("cftoken");
+	private static final Key LOCAL = KeyImpl.getInstance("local");
 	
 	private static int counter=0;
 	
@@ -202,7 +206,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private CGIImpl cgi=new CGIImpl();	
 	private Argument argument=new ArgumentImpl();
     private static LocalNotSupportedScope localUnsupportedScope=LocalNotSupportedScope.getInstance();
-	private Scope local=localUnsupportedScope;
+	private LocalPro local=localUnsupportedScope;
 	private Session session;
 	private Server server;
 	private Cluster cluster;
@@ -885,6 +889,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
     /**
      * @see PageContext#scope(int)
+     * @deprecated use instead <code>VariableInterpreter.scope(...)</code>
      */
     public Scope scope(int type) throws PageException {
         switch(type) {
@@ -900,7 +905,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             case Scope.SCOPE_SERVER:        return serverScope();
             case Scope.SCOPE_COOKIE:        return cookieScope();
             case Scope.SCOPE_CLIENT:        return clientScope();
-            case Scope.SCOPE_LOCAL:         return localScope();
+            case Scope.SCOPE_LOCAL:         
+            case ScopeSupport.SCOPE_VAR:         	return localScope();
             case Scope.SCOPE_CLUSTER:return clusterScope();
         }
         return variables;
@@ -908,7 +914,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     
     public Scope scope(String strScope,Scope defaultValue) throws PageException {
     	if(strScope==null)return defaultValue;
-    	strScope=strScope.toLowerCase().trim();
+    	strScope=strScope.toLowerCase().trim(); 
     	if("variables".equals(strScope))	return variablesScope(); 
     	if("url".equals(strScope))			return urlScope();
     	if("form".equals(strScope))			return formScope();
@@ -1017,13 +1023,39 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     
     /**
      * @see PageContext#localScope()
-     */
-    public Scope localScope() { return local; }// FUTURE remove class from type Local
+     */// FUTURE remove class from type Local
+    public Scope localScope() { return local; }
     
-
-    public Scope localScope(boolean bind) { // FUTURE remove class from type Local
-    	if(bind && local instanceof LocalPro)((LocalPro)local).setBind(true); 
+// FUTURE remove class from type Local
+    public Scope localScope(boolean bind) { 
+    	if(bind)local.setBind(true); 
     	return local; 
+    }
+
+    
+    public Object localGet() throws PageException { 
+    	return localGet(false);
+    }
+    
+    public Object localGet(boolean bind) throws PageException { 
+    	// inside a local supported block
+    	if(undefined.getCheckArguments()){
+    		return localScope(bind);
+    	}
+    	return undefinedScope().get(LOCAL);
+    }
+
+    public Object localTouch() throws PageException { 
+    	return localTouch(false);
+    }
+    
+    public Object localTouch(boolean bind) throws PageException { 
+    	// inside a local supported block
+    	if(undefined.getCheckArguments()){
+    		return localScope(bind);
+    	}
+    	return touch(undefinedScope(), LOCAL);
+    	//return undefinedScope().get(LOCAL);
     }
     
 	
@@ -1034,7 +1066,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public void setFunctionScopes(Scope local,Argument argument) {
     	// FUTURE setFunctionScopes(Local local,Argument argument)
 		this.argument=argument;
-		this.local=local;
+		this.local=(LocalPro) local;
 		undefined.setFunctionScopes(local,argument);
 	}
 	
@@ -1388,88 +1420,133 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public void setAttribute(String name, Object value) {
 	    try {
-            setVariable(name,value);
+            if(value==null)removeVariable(name);
+            else setVariable(name,value);
         } catch (PageException e) {}
-        /*
-         * old code
-         * try {
-			if(value==null) variablesScope().clear(name);
-			else variablesScope().set(name,value);
-		} 
-		catch (ExpressionException e) {}*/
 	}
 
 	/**
 	 * @see javax.servlet.jsp.PageContext#setAttribute(java.lang.String, java.lang.Object, int)
 	 */
 	public void setAttribute(String name, Object value, int scope) {
-		try {
-			Scope s=scope(scope);
-			if(value==null)s.removeEL(KeyImpl.init(name));
-			else s.setEL(name,value);
-		} 
-		catch (PageException e) {
-			throw new IllegalArgumentException(e.getMessage());
-		}		
+		switch(scope){
+		case javax.servlet.jsp.PageContext.APPLICATION_SCOPE:
+			if(value==null) getServletContext().removeAttribute(name);
+			else getServletContext().setAttribute(name, value);
+		break;
+		case javax.servlet.jsp.PageContext.PAGE_SCOPE:
+			setAttribute(name, value);
+		break;
+		case javax.servlet.jsp.PageContext.REQUEST_SCOPE:
+			if(value==null) req.removeAttribute(name);
+			else setAttribute(name, value);
+		break;
+		case javax.servlet.jsp.PageContext.SESSION_SCOPE:
+			HttpSession s = req.getSession(true);
+			if(value==null)s.removeAttribute(name);
+			else s.setAttribute(name, value);
+		break;
+		}	
 	}
 
 	/**
 	 * @see javax.servlet.jsp.PageContext#getAttribute(java.lang.String)
 	 */
 	public Object getAttribute(String name) {
-		return variablesScope().get(name,null);
+		try {
+			return getVariable(name);
+		} catch (PageException e) {
+			return null;
+		}
 	}
 
 	/**
 	 * @see javax.servlet.jsp.PageContext#getAttribute(java.lang.String, int)
 	 */
 	public Object getAttribute(String name, int scope) {
-		try {
-			return scope(scope).get(name,null);
-		} catch (PageException e) {
-			throw new IllegalArgumentException(e.getMessage());
-		}
+		switch(scope){
+		case javax.servlet.jsp.PageContext.APPLICATION_SCOPE:
+			return getServletContext().getAttribute(name);
+		case javax.servlet.jsp.PageContext.PAGE_SCOPE:
+			return getAttribute(name);
+		case javax.servlet.jsp.PageContext.REQUEST_SCOPE:
+			return req.getAttribute(name);
+		case javax.servlet.jsp.PageContext.SESSION_SCOPE:
+			HttpSession s = req.getSession();
+			if(s!=null)return s.getAttribute(name);
+		break;
+		}	
+		return null;
 	}
 
 	/**
 	 * @see javax.servlet.jsp.PageContext#findAttribute(java.lang.String)
 	 */
 	public Object findAttribute(String name) {
-		return undefinedScope().get(name,null);
+		// page
+		Object value=getAttribute(name);
+		if(value!=null) return value;
+		// request
+		value=req.getAttribute(name);
+		if(value!=null) return value;
+		// session
+		HttpSession s = req.getSession();
+		value=s!=null?s.getAttribute(name):null;
+		if(value!=null) return value;
+		// application
+		value=getServletContext().getAttribute(name);
+		if(value!=null) return value;
+		
+		
+		return null;
 	}
 
 	/**
 	 * @see javax.servlet.jsp.PageContext#removeAttribute(java.lang.String)
 	 */
 	public void removeAttribute(String name) {
-		undefinedScope().removeEL(KeyImpl.init(name));
+		setAttribute(name, null);
 	}
 
 	/**
 	 * @see javax.servlet.jsp.PageContext#removeAttribute(java.lang.String, int)
 	 */
 	public void removeAttribute(String name, int scope) {
-		try {
-			scope(scope).removeEL(KeyImpl.init(name));
-		} 
-		catch (PageException e) {
-			throw new IllegalArgumentException(e.getMessage());
-		}	
-		
+		setAttribute(name, null,scope);
 	}
 
 	/**
 	 * @see javax.servlet.jsp.PageContext#getAttributesScope(java.lang.String)
 	 */
-	public int getAttributesScope(String scopeName) {
-		return VariableInterpreter.scopeString2Int(scopeName);
+	public int getAttributesScope(String name) {
+		// page
+		if(getAttribute(name)!=null) return PageContext.PAGE_SCOPE;
+        // request
+        if(req.getAttribute(name) != null) return PageContext.REQUEST_SCOPE;
+        // session
+        HttpSession s = req.getSession();
+        if(s!=null && s.getAttribute(name) != null) return PageContext.SESSION_SCOPE;
+        // application
+        if(getServletContext().getAttribute(name)!=null) return PageContext.APPLICATION_SCOPE;
+        
+		return 0;
 	}
 
 	/**
 	 * @see javax.servlet.jsp.PageContext#getAttributeNamesInScope(int)
 	 */
-	public Enumeration getAttributeNamesInScope(int arg0) {
-		// TODO impl
+	public Enumeration getAttributeNamesInScope(int scope) {
+		
+        switch(scope){
+		case javax.servlet.jsp.PageContext.APPLICATION_SCOPE:
+			return getServletContext().getAttributeNames();
+		case javax.servlet.jsp.PageContext.PAGE_SCOPE:
+			return new KeyIterator(variablesScope().keys());
+		case javax.servlet.jsp.PageContext.REQUEST_SCOPE:
+			return req.getAttributeNames();
+		case javax.servlet.jsp.PageContext.SESSION_SCOPE:
+			return req.getSession(true).getAttributeNames();
+		}
 		return null;
 	}
 
@@ -1484,7 +1561,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @see javax.servlet.jsp.PageContext#getSession()
 	 */
 	public HttpSession getSession() {
-		return getHttpServletRequest().getSession(true);
+		return getHttpServletRequest().getSession();
 	}
 
 	/**

@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/services
+END
+DataSourceServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/services/DataSourceServiceImpl.java
+END
+ServiceSupport.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/services/ServiceSupport.java
+END
+EmptyServiceMetaData.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/services/EmptyServiceMetaData.java
+END
+DataSource.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/services/DataSource.java
+END
+DataSourceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/services/DataSourceImpl.java
+END
+DatSourceDefImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/90/trunk/railo-java/railo-core/src/railo/runtime/services/DatSourceDefImpl.java
+END

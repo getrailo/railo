@@ -33,7 +33,7 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 	public PageSource pageSource;
 	public int index;
 	public FunctionArgument[] arguments;
-	public StructImpl meta;
+	public Struct meta;
 	public String description;
 	public Boolean secureJson;
 	public Boolean verifyClient;
@@ -326,7 +326,7 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		displayName = ExternalizableUtil.readString(in);
 		functionName = ExternalizableUtil.readString(in);
 		hint = ExternalizableUtil.readString(in);
-		meta = (StructImpl) in.readObject();
+		meta = (Struct) in.readObject();
 		output = in.readBoolean();
 		secureJson = ExternalizableUtil.readBoolean(in);
 		strReturnFormat = ExternalizableUtil.readString(in);

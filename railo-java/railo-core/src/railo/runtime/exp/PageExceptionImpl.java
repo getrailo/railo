@@ -52,7 +52,7 @@ public abstract class PageExceptionImpl extends PageException {
 	
 	
 	
-	private ArrayImpl tagContext=new ArrayImpl();
+	private Array tagContext=new ArrayImpl();
 	private Struct additional=new StructImpl(Struct.TYPE_LINKED);
 	/**
 	 * Field <code>detail</code>
@@ -198,17 +198,17 @@ public abstract class PageExceptionImpl extends PageException {
 	
 
 	public static Array getTagContext(PageContext pc,StackTraceElement[] traces) {
-		ArrayImpl tagContext=new ArrayImpl();
+		Array tagContext=new ArrayImpl();
 		_getTagContext(pc,tagContext,traces,new LinkedList());
 		return tagContext;
 	}
 	
 
-	private static void _getTagContext(PageContext pc, ArrayImpl tagContext, Throwable t, LinkedList sources) {
+	private static void _getTagContext(PageContext pc, Array tagContext, Throwable t, LinkedList sources) {
 		_getTagContext(pc, tagContext, getStackTraceElements(t), sources);
 	}
 	
-	private static void _getTagContext(PageContext pc, ArrayImpl tagContext, StackTraceElement[] traces, LinkedList sources) {
+	private static void _getTagContext(PageContext pc, Array tagContext, StackTraceElement[] traces, LinkedList sources) {
 		//StackTraceElement[] traces = getStackTraceElements(t);
 		
 		int line=0;
@@ -450,7 +450,6 @@ public abstract class PageExceptionImpl extends PageException {
 				htmlBox.appendRow(1,new SimpleDumpData("Context"),context);
 				
 				
-				//((StructImpl)tagContext.get(1,null)).get("codePrintHTML","").toString();
 				// Code
 				String strCode=((Struct)tagContext.get(1,null)).get("codePrintPlain","").toString();
 				String[] arrCode = List.listToStringArray(strCode, '\n');

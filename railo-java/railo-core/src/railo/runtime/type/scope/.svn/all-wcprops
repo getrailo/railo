@@ -1,0 +1,221 @@
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/type/scope
+END
+ClientDatasource.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ClientDatasource.java
+END
+ArgumentPro.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ArgumentPro.java
+END
+ClientCookie.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ClientCookie.java
+END
+RequestImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/70/trunk/railo-java/railo-core/src/railo/runtime/type/scope/RequestImpl.java
+END
+ArgumentIntKey.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ArgumentIntKey.java
+END
+ClientMemory.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ClientMemory.java
+END
+CallerImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/type/scope/CallerImpl.java
+END
+CGIImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/type/scope/CGIImpl.java
+END
+ClusterWrap.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ClusterWrap.java
+END
+CookieImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/type/scope/CookieImpl.java
+END
+ServerImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ServerImpl.java
+END
+RequestImpl2.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/70/trunk/railo-java/railo-core/src/railo/runtime/type/scope/RequestImpl2.java
+END
+ArgumentImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ArgumentImpl.java
+END
+ScopeContext.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/70/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ScopeContext.java
+END
+ClientCookieOld.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ClientCookieOld.java
+END
+ClusterEntryImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ClusterEntryImpl.java
+END
+VariablesImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/VariablesImpl.java
+END
+ScopeFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ScopeFactory.java
+END
+ClusterNotSupported.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ClusterNotSupported.java
+END
+UndefinedImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/type/scope/UndefinedImpl.java
+END
+ApplicationImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ApplicationImpl.java
+END
+URLImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/type/scope/URLImpl.java
+END
+LocalNotSupportedScope.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/LocalNotSupportedScope.java
+END
+JSession.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/JSession.java
+END
+LocalImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/LocalImpl.java
+END
+ClientFile.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ClientFile.java
+END
+ArgumentThreadImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ArgumentThreadImpl.java
+END
+FormImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/type/scope/FormImpl.java
+END
+ClientSupport.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ClientSupport.java
+END
+ScriptProtected.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ScriptProtected.java
+END
+ClientCookieSimple.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ClientCookieSimple.java
+END
+ClusterRemoteNotSupported.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ClusterRemoteNotSupported.java
+END
+ScopeSupport.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ScopeSupport.java
+END
+ObjectStruct.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/ObjectStruct.java
+END
+UrlFormImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/UrlFormImpl.java
+END
+CFSession.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/scope/CFSession.java
+END

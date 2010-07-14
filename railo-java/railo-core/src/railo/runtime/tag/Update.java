@@ -160,7 +160,7 @@ public final class Update extends TagImpl {
 		    String[] pKeys=getPrimaryKeys(dc);
 			SQL sql=createSQL(dc,pKeys,meta);
 			if(sql!=null) {
-				QueryImpl query = new QueryImpl(dc,sql,-1,-1,-1,"query");
+				railo.runtime.type.Query query = new QueryImpl(dc,sql,-1,-1,-1,"query");
 				
 				if(pageContext.getConfig().debug()) {
 					pageContext.getDebugger().addQueryExecutionTime(datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.executionTime());
@@ -174,7 +174,7 @@ public final class Update extends TagImpl {
 	}
 
     private String[] getPrimaryKeys(DatasourceConnection dc) throws PageException {
-        QueryImpl query = getPrimaryKeysAsQuery(dc);
+    	railo.runtime.type.Query query = getPrimaryKeysAsQuery(dc);
 		int recCount=query.getRecordcount();
         String[] pKeys=new String[recCount];
 		
@@ -187,7 +187,7 @@ public final class Update extends TagImpl {
 		return pKeys;
     }
     
-    private QueryImpl getPrimaryKeysAsQuery(DatasourceConnection dc) throws PageException {
+    private railo.runtime.type.Query getPrimaryKeysAsQuery(DatasourceConnection dc) throws PageException {
 
         // Read Meta Data
         DatabaseMetaData meta;

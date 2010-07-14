@@ -41,14 +41,10 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	
 	private static JspEngineInfo info=new JspEngineInfoImpl("1.0");
 	private ConfigWebImpl config;
-	//private CFMLCompilerImpl compiler;
-    Stack pcs=new Stack();
-    //ArrayImpl runningPcs=new ArrayImpl();
+	Stack pcs=new Stack();
     private Struct runningPcs=new StructImpl();
-    //PageContext[] runningPcs=new PageContext[0];
     int idCounter=1;
-    //int runningCount=0;
-	private QueryCache queryCache;
+    private QueryCache queryCache;
     private ScopeContext scopeContext=new ScopeContext();
     private String label;
 	private HttpServlet servlet;

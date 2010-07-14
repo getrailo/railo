@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/transformer/bytecode/cast
+END
+CastString.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/44/trunk/railo-java/railo-core/src/railo/transformer/bytecode/cast/CastString.java
+END
+CastDouble.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/44/trunk/railo-java/railo-core/src/railo/transformer/bytecode/cast/CastDouble.java
+END
+Cast.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/transformer/bytecode/cast/Cast.java
+END
+CastFloat.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/44/trunk/railo-java/railo-core/src/railo/transformer/bytecode/cast/CastFloat.java
+END
+CastBoolean.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/97/trunk/railo-java/railo-core/src/railo/transformer/bytecode/cast/CastBoolean.java
+END

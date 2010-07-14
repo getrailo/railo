@@ -32,7 +32,7 @@ public class UDFSetterProperty extends UDFGSProperty {
 	
 
 	public UDF duplicate() {
-		return duplicate((ComponentImpl)component);
+		return duplicate(component);
 	}
 	/**
 	 * @see railo.runtime.type.UDF#call(railo.runtime.PageContext, java.lang.Object[], boolean)

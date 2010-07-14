@@ -200,5 +200,9 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
 	public long sizeOf() {
 		return 0;
 	}
+	
+	public int count() {
+		return count;
+	}
 
 }

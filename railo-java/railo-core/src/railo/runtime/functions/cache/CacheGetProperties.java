@@ -23,7 +23,7 @@ public final class CacheGetProperties implements Function {
 	
 	public static Array call(PageContext pc, String cacheName) throws PageException {
 		CacheGet.checkRestriction(pc);
-		ArrayImpl arr = new ArrayImpl();
+		Array arr = new ArrayImpl();
 		try {
 			if(StringUtil.isEmpty(cacheName)){
 				addDefault(pc,ConfigImpl.CACHE_DEFAULT_OBJECT,arr);
@@ -60,7 +60,7 @@ public final class CacheGetProperties implements Function {
 		}
 	}
 
-	private static void addDefault(PageContext pc, int type, ArrayImpl arr) {
+	private static void addDefault(PageContext pc, int type, Array arr) {
 		try {
 			arr.appendEL(Util.getDefault(pc,type).getCustomInfo());
 		} catch (IOException e) {}

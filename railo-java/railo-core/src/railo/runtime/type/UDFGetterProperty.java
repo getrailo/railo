@@ -27,7 +27,7 @@ public class UDFGetterProperty extends UDFGSProperty {
 	
 
 	public UDF duplicate() {
-		return duplicate((ComponentImpl)component);
+		return duplicate(component);
 	}
 	
 	/**

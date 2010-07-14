@@ -457,7 +457,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		return EVAL_PAGE;
 	}
 
-	private QueryImpl executeORM(SQL sql) throws PageException {
+	private railo.runtime.type.Query executeORM(SQL sql) throws PageException {
 		ORMSession session=ORMUtil.getSession(pageContext);
 		
 		// params
@@ -477,7 +477,7 @@ cacheable: Whether the result of this query is to be cached in the secondary cac
 cachename: Name of the cache in secondary cache.
 		 */
 		Object res = session.executeQuery(pageContext,sql.getSQLString(),params,unique,options);
-		return (QueryImpl) session.toQuery(pageContext, res, null);
+		return session.toQuery(pageContext, res, null);
 		
 	}
 	
@@ -493,7 +493,7 @@ cachename: Name of the cache in secondary cache.
 	}
 	
 
-	private QueryImpl executeQoQ(SQL sql) throws PageException {
+	private railo.runtime.type.Query executeQoQ(SQL sql) throws PageException {
 		try {
 			return new HSQLDBHandler().execute(pageContext,sql,maxrows,blockfactor,timeout);
 		} 
@@ -502,7 +502,7 @@ cachename: Name of the cache in secondary cache.
 		} 
 	}
 	
-	private QueryImpl executeDatasoure(SQL sql,boolean createUpdateData) throws PageException {
+	private railo.runtime.type.Query executeDatasoure(SQL sql,boolean createUpdateData) throws PageException {
 		DataSourceManager manager = pageContext.getDataSourceManager();
 		
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);

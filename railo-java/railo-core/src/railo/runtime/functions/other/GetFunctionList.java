@@ -22,7 +22,7 @@ public final class GetFunctionList implements Function {
 		
 		
 		if(functions==null) {
-			StructImpl sct=new StructImpl();
+			Struct sct=new StructImpl();
 			//synchronized(sct) {
 				//hasSet=true;
 			FunctionLib[] flds;

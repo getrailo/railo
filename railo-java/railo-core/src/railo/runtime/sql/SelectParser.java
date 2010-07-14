@@ -691,7 +691,7 @@ FROM tableList
 
 
 
-	public static void main(String[] args) throws SQLParserException {
+	public static void main(String[] args) {
 		
 		
 		//print.out(new SelectParser().parse("select a, b as c, d e from test limit 3").toString());

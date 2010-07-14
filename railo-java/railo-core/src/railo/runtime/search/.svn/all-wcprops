@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/search
+END
+AddionalAttrs.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/search/AddionalAttrs.java
+END
+SearchCollectionPlus.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/search/SearchCollectionPlus.java
+END
+IndexResultImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/search/IndexResultImpl.java
+END
+SearchUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/search/SearchUtil.java
+END
+SearchIndex.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/search/SearchIndex.java
+END
+SearchCollectionSupport.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/search/SearchCollectionSupport.java
+END
+SearchCollectionSupport2.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/search/SearchCollectionSupport2.java
+END
+SuggestionItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/search/SuggestionItem.java
+END
+SearchEngineSupport.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/search/SearchEngineSupport.java
+END
+SearchResultItemPro.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/search/SearchResultItemPro.java
+END
+SearchResulItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/search/SearchResulItem.java
+END
+SearchDataImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/search/SearchDataImpl.java
+END
+SearchResulItemImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/search/SearchResulItemImpl.java
+END

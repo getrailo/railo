@@ -33,8 +33,8 @@ public final class MethodInstance {
 	 * @throws InvocationTargetException
 	 * @throws InvocationTargetException
 	 */
-	public Object invoke(Object o) throws IllegalAccessException, InvocationTargetException {	    
-	    return method.invoke(o,args);
+	public Object invoke(Object o) throws IllegalAccessException, InvocationTargetException {	
+		return method.invoke(o,args);
 	}
 	
     /**

@@ -26,7 +26,7 @@ public final class ToString implements Function {
         		try {
 					return new String((byte[])object,encoding);
 				} 
-        		catch (UnsupportedEncodingException e) {}
+        		catch (UnsupportedEncodingException e) {e.printStackTrace();}
         	}
         	return new String((byte[])object);
 		}

@@ -10,6 +10,6 @@ public final class GetSystemInfo implements Function {
     
     public static Struct call(PageContext pc) throws PageException {
         throw new ExpressionException("the function getSystemInfo is no longer supported");
-    	// return new StructImpl();
+    	
     }
 }

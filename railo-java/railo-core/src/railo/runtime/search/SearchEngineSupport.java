@@ -86,7 +86,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
      */
 	public final Query getCollectionsAsQuery() {
         final String v="VARCHAR";
-        QueryImpl query=null;
+        Query query=null;
         String[] cols = new String[]{"external","language","mapped","name","online","path","registered","lastmodified","categories","charset","created",
         							 "size","doccount"};
         String[] types = new String[]{"BOOLEAN",v,"BOOLEAN",v,"BOOLEAN",v,v,"DATE","BOOLEAN",v,"OBJECT","DOUBLE","DOUBLE"};

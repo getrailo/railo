@@ -5,9 +5,11 @@ import java.util.Map;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.Collection.Key;
 
@@ -26,15 +28,15 @@ public final class WeakMethodStorage {
 	 */
 	public Method[] getMethods(Class clazz,Collection.Key methodName, int count) {
 		Object o=map.get(clazz);
-		StructImpl methodsMap;
+		Struct methodsMap;
 		if(o==null) {
 			methodsMap=store(clazz);
 		}
-		else methodsMap=(StructImpl) o;
+		else methodsMap=(Struct) o;
 		
 		o=methodsMap.get(methodName,null);
 		if(o==null) return null;
-		ArrayImpl methods=(ArrayImpl) o;
+		Array methods=(Array) o;
 		o=methods.get(count+1,null);
 		if(o==null) return null;
 		return (Method[]) o;
@@ -68,12 +70,12 @@ public final class WeakMethodStorage {
 		
 		
 		Object o=methodsMap.get(methodName,null);
-		ArrayImpl methodArgs;
+		Array methodArgs;
 		if(o==null) {
 			methodArgs=new ArrayImpl();
 			methodsMap.setEL(methodName,methodArgs);
 		}
-		else methodArgs=(ArrayImpl) o;
+		else methodArgs=(Array) o;
 		storeArgs(method,methodArgs);
 		//Modifier.isStatic(method.getModifiers());
 	}
@@ -83,7 +85,7 @@ public final class WeakMethodStorage {
 	 * @param method
 	 * @param methodArgs
 	 */
-	private void storeArgs(Method method, ArrayImpl methodArgs) {
+	private void storeArgs(Method method, Array methodArgs) {
 		
 		Class[] pmt = method.getParameterTypes();
 		Object o=methodArgs.get(pmt.length+1,null);

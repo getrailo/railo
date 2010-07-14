@@ -106,7 +106,7 @@ public final class ScopeFactory {
      * @param scope
      * @return
      */
-    public static String toStringScope(int scope) {
+    public static String toStringScope(int scope, String defaultValue) {
         switch(scope) {
         case Scope.SCOPE_APPLICATION:   return "application";
         case Scope.SCOPE_ARGUMENTS:     return "arguments";
@@ -115,6 +115,7 @@ public final class ScopeFactory {
         case Scope.SCOPE_CLIENT:        return "client";
         case Scope.SCOPE_COOKIE:        return "cookie";
         case Scope.SCOPE_FORM:          return "form";
+        case ScopeSupport.SCOPE_VAR:         
         case Scope.SCOPE_LOCAL:         return "local";
         case Scope.SCOPE_REQUEST:       return "request";
         case Scope.SCOPE_SERVER:        return "server";
@@ -124,7 +125,10 @@ public final class ScopeFactory {
         case Scope.SCOPE_VARIABLES:     return "variables";
         case ScopeSupport.SCOPE_CLUSTER:     return "cluster";
         }
-        return "undefined";
+        
+        
+        
+        return defaultValue;
     }
     
     /* *

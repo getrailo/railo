@@ -39,6 +39,7 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.EncodingUtil;
 
+import railo.print;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -53,6 +54,7 @@ import railo.runtime.exp.HTTPException;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
+import railo.runtime.functions.string.ToString;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.text.csv.CSVParser;
@@ -651,9 +653,9 @@ public final class Http extends BodyTagImpl {
 	        		Object value=responseHeader.get(header.getName(),null);
 	        		if(value==null) responseHeader.set(header.getName(),header.getValue());
 	        		else {
-	        		    ArrayImpl arr=null;
+	        		    Array arr=null;
 	        		    if(value instanceof ArrayImpl) {
-	        		        arr=(ArrayImpl) value;
+	        		        arr=(Array) value;
 	        		    }
 	        		    else {
 	        		        arr=new ArrayImpl();
@@ -680,12 +682,18 @@ public final class Http extends BodyTagImpl {
 	        boolean isText=
 	        	mimetype == null ||  
 	        	mimetype == NO_MIMETYPE || 
-	        	mimetype.startsWith("text")  || 
-	        	mimetype.startsWith("application/xml")  || 
-	        	mimetype.startsWith("message") || 
-	        	mimetype.startsWith("application/octet-stream");
+	        	StringUtil.startsWithIgnoreCase(mimetype,"text")  || 
+	        	StringUtil.startsWithIgnoreCase(mimetype,"application/xml")  || 
+	        	StringUtil.startsWithIgnoreCase(mimetype,"application/xhtml")  || 
+	        	StringUtil.startsWithIgnoreCase(mimetype,"message") || 
+	        	StringUtil.startsWithIgnoreCase(mimetype,"application/octet-stream") || 
+	        	StringUtil.indexOfIgnoreCase(mimetype, "xxml")!=-1 || 
+	        	StringUtil.indexOfIgnoreCase(mimetype, "json")!=-1 || 
+	        	StringUtil.indexOfIgnoreCase(mimetype, "text")!=-1;
+	       
 	        cfhttp.set(TEXT,Caster.toBoolean(isText));
 	    // mimetype charset
+	        boolean responseProvideCharset=false;
 	        if(!StringUtil.isEmpty(mimetype)){
 		        if(isText) {
 		        	String[] types=mimetype.split(";");
@@ -697,6 +705,7 @@ public final class Http extends BodyTagImpl {
 	                    if(index!=-1) {
 	                    	responseCharset=StringUtil.removeQuotes(tmp.substring(index+8),true);
 	                        cfhttp.set(CHARSET,responseCharset);
+	                        responseProvideCharset=true;
 	                    }
 	                }
 		        }
@@ -720,6 +729,7 @@ public final class Http extends BodyTagImpl {
 	    // filecontent
 	        //try {
 	        //print.ln(">> "+responseCharset);
+	        
 		        if(isText && getAsBinary!=GET_AS_BINARY_YES) {
 		            
 		    String str;
@@ -758,8 +768,9 @@ public final class Http extends BodyTagImpl {
 						throw Caster.toPageException(t);
 					}
                     
-                    if(getAsBinary==GET_AS_BINARY_NO) {
+                    /*if(getAsBinary==GET_AS_BINARY_NO) {
 		                ByteArrayOutputStream os = new ByteArrayOutputStream();
+		                
 		                try {
 		                    if(barr!=null)os.write(barr);
 			                cfhttp.set(FILE_CONTENT,os);
@@ -768,9 +779,9 @@ public final class Http extends BodyTagImpl {
                             throw Caster.toPageException(ioe);
                         }
 		            }
-		            else {
+		            else {*/
 		                cfhttp.set(FILE_CONTENT,barr);
-		            }
+		            //}
 
 		            if(file!=null) {
                         try {

@@ -348,6 +348,7 @@ public abstract class ConfigImpl implements Config {
 	private ImportDefintion componentDefaultImport=new ImportDefintion("org.railo.cfml","*");
 	private boolean componentLocalSearch=true;
 	private boolean componentRootSearch=true;
+	private LogAndSource mappingLogger;
 
 	
 	
@@ -1609,6 +1610,17 @@ public abstract class ConfigImpl implements Config {
         this.applicationLogger=applicationLogger;
     }
 
+
+    protected void setMappingLogger(LogAndSource mappingLogger) {
+        this.mappingLogger=mappingLogger;
+    }
+
+    public LogAndSource getMappingLogger() {
+    	if(mappingLogger==null)
+    		mappingLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		return mappingLogger;
+    }
+    
     /**
      * @param clientType
      */

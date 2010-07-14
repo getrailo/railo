@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/resource/context/gateway
+END
+DirectoryWatcher.cfc
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/resource/context/gateway/DirectoryWatcher.cfc
+END
+DirectoryWatcherListener.cfc
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/resource/context/gateway/DirectoryWatcherListener.cfc
+END
+MailWatcher.cfc
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/resource/context/gateway/MailWatcher.cfc
+END
+MailWatcherListener.cfc
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/resource/context/gateway/MailWatcherListener.cfc
+END
+DummyGateway.cfc
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/resource/context/gateway/DummyGateway.cfc
+END

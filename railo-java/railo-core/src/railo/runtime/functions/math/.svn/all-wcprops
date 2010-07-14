@@ -1,0 +1,209 @@
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math
+END
+BitMaskRead.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/BitMaskRead.java
+END
+BitMaskSet.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/BitMaskSet.java
+END
+Cos.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Cos.java
+END
+ACos.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/ACos.java
+END
+Max.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Max.java
+END
+BitSHLN.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/BitSHLN.java
+END
+DecrementValue.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/DecrementValue.java
+END
+BitSHRN.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/BitSHRN.java
+END
+Ceiling.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Ceiling.java
+END
+Sgn.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Sgn.java
+END
+Pi.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Pi.java
+END
+Sin.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Sin.java
+END
+RandRange.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/RandRange.java
+END
+ASin.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/ASin.java
+END
+Sqr.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Sqr.java
+END
+InputBaseN.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/InputBaseN.java
+END
+Min.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Min.java
+END
+Randomize.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Randomize.java
+END
+BitOr.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/BitOr.java
+END
+Int.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Int.java
+END
+BitXor.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/BitXor.java
+END
+Round.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Round.java
+END
+BitAnd.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/BitAnd.java
+END
+BitNot.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/BitNot.java
+END
+Rand.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Rand.java
+END
+Log.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Log.java
+END
+Log10.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Log10.java
+END
+IncrementValue.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/IncrementValue.java
+END
+Tan.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Tan.java
+END
+Exp.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Exp.java
+END
+Atn.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Atn.java
+END
+Fix.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Fix.java
+END
+BitMaskClear.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/BitMaskClear.java
+END
+Abs.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/math/Abs.java
+END

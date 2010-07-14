@@ -207,7 +207,7 @@ public abstract class MailClient {
      * @throws IOException
      */
     public Query getMails(String[] messageNumbers, String[] uids, boolean all) throws MessagingException, IOException {
-		QueryImpl qry = new QueryImpl(all ? _fldnew : _flddo, 0, "query");
+		Query qry = new QueryImpl(all ? _fldnew : _flddo, 0, "query");
 		Folder folder = _fldelse.getFolder("INBOX");
 		folder.open(Folder.READ_ONLY);
 		try {
@@ -219,7 +219,7 @@ public abstract class MailClient {
 		return qry;
 	}
 
-    private void toQuery(QueryImpl qry, Message message, Object uid, boolean all) 
+    private void toQuery(Query qry, Message message, Object uid, boolean all) 
      {
 		int row = qry.addRow();
     	// date
@@ -291,7 +291,7 @@ public abstract class MailClient {
      * @return matching Messages
 	 * @throws MessagingException 
      */
-    private Map<String,Message> getMessages(QueryImpl qry, Folder folder, String[] uids, String[] messageNumbers, int startRow, int maxRow, boolean all) throws MessagingException 
+    private Map<String,Message> getMessages(Query qry, Folder folder, String[] uids, String[] messageNumbers, int startRow, int maxRow, boolean all) throws MessagingException 
      {
 		
     	Message[] messages = folder.getMessages();
@@ -358,8 +358,8 @@ public abstract class MailClient {
 		else {
 			Object content = message.getContent();
 			if(content instanceof MimeMultipart) {
-				ArrayImpl attachments = new ArrayImpl();
-				ArrayImpl attachmentFiles = new ArrayImpl();
+				Array attachments = new ArrayImpl();
+				Array attachmentFiles = new ArrayImpl();
 				getMultiPart(query, row, attachments, attachmentFiles,cids, (MimeMultipart) content, body);
 	
 				if(attachments.size() > 0) {
@@ -383,7 +383,7 @@ public abstract class MailClient {
 		query.setAtEL("body", row, body.toString());
 	}
 
-	private void getMultiPart(Query query, int row, ArrayImpl attachments, ArrayImpl attachmentFiles,Struct cids, Multipart multiPart, StringBuffer body) throws MessagingException, IOException {
+	private void getMultiPart(Query query, int row, Array attachments, Array attachmentFiles,Struct cids, Multipart multiPart, StringBuffer body) throws MessagingException, IOException {
 		int j = multiPart.getCount();
 
 		for(int k = 0; k < j; k++) {

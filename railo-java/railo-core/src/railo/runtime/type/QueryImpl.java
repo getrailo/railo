@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.db.DBUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.SizeOf;
@@ -57,6 +58,8 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.arrays.ArrayFind;
+import railo.runtime.functions.other.SSLCertificateInstall;
+import railo.runtime.functions.other.SSLCertificateList;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -82,7 +85,7 @@ import railo.runtime.type.util.CollectionUtil;
 /**
  * 
  */
-public class QueryImpl implements Query,Objects,Sizeable {
+public class QueryImpl implements QueryPro,Objects,Sizeable {
 
 	/**
 	 * @return the template
@@ -99,7 +102,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	public static final Collection.Key CACHED = KeyImpl.getInstance("cached");
 	public static final Collection.Key COLUMNLIST = KeyImpl.getInstance("COLUMNLIST");
 	public static final Collection.Key CURRENTROW = KeyImpl.getInstance("CURRENTROW");
-	private static final Key IDENTITYCOL =  KeyImpl.getInstance("IDENTITYCOL");
+	public static final Collection.Key IDENTITYCOL =  KeyImpl.getInstance("IDENTITYCOL");
 	
 	
 	
@@ -593,11 +596,13 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 */
 
 	public QueryImpl(String[] strColumnNames, Array[] arrColumns, String name) throws DatabaseException {
-        this(_toKeys(strColumnNames),arrColumns,name);		
+		this(_toKeys(strColumnNames),arrColumns,name);		
+		
 	}
 	
 
 	private static Collection.Key[] _toKeys(String[] strColumnNames) {
+		print.o(strColumnNames);
 		Collection.Key[] columnNames=new Collection.Key[strColumnNames.length];
 		for(int i=0	;i<columnNames.length;i++) {
 			columnNames[i]=KeyImpl.init(strColumnNames[i].trim());
@@ -1144,12 +1149,16 @@ public class QueryImpl implements Query,Objects,Sizeable {
 
 	/**
 	 * @see railo.runtime.type.Iterator#getCurrentrow()
+	 * FUTURE set this to deprectaed
 	 */
 	public int getCurrentrow() {
 		return getCurrentrow(getPid());
 	}
 	
-	public int getCurrentrow(int pid) {//FUTURE add to interface and change bytecode
+	/**
+	 * @see railo.runtime.type.QueryPro#getCurrentrow(int)
+	 */
+	public int getCurrentrow(int pid) {
 		return arrCurrentRow.get(pid,1);
 	}
 
@@ -1771,7 +1780,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
     		int recordcount=getRecordcount();
     		for(int i=src.length;i<trg.length;i++){
     			
-    			ArrayImpl arr=new ArrayImpl();
+    			Array arr=new ArrayImpl();
     			for(int r=1;r<=recordcount;r++){
     				arr.setE(i,"");
     			}
@@ -1950,7 +1959,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	}
 
     public synchronized Array getMetaDataSimple() {
-    	ArrayImpl cols=new ArrayImpl();
+    	Array cols=new ArrayImpl();
     	Struct column;
         for(int i=0;i<columns.length;i++) {
         	column=new StructImpl();
@@ -3330,7 +3339,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	public void writeExternal(ObjectOutput out) throws IOException {
+	public void writeExternal(ObjectOutput out) {
 		try {
 			out.writeUTF(new ScriptConverter().serialize(this));
 		} 

@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import railo.print;
 import railo.commons.date.DateTimeUtil;
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.i18n.FormatUtil;
@@ -38,6 +40,7 @@ import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;
@@ -1139,10 +1142,28 @@ public final class Decision {
             Component comp=((Component)o);
             return comp.instanceOf(type);
         }
+        if(isArrayType(type) && isArray(o)){
+        	String t=type.substring(0,type.length()-2);
+        	Array arr = Caster.toArray(o,null);
+        	if(arr!=null){
+        		Iterator it = arr.valueIterator();
+        		while(it.hasNext()){
+        			if(!isCastableTo(t, it.next(), alsoPattern))
+        				return false;
+        			
+        		}
+        		return true;
+        	}
+        	
+        }
 		return false;
     }
     
     
+
+	private static boolean isArrayType(String type) {
+		return type.endsWith("[]");
+	}
 
 	public static boolean isCastableTo(short type,String strType, Object o) {
 		switch(type){
@@ -1167,33 +1188,23 @@ public final class Decision {
         	Component comp=((Component)o);
             return comp.instanceOf(strType);
         }
+        if(isArrayType(strType) && isArray(o)){
+        	String t=strType.substring(0,strType.length()-2);
+        	Array arr = Caster.toArray(o,null);
+        	if(arr!=null){
+        		Iterator it = arr.valueIterator();
+        		while(it.hasNext()){
+        			if(!isCastableTo(type,t, it.next()))
+        				return false;
+        			
+        		}
+        		return true;
+        	}
+        	
+        }
+        
 		return false;
 	}
-	
-	/*public static boolean isx(short type,String strType, Object o) {
-		if(type==CFTypes.TYPE_ANY)                 return true;
-        else if(type==CFTypes.TYPE_STRING)         return isString(o);
-        else if(type==CFTypes.TYPE_ARRAY)          return isArray(o);
-        else if(type==CFTypes.TYPE_BOOLEAN)        return isBoolean(o);
-        else if(type==CFTypes.TYPE_DATETIME)       return isDateAdvanced(o, false);
-        else if(type==CFTypes.TYPE_NUMERIC)        return isNumeric(o);
-        else if(type==CFTypes.TYPE_QUERY)          return isQuery(o);
-        else if(type==CFTypes.TYPE_STRUCT)         return isStruct(o);
-        else if(type==CFTypes.TYPE_TIMESPAN)       return Caster.toTimespan(o,null)!=null;
-        else if(type==CFTypes.TYPE_BINARY)         return isBinary(o);
-        else if(type==CFTypes.TYPE_UUID)           return isUUId(o);
-        else if(type==CFTypes.TYPE_GUID)           return isGUId(o);
-        else if(type==CFTypes.TYPE_VARIABLE_NAME)  return isVariableName(o);
-        else if(type==CFTypes.TYPE_VOID)           return isVoid(o);//Caster.toVoid(o,Boolean.TRUE)!=Boolean.TRUE;
-        else if(type==CFTypes.TYPE_XML)            return isXML(o);
-
-        if(o instanceof Component) {
-            Component comp=((Component)o);
-            return comp.instanceOf(strType);
-        }
-		return false;
-	}*/
-	
 
     public synchronized static boolean isDate(String str,Locale locale, TimeZone tz,boolean lenient) {
     	str=str.trim();

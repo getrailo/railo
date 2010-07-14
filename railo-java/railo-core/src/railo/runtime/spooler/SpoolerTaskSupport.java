@@ -17,7 +17,7 @@ public abstract class SpoolerTaskSupport implements SpoolerTask {
 	private long lastExecution;
 	private int tries=0;
 	private long nextExecution;
-	private ArrayImpl exceptions=new ArrayImpl();
+	private Array exceptions=new ArrayImpl();
 	private boolean closed;
 	private String id;
 	private ExecutionPlan[] plans;

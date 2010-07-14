@@ -44,7 +44,7 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
   public static HttpMethod clone(HttpMethod m) {
 	  HttpMethod copy = null;
 	  try {
-		  copy = (HttpMethod) m.getClass().newInstance();
+		  copy = m.getClass().newInstance();
 	  } 
 	  catch (InstantiationException iEx) {} 
 	  catch (IllegalAccessException iaEx) {}

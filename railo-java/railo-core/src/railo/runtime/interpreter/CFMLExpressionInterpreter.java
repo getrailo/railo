@@ -50,6 +50,7 @@ import railo.runtime.interpreter.ref.var.Bind;
 import railo.runtime.interpreter.ref.var.DynAssign;
 import railo.runtime.interpreter.ref.var.Variable;
 import railo.runtime.type.Scope;
+import railo.runtime.type.scope.ScopeSupport;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
@@ -1227,7 +1228,7 @@ public class CFMLExpressionInterpreter {
         }
         if(ref instanceof railo.runtime.interpreter.ref.var.Scope) { 
             railo.runtime.interpreter.ref.var.Scope s=(railo.runtime.interpreter.ref.var.Scope)ref;
-            if(s.getScope()==Scope.SCOPE_ARGUMENTS || s.getScope()==Scope.SCOPE_LOCAL) {
+            if(s.getScope()==Scope.SCOPE_ARGUMENTS || s.getScope()==Scope.SCOPE_LOCAL || s.getScope()==ScopeSupport.SCOPE_VAR) {
                 ref=new Bind(s);
             }
         }
@@ -1333,16 +1334,14 @@ public class CFMLExpressionInterpreter {
             String name=identifier(false);
             if(name!=null){
                 cfml.removeSpace();
-                return new Variable(pc,new railo.runtime.interpreter.ref.var.Scope(pc,Scope.SCOPE_LOCAL),name);
+                return new Variable(pc,new railo.runtime.interpreter.ref.var.Scope(pc,ScopeSupport.SCOPE_VAR),name);
             }
         }
         int scope = VariableInterpreter.scopeString2Int(idStr);
         if(scope==Scope.SCOPE_UNDEFINED) {
             return new Variable(pc,new railo.runtime.interpreter.ref.var.Scope(pc,Scope.SCOPE_UNDEFINED),idStr);
-            //return new VariableReference(pc.undefinedScope(),idStr);
         }
         return new railo.runtime.interpreter.ref.var.Scope(pc,scope);
-        //return new ScopeReference(pc,scope);
         
     }
     

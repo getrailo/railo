@@ -104,9 +104,9 @@ public class PDF2ImagePDFRenderer extends PDF2Image {
 		int width = (int)page.getBBox().getWidth();
 		int height = (int)page.getBBox().getHeight();
 		if(scale!=100){
-			double s=((double)scale)/100d;
-			width=	(int)(((double)width)*s);
-			height=	(int)(((double)height)*s);
+			double s=(scale)/100d;
+			width=	(int)((width)*s);
+			height=	(int)((height)*s);
 			
 			
 		}

@@ -513,8 +513,8 @@ public class CellularFilter extends WholeImageFilter implements Function2D, Clon
 
 	public Object clone() {
 		CellularFilter f = (CellularFilter)super.clone();
-		f.coefficients = (float[])coefficients.clone();
-		f.results = (Point[])results.clone();
+		f.coefficients = coefficients.clone();
+		f.results = results.clone();
 		f.random = new Random();
 //		if (colormap != null)
 //			f.colormap = (Colormap)colormap.clone();

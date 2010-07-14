@@ -154,7 +154,7 @@ public class DataSourceServiceImpl extends ServiceSupport implements DataSourceS
 	public Array getNames() throws SecurityException {
 		checkReadAccess();
 		railo.runtime.db.DataSource[] sources = config().getDataSources();
-		ArrayImpl names=new ArrayImpl();
+		Array names=new ArrayImpl();
 		for(int i=0;i<sources.length;i++) {
 			names.appendEL(sources[i].getName());
 		}

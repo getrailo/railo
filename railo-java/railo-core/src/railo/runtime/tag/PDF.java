@@ -613,7 +613,7 @@ public class PDF extends BodyTagImpl  {
 
 
 
-	private void doActionThumbnail() throws PageException, PdfException, IOException, DocumentException {
+	private void doActionThumbnail() throws PageException, IOException, DocumentException {
 		required("pdf", "thumbnail", "source", source);
 
 		PDFDocument doc = toPDFDocument(source, password, null);
@@ -661,7 +661,7 @@ public class PDF extends BodyTagImpl  {
 	
 	
 	
-	private void doActionAddWatermark() throws PageException, IOException, DocumentException, PdfException {
+	private void doActionAddWatermark() throws PageException, IOException, DocumentException {
 		required("pdf", "addWatermark", "source", source);
 		if(copyFrom==null && image==null)
 			throw new ApplicationException("at least one of the following attributes must be defined " +
@@ -770,7 +770,7 @@ public class PDF extends BodyTagImpl  {
 		}
 	}
 	
-	private void doActionRemoveWatermark() throws PageException, IOException, DocumentException, PdfException {
+	private void doActionRemoveWatermark() throws PageException, IOException, DocumentException {
 		required("pdf", "removeWatermark", "source", source);
 		
 		if(destination!=null && destination.exists() && !overwrite)

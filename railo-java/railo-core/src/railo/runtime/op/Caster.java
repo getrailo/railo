@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -36,6 +37,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import railo.print;
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.i18n.FormatUtil;
@@ -1730,8 +1732,7 @@ public final class Caster {
      * @throws PageException
      */
     public static String toString(Object o) throws PageException {
-    	//print.ln("toString:"+o);
-        if(o instanceof String) return (String)o;
+    	if(o instanceof String) return (String)o;
         else if(o instanceof Number) return toString(((Number)o).doubleValue());
         else if(o instanceof Boolean) return toString(((Boolean)o).booleanValue());
         else if(o instanceof Castable) return ((Castable)o).castToString();
@@ -1754,9 +1755,10 @@ public final class Caster {
 			}
         }
         else if(o instanceof InputStream) {
+        	Config config = ThreadLocalPageContext.getConfig();
         	InputStream r=null;
 			try {
-				return IOUtil.toString(r=(InputStream)o,null);
+				return IOUtil.toString(r=(InputStream)o,config.getWebCharset());
 			} 
 			catch (IOException e) {
 				throw Caster.toPageException(e);
@@ -1766,7 +1768,13 @@ public final class Caster {
 			}
         }
         else if(o instanceof byte[]) {
-        	return new String((byte[])o);
+        	Config config = ThreadLocalPageContext.getConfig();
+        	
+        	try {
+				return new String((byte[])o,config.getWebCharset());
+			} catch (Throwable t) {
+				return new String((byte[])o);
+			}
         }
         else if(o instanceof char[]) return new String((char[])o);
         else if(o instanceof ObjectWrap) return toString(((ObjectWrap)o).getEmbededObject());
@@ -1776,8 +1784,7 @@ public final class Caster {
         // INFO Collection is new of type Castable 
         if(o instanceof Map || o instanceof List || o instanceof Function)
             throw new CasterException(o,"string");
-        /*
-        if((x instanceof Query) || 
+        /*if((x instanceof Query) || 
         		(x instanceof RowSet) || 
         		(x instanceof coldfusion.runtime.Array) || 
         		(x instanceof JavaProxy) || 
@@ -2163,7 +2170,7 @@ public final class Caster {
             return new ArrayImpl(((List) o).toArray());
         }
         else if(o instanceof XMLStruct) {
-            ArrayImpl arr = new ArrayImpl();
+            Array arr = new ArrayImpl();
             arr.appendEL(o);
             return arr;
         }

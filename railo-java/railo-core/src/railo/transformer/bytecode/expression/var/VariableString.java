@@ -52,7 +52,7 @@ public final class VariableString extends ExpressionBase implements ExprString {
 		List members = var.getMembers();
 			
 		List<String> arr=new ArrayList<String>();
-		if(var.getScope()!=Scope.SCOPE_UNDEFINED)arr.add(ScopeFactory.toStringScope(var.getScope()));
+		if(var.getScope()!=Scope.SCOPE_UNDEFINED)arr.add(ScopeFactory.toStringScope(var.getScope(),"undefined"));
 		Iterator it = members.iterator();
 		DataMember dm;
 		Expression n;

@@ -11,7 +11,7 @@ import railo.runtime.type.StructImpl;
 public class ImageFormats {
 
 	public static Struct call(PageContext pc) throws PageException {
-		StructImpl sct=new StructImpl();
+		Struct sct=new StructImpl();
 		sct.set("decoder", toArray(Image.getReaderFormatNames()));
 		sct.set("encoder", toArray(Image.getWriterFormatNames()));
 		

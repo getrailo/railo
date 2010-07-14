@@ -24,6 +24,7 @@ import railo.runtime.orm.ORMException;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.Collection.Key;
@@ -349,7 +350,7 @@ public class HibernateCaster {
 
 
 	public static railo.runtime.type.Query toQuery(PageContext pc,HibernateORMSession session, Object obj, String name) throws PageException {
-		QueryImpl qry=null;
+		Query qry=null;
 		// a single entity
 		if(!Decision.isArray(obj)){
 			qry= toQuery(pc,session,ComponentUtil.toComponentPro(HibernateCaster.toComponent(obj)),name,null,1,1);
@@ -374,7 +375,7 @@ public class HibernateCaster {
 		return qry;
 	}
 	
-	private static QueryImpl toQuery(PageContext pc,HibernateORMSession session,ComponentPro cfc, String entityName,QueryImpl qry, int rowcount, int row) throws PageException {
+	private static Query toQuery(PageContext pc,HibernateORMSession session,ComponentPro cfc, String entityName,Query qry, int rowcount, int row) throws PageException {
 		// inheritance mapping
 		if(!StringUtil.isEmpty(entityName)){
 			//String cfcName = toComponentName(HibernateCaster.toComponent(pc, entityName));
@@ -386,7 +387,7 @@ public class HibernateCaster {
 
 
 
-	private static QueryImpl populateQuery(PageContext pc,HibernateORMSession session,ComponentPro cfc,QueryImpl qry) throws PageException {
+	private static Query populateQuery(PageContext pc,HibernateORMSession session,ComponentPro cfc,Query qry) throws PageException {
 		Property[] properties = cfc.getProperties();
 		ComponentScope scope = cfc.getComponentScope();
 		HibernateORMEngine engine=(HibernateORMEngine) session.getEngine();
@@ -427,7 +428,7 @@ public class HibernateCaster {
 		}
 		
 		// populate
-		Key[] names = qry.getColumnNames();
+		Key[] names = Caster.toQueryImpl(qry).getColumnNames();
 		int row=qry.addRow();
 		for(int i=0;i<names.length;i++){
 			qry.setAtEL(names[i], row, scope.get(names[i],null));
@@ -438,7 +439,7 @@ public class HibernateCaster {
 
 
 
-	private static QueryImpl inheritance(PageContext pc,HibernateORMSession session,ComponentPro cfc,QueryImpl qry, String entityName) throws PageException {
+	private static Query inheritance(PageContext pc,HibernateORMSession session,ComponentPro cfc,Query qry, String entityName) throws PageException {
 		Property[] properties = cfc.getProperties();
 		ComponentScope scope = cfc.getComponentScope();
 		String name;
@@ -468,7 +469,7 @@ public class HibernateCaster {
 
 
 
-	private static QueryImpl inheritance(PageContext pc,HibernateORMSession session,QueryImpl qry,ComponentPro parent,ComponentPro child,String entityName) throws PageException {
+	private static Query inheritance(PageContext pc,HibernateORMSession session,Query qry,ComponentPro parent,ComponentPro child,String entityName) throws PageException {
 		if(getEntityName(pc, child).equalsIgnoreCase(entityName))
 			return populateQuery(pc,session,child,qry);
 		return inheritance(pc,session,child, qry, entityName);// MUST geh ACF auch so tief?

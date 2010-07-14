@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting
+END
+NumberFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting/NumberFormat.java
+END
+YesNoFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting/YesNoFormat.java
+END
+HTMLCodeFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting/HTMLCodeFormat.java
+END
+GetLocaleDisplayName.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting/GetLocaleDisplayName.java
+END
+HTMLEditFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting/HTMLEditFormat.java
+END
+TrueFalseFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting/TrueFalseFormat.java
+END
+AjaxLink.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting/AjaxLink.java
+END
+DecimalFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting/DecimalFormat.java
+END
+FormatBaseN.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting/FormatBaseN.java
+END
+AjaxOnLoad.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting/AjaxOnLoad.java
+END
+DateFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting/DateFormat.java
+END
+ParagraphFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting/ParagraphFormat.java
+END
+TimeFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting/TimeFormat.java
+END
+DollarFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/displayFormatting/DollarFormat.java
+END

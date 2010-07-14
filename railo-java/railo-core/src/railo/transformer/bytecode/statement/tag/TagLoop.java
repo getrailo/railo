@@ -9,6 +9,7 @@ import org.objectweb.asm.commons.Method;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.exp.TemplateException;
+import railo.runtime.type.Query;
 import railo.runtime.type.scope.Undefined;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -155,7 +156,13 @@ public final class TagLoop extends TagBase implements FlowControl {
 			new Type[]{Types.STRING});
 
 	// int getCurrentrow()
-	static final Method GET_CURRENTROW = new Method(
+	static final Method GET_CURRENTROW_0 = new Method(
+			"getCurrentrow",
+			Types.INT_VALUE,
+			new Type[]{});
+	
+	// int getCurrentrow()
+	static final Method GET_CURRENTROW_1 = new Method(
 			"getCurrentrow",
 			Types.INT_VALUE,
 			new Type[]{Types.INT_VALUE});
@@ -175,19 +182,23 @@ public final class TagLoop extends TagBase implements FlowControl {
 			new Type[]{});
 
 	// void addCollection(Query coll)
-	private static final Method ADD_COLLECTION = new Method(
-			"addCollection",
+	private static final Method ADD_QUERY = new Method(
+			"addQuery",
 			Types.VOID,
 			new Type[]{Types.QUERY});
 
 	// void removeCollection()
-	private static final Method REMOVE_COLLECTION = new Method(
-			"removeCollection",
+	private static final Method REMOVE_QUERY = new Method(
+			"removeQuery",
 			Types.VOID,
 			new Type[]{});
 
 	// boolean go(int index)
-	static final Method GO = new Method(
+	static final Method GO_1 = new Method(
+			"go",
+			Types.BOOLEAN_VALUE,
+			new Type[]{Types.INT_VALUE});
+	static final Method GO_2 = new Method(
 			"go",
 			Types.BOOLEAN_VALUE,
 			new Type[]{Types.INT_VALUE,Types.INT_VALUE});
@@ -707,21 +718,26 @@ public final class TagLoop extends TagBase implements FlowControl {
 		adapter.loadArg(0);
 		getAttribute("query").getValue().writeOut(bc, Expression.MODE_REF);
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_QUERY);
-		adapter.dup();
+		//adapter.dup();
 		adapter.storeLocal(query);
 		
-		int queryImpl = adapter.newLocal(Types.QUERY_IMPL);
-		//adapter.loadLocal(query);
-		adapter.checkCast(Types.QUERY_IMPL);
-		adapter.storeLocal(queryImpl);
+		//int queryImpl = adapter.newLocal(Types.QUERY_IMPL);
+		//adapter.checkCast(Types.QUERY_IMPL);
+		//adapter.storeLocal(queryImpl);
 		
 		
 		// int startAt=query.getCurrentrow();
 		int startAt=adapter.newLocal(Types.INT_VALUE);
-		adapter.loadLocal(queryImpl);
+		/* FUTURE
+		adapter.loadLocal(query);
 		adapter.loadArg(0);
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-		adapter.invokeVirtual(Types.QUERY_IMPL, GET_CURRENTROW);
+		adapter.invokeInterface(Types.QUERY, GET_CURRENTROW_1);
+		adapter.storeLocal(startAt);
+		
+		*/
+		adapter.loadLocal(query);
+		adapter.invokeInterface(Types.QUERY, GET_CURRENTROW_0);
 		adapter.storeLocal(startAt);
 		
 		
@@ -753,7 +769,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 		adapter.loadArg(0);
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, US);
 		adapter.loadLocal(query);
-		adapter.invokeInterface(UNDEFINED, ADD_COLLECTION);
+		adapter.invokeInterface(UNDEFINED, ADD_QUERY);
 		
 		// try
 		TryFinallyVisitor tfv=new TryFinallyVisitor();
@@ -768,13 +784,16 @@ public final class TagLoop extends TagBase implements FlowControl {
 				if(attrEndRow!=null){
 					AndVisitor av=new AndVisitor();
 					av.visitBegin();
-						adapter.loadLocal(queryImpl);
+						adapter.loadLocal(query);
 						adapter.visitVarInsn(Opcodes.ILOAD, i);
-
+						/* FUTURE
 						adapter.loadArg(0);
 						adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-						adapter.invokeVirtual(Types.QUERY_IMPL, GO);
-					av.visitMiddle(bc);
+						adapter.invokeVirtual(Types.QUERY, GO_2); 
+						*/
+						adapter.invokeInterface(Types.QUERY, GO_1); 
+					
+						av.visitMiddle(bc);
 						//LitBoolean.TRUE.writeOut(bc, Expression.MODE_VALUE);
 						DecisionIntVisitor dv=new DecisionIntVisitor();
 						dv.visitBegin();
@@ -785,12 +804,17 @@ public final class TagLoop extends TagBase implements FlowControl {
 					av.visitEnd(bc);
 				}
 				else {
-					adapter.loadLocal(queryImpl);
+					adapter.loadLocal(query);
 					adapter.visitVarInsn(Opcodes.ILOAD, i);
-
+					/* FUTURE
 					adapter.loadArg(0);
 					adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-					adapter.invokeVirtual(Types.QUERY_IMPL, GO);
+					adapter.invokeInterface(Types.QUERY, GO_2);
+					*/
+					adapter.invokeInterface(Types.QUERY, GO_1);
+
+				
+				
 				}
 				
 				
@@ -801,14 +825,18 @@ public final class TagLoop extends TagBase implements FlowControl {
 			// pc.us().removeCollection();
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, US);
-			adapter.invokeInterface(UNDEFINED, REMOVE_COLLECTION);
+			adapter.invokeInterface(UNDEFINED, REMOVE_QUERY);
 		
 			// query.go(startAt);
-			adapter.loadLocal(queryImpl);
+			adapter.loadLocal(query);
 			adapter.loadLocal(startAt);
+			/* FUTURE
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-			adapter.invokeVirtual(Types.QUERY_IMPL, GO);
+			adapter.invokeInterface(Types.QUERY, GO_2);
+			*/
+			adapter.invokeInterface(Types.QUERY, GO_1);
+			
 			adapter.pop();
 			
 			

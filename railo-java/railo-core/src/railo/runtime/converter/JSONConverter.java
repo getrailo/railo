@@ -295,7 +295,7 @@ public final class JSONConverter {
     
 
     private void _serializeUDF(PageContext pc,Set test,UDF udf, StringBuffer sb,boolean serializeQueryByColumns) throws ConverterException {
-		StructImpl sct=new StructImpl();
+		Struct sct=new StructImpl();
 		try {
 			// Meta
 			Struct meta = udf.getMetaData(pc);

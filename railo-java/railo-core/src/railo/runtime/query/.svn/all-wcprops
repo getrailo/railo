@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/query
+END
+QueryCacheQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/109/trunk/railo-java/railo-core/src/railo/runtime/query/QueryCacheQuery.java
+END
+CacheQueryCache.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/90/trunk/railo-java/railo-core/src/railo/runtime/query/CacheQueryCache.java
+END
+MemoryQueryCache.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/108/trunk/railo-java/railo-core/src/railo/runtime/query/MemoryQueryCache.java
+END
+QueryCacheEntry.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/70/trunk/railo-java/railo-core/src/railo/runtime/query/QueryCacheEntry.java
+END
+QueryCacheSupport.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/70/trunk/railo-java/railo-core/src/railo/runtime/query/QueryCacheSupport.java
+END
+QueryCacheQueryColumn.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/query/QueryCacheQueryColumn.java
+END
+QueryCacheFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/query/QueryCacheFilter.java
+END
+QueryCacheFilterImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/query/QueryCacheFilterImpl.java
+END

@@ -393,6 +393,8 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	        //pc.popBody();
 			
 	        
+	        
+	        
 	        if(properties.returnType==CFTypes.TYPE_ANY) return returnValue;
 	        else if(Decision.isCastableTo(properties.strReturnType,returnValue,false)) return returnValue;
 	        else throw new UDFCasterException(this,properties.strReturnType,returnValue);
@@ -557,7 +559,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         
         
         FunctionArgument[] args =  udf.getFunctionArguments();
-        ArrayImpl params=new ArrayImpl();
+        Array params=new ArrayImpl();
         //Object defaultValue;
         Struct m;
         //Object defaultValue;

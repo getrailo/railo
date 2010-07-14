@@ -1,12 +1,14 @@
 package railo.runtime.interpreter.ref.var;
 
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
 import railo.runtime.interpreter.ref.Set;
 import railo.runtime.interpreter.ref.literal.LString;
+import railo.runtime.type.scope.ScopeFactory;
 
 /**
  * 
@@ -30,7 +32,10 @@ public final class Scope extends RefSupport implements Set {
 	 * @see railo.runtime.interpreter.ref.Ref#getValue()
 	 */
 	public Object getValue() throws PageException {
-		return pc.scope(scope);
+		return VariableInterpreter.scope(pc, scope, false);
+		//if(scope==railo.runtime.type.Scope.SCOPE_LOCAL)
+    	//	return ((PageContextImpl)pc).localGet();
+        //return pc.scope(scope);
 	}
 
 	/**
@@ -44,7 +49,10 @@ public final class Scope extends RefSupport implements Set {
      * @see railo.runtime.interpreter.ref.Ref#touchValue()
      */
     public Object touchValue() throws PageException {
-        return pc.scope(scope);
+    	return VariableInterpreter.scope(pc, scope, true);
+		//if(scope==railo.runtime.type.Scope.SCOPE_LOCAL)
+    	//	return ((PageContextImpl)pc).localTouch();
+        //return pc.scope(scope);
     }
 
     /**
@@ -79,6 +87,7 @@ public final class Scope extends RefSupport implements Set {
      * @see railo.runtime.interpreter.ref.Set#getKey()
      */
     public String getKeyAsString() throws PageException {
+        //return ScopeFactory.toStringScope(scope,null);
         return VariableInterpreter.scopeInt2String(scope);
     }
 }

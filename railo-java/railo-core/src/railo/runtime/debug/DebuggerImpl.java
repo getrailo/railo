@@ -26,6 +26,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Constants;
+import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -53,8 +54,8 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	private boolean output=true;
 	private long lastEntry;
 	private long lastTrace;
-	private ArrayImpl historyId=new ArrayImpl();
-	private ArrayImpl historyLevel=new ArrayImpl();
+	private Array historyId=new ArrayImpl();
+	private Array historyLevel=new ArrayImpl();
 	
 	/**
      * @see railo.runtime.debug.Debugger#reset()
@@ -454,11 +455,11 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 			catch(PageException dbe) {}
         }
 		
-        QueryImpl history=new QueryImpl(new String[]{},0,"history");
+        Query history=new QueryImpl(new String[]{},0,"history");
         try {
 			history.addColumn("id", historyId);
 	        history.addColumn("level", historyLevel);
-		} catch (DatabaseException e) {
+		} catch (PageException e) {
 		}
         
 		debugging.setEL(PAGES,qryPage);

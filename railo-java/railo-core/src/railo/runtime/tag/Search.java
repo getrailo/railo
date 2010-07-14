@@ -306,7 +306,7 @@ public final class Search extends TagImpl {
         SuggestionItem item=null;// this is already here to make sure the classloader load this sinstance 
         
         
-        QueryImpl qry=new QueryImpl(cols,types,0,"query");
+        railo.runtime.type.Query qry=new QueryImpl(cols,types,0,"query");
 	    	
 	    SearchCollection collection;
 	    long time=System.currentTimeMillis();

@@ -103,7 +103,7 @@ public final class List {
 		int len=list.length();
 		if(len==0) return new ArrayImpl();
 		 
-		ArrayImpl array=new ArrayImpl();
+		Array array=new ArrayImpl();
 		int from=0;
 		int index;
 		int dl=delimeter.length();
@@ -127,7 +127,7 @@ public final class List {
 		int len=list.length();
 		int last=0;
 		
-		ArrayImpl array=new ArrayImpl();
+		Array array=new ArrayImpl();
 		try{
 			for(int i=0;i<len;i++) {
 				if(list.charAt(i)==delimeter) {
@@ -137,7 +137,7 @@ public final class List {
 			}
 			if(last<=len)array.append(list.substring(last));
 		}
-		catch(ExpressionException e){}
+		catch(PageException e){}
 		return array;
 	}
 	
@@ -156,7 +156,7 @@ public final class List {
 		if(len==0)  return new ArrayImpl();
 		
 		
-		ArrayImpl array=new ArrayImpl();
+		Array array=new ArrayImpl();
 		int from=0;
 		int index;
 		int dl=delimeter.length();

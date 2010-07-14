@@ -34,7 +34,7 @@ public final class CacheGetAllIds implements Function {
 			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
 			List keys = isFilter(filter)?cache.keys(new WildCardFilter(filter,true)):cache.keys();
 			Iterator it = keys.iterator();
-			ArrayImpl arr = new ArrayImpl();
+			Array arr = new ArrayImpl();
 			while(it.hasNext()){
 				arr.append(it.next());
 			}

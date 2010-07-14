@@ -393,7 +393,7 @@ public final class RPCClient implements Objects, Iteratorable{
         //getParamData((org.apache.axis.client.Call)call,parameters.returnParam,ret);
 		Map outputs = call.getOutputParams();
 		
-		StructImpl sct = new StructImpl();
+		Struct sct = new StructImpl();
 		for(int pos = 0; pos < outNames.size(); pos++) {
 			String name = (String)outNames.get(pos);
             //print.ln(name);

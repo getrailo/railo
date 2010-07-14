@@ -614,7 +614,7 @@ public final class ASMUtil {
 			SystemOut.printDate(ew, VERSION_MESSAGE);
 			
 			try {
-				return (ClassWriter) ClassWriter.class.getConstructor(new Class[]{int.class}).newInstance(new Object[]{new Integer(1)});
+				return  ClassWriter.class.getConstructor(new Class[]{int.class}).newInstance(new Object[]{new Integer(1)});
 				
 			} 
 			catch (Exception e) {

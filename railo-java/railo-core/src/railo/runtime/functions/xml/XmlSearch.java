@@ -63,11 +63,11 @@ public final class XmlSearch implements Function {
 		
 		
 	}
-	private static Array nodelist(XObject rs, boolean caseSensitive) throws TransformerException, ExpressionException {
+	private static Array nodelist(XObject rs, boolean caseSensitive) throws TransformerException, PageException {
 		
 		NodeList list = rs.nodelist();
 		int len=list.getLength();
-		ArrayImpl rtn=new ArrayImpl();
+		Array rtn=new ArrayImpl();
 		for(int i=0;i<len;i++) {
 			Node n=list.item(i);
 			if(n !=null)

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/railo/commons/io/res/type/ram
+END
+RamResourceProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/repos/railo/!svn/ver/80/trunk/railo-java/railo-core/src/railo/commons/io/res/type/ram/RamResourceProvider.java
+END
+RamResource.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/90/trunk/railo-java/railo-core/src/railo/commons/io/res/type/ram/RamResource.java
+END
+RamResourceCore.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/type/ram/RamResourceCore.java
+END

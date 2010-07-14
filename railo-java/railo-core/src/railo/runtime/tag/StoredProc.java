@@ -30,6 +30,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallySupport;
 import railo.runtime.op.Caster;
 import railo.runtime.tag.util.DeprecatedUtil;
+import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryImpl;
@@ -71,7 +72,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	
 	
 	private List params=new ArrayList();
-	private ArrayImpl results=new ArrayImpl();
+	private Array results=new ArrayImpl();
 
 	private String procedure;
 	private String datasource;
@@ -438,7 +439,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 							try{
 								result=(ProcResultBean) results.get(index++,null);
 								if(result!=null) {
-									QueryImpl q = new QueryImpl(rs,result.getMaxrows(),result.getName());	
+									railo.runtime.type.Query q = new QueryImpl(rs,result.getMaxrows(),result.getName());	
 									count+=q.getRecordcount();
 									setVariable(result.getName(), q);
 									if(hasCached)cache.set(result.getName(), q);

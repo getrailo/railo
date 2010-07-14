@@ -353,7 +353,7 @@ public final class Directory extends TagImpl  {
 		    types=new String[]{"VARCHAR","DOUBLE","VARCHAR","DATE","VARCHAR","VARCHAR","VARCHAR","OBJECT"};
 	    }
 	    Array array=null;
-	    QueryImpl query=null;
+	    Query query=null;
 	    Object rtn;
 	    if(listInfo==LIST_INFO_QUERY_ALL || listInfo==LIST_INFO_QUERY_NAME){
 	    	boolean listOnlyNames=listInfo==LIST_INFO_QUERY_NAME;

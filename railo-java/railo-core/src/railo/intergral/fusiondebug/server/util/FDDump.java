@@ -5,10 +5,13 @@ import java.util.Iterator;
 import railo.intergral.fusiondebug.server.type.FDVariable;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Constants;
+import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.Collection.Key;
 
@@ -80,23 +83,23 @@ public class FDDump {
 	}
 	
 	public static void main(String[] args) throws PageException {
-		ArrayImpl arr = new ArrayImpl();
+		Array arr = new ArrayImpl();
 		arr.setEL(1, "aaa");
 		arr.setEL(2, Boolean.TRUE);
 		arr.setEL(5, Constants.INTEGER_3);
 		
-		ArrayImpl sub1 = new ArrayImpl();
+		Array sub1 = new ArrayImpl();
 		sub1.setEL(1, "ddd");
 		arr.setEL(6, sub1);
 		
-		StructImpl sct=new StructImpl();
+		Struct sct=new StructImpl();
 		sct.set("susi1", "eee");
 		sct.set("susi2", "fff");
 		arr.setEL(7, sct);
 		
 		Key aaa = KeyImpl.init("aaa");
 		Key bbb = KeyImpl.init("bbb");
-		QueryImpl qry=new QueryImpl(new Collection.Key[]{aaa,bbb},2,"quererli");
+		Query qry=new QueryImpl(new Collection.Key[]{aaa,bbb},2,"quererli");
 		qry.setAt(aaa, 1, "a1");
 		qry.setAt(bbb, 1, "b1");
 		qry.setAt(aaa, 2, "a2");

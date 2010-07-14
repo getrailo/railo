@@ -635,7 +635,20 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 				
 				// name
 				//String idName=identifier(data,false,true);
+				boolean required=false;
+				
 				String idName=variableDeclaration(data, false, false);
+				// required
+				if("required".equalsIgnoreCase(idName)){
+					comments(data.cfml);
+					String idName2=variableDeclaration(data, false, false);
+					if(idName2!=null){
+						idName=idName2;
+						required=true;
+					}
+				}
+				
+				
 				String typeName="any";
 				if(idName==null) throw new TemplateException(data.cfml,"invalid argument definition");
 				comments(data.cfml);
@@ -651,9 +664,9 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 				if(data.cfml.isCurrent('=') || data.cfml.isCurrent(':')) {
 					data.cfml.next();
 					comments(data.cfml);
-					func.addArgument(idName,typeName,true,expression(data));
+					func.addArgument(idName,typeName,required,expression(data));
 				}
-				else func.addArgument(idName,typeName,true);
+				else func.addArgument(idName,typeName,required);
 				
 				
 				comments(data.cfml);

@@ -79,6 +79,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Constants;
 import railo.runtime.op.Decision;
 import railo.runtime.text.xml.XMLUtil;
+import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.List;
@@ -142,7 +143,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 
 	private Stroke stroke;
 
-	private StructImpl sctInfo;
+	private Struct sctInfo;
 
 
 	private float alpha=1;
@@ -246,7 +247,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	public Struct info()  throws ExpressionException{
 		if(sctInfo!=null) return sctInfo;
 		
-		StructImpl sctInfo=new StructImpl();
+		Struct sctInfo=new StructImpl();
 		Struct sctCM=new StructImpl();
 		sctInfo.setEL("height",new Double(getHeight()));
 		sctInfo.setEL("width",new Double(getWidth()));
@@ -265,7 +266,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 
 	    //bits_component
 		int[] bitspercomponent = cm.getComponentSize();
-		ArrayImpl arr=new ArrayImpl();
+		Array arr=new ArrayImpl();
 		Double value;
 	    for (int i = 0; i < bitspercomponent.length; i++) {
 	    	sctCM.setEL("bits_component_" + (i + 1),value=new Double(bitspercomponent[i]));

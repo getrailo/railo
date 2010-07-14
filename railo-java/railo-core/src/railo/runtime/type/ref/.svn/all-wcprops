@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/railo/runtime/type/ref
+END
+ReferenceReference.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/ref/ReferenceReference.java
+END
+VariableReference.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/type/ref/VariableReference.java
+END
+SimpleVarRef.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/ref/SimpleVarRef.java
+END
+ScopeReference.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/railo/runtime/type/ref/ScopeReference.java
+END
+NativeReference.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/type/ref/NativeReference.java
+END

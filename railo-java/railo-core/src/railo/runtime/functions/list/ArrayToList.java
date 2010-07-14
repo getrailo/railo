@@ -15,7 +15,6 @@ public final class ArrayToList implements Function {
 	}
 	public static String call(PageContext pc , Array array, String delimeter) throws PageException {
 		if(delimeter.length()==1) return call(pc,array,delimeter.charAt(0));
-		//if(array instanceof ArrayImpl) return ((ArrayImpl)array).toList(delimeter);
 		int len=array.size();
 		if(len==0) return "";
 		if(len==1)return Caster.toString(array.getE(1));
@@ -30,7 +29,6 @@ public final class ArrayToList implements Function {
 		return sb.toString();
 	}
 	public static String call(PageContext pc , Array array, char delimeter) throws PageException {
-		//if(array instanceof ArrayImpl) return ((ArrayImpl)array).toList(delimeter);
 		int len=array.size();
 		if(len==0) return "";
 		if(len==1)return Caster.toString(array.getE(1));

@@ -26,10 +26,8 @@ public class FDQuery extends FDValueNotMutability {
 		List lstColumns=new ArrayList();
 		String type;
 		for(int i=0;i<strColumns.length;i++){
-			if(qry instanceof QueryImpl){
-				type=((QueryImpl)qry).getColumn(strColumns[i],null).getTypeAsString();
-			}
-			else type="";
+			type=qry.getColumn(strColumns[i],null).getTypeAsString();
+			//else type="";
 			lstColumns.add(new FDSimpleVariable(frame,strColumns[i],type,null));
 		}
 		children.add(new FDSimpleVariable(frame,"Columns",Caster.toString(strColumns.length),lstColumns));

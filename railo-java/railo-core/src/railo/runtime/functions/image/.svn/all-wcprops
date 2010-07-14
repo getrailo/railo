@@ -1,0 +1,341 @@
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/railo/runtime/functions/image
+END
+ImageNegative.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageNegative.java
+END
+ImageCopy.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageCopy.java
+END
+ImageSetDrawingTransparency.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageSetDrawingTransparency.java
+END
+ImageGetEXIFTag.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageGetEXIFTag.java
+END
+ImageTranslateDrawingAxis.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageTranslateDrawingAxis.java
+END
+ImageGrayscale.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageGrayscale.java
+END
+ImageCrop.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageCrop.java
+END
+ImageGetWidth.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageGetWidth.java
+END
+ImageGetIPTCTag.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageGetIPTCTag.java
+END
+ImageFlip.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageFlip.java
+END
+ImageSetDrawingAlpha.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageSetDrawingAlpha.java
+END
+GetReadableImageFormats.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/GetReadableImageFormats.java
+END
+ImageNew.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageNew.java
+END
+ImageDrawCubicCurve.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageDrawCubicCurve.java
+END
+GetWriteableImageFormats.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/GetWriteableImageFormats.java
+END
+ImageDrawRect.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageDrawRect.java
+END
+ImageBlur.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageBlur.java
+END
+ImageFormats.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageFormats.java
+END
+ImageXORDrawingMode.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageXORDrawingMode.java
+END
+ImageGetBufferedImage.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageGetBufferedImage.java
+END
+ImageDrawBeveledRect.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageDrawBeveledRect.java
+END
+ImageDrawImage.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageDrawImage.java
+END
+ImageShearDrawingAxis.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageShearDrawingAxis.java
+END
+ImageDrawQuadraticCurve.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageDrawQuadraticCurve.java
+END
+ImageRotate.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageRotate.java
+END
+ImageOverlay.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageOverlay.java
+END
+ImageWriteBase64.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageWriteBase64.java
+END
+ImageTranslate.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageTranslate.java
+END
+ImageAddBorder.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageAddBorder.java
+END
+ImageDrawOval.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageDrawOval.java
+END
+ImageSetDrawingStroke.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageSetDrawingStroke.java
+END
+ImageResize.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageResize.java
+END
+ImageSetBackgroundColor.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageSetBackgroundColor.java
+END
+IsImageFile.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/IsImageFile.java
+END
+ImageDrawText.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageDrawText.java
+END
+ImageSetDrawingColor.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageSetDrawingColor.java
+END
+ImageRotateDrawingAxis.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageRotateDrawingAxis.java
+END
+ImageFonts.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageFonts.java
+END
+ImageInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageInfo.java
+END
+ImageScaleToFit.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageScaleToFit.java
+END
+ImageShear.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageShear.java
+END
+ImageWrite.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageWrite.java
+END
+ImageGetHeight.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageGetHeight.java
+END
+ImageReadBase64.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageReadBase64.java
+END
+ImageDrawLines.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageDrawLines.java
+END
+ImageSetAntialiasing.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageSetAntialiasing.java
+END
+ImageSharpen.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageSharpen.java
+END
+ImagePaste.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImagePaste.java
+END
+ImageGetBlob.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageGetBlob.java
+END
+ImageClearRect.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageClearRect.java
+END
+ImageDrawLine.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageDrawLine.java
+END
+ImageDrawRoundRect.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageDrawRoundRect.java
+END
+ImageDrawArc.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageDrawArc.java
+END
+ImageDrawPoint.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageDrawPoint.java
+END
+ImageRead.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/ImageRead.java
+END
+IsImage.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/image/IsImage.java
+END

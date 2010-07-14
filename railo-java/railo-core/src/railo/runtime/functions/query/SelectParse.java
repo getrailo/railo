@@ -18,7 +18,7 @@ public final class SelectParse implements Function {
 		
 		try {
 			Selects selects = new SelectParser().parse(sql);
-			StructImpl sct=new StructImpl();
+			Struct sct=new StructImpl();
 			
 			
 			

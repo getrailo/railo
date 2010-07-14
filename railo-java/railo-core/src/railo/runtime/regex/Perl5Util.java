@@ -84,8 +84,8 @@ public final class Perl5Util {
             MatchResult result = matcher.getMatch();
             
             int groupCount = result.groups();
-            ArrayImpl posArray = new ArrayImpl();
-            ArrayImpl lenArray = new ArrayImpl();
+            Array posArray = new ArrayImpl();
+            Array lenArray = new ArrayImpl();
             for(int i = 0; i < groupCount; i++) {
                 int off = result.beginOffset(i);
                 posArray.appendEL(Constants.Integer(off + 1));
@@ -97,8 +97,8 @@ public final class Perl5Util {
             return struct;
             
         }
-        ArrayImpl posArray = new ArrayImpl();
-        ArrayImpl lenArray = new ArrayImpl();
+        Array posArray = new ArrayImpl();
+        Array lenArray = new ArrayImpl();
         posArray.appendEL(Constants.INTEGER_0);
         lenArray.appendEL(Constants.INTEGER_0);
         
@@ -123,7 +123,7 @@ public final class Perl5Util {
         Pattern pattern = getPattern(strPattern,compileOptions);
         
         
-        ArrayImpl rtn = new ArrayImpl();
+        Array rtn = new ArrayImpl();
         MatchResult result;
         while(matcher.contains(input, pattern)) {
           result = matcher.getMatch();  

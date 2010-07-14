@@ -19,7 +19,7 @@ public final class FunctionArgumentImpl implements FunctionArgument,Externalizab
 	private short type;
 	private String strType;
 	private boolean required;
-	private StructImpl meta;
+	private Struct meta;
 	private int defaultType;
 	private boolean passByReference;
 	
@@ -264,7 +264,7 @@ public final class FunctionArgumentImpl implements FunctionArgument,Externalizab
 		type=in.readShort();
 		strType=ExternalizableUtil.readString(in);
 		required=in.readBoolean();
-		meta=(StructImpl) in.readObject();
+		meta=(Struct) in.readObject();
 		defaultType=in.readInt();
 		passByReference=in.readBoolean();
 	}

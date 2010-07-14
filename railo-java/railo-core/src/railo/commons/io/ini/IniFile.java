@@ -204,16 +204,6 @@ public final class IniFile {
      }
  }
 
- /* *
-  * Adds a feature to the Section attribute of the IniFile object
-  *
-  * @param section  The feature to be added to the Section attribute
-  * /
- public void addSection(String section) {
-    
-   sections.put(section, new StructImpl());
- }*/
-
  /**
   * removes a selection
   *
@@ -231,7 +221,7 @@ public final class IniFile {
  */
 public static Struct getProfileSections(Resource file) throws IOException {
      IniFile ini=new IniFile(file);
-     Struct rtn=new StructImpl(StructImpl.TYPE_SYNC);
+     Struct rtn=new StructImpl(Struct.TYPE_SYNC);
      Map sections = ini.getSections();
      Iterator it = sections.keySet().iterator();
      while(it.hasNext()) {

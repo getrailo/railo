@@ -1,5 +1,6 @@
 package railo.runtime.type.it;
 
+import java.util.Enumeration;
 import java.util.Iterator;
 
 import railo.runtime.type.Collection;
@@ -7,7 +8,7 @@ import railo.runtime.type.Collection;
 /**
  * Iterator Implementation for a Object Array
  */
-public final class KeyIterator implements Iterator {
+public final class KeyIterator implements Iterator,Enumeration {
 	
 	private Collection.Key[] arr;
 	private int pos;
@@ -40,5 +41,13 @@ public final class KeyIterator implements Iterator {
 	 */
 	public Object next() {
 		return arr[pos++].getString();
+	}
+
+	public boolean hasMoreElements() {
+		return hasNext();
+	}
+
+	public Object nextElement() {
+		return next();
 	}
 }

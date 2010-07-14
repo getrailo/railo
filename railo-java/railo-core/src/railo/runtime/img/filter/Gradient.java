@@ -124,10 +124,10 @@ public class Gradient extends ArrayColormap implements Cloneable {
 	
 	public Object clone() {
 		Gradient g = (Gradient)super.clone();
-		g.map = (int[])map.clone();
-		g.xKnots = (int[])xKnots.clone();
-		g.yKnots = (int[])yKnots.clone();
-		g.knotTypes = (byte[])knotTypes.clone();
+		g.map = map.clone();
+		g.xKnots = xKnots.clone();
+		g.yKnots = yKnots.clone();
+		g.knotTypes = knotTypes.clone();
 		return g;
 	}
 	
@@ -137,10 +137,10 @@ public class Gradient extends ArrayColormap implements Cloneable {
      */
 	public void copyTo(Gradient g) {
 		g.numKnots = numKnots;
-		g.map = (int[])map.clone();
-		g.xKnots = (int[])xKnots.clone();
-		g.yKnots = (int[])yKnots.clone();
-		g.knotTypes = (byte[])knotTypes.clone();
+		g.map = map.clone();
+		g.xKnots = xKnots.clone();
+		g.yKnots = yKnots.clone();
+		g.knotTypes = knotTypes.clone();
 	}
 	
     /**

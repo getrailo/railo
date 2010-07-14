@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/transformer/bytecode/literal
+END
+LitString.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/transformer/bytecode/literal/LitString.java
+END
+LitDouble.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/44/trunk/railo-java/railo-core/src/railo/transformer/bytecode/literal/LitDouble.java
+END
+LitInteger.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/44/trunk/railo-java/railo-core/src/railo/transformer/bytecode/literal/LitInteger.java
+END
+LitFloat.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/44/trunk/railo-java/railo-core/src/railo/transformer/bytecode/literal/LitFloat.java
+END
+LitBoolean.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/97/trunk/railo-java/railo-core/src/railo/transformer/bytecode/literal/LitBoolean.java
+END

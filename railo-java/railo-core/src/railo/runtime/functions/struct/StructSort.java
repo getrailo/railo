@@ -71,7 +71,7 @@ public final class StructSort implements Function {
 			throw ee;
 		}
 		
-		ArrayImpl rtn=new ArrayImpl();
+		Array rtn=new ArrayImpl();
 		for(int i=0;i<arr.length;i++) {
 		    rtn.append(keys[arr[i].getOldPosition()]);
 		}

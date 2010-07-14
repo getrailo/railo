@@ -601,7 +601,7 @@ public final class XMLUtil {
         }
          
             NodeList nodes = node.getChildNodes();
-            ArrayImpl array=new ArrayImpl();
+            Array array=new ArrayImpl();
             for(int i=nodes.getLength()-1;i>=0;i--) {
                 Object o=nodes.item(i);
                 if(o instanceof Element) {

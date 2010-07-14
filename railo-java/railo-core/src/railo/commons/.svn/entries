@@ -1,0 +1,76 @@
+9
+
+dir
+63
+https://svn.jboss.org/repos/railo/trunk/railo-java/railo-core/src/railo/commons
+https://svn.jboss.org/repos/railo
+
+
+
+2009-11-24T09:18:31.941153Z
+62
+gfranz
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+d16dd37a-1a69-0410-ae00-9b64cd4d4088
+
+activation
+dir
+
+cli
+dir
+
+collections
+dir
+
+color
+dir
+
+date
+dir
+
+db
+dir
+
+digest
+dir
+
+i18n
+dir
+
+img
+dir
+
+io
+dir
+
+lang
+dir
+
+math
+dir
+
+net
+dir
+
+pdf
+dir
+
+res
+dir
+
+sql
+dir
+

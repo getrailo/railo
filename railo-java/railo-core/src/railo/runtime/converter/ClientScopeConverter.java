@@ -128,7 +128,7 @@ public class ClientScopeConverter {
 	}
 
 	public static void main(String[] args) throws ConverterException {
-		StructImpl sct=new StructImpl();
+		Struct sct=new StructImpl();
 		sct.setEL("a", "b");
 		sct.setEL("pe#=ter", "ab##c");
 		sct.setEL("susi", Boolean.TRUE);

@@ -26,7 +26,7 @@ public abstract class FileStreamWrapper extends StructSupport implements Struct 
 	
 	protected Resource res;
 	private String status=STATE_OPEN;
-	private StructImpl info;
+	private Struct info;
 	private long lastModifed;
 	private long length;
 	
