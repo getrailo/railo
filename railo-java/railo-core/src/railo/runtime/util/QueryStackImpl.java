@@ -22,10 +22,10 @@ public final class QueryStackImpl implements QueryStack {
         if(start<1)grow();
         queries[--start]= query;
 	}
-	public void addQuery(QueryImpl query) {
+	/*public void addQueryImpl(QueryImpl query) {
         if(start<1)grow();
         queries[--start]=query;
-	}
+	}*/
 
     /**
      * @see railo.runtime.util.QueryStack#removeQuery()
