@@ -15,7 +15,6 @@ import railo.runtime.component.Property;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.ClonedComponent;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
@@ -215,7 +214,7 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	 * @see railo.runtime.ComponentImpl#duplicate(boolean)
 	 */
 	public synchronized Collection duplicate(boolean deepCopy) {
-		return new SuperComponent(new ClonedComponent(this,deepCopy));
+		return new SuperComponent((ComponentImpl) comp.duplicate(deepCopy));
 	}
 
 	/**

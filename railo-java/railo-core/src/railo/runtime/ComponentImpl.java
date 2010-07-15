@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -44,7 +45,6 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.op.Operator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.ClonedComponent;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
@@ -178,36 +178,103 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         		extend, implement, hint, dspName,callPath, realPath, style,persistent, false,meta);
     }
 	 
-	 
-	 
     public ComponentImpl(ComponentPage componentPage,Boolean output,boolean _synchronized, 
     		String extend, String implement, String hint, String dspName,String callPath, boolean realPath, 
     		String style,boolean persistent,boolean accessors,StructImpl meta) throws ApplicationException {
     	this.properties=new ComponentProperties(dspName,extend.trim(),implement,hint,output,callPath,realPath,_synchronized,null,persistent,accessors,meta);
     	//this.componentPage=componentPage instanceof ComponentPageProxy?componentPage:PageProxy.toProxy(componentPage);
     	this.pageSource=componentPage.getPageSource();
-    	
+    	if(this.pageSource==null)print.ds();
     	if(!StringUtil.isEmpty(style) && !"rpc".equals(style))
     		throw new ApplicationException("style ["+style+"] is not supported, only the following styles are supported [rpc]");
     }
+    
+
+    /**
+     * @see railo.runtime.type.Collection#duplicate(boolean)
+     
+    public synchronized Collection duplicatex(boolean deepCopy) {
+        ComponentImpl c=new ClonedComponent(this,deepCopy);
+        return c;
+    }*/
+
+    public Collection duplicate(boolean deepCopy) {
+    	ComponentImpl top= _duplicate(deepCopy);
+    	setTop(top,top);
+    	
+		print.o("1:"+pageSource);
+		print.o("2:"+top.pageSource);
+		print.o("3:"+getPageSource());
+		print.o("4:"+top.getPageSource());
+		if(top.pageSource==null)print.ds();
+		return top;
+    }
+    
+    
+    private ComponentImpl _duplicate( boolean deepCopy) {
+    	ComponentImpl trg=new ComponentImpl();
+    	
+		// attributes
+    	trg.pageSource=pageSource;
+		trg.threadsWaiting=threadsWaiting;
+        trg.threadUsingLock=threadUsingLock;
+        trg.triggerDataMember=triggerDataMember;
+        trg.useShadow=useShadow;
+        trg.afterConstructor=afterConstructor;
+        trg.dataMemberDefaultAccess=dataMemberDefaultAccess;
+		trg.properties=properties.duplicate();
+		trg.isInit=isInit;
+		trg.interfaceCollection=interfaceCollection;
+    	
+    	if(base!=null){
+			trg.base=base._duplicate(deepCopy);
+		}
+		
+    	// data members
+		trg._data=duplicateMap(trg,_data,new HashMap(),deepCopy);
+		trg._udfs=duplicateMap(trg,_udfs,new HashMap(),deepCopy);
+		if(constructorUDFs!=null)trg.constructorUDFs=duplicateMap(trg,constructorUDFs,new HashMap(),deepCopy);
+		
+		
+		// scope 
+		if(scope instanceof ComponentScopeThis) {
+			trg.scope=new ComponentScopeThis(trg);
+		}
+		else if(scope instanceof ComponentScopeShadow) {
+			ComponentScopeShadow css = (ComponentScopeShadow)scope;
+			trg.scope=new ComponentScopeShadow(trg,duplicateMap(trg,css.getShadow(),ComponentScopeShadow.newMap(),deepCopy));
+		}
+		else trg.scope=(ComponentScope) scope.clone();
+    	
+    	
+		return trg;
+	}
+
 	
     /**
      * Constructor of the class
      * @param c
-     */
+     * /
     protected ComponentImpl(Component c, boolean deepCopy) {
     	if(c instanceof ComponentImpl) {
     		ComponentImpl ci=(ComponentImpl)c;
     		if(ci.base!=null){
     			this.base=new ClonedComponent(ci.base,true);
-    			setTop(this.base);
+    			setTop(this,this.base);
     		}
     		
     		this._data=duplicateMap(this,ci._data,new HashMap(),deepCopy);
     		
     		this._udfs=duplicateMap(this,ci._udfs,new HashMap(),deepCopy);
-    		//this.componentPage=ci.componentPage;
     		this.pageSource=ci.pageSource;
+    		
+    		print.o("1:"+this.pageSource);
+    		print.o("2:"+ci.pageSource);
+    		print.o("3:"+this.getPageSource());
+    		print.o("4:"+ci.getPageSource());
+    		
+    		
+    		
     		this.dataMemberDefaultAccess=ci.dataMemberDefaultAccess;
     		this.properties=ci.properties.duplicate();
     		this.isInit=ci.isInit;
@@ -226,7 +293,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             this.afterConstructor=ci.afterConstructor;
     	}
     	else throw new PageRuntimeException(new ApplicationException("can't clone this component "+c.getDisplayName()));
-	}
+	}*/
     
 
     public static Map duplicateMap(ComponentImpl c,Map map,Map newMap,boolean deepCopy){
@@ -272,7 +339,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	    	this.triggerDataMember=base.triggerDataMember;
 	    	_data=base._data;
 	    	_udfs=new HashMap(base._udfs);
-	    	setTop(base);
+	    	setTop(this,base);
 	    }
 	    else {
 	    	this.dataMemberDefaultAccess=pageContext.getConfig().getComponentDataMemberDefaultAccess();
@@ -381,10 +448,10 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	}
 
 
-	private void setTop(ComponentImpl c) {
-		while(c!=null){
-			c.top=this;
-			c=c.base;
+	private static void setTop(ComponentImpl top,ComponentImpl trg) {
+		while(trg!=null){
+			trg.top=top;
+			trg=trg.base;
 		}
 	}
 
@@ -1018,13 +1085,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         return top.pageSource;
     }
     
-    /**
-     * @see railo.runtime.type.Collection#duplicate(boolean)
-     */
-    public synchronized Collection duplicate(boolean deepCopy) {
-        ComponentImpl c=new ClonedComponent(this,deepCopy);
-        return c;
-    }
 
     /**
      * @see railo.runtime.op.Castable#castToString()
@@ -1807,6 +1867,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 // MUST more native impl
 	public void readExternal(ObjectInput in) throws IOException,ClassNotFoundException {
 		try {
+			// MUST nicht gut
 			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(ThreadLocalPageContext.get(),in.readUTF());
 			this._data=other._data;
 			this._udfs=other._udfs;
@@ -1825,7 +1886,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			this.top=this;
 			this.triggerDataMember=other.triggerDataMember;
 			this.useShadow=other.useShadow;
-			
+			if(this.pageSource==null)print.ds();
 			
 		} catch (PageException e) {
 			throw new IOException(e.getMessage());

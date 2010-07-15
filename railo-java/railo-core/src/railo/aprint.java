@@ -155,6 +155,9 @@ public class aprint {
 	public static void e(Object o) {
 		_(System.err, o);
 	}
+	public static void oe(Object o, boolean valid) {
+		_(valid?System.out:System.err, o);
+	}
 	
 	
 	

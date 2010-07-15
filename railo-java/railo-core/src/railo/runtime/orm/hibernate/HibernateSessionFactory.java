@@ -231,11 +231,17 @@ public class HibernateSessionFactory {
 	public static List<Component> loadComponents(PageContext pc,HibernateORMEngine engine, ORMConfiguration ormConf) {
 		ExtensionResourceFilter filter = new ExtensionResourceFilter(pc.getConfig().getCFCExtension(),true);
 		List<Component> components=new ArrayList<Component>();
-		loadComponents(pc,engine,components,ormConf.getCfcLocation(),filter);
+		loadComponents(pc,engine,components,ormConf.getCfcLocations(),filter);
 		return components;
 		//print.out("CfcLocation:"+ormConf.getCfcLocation());
 	}
-
+	
+	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<Component> components,Resource[] reses,ExtensionResourceFilter filter) {
+		for(int i=0;i<reses.length;i++){
+			if(reses[i]!=null && reses[i].isDirectory())loadComponents(pc,engine,components,reses[i], filter);
+		}
+	}
+	
 	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<Component> components,Resource res,ExtensionResourceFilter filter) {
 		if(res==null) return;
 

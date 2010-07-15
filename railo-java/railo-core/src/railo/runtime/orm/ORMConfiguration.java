@@ -1,14 +1,28 @@
 package railo.runtime.orm;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.w3c.dom.Element;
 
+import railo.print;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
+import railo.runtime.tag.Directory;
+import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
@@ -37,7 +51,7 @@ public class ORMConfiguration {
 	
 	private boolean autogenmap=true;
 	private String catalog;
-	private Resource cfcLocation;
+	private Resource[] cfcLocations;
 	private int dbCreate=DBCREATE_NONE;
 	private String dialect;
 	private boolean eventHandling;
@@ -85,17 +99,37 @@ public class ORMConfiguration {
 		// cfclocation
 		Object obj = settings.get(CFC_LOCATION,null);
 		if(obj!=null){
-			try {
-				c.cfcLocation=Caster.toResource(config, obj, true);
-			} catch (ExpressionException e) {
-				//print.printST(e);
+			Resource res;
+			if(Decision.isArray(obj)){
+				Array arr=Caster.toArray(obj,null);
+				java.util.List<Resource> list=new ArrayList<Resource>();
+				//c.cfcLocations=new Resource[arr.size()];
+				Iterator it = arr.valueIterator();
+				
+				while(it.hasNext()){
+					try	{
+						res=toResourceExisting(config, it.next());
+						if(res!=null) list.add(res);
+					}
+					catch(Throwable t){}
+				}
+				if(list.size()>0)
+					c.cfcLocations=list.toArray(new Resource[list.size()]);
 			}
+			else {
+				try	{
+					res = toResourceExisting(config, obj);
+					if(res!=null) c.cfcLocations=new Resource[]{res};//Caster.toResource(config, obj, true);
+				}
+				catch(Throwable t){}
+			}
+			
 		}
-		else {
-			c.cfcLocation=defaultCFCLocation;
-			//print.out("www:"+pc.getCurrentPageSource());
-			//c.cfcLocation=pc.getCurrentPageSource().getPhyscalFile().getParentResource();
-		}
+		
+		if(c.cfcLocations == null)
+			c.cfcLocations=new Resource[]{defaultCFCLocation};
+		
+		print.o(c.cfcLocations);
 		
 		// dbcreate
 		obj = settings.get(DB_CREATE,null);
@@ -164,6 +198,33 @@ public class ORMConfiguration {
 		return c;
 	}	
 
+	private static Resource toResourceExisting(Config config, Object obj) {
+		//Resource root = config.getRootDirectory();
+		String path = Caster.toString(obj,null);
+		if(StringUtil.isEmpty(path)) return null;
+		
+		Resource res = ResourceUtil.toResourceNotExisting(config, path);
+		print.oe(res,res.isDirectory());
+		if(res.isDirectory()) return res;
+		res=config.getRootDirectory().getRealResource(path);
+		print.oe(res,res.isDirectory());
+		if(res.isDirectory()) return res;
+		
+		PageContext pc = ThreadLocalPageContext.get();
+		if(pc!=null){
+			res=ResourceUtil.toResourceNotExisting(pc, path);
+			print.oe(res,res.isDirectory());
+			if(res.isDirectory()) return res;
+		}
+		
+		return null;
+	}
+
+
+
+
+
+
 	private ORMConfiguration duplicate() {
 		
 		ORMConfiguration other = new ORMConfiguration();
@@ -172,7 +233,7 @@ public class ORMConfiguration {
 		
 		other.autogenmap=autogenmap;
 		other.catalog=catalog;
-		other.cfcLocation=cfcLocation;
+		other.cfcLocations=cfcLocations;
 		other.dbCreate=dbCreate;
 		other.dialect=dialect;
 		other.eventHandling=eventHandling;
@@ -212,8 +273,8 @@ public class ORMConfiguration {
 	/**
 	 * @return the cfcLocation
 	 */
-	public Resource getCfcLocation() {
-		return cfcLocation;
+	public Resource[] getCfcLocations() {
+		return cfcLocations;
 	}
 
 	/**
@@ -314,10 +375,15 @@ public class ORMConfiguration {
 
 	public Object toStruct() {
 		
+		Resource[] locs = getCfcLocations();
+		Array arrLocs=new ArrayImpl();
+		if(locs!=null)for(int i=0;i<locs.length;i++){
+			arrLocs.appendEL(getAbsolutePath(locs[i]));
+		}
 		Struct sct=new StructImpl();
 		sct.setEL(AUTO_GEN_MAP,this.autogenmap());
 		sct.setEL(CATALOG,StringUtil.toStringEmptyIfNull(getCatalog()));
-		sct.setEL(CFC_LOCATION,getAbsolutePath(getCfcLocation()));
+		sct.setEL(CFC_LOCATION,arrLocs);
 		sct.setEL(DB_CREATE,dbCreateAsString(getDbCreate()));
 		sct.setEL(DIALECT,StringUtil.toStringEmptyIfNull(getDialect()));
 		sct.setEL(EVENT_HANDLING,eventHandling());

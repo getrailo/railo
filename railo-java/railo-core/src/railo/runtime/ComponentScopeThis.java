@@ -7,7 +7,6 @@ import railo.runtime.component.Member;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.ClonedComponent;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -261,7 +260,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
      * @see railo.runtime.type.Collection#duplicate(boolean)
      */
     public Collection duplicate(boolean deepCopy) {
-    	return new ComponentScopeThis(new ClonedComponent(component,deepCopy));
+    	return new ComponentScopeThis((ComponentImpl) component.duplicate(deepCopy));
     	//return new ComponentScopeThis(component.cloneComponentImpl(deepCopy));
     }
 
