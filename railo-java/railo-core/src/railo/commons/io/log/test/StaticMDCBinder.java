@@ -3,8 +3,6 @@ package railo.commons.io.log.test;
 import org.slf4j.helpers.BasicMDCAdapter;
 import org.slf4j.spi.MDCAdapter;
 
-import railo.print;
-
 
 /**
  * This implementation is bound to {@link BasicMDCAdapter}.

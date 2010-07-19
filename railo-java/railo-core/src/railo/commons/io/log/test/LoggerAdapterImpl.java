@@ -1,27 +1,15 @@
 package railo.commons.io.log.test;
 
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 
-import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.helpers.MarkerIgnoringBase;
-import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.spi.LocationAwareLogger;
 
-import railo.print;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
+import railo.commons.lang.ExceptionUtil;
+import railo.runtime.op.Caster;
 
-/**
- * A wrapper over {@link java.util.logging.Logger java.util.logging.Logger} in
- * conformity with the {@link Logger} interface. Note that the logging levels
- * mentioned in this class refer to those defined in the java.util.logging
- * package.
- * 
- * @author Ceki G&uuml;lc&uuml;
- * @author Peter Royal
- */
 public final class LoggerAdapterImpl extends MarkerIgnoringBase implements LocationAwareLogger {
 
 	private LogAndSource logger;
@@ -68,17 +56,22 @@ public final class LoggerAdapterImpl extends MarkerIgnoringBase implements Locat
 		
 	}
 	private void log(int level, String msg, Throwable t) {
-		
+		log(level, msg+"\n"+t.getMessage()+" "+ExceptionUtil.getStacktrace(t));
 	}
 	
 	private void log(int level, String format, Object arg) {
-		
+		log(level, Caster.toString(arg,""));
 	}
 	private void log(int level, String format, Object arg1, Object arg2) {
-		
+		log(level, Caster.toString(arg1,"")+"\n"+Caster.toString(arg2,""));
 	}
 	private void log(int level, String format, Object[] args) {
-		
+		StringBuilder sb=new StringBuilder();
+		for(int i=0;i<args.length;i++){
+			sb.append(Caster.toString(args[i],""));
+			sb.append("\n");
+		}
+		log(level, sb.toString().trim());
 	}
 
 	
@@ -126,10 +119,8 @@ public final class LoggerAdapterImpl extends MarkerIgnoringBase implements Locat
 
 
 
-	public void log(Marker arg0, String arg1, int arg2, String arg3,
-			Throwable arg4) {
-		// TODO Auto-generated method stub
-		
+	public void log(Marker marker, String arg1, int arg2, String arg3,Throwable arg4) {
+		// log(level, Caster.toString(arg1,"")+"\n"+Caster.toString(arg2,"")+"\n"+Caster.toString(arg3,""));
 	}
 
   

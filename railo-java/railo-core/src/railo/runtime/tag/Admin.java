@@ -19,7 +19,6 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.opencfml.eventgateway.Gateway;
 
-import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.SystemUtil;

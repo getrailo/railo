@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Settings;
-import org.hibernate.cfg.SettingsFactory;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.w3c.dom.Document;

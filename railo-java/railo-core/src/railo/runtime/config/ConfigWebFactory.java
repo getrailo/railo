@@ -29,7 +29,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
-import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.digest.MD5;
 import railo.commons.io.DevNullOutputStream;
@@ -2801,13 +2800,13 @@ public final class ConfigWebFactory {
       	boolean hasCS=configServer!=null;
       	
       	
-      	/*
+      	
       // log
         String strLogger=orm.getAttribute("log");
         if(StringUtil.isEmpty(strLogger) && hasCS) 
         	strLogger=((ConfigServerImpl)configServer).getORMLogger().getSource();
         else
-        	
+        	strLogger="{railo-config}/logs/orm.log";
         
         	
         int logLevel=LogUtil.toIntType(orm.getAttribute("log-level"),-1);
@@ -2816,8 +2815,7 @@ public final class ConfigWebFactory {
         if(logLevel==-1)logLevel=Log.LEVEL_ERROR;
         
         config.setORMLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,hasAccess,logLevel));
-        */
-      	
+        
       	
       // engine
       	String defaulrEngineClass=HibernateORMEngine.class.getName();//"railo.runtime.orm.hibernate.HibernateORMEngine";

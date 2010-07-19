@@ -92,9 +92,9 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/jta.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/javassist.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/antlr.jar"/>
-	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/slf4j-api.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/slf4j-api.jar" sourcepath="/Users/mic/libs/slf4j-api-1.6.1-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/slf4j-simple.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/dom4j.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Downloads/slf4j-1.6.1/slf4j-ext-1.6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
