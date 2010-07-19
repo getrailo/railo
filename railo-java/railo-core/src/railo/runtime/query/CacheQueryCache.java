@@ -7,7 +7,6 @@ import java.util.List;
 
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
-import railo.commons.io.cache.CacheKeyFilter;
 import railo.commons.lang.Md5;
 import railo.runtime.cache.ram.RamCache;
 import railo.runtime.cache.util.CacheKeyFilterAll;

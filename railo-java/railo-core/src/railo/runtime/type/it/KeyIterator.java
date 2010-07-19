@@ -3,7 +3,6 @@ package railo.runtime.type.it;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import railo.print;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 
@@ -20,11 +19,6 @@ public final class KeyIterator implements Iterator,Enumeration {
 	 * @param arr Base Array
 	 */
 	public KeyIterator(Collection.Key[] arr) {
-		if(arr==null)throw new NullPointerException();
-		for(int i=0;i<arr.length;i++){
-			if(arr[i]==null) print.ds();
-		}
-		
 		
 		this.arr=arr;
 		this.pos=0;

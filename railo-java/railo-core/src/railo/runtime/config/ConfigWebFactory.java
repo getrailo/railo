@@ -29,7 +29,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
-import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.digest.MD5;
 import railo.commons.io.DevNullOutputStream;
@@ -2819,8 +2818,6 @@ public final class ConfigWebFactory {
     // config
         if(orm==null) orm = doc.createElement("orm"); // this is just a dummy 
         ORMConfiguration def=hasCS?((ConfigServerImpl)configServer).getORMConfig():null;
-        print.o(config.getRootDirectory());
-        print.o(config.getConfigDir());
         ORMConfiguration ormConfig=ORMConfiguration.load(config,orm,config.getRootDirectory(),def);
         config.setORMConfig(ormConfig);
         

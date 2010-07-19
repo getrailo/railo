@@ -15,7 +15,6 @@ import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.w3c.dom.Document;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
@@ -25,7 +24,6 @@ import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.db.DataSource;
@@ -239,7 +237,6 @@ public class HibernateSessionFactory {
 	}
 	
 	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<Component> components,Resource[] reses,ExtensionResourceFilter filter) {
-		print.o(reses);
 		for(int i=0;i<reses.length;i++){
 			if(reses[i]!=null && reses[i].isDirectory())loadComponents(pc,engine,components,reses[i], filter);
 		}
@@ -266,9 +263,6 @@ public class HibernateSessionFactory {
 				try {
 					PageSource ps = pc.toPageSource(res,null);
 
-					print.o(res);
-					print.o(ps);
-					
 					Page p = ps.loadPage(pc.getConfig());
 					String name=res.getName();
 					name=name.substring(0,name.length()-4);

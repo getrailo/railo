@@ -20,7 +20,6 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
-import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -32,7 +31,6 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
-import railo.commons.io.res.type.file.FileResource;
 import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;

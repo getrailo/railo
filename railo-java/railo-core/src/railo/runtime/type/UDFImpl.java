@@ -7,7 +7,6 @@ import java.io.ObjectOutput;
 
 import javax.servlet.jsp.tagext.BodyContent;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -531,8 +530,6 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         func.set(RETURN_TYPE, udf.getReturnTypeAsString());
         func.set(DESCRIPTION, udf.getDescription());
         
-        print.e("udf:"+udf.getClass().getName());
-        print.e("ps:"+udf.getPageSource());
         func.set(OWNER, udf.getPageSource().getDisplayPath());
         
 	    	   

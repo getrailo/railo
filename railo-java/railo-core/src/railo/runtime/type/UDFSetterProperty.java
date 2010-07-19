@@ -1,6 +1,5 @@
 package railo.runtime.type;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.ComponentImpl;
@@ -19,11 +18,6 @@ public class UDFSetterProperty extends UDFGSProperty {
 			new FunctionArgumentImpl(prop.getName(),prop.getType(),true)
 		},CFTypes.TYPE_VOID,"wddx");
 		
-		if(component.getPageSource()==null){
-		print.e("UDFSetterProperty:"+component.getClass().getName());
-		print.e("UDFSetterProperty2"+component.getPageSource());
-		print.ds();
-		}
 		
 		this.prop=prop; 
 		

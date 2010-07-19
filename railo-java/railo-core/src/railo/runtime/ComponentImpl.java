@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -184,7 +183,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	this.properties=new ComponentProperties(dspName,extend.trim(),implement,hint,output,callPath,realPath,_synchronized,null,persistent,accessors,meta);
     	//this.componentPage=componentPage instanceof ComponentPageProxy?componentPage:PageProxy.toProxy(componentPage);
     	this.pageSource=componentPage.getPageSource();
-    	if(this.pageSource==null)print.ds();
+    	
     	if(!StringUtil.isEmpty(style) && !"rpc".equals(style))
     		throw new ApplicationException("style ["+style+"] is not supported, only the following styles are supported [rpc]");
     }
@@ -202,11 +201,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	ComponentImpl top= _duplicate(deepCopy);
     	setTop(top,top);
     	
-		print.o("1:"+pageSource);
-		print.o("2:"+top.pageSource);
-		print.o("3:"+getPageSource());
-		print.o("4:"+top.getPageSource());
-		if(top.pageSource==null)print.ds();
+		
 		return top;
     }
     
@@ -1886,7 +1881,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			this.top=this;
 			this.triggerDataMember=other.triggerDataMember;
 			this.useShadow=other.useShadow;
-			if(this.pageSource==null)print.ds();
+			
 			
 		} catch (PageException e) {
 			throw new IOException(e.getMessage());

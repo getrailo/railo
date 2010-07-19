@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import org.w3c.dom.Element;
 
-import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -200,16 +199,13 @@ public class ORMConfiguration {
 		if(StringUtil.isEmpty(path)) return null;
 		
 		Resource res = ResourceUtil.toResourceNotExisting(config, path);
-		print.oe(res,res.isDirectory());
 		if(res.isDirectory()) return res;
 		res=config.getRootDirectory().getRealResource(path);
-		print.oe(res,res.isDirectory());
 		if(res.isDirectory()) return res;
 		
 		PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null){
 			res=ResourceUtil.toResourceNotExisting(pc, path);
-			print.oe(res,res.isDirectory());
 			if(res.isDirectory()) return res;
 		}
 		

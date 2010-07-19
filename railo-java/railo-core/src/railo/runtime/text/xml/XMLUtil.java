@@ -38,18 +38,14 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import railo.aprint;
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.SystemOut;
 import railo.runtime.PageContext;
-import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.XMLException;
-import railo.runtime.functions.xml.XmlParse;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.struct.XMLMultiElementStruct;
 import railo.runtime.text.xml.struct.XMLStruct;
