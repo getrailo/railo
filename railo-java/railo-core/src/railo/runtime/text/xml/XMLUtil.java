@@ -22,6 +22,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.xalan.processor.TransformerFactoryImpl;
+import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
 import org.ccil.cowan.tagsoup.Parser;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
@@ -37,14 +38,18 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.SystemOut;
 import railo.runtime.PageContext;
+import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.XMLException;
+import railo.runtime.functions.xml.XmlParse;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.struct.XMLMultiElementStruct;
 import railo.runtime.text.xml.struct.XMLStruct;
@@ -209,16 +214,28 @@ public final class XMLUtil {
         throws SAXException, IOException {
         
         if(!isHtml) {
+        	// try to load org.apache.xerces.jaxp.DocumentBuilderFactoryImpl, oracle impl sucks
+        	DocumentBuilderFactory factory = null;
+        	try{
+        		factory = new DocumentBuilderFactoryImpl();
+        	}
+        	catch(Throwable t) {
+        		factory = DocumentBuilderFactory.newInstance();
+        	}
         	
-        	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        	//print.o(factory);
             if(validator==null) {
-            	factory.setAttribute(XMLConstants.NON_VALIDATING_DTD_EXTERNAL, Boolean.FALSE);
-            	factory.setAttribute(XMLConstants.NON_VALIDATING_DTD_GRAMMAR, Boolean.FALSE);
+            	XMLUtil.setAttributeEL(factory,XMLConstants.NON_VALIDATING_DTD_EXTERNAL, Boolean.FALSE);
+            	XMLUtil.setAttributeEL(factory,XMLConstants.NON_VALIDATING_DTD_GRAMMAR, Boolean.FALSE);
             }
             else {
-            	factory.setAttribute(XMLConstants.VALIDATION_SCHEMA, Boolean.TRUE);
-                factory.setAttribute(XMLConstants.VALIDATION_SCHEMA_FULL_CHECKING, Boolean.TRUE);
+            	XMLUtil.setAttributeEL(factory,XMLConstants.VALIDATION_SCHEMA, Boolean.TRUE);
+            	XMLUtil.setAttributeEL(factory,XMLConstants.VALIDATION_SCHEMA_FULL_CHECKING, Boolean.TRUE);
+            
+                
             }
+            
+            
             factory.setNamespaceAware(true);
             factory.setValidating(validator!=null);
             
@@ -255,6 +272,15 @@ public final class XMLUtil {
         }
     }
 	
+	private static void setAttributeEL(DocumentBuilderFactory factory,String name, Object value) {
+		try{
+			factory.setAttribute(name, value);
+		}
+		catch(Throwable t){
+			//SystemOut.printDate("attribute ["+name+"] is not allowed for ["+factory.getClass().getName()+"]");
+		}
+	}
+
 	/**
 	 * sets a node to a node (Expression Less)
 	 * @param node
