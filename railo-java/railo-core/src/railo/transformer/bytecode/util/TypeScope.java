@@ -4,7 +4,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.runtime.type.Scope;
 import railo.runtime.type.scope.Application;
 import railo.runtime.type.scope.ArgumentImpl;
@@ -20,7 +19,6 @@ import railo.runtime.type.scope.Server;
 import railo.runtime.type.scope.Session;
 import railo.runtime.type.scope.URL;
 import railo.runtime.type.scope.Undefined;
-import railo.runtime.type.util.ArrayUtil;
 
 public final class TypeScope {
 	

@@ -1,8 +1,8 @@
 package railo.runtime.functions.flow;
 
 import railo.runtime.ext.function.Function;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 
 /**
  * Decodes Binary Data that are encoded as String

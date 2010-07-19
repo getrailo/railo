@@ -11,9 +11,9 @@ import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
-import railo.runtime.type.Collection.Key;
 
 /**
 * Allows subtag data to be saved with the base tag. Applies only to custom tags.

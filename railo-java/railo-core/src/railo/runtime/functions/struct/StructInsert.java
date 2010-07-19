@@ -7,9 +7,9 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
-import railo.runtime.type.Collection.Key;
 
 public final class StructInsert implements Function {
 	public static boolean call(PageContext pc , Struct struct, String key, Object value) throws PageException {

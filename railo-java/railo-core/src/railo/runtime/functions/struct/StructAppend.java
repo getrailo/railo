@@ -8,9 +8,9 @@ import java.util.Iterator;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
-import railo.runtime.type.Collection.Key;
 
 public final class StructAppend implements Function {
 	public static boolean call(PageContext pc , Struct struct1, Struct struct2) throws PageException {

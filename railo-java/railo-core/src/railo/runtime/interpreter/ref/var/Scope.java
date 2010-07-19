@@ -1,14 +1,12 @@
 package railo.runtime.interpreter.ref.var;
 
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
 import railo.runtime.interpreter.ref.Set;
 import railo.runtime.interpreter.ref.literal.LString;
-import railo.runtime.type.scope.ScopeFactory;
 
 /**
  * 

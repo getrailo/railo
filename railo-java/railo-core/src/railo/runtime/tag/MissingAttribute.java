@@ -1,7 +1,7 @@
 package railo.runtime.tag;
 
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 
 public class MissingAttribute {
 	

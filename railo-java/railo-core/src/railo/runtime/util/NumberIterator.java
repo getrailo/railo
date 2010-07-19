@@ -5,7 +5,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Operator;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
-import railo.runtime.type.QueryImpl;
 
 /**
  * A Number Iterator Implementation to iterate from to

@@ -20,7 +20,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import railo.print;
 import railo.commons.date.DateTimeUtil;
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.i18n.FormatUtil;
@@ -40,7 +39,6 @@ import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Array;
-import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;

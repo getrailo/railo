@@ -19,13 +19,13 @@ import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.QueryPro;
 import railo.runtime.type.SVArray;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.Collection.Key;
 
 /**
 * Handles all interactions with files. The attributes you use with cffile depend on the value of the action attribute. 

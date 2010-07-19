@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
-import railo.print;
 import railo.commons.io.FileUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;

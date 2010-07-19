@@ -26,13 +26,13 @@ import railo.runtime.net.rpc.server.RPCServer;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.StructUtil;
 
 /**

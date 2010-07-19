@@ -9,10 +9,10 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.Collection.Key;
 
 public class StructKeyTranslate {
 	public static double call(PageContext pc ,Struct sct) throws PageException {

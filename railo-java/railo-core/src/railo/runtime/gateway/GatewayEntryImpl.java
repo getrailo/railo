@@ -11,8 +11,8 @@ import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Struct;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.Struct;
 
 public class GatewayEntryImpl implements GatewayEntry {
 

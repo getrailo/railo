@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.oro.text.regex.MalformedPatternException;
-import org.jpedal.exception.PdfException;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -33,9 +32,9 @@ import railo.runtime.op.Decision;
 import railo.runtime.text.pdf.PDFDocument;
 import railo.runtime.text.pdf.PDFUtil;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
-import railo.runtime.type.Collection.Key;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;

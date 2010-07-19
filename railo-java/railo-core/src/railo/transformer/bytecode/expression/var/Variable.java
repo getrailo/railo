@@ -8,10 +8,8 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.type.Scope;
-import railo.runtime.type.scope.ScopeFactory;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.util.VariableUtilImpl;
 import railo.transformer.bytecode.BytecodeContext;

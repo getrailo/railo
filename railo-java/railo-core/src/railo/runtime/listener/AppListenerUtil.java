@@ -12,9 +12,9 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
-import railo.runtime.type.Collection.Key;
 
 public final class AppListenerUtil {
 	

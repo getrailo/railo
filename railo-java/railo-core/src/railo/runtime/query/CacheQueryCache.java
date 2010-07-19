@@ -10,6 +10,7 @@ import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.CacheKeyFilter;
 import railo.commons.lang.Md5;
 import railo.runtime.cache.ram.RamCache;
+import railo.runtime.cache.util.CacheKeyFilterAll;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
@@ -42,7 +43,7 @@ import railo.runtime.type.Query;
 	 * @see railo.runtime.query.QueryCache#clear()
 	 */
 	public void clear() {
-		getCache().remove(new FilterNone());
+		getCache().remove(CacheKeyFilterAll.getInstance());
 	}
 
 
@@ -115,17 +116,7 @@ import railo.runtime.type.Query;
 		}
 	}
     
-	public class FilterNone  implements CacheKeyFilter {
-		public boolean accept(String key) {
-			return true;
-		}
-
-		public String toPattern() {
-			// TODO Auto-generated method stub
-			return "*";
-		}
-
-	}
+	
 
 	public void clear(QueryCacheFilter filter) {
 		Cache c = getCache();

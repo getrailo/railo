@@ -3,8 +3,8 @@ package railo.runtime.type.it;
 import java.util.Iterator;
 
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 
 public class CollectionIterator implements Iterator {
 

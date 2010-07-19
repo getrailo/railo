@@ -11,8 +11,8 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.hibernate.HibernateRuntimeException;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.util.ComponentUtil;
 
 public final class CFCSetter implements Setter {

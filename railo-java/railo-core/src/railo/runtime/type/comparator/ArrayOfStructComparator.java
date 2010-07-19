@@ -4,8 +4,8 @@ import java.util.Comparator;
 
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Struct;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.Struct;
 
 public class ArrayOfStructComparator implements Comparator<Struct> {
 

@@ -12,8 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import javax.servlet.jsp.tagext.Tag;
 
@@ -99,11 +99,11 @@ import railo.runtime.spooler.remote.RemoteClientTask;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
@@ -2648,7 +2648,8 @@ private void doGetMappings() throws PageException {
 	private void doVerifyCacheConnection() throws PageException {
         try {
 			Cache cache = Util.getCache(pageContext, getString("admin",action,"name"));
-			cache.keys();
+			// FUTURE cache.verify();
+			cache.getCustomInfo();
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}

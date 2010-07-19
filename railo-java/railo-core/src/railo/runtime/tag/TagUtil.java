@@ -10,10 +10,10 @@ import railo.runtime.ext.tag.DynamicAttributes;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.reflection.pairs.MethodInstance;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.library.tag.TagLibTag;
 

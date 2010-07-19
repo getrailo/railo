@@ -23,11 +23,11 @@ import railo.runtime.thread.ChildThreadImpl;
 import railo.runtime.thread.ThreadUtil;
 import railo.runtime.thread.ThreadsImpl;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.scope.Threads;
 
 // MUST change behavor of mltiple headers now is a array, it das so?

@@ -21,12 +21,12 @@ import railo.runtime.net.ftp.FTPConstant;
 import railo.runtime.net.ftp.FTPPath;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTimeImpl;
 
 /**

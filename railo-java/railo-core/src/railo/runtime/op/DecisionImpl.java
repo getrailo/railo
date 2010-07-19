@@ -2,8 +2,8 @@ package railo.runtime.op;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 
 
 /**

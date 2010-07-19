@@ -7,9 +7,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 import javax.xml.rpc.encoding.TypeMapping;
@@ -30,9 +30,9 @@ import org.apache.axis.types.NMTokens;
 import org.apache.axis.types.Name;
 import org.apache.axis.types.Token;
 import org.apache.axis.types.URI;
+import org.apache.axis.types.URI.MalformedURIException;
 import org.apache.axis.types.Year;
 import org.apache.axis.types.YearMonth;
-import org.apache.axis.types.URI.MalformedURIException;
 
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;

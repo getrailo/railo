@@ -1,12 +1,11 @@
 package railo.runtime.util;
 
-import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
-import railo.runtime.type.Collection.Key;
 
 /**
  * Stack for Query Objects

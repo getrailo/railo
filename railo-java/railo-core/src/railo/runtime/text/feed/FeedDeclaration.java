@@ -6,9 +6,9 @@ import java.util.Map;
 import railo.commons.lang.StringUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
-import railo.runtime.type.Collection.Key;
 
 public class FeedDeclaration {
 

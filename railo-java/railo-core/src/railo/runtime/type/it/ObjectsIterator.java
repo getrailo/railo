@@ -3,9 +3,9 @@ package railo.runtime.type.it;
 import java.util.Iterator;
 
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
-import railo.runtime.type.Collection.Key;
 
 public class ObjectsIterator implements Iterator {
 

@@ -13,8 +13,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
 
@@ -110,11 +110,11 @@ import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.spooler.SpoolerEngineImpl;
 import railo.runtime.text.xml.XMLCaster;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.util.ArrayUtil;

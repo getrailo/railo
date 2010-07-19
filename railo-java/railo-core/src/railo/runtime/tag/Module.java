@@ -7,8 +7,8 @@ import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 
 /**
 * Invokes a custom tag for use in ColdFusion application pages. The cfmodule tag can help deal with 

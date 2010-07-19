@@ -9,7 +9,6 @@ import org.objectweb.asm.commons.Method;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.exp.TemplateException;
-import railo.runtime.type.Query;
 import railo.runtime.type.scope.Undefined;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;

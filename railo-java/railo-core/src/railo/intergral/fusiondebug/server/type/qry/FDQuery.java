@@ -8,7 +8,6 @@ import railo.intergral.fusiondebug.server.type.FDVariable;
 import railo.intergral.fusiondebug.server.type.simple.FDSimpleVariable;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Query;
-import railo.runtime.type.QueryImpl;
 
 import com.intergral.fusiondebug.server.IFDStackFrame;
 
