@@ -118,6 +118,8 @@ public final class FTPWrap {
 
 
 	static void setConnectionSettings(FTPClient client, FTPConnection conn) {
+		if(client==null) return;
+		
 		// timeout
         client.setDataTimeout(conn.getTimeout()*1000);
         try {

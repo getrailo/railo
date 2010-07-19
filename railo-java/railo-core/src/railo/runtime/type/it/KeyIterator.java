@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import railo.print;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 
 /**
  * Iterator Implementation for a Object Array
@@ -20,6 +21,11 @@ public final class KeyIterator implements Iterator,Enumeration {
 	 */
 	public KeyIterator(Collection.Key[] arr) {
 		if(arr==null)throw new NullPointerException();
+		for(int i=0;i<arr.length;i++){
+			if(arr[i]==null) print.ds();
+		}
+		
+		
 		this.arr=arr;
 		this.pos=0;
 	}
@@ -42,7 +48,9 @@ public final class KeyIterator implements Iterator,Enumeration {
 	 * @see java.util.Iterator#next()
 	 */
 	public Object next() {
-		return arr[pos++].getString();
+		Key key = arr[pos++];
+		if(key==null) return null;
+		return key.getString();
 	}
 
 	public boolean hasMoreElements() {

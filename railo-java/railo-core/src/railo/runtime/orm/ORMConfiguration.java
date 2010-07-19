@@ -83,8 +83,10 @@ public class ORMConfiguration {
 	}
 
 	private static ORMConfiguration _load(Config config,_Get settings, Resource defaultCFCLocation,ORMConfiguration dc) {
+		
 		if(dc==null)dc=new ORMConfiguration();
 		ORMConfiguration c = dc.duplicate();
+		c.cfcLocations=new Resource[]{defaultCFCLocation};
 		
 		// autogenmap
 		c.autogenmap=Caster.toBooleanValue(settings.get(AUTO_GEN_MAP,dc.autogenmap()),dc.autogenmap());
@@ -124,8 +126,6 @@ public class ORMConfiguration {
 		
 		if(c.cfcLocations == null)
 			c.cfcLocations=new Resource[]{defaultCFCLocation};
-		
-		print.o(c.cfcLocations);
 		
 		// dbcreate
 		obj = settings.get(DB_CREATE,null);
