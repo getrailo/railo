@@ -19,6 +19,7 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.opencfml.eventgateway.Gateway;
 
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.SystemUtil;
@@ -912,12 +913,15 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         ConfigWeb[] webs = server.getConfigWebs();
         ConfigWeb web;
         Resource trg,p;
+        
         for(int i=0;i<webs.length;i++){
         	web=webs[i];
         	trg=web.getConfigDir().getRealResource("context").getRealResource(strRealpath);
+        	
         	if(trg.exists()) trg.remove(true);
         	p = trg.getParentResource();
             if(!p.isDirectory())p.createDirectory(true);
+           
             src.copyTo(trg, false);
         }
         store();

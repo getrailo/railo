@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Settings;
+import org.hibernate.cfg.SettingsFactory;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.w3c.dom.Document;
@@ -68,9 +70,7 @@ public class HibernateSessionFactory {
 		else if("HashTable".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.HashtableCacheProvider";
 		else if("SwarmCache".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.SwarmCacheProvider";
 		else if("OSCache".equalsIgnoreCase(cacheProvider)) 		cacheProvider="org.hibernate.cache.OSCacheProvider";
-		
-		
-		
+	
 		Resource cacheConfig = ormConf.getCacheConfig();
 		Configuration configuration = new Configuration();
 		

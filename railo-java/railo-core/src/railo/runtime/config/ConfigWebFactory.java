@@ -29,6 +29,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.digest.MD5;
 import railo.commons.io.DevNullOutputStream;
@@ -1734,12 +1735,14 @@ public final class ConfigWebFactory {
         
 
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_CACHE);
-	  	
+	  	//print.o("LOAD CACHE:"+hasAccess+":"+hasCS);
+
         
         Element eCache=getChildByName(doc.getDocumentElement(),"cache");
         
         // has changes
-        String md5=getMD5(eCache);
+        
+        String md5=getMD5(eCache,hasCS?configServer.getCacheMD5():"");
         if(md5.equals(config.getCacheMD5())) return;
         config.setCacheMD5(md5);
         
@@ -1880,6 +1883,8 @@ public final class ConfigWebFactory {
 		// Copy Parent caches as readOnly
         if(hasCS) {
             Map ds = configServer.getCacheConnections();
+            //print.o("PARENT");
+            //print.o(ds);
             Iterator it = ds.entrySet().iterator();
             Map.Entry entry;
             while(it.hasNext()) {
@@ -1892,9 +1897,9 @@ public final class ConfigWebFactory {
 	}
 
 
-    private static String getMD5(Node node) {
+    private static String getMD5(Node node,String parentMD5) {
 		try {
-			return MD5.getDigestAsString(XMLCaster.toString(node,""));
+			return MD5.getDigestAsString(XMLCaster.toString(node,"")+":"+parentMD5);
 		} catch (IOException e) {
 			return "";
 		}
@@ -2789,11 +2794,30 @@ public final class ConfigWebFactory {
     }
     
     
-    private static void loadORM(ConfigServer configServer, ConfigImpl config, Document doc) {
+    private static void loadORM(ConfigServer configServer, ConfigImpl config, Document doc) throws IOException {
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
         
         Element orm=hasAccess?getChildByName(doc.getDocumentElement(),"orm"):null;
       	boolean hasCS=configServer!=null;
+      	
+      	
+      	/*
+      // log
+        String strLogger=orm.getAttribute("log");
+        if(StringUtil.isEmpty(strLogger) && hasCS) 
+        	strLogger=((ConfigServerImpl)configServer).getORMLogger().getSource();
+        else
+        	
+        
+        	
+        int logLevel=LogUtil.toIntType(orm.getAttribute("log-level"),-1);
+        if(logLevel==-1 && hasCS)
+        	logLevel=((ConfigServerImpl)configServer).getORMLogger().getLogLevel();
+        if(logLevel==-1)logLevel=Log.LEVEL_ERROR;
+        
+        config.setORMLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,hasAccess,logLevel));
+        */
+      	
       	
       // engine
       	String defaulrEngineClass=HibernateORMEngine.class.getName();//"railo.runtime.orm.hibernate.HibernateORMEngine";

@@ -349,6 +349,7 @@ public abstract class ConfigImpl implements Config {
 	private boolean componentLocalSearch=true;
 	private boolean componentRootSearch=true;
 	private LogAndSource mappingLogger;
+	private LogAndSource ormLogger;
 
 	
 	
@@ -1365,6 +1366,16 @@ public abstract class ConfigImpl implements Config {
      */
     protected void setMailLogger(LogAndSource mailLogger) {
         this.mailLogger = mailLogger;
+    }
+    
+
+    protected void setORMLogger(LogAndSource ormLogger) {
+        this.ormLogger = ormLogger;
+    }
+    public LogAndSource getORMLogger() {
+    	if(ormLogger==null)ormLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		
+        return ormLogger;
     }
 
     /**

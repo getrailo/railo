@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
@@ -93,11 +94,12 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
      * @see railo.runtime.config.ConfigServer#getConfigWebs()
      */
     public ConfigWeb[] getConfigWebs() {
-        Iterator it = contextes.keySet().iterator();
-        ConfigWeb[] webs=new ConfigWeb[contextes.size()];
+    
+         Iterator it = initContextes.keySet().iterator();
+        ConfigWeb[] webs=new ConfigWeb[initContextes.size()];
         int index=0;        
         while(it.hasNext()) {
-            webs[index++]=((CFMLFactoryImpl)contextes.get(it.next())).getConfig();
+            webs[index++]=((CFMLFactoryImpl)initContextes.get(it.next())).getConfig();
         }
         return webs;
     }
@@ -115,10 +117,9 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
      * @return ConfigWebImpl
      */
     protected ConfigWebImpl getConfigWebImpl(String realpath) {
-        Iterator it = contextes.keySet().iterator();
-          
+    	Iterator it = initContextes.keySet().iterator();
         while(it.hasNext()) {
-            ConfigWebImpl cw=((CFMLFactoryImpl)contextes.get(it.next())).getConfigWebImpl();
+            ConfigWebImpl cw=((CFMLFactoryImpl)initContextes.get(it.next())).getConfigWebImpl();
             if(cw.getServletContext().getRealPath("/").equals(realpath))
                 return cw;
         }
@@ -126,10 +127,10 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     }
     
     public ConfigWebImpl getConfigWebById(String id) {
-        Iterator it = contextes.keySet().iterator();
+        Iterator it = initContextes.keySet().iterator();
           
         while(it.hasNext()) {
-            ConfigWebImpl cw=((CFMLFactoryImpl)contextes.get(it.next())).getConfigWebImpl();
+            ConfigWebImpl cw=((CFMLFactoryImpl)initContextes.get(it.next())).getConfigWebImpl();
             if(cw.getId().equals(id))
                 return cw;
         }
@@ -152,7 +153,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
      * @see railo.runtime.config.ConfigServer#getJSPFactoriesAsMap()
      */
     public Map getJSPFactoriesAsMap() {
-        return contextes;
+        return initContextes;
     }
 
     /**
