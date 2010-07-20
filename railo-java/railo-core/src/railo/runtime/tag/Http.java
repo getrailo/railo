@@ -685,9 +685,11 @@ public final class Http extends BodyTagImpl {
 	        	StringUtil.startsWithIgnoreCase(mimetype,"application/xhtml")  || 
 	        	StringUtil.startsWithIgnoreCase(mimetype,"message") || 
 	        	StringUtil.startsWithIgnoreCase(mimetype,"application/octet-stream") || 
-	        	StringUtil.indexOfIgnoreCase(mimetype, "xxml")!=-1 || 
+	        	StringUtil.indexOfIgnoreCase(mimetype, "xml")!=-1 || 
 	        	StringUtil.indexOfIgnoreCase(mimetype, "json")!=-1 || 
+	        	StringUtil.indexOfIgnoreCase(mimetype, "rss")!=-1 || 
 	        	StringUtil.indexOfIgnoreCase(mimetype, "text")!=-1;
+	        
 	       
 	        cfhttp.set(TEXT,Caster.toBoolean(isText));
 	    // mimetype charset
@@ -722,9 +724,17 @@ public final class Http extends BodyTagImpl {
 	        }
 	        else if(strPath!=null) {
 	            file=ResourceUtil.toResourceNotExisting(pageContext, strPath);
+	            //Resource dir = file.getParentResource();
+	            if(file.isDirectory()){
+	            	file=file.getRealResource(httpMethod.getURI().getName());
+	            }
+	            
 	        }
 	        if(file!=null)pageContext.getConfig().getSecurityManager().checkFileLocation(file);
-	    // filecontent
+	        
+	        print.e("file:"+file);
+	        
+	        // filecontent
 	        //try {
 	        //print.ln(">> "+responseCharset);
 	        
@@ -909,7 +919,7 @@ public final class Http extends BodyTagImpl {
 	
 	// parse url (also query string)
 		
-		
+		print.e(url);
 		URL _url=null;
 		try {
 			_url = HTTPUtil.toURL(url,port);
@@ -919,6 +929,7 @@ public final class Http extends BodyTagImpl {
 		} catch (MalformedURLException mue) {
 			throw Caster.toPageException(mue);
 		}
+		print.e(url);
 
 		
 		

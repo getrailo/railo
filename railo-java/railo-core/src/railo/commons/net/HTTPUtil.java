@@ -29,6 +29,7 @@ import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
@@ -169,7 +170,7 @@ public final class HTTPUtil {
         	
         	while(list.hasNext()){
         		str=list.next();
-        		str=URLDecoder.decode(str);
+        		//str=URLDecoder.decode(str);
         		
         		if(StringUtil.isEmpty(str)) continue;
         		res.append("/");
@@ -178,7 +179,7 @@ public final class HTTPUtil {
         	path=res.toString();
         }
         
-        // decode query
+        // decode query	
         if(!StringUtil.isEmpty(query)) {
         	StringBuffer res=new StringBuffer();
         	
@@ -217,14 +218,18 @@ public final class HTTPUtil {
        
        		       
     }
+
+    
     
     private static Object escapeQSValue(String str) {
     	Config config = ThreadLocalPageContext.getConfig();
     	if(config!=null){
     		try {
+    			str=URLDecoder.decode(str,config.getWebCharset());
 				return URLEncoder.encode(str,config.getWebCharset());
 			} catch (UnsupportedEncodingException e) {}
     	}
+    	str=URLDecoder.decode(str);
     	return URLEncoder.encode(str);
     	//if(str.indexOf('=')!=-1)str=StringUtil.replace(str, "=", "%3D", false);
     	//return str;
