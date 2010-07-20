@@ -281,13 +281,14 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
             cl = (PhysicalClassLoader)mapping.getClassLoaderForPhysical(resetCL.booleanValue());
             
             Class clazz=null;
-            try {
+            clazz = cl.loadClass(getClazz(),barr);
+            /*try {
             	clazz = cl.loadClass(getClazz(),barr);
 				
 			} catch (Throwable t) {
 				t.printStackTrace();
 				clazz = cl.loadClass(getClazz(),barr);
-			}
+			}*/
 			return  newInstance(clazz);
         }
         catch(Throwable t) {
