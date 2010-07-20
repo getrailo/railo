@@ -8,7 +8,7 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 import org.slf4j.spi.LoggerFactoryBinder;
 
-import railo.commons.io.log.test.LoggerFactoryImpl;
+import railo.commons.io.log.sl4j.LoggerFactoryImpl;
 
 /**
  * The binding of {@link LoggerFactory} class with an actual instance of 

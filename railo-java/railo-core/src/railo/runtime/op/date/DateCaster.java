@@ -604,7 +604,8 @@ public final class DateCaster {
 		if(ds.fwIfCurrent('a') || ds.fwIfCurrent('A'))	{
 			if(!ds.fwIfCurrent('m'))ds.fwIfCurrent('M');
 	        if(ds.isAfterLast()) 
-	            return DateTimeUtil.getInstance().toDateTime(timeZone, date[0], date[1], date[2], hours, minutes, seconds, msSeconds, defaultValue);
+	            return DateTimeUtil.getInstance().toDateTime(timeZone, date[0], date[1], date[2], 
+	            		hours<12?hours:hours-12, minutes, seconds, msSeconds, defaultValue);
 	        return defaultValue;
 	    }
 	    else if(ds.fwIfCurrent('p') || ds.fwIfCurrent('P'))	{

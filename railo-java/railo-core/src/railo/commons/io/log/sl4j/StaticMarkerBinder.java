@@ -1,4 +1,4 @@
-package railo.commons.io.log.test;
+package railo.commons.io.log.sl4j;
 
 import org.slf4j.IMarkerFactory;
 import org.slf4j.MarkerFactory;
