@@ -38,7 +38,6 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.EncodingUtil;
 
-import railo.print;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -732,7 +731,6 @@ public final class Http extends BodyTagImpl {
 	        }
 	        if(file!=null)pageContext.getConfig().getSecurityManager().checkFileLocation(file);
 	        
-	        print.e("file:"+file);
 	        
 	        // filecontent
 	        //try {
@@ -919,7 +917,6 @@ public final class Http extends BodyTagImpl {
 	
 	// parse url (also query string)
 		
-		print.e(url);
 		URL _url=null;
 		try {
 			_url = HTTPUtil.toURL(url,port);
@@ -929,8 +926,7 @@ public final class Http extends BodyTagImpl {
 		} catch (MalformedURLException mue) {
 			throw Caster.toPageException(mue);
 		}
-		print.e(url);
-
+		
 		
 		
 		

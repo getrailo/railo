@@ -2,7 +2,6 @@ package railo.runtime.net.ftp;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketException;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -124,7 +123,7 @@ public final class FTPWrap {
         client.setDataTimeout(conn.getTimeout()*1000);
         try {
 			client.setSoTimeout(conn.getTimeout()*1000);
-		} catch (SocketException se) {}
+		} catch (Throwable t) {}
         
         // passive/active Mode
 		int mode = client.getDataConnectionMode();
