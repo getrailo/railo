@@ -38,6 +38,7 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.EncodingUtil;
 
+import railo.print;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -1249,8 +1250,9 @@ public final class Http extends BodyTagImpl {
      * @param status
      * @return is redirect
      */
-    static boolean isRedirect(int status) {
-        return 
+    
+	static boolean isRedirect(int status) {
+    	return 
         	status==STATUS_REDIRECT_FOUND || 
         	status==STATUS_REDIRECT_MOVED_PERMANENTLY ||
         	status==STATUS_REDIRECT_SEE_OTHER;
@@ -1356,12 +1358,16 @@ class Executor extends Thread {
 	
 	public void execute() throws IOException, PageException	{
 		// Execute Request 
+		httpMethod.setFollowRedirects(redirect);
+		client.executeMethod(httpMethod);
+		/*
 		short count=0;
         URL lu;
         while(Http.isRedirect(client.executeMethod(httpMethod)) && redirect && count++ < Http.MAX_REDIRECT) { 
         	lu=Http.locationURL(httpMethod);
-        	
+        	print.e(lu);
         	httpMethod=Http.createMethod(http,client,lu.toExternalForm(),-1);
         }
+        */
 	}
 }
