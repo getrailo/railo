@@ -1,0 +1,34 @@
+9
+
+dir
+63
+https://svn.jboss.org/repos/railo/trunk/railo-java/railo-loader/src/railo/commons
+https://svn.jboss.org/repos/railo
+
+
+
+2009-11-24T09:18:31.941153Z
+62
+gfranz
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+d16dd37a-1a69-0410-ae00-9b64cd4d4088
+
+io
+dir
+
+lang
+dir
+

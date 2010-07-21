@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-loader/src/com/allaire/cfx
+END
+Request.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/com/allaire/cfx/Request.java
+END
+DebugRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/com/allaire/cfx/DebugRequest.java
+END
+CustomTag.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/com/allaire/cfx/CustomTag.java
+END
+Query.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-loader/src/com/allaire/cfx/Query.java
+END
+DebugQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/com/allaire/cfx/DebugQuery.java
+END
+DebugResponse.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/com/allaire/cfx/DebugResponse.java
+END
+Response.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/com/allaire/cfx/Response.java
+END

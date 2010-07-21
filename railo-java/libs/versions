@@ -38,3 +38,9 @@ jfreechart-1.0.12
 3.51b12_jpedal_gpl
 fusiondebug-api-server-1.0.20-SNAPSHOT
 joda-time-1.6
+hibernate 3.5.2
+dom4j-1.6.1
+antlr-2.7.6
+javassist-3.9.0.GA
+jta-1.1
+slf4j-api-1.5.8

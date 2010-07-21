@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/runtime/search
+END
+IndexResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/runtime/search/IndexResult.java
+END
+SearchEngine.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/runtime/search/SearchEngine.java
+END
+SearchException.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/runtime/search/SearchException.java
+END
+SearchCollection.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/runtime/search/SearchCollection.java
+END
+SearchInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/runtime/search/SearchInfo.java
+END
+SearchResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/runtime/search/SearchResult.java
+END
+SearchData.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/runtime/search/SearchData.java
+END
+SearchResulItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/57/trunk/railo-java/railo-loader/src/railo/runtime/search/SearchResulItem.java
+END
