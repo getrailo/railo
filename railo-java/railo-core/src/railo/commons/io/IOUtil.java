@@ -26,7 +26,6 @@ import java.util.zip.ZipFile;
 import javax.mail.Transport;
 
 import net.sf.jmimemagic.Magic;
-import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.net.URLEncoder;
 import railo.runtime.exp.PageException;

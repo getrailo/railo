@@ -2,9 +2,7 @@ package railo.commons.net;
 
 import java.io.UnsupportedEncodingException;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
-import railo.runtime.functions.other.URLEncodedFormat;
 
 /**
  * Utility class for HTML form encoding. This class contains static methods
@@ -145,29 +143,5 @@ public class URLEncoder {
     	
     	return false;
     }
-    public static void main(String[] args) {
-    	// ._-*
-    	
-    	try {
-			print.o(railo.commons.lang.URLEncoder.encode("a$_-.:+!'*(),@[]?=;"));
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	print.o(encode("a$_-.:+!'*(),@[]?=;"));
-    	print.o(encode("_-.*"));
-    	// $ : + ! ' ( ) , @ [ ] ?=
-    	test("abra");
-    	test("Š");
-    	test("a+a");
-    	test("a%20a");
-    	test("a%a");
-    	test("a%");
-    	test("._-*");
-	}
-
-	private static void test(String str) {
-		print.o(str+":"+needEncoding(str));
-	}
     
 }
