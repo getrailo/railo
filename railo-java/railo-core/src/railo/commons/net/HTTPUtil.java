@@ -536,7 +536,14 @@ public final class HTTPUtil {
         }
        return res.toString();		       
     }
-	
+
+
+	public static int getPort(URL url) {
+		if(url.getPort()!=-1) return url.getPort();
+		if("https".equalsIgnoreCase(url.getProtocol()))
+			return 443;
+		return 80;
+	}
 	
 	
 }
