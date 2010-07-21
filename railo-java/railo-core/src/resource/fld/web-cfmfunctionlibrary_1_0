@@ -9440,6 +9440,30 @@
 			<type>string</type>
 		</return>
 	</function>
+	<!-- uRLEncode -->
+	<function>
+		<name>uRLEncode</name>
+		<class>railo.runtime.functions.other.URLEncode</class>
+		<description/>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>charset</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>force</name>
+			<type>boolean</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
 	<!-- uRLEncodedFormat -->
 	<function>
 		<name>uRLEncodedFormat</name>
@@ -9451,8 +9475,13 @@
 			<required>Yes</required>
 		</argument>
 		<argument>
-			<name>arg2</name>
+			<name>charset</name>
 			<type>string</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>force</name>
+			<type>boolean</type>
 			<required>No</required>
 		</argument>
 		<return>

@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/spooler
+END
+SpoolerTaskSupport.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/spooler/SpoolerTaskSupport.java
+END
+SpoolerEngineImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/spooler/SpoolerEngineImpl.java
+END
+SpoolerTaskWS.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/spooler/SpoolerTaskWS.java
+END
+ExecutionPlanImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/spooler/ExecutionPlanImpl.java
+END

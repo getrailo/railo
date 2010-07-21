@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/net/smtp
+END
+URLDataSource2.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/net/smtp/URLDataSource2.java
+END
+SMTPAuthenticator.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/net/smtp/SMTPAuthenticator.java
+END
+SMTPSender.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/net/smtp/SMTPSender.java
+END
+StringDataSource.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/net/smtp/StringDataSource.java
+END
+Attachment.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/net/smtp/Attachment.java
+END
+SMTPClient.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/net/smtp/SMTPClient.java
+END

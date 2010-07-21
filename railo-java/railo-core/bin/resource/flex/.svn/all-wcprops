@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/repos/railo/!svn/ver/28/trunk/railo-java/railo-core/src/resource/flex
+END
+messaging-config.xml
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/28/trunk/railo-java/railo-core/src/resource/flex/messaging-config.xml
+END
+remoting-config.xml
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/railo/!svn/ver/28/trunk/railo-java/railo-core/src/resource/flex/remoting-config.xml
+END
+proxy-config.xml
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/railo/!svn/ver/28/trunk/railo-java/railo-core/src/resource/flex/proxy-config.xml
+END
+services-config.xml
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/railo/!svn/ver/28/trunk/railo-java/railo-core/src/resource/flex/services-config.xml
+END

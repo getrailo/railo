@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/reflection
+END
+Reflector.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/reflection/Reflector.java
+END
+Invoker.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/reflection/Invoker.java
+END
+StaticReflector.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/reflection/StaticReflector.java
+END

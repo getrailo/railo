@@ -24,9 +24,9 @@ public final class Evaluate implements Function {
 			else if(objs[objs.length-1] instanceof CallerImpl){
 				var=((CallerImpl) objs[objs.length-1]).getVariablesScope();
 			}
-			else if(objs[objs.length-1] instanceof CallerImpl){
+			/*else if(objs[objs.length-1] instanceof CallerImpl){
 				var=((CallerImpl) objs[objs.length-1]).getVariablesScope();
-			}
+			}*/
 			if(var!=null){
 				Variables current=pc.variablesScope();
 				pc.setVariablesScope(var);

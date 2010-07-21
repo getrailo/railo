@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/img
+END
+MarpleCaptcha.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/railo/!svn/ver/49/trunk/railo-java/railo-core/src/railo/runtime/img/MarpleCaptcha.java
+END
+ResourceImageOutputStream.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/50/trunk/railo-java/railo-core/src/railo/runtime/img/ResourceImageOutputStream.java
+END
+ImageUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/railo/!svn/ver/48/trunk/railo-java/railo-core/src/railo/runtime/img/ImageUtil.java
+END
+Image.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/railo/!svn/ver/98/trunk/railo-java/railo-core/src/railo/runtime/img/Image.java
+END
+IImageIO.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/img/IImageIO.java
+END
+NeuQuant.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/railo/!svn/ver/50/trunk/railo-java/railo-core/src/railo/runtime/img/NeuQuant.java
+END
+ImageException.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/48/trunk/railo-java/railo-core/src/railo/runtime/img/ImageException.java
+END
+PSDReader.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/railo/!svn/ver/50/trunk/railo-java/railo-core/src/railo/runtime/img/PSDReader.java
+END
+LZWEncoder.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/railo/!svn/ver/49/trunk/railo-java/railo-core/src/railo/runtime/img/LZWEncoder.java
+END
+ImageResizer.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/img/ImageResizer.java
+END

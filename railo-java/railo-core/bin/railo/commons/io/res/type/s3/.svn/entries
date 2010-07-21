@@ -1,0 +1,133 @@
+9
+
+dir
+0
+https://svn.jboss.org/repos/railo/trunk/railo-java/railo-core/src/railo/commons/io/res/type/s3
+https://svn.jboss.org/repos/railo
+add
+
+
+
+
+
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+d16dd37a-1a69-0410-ae00-9b64cd4d4088
+
+Bucket.java
+file
+
+
+
+add
+
+BucketFactory.java
+file
+
+
+
+add
+
+Content.java
+file
+
+
+
+add
+
+ContentFactory.java
+file
+
+
+
+add
+
+EmptyRequestEntity.java
+file
+
+
+
+add
+
+ErrorFactory.java
+file
+
+
+
+add
+
+S3.java
+file
+
+
+
+add
+
+S3Exception.java
+file
+
+
+
+add
+
+S3Factory.java
+file
+
+
+
+add
+
+S3Info.java
+file
+
+
+
+add
+
+S3Resource.java
+file
+
+
+
+add
+
+S3ResourceOutputStream.java
+file
+
+
+
+add
+
+S3ResourceProvider.java
+file
+
+
+
+add
+
+TemporaryStream.java
+file
+
+
+
+add
+
+TemporaryStreamRequestEntity.java
+file
+
+
+
+add
+

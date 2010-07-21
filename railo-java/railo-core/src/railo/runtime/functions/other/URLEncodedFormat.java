@@ -19,10 +19,18 @@ public final class URLEncodedFormat implements Function {
 	
 	
 	public static String call(PageContext pc , String str) throws PageException {
-		return call(pc,str, "UTF-8");
+		return call(pc,str, "UTF-8",true);
 	}
 	
+
 	public static String call(PageContext pc , String str, String encoding) throws PageException {
+		return call(pc,str, encoding,true);
+	}
+	
+	public static String call(PageContext pc , String str, String encoding,boolean force) throws PageException {
+		if(!force && !railo.commons.net.URLEncoder.needEncoding(str))
+			return str;
+		
 		try {
 			String enc=java.net.URLEncoder.encode(str, encoding);
 			return enc;
@@ -35,13 +43,6 @@ public final class URLEncodedFormat implements Function {
 				throw Caster.toPageException(e);
 			}
 		}
-		
-		/*try {
-			return URLEncoder.encode(str, encoding);
-		} 
-		catch (UnsupportedEncodingException e) {
-			throw Caster.toPageException(e);
-		}*/
 	}
 	
 	

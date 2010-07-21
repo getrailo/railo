@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/type/datasource/core
+END
+CoreSupport.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/commons/io/res/type/datasource/core/CoreSupport.java
+END
+Core.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/type/datasource/core/Core.java
+END
+MSSQL.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/type/datasource/core/MSSQL.java
+END
+MySQL.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/type/datasource/core/MySQL.java
+END

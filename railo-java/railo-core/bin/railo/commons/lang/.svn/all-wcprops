@@ -1,0 +1,209 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/commons/lang
+END
+StringList.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/commons/lang/StringList.java
+END
+HTMLEntities.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/HTMLEntities.java
+END
+ArchiveClassLoader.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/91/trunk/railo-java/railo-core/src/railo/commons/lang/ArchiveClassLoader.java
+END
+ByteBuffer.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/ByteBuffer.java
+END
+ByteSizeParser.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/ByteSizeParser.java
+END
+LogClassLoader.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/LogClassLoader.java
+END
+SoftHashMap.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/SoftHashMap.java
+END
+NameValuePair.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/NameValuePair.java
+END
+SerializableObject.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/SerializableObject.java
+END
+ClassUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/commons/lang/ClassUtil.java
+END
+Pair.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/Pair.java
+END
+ClassLoaderHelper.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/ClassLoaderHelper.java
+END
+IDGenerator.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/commons/lang/IDGenerator.java
+END
+CharSequenceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/CharSequenceImpl.java
+END
+ClassException.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/ClassException.java
+END
+ArrayUtilException.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/ArrayUtilException.java
+END
+PhysicalClassLoader.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/PhysicalClassLoader.java
+END
+StringUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/commons/lang/StringUtil.java
+END
+DevNullCharBuffer.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/DevNullCharBuffer.java
+END
+ExceptionUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/ExceptionUtil.java
+END
+ParserString.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/ParserString.java
+END
+URLEncoder.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/commons/lang/URLEncoder.java
+END
+HTMLUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/railo/commons/lang/HTMLUtil.java
+END
+MD5Hash.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/MD5Hash.java
+END
+Charset.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/Charset.java
+END
+NumberUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/NumberUtil.java
+END
+Wrap.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/Wrap.java
+END
+SystemOut.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/commons/lang/SystemOut.java
+END
+Md5.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/Md5.java
+END
+ByteNameValuePair.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/lang/ByteNameValuePair.java
+END
+SizeOf.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/commons/lang/SizeOf.java
+END
+ExternalizableUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/commons/lang/ExternalizableUtil.java
+END
+CharBuffer.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/commons/lang/CharBuffer.java
+END
+CFTypes.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/commons/lang/CFTypes.java
+END

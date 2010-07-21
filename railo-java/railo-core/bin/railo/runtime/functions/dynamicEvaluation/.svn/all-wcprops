@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dynamicEvaluation
+END
+Serialize.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/railo/runtime/functions/dynamicEvaluation/Serialize.java
+END
+SetVariable.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dynamicEvaluation/SetVariable.java
+END
+EvaluateJava.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dynamicEvaluation/EvaluateJava.java
+END
+Evaluate.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dynamicEvaluation/Evaluate.java
+END
+UnserializeJava.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dynamicEvaluation/UnserializeJava.java
+END
+PrecisionEvaluate.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dynamicEvaluation/PrecisionEvaluate.java
+END
+IIf.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dynamicEvaluation/IIf.java
+END
+EvaluateComponent.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dynamicEvaluation/EvaluateComponent.java
+END
+GetVariable.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dynamicEvaluation/GetVariable.java
+END
+DE.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dynamicEvaluation/DE.java
+END

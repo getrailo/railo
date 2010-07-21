@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/cfx/customtag
+END
+CPPCFXTagClass.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/cfx/customtag/CPPCFXTagClass.java
+END
+CPPCustomTag.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/cfx/customtag/CPPCustomTag.java
+END
+CFXTagClass.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/cfx/customtag/CFXTagClass.java
+END
+JavaCFXTagClass.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/cfx/customtag/JavaCFXTagClass.java
+END
+CFXTagPoolImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/cfx/customtag/CFXTagPoolImpl.java
+END

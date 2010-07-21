@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/filter
+END
+AndResourceFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/filter/AndResourceFilter.java
+END
+NotResourceFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/filter/NotResourceFilter.java
+END
+OrResourceFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/filter/OrResourceFilter.java
+END
+ExtensionResourceFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/filter/ExtensionResourceFilter.java
+END
+DirectoryResourceFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/filter/DirectoryResourceFilter.java
+END
+FileResourceFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/filter/FileResourceFilter.java
+END

@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/repos/railo/!svn/ver/28/trunk/railo-java/railo-core/src/resource/dtd
+END
+web-jsptaglibrary_1_1.dtd
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/28/trunk/railo-java/railo-core/src/resource/dtd/web-jsptaglibrary_1_1.dtd
+END
+web-jsptaglibrary_1_2.dtd
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/28/trunk/railo-java/railo-core/src/resource/dtd/web-jsptaglibrary_1_2.dtd
+END
+web-cfmfunctionlibrary_1_0.dtd
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/28/trunk/railo-java/railo-core/src/resource/dtd/web-cfmfunctionlibrary_1_0.dtd
+END
+web-cfmtaglibrary_1_0.dtd
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/28/trunk/railo-java/railo-core/src/resource/dtd/web-cfmtaglibrary_1_0.dtd
+END

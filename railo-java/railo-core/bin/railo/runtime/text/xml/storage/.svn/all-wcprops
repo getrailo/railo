@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/text/xml/storage
+END
+StorageItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/text/xml/storage/StorageItem.java
+END
+StorageException.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/text/xml/storage/StorageException.java
+END
