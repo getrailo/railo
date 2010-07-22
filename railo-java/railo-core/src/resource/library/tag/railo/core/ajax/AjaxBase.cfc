@@ -3,12 +3,17 @@
 	<!--- Instance vars --->
 	<cfset variables.instance = {} />
 	
-	<!--- used by UI tags --->
-	<cfset variables.instance.SCRIPTSRC = "/mapping-tag/org/railoajax/libs/JSLoader.cfc?method=get&lib=" />
-	<cfset variables.instance.CSSSRC = "/mapping-tag/org/railoajax/libs/css/" />
-	<!--- used by core tags --->
-	<cfset variables.instance.RAILOJSSRC = "/mapping-tag/railo/core/ajax/JSLoader.cfc?method=get&lib=" />
+	<!--- 
+	Resources location ( can be overwritten ) 
+	--->
+	<cfset variables.instance.SCRIPTSRC = "/mapping-tag/railo/core/ajax/JSLoader.cfc?method=get&lib=" />
+	<cfset variables.instance.CSSSRC = "/mapping-tag/railo/core/ajax/css/" />
 	<cfset variables.instance.LOADERSRC = "/mapping-tag/railo/core/ajax/loader/loading.gif.cfm" />
+	
+	<!--- 
+	Railo js library location 
+	--->
+	<cfset variables.instance.RAILOJSSRC = "/mapping-tag/railo/core/ajax/JSLoader.cfc?method=get&lib=" />
 	
 	<!--- Constructor --->
     <cffunction name="init" output="no" returntype="void">
@@ -33,7 +38,7 @@
 		<cfsavecontent variable="js">
 			<cfoutput>									
 				<script type="text/javascript">
-				var _cf_ajaxscriptsrc = '#arguments.scriptSrc#';
+				var _cf_ajaxscriptsrc = '#arguments.scriptsrc#';
 				var _cf_ajaxcsssrc = '#arguments.cssSrc#';
 				var _cf_loadingtexthtml = '<div style="text-align: center;"><img src="#arguments.loadersrc#"/></div>';				
 				var _cf_params = #serializeJson(arguments.params)#;
