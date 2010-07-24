@@ -22,7 +22,7 @@ ACTIONS --->
 				returnVariable="existing">
 			<cfset form.password=existing.password>
 		</cfif>
-		
+		<cfset verifiy=getForm('verify',false)>
 		<cfadmin 
 			action="updateDatasource"
 			type="#request.adminType#"
@@ -53,9 +53,15 @@ ACTIONS --->
 			allowed_revoke="#getForm('allowed_revoke',false)#"
 			allowed_create="#getForm('allowed_create',false)#"
 			allowed_grant="#getForm('allowed_grant',false)#"
+			verify="#verifiy#"
 			custom="#custom#"
 			remoteClients="#request.getRemoteClients()#">
-		<cflocation url="#request.self#?action=#url.action#" addtoken="no">
+            
+        <cfset v="">
+        <cfif verifiy>
+        	<cfset v="&verified="&form.name>
+        </cfif>
+		<cflocation url="#request.self#?action=#url.action##v#" addtoken="no">
 	</cfif>
 	<cfcatch>
 		<cfset driver.onBeforeError(cfcatch)>
@@ -68,8 +74,16 @@ ACTIONS --->
 <!--- 
 Error Output--->
 <cfset printError(error)>
+
 <cfsilent>
-<cfif structKeyExists(url,'name')>
+<cfset isInsert=structKeyExists(form,'mark')>
+<cfif isInsert>
+	<cfset actionType="create">
+	<cfset datasource=struct()>
+	<cfset datasource.type=form.type>
+	<cfset datasource.name=form.name>
+	
+<cfelse>
 	<cfset actionType="update">
 	<cfadmin 
 	action="getDatasource"
@@ -81,18 +95,13 @@ Error Output--->
 	<cfset datasource._password=datasource.password>
 	<cfset datasource.password="****************">
 	<cfset datasource.type=getType(datasource.classname,datasource.dsn)>
-<cfelse>
-	<cfset actionType="create">
-	<cfset datasource=struct()>
-	<cfset datasource.type=form.type>
-	<cfset datasource.name=form.name>
 </cfif>
 
 
 <cfset driver=createObject("component","dbdriver."&datasource.type)>
 
 
-<cfif not structKeyExists(url,'name')>
+<cfif isInsert>
 	<cfset datasource.host=driver.getValue('host')>
 	<cfset datasource.database=driver.getValue('database')>
 	<cfset datasource.port=driver.getValue('port')>
@@ -127,7 +136,7 @@ Error Output--->
 </cfsilent>
 <cfoutput>
 
-<cfif structKeyExists(url,'name')>
+<cfif actionType EQ "update">
 <i><b>Class:</b> #datasource.classname#</i><br />
 <i><b>DNS:</b> <cfif len(datasource._password)>#replace(datasource.dsnTranslated,datasource._password,datasource.password,'all')#<cfelse>#datasource.dsnTranslated#</cfif></i>
 </cfif>
@@ -145,7 +154,7 @@ Error Output--->
 <tr>
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<cfform action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.name'),de('&name=##url.name##'),de(''))#" method="post">
+<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
 <input type="hidden" name="name" value="#datasource.name#">
 <input type="hidden" name="type" value="#datasource.type#">
 
@@ -368,6 +377,16 @@ Allow --->
 </tr>
 </cfloop>
 <cfmodule template="remoteclients.cfm" colspan="2">
+<tr>
+	<td class="tblHead" colspan="2">
+    	 <table class="tbl" width="100%">
+         <tr>
+         	<td class="tblContent" bgcolor="white"><input type="checkbox" checked="checked" name="verify" value="true" /> &nbsp;# stText.Settings.verifyConnection#</td>
+         </tr>
+         </table>
+         
+    </td>
+</tr>
 <tr>
 	<td colspan="2">
 	<input type="hidden" name="run" value="create2">

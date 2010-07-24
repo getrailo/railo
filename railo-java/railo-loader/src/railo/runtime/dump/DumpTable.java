@@ -20,7 +20,7 @@ public class DumpTable implements DumpData {
 	private String height;
 	
 	
-	DumpTable(String highLightColor, String normalColor, String borderColor, String fontColor) {
+	public DumpTable(String highLightColor, String normalColor, String borderColor, String fontColor) {
 		this.highLightColor=highLightColor;
 		this.normalColor=normalColor;
 		this.borderColor=borderColor;

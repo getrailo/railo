@@ -115,8 +115,8 @@ ACTIONS --->
 				remoteClients="#request.getRemoteClients()#"
                 >
                 
-                <cfif StructKeyExists(form,"paused") and form.paused>
-    	<cfadmin 
+   <cfif StructKeyExists(form,"paused") and form.paused>
+       	<cfadmin 
                     action="schedule" 
                     type="#request.adminType#"
                     password="#session["password"&request.adminType]#"
@@ -124,6 +124,15 @@ ACTIONS --->
                     scheduleAction="pause" 
                     task="#trim(form.name)#"
                     remoteClients="#request.getRemoteClients()#">
+   <cfelse>
+    	<cfadmin 
+						action="schedule" 
+						type="#request.adminType#"
+						password="#session["password"&request.adminType]#"
+						
+						scheduleAction="resume" 
+						task="#trim(form.name)#"
+						remoteClients="#request.getRemoteClients()#">
     </cfif>
                 
 		<!--- <cflocation url="#request.self#?action=#url.action#" addtoken="no"> --->

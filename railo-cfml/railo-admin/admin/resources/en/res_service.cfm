@@ -5,9 +5,13 @@
 <cfset stText.Settings.DatasourceModify                = "Modify and add datasources">
 <cfset stText.Settings.PreserveSingleQuotes            = "Preserve single quotes">
 <cfset stText.Settings.PreserveSingleQuotesDescription = "Preserve single quotes ("") in the SQL defined with the tag cfquery">
-<cfset stText.Settings.ReadOnlyDatasources             = "Read-only datasources">
-<cfset stText.Settings.ReadOnlyDatasourcesDescription  = "Read-only datasources are generated within the Server Administrator for all web contexts and cannot be modified by the Web Administrator.">
+<cfset stText.Settings.ReadOnlyDatasources             = "Global Datasources (Datasources from Server Administrator)">
+<cfset stText.Settings.ReadOnlyDatasourcesDescription  = "These datasources have been created in the Server Administrator and are shared with ALL web contexts. You cannot modify these datasources in the Web Administrator, but you can override them by creating your own datasource with the same name.">
+
 <cfset stText.Settings.ListDatasources                 = "Datasources">
+<cfset stText.Settings.ListDatasourcesDescWeb          = "">
+<cfset stText.Settings.ListDatasourcesDescServer       = "Datasources created here are available for ALL web contexts to use. The settings for these datasources can only be modified in this Server Administrator area.">
+
 <cfset stText.Settings.DatasourceModify                = "Create new datasource">
 <cfset stText.Settings.Name                            = "Name">
 <cfset stText.Settings.Type                            = "Type">
@@ -26,6 +30,9 @@
 <cfset stText.Settings.dbPassDesc   	               = "The password for the database">
 <cfset stText.Settings.dbConnTimeout	               = "Connection timeout (in minutes)">
 <cfset stText.Settings.dbConnTimeoutDesc   	           = "Define a time in minutes for how long a connection is kept alive before it will be closed">
+
+
+<cfset stText.Settings.verifyConnection   	           = "Verify connection">
 <cfset stText.Settings.dbConnLimit="Connection limit (max)">
 <cfset stText.Settings.dbConnLimitInf="- inf -">
 <cfset stText.Settings.dbConnLimitDesc="Restricts the maximal connections at time">
@@ -53,9 +60,12 @@
 <cfset stText.services.update.exeRun= "execute update">
 <cfset stText.services.update.exeDesc= "Apply the latest patch for your version. After the update has been installed Railo will be restarted, all sessions will be cleared and you have to login again.">
 
-<cfset stText.services.update.remove= "Remove updates">
-<cfset stText.services.update.removeRun= "Remove updates">
-<cfset stText.services.update.removeDesc= "Remove all installed updates.">
+
+<cfset stText.services.update.remove="Remove installed patches">
+<cfset stText.services.update.removeDesc="Remove all installed patches or only latest.">
+<cfset stText.services.update.patch="Installed patches">
+<cfset stText.services.update.removeRun="Remove patches">
+<cfset stText.services.update.removeLatest="Remove latest patch {version}">
 
 <cfset stText.services.update.restartDesc="Restart the Railo engine. All sessions will be cleared and you will have to login again.">
 <cfset stText.services.update.restart="Restart Railo">

@@ -120,7 +120,6 @@ Error Output--->
 </span><br><br></cfoutput>
 </cfif>
 
-<!--- <cfset mappings=array(config.getCustomTagMapping())> --->
 <cfadmin 
 	action="getCustomTagMappings"
 	type="#request.adminType#"
@@ -252,6 +251,7 @@ function checkTheRadio(field) {
 
 <cfoutput>
 <h2>#stText.CustomTags.CustomtagMappings#</h2>
+#stText.CustomTags.CustomtagMappingsDesc#
 <table class="tbl" width="600">
 <tr>
 	<td colspan="5"></td>

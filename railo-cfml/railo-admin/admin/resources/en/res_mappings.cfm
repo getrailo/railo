@@ -13,6 +13,8 @@
 <cfset stText.CustomTags.PhysicalMissing = "Please enter a value for the resource (row ">
 <cfset stText.CustomTags.ArchiveMissing  = "Please enter a value for the archive name (row ">
 <cfset stText.CustomTags.CustomtagMappings="Resources">
+<cfset stText.CustomTags.CustomtagMappingsDesc="Directories that Railo checks for Custom Tags.">
+
 <cfset stText.CustomTags.CustomtagSetting="Settings">
 <cfset stText.CustomTags.customTagDeepSearch="Search subdirectories">
 <cfset stText.CustomTags.customTagDeepSearchDesc="Search for custom tags in subdirectories (not supported for archives)">

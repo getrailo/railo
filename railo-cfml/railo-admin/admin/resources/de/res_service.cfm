@@ -6,9 +6,12 @@
 
 <cfset stText.Settings.PreserveSingleQuotes            = "Single Quotes erhalten">
 <cfset stText.Settings.PreserveSingleQuotesDescription = "Erhält die einfachen Anführungszeichen (') in den SQL-Statements, die im Tag CFQuery definiert werden.">
-<cfset stText.Settings.ReadOnlyDatasources             = "Readonly Datenquellen">
-<cfset stText.Settings.ReadOnlyDatasourcesDescription  = "Readonly Datenquellen werden im 'Server Administrator' für alle Web Instanzen erstellt und können im 'Web Administrator' nicht geändert werden.">
+<cfset stText.Settings.ReadOnlyDatasources             = "Globale Datequellen (Datenquellen vom Server Administrator)">
+<cfset stText.Settings.ReadOnlyDatasourcesDescription  = "Diese Datenquellen werden im Server Administrator für alle Web Instanzen erstellt und können im Web Administrator nicht geändert werden, diese können jedoch überschrieben werden indem sie eine Datenquelle mit dem selben Namen unterhalb anlegen.">
 <cfset stText.Settings.ListDatasources                 = "Vorhandene Datenquellen">
+<cfset stText.Settings.ListDatasourcesDescWeb          = "">
+<cfset stText.Settings.ListDatasourcesDescServer       = "Datenquellen welche hier erstellt wurden, stehen allen Webkontexten zur Verfügung, jedoch kann die Konfiguration der Datenquelle nur hier geändert werden.">
+
 <cfset stText.Settings.DatasourceModify                = "Neue Datenquelle erstellen">
 <cfset stText.Settings.Name                            = "Name">
 <cfset stText.Settings.Type                            = "Typ">
@@ -28,6 +31,8 @@
 <cfset stText.Settings.dbPassDesc   	               = "Passwort für den Zugriff auf die Datenbank">
 <cfset stText.Settings.dbConnTimeout	               = "Verbindungs Timeout (in Minuten)">
 <cfset stText.Settings.dbConnTimeoutDesc   	           = "Definiert wie lange eine stehende Verbindung aufrechterhalten wird, bevor Sie beendet wird.">
+
+<cfset stText.Settings.verifyConnection   	           = "Verbindung prüfen">
 <cfset stText.Settings.dbConnLimit="Verbindungslimitierung (max)">
 <cfset stText.Settings.dbConnLimitInf="- inf -">
 <cfset stText.Settings.dbConnLimitDesc="Beschränkt die Anzahl Verbindungen die zur Datenbank aufgebaut werden.">
@@ -59,9 +64,14 @@ und Optimierungen innerhalb ihrer Version einspielen.">
 <cfset stText.services.update.restartDesc="Hier können Sie Railo neu starten. Nach erfolgtem Restart werden bestehende Sitzungen entfernt. Sie müssen sich in den Administrator erneut einloggen.">
 <cfset stText.services.update.restart="Railo neu starten">
 
-<cfset stText.services.update.remove= "Updates entfernen">
-<cfset stText.services.update.removeRun= "Updates entfernen">
-<cfset stText.services.update.removeDesc= "Entfernen Sie alle nach der Grundinstallation nachträglich installierten Updates.">
+
+<cfset stText.services.update.remove="Installierte Patches entfernen">
+<cfset stText.services.update.patch="Installierte Patches">
+<cfset stText.services.update.removeRun="Patches entfernen">
+
+
+<cfset stText.services.update.removeLatest= "Letzten Patch {version} entfernen">
+<cfset stText.services.update.removeDesc= "Entfernen Sie alle nach der Grundinstallation nachträglich installierten Patches order nur den Letzten.">
 
 
 <cfset stText.remote.urlMissing               = "Die Remote Client URL fehlt">

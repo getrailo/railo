@@ -14,7 +14,7 @@
 		<cfargument name="app" type="struct">
 		<cfargument name="req" type="struct">
 		<cfset req.note=app.note>
-        <cfset req.root="ram:///">
+        <cfset req.root="cache:///">
         <!--- create some files
 		<cfif not DirectoryExists("#req.root#sub")>
             <cffile action="write" addnewline="yes" file="ram://susi.txt" mode="777" output="Hello Susi" fixnewline="no">

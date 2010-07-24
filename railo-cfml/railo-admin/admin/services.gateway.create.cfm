@@ -15,6 +15,9 @@
         </cfif> 
     </cfloop>
 <cfelse>
+	<cfif not StructKeyExists(form,"name")>
+    	<cflocation url="#request.self#" addtoken="no">
+    </cfif>
 	<cfset driver=drivers[form.name]>
 	<cfset isNew=true>
 	<cfset entry=struct()>
@@ -22,7 +25,7 @@
 	<cfset entry.default=false>
 	<cfset entry.id=form._id>
 	<cfset entry.cfcpath=structKeyExists(driver,'getCFCPath')?driver.getCFCPath():"">
-	<cfset entry.listenercfcpath="">
+	<cfset entry.listenercfcpath=structKeyExists(driver,'getListenerPath')?driver.getListenerPath():"">
 	<cfset entry.startupMode="automatic">
 	<cfset entry.custom=struct()>
 </cfif>
@@ -70,7 +73,7 @@
                     
 		</cfcase>
 	</cfswitch>
-	<cfcatch><cfrethrow>
+	<cfcatch>
     	<cfset driver.onBeforeError(cfcatch)>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>

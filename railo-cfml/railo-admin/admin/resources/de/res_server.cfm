@@ -89,6 +89,9 @@
 <cfset stText.Scopes.ApplicationTimeout            = "Application Timeout">
 <cfset stText.Scopes.ApplicationTimeoutDescription = "Legt die Zeit fest, wie lange Railo für inaktive Applikationen den Application-Scope erhält. Diese Verhaltensweise kann von dem Tag CFApplication übersteuert werden.">
 
+<cfset stText.Scopes.ClientTimeout            = "Client Timeout">
+<cfset stText.Scopes.ApplicationTimeoutDescription = "Legt fest wielange Client Scope Daten behalten werden bevor sie gelöscht werden.">
+
 
 <cfset stText.Scopes.LocalMode="Local Scope Modus">
 <cfset stText.Scopes.LocalModeDesc="Definiert wie der Lokal Scope innerhalb einer UDF von einer Variable ohne Scope angesprochen wird.<br>
@@ -219,9 +222,15 @@ When checked, any requested files found to currently reside in the template cach
 
 
 <cfset stText.setting.templateCache="Template Cache">
-<cfset stText.setting.templateCacheClear="Template Cache leeren ( {count} Element(s) )">
+<cfset stText.setting.templateCacheClear="Template Cache leeren">
+<cfset stText.setting.templateCacheClearCount="Template Cache leeren ( {count} Element(e) )">
 <cfset stText.setting.templateCacheClearDesc="Drücken Sie den Button oberhalb um den Template Cache zu leeren.">
 
 <cfset stText.setting.queryCache="Query Cache">
-<cfset stText.setting.queryCacheClear="Query Cache leeren ( {count} Element(s) )">
+<cfset stText.setting.queryCacheClear="Query Cache leeren">
+<cfset stText.setting.queryCacheClearCount="Query Cache leeren ( {count} Element(e) )">
 <cfset stText.setting.queryCacheClearDesc="Drücken Sie den Button oberhalb um den Query Cache zu leeren.">
+
+<cfset stText.setting.componentCache="Komponentenpfad Cache">
+<cfset stText.setting.componentCacheClear="Komponentenpfad Cache leeren ( {count} Element(e) )">
+<cfset stText.setting.componentCacheClearDesc="Drücken Sie den Button oberhalb um den Komponentenpfad Cache zu leeren.">
