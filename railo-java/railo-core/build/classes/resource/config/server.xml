@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
 <!-- 
-Path placeholders:
-	{railo-web}: path to the railo web directory typical "{web-root}/WEB-INF/railo"
+Path placeholders: 
 	{railo-server}: path to the railo server directory typical where the railo.jar is located
+	{railo-config}: same as {railo-server} in server context and same as {railo-web} in web context}
 	{temp-directory}: path to the temp directory of the current user of the system
 	{home-directory}: path to the home directory of the current user of the system
 	{web-root-directory}: path to the web root
@@ -45,13 +45,15 @@ Path placeholders:
 	<!--
 		deploy-directory - directory where java classes will be deployed
 		custom-tag-directory - directory where the custom tags are
-		tld-directory / fld-directory - directory where addional Function and Tag Library Deskriptor are.
+		tld-directory / fld-directory - directory where additional Function and Tag Library Deskriptor are.
 		temp-directory - directory for temporary files (upload aso.)
 	 -->
 	<file-system  
-		fld-directory="{railo-web}/library/fld/" 
-		temp-directory="{railo-web}/temp/" 
-		tld-directory="{railo-web}/library/tld/">
+		fld-directory="{railo-config}/library/fld/" 
+		temp-directory="{railo-config}/temp/" 
+		tld-directory="{railo-config}/library/tld/"
+		function-directory="{railo-config}/library/function/"
+		tag-directory="{railo-config}/library/tag/">
 	</file-system>
 	
 	
@@ -70,7 +72,7 @@ Path placeholders:
 	</dump-writers>
 	
 	
-	<remote-clients directory="{railo-web}remote-client/" log="logs/" log-level="info"/>
+	<remote-clients directory="{railo-config}remote-client/" log="logs/" log-level="info"/>
 	
     <resources>
         <!--
@@ -138,6 +140,15 @@ Path placeholders:
     		scheme="http"
     		class="railo.commons.io.res.type.http.HTTPResourceProvider"
     		arguments="lock-timeout:10000;case-sensitive:false;"/>
+    	<!--
+        arguments:
+		lock-timeout   - 	define how long a request wait for a log
+		case-sensitive	-	is http handled case-sensitive or not
+	 	-->
+    	<resource-provider 
+    		scheme="https"
+    		class="railo.commons.io.res.type.http.HTTPSResourceProvider"
+    		arguments="lock-timeout:10000;case-sensitive:false;"/>
     	
     </resources>
 	
@@ -155,6 +166,12 @@ Path placeholders:
 			
 		merge-url-form:yes|no
 			when yes all form and url scope are synonym for both data
+		
+		client-directory-max-size
+			maximal size in bytes of the client scope directory (used for default type file)
+		
+		client-max-age
+			the max age of the client scope in days
 	-->
 	<scope 
 		cascading="standard"
@@ -165,15 +182,19 @@ Path placeholders:
 		applicationtimeout="1,0,0,0"
 		
 		requesttimeout="0,0,0,50"
-		requesttimeout-log="{railo-web}/logs/requesttimeout.log"
+		requesttimeout-log="{railo-config}/logs/requesttimeout.log"
 		
 		sessionmanagement="yes"		
 		clientmanagement="no" 
 		setclientcookies="yes" 
 		setdomaincookies="no"
+		
+		client-directory-max-size="10mb"
+		client-max-age="90"
+		
 		/>
 		
-	<mail spool-interval="5" log="{railo-web}/logs/mail.log" spool-enable="yes" timeout="30">
+	<mail spool-interval="5" log="{railo-config}/logs/mail.log" spool-enable="yes" timeout="30">
 	</mail>
 	
 	<mappings>
@@ -201,8 +222,8 @@ Path placeholders:
 			readonly="yes"
 			trusted="true"
 			virtual="/railo-context/"
-			physical="{railo-web}/context/"
-			archive="{railo-web}/context/railo-context.ra"
+			physical="{railo-config}/context/"
+			archive="{railo-config}/context/railo-context.ra"
 			primary="physical"/>
 
 	</mappings>	
@@ -210,12 +231,12 @@ Path placeholders:
 	<custom-tag>
 		<mapping
 			trusted="yes"
-			physical="{railo-web}/customtags/"/>
+			physical="{railo-config}/customtags/"/>
 	</custom-tag>
 	
-	<cfx-tags>
-		<cfx-tag type="java" name="HelloWorld" class="railo.cfx.example.HelloWorld"/>
-	</cfx-tags>
+	<ext-tags>
+		<ext-tag type="java" name="HelloWorld" class="railo.cfx.example.HelloWorld"/>
+	</ext-tags>
 	
 	<!--
 	component:
@@ -228,7 +249,8 @@ Path placeholders:
 	<component 
         base="/railo-context/Component.cfc"
 		data-member-default-access="public"
-		dump-template="/railo-context/component-dump.cfm"> 
+		dump-template="/railo-context/component-dump.cfm">
+  		<mapping physical="{railo-web}/components/" primary="physical" trusted="true"/>
 	</component>
 	
 	<!--
@@ -246,11 +268,26 @@ Path placeholders:
 		timeserver="pool.ntp.org"/>
 	
 	<!--
+	orm configuration:
+		
+		engine-class: class that implements interface railo.runtime.orm.ORMEngine
+		
+		
+		timezone: default:maschine configuration
+			the ID for a TimeZone, either an abbreviation such as "PST", 
+			a full name such as "America/Los_Angeles", or a custom ID such as "GMT-8:00". 
+		timeserver: [example: swisstime.ethz.ch] default:local time
+			dns of a ntp time server
+	-->
+	<orm
+		engine-class="railo.runtime.orm.hibernate.HibernateORMEngine"/>
+	
+	<!--
 		enable and disable debugging
 	 -->
 	<debugging
 		log-memory-usage="no"
-		memory-log="{railo-web}/logs/memory.log"
+		memory-log="{railo-config}/logs/memory.log"
 		template="/railo-context/templates/debugging/debugging.cfm"
 		debug="yes"/>
 	

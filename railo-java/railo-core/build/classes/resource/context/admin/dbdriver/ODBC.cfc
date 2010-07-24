@@ -7,12 +7,12 @@
 	
 	<cffunction name="getName" returntype="string" output="no"
 		hint="returns display name of the driver">
-		<cfreturn "JDBC-ODBC Brige (for Access,MSSQL)">
+		<cfreturn "JDBC-ODBC Bridge (for Access,MSSQL)">
 	</cffunction>
 	
 	<cffunction name="getDescription" returntype="string" output="no"
 		hint="returns description for the driver">
-		<cfreturn "JDBC-ODBC Brige Driver to access a ODBC Connection on windows">
+		<cfreturn "JDBC-ODBC Bridge Driver to access a ODBC Connection on windows">
 	</cffunction>
 	
 	<cffunction name="getFields" returntype="array" output="no"

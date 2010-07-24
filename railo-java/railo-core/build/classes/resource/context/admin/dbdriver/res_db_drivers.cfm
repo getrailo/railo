@@ -3,7 +3,7 @@
 <cfset stDBDriver.Other.dsn           = "The string needed for the datasource connection">
 <cfset stDBDriver.Other.description   = "Connect to an other JDBC Driver installed on the system">
 <cfset stDBDriver.ODBC.DatabaseName   = "The name of the ODBC-DSN defined on the system">
-<cfset stDBDriver.ODBC.description    = "JDBC-ODBC brige driver to access an ODBC connection on windows systems">
+<cfset stDBDriver.ODBC.description    = "JDBC-ODBC Bridge driver to access an ODBC connection on windows systems">
 <cfset stDBDriver.MySQL.ServerHost    = "The hostname of the MySQL database server">
 <cfset stDBDriver.MySQL.DatabaseName  = "The name of the MySQL database from the database server">
 <cfset stDBDriver.MySQL.description   = "Database driver to connect to a MySQL Database resided on a MySQL server">

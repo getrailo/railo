@@ -179,7 +179,24 @@ function RailoForms(form) {
 	prv.validate=function(el,value) {
 		var v=el.validate;
 		
-		if(v==pub.VALIDATE_NONE || value.length==0)						return;
+        
+        if(el.onvalidate) {
+			if(typeof(el.onvalidate) == "string" && typeof(eval(el.onvalidate)) == "function") {
+  				var func=eval(el.onvalidate);
+				var f=document.forms[prv.form]
+				var i=f[el.name];				
+				if(func(f,i,value));
+				else {
+					if(el.message && el.message.length>0)prv.addError(el,el.message);
+					else prv.addError(el,'value ('+value+') of field '+el.name+' has a invalid value');
+					
+				}
+			}
+			else prv.addError(el,'invalid definition of the validation function in argument onValidation, you must only define the name of the function, not a function call, example: "myValidation" not "myValidation(\'argument\')"');
+		}		
+        
+        
+		if(v==pub.VALIDATE_NONE || value.length==0)return;
 		else if(v==pub.VALIDATE_DATE) 					prv.validateDate(el,value);
 		else if(v==pub.VALIDATE_USDATE) 				prv.validateUSDate(el,value);
 		else if(v==pub.VALIDATE_EURODATE) 				prv.validateEuroDate(el,value);
@@ -199,20 +216,7 @@ function RailoForms(form) {
 		else if(v==pub.VALIDATE_CREDITCARD) 			prv.validateCreditCard(el,value);
 		else if(v==pub.VALIDATE_SOCIAL_SECURITY_NUMBER)	prv.validateSocialSecurityNumber(el,value);
 		else if(v==pub.VALIDATE_REGULAR_EXPRESSION)		prv.validateRegularExpression(el,value);
-		if(el.onvalidate && !prv.hasError()) {
-			if(typeof(el.onvalidate) == "string" && typeof(eval(el.onvalidate)) == "function") {
-  				var func=eval(el.onvalidate);
-				var f=document.forms[prv.form]
-				var i=[el.name];				
-				if(func(f,i,value))return;
-				else {
-					if(el.message && el.message.length>0)prv.addError(el,el.message);
-					else prv.addError(el,'value ('+value+') of field '+el.name+' has a invalid value');
-					return;
-				}
-			}
-			prv.addError(el,'invalid definition of the validation function in argument onValidation, you must only define the name of the function, not a function call, example: "myValidation" not "myValidation(\'argument\')"');
-		}		
+		
 	}
 	
 	/*

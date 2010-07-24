@@ -66,7 +66,7 @@
     	
     	<property name="railo.admin_source_abs" location="${railo.admin_source}"/>
     	
-    	<input message="Please enter Railo-Admin password:" addproperty="railo.password" defaultvalue="your admin password"/>
+    	<!--<input message="Please enter Railo-Admin password:" addproperty="railo.password" defaultvalue="your admin password"/>-->
 		<echo>Compiling Railo Administrator</echo>
     	<!-- please note, that you have to set the railo.admin_source location in the properties file -->
 		<get src="${railo.url}?password=${railo.password}&amp;admin_source=${railo.admin_source_abs}" verbose="on" dest="generate.html"/>

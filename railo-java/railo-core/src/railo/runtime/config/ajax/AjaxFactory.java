@@ -41,6 +41,10 @@ public class AjaxFactory {
         if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/LayoutArea.cfc",f);
         f = dir.getRealResource("Window.cfc");
         if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/Window.cfc",f);
+        f = dir.getRealResource("JavaScript.cfc");
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/JavaScript.cfc",f);
+        f = dir.getRealResource("StyleSheet.cfc");
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/StyleSheet.cfc",f);
         
         		
         // helper files
@@ -84,7 +88,7 @@ public class AjaxFactory {
         Resource jqDir = jsDir.getRealResource("jquery");
         if(!jqDir.isDirectory())jqDir.mkdirs();
         f = jqDir.getRealResource("jquery-1.4.2.js");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/js/jquery/jquery-1.3.2.js",f);        
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/js/jquery/jquery-1.4.2.js",f);        
         f = jqDir.getRealResource("jquery-ui-1.8.2.js");
         if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/js/jquery/jquery-ui-1.8.2.js",f);        
         f = jqDir.getRealResource("jquery.layout.js");
@@ -95,8 +99,8 @@ public class AjaxFactory {
         //css Railo Skin
         Resource cssDir = dir.getRealResource("css/jquery");
         if(!cssDir.isDirectory())cssDir.mkdirs();
-        f = cssDir.getRealResource("RailoSkin.cfm");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/RailoSkin.cfm",f);        
+        f = cssDir.getRealResource("RailoSkin.css.cfm");
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/RailoSkin.css.cfm",f);        
         
         //css images 
         Resource imgDir = cssDir.getRealResource("images");
@@ -110,25 +114,25 @@ public class AjaxFactory {
         f = imgDir.getRealResource("ui-bg_glass_55_fbf9ee_1x400.png.cfm");
         if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/images/ui-bg_glass_55_fbf9ee_1x400.png.cfm",f);        
         f = imgDir.getRealResource("ui-bg_glass_65_ffffff_1x400.png.cfm");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/ui-bg_glass_65_ffffff_1x400.png.cfm",f);        
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/images/ui-bg_glass_65_ffffff_1x400.png.cfm",f);        
         f = imgDir.getRealResource("ui-bg_glass_75_dadada_1x400.png.cfm");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/ui-bg_glass_75_dadada_1x400.png.cfm",f);        
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/images/ui-bg_glass_75_dadada_1x400.png.cfm",f);        
         f = imgDir.getRealResource("ui-bg_glass_75_e6e6e6_1x400.png.cfm");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/ui-bg_glass_75_e6e6e6_1x400.png.cfm",f);        
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/images/ui-bg_glass_75_e6e6e6_1x400.png.cfm",f);        
         f = imgDir.getRealResource("ui-bg_glass_95_fef1ec_1x400.png.cfm");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/ui-bg_glass_95_fef1ec_1x400.png.cfm",f);        
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/images/ui-bg_glass_95_fef1ec_1x400.png.cfm",f);        
         f = imgDir.getRealResource("ui-bg_highlight-soft_75_cccccc_1x100.png.cfm");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/ui-bg_highlight-soft_75_cccccc_1x100.png.cfm",f);        
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/images/ui-bg_highlight-soft_75_cccccc_1x100.png.cfm",f);        
         f = imgDir.getRealResource("ui-icons_222222_256x240.png.cfm");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/ui-icons_222222_256x240.png.cfm",f);        
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/images/ui-icons_222222_256x240.png.cfm",f);        
         f = imgDir.getRealResource("ui-icons_2e83ff_256x240.png.cfm");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/ui-icons_2e83ff_256x240.png.cfm",f);        
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/images/ui-icons_2e83ff_256x240.png.cfm",f);        
         f = imgDir.getRealResource("ui-icons_454545_256x240.png.cfm");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/ui-icons_454545_256x240.png.cfm",f);        
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/images/ui-icons_454545_256x240.png.cfm",f);        
         f = imgDir.getRealResource("ui-icons_888888_256x240.png.cfm");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/ui-icons_888888_256x240.png.cfm",f);        
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/images/ui-icons_888888_256x240.png.cfm",f);        
         f = imgDir.getRealResource("ui-icons_cd0a0a_256x240.png.cfm");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/ui-icons_cd0a0a_256x240.png.cfm",f);        
+        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/images/ui-icons_cd0a0a_256x240.png.cfm",f);        
        
         
         //image loader	

@@ -37,8 +37,7 @@
     
     
 	<cffunction name="onBeforeUpdate" returntype="void" output="no">
-        <cfset systemOutput(StructKeyList(form))>
-		<cfset this.drivertype=form.custom_drivertype>
+        <cfset this.drivertype=form.custom_drivertype>
 		<!---cfset StructDelete(form,'custom_drivertype')--->
 	</cffunction>
     
@@ -65,8 +64,7 @@
 	
 	<cffunction name="getDSN" returntype="string" output="no"
 		hint="return DSN">
-        <cfset systemOutput("this.dsn:"&this.dsn)>
-		<cfreturn this.dsn>
+        <cfreturn this.dsn>
 	</cffunction>
 	
 	<cffunction name="equals" returntype="string" output="no"
