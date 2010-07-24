@@ -1,6 +1,6 @@
 va specific
 *.class
-
+*.rc
 ## generic files to ignore
 *~
 *.lock
