@@ -58,7 +58,7 @@ public class ComponentLoader {
     	
     	if(isRealPath){
     		ImportDefintion impDef = config.getComponentDefaultImport();
-	    	ImportDefintion[] impDefs=pp.getImportDefintions();
+	    	ImportDefintion[] impDefs=pp==null?new ImportDefintion[0]:pp.getImportDefintions();
 	    	int i=-1;
 	    	do{
 	    		
@@ -97,7 +97,7 @@ public class ComponentLoader {
     	if(isRealPath){
 
     		ImportDefintion impDef = config.getComponentDefaultImport();
-	    	ImportDefintion[] impDefs=pp.getImportDefintions();
+	    	ImportDefintion[] impDefs=pp==null?new ImportDefintion[0]:pp.getImportDefintions();
 	    	
     		
 	    	int i=-1;

@@ -18,6 +18,7 @@ public final class Argument {
 	private static final Expression DEFAULT_TYPE_NULL = 				LitInteger.toExpr(FunctionArgumentImpl.DEFAULT_TYPE_NULL, -1);
 	private static final Expression DEFAULT_TYPE_LITERAL =				LitInteger.toExpr(FunctionArgumentImpl.DEFAULT_TYPE_LITERAL, -1);
 	private static final Expression DEFAULT_TYPE_RUNTIME_EXPRESSION =	LitInteger.toExpr(FunctionArgumentImpl.DEFAULT_TYPE_RUNTIME_EXPRESSION, -1);
+	private static final LitString RUNTIME_EXPRESSION =				(LitString) LitString.toExprString("[runtime expression]");
 	
 	
 	private ExprString name;
@@ -46,14 +47,16 @@ public final class Argument {
 		this.type=CastString.toExprString(type);
 		this.required=CastBoolean.toExprBoolean(required);
 		this.defaultValue=defaultValue;
-		this.displayName=CastString.toExprString(displayName);
-		
-		if(!(hint instanceof Literal)) {
-			this.hint=LitString.toExprString("[runtime expression]");
-		}
-		else this.hint=CastString.toExprString(hint);
+		this.displayName=litString(CastString.toExprString(displayName),RUNTIME_EXPRESSION);
+		this.hint=litString(hint, RUNTIME_EXPRESSION);
 		this.passByReference=passByReference;
 		this.meta=meta;
+	}
+
+	private LitString litString(Expression expr, LitString defaultValue) {
+		ExprString str = CastString.toExprString(expr);
+		if(str instanceof LitString) return (LitString) str;
+		return defaultValue;
 	}
 
 	/**
