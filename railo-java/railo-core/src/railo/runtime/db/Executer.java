@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.Vector;
 
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.lang.StringUtil;
 import railo.commons.math.MathUtil;
@@ -57,6 +58,7 @@ public final class Executer {
 	
 	public Query execute(PageContext pc,SQL sql,String prettySQL, int maxrows) throws PageException {
 		if(StringUtil.isEmpty(prettySQL))prettySQL=SQLPrettyfier.prettyfie(sql.getSQLString());
+		
 		ZqlParser parser = new ZqlParser(new ByteArrayInputStream(prettySQL.getBytes()));
 		Vector statements;
 		try {
@@ -217,6 +219,7 @@ public final class Executer {
 	 * @throws PageException
 	 */
 	private Object executeExp(PageContext pc,SQL sql,Query qr, ZExp exp, int row) throws PageException {
+		print.o(exp.getClass().getName());
 		if(exp instanceof ZConstant) return executeConstant(sql,qr, (ZConstant)exp, row);
 		else if(exp instanceof ZExpression)return executeExpression(pc,sql,qr, (ZExpression)exp, row);
 		throw new DatabaseException("unsupported sql statement ["+exp+"]",null,sql,null);
@@ -740,6 +743,7 @@ public final class Executer {
 	 * @throws PageException
 	 */
 	private Object executeConstant(SQL sql,Query qr, ZConstant constant, int row) throws PageException {
+		print.o(constant.getClass().getName());
 		switch(constant.getType()) {
 			case ZConstant.COLUMNNAME:		{
 			    if(constant.getValue().equals(SQLPrettyfier.PLACEHOLDER_QUESTION)) {

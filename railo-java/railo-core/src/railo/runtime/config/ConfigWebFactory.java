@@ -2660,7 +2660,7 @@ public final class ConfigWebFactory {
         	config.setErr(toPrintwriter(config,err,true));
         }
         else if(hasCS)config.setErr(configServer.getErrWriter());
-        
+       
     }
 
     private static PrintWriter toPrintwriter(ConfigImpl config, String streamtype, boolean iserror) {
