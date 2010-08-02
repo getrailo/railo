@@ -12,7 +12,7 @@ public final class ZConstant
 {
 
  public ZConstant(String s, int i) {
-	 if(s.indexOf("12:00:00")!=-1)print.ds("init:"+s);
+	 //if(s.indexOf("12:00:00")!=-1)print.ds("init:"+s);
      type_ = -1;
      val_ = null;
      val_ = new String(s);

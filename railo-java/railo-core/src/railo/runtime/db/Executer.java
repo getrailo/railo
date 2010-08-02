@@ -219,7 +219,6 @@ public final class Executer {
 	 * @throws PageException
 	 */
 	private Object executeExp(PageContext pc,SQL sql,Query qr, ZExp exp, int row) throws PageException {
-		print.o(exp.getClass().getName());
 		if(exp instanceof ZConstant) return executeConstant(sql,qr, (ZConstant)exp, row);
 		else if(exp instanceof ZExpression)return executeExpression(pc,sql,qr, (ZExpression)exp, row);
 		throw new DatabaseException("unsupported sql statement ["+exp+"]",null,sql,null);
@@ -743,7 +742,6 @@ public final class Executer {
 	 * @throws PageException
 	 */
 	private Object executeConstant(SQL sql,Query qr, ZConstant constant, int row) throws PageException {
-		print.o(constant.getClass().getName());
 		switch(constant.getType()) {
 			case ZConstant.COLUMNNAME:		{
 			    if(constant.getValue().equals(SQLPrettyfier.PLACEHOLDER_QUESTION)) {

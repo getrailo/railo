@@ -250,15 +250,15 @@ public final class HSQLDBHandler {
 					return q;
 				} 
 				catch (SQLParserException spe) {
-					railo.print.printST(spe);
+					//railo.print.printST(spe);
 					//sp
-					railo.print.out("sql parser crash at:");
-					railo.print.out("--------------------------------");
-					railo.print.out(sql.getSQLString().trim());
-					railo.print.out("--------------------------------");
-					print.e("1:"+sql.getSQLString());
+					//railo.print.out("sql parser crash at:");
+					//railo.print.out("--------------------------------");
+					//railo.print.out(sql.getSQLString().trim());
+					//railo.print.out("--------------------------------");
+					//print.e("1:"+sql.getSQLString());
 					prettySQL = SQLPrettyfier.prettyfie(sql.getSQLString());
-					print.e("2:"+prettySQL);
+					//print.e("2:"+prettySQL);
 					try {
 						Query query=executer.execute(pc,sql,prettySQL,maxrows);
 						query.setExecutionTime(stopwatch.time());

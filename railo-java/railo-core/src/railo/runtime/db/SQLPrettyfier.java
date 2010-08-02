@@ -150,9 +150,5 @@ public class SQLPrettyfier {
 		return sb.toString();
 	}
 	
-	public static void main(String[] args) {
-		print.o(prettyfie("SELECT * FROM qry WHERE  b={ts '2010-07-04 00:00:00'}"));
-	}
-	
 	
 }

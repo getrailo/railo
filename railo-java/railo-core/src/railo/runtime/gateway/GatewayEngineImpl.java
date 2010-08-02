@@ -329,7 +329,11 @@ public class GatewayEngineImpl implements GatewayEngine {
 		if(peristent) cfcs.put(requestURI+id, cfc);
 		return cfc;
 	}
-
+	
+	
+	public void clear(String cfcPath,String id)  {
+		cfcs.remove(toRequestURI(cfcPath)+id);
+	}
 
 	/**
 	 * @see org.opencfml.eventgateway.GatewayEngine#toRequestURI(java.lang.String)
