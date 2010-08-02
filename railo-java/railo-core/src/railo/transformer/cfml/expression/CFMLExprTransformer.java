@@ -852,9 +852,10 @@ public class CFMLExprTransformer implements ExprTransformer {
 			} 
 		// Dynamic
 			if((expr=dynamic(data))!=null) {
-				Expression res = newOp(data, expr);
-				if(res==expr)expr = subDynamic(data,expr);
-				else expr=res;
+				expr = newOp(data, expr);
+				//if(res==expr)
+					expr = subDynamic(data,expr);
+				//else expr=res;
 				data.mode=DYNAMIC;
 				return expr;
 			} 

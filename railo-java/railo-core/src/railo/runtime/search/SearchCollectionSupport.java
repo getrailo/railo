@@ -621,13 +621,13 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
             String custom3;
             String custom4;
             String url;
-            SearchResulItem record;
+            SearchResultItemPro record;
             SearchIndex si;
             boolean hasContextSummary=false;
             for(int y=0;y<to;y++) {
             		
                 int row=len+y+1;
-                record = records[y];
+                record = SearchResulItemImpl.toSearchResultItemPro(records[y]);
                 if(y==0)hasContextSummary=record instanceof SearchResultItemPro;
             	si=(SearchIndex)indexes.get(record.getId());
 
