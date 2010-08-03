@@ -4,6 +4,7 @@ railo-java/railo-core/dist
 railo-java/railo-core/build
 railo-java/railo-loader/bin
 railo-java/railo-loader/build
+
 railo-cfml/WEB-INF/
 .DS_Store
 **/.svn/
