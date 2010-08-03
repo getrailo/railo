@@ -3,9 +3,11 @@ package railo.runtime.sql;
 import java.util.ArrayList;
 import java.util.List;
 
+import railo.print;
 import railo.commons.lang.ParserString;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
+import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.sql.exp.Column;
 import railo.runtime.sql.exp.ColumnExpression;
@@ -16,6 +18,7 @@ import railo.runtime.sql.exp.op.Operation2;
 import railo.runtime.sql.exp.op.Operation3;
 import railo.runtime.sql.exp.op.OperationN;
 import railo.runtime.sql.exp.value.ValueBoolean;
+import railo.runtime.sql.exp.value.ValueDate;
 import railo.runtime.sql.exp.value.ValueNull;
 import railo.runtime.sql.exp.value.ValueNumber;
 import railo.runtime.sql.exp.value.ValueString;
@@ -504,6 +507,7 @@ FROM tableList
 	private Expression clip(ParserString raw) throws SQLParserException {
 		Expression exp=column(raw);
 		//if(exp==null)exp=brackedColumn(raw);
+		if(exp==null)exp=date(raw);
 		if(exp==null)exp=bracked(raw);
 		if(exp==null)exp=number(raw);
 		if(exp==null)exp=string(raw);
@@ -653,6 +657,32 @@ FROM tableList
 		
 		raw.removeSpace();
 		return new ValueString(str.toString());
+	}
+	
+private ValueDate date(ParserString raw) throws SQLParserException {
+		
+		if(!raw.isCurrent('{'))
+			return null;
+		
+		// Init Parameter
+		StringBuilder str=new StringBuilder();
+		
+		while(raw.hasNext()) {
+			raw.next();
+			if(raw.isCurrent('}'))break;
+			else {
+				str.append(raw.getCurrent());
+			}
+		}if(!raw.forwardIfCurrent('}'))
+			throw new SQLParserException("Invalid Syntax Closing [}] not found");
+		
+		raw.removeSpace();
+		try {
+			return new ValueDate("{"+str.toString()+"}");
+		} 
+		catch (PageException e) {
+			throw new SQLParserException("can't cast value [{"+str.toString()+"}] to date object");
+		}
 	}
 	
 	private String identifier(ParserString raw,RefBoolean hasBracked) throws SQLParserException {

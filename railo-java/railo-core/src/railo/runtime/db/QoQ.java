@@ -3,6 +3,7 @@ package railo.runtime.db;
 import java.util.HashMap;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.commons.math.MathUtil;
@@ -326,6 +327,7 @@ public final class QoQ {
 	 * @throws PageException
 	 */
 	private Object executeExp(PageContext pc,SQL sql,Query qr, Expression exp, int row) throws PageException {
+		//print.e("name:"+exp.getClass().getName());
 		if(exp instanceof Value) return ((Value)exp).getValue();//executeConstant(sql,qr, (Value)exp, row);
 		if(exp instanceof Column) return executeColumn(sql,qr, (Column)exp, row);
 		if(exp instanceof Operation) return executeOperation(pc,sql,qr, (Operation)exp, row);
@@ -334,6 +336,7 @@ public final class QoQ {
 	}
 	
 	private Object executeExp(PageContext pc,SQL sql,Query qr, Expression exp, int row, Object columnDefault) throws PageException {
+		//print.o(exp.getClass().getName());
 		if(exp instanceof Value) return ((Value)exp).getValue();//executeConstant(sql,qr, (Value)exp, row);
 		if(exp instanceof Column) return executeColumn(sql,qr, (Column)exp, row,columnDefault);
 		if(exp instanceof Operation) return executeOperation(pc,sql,qr, (Operation)exp, row);
@@ -731,6 +734,7 @@ public final class QoQ {
 	 * @throws PageException
 	 */
 	private int executeCompare(PageContext pc,SQL sql,Query qr, Operation2 op, int row) throws PageException {
+		//print.e(op.getLeft().getClass().getName());
 		return 
 			Operator.compare(executeExp(pc,sql,qr,op.getLeft(),row),executeExp(pc,sql,qr,op.getRight(),row));
 	}

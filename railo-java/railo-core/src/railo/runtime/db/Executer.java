@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.Vector;
 
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.lang.StringUtil;
 import railo.commons.math.MathUtil;
@@ -57,6 +58,7 @@ public final class Executer {
 	
 	public Query execute(PageContext pc,SQL sql,String prettySQL, int maxrows) throws PageException {
 		if(StringUtil.isEmpty(prettySQL))prettySQL=SQLPrettyfier.prettyfie(sql.getSQLString());
+		
 		ZqlParser parser = new ZqlParser(new ByteArrayInputStream(prettySQL.getBytes()));
 		Vector statements;
 		try {

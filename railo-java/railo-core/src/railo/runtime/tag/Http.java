@@ -38,7 +38,6 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.EncodingUtil;
 
-import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -97,6 +96,13 @@ public final class Http extends BodyTagImpl {
      * Constant value for HTTP Status Code "see other 303"
      */
     public static final int STATUS_REDIRECT_SEE_OTHER=303;
+    
+
+    public static final int STATUS_REDIRECT_TEMPORARY_REDIRECT = 307;
+
+
+    	
+    
     
 
 	private static final short METHOD_GET=0;
@@ -551,7 +557,7 @@ public final class Http extends BodyTagImpl {
 		// because commons 
 		PrintStream out = System.out;
         try {
-        	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
+        	//System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
              _doEndTag(cfhttp);
              return EVAL_PAGE;
         } 
@@ -854,7 +860,7 @@ public final class Http extends BodyTagImpl {
 		cfhttp.setEL(TEXT,Boolean.TRUE);
 	}
 
-	private static HttpMethod execute(Http http, HttpClient client, HttpMethod httpMethod, boolean redirect) throws PageException {
+	/*private static HttpMethod execute(Http http, HttpClient client, HttpMethod httpMethod, boolean redirect) throws PageException {
 		try {
 			// Execute Request
 			short count=0;
@@ -873,7 +879,7 @@ public final class Http extends BodyTagImpl {
 			throw pe;
         }
 		return httpMethod;
-	}
+	}*/
 
 	private void releaseConnection(HttpMethod httpMethod, HttpConnectionManager manager) {
 		httpMethod.releaseConnection();
@@ -882,8 +888,10 @@ public final class Http extends BodyTagImpl {
 
 	static URL locationURL(HttpMethod method) throws MalformedURLException, ExpressionException {
         Header location = method.getResponseHeader("location");
+        
         if(location==null) throw new ExpressionException("missing location header definition");
-
+        
+        
         HostConfiguration config = method.getHostConfiguration();
         URL url;
         try {
@@ -1262,7 +1270,10 @@ public final class Http extends BodyTagImpl {
     	return 
         	status==STATUS_REDIRECT_FOUND || 
         	status==STATUS_REDIRECT_MOVED_PERMANENTLY ||
-        	status==STATUS_REDIRECT_SEE_OTHER;
+        	status==STATUS_REDIRECT_SEE_OTHER ||
+        	status==STATUS_REDIRECT_TEMPORARY_REDIRECT;
+    	
+    	
     }
     
     /**
@@ -1365,16 +1376,13 @@ class Executor extends Thread {
 	
 	public void execute() throws IOException, PageException	{
 		// Execute Request 
-		httpMethod.setFollowRedirects(redirect);
-		client.executeMethod(httpMethod);
-		/*
+		
 		short count=0;
         URL lu;
         while(Http.isRedirect(client.executeMethod(httpMethod)) && redirect && count++ < Http.MAX_REDIRECT) { 
         	lu=Http.locationURL(httpMethod);
-        	print.e(lu);
         	httpMethod=Http.createMethod(http,client,lu.toExternalForm(),-1);
         }
-        */
+        
 	}
 }

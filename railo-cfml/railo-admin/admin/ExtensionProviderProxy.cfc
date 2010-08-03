@@ -46,6 +46,11 @@
     	<cfargument name="serialNumber" required="no" type="string">
     
     	<cfset cfc = createObject('webservice',this.cfcName&"?wsdl")>
+        <cftry>
         <cfreturn cfc.getDownloadDetails(type,serverId,webId,appId,serialNumber)>
+        	<cfcatch>
+            <cfreturn cfc.getDownloadDetails(type,serverId,webId,appId)>
+            </cfcatch>
+        </cftry>
     </cffunction>
 </cfcomponent>

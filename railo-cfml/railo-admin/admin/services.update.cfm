@@ -29,6 +29,7 @@
 	<cfcase value="remove">
 		<cfadmin 
 			action="removeUpdate"
+            onlyLatest="#StructKeyExists(form,'latest')#"
 			type="#request.adminType#"
 			password="#session["password"&request.adminType]#"
 			remoteClients="#request.getRemoteClients()#">
@@ -50,6 +51,12 @@ Redirtect to entry --->
 Error Output --->
 <cfset printError(error)>
 
+
+<cfadmin 
+			action="listPatches"
+			returnvariable="patches"
+            type="#request.adminType#"
+            password="#session["password"&request.adminType]#">
 
 
 <cffunction name="getAviableVersion" output="false">
@@ -263,18 +270,27 @@ run update --->
 </table>
 </cfif>
 
-
-
 <!--- 
 remove update --->
+<cfset size=arrayLen(patches)>
+<cfif size>
+
+
 <h2>#stText.services.update.remove#</h2>
+#stText.services.update.removeDesc#
 <table class="tbl" width="600">
+
 <tr>
-	<td colspan="2">#stText.services.update.removeDesc#</td>
+	<td class="tblHead" colspan="2">#stText.services.update.patch#</td>
+	
 </tr>
+
+<cfloop index="i" from="1" to="#size#">
 <tr>
-	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
+	<td class="tblContent" colspan="2">#patches[i]#</td>
+	
+</tr><cfset version=patches[i]>
+</cfloop>
 
 <cfform action="#go(url.action,"Remove")#" method="post">
 
@@ -282,9 +298,10 @@ remove update --->
 <tr>
 	<td colspan="2">
 		<input type="submit" class="submit" name="mainAction" value="#stText.services.update.removeRun#">
+		<input type="submit" class="submit" name="latest" value="#replace(stText.services.update.removeLatest,'{version}',version)#">
 	</td>
 </tr>
 </cfform>
 </table>
-
+</cfif>
 </cfoutput>

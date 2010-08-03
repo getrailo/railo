@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/xml
+END
+XmlChildPos.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/xml/XmlChildPos.java
+END
+XmlSearch.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/railo/runtime/functions/xml/XmlSearch.java
+END
+GetSOAPResponseHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/xml/GetSOAPResponseHeader.java
+END
+GetSOAPRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/xml/GetSOAPRequest.java
+END
+XmlValidate.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/xml/XmlValidate.java
+END
+XmlParse.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/xml/XmlParse.java
+END
+GetSOAPRequestHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/xml/GetSOAPRequestHeader.java
+END
+XmlGetNodeType.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/xml/XmlGetNodeType.java
+END
+XmlElemNew.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/xml/XmlElemNew.java
+END
+XmlNew.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/xml/XmlNew.java
+END
+HtmlParse.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/xml/HtmlParse.java
+END
+XmlTransform.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/xml/XmlTransform.java
+END
+GetSOAPResponse.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/xml/GetSOAPResponse.java
+END

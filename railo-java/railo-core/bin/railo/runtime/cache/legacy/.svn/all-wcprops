@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/cache/legacy
+END
+CacheEntry.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/cache/legacy/CacheEntry.java
+END
+MetaData.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/cache/legacy/MetaData.java
+END
+FileCacheEntry.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/cache/legacy/FileCacheEntry.java
+END
+CacheWriter.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/cache/legacy/CacheWriter.java
+END
+CacheItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/cache/legacy/CacheItem.java
+END

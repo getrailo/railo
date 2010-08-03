@@ -180,6 +180,8 @@ public interface Cache {
 	/**
 	 * removes the cache coplitly
 	 */
-	// FUTURE public void remove() throws IOException;
+	// FUTURE public void remove() throws IOException; or better clear()
+	
+	// FUTURE public void verify() throws IOException;
 
 }

@@ -2,6 +2,7 @@ package railo.runtime.db;
 
 import java.util.Locale;
 
+import railo.print;
 import railo.commons.lang.ParserString;
 import railo.runtime.exp.PageException;
 import railo.runtime.format.DateFormat;
@@ -82,7 +83,7 @@ public class SQLPrettyfier {
 							sb.append('\'');
 		        			sb.append(new DateFormat(Locale.US).format(d,"yyyy-mm-dd"));
 		        			sb.append(' ');
-		        			sb.append(new TimeFormat(Locale.US).format(d,"hh:mm:ss"));
+		        			sb.append(new TimeFormat(Locale.US).format(d,"HH:mm:ss"));
 		        			sb.append('\'');
 		        			ps.next();
 		        			continue outer;
@@ -148,5 +149,6 @@ public class SQLPrettyfier {
 		//print.err("---------------------------------------------------------------------------------");
 		return sb.toString();
 	}
+	
 	
 }

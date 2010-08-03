@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import railo.print;
 import railo.runtime.functions.system.CFFunction;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeException;
@@ -80,7 +81,7 @@ public final class Function extends EvaluatorSupport {
         	Attribute attr;
         	while(it.hasNext()) {
         		attr=(Attribute) attrs.get(it.next());
-        		checkAttributeValue(attr);
+        		checkAttributeValue(tag,attr);
         	}
         //}
         
@@ -118,9 +119,9 @@ public final class Function extends EvaluatorSupport {
 		}
 	}
 
-	private void checkAttributeValue(Attribute attr) throws EvaluatorException {
-        if(!(attr.getValue() instanceof Literal))
-            throw new EvaluatorException("value of attribute ["+attr.getName()+"] must have a literal/constant value");
+	private void checkAttributeValue(Tag tag, Attribute attr) throws EvaluatorException {
+		if(!(attr.getValue() instanceof Literal))
+			throw new EvaluatorException("Attribute ["+attr.getName()+"] of the Tag ["+tag.getFullname()+"] must be a literal/constant value");
         
     }
 }

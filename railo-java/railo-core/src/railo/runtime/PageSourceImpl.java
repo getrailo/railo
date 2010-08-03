@@ -286,7 +286,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
             	clazz = cl.loadClass(getClazz(),barr);
 				
 			} catch (Throwable t) {
-				//t.printStackTrace();
+				t.printStackTrace();
 				clazz = cl.loadClass(getClazz(),barr);
 			}
 			return  newInstance(clazz);

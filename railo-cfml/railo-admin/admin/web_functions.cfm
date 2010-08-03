@@ -11,11 +11,11 @@ function printError(error,boolean longversion=false) {
 
 	
 
-	if(error.message NEQ "") {
+	if(StructKeyExists(arguments.error,'message') and arguments.error.message NEQ "") {
 		writeOutput('<span class="CheckError">');
-		writeOutput(br(error.message));
+		writeOutput(br(arguments.error.message));
 		writeOutput('<br>');
-		writeOutput(br(error.detail));
+		writeOutput(br(arguments.error.detail));
 		
 		if(longversion) {
 			if(StructKeyExists(error,"TagContext")){
@@ -82,8 +82,8 @@ function toArrayFromForm(fieldName) {
 function queryRow2Struct(query,row) {
 	var sct=struct();
 	var columns=listToArray(query.columnlist);
-	for(var key in columns) {
-		sct[columns[key]]=query[columns[key]][row];
+	for(var el in columns) {
+		sct[el]=query[el][row];
 	}
 	return sct;
 }

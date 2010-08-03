@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.db.DBUtil;
 import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
@@ -255,7 +256,9 @@ public final class HSQLDBHandler {
 					//railo.print.out("--------------------------------");
 					//railo.print.out(sql.getSQLString().trim());
 					//railo.print.out("--------------------------------");
+					//print.e("1:"+sql.getSQLString());
 					prettySQL = SQLPrettyfier.prettyfie(sql.getSQLString());
+					//print.e("2:"+prettySQL);
 					try {
 						Query query=executer.execute(pc,sql,prettySQL,maxrows);
 						query.setExecutionTime(stopwatch.time());

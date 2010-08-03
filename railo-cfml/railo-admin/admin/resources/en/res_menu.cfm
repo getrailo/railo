@@ -5,7 +5,6 @@
 			children:array(
 				struct(action:"cache",label:"Performance/Caching"),
 				struct(action:"regional",label:"Regional"),
-				struct(action:"component",label:"Component"),
 				struct(action:"charset",label:"Charset"),
 				struct(action:"scope",label:"Scope"),
 				struct(action:"application",label:"Application"),
@@ -16,10 +15,12 @@
 		struct(
 			action:"services",label:"Services",
 			children:array(
+				struct(action:"gateway",label:"Event Gateway (Alpha)"),
 				struct(action:"cache",label:"Cache (Beta)"),
 				struct(action:"datasource",label:"Datasource"),
 				//struct(action:"gateway",label:"Gateway (Beta)"),
 				struct(action:"search",label:"Search",hidden: request.adminType NEQ "web"),
+				//struct(action:"orm",label:"ORM (Alpha)"),
 				struct(action:"mail",label:"Mail"),
 				struct(action:"tasks",label:"Tasks",xhidden: server.ColdFusion.ProductLevel eq "community" or server.ColdFusion.ProductLevel eq "professional"),
 				//struct(action:"video",label:"Video",hidden:  	 server.ColdFusion.ProductLevel eq "community"),
@@ -47,6 +48,7 @@
 			action:"resources",label:"Archives &amp; Resources",
 			children:array(
 				struct(action:"mappings",label:"Mappings"),
+				struct(action:"component",label:"Component"),
 				struct(action:"customtags",label:"Custom tags"),
 				struct(action:"cfx_tags",label:"CFX tags")
 			)

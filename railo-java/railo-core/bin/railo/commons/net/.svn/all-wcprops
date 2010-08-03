@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/commons/net
+END
+URLEncoder.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/net/URLEncoder.java
+END
+ResourcePartSource.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/net/ResourcePartSource.java
+END
+HTTPUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/commons/net/HTTPUtil.java
+END
+EmptyRequestEntity.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/net/EmptyRequestEntity.java
+END
+URLDecoder.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/commons/net/URLDecoder.java
+END
+URLItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/railo/!svn/ver/99/trunk/railo-java/railo-core/src/railo/commons/net/URLItem.java
+END
+TemporaryStreamRequestEntity.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/net/TemporaryStreamRequestEntity.java
+END

@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/debug
+END
+QueryEntryComparator.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/debug/QueryEntryComparator.java
+END
+DebugEntryImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/debug/DebugEntryImpl.java
+END
+QueryEntryImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/debug/QueryEntryImpl.java
+END
+DebugEntryComparator.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/debug/DebugEntryComparator.java
+END
+DebugPageImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/debug/DebugPageImpl.java
+END
+DebugTraceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/debug/DebugTraceImpl.java
+END
+DebugTimerImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/debug/DebugTimerImpl.java
+END
+DebuggerImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/railo/!svn/ver/55/trunk/railo-java/railo-core/src/railo/runtime/debug/DebuggerImpl.java
+END

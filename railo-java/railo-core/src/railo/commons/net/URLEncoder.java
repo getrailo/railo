@@ -2,6 +2,8 @@ package railo.commons.net;
 
 import java.io.UnsupportedEncodingException;
 
+import railo.commons.lang.StringUtil;
+
 /**
  * Utility class for HTML form encoding. This class contains static methods
  * for converting a String to the <CODE>application/x-www-form-urlencoded</CODE> MIME
@@ -89,4 +91,57 @@ public class URLEncoder {
     public static String encode(String s, String enc) throws UnsupportedEncodingException {
     	return java.net.URLEncoder.encode(s, enc);
     }
+    
+    
+    // Only alphanumerics [0-9a-zA-Z], the special characters ""
+    public static boolean needEncoding(String str){
+    	if(StringUtil.isEmpty(str,false)) return false;
+    	
+    	int len=str.length();
+    	char c;
+    	for(int i=0;i<len;i++){
+    		c=str.charAt(i);
+    		if(c >='0' && c <= '9') continue;
+    		if(c >='a' && c <= 'z') continue;
+    		if(c >='A' && c <= 'Z') continue;
+    		
+    		// _-.*
+    		if(c =='-') continue;
+    		if(c =='_') continue;
+    		if(c =='.') continue;
+    		if(c =='*') continue;
+    		if(c =='+') continue;
+    		/*
+    		if(c =='$') continue;
+    		if(c =='+') continue;
+    		if(c =='!') continue;
+    		if(c =='\'') continue;
+    		if(c =='(') continue;
+    		if(c ==')') continue;
+    		if(c ==',') continue;
+    		*/
+    		//  # % &  / : ; = ? @ [ ]
+    		
+    		// [A-Z, a-z], Ziffern [0-9] und
+    		// - _ . ~
+
+    		if(c =='%') {
+    			if(i+2>=len) return true;
+    			try{
+    				Integer.parseInt(str.substring(i+1,i+3),16);
+    			}
+    			catch(NumberFormatException nfe){
+    				return true;
+    			}
+    			i+=3;
+    			continue;
+    		}
+    		return true;
+    	}
+    	
+    	
+    	
+    	return false;
+    }
+    
 }

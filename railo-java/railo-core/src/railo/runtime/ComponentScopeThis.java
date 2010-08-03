@@ -7,6 +7,7 @@ import railo.runtime.component.Member;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -74,12 +75,32 @@ public final class ComponentScopeThis extends StructSupport implements Component
     public String[] keysAsString() {
         Set keySet = component.keySet(access);
         keySet.add("this");
-        return (String[]) keySet.toArray(new String[keySet.size()]);
+        String[] arr = new String[keySet.size()];
+        Iterator it = keySet.iterator();
+        
+        int index=0;
+        while(it.hasNext()){
+        	arr[index++]=Caster.toString(it.next(),null);
+        }
+        
+        return arr;
     }
 
     public Collection.Key[] keys() {
-    	return StructUtil.toCollectionKeys(keysAsString());
+    	Set keySet = component.keySet(access);
+        keySet.add("this");
+        Collection.Key[] arr = new Collection.Key[keySet.size()];
+        Iterator it = keySet.iterator();
+        
+        int index=0;
+        while(it.hasNext()){
+        	arr[index++]=KeyImpl.toKey(it.next(),null);
+        }
+        return arr;
     }
+    
+    
+    
 
 	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)

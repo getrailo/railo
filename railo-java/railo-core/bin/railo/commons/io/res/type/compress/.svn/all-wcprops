@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/commons/io/res/type/compress
+END
+CompressResource.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/type/compress/CompressResource.java
+END
+CompressOutputStreamSynchronizer.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/type/compress/CompressOutputStreamSynchronizer.java
+END
+Compress.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/80/trunk/railo-java/railo-core/src/railo/commons/io/res/type/compress/Compress.java
+END
+CompressResourceProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/repos/railo/!svn/ver/43/trunk/railo-java/railo-core/src/railo/commons/io/res/type/compress/CompressResourceProvider.java
+END

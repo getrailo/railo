@@ -169,4 +169,7 @@ public class SearchResulItemImpl implements SearchResultItemPro {
 	public String getContextSummary() {
 		return contextSummary;
 	}
+	public static SearchResultItemPro toSearchResultItemPro(SearchResulItem item) {
+		return (SearchResultItemPro) item;
+	}
 }

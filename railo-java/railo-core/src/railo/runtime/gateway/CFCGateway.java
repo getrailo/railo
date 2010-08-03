@@ -68,8 +68,10 @@ public class CFCGateway implements Gateway {
 		try{
 			boolean has=callOneWay("restart",args);
 			if(!has){
-				if(callOneWay("stop",args))
+				if(callOneWay("stop",args)){
+					//engine.clear(cfcPath,id);
 					callOneWay("start",args);
+				}
 			}
 		}
 		catch(PageException pe){ 
@@ -106,10 +108,12 @@ public class CFCGateway implements Gateway {
 		state=STOPPING;
 		try{
 			callOneWay("stop",args);
+			//engine.clear(cfcPath,id);
 			state=STOPPED;
 		}
 		catch(PageException pe){
 			state=FAILED;
+			//engine.clear(cfcPath,id);
 			throw new PageGatewayException(pe);
 		}
 	}
@@ -162,7 +166,7 @@ public class CFCGateway implements Gateway {
 	private Object callEL(String methodName,Struct arguments, Object defaultValue)  {
 		return engine.callEL(cfcPath,id, methodName, arguments, true, defaultValue);
 	}
-	
+
 	private boolean callOneWay(String methodName,Struct arguments) throws PageException {
 		return engine.callOneWay(cfcPath,id, methodName, arguments, true);
 	}

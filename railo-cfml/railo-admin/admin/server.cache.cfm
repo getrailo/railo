@@ -14,12 +14,21 @@ Defaults --->
 <cfparam name="url.action2" default="list">
 <cfparam name="form.mainAction" default="none">
 <cfparam name="form.subAction" default="none">
-<cfobjectcache action="size" result="qrySize">
+<cftry>
+	<cfobjectcache action="size" result="qrySize">
+    <cfcatch>
+    	<cfset qrySize=-1>
+    </cfcatch>
+</cftry>
 
+<cfset btnClearTemplateCache=replace(stText.setting.templateCacheClearCount,'{count}',arrayLen(pagePoolList()))>
 
+<cfset btnClearQueryCache=stText.setting.queryCacheClear>
+<cfif qrySize GTE 0>
+	<cfset btnClearQueryCache=replace(stText.setting.queryCacheClearCount,'{count}',qrySize)>
+</cfif>
 
-<cfset btnClearTemplateCache=replace(stText.setting.templateCacheClear,'{count}',arrayLen(pagePoolList()))>
-<cfset btnClearQueryCache=replace(stText.setting.queryCacheClear,'{count}',qrySize)>
+<cfset btnClearComponentCache=replace(stText.setting.componentCacheClear,'{count}',structCount(componentCacheList()))>
 
 
 
@@ -27,7 +36,10 @@ Defaults --->
 <cftry>
 	<cfswitch expression="#form.mainAction#">
 	
-		<cfcase value="#btnClearTemplateCache#">
+		<cfcase value="#btnClearComponentCache#">
+			<cfset componentCacheClear()>
+		</cfcase>
+        <cfcase value="#btnClearTemplateCache#">
 			<cfset pagePoolClear()>
 		</cfcase>
         <cfcase value="#btnClearQueryCache#">
@@ -140,6 +152,15 @@ Create Datasource --->
 	<td class="tblContent" style="padding:10px">
         <input class="submit" type="submit" class="submit" name="mainAction" value="#btnClearQueryCache#">
         <br /><span class="comment">#stText.setting.queryCacheClearDesc#</span>
+	</td>
+</tr>
+
+<!--- Component Cache --->
+<tr>
+	<td class="tblHead" width="150">#stText.setting.componentCache#</td>
+	<td class="tblContent" style="padding:10px">
+        <input class="submit" type="submit" class="submit" name="mainAction" value="#btnClearComponentCache#">
+        <br /><span class="comment">#stText.setting.componentCacheClearDesc#</span>
 	</td>
 </tr>
 

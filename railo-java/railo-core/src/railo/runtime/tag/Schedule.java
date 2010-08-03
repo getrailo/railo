@@ -8,6 +8,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.net.HTTPUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
@@ -504,7 +505,7 @@ public final class Schedule extends TagImpl {
 	            query.setAt("enddate",row,task.getEndDate());
 	            query.setAt("endtime",row,task.getEndTime());
 	            query.setAt("url",row,printUrl(task.getUrl()));
-	            query.setAt("port",row,Caster.toString(task.getUrl().getPort()));
+	            query.setAt("port",row,Caster.toString(HTTPUtil.getPort(task.getUrl())));
 	            query.setAt("interval",row,task.getStringInterval());
 	            query.setAt("timeout",row,Caster.toString(task.getTimeout()/1000));
 	            query.setAt("valid",row,Caster.toString(task.isValid()));

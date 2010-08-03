@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -791,7 +792,8 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		if(data.ep==null) return null;
 		
 		if(data.cfml.forwardIfCurrent(type)){
-			if(!data.cfml.isCurrent(' ') && (hasBody && !data.cfml.isCurrent('{'))){
+			boolean isValid=(data.cfml.isCurrent(' ') || (hasBody && data.cfml.isCurrent('{')));
+			if(!isValid){
 				data.cfml.setPos(data.cfml.getPos()-type.length());
 				return null;
 			}

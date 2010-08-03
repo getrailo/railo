@@ -1,0 +1,197 @@
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime
+END
+DayOfYear.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/DayOfYear.java
+END
+GetTimeZone.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/GetTimeZone.java
+END
+CreateODBCDateTime.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/CreateODBCDateTime.java
+END
+Quarter.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/Quarter.java
+END
+Hour.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/Hour.java
+END
+DatePart.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/97/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/DatePart.java
+END
+CreateODBCDate.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/CreateODBCDate.java
+END
+CreateODBCTime.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/CreateODBCTime.java
+END
+Year.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/Year.java
+END
+FirstDayOfMonth.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/FirstDayOfMonth.java
+END
+Day.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/Day.java
+END
+GetHttpTimeString.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/repos/railo/!svn/ver/60/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/GetHttpTimeString.java
+END
+DaysInYear.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/DaysInYear.java
+END
+NowServer.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/NowServer.java
+END
+CreateDateTime.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/CreateDateTime.java
+END
+Now.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/Now.java
+END
+Minute.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/Minute.java
+END
+CreateDate.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/CreateDate.java
+END
+CreateTime.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/CreateTime.java
+END
+DayOfWeek.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/DayOfWeek.java
+END
+DateConvert.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/DateConvert.java
+END
+DaysInMonth.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/DaysInMonth.java
+END
+MilliSecond.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/MilliSecond.java
+END
+Month.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/Month.java
+END
+SetTimeZone.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/SetTimeZone.java
+END
+DateCompare.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/DateCompare.java
+END
+Beat.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/Beat.java
+END
+Week.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/Week.java
+END
+Second.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/railo/!svn/ver/62/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/Second.java
+END
+CreateTimeSpan.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/repos/railo/!svn/ver/45/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/CreateTimeSpan.java
+END
+DateDiff.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/DateDiff.java
+END
+DateAdd.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/railo/!svn/ver/104/trunk/railo-java/railo-core/src/railo/runtime/functions/dateTime/DateAdd.java
+END

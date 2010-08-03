@@ -175,7 +175,9 @@ public final class HTTPUtil {
         		res.append("/");
         		res.append(escapeQSValue(str));
         	}
+        	if(StringUtil.endsWith(path, '/')) res.append('/');      		
         	path=res.toString();
+        	
         }
         
         // decode query	
@@ -221,17 +223,16 @@ public final class HTTPUtil {
     
     
     private static Object escapeQSValue(String str) {
+    	if(!URLEncoder.needEncoding(str)) return str;
+    	
     	Config config = ThreadLocalPageContext.getConfig();
     	if(config!=null){
     		try {
-    			str=URLDecoder.decode(str,config.getWebCharset());
-				return URLEncoder.encode(str,config.getWebCharset());
-			} catch (UnsupportedEncodingException e) {}
+    			return URLEncoder.encode(str,config.getWebCharset());
+    		} 
+    		catch (UnsupportedEncodingException e) {}
     	}
-    	str=URLDecoder.decode(str);
     	return URLEncoder.encode(str);
-    	//if(str.indexOf('=')!=-1)str=StringUtil.replace(str, "=", "%3D", false);
-    	//return str;
 	}
 
 	public static HttpMethod put(URL url, String username, String password, int timeout, 
@@ -534,7 +535,14 @@ public final class HTTPUtil {
         }
        return res.toString();		       
     }
-	
+
+
+	public static int getPort(URL url) {
+		if(url.getPort()!=-1) return url.getPort();
+		if("https".equalsIgnoreCase(url.getProtocol()))
+			return 443;
+		return 80;
+	}
 	
 	
 }

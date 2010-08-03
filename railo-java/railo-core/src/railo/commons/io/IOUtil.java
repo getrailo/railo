@@ -871,6 +871,21 @@ public final class IOUtil {
         }
     }
     
+
+    public static String getMymeType(File file, String defaultValue) {
+        PrintStream out = System.out;
+        try {
+        	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
+            return Magic.getMagicMatch(file,false).getMimeType();
+        }
+        catch (Exception e) {
+            return defaultValue;
+        }
+        finally {
+        	System.setOut(out);
+        }
+    }
+    
     /**
      * return the mime type of a file, dont check extension
      * @param barr
@@ -879,7 +894,7 @@ public final class IOUtil {
      */
     public static String getMymeType(InputStream is, String defaultValue) {
         try {
-			return getMymeType(IOUtil.toBytesMax(is,1000000), defaultValue);
+			return getMymeType(IOUtil.toBytesMax(is,1000), defaultValue);
 		} catch (IOException e) {
 			return defaultValue;
 		}
@@ -892,10 +907,12 @@ public final class IOUtil {
      * @return mime type of the file
      */
     public static String getMymeType(Resource res, String defaultValue) {
-        InputStream is = null;
+        if(res instanceof File)
+        	return getMymeType((File)res, defaultValue);
+    	InputStream is = null;
     	try {
     		is = res.getInputStream();
-			return getMymeType(IOUtil.toBytesMax(is,1000000), defaultValue);
+			return getMymeType(IOUtil.toBytesMax(is,1000), defaultValue);
 		} 
     	catch (IOException e) {
 			return defaultValue;

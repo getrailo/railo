@@ -1668,7 +1668,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 						pe=e;
 					}
 				}
-				forceWrite(getConfig().getDefaultDumpWriter().toString(this,pe.toDumpData(this, 9999,DumpUtil.toDumpProperties()),true));
+				if(!(pe instanceof Abort))forceWrite(getConfig().getDefaultDumpWriter().toString(this,pe.toDumpData(this, 9999,DumpUtil.toDumpProperties()),true));
 			} 
 			catch (Exception e) { 
 			}

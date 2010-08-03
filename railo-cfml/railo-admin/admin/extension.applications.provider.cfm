@@ -1,5 +1,5 @@
 
-<cfset data=getProviderData(hashProvider,true)>
+<cfset data=getProviderData(url.hashProvider,true)>
 <cfset info=data.info>
 
 
@@ -11,7 +11,7 @@
     <td colspan="2">#info.description#<br /><br /></td>
 </tr>
 <tr>
-    <td><img src="#info.image#" /></td>
+    <td><cfif structKeyExists(info,'image')><img src="#info.image#" /></cfif></td>
     <td valign="top" align="right">
         
         <table class="tbl" width="300">
