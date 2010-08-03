@@ -1,7 +1,7 @@
-railo-java/railo-core/bin/
+railo-java/railo-core/bin
 railo-java/railo-loader/bin/
-railo-java/railo-core/dist/*.*
-railo-java/railo-core/build/*.*
+railo-java/railo-core/dist
+railo-java/railo-core/build
 railo-cfml/WEB-INF/
 .DS_Store
 railo-cfml/.DS_Store
