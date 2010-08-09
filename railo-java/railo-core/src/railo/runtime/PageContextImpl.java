@@ -1919,6 +1919,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public void clear() {
 		try {
+			//print.o(getOut().getClass().getName());
 			getOut().clear();
 		} catch (IOException e) {}
 	}

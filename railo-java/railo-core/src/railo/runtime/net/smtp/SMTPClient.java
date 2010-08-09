@@ -661,7 +661,6 @@ public final class SMTPClient implements Serializable  {
 		try {
 
         	Proxy.start(proxyData);
-		
 		LogAndSource log = config.getMailLogger();
 		// Server
         Server[] servers = config.getMailServers();
@@ -699,21 +698,13 @@ public final class SMTPClient implements Serializable  {
 			//int _port;
 			
 			// username/password
-			/*if(username!=null && username.length()>0) {
-				_username=username;
-				_password=password;
-			}
-			else */
+			
 			if(server.hasAuthentication()) {
 				_username=server.getUsername();
 				_password=server.getPassword();
 			}
 			
-			/*
-			if(port>0)_port=port;
-			else if(server.getPort()>0)_port=server.getPort();
-			else _port=PORT;
-			*/
+			
 			// tls
 			if(tls!=TLS_NONE)_tls=tls==TLS_YES;
 			else _tls=((ServerImpl)server).isTLS();
@@ -733,11 +724,11 @@ public final class SMTPClient implements Serializable  {
 					log.error("mail",LogUtil.toMessage(e));
 					throw new MailException(e.getMessage());
 				}
-				
-	            try {
+				try {
 	            	Transport tr = msgAsess.session.getTransport("smtp");
             		SMTPSender sender=new SMTPSender(LOCK,tr,msgAsess.message,server.getHostName(),server.getPort(),_username,_password);
             		sender.start();
+            		
             		LOCK.wait(timeout);
                 	if(!sender.hasSended()) {
                 		try{
@@ -748,6 +739,7 @@ public final class SMTPClient implements Serializable  {
                 		throw new MessagingException("timeout occurred after "+(timeout/1000)+" seconds while sending mail message");
                 	}
                 	clean();
+                	
 	            	log.info("mail","send mail");
 					break;
 				} 

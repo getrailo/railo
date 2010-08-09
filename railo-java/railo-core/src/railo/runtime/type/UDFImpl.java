@@ -271,25 +271,40 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
     	//print.out(values.size());
     	Object value;
     	Collection.Key name;
-		for(int i=0;i<funcArgs.length;i++) {
+		
+    	
+    	
+    	for(int i=0;i<funcArgs.length;i++) {
 			// argument defined
 			name=funcArgs[i].getName();
 			value=values.removeEL(name); 
 			if(value!=null) {
 				newArgs.set(name,castToAndClone(funcArgs[i], value,i+1));
+				continue;
 			}
-			// argument not defined, bot also not required
-			else {
-				Object defaultValue=getDefaultValue(pageContext,i);//funcArgs[i].getDefaultValue();
-				if(defaultValue==null) { 
-					if(funcArgs[i].isRequired()) {
-						throw new ExpressionException("The parameter "+funcArgs[i].getName()+" to function "+getFunctionName()+" is required but was not passed in.");
-					}
-					newArgs.set(name,ArgumentPro.NULL);
+			/*
+			// numeric key
+			value=values.removeEL(ArgumentIntKey.init(i+1)); 
+			if(value!=null) {
+				newArgs.set(name,castToAndClone(funcArgs[i], value,i+1));
+				continue;
+			}
+			*/
+			// default argument or exception
+			//else {
+			Object defaultValue=getDefaultValue(pageContext,i);//funcArgs[i].getDefaultValue();
+			if(defaultValue==null) { 
+				if(funcArgs[i].isRequired()) {
+					throw new ExpressionException("The parameter "+funcArgs[i].getName()+" to function "+getFunctionName()+" is required but was not passed in.");
 				}
-				else newArgs.set(name,castTo(funcArgs[i],defaultValue,i+1));
+				newArgs.set(name,ArgumentPro.NULL);
 			}
+			else newArgs.set(name,castTo(funcArgs[i],defaultValue,i+1));
+			//}
+				
 		}
+		
+		
 		Collection.Key[] arr=values.keys();
 		for(int i=0;i<arr.length;i++) {
 			newArgs.set(arr[i],values.get(arr[i],null));
