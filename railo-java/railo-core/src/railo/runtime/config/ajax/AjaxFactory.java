@@ -98,7 +98,7 @@ public class AjaxFactory {
         f = cssDir.getRealResource("RailoSkin.cfm");
         if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/railo/core/ajax/css/jquery/RailoSkin.cfm",f);        
         
-        //css images 
+        //css images
         Resource imgDir = cssDir.getRealResource("images");
         if(!imgDir.isDirectory())imgDir.mkdirs();
         f = imgDir.getRealResource("ui-anim_basic_16x16.gif.cfm");
