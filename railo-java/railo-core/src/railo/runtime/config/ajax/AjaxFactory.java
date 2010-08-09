@@ -41,10 +41,11 @@ public static void deployTags(Resource dir, boolean doNew) {
         if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/LayoutArea.cfc",f);
         f = dir.getRealResource("Window.cfc");
         if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/Window.cfc",f);
-        f = dir.getRealResource("JavaScript.cfc");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/JavaScript.cfc",f);
-        f = dir.getRealResource("StyleSheet.cfc");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/StyleSheet.cfc",f);
+        
+        //f = dir.getRealResource("JavaScript.cfc");
+        //if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/JavaScript.cfc",f);
+        //f = dir.getRealResource("StyleSheet.cfc");
+        //if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/StyleSheet.cfc",f);
         
         
         // helper files
