@@ -20,7 +20,7 @@
     	<cfreturn "">
     </cffunction>
 	<cffunction name="getCFCPath" returntype="string">
-    	<cfreturn "railo.extension.gateway.DummyGateway">
+    	<cfreturn "railo.extension.gateway.DirectoryWatcher">
     </cffunction>
     
 	<cffunction name="getLabel" returntype="string" output="no">
@@ -35,18 +35,28 @@
 		<cfargument name="startupMode" required="true" type="string">
 		<cfargument name="custom" required="true" type="struct">
         
+        <!--- directory --->
         <cfif not DirectoryExists(custom.directory)>
         	<cfthrow message="directory [#custom.directory#] does not exist">
         </cfif>
+        
+        <!--- interval --->
         <cfif not IsNumeric(custom.interval)>
         	<cfthrow message="interval [#custom.interval#] is not a numeric value">
+        <cfelseif custom.interval LT 1>
+        	<cfthrow message="interval [#custom.interval#] must be a positive number greater than 0">
         </cfif>
+        
+        
         
 	</cffunction>
     
     
 	<cffunction name="getListenerCfcMode" returntype="string" output="no">
-		<cfreturn "none">
+		<cfreturn "required">
+	</cffunction>
+	<cffunction name="getListenerPath" returntype="string" output="no">
+		<cfreturn "railo.extension.gateway.DirectoryWatcherListener">
 	</cffunction>
 </cfcomponent>
 

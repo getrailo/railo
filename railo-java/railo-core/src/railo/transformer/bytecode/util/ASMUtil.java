@@ -27,11 +27,16 @@ import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Statement;
+import railo.transformer.bytecode.cast.CastBoolean;
+import railo.transformer.bytecode.cast.CastDouble;
+import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ExprDouble;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableString;
+import railo.transformer.bytecode.literal.LitBoolean;
+import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.statement.PrintOut;
@@ -46,6 +51,14 @@ public final class ASMUtil {
 
 	private static final int VERSION_2=1;
 	private static final int VERSION_3=2;
+
+	public static final short TYPE_ALL=0;
+	public static final short TYPE_BOOLEAN=1;
+	public static final short TYPE_NUMERIC=2;
+	public static final short TYPE_STRING=4;
+	
+	
+	
 	
 	private static int version=0;
 	
@@ -724,6 +737,40 @@ public final class ASMUtil {
 			s=p;
 		}
 		
+		return true;
+	}
+
+
+	
+	
+	public static boolean isLiteralAttribute(Tag tag, String attrName, short type,boolean required,boolean throwWhenNot) throws EvaluatorException {
+		Attribute attr = tag.getAttribute(attrName);
+		String strType="/constant";
+		if(attr!=null) {
+			switch(type){
+			case TYPE_ALL:
+				if(attr.getValue() instanceof Literal) return true;
+			break;
+			case TYPE_BOOLEAN:
+				if(CastBoolean.toExprBoolean(attr.getValue()) instanceof LitBoolean) return true;
+				strType=" boolean";
+			break;
+			case TYPE_NUMERIC:
+				if(CastDouble.toExprDouble(attr.getValue()) instanceof LitDouble) return true;
+				strType=" numeric";
+			break;
+			case TYPE_STRING:
+				if(CastString.toExprString(attr.getValue()) instanceof LitString) return true;
+				strType=" string";
+			break;
+			}
+			if(!throwWhenNot) return false;
+			throw new EvaluatorException("Attribute ["+attrName+"] of the Tag ["+tag.getFullname()+"] must be a literal"+strType+" value");
+		}
+		if(required){
+			if(!throwWhenNot) return false;
+			throw new EvaluatorException("Attribute ["+attrName+"] of the Tag ["+tag.getFullname()+"] is required");
+		}
 		return true;
 	}
 	

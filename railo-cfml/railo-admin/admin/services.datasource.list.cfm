@@ -84,6 +84,11 @@ Redirtect to entry --->
 Error Output --->
 <cfset printError(error)>
 
+<cfif structKeyExists(url,'verified') and len(url.verified)>
+	<cfset stVeritfyMessages={}>
+	<cfset stVeritfyMessages[url.verified].Label = "OK">
+</cfif>
+
 
 <cfadmin 
 	action="getDatasourceSetting"
@@ -266,6 +271,7 @@ function selectAll(field) {
 <cfif srcLocal.recordcount>
 	<cfoutput>
 	<h2>#stText.Settings.ListDatasources#</h2>
+	#stText.Settings['ListDatasourcesDesc'& request.adminType ]#
 	<table class="tbl" width="650">
 	<tr>
 		<td colspan="3"></td> 
@@ -375,6 +381,7 @@ function selectAll(field) {
 	</tr>
 	<tr>
 		<td colspan="2">
+			<input type="hidden" name="mark" value="create">
 			<input type="submit" class="submit" name="run" value="#stText.Buttons.Create#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 		</td>

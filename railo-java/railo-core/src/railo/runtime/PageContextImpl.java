@@ -1668,7 +1668,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 						pe=e;
 					}
 				}
-				forceWrite(getConfig().getDefaultDumpWriter().toString(this,pe.toDumpData(this, 9999,DumpUtil.toDumpProperties()),true));
+				if(!(pe instanceof Abort))forceWrite(getConfig().getDefaultDumpWriter().toString(this,pe.toDumpData(this, 9999,DumpUtil.toDumpProperties()),true));
 			} 
 			catch (Exception e) { 
 			}
@@ -1919,6 +1919,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public void clear() {
 		try {
+			//print.o(getOut().getClass().getName());
 			getOut().clear();
 		} catch (IOException e) {}
 	}

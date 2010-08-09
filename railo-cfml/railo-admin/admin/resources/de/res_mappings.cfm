@@ -13,6 +13,7 @@
 <cfset stText.CustomTags.PhysicalMissing = "Bitte geben Sie einen Wert für die Ressource an. (Zeile ">
 <cfset stText.CustomTags.ArchiveMissing  = "Bitte geben Sie einen Wert für den Archivnamen an. (Zeile ">
 <cfset stText.CustomTags.CustomtagMappings="Resourcen">
+<cfset stText.CustomTags.CustomtagMappingsDesc="Verzeichnisse, welche Railo nach Custom tags überprüft.">
 <cfset stText.CustomTags.CustomtagSetting="Einstellungen">
 <cfset stText.CustomTags.customTagDeepSearch="Untergeordnete Verzeichnisse einbeziehen">
 <cfset stText.CustomTags.customTagDeepSearchDesc="Untergeordnete Verzeichnisse nach Customtags durchsuchen (für Archive nicht unterstützt)">

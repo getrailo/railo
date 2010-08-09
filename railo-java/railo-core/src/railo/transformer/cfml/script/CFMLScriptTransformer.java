@@ -791,7 +791,8 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		if(data.ep==null) return null;
 		
 		if(data.cfml.forwardIfCurrent(type)){
-			if(!data.cfml.isCurrent(' ') && (hasBody && !data.cfml.isCurrent('{'))){
+			boolean isValid=(data.cfml.isCurrent(' ') || (hasBody && data.cfml.isCurrent('{')));
+			if(!isValid){
 				data.cfml.setPos(data.cfml.getPos()-type.length());
 				return null;
 			}

@@ -140,7 +140,7 @@
 <form>
 <cfloop query="rst">
 <tr>
-	<td class="tblContent" width="100">#rst.label#</td>
+	<td class="tblContent" width="100"><input type="text" style="width:100px" name="label#rst.currentrow#" value="#rst.label#"/></td>
 	<td class="tblContent" width="150"><cfif len(rst.url)><a target="_blank" href="#rst.url#/railo-context/admin/web.cfm">#rst.url#</a></cfif></td>
 	<td class="tblContent"><input type="text" style="width:220px" name="path#rst.currentrow#" value="#rst.path#" readonly="readonly"/></td>
 	<td class="tblContent"><input type="text" style="width:220px" name="cf#rst.currentrow#" value="#rst.config_file#" readonly="readonly"/></td>

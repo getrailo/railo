@@ -38,6 +38,7 @@ Defaults --->
 				
 				
 				
+				clientTimeout="#CreateTimeSpan(form.client_days,form.client_hours,form.client_minutes,form.client_seconds)#"
 				sessionTimeout="#CreateTimeSpan(form.session_days,form.session_hours,form.session_minutes,form.session_seconds)#"
 				applicationTimeout="#CreateTimeSpan(form.application_days,form.application_hours,form.application_minutes,form.application_seconds)#"
 				sessionManagement="#isDefined("form.sessionManagement") and form.sessionManagement#"
@@ -281,6 +282,36 @@ Merge URL and Form --->
 			<td class="tblContent" align="center"><b>#scope.applicationTimeout_hour#</b></td>
 			<td class="tblContent" align="center"><b>#scope.applicationTimeout_minute#</b></td>
 			<td class="tblContent" align="center"><b>#scope.applicationTimeout_second#</b></td>
+		</tr>
+		</cfif>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td class="tblHead" width="150">#stText.Scopes.ClientTimeout#</td>
+	<td class="tblContent">
+		<span class="comment">#stText.Scopes.ClientTimeoutDescription#</span>
+		<cfset timeout=scope.clientTimeout>
+		<table class="tbl">
+		<tr>
+			<td class="tblHead">#stText.General.Days#</td>
+			<td class="tblHead">#stText.General.Hours#</td>
+			<td class="tblHead">#stText.General.Minutes#</td>
+			<td class="tblHead">#stText.General.Seconds#</td>
+		</tr>
+		<cfif hasAccess>
+		<tr>
+			<td class="tblContent"><cfinput type="text" name="client_days" value="#scope.clientTimeout_day#" style="width:40px" required="yes" validate="integer" message="#stText.Scopes.TimeoutDaysValue#client#stText.Scopes.TimeoutEndValue#"></td>
+			<td class="tblContent"><cfinput type="text" name="client_hours" value="#scope.clientTimeout_hour#" style="width:40px" required="yes" validate="integer" message="#stText.Scopes.TimeoutHoursValue#client#stText.Scopes.TimeoutEndValue#"></td>
+			<td class="tblContent"><cfinput type="text" name="client_minutes" value="#scope.clientTimeout_minute#" style="width:40px" required="yes" validate="integer" message="#stText.Scopes.TimeoutMinutesValue#client#stText.Scopes.TimeoutEndValue#"></td>
+			<td class="tblContent"><cfinput type="text" name="client_seconds" value="#scope.clientTimeout_second#" style="width:40px" required="yes" validate="integer" message="#stText.Scopes.TimeoutSecondsValue#client#stText.Scopes.TimeoutEndValue#"></td>
+		</tr>
+		<cfelse>
+		<tr>
+			<td class="tblContent" align="center"><b>#scope.clientTimeout_day#</b></td>
+			<td class="tblContent" align="center"><b>#scope.clientTimeout_hour#</b></td>
+			<td class="tblContent" align="center"><b>#scope.clientTimeout_minute#</b></td>
+			<td class="tblContent" align="center"><b>#scope.clientTimeout_second#</b></td>
 		</tr>
 		</cfif>
 		</table>

@@ -101,7 +101,7 @@
 				
 		</cfcase>
 	</cfswitch>
-	<cfcatch><cfrethrow>
+	<cfcatch>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>
@@ -231,6 +231,7 @@ Error Output--->
 		<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 	</tr>
 	<cfloop query="srcLocal">
+    <cfif IsSimpleValue(srcLocal.driver)><cfcontinue></cfif>
     <cfswitch expression="#srcLocal.state#">
     	<cfcase value="running"><cfset css="Green"></cfcase>
     	<cfcase value="failed,stopped"><cfset css="Red"></cfcase>

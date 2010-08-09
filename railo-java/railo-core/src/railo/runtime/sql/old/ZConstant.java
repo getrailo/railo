@@ -3,14 +3,15 @@ package railo.runtime.sql.old;
 
 
 
+
 //         ZExp
 
 public final class ZConstant
  implements ZExp
 {
 
- public ZConstant(String s, int i)
- {
+ public ZConstant(String s, int i) {
+	 //if(s.indexOf("12:00:00")!=-1)print.ds("init:"+s);
      type_ = -1;
      val_ = null;
      val_ = new String(s);

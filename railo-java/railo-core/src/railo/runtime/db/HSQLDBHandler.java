@@ -255,7 +255,9 @@ public final class HSQLDBHandler {
 					//railo.print.out("--------------------------------");
 					//railo.print.out(sql.getSQLString().trim());
 					//railo.print.out("--------------------------------");
+					//print.e("1:"+sql.getSQLString());
 					prettySQL = SQLPrettyfier.prettyfie(sql.getSQLString());
+					//print.e("2:"+prettySQL);
 					try {
 						Query query=executer.execute(pc,sql,prettySQL,maxrows);
 						query.setExecutionTime(stopwatch.time());

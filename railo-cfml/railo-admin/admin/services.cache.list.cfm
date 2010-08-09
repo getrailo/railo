@@ -79,7 +79,10 @@ Redirtect to entry --->
 <cfset srcLocal=queryNew("name,class,custom,default,readonly")>
 <cfset srcGlobal=queryNew("name,class,custom,default,readonly")>
 
-		
+
+
+
+
 <cfloop query="connections">
 	<cfif not connections.readOnly>
     	<cfset tmp=srcLocal>
@@ -112,6 +115,7 @@ function selectAll(field) {
 	}
 }
 </script>
+
 
 <!---- READ ONLY ---->
 <cfif request.adminType EQ "web" and srcGlobal.recordcount>
@@ -199,7 +203,10 @@ function selectAll(field) {
 		<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 	</tr>
 	<cfloop query="srcLocal">
-    	<cfset driver=drivers[srcLocal.class]>
+    	<cftry>
+    		<cfset driver=drivers[srcLocal.class]>
+        	<cfcatch><cfcontinue></cfcatch>
+        </cftry>
 	<tr>
 		<td>
 		<table border="0" cellpadding="0" cellspacing="0">

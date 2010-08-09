@@ -26,7 +26,7 @@ public final class Function implements AttributeEvaluator {
 		Expression expr = CastBoolean.toExprBoolean(attrOutput.getValue());
 		
 		if(!(expr instanceof LitBoolean))
-			throw new AttributeEvaluatorException("Attribute output of the Tag Function, must be a static boolean value (true or false)");
+			throw new AttributeEvaluatorException("Attribute output of the Tag Function, must be a literal boolean value (true or false)");
 		boolean output = ((LitBoolean)expr).getBooleanValue();
 		if(output)
 			tagLibTag.setParseBody(true);

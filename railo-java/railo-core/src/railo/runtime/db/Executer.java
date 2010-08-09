@@ -57,6 +57,7 @@ public final class Executer {
 	
 	public Query execute(PageContext pc,SQL sql,String prettySQL, int maxrows) throws PageException {
 		if(StringUtil.isEmpty(prettySQL))prettySQL=SQLPrettyfier.prettyfie(sql.getSQLString());
+		
 		ZqlParser parser = new ZqlParser(new ByteArrayInputStream(prettySQL.getBytes()));
 		Vector statements;
 		try {

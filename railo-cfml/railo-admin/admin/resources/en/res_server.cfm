@@ -90,6 +90,8 @@
 <cfset stText.Scopes.SessionTimeoutDescription     = "Sets the amount of time Railo will keep the session scope alive. This behaviour can be overridden by the tag cfapplication.">
 <cfset stText.Scopes.ApplicationTimeout            = "Application timeout">
 <cfset stText.Scopes.ApplicationTimeoutDescription = "Sets the amount of time Railo will keep the application scope alive. This behaviour can be overridden by the tag cfapplication.">
+<cfset stText.Scopes.ClientTimeout            = "Client timeout">
+<cfset stText.Scopes.ClientTimeoutDescription = "Sets the amount of time Railo will keep the client scope alive. ">
 
 
 <cfset stText.Scopes.LocalMode="Local scope mode">
@@ -221,9 +223,15 @@ When checked, any requested files found to currently reside in the template cach
 
 
 <cfset stText.setting.templateCache="Template Cache">
-<cfset stText.setting.templateCacheClear="Clear Template Cache ( {count} Element(s) )">
+<cfset stText.setting.templateCacheClear="Clear template cache">
+<cfset stText.setting.templateCacheClearCount="Clear template cache ( {count} element(s) )">
 <cfset stText.setting.templateCacheClearDesc="Press the button above to clear the template cache.">
 
 <cfset stText.setting.queryCache="Query Cache">
-<cfset stText.setting.queryCacheClear="Clear Query Cache ( {count} Element(s) )">
+<cfset stText.setting.queryCacheClear="Clear query cache">
+<cfset stText.setting.queryCacheClearCount="Clear query cache ( {count} element(s) )">
 <cfset stText.setting.queryCacheClearDesc="Press the button above to clear the query cache.">
+
+<cfset stText.setting.componentCache="Component path Cache">
+<cfset stText.setting.componentCacheClear="Clear component path cache ( {count} element(s) )">
+<cfset stText.setting.componentCacheClearDesc="Press the button above to clear the component path cache.">

@@ -25,8 +25,15 @@ public final class Argument extends EvaluatorSupport {
 	 */
 	public void evaluate(Tag tag, TagLibTag libTag) throws EvaluatorException  {
 			String ns=libTag.getTagLib().getNameSpaceAndSeparator();
-				String functionName=ns+"function";
-		
+			String functionName=ns+"function";
+		    
+			ASMUtil.isLiteralAttribute(tag,"type",ASMUtil.TYPE_STRING,false,true);
+			ASMUtil.isLiteralAttribute(tag,"name",ASMUtil.TYPE_STRING,false,true);
+			//ASMUtil.isLiteralAttribute(tag,"hint",ASMUtil.TYPE_STRING,false,true);
+			//ASMUtil.isLiteralAttribute(tag,"displayname",ASMUtil.TYPE_STRING,false,true);
+				
+			
+				
 			// check attribute passby
 			Attribute attrPassBy = tag.getAttribute("passby");
 			if(attrPassBy!=null) {

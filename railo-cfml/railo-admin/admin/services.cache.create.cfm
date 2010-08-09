@@ -25,6 +25,7 @@
                     <cfset custom[mid(key,8,10000)]=form[key]>
                 </cfif>
             </cfloop>
+            
             <cfadmin 
                 action="updateCacheConnection"
                 type="#request.adminType#"
@@ -128,7 +129,12 @@ Error Output --->
 <cfelseif type EQ "time">
 			<cfsilent>
             <cfset doBR=false>
-			<cfset default=default+0>
+            <cfif len(default) EQ 0>
+            	<cfset default=0>
+            <cfelse>
+            	<cfset default=default+0>
+            </cfif> 
+			
             <cfset s=default>
             <cfset m=0>
             <cfset h=0>

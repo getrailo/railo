@@ -210,9 +210,13 @@ public final class MappingImpl implements Mapping {
      */
     public Resource getClassRootDirectory() {
         if(classRootDirectory==null) {
+        	String path=getPhysical()!=null?
+        			getPhysical().getAbsolutePath():
+        			getArchive().getAbsolutePath();
+        	
         	classRootDirectory=config.getDeployDirectory().getRealResource(
                                         StringUtil.toIdentityVariableName(
-                                        		getPhysical().getAbsolutePath())
+                                        		path)
                                 );
         }
         return classRootDirectory;

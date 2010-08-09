@@ -12,7 +12,7 @@
 </cfif>
 
 <!--- load language --->
-<cfif true or not structKeyExists(application.pluginLanguage[session.railo_admin_lang],url.plugin)>
+<cfif not structKeyExists(application.pluginLanguage[session.railo_admin_lang],url.plugin)>
 	<cfset fileLanguage="#pluginDir#/#url.plugin#/language.xml">
     <cfset language=struct(
 			title:ucFirst(url.plugin),

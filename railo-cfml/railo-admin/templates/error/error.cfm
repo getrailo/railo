@@ -49,11 +49,11 @@ function oc(id) {
 </tr>
 </cfif>
 
-<cfif structKeyExists(catch,'addional')>
-<cfloop collection="#catch.addional#" item="key">
+<cfif structKeyExists(catch,'additional')>
+<cfloop collection="#catch.additional#" item="key">
 <tr>
 	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">#key#</td>
-	<td style="border : 1px solid ##350606;background-color :##FFCC00;">#HTMLEditFormat(catch.addional[key])#</td>
+	<td style="border : 1px solid ##350606;background-color :##FFCC00;">#HTMLEditFormat(catch.additional[key])#</td>
 </tr>
 </cfloop>
 </cfif>

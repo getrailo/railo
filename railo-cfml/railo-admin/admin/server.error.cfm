@@ -153,8 +153,8 @@ Create Datasource --->
 			</tr>
 			</table>
 		<cfelse>
-			<b>#err.errorTemplate#</b>
-			<input type="hidden" name="errorTemplate#statusCode#" value="#err.strErrorTemplate#">
+			<b>#err.str[statusCode]#</b>
+			<input type="hidden" name="errorTemplate#statusCode#" value="#err.str[statusCode]#">
 		</cfif>
 	</td>
 </tr>
@@ -167,7 +167,7 @@ Create Datasource --->
 		<cfif hasAccess>
 		<input class="checkbox" type="checkbox" class="checkbox" name="doStatusCode" value="yes" <cfif err.doStatusCode>checked</cfif>>
 		<cfelse>
-		<br><b>#YesNoFormat(err.doStatusCode)#</b>
+		<b>#YesNoFormat(err.doStatusCode)#</b><br />
 		</cfif>
 		<span class="comment">#stText.err.errorStatusCodeDescription#</span><br>
       	

@@ -224,22 +224,22 @@
         <cfcase value="#stText.Buttons.install#">
         	<cfset data.hashProviders=toArrayFromForm("hashProvider")>
         	<cfset data.ids=toArrayFromForm("id")>
-            <cfif StructKeyExists(form,"row") and StructKeyExists(data,"ids") and ArrayIndexExists(data.ids,row)>
-            	<cflocation url="#request.self#?action=#url.action#&action2=install1&provider=#data.hashProviders[row]#&app=#data.ids[row]#" addtoken="no">
+            <cfif StructKeyExists(form,"row") and StructKeyExists(data,"ids") and ArrayIndexExists(data.ids,form.row)>
+            	<cflocation url="#request.self#?action=#url.action#&action2=install1&provider=#data.hashProviders[form.row]#&app=#data.ids[form.row]#" addtoken="no">
             </cfif>
 		</cfcase>
         <cfcase value="#stText.Buttons.uninstall#">
         	<cfset data.hashProviders=toArrayFromForm("hashProvider")>
         	<cfset data.ids=toArrayFromForm("id")>
-            <cfif StructKeyExists(form,"row") and StructKeyExists(data,"ids") and ArrayIndexExists(data.ids,row)>
-            	<cflocation url="#request.self#?action=#url.action#&action2=uninstall&provider=#data.hashProviders[row]#&app=#data.ids[row]#" addtoken="no">
+            <cfif StructKeyExists(form,"row") and StructKeyExists(data,"ids") and ArrayIndexExists(data.ids,form.row)>
+            	<cflocation url="#request.self#?action=#url.action#&action2=uninstall&provider=#data.hashProviders[form.row]#&app=#data.ids[form.row]#" addtoken="no">
             </cfif>
 		</cfcase>
         <cfcase value="#stText.Buttons.update#">
         	<cfset data.hashProviders=toArrayFromForm("hashProvider")>
         	<cfset data.ids=toArrayFromForm("id")>
-            <cfif StructKeyExists(form,"row") and StructKeyExists(data,"ids") and ArrayIndexExists(data.ids,row)>
-            	<cflocation url="#request.self#?action=#url.action#&action2=install1&provider=#data.hashProviders[row]#&app=#data.ids[row]#" addtoken="no">
+            <cfif StructKeyExists(form,"row") and StructKeyExists(data,"ids") and ArrayIndexExists(data.ids,form.row)>
+            	<cflocation url="#request.self#?action=#url.action#&action2=install1&provider=#data.hashProviders[form.row]#&app=#data.ids[form.row]#" addtoken="no">
             </cfif>
 		</cfcase>
 	</cfswitch>

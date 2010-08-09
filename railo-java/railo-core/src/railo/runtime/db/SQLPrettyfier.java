@@ -82,7 +82,7 @@ public class SQLPrettyfier {
 							sb.append('\'');
 		        			sb.append(new DateFormat(Locale.US).format(d,"yyyy-mm-dd"));
 		        			sb.append(' ');
-		        			sb.append(new TimeFormat(Locale.US).format(d,"hh:mm:ss"));
+		        			sb.append(new TimeFormat(Locale.US).format(d,"HH:mm:ss"));
 		        			sb.append('\'');
 		        			ps.next();
 		        			continue outer;
@@ -148,5 +148,6 @@ public class SQLPrettyfier {
 		//print.err("---------------------------------------------------------------------------------");
 		return sb.toString();
 	}
+	
 	
 }

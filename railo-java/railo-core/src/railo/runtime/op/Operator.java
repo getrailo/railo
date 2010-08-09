@@ -30,6 +30,7 @@ public final class Operator {
 	 * @throws PageException
 	 */ 
 	public static int compare(Object left, Object right) throws PageException { 
+		//print.dumpStack();
 		if(left instanceof String) 			return compare((String)left,right);
 		else if(left instanceof Number) 	return compare(((Number)left).doubleValue(),right);
 		else if(left instanceof Boolean)	return compare(((Boolean)left).booleanValue(),right);
