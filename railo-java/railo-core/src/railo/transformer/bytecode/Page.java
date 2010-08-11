@@ -733,7 +733,8 @@ public final class Page extends BodyBase {
 						adapter.push(i);
 					div.visitEnd(bc);
 	        	cv.visitWhenAfterExprBeforeBody(bc);
-	        		threads[i].getRealBody().writeOut(bc);
+	        		Body body = threads[i].getRealBody();
+	        		if(body!=null)body.writeOut(bc);
 	        	cv.visitWhenAfterBody(bc);
 	        }
         cv.visitAfter(bc);

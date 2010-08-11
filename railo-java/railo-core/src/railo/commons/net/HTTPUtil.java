@@ -158,7 +158,11 @@ public final class HTTPUtil {
         String path=url.getPath();
         String file=url.getFile();
         String query = url.getQuery();
-       
+        String ref = url.getRef();
+        String user=url.getUserInfo();
+        if(port<=0) port=url.getPort();
+        
+        
         
         // decode path
         if(!StringUtil.isEmpty(path)) {
@@ -205,24 +209,54 @@ public final class HTTPUtil {
         else query="";
         file=path+query;
         
-       // port
-       if(port<=0) { 
-    	   port=url.getPort();
-    	   if(port<=0) {
-    		   return new URL(url.getProtocol(),url.getHost(),file);
-    		   //if(url.getProtocol().equalsIgnoreCase("https")) port=443;
-    		   //else port=80;
-    	   }
-       }
+     // decode ref/anchor	
+        if(!StringUtil.isEmpty(ref)) {
+        	file+="#"+escapeQSValue(ref);
+        }
+        
+        // user/pasword
+        if(!StringUtil.isEmpty(user)) {
+        	int index=user.indexOf(':');
+        	if(index!=-1) {
+        		user=escapeQSValue(user.substring(0,index))+":"+escapeQSValue(user.substring(index+1));
+        	}
+        	else user=escapeQSValue(user);
+        	
+        	strUrl=getProtocol(url)+"://"+user+"@"+url.getHost();
+        	if(port>0)strUrl+=":"+port;
+        	strUrl+=file;
+        	return new URL(strUrl);
+        }
        
+       
+        
+       // port
+       if(port<=0) return new URL(url.getProtocol(),url.getHost(),file);
        return new URL(url.getProtocol(),url.getHost(),port,file);
        
        		       
     }
+    
+    private static String getProtocol(URL url) {
+		String p=url.getProtocol().toLowerCase();
+		if(p.indexOf('/')==-1) return p;
+		if(p.indexOf("https")!=-1) return "https";
+		if(p.indexOf("http")!=-1) return "http";
+		return p;
+	}
+
+
+	/*public static void main(String[] args) throws MalformedURLException {
+    	print.o(toURL("http://www.railo.ch/index.cfm#susi"));
+    	print.o(toURL("http://www.railo.ch/index.cfm#šŠŸ"));
+    	print.o(toURL("http://hans:geheim@www.example.org:80/demo/example.cgi?land=de&stadt=aa#geschichte"));
+    	print.o(toURL("http://hašns:gehešim@www.example.org/dšemo/example.cgi?lanšd=de&stadt=aa#geschiŠchte"));
+		// 
+	}*/
 
     
     
-    private static Object escapeQSValue(String str) {
+    private static String escapeQSValue(String str) {
     	if(!URLEncoder.needEncoding(str)) return str;
     	
     	Config config = ThreadLocalPageContext.getConfig();

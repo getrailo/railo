@@ -7,12 +7,15 @@ import java.util.ConcurrentModificationException;
 import javax.servlet.http.HttpServletRequest;
 
 import railo.commons.io.DevNullOutputStream;
+import railo.commons.io.log.LogAndSource;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.Pair;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
@@ -158,6 +161,12 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		catch (Throwable t) {
 			//t.printStackTrace(pc.getConfig().getErrWriter());
 			t.printStackTrace();
+			ConfigWeb c = pc.getConfig();
+			if(c instanceof ConfigImpl) {
+				ConfigImpl ci=(ConfigImpl) c;
+				LogAndSource log = ci.getThreadLogger();
+				if(log!=null)log.error(this.getName(), ExceptionUtil.getStacktrace(t,true));
+			}
 			PageException pe = Caster.toPageException(t);
 			if(!serializable)catchBlock=pe.getCatchBlock(pc);
 			return pe;
