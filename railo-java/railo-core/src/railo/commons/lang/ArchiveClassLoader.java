@@ -112,7 +112,7 @@ public final class ArchiveClassLoader extends ClassLoader implements Sizeable,Cl
     }
     
     private Class findClassEL(String name) {
-        byte[] barr = getBytes(name.replace('.','/').concat(".class"));
+    	byte[] barr = getBytes(name.replace('.','/').concat(".class"));
         if(barr!=null) {
             try {
                 return defineClass(name,barr,0,barr.length);

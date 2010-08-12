@@ -225,6 +225,8 @@ public abstract class ConfigImpl implements Config {
     
     private LogAndSource mailLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
     private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
+    private LogAndSource threadLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
+    
     private LogAndSource requestTimeoutLogger=null;
     private LogAndSource applicationLogger=null;
     private LogAndSource exceptionLogger=null;
@@ -679,6 +681,19 @@ public abstract class ConfigImpl implements Config {
 
     public void setGatewayLogger(LogAndSource gatewayLogger) {
     	this.gatewayLogger=gatewayLogger;
+    }
+
+    /**
+     * @see railo.runtime.config.Config#getMailLogger()
+     */
+    public LogAndSource getThreadLogger() {
+    	if(threadLogger==null)threadLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		return threadLogger;
+    }
+
+
+    public void setThreadLogger(LogAndSource threadLogger) {
+    	this.threadLogger=threadLogger;
     }
     
     /**
@@ -3040,7 +3055,7 @@ public abstract class ConfigImpl implements Config {
 			m=new MappingImpl(
 				this,virtual,
 				physical,
-				null,false,true,false,false,false
+				null,false,true,false,false,false,true
 				);
 			customTagAppMappings.put(physical.toLowerCase(),m);
 		}

@@ -1455,7 +1455,7 @@ public final class ConfigWebFactory {
 	               String primary=el.getAttribute("primary");
 	               boolean physicalFirst=primary==null || !primary.equalsIgnoreCase("archive");
 	               
-	               tmp=new MappingImpl(config,virtual,physical,archive,trusted,physicalFirst,hidden,readonly,toplevel,clMaxEl);
+	               tmp=new MappingImpl(config,virtual,physical,archive,trusted,physicalFirst,hidden,readonly,toplevel,false,clMaxEl);
 	               mappings.put(tmp.getVirtualLowerCase(),tmp);
 	               if(virtual.equals("/")) {
 	                   finished=true;
@@ -2121,7 +2121,7 @@ public final class ConfigWebFactory {
 	           boolean physicalFirst=archive==null || !primary.equalsIgnoreCase("archive");
 	           //print.out("xxx:"+physicalFirst);
 	           hasSet=true;
-	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,clMaxEl);
+	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,false,clMaxEl);
 	           //print.out(mappings[i].isPhysicalFirst());
 	        }
 	        
@@ -3492,7 +3492,7 @@ public final class ConfigWebFactory {
 	           boolean physicalFirst=archive==null || !primary.equalsIgnoreCase("archive");
 	           //print.out("xxx:"+physicalFirst);
 	           hasSet=true;
-	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,clMaxEl);
+	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,false,clMaxEl);
 	           //print.out(mappings[i].isPhysicalFirst());
 	        }
 	        
@@ -3635,9 +3635,8 @@ public final class ConfigWebFactory {
      * @throws PageException 
      */
     private static void loadApplication(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException, PageException {
-        //boolean hasCS=configServer!=null;
-        
-    	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        boolean hasCS=configServer!=null;
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
         
     	
         Element application=getChildByName(doc.getDocumentElement(),"application");
@@ -3652,14 +3651,26 @@ public final class ConfigWebFactory {
         strLogger=application.getAttribute("exception-log");
         logLevel=LogUtil.toIntType(application.getAttribute("exception-log-level"),Log.LEVEL_ERROR);
         config.setExceptionLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
-        
+
         // Trace Logger
         strLogger=application.getAttribute("trace-log");
         logLevel=LogUtil.toIntType(application.getAttribute("trace-log-level"),Log.LEVEL_INFO);
         config.setTraceLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
+
+        // Thread Logger
+        strLogger=hasAccess?application.getAttribute("thread-log"):"";
+        if(StringUtil.isEmpty(strLogger) && hasCS)
+        	strLogger=configServer.getThreadLogger().getSource();
+        if(StringUtil.isEmpty(strLogger))
+        	strLogger="{railo-config}/logs/thread.log";
+        
+        logLevel=LogUtil.toIntType(application.getAttribute("thread-log-level"),Log.LEVEL_ERROR);
+        config.setThreadLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
+        
+        //print.o(strLogger);
         
         // Listener
-        boolean hasCS=configServer!=null;
+        //boolean hasCS=configServer!=null;
         
         String strListenerType=application.getAttribute("listener-type");
         ApplicationListener listener;

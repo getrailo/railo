@@ -2,7 +2,7 @@
 	
 	<cfset fields=array(
 		field("Use Unicode","useUnicode","true,false",true,"Should the driver use Unicode character encodings when handling strings? Should only be used when the driver can't determine the character set mapping, or you are trying to 'force' the driver to use a character set that MySQL either doesn't natively support (such as UTF-8)","radio"),
-		field("Charset","CharacterEncoding","UTF-8",false,"If 'Use Unicode' is set to true, what character encoding should the driver use when dealing with strings?"),
+		field("Charset","characterEncoding","UTF-8",false,"If 'Use Unicode' is set to true, what character encoding should the driver use when dealing with strings?"),
 		//field("cache ResultSetMetadata","cacheResultSetMetadata","true,false",false,"Should the driver cache ResultSetMetaData for Statements and PreparedStatements.","radio"),
 		
 		field("Alias Handling","useOldAliasMetadataBehavior","true,false",false,"Should the driver use the legacy behavior for ""AS"" clauses on columns and tables, 

@@ -58,11 +58,19 @@ public final class MappingImpl implements Mapping {
     private Map<String,Object> customTagPath=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
     //private final Map<String,Object> customTagPath=new HashMap<String, Object>();
 	private int classLoaderMaxElements=5000;
+	private boolean appMapping;
 
 
     public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
             boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel) {
-    	this(config, virtual, strPhysical, strArchive, trusted, physicalFirst, hidden, readonly,topLevel,5000);
+    	this(config, virtual, strPhysical, strArchive, trusted, physicalFirst, hidden, readonly,topLevel,false,5000);
+    }
+    
+
+    public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
+            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping) {
+    	this(config, virtual, strPhysical, strArchive, trusted, physicalFirst, hidden, readonly,topLevel,appMapping,5000);
+    	
     }
 
     /**
@@ -78,9 +86,9 @@ public final class MappingImpl implements Mapping {
      * @throws IOException
      */
     public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
-            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, int classLoaderMaxElements) {
+            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping, int classLoaderMaxElements) {
     	//print.dumpStack();
-    	
+    	//if(virtual.equals("/map"))print.ds();
     	this.config=config;
         this.hidden=hidden;
         this.readonly=readonly;
@@ -88,6 +96,8 @@ public final class MappingImpl implements Mapping {
         this.strArchive=StringUtil.isEmpty(strArchive)?null:strArchive;
         this.trusted=trusted;
         this.topLevel=topLevel;
+        this.topLevel=topLevel;
+        this.appMapping=appMapping;
         this.physicalFirst=physicalFirst;
         this.classLoaderMaxElements=classLoaderMaxElements;
         
@@ -229,7 +239,7 @@ public final class MappingImpl implements Mapping {
      * @throws IOException
      */
     public MappingImpl cloneReadOnly(ConfigImpl config) {
-    	return new MappingImpl(config,virtual,strPhysical,strArchive,trusted,physicalFirst,hidden,true,topLevel,classLoaderMaxElements);
+    	return new MappingImpl(config,virtual,strPhysical,strArchive,trusted,physicalFirst,hidden,true,topLevel,appMapping,classLoaderMaxElements);
     }
     
     /**
@@ -247,6 +257,7 @@ public final class MappingImpl implements Mapping {
 		htmlBox.appendRow(1,new SimpleDumpData("physicalFirst"),new SimpleDumpData(Caster.toString(physicalFirst)));
 		htmlBox.appendRow(1,new SimpleDumpData("readonly"),new SimpleDumpData(Caster.toString(readonly)));
 		htmlBox.appendRow(1,new SimpleDumpData("hidden"),new SimpleDumpData(Caster.toString(hidden)));
+		htmlBox.appendRow(1,new SimpleDumpData("appmapping"),new SimpleDumpData(Caster.toBoolean(appMapping)));
 		htmlBox.appendRow(1,new SimpleDumpData("toplevel"),new SimpleDumpData(Caster.toString(topLevel)));
 		return htmlBox;
     }
@@ -380,6 +391,11 @@ public final class MappingImpl implements Mapping {
     public String getVirtual() {
         return virtual;
     }
+
+	public boolean isAppMapping() {
+		return appMapping;
+	}
+
 
 	public boolean isTopLevel() {
 		return topLevel;

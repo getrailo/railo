@@ -26,7 +26,7 @@ public final class ExceptionHandler {
 		config.getApplicationLogger().log(Log.LEVEL_ERROR, "",message.toString());
 		
 		// exception.log
-		String st = ExceptionUtil.getStacktrace(pe);
+		String st = ExceptionUtil.getStacktrace(pe,true);
 		config.getExceptionLogger().log(Log.LEVEL_ERROR, "",st);
 		
 		
