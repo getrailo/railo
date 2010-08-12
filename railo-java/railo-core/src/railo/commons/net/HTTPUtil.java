@@ -578,5 +578,4 @@ public final class HTTPUtil {
 		return 80;
 	}
 	
-	
 }

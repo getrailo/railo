@@ -3055,7 +3055,7 @@ public abstract class ConfigImpl implements Config {
 			m=new MappingImpl(
 				this,virtual,
 				physical,
-				null,false,true,false,false,false
+				null,false,true,false,false,false,true
 				);
 			customTagAppMappings.put(physical.toLowerCase(),m);
 		}

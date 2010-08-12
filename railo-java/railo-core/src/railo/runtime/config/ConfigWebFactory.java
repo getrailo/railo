@@ -1455,7 +1455,7 @@ public final class ConfigWebFactory {
 	               String primary=el.getAttribute("primary");
 	               boolean physicalFirst=primary==null || !primary.equalsIgnoreCase("archive");
 	               
-	               tmp=new MappingImpl(config,virtual,physical,archive,trusted,physicalFirst,hidden,readonly,toplevel,clMaxEl);
+	               tmp=new MappingImpl(config,virtual,physical,archive,trusted,physicalFirst,hidden,readonly,toplevel,false,clMaxEl);
 	               mappings.put(tmp.getVirtualLowerCase(),tmp);
 	               if(virtual.equals("/")) {
 	                   finished=true;
@@ -2121,7 +2121,7 @@ public final class ConfigWebFactory {
 	           boolean physicalFirst=archive==null || !primary.equalsIgnoreCase("archive");
 	           //print.out("xxx:"+physicalFirst);
 	           hasSet=true;
-	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,clMaxEl);
+	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,false,clMaxEl);
 	           //print.out(mappings[i].isPhysicalFirst());
 	        }
 	        
@@ -3492,7 +3492,7 @@ public final class ConfigWebFactory {
 	           boolean physicalFirst=archive==null || !primary.equalsIgnoreCase("archive");
 	           //print.out("xxx:"+physicalFirst);
 	           hasSet=true;
-	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,clMaxEl);
+	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,false,clMaxEl);
 	           //print.out(mappings[i].isPhysicalFirst());
 	        }
 	        

@@ -685,9 +685,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		}
 		
 		// Tooltip
-		//ToolTipTagFragmentGenerator tttfg = new StandardToolTipTagFragmentGenerator();
 		ToolTipTagFragmentGenerator tttfg = new ToolTipTagFragmentGeneratorImpl(url);
-		//URLTagFragmentGenerator utfg=new StandardURLTagFragmentGenerator();
 		URLTagFragmentGenerator utfg=new EmptyURLTagFragmentGenerator();
 		
 		try {

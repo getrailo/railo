@@ -9,6 +9,7 @@ import railo.runtime.ComponentPage;
 import railo.runtime.InterfaceImpl;
 import railo.runtime.InterfacePage;
 import railo.runtime.Mapping;
+import railo.runtime.MappingImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -27,7 +28,7 @@ public class ComponentLoader {
     public static ComponentImpl loadComponentImpl(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {//, boolean isInterfaces
     	ConfigImpl config=(ConfigImpl) pc.getConfig();
     	//print.o(rawPath);
-    	
+    	String appName=pc.getApplicationContext().getName();
     	rawPath=rawPath.trim().replace('\\','/');
     	String path=(rawPath.indexOf("./")==-1)?rawPath.replace('.','/'):rawPath;
     	String pathWithCFC=path.concat(".cfc");
@@ -54,8 +55,8 @@ public class ComponentLoader {
 	    	page=config.getCachedPage(pc, localCacheName);
 	    	if(page!=null) return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
 	    }
+	    
     	// check import cache
-    	
     	if(isRealPath){
     		ImportDefintion impDef = config.getComponentDefaultImport();
 	    	ImportDefintion[] impDefs=pp==null?new ImportDefintion[0]:pp.getImportDefintions();
@@ -64,6 +65,9 @@ public class ComponentLoader {
 	    		
 	    		if(impDef.isWildcard() || impDef.getName().equalsIgnoreCase(path)){
 	    			page=config.getCachedPage(pc, "import:"+impDef.getPackageAsPath()+pathWithCFC);
+	    			if(page!=null) return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
+	    			
+	    			page=config.getCachedPage(pc, "import:"+appName+":"+impDef.getPackageAsPath()+pathWithCFC);
 	    			if(page!=null) return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
 		    	}
 		    	impDef=++i<impDefs.length?impDefs[i]:null;
@@ -76,6 +80,9 @@ public class ComponentLoader {
     	page=config.getCachedPage(pc, pathWithCFC);
     	if(page!=null) return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
     	
+    	// get pages from application mappings
+    	page=config.getCachedPage(pc, ":"+appName+":"+pathWithCFC);
+    	if(page!=null) return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
     	
     // SEARCH
     	// search from local
@@ -106,7 +113,8 @@ public class ComponentLoader {
 	    			
 	    			// search from local first
 	    			if(searchLocal){
-		    			ps=pc.getRelativePageSource(pathWithCFC);
+		    			ps=pc.getRelativePageSource(impDef.getPackageAsPath()+pathWithCFC);
+		    			//print.o("ps1:"+ps.getDisplayPath());
 			    		page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
 			    		if(page!=null)	{
 			    			config.putCachedPageSource("import:"+impDef.getPackageAsPath()+pathWithCFC, page.getPageSource());
@@ -115,10 +123,13 @@ public class ComponentLoader {
 	    			}
 	    			
 	    			// search mappings and webroot
-	    	    	ps=((PageContextImpl)pc).getPageSource(impDef.getPackageAsPath()+pathWithCFC);
+	    	    	ps=((PageContextImpl)pc).getPageSource("/"+impDef.getPackageAsPath()+pathWithCFC);
 	    	    	page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
 	    	    	if(page!=null){
-	    	    		config.putCachedPageSource("import:"+impDef.getPackageAsPath()+pathWithCFC, page.getPageSource());
+	    	    		String key=impDef.getPackageAsPath()+pathWithCFC;
+	    	    		if(((MappingImpl)ps.getMapping()).isAppMapping())key=appName+":"+key;
+	    	    		
+	    	    		config.putCachedPageSource("import:"+key, page.getPageSource());
 	    				return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
 	    	    	}
 		    		
@@ -128,7 +139,7 @@ public class ComponentLoader {
 		        		m=cMappings[y];
 		        		ps=m.getPageSource(impDef.getPackageAsPath()+pathWithCFC);
 		        		page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
-			    		if(page!=null)	{
+			    		if(page!=null)	{    
 			    			config.putCachedPageSource("import:"+impDef.getPackageAsPath()+pathWithCFC, page.getPageSource());
 			    			return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
 			        	}
@@ -148,7 +159,8 @@ public class ComponentLoader {
     	ps=((PageContextImpl)pc).getPageSource(p);
     	page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
     	if(page!=null){
-    		config.putCachedPageSource(pathWithCFC, page.getPageSource());
+    		String key=((MappingImpl)ps.getMapping()).isAppMapping()?":"+appName+":"+pathWithCFC:pathWithCFC;
+    		config.putCachedPageSource(key, page.getPageSource());
 			return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
     	}
         

@@ -72,7 +72,7 @@
             	<cfset var meta=dumpStruct(StructKeyExists(attributes,'var')?attributes.var:nullValue(),attributes.top,attributes.show,attributes.hide,attributes.keys,attributes.metaInfo,attributes.showUDFs)>
             </cfcatch>
         </cftry>
-        
+         
 		<!--- create output --->
         <cfset result=this[attributes.format](meta,context,attributes.expand,attributes.output)>
 		
