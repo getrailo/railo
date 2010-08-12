@@ -60,6 +60,8 @@
             	<cfset attributes.format=default.console>
             <cfelseif attributes.output EQ "browser">
             	<cfset attributes.format=default.browser>
+            <cfelse>
+            	<cfset attributes.format=default.console>
             </cfif>
         <cfelseif not arrayFind(supportedFormats,attributes.format)>
         	<cfthrow message="format [#attributes.format#] is not supported, supported fomats are [#ArrayToList(supportedFormats)#]">
