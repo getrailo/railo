@@ -96,7 +96,6 @@ public final class MappingImpl implements Mapping {
         this.strArchive=StringUtil.isEmpty(strArchive)?null:strArchive;
         this.trusted=trusted;
         this.topLevel=topLevel;
-        this.topLevel=topLevel;
         this.appMapping=appMapping;
         this.physicalFirst=physicalFirst;
         this.classLoaderMaxElements=classLoaderMaxElements;

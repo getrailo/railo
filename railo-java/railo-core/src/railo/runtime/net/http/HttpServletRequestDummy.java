@@ -809,5 +809,8 @@ public final class HttpServletRequestDummy implements HttpServletRequest,Seriali
 		catch(Throwable t){}
 		return null;
 	}
+	public void setAttributes(Struct attributes) {
+		this.attributes=attributes;
+	}
 	
 }
