@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Enumeration;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletInputStream;
@@ -14,7 +15,10 @@ import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.scope.FormImpl;
+import railo.runtime.type.scope.Request;
 
 /**
  * extends a existing {@link HttpServletRequest} with the possibility to reread the input as many you want.
@@ -36,6 +40,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	private String path_info;
 	private String query_string;
 	private HttpServletRequest req;
+	private Request _request;
 
 	/**
 	 * Constructor of the class
@@ -46,11 +51,11 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		super(req);
 		this.req=pure(req);
 		
-		if((servlet_path=attr("javax.servlet.include.servlet_path"))!=null){
-			request_uri=attr("javax.servlet.include.request_uri");
-			context_path=attr("javax.servlet.include.context_path");
-			path_info=attr("javax.servlet.include.path_info");
-			query_string = attr("javax.servlet.include.query_string");
+		if((servlet_path=attrAsString("javax.servlet.include.servlet_path"))!=null){
+			request_uri=attrAsString("javax.servlet.include.request_uri");
+			context_path=attrAsString("javax.servlet.include.context_path");
+			path_info=attrAsString("javax.servlet.include.path_info");
+			query_string = attrAsString("javax.servlet.include.query_string");
 		}
 		
 		//forward
@@ -86,6 +91,12 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		print.out("path_info."+req.getPathInfo());
 		print.out("query_string."+req.getQueryString());
 		*/
+	}
+	
+	private String attrAsString(String key) {
+		Object res = getAttribute(key);
+		if(res==null) return null;
+		return res.toString();
 	}
 	
 	private static HttpServletRequest pure(HttpServletRequest req) {
@@ -159,16 +170,37 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	 * @see javax.servlet.ServletRequestWrapper#removeAttribute(java.lang.String)
 	 */
 	public void removeAttribute(String name) {
-		req.removeAttribute(name);
+		if(_request!=null) _request.removeEL(KeyImpl.init(name));
+		else req.removeAttribute(name);
 	}
 
 	/**
 	 * @see javax.servlet.ServletRequestWrapper#setAttribute(java.lang.String, java.lang.Object)
 	 */
 	public void setAttribute(String name, Object o) {
-		req.setAttribute(name, o);
+		if(_request!=null) _request.setEL(KeyImpl.init(name), o);
+		else req.setAttribute(name, o);
+	}
+	
+	public void setAttributes(Request request) {
+		this._request=request;
 	}
 
+
+	/**
+	 * @see javax.servlet.ServletRequestWrapper#getAttribute(java.lang.String)
+	 */
+	public Object getAttribute(String name) {
+		if(_request!=null) return _request.get(name,null);
+		return req.getAttribute(name);
+	}
+
+	public Enumeration getAttributeNames() {
+		if(_request==null)
+			return req.getAttributeNames();
+		return new KeyIterator(_request.keys());
+		
+	}
 
 	/**
 	 * this method still throws a error if want read input stream a second time
@@ -244,9 +276,6 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 
 	
 
-	private String attr(String key) {
-		return (String) req.getAttribute(key);
-	}
 
 	public HttpServletRequest getOriginalRequest() {
 		return req;

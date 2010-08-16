@@ -234,13 +234,21 @@ public class JavaObject implements Objects,ObjectWrap {
         else if(isInit) {
 		    return Reflector.callMethod(object,methodName,arguments);
 		}
-
+        
+        
 	    try {
-		    // method call
+		    // get method
 		    MethodInstance mi = Reflector.getMethodInstance(clazz,methodName,arguments);
-			if(Modifier.isStatic(mi.getMethod().getModifiers())) {
+			// call static method if exist
+		    if(Modifier.isStatic(mi.getMethod().getModifiers())) {
 				return mi.invoke(null);
 			}
+		    
+		    if(arguments.length==0 && methodName.equalsIgnoreCase("getClass")){
+		    	return clazz;
+		    }
+		    
+		    // invoke constructor and call instance method
 			return mi.invoke(init());
 		}
 		catch(InvocationTargetException e) {

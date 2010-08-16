@@ -41,7 +41,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	
 	private static JspEngineInfo info=new JspEngineInfoImpl("1.0");
 	private ConfigWebImpl config;
-	Stack pcs=new Stack();
+	Stack<PageContext> pcs=new Stack<PageContext>();
     private Struct runningPcs=new StructImpl();
     int idCounter=1;
     private QueryCache queryCache;
@@ -149,11 +149,16 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		if(pc.getId()<0)return;
         pc.release();
         ThreadLocalPageContext.release();
-		synchronized (pcs) {
-            runningPcs.removeEL(ArgumentIntKey.init(pc.getId()));
-            pcs.push(pc);
-            SystemOut.printDate(config.getOutWriter(),"Release: ("+pc.getId()+")");
-        }
+        //if(!pc.hasFamily()){
+			synchronized (pcs) {
+	            runningPcs.removeEL(ArgumentIntKey.init(pc.getId()));
+	            pcs.push(pc);
+	            SystemOut.printDate(config.getOutWriter(),"Release: ("+pc.getId()+")");
+	        }
+       /*}
+        else {
+        	 SystemOut.printDate(config.getOutWriter(),"Unlink: ("+pc.getId()+")");
+        }*/
 	}
     
     /**

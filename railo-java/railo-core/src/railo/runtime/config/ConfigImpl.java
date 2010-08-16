@@ -106,6 +106,7 @@ import railo.transformer.library.tag.TagLibException;
 import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
+import edu.emory.mathcs.backport.java.util.Collections;
 import flex.messaging.config.ConfigMap;
 
 
@@ -3077,7 +3078,7 @@ public abstract class ConfigImpl implements Config {
 	}
 	
 	public void putCachedPageSource(String pathWithCFC,PageSource ps) {
-		if(pages==null) pages=new HashMap<String, PageSource>();//new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT); 
+		if(pages==null) pages=Collections.synchronizedMap(new HashMap<String, PageSource>());//MUSTMUST new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT); 
 		pages.put(pathWithCFC.toLowerCase(),ps);
 	}
 	

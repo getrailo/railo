@@ -41,6 +41,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 	
 	private int threadIndex;
 	private PageContextImpl parent;
+	PageContextImpl pc =null;
 	private String tagName;
 	private long start;
 	private Threads scope;
@@ -109,15 +110,21 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		}
 	}
 
+	public PageContext getPageContext(){
+		return pc;
+	}
+	
+	
 	public void run()  {
 		execute(null);
 	}
 	public PageException execute(Config config)   {
 		PageContext oldPc = ThreadLocalPageContext.get();
-		PageContextImpl pc =null;
+		
 		Page p=page;
 		
 		if(parent!=null){
+			
 			pc=parent;
 			ThreadLocalPageContext.register(pc);
 		}
@@ -179,6 +186,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
             pc.getScopeFactory().recycle(newLocal);
             
 			((ConfigImpl)pc.getConfig()).getFactory().releasePageContext(pc);
+			pc=null;
 			if(oldPc!=null)ThreadLocalPageContext.register(oldPc);
 		}
 		return null;
