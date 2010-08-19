@@ -147,6 +147,7 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		// config
 		ORMConfiguration ormConf = appContext.getORMConfiguration();
+		
 		//List<Component> arr = null;
 		arr=null;
 		if(init && ormConf.autogenmap()){
@@ -396,7 +397,18 @@ public class HibernateORMEngine implements ORMEngine {
 			if(cfc!=null)return cfc;
 		}
 		
-		throw new ORMException("No entity (persitent component) with name ["+entityName+"] found, available entities are ["+railo.runtime.type.List.arrayToList(cfcs.keySet().toArray(new String[cfcs.size()]),", ")+"] ");
+		
+		
+		ApplicationContextImpl appContext = ((ApplicationContextImpl)pc.getApplicationContext());
+		ORMConfiguration ormConf = appContext.getORMConfiguration();
+		Resource[] locations = ormConf.getCfcLocations();
+		
+		
+		
+		
+		throw new ORMException(
+				"No entity (persitent component) with name ["+entityName+"] found, available entities are ["+railo.runtime.type.List.arrayToList(cfcs.keySet().toArray(new String[cfcs.size()]),", ")+"] ",
+				"component are searched in the following directories ["+toString(locations)+"]");
 		
 		/*
 		// try to load "new" entity
@@ -428,6 +440,16 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 	
 	
+	private String toString(Resource[] locations) {
+		if(locations==null) return "";
+		StringBuilder sb=new StringBuilder();
+		for(int i=0;i<locations.length;i++){
+			if(i>0) sb.append(", ");
+			sb.append(locations[i].getAbsolutePath());
+		}
+		return sb.toString();
+	}
+
 	private ComponentImpl _create(PageContext pc, String entityName, boolean unique) throws PageException {
 		CFCInfo info = cfcs.get(id(entityName));
 		if(info!=null) {

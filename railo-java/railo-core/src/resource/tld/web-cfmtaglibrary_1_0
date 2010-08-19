@@ -8464,6 +8464,20 @@ Permits searching collections by title or displaying a separate title from the k
 			<rtexprvalue>true</rtexprvalue>
 			<description></description>
 		</attribute>
+		<attribute>
+			<type>struct</type>
+			<name>ormoptions</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>returntype</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
 	</tag>
 	<!-- QueryParam -->
 	<tag>
