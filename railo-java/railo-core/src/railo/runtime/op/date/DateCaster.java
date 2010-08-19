@@ -36,6 +36,7 @@ public final class DateCaster {
 	private static DateTimeUtil util=DateTimeUtil.getInstance();
 	
     private static SimpleDateFormat[] simpleDateFormatters;
+	public static boolean classicStyle=false;
 	static  {
 	    simpleDateFormatters=new SimpleDateFormat[]{
 			  new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy",Locale.ENGLISH)
@@ -543,16 +544,22 @@ public final class DateCaster {
 		}
 		
 		if(ds.isAfterLast()) {
+			if(classicStyle() && del=='.')return toDate(month,timeZone,second,first,third,defaultValue);
 			return toDate(month,timeZone,first,second,third,defaultValue);
 		}
 		ds.fwIfCurrent(' ');
 		ds.fwIfCurrent('T');
 		ds.fwIfCurrent(' ');
+		if(classicStyle() && del=='.')return parseTime(timeZone,_toDate(month, second,first,third),ds,defaultValue,-1);
 		return parseTime(timeZone,_toDate(month, first, second,third),ds,defaultValue,-1);
 		
 		
 	}
 	
+	private static boolean classicStyle() {
+		return classicStyle;
+	}
+
 	private static DateTime parseTime(TimeZone timeZone,int[] date, DateString ds,DateTime defaultValue, int hours) {
 		if(date==null)return defaultValue;
 		
