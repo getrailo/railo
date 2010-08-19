@@ -2802,14 +2802,14 @@ public final class ConfigWebFactory {
       	
       	
       // log
-        String strLogger=orm.getAttribute("log");
-        if(StringUtil.isEmpty(strLogger) && hasCS) 
+        String strLogger=hasAccess?orm.getAttribute("log"):null;
+        if(hasAccess && StringUtil.isEmpty(strLogger) && hasCS) 
         	strLogger=((ConfigServerImpl)configServer).getORMLogger().getSource();
         else
         	strLogger="{railo-config}/logs/orm.log";
         
         	
-        int logLevel=LogUtil.toIntType(orm.getAttribute("log-level"),-1);
+        int logLevel=hasAccess?LogUtil.toIntType(orm.getAttribute("log-level"),-1):-1;
         if(logLevel==-1 && hasCS)
         	logLevel=((ConfigServerImpl)configServer).getORMLogger().getLogLevel();
         if(logLevel==-1)logLevel=Log.LEVEL_ERROR;

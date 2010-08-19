@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -41,7 +42,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		this.persisDirectory=persisDirectory;
 		this.label=label;
 		this.log=log;
-		
+		//print.ds(persisDirectory.getAbsolutePath());
 		load();
 		
 	}
@@ -88,6 +89,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	}
 	
 	private void load(Resource dir, LinkedList list) throws IOException {
+		
 		if(!dir.exists()){
 			dir.createDirectory(true);
 			return;

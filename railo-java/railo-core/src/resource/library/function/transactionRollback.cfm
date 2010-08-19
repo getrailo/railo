@@ -1,3 +1,3 @@
-<cffunction name="TransactionRollBack" output="no">
-    <cftransaction action="rollback">
+<cffunction name="TransactionRollBack" output="no" returntype="void">
+    <cftransaction action="rollback"/>
 </cffunction>

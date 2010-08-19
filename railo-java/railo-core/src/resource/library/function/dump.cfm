@@ -1,4 +1,4 @@
-<cffunction name="dump" output="yes">
+<cffunction name="dump" output="yes" returntype="void">
 	<cfargument name="var" type="object" required="no">
 	<cfargument name="expand" type="boolean" required="no">
 	<cfargument name="format" type="string" required="no">
