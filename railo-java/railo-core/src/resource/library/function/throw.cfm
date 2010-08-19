@@ -1,4 +1,4 @@
-<cffunction name="throw" output="no">
+<cffunction name="throw" output="no" returntype="void">
 	<cfargument name="message" type="string" required="no">
 	<cfargument name="type" type="string" required="no" default="application">
 	<cfargument name="detail" type="string" required="no">

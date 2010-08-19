@@ -67,7 +67,7 @@ public class CFFunction {
 		return udf.callWithNamedValues(pc, namedArguments, false);
 	}
 
-	private static synchronized UDF loadUDF(PageContext pc, String filename,Collection.Key name,boolean isweb) throws PageException {
+	public static synchronized UDF loadUDF(PageContext pc, String filename,Collection.Key name,boolean isweb) throws PageException {
 		ConfigWebImpl config = (ConfigWebImpl) pc.getConfig();
 		String key=isweb?name.getString()+config.getId():name.getString();
     	UDF udf=(UDF) udfs.get(key);

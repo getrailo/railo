@@ -19,6 +19,7 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.opencfml.eventgateway.Gateway;
 
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.SystemUtil;
@@ -1199,7 +1200,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	}
 
 	private void doUpdateSecurityManager() throws  PageException {
-        admin.updateSecurity(
+		print.e("registry2:"+fb("tag_registry"));
+		admin.updateSecurity(
                 getString("admin",action,"id"),
                 fb("setting"),
                 SecurityManagerImpl.toShortAccessValue(getString("admin",action,"file")),
