@@ -1,4 +1,4 @@
-<cffunction name="threadJoin" output="no">
+<cffunction name="threadJoin" output="no" returntype="void">
 	<cfargument name="name" type="string" required="yes">
 	<cfargument name="timeout" type="numeric" required="no" default="#0#">
     

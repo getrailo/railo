@@ -261,7 +261,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 				m=new MappingImpl(this,
 					virtual,
 					physical,
-					null,false,true,false,false,false
+					null,false,true,false,false,false,true
 					);
 				applicationMappings.put(key, m);
 			}

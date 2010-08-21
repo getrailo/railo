@@ -58,7 +58,6 @@ import railo.runtime.cfx.customtag.CFXTagPoolImpl;
 import railo.runtime.component.ImportDefintion;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnectionPool;
-import railo.runtime.db.QoQ;
 import railo.runtime.dump.DumpWriter;
 import railo.runtime.dump.DumpWriterEntry;
 import railo.runtime.dump.HTMLDumpWriter;
@@ -107,6 +106,7 @@ import railo.transformer.library.tag.TagLibException;
 import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
+import edu.emory.mathcs.backport.java.util.Collections;
 import flex.messaging.config.ConfigMap;
 
 
@@ -226,6 +226,8 @@ public abstract class ConfigImpl implements Config {
     
     private LogAndSource mailLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
     private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
+    private LogAndSource threadLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
+    
     private LogAndSource requestTimeoutLogger=null;
     private LogAndSource applicationLogger=null;
     private LogAndSource exceptionLogger=null;
@@ -680,6 +682,19 @@ public abstract class ConfigImpl implements Config {
 
     public void setGatewayLogger(LogAndSource gatewayLogger) {
     	this.gatewayLogger=gatewayLogger;
+    }
+
+    /**
+     * @see railo.runtime.config.Config#getMailLogger()
+     */
+    public LogAndSource getThreadLogger() {
+    	if(threadLogger==null)threadLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		return threadLogger;
+    }
+
+
+    public void setThreadLogger(LogAndSource threadLogger) {
+    	this.threadLogger=threadLogger;
     }
     
     /**
@@ -3041,7 +3056,7 @@ public abstract class ConfigImpl implements Config {
 			m=new MappingImpl(
 				this,virtual,
 				physical,
-				null,false,true,false,false,false
+				null,false,true,false,false,false,true
 				);
 			customTagAppMappings.put(physical.toLowerCase(),m);
 		}
@@ -3063,7 +3078,7 @@ public abstract class ConfigImpl implements Config {
 	}
 	
 	public void putCachedPageSource(String pathWithCFC,PageSource ps) {
-		if(pages==null) pages=new HashMap<String, PageSource>();//new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT); 
+		if(pages==null) pages=Collections.synchronizedMap(new HashMap<String, PageSource>());//MUSTMUST new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT); 
 		pages.put(pathWithCFC.toLowerCase(),ps);
 	}
 	

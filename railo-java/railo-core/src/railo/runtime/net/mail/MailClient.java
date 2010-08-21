@@ -327,9 +327,9 @@ public abstract class MailClient {
     	try {
 			getContent(query, message, row);
 		} catch (Exception e) {
-			String st = ExceptionUtil.getStacktrace(e);
+			String st = ExceptionUtil.getStacktrace(e,true);
 			
-			query.setAtEL("body", row, e.getMessage()+"\n"+st);
+			query.setAtEL("body", row, st);
 		}
     }
 

@@ -149,7 +149,7 @@ public class ServletContextDummy implements ServletContext {
 	 */
 	public void log(String msg, Throwable t) {
 		if(t==null)log.log(Log.LEVEL_INFO, "ServletContext", msg);
-		else log.log(Log.LEVEL_ERROR, "ServletContext", msg+":\n"+ExceptionUtil.getStacktrace(t));
+		else log.log(Log.LEVEL_ERROR, "ServletContext", msg+":\n"+ExceptionUtil.getStacktrace(t,false));
 	}
 
 	/**

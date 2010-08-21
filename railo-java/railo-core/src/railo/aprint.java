@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -157,6 +158,23 @@ public class aprint {
 	}
 	public static void oe(Object o, boolean valid) {
 		_(valid?System.out:System.err, o);
+	}
+	
+	public static void dateO(String value) {
+		_date(System.out, value);
+	}
+	
+	public static void dateE(String value) {
+		_date(System.err, value);
+	}
+
+	private static void _date(PrintStream ps,String value) {
+		long millis = System.currentTimeMillis();
+		_(ps,
+		new Date(millis)
+		+"-"
+		+(millis-(millis/1000*1000))
+		+" "+value);
 	}
 	
 	
@@ -338,4 +356,5 @@ public class aprint {
         }
         ps.println("}");
     }
+
 }

@@ -29,7 +29,7 @@ public final class FunctionLibFunction {
 	 
 	private FunctionLib functionLib;
 	private String name;
-	private ArrayList argument=new ArrayList();
+	private ArrayList<FunctionLibFunctionArg> argument=new ArrayList<FunctionLibFunctionArg>();
 	
 	private int argMin=0;
 	private int argMax=-1;
@@ -66,7 +66,7 @@ public final class FunctionLibFunction {
 	* Gibt alle Argumente einer Funktion als ArrayList zurück.
 	* @return Argumente der Funktion.
 	*/
-   public ArrayList getArg() {
+   public ArrayList<FunctionLibFunctionArg> getArg() {
 	   return argument;
    }
 

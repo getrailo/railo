@@ -139,7 +139,7 @@ public class ResourceExecutionLog implements ExecutionLog {
 	}
 
 	private void err(PageContext pc, Throwable t) {
-		String msg = t.getMessage()+"\n"+ExceptionUtil.getStacktrace(t);
+		String msg =ExceptionUtil.getStacktrace(t,true);
 		SystemOut.print(pc.getConfig().getErrWriter(), msg);
 	}
 }

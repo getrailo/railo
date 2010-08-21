@@ -44,8 +44,9 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     private String className;
     private String packageName;
     private String javaName;
-    
+
     private Resource physcalSource;
+    private Resource archiveSource;
     private String fileName;
     private String compName;
     private PagePlus page;
@@ -366,7 +367,16 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         }
         return physcalSource;
 	}
-	
+    
+    public Resource getArchiveFile() {
+    	if(archiveSource==null) {
+	    	if(!mapping.hasArchive()) return null;
+	    	String path="zip://"+mapping.getArchive().getAbsolutePath()+"!"+realPath;
+	    	archiveSource = ThreadLocalPageContext.getConfig().getResource(path);
+    	}
+        return archiveSource;
+	}
+    
 
     /**
 	 * merge to realpath to one
@@ -615,10 +625,12 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     private boolean archiveExists() {
         if(!mapping.hasArchive())return false;
         try {
-            mapping.getClassLoaderForArchive().loadClass(getClazz());
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
+        	String clazz = getClazz();
+        	if(clazz==null) return getArchiveFile().exists();
+        	mapping.getClassLoaderForArchive().loadClass(clazz);
+        	return true;
+        } catch (Exception e) {
+            return getArchiveFile().exists();
         }
     }
 
@@ -730,7 +742,9 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
      * @see railo.runtime.SourceFile#getFile()
      */
     public Resource getFile() {
-        return getPhyscalFile();
+    	Resource res = getPhyscalFile();
+    	if(res!=null) return res;
+    	return getArchiveFile();
     }
 
 

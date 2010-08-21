@@ -73,16 +73,16 @@ public abstract class SpoolerTaskSupport implements SpoolerTask {
 		}
 		catch(Throwable t) {
 			PageException pe = Caster.toPageException(t);
-			String st = ExceptionUtil.getStacktrace(t);
+			String st = ExceptionUtil.getStacktrace(t,true);
 			config.getErrWriter().write(st+"\n");
-			//if(t instanceof SpoolerException) se=(SpoolerException) t;
-			//else se=new SpoolerException(t,t.getMessage());
+			
 			Struct sct=new StructImpl();
 			sct.setEL("message", pe.getMessage());
 			sct.setEL("detail", pe.getDetail());
 			sct.setEL("stacktrace", st);
 			sct.setEL("time", Caster.toLong(System.currentTimeMillis()));
 			exceptions.appendEL(sct);
+			
 			throw pe;
 		}
 		finally {

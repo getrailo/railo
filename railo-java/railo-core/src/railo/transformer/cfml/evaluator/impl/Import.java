@@ -105,6 +105,7 @@ public final class Import extends EvaluatorSupport {
 		if(textTagLib.startsWith("/")){
             //config.getPhysical(textTagLib);
 		    PageSource ps = ((ConfigImpl)config).getPageSource(null,textTagLib,false,false);//toPageSource(config.getMappings(),textTagLib);
+		    
 		    //config.getConfigDir()
 		    if(ps.exists()) {
 		        if(ps.physcalExists()) {

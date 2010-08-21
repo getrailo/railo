@@ -2,7 +2,6 @@ package railo.runtime.db;
 
 import java.util.Locale;
 
-import railo.print;
 import railo.commons.lang.ParserString;
 import railo.runtime.exp.PageException;
 import railo.runtime.format.DateFormat;

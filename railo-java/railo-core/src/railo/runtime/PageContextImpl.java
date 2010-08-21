@@ -201,7 +201,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private Form form;
 	
 	
-	private Request request=new RequestImpl();
+	private RequestImpl request=new RequestImpl();
 	private CGIImpl cgi=new CGIImpl();	
 	private Argument argument=new ArgumentImpl();
     private static LocalNotSupportedScope localUnsupportedScope=LocalNotSupportedScope.getInstance();
@@ -369,7 +369,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			 boolean needsSession, 
 			 int bufferSize, 
 			 boolean autoFlush) {
-		
 		requestId=counter++;
 		rsp.setContentType("text/html; charset=UTF-8");
 		
@@ -434,6 +433,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @see javax.servlet.jsp.PageContext#release()
 	 */
 	public void release() {
+		boolean isChild=parent!=null;
 		parent=null;
 		// Attention have to be before close
 		if(client!=null){
@@ -469,8 +469,34 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		close();
         thread=null;
         
-		// Scopes
+        RequestImpl r = request;
+        
+        // Scopes
         if(hasFamily) {
+        	/*if(!isChild && threads!=null){
+               	synchronized (threads) {
+               		print.ds("isChild:"+isChild);
+       	        	java.util.Iterator it = threads.entrySet().iterator();
+       	        	Map.Entry entry;
+       	        	Threads t;
+       	        	ChildThreadImpl cti;
+       	        	PageContextImpl pci;
+       	        	while(it.hasNext()) {
+       	        		entry=(Entry) it.next();
+       	        		t = (Threads)entry.getValue();
+       	        		cti = (ChildThreadImpl) t.getChildThread();
+       	        		pci = (PageContextImpl) cti.getPageContext();
+       	        		if(pci !=null) {
+       	        			pci.unlink();
+       	        		}
+       	        	}
+       			}
+               }*/
+        	
+        	
+        	
+        	
+        	
         	request=null;
         	_url=null;
         	_form=null;
@@ -560,7 +586,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
         
         
-        
 	}
 	/**
 	 * @see javax.servlet.jsp.PageContext#initialize(javax.servlet.Servlet, javax.servlet.ServletRequest, javax.servlet.ServletResponse, java.lang.String, boolean, int, boolean)
@@ -575,6 +600,28 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			boolean autoFlush) throws IOException, IllegalStateException, IllegalArgumentException {
 	   initialize((HttpServlet)servlet,(HttpServletRequest)req,(HttpServletResponse)rsp,errorPageURL,needsSession,bufferSize,autoFlush);
 	}
+	
+	// FUTURE add to abstract class
+	
+	/* *
+	 * called when parent thread end
+	 * /
+	public void unlink() {
+		
+		//print.o(request.keysAsString());
+		// unlink request scope
+		HttpServletRequest org = req.getOriginalRequest();
+		if(org instanceof HttpServletRequestDummy) {
+			((HttpServletRequestDummy)org).setAttributes(new StructImpl());
+		}
+		
+		RequestImpl r = new RequestImpl();
+		r.initialize(this);
+		StructImpl.copy(request,r,false);
+		//print.o(request.keysAsString());
+		//print.o(r.keysAsString());
+		this.request=r;
+	}*/
 
     /**
      * @see railo.runtime.PageContext#write(java.lang.String)
@@ -787,6 +834,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
     	
     	// scopes
+    	other.req.setAttributes(request);
+    	/*HttpServletRequest org = other.req.getOriginalRequest();
+    	if(org instanceof HttpServletRequestDummy) {
+    		((HttpServletRequestDummy)org).setAttributes(request);
+    	}*/
     	other.request=request;
     	other.form=form;
     	other.url=url;
@@ -1919,6 +1971,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public void clear() {
 		try {
+			//print.o(getOut().getClass().getName());
 			getOut().clear();
 		} catch (IOException e) {}
 	}
