@@ -6282,6 +6282,15 @@ Permits searching collections by title or displaying a separate title from the k
 			<rtexprvalue>true</rtexprvalue>
 			<description>If no user name is specified, the LDAP connection is anonymous.</description>
 		</attribute>
+		
+		<attribute>
+			<type>string</type>
+			<name>secure</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The type of security to use</description>
+		</attribute>
+		
 		<attribute>
 			<type>string</type>
 			<name>password</name>
@@ -8460,6 +8469,20 @@ Permits searching collections by title or displaying a separate title from the k
 		<attribute>
 			<type>boolean</type>
 			<name>unique</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>struct</type>
+			<name>ormoptions</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>returntype</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description></description>

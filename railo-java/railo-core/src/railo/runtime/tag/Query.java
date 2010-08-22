@@ -43,6 +43,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private static final Collection.Key EXECUTION_TIME = KeyImpl.getInstance("executiontime");
 	private static final Collection.Key CFQUERY = KeyImpl.getInstance("cfquery");
 	private static final Collection.Key GENERATEDKEY = KeyImpl.getInstance("generatedKey");
+	private static final int RETURN_TYPE_QUERY = 1;
+	private static final int RETURN_TYPE_ARRAY_OF_ENTITY = 2;
 
 	
 	/** If specified, password overrides the password value specified in the data source setup. */
@@ -100,6 +102,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	
 	private boolean clearCache;
 	private boolean unique;
+	private Struct ormoptions;
+	private int returntype=RETURN_TYPE_ARRAY_OF_ENTITY;
 	
 	
 	
@@ -127,9 +131,34 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		orgPSQ=false;
 		hasChangedPSQ=false;
 		unique=false;
+		
+		ormoptions=null;
+		returntype=RETURN_TYPE_ARRAY_OF_ENTITY;
 	}
 	
 	
+	public void setOrmoptions(Struct ormoptions) {
+		this.ormoptions = ormoptions;
+	}
+
+
+	public void setReturntype(String strReturntype) throws ApplicationException {
+		if(StringUtil.isEmpty(strReturntype)) return;
+		strReturntype=strReturntype.toLowerCase().trim();
+		
+		if(strReturntype.equals("query"))
+			returntype=RETURN_TYPE_QUERY;
+		    //mail.setType(railo.runtime.mail.Mail.TYPE_TEXT);
+		else if(strReturntype.equals("array_of_entity") || strReturntype.equals("array-of-entity") || 
+				strReturntype.equals("array_of_entities") || strReturntype.equals("array-of-entities") || 
+				strReturntype.equals("arrayofentities") || strReturntype.equals("arrayofentities"))
+			returntype=RETURN_TYPE_ARRAY_OF_ENTITY;
+		    //mail.setType(railo.runtime.mail.Mail.TYPE_TEXT);
+		else
+			throw new ApplicationException("attribute returntype of tag query has a invalid value","valid values are [query,array-of-entity] but value is now ["+strReturntype+"]");
+	}
+
+
 	public void setUnique(boolean unique) {
 		this.unique = unique;
 	}
@@ -368,8 +397,35 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		
 		if(query==null) {
 			if("query".equals(dbtype)) 		query=executeQoQ(sql);
-			else if("orm".equals(dbtype)) 	query=executeORM(sql);
-			else 							query=executeDatasoure(sql,result!=null);
+			else if("orm".equals(dbtype) || "hql".equals(dbtype)) 	{
+				long start=System.currentTimeMillis();
+				Object obj = executeORM(sql,returntype,ormoptions);
+				
+				if(obj instanceof railo.runtime.type.Query){
+					query=(railo.runtime.type.Query) obj;
+				}
+				else {
+					if(!StringUtil.isEmpty(name)) {
+						pageContext.setVariable(name,obj);
+					}
+					if(result!=null){
+						Struct sct=new StructImpl();
+						sct.setEL(QueryImpl.CACHED, Boolean.FALSE);
+						sct.setEL(QueryImpl.EXECUTION_TIME, Caster.toDouble(System.currentTimeMillis()-start));
+						sct.setEL(QueryImpl.SQL, sql.getSQLString());
+						if(Decision.isArray(obj)){
+							
+						}
+						else sct.setEL(QueryImpl.RECORDCOUNT, Caster.toDouble(1));
+							
+						pageContext.setVariable(result, sct);
+					}
+					else
+						setExecutionTime(System.currentTimeMillis()-start);
+					return EVAL_PAGE;
+				}
+			}
+			else query=executeDatasoure(sql,result!=null);
 			//query=(dbtype!=null && dbtype.equals("query"))?executeQoQ(sql):executeDatasoure(sql,result!=null);
 			
 			
@@ -378,6 +434,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 				//if(cachedWithin!=null)
 					cachedBefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedWithin.getMillis(),false);
                 pageContext.getQueryCache().set(sql,datasource,username,password,query,cachedBefore);
+                
+                
 			}
 			exe=query.executionTime();
 		}
@@ -446,9 +504,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		}
 		// cfquery.executiontime
 		else {
-			Struct sct=new StructImpl();
-			sct.setEL(EXECUTION_TIME,new Double(exe));
-			pageContext.undefinedScope().setEL(CFQUERY,sct);
+			setExecutionTime(exe);
+			
 		}
 		
 		
@@ -457,7 +514,14 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		return EVAL_PAGE;
 	}
 
-	private railo.runtime.type.Query executeORM(SQL sql) throws PageException {
+	private void setExecutionTime(long exe) {
+		Struct sct=new StructImpl();
+		sct.setEL(EXECUTION_TIME,new Double(exe));
+		pageContext.undefinedScope().setEL(CFQUERY,sct);
+	}
+
+
+	private Object executeORM(SQL sql, int returnType, Struct ormoptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pageContext);
 		
 		// params
@@ -468,15 +532,15 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		}
 		
 		// query options
-		Struct options=new StructImpl();
-		if(maxrows!=-1) options.setEL("maxResults", new Double(maxrows));
-		if(timeout!=-1) options.setEL("timeout", new Double(timeout));
+		if(maxrows!=-1 && !ormoptions.containsKey("maxResults")) ormoptions.setEL("maxResults", new Double(maxrows));
+		if(timeout!=-1 && !ormoptions.containsKey("timeout")) ormoptions.setEL("timeout", new Double(timeout));
 		/* MUST
 offset: Specifies the start index of the resultset from where it has to start the retrieval.
 cacheable: Whether the result of this query is to be cached in the secondary cache. Default is false.
 cachename: Name of the cache in secondary cache.
 		 */
-		Object res = session.executeQuery(pageContext,sql.getSQLString(),params,unique,options);
+		Object res = session.executeQuery(pageContext,sql.getSQLString(),params,unique,ormoptions);
+		if(returnType==RETURN_TYPE_ARRAY_OF_ENTITY) return res;
 		return session.toQuery(pageContext, res, null);
 		
 	}

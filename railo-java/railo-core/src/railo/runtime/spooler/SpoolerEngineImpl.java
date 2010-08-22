@@ -169,6 +169,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	 * @see railo.runtime.spooler.SpoolerEngine#getOpenTasks()
 	 */
 	public SpoolerTask[] getOpenTasks() {
+		if(openTasks.size()==0) return new SpoolerTask[0];
 		return (SpoolerTask[]) openTasks.toArray(new SpoolerTask[openTasks.size()]);
 	}
 	
@@ -176,6 +177,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	 * @see railo.runtime.spooler.SpoolerEngine#getClosedTasks()
 	 */
 	public SpoolerTask[] getClosedTasks() {
+		if(closedTasks.size()==0) return new SpoolerTask[0];
 		return (SpoolerTask[]) closedTasks.toArray(new SpoolerTask[closedTasks.size()]);
 	}
 

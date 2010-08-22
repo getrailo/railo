@@ -28,6 +28,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import coldfusion.runtime.SessionTracker;
+
 import railo.aprint;
 import railo.commons.collections.HashTable;
 import railo.commons.digest.MD5;
@@ -3747,6 +3749,17 @@ public final class ConfigWebFactory {
 	        config.setScriptProtect(ApplicationContextUtil.translateScriptProtect(strScriptProtect));
 	    }
 	    else if(hasCS) config.setScriptProtect(configServer.getScriptProtect());
+        
+        // classic-date-parsing
+        if(config instanceof ConfigServer){
+	        String strClassicDateParsing=application.getAttribute("classic-date-parsing");
+	        
+	        if(!StringUtil.isEmpty(strClassicDateParsing)) {
+	        	DateCaster.classicStyle=Caster.toBooleanValue(strClassicDateParsing,false);
+		    }
+        }
+        
+        
 
 	    // Cache
   	  	Resource configDir=config.getConfigDir();
