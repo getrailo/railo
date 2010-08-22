@@ -1,3 +1,3 @@
-<cffunction name="TransactionCommit" output="no">
-    <cftransaction action="commit">
+<cffunction name="TransactionCommit" output="no" returntype="void">
+    <cftransaction action="commit"/>
 </cffunction>

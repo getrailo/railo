@@ -1,4 +1,4 @@
-<cffunction name="trace" output="no">
+<cffunction name="trace" output="no" returntype="void">
 	<cfargument name="var" type="string" required="no">
 	<cfargument name="text" type="string" required="no">
 	<cfargument name="type" type="string" required="no" default="Information">

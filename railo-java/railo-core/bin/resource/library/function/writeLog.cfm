@@ -1,4 +1,4 @@
-<cffunction name="writeLog" output="no">
+<cffunction name="writeLog" output="no" returntype="void">
 	<cfargument name="text" type="string" required="yes">
 	<cfargument name="type" type="string" required="no" default="Information">
 	<cfargument name="application" type="boolean" required="no">
