@@ -288,6 +288,13 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	public String getAbsName() {
 		return comp.getAbsName();
 	}
+    
+    /**
+     * @see railo.runtime.ComponentPro#getBaseAbsName()
+     */
+    public String getBaseAbsName() {
+        return comp.getBaseAbsName();
+    }
 
 	/**
 	 *

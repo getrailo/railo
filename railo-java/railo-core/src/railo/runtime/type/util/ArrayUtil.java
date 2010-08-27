@@ -167,15 +167,17 @@ public final class ArrayUtil {
 	 * the smallest value, of all values inside the array, only work when all values are numeric
 	 * @param array
 	 * @return the smallest value
-	 * @throws ExpressionException
+	 * @throws PageException 
 	*/
-	public static double min(Array array) throws ExpressionException {
+	public static double min(Array array) throws PageException {
 		if(array.getDimension()>1)
 			throw new ExpressionException("can only get max value from 1 dimensional arrays");
-		double rtn=Double.MAX_VALUE;
+		if(array.size()==0) return 0;
+		
+		double rtn=Caster.toDoubleValue(array.getE(1));
 		int len=array.size();
 		try {
-			for(int i=1;i<=len;i++) {
+			for(int i=2;i<=len;i++) {
 				double v=Caster.toDoubleValue(array.getE(i));
 				if(rtn>v)rtn=v;
 				
@@ -183,7 +185,6 @@ public final class ArrayUtil {
 		} catch (PageException e) {
 			throw new ExpressionException("exception while execute array operation: "+e.getMessage());
 		}
-		if(rtn==Double.MAX_VALUE) return 0;
 		return rtn;
 	}
 	
@@ -191,15 +192,17 @@ public final class ArrayUtil {
 	 * the greatest value, of all values inside the array, only work when all values are numeric
 	 * @param array
 	 * @return the greatest value
-	 * @throws ExpressionException
+	 * @throws PageException 
 	*/
-	public static double max(Array array) throws ExpressionException {
+	public static double max(Array array) throws PageException {
 		if(array.getDimension()>1)
 			throw new ExpressionException("can only get max value from 1 dimensional arrays");
-		double rtn=Double.MIN_VALUE;
+		if(array.size()==0) return 0;
+		
+		double rtn=Caster.toDoubleValue(array.getE(1));
 		int len=array.size();
 		try {
-			for(int i=1;i<=len;i++) {
+			for(int i=2;i<=len;i++) {
 				double v=Caster.toDoubleValue(array.getE(i));
 				if(rtn<v)rtn=v;
 				
@@ -207,7 +210,6 @@ public final class ArrayUtil {
 		} catch (PageException e) {
 			throw new ExpressionException("exception while execute array operation: "+e.getMessage());
 		}
-		if(rtn==Double.MIN_VALUE) return 0;
 		return rtn;
 	}
 	

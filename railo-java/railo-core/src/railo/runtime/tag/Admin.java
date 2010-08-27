@@ -19,7 +19,6 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.opencfml.eventgateway.Gateway;
 
-import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.SystemUtil;
@@ -95,6 +94,7 @@ import railo.runtime.reflection.Reflector;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.spooler.ExecutionPlan;
+import railo.runtime.spooler.SpoolerEngineImpl;
 import railo.runtime.spooler.SpoolerTask;
 import railo.runtime.spooler.remote.RemoteClientTask;
 import railo.runtime.type.Array;
@@ -102,6 +102,7 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -546,6 +547,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("removeremoteclient",     ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveRemoteClient();
         else if(check("removeRemoteClientUsage",ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveRemoteClientUsage();
     	else if(check("removeSpoolerTask", 		ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveSpoolerTask();
+    	else if(check("removeAllSpoolerTask", 	ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveAllSpoolerTask();
         // alias for executeSpoolerTask
         else if(check("removeRemoteClientTask", ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveSpoolerTask();
         else if(check("executeSpoolerTask",		ACCESS_FREE) && check2(ACCESS_WRITE  )) doExecuteSpoolerTask();
@@ -1200,7 +1202,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	}
 
 	private void doUpdateSecurityManager() throws  PageException {
-		print.e("registry2:"+fb("tag_registry"));
 		admin.updateSecurity(
                 getString("admin",action,"id"),
                 fb("setting"),
@@ -2380,6 +2381,9 @@ private void doGetMappings() throws PageException {
     private void doRemoveSpoolerTask() throws PageException {
     	config.getSpoolerEngine().remove(getString("admin",action,"id"));
     }
+    private void doRemoveAllSpoolerTask() throws PageException {
+    	((SpoolerEngineImpl)config.getSpoolerEngine()).removeAll();
+    }
     private void doExecuteSpoolerTask() throws PageException {
     	PageException pe = config.getSpoolerEngine().execute(getString("admin",action,"id"));
 		if(pe!=null) throw pe;
@@ -2741,12 +2745,24 @@ private void doGetMappings() throws PageException {
     }
     
     private void doGetSpoolerTasks() throws PageException {
+    	int startrow = getInt("startrow",1);
+    	int maxrow = getInt("maxrow",-1);
+    	String result=getString("result", null);
+    	SpoolerEngineImpl engine = (SpoolerEngineImpl) config.getSpoolerEngine();
     	
+    	Query qry = engine.getAllTasksAsQuery(startrow,maxrow);
+    	pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+		if(!StringUtil.isEmpty(result)){
+			Struct sct=new StructImpl();
+			pageContext.setVariable(result,sct);
+			sct.setEL("open", engine.getOpenTaskCount());
+				sct.setEL("closed", engine.getClosedTaskCount());
+		}
     	
-			SpoolerTask[] open = config.getSpoolerEngine().getOpenTasks();
+    	/*
+    	SpoolerTask[] open = config.getSpoolerEngine().getOpenTasks();
 			SpoolerTask[] closed = config.getSpoolerEngine().getClosedTasks();
-			String v="VARCHAR";
-			String d="DATE";
+			String v="VARCHAR"; 
 			railo.runtime.type.Query qry=new QueryImpl(
 					new String[]{"type","name","detail","id","lastExecution","nextExecution","closed","tries","exceptions","triesmax"},
 					new String[]{v,v,"object",v,d,d,"boolean","int","object","int"},
@@ -2756,7 +2772,9 @@ private void doGetMappings() throws PageException {
 			row=doGetRemoteClientTasks(qry,open,row);
 			doGetRemoteClientTasks(qry,closed,row);
 	        pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
-    	       
+    	   */  
+    	
+    	
     	
     }
     

@@ -1,10 +1,12 @@
 package railo.runtime.orm;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.w3c.dom.Element;
 
+import railo.commons.digest.MD5;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -243,6 +245,15 @@ public class ORMConfiguration {
 		return other;
 	}
 
+	public String hash() {
+		
+		String data=autogenmap+catalog+cfcLocations+dbCreate+dialect+eventHandling+flushAtRequestEnd+logSQL+saveMapping+schema+secondaryCacheEnabled+sqlScript+useDBForMapping+cacheConfig+cacheProvider+ormConfig;
+		try {
+			return MD5.getDigestAsString(data);
+		} catch (IOException e) {
+			return null;
+		}
+	}
 
 
 
@@ -428,6 +439,12 @@ public class ORMConfiguration {
 		
 		return "none";
 	}
+
+
+
+
+
+
 	
 	
 	

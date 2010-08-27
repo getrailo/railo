@@ -265,28 +265,28 @@ public class HibernateORMSession implements ORMSession{
 			Object obj=options.get("maxresults",null);
 			if(obj!=null) {
 				int max=Caster.toIntValue(obj,-1);
-				if(max<0) throw new ORMException("option [maxresults] has a invalid value ["+obj+"], value should be a number bigger or equal to 0");
+				if(max<0) throw new ORMException(engine,"option [maxresults] has a invalid value ["+obj+"], value should be a number bigger or equal to 0");
 				query.setMaxResults(max);
 			}
 			// offset
 			obj=options.get("offset",null);
 			if(obj!=null) {
 				int off=Caster.toIntValue(obj,-1);
-				if(off<0) throw new ORMException("option [offset] has a invalid value ["+obj+"], value should be a number bigger or equal to 0");
+				if(off<0) throw new ORMException(engine,"option [offset] has a invalid value ["+obj+"], value should be a number bigger or equal to 0");
 				query.setFirstResult(off);
 			}
 			// readonly
 			obj=options.get("readonly",null);
 			if(obj!=null) {
 				Boolean ro=Caster.toBoolean(obj,null);
-				if(ro==null) throw new ORMException("option [readonly] has a invalid value ["+obj+"], value should be a boolean value");
+				if(ro==null) throw new ORMException(engine,"option [readonly] has a invalid value ["+obj+"], value should be a boolean value");
 				query.setReadOnly(ro.booleanValue());
 			}
 			// timeout
 			obj=options.get("timeout",null);
 			if(obj!=null) {
 				int to=Caster.toIntValue(obj,-1);
-				if(to<0) throw new ORMException("option [timeout] has a invalid value ["+obj+"], value should be a number bigger or equal to 0");
+				if(to<0) throw new ORMException(engine,"option [timeout] has a invalid value ["+obj+"], value should be a number bigger or equal to 0");
 				query.setTimeout(to);
 			}
         }
@@ -323,7 +323,7 @@ public class HibernateORMSession implements ORMSession{
 					index++;
 				}
 				if(meta.getOrdinalParameterCount()>index)
-					throw new ORMException("parameter array is to small ["+arr.size()+"], need ["+meta.getOrdinalParameterCount()+"] elements");
+					throw new ORMException(engine,"parameter array is to small ["+arr.size()+"], need ["+meta.getOrdinalParameterCount()+"] elements");
 			}
 			// struct
 			else if(Decision.isStruct(params)) {
@@ -476,7 +476,7 @@ public class HibernateORMSession implements ORMSession{
 		Object obj=null;
 		try{
 			ClassMetadata metaData = getSessionFactory(pc).getClassMetadata(name);
-			if(metaData==null) throw new ORMException("could not load meta information for entity ["+name+"]");
+			if(metaData==null) throw new ORMException(engine,"could not load meta information for entity ["+name+"]");
 			Serializable oId = Caster.toSerializable(
 					Caster.castTo(pc, 
 							metaData

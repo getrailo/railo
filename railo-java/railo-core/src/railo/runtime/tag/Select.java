@@ -342,7 +342,7 @@ public final class Select extends BodyTagImpl {
 		    form.setInput(input);	
 		}
 		else { 
-		    throw new ApplicationException("Tag select must be inside a form tag");
+		    throw new ApplicationException("Tag cfselect must be inside a cfform tag");
 		}
     	
     	

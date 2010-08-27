@@ -60,17 +60,21 @@ public final class SystemOut {
     }
     
     public static void printDate(String value,int type) {
+    	printDate(getPrinWriter(type),value);
+    }
+    
+
+    public static PrintWriter getPrinWriter(int type) {
     	PageContext pc=ThreadLocalPageContext.get();
     	if(pc!=null) {
-    		if(type==ERR)
-    			printDate(pc.getConfig().getErrWriter(),value);
-    		else 
-    			printDate(pc.getConfig().getOutWriter(),value);
+    		if(type==ERR) return pc.getConfig().getErrWriter();
+    		return pc.getConfig().getOutWriter();
     	}
-    	else {
-    		printDate(new PrintWriter((type==ERR)?System.err:System.out),value);
-    	}
+    	return new PrintWriter((type==ERR)?System.err:System.out);
     }
+    
+    
+    
     /**
      * logs a value 
      * @param value

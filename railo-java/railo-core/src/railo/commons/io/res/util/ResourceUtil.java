@@ -1215,5 +1215,17 @@ public final class ResourceUtil {
         }
 		return res;
 	}
+	
+	public static int directrySize(Resource dir,ResourceFilter filter) {
+		if(dir==null || !dir.isDirectory()) return 0;
+		if(filter==null) return dir.list().length;
+		return dir.list(filter).length;
+	}
+	
+	public static int directrySize(Resource dir,ResourceNameFilter filter) {
+		if(dir==null || !dir.isDirectory()) return 0;
+		if(filter==null) return dir.list().length;
+		return dir.list(filter).length;
+	}
 
 }

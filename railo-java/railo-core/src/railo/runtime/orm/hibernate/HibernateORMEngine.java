@@ -37,7 +37,6 @@ import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMSession;
-import railo.runtime.orm.ORMUtil;
 import railo.runtime.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
@@ -73,11 +72,13 @@ public class HibernateORMEngine implements ORMEngine {
 
 	private List<Component> arr;
 
+	private Object hash;
+
 	public HibernateORMEngine() {}
 
 	void checkExistent(PageContext pc,Component cfc) throws ORMException {
 		if(!cfcs.containsKey(id(HibernateCaster.getEntityName(pc, cfc))))
-            throw new ORMException("there is no mapping definition for component ["+cfc.getAbsName()+"]");
+            throw new ORMException(this,"there is no mapping definition for component ["+cfc.getAbsName()+"]");
 	}
 
 	
@@ -87,7 +88,7 @@ public class HibernateORMEngine implements ORMEngine {
 	 * @see railo.runtime.orm.ORMEngine#init(railo.runtime.PageContext)
 	 */
 	public void init(PageContext pc) throws PageException{
-		 getSessionFactory(pc,true);
+		getSessionFactory(pc,true);
 	}
 		
 	/**
@@ -126,20 +127,29 @@ public class HibernateORMEngine implements ORMEngine {
 	public SessionFactory getSessionFactory(PageContext pc) throws PageException{
 		return getSessionFactory(pc,false);
 	}
+	
+	public boolean reload(PageContext pc) throws PageException {
+		Object h = hash((ApplicationContextImpl)pc.getApplicationContext());
+		if(this.hash.equals(h))return false;
+		getSessionFactory(pc,true);
+		return true;
+	}
 
 
 	private synchronized SessionFactory getSessionFactory(PageContext pc,boolean init) throws PageException {
 		
 		ApplicationContextImpl appContext = ((ApplicationContextImpl)pc.getApplicationContext());
 		if(!appContext.isORMEnabled())
-			throw new ORMException("ORM is not enabled in application.cfc/cfapplication");
+			throw new ORMException(this,"ORM is not enabled in application.cfc/cfapplication");
 		
 		ConfigWeb config = pc.getConfig();
+		
+		this.hash=hash(appContext);
 		
 		// datasource
 		String dsn=appContext.getORMDatasource();
 		if(StringUtil.isEmpty(dsn))
-			throw new ORMException("missing datasource defintion in application.cfc/cfapplication");
+			throw new ORMException(this,"missing datasource defintion in application.cfc/cfapplication");
 		if(!dsn.equalsIgnoreCase(datasource)){
 			configuration=null;
 			datasource=dsn.toLowerCase();
@@ -162,12 +172,14 @@ public class HibernateORMEngine implements ORMEngine {
 			try {
 				Iterator<Component> it = arr.iterator();
 				while(it.hasNext()){
-					try {
+					createMapping(pc,it.next(),dc,ormConf);
+					/*try {
 						createMapping(pc,it.next(),dc,ormConf);
 					}
 					catch(Throwable t){
 						ORMUtil.printError(t, this);
-					}
+						
+					}*/
 				}
 			}
 			finally {
@@ -175,7 +187,6 @@ public class HibernateORMEngine implements ORMEngine {
 			}
 		}
 		arr=null;
-		
 		
 		
 		if(configuration!=null) return _factory;
@@ -193,6 +204,16 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		String mappings=HibernateSessionFactory.createMappings(cfcs);
 		
+		/*ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
+		try {
+			mappings=IOUtil.toString(frp.getResource("/Users/mic/mapping.xml"),null);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		print.o(cfcs.keySet());
+		print.o(mappings);*/
+		
 		DataSourceManager manager = pc.getDataSourceManager();
 		DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
 		try{
@@ -209,38 +230,69 @@ public class HibernateORMEngine implements ORMEngine {
 		//tuplizerFactory.registerDefaultTuplizerClass(EntityMode.MAP, CFCEntityTuplizer.class);
 		//tuplizerFactory.registerDefaultTuplizerClass(EntityMode.MAP, MapEntityTuplizer.class);
 		tuplizerFactory.registerDefaultTuplizerClass(EntityMode.MAP, AbstractEntityTuplizerImpl.class);
+		tuplizerFactory.registerDefaultTuplizerClass(EntityMode.POJO, AbstractEntityTuplizerImpl.class);
 		//tuplizerFactory.registerDefaultTuplizerClass(EntityMode.POJO, AbstractEntityTuplizerImpl.class);
+		
+		//configuration.setEntityResolver(new CFCEntityResolver());
+		//configuration.setEntityNotFoundDelegate(new EntityNotFoundDelegate());
 		
 		
 		
 		return _factory = configuration.buildSessionFactory();
 	}
 
+	private Object hash(ApplicationContextImpl appContext) {
+		String hash=appContext.getORMDatasource()+":"+appContext.getORMConfiguration().hash();
+		//print.ds(hash);
+		return hash;
+	}
+
 	public void createMapping(PageContext pc,Component cfc, DatasourceConnection dc, ORMConfiguration ormConf) throws PageException {
 		String id=id(HibernateCaster.getEntityName(pc, cfc));
 		CFCInfo info=cfcs.get(id);
 		//Long modified=cfcs.get(id);
-		if(info==null || (info.getCFC().equals(cfc) && info.getModified()!=ComponentUtil.getCompileTime(pc,((ComponentPro)cfc).getPageSource())))	{
-			configuration=null;
-			Document doc=null;
-			try {
-				doc=XMLUtil.newDocument();
-			}catch(Throwable t){}
-			Element hm=doc.createElement("hibernate-mapping");
-			doc.appendChild(hm);
-			pc.addPageSource(ComponentUtil.toComponentPro(cfc).getPageSource(), true);
-			try{
-				HBMCreator.createXMLMapping(pc,dc,cfc,ormConf,hm, this);
+		String xml;
+		long cfcCompTime = ComponentUtil.getCompileTime(pc,((ComponentPro)cfc).getPageSource());
+		if(info==null || (info.getCFC().equals(cfc) && info.getModified()!=cfcCompTime))	{
+			StringBuilder sb=new StringBuilder();
+			
+			long xmlLastMod = loadMapping(sb,ormConf, cfc);
+			Element root;
+			// create maaping
+			if(true || xmlLastMod< cfcCompTime) {
+				configuration=null;
+				Document doc=null;
+				try {
+					doc=XMLUtil.newDocument();
+				}catch(Throwable t){t.printStackTrace();}
+				
+				root=doc.createElement("hibernate-mapping");
+				doc.appendChild(root);
+				pc.addPageSource(ComponentUtil.toComponentPro(cfc).getPageSource(), true);
+				try{
+					HBMCreator.createXMLMapping(pc,dc,cfc,ormConf,root, this);
+				}
+				finally{
+					pc.removeLastPageSource(true);
+				}
+				xml=XMLCaster.toString(root.getChildNodes(),true);
+				saveMapping(ormConf,cfc,root);
 			}
-			finally{
-				pc.removeLastPageSource(true);
+			// load
+			else {
+				xml=sb.toString();
+				root=Caster.toXML(xml).getOwnerDocument().getDocumentElement();
+				/*print.o("1+++++++++++++++++++++++++++++++++++++++++");
+				print.o(xml);
+				print.o("2+++++++++++++++++++++++++++++++++++++++++");
+				print.o(root);
+				print.o("3+++++++++++++++++++++++++++++++++++++++++");*/
+				
 			}
-			String str=XMLCaster.toString(hm.getChildNodes(),true);
-			// save mapping to file
-			saveMapping(ormConf,cfc,hm);
-			cfcs.put(id, new CFCInfo(ComponentUtil.getCompileTime(pc,((ComponentPro)cfc).getPageSource()),str,cfc));
-			//_cfcids.put(id,new Long());
-			//_cfcs.put(id, str);
+			
+			
+			cfcs.put(id, new CFCInfo(ComponentUtil.getCompileTime(pc,((ComponentPro)cfc).getPageSource()),xml,cfc));
+			
 		}
 		
 	}
@@ -251,11 +303,25 @@ public class HibernateORMEngine implements ORMEngine {
 			if(res!=null){
 				res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
 				try{
-				IOUtil.write(res, XMLCaster.toString(hm), null, false);
+				IOUtil.write(res, XMLCaster.toString(hm), "UTF-8", false);
 				}
 				catch(Exception e){} 
 			}
 		}
+	}
+	
+	private static long loadMapping(StringBuilder sb,ORMConfiguration ormConf, Component cfc) throws ExpressionException {
+		
+		Resource res=ComponentUtil.toComponentPro(cfc).getPageSource().getPhyscalFile();
+		if(res!=null){
+			res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
+			try{
+				sb.append(IOUtil.toString(res, "UTF-8"));
+				return res.lastModified();
+			}
+			catch(Exception e){} 
+		}
+		return 0;
 	}
 
 	/**
@@ -294,14 +360,14 @@ public class HibernateORMEngine implements ORMEngine {
 			DatabaseMetaData md = dc.getConnection().getMetaData();
 			Struct rows=checkTableFill(md,dbName,tableName);
 			if(rows.size()==0)	{
-				tableName=checkTableValidate(md,dbName,tableName);
-				rows=checkTableFill(md,dbName,tableName);
+				String tableName2 = checkTableValidate(md,dbName,tableName);
+				if(tableName2!=null)rows=checkTableFill(md,dbName,tableName2);
 			}
 			
 			
 			
 			if(rows.size()==0)	{
-				ORMUtil.printError("there is no table with name  ["+tableName+"] defined", engine);
+				//ORMUtil.printError("there is no table with name  ["+tableName+"] defined", engine);
 				return null;
 			}
 			return rows;
@@ -321,6 +387,7 @@ public class HibernateORMEngine implements ORMEngine {
 			Object nullable;
 			while(columns.next()) {
 				name=columns.getString("COLUMN_NAME");
+				
 				nullable=columns.getObject("IS_NULLABLE");
 				rows.setEL(KeyImpl.init(name),new ColumnInfo(
 						name,
@@ -404,10 +471,21 @@ public class HibernateORMEngine implements ORMEngine {
 		Resource[] locations = ormConf.getCfcLocations();
 		
 		
+		/* / get key list
+		Iterator<Entry<String, CFCInfo>> it = cfcs.entrySet().iterator();
+		Entry<String, CFCInfo> entry;
+		String name;
+		StringBuilder keys=new StringBuilder();
+		while(it.hasNext()){
+			entry=it.next();
+			name=entry.getValue().getCFC().getName();
+			if(keys.length()>0) keys.append(", ");
+			keys.append(name);
+		}*/
 		
 		
 		throw new ORMException(
-				"No entity (persitent component) with name ["+entityName+"] found, available entities are ["+railo.runtime.type.List.arrayToList(cfcs.keySet().toArray(new String[cfcs.size()]),", ")+"] ",
+				"No entity (persitent component) with name ["+entityName+"] found, available entities are ["+railo.runtime.type.List.arrayToList(getEntityNames(), ", ")+"] ",
 				"component are searched in the following directories ["+toString(locations)+"]");
 		
 		/*
@@ -463,7 +541,7 @@ public class HibernateORMEngine implements ORMEngine {
 		return null;
 	}
 
-	private String id(String id) {
+	public static String id(String id) {
 		return id.toLowerCase().trim();
 	}
 
@@ -508,13 +586,21 @@ public class HibernateORMEngine implements ORMEngine {
 			return unique?(Component)cfc.duplicate(false):cfc;
 		}
 		
-		throw new ORMException("entity ["+cfcname+"] does not exist, existing  entities are ["+railo.runtime.type.List.arrayToList(names, ", ")+"]");
+		throw new ORMException(this,"entity ["+cfcname+"] does not exist, existing  entities are ["+railo.runtime.type.List.arrayToList(names, ", ")+"]");
 		
 	}
 	
 
 	public String[] getEntityNames() {
-		return cfcs.keySet().toArray(new String[cfcs.size()]);
+		Iterator<Entry<String, CFCInfo>> it = cfcs.entrySet().iterator();
+		String[] names=new String[cfcs.size()];
+		int index=0;
+		while(it.hasNext()){
+			names[index++]=it.next().getValue().getCFC().getName();
+		}
+		return names;
+		
+		//return cfcs.keySet().toArray(new String[cfcs.size()]);
 	}
 	
 	
