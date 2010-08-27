@@ -63,13 +63,13 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
 
     /**
      * returns null when not defined
-     * @return
+     * @return value of attribute securejson
      */
     public abstract Boolean getSecureJson();
 
     /**
      * returns null when not defined
-     * @return
+     * @return value of attribute verifyclient
      */
     public abstract Boolean getVerifyClient();
     
