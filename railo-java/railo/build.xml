@@ -46,8 +46,10 @@
     	<copy todir="${build.dir}/classes/railo">
     		<fileset file="${src.dir}/railo/version"/>
     	</copy>
-    	<echo>Copy the core.rc to the classes/core directory.</echo>
-    	<copy todir="${build.dir}/classes/core">
+    	<echo>Creating core directory</echo>
+    	<mkdir dir="${build.dir}/classes/core/" />
+    	<echo>Copy the core.rc to the classes/core directory.</echo>   	
+    	<copy todir="${build.dir}/classes/core/">
     		<fileset dir="${core.dir}"/>
     	</copy>
     </target>
