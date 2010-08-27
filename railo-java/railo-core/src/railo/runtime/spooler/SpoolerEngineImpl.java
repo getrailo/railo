@@ -5,9 +5,11 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -232,6 +234,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 
 	public Query getAllTasksAsQuery(int startrow, int maxrow) throws PageException {
 		Query query = createQuery();
+		//print.o(startrow+":"+maxrow);
 		getTasksAsQuery(query,openDirectory,startrow, maxrow);
 		int records = query.getRecordcount();
 		if(maxrow<0) maxrow=Integer.MAX_VALUE;
@@ -261,7 +264,11 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		if(ArrayUtil.isEmpty(children)) return qry;
 		if(children.length<maxrow)maxrow=children.length;
 		SpoolerTask task;
-		for(int i=startrow-1;i< maxrow;i++){
+		
+		int to=startrow+maxrow;
+		if(to>children.length)to=children.length;
+		
+		for(int i=startrow-1;i<to;i++){
 			task = getTaskByName(dir, children[i]);
 			if(task!=null)addQueryRow(qry, task);
 		}
@@ -375,12 +382,17 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 				nextExection=Long.MAX_VALUE;
 				for(int i=0;i<taskNames.length;i++) {
 					task=getTaskByName(openDirectory, taskNames[i]);
+					//print.o("- "+task.getId()+" : "+new Date(task.nextExecution()));
+					
 					if(task!=null && task.nextExecution()<=System.currentTimeMillis()) {
+						//print.o("- execute");
 						tt=new TaskThread(engine,task);
 						tt.start();
 						runningTasks.add(tt);
-						nextExection=joinTasks(runningTasks,maxThreads,nextExection);
 					}
+					else if(task.nextExecution()<nextExection && nextExection!=-1 && !task.closed()) 
+						nextExection=task.nextExecution();
+					nextExection=joinTasks(runningTasks,maxThreads,nextExection);
 				}
 				
 				nextExection=joinTasks(runningTasks,0,nextExection);
@@ -389,10 +401,12 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 				if(nextExection==Long.MAX_VALUE)break;
 				long sleep = nextExection-System.currentTimeMillis();
 				
+				//print.o("sleep:"+sleep+">"+(sleep/1000));
 				if(sleep>0)doWait(sleep);
 				
 				//if(sleep<0)break;
 			}
+			//print.o("end:"+getOpenTaskCount());
 		}
 
 		private long joinTasks(List<TaskThread> runningTasks, int maxThreads,long nextExection) {
@@ -405,7 +419,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 					SystemUtil.join(tt);
 					task = tt.getTask();
 
-					if(task!=null && task.nextExecution()<nextExection && !task.closed()) {
+					if(task!=null && task.nextExecution()!=-1 && task.nextExecution()<nextExection && !task.closed()) {
 						nextExection=task.nextExecution();
 					}
 				}

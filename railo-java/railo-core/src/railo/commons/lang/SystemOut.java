@@ -31,7 +31,7 @@ public final class SystemOut {
     public static void print(PrintWriter pw,String value) {
     	pw.write(value+"\n");
     	pw.flush();
-    }
+    } 
 
 
 	public static void printStack(PrintWriter pw) {
