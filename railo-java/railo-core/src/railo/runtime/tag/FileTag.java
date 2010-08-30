@@ -615,7 +615,7 @@ public final class FileTag extends TagImpl {
 		
 		// fill data to query
 		sct.setEL("name",file.getName());
-		sct.setEL("size",new Long(file.length()));
+		sct.setEL("size",Long.valueOf(file.length()));
 		sct.setEL("type",file.isDirectory()?"Dir":"File");
 		sct.setEL("dateLastModified",new DateTimeImpl(pageContext,file.lastModified(),false));
 		sct.setEL("attributes",getFileAttribute(file));
@@ -679,8 +679,8 @@ public final class FileTag extends TagImpl {
 			cffile.set("timecreated",new DateTimeImpl(pageContext.getConfig()));
 			cffile.set("timelastmodified",new DateTimeImpl(pageContext.getConfig()));
 			cffile.set("datelastaccessed",new DateImpl(pageContext));
-			cffile.set("oldfilesize",new Long(length));
-			cffile.set("filesize",new Long(length));
+			cffile.set("oldfilesize",Long.valueOf(length));
+			cffile.set("filesize",Long.valueOf(length));
 			cffile.set("contenttype",ListFirst.call(pageContext,contentType,"/"));
 			cffile.set("contentsubtype",ListLast.call(pageContext,contentType,"/"));
 		

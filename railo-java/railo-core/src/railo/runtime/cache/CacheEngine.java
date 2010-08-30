@@ -84,7 +84,7 @@ public class CacheEngine {
 	}
 
 	public void set(String key, Object value, TimeSpan timespan) {
-		Long until=timespan==null?null:new Long(timespan.getMillis());
+		Long until=timespan==null?null:Long.valueOf(timespan.getMillis());
 		cache.put(key, value, null, until); 
 	}
 

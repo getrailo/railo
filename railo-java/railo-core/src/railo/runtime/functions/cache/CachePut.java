@@ -17,13 +17,13 @@ public final class CachePut implements Function {
 		return _call(pc,key, value, null, null,null);
 	}
 	public static String call(PageContext pc, String key,Object value,TimeSpan timeSpan) throws PageException {
-		return _call(pc,key, value, new Long(timeSpan.getMillis()), null,null);
+		return _call(pc,key, value, Long.valueOf(timeSpan.getMillis()), null,null);
 	}
 	public static String call(PageContext pc, String key,Object value,TimeSpan timeSpan, TimeSpan idleTime) throws PageException {
-		return _call(pc,key, value, new Long(timeSpan.getMillis()), new Long(idleTime.getMillis()),null);
+		return _call(pc,key, value, Long.valueOf(timeSpan.getMillis()), Long.valueOf(idleTime.getMillis()),null);
 	}
 	public static String call(PageContext pc, String key,Object value,TimeSpan timeSpan, TimeSpan idleTime,String cacheName) throws PageException {
-		return _call(pc,key, value, new Long(timeSpan.getMillis()), new Long(idleTime.getMillis()),cacheName);
+		return _call(pc,key, value, Long.valueOf(timeSpan.getMillis()), Long.valueOf(idleTime.getMillis()),cacheName);
 	}
 	
 	private static String _call(PageContext pc, String key,Object value,Long timeSpan, Long idleTime,String cacheName) throws PageException {

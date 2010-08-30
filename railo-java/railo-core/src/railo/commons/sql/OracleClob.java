@@ -34,7 +34,7 @@ public class OracleClob {
 
 			//c.setString(1,value);
 			if(setString==null)setString = clazz.getMethod("setString", new Class[]{long.class,String.class});
-			setString.invoke(clob, new Object[]{new Long(1),value});
+			setString.invoke(clob, new Object[]{Long.valueOf(1),value});
 
 			return (Clob) clob;
 		}

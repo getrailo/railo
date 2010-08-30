@@ -689,7 +689,7 @@ public final class Caster {
             
         }
         else if(o instanceof Date) return (int)new DateTimeImpl((Date)o).castToDoubleValue();
-        else if(o instanceof ObjectWrap) return toIntValue(((ObjectWrap)o).getEmbededObject(new Integer(defaultValue)),defaultValue);
+        else if(o instanceof ObjectWrap) return toIntValue(((ObjectWrap)o).getEmbededObject(Integer.valueOf(defaultValue)),defaultValue);
 		
         return defaultValue;
     }
@@ -1352,7 +1352,7 @@ public final class Caster {
      * @return casted Long Object
      */
     public static Long toLong(boolean b) {
-        return new Long(toLongValue(b));
+        return Long.valueOf(toLongValue(b));
     }
     
     /**
@@ -1361,7 +1361,7 @@ public final class Caster {
      * @return casted Long Object
      */
     public static Long toLong(char c) {
-        return new Long(toLongValue(c));
+        return Long.valueOf(toLongValue(c));
     }
     
     /**
@@ -1370,7 +1370,7 @@ public final class Caster {
      * @return casted Long Object
      */
     public static Long toLong(double d) {
-        return new Long(toLongValue(d));
+        return Long.valueOf(toLongValue(d));
     }
 
     /**
@@ -1381,7 +1381,7 @@ public final class Caster {
      */
     public static Long toLong(Object o) throws PageException {
         if(o instanceof Long) return (Long)o;
-        return new Long(toLongValue(o));
+        return Long.valueOf(toLongValue(o));
         
     }
 
@@ -1392,7 +1392,7 @@ public final class Caster {
      * @throws PageException
      */
     public static Long toLong(String str) throws PageException {
-        return new Long(toLongValue(str));
+        return Long.valueOf(toLongValue(str));
         
     }
 
@@ -1404,11 +1404,11 @@ public final class Caster {
      */
     public static Long toLong(Object o, Long defaultValue) {
         if(o instanceof Long) return (Long)o;
-        if(defaultValue!=null) return new Long(toLongValue(o,defaultValue.longValue()));
+        if(defaultValue!=null) return Long.valueOf(toLongValue(o,defaultValue.longValue()));
         
         long res=toLongValue(o,Long.MIN_VALUE);
         if(res==Long.MIN_VALUE) return defaultValue;
-        return new Long(res);
+        return Long.valueOf(res);
     }
     
     /**
@@ -3579,7 +3579,7 @@ public final class Caster {
      * @return casted Long
      */
     public static Long toRef(long l) {
-        return new Long(l);
+        return Long.valueOf(l);
     }
     
     /**
@@ -3937,7 +3937,7 @@ public final class Caster {
         if(defaultValue!=null) return Integer.valueOf(toIntValue(o,defaultValue.intValue()));
         int res=toIntValue(o,Integer.MIN_VALUE);
         if(res==Integer.MIN_VALUE) return defaultValue;
-        return new Integer(res);
+        return Integer.valueOf(res);
     }
     
     /**
@@ -4140,7 +4140,7 @@ public final class Caster {
 		else if(trgClass==byte.class)return Caster.toByte(obj); 
 		else if(trgClass==short.class)return Caster.toShort(obj); 
 		else if(trgClass==int.class)return Integer.valueOf(Caster.toDouble(obj).intValue()); 
-		else if(trgClass==long.class)return new Long(Caster.toDouble(obj).longValue()); 
+		else if(trgClass==long.class)return Long.valueOf(Caster.toDouble(obj).longValue()); 
 		else if(trgClass==float.class)return new Float(Caster.toDouble(obj).floatValue()); 
 		else if(trgClass==double.class)return Caster.toDouble(obj); 
 		else if(trgClass==char.class)return Caster.toCharacter(obj); 
@@ -4149,7 +4149,7 @@ public final class Caster {
 		else if(trgClass==Byte.class)return Caster.toByte(obj); 
 		else if(trgClass==Short.class)return Caster.toShort(obj); 
 		else if(trgClass==Integer.class)return Integer.valueOf(Caster.toDouble(obj).intValue()); 
-		else if(trgClass==Long.class)return new Long(Caster.toDouble(obj).longValue()); 
+		else if(trgClass==Long.class)return Long.valueOf(Caster.toDouble(obj).longValue()); 
 		else if(trgClass==Float.class)return new Float(Caster.toDouble(obj).floatValue()); 
 		else if(trgClass==Double.class)return Caster.toDouble(obj); 
 		else if(trgClass==Character.class)return Caster.toCharacter(obj); 

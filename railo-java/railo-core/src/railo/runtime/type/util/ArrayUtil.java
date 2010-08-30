@@ -303,7 +303,7 @@ public final class ArrayUtil {
 	 */
 	public static Long[] toReferenceType(long[] primArr) {
 		Long[] refArr=new Long[primArr.length];
-		for(int i=0;i<primArr.length;i++)refArr[i]=new Long(primArr[i]);
+		for(int i=0;i<primArr.length;i++)refArr[i]=Long.valueOf(primArr[i]);
 		return refArr;
 	}
 	
@@ -376,7 +376,7 @@ public final class ArrayUtil {
 		}
 	    else if(o instanceof long[])	{
 	        long[] arr=((long[])o);
-		    if(arr.length>index)return new Long(arr[index]);
+		    if(arr.length>index)return Long.valueOf(arr[index]);
 		}
 	    else if(o instanceof float[])	{
 	        float[] arr=((float[])o);
@@ -448,7 +448,7 @@ public final class ArrayUtil {
 	        if(arr.length>index) {
 	            double v=Caster.toDoubleValue(value,Double.NaN);
 	            if(Decision.isValid(v)) {
-	                return new Long(arr[index]=(long)v);
+	                return Long.valueOf(arr[index]=(long)v);
 	            }
 	        }
 		    throw invalidIndex(index,arr.length);

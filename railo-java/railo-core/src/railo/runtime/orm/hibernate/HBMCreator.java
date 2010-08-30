@@ -7,6 +7,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentPro;
@@ -374,8 +375,6 @@ public class HBMCreator {
 			str=toString(meta,"lazy");
 			key.setAttribute("lazy",str);
 		}
-		
-		
 	}
 	
 	
@@ -387,9 +386,7 @@ public class HBMCreator {
 		Document doc = XMLUtil.getDocument(clazz);
 		Element id = doc.createElement("id");
 		clazz.appendChild(id);
-		
-		
-				
+			
         // access
     	str=toString(meta,"access");
 		if(!StringUtil.isEmpty(str,true))id.setAttribute("access", str);
@@ -406,9 +403,9 @@ public class HBMCreator {
     	column.setAttribute("name",formatColumn(str));
     	ColumnInfo info=getColumnInfo(columnsInfo,tableName,str,engine);
     	
-		
         // type
 		String type = getType(info,prop,meta,"string");
+		print.o(prop.getName()+":"+type);
 		id.setAttribute("type", type);
 		
 		
@@ -417,7 +414,6 @@ public class HBMCreator {
     		//column.setAttribute("length",Caster.toString(info.getSize()));
     	}
     	
-		
 		// unsaved-value
 		str=toString(meta,"unsavedValue");
 		if(!StringUtil.isEmpty(str,true))id.setAttribute("unsaved-value", str);
@@ -456,7 +452,7 @@ public class HBMCreator {
 			}
 			else type=defaultValue;
 		}
-		return type;
+		return type;Caster.toInteger(1)
 	}
 
 

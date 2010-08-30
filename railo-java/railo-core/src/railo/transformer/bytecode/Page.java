@@ -1345,7 +1345,7 @@ public final class Page extends BodyBase {
 			
 			MethodVisitor mv = cv.visitMethod(access,name, desc, signature, exceptions);
 			mv.visitCode();
-			mv.visitLdcInsn(new Long(lastModified));
+			mv.visitLdcInsn(Long.valueOf(lastModified));
 			mv.visitInsn(Opcodes.LRETURN);
 			mv.visitEnd();
 			return mv;

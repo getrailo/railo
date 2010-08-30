@@ -76,7 +76,7 @@ public final class COMUtil {
 					l=0;
 				}
 			}
-			return new Long(l);
+			return Long.valueOf(l);
 		}
 		else if(type==Variant.VariantObject) return variant.toEnumVariant();
 		else if(type==Variant.VariantDate) return new DateTimeImpl((long)variant.toDate(),true);

@@ -925,14 +925,6 @@ public final class Reflector {
 		return rtn;
 	}
 	
-	/*public static void main(String[] args) throws Exception {
-		print.ln(toNativeArray(Date[].class, new String[]{"30.1.2005"}, null));
-		print.ln(toNativeArray(Integer[].class, new String[]{"1","2","0"}, null));
-		print.ln(toNativeArray(boolean[].class, new String[]{"1","2","0"}, null));
-		print.ln(toNativeArray(Object[].class, new int[]{1,2,3}, null));
-		print.ln(toNativeArray(int[].class, new Integer[]{new Integer(1),new Integer(2)}, null));
-		print.ln(toNativeArray(byte[].class, new Double[]{new Double(1),new Double(2)}, null));
-	}*/
 
 	private static Object[] toRefArray(boolean[] src) {
 		Object[] trg=new Object[src.length];
@@ -969,7 +961,7 @@ public final class Reflector {
 	private static Object[] toRefArray(int[] src) {
 		Object[] trg=new Object[src.length];
 		for(int i=0;i<trg.length;i++) {
-			trg[i]=new Integer(src[i]);
+			trg[i]=Integer.valueOf(src[i]);
 		}
 		return trg;
 	}
@@ -977,7 +969,7 @@ public final class Reflector {
 	private static Object[] toRefArray(long[] src) {
 		Object[] trg=new Object[src.length];
 		for(int i=0;i<trg.length;i++) {
-			trg[i]=new Long(src[i]);
+			trg[i]=Long.valueOf(src[i]);
 		}
 		return trg;
 	}
