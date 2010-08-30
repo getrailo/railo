@@ -230,16 +230,16 @@ public final class Invoker {
 				return null;
 			}
 			else if (trgClass.getName().equals("java.lang.Short")) {
-				return new Short((short) Caster.toIntValue(parameter));
+				return Short.valueOf((short) Caster.toIntValue(parameter));
 			}
 			else if (trgClass.getName().equals("java.lang.Integer")) {
-				return Constants.Integer(Caster.toIntValue(parameter));
+				return Integer.valueOf(Caster.toIntValue(parameter));
 			}
 			else if (trgClass.getName().equals("java.lang.Long")) {
-				return new Long((long)Caster.toDoubleValue(parameter));
+				return Long.valueOf((long)Caster.toDoubleValue(parameter));
 			}
 			else if (trgClass.getName().equals("java.lang.Float")) {
-				return new Float((float)Caster.toDoubleValue(parameter));
+				return Float.valueOf((float)Caster.toDoubleValue(parameter));
 			}
 			else if (trgClass.getName().equals("java.lang.Double")) {
 				return Caster.toDouble(parameter);

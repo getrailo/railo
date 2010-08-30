@@ -3302,6 +3302,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	}
 
 	public ResultSetMetaData getMetaData() throws SQLException {
+		
 		throw new SQLException("method is not implemented");
 	}
 

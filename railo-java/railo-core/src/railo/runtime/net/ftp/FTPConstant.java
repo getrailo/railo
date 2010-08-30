@@ -88,6 +88,6 @@ public final class FTPConstant {
         if(file.hasPermission(FTPFile.USER_ACCESS,FTPFile.WRITE_PERMISSION))rtn+=ACCESS_USER*PERMISSION_WRITE;
         if(file.hasPermission(FTPFile.USER_ACCESS,FTPFile.EXECUTE_PERMISSION))rtn+=ACCESS_USER*PERMISSION_EXECUTE;
         
-        return Constants.Integer(rtn);
+        return Integer.valueOf(rtn);
     }
 }

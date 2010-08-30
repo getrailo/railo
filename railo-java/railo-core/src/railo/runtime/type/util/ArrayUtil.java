@@ -292,7 +292,7 @@ public final class ArrayUtil {
 	 */
 	public static Integer[] toReferenceType(int[] primArr) {
 		Integer[] refArr=new Integer[primArr.length];
-		for(int i=0;i<primArr.length;i++)refArr[i]=Constants.Integer(primArr[i]);
+		for(int i=0;i<primArr.length;i++)refArr[i]=Integer.valueOf(primArr[i]);
 		return refArr;
 	}
 	
@@ -372,7 +372,7 @@ public final class ArrayUtil {
 		}
 	    else if(o instanceof int[])	{
 	        int[] arr=((int[])o);
-		    if(arr.length>index)return Constants.Integer(arr[index]);
+		    if(arr.length>index)return Integer.valueOf(arr[index]);
 		}
 	    else if(o instanceof long[])	{
 	        long[] arr=((long[])o);
@@ -438,7 +438,7 @@ public final class ArrayUtil {
 	        if(arr.length>index) {
 	            double v=Caster.toDoubleValue(value,Double.NaN);
 	            if(Decision.isValid(v)) {
-	                return Constants.Integer(arr[index]=(int)v);
+	                return Integer.valueOf(arr[index]=(int)v);
 	            }
 	        }
 		    throw invalidIndex(index,arr.length);

@@ -269,8 +269,8 @@ public final class Executer {
                 if(op.equals("floor"))  return new Double(Math.floor(Caster.toDoubleValue(value)));
             break;
             case 'i':
-                if(op.equals("is not null"))  return Constants.Boolean(value!=null);
-                if(op.equals("is null"))  return Constants.Boolean(value==null);
+                if(op.equals("is not null"))  return Boolean.valueOf(value!=null);
+                if(op.equals("is null"))  return Boolean.valueOf(value==null);
             break;
             case 'u':
                 if(op.equals("upper") || op.equals("ucase")) return Caster.toString(value).toUpperCase();
@@ -681,7 +681,7 @@ public final class Executer {
 	 */
 	private Object executeExponent(PageContext pc,SQL sql,Query qr, ZExpression expression, int row) throws PageException {
 		return 
-        Constants.Integer(
+		Integer.valueOf(
 			Caster.toIntValue(executeExp(pc,sql,qr,expression.getOperand(0),row))
 			^
 			Caster.toIntValue(executeExp(pc,sql,qr,expression.getOperand(1),row))

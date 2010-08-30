@@ -3561,7 +3561,7 @@ public final class Caster {
      * @return casted Integer
      */
     public static Integer toRef(int i) {
-        return Constants.Integer(i);
+        return Integer.valueOf(i);
     }
     
     /**
@@ -3890,7 +3890,7 @@ public final class Caster {
      * @return Integer from char
      */
     public static Integer toInteger(char c) {
-        return Constants.Integer(c);
+        return Integer.valueOf(c);
     }
 
     /**
@@ -3899,7 +3899,7 @@ public final class Caster {
      * @return Integer from double
      */
     public static Integer toInteger(double d) { 
-        return Constants.Integer((int)d);
+        return Integer.valueOf((int)d);
     }
     
     /**
@@ -3909,7 +3909,7 @@ public final class Caster {
      * @throws PageException
      */
     public static Integer toInteger(Object o) throws PageException {
-        return Constants.Integer(toIntValue(o));
+        return Integer.valueOf(toIntValue(o));
     }
     
     /**
@@ -3919,12 +3919,12 @@ public final class Caster {
      * @throws PageException
      */
     public static Integer toInteger(String str) throws PageException {
-        return Constants.Integer(toIntValue(str));
+        return Integer.valueOf(toIntValue(str));
     }
     
     // used in bytecode genrator 
     public static Integer toInteger(int i) {
-        return Constants.Integer(i);
+        return Integer.valueOf(i);
     }
     
     /**
@@ -3934,7 +3934,7 @@ public final class Caster {
      * @return Integer from Object
      */
     public static Integer toInteger(Object o, Integer defaultValue) {
-        if(defaultValue!=null) return Constants.Integer(toIntValue(o,defaultValue.intValue()));
+        if(defaultValue!=null) return Integer.valueOf(toIntValue(o,defaultValue.intValue()));
         int res=toIntValue(o,Integer.MIN_VALUE);
         if(res==Integer.MIN_VALUE) return defaultValue;
         return new Integer(res);
@@ -4139,7 +4139,7 @@ public final class Caster {
 		else if(trgClass==boolean.class)return Caster.toBoolean(obj); 
 		else if(trgClass==byte.class)return Caster.toByte(obj); 
 		else if(trgClass==short.class)return Caster.toShort(obj); 
-		else if(trgClass==int.class)return Constants.Integer(Caster.toDouble(obj).intValue()); 
+		else if(trgClass==int.class)return Integer.valueOf(Caster.toDouble(obj).intValue()); 
 		else if(trgClass==long.class)return new Long(Caster.toDouble(obj).longValue()); 
 		else if(trgClass==float.class)return new Float(Caster.toDouble(obj).floatValue()); 
 		else if(trgClass==double.class)return Caster.toDouble(obj); 
@@ -4148,7 +4148,7 @@ public final class Caster {
 		else if(trgClass==Boolean.class)return Caster.toBoolean(obj); 
 		else if(trgClass==Byte.class)return Caster.toByte(obj); 
 		else if(trgClass==Short.class)return Caster.toShort(obj); 
-		else if(trgClass==Integer.class)return Constants.Integer(Caster.toDouble(obj).intValue()); 
+		else if(trgClass==Integer.class)return Integer.valueOf(Caster.toDouble(obj).intValue()); 
 		else if(trgClass==Long.class)return new Long(Caster.toDouble(obj).longValue()); 
 		else if(trgClass==Float.class)return new Float(Caster.toDouble(obj).floatValue()); 
 		else if(trgClass==Double.class)return Caster.toDouble(obj); 

@@ -14,6 +14,7 @@ import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.other.ToBinary;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
@@ -1262,8 +1263,16 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 		}
 		
 		// lazy
-		Boolean b=toBoolean(meta, "lazy");
-        if(b!=null) x2x.setAttribute("lazy", b.booleanValue()?"proxy":"false");
+		str=toString(meta, "lazy");
+		if(!StringUtil.isEmpty(str)){
+			Boolean b = Caster.toBoolean(str,null);
+			if(b!=null)
+				x2x.setAttribute("lazy", b.booleanValue()?"true":"false");
+			else if("extra".equalsIgnoreCase(str))
+				x2x.setAttribute("lazy", "extra");
+			else 
+				throw new ORMException(engine,"invalid value ["+str+"] for attribute [lazy], valid values are [true,false,extra]");
+		}
 	}
 
 

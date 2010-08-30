@@ -2690,22 +2690,22 @@ private void doGetMappings() throws PageException {
                 sct.setEL("password",d.getPassword());
                 sct.setEL("username",d.getUsername());
                 sct.setEL("readonly",Caster.toBoolean(d.isReadOnly()));
-                sct.setEL("select",Constants.Boolean(d.hasAllow(DataSource.ALLOW_SELECT)));
-                sct.setEL("delete",Constants.Boolean(d.hasAllow(DataSource.ALLOW_DELETE)));
-                sct.setEL("update",Constants.Boolean(d.hasAllow(DataSource.ALLOW_UPDATE)));
-                sct.setEL("insert",Constants.Boolean(d.hasAllow(DataSource.ALLOW_INSERT)));
-                sct.setEL("create",Constants.Boolean(d.hasAllow(DataSource.ALLOW_CREATE)));
-                sct.setEL("insert",Constants.Boolean(d.hasAllow(DataSource.ALLOW_INSERT)));
-                sct.setEL("drop",Constants.Boolean(d.hasAllow(DataSource.ALLOW_DROP)));
-                sct.setEL("grant",Constants.Boolean(d.hasAllow(DataSource.ALLOW_GRANT)));
-                sct.setEL("revoke",Constants.Boolean(d.hasAllow(DataSource.ALLOW_REVOKE)));
-                sct.setEL("alter",Constants.Boolean(d.hasAllow(DataSource.ALLOW_ALTER)));
+                sct.setEL("select",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_SELECT)));
+                sct.setEL("delete",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_DELETE)));
+                sct.setEL("update",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_UPDATE)));
+                sct.setEL("insert",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_INSERT)));
+                sct.setEL("create",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_CREATE)));
+                sct.setEL("insert",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_INSERT)));
+                sct.setEL("drop",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_DROP)));
+                sct.setEL("grant",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_GRANT)));
+                sct.setEL("revoke",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_REVOKE)));
+                sct.setEL("alter",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_ALTER)));
     
                 sct.setEL("connectionLimit",d.getConnectionLimit()<1?"":Caster.toString(d.getConnectionLimit()));
                 sct.setEL("connectionTimeout",d.getConnectionTimeout()<1?"":Caster.toString(d.getConnectionTimeout()));
                 sct.setEL("custom",d.getCustoms());
-                sct.setEL("blob",Constants.Boolean(d.isBlob()));
-                sct.setEL("clob",Constants.Boolean(d.isClob()));
+                sct.setEL("blob",Boolean.valueOf(d.isBlob()));
+                sct.setEL("clob",Boolean.valueOf(d.isClob()));
                 pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
                 return;
             }
@@ -2927,22 +2927,22 @@ private void doGetMappings() throws PageException {
             qry.setAt("password",row,d.getPassword());
             qry.setAt("username",row,d.getUsername());
             qry.setAt("readonly",row,Caster.toBoolean(d.isReadOnly()));
-            qry.setAt("select",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_SELECT)));
-            qry.setAt("delete",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_DELETE)));
-            qry.setAt("update",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_UPDATE)));
-            qry.setAt("insert",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_INSERT)));
-            qry.setAt("create",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_CREATE)));
-            qry.setAt("insert",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_INSERT)));
-            qry.setAt("drop",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_DROP)));
-            qry.setAt("grant",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_GRANT)));
-            qry.setAt("revoke",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_REVOKE)));
-            qry.setAt("alter",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_ALTER)));
+            qry.setAt("select",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_SELECT)));
+            qry.setAt("delete",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_DELETE)));
+            qry.setAt("update",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_UPDATE)));
+            qry.setAt("insert",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_INSERT)));
+            qry.setAt("create",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_CREATE)));
+            qry.setAt("insert",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_INSERT)));
+            qry.setAt("drop",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_DROP)));
+            qry.setAt("grant",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_GRANT)));
+            qry.setAt("revoke",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_REVOKE)));
+            qry.setAt("alter",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_ALTER)));
 
             qry.setAt("connectionLimit",row,d.getConnectionLimit()<1?"":Caster.toString(d.getConnectionLimit()));
             qry.setAt("connectionTimeout",row,d.getConnectionTimeout()<1?"":Caster.toString(d.getConnectionTimeout()));
             qry.setAt("customSettings",row,d.getCustoms());
-            qry.setAt("blob",row,Constants.Boolean(d.isBlob()));
-            qry.setAt("clob",row,Constants.Boolean(d.isClob()));
+            qry.setAt("blob",row,Boolean.valueOf(d.isBlob()));
+            qry.setAt("clob",row,Boolean.valueOf(d.isClob()));
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     }

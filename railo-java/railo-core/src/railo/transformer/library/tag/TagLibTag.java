@@ -557,7 +557,7 @@ public final class TagLibTag {
 			Class clazz = ClassUtil.loadClass(tttClass);
 			tttConstructor = clazz.getConstructor(CONSTRUCTOR_PARAMS);
 		}
-		return (Tag) tttConstructor.newInstance(new Object[]{Constants.Integer(startline),Constants.Integer(endline)});
+		return (Tag) tttConstructor.newInstance(new Object[]{Integer.valueOf(startline),Integer.valueOf(endline)});
 	}
 
 	public void setAllowRemovingLiteral(boolean allowRemovingLiteral) {

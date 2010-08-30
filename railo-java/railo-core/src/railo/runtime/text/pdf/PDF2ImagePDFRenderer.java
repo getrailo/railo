@@ -83,7 +83,7 @@ public class PDF2ImagePDFRenderer extends PDF2Image {
 			int count = pdf.getNumPages();
 			 
 			for(int page=1;page<=count;page++) {
-				if(pages!=null && !pages.contains(Constants.Integer(page)))continue;
+				if(pages!=null && !pages.contains(Integer.valueOf(page)))continue;
 				res=createDestinationResource(outputDirectory,prefix,page,format,overwrite);
 				//res=outputDirectory.getRealResource(prefix+"_page_"+page+"."+format);
 				writeImage(pdf,page,res,format,scale,overwrite,goodQuality, transparent);

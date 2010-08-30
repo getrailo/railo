@@ -349,7 +349,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		for(int i=offset;i<offset+size;i++) {
 			Object o=arr[i];
 			count++;
-			if(o!=null) lst.add(Constants.Integer(count));
+			if(o!=null) lst.add(Integer.valueOf(count));
 		}
 
 		int[] ints=new int[lst.size()];
