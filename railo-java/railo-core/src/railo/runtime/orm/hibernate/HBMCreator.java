@@ -452,7 +452,7 @@ public class HBMCreator {
 			}
 			else type=defaultValue;
 		}
-		return type;Caster.toInteger(1)
+		return type;
 	}
 
 

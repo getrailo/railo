@@ -953,7 +953,7 @@ public final class Reflector {
 	private static Object[] toRefArray(short[] src) {
 		Object[] trg=new Object[src.length];
 		for(int i=0;i<trg.length;i++) {
-			trg[i]=new Short(src[i]);
+			trg[i]=Short.valueOf(src[i]);
 		}
 		return trg;
 	}

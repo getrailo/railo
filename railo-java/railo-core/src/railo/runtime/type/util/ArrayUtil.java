@@ -281,7 +281,7 @@ public final class ArrayUtil {
 	 */
 	public static Short[] toReferenceType(short[] primArr) {
 		Short[] refArr=new Short[primArr.length];
-		for(int i=0;i<primArr.length;i++)refArr[i]=new Short(primArr[i]);
+		for(int i=0;i<primArr.length;i++)refArr[i]=Short.valueOf(primArr[i]);
 		return refArr;
 	}
 	
@@ -368,7 +368,7 @@ public final class ArrayUtil {
 		}
 	    else if(o instanceof short[])	{
 	        short[] arr=((short[])o);
-		    if(arr.length>index)return new Short(arr[index]);
+		    if(arr.length>index)return Short.valueOf(arr[index]);
 		}
 	    else if(o instanceof int[])	{
 	        int[] arr=((int[])o);
@@ -428,7 +428,7 @@ public final class ArrayUtil {
 	        if(arr.length>index) {
 	            double v=Caster.toDoubleValue(value,Double.NaN);
 	            if(Decision.isValid(v)) {
-	                return new Short(arr[index]=(short)v);
+	                return Short.valueOf(arr[index]=(short)v);
 	            }
 	        }
 		    throw invalidIndex(index,arr.length);

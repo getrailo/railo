@@ -1633,7 +1633,7 @@ public final class Caster {
      * @return casted Short Object
      */
     public static Short toShort(boolean b) {
-        return new Short(toShortValue(b));
+        return Short.valueOf(toShortValue(b));
     }
     
     /**
@@ -1642,7 +1642,7 @@ public final class Caster {
      * @return casted Short Object
      */
     public static Short toShort(char c) {
-        return new Short(toShortValue(c));
+        return Short.valueOf(toShortValue(c));
     }
     
     /**
@@ -1651,7 +1651,7 @@ public final class Caster {
      * @return casted Byte Object
      */
     public static Short toShort(double d) {
-        return new Short(toShortValue(d));
+        return Short.valueOf(toShortValue(d));
     }
 
     /**
@@ -1662,7 +1662,7 @@ public final class Caster {
      */
     public static Short toShort(Object o) throws PageException {
         if(o instanceof Short) return (Short)o;
-        return new Short(toShortValue(o));
+        return Short.valueOf(toShortValue(o));
         
     }
 
@@ -1673,7 +1673,7 @@ public final class Caster {
      * @throws PageException
      */
     public static Short toShort(String str) throws PageException {
-        return new Short(toShortValue(str));
+        return Short.valueOf(toShortValue(str));
         
     }
 
@@ -1685,10 +1685,10 @@ public final class Caster {
      */
     public static Short toShort(Object o, Short defaultValue) {
         if(o instanceof Short) return (Short)o;
-        if(defaultValue!=null)return new Short(toShortValue(o,defaultValue.shortValue()));
+        if(defaultValue!=null)return Short.valueOf(toShortValue(o,defaultValue.shortValue()));
         short res=toShortValue(o,Short.MIN_VALUE);
         if(res==Short.MIN_VALUE) return defaultValue;
-        return new Short(res);
+        return Short.valueOf(res);
     }
     
     /**
@@ -3597,7 +3597,7 @@ public final class Caster {
      * @return casted Short
      */
     public static Short toRef(short s) {
-        return new Short(s);
+        return Short.valueOf(s);
     }
 
     /**

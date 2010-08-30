@@ -54,7 +54,7 @@ public final class COMUtil {
 		
 		if(type==Variant.VariantEmpty) return null;
 		else if(type==Variant.VariantNull) return null;
-		else if(type==Variant.VariantShort) return new Short(variant.toShort());
+		else if(type==Variant.VariantShort) return Short.valueOf(variant.toShort());
 		else if(type==Variant.VariantInt) return Integer.valueOf(variant.toInt());
 		else if(type==Variant.VariantFloat) return new Float(variant.toFloat());
 		else if(type==Variant.VariantDouble) return new Double(variant.toDouble());
