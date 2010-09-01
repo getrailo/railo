@@ -167,15 +167,17 @@ public final class ArrayUtil {
 	 * the smallest value, of all values inside the array, only work when all values are numeric
 	 * @param array
 	 * @return the smallest value
-	 * @throws ExpressionException
+	 * @throws PageException 
 	*/
-	public static double min(Array array) throws ExpressionException {
+	public static double min(Array array) throws PageException {
 		if(array.getDimension()>1)
 			throw new ExpressionException("can only get max value from 1 dimensional arrays");
-		double rtn=Double.MAX_VALUE;
+		if(array.size()==0) return 0;
+		
+		double rtn=Caster.toDoubleValue(array.getE(1));
 		int len=array.size();
 		try {
-			for(int i=1;i<=len;i++) {
+			for(int i=2;i<=len;i++) {
 				double v=Caster.toDoubleValue(array.getE(i));
 				if(rtn>v)rtn=v;
 				
@@ -183,7 +185,6 @@ public final class ArrayUtil {
 		} catch (PageException e) {
 			throw new ExpressionException("exception while execute array operation: "+e.getMessage());
 		}
-		if(rtn==Double.MAX_VALUE) return 0;
 		return rtn;
 	}
 	
@@ -191,15 +192,17 @@ public final class ArrayUtil {
 	 * the greatest value, of all values inside the array, only work when all values are numeric
 	 * @param array
 	 * @return the greatest value
-	 * @throws ExpressionException
+	 * @throws PageException 
 	*/
-	public static double max(Array array) throws ExpressionException {
+	public static double max(Array array) throws PageException {
 		if(array.getDimension()>1)
 			throw new ExpressionException("can only get max value from 1 dimensional arrays");
-		double rtn=Double.MIN_VALUE;
+		if(array.size()==0) return 0;
+		
+		double rtn=Caster.toDoubleValue(array.getE(1));
 		int len=array.size();
 		try {
-			for(int i=1;i<=len;i++) {
+			for(int i=2;i<=len;i++) {
 				double v=Caster.toDoubleValue(array.getE(i));
 				if(rtn<v)rtn=v;
 				
@@ -207,7 +210,6 @@ public final class ArrayUtil {
 		} catch (PageException e) {
 			throw new ExpressionException("exception while execute array operation: "+e.getMessage());
 		}
-		if(rtn==Double.MIN_VALUE) return 0;
 		return rtn;
 	}
 	
@@ -279,7 +281,7 @@ public final class ArrayUtil {
 	 */
 	public static Short[] toReferenceType(short[] primArr) {
 		Short[] refArr=new Short[primArr.length];
-		for(int i=0;i<primArr.length;i++)refArr[i]=new Short(primArr[i]);
+		for(int i=0;i<primArr.length;i++)refArr[i]=Short.valueOf(primArr[i]);
 		return refArr;
 	}
 	
@@ -290,7 +292,7 @@ public final class ArrayUtil {
 	 */
 	public static Integer[] toReferenceType(int[] primArr) {
 		Integer[] refArr=new Integer[primArr.length];
-		for(int i=0;i<primArr.length;i++)refArr[i]=Constants.Integer(primArr[i]);
+		for(int i=0;i<primArr.length;i++)refArr[i]=Integer.valueOf(primArr[i]);
 		return refArr;
 	}
 	
@@ -301,7 +303,7 @@ public final class ArrayUtil {
 	 */
 	public static Long[] toReferenceType(long[] primArr) {
 		Long[] refArr=new Long[primArr.length];
-		for(int i=0;i<primArr.length;i++)refArr[i]=new Long(primArr[i]);
+		for(int i=0;i<primArr.length;i++)refArr[i]=Long.valueOf(primArr[i]);
 		return refArr;
 	}
 	
@@ -366,15 +368,15 @@ public final class ArrayUtil {
 		}
 	    else if(o instanceof short[])	{
 	        short[] arr=((short[])o);
-		    if(arr.length>index)return new Short(arr[index]);
+		    if(arr.length>index)return Short.valueOf(arr[index]);
 		}
 	    else if(o instanceof int[])	{
 	        int[] arr=((int[])o);
-		    if(arr.length>index)return Constants.Integer(arr[index]);
+		    if(arr.length>index)return Integer.valueOf(arr[index]);
 		}
 	    else if(o instanceof long[])	{
 	        long[] arr=((long[])o);
-		    if(arr.length>index)return new Long(arr[index]);
+		    if(arr.length>index)return Long.valueOf(arr[index]);
 		}
 	    else if(o instanceof float[])	{
 	        float[] arr=((float[])o);
@@ -426,7 +428,7 @@ public final class ArrayUtil {
 	        if(arr.length>index) {
 	            double v=Caster.toDoubleValue(value,Double.NaN);
 	            if(Decision.isValid(v)) {
-	                return new Short(arr[index]=(short)v);
+	                return Short.valueOf(arr[index]=(short)v);
 	            }
 	        }
 		    throw invalidIndex(index,arr.length);
@@ -436,7 +438,7 @@ public final class ArrayUtil {
 	        if(arr.length>index) {
 	            double v=Caster.toDoubleValue(value,Double.NaN);
 	            if(Decision.isValid(v)) {
-	                return Constants.Integer(arr[index]=(int)v);
+	                return Integer.valueOf(arr[index]=(int)v);
 	            }
 	        }
 		    throw invalidIndex(index,arr.length);
@@ -446,7 +448,7 @@ public final class ArrayUtil {
 	        if(arr.length>index) {
 	            double v=Caster.toDoubleValue(value,Double.NaN);
 	            if(Decision.isValid(v)) {
-	                return new Long(arr[index]=(long)v);
+	                return Long.valueOf(arr[index]=(long)v);
 	            }
 	        }
 		    throw invalidIndex(index,arr.length);

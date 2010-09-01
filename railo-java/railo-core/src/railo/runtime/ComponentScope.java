@@ -11,7 +11,8 @@ public interface ComponentScope extends Variables,Objects {
      * @return value component
      */
     public ComponentPro getComponent();
-    
+
     public void setComponent(ComponentImpl c);
+    //public void getInner(PageContext pc, Collection.Key key, Object defaultValue);
 
 }

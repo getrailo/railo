@@ -837,7 +837,7 @@ public final class QoQ {
 	 */
 	private Object executeExponent(PageContext pc,SQL sql,Query qr, Operation2 expression, int row) throws PageException {
 		return 
-        Constants.Integer(
+		Integer.valueOf(
 			Caster.toIntValue(executeExp(pc,sql,qr,expression.getLeft(),row))
 			^
 			Caster.toIntValue(executeExp(pc,sql,qr,expression.getRight(),row))

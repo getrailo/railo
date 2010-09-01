@@ -5,30 +5,57 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
-import railo.aprint;
 import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.filter.ExtensionResourceFilter;
+import railo.commons.io.res.filter.ResourceNameFilter;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalConfig;
+import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Array;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Query;
+import railo.runtime.type.QueryImpl;
+import railo.runtime.type.Struct;
+import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.ArrayUtil;
 
 public class SpoolerEngineImpl implements SpoolerEngine {
+	
+	private static final TaskFileFilter FILTER=new TaskFileFilter();
+
+	private static final Collection.Key TYPE = KeyImpl.getInstance("type");
+	private static final Collection.Key NAME = KeyImpl.getInstance("name");
+	private static final Collection.Key DETAIL = KeyImpl.getInstance("detail");
+	private static final Collection.Key ID = KeyImpl.getInstance("id");
+	private static final Collection.Key LAST_EXECUTION = KeyImpl.getInstance("lastExecution");
+	private static final Collection.Key NEXT_EXECUTION = KeyImpl.getInstance("nextExecution");
+	
+	private static final Collection.Key CLOSED = KeyImpl.getInstance("closed");
+	private static final Collection.Key TRIES = KeyImpl.getInstance("tries");
+	private static final Collection.Key TRIES_MAX = KeyImpl.getInstance("triesmax");
+	private static final Collection.Key EXECUTIONS = KeyImpl.getInstance("exceptions");
+	private static final Collection.Key TIME = KeyImpl.getInstance("time");
+
 	
 	private String label;
 	
 
-	private LinkedList openTasks=new LinkedList();
-	private LinkedList closedTasks=new LinkedList();
+	//private LinkedList<SpoolerTask> openTaskss=new LinkedList<SpoolerTask>();
+	//private LinkedList<SpoolerTask> closedTasks=new LinkedList<SpoolerTask>();
 	private SpoolerThread thread;
 	//private ExecutionPlan[] plans;
 	private Resource persisDirectory;
@@ -36,49 +63,59 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	private Log log;
 	private Config config; 
 	private int add=0;
+
+
+	private Resource closedDirectory;
+	private Resource openDirectory;
 	
 	public SpoolerEngineImpl(Config config,Resource persisDirectory,String label, Log log) throws IOException {
 		this.config=config;
 		this.persisDirectory=persisDirectory;
+
+		closedDirectory = persisDirectory.getRealResource("closed");
+		openDirectory = persisDirectory.getRealResource("open");
+		//calculateSize();
+		
+		
 		this.label=label;
 		this.log=log;
 		//print.ds(persisDirectory.getAbsolutePath());
-		load();
-		
+		//load();
+		if(getOpenTaskCount()>0)start();
+	}
+
+	/*private void calculateSize() {
+		closedCount=calculateSize(closedDirectory);
+		openCount=calculateSize(openDirectory);
+	}*/
+
+	private int calculateSize(Resource res) {
+		return ResourceUtil.directrySize(res,FILTER);
 	}
 
 	/**
 	 * @see railo.runtime.spooler.SpoolerEngine#add(railo.runtime.spooler.SpoolerTask)
 	 */
 	public void add(SpoolerTask task) {
-		openTasks.add(task);
+		//openTasks.add(task);
 		add++;
 		task.setNextExecution(System.currentTimeMillis());
-		task.setId(StringUtil.addZeros(++count, 8));
+		task.setId(createId(task));
 		store(task);
 		start();
 	}
 
+
 	private void start() {
 		if(thread==null || !thread.isAlive()) {
 			thread=new SpoolerThread(this);
+			thread.setPriority(Thread.MIN_PRIORITY);
 			thread.start();
 		}
 		else if(thread.sleeping) {
 			thread.interrupt();
 		}
 		//else print.out("- existing");
-	}
-
-	private void load() throws IOException {
-		if(persisDirectory==null) return;
-		
-		Resource closed = persisDirectory.getRealResource("closed");
-		Resource open = persisDirectory.getRealResource("open");
-
-		load(open,openTasks);
-		load(closed,closedTasks);
-		if(openTasks.size()>0)start();
 	}
 
 	/**
@@ -88,37 +125,32 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		return label;
 	}
 	
-	private void load(Resource dir, LinkedList list) throws IOException {
-		
-		if(!dir.exists()){
-			dir.createDirectory(true);
-			return;
-		}
-		ObjectInputStream ois=null;
-		InputStream is=null;
-		SpoolerTask task=null;
-        Resource[] resTasks = dir.listResources(new ExtensionResourceFilter("tsk"));
 	
-        for(int i=0;i<resTasks.length;i++) {
-        	long name = Caster.toLongValue(StringUtil.replace(resTasks[i].getName(),".tsk","",true),-1);
-        	if(count<name)count=name;
-			try {
-	        	is=resTasks[i].getInputStream();
-		        ois = new ObjectInputStream(is);
-		        task=(SpoolerTask) ois.readObject();
-		        
-		        //print.out(dir.getName()+":"+task.subject());
-		        list.add(task);
-	        } 
-	        catch (Throwable t) {
-	        	//print.printST(t);
-	        	IOUtil.closeEL(is);
-	        	IOUtil.closeEL(ois);
-	        	resTasks[i].delete();
-	        }
-	        IOUtil.closeEL(is);
-	        IOUtil.closeEL(ois);
-		}
+
+	private SpoolerTask getTaskById(Resource dir,String id) {
+		return getTask(dir.getRealResource(id+".tsk"),null);
+	}
+	
+	private SpoolerTask getTaskByName(Resource dir,String name) {
+		return getTask(dir.getRealResource(name),null);
+	}
+
+	private SpoolerTask getTask(Resource res, SpoolerTask defaultValue) {
+		InputStream is = null;
+        ObjectInputStream ois = null;
+        SpoolerTask task=defaultValue;
+		try {
+			is = res.getInputStream();
+	        ois = new ObjectInputStream(is);
+	        task = (SpoolerTask) ois.readObject();
+        } 
+        catch (Throwable t) {
+        	IOUtil.closeEL(is);
+        	IOUtil.closeEL(ois);
+        }
+        IOUtil.closeEL(is);
+        IOUtil.closeEL(ois);
+		return task;
 	}
 
 	private void store(SpoolerTask task) {
@@ -134,17 +166,29 @@ public class SpoolerEngineImpl implements SpoolerEngine {
         	IOUtil.closeEL(oos);
         }
 	}
-	
 
 	private void unstore(SpoolerTask task) {
 		Resource persis = getFile(task);
-		if(persis.exists()) persis.delete();   
+		boolean exists=persis.exists();
+		if(exists) persis.delete(); 
 	}
 	private Resource getFile(SpoolerTask task) {
 		Resource dir = persisDirectory.getRealResource(task.closed()?"closed":"open");
 		dir.mkdirs();
 		return dir.getRealResource(task.getId()+".tsk");
 	}
+	
+	private String createId(SpoolerTask task) {
+		Resource dir = persisDirectory.getRealResource(task.closed()?"closed":"open");
+		dir.mkdirs();
+		
+		String id=null;
+		do{
+			id=StringUtil.addZeros(++count, 8);
+		}while(dir.getRealResource(id+".tsk").exists());
+		return id;
+	}
+	
 
 	/**
 	 * @see railo.runtime.spooler.SpoolerEngine#calculateNextExecution(railo.runtime.spooler.SpoolerTask)
@@ -169,31 +213,147 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	 * @see railo.runtime.spooler.SpoolerEngine#getOpenTasks()
 	 */
 	public SpoolerTask[] getOpenTasks() {
-		if(openTasks.size()==0) return new SpoolerTask[0];
-		return (SpoolerTask[]) openTasks.toArray(new SpoolerTask[openTasks.size()]);
+		throw new PageRuntimeException(new ApplicationException("this method is no longer supported"));
 	}
 	
 	/**
 	 * @see railo.runtime.spooler.SpoolerEngine#getClosedTasks()
 	 */
 	public SpoolerTask[] getClosedTasks() {
-		if(closedTasks.size()==0) return new SpoolerTask[0];
-		return (SpoolerTask[]) closedTasks.toArray(new SpoolerTask[closedTasks.size()]);
+		throw new PageRuntimeException(new ApplicationException("this method is no longer supported"));
+	}
+	
+	// FUTURE add to interface
+	public Query getOpenTasksAsQuery(int startrow, int maxrow) throws PageException {
+		return getTasksAsQuery(createQuery(),openDirectory,startrow, maxrow);
 	}
 
-	public static void list(SpoolerTask[] tasks) {
+	public Query getClosedTasksAsQuery(int startrow, int maxrow) throws PageException {
+		return getTasksAsQuery(createQuery(),closedDirectory,startrow, maxrow);
+	}
+
+	public Query getAllTasksAsQuery(int startrow, int maxrow) throws PageException {
+		Query query = createQuery();
+		//print.o(startrow+":"+maxrow);
+		getTasksAsQuery(query,openDirectory,startrow, maxrow);
+		int records = query.getRecordcount();
+		if(maxrow<0) maxrow=Integer.MAX_VALUE;
+		// no open tasks
+		if(records==0) {
+			startrow-=getOpenTaskCount();
+		}
+		else {
+			startrow=1;
+			maxrow-=records;
+		}
+		if(maxrow>0)getTasksAsQuery(query,closedDirectory,startrow, maxrow);
+		return query;
+	}
+	
+	public int getOpenTaskCount() {
+		return calculateSize(openDirectory);
+	}
+	
+	public int getClosedTaskCount() {
+		return calculateSize(closedDirectory);
+	}
+	
+	
+	private Query getTasksAsQuery(Query qry,Resource dir, int startrow, int maxrow) throws PageException {
+		String[] children = dir.list(FILTER);
+		if(ArrayUtil.isEmpty(children)) return qry;
+		if(children.length<maxrow)maxrow=children.length;
+		SpoolerTask task;
+		
+		int to=startrow+maxrow;
+		if(to>children.length)to=children.length;
+		
+		for(int i=startrow-1;i<to;i++){
+			task = getTaskByName(dir, children[i]);
+			if(task!=null)addQueryRow(qry, task);
+		}
+		
+		return qry;
+	}
+	
+	private Query createQuery() throws DatabaseException {
+		String v="VARCHAR";
+		String d="DATE";
+		railo.runtime.type.Query qry=new QueryImpl(
+				new String[]{"type","name","detail","id","lastExecution","nextExecution","closed","tries","exceptions","triesmax"},
+				new String[]{v,v,"object",v,d,d,"boolean","int","object","int"},
+				0,"query");
+		return qry;
+	}
+	
+	private void addQueryRow(railo.runtime.type.Query qry, SpoolerTask task) throws PageException {
+    	int row = qry.addRow();
+		try{
+			qry.setAt(TYPE, row, task.getType());
+			qry.setAt(NAME, row, task.subject());
+			qry.setAt(DETAIL, row, task.detail());
+			qry.setAt(ID, row, task.getId());
+
+			
+			qry.setAt(LAST_EXECUTION, row,new DateTimeImpl(task.lastExecution(),true));
+			qry.setAt(NEXT_EXECUTION, row,new DateTimeImpl(task.nextExecution(),true));
+			qry.setAt(CLOSED, row,Caster.toBoolean(task.closed()));
+			qry.setAt(TRIES, row,Caster.toDouble(task.tries()));
+			qry.setAt(TRIES_MAX, row,Caster.toDouble(task.tries()));
+			qry.setAt(EXECUTIONS, row,translateTime(task.getExceptions()));
+			
+			int triesMax=0;
+			ExecutionPlan[] plans = task.getPlans();
+			for(int y=0;y<plans.length;y++) {
+				triesMax+=plans[y].getTries();
+			}
+			qry.setAt(TRIES_MAX, row,Caster.toDouble(triesMax));
+		}
+		catch(Throwable t){}
+	}
+	
+	private Array translateTime(Array exp) {
+		exp=(Array) exp.duplicate(true);
+		Iterator it = exp.iterator();
+		Struct sct;
+		while(it.hasNext()) {
+			sct=(Struct) it.next();
+			sct.setEL(TIME,new DateTimeImpl(Caster.toLongValue(sct.get(TIME,null),0),true));
+		}
+		return exp;
+	}
+
+
+	/* *
+	 * @see railo.runtime.spooler.SpoolerEngine#getOpenTasks()
+	
+	public SpoolerTask[] getOpenTasks() {
+		if(openTasks.size()==0) return new SpoolerTask[0];
+		return (SpoolerTask[]) openTasks.toArray(new SpoolerTask[openTasks.size()]);
+	} */
+	
+	/* *
+	 * @see railo.runtime.spooler.SpoolerEngine#getClosedTasks()
+	 
+	public SpoolerTask[] getClosedTasks() {
+		if(closedTasks.size()==0) return new SpoolerTask[0];
+		return (SpoolerTask[]) closedTasks.toArray(new SpoolerTask[closedTasks.size()]);
+	}*/
+	
+
+	/*public static void list(SpoolerTask[] tasks) {
 		for(int i=0;i<tasks.length;i++) {
 			aprint.out(tasks[i].subject());
 			aprint.out("- last exe:"+tasks[i].lastExecution());
 			aprint.out("- tries:"+tasks[i].tries());
 		}
-	}
+	}*/
 	
 	class SpoolerThread extends Thread {
 
 		private SpoolerEngineImpl engine;
 		private boolean sleeping;
-		private int maxThreads=10;
+		private int maxThreads=20;
 
 		public SpoolerThread(SpoolerEngineImpl engine) {
 			this.engine=engine;
@@ -205,7 +365,8 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		}
 		
 		public void run() {
-			SpoolerTask[] tasks;
+			String[] taskNames;
+			//SpoolerTask[] tasks;
 			SpoolerTask task=null;
 			long nextExection;
 			ThreadLocalConfig.register(engine.config);
@@ -213,21 +374,25 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 			List<TaskThread> runningTasks=new ArrayList<TaskThread>();
 			TaskThread tt;
 			int adds;
-			while(!engine.openTasks.isEmpty()) {
+			
+			while(getOpenTaskCount()>0) {
 				adds=engine.adds();
-				tasks=engine.getOpenTasks();
+				taskNames = openDirectory.list(FILTER);
+				//tasks=engine.getOpenTasks();
 				nextExection=Long.MAX_VALUE;
-				for(int i=0;i<tasks.length;i++) {
-					task=tasks[i];
-					if(task.nextExecution()<=System.currentTimeMillis()) {
+				for(int i=0;i<taskNames.length;i++) {
+					task=getTaskByName(openDirectory, taskNames[i]);
+					//print.o("- "+task.getId()+" : "+new Date(task.nextExecution()));
+					
+					if(task!=null && task.nextExecution()<=System.currentTimeMillis()) {
+						//print.o("- execute");
 						tt=new TaskThread(engine,task);
 						tt.start();
 						runningTasks.add(tt);
 					}
-					
+					else if(task.nextExecution()<nextExection && nextExection!=-1 && !task.closed()) 
+						nextExection=task.nextExecution();
 					nextExection=joinTasks(runningTasks,maxThreads,nextExection);
-					
-					     
 				}
 				
 				nextExection=joinTasks(runningTasks,0,nextExection);
@@ -236,10 +401,12 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 				if(nextExection==Long.MAX_VALUE)break;
 				long sleep = nextExection-System.currentTimeMillis();
 				
+				//print.o("sleep:"+sleep+">"+(sleep/1000));
 				if(sleep>0)doWait(sleep);
 				
 				//if(sleep<0)break;
 			}
+			//print.o("end:"+getOpenTaskCount());
 		}
 
 		private long joinTasks(List<TaskThread> runningTasks, int maxThreads,long nextExection) {
@@ -252,7 +419,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 					SystemUtil.join(tt);
 					task = tt.getTask();
 
-					if(task!=null && task.nextExecution()<nextExection && !task.closed()) {
+					if(task!=null && task.nextExecution()!=-1 && task.nextExecution()<nextExection && !task.closed()) {
 						nextExection=task.nextExecution();
 					}
 				}
@@ -310,7 +477,15 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	 */
 	public void remove(SpoolerTask task) {
 		unstore(task);
-		if(!openTasks.remove(task))closedTasks.remove(task);
+		//if(!openTasks.remove(task))closedTasks.remove(task);
+	}
+	
+	public void removeAll() {
+		ResourceUtil.removeChildrenEL(openDirectory);
+		ResourceUtil.removeChildrenEL(closedDirectory);
+		SystemUtil.sleep(100);
+		ResourceUtil.removeChildrenEL(openDirectory);
+		ResourceUtil.removeChildrenEL(closedDirectory);
 	}
 	
 
@@ -333,19 +508,19 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	 * @see railo.runtime.spooler.SpoolerEngine#remove(java.lang.String)
 	 */
 	public void remove(String id) {
-		SpoolerTask task = getTaskById(getOpenTasks(),id);
-		if(task==null)task=getTaskById(getClosedTasks(),id);
+		SpoolerTask task = getTaskById(openDirectory,id);
+		if(task==null)task=getTaskById(closedDirectory,id);
 		if(task!=null)remove(task);
 	}
 
-	private SpoolerTask getTaskById(SpoolerTask[] tasks, String id) {
+	/*private SpoolerTask getTaskById(SpoolerTask[] tasks, String id) {
 		for(int i=0;i<tasks.length;i++) {
 			if(tasks[i].getId().equals(id)) {
 				return tasks[i];
 			}
 		}
 		return null;
-	}
+	}*/
 
 	/**
 	 * execute task by id and return eror throwd by task
@@ -353,8 +528,8 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	 * @throws SpoolerException
 	 */
 	public PageException execute(String id) {
-		SpoolerTask task = getTaskById(getOpenTasks(),id);
-		if(task==null)task=getTaskById(getClosedTasks(),id);
+		SpoolerTask task = getTaskById(openDirectory,id);
+		if(task==null)task=getTaskById(closedDirectory,id);
 		if(task!=null){
 			return execute(task);
 		}
@@ -365,8 +540,8 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		//task.closed();
 		try {
 			((SpoolerTaskSupport)task)._execute(config);
-			if(task.closed())closedTasks.remove(task);
-			else openTasks.remove(task);
+			//if(task.closed())closedTasks.remove(task);
+			//else openTasks.remove(task);
 			
 			unstore(task);
 			log.info("remote-client", task.subject());
@@ -381,8 +556,8 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 			task.setNextExecution(calculateNextExecution(task));
 			log.error("remote-client", task.subject()+":"+t.getMessage());
 			if(task.nextExecution()==-1) {
-				openTasks.remove(task);
-				if(!closedTasks.contains(task))closedTasks.add(task);
+				//openTasks.remove(task);
+				//if(!closedTasks.contains(task))closedTasks.add(task);
 				unstore(task);
 				task.setClosed(true);
 				store(task);
@@ -423,4 +598,13 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	public void setConfig(Config config) {
 		this.config = config;
 	}
+	
+}
+	
+class TaskFileFilter implements ResourceNameFilter {
+
+	public boolean accept(Resource parent, String name) {
+		return name!=null && name.endsWith(".tsk");
+	}
+	
 }

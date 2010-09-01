@@ -20,7 +20,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import railo.print;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
@@ -2123,7 +2122,6 @@ public final class ConfigWebAdmin {
     	checkWriteAccess();
         if(!(config instanceof ConfigServer))
             throw new SecurityException("can't change security settings from this context");
-        print.e("reg:"+tagRegistry);
         
         Element security=_getRootElement("security");
         updateSecurityFileAccess(security,fileAccess,file);
@@ -2216,7 +2214,6 @@ public final class ConfigWebAdmin {
         if(!(config instanceof ConfigServer))
             throw new SecurityException("can't change security settings from this context");
         
-        print.e("registry3:"+tagRegistry);
         Element security=_getRootElement("security");
         Element[] children = ConfigWebFactory.getChildren(security,"accessor");
         Element accessor=null;

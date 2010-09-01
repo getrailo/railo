@@ -122,7 +122,7 @@ public class ListAsArray implements Array,List,Sizeable {
 		while(lit.hasNext()) {
 			index=lit.nextIndex()+1;
 			v=lit.next();
-			if(v!=null)keys.add(Constants.Integer(index));
+			if(v!=null)keys.add(Integer.valueOf(index));
 		}
 		int[] intKeys = new int[keys.size()];
 		Iterator it = keys.iterator();

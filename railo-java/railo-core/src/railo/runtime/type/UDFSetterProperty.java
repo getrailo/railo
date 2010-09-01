@@ -16,7 +16,7 @@ public class UDFSetterProperty extends UDFGSProperty {
 	public UDFSetterProperty(ComponentImpl component,Property prop) {
 		super(component,"set"+StringUtil.ucFirst(prop.getName()),new FunctionArgument[]{
 			new FunctionArgumentImpl(prop.getName(),prop.getType(),true)
-		},CFTypes.TYPE_VOID,"wddx");
+		},CFTypes.TYPE_ANY,"wddx");
 		
 		
 		this.prop=prop; 
@@ -44,7 +44,7 @@ public class UDFSetterProperty extends UDFGSProperty {
 			throw new ExpressionException("The parameter "+prop.getName()+" to function "+getFunctionName()+" is required but was not passed in.");
 		component.getComponentScope().set(prop.getName(), args[0]);
 		
-		return null;
+		return component;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class UDFSetterProperty extends UDFGSProperty {
 			else throw new ExpressionException("The parameter "+prop.getName()+" to function "+getFunctionName()+" is required but was not passed in.");
 		}
 		component.getComponentScope().set(prop.getName(), value);
-		return null;
+		return component;
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class UDFSetterProperty extends UDFGSProperty {
 	 * @see railo.runtime.type.UDF#getReturnTypeAsString()
 	 */
 	public String getReturnTypeAsString() {
-		return "void";
+		return "any";
 	}
 
 	/**

@@ -7,7 +7,7 @@ import railo.runtime.orm.hibernate.HibernateCaster;
 import railo.runtime.orm.hibernate.HibernateRuntimeException;
 
 
-public class CFCEntityNameResolver implements EntityNameResolver {
+public  class CFCEntityNameResolver implements EntityNameResolver {
 	public static final CFCEntityNameResolver INSTANCE = new CFCEntityNameResolver();
 
 	/**

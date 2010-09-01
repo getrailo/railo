@@ -2937,9 +2937,11 @@ public abstract class ConfigImpl implements Config {
 	}
 	
 	public ORMEngine resetORMEngine(PageContext pc) throws PageException {
-		String name = pc.getApplicationContext().getName();
-		ormengines.remove(name);
-		return getORMEngine(pc);
+		//String name = pc.getApplicationContext().getName();
+		//ormengines.remove(name);
+		ORMEngine e = getORMEngine(pc);
+		e.reload(pc);
+		return e;
 	}
 	
 	public ORMEngine getORMEngine(PageContext pc) throws PageException {

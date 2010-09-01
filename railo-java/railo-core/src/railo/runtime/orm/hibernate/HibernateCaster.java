@@ -370,8 +370,8 @@ public class HibernateCaster {
 		
 		if(qry==null) {
 			if(!StringUtil.isEmpty(name))
-				throw new ORMException("there is no entity inheritance that match the name ["+name+"]");
-			throw new ORMException("can not create query");
+				throw new ORMException(session.getEngine(),"there is no entity inheritance that match the name ["+name+"]");
+			throw new ORMException(session.getEngine(),"can not create query");
 		}
 		return qry;
 	}
@@ -425,7 +425,7 @@ public class HibernateCaster {
 		// check
 		else if(engine.getMode() == ORMEngine.MODE_STRICT){
 			if(!qry.getName().equals(getEntityName(pc,cfc)))
-				throw new ORMException("can only merge entities of the same kind to a query");
+				throw new ORMException(session.getEngine(),"can only merge entities of the same kind to a query");
 		}
 		
 		// populate

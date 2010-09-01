@@ -47,7 +47,7 @@ public final class RefLongImpl implements RefLong {
      * @see railo.commons.lang.types.RefLong#toLong()
      */
     public Long toLong() {
-        return new Long(value);
+        return Long.valueOf(value);
     }
     
 	/**

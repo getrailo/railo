@@ -60,7 +60,7 @@ public final class ZTuple
                 int j = attributes_.size();
                 attributes_.addElement(s);
                 values_.addElement(obj);
-                searchTable_.put(s, new Integer(j));
+                searchTable_.put(s, Integer.valueOf(j));
             }
         }
     }

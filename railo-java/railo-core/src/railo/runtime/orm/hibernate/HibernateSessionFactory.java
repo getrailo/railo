@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
@@ -58,7 +60,7 @@ public class HibernateSessionFactory {
 		String dialect=Dialect.getDialect(ormConf.getDialect());
 		if(StringUtil.isEmpty(dialect)) dialect=Dialect.getDialect(ds);
 		if(StringUtil.isEmpty(dialect))
-			throw new ORMException("A valid dialect definition inside the application.cfc/cfapplication is missing. The dialect cannot be determinated automatically");
+			throw new ORMException(engine,"A valid dialect definition inside the application.cfc/cfapplication is missing. The dialect cannot be determinated automatically");
 		
 		// Cache Provider
 		String cacheProvider = ormConf.getCacheProvider();
@@ -210,7 +212,8 @@ public class HibernateSessionFactory {
 
 
 	public static String createMappings(Map<String, CFCInfo> cfcs) {
-
+		
+		Set<String> done=new HashSet<String>();
 		StringBuffer mappings=new StringBuffer();
 		mappings.append("<?xml version=\"1.0\"?>\n");
 		mappings.append("<!DOCTYPE hibernate-mapping PUBLIC \"-//Hibernate/Hibernate Mapping DTD 3.0//EN\" \"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd\">\n");
@@ -219,11 +222,27 @@ public class HibernateSessionFactory {
 		Entry<String, CFCInfo> entry;
 		while(it.hasNext()){
 			entry = it.next();
-			mappings.append(entry.getValue().getXML());
+			createMappings(cfcs,entry.getKey(),entry.getValue(),done,mappings);
+			
 		}
 		mappings.append("</hibernate-mapping>");
-		
 		return mappings.toString();
+	}
+
+	private static void createMappings(Map<String, CFCInfo> cfcs,String key, CFCInfo value,Set<String> done,StringBuffer mappings) {
+		if(done.contains(key)) return;
+		CFCInfo v;
+		String k = value.getCFC().getExtends();
+		if(!StringUtil.isEmpty(k)){
+			k=HibernateORMEngine.id(railo.runtime.type.List.last(k, '.').trim());
+			if(!done.contains(k)) {
+				v = cfcs.get(k);
+				if(v!=null)createMappings(cfcs, k, v, done, mappings);
+			}
+		}
+		
+		mappings.append(value.getXML());
+		done.add(key);
 	}
 
 	public static List<Component> loadComponents(PageContext pc,HibernateORMEngine engine, ORMConfiguration ormConf) {

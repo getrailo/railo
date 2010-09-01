@@ -746,7 +746,7 @@ public class PDF extends BodyTagImpl  {
 			
 			Set _pages = doc.getPages();
 		    for (int i=1;i<=len;i++) {
-		    	if(_pages!=null && !_pages.contains(Constants.Integer(i))) continue;
+		    	if(_pages!=null && !_pages.contains(Integer.valueOf(i))) continue;
 		    	PdfContentByte cb =foreground? stamp.getOverContent(i):stamp.getUnderContent(i);
 		    	PdfGState gs1 = new PdfGState();
 		    	//print.out("op:"+opacity);
@@ -804,7 +804,7 @@ public class PDF extends BodyTagImpl  {
 			
 			Set _pages = doc.getPages();
 		    for (int i=1;i<=len;i++) {
-		    	if(_pages!=null && !_pages.contains(Constants.Integer(i))) continue;
+		    	if(_pages!=null && !_pages.contains(Integer.valueOf(i))) continue;
 		    	PdfContentByte cb =foreground? stamp.getOverContent(i):stamp.getUnderContent(i);
 		    	PdfGState gs1 = new PdfGState();
 		        gs1.setFillOpacity(0);

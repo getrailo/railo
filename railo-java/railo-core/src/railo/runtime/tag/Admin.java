@@ -19,7 +19,6 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.opencfml.eventgateway.Gateway;
 
-import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.SystemUtil;
@@ -95,6 +94,7 @@ import railo.runtime.reflection.Reflector;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.spooler.ExecutionPlan;
+import railo.runtime.spooler.SpoolerEngineImpl;
 import railo.runtime.spooler.SpoolerTask;
 import railo.runtime.spooler.remote.RemoteClientTask;
 import railo.runtime.type.Array;
@@ -102,6 +102,7 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -546,6 +547,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("removeremoteclient",     ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveRemoteClient();
         else if(check("removeRemoteClientUsage",ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveRemoteClientUsage();
     	else if(check("removeSpoolerTask", 		ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveSpoolerTask();
+    	else if(check("removeAllSpoolerTask", 	ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveAllSpoolerTask();
         // alias for executeSpoolerTask
         else if(check("removeRemoteClientTask", ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveSpoolerTask();
         else if(check("executeSpoolerTask",		ACCESS_FREE) && check2(ACCESS_WRITE  )) doExecuteSpoolerTask();
@@ -1200,7 +1202,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	}
 
 	private void doUpdateSecurityManager() throws  PageException {
-		print.e("registry2:"+fb("tag_registry"));
 		admin.updateSecurity(
                 getString("admin",action,"id"),
                 fb("setting"),
@@ -2380,6 +2381,9 @@ private void doGetMappings() throws PageException {
     private void doRemoveSpoolerTask() throws PageException {
     	config.getSpoolerEngine().remove(getString("admin",action,"id"));
     }
+    private void doRemoveAllSpoolerTask() throws PageException {
+    	((SpoolerEngineImpl)config.getSpoolerEngine()).removeAll();
+    }
     private void doExecuteSpoolerTask() throws PageException {
     	PageException pe = config.getSpoolerEngine().execute(getString("admin",action,"id"));
 		if(pe!=null) throw pe;
@@ -2686,22 +2690,22 @@ private void doGetMappings() throws PageException {
                 sct.setEL("password",d.getPassword());
                 sct.setEL("username",d.getUsername());
                 sct.setEL("readonly",Caster.toBoolean(d.isReadOnly()));
-                sct.setEL("select",Constants.Boolean(d.hasAllow(DataSource.ALLOW_SELECT)));
-                sct.setEL("delete",Constants.Boolean(d.hasAllow(DataSource.ALLOW_DELETE)));
-                sct.setEL("update",Constants.Boolean(d.hasAllow(DataSource.ALLOW_UPDATE)));
-                sct.setEL("insert",Constants.Boolean(d.hasAllow(DataSource.ALLOW_INSERT)));
-                sct.setEL("create",Constants.Boolean(d.hasAllow(DataSource.ALLOW_CREATE)));
-                sct.setEL("insert",Constants.Boolean(d.hasAllow(DataSource.ALLOW_INSERT)));
-                sct.setEL("drop",Constants.Boolean(d.hasAllow(DataSource.ALLOW_DROP)));
-                sct.setEL("grant",Constants.Boolean(d.hasAllow(DataSource.ALLOW_GRANT)));
-                sct.setEL("revoke",Constants.Boolean(d.hasAllow(DataSource.ALLOW_REVOKE)));
-                sct.setEL("alter",Constants.Boolean(d.hasAllow(DataSource.ALLOW_ALTER)));
+                sct.setEL("select",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_SELECT)));
+                sct.setEL("delete",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_DELETE)));
+                sct.setEL("update",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_UPDATE)));
+                sct.setEL("insert",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_INSERT)));
+                sct.setEL("create",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_CREATE)));
+                sct.setEL("insert",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_INSERT)));
+                sct.setEL("drop",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_DROP)));
+                sct.setEL("grant",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_GRANT)));
+                sct.setEL("revoke",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_REVOKE)));
+                sct.setEL("alter",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_ALTER)));
     
                 sct.setEL("connectionLimit",d.getConnectionLimit()<1?"":Caster.toString(d.getConnectionLimit()));
                 sct.setEL("connectionTimeout",d.getConnectionTimeout()<1?"":Caster.toString(d.getConnectionTimeout()));
                 sct.setEL("custom",d.getCustoms());
-                sct.setEL("blob",Constants.Boolean(d.isBlob()));
-                sct.setEL("clob",Constants.Boolean(d.isClob()));
+                sct.setEL("blob",Boolean.valueOf(d.isBlob()));
+                sct.setEL("clob",Boolean.valueOf(d.isClob()));
                 pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
                 return;
             }
@@ -2741,12 +2745,24 @@ private void doGetMappings() throws PageException {
     }
     
     private void doGetSpoolerTasks() throws PageException {
+    	int startrow = getInt("startrow",1);
+    	int maxrow = getInt("maxrow",-1);
+    	String result=getString("result", null);
+    	SpoolerEngineImpl engine = (SpoolerEngineImpl) config.getSpoolerEngine();
     	
+    	Query qry = engine.getAllTasksAsQuery(startrow,maxrow);
+    	pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+		if(!StringUtil.isEmpty(result)){
+			Struct sct=new StructImpl();
+			pageContext.setVariable(result,sct);
+			sct.setEL("open", engine.getOpenTaskCount());
+				sct.setEL("closed", engine.getClosedTaskCount());
+		}
     	
-			SpoolerTask[] open = config.getSpoolerEngine().getOpenTasks();
+    	/*
+    	SpoolerTask[] open = config.getSpoolerEngine().getOpenTasks();
 			SpoolerTask[] closed = config.getSpoolerEngine().getClosedTasks();
-			String v="VARCHAR";
-			String d="DATE";
+			String v="VARCHAR"; 
 			railo.runtime.type.Query qry=new QueryImpl(
 					new String[]{"type","name","detail","id","lastExecution","nextExecution","closed","tries","exceptions","triesmax"},
 					new String[]{v,v,"object",v,d,d,"boolean","int","object","int"},
@@ -2756,7 +2772,9 @@ private void doGetMappings() throws PageException {
 			row=doGetRemoteClientTasks(qry,open,row);
 			doGetRemoteClientTasks(qry,closed,row);
 	        pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
-    	       
+    	   */  
+    	
+    	
     	
     }
     
@@ -2909,22 +2927,22 @@ private void doGetMappings() throws PageException {
             qry.setAt("password",row,d.getPassword());
             qry.setAt("username",row,d.getUsername());
             qry.setAt("readonly",row,Caster.toBoolean(d.isReadOnly()));
-            qry.setAt("select",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_SELECT)));
-            qry.setAt("delete",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_DELETE)));
-            qry.setAt("update",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_UPDATE)));
-            qry.setAt("insert",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_INSERT)));
-            qry.setAt("create",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_CREATE)));
-            qry.setAt("insert",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_INSERT)));
-            qry.setAt("drop",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_DROP)));
-            qry.setAt("grant",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_GRANT)));
-            qry.setAt("revoke",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_REVOKE)));
-            qry.setAt("alter",row,Constants.Boolean(d.hasAllow(DataSource.ALLOW_ALTER)));
+            qry.setAt("select",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_SELECT)));
+            qry.setAt("delete",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_DELETE)));
+            qry.setAt("update",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_UPDATE)));
+            qry.setAt("insert",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_INSERT)));
+            qry.setAt("create",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_CREATE)));
+            qry.setAt("insert",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_INSERT)));
+            qry.setAt("drop",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_DROP)));
+            qry.setAt("grant",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_GRANT)));
+            qry.setAt("revoke",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_REVOKE)));
+            qry.setAt("alter",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_ALTER)));
 
             qry.setAt("connectionLimit",row,d.getConnectionLimit()<1?"":Caster.toString(d.getConnectionLimit()));
             qry.setAt("connectionTimeout",row,d.getConnectionTimeout()<1?"":Caster.toString(d.getConnectionTimeout()));
             qry.setAt("customSettings",row,d.getCustoms());
-            qry.setAt("blob",row,Constants.Boolean(d.isBlob()));
-            qry.setAt("clob",row,Constants.Boolean(d.isClob()));
+            qry.setAt("blob",row,Boolean.valueOf(d.isBlob()));
+            qry.setAt("clob",row,Boolean.valueOf(d.isClob()));
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     }

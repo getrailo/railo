@@ -362,15 +362,15 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		        row++;
 		        QueryEntry qe=(QueryEntry) qryIt.next();
 				qryQueries.setAt("name",row,qe.getName()==null?"":qe.getName());
-		        qryQueries.setAt("time",row,Constants.Integer(qe.getExe()));
+		        qryQueries.setAt("time",row,Integer.valueOf(qe.getExe()));
 		        qryQueries.setAt("sql",row,qe.getSQL().toString());
 				qryQueries.setAt("src",row,qe.getSrc());
-                qryQueries.setAt("count",row,Constants.Integer(qe.getRecordcount()));
+                qryQueries.setAt("count",row,Integer.valueOf(qe.getRecordcount()));
                 qryQueries.setAt("datasource",row,qe.getDatasource());
                 
 		        Object o=qryExe.get(qe.getSrc(),null);
-		        if(o==null) qryExe.setEL(qe.getSrc(),Constants.Integer(qe.getExe()));
-		        else qryExe.setEL(qe.getSrc(),Constants.Integer(((Integer)o).intValue()+qe.getExe()));
+		        if(o==null) qryExe.setEL(qe.getSrc(),Integer.valueOf(qe.getExe()));
+		        else qryExe.setEL(qe.getSrc(),Integer.valueOf(((Integer)o).intValue()+qe.getExe()));
 		    }
 		}
 		catch(PageException dbe) {}

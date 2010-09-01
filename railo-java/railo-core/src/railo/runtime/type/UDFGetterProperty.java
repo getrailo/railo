@@ -34,7 +34,7 @@ public class UDFGetterProperty extends UDFGSProperty {
 	 * @see railo.runtime.type.UDF#call(railo.runtime.PageContext, java.lang.Object[], boolean)
 	 */
 	public Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException {
-		return component.getComponentScope().get(prop.getName(),null);
+		return component.getComponentScope().get(pageContext, KeyImpl.init(prop.getName()),null);
 	}
 
 	/**

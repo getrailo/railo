@@ -161,7 +161,7 @@ public class PDFUtil {
 				
 				
 				for (int y = 1; y <= n; y++) {
-					if(pages!=null && removePages==pages.contains(Constants.Integer(y))){
+					if(pages!=null && removePages==pages.contains(Integer.valueOf(y))){
 						continue;
 					}
 					pageOffset++;
@@ -199,11 +199,11 @@ public class PDFUtil {
 
 	public static Set parsePageDefinition(String strPages) throws PageException {
 		if(StringUtil.isEmpty(strPages)) return null;
-		HashSet set=new HashSet();
+		HashSet<Integer> set=new HashSet<Integer>();
 		parsePageDefinition(set, strPages);
 		return set;
 	}
-	public static void parsePageDefinition(Set pages, String strPages) throws PageException {
+	public static void parsePageDefinition(Set<Integer> pages, String strPages) throws PageException {
 		if(StringUtil.isEmpty(strPages)) return;
 		String[] arr = railo.runtime.type.List.toStringArrayTrim(railo.runtime.type.List.listToArrayRemoveEmpty(strPages, ','));
 		int index,from,to;
@@ -214,7 +214,7 @@ public class PDFUtil {
 				from=Caster.toIntValue(arr[i].substring(0,index).trim());
 				to=Caster.toIntValue(arr[i].substring(index+1).trim());
 				for(int y=from;y<=to;y++){
-					pages.add(Constants.Integer(y));
+					pages.add(Integer.valueOf(y));
 				}
 			}
 		}

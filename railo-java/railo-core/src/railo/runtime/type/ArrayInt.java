@@ -124,7 +124,7 @@ public class ArrayInt implements Sizeable,Serializable {
 		for(int i=offset;i<offset+size;i++) {
 			int o=arr[i];
 			count++;
-			if(o!=NULL) lst.add(Constants.Integer(count));
+			if(o!=NULL) lst.add(Integer.valueOf(count));
 		}
 
 		int[] ints=new int[lst.size()];

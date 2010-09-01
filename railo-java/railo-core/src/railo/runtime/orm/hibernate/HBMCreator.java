@@ -7,6 +7,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentPro;
@@ -14,6 +15,7 @@ import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.other.ToBinary;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
@@ -36,6 +38,7 @@ public class HBMCreator {
 		Boolean b;
 		Integer i;
 		
+		
 		// MUST Support for embeded objects 
 		
 		ComponentPro cfci = ComponentUtil.toComponentPro(cfc);
@@ -50,98 +53,64 @@ public class HBMCreator {
 		comment.append("\ncompilation-time:").append(new DateTimeImpl(ComponentUtil.getCompileTime(pc,cfci.getPageSource()),false)).append("\n");
 		
 		hibernateMapping.appendChild(doc.createComment(comment.toString()));
+		String extend = cfc.getExtends();
 		
-		
-		Element clazz = doc.createElement("class");
-		
-		
-		hibernateMapping.appendChild(clazz);
-		
-		
-		
+		Element clazz;
+		boolean isClass=StringUtil.isEmpty(extend);
+		boolean doTable=true;
+		if(isClass)  {
+			clazz = doc.createElement("class");
+			hibernateMapping.appendChild(clazz);
+		}
+		// extended CFC
+		else{
+			String ext = List.last(extend,'.').trim();
+			String discriminatorValue = toString(meta,"discriminatorValue");
+			if(!StringUtil.isEmpty(discriminatorValue,true)) {
+				doTable=false;
+				clazz = doc.createElement("subclass");
+				hibernateMapping.appendChild(clazz);
+		        //addClassAttributes(classNode);
+		        clazz.setAttribute("extends", ext);
+		        
+		        clazz.setAttribute("discriminator-value", discriminatorValue);
+			}
+			else {
+				clazz = doc.createElement("joined-subclass");
+				hibernateMapping.appendChild(clazz);
+				clazz.setAttribute("extends",ext);
+				Element key = doc.createElement("key");
+			    clazz.appendChild(key);
+		        key.setAttribute("column", formatColumn(toString(meta,"joincolumn",true)));
+			}
+
+		}
 		
 		//lazy
 		//clazz.setAttribute("lazy", "true");
 		//createXMLMappingTuplizer(clazz,pc);
+
+		addGeneralClassAttributes(pc,ormConf,engine,cfc,meta,clazz);
+		String tableName=getTableName(pc,meta,cfc);
+		if(doTable)addGeneralTableAttributes(pc,ormConf,engine,cfc,meta,clazz);
 		
-		addGeneralClassAttributes(pc,engine,cfc,meta,clazz);
-		
-		
-        // read-only
-        b=toBoolean(meta,"readOnly");
-        if(b!=null && b.booleanValue()) clazz.setAttribute("mutable", "false");
-        
-        // where
-        str=toString(meta,"where");
-        if(!StringUtil.isEmpty(str,true)) clazz.setAttribute("where", str);
-        
-		
-        
-        
-        
-        // optimistic-lock
-        str=toString(meta,"optimisticLock");
-        if(!StringUtil.isEmpty(str,true)) {
-        	str=str.trim().toLowerCase();
-        	if("all".equals(str) || "dirty".equals(str) || "none".equals(str) || "version".equals(str))
-        		clazz.setAttribute("optimistic-lock",str);
-        	else
-        		throw new ORMException("invalid value ["+str+"] for attribute [optimistic-lock] of tag [component], valid values are [all,dirty,none,version]");
-        }
-        
-        // rowid
-        str=toString(meta,"rowid");
-        if(!StringUtil.isEmpty(str,true)) clazz.setAttribute("rowid",str);
-        
-        // mutable
-        b=toBoolean(meta,"readonly");
-        if(b!=null && b.booleanValue())clazz.setAttribute("mutable","false");
-        
-		
-        // table
-        String tableName=toString(meta,"table");
-        if(StringUtil.isEmpty(tableName,true)) tableName=HibernateCaster.getEntityName(pc, cfc);
-        clazz.setAttribute("table",tableName);
-        
-        // catalog
-        str=toString(meta,"catalog");
-        if(str==null)// empty string is allowed as input
-        	str=ormConf.getCatalog();
-        if(!StringUtil.isEmpty(str,true)) clazz.setAttribute("catalog", str);
-        
-        // schema
-        str=toString(meta,"schema");
-        if(str==null)// empty string is allowed as input
-        	str=ormConf.getSchema();
-        if(!StringUtil.isEmpty(str,true)) clazz.setAttribute( "schema", str);
         
         
         Struct columnsInfo=null;
         if(ormConf.useDBForMapping()){
-        	columnsInfo = engine.getTableInfo(dc,HibernateCaster.getEntityName(pc,cfci),engine);
+        	columnsInfo = engine.getTableInfo(dc,getTableName(pc, meta, cfci),engine);
         }
         
-        setCacheStrategy(doc, meta, clazz);
+        if(isClass)setCacheStrategy(engine,doc, meta, clazz);
         
 		// id
-        ArrayList<Property> ids=new ArrayList<Property>();
-        for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getMeta().get("fieldType",null),null);
-			if("id".equalsIgnoreCase(fieldType) || List.listFindNoCaseIgnoreEmpty(fieldType,"id",',')!=-1)
-				ids.add(props[y]);
-		}
-        Property[] _ids = ids.toArray(new Property[ids.size()]);
-        
-        if(_ids.length==1) 
-        	createXMLMappingId(clazz,pc, _ids[0],columnsInfo,tableName,engine);
-        else if(_ids.length>1) 
-        	createXMLMappingCompositeId(clazz,pc, _ids,columnsInfo,tableName,engine);
-		
+        if(isClass) addId(doc,clazz,pc,meta,props,columnsInfo,tableName,engine);
+	      
         // discriminator
         addDiscriminator(doc,clazz,pc,meta);
         
 		// version
-        addVersion(clazz,pc, props,columnsInfo,tableName,engine);
+        if(isClass)addVersion(clazz,pc, props,columnsInfo,tableName,engine);
 		
 		// property
 		addProperty(clazz,pc, props,columnsInfo,tableName,engine);
@@ -152,7 +121,6 @@ public class HBMCreator {
 		// collection
 		addCollection(clazz,pc, props,columnsInfo,tableName,engine,dc,ormConf);
 		
-		
 	}
 	
 	
@@ -160,13 +128,48 @@ public class HBMCreator {
 
 
 
+	private static void addId(Document doc, Element clazz, PageContext pc, Struct meta, Property[] props, Struct columnsInfo, String tableName, HibernateORMEngine engine) throws PageException {
+		ArrayList<Property> ids=new ArrayList<Property>();
+        for(int y=0;y<props.length;y++){
+			String fieldType = Caster.toString(props[y].getMeta().get("fieldType",null),null);
+			if("id".equalsIgnoreCase(fieldType) || List.listFindNoCaseIgnoreEmpty(fieldType,"id",',')!=-1)
+				ids.add(props[y]);
+		}
+        
+        // no id field defined
+        if(ids.size()==0) {
+        	for(int y=0;y<props.length;y++){
+    			String fieldType = Caster.toString(props[y].getMeta().get("fieldType",null),null);
+    			//print.o(fieldType+":"+props[y].getName());
+    			if(StringUtil.isEmpty(fieldType,true) && props[y].getName().equalsIgnoreCase("id")){
+    				ids.add(props[y]);
+    				props[y].getMeta().set("fieldType", "id");
+    			}
+    		}
+        } 
+        
+        Property[] _ids = ids.toArray(new Property[ids.size()]);
+        
+        if(_ids.length==1) 
+        	createXMLMappingId(clazz,pc, _ids[0],columnsInfo,tableName,engine);
+        else if(_ids.length>1) 
+        	createXMLMappingCompositeId(clazz,pc, _ids,columnsInfo,tableName,engine);
+        else 
+        	throw new ORMException(engine,"missing id property for entity ["+tableName+"]");
+	}
+
+
+
+
+
+
 	private static void addVersion(Element clazz, PageContext pc,Property[] props, Struct columnsInfo, String tableName,HibernateORMEngine engine) throws PageException {
     	for(int y=0;y<props.length;y++){
 			String fieldType = Caster.toString(props[y].getMeta().get("fieldType",null),null);
 			if("version".equalsIgnoreCase(fieldType))
-				createXMLMappingVersion(clazz,pc, props[y]);
+				createXMLMappingVersion(engine,clazz,pc, props[y]);
 			else if("timestamp".equalsIgnoreCase(fieldType))
-				createXMLMappingTimestamp(clazz,pc, props[y]);
+				createXMLMappingTimestamp(engine,clazz,pc, props[y]);
 		}
 	}
 
@@ -219,7 +222,6 @@ public class HBMCreator {
     		 disc.setAttribute("column",str);
     	 }
     	 
-    	 //MUST discriminatorValue
 
     	
     	
@@ -227,7 +229,7 @@ public class HBMCreator {
 
 
 
-	private static void addGeneralClassAttributes(PageContext pc, HibernateORMEngine engine, Component cfc, Struct meta, Element clazz) throws PageException {
+	private static void addGeneralClassAttributes(PageContext pc, ORMConfiguration ormConf, HibernateORMEngine engine, Component cfc, Struct meta, Element clazz) throws PageException {
     	
     	// name
 		clazz.setAttribute("node", HibernateCaster.toComponentName(cfc));
@@ -257,18 +259,58 @@ public class HBMCreator {
         // select-before-update
         b=toBoolean(meta,"selectbeforeupdate");
         if(b!=null && b.booleanValue())clazz.setAttribute("select-before-update","true");
+
+        // optimistic-lock
+        str=toString(meta,"optimisticLock");
+        if(!StringUtil.isEmpty(str,true)) {
+        	str=str.trim().toLowerCase();
+        	if("all".equals(str) || "dirty".equals(str) || "none".equals(str) || "version".equals(str))
+        		clazz.setAttribute("optimistic-lock",str);
+        	else
+        		throw new ORMException(engine,"invalid value ["+str+"] for attribute [optimistic-lock] of tag [component], valid values are [all,dirty,none,version]");
+        }
         
+        // read-only
+        b=toBoolean(meta,"readOnly");
+        if(b!=null && b.booleanValue()) clazz.setAttribute("mutable", "false");
         
-		
+        // rowid
+        str=toString(meta,"rowid");
+        if(!StringUtil.isEmpty(str,true)) clazz.setAttribute("rowid",str);
+        
+        // where
+        str=toString(meta,"where");
+        if(!StringUtil.isEmpty(str,true)) clazz.setAttribute("where", str);
+
+       
+	}
+	private static void addGeneralTableAttributes(PageContext pc, ORMConfiguration ormConf, HibernateORMEngine engine, Component cfc, Struct meta, Element clazz) throws PageException {
+		 // table
+        clazz.setAttribute("table",getTableName(pc,meta,cfc));
+        
+        // catalog
+        String str = toString(meta,"catalog");
+        if(str==null)// empty string is allowed as input
+        	str=ormConf.getCatalog();
+        if(!StringUtil.isEmpty(str,true)) clazz.setAttribute("catalog", str);
+        
+        // schema
+        str=toString(meta,"schema");
+        if(str==null)// empty string is allowed as input
+        	str=ormConf.getSchema();
+        if(!StringUtil.isEmpty(str,true)) clazz.setAttribute( "schema", str);
+        
+	}
+	private static String getTableName(PageContext pc, Struct meta, Component cfc) throws ORMException {
+		String tableName=toString(meta,"table");
+        if(StringUtil.isEmpty(tableName,true)) tableName=HibernateCaster.getEntityName(pc, cfc);
+        //if(tableName==null) print.ds("null:"+cfc.getAbsName());
+		return tableName;
 	}
 
-	
 
 
 
-
-
-	
 
 
 	private static void createXMLMappingCompositeId(Element clazz, PageContext pc,Property[] props,Struct columnsInfo,String tableName,HibernateORMEngine engine) throws PageException {
@@ -333,8 +375,6 @@ public class HBMCreator {
 			str=toString(meta,"lazy");
 			key.setAttribute("lazy",str);
 		}
-		
-		
 	}
 	
 	
@@ -346,9 +386,7 @@ public class HBMCreator {
 		Document doc = XMLUtil.getDocument(clazz);
 		Element id = doc.createElement("id");
 		clazz.appendChild(id);
-		
-		
-				
+			
         // access
     	str=toString(meta,"access");
 		if(!StringUtil.isEmpty(str,true))id.setAttribute("access", str);
@@ -364,21 +402,23 @@ public class HBMCreator {
     	if(StringUtil.isEmpty(str,true)) str=prop.getName();
     	column.setAttribute("name",formatColumn(str));
     	ColumnInfo info=getColumnInfo(columnsInfo,tableName,str,engine);
-    	if(info!=null){
-    		column.setAttribute("sql-type",info.getTypeName());
-    		column.setAttribute("length",Caster.toString(info.getSize()));
+    	
+        // type
+		String type = getType(info,prop,meta,"string");
+		print.o(prop.getName()+":"+type);
+		id.setAttribute("type", type);
+		
+		
+		if(info!=null && !"string".equalsIgnoreCase(type)){
+    		//column.setAttribute("sql-type",info.getTypeName());
+    		//column.setAttribute("length",Caster.toString(info.getSize()));
     	}
     	
-		
-        // type
-		str=getType(info,prop,meta,"long");
-		id.setAttribute("type", str);
-		
 		// unsaved-value
 		str=toString(meta,"unsavedValue");
 		if(!StringUtil.isEmpty(str,true))id.setAttribute("unsaved-value", str);
 
-		createXMLMappingGenerator(id,pc,prop);		
+		createXMLMappingGenerator(engine,id,pc,prop);		
 	}
 	
 
@@ -445,7 +485,7 @@ public class HBMCreator {
 
 
 
-	private static void createXMLMappingGenerator(Element id, PageContext pc,Property prop) throws PageException {
+	private static void createXMLMappingGenerator(ORMEngine engine,Element id, PageContext pc,Property prop) throws PageException {
 		Struct meta = prop.getMeta();
 		
 		// generator
@@ -465,7 +505,7 @@ public class HBMCreator {
 			Struct sct=null;
 			if(obj instanceof String) obj=convertToSimpleMap((String)obj);
 			if(Decision.isStruct(obj)) sct=Caster.toStruct(obj);
-			else throw new ORMException("invalid value for attribute [params] of tag [property]");
+			else throw new ORMException(engine,"invalid value for attribute [params] of tag [property]");
 			className=className.trim().toLowerCase();
 			
 			// special classes
@@ -588,7 +628,7 @@ public class HBMCreator {
         	if("always".equals(str) || "insert".equals(str) || "never".equals(str))
         		property.setAttribute("generated",str);
         	else
-        		throw new ORMException("invalid value ["+str+"] for attribute [generated] of column ["+columnName+"], valid values are [always,insert,never]");
+        		throw new ORMException(engine,"invalid value ["+str+"] for attribute [generated] of column ["+columnName+"], valid values are [always,insert,never]");
         }
         
         
@@ -707,7 +747,7 @@ public class HBMCreator {
         
 		setEntityName(pc,engine,meta,x2o);
 		
-		createXMLMappingXToX(x2o, pc,prop,meta);
+		createXMLMappingXToX(engine,x2o, pc,prop,meta);
 	}
 	
 	private static Element getJoin(Element clazz) {
@@ -786,7 +826,7 @@ public class HBMCreator {
 				if(!StringUtil.isEmpty(str,true))mapKey.setAttribute("type", str);
 			}
 		}
-		else throw new ORMException("invalid value ["+str+"] for attribute [collectiontype], valid values are [array,struct]");
+		else throw new ORMException(engine,"invalid value ["+str+"] for attribute [collectiontype], valid values are [array,struct]");
 		
 		if(join==clazz) clazz.appendChild(el);
 		else clazz.insertBefore(el, join);
@@ -850,7 +890,7 @@ public class HBMCreator {
 		}
 		
 		// cache
-		setCacheStrategy(doc, meta, el);
+		setCacheStrategy(engine,doc, meta, el);
 		
 		// optimistic-lock
 		b=toBoolean(meta, "optimisticlock");
@@ -861,7 +901,7 @@ public class HBMCreator {
 	
 	
 	private static void createXMLMappingManyToMany(Element clazz, PageContext pc,Property prop,ORMConfiguration ormConf, HibernateORMEngine engine) throws PageException {
-		Element el = createXMLMappingXToMany(clazz, pc, prop);
+		Element el = createXMLMappingXToMany(engine,clazz, pc, prop);
 		Struct meta = prop.getMeta();
 		Document doc = XMLUtil.getDocument(clazz);
 		Element m2m = doc.createElement("many-to-many");
@@ -922,7 +962,7 @@ public class HBMCreator {
 
 
 	private static void createXMLMappingOneToMany(HibernateORMEngine engine,DatasourceConnection dc,ORMConfiguration ormConf,Element clazz, PageContext pc,Property prop, HibernateORMEngine engine2) throws PageException {
-		Element el = createXMLMappingXToMany(clazz, pc, prop);
+		Element el = createXMLMappingXToMany(engine,clazz, pc, prop);
 		Struct meta = prop.getMeta();
 		Document doc = XMLUtil.getDocument(clazz);
 		Element x2m;
@@ -959,7 +999,7 @@ public class HBMCreator {
 	
 	
 	
-	private static Element createXMLMappingXToMany(Element clazz, PageContext pc,Property prop) throws PageException {
+	private static Element createXMLMappingXToMany(ORMEngine engine,Element clazz, PageContext pc,Property prop) throws PageException {
 		Struct meta = prop.getMeta();
 		Document doc = XMLUtil.getDocument(clazz);
 		Element el=null;
@@ -993,7 +1033,7 @@ public class HBMCreator {
 			str=toString(meta,"structKeyType");
 			if(!StringUtil.isEmpty(str,true))mapKey.setAttribute("type", str);
 		}
-		else throw new ORMException("invalid value ["+str+"] for attribute [collectiontype], valid values are [array,struct]");
+		else throw new ORMException(engine,"invalid value ["+str+"] for attribute [collectiontype], valid values are [array,struct]");
 		
 		if(join==clazz) clazz.appendChild(el);
 		else clazz.insertBefore(el, join);
@@ -1007,7 +1047,7 @@ public class HBMCreator {
         }
  
 		// cacheUse
-        setCacheStrategy(doc, meta, el);
+        setCacheStrategy(engine,doc, meta, el);
         
         // column
 		str=toString(meta,"fkcolumn");
@@ -1044,12 +1084,12 @@ public class HBMCreator {
         
         
         
-		createXMLMappingXToX(el, pc,prop,meta);
+		createXMLMappingXToX(engine,el, pc,prop,meta);
 		
 		return el;
 	}
 	
-	private static void setCacheStrategy(Document doc,Struct meta, Element el) throws ORMException {
+	private static void setCacheStrategy(ORMEngine engine,Document doc,Struct meta, Element el) throws ORMException {
 		String strategy = toString(meta,"cacheuse");
 		
 		if(!StringUtil.isEmpty(strategy,true)){
@@ -1064,7 +1104,7 @@ public class HBMCreator {
 				}
 			}	
 			else
-				throw new ORMException("invalid value ["+strategy+"] for attribute [cacheuse], valid values are [read-only,nonstrict-read-write,read-write,transactional]");
+				throw new ORMException(engine,"invalid value ["+strategy+"] for attribute [cacheuse], valid values are [read-only,nonstrict-read-write,read-write,transactional]");
 		}
 		
 	}
@@ -1170,7 +1210,7 @@ public class HBMCreator {
 		str=toString(meta,"access");
 		if(!StringUtil.isEmpty(str,true)) m2o.setAttribute("access", str);
 		
-        createXMLMappingXToX(m2o, pc,prop,meta);
+        createXMLMappingXToX(engine,m2o, pc,prop,meta);
         
 	}
 	
@@ -1201,7 +1241,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 >
 
 	*/
-	private static void createXMLMappingXToX(Element x2x, PageContext pc, Property prop, Struct meta) throws ORMException {
+	private static void createXMLMappingXToX(ORMEngine engine,Element x2x, PageContext pc, Property prop, Struct meta) throws ORMException {
 		x2x.setAttribute("name",prop.getName());
 		
 		// cascade
@@ -1215,19 +1255,27 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 			if("join".equals(str) || "select".equals(str))
 				x2x.setAttribute("fetch", str);
 			else
-				throw new ORMException("invalid value ["+str+"] for attribute [fetch], valid values are [join,select]");
+				throw new ORMException(engine,"invalid value ["+str+"] for attribute [fetch], valid values are [join,select]");
 		}
 		
 		// lazy
-		Boolean b=toBoolean(meta, "lazy");
-        if(b!=null) x2x.setAttribute("lazy", b.booleanValue()?"proxy":"false");
+		str=toString(meta, "lazy");
+		if(!StringUtil.isEmpty(str)){
+			Boolean b = Caster.toBoolean(str,null);
+			if(b!=null)
+				x2x.setAttribute("lazy", b.booleanValue()?"true":"false");
+			else if("extra".equalsIgnoreCase(str))
+				x2x.setAttribute("lazy", "extra");
+			else 
+				throw new ORMException(engine,"invalid value ["+str+"] for attribute [lazy], valid values are [true,false,extra]");
+		}
 	}
 
 
 
 	
 
-	private static void createXMLMappingTimestamp(Element clazz, PageContext pc,Property prop) throws PageException {
+	private static void createXMLMappingTimestamp(ORMEngine engine,Element clazz, PageContext pc,Property prop) throws PageException {
 		Struct meta = prop.getMeta();
 		String str;
 		Integer i;
@@ -1260,7 +1308,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 			if("db".equals(str) || "vm".equals(str))
 				timestamp.setAttribute("source", str);
 			else 
-				throw new ORMException("invalid value ["+str+"] for attribute [source], valid values are [db,vm]");
+				throw new ORMException(engine,"invalid value ["+str+"] for attribute [source], valid values are [db,vm]");
 		}
 		
 		// unsavedValue
@@ -1270,12 +1318,12 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 			if("null".equals(str) || "undefined".equals(str))
 				timestamp.setAttribute("unsaved-value", str);
 			else 
-				throw new ORMException("invalid value ["+str+"] for attribute [unsavedValue], valid values are [null, undefined]");
+				throw new ORMException(engine,"invalid value ["+str+"] for attribute [unsavedValue], valid values are [null, undefined]");
 		}
 	}
 
 	
-	private static void createXMLMappingVersion(Element clazz, PageContext pc,Property prop) throws PageException {
+	private static void createXMLMappingVersion(ORMEngine engine,Element clazz, PageContext pc,Property prop) throws PageException {
 		Struct meta = prop.getMeta();
 		
 		Document doc = XMLUtil.getDocument(clazz);
@@ -1310,7 +1358,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 			if("int".equals(str) || "integer".equals(str))
 				version.setAttribute("type", "integer");
 			else 
-				throw new ORMException("invalid value ["+str+"] for attribute [dataType], valid values are [int,integer]");
+				throw new ORMException(engine,"invalid value ["+str+"] for attribute [dataType], valid values are [int,integer]");
 		}
 		
 		// unsavedValue
@@ -1320,7 +1368,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 			if("null".equals(str) || "negative".equals(str) || "undefined".equals(str))
 				version.setAttribute("unsaved-value", str);
 			else 
-				throw new ORMException("invalid value ["+str+"] for attribute [unsavedValue], valid values are [null, negative, undefined]");
+				throw new ORMException(engine,"invalid value ["+str+"] for attribute [unsavedValue], valid values are [null, negative, undefined]");
 		}
 	}   
 	

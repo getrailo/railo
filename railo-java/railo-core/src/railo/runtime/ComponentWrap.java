@@ -89,6 +89,13 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
     public String getAbsName() {
         return component.getAbsName();
     }
+    
+    /**
+     * @see railo.runtime.ComponentPro#getBaseAbsName()
+     */
+    public String getBaseAbsName() {
+        return component.getBaseAbsName();
+    }
 
     /* *
      * @see railo.runtime.Component#getBase()

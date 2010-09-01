@@ -88,8 +88,8 @@ public final class Perl5Util {
             Array lenArray = new ArrayImpl();
             for(int i = 0; i < groupCount; i++) {
                 int off = result.beginOffset(i);
-                posArray.appendEL(Constants.Integer(off + 1));
-                lenArray.appendEL(Constants.Integer(result.endOffset(i) - off));
+                posArray.appendEL(Integer.valueOf(off + 1));
+                lenArray.appendEL(Integer.valueOf(result.endOffset(i) - off));
             }
             Struct struct = new StructImpl();
             struct.setEL("pos", posArray);

@@ -28,8 +28,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import coldfusion.runtime.SessionTracker;
-
 import railo.aprint;
 import railo.commons.collections.HashTable;
 import railo.commons.digest.MD5;

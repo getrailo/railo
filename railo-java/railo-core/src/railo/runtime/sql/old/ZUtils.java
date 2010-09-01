@@ -114,7 +114,7 @@ public final class ZUtils
             fcts_ = new Hashtable();
         if(i <= 0)
             i = 1;
-        fcts_.put(s.toUpperCase(), new Integer(i));
+        fcts_.put(s.toUpperCase(), Integer.valueOf(i));
     }
 
     public static int isCustomFunction(String s)	{
