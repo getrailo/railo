@@ -1,7 +1,9 @@
-# Railo CFML Engine
+Railo CFML Engine
+=================
 Welcome to the Railo CFML Engine repostory
 
-## Building from source
+Building from source
+--------------------
 
 ### 1. Before you get started
 Before you start building Railo from source, you are going to need a few things installed on your machine:
