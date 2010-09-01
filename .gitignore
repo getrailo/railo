@@ -1,5 +1,5 @@
 railo-java/railo/build
-railo-java/railo-core/bin
+railo-java/railo-core/bin/
 railo-java/railo-core/dist
 railo-java/railo-core/build
 railo-java/railo-loader/bin
@@ -11,5 +11,17 @@ railo-cfml/.DS_Store
 railo-java/.DS_Store
 railo-java/railo-core/.DS_Store
 railo-java/railo-core/src/resource/library/tag/.DS_Store
+railo-java/railo-core/bin/.DS_Store
+
 railo-cfml/railo-admin/admin2/
 /*.project
+va specific
+*.class
+*.rc
+## generic files to ignore
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
+
