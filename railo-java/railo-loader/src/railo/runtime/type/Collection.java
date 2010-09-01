@@ -191,14 +191,14 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
     	/**
     	 * return lower case char a given position
     	 * @param index
-    	 * @return
+    	 * @return lower case char from given position
     	 */
     	public char lowerCharAt(int index);
 
     	/**
     	 * return upper case char a given position
     	 * @param index
-    	 * @return
+    	 * @return upper case char from given position
     	 */
     	public char upperCharAt(int index);
     	
