@@ -80,8 +80,8 @@
 <cfset stText.remote.securityKeyMissing       = "The security key for the remote client is missing">
 <cfset stText.remote.adminPassword.web        = "Password for the remote Web Administrator">
 <cfset stText.remote.adminPassword.server     = "Password for the remote Server Administrator">
-<cfset stText.remote.adminPasswordDesc.web    = "Password für the access to the remote Railo Web Administrator">
-<cfset stText.remote.adminPasswordDesc.server = "Password für the access to the remote Railo Server Administrator">
+<cfset stText.remote.adminPasswordDesc.web    = "Password fï¿¼r the access to the remote Railo Web Administrator">
+<cfset stText.remote.adminPasswordDesc.server = "Password fï¿¼r the access to the remote Railo Server Administrator">
 <cfset stText.remote.securityKey              = "Security Key">
 <cfset stText.remote.securityKeyDesc          = "Please enter the key of the remote clients. You can find it under Remote security key in the administrator of the remote clients">
 <cfset stText.remote.proxyServer              = "Server">
@@ -137,3 +137,9 @@
 <cfset stText .remote.urlPath="Path">
 <cfset stText .remote.urlPathDesc="Path to Admin.cfc (example: /railo-context/admin.cfc?wsdl)">
 <cfset stText .remote.urlPathMissing="the path to the Admin.cfc is missing">
+
+
+<cfset stText.remote.from="from">
+<cfset stText.remote.to="to">
+<cfset stText.remote.previous="previous">
+<cfset stText.remote.next="next">
