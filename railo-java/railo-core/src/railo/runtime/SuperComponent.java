@@ -295,6 +295,10 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
     public String getBaseAbsName() {
         return comp.getBaseAbsName();
     }
+    
+    public boolean isBasePeristent() {
+		return comp.isPersistent();
+	}
 
 	/**
 	 *

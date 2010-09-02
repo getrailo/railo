@@ -96,6 +96,10 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
     public String getBaseAbsName() {
         return component.getBaseAbsName();
     }
+    
+    public boolean isBasePeristent() {
+		return component.isPersistent();
+	}
 
     /* *
      * @see railo.runtime.Component#getBase()

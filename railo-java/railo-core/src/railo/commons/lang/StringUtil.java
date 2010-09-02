@@ -449,10 +449,16 @@ public final class StringUtil {
      * @param max 
      * @return cutted string
      */
+    
     public static String max(String content,int max) {
+    	return max(content, max,"");
+    }
+    
+    public static String max(String content,int max, String dotDotDot) {
         if(content==null) return null;
         if(content.length()<=max) return content;
-        return content.substring(0,max);
+        
+        return content.substring(0,max)+dotDotDot;
     }
     
 
@@ -768,8 +774,9 @@ public final class StringUtil {
 	public static boolean isEmpty(Object obj) {
 		if(obj==null) return true;
 		if(obj instanceof String)return isEmpty((String)obj);
-		if(obj instanceof StringBuffer)return isEmpty((StringBuffer)obj);
 		if(obj instanceof Collection.Key)return isEmpty(((Collection.Key)obj).getString());
+		if(obj instanceof StringBuffer)return isEmpty((StringBuffer)obj);
+		if(obj instanceof StringBuilder)return isEmpty((StringBuilder)obj);
 		return false;
 	}
 
@@ -779,6 +786,10 @@ public final class StringUtil {
 	}
 
 	public static boolean isEmpty(StringBuffer sb) {
+		return sb==null || sb.length()==0;
+	}
+
+	public static boolean isEmpty(StringBuilder sb) {
 		return sb==null || sb.length()==0;
 	}
 

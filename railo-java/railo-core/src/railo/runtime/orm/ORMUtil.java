@@ -16,7 +16,7 @@ public class ORMUtil {
 	
 	
 	
-	public static void checkRestriction(PageContext pc) {
+	/*public static void checkRestriction(PageContext pc) {
 		boolean enable = false;
 		try {
 			String str = Caster.toString(pc.serverScope().get("enableORM", null), null);
@@ -27,20 +27,20 @@ public class ORMUtil {
 		if(!enable)
 			throw new PageRuntimeException(new railo.runtime.exp.SecurityException("orm functionality is not supported"));
 		
-	}
+	}*/
 	
 	public static ORMSession getSession(PageContext pc) throws PageException {
 		return ((PageContextImpl) pc).getORMSession();
 	}
 
 	public static ORMEngine getEngine(PageContext pc) throws PageException {
-		checkRestriction(pc);
+		//checkRestriction(pc);
 		ConfigImpl config=(ConfigImpl) pc.getConfig();
 		return config.getORMEngine(pc);
 	}
 
 	public static void resetEngine(PageContext pc) throws PageException {
-		checkRestriction(pc);
+		//checkRestriction(pc);
 		ConfigImpl config=(ConfigImpl) pc.getConfig();
 		config.resetORMEngine(pc);
 	}

@@ -33,7 +33,10 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
+import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.engine.ThreadLocalConfig;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.mail.EmailNamePair;
@@ -81,6 +84,8 @@ public final class SMTPClient implements Serializable  {
 	private String plainTextCharset;
 	
 	private String htmlText;
+	
+
 	private String htmlTextCharset;
 
 	private Attachment[] attachmentz;
@@ -296,6 +301,13 @@ public final class SMTPClient implements Serializable  {
 	 */
 	public void addFailTo(InternetAddress ft) {
 		fts=add(fts,ft);
+	}
+
+	public String getHTMLTextAsString() {
+		return htmlText;
+	}
+	public String getPlainTextAsString() {
+		return plainText;
 	}
 
 	/**
@@ -608,7 +620,7 @@ public final class SMTPClient implements Serializable  {
 		MimeBodyPart mbp = new MimeBodyPart();
 		
 		// set Data Source
-		String strRes = att.getResource().getAbsolutePath();
+		String strRes = att.getAbsolutePath();
 		if(!StringUtil.isEmpty(strRes)){
 			
 			mbp.setDataHandler(new DataHandler(new ResourceDataSource(config.getResource(strRes))));
@@ -738,7 +750,7 @@ public final class SMTPClient implements Serializable  {
                 		if(sender.hasError()) throw sender.getMessageExpection();
                 		throw new MessagingException("timeout occurred after "+(timeout/1000)+" seconds while sending mail message");
                 	}
-                	clean();
+                	clean(config);
                 	
 	            	log.info("mail","send mail");
 					break;
@@ -762,10 +774,12 @@ public final class SMTPClient implements Serializable  {
 	}
 
 	// remove all atttachements that are marked to remove
-	private void clean() {
+	private void clean(Config config) {
 		if(attachmentz!=null)for(int i=0;i<attachmentz.length;i++){
-			if(attachmentz[i].isRemoveAfterSend())
-				ResourceUtil.removeEL(attachmentz[i].getResource(),true);
+			if(attachmentz[i].isRemoveAfterSend()){
+				Resource res = config.getResource(attachmentz[i].getAbsolutePath());
+				ResourceUtil.removeEL(res,true);
+			}
 		}
 	}
 

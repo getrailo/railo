@@ -18,6 +18,7 @@ import org.hibernate.tuple.entity.EntityTuplizerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import railo.print;
 import railo.commons.db.DBUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -558,9 +559,11 @@ public class HibernateORMEngine implements ORMEngine {
 			while(it2.hasNext()){
 				cfc=it2.next();
 				names[index++]=cfc.getName();
+				//print.e(names[index-1]+":"+cfcname);
 				if(cfc.instanceOf(cfcname))
 					return unique?(Component)cfc.duplicate(false):cfc;
 			}
+			
 			
 		}
 		else {

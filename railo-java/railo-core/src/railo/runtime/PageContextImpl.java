@@ -2719,7 +2719,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	
 	public ORMSession getORMSession() throws PageException {
-		ORMUtil.checkRestriction(this);
+		//ORMUtil.checkRestriction(this);
 		
 		if(ormSession==null || !ormSession.isValid())	{
 			ormSession=config.getORMEngine(this).createSession(this);

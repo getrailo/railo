@@ -980,6 +980,11 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     public String getBaseAbsName() {
 		return top.base.pageSource.getComponentName();
 	}
+    
+    public boolean isBasePeristent() {
+		return top.base!=null && top.base.properties.persistent;
+	}
+	
 	
     /**
      * @see railo.runtime.Component#getHint()

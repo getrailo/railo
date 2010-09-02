@@ -497,7 +497,7 @@ public class ModernAppListener extends AppListenerSupport {
 			pc.removeLastPageSource(true);
 		}
 		pc.setApplicationContext(appContext);
-		if(initORM){
+		if(initORM) {
 			try {
 				ORMUtil.resetEngine(pc);
 			} catch (PageException e) {

@@ -83,6 +83,7 @@ import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
+import railo.runtime.orm.ORMException;
 import railo.runtime.schedule.Scheduler;
 import railo.runtime.schedule.SchedulerImpl;
 import railo.runtime.search.SearchEngine;
@@ -2949,14 +2950,21 @@ public abstract class ConfigImpl implements Config {
 		
 		ORMEngine engine = ormengines.get(name);
 		if(engine==null){
-			try {
-				engine=(ORMEngine)ClassUtil.loadInstance(ormEngineClass);
+			//try {
+				try {
+					engine=(ORMEngine)ClassUtil.loadInstance(ormEngineClass);
+				}
+				catch (Throwable t) {
+					throw new ORMException(
+							"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
+							"Update your jars with the jars located in Railo's download section at [Railo Custom] at [railo-x.x.x.xxx-jars.zip]");
+				}
 				engine.init(pc);
 				ormengines.put(name,engine);
-			}
-			catch (ClassException e) {
-				e.printStackTrace();
-			}
+			/*}
+			catch (PageException pe) {
+				throw pe;
+			}*/
 		}
 		
 		return engine; 

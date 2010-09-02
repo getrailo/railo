@@ -50,6 +50,9 @@ public class MailSpoolerTask extends SpoolerTaskSupport {
 		StructImpl sct = new StructImpl();
 		sct.setEL("subject", client.getSubject());
 		
+		if(client.hasHTMLText())sct.setEL("body", StringUtil.max(client.getHTMLTextAsString(),1024,"..."));
+		else if(client.hasPlainText())sct.setEL("body", StringUtil.max(client.getPlainTextAsString(),1024,"..."));
+		
 		sct.setEL("from", toString(client.getFrom()));
 		
 		InternetAddress[] adresses = client.getTos();
