@@ -20,13 +20,13 @@ public interface SpoolerEngine {
 	 * return all open task that are inside the Engine
 	 * @return all open tasks
 	 */
-	public SpoolerTask[] getOpenTasks();
+	public SpoolerTask[] getOpenTasks(); //FUTURE remove
 	
 	/**
 	 * return all closed task that are inside the Engine
 	 * @return all closed tasks
 	 */
-	public SpoolerTask[] getClosedTasks();
+	public SpoolerTask[] getClosedTasks(); //FUTURE remove
 
 	/**
 	 * remove that task from Spooler
@@ -49,7 +49,7 @@ public interface SpoolerEngine {
 	
 	/**
 	 * execute task and return error throwed by task
-	 * @param id
+	 * @param task
 	 * @throws SpoolerException
 	 */
 	public PageException execute(SpoolerTask task);

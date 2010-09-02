@@ -138,7 +138,7 @@ public class CFCGateway implements Gateway {
 	 */
 	public int getState() {
 		Struct args=new StructImpl();
-		Integer state=Constants.Integer(this.state);
+		Integer state=Integer.valueOf(this.state);
 		try {
 			return GatewayEngineImpl.toIntState(Caster.toString(call("getState",args,state)),this.state);
 		} 

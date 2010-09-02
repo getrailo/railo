@@ -55,7 +55,7 @@ public class ClusterEntryImpl  implements ClusterEntry {
 	 * @return the time
 	 */
 	public Long getTimeRef() {
-		return new Long(time);
+		return Long.valueOf(time);
 	}
 	
 	public long getTime() {

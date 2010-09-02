@@ -595,13 +595,13 @@ public class QueryWrap implements Query {
 		return rst.isBeforeFirst();
 	}
 	/**
-	 * @return
+	 * @return is cached
 	 */
 	public boolean isCached() {
 		return rst.isCached();
 	}
 	/**
-	 * @return
+	 * @return has records
 	 */
 	public boolean isEmpty() {
 		return rst.isEmpty();
@@ -619,7 +619,7 @@ public class QueryWrap implements Query {
 		return rst.isLast();
 	}
 	/**
-	 * @return
+	 * @return iterator for he keys
 	 */
 	public Iterator keyIterator() {
 		return rst.keyIterator();
@@ -709,7 +709,7 @@ public class QueryWrap implements Query {
 	}
 	
 	/**
-	 * @return
+	 * @return the size of the query
 	 */
 	public int size() {	
 		return rst.size();

@@ -34,7 +34,7 @@ public class OracleBlob {
 
 			//blob.setBytes(1,barr);
 			if(setBytes==null)setBytes = clazz.getMethod("setBytes", new Class[]{long.class,byte[].class});
-			setBytes.invoke(blob, new Object[]{new Long(1),barr});
+			setBytes.invoke(blob, new Object[]{Long.valueOf(1),barr});
 
 			return (Blob) blob;
 		}

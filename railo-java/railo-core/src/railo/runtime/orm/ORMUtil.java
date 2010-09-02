@@ -46,14 +46,17 @@ public class ORMUtil {
 	}
 	
 	public static void printError(Throwable t, ORMEngine engine) throws ORMException {
-		printError(t.getMessage(), engine);
+		printError(t, engine, t.getMessage());
 	}
 
 	public static void printError(String msg, ORMEngine engine) throws ORMException {
-		//if(engine.getMode()==ORMEngine.MODE_LAZY){
-			SystemOut.printDate("{"+engine.getLabel().toUpperCase()+"} - "+msg,SystemOut.ERR);
-			//SystemOut.printStack(SystemOut.ERR);
-		//}
-		//else throw new ORMException(msg);
+		printError(null, engine, msg);
+	}
+	
+
+	private static void printError(Throwable t, ORMEngine engine,String msg) throws ORMException {
+		SystemOut.printDate("{"+engine.getLabel().toUpperCase()+"} - "+msg,SystemOut.ERR);
+		if(t==null)t=new Throwable();
+		t.printStackTrace(SystemOut.getPrinWriter(SystemOut.ERR));
 	}
 }

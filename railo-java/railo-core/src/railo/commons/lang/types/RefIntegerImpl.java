@@ -43,7 +43,7 @@ public final class RefIntegerImpl implements RefInteger {
      * @return returns value as integer
      */
     public Integer toInteger() {
-        return new Integer(value);
+        return Integer.valueOf(value);
     }
     /**
      * @return returns value as integer

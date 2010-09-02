@@ -800,6 +800,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @return returns if is private
      */
     private boolean isPrivate(PageContext pc) {
+    	if(pc==null) return true;
     	Component ac = pc.getActiveComponent();
         return (ac!=null && (ac==this || 
                 ((ComponentImpl)ac).top.pageSource.equals(top.pageSource))) ;
@@ -975,6 +976,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      */
     public String getExtends() {
 		return top.properties.extend;
+	}
+    public String getBaseAbsName() {
+		return top.base.pageSource.getComponentName();
 	}
 	
     /**
@@ -1534,7 +1538,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         if(member!=null) return member.getValue();
         
         // trigger
-        if(triggerDataMember) {
+        if(triggerDataMember && !isPrivate(pc)) {
         	return callGetter(pc,key);
         }
         throw new ExpressionException("Component ["+getCallName()+"] has no acessible Member with name ["+key+"]","enable [trigger data member] in admininistrator to also invoke getters and setters");
@@ -1595,7 +1599,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         if(member!=null) return member.getValue();
         
         // Trigger
-        if(triggerDataMember) {
+        if(triggerDataMember && !isPrivate(ThreadLocalPageContext.get())) {
         	return callGetter(ThreadLocalPageContext.get(),key);
         }
         throw new ExpressionException("Component ["+getCallName()+"] has no acessible Member with name ["+key+"]");
@@ -1616,7 +1620,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         if(member!=null) return member.getValue();
         
         // trigger
-        if(triggerDataMember) {
+        if(triggerDataMember && !isPrivate(pc)) {
         	return callGetter(pc,key,defaultValue);
         }
         return defaultValue;
@@ -1643,7 +1647,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         if(member!=null) return member.getValue();
         
         // trigger
-        if(triggerDataMember) {
+        if(triggerDataMember && !isPrivate(ThreadLocalPageContext.get())) {
         	return callGetter(ThreadLocalPageContext.get(),key,defaultValue);
         }
         return defaultValue;

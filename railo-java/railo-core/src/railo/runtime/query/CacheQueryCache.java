@@ -92,7 +92,7 @@ import railo.runtime.type.Query;
 
 	public void set(SQL sql, String datasource, String username,String password, Object value, Date cacheBefore) {
 		long timeSpan = ((cacheBefore.getTime()-System.currentTimeMillis())+1);
-		getCache().put(key(sql, datasource, username, password), new QueryCacheEntry(cacheBefore,value), null, new Long(timeSpan));
+		getCache().put(key(sql, datasource, username, password), new QueryCacheEntry(cacheBefore,value), null, Long.valueOf(timeSpan));
 	}
 
 	private Cache getCache() {
