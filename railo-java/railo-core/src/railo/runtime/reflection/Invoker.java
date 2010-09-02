@@ -8,7 +8,6 @@ import java.lang.reflect.Method;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Constants;
 import railo.runtime.reflection.pairs.ConstructorParameterPair;
 import railo.runtime.reflection.pairs.MethodParameterPair;
 import railo.runtime.type.ObjectWrap;

@@ -18,7 +18,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.Image;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Constants;
 
 public class PDF2ImageICEpdf extends PDF2Image {
 	

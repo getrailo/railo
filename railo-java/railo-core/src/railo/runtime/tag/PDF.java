@@ -27,7 +27,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Constants;
 import railo.runtime.op.Decision;
 import railo.runtime.text.pdf.PDFDocument;
 import railo.runtime.text.pdf.PDFUtil;

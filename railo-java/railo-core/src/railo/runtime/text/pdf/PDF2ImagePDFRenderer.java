@@ -15,7 +15,6 @@ import railo.commons.io.res.Resource;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.Image;
-import railo.runtime.op.Constants;
 
 import com.sun.pdfview.PDFFile;
 import com.sun.pdfview.PDFPage;

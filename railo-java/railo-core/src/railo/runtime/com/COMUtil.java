@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Constants;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 

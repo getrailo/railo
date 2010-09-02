@@ -2,8 +2,6 @@ package railo.runtime.net.ftp;
 
 import org.apache.commons.net.ftp.FTPFile;
 
-import railo.runtime.op.Constants;
-
 
 /**
  * 

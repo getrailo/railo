@@ -7,7 +7,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentPro;
@@ -15,7 +14,6 @@ import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.other.ToBinary;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
@@ -66,7 +64,7 @@ public class HBMCreator {
 		Element clazz;
 		boolean isClass=StringUtil.isEmpty(extend);
 		
-		print.e(cfc.getAbsName()+";"+isClass+" -> "+cfci.getBaseAbsName()+":"+cfci.isBasePeristent());
+		//print.e(cfc.getAbsName()+";"+isClass+" -> "+cfci.getBaseAbsName()+":"+cfci.isBasePeristent());
 		if(!isClass && !cfci.isBasePeristent()) {
 			isClass=true;
 		} 
@@ -463,6 +461,8 @@ public class HBMCreator {
 		if("native".equalsIgnoreCase(generator)) return "integer";
 		if("seqhilo".equalsIgnoreCase(generator)) return "string";
 		if("uuid".equalsIgnoreCase(generator)) return "string";
+		if("guid".equalsIgnoreCase(generator)) return "string";
+		if("select".equalsIgnoreCase(generator)) return "string";
 		if("foreign".equalsIgnoreCase(generator)) {
 			if(!StringUtil.isEmpty(foreignCFC)) {
 				try {
@@ -551,12 +551,6 @@ public class HBMCreator {
 		return null;
 	}
 
-
-
-
-
-
-
 	private static String createXMLMappingGenerator(ORMEngine engine,Element id, PageContext pc,Property prop,StringBuilder foreignCFC) throws PageException {
 		Struct meta = prop.getMeta();
 		
@@ -571,16 +565,18 @@ public class HBMCreator {
 		
 		generator.setAttribute("class", className);
 		
+		//print.e("generator:"+className);
+		
 		// params
 		Object obj=meta.get("params",null);
-		if(obj!=null){
+		//if(obj!=null){
 			Struct sct=null;
-			if(obj instanceof String) obj=convertToSimpleMap((String)obj);
+			if(obj==null) obj=new StructImpl();
+			else if(obj instanceof String) obj=convertToSimpleMap((String)obj);
+			
 			if(Decision.isStruct(obj)) sct=Caster.toStruct(obj);
 			else throw new ORMException(engine,"invalid value for attribute [params] of tag [property]");
 			className=className.trim().toLowerCase();
-			print.e("generator:"+className);
-			print.e(sct);
 			
 			// special classes
 			if("foreign".equals(className)){
@@ -594,6 +590,7 @@ public class HBMCreator {
 				
 			}
 			else if("select".equals(className)){
+				//print.e("select:"+toString(meta, "selectKey",true));
 				if(!sct.containsKey("key")) sct.setEL("key", toString(meta, "selectKey",true));
 			}
 			else if("sequence".equals(className)){
@@ -611,7 +608,7 @@ public class HBMCreator {
 				param.appendChild(doc.createTextNode(Caster.toString(sct.get(keys[y]))));
 				
 			}
-		}
+		//}
 		return className;
 	}
 	

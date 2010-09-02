@@ -14,7 +14,6 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
-import railo.runtime.op.Constants;
 import railo.transformer.bytecode.cast.Cast;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;

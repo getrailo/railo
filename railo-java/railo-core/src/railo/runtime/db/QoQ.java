@@ -10,7 +10,6 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Constants;
 import railo.runtime.op.Operator;
 import railo.runtime.sql.Select;
 import railo.runtime.sql.SelectParser;
