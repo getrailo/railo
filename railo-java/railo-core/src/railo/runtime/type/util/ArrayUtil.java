@@ -15,7 +15,6 @@ import railo.runtime.exp.CasterException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Constants;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Operator;
 import railo.runtime.type.Array;

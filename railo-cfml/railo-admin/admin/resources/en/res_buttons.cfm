@@ -9,6 +9,7 @@
 <cfset stText.Buttons.Optimize      = "optimize">
 <cfset stText.Buttons.Purge         = "purge">
 <cfset stText.Buttons.Delete        = "delete">
+<cfset stText.Buttons.DeleteAll        = "delete all">
 <cfset stText.Buttons.Execute       = "execute">
 <cfset stText.Buttons.Submit        = "submit">
 <cfset stText.Buttons.Setting       = "setting">

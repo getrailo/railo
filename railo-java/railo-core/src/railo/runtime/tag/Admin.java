@@ -87,7 +87,6 @@ import railo.runtime.net.mail.ServerImpl;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Constants;
 import railo.runtime.op.Decision;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.reflection.Reflector;

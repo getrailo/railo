@@ -55,6 +55,8 @@ Detail
 Overview
  --->
 <cfelse>
+<cfset count=0>
+<cfloop query="contextes"><cfif contextes.hasOwnSecContext><cfset count++></cfif></cfloop>
 <cfoutput>
 	
 	<table class="tbl" width="650">
@@ -116,6 +118,7 @@ Overview
 	</cfform>
 	</cfoutput>
 	</table>
+    
 	<br><br>
 
 

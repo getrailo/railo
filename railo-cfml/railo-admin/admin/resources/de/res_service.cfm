@@ -2,20 +2,20 @@
 <cfset stText.Settings.DatasourceDescriptionCreate     = "Neue Datenquelle erstellen">
 <cfset stText.Settings.DatasourceDescriptionUpdate     = "Datenquelle aktualisieren">
 <cfset stText.Settings.DatasourceSettings              = "Einstellungen">
-<cfset stText.Settings.DatasourceModify                = "Datenquelle ändern oder hinzufügen">
+<cfset stText.Settings.DatasourceModify                = "Datenquelle ï¿¤ndern oder hinzufï¿¼gen">
 
 <cfset stText.Settings.PreserveSingleQuotes            = "Single Quotes erhalten">
-<cfset stText.Settings.PreserveSingleQuotesDescription = "Erhält die einfachen Anführungszeichen (') in den SQL-Statements, die im Tag CFQuery definiert werden.">
+<cfset stText.Settings.PreserveSingleQuotesDescription = "Erhï¿¤lt die einfachen Anfï¿¼hrungszeichen (') in den SQL-Statements, die im Tag CFQuery definiert werden.">
 <cfset stText.Settings.ReadOnlyDatasources             = "Globale Datequellen (Datenquellen vom Server Administrator)">
-<cfset stText.Settings.ReadOnlyDatasourcesDescription  = "Diese Datenquellen werden im Server Administrator für alle Web Instanzen erstellt und können im Web Administrator nicht geändert werden, diese können jedoch überschrieben werden indem sie eine Datenquelle mit dem selben Namen unterhalb anlegen.">
+<cfset stText.Settings.ReadOnlyDatasourcesDescription  = "Diese Datenquellen werden im Server Administrator fï¿¼r alle Web Instanzen erstellt und kï¿¶nnen im Web Administrator nicht geï¿¤ndert werden, diese kï¿¶nnen jedoch ï¿¼berschrieben werden indem sie eine Datenquelle mit dem selben Namen unterhalb anlegen.">
 <cfset stText.Settings.ListDatasources                 = "Vorhandene Datenquellen">
 <cfset stText.Settings.ListDatasourcesDescWeb          = "">
-<cfset stText.Settings.ListDatasourcesDescServer       = "Datenquellen welche hier erstellt wurden, stehen allen Webkontexten zur Verfügung, jedoch kann die Konfiguration der Datenquelle nur hier geändert werden.">
+<cfset stText.Settings.ListDatasourcesDescServer       = "Datenquellen welche hier erstellt wurden, stehen allen Webkontexten zur Verfï¿¼gung, jedoch kann die Konfiguration der Datenquelle nur hier geï¿¤ndert werden.">
 
 <cfset stText.Settings.DatasourceModify                = "Neue Datenquelle erstellen">
 <cfset stText.Settings.Name                            = "Name">
 <cfset stText.Settings.Type                            = "Typ">
-<cfset stText.Settings.NameMissing                     = "Bitte geben Sie einen Namen für die Datenquelle ein.">
+<cfset stText.Settings.NameMissing                     = "Bitte geben Sie einen Namen fï¿¼r die Datenquelle ein.">
 <cfset stText.Settings.DBCheck                         = "Check">
 
 
@@ -26,16 +26,16 @@
 <cfset stText.Settings.dbPort    		               = "Port">
 <cfset stText.Settings.dbPortDesc   	               = "Der Port der Datenbank die angesprochen werden soll.">
 <cfset stText.Settings.dbUser    		               = "Benutzername">
-<cfset stText.Settings.dbUserDesc   	               = "Benutzername für den Zugriff auf die Datenbank">
+<cfset stText.Settings.dbUserDesc   	               = "Benutzername fï¿¼r den Zugriff auf die Datenbank">
 <cfset stText.Settings.dbPass    		               = "Passwort">
-<cfset stText.Settings.dbPassDesc   	               = "Passwort für den Zugriff auf die Datenbank">
+<cfset stText.Settings.dbPassDesc   	               = "Passwort fï¿¼r den Zugriff auf die Datenbank">
 <cfset stText.Settings.dbConnTimeout	               = "Verbindungs Timeout (in Minuten)">
 <cfset stText.Settings.dbConnTimeoutDesc   	           = "Definiert wie lange eine stehende Verbindung aufrechterhalten wird, bevor Sie beendet wird.">
 
-<cfset stText.Settings.verifyConnection   	           = "Verbindung prüfen">
+<cfset stText.Settings.verifyConnection   	           = "Verbindung prï¿¼fen">
 <cfset stText.Settings.dbConnLimit="Verbindungslimitierung (max)">
 <cfset stText.Settings.dbConnLimitInf="- inf -">
-<cfset stText.Settings.dbConnLimitDesc="Beschränkt die Anzahl Verbindungen die zur Datenbank aufgebaut werden.">
+<cfset stText.Settings.dbConnLimitDesc="Beschrï¿¤nkt die Anzahl Verbindungen die zur Datenbank aufgebaut werden.">
 <cfset stText.Settings.dbBlob    		               = "Blob">
 <cfset stText.Settings.dbBlobDesc   	               = "Erlaubt das einbeziehen von BLOBs">
 <cfset stText.Settings.dbClob    		               = "Clob">
@@ -43,25 +43,25 @@
 <cfset stText.Settings.dbAllowed    	               = "Erlaubte Operationen">
 
 <cfset stText.services.update.desc= "
-Sie können Railo auf eine neue Version patchen, also bekannte Fehler ausbügeln 
+Sie kï¿¶nnen Railo auf eine neue Version patchen, also bekannte Fehler ausbï¿¼geln 
 und Optimierungen innerhalb ihrer Version einspielen.">
 <cfset stText.services.update.infoTitle= "Info">
-<cfset stText.services.update.jira= "Für Details besuchen Sie unser {a}Bug Tracking System{/a}">
-<cfset stText.services.update.update= "Für Ihre Version steht ein Patch zur Verfügung, Sie haben die Version {current} installiert, die aktuell verfügbare Version ist {avaiable}">
-<cfset stText.services.update.noUpdate= "Für Ihre Version {current} steht kein Patch zur Verfügung">
+<cfset stText.services.update.jira= "Fï¿¼r Details besuchen Sie unser {a}Bug Tracking System{/a}">
+<cfset stText.services.update.update= "Fï¿¼r Ihre Version steht ein Patch zur Verfï¿¼gung, Sie haben die Version {current} installiert, die aktuell verfï¿¼gbare Version ist {avaiable}">
+<cfset stText.services.update.noUpdate= "Fï¿¼r Ihre Version {current} steht kein Patch zur Verfï¿¼gung">
 <cfset stText.services.update.setTitle= "Einstellungen">
-<cfset stText.services.update.setDesc= "Definieren Sie wie und wo Ihre Railo Version ihre Patches bezieht. Damit die eine Änderung dieser Einstellung aktiv wird, ist ein Neustart von Railo erforderlich.">
+<cfset stText.services.update.setDesc= "Definieren Sie wie und wo Ihre Railo Version ihre Patches bezieht. Damit die eine ï¿„nderung dieser Einstellung aktiv wird, ist ein Neustart von Railo erforderlich.">
 <cfset stText.services.update.location= "URL">
 <cfset stText.services.update.locDesc= "Definieren Sie die URL von der ein Railo Update bezogen werden kann, typischerweise 'http://www.railo.ch'">
 <cfset stText.services.update.type= "Typ">
-<cfset stText.services.update.typeDesc= "Definieren Sie hier wie Railo gepatcht werden soll, 'Automatisch' steht dafür, dass Railo automatisch, täglich nach updates sucht. 'Manuell' bedeutet, dass ein Update nur manuell ausgeführt werden kann.">
+<cfset stText.services.update.typeDesc= "Definieren Sie hier wie Railo gepatcht werden soll, 'Automatisch' steht dafï¿¼r, dass Railo automatisch, tï¿¤glich nach updates sucht. 'Manuell' bedeutet, dass ein Update nur manuell ausgefï¿¼hrt werden kann.">
 <cfset stText.services.update.type_auto= "Automatisch">
 <cfset stText.services.update.type_manually= "Manuell">
 
-<cfset stText.services.update.exe= "Update ausführen">
-<cfset stText.services.update.exeRun= "Update ausführen">
-<cfset stText.services.update.exeDesc= "Spielen Sie die aktuellsten Pacthes für Ihre Version ein. Nach einem erfolgten Update, müssen Sie sich neu in den Administrator einloggen.">
-<cfset stText.services.update.restartDesc="Hier können Sie Railo neu starten. Nach erfolgtem Restart werden bestehende Sitzungen entfernt. Sie müssen sich in den Administrator erneut einloggen.">
+<cfset stText.services.update.exe= "Update ausfï¿¼hren">
+<cfset stText.services.update.exeRun= "Update ausfï¿¼hren">
+<cfset stText.services.update.exeDesc= "Spielen Sie die aktuellsten Pacthes fï¿¼r Ihre Version ein. Nach einem erfolgten Update, mï¿¼ssen Sie sich neu in den Administrator einloggen.">
+<cfset stText.services.update.restartDesc="Hier kï¿¶nnen Sie Railo neu starten. Nach erfolgtem Restart werden bestehende Sitzungen entfernt. Sie mï¿¼ssen sich in den Administrator erneut einloggen.">
 <cfset stText.services.update.restart="Railo neu starten">
 
 
@@ -71,7 +71,7 @@ und Optimierungen innerhalb ihrer Version einspielen.">
 
 
 <cfset stText.services.update.removeLatest= "Letzten Patch {version} entfernen">
-<cfset stText.services.update.removeDesc= "Entfernen Sie alle nach der Grundinstallation nachträglich installierten Patches order nur den Letzten.">
+<cfset stText.services.update.removeDesc= "Entfernen Sie alle nach der Grundinstallation nachtrï¿¤glich installierten Patches order nur den Letzten.">
 
 
 <cfset stText.remote.urlMissing               = "Die Remote Client URL fehlt">
@@ -79,15 +79,15 @@ und Optimierungen innerhalb ihrer Version einspielen.">
 <cfset stText.remote.serverusernameDesc       = "Http Access Auhtentication Username">
 <cfset stText.remote.serverpassword           = "Passwort">
 <cfset stText.remote.serverpasswordDesc       = "Http Access Auhtentication Passwort">
-<cfset stText.remote.LabelMissing             = "Die Bezeichnung für den Remote Client fehlt">
-<cfset stText.remote.passwordMissing          = "Das Administrator Passwort für den Remote Client fehlt">
-<cfset stText.remote.securityKeyMissing       = "Der Sicherheitsschlüssel  für den Remote Client fehlt">
-<cfset stText.remote.adminPassword.web        = "Passwort für den Remote Web Administrator">
-<cfset stText.remote.adminPassword.server     = "Passwort für den remote Server Administrator">
-<cfset stText.remote.adminPasswordDesc.web    = "Passwort für den Zugriff auf den Remote Railo Web Administrator">
-<cfset stText.remote.adminPasswordDesc.server = "Passwort für den Zugriff auf den Remote Railo Server Administrator">
-<cfset stText.remote.securityKey              = "Sicherheitsschlüssel">
-<cfset stText.remote.securityKeyDesc          = "Geben Sie hier den Schlüssel des Remote Clients an. Sie finden ihn unter Remote-Scherheitsschlüssel im Administrator des Remote Clients">
+<cfset stText.remote.LabelMissing             = "Die Bezeichnung fï¿¼r den Remote Client fehlt">
+<cfset stText.remote.passwordMissing          = "Das Administrator Passwort fï¿¼r den Remote Client fehlt">
+<cfset stText.remote.securityKeyMissing       = "Der Sicherheitsschlï¿¼ssel  fï¿¼r den Remote Client fehlt">
+<cfset stText.remote.adminPassword.web        = "Passwort fï¿¼r den Remote Web Administrator">
+<cfset stText.remote.adminPassword.server     = "Passwort fï¿¼r den remote Server Administrator">
+<cfset stText.remote.adminPasswordDesc.web    = "Passwort fï¿¼r den Zugriff auf den Remote Railo Web Administrator">
+<cfset stText.remote.adminPasswordDesc.server = "Passwort fï¿¼r den Zugriff auf den Remote Railo Server Administrator">
+<cfset stText.remote.securityKey              = "Sicherheitsschlï¿¼ssel">
+<cfset stText.remote.securityKeyDesc          = "Geben Sie hier den Schlï¿¼ssel des Remote Clients an. Sie finden ihn unter Remote-Scherheitsschlï¿¼ssel im Administrator des Remote Clients">
 <cfset stText.remote.proxyServer              = "Server">
 <cfset stText.remote.proxyServerDesc          = "Proxy Server (Host)">
 <cfset stText.remote.proxyPort                = "Port">
@@ -98,20 +98,20 @@ und Optimierungen innerhalb ihrer Version einspielen.">
 <cfset stText.remote.newClient                = "Neuen Remote Client erstellen">
 <cfset stText.remote.desc                     = "Definiert Clients, mit welchen die Einstellungen dieses Administrators, synchronisiert werden sollen">
 <cfset stText.remote.label                    = "Bezeichnung">
-<cfset sttext.remote.securityKeyTitleDesc     = "Falls dieser Web Administrator von einem anderen Server aus synchronisiert werden soll, müssen sie den unten angegebenen Schlüssel bei der Definition der Remote Client Verbindung angeben.">
+<cfset sttext.remote.securityKeyTitleDesc     = "Falls dieser Web Administrator von einem anderen Server aus synchronisiert werden soll, mï¿¼ssen sie den unten angegebenen Schlï¿¼ssel bei der Definition der Remote Client Verbindung angeben.">
 <cfset stText.remote.ot.name                  = "Name">
 <cfset stText.remote.ot.url                   = "URL">
 <cfset stText.remote.ot.action                = "Aktion">
-<cfset stText.remote.ot.lastExecution         = "Letzte Ausführung">
-<cfset stText.remote.ot.nextExecutionInMinutes         = "Nächste Ausführung in Minuten">
-<cfset stText.remote.ot.exetime               = "Ausführungszeit">
+<cfset stText.remote.ot.lastExecution         = "Letzte Ausfï¿¼hrung">
+<cfset stText.remote.ot.nextExecutionInMinutes         = "Nï¿¤chste Ausfï¿¼hrung in Minuten">
+<cfset stText.remote.ot.exetime               = "Ausfï¿¼hrungszeit">
 <cfset stText.remote.ot.error                 = "Fehlermeldungen">
 <cfset stText.remote.ot.tries                 = "Anzahl Versuche">
 <cfset stText.remote.ot.triesLeft             = "Anzahl verbleibender Versuche">
 <cfset stText.remote.ot.state                 = "Status">
-<cfset stText.remote.ot.overviewDesc          = "Liste der fehlgeschlagenen Tasks. Die hier grün aufgelisteten werden nochmals ausgeführt. Die rot gelisteten Tasks konnten nicht ausgeführt werden.">
-<cfset stText.remote.ot.detailDesc.green      = "Es wurde bereits <tries> mal versucht diesen Task auszuführen. <triesleft> Versuche stehen noch aus">
-<cfset stText.remote.ot.detailDesc.red        = "Dieser Task konnte trotz <tries> Versuchen nicht korrekt ausgeführt werden">
+<cfset stText.remote.ot.overviewDesc          = "Liste der fehlgeschlagenen Tasks. Die hier grï¿¼n aufgelisteten werden nochmals ausgefï¿¼hrt. Die rot gelisteten Tasks konnten nicht ausgefï¿¼hrt werden.">
+<cfset stText.remote.ot.detailDesc.green      = "Es wurde bereits <tries> mal versucht diesen Task auszufï¿¼hren. <triesleft> Versuche stehen noch aus">
+<cfset stText.remote.ot.detailDesc.red        = "Dieser Task konnte trotz <tries> Versuchen nicht korrekt ausgefï¿¼hrt werden">
 <cfset stText.remote.ot.fromto                = "1-100 von <recordcount> offenen Tasks">
 <cfset stText.remote.ot.noOt                  = "Zur Zeit gibt es keine offenen Tasks">
 <cfset stText.remote.sync.title               = "Remote Client Synchronisation">
@@ -126,11 +126,11 @@ und Optimierungen innerhalb ihrer Version einspielen.">
 <cfset stText .remote.usage.title="Verwendung">
 <cfset stText .remote.usage.sync="Admin Synchronisation">
 <cfset stText .remote.usage.cluster="Cluster Scope">
-<cfset stText .remote.usage.desc="Definiert für was alles der Remote Client verwendet werden soll">
+<cfset stText .remote.usage.desc="Definiert fï¿¼r was alles der Remote Client verwendet werden soll">
 <cfset stText .remote.connection="Verbindung">
 <cfset stText .remote.connectionDesc="Verbindung zum Remote Client, komplette URL (inkl. Port) und HTTP Access">
 <cfset stText .remote.proxy="Proxy Settings">
-<cfset stText .remote.proxyDesc="Proxy Settings welche für die Verbindung verwendet werden sollen">
+<cfset stText .remote.proxyDesc="Proxy Settings welche fï¿¼r die Verbindung verwendet werden sollen">
 <cfset stText .remote.adminAccess="Admin Access">
 <cfset stText .remote.adminAccessDesc="Definiert den Zugang zum Remote Client, dessen Password und Security Key, die Security key kann innerhalb des Remote Client bezogen werden">
 <cfset stText .remote.url="URL">
@@ -140,3 +140,8 @@ und Optimierungen innerhalb ihrer Version einspielen.">
 <cfset stText .remote.urlPath="Pfad">
 <cfset stText .remote.urlPathDesc="Pfad zur Admin.cfc (Beispiel: /railo-context/admin.cfc?wsdl)">
 <cfset stText .remote.urlPathMissing="Der Pfad zur Admin.cfc fehlt">
+
+<cfset stText.remote.from="von">
+<cfset stText.remote.to="bis">
+<cfset stText.remote.previous="vorherige">
+<cfset stText.remote.next="nï¿¤chste">

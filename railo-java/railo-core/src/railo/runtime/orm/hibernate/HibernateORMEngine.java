@@ -558,9 +558,11 @@ public class HibernateORMEngine implements ORMEngine {
 			while(it2.hasNext()){
 				cfc=it2.next();
 				names[index++]=cfc.getName();
+				//print.e(names[index-1]+":"+cfcname);
 				if(cfc.instanceOf(cfcname))
 					return unique?(Component)cfc.duplicate(false):cfc;
 			}
+			
 			
 		}
 		else {

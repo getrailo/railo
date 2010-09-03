@@ -8,6 +8,12 @@
 <cfparam name="form.mainAction" default="none">
 <cfparam name="session.taskRange" default="10">
 <cfparam name="form.subAction" default="none">
+
+
+
+<cfparam name="url.startrow" default="1">
+<cfparam name="url.maxrow" default="100">
+
 <cfparam name="error" default="#struct(message:"",detail:"")#">
 <cfset error.message="">
 <cfset stVeritfyMessages = StructNew()>
@@ -64,6 +70,18 @@
 				<cflocation url="#request.self#?action=#url.action#" addtoken="no">
 			</cfif>
 		</cfcase>
+	<!--- DELETE ALL --->
+		<cfcase value="#stText.Buttons.DeleteAll#">
+			
+					<cfadmin 
+						action="removeAllSpoolerTask"
+						type="#request.adminType#"
+						password="#session["password"&request.adminType]#">
+
+			<cfif cgi.request_method EQ "POST" and error.message EQ "">
+				<cflocation url="#request.self#?action=#url.action#" addtoken="no">
+			</cfif>
+		</cfcase>
 	</cfswitch>
 	<cfcatch>
 		<cfset error.message=cfcatch.message>
@@ -88,12 +106,13 @@ Error Output--->
 <cfparam name="url.id" default="0">
 
 <cfadmin 
-						action="getSpoolerTasks"
-						type="#request.adminType#"
-						password="#session["password"&request.adminType]#"
-						
-						returnVariable="tasks">
-
+    action="getSpoolerTasks"
+    type="#request.adminType#"
+    password="#session["password"&request.adminType]#"
+    startrow="#url.startrow#"
+    maxrow="#url.maxrow#"
+    result="result"
+    returnVariable="tasks">
 
 <cffunction name="addZeros" returntype="string" output="false">
 	<cfargument name="nbr" required="yes" type="numeric">
@@ -160,7 +179,7 @@ Error Output--->
 
 
 <!--- 0 records ---->
-<cfif tasks.recordcount EQ 0>
+<cfif result.open+result.closed EQ 0>
 <cfoutput><b>#stText.remote.ot.noOt#</b></cfoutput>
 
 <!--- DETAIL ---->
@@ -183,7 +202,7 @@ Error Output--->
 	<!--- MUST wieso geht hier der direkte aufruf nicht! ---><cfset detail=tasks.detail>
 	<cfif isDefined("detail.label")>
 	<tr>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.name#</td>
+		<td width="100" class="tblHead" nowrap>x#stText.remote.ot.name#</td>
 		<td class="tblContent#css#" nowrap>#detail.label#</td>
 	</tr>
 	</cfif>
@@ -233,7 +252,7 @@ Error Output--->
 		</cfif>
 	<tr>
 		<td width="100" class="tblHead" nowrap>#(tasks.type)# #key#</td>
-		<td class="tblContent#css#" nowrap>#detail[key]#</td>
+		<td class="tblContent#css#">#replace(detail[key],'<','&lt;','all')#</td>
 	</tr>
 	</cfloop>
 	
@@ -310,15 +329,11 @@ function selectAll(field) {
 </tr>
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<cfoutput>
-<cfif tasks.recordcount GT 100>
-	<tr>
-		<td width="200"></td>
-		<td width="380" class="tblHead" nowrap colspan="5" align="right">
-        	<cfif tasks.recordcount GT session.taskRange></cfif>
-        	<span class="comment"  style="color:##DFE9F6">#replace(stText.remote.ot.fromTo,"<recordcount>",tasks.recordcount)#&nbsp;&nbsp;</span>
-        </td>
-	</tr>
-</cfif>
+
+	<!---
+	
+	FILTER take out temporary
+	
 	
 	<tr>
 		<td width="200"></td>
@@ -336,6 +351,7 @@ function selectAll(field) {
 		<td width="100" class="tblHead" nowrap><input type="text" name="triesFilter" style="width:90px" value="#session.filter.tries#" /></td>
 		<td class="tblHead" nowrap><input type="submit" class="submit" name="mainAction" value="#stText.Buttons.filter#"></td>
 	</tr>
+	--->
 	<tr>
 		<td width="380" colspan="7" align="right"></td>
 	</tr>
@@ -350,25 +366,56 @@ function selectAll(field) {
 		</td>
 		<td class="tblHead" nowrap>#stText.remote.ot.type#</td>
 		<td width="250" class="tblHead" nowrap>#stText.remote.ot.name#</td>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.nextExecutionInMinutes#<!---<br /><span class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</span>---></td>
+		<td width="100" class="tblHead" nowrap>#stText.remote.ot.nextExecution#<!---<br /><span class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</span>---></td>
 		<td width="100" class="tblHead" nowrap>#stText.remote.ot.tries#</td>
 		<td class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 	</tr>
+
+<cfsavecontent variable="browse">
+<cfset to=url.startrow+url.maxrow-1>
+
+<cfif to GT result.open+result.closed>
+	<cfset to=result.open+result.closed>
+<cfelse>
+	
+</cfif>
+	<tr>
+		<td>&nbsp;</td>
+		<td class="tblHead" colspan="5" align="center" nowrap>
+        	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+            	<td width="100">
+                <cfif url.startrow GT 1><a href="#request.self#?action=#url.action#&startrow=#startrow-url.maxrow#" class="comment"><img src="resources/img/arrow-left.gif.cfm" border="0" hspace="4">#stText.remote.previous#</a><cfelse>&nbsp;</cfif>
+                
+                </td>
+            	<td align="center"><span class="comment">#url.startrow# #stText.remote.to# #to# #stText.remote.from# #result.open+result.closed#</span></td>
+            	<td width="100" align="right">
+                <cfif to LT result.open+result.closed><a href="#request.self#?action=#url.action#&startrow=#startrow+url.maxrow#" class="comment">#stText.remote.next#<img src="resources/img/arrow-right.gif.cfm" border="0" hspace="4"></a><cfelse>&nbsp;</cfif>
+                </td>
+            </tr>
+            </table>
+        </td>
+	</tr>
+</cfsavecontent> 
+    
+    #browse#
+
+
+
 <cfloop query="tasks">
 		<cfset css="">
 		<cfset next=inMinutes(tasks.nextExecution,true)>
 		<cfset closed=tasks.closed NEQ "" and tasks.closed>
 		<cfif closed><cfset next='-'></cfif>
-		<!--- filter --->
-		<cfif 
+		<!--- filter 
 			doFilter(session.filter.type,tasks.type,false)
 			and
 			doFilter(session.filter.name,tasks.name,false)
 			and
 			doFilter(session.filter.next,next,true)
 			and
-			doFilter(session.filter.tries,tasks.tries,true)
-			>
+			doFilter(session.filter.tries,tasks.tries,true)--->
+		<cfif true>
 			
 		
 		<cfif tasks.closed NEQ ""><cfset css=iif(not tasks.closed,de('Green'),de('Red'))></cfif>
@@ -399,8 +446,7 @@ function selectAll(field) {
 			<cfif closed> 
 				<center>-</center>
 			<cfelse>
-				<!---#dateFormat(tasks.nextExecution,'mm/dd/yyyy')# #timeFormat(tasks.nextExecution,'HH:mm:ss')#--->
-				#next#
+				#lsDateFormat(tasks.nextExecution)# #timeFormat(tasks.nextExecution,'HH:mm:ss')#
 			</cfif>
 		</td>
 		<td class="tblContent#css#" title="" nowrap align="center">
@@ -424,7 +470,12 @@ function selectAll(field) {
 				</cfif>
 			</td>
 	</tr></cfif>
+    
 </cfloop>
+
+ 
+    
+    #browse#
 	<tr>
 		<td colspan="6">
 		 <table border="0" cellpadding="0" cellspacing="0">
@@ -441,6 +492,7 @@ function selectAll(field) {
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Execute#">
 			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
+			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.DeleteAll#">
 			</cfoutput>
 			</td>	
 		</tr>

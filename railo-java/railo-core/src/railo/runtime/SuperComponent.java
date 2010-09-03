@@ -295,6 +295,10 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
     public String getBaseAbsName() {
         return comp.getBaseAbsName();
     }
+    
+    public boolean isBasePeristent() {
+		return comp.isPersistent();
+	}
 
 	/**
 	 *
@@ -608,8 +612,8 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	/**
 	 * @see railo.runtime.ComponentPro#getProperties()
 	 */
-	public Property[] getProperties() {
-		return comp.getProperties();
+	public Property[] getProperties(boolean onlyPeristent) {
+		return comp.getProperties(onlyPeristent);
 	}
 
 	/**

@@ -919,7 +919,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		
 		// properties
 		if(c.top.properties.persistent){
-			Property[] properties=c.getProperties();
+			Property[] properties=c.getProperties(false);
 			DumpTable prop = new DumpTable("#8BC893","#C5EBC2","#000000");
 			prop.setTitle("Properties");
 			prop.setWidth("100%");
@@ -980,6 +980,11 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     public String getBaseAbsName() {
 		return top.base.pageSource.getComponentName();
 	}
+    
+    public boolean isBasePeristent() {
+		return top.base!=null && top.base.properties.persistent;
+	}
+	
 	
     /**
      * @see railo.runtime.Component#getHint()
@@ -1813,15 +1818,32 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	}
 
 	// FUTURE add to interface and then search for #321 and change this as well
-	public Property[] getProperties() {
+	public Property[] getProperties(boolean onlyPeristent) {
 		if(top.properties.properties==null) return new Property[0];
-		Property[] props=new Property[top.properties.properties.size()];
 		Iterator it = top.properties.properties.keySet().iterator();
-		int index=0;
-		while(it.hasNext())	{
-			props[index++]=(Property) top.properties.properties.get(it.next());
+		
+		// filter none peristent properties
+		if(onlyPeristent){
+			Property p;
+			java.util.List<Property> props=new ArrayList<Property>();
+			while(it.hasNext())	{
+				p = (Property)top.properties.properties.get(it.next());
+				//print.e(p.getName()+":"+p.isPeristent());
+				if(p.isPeristent()) props.add(p);
+			}
+			return props.toArray(new Property[props.size()]);
 		}
-		return props;
+		// all properties
+		else {
+			int index=0;
+			Property[] props=new Property[top.properties.properties.size()];
+			while(it.hasNext())	{
+				props[index++]=(Property) top.properties.properties.get(it.next());
+			}
+			
+			return props;
+		}
+		
 	}
 
 	public ComponentScope getComponentScope() {

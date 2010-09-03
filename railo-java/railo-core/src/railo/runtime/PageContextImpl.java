@@ -88,7 +88,6 @@ import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
-import railo.runtime.orm.ORMUtil;
 import railo.runtime.query.QueryCache;
 import railo.runtime.security.Credential;
 import railo.runtime.security.CredentialImpl;
@@ -2719,7 +2718,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	
 	public ORMSession getORMSession() throws PageException {
-		ORMUtil.checkRestriction(this);
+		//ORMUtil.checkRestriction(this);
 		
 		if(ormSession==null || !ormSession.isValid())	{
 			ormSession=config.getORMEngine(this).createSession(this);

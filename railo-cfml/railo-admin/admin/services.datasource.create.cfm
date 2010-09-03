@@ -85,11 +85,12 @@ Error Output--->
 	
 <cfelse>
 	<cfset actionType="update">
+    
 	<cfadmin 
 	action="getDatasource"
 	type="#request.adminType#"
 	password="#session["password"&request.adminType]#"
-	name="#url.name#"
+	name="#structKeyExists(url,'name')?url.name:form.name#"
 	returnVariable="datasource">
     
 	<cfset datasource._password=datasource.password>

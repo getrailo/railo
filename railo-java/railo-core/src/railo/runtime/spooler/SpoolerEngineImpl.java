@@ -5,11 +5,9 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -138,15 +136,17 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	private SpoolerTask getTask(Resource res, SpoolerTask defaultValue) {
 		InputStream is = null;
         ObjectInputStream ois = null;
+        
         SpoolerTask task=defaultValue;
 		try {
 			is = res.getInputStream();
 	        ois = new ObjectInputStream(is);
 	        task = (SpoolerTask) ois.readObject();
         } 
-        catch (Throwable t) {
+        catch (Throwable t) {//t.printStackTrace();
         	IOUtil.closeEL(is);
         	IOUtil.closeEL(ois);
+        	res.delete();
         }
         IOUtil.closeEL(is);
         IOUtil.closeEL(ois);
@@ -382,15 +382,17 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 				nextExection=Long.MAX_VALUE;
 				for(int i=0;i<taskNames.length;i++) {
 					task=getTaskByName(openDirectory, taskNames[i]);
-					//print.o("- "+task.getId()+" : "+new Date(task.nextExecution()));
+					if(task==null) continue;
 					
-					if(task!=null && task.nextExecution()<=System.currentTimeMillis()) {
+					if(task.nextExecution()<=System.currentTimeMillis()) {
 						//print.o("- execute");
 						tt=new TaskThread(engine,task);
 						tt.start();
 						runningTasks.add(tt);
 					}
-					else if(task.nextExecution()<nextExection && nextExection!=-1 && !task.closed()) 
+					else if(task.nextExecution()<nextExection && 
+							nextExection!=-1 && 
+							!task.closed()) 
 						nextExection=task.nextExecution();
 					nextExection=joinTasks(runningTasks,maxThreads,nextExection);
 				}

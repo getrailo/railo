@@ -10,7 +10,7 @@ function translateDateTime(task,dateName,timeName,newName) {
 	var sct=struct();
 	var d=0;
 	// Date
-	if(IsDate(task[dateName])) {
+	if(structKeyExists(task,dateName) and IsDate(task[dateName])) {
 		d=task[dateName];
 		sct.year=year(d);
 		sct.month=two(month(d));
@@ -22,7 +22,7 @@ function translateDateTime(task,dateName,timeName,newName) {
 		sct.day='';
 	}
 	// Time
-	if(IsDate(task[timeName])) {
+	if(structKeyExists(task,timeName) and IsDate(task[timeName])) {
 		d=task[timeName];
 		sct.hour=two(hour(d));
 		sct.minute=two(minute(d));
@@ -175,9 +175,8 @@ Error Output--->
 </style> --->
 
 
-
 <cfoutput>
-<table class="tbl">
+<table class="tbl" width="600">
 <cfform action="#request.self#?action=#url.action#&action2=#url.action2#&task=#url.task#" method="post">
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.Name#</td>
@@ -218,7 +217,7 @@ Error Output--->
 </tr>
 </table>
 <br><h2>#stText.Schedule.Proxy#</h2>
-<table class="tbl">
+<table class="tbl" width="600">
 <tr>
 	<td colspan="2">#stText.Schedule.ProxyDesc#</td>
 </tr>
@@ -248,7 +247,7 @@ Error Output--->
 </table>
 <br><h2>#stText.Schedule.Output#</h2>
 
-<table class="tbl">
+<table class="tbl" width="600">
 <tr>
 	<td colspan="2">#stText.Schedule.OutputDesc#</td>
 </tr>
@@ -269,7 +268,7 @@ Error Output--->
 </tr>
 </table>
 <br><h2>#stText.Schedule.ExecutionDate# <cfif isNumeric(task.interval)>(Every...)<cfelse>(#ucFirst(task.interval)#)</cfif></h2>
-<table class="tbl">
+<table class="tbl" width="600">
 <tr>
 	<td colspan="2"><cfif isNumeric(task.interval)>#stText.Schedule['ExecutionDescEvery']#<cfelse>#stText.Schedule['ExecutionDesc'& task.interval]#</cfif></td>
 </tr>

@@ -3379,5 +3379,215 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		if(!(obj instanceof Collection)) return false;
 		return CollectionUtil.equals(this,(Collection)obj);
 	}
+
+	public int getHoldability() throws SQLException {
+		throw notSupported();
+	}
+
+	public boolean isClosed() throws SQLException {
+		return false;
+	}
+
+	public void updateNString(int columnIndex, String nString)throws SQLException {
+		updateString(columnIndex, nString);
+	}
+
+	public void updateNString(String columnLabel, String nString)throws SQLException {
+		updateString(columnLabel, nString);
+	}
+
 	
+
+	public String getNString(int columnIndex) throws SQLException {
+		return getString(columnIndex);
+	}
+
+	public String getNString(String columnLabel) throws SQLException {
+		return getString(columnLabel);
+	}
+
+	public Reader getNCharacterStream(int columnIndex) throws SQLException {
+		return getCharacterStream(columnIndex);
+	}
+
+	public Reader getNCharacterStream(String columnLabel) throws SQLException {
+		return getCharacterStream(columnLabel);
+	}
+
+	public void updateNCharacterStream(int columnIndex, Reader x, long length)throws SQLException {
+		updateCharacterStream(columnIndex, x, length);
+	}
+
+	public void updateNCharacterStream(String columnLabel, Reader reader,long length) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateAsciiStream(int columnIndex, InputStream x, long length)throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateBinaryStream(int columnIndex, InputStream x, long length)throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateCharacterStream(int columnIndex, Reader x, long length) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateAsciiStream(String columnLabel, InputStream x, long length)throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateBinaryStream(String columnLabel, InputStream x,long length) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateCharacterStream(String columnLabel, Reader reader,long length) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateBlob(int columnIndex, InputStream inputStream, long length) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateBlob(String columnLabel, InputStream inputStream,long length) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateClob(int columnIndex, Reader reader, long length) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateClob(String columnLabel, Reader reader, long length) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateNClob(int columnIndex, Reader reader, long length) throws SQLException {
+		updateClob(columnIndex, reader, length);
+	}
+
+	public void updateNClob(String columnLabel, Reader reader, long length) throws SQLException {
+		updateClob(columnLabel, reader,length);
+	}
+
+	public void updateNCharacterStream(int columnIndex, Reader x) throws SQLException {
+		updateCharacterStream(columnIndex, x);
+	}
+
+	public void updateNCharacterStream(String columnLabel, Reader reader)throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateAsciiStream(int columnIndex, InputStream x)throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateBinaryStream(int columnIndex, InputStream x)throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateCharacterStream(int columnIndex, Reader x) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateAsciiStream(String columnLabel, InputStream x) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateBinaryStream(String columnLabel, InputStream x) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateCharacterStream(String columnLabel, Reader reader) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateBlob(int columnIndex, InputStream inputStream) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateBlob(String columnLabel, InputStream inputStream) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateClob(int columnIndex, Reader reader) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateClob(String columnLabel, Reader reader) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateNClob(int columnIndex, Reader reader) throws SQLException {
+		updateClob(columnIndex, reader);
+	}
+
+	public void updateNClob(String columnLabel, Reader reader) throws SQLException {
+		updateClob(columnLabel, reader);
+	}
+
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		throw notSupported();
+	}
+
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		throw notSupported();
+	}
+	
+	/*
+	public void updateNClob(int columnIndex, NClob nClob) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateNClob(String columnLabel, NClob nClob) throws SQLException {
+		throw notSupported();
+	}
+
+	public NClob getNClob(int columnIndex) throws SQLException {
+		throw notSupported();
+	}
+
+	public NClob getNClob(String columnLabel) throws SQLException {
+		throw notSupported();
+	}
+
+	public SQLXML getSQLXML(int columnIndex) throws SQLException {
+		throw notSupported();
+	}
+
+	public SQLXML getSQLXML(String columnLabel) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateSQLXML(int columnIndex, SQLXML xmlObject) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateSQLXML(String columnLabel, SQLXML xmlObject) throws SQLException {
+		throw notSupported();
+	}
+	
+	public RowId getRowId(int columnIndex) throws SQLException {
+		throw notSupported();
+	}
+
+	public RowId getRowId(String columnLabel) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateRowId(int columnIndex, RowId x) throws SQLException {
+		throw notSupported();
+	}
+
+	public void updateRowId(String columnLabel, RowId x) throws SQLException {
+		throw notSupported();
+	}
+	 */
+
+	private SQLException notSupported() {
+		return new SQLException("this feature is not supported");
+	}
+	private RuntimeException notSupportedEL() {
+		return new RuntimeException(new SQLException("this feature is not supported"));
+	}
 }

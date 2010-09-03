@@ -130,7 +130,7 @@ public class ClassicAMFCaster implements AMFCaster {
 		if(cfc instanceof ComponentImpl)c=new ComponentWrap(methodAccessLevel,(ComponentImpl)cfc);
 		
 
-		Property[] prop = ComponentUtil.getProperties(cfc);
+		Property[] prop = ComponentUtil.getProperties(cfc,false);
 		Object v; UDF udf;
     	if(prop!=null)for(int i=0;i<prop.length;i++) {
     		v=cfc.get(prop[i].getName(),null);

@@ -1,6 +1,9 @@
 package railo.runtime.orm;
 
+import java.sql.Array;
+import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -8,7 +11,9 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.sql.Struct;
 import java.util.Map;
+import java.util.Properties;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
@@ -281,9 +286,66 @@ public class ORMConnection implements Connection {
 		e.initCause(pe);
 		return e;
 	}
-	
+
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		throw notSupported();
+	}
+
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		throw notSupported();
+	}
+
+	public Clob createClob() throws SQLException {
+		throw notSupported();
+	}
+
+	public Blob createBlob() throws SQLException {
+		throw notSupported();
+	}
+
+	public boolean isValid(int timeout) throws SQLException {
+		throw notSupported();
+	}
+
+	public void setClientInfo(String name, String value) {
+		throw notSupportedEL();
+	}
+
+	public void setClientInfo(Properties properties) {
+		throw notSupportedEL();
+	}
+
+	public String getClientInfo(String name) throws SQLException {
+		throw notSupported();
+	}
+
+	public Properties getClientInfo() throws SQLException {
+		throw notSupported();
+	}
+
+	public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
+		throw notSupported();
+	}
+
+	/**
+	 * @see java.sql.Connection#createStruct(java.lang.String, java.lang.Object[])
+	 */
+	public Struct createStruct(String typeName, Object[] attributes)throws SQLException {
+		throw notSupported();
+	}
+
 	private SQLException notSupported() {
 		return new SQLException("this feature is not supported");
 	}
+	private RuntimeException notSupportedEL() {
+		return new RuntimeException(new SQLException("this feature is not supported"));
+	}
 
+	/*public NClob createNClob() throws SQLException {
+		throw notSupported();
+	}
+
+	public SQLXML createSQLXML() throws SQLException {
+		throw notSupported();
+	}*/
 }

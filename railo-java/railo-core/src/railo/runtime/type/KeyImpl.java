@@ -1,9 +1,9 @@
 package railo.runtime.type;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
-import railo.commons.collections.HashTableNotSync;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.CasterException;
@@ -24,7 +24,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable {
 	
 	
 	
-	private static Map<String,KeyImpl> keys = new HashTableNotSync();
+	private static Map<String,KeyImpl> keys = new HashMap<String, KeyImpl>();//HashTableNotSync();
 	
 	//public int index;
 	//private static long count=0;

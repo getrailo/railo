@@ -2819,7 +2819,9 @@ public final class ConfigWebFactory {
       	
       // engine
       	String defaulrEngineClass=HibernateORMEngine.class.getName();//"railo.runtime.orm.hibernate.HibernateORMEngine";
-        String strEngine=null;
+      	
+        //print.o("orm:"+defaulrEngineClass);
+      	String strEngine=null;
         if(orm!=null)strEngine=orm.getAttribute("engine-class");
         if(StringUtil.isEmpty(strEngine,true))
         	strEngine=defaulrEngineClass;

@@ -9,7 +9,6 @@ import org.opencfml.eventgateway.GatewayException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Constants;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 

@@ -34,7 +34,7 @@ other=iif(request.adminType EQ "web","'server'","'web'");
     	a.navsub		{text-decoration:none;color:##568bc1;font-size : 8pt;}
     	a.navsub_active	{text-decoration:none;color:##568bc1;font-size : 8pt;font-weight:bold;}
 		
-		.comment{font-size : 10px;color:##787a7d;}
+		.comment{font-size : 10px;color:##787a7d;text-decoration:none;}
 		.commentHead{font-size : 10px;color:##DFE9F6;}
 		.copy { font-size : 8pt;color:##666666;}
 		
