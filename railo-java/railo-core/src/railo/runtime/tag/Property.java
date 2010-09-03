@@ -218,6 +218,7 @@ public final class Property extends TagImpl  implements DynamicAttributes{
 		if(pageContext.variablesScope() instanceof ComponentScope) {
 			ComponentPro comp = ((ComponentScope)pageContext.variablesScope()).getComponent();
 			comp.setProperty(property);
+			property.setOwnerName(comp.getAbsName());
 		}
 		
 		return SKIP_BODY;

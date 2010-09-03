@@ -298,7 +298,7 @@ public class HBMCreator {
         	if("all".equals(str) || "dirty".equals(str) || "none".equals(str) || "version".equals(str))
         		clazz.setAttribute("optimistic-lock",str);
         	else
-        		throw new ORMException(engine,"invalid value ["+str+"] for attribute [optimistic-lock] of tag [component], valid values are [all,dirty,none,version]");
+        		throw new ORMException(engine,"invalid value ["+str+"] for attribute [optimisticlock] of tag [component], valid values are [all,dirty,none,version]");
         }
         
         // read-only
@@ -709,7 +709,8 @@ public class HBMCreator {
         	if("always".equals(str) || "insert".equals(str) || "never".equals(str))
         		property.setAttribute("generated",str);
         	else
-        		throw new ORMException(engine,"invalid value ["+str+"] for attribute [generated] of column ["+columnName+"], valid values are [always,insert,never]");
+        		throw invalidValue(engine,prop,"generated",str,"always,insert,never");
+				//throw new ORMException(engine,"invalid value ["+str+"] for attribute [generated] of column ["+columnName+"], valid values are [always,insert,never]");
         }
         
         
@@ -907,7 +908,8 @@ public class HBMCreator {
 				if(!StringUtil.isEmpty(str,true))mapKey.setAttribute("type", str);
 			}
 		}
-		else throw new ORMException(engine,"invalid value ["+str+"] for attribute [collectiontype], valid values are [array,struct]");
+		else throw invalidValue(engine,prop,"collectiontype",str,"array,struct");
+		//throw new ORMException(engine,"invalid value ["+str+"] for attribute [collectiontype], valid values are [array,struct]");
 		
 		if(join==clazz) clazz.appendChild(el);
 		else clazz.insertBefore(el, join);
@@ -1114,7 +1116,8 @@ public class HBMCreator {
 			str=toString(meta,"structKeyType");
 			if(!StringUtil.isEmpty(str,true))mapKey.setAttribute("type", str);
 		}
-		else throw new ORMException(engine,"invalid value ["+str+"] for attribute [collectiontype], valid values are [array,struct]");
+		else throw invalidValue(engine,prop,"collectiontype",str,"array,struct");
+		//throw new ORMException(engine,"invalid value ["+str+"] for attribute [collectiontype], valid values are [array,struct]");
 		
 		if(join==clazz) clazz.appendChild(el);
 		else clazz.insertBefore(el, join);
@@ -1336,7 +1339,8 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 			if("join".equals(str) || "select".equals(str))
 				x2x.setAttribute("fetch", str);
 			else
-				throw new ORMException(engine,"invalid value ["+str+"] for attribute [fetch], valid values are [join,select]");
+				throw invalidValue(engine,prop,"fetch",str,"join,select");
+			//throw new ORMException(engine,"invalid value ["+str+"] for attribute [fetch], valid values are [join,select]");
 		}
 		
 		// lazy
@@ -1348,7 +1352,8 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 			else if("extra".equalsIgnoreCase(str))
 				x2x.setAttribute("lazy", "extra");
 			else 
-				throw new ORMException(engine,"invalid value ["+str+"] for attribute [lazy], valid values are [true,false,extra]");
+				throw invalidValue(engine,prop,"lazy",str,"true,false,extra");
+				//throw new ORMException(engine,"invalid value ["+str+"] for attribute [lazy], valid values are [true,false,extra]");
 		}
 	}
 
@@ -1389,7 +1394,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 			if("db".equals(str) || "vm".equals(str))
 				timestamp.setAttribute("source", str);
 			else 
-				throw new ORMException(engine,"invalid value ["+str+"] for attribute [source], valid values are [db,vm]");
+				throw invalidValue(engine,prop,"source",str,"db,vm");
 		}
 		
 		// unsavedValue
@@ -1399,11 +1404,23 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 			if("null".equals(str) || "undefined".equals(str))
 				timestamp.setAttribute("unsaved-value", str);
 			else 
-				throw new ORMException(engine,"invalid value ["+str+"] for attribute [unsavedValue], valid values are [null, undefined]");
+				throw invalidValue(engine,prop,"unsavedValue",str,"null, undefined");
+				//throw new ORMException(engine,"invalid value ["+str+"] for attribute [unsavedValue], valid values are [null, undefined]");
 		}
 	}
 
 	
+	private static ORMException invalidValue(ORMEngine engine,Property prop, String attrName, String invalid, String valid) {
+		String owner = prop.getOwnerName();
+		if(StringUtil.isEmpty(owner))return new ORMException(engine,"invalid value ["+invalid+"] for attribute ["+attrName+"] of property ["+prop.getName()+"], valid values are ["+valid+"]");
+		return new ORMException(engine,"invalid value ["+invalid+"] for attribute ["+attrName+"] of property ["+prop.getName()+"] of Component ["+List.last(owner,'.')+"], valid values are ["+valid+"]");
+	}
+
+
+
+
+
+
 	private static void createXMLMappingVersion(ORMEngine engine,Element clazz, PageContext pc,Property prop) throws PageException {
 		Struct meta = prop.getMeta();
 		
@@ -1435,7 +1452,8 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 				str=Caster.toString(o,null);
 				if("always".equalsIgnoreCase(str))str="always";
 				else if("never".equalsIgnoreCase(str))str="never";
-				else throw new ORMException(engine,"invalid value ["+o+"] for attribute [generated] of property ["+prop.getName()+"], valid values are [true,false,always,never]");
+				else throw invalidValue(engine,prop,"generated",o.toString(),"true,false,always,never");
+				//throw new ORMException(engine,"invalid value ["+o+"] for attribute [generated] of property ["+prop.getName()+"], valid values are [true,false,always,never]");
 			}
 			version.setAttribute( "generated", str);
 		}
@@ -1460,7 +1478,8 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 			else if("short".equals(str))
 				version.setAttribute("type", "short");
 			else 
-				throw new ORMException(engine,"invalid value ["+str+"] for attribute ["+typeName+"], valid values are [int,integer,long,short]");
+				throw invalidValue(engine,prop,typeName,str,"int,integer,long,short");
+			//throw new ORMException(engine,"invalid value ["+str+"] for attribute ["+typeName+"], valid values are [int,integer,long,short]");
 		}
 		else 
 			version.setAttribute("type", "integer");
@@ -1472,7 +1491,8 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 			if("null".equals(str) || "negative".equals(str) || "undefined".equals(str))
 				version.setAttribute("unsaved-value", str);
 			else 
-				throw new ORMException(engine,"invalid value ["+str+"] for attribute [unsavedValue], valid values are [null, negative, undefined]");
+				throw invalidValue(engine,prop,"unsavedValue",str,"null, negative, undefined");
+			//throw new ORMException(engine,"invalid value ["+str+"] for attribute [unsavedValue], valid values are [null, negative, undefined]");
 		}
 	}   
 	

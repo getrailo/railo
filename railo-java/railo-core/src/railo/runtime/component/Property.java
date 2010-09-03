@@ -35,7 +35,9 @@ public final class Property extends MemberSupport implements ASMProperty {
 	private String _default;
 	private String displayname="";
 	private String hint="";
-	private Struct meta=new StructImpl(); 
+	private Struct meta=new StructImpl();
+
+	private String ownerName; 
 	
 	// ORM Attributes
 	/*private int batchsize;
@@ -363,6 +365,13 @@ public final class Property extends MemberSupport implements ASMProperty {
 
 	public boolean isPeristent() {
 		return Caster.toBooleanValue(meta.get(PERSITENT,Boolean.TRUE),true);
+	}
+
+	public void setOwnerName(String ownerName) {
+		this.ownerName=ownerName;
+	}
+	public String getOwnerName() {
+		return ownerName;
 	}
 
 	
