@@ -1424,23 +1424,46 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 		if(!StringUtil.isEmpty(str,true))version.setAttribute("access", str);
 		
 		// generated
-		Boolean b = toBoolean(meta, "generated");
-        if(b!=null) version.setAttribute( "generated", b.booleanValue()?"always":"never");
-        
+		Object o=meta.get("generated",null);
+		if(o!=null){
+			Boolean b = Caster.toBoolean(o,null); 
+			str=null;
+			if(b!=null) {
+				str=b.booleanValue()?"always":"never";
+			}
+			else {
+				str=Caster.toString(o,null);
+				if("always".equalsIgnoreCase(str))str="always";
+				else if("never".equalsIgnoreCase(str))str="never";
+				else throw new ORMException(engine,"invalid value ["+o+"] for attribute [generated] of property ["+prop.getName()+"], valid values are [true,false,always,never]");
+			}
+			version.setAttribute( "generated", str);
+		}
+		
         // insert
-        b=toBoolean(meta, "insert");
+        Boolean b = toBoolean(meta, "insert");
         if(b!=null && !b.booleanValue()) version.setAttribute("insert", "false");
         
         // type
-		str=toString(meta,"dataType");
-		if(StringUtil.isEmpty(str,true))str=toString(meta,"ormType");
+        String typeName="dataType";
+		str=toString(meta,typeName);
+		if(StringUtil.isEmpty(str,true)){
+			typeName="ormType";
+			str=toString(meta,typeName);
+		}
 		if(!StringUtil.isEmpty(str,true)) {
 			str=str.trim().toLowerCase();
 			if("int".equals(str) || "integer".equals(str))
 				version.setAttribute("type", "integer");
+			else if("long".equals(str))
+				version.setAttribute("type", "long");
+			else if("short".equals(str))
+				version.setAttribute("type", "short");
 			else 
-				throw new ORMException(engine,"invalid value ["+str+"] for attribute [dataType], valid values are [int,integer]");
+				throw new ORMException(engine,"invalid value ["+str+"] for attribute ["+typeName+"], valid values are [int,integer,long,short]");
 		}
+		else 
+			version.setAttribute("type", "integer");
 		
 		// unsavedValue
         str=toString(meta,"unsavedValue");
