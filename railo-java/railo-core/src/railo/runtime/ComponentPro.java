@@ -6,7 +6,9 @@ public interface ComponentPro extends Component {
 	/**
 	 * @return properties of the component
 	 */
-	public Property[] getProperties();
+	//public Property[] getProperties();
+	
+	public Property[] getProperties(boolean onlyPeristent);
 	
 	public void setProperty(Property property);
 	

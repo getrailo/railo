@@ -245,7 +245,7 @@ public final class AxisCaster {
     	if(comp instanceof ComponentImpl)comp=new ComponentWrap(ComponentImpl.ACCESS_PRIVATE,(ComponentImpl)comp);
 		
     	
-    	Property[] props=ComponentUtil.getProperties(comp);
+    	Property[] props=ComponentUtil.getProperties(comp,false);
     	//Map rtn=new HashTable();
     	Object obj=null;
 		try {
@@ -553,7 +553,7 @@ public final class AxisCaster {
         		}
         		
         		
-        		Property[] props = c.getProperties();
+        		Property[] props = c.getProperties(false);
         		Property prop;
         		for(int i=0;i<props.length;i++){
         			prop=props[i];

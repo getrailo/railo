@@ -9,17 +9,22 @@ import railo.runtime.Component;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.transformer.bytecode.util.ASMProperty;
 import railo.transformer.bytecode.util.ASMUtil;
 
 /**
- * 
+ * FUTURE add a interface to public interface
  */
 public final class Property extends MemberSupport implements ASMProperty {
     
 
+	private static final Collection.Key PERSITENT = KeyImpl.getInstance("persistent");
+	
 	private String type="any";
 	private String name;
 	private boolean required;
@@ -354,6 +359,10 @@ public final class Property extends MemberSupport implements ASMProperty {
 	 */
 	public Class getClazz() {
 		return null;
+	}
+
+	public boolean isPeristent() {
+		return Caster.toBooleanValue(meta.get(PERSITENT,Boolean.TRUE),true);
 	}
 
 	

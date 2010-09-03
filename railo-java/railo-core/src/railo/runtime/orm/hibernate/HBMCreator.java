@@ -19,7 +19,6 @@ import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
-import railo.runtime.orm.ORMUtil;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
@@ -49,7 +48,7 @@ public class HBMCreator {
 		
 		ComponentPro cfci = ComponentUtil.toComponentPro(cfc);
 		Struct meta = cfci.getMetaData(pc);
-		Property[] props = cfci.getProperties();
+		Property[] props = cfci.getProperties(true);
 		
 		// create class element and attach
 		Document doc = XMLUtil.getDocument(hibernateMapping);
@@ -370,7 +369,7 @@ public class HBMCreator {
 			String str = toString(meta,"column");
 	    	if(StringUtil.isEmpty(str,true)) str=prop.getName();
 	    	column.setAttribute("name",formatColumn(str));
-	    	ColumnInfo info=getColumnInfo(columnsInfo,tableName,str,engine);
+	    	ColumnInfo info=getColumnInfo(columnsInfo,tableName,str,engine,null);
 	    	if(info!=null){
 	    		column.setAttribute("sql-type",info.getTypeName());
 	    		column.setAttribute("length",Caster.toString(info.getSize()));
@@ -433,7 +432,7 @@ public class HBMCreator {
 		str=toString(meta,"column");
     	if(StringUtil.isEmpty(str,true)) str=prop.getName();
     	column.setAttribute("name",formatColumn(str));
-    	ColumnInfo info=getColumnInfo(columnsInfo,tableName,str,engine);
+    	ColumnInfo info=getColumnInfo(columnsInfo,tableName,str,engine,null);
     	StringBuilder foreignCFC=new StringBuilder();
 		String generator=createXMLMappingGenerator(engine,id,pc,prop,foreignCFC);
         	
@@ -443,12 +442,6 @@ public class HBMCreator {
 		//print.o(prop.getName()+":"+type+"::"+getDefaultTypeForGenerator(engine,generator,foreignCFC));
 		if(!StringUtil.isEmpty(type))id.setAttribute("type", type);
 		
-		
-		if(info!=null && !"string".equalsIgnoreCase(type)){
-    		//column.setAttribute("sql-type",info.getTypeName());
-    		//column.setAttribute("length",Caster.toString(info.getSize()));
-    	}
-    	
 		// unsaved-value
 		str=toString(meta,"unsavedValue");  
 		if(!StringUtil.isEmpty(str,true))id.setAttribute("unsaved-value", str);
@@ -469,7 +462,7 @@ public class HBMCreator {
 					Component cfc = engine.getEntityByCFCName(foreignCFC.toString(), false);
 					if(cfc!=null){
 						ComponentPro cfcp = ComponentUtil.toComponentPro(cfc);
-						Property[] ids = getIds(cfcp.getProperties());
+						Property[] ids = getIds(cfcp.getProperties(true));
 						if(!ArrayUtil.isEmpty(ids)){
 							Property id = ids[0];
 							id.getMeta();
@@ -535,7 +528,16 @@ public class HBMCreator {
 
 
 
-	private static ColumnInfo getColumnInfo(Struct columnsInfo,String tableName,String columnName,ORMEngine engine) throws ORMException {
+	private static ColumnInfo getColumnInfo(Struct columnsInfo,String tableName,String columnName,ORMEngine engine,ColumnInfo defaultValue) throws ORMException {
+		if(columnsInfo!=null) {
+	    	ColumnInfo info = (ColumnInfo) columnsInfo.get(KeyImpl.init(columnName),null);
+			if(info==null) return defaultValue;
+			return info;
+    	}
+		return defaultValue;
+	}
+	
+	/*private static ColumnInfo getColumnInfo(Struct columnsInfo,String tableName,String columnName,ORMEngine engine) throws ORMException {
 		if(columnsInfo!=null) {
 	    	ColumnInfo info = (ColumnInfo) columnsInfo.get(columnName,null);
 			if(info==null) {
@@ -549,7 +551,7 @@ public class HBMCreator {
 			return info;
     	}
 		return null;
-	}
+	}*/
 
 	private static String createXMLMappingGenerator(ORMEngine engine,Element id, PageContext pc,Property prop,StringBuilder foreignCFC) throws PageException {
 		Struct meta = prop.getMeta();
@@ -627,7 +629,7 @@ public class HBMCreator {
 		String columnName=toString(meta,"column");
     	if(StringUtil.isEmpty(columnName,true)) columnName=prop.getName();
     	
-    	ColumnInfo info=getColumnInfo(columnsInfo,tableName,columnName,engine);
+    	ColumnInfo info=getColumnInfo(columnsInfo,tableName,columnName,engine,null);
 		
 		Document doc = XMLUtil.getDocument(clazz);
 		Element property = doc.createElement("property");

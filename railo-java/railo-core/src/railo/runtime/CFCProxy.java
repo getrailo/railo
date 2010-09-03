@@ -530,8 +530,8 @@ public class CFCProxy extends ComponentImpl implements HibernateProxy, Serializa
 	 * @see railo.runtime.ComponentImpl#getProperties()
 	 */
 	@Override
-	public Property[] getProperties() {
-		return li.getCFC().getProperties();
+	public Property[] getProperties(boolean onlyPeristent) {
+		return li.getCFC().getProperties(onlyPeristent);
 	}
 
 	/**

@@ -32,7 +32,6 @@ import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
-import railo.runtime.SuperComponent;
 import railo.runtime.component.Property;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -389,7 +388,7 @@ public final class ComponentUtil {
     	
 		
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component),Object.class,new Class[]{Pojo.class},cp.getPageSource().getDisplayPath());
+		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component,false),Object.class,new Class[]{Pojo.class},cp.getPageSource().getDisplayPath());
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
@@ -576,15 +575,11 @@ public final class ComponentUtil {
 		return new ExpressionException("member ["+key+"] of component ["+c.getCallName()+"] is not a function", "Member is of type ["+Caster.toTypeName(member)+"]");
 	}
 
-	public static Property[] getProperties(Component c) {//#321
-		if(c instanceof ComponentImpl)
-			return ((ComponentImpl)c).getProperties();
-		if(c instanceof ComponentWrap)
-			return ((ComponentWrap)c).getProperties();
-		if(c instanceof SuperComponent)
-			return ((SuperComponent)c).getProperties();
+	public static Property[] getProperties(Component c,boolean onlyPeristent) {
+		if(c instanceof ComponentPro)
+			return ((ComponentPro)c).getProperties(onlyPeristent);
 		
-		throw new RuntimeException("class ["+Caster.toClassName(c)+"] does not support method [getProperties()]");
+		throw new RuntimeException("class ["+Caster.toClassName(c)+"] does not support method [getProperties(boolean)]");
 	}
 
 	public static ComponentImpl toComponentImpl(Component comp) throws ExpressionException {

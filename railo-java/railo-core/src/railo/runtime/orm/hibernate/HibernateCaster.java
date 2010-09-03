@@ -389,7 +389,7 @@ public class HibernateCaster {
 
 
 	private static Query populateQuery(PageContext pc,HibernateORMSession session,ComponentPro cfc,Query qry) throws PageException {
-		Property[] properties = cfc.getProperties();
+		Property[] properties = cfc.getProperties(true);
 		ComponentScope scope = cfc.getComponentScope();
 		HibernateORMEngine engine=(HibernateORMEngine) session.getEngine();
 		
@@ -443,7 +443,7 @@ public class HibernateCaster {
 
 
 	private static Query inheritance(PageContext pc,HibernateORMSession session,ComponentPro cfc,Query qry, String entityName) throws PageException {
-		Property[] properties = cfc.getProperties();
+		Property[] properties = cfc.getProperties(true);
 		ComponentScope scope = cfc.getComponentScope();
 		String name;
 		Object value;

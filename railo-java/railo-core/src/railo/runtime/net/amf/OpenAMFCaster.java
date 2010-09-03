@@ -90,7 +90,7 @@ public final class OpenAMFCaster implements AMFCaster {
     private Object toAMFObject(Component c) throws PageException {
     	ASObject aso = new ASObject();
     	if(c instanceof ComponentImpl) {
-    		Property[] prop = ComponentUtil.getProperties(c);
+    		Property[] prop = ComponentUtil.getProperties(c,false);
         	if(prop!=null)for(int i=0;i<prop.length;i++) {
         		aso.put(prop[i].getName().toUpperCase(), toAMFObject(c.get(prop[i].getName(),null)));
         	}
