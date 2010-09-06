@@ -18,6 +18,7 @@ import org.hibernate.tuple.entity.EntityTuplizerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import railo.print;
 import railo.commons.db.DBUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -211,8 +212,8 @@ public class HibernateORMEngine implements ORMEngine {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		print.o(cfcs.keySet());
-		print.o(mappings);*/
+		print.o(cfcs.keySet());*/
+		//print.o(mappings);
 		
 		DataSourceManager manager = pc.getDataSourceManager();
 		DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);

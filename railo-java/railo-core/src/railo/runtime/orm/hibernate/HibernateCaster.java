@@ -263,10 +263,10 @@ public class HibernateCaster {
 		if("long".equals(type)) return type;
 		if("binary".equals(type)) return type;
 		if("boolean".equals(type)) return type;
-		if("blob".equals(type)) return type;
+		if("blob".equals(type)) return "binary";
 		if("boolean".equals(type)) return type;
 		if("character".equals(type)) return type;
-		if("clob".equals(type)) return type;
+		if("clob".equals(type)) return "text";
 		if("date".equals(type)) return type;
 		if("big_decimal".equals(type)) return type;
 		if("double".equals(type)) return type;
@@ -281,6 +281,7 @@ public class HibernateCaster {
 		if("byte".equals(type)) return type;
 		if("binary".equals(type)) return type;
 		if("string".equals(type)) return type;
+		if("text".equals(type)) return type;
 		
 		
 		// return different value
@@ -296,8 +297,10 @@ public class HibernateCaster {
 		if("bool".equals(type)) 					return "boolean";
 		if("yes-no".equals(type)) 					return "yes_no";
 		if("yesno".equals(type)) 					return "yes_no";
+		if("yes_no".equals(type)) 					return "yes_no";
 		if("true-false".equals(type)) 				return "true_false";
 		if("truefalse".equals(type)) 				return "true_false";
+		if("true_false".equals(type)) 				return "true_false";
 		if("varchar".equals(type)) 					return "string";
 		if("big-decimal".equals(type)) 				return "big_decimal";
 		if("bigdecimal".equals(type)) 				return "big_decimal";
@@ -306,6 +309,7 @@ public class HibernateCaster {
 		if("biginteger".equals(type)) 				return "big_integer";
 		if("java.math.biginteger".equals(type)) 	return "big_integer";
 		if("byte[]".equals(type)) 					return "binary";
+		if("serializable".equals(type)) 			return "serializable";
 		
 		return defaultValue;
     }

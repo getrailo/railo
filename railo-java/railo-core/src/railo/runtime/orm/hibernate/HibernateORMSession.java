@@ -19,9 +19,11 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.query.HQLQueryPlan;
 import org.hibernate.engine.query.ParameterMetadata;
 import org.hibernate.engine.query.QueryPlanCache;
+import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
+import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentPro;
@@ -30,6 +32,7 @@ import railo.runtime.PageContext;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQLItem;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMEngine;
@@ -42,6 +45,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.ComponentUtil;
+import sun.security.provider.NativePRNG;
 
 public class HibernateORMSession implements ORMSession{
 
@@ -91,11 +95,22 @@ public class HibernateORMSession implements ORMSession{
 		return engine;
 	}
 	
-	/**
+	/** 
 	 * @see railo.runtime.orm.ORMSession#flush(railo.runtime.PageContext)
 	 */
-	public void flush(PageContext pc) {
-		session().flush();
+	public void flush(PageContext pc) throws PageException {
+		try {
+			session().flush();
+		}
+		catch(ConstraintViolationException cve){
+			PageException pe = Caster.toPageException(cve);
+			if(pe instanceof PageExceptionImpl && !StringUtil.isEmpty(cve.getConstraintName())) {
+				//print.o(cve.getConstraintName());
+				((PageExceptionImpl)pe).setAdditional("constraint name", cve.getConstraintName() );
+			}
+			throw pe;
+		}
+		
 	}
 
 	/**

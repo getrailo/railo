@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.servlet.RequestDispatcher;
@@ -29,6 +31,7 @@ import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
@@ -39,11 +42,13 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
+import railo.runtime.functions.other.URLEncodedFormat;
 import railo.runtime.net.http.HTTPServletRequestWrap;
 import railo.runtime.net.http.HttpClientUtil;
 import railo.runtime.net.http.HttpServletResponseWrap;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.tag.Http;
 import railo.runtime.type.List;
 
 /**
@@ -146,7 +151,19 @@ public final class HTTPUtil {
      */
     public static URL toURL(String strUrl, int port) throws MalformedURLException {
     	
-        URL url;
+    	URL url;
+        
+        try {
+        	print.o(strUrl);
+        	URI uri = new URI(strUrl);
+
+			print.o(uri.getHost());
+			print.o(uri.getFragment());
+			print.o(uri.getPath());
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         try {
             url=new URL(strUrl);
         }
@@ -161,7 +178,7 @@ public final class HTTPUtil {
         String ref = url.getRef();
         String user=url.getUserInfo();
         if(port<=0) port=url.getPort();
-        
+
         
         
         // decode path
@@ -236,6 +253,16 @@ public final class HTTPUtil {
        
        		       
     }
+    
+    
+    private static String getProtocol(URI uri) {
+    	String p=uri.getRawSchemeSpecificPart();
+    	if(p==null) return null;
+		if(p.indexOf('/')==-1) return p;
+		if(p.indexOf("https")!=-1) return "https";
+		if(p.indexOf("http")!=-1) return "http";
+		return p;
+	}
     
     private static String getProtocol(URL url) {
 		String p=url.getProtocol().toLowerCase();
@@ -536,18 +563,29 @@ public final class HTTPUtil {
 	}
 	
 	
+	// MUST create a copy from toURL and rename toURI and rewrite for URI, pherhaps it is possible to merge them somehow
 	public static String encode(String realpath) {
     	
         
 		int qIndex=realpath.indexOf('?');
+		
 		if(qIndex==-1) return realpath;
 		
 		String file=realpath.substring(0,qIndex);
 		String query=realpath.substring(qIndex+1);
+		int sIndex=query.indexOf('#');
+		
+		String anker=null;
+		if(sIndex!=-1){
+			//print.o(sIndex);
+			anker=query.substring(sIndex+1);
+			query=query.substring(0,sIndex);
+		}
+		
 		StringBuffer res=new StringBuffer(file);
     	
 		
-        // file
+        // query
         if(!StringUtil.isEmpty(query)){
         	
         	StringList list = List.toList(query, '&');
@@ -567,6 +605,14 @@ public final class HTTPUtil {
         		}
         	}	
         }
+       
+        // anker
+        if(anker!=null) {
+        	res.append('#');
+        	res.append(escapeQSValue(anker));
+        }
+       
+        
        return res.toString();		       
     }
 
@@ -576,6 +622,12 @@ public final class HTTPUtil {
 		if("https".equalsIgnoreCase(url.getProtocol()))
 			return 443;
 		return 80;
+	}
+	
+	public static void main(String[] args) throws MalformedURLException {
+		print.o(encode("http://www.railo.ch/test.cfm?do=photo.view&id=289#commentAdd"));
+		print.o(toURL("/test.cfm?do=photo.view&id=289#commentAdd"));
+		print.o(toURL("http://localhost/testingapp/index.cfm?do=photo.view&id=289#commentAdd"));
 	}
 	
 }

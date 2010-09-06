@@ -575,7 +575,7 @@ public abstract class PageExceptionImpl extends PageException {
 	 * @param value
 	 */
 	public void setAdditional(String key, Object value) {
-		additional.setEL(KeyImpl.init(key),value);
+		additional.setEL(KeyImpl.init(key),StringUtil.toStringEmptyIfNull(value));
 	}
 	
 	

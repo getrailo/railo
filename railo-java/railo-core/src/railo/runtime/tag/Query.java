@@ -173,9 +173,12 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	 * @param psq set preserver single quote
 	 */
 	public void setPsq(boolean psq)	{
+		psq=!psq;
 		orgPSQ=pageContext.getPsq();
-        pageContext.setPsq(psq);
-		hasChangedPSQ=true;
+        if(orgPSQ!=psq){
+        	pageContext.setPsq(psq);
+        	hasChangedPSQ=true;
+        }
 	}
 	
 	/** set the value password

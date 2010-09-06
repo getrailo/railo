@@ -9,9 +9,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -924,9 +926,23 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			prop.setTitle("Properties");
 			prop.setWidth("100%");
 			Property p;
+			Object child;
 			for(int i=0;i<properties.length;i++) {
 				p=properties[i];
-				prop.appendRow(1, new SimpleDumpData(p.getName()),DumpUtil.toDumpData(c.scope.get(p.getName(),null), pc, maxlevel-1, dp));
+				child = c.scope.get(p.getName(),null);
+				DumpData dd;
+				if(child instanceof Component) {
+					DumpTable t = new DumpTablePro("component","#97C0AB","#EAF2EE","#000000");
+					t.appendRow(1,new SimpleDumpData("Component"),new SimpleDumpData(((Component)child).getCallName()));
+					dd=t;
+					
+				}
+				else 
+					dd=DumpUtil.toDumpData(child, pc, maxlevel-1, dp);
+				
+				
+				
+				prop.appendRow(1, new SimpleDumpData(p.getName()),dd);
 			}
 			
 			if(access>=ACCESS_PUBLIC && !prop.isEmpty()) {
@@ -1793,7 +1809,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     }
 
 	public void setProperty(Property property) {
-		if(top.properties.properties==null) top.properties.properties=new HashMap();
+		if(top.properties.properties==null) top.properties.properties=new LinkedHashMap<String,Property>();
 		top.properties.properties.put(StringUtil.toLowerCase(property.getName()),property);
 		if(top.properties.persistent || top.properties.accessors){
 			if(property.getDefault()!=null)scope.setEL(property.getName(), property.getDefault());

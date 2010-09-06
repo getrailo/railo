@@ -7,6 +7,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentPro;
@@ -370,14 +371,29 @@ public class HBMCreator {
 	    	if(StringUtil.isEmpty(str,true)) str=prop.getName();
 	    	column.setAttribute("name",formatColumn(str));
 	    	ColumnInfo info=getColumnInfo(columnsInfo,tableName,str,engine,null);
-	    	if(info!=null){
+	    	
+            str = toString(meta,"sqltype");
+	    	if(!StringUtil.isEmpty(str,true)) column.setAttribute("sql-type",str);
+	    	str = toString(meta,"length");
+	    	if(!StringUtil.isEmpty(str,true)) column.setAttribute("length",str);
+            
+	    	/*if(info!=null){
 	    		column.setAttribute("sql-type",info.getTypeName());
 	    		column.setAttribute("length",Caster.toString(info.getSize()));
-	    	}
+	    	}*/
 			
 	    	 // type
-			str=getType(info,prop,meta,"long"); //MUSTMUST
-			key.setAttribute("type", str);
+			//str=getType(info,prop,meta,"long"); //MUSTMUST
+			//key.setAttribute("type", str);
+			
+			String generator=toString(meta,"generator");
+			print.e("type1:"+getDefaultTypeForGenerator(generator,"string"));
+			String type = getType(info,prop,meta,getDefaultTypeForGenerator(generator,"string"));
+			print.e("type2:"+type);
+			if(!StringUtil.isEmpty(type))key.setAttribute("type", type);
+			
+			
+			
             
 		}
 		
@@ -449,13 +465,9 @@ public class HBMCreator {
 	}
 	
 	private static String getDefaultTypeForGenerator(HibernateORMEngine engine, String generator,StringBuilder foreignCFC) {
-		if("increment".equalsIgnoreCase(generator)) return "integer";
-		if("identity".equalsIgnoreCase(generator)) return "integer";
-		if("native".equalsIgnoreCase(generator)) return "integer";
-		if("seqhilo".equalsIgnoreCase(generator)) return "string";
-		if("uuid".equalsIgnoreCase(generator)) return "string";
-		if("guid".equalsIgnoreCase(generator)) return "string";
-		if("select".equalsIgnoreCase(generator)) return "string";
+		String value = getDefaultTypeForGenerator(generator, null);
+		if(value!=null) return value;
+		
 		if("foreign".equalsIgnoreCase(generator)) {
 			if(!StringUtil.isEmpty(foreignCFC)) {
 				try {
@@ -489,6 +501,17 @@ public class HBMCreator {
 		}
 		
 		return "string";
+	}
+	
+	private static String getDefaultTypeForGenerator(String generator,String defaultValue) {
+		if("increment".equalsIgnoreCase(generator)) return "integer";
+		if("identity".equalsIgnoreCase(generator)) return "integer";
+		if("native".equalsIgnoreCase(generator)) return "integer";
+		if("seqhilo".equalsIgnoreCase(generator)) return "string";
+		if("uuid".equalsIgnoreCase(generator)) return "string";
+		if("guid".equalsIgnoreCase(generator)) return "string";
+		if("select".equalsIgnoreCase(generator)) return "string";
+		return defaultValue;
 	}
 	
 	private static String getType(ColumnInfo info, Property prop,Struct meta,String defaultValue) throws ORMException {
