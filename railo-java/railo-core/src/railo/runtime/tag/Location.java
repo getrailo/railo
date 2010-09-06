@@ -91,6 +91,7 @@ public final class Location extends TagImpl {
 		HttpServletResponse rsp = pageContext. getHttpServletResponse();
 		
 		url=HTTPUtil.encode(url);
+		
 		// add token
 		if(addtoken && needId()) {
 			String[] arr=url.split("\\?");

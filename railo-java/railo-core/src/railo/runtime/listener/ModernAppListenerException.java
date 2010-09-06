@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -217,8 +218,8 @@ public final class ModernAppListenerException extends PageException {
 	 *
 	 * @see railo.runtime.exp.PageExceptionImpl#getLine(railo.runtime.PageContext)
 	 */
-	public String getLine(PageContext pc) {
-		return ((PageExceptionImpl)rootCause).getLine(pc);
+	public String getLine(Config config) {
+		return ((PageExceptionImpl)rootCause).getLine(config);
 	}
 
 	/**

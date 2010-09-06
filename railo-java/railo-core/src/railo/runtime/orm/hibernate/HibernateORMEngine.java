@@ -3,6 +3,7 @@ package railo.runtime.orm.hibernate;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +15,15 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.engine.query.QueryPlanCache;
+import org.hibernate.event.EventListeners;
+import org.hibernate.event.PostDeleteEventListener;
+import org.hibernate.event.PostInsertEventListener;
+import org.hibernate.event.PostLoadEventListener;
+import org.hibernate.event.PostUpdateEventListener;
+import org.hibernate.event.PreDeleteEventListener;
+import org.hibernate.event.PreInsertEventListener;
+import org.hibernate.event.PreLoadEventListener;
+import org.hibernate.event.PreUpdateEventListener;
 import org.hibernate.tuple.entity.EntityTuplizerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,6 +47,7 @@ import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMSession;
+import railo.runtime.orm.hibernate.event.EventListenerImpl;
 import railo.runtime.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
@@ -45,6 +56,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.util.ApplicationContext;
@@ -211,8 +223,8 @@ public class HibernateORMEngine implements ORMEngine {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		print.o(cfcs.keySet());
-		print.o(mappings);*/
+		print.o(cfcs.keySet());*/
+		//print.o(mappings);
 		
 		DataSourceManager manager = pc.getDataSourceManager();
 		DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
@@ -225,6 +237,8 @@ public class HibernateORMEngine implements ORMEngine {
 		finally {
 			manager.releaseConnection(pc,dc);
 		}
+		
+		addEventListeners(pc, configuration,ormConf,cfcs);
 		
 		EntityTuplizerFactory tuplizerFactory = configuration.getEntityTuplizerFactory();
 		//tuplizerFactory.registerDefaultTuplizerClass(EntityMode.MAP, CFCEntityTuplizer.class);
@@ -239,6 +253,81 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		
 		return _factory = configuration.buildSessionFactory();
+	}
+	
+	private static void addEventListeners(PageContext pc, Configuration config,ORMConfiguration ormConfig, Map<String, CFCInfo> cfcs) {
+		if(!ormConfig.eventHandling()) return;
+		String eventHandler = ormConfig.eventHandler();
+		EventListenerImpl listener=null;
+		if(!StringUtil.isEmpty(eventHandler,true)){
+			try {
+				Component c = pc.loadComponent(eventHandler.trim());
+				listener = new EventListenerImpl(c,true);
+		        //config.setInterceptor(listener);
+			} 
+			catch (PageException e) {e.printStackTrace();}
+		}
+        EventListeners listeners = config.getEventListeners();
+		
+        // post delete
+		List<EventListenerImpl> 
+		list=merge(listener,cfcs,EventListenerImpl.POST_DELETE);
+		listeners.setPostDeleteEventListeners(list.toArray(new PostDeleteEventListener[list.size()]));
+		
+        // post insert
+		list=merge(listener,cfcs,EventListenerImpl.POST_INSERT);
+		listeners.setPostInsertEventListeners(list.toArray(new PostInsertEventListener[list.size()]));
+		
+		// post update
+		list=merge(listener,cfcs,EventListenerImpl.POST_UPDATE);
+		listeners.setPostUpdateEventListeners(list.toArray(new PostUpdateEventListener[list.size()]));
+		
+		// post update
+		list=merge(listener,cfcs,EventListenerImpl.POST_LOAD);
+		listeners.setPostLoadEventListeners(list.toArray(new PostLoadEventListener[list.size()]));
+		
+		// pre delete
+		list=merge(listener,cfcs,EventListenerImpl.PRE_DELETE);
+		listeners.setPreDeleteEventListeners(list.toArray(new PreDeleteEventListener[list.size()]));
+		
+		// pre insert
+		list=merge(listener,cfcs,EventListenerImpl.PRE_INSERT);
+		listeners.setPreInsertEventListeners(list.toArray(new PreInsertEventListener[list.size()]));
+		
+		// pre load
+		list=merge(listener,cfcs,EventListenerImpl.PRE_LOAD);
+		listeners.setPreLoadEventListeners(list.toArray(new PreLoadEventListener[list.size()]));
+		
+		// pre update
+		list=merge(listener,cfcs,EventListenerImpl.PRE_UPDATE);
+		listeners.setPreUpdateEventListeners(list.toArray(new PreUpdateEventListener[list.size()]));
+		
+
+    }
+
+	private static List<EventListenerImpl> merge(EventListenerImpl listener, Map<String, CFCInfo> cfcs, Collection.Key eventType) {
+		List<EventListenerImpl> list=new ArrayList<EventListenerImpl>();
+		// general listener
+		if(listener!=null && is(listener.getCFC(),eventType))
+			list.add(listener);
+			
+		
+		Iterator<Entry<String, CFCInfo>> it = cfcs.entrySet().iterator();
+		Entry<String, CFCInfo> entry;
+		Component cfc;
+		while(it.hasNext()){
+			entry = it.next();
+			cfc = entry.getValue().getCFC();
+			if(is(cfc,eventType)) {
+				list.add(new EventListenerImpl(cfc,false));
+			}
+		}
+		//print.o(eventType+":"+list.size());
+		return list;
+	}
+
+	private static boolean is(Component cfc, Collection.Key eventType) {
+		return cfc.get(eventType,null) instanceof UDF;
 	}
 
 	private Object hash(ApplicationContextImpl appContext) {
@@ -364,8 +453,6 @@ public class HibernateORMEngine implements ORMEngine {
 				if(tableName2!=null)rows=checkTableFill(md,dbName,tableName2);
 			}
 			
-			
-			
 			if(rows.size()==0)	{
 				//ORMUtil.printError("there is no table with name  ["+tableName+"] defined", engine);
 				return null;
@@ -381,7 +468,7 @@ public class HibernateORMEngine implements ORMEngine {
 	private static Struct checkTableFill(DatabaseMetaData md, String dbName, String tableName) throws SQLException, PageException {
 		Struct rows=new CastableStruct(tableName);
 		ResultSet columns = md.getColumns(dbName, null, tableName, null);
-		
+		//print.o(new QueryImpl(columns,""));
 		try{
 			String name;
 			Object nullable;
@@ -591,6 +678,7 @@ public class HibernateORMEngine implements ORMEngine {
 		throw new ORMException(this,"entity ["+cfcname+"] does not exist, existing  entities are ["+railo.runtime.type.List.arrayToList(names, ", ")+"]");
 		
 	}
+	
 	
 
 	public String[] getEntityNames() {

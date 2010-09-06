@@ -1854,7 +1854,7 @@ private void doGetMappings() throws PageException {
             qry.setAt("Timeout",row,new Double(pc.getRequestTimeout()/1000));
             qry.setAt("ThreadType",row,pc.getParentPageContext()==null?"main":"child");
             qry.setAt("StackTrace",row,toString(st));
-            qry.setAt("TagContext",row,PageExceptionImpl.getTagContext(pc, st));
+            qry.setAt("TagContext",row,PageExceptionImpl.getTagContext(pc.getConfig(), st));
             
             qry.setAt("label",row,factory.getLabel());
             qry.setAt("RootPath",row,((ConfigWebImpl)configWeb).getServletContext().getRealPath("/"));
@@ -1923,7 +1923,7 @@ private void doGetMappings() throws PageException {
         	qry.setAt("description", i+1, libs[i].getDescription());
         	qry.setAt("uri", i+1, Caster.toString(libs[i].getUri()));
         	qry.setAt("elclass", i+1, libs[i].getELClass());
-        	qry.setAt("source", i+1, StringUtil.toStringEmptyIfNull(libs[i].getSource()));
+        	qry.setAt("source", i+1, StringUtil.emptyIfNull(libs[i].getSource()));
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     }
@@ -1948,7 +1948,7 @@ private void doGetMappings() throws PageException {
         	qry.setAt("shortname", i+1, libs[i].getShortName());
         	qry.setAt("description", i+1, libs[i].getDescription());
         	qry.setAt("uri", i+1, Caster.toString(libs[i].getUri()));
-        	qry.setAt("source", i+1, StringUtil.toStringEmptyIfNull(libs[i].getSource()));
+        	qry.setAt("source", i+1, StringUtil.emptyIfNull(libs[i].getSource()));
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     }
@@ -2730,9 +2730,9 @@ private void doGetMappings() throws PageException {
                 sct.setEL("ServerPassword",client.getServerPassword());
                 sct.setEL("type",client.getType());
                 sct.setEL("url",client.getUrl());
-                sct.setEL("proxyServer",pd==null?"":StringUtil.toStringEmptyIfNull(pd.getServer()));
-                sct.setEL("proxyUsername",pd==null?"":StringUtil.toStringEmptyIfNull(pd.getUsername()));
-                sct.setEL("proxyPassword",pd==null?"":StringUtil.toStringEmptyIfNull(pd.getPassword()));
+                sct.setEL("proxyServer",pd==null?"":StringUtil.emptyIfNull(pd.getServer()));
+                sct.setEL("proxyUsername",pd==null?"":StringUtil.emptyIfNull(pd.getUsername()));
+                sct.setEL("proxyPassword",pd==null?"":StringUtil.emptyIfNull(pd.getPassword()));
                 sct.setEL("proxyPort",pd==null?"":(pd.getPort()==-1?"":Caster.toString(pd.getPort())));
                 
                 

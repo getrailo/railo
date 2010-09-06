@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.hibernate.MappingException;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
@@ -40,7 +41,7 @@ import railo.runtime.type.util.ArrayUtil;
 
 public class HibernateSessionFactory {
 
-	public static Configuration createConfiguration(HibernateORMEngine engine,String mappings, DatasourceConnection dc, ORMConfiguration ormConf) throws ORMException, SQLException, IOException {
+	public static Configuration createConfiguration(HibernateORMEngine engine,String mappings, DatasourceConnection dc, ORMConfiguration ormConf) throws SQLException, IOException, PageException {
 		/*
 		 autogenmap
 		 cacheconfig
@@ -87,15 +88,15 @@ public class HibernateSessionFactory {
 			}
 		}
 		
-		
+		try{
+			configuration.addXML(mappings);
+		}
+		catch(MappingException me){
+			throw HibernateException.toPageException(engine, me);
+		}
 		
 		configuration
-        //.addClass(Event.class)
-		//.addURL(configuration.getClass().getResource("/railo/runtime/orm/hibernate/test.hbm.xml"))
-		.addXML(mappings)
-		
-        //.setProperty("hibernate.order_updates", "true")
-    
+        
         // Database connection settings
         .setProperty("hibernate.connection.driver_class", ds.getClazz().getName())
     	.setProperty("hibernate.connection.url", ds.getDsnTranslated())
@@ -148,16 +149,18 @@ public class HibernateSessionFactory {
 		return configuration;
 	}
 
-	private static void schemaExport(HibernateORMEngine engine,Configuration configuration, ORMConfiguration ormConf,DatasourceConnection dc) throws ORMException, SQLException, IOException {
+	private static void schemaExport(HibernateORMEngine engine,Configuration configuration, ORMConfiguration ormConf,DatasourceConnection dc) throws PageException,ORMException, SQLException, IOException {
+		
 		if(ORMConfiguration.DBCREATE_NONE==ormConf.getDbCreate()) {
 			//print.out("dbcreate:none");
 			return;
 		}
 		else if(ORMConfiguration.DBCREATE_DROP_CREATE==ormConf.getDbCreate()) {
-			//print.out("dbcreate:create");
-			SchemaExport export = (new SchemaExport(configuration)).setHaltOnError(true);
-            export.execute(false,true,false,false);
-            printError(engine,export.getExceptions());
+			SchemaExport export = new SchemaExport(configuration);
+			export.setHaltOnError(true);
+	            
+			export.execute(false,true,false,false);
+            printError(engine,export.getExceptions(),false);
             executeSQLScript(ormConf,dc);
 		}
 		else if(ORMConfiguration.DBCREATE_UPDATE==ormConf.getDbCreate()) {
@@ -165,15 +168,23 @@ public class HibernateSessionFactory {
 			SchemaUpdate update = new SchemaUpdate(configuration);
             update.setHaltOnError(true);
             update.execute(false, true);
-            printError(engine,update.getExceptions());
+            printError(engine,update.getExceptions(),false);
         }
 	}
 
-	private static void printError(HibernateORMEngine engine, List<Exception> exceptions) throws ORMException {
+	private static void printError(HibernateORMEngine engine, List<Exception> exceptions,boolean throwException) throws PageException {
 		if(ArrayUtil.isEmpty(exceptions)) return;
 		Iterator<Exception> it = exceptions.iterator();
+        if(!throwException || exceptions.size()>1){
+			while(it.hasNext()) {
+	        	ORMUtil.printError(it.next(), engine);
+	        } 
+        }
+        if(!throwException) return;
+        
+        it = exceptions.iterator();
         while(it.hasNext()) {
-            ORMUtil.printError(it.next(), engine);
+        	throw HibernateException.toPageException(engine, it.next());
         } 
 	}
 

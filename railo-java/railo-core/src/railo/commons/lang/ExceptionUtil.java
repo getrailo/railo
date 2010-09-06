@@ -3,6 +3,9 @@ package railo.commons.lang;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageExceptionImpl;
+
 public final class ExceptionUtil {
 	
 	public static String getStacktrace(Throwable t, boolean addMessage) {
@@ -16,5 +19,10 @@ public final class ExceptionUtil {
 			st=msg+"\n"+st;
 		return st;
 		
+	}
+
+	public static PageException addHint(PageExceptionImpl pe,String hint) {
+		pe.setAdditional("Hint", hint);
+		return pe;
 	}
 }

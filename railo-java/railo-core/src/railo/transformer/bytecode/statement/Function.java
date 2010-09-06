@@ -12,6 +12,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
@@ -536,12 +537,13 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 			this.returnType=toLitString(name,attr.getValue());
 		}
 		else if("access".equals(name))	{
+			
 			LitString ls = toLitString(name,attr.getValue());
 			String strAccess = ls.getString();
 			int acc = ComponentUtil.toIntAccess(strAccess,-1);
 			if(acc==-1)
 				throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getLine());
-	        
+			access=acc;
 			
 		}
 		

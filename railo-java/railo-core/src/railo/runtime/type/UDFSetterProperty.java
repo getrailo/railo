@@ -1,4 +1,4 @@
-package railo.runtime.type;
+ package railo.runtime.type;
 
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
@@ -12,6 +12,7 @@ import railo.runtime.type.Collection.Key;
 public class UDFSetterProperty extends UDFGSProperty {
 
 	private Property prop;
+	private Key propName;
 
 	public UDFSetterProperty(ComponentImpl component,Property prop) {
 		super(component,"set"+StringUtil.ucFirst(prop.getName()),new FunctionArgument[]{
@@ -20,7 +21,7 @@ public class UDFSetterProperty extends UDFGSProperty {
 		
 		
 		this.prop=prop; 
-		
+		this.propName=KeyImpl.init(prop.getName());
 		
 	} 
 
@@ -42,7 +43,7 @@ public class UDFSetterProperty extends UDFGSProperty {
 	public Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException {
 		if(args.length<1)
 			throw new ExpressionException("The parameter "+prop.getName()+" to function "+getFunctionName()+" is required but was not passed in.");
-		component.getComponentScope().set(prop.getName(), args[0]);
+		component.getComponentScope().set(propName, cast(this.arguments[0],args[0],1));
 		
 		return component;
 	}
@@ -52,7 +53,7 @@ public class UDFSetterProperty extends UDFGSProperty {
 	 */
 	public Object callWithNamedValues(PageContext pageContext, Struct values,boolean doIncludePath) throws PageException {
 		UDFImpl.argumentCollection(values,getFunctionArguments());
-		Object value = values.get(prop.getName(),null);
+		Object value = values.get(propName,null);
 		
 		if(value==null){
 			Key[] keys = values.keys();
@@ -61,7 +62,7 @@ public class UDFSetterProperty extends UDFGSProperty {
 			}
 			else throw new ExpressionException("The parameter "+prop.getName()+" to function "+getFunctionName()+" is required but was not passed in.");
 		}
-		component.getComponentScope().set(prop.getName(), value);
+		component.getComponentScope().set(propName, cast(arguments[0],value,1));
 		return component;
 	}
 

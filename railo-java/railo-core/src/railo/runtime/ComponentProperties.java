@@ -3,6 +3,7 @@ package railo.runtime;
 import java.io.Serializable;
 import java.util.Map;
 
+import railo.runtime.component.Property;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -20,7 +21,7 @@ public class ComponentProperties implements Serializable {
 	final boolean realPath;
 	final boolean _synchronized;
 	Class javaAccessClass;
-	Map properties;
+	Map<String,Property> properties;
 	Struct meta;
 	String implement;
 	boolean persistent;

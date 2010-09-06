@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.servlet.RequestDispatcher;
@@ -29,6 +31,7 @@ import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
+import railo.aprint;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
@@ -144,15 +147,26 @@ public final class HTTPUtil {
      * @return url from string
      * @throws MalformedURLException
      */
-    public static URL toURL(String strUrl, int port) throws MalformedURLException {
+
+	  public static URL toURL(String strUrl, int port) throws MalformedURLException {
+		  URL url;
+		  try {
+	            url=new URL(strUrl);
+	        }
+	        catch(MalformedURLException mue) {
+	            url=new URL("http://"+strUrl);
+	        }
+		  
+		  return toURL(url, port);
+	  }
+	 
+	 
+    private static URL toURL(URL url, int port) throws MalformedURLException {
     	
-        URL url;
-        try {
-            url=new URL(strUrl);
-        }
-        catch(MalformedURLException mue) {
-            url=new URL("http://"+strUrl);
-        }
+    	
+        
+        
+        
         
         // file
         String path=url.getPath();
@@ -161,7 +175,7 @@ public final class HTTPUtil {
         String ref = url.getRef();
         String user=url.getUserInfo();
         if(port<=0) port=url.getPort();
-        
+
         
         
         // decode path
@@ -210,7 +224,7 @@ public final class HTTPUtil {
         file=path+query;
         
      // decode ref/anchor	
-        if(!StringUtil.isEmpty(ref)) {
+        if(ref!=null) {
         	file+="#"+escapeQSValue(ref);
         }
         
@@ -222,7 +236,7 @@ public final class HTTPUtil {
         	}
         	else user=escapeQSValue(user);
         	
-        	strUrl=getProtocol(url)+"://"+user+"@"+url.getHost();
+        	String strUrl = getProtocol(url)+"://"+user+"@"+url.getHost();
         	if(port>0)strUrl+=":"+port;
         	strUrl+=file;
         	return new URL(strUrl);
@@ -236,6 +250,231 @@ public final class HTTPUtil {
        
        		       
     }
+    
+    public static URI toURI(String strUrl) throws URISyntaxException {
+		 return toURI(strUrl,-1);
+	 }
+    
+    public static URI toURI(String strUrl, int port) throws URISyntaxException {
+    	
+    	//print.o((strUrl));
+    	URI uri = new URI(strUrl);
+    	
+    	String host = uri.getHost();
+    	String fragment = uri.getRawFragment();
+    	String path = uri.getRawPath();
+    	String query= uri.getRawQuery();
+    	
+    	String scheme = uri.getScheme();
+    	String userInfo = uri.getRawUserInfo();
+    	if(port<=0) port=uri.getPort();
+
+    	
+    	
+    	
+        // file
+        
+
+        
+        
+        // decode path
+        if(!StringUtil.isEmpty(path)) {
+        	StringBuffer res=new StringBuffer();
+        	
+        	StringList list = List.toListTrim(path, '/');
+        	String str;
+        	
+        	while(list.hasNext()){
+        		str=list.next();
+        		//str=URLDecoder.decode(str);
+        		
+        		if(StringUtil.isEmpty(str)) continue;
+        		res.append("/");
+        		res.append(escapeQSValue(str));
+        	}
+        	if(StringUtil.endsWith(path, '/')) res.append('/');      		
+        	path=res.toString();
+        }
+        
+        // decode query	
+        if(!StringUtil.isEmpty(query)) {
+        	StringBuffer res=new StringBuffer();
+        	
+        	StringList list = List.toList(query, '&');
+        	String str;
+        	int index;
+        	char del='?';
+        	while(list.hasNext()){
+        		res.append(del);
+        		del='&';
+        		str=list.next();
+        		index=str.indexOf('=');
+        		if(index==-1)res.append(escapeQSValue(str));
+        		else {
+        			res.append(escapeQSValue(str.substring(0,index)));
+        			res.append('=');
+        			res.append(escapeQSValue(str.substring(index+1)));
+        		}
+        	}
+        	query=res.toString();
+        }
+        
+        
+     // decode ref/anchor	
+        if(!StringUtil.isEmpty(fragment)) {
+        	fragment=escapeQSValue(fragment);
+        }
+        
+        // user/pasword
+        if(!StringUtil.isEmpty(userInfo)) {
+        	int index=userInfo.indexOf(':');
+        	if(index!=-1) {
+        		userInfo=escapeQSValue(userInfo.substring(0,index))+":"+escapeQSValue(userInfo.substring(index+1));
+        	}
+        	else userInfo=escapeQSValue(userInfo);
+        }
+        
+        /*print.o("- fragment:"+fragment);
+    	print.o("- host:"+host);
+    	print.o("- path:"+path);
+    	print.o("- query:"+query);
+    	print.o("- scheme:"+scheme);
+    	print.o("- userInfo:"+userInfo);
+    	print.o("- port:"+port);
+    	print.o("- absolute:"+uri.isAbsolute());
+    	print.o("- opaque:"+uri.isOpaque());*/
+       	
+    	StringBuilder rtn=new StringBuilder();
+    	if(scheme!=null) {
+    		rtn.append(scheme);
+    		rtn.append("://");
+    	}
+    	if(userInfo!=null) {
+    		rtn.append(userInfo);
+    		rtn.append("@");
+    	}
+    	if(host!=null) {
+    		rtn.append(host);
+    	}
+    	if(port>0) {
+    		rtn.append(":");
+    		rtn.append(port);
+    	}
+    	if(path!=null) {
+    		rtn.append(path);
+    	}
+    	if(query!=null) {
+    		//rtn.append("?");
+    		rtn.append(query);
+    	}
+    	if(fragment!=null) {
+    		rtn.append("#");
+    		rtn.append(fragment);
+    	}
+    	
+    	return new URI(rtn.toString()); 
+    }
+    
+    private static void test(String str) throws URISyntaxException {
+    	//print.o(str);
+    	int port=-1;
+    	String res;
+    	try {
+			res=toURL(new URL(str),port).toString();
+		} catch (MalformedURLException e) {
+			res=toURI(str).toString();
+		}
+    	String res2 = encode(str);
+		
+    	if(res.equals(res2)){
+    		aprint.o(res);
+    	}
+    	else {
+    		aprint.e(str);
+    		aprint.e("- uri:"+res);
+    		aprint.e("- enc:"+res2);
+    	}
+    	
+		
+    	/*String uri = toURI(str).toString();
+    	String url = toURL(str).toString();
+    	
+    	if(uri.equals(url)){
+    		print.o(uri);
+    	}
+    	else {
+    		print.e(str);
+    		print.e("uri:"+uri);
+    		print.e("url:"+url);
+    	}*/
+		
+	}
+
+	public static void main(String[] args) throws Exception {
+		// valid urls
+		test("http://www.railo.ch");
+		test("http://www.railo.ch/");
+		test("http://www.railo.ch/a.cfm");
+		test("http://www.railo.ch/a.cfm?");
+		test("http://www.railo.ch/a.cfm?test=1");
+		test("http://www.railo.ch/a.cfm?test=1&");
+		test("http://www.railo.ch:80/a.cfm?test=1&");
+		test("http://hans@www.railo.ch:80/a.cfm?test=1&");
+		test("http://hans:peter@www.railo.ch:80/a.cfm?test=1&x");
+		test("http://hans:peter@www.railo.ch:80/a.cfm?test=1&x#");
+		test("http://hans:peter@www.railo.ch:80/a.cfm?test=1&x#xx");
+		
+		test("http://www.railo.ch");
+		test("http://www.railo.ch/");
+		test("http://www.railo.ch/ä.cfm");
+		test("http://www.railo.ch/ä.cfm?");
+		test("http://www.railo.ch/ä.cfm?testä=ä");
+		test("http://www.railo.ch/ä.cfm?testä=ä&");
+		test("http://www.railo.ch:80/ä.cfm?testä=ä&");
+		test("http://häns@www.railo.ch:80/ä.cfm?testä=ä&");
+		test("http://häns:püter@www.railo.ch:80/ä.cfm?testä=ä&x");
+		test("http://häns:püter@www.railo.ch:80/ä.cfm?testä=ä&x#");
+		test("http://häns:püter@www.railo.ch:80/ä.cfm?testä=ä&x#ü");
+		
+		test("/");
+		test("/a.cfm");
+		test("/a.cfm?");
+		test("/a.cfm?test=1");
+		test("/a.cfm?test=1&");
+		test("/a.cfm?test=1&");
+		test("/a.cfm?test=1&");
+		test("/a.cfm?test=1&x");
+		test("/a.cfm?test=1&x#");
+		test("/a.cfm?test=1&x#xx");
+		
+
+		test("/");
+		test("/ä.cfm");
+		test("/ä.cfm?");
+		test("/ä.cfm?testö=1ü");
+		test("/ä.cfm?testö=1ü&");
+		test("/ä.cfm?testö=1ü&");
+		test("/ä.cfm?testö=1ü&");
+		test("/ä.cfm?testö=1ü&x");
+		test("/ä.cfm?testö=1ü&x#");
+		test("/ä.cfm?testö=1ü&x#xxä");
+		//test("http://haöns:geheöim@www.example.org:80/döemo/example.cgi?lanöd=de&stadt=aa#geschiächte");
+		//print.o(toURI("http://www.railo.ch/teöst.cfm?do=pöhoto.view&id=289#commentAdd"));
+		//print.o(toURI("/test.cfm?do=photo.view&id=289#commentAdd"));
+		//print.o(toURI("http://localhost/testingapp/index.cfm?do=photo.view&id=289#commentAdd"));
+	}
+    
+    
+
+
+	private static String getProtocol(URI uri) {
+    	String p=uri.getRawSchemeSpecificPart();
+    	if(p==null) return null;
+		if(p.indexOf('/')==-1) return p;
+		if(p.indexOf("https")!=-1) return "https";
+		if(p.indexOf("http")!=-1) return "http";
+		return p;
+	}
     
     private static String getProtocol(URL url) {
 		String p=url.getProtocol().toLowerCase();
@@ -255,6 +494,7 @@ public final class HTTPUtil {
 	}*/
 
     
+
     
     private static String escapeQSValue(String str) {
     	if(!URLEncoder.needEncoding(str)) return str;
@@ -536,18 +776,29 @@ public final class HTTPUtil {
 	}
 	
 	
+	// MUST create a copy from toURL and rename toURI and rewrite for URI, pherhaps it is possible to merge them somehow
 	public static String encode(String realpath) {
     	
         
 		int qIndex=realpath.indexOf('?');
+		
 		if(qIndex==-1) return realpath;
 		
 		String file=realpath.substring(0,qIndex);
 		String query=realpath.substring(qIndex+1);
+		int sIndex=query.indexOf('#');
+		
+		String anker=null;
+		if(sIndex!=-1){
+			//print.o(sIndex);
+			anker=query.substring(sIndex+1);
+			query=query.substring(0,sIndex);
+		}
+		
 		StringBuffer res=new StringBuffer(file);
     	
 		
-        // file
+        // query
         if(!StringUtil.isEmpty(query)){
         	
         	StringList list = List.toList(query, '&');
@@ -567,6 +818,14 @@ public final class HTTPUtil {
         		}
         	}	
         }
+       
+        // anker
+        if(anker!=null) {
+        	res.append('#');
+        	res.append(escapeQSValue(anker));
+        }
+       
+        
        return res.toString();		       
     }
 
@@ -577,5 +836,6 @@ public final class HTTPUtil {
 			return 443;
 		return 80;
 	}
+	
 	
 }

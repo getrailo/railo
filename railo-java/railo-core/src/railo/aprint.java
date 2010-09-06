@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.ResultSet;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -18,7 +19,9 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import railo.commons.io.IOUtil;
+import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.QueryImpl;
 
 /**
  *  
@@ -192,6 +195,7 @@ public class aprint {
     	else if(o instanceof Set) _(ps,(Set)o);
     	else if(o instanceof List) _(ps,(List)o);
     	else if(o instanceof Map) _(ps,(Map)o);
+    	else if(o instanceof ResultSet) _(ps,(ResultSet)o);
     	else if(o instanceof Node) _(ps,(Node)o);
     	else if(o instanceof Throwable) _(ps,(Throwable)o);
     	else if(o instanceof Cookie) {
@@ -337,6 +341,14 @@ public class aprint {
             ps.println(",");
         }
         _(ps,"}");
+    }
+    
+    private static void _(PrintStream ps,ResultSet res) {
+    	try {
+			_(ps, new QueryImpl(res,"query").toString());
+		} catch (PageException e) {e.printStackTrace();
+			_(ps, res.toString());
+		}
     }
 
     private static void _(PrintStream ps,Map map) {

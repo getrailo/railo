@@ -1232,7 +1232,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	    
 	    
 	    // first identifier
-	    name = identifier(data,true,true);
+	    name = identifier(data,true,false);
 	    
 		
 		ExprString exprName;
@@ -1243,7 +1243,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			while (data.cfml.isValidIndex()) {
 				if (data.cfml.forwardIfCurrent('.')) {
 					comments(data.cfml);
-	                name = identifier(data,true,true);
+	                name = identifier(data,true,false);
 					if(name==null) {
 						data.cfml.setPos(start);
 						return expr;//throw new TemplateException(data.cfml,"invalid Component declaration ");
@@ -1254,6 +1254,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 				}
 				else break;
 			}
+			
 			exprName=LitString.toExprString(fullName.toString());
 		}
 		else {

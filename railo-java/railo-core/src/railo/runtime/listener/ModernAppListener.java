@@ -22,7 +22,6 @@ import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Member;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.Abort;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.JSONExpressionInterpreter;
@@ -287,7 +286,7 @@ public class ModernAppListener extends AppListenerSupport {
 		}
 	}
 
-	private PageContext createPageContext(CFMLFactory factory, ComponentImpl app, String applicationName, String cfid,Collection.Key methodName) {
+	private PageContext createPageContext(CFMLFactory factory, ComponentImpl app, String applicationName, String cfid,Collection.Key methodName) throws PageException {
 		Resource root = factory.getConfig().getRootDirectory();
 		String path = app.getPageSource().getFullRealpath();
 		
@@ -375,7 +374,7 @@ public class ModernAppListener extends AppListenerSupport {
 		}
 	}
 
-	private void initApplicationContext(PageContextImpl pc, ComponentImpl app) {
+	private void initApplicationContext(PageContextImpl pc, ComponentImpl app) throws PageException {
 		
 		// use existing app context
 		ApplicationContextImpl appContext = new ApplicationContextImpl(pc.getConfig(),false);
@@ -476,11 +475,11 @@ public class ModernAppListener extends AppListenerSupport {
 					
 					// default cfc location (parent of the application.cfc)
 					Resource res=null;
-					try {
+					
 						res=ResourceUtil.getResource(pc, pc.getCurrentTemplatePageSource()).getParentResource();
-					} catch (ExpressionException e) {
+					/*try {} catch (ExpressionException e) {
 						e.printStackTrace();
-					}
+					}*/
 					ConfigImpl config=(ConfigImpl) pc.getConfig();
 					ORMConfiguration ormConfig=ORMConfiguration.load(config,settings,res,config.getORMConfig());
 					appContext.setORMConfiguration(ormConfig);
@@ -498,11 +497,11 @@ public class ModernAppListener extends AppListenerSupport {
 		}
 		pc.setApplicationContext(appContext);
 		if(initORM) {
-			try {
-				ORMUtil.resetEngine(pc);
-			} catch (PageException e) {
+			
+			ORMUtil.resetEngine(pc);
+			/*try {} catch (PageException e) {
 				 e.printStackTrace();
-			}
+			}*/
 		}
 	}
 

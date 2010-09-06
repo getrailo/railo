@@ -38,6 +38,8 @@ public final class Property extends MemberSupport implements ASMProperty {
 	private Struct meta=new StructImpl();
 
 	private String ownerName; 
+
+	
 	
 	// ORM Attributes
 	/*private int batchsize;
@@ -322,20 +324,7 @@ public final class Property extends MemberSupport implements ASMProperty {
 		this.getter = getter;
 	}
 	
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		String strMeta="";
-		try{
-		strMeta=new ScriptConverter().serialize(meta);
-		}
-		catch(ConverterException ce){}
-		
-		return "default:"+this._default+";displayname:"+this.displayname+";hint:"+this.hint+
-		";name:"+this.name+";type:"+this.type+";meta:"+strMeta+";";
-	}
+	
 
 	public Object getMetaData() {
 		Struct sct=new StructImpl();
@@ -375,7 +364,29 @@ public final class Property extends MemberSupport implements ASMProperty {
 	}
 
 	
-
+	
+	/**
+	 *
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		String strMeta="";
+		try{
+		strMeta=new ScriptConverter().serialize(meta);
+		}
+		catch(ConverterException ce){}
+		
+		return "default:"+this._default+";displayname:"+this.displayname+";hint:"+this.hint+
+		";name:"+this.name+";type:"+this.type+";ownerName:"+ownerName+";meta:"+strMeta+";";
+	}
+	
+	public boolean equals(Object obj) {
+		if(this == obj) return true;
+		if(!(obj instanceof Property)) return false;
+		Property other=(Property)obj;
+		
+		return toString().equals(other.toString());
+	}
 	
 
 

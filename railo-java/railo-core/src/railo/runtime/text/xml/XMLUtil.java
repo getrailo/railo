@@ -30,6 +30,7 @@ import org.w3c.dom.CharacterData;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
@@ -38,9 +39,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -53,6 +56,7 @@ import railo.runtime.text.xml.struct.XMLStructFactory;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 
@@ -452,10 +456,12 @@ public final class XMLUtil {
 			}
 		// NS URI
 			if(k.equals(XMLNSURI)) {
+				undefinedInRoot(k,node);
 				return param(node.getNamespaceURI(),"");
 			}
 		// Prefix
 			if(k.equals(XMLNSPREFIX)) {
+				undefinedInRoot(k,node);
 				return param(node.getPrefix(),"");
 			}
 		// Root
@@ -470,7 +476,7 @@ public final class XMLUtil {
 			}
 		// Value	
 			else if(k.equals(XMLVALUE)) {
-				return node.getNodeValue();
+				return StringUtil.toStringEmptyIfNull(node.getNodeValue());
 			}
 		// type	
 			else if(k.equals(XMLTYPE)) {
@@ -478,10 +484,14 @@ public final class XMLUtil {
 			}
 		// Attributes	
 			else if(k.equals(XMLATTRIBUTES)) {
-				return new XMLAttributes(node.getOwnerDocument(),node.getAttributes(),caseSensitive);
+				NamedNodeMap attr = node.getAttributes();
+				
+				if(attr==null)throw undefined(k,node);
+				return new XMLAttributes(node.getOwnerDocument(),attr,caseSensitive);
 			}
 		// Text	
 			else if(k.equals(XMLTEXT)) {
+				undefinedInRoot(k,node);
 				StringBuffer sb=new StringBuffer();
 				NodeList list = node.getChildNodes();
 				int len=list.getLength();
@@ -494,6 +504,7 @@ public final class XMLUtil {
                 return sb.toString();
 			}
 			else if(k.equals(XMLCDATA)) {
+				undefinedInRoot(k,node);
 				StringBuffer sb=new StringBuffer();
 				NodeList list = node.getChildNodes();
 				int len=list.getLength();
@@ -551,9 +562,27 @@ public final class XMLUtil {
 		}
 		throw new SAXException("Attribute ["+k.getString()+"] not found in XML Node ("+Caster.toClassName(node)+")");
 	}
-	
 
-    /**
+
+    private static SAXException undefined(Key key, Node node) {
+    	if(node.getNodeType()==Node.DOCUMENT_NODE)
+    		return new SAXException("you cannot address ["+key+"] on the Document Object, to address ["+key+"]  from the root Node use [{variable-name}.xmlRoot."+key+"]");
+    	
+    	return new SAXException(key+" is undefined");
+	}
+
+    private static void undefinedInRoot(Key key, Node node) throws SAXException {
+    	if(node.getNodeType()==Node.DOCUMENT_NODE)
+    		throw undefined(key, node);
+	}
+
+	private static NamedNodeMap getAttributes(Node node) {
+		NamedNodeMap attr = node.getAttributes();
+		//if(attr==null)return new EmptyNamedNodeMap();
+		return attr;
+	}
+
+	/**
      * check if given name is equal to name of the element (with and without namespace)
      * @param node
      * @param k

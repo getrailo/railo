@@ -102,10 +102,28 @@ public class HibernateCaster {
 		try {
 			Struct md = cfc.getMetaData(ThreadLocalPageContext.get(pc));
 			String name = Caster.toString(md.get("entityname"),"");
-			if(!StringUtil.isEmpty(name)) return name;
+			if(!StringUtil.isEmpty(name)) {
+				//print.o("name1:"+cfc.getName());
+				return name;//.toLowerCase();
+			}
 		} 
 		catch (PageException e) {}
-		return cfc.getName();
+		
+		
+		
+		// MUSTMUST cfc.getName() should return the real case, this should not be needed
+		ComponentPro cp = ComponentUtil.toComponentPro(cfc,null);
+		if(cp!=null){
+			String name = cp.getPageSource().getDisplayPath();
+	        name=railo.runtime.type.List.last(name, "\\/");
+	        int index=name.lastIndexOf('.');
+	        name= name.substring(0,index);
+			return name;
+		}
+		////////////////////////
+		
+		
+		return cfc.getName();//.toLowerCase();
 	}
 
 	public static int cascade(String cascade) throws ORMException {
@@ -263,10 +281,10 @@ public class HibernateCaster {
 		if("long".equals(type)) return type;
 		if("binary".equals(type)) return type;
 		if("boolean".equals(type)) return type;
-		if("blob".equals(type)) return type;
+		if("blob".equals(type)) return "binary";
 		if("boolean".equals(type)) return type;
 		if("character".equals(type)) return type;
-		if("clob".equals(type)) return type;
+		if("clob".equals(type)) return "text";
 		if("date".equals(type)) return type;
 		if("big_decimal".equals(type)) return type;
 		if("double".equals(type)) return type;
@@ -281,6 +299,7 @@ public class HibernateCaster {
 		if("byte".equals(type)) return type;
 		if("binary".equals(type)) return type;
 		if("string".equals(type)) return type;
+		if("text".equals(type)) return type;
 		
 		
 		// return different value
@@ -296,8 +315,10 @@ public class HibernateCaster {
 		if("bool".equals(type)) 					return "boolean";
 		if("yes-no".equals(type)) 					return "yes_no";
 		if("yesno".equals(type)) 					return "yes_no";
+		if("yes_no".equals(type)) 					return "yes_no";
 		if("true-false".equals(type)) 				return "true_false";
 		if("truefalse".equals(type)) 				return "true_false";
+		if("true_false".equals(type)) 				return "true_false";
 		if("varchar".equals(type)) 					return "string";
 		if("big-decimal".equals(type)) 				return "big_decimal";
 		if("bigdecimal".equals(type)) 				return "big_decimal";
@@ -306,6 +327,7 @@ public class HibernateCaster {
 		if("biginteger".equals(type)) 				return "big_integer";
 		if("java.math.biginteger".equals(type)) 	return "big_integer";
 		if("byte[]".equals(type)) 					return "binary";
+		if("serializable".equals(type)) 			return "serializable";
 		
 		return defaultValue;
     }

@@ -25,6 +25,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.Type;
+import railo.runtime.type.wrap.MapAsStruct;
 
 /**
  * Class to handle CF Variables (set,get,call)
@@ -246,13 +247,21 @@ public final class VariableUtilImpl implements VariableUtil {
 			Object rtn=null;
 			try {
 				rtn=((Map)coll).get(key.getString());
-				//if(rtn==null)rtn=((Map)coll).get(MapAsStruct.getCaseSensitiveKey((Map)coll, key.getString()));
+				if(rtn==null && coll.getClass().getName().startsWith("org.hibernate."))
+					rtn=((Map)coll).get(MapAsStruct.getCaseSensitiveKey((Map)coll, key.getString()));
 				if(rtn!=null) return rtn;
 			}
 			catch(Throwable t) {}
 			rtn = Reflector.getProperty(coll,key.getString(),null);
 			if(rtn!=null) return rtn;
-			throw new ExpressionException("Key ["+key.getString()+"] doesn't exist in Map");
+			
+			String realKey = MapAsStruct.getCaseSensitiveKey((Map)coll, key.getString());
+			String detail=null;
+			if(realKey!=null) {
+				detail="The keys for this Map are case-sensitive, use bracked notation like this \"map['"+realKey+"']\" instead of dot notation like this  \"map."+realKey+"\" to address the Map";
+			}
+			
+			throw new ExpressionException("Key ["+key.getString()+"] doesn't exist in Map ("+((Map)coll).getClass().getName()+")",detail);
 					//,"keys are ["+railo.runtime.type.List.arrayToList(MapAsStruct.toStruct((Map)coll, true).keysAsString(),",")+"]");
 		} 
 		// List

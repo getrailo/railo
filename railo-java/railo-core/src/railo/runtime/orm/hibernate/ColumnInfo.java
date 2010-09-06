@@ -10,6 +10,8 @@ public class ColumnInfo {
 	private boolean nullable;
 	
 	public ColumnInfo(String name, int type, String typeName, int size,boolean nullable) {
+		
+		
 		this.name = name;
 		this.type = type;
 		this.typeName = typeName;

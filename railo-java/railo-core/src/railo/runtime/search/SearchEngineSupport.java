@@ -438,7 +438,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
     }
 
   private String _attr(Element el, String attr) {
-        return StringUtil.toStringEmptyIfNull(el.getAttribute(attr));
+        return StringUtil.emptyIfNull(el.getAttribute(attr));
     }
 
       /**

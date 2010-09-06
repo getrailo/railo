@@ -17,6 +17,7 @@ import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
+import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
@@ -177,8 +178,7 @@ public abstract class PageExceptionImpl extends PageException {
 	 * @see railo.runtime.exp.IPageException#getCatchBlock()
 	 */
 	public Struct getCatchBlock() {
-		// TLPC
-		return getCatchBlock(ThreadLocalPageContext.get());
+		return new CatchBlock(ThreadLocalPageContext.getConfig(),this);
 	}
 	
 	/**
@@ -186,29 +186,38 @@ public abstract class PageExceptionImpl extends PageException {
 	 * @see railo.runtime.exp.IPageException#getCatchBlock(railo.runtime.PageContext)
 	 */
 	public Struct getCatchBlock(PageContext pc) {
-		return new CatchBlock(pc,this);
+		return new CatchBlock(pc.getConfig(),this);
 	}
 	
-	public Array getTagContext(PageContext pc) {
+	/**
+	 * FUTURE
+	 * @see railo.runtime.exp.IPageException#getCatchBlock(railo.runtime.PageContext)
+	 */
+	public CatchBlock getCatchBlock(Config config) {
+		return new CatchBlock(config,this);
+	}
+	
+	public Array getTagContext(Config config) {
 		if(isInitTagContext) return tagContext;
-		_getTagContext(pc,tagContext,this,sources);
+		_getTagContext( config,tagContext,this,sources);
 		isInitTagContext=true;
 		return tagContext;
 	}
 	
 
-	public static Array getTagContext(PageContext pc,StackTraceElement[] traces) {
+	public static Array getTagContext(Config config,StackTraceElement[] traces) {
 		Array tagContext=new ArrayImpl();
-		_getTagContext(pc,tagContext,traces,new LinkedList());
+		_getTagContext( config,tagContext,traces,new LinkedList());
 		return tagContext;
 	}
 	
 
-	private static void _getTagContext(PageContext pc, Array tagContext, Throwable t, LinkedList sources) {
-		_getTagContext(pc, tagContext, getStackTraceElements(t), sources);
+	private static void _getTagContext(Config config, Array tagContext, Throwable t, LinkedList sources) {
+		_getTagContext(config, tagContext, getStackTraceElements(t), sources);
 	}
 	
-	private static void _getTagContext(PageContext pc, Array tagContext, StackTraceElement[] traces, LinkedList sources) {
+	private static void _getTagContext(Config config, Array tagContext, StackTraceElement[] traces, 
+			LinkedList sources) {
 		//StackTraceElement[] traces = getStackTraceElements(t);
 		
 		int line=0;
@@ -223,19 +232,26 @@ public abstract class PageExceptionImpl extends PageException {
 			template=trace.getFileName();
 			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template).equals("java")) continue;
 			// content
-			if(!StringUtil.toStringEmptyIfNull(tlast).equals(template))index++;
+			if(!StringUtil.emptyIfNull(tlast).equals(template))index++;
 			
 			String[] content=null;
 			try {
-				Resource res = ResourceUtil.toResourceNotExisting(pc, template);
+				
+				Resource res = config.getResource(template);
+				
+				// never happens i think
+				if(!res.exists()) {
+					res = ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), template);
+				}
+				 
 				if(res.exists())	
-					content=IOUtil.toStringArray(IOUtil.getReader(res, pc.getConfig().getTemplateCharset()));
+					content=IOUtil.toStringArray(IOUtil.getReader(res,config.getTemplateCharset()));
 				else {
 					if(sources.size()>index)ps=(PageSource) sources.get(index);
 					else ps=null;
 					if(ps!=null && trace.getClassName().equals(ps.getFullClassName())) {
 						if(ps.physcalExists())
-							content=IOUtil.toStringArray(IOUtil.getReader(ps.getPhyscalFile(), pc.getConfig().getTemplateCharset()));
+							content=IOUtil.toStringArray(IOUtil.getReader(ps.getPhyscalFile(), config.getTemplateCharset()));
 						template=ps.getDisplayPath();
 					}
 				}	
@@ -289,7 +305,7 @@ public abstract class PageExceptionImpl extends PageException {
 			tlast=template;
 			template=trace.getFileName();
 			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template).equals("java")) continue;
-			if(!StringUtil.toStringEmptyIfNull(tlast).equals(template))index++;
+			if(!StringUtil.emptyIfNull(tlast).equals(template))index++;
 			
 		}
 		return index;
@@ -304,12 +320,12 @@ public abstract class PageExceptionImpl extends PageException {
 
 		struct.setEL("browser",pc.cgiScope().get("HTTP_USER_AGENT",""));
 		struct.setEL("datetime",new DateTimeImpl(pc));
-		struct.setEL("diagnostics",getMessage()+' '+getDetail()+"<br>The error occurred on line "+getLine(pc)+" in file "+getFile(pc)+".");
+		struct.setEL("diagnostics",getMessage()+' '+getDetail()+"<br>The error occurred on line "+getLine(pc.getConfig())+" in file "+getFile(pc.getConfig())+".");
 		struct.setEL("GeneratedContent",getGeneratedContent(pc));
 		struct.setEL("HTTPReferer",pc.cgiScope().get("HTTP_REFERER",""));
 		struct.setEL("mailto",ep.getMailto());
 		struct.setEL("message",getMessage());
-		struct.setEL("QueryString",StringUtil.toStringEmptyIfNull(pc. getHttpServletRequest().getQueryString()));
+		struct.setEL("QueryString",StringUtil.emptyIfNull(pc. getHttpServletRequest().getQueryString()));
 		struct.setEL("RemoteAddress",pc.cgiScope().get("REMOTE_ADDR",""));
 		struct.setEL("RootCause",getCatchBlock(pc));
 		struct.setEL("StackTrace",getStackTraceAsString());
@@ -319,7 +335,7 @@ public abstract class PageExceptionImpl extends PageException {
 			struct.setEL("ErrorCode",getErrorCode());
 			struct.setEL("ExtendedInfo",getExtendedInfo());
 			struct.setEL("type",getTypeAsString());
-			struct.setEL("TagContext",getTagContext(pc));
+			struct.setEL("TagContext",getTagContext(pc.getConfig()));
 			struct.setEL("additional",additional);
 			// TODO RootCause,StackTrace
 		
@@ -342,19 +358,19 @@ public abstract class PageExceptionImpl extends PageException {
 	/**
 	 * @return return the file where the failure occurred
 	 */
-	private String getFile(PageContext pc) {
-        if(getTagContext(pc).size()==0) return "";
+	private String getFile(Config config) {
+        if(getTagContext(config).size()==0) return "";
         
-        Struct sct=(Struct) getTagContext(pc).get(1,null);
+        Struct sct=(Struct) getTagContext(config).get(1,null);
         return Caster.toString(sct.get("template",""),"");
     }
     /**
      * @see railo.runtime.exp.PageException#getLine()
      */
-	public String getLine(PageContext pc) {
-        if(getTagContext(pc).size()==0) return "";
+	public String getLine(Config config) {
+        if(getTagContext(config).size()==0) return "";
         
-        Struct sct=(Struct) getTagContext(pc).get(1,null);
+        Struct sct=(Struct) getTagContext(config).get(1,null);
         return Caster.toString(sct.get("line",""),"");
     }
     /**
@@ -426,7 +442,7 @@ public abstract class PageExceptionImpl extends PageException {
 			htmlBox.appendRow(1,new SimpleDumpData(key),new SimpleDumpData(additional.get(key,"").toString()));
 		}
 		
-		Array tagContext = getTagContext(pageContext);
+		Array tagContext = getTagContext(pageContext.getConfig());
 		// Context MUSTMUST
 		if(tagContext.size()>0) {
 			Collection.Key[] keys=tagContext.keys();
@@ -575,7 +591,7 @@ public abstract class PageExceptionImpl extends PageException {
 	 * @param value
 	 */
 	public void setAdditional(String key, Object value) {
-		additional.setEL(KeyImpl.init(key),value);
+		additional.setEL(KeyImpl.init(key),StringUtil.toStringEmptyIfNull(value));
 	}
 	
 	

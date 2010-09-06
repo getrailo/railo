@@ -7,6 +7,7 @@ import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.db.SQL;
 import railo.runtime.dump.Dumpable;
+import railo.runtime.exp.PageException;
 import railo.runtime.type.Struct;
 
 /**
@@ -86,5 +87,7 @@ public interface Debugger extends Dumpable {
 	public abstract DebugTrace addTrace(int type, String category, String text, PageSource page, String varName, String varValue);
 
 	public abstract DebugTrace[] getTraces();
+
+	// FUTURE public abstract void addException(PageException exception);
 
 }

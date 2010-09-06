@@ -2,6 +2,9 @@ package railo.runtime.orm;
 
 
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageExceptionImpl;
+import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 
 public class ORMException extends ApplicationException {
@@ -16,7 +19,7 @@ public class ORMException extends ApplicationException {
 	
 	public ORMException(ORMEngine engine,String message) {
 		super(message);
-		setAddional(engine);
+		setAddional(engine,this);
 	}
 
 	/**
@@ -31,15 +34,25 @@ public class ORMException extends ApplicationException {
 
 	public ORMException(ORMEngine engine,String message, String detail) {
 		super(message, detail);
-		setAddional(engine);
+		setAddional(engine, this);
 	}
 
-
-	private void setAddional(ORMEngine engine) {
+	public static PageException toPageException(ORMEngine engine,Throwable t) {
+		Throwable c = t.getCause();
+		if(c!=null)t=c;
+		PageException pe = Caster.toPageException(t);
+		setAddional(engine, pe);
+		return pe;
+	}
+	
+	public static void setAddional(ORMEngine engine,PageException pe) {
 		String[] names = engine.getEntityNames();
-		setAdditional("Entities", List.arrayToList(names, ", "));
-		setAdditional("Datasource", engine.getDataSource().getName());
 		
+		if(pe instanceof PageExceptionImpl){
+			PageExceptionImpl pei = (PageExceptionImpl)pe;
+			pei.setAdditional("Entities", List.arrayToList(names, ", "));
+			pei.setAdditional("Datasource", engine.getDataSource().getName());
+		}
 	}
 
 	public ORMException(Throwable t) {

@@ -2302,6 +2302,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	else {
     		exception = Caster.toPageException(t);
     		undefinedScope().setEL(CFCATCH,exception.getCatchBlock(this));
+    		if(config.debug()) ((DebuggerImpl)debugger).addException(config,exception);
     	}
     	return exception;
     }
@@ -2313,6 +2314,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	}
     	else {
     		undefinedScope().setEL(CFCATCH,pe.getCatchBlock(this));
+    		if(config.debug()) ((DebuggerImpl)debugger).addException(config,exception);
     	}
     }
     
@@ -2328,6 +2330,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    	}
 	    	else {
 	    		undefinedScope().setEL(CFCATCH,pe.getCatchBlock(this));
+	    		if(config.debug()) ((DebuggerImpl)debugger).addException(config,exception);
 	    	}
     	}
     }

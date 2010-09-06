@@ -9,10 +9,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 import railo.commons.lang.CFTypes;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -53,10 +55,8 @@ import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.UDFGetterProperty;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
-import railo.runtime.type.UDFSetterProperty;
 import railo.runtime.type.comparator.ArrayOfStructComparator;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.scope.Argument;
@@ -65,6 +65,7 @@ import railo.runtime.type.scope.ArgumentIntKey;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.PropertyFactory;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.util.ArrayIterator;
 
@@ -80,7 +81,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     private Map _data;//new HashMap();
     private Map _udfs;
 
-    ComponentImpl top=this;
+    
+
+	ComponentImpl top=this;
     ComponentImpl base;
     //private ComponentPage componentPage;
     private PageSource pageSource;
@@ -924,9 +927,23 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			prop.setTitle("Properties");
 			prop.setWidth("100%");
 			Property p;
+			Object child;
 			for(int i=0;i<properties.length;i++) {
 				p=properties[i];
-				prop.appendRow(1, new SimpleDumpData(p.getName()),DumpUtil.toDumpData(c.scope.get(p.getName(),null), pc, maxlevel-1, dp));
+				child = c.scope.get(p.getName(),null);
+				DumpData dd;
+				if(child instanceof Component) {
+					DumpTable t = new DumpTablePro("component","#97C0AB","#EAF2EE","#000000");
+					t.appendRow(1,new SimpleDumpData("Component"),new SimpleDumpData(((Component)child).getCallName()));
+					dd=t;
+					
+				}
+				else 
+					dd=DumpUtil.toDumpData(child, pc, maxlevel-1, dp);
+				
+				
+				
+				prop.appendRow(1, new SimpleDumpData(p.getName()),dd);
 			}
 			
 			if(access>=ACCESS_PUBLIC && !prop.isEmpty()) {
@@ -1117,8 +1134,10 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 				}
 			}
 		}
-        throw new ExpressionException("Can't cast Component ["+getName()+"] to String",
-                "Add a User-Defined-Function to Component with the following pattern [_toString():String] to cast it to a String or use Build-In-Function \"serialize(Component):String\" to convert it to a serialized String");
+		
+		
+		throw ExceptionUtil.addHint(new ExpressionException("Can't cast Component ["+getName()+"] to String"),"Add a User-Defined-Function to Component with the following pattern [_toString():String] to cast it to a String or use Build-In-Function \"serialize(Component):String\" to convert it to a serialized String");
+        
     }
     
     
@@ -1172,7 +1191,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			}
 		}
     	
-        throw new ExpressionException("Can't cast Component ["+getName()+"] to a boolean value",
+        throw ExceptionUtil.addHint(new ExpressionException("Can't cast Component ["+getName()+"] to a boolean value"),
                 "Add a User-Defined-Function to Component with the following pattern [_toBoolean():boolean] to cast it to a boolean value");
     }
     
@@ -1225,7 +1244,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			}
 		}
     
-        throw new ExpressionException("Can't cast Component ["+getName()+"] to a numeric value",
+        throw ExceptionUtil.addHint(new ExpressionException("Can't cast Component ["+getName()+"] to a numeric value"),
                 "Add a User-Defined-Function to Component with the following pattern [_toNumeric():numeric] to cast it to a numeric value");
     }
     double castToDoubleValue(boolean superAccess,double defaultValue) {
@@ -1276,7 +1295,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			}
 		}
     
-        throw new ExpressionException("Can't cast Component ["+getName()+"] to a date",
+		throw ExceptionUtil.addHint(new ExpressionException("Can't cast Component ["+getName()+"] to a date"),
                 "Add a User-Defined-Function to Component with the following pattern [_toDateTime():datetime] to cast it to a date");
     }
     DateTime castToDateTime(boolean superAccess,DateTime defaultValue) {
@@ -1793,26 +1812,38 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     }
 
 	public void setProperty(Property property) {
-		if(top.properties.properties==null) top.properties.properties=new HashMap();
+		if(top.properties.properties==null) top.properties.properties=new LinkedHashMap<String,Property>();
 		top.properties.properties.put(StringUtil.toLowerCase(property.getName()),property);
 		if(top.properties.persistent || top.properties.accessors){
 			if(property.getDefault()!=null)scope.setEL(property.getName(), property.getDefault());
 			// getter
 			if(property.getGetter()){
-				Member m = getMember(ACCESS_PRIVATE,KeyImpl.init("get"+property.getName()),true,false);
-				if(!(m instanceof UDF)){
-					UDF udf = new UDFGetterProperty(this,property);
-					registerUDF(udf.getFunctionName(), udf);
-				}
+				PropertyFactory.addGet(this,property);
 			}
 			// setter
 			if(property.getSetter()){
-				Member m = getMember(ACCESS_PRIVATE,KeyImpl.init("set"+property.getName()),true,false);
-				if(!(m instanceof UDF)){
-					UDF udf = new UDFSetterProperty(this,property);
-					registerUDF(udf.getFunctionName(), udf);
+				PropertyFactory.addSet(this,property);
+			}
+
+			String fieldType = Caster.toString(property.getMeta().get(PropertyFactory.FIELD_TYPE,null),null);
+			String type = property.getType();
+			
+			
+			// add
+			if(fieldType!=null) {
+				if("one-to-many".equalsIgnoreCase(fieldType) || "many-to-many".equalsIgnoreCase(fieldType)) {
+					PropertyFactory.addHas(this,property);
+					PropertyFactory.addAdd(this,property);
+					PropertyFactory.addRemove(this,property);
+				}
+				else if("one-to-one".equalsIgnoreCase(fieldType) || "many-to-one".equalsIgnoreCase(fieldType)) {
+					PropertyFactory.addHas(this,property);
 				}
 			}
+			
+			
+			
+			
 		}
 		
 	}
@@ -1923,4 +1954,5 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		}
 		
 	}
+	
 }

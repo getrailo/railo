@@ -33,7 +33,6 @@ public class ORMConfiguration {
 	public static final Collection.Key CFC_LOCATION = KeyImpl.getInstance("cfclocation");
 	public static final Collection.Key DB_CREATE = KeyImpl.getInstance("dbcreate");
 	public static final Collection.Key DIALECT = KeyImpl.getInstance("dialect");
-	public static final Collection.Key EVENT_HANDLING = KeyImpl.getInstance("eventHandling");
 	public static final Collection.Key FLUSH_AT_REQUEST_END = KeyImpl.getInstance("flushatrequestend");
 	public static final Collection.Key LOG_SQL = KeyImpl.getInstance("logSQL");
 	public static final Collection.Key SAVE_MAPPING = KeyImpl.getInstance("savemapping");
@@ -44,6 +43,8 @@ public class ORMConfiguration {
 	public static final Collection.Key CACHE_CONFIG = KeyImpl.getInstance("cacheconfig");
 	public static final Collection.Key CACHE_PROVIDER = KeyImpl.getInstance("cacheProvider");
 	public static final Collection.Key ORM_CONFIG = KeyImpl.getInstance("ormConfig");
+	public static final Collection.Key EVENT_HANDLING = KeyImpl.getInstance("eventHandling");
+	public static final Collection.Key EVENT_HANDLER = KeyImpl.getInstance("eventHandler");
 	
 	
 	private boolean autogenmap=true;
@@ -62,6 +63,7 @@ public class ORMConfiguration {
 	private Resource cacheConfig;
 	private String cacheProvider;
 	private Resource ormConfig;
+	private String eventHandler;
 
 	private ORMConfiguration(){
 		autogenmap=true;
@@ -140,6 +142,9 @@ public class ORMConfiguration {
 		
 		// eventHandling
 		c.eventHandling=Caster.toBooleanValue(settings.get(EVENT_HANDLING,dc.eventHandling()),dc.eventHandling());
+		
+		// eventHandler
+		c.eventHandler=Caster.toString(settings.get(EVENT_HANDLER,dc.eventHandler()),dc.eventHandler());
 		
 		// flushatrequestend
 		c.flushAtRequestEnd=Caster.toBooleanValue(settings.get(FLUSH_AT_REQUEST_END,dc.flushAtRequestEnd()),dc.flushAtRequestEnd());
@@ -301,6 +306,10 @@ public class ORMConfiguration {
 		return eventHandling;
 	}
 
+	public String eventHandler() {
+		return eventHandler;
+	}
+
 	/**
 	 * @return the flushAtRequestEnd
 	 */
@@ -385,20 +394,20 @@ public class ORMConfiguration {
 		}
 		Struct sct=new StructImpl();
 		sct.setEL(AUTO_GEN_MAP,this.autogenmap());
-		sct.setEL(CATALOG,StringUtil.toStringEmptyIfNull(getCatalog()));
+		sct.setEL(CATALOG,StringUtil.emptyIfNull(getCatalog()));
 		sct.setEL(CFC_LOCATION,arrLocs);
 		sct.setEL(DB_CREATE,dbCreateAsString(getDbCreate()));
-		sct.setEL(DIALECT,StringUtil.toStringEmptyIfNull(getDialect()));
+		sct.setEL(DIALECT,StringUtil.emptyIfNull(getDialect()));
 		sct.setEL(EVENT_HANDLING,eventHandling());
 		sct.setEL(FLUSH_AT_REQUEST_END,flushAtRequestEnd());
 		sct.setEL(LOG_SQL,logSQL());
 		sct.setEL(SAVE_MAPPING,saveMapping());
-		sct.setEL(SCHEMA,StringUtil.toStringEmptyIfNull(getSchema()));
+		sct.setEL(SCHEMA,StringUtil.emptyIfNull(getSchema()));
 		sct.setEL(SECONDARY_CACHE_ENABLED,secondaryCacheEnabled());
 		sct.setEL(SQL_SCRIPT,StringUtil.toStringEmptyIfNull(getSqlScript()));
 		sct.setEL(USE_DB_FOR_MAPPING,useDBForMapping());
 		sct.setEL(CACHE_CONFIG,getAbsolutePath(getCacheConfig()));
-		sct.setEL(CACHE_PROVIDER,StringUtil.toStringEmptyIfNull(getCacheProvider()));
+		sct.setEL(CACHE_PROVIDER,StringUtil.emptyIfNull(getCacheProvider()));
 		sct.setEL(ORM_CONFIG,getAbsolutePath(getOrmConfig()));
 		
 		
@@ -463,6 +472,10 @@ class _GetStruct implements _Get {
 	
 	public Object get(Collection.Key name,Object defaultValue){
 		return sct.get(name,defaultValue);
+	}
+	
+	public String toString(){
+		return "_GetStruct:"+sct.toString();
 	}
 }
 

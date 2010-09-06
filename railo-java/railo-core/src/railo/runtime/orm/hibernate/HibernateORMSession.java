@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
 import org.hibernate.NonUniqueResultException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -19,6 +18,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.query.HQLQueryPlan;
 import org.hibernate.engine.query.ParameterMetadata;
 import org.hibernate.engine.query.QueryPlanCache;
+import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
@@ -30,6 +30,7 @@ import railo.runtime.PageContext;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQLItem;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMEngine;
@@ -91,11 +92,22 @@ public class HibernateORMSession implements ORMSession{
 		return engine;
 	}
 	
-	/**
+	/** 
 	 * @see railo.runtime.orm.ORMSession#flush(railo.runtime.PageContext)
 	 */
-	public void flush(PageContext pc) {
-		session().flush();
+	public void flush(PageContext pc) throws PageException {
+		try {
+			session().flush();
+		}
+		catch(ConstraintViolationException cve){
+			PageException pe = HibernateException.toPageException(engine, cve);
+			if(pe instanceof PageExceptionImpl && !StringUtil.isEmpty(cve.getConstraintName())) {
+				//print.o(cve.getConstraintName());
+				((PageExceptionImpl)pe).setAdditional("constraint name", cve.getConstraintName() );
+			}
+			throw pe;
+		}
+		
 	}
 
 	/**
@@ -143,10 +155,15 @@ public class HibernateORMSession implements ORMSession{
 		Component cfc = HibernateCaster.toComponent(obj);
 		//Session session = getSession(pc, cfc);
 		String name = HibernateCaster.getEntityName(pc,cfc);
-		if(forceInsert)
-			session().save(name, cfc);
-		else
-				session().saveOrUpdate(name, cfc);
+		try {
+			if(forceInsert)
+				session().save(name, cfc);
+			else
+					session().saveOrUpdate(name, cfc);
+		}
+		catch(Throwable t){
+			throw HibernateException.toPageException(getEngine(), t);
+		}
 	}
 	
 	/**
@@ -237,6 +254,11 @@ public class HibernateORMSession implements ORMSession{
 			f.evictCollection(role,Caster.toSerializable(id));
 		}
 	}
+	
+	 
+	
+	
+	
 	
 	
 
