@@ -4,6 +4,7 @@
 *.project
 *.class
 *.classpath
+*.ra
 *.rc
 *~
 *.lock
