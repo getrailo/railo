@@ -14,4 +14,10 @@ public class HibernateException extends ORMException {
 		
 	}
 
+	/*public HibernateException(ORMEngine engine, MappingException me) {
+		super(engine, me.getMessage());
+		setStackTrace(me.getStackTrace());
+		setAdditional("Cause", me.getClass().getName());
+	}*/
+
 }

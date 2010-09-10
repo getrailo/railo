@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
+import org.hibernate.MappingException;
 import org.hibernate.NonUniqueResultException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -23,7 +23,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentPro;
@@ -45,7 +44,6 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.ComponentUtil;
-import sun.security.provider.NativePRNG;
 
 public class HibernateORMSession implements ORMSession{
 
@@ -158,10 +156,15 @@ public class HibernateORMSession implements ORMSession{
 		Component cfc = HibernateCaster.toComponent(obj);
 		//Session session = getSession(pc, cfc);
 		String name = HibernateCaster.getEntityName(pc,cfc);
-		if(forceInsert)
-			session().save(name, cfc);
-		else
-				session().saveOrUpdate(name, cfc);
+		try {
+			if(forceInsert)
+				session().save(name, cfc);
+			else
+					session().saveOrUpdate(name, cfc);
+		}
+		catch(MappingException me){
+			throw HibernateException.toPageException(getEngine(), me);
+		}
 	}
 	
 	/**

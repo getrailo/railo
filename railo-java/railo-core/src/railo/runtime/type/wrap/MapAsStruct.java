@@ -76,7 +76,7 @@ public  class MapAsStruct extends StructSupport implements Struct {
         return k;
     }
     
-    private static String getCaseSensitiveKey(Map map,String key) {
+    public static String getCaseSensitiveKey(Map map,String key) {
     	Iterator it = map.keySet().iterator();
 		String strKey;
     	while(it.hasNext()) {

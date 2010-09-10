@@ -102,10 +102,15 @@ public class HibernateCaster {
 		try {
 			Struct md = cfc.getMetaData(ThreadLocalPageContext.get(pc));
 			String name = Caster.toString(md.get("entityname"),"");
-			if(!StringUtil.isEmpty(name)) return name;
+			if(!StringUtil.isEmpty(name)) {
+				//print.o("name1:"+cfc.getName());
+				return name.toLowerCase();
+			}
 		} 
 		catch (PageException e) {}
-		return cfc.getName();
+		
+		//print.o("name2:"+cfc.getName());
+		return cfc.getName().toLowerCase();
 	}
 
 	public static int cascade(String cascade) throws ORMException {

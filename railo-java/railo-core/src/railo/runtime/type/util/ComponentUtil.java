@@ -588,10 +588,15 @@ public final class ComponentUtil {
 		throw new ExpressionException("can't cast class ["+Caster.toClassName(comp)+"] to a class of type ComponentImpl");
 		
 	}
+	
 	public static ComponentPro toComponentPro(Component comp) throws ExpressionException {
 		if(comp instanceof ComponentPro) return (ComponentPro) comp;
 		throw new ExpressionException("can't cast class ["+Caster.toClassName(comp)+"] to a class of type ComponentPro");
-		
+	}
+	
+	public static ComponentPro toComponentPro(Component comp, ComponentPro defaultValue) {
+		if(comp instanceof ComponentPro) return (ComponentPro) comp;
+		return defaultValue;
 	}
 
 	public static ComponentImpl getActiveComponent(PageContext pc, ComponentImpl current) {

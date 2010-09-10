@@ -6,16 +6,18 @@ import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection.Key;
 
 public class UDFGetterProperty extends UDFGSProperty {
 
 	private Property prop;
 	//private ComponentScope scope;
+	private Key propName;
 
 	public UDFGetterProperty(ComponentImpl component,Property prop)  {
 		super(component,"get"+StringUtil.ucFirst(prop.getName()),new FunctionArgument[0],CFTypes.TYPE_STRING,"wddx");
 		this.prop=prop;
-		
+		this.propName=KeyImpl.init(prop.getName());
 	} 
 
 	/**
@@ -34,21 +36,21 @@ public class UDFGetterProperty extends UDFGSProperty {
 	 * @see railo.runtime.type.UDF#call(railo.runtime.PageContext, java.lang.Object[], boolean)
 	 */
 	public Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException {
-		return component.getComponentScope().get(pageContext, KeyImpl.init(prop.getName()),null);
+		return component.getComponentScope().get(pageContext, propName,null);
 	}
 
 	/**
 	 * @see railo.runtime.type.UDF#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Struct, boolean)
 	 */
 	public Object callWithNamedValues(PageContext pageContext, Struct values,boolean doIncludePath) throws PageException {
-		return component.getComponentScope().get(prop.getName(),null);
+		return component.getComponentScope().get(pageContext,propName,null);
 	}
 
 	/**
 	 * @see railo.runtime.type.UDF#implementation(railo.runtime.PageContext)
 	 */
 	public Object implementation(PageContext pageContext) throws Throwable {
-		return component.getComponentScope().get(prop.getName(),null);
+		return component.getComponentScope().get(pageContext,propName,null);
 	}
 	
 	/**

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.hibernate.MappingException;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
@@ -40,7 +41,7 @@ import railo.runtime.type.util.ArrayUtil;
 
 public class HibernateSessionFactory {
 
-	public static Configuration createConfiguration(HibernateORMEngine engine,String mappings, DatasourceConnection dc, ORMConfiguration ormConf) throws ORMException, SQLException, IOException {
+	public static Configuration createConfiguration(HibernateORMEngine engine,String mappings, DatasourceConnection dc, ORMConfiguration ormConf) throws SQLException, IOException, PageException {
 		/*
 		 autogenmap
 		 cacheconfig
@@ -87,15 +88,15 @@ public class HibernateSessionFactory {
 			}
 		}
 		
-		
+		try{
+			configuration.addXML(mappings);
+		}
+		catch(MappingException me){
+			throw HibernateException.toPageException(engine, me);
+		}
 		
 		configuration
-        //.addClass(Event.class)
-		//.addURL(configuration.getClass().getResource("/railo/runtime/orm/hibernate/test.hbm.xml"))
-		.addXML(mappings)
-		
-        //.setProperty("hibernate.order_updates", "true")
-    
+        
         // Database connection settings
         .setProperty("hibernate.connection.driver_class", ds.getClazz().getName())
     	.setProperty("hibernate.connection.url", ds.getDsnTranslated())

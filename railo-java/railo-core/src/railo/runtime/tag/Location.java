@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.exp.Abort;
@@ -91,10 +90,7 @@ public final class Location extends TagImpl {
 		}
 		HttpServletResponse rsp = pageContext. getHttpServletResponse();
 		
-		print.o(url);
 		url=HTTPUtil.encode(url);
-		print.o(url);
-		
 		
 		// add token
 		if(addtoken && needId()) {
