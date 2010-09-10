@@ -1,5 +1,5 @@
-Railo CFML Engine
-=================
+## Railo CFML Engine
+
 Welcome to the Railo CFML Engine repostory
 
 Building from source
@@ -139,7 +139,7 @@ If you have modified the code and want to submit a patch, you should post your i
 
 There are some problems on OS X Snow Leopard, especially when dealing with the fact that you don't actually have Java 1.5.0 which is required to build the source, there are work rounds for this, see: <http://chxor.chxo.com/post/183013153/installing-java-1-5-on-snow-leopard>
 
->Download the official Java package from Apple, �Java for Mac OS X 10.5 Update 7” dated May 18, 2010.
+>Download the official Java package from Apple, �Java for Mac OS X 10.5 Update 7” dated May 18, 2010.
 
 >Then use the excellent shareware utility Pacifist to open the downloaded JavaForMacOSX10.5Update4.pkg file.
 
