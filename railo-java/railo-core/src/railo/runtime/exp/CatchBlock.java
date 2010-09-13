@@ -4,6 +4,7 @@ import java.util.Set;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.op.Castable;
@@ -13,20 +14,22 @@ import railo.runtime.type.StructImpl;
 
 public class CatchBlock extends StructImpl implements Castable{
 
-	private static final Key MESSAGE = KeyImpl.getInstance("Message");
-	private static final Key DETAIL = KeyImpl.getInstance("Detail");
-	private static final Key ERROR_CODE = KeyImpl.getInstance("ErrorCode");
-	private static final Key EXTENDED_INFO = KeyImpl.getInstance("ExtendedInfo");
-	private static final Key TYPE = KeyImpl.getInstance("type");
-	private static final Key TAG_CONTEXT = KeyImpl.getInstance("TagContext");
-	private static final Key STACK_TRACE = KeyImpl.getInstance("StackTrace");
-	private static final Key ADDITIONAL = KeyImpl.getInstance("additional");
+	public static final Key MESSAGE = KeyImpl.getInstance("Message");
+	public static final Key DETAIL = KeyImpl.getInstance("Detail");
+	public static final Key ERROR_CODE = KeyImpl.getInstance("ErrorCode");
+	public static final Key EXTENDED_INFO = KeyImpl.getInstance("ExtendedInfo");
+	public static final Key TYPE = KeyImpl.getInstance("type");
+	public static final Key TAG_CONTEXT = KeyImpl.getInstance("TagContext");
+	public static final Key STACK_TRACE = KeyImpl.getInstance("StackTrace");
+	public static final Key ADDITIONAL = KeyImpl.getInstance("additional");
 	
-	private PageContext pc;
+	private Config config;// MUSTMUST remove this -> serialiable
 	private PageExceptionImpl pe;
 	private SpecialItem si = new SpecialItem();
-	public CatchBlock(PageContext pc,PageExceptionImpl pe) {
-		this.pc=pc;
+	
+
+	public CatchBlock(Config config,PageExceptionImpl pe) {
+		this.config=config;
 		this.pe=pe;
 		
 		setEL(MESSAGE,si);
@@ -42,6 +45,7 @@ public class CatchBlock extends StructImpl implements Castable{
 	}
 
 	/**
+	 * FUTURE add to interface
 	 * @return the pe
 	 */
 	public PageException getPageException() {
@@ -78,7 +82,7 @@ public class CatchBlock extends StructImpl implements Castable{
 	 */
 	public Collection duplicate(boolean deepCopy) {
 		initAll();
-		CatchBlock trg = new CatchBlock(pc,pe);
+		CatchBlock trg = new CatchBlock(config,pe);
 		trg.initAll();
 		StructImpl.copy(this, trg, deepCopy);
 		return trg;
@@ -142,7 +146,7 @@ public class CatchBlock extends StructImpl implements Castable{
 		if(TYPE.equals(key)) 			return setEL(key, StringUtil.toStringEmptyIfNull(pe.getTypeAsString()));
 		if(STACK_TRACE.equals(key)) 	return setEL(key, StringUtil.toStringEmptyIfNull(pe.getStackTraceAsString()));
 		if(ADDITIONAL.equals(key)) 		return setEL(key, pe.getAdditional());
-		if(TAG_CONTEXT.equals(key)) 	return setEL(key, pe.getTagContext(pc)); 	
+		if(TAG_CONTEXT.equals(key)) 	return setEL(key, pe.getTagContext(config)); 	
 		return null;
 	}
 	

@@ -4,8 +4,10 @@ package railo.transformer.cfml.expression;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import railo.print;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.TemplateException;
+import railo.runtime.functions.other._CreateComponent;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Scope;
 import railo.runtime.type.scope.ScopeSupport;
@@ -1232,7 +1234,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	    
 	    
 	    // first identifier
-	    name = identifier(data,true,true);
+	    name = identifier(data,true,false);
 	    
 		
 		ExprString exprName;
@@ -1243,7 +1245,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			while (data.cfml.isValidIndex()) {
 				if (data.cfml.forwardIfCurrent('.')) {
 					comments(data.cfml);
-	                name = identifier(data,true,true);
+	                name = identifier(data,true,false);
 					if(name==null) {
 						data.cfml.setPos(start);
 						return expr;//throw new TemplateException(data.cfml,"invalid Component declaration ");
@@ -1254,6 +1256,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 				}
 				else break;
 			}
+			
 			exprName=LitString.toExprString(fullName.toString());
 		}
 		else {

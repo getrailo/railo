@@ -23,6 +23,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
+import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentPro;
@@ -101,7 +102,7 @@ public class HibernateORMSession implements ORMSession{
 			session().flush();
 		}
 		catch(ConstraintViolationException cve){
-			PageException pe = Caster.toPageException(cve);
+			PageException pe = HibernateException.toPageException(engine, cve);
 			if(pe instanceof PageExceptionImpl && !StringUtil.isEmpty(cve.getConstraintName())) {
 				//print.o(cve.getConstraintName());
 				((PageExceptionImpl)pe).setAdditional("constraint name", cve.getConstraintName() );
@@ -156,14 +157,15 @@ public class HibernateORMSession implements ORMSession{
 		Component cfc = HibernateCaster.toComponent(obj);
 		//Session session = getSession(pc, cfc);
 		String name = HibernateCaster.getEntityName(pc,cfc);
+		print.o("name:"+name);
 		try {
 			if(forceInsert)
 				session().save(name, cfc);
 			else
 					session().saveOrUpdate(name, cfc);
 		}
-		catch(MappingException me){
-			throw HibernateException.toPageException(getEngine(), me);
+		catch(Throwable t){
+			throw HibernateException.toPageException(getEngine(), t);
 		}
 	}
 	

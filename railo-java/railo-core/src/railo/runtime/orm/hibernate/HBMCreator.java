@@ -7,6 +7,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentPro;
@@ -116,6 +117,9 @@ public class HBMCreator {
 
 		addGeneralClassAttributes(pc,ormConf,engine,cfc,meta,clazz);
 		String tableName=getTableName(pc,meta,cfc);
+		print.o("table:"+tableName);
+		
+		
 		if(join!=null) clazz=join;
 		if(doTable)addGeneralTableAttributes(pc,ormConf,engine,cfc,meta,clazz);
 		
@@ -352,8 +356,8 @@ public class HBMCreator {
 	}
 	private static String getTableName(PageContext pc, Struct meta, Component cfc) throws ORMException {
 		String tableName=toString(null,meta,"table");
-        if(StringUtil.isEmpty(tableName,true)) tableName=HibernateCaster.getEntityName(pc, cfc);
-        //if(tableName==null) print.ds("null:"+cfc.getAbsName());
+		if(StringUtil.isEmpty(tableName,true)) 
+			tableName=HibernateCaster.getEntityName(pc, cfc);
 		return tableName;
 	}
 

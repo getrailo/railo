@@ -1854,7 +1854,7 @@ private void doGetMappings() throws PageException {
             qry.setAt("Timeout",row,new Double(pc.getRequestTimeout()/1000));
             qry.setAt("ThreadType",row,pc.getParentPageContext()==null?"main":"child");
             qry.setAt("StackTrace",row,toString(st));
-            qry.setAt("TagContext",row,PageExceptionImpl.getTagContext(pc, st));
+            qry.setAt("TagContext",row,PageExceptionImpl.getTagContext(pc.getConfig(), st));
             
             qry.setAt("label",row,factory.getLabel());
             qry.setAt("RootPath",row,((ConfigWebImpl)configWeb).getServletContext().getRealPath("/"));

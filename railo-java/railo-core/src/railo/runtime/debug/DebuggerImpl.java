@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.io.log.LogUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.config.Config;
 import railo.runtime.db.SQL;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -21,8 +23,10 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.Dumpable;
 import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
@@ -33,6 +37,7 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.ArrayUtil;
 
 
 /**
@@ -44,12 +49,15 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	private static final Collection.Key QUERIES = KeyImpl.getInstance("queries");
 	private static final Collection.Key TIMERS = KeyImpl.getInstance("timers");
 	private static final Collection.Key TRACES = KeyImpl.getInstance("traces");
+	private static final Collection.Key EXCEPTIONS = KeyImpl.getInstance("exceptions");
 	private static final Collection.Key HISTORY = KeyImpl.getInstance("history");
 	
-	private Map pages=new HashMap();
-	private List queries=new ArrayList();
-	private List timers=new ArrayList();
-	private List traces=new ArrayList();
+	private Map<String,DebugEntryImpl> pages=new HashMap<String,DebugEntryImpl>();
+	private List<QueryEntryImpl> queries=new ArrayList<QueryEntryImpl>();
+	private List<DebugTimerImpl> timers=new ArrayList<DebugTimerImpl>();
+	private List<DebugTraceImpl> traces=new ArrayList<DebugTraceImpl>();
+	private List<CatchBlock> exceptions=new ArrayList<CatchBlock>();
+	
 	private boolean output=true;
 	private long lastEntry;
 	private long lastTrace;
@@ -64,6 +72,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		queries.clear();
 		timers.clear();
 		traces.clear();
+		exceptions.clear();
 		historyId.clear();
 		historyLevel.clear();
 		output=true;
@@ -152,10 +161,40 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         row=new DumpRow(1023,new DumpData[]{new SimpleDumpData("file"),new SimpleDumpData("count"),new SimpleDumpData("load"),new SimpleDumpData("query"),new SimpleDumpData("app"),new SimpleDumpData(""),new SimpleDumpData("total")});
         boxPage.appendRow(row);
         boxPage.prependRow(row);
-        
+
+
+//      Exceptions
+        DumpTable tableExceptions=null;
+		int tl=exceptions==null?0:exceptions.size();
+		if(tl>0) {
+			tableExceptions = new DumpTable("#eeeeee","white","#666666");
+			
+			tableExceptions.appendRow(15, new SimpleDumpData("type"),new SimpleDumpData("message"),new SimpleDumpData("detail"), new SimpleDumpData("template"));
+			
+			
+	        	Iterator<CatchBlock> it = exceptions.iterator();
+	        	CatchBlock block;
+	        	PageException pe;
+	        	String type,msg,detail,templ;
+	        	while(it.hasNext()) {
+	        		block=it.next();
+	        		pe=block.getPageException();
+	        		type=StringUtil.toStringEmptyIfNull(pe.getTypeAsString());
+	        		msg=StringUtil.toStringEmptyIfNull(pe.getMessage());
+	        		detail=StringUtil.toStringEmptyIfNull(pe.getDetail());
+	        		templ=getTemplate(pageContext.getConfig(),pe);
+	        		tableExceptions.appendRow(0, 
+	        				new SimpleDumpData(type),
+	        				new SimpleDumpData(msg),
+	        				new SimpleDumpData(detail),
+	        				new SimpleDumpData(templ)) ;
+	        	}
+		}
+		
+		
 //      Timers
         DumpTable tableTimer=null;
-		int tl=timers==null?0:timers.size();
+		tl=timers==null?0:timers.size();
 		if(tl>0) {
 			tableTimer = new DumpTable("#eeeeee","white","#666666");
 			//boxTimer.setWidth("100%");
@@ -226,19 +265,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 				tableQueryItem.appendRow(1, new SimpleDumpData("Recordcount"), new SimpleDumpData(arrQueries[i].getRecordcount()));
 				tableQueryItem.appendRow(1, new SimpleDumpData("Query"), new SimpleDumpData((arrQueries[i].getSQL().toString().trim())));
 				
-			    /*StringBuffer sb=new StringBuffer("<b>"+arrQueries[i].getName()+"</b><br>");
-			    sb.append("Source: ");
-				sb.append(arrQueries[i].getSrc());
-				sb.append("<br>");
-				sb.append("Execution Time: ");
-				sb.append(arrQueries[i].getExe());
-				sb.append(" ms<br>");
-				sb.append("Recordcount: ");
-				sb.append(arrQueries[i].getRecordcount());
-				sb.append("<br>");
-				sb.append("Query:<br>");
-				sb.append(StringUtil.replace(arrQueries[i].getSQL().toString().trim(),"\n","<br>",false));*/
-				tableQuery.appendRow(0,tableQueryItem);
+			    tableQuery.appendRow(0,tableQueryItem);
 			}
 		}
 		
@@ -246,11 +273,26 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		table.setTitle("Debugging Output");
 		table.setWidth("100%");
 		table.appendRow(1,new SimpleDumpData("Pages"),boxPage);
+		
+		
+		if(tableExceptions!=null && !tableExceptions.isEmpty())table.appendRow(1,new SimpleDumpData("Cached Exceptions"),tableExceptions);
 		if(tableTimer!=null && !tableTimer.isEmpty())table.appendRow(1,new SimpleDumpData("Timers"),tableTimer);
 		if(tableTraces!=null && !tableTraces.isEmpty())table.appendRow(1,new SimpleDumpData("Traces"),tableTraces);
 		if(tableQuery!=null && !tableQuery.isEmpty())table.appendRow(1,new SimpleDumpData("Queries"),tableQuery);
 		
 		return table;
+	}
+
+	private String getTemplate(Config config,PageException pe) {
+		try {
+			Array arr = ((PageExceptionImpl)pe).getTagContext(config);
+			Struct sct=Caster.toStruct(arr.getE(1));
+			return Caster.toString(sct.get("template"));
+			
+		} 
+		catch (Throwable t) {print.e(t);}
+		
+		return "";
 	}
 
 	private String toString(Object o) {
@@ -407,6 +449,19 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		}
 		catch(PageException dbe) {}
 
+		// exceptions
+		len=exceptions==null?0:exceptions.size();
+		
+        Array arrExceptions=new ArrayImpl();
+        if(len>0) {
+	        	Iterator<CatchBlock> it = exceptions.iterator();
+	        	row=0;
+	        	while(it.hasNext()) {
+	        		arrExceptions.appendEL(it.next());  
+	        	}
+			
+        }
+
 		// timers
 		len=timers==null?0:timers.size();
         Query qryTimers=new QueryImpl(
@@ -466,6 +521,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		debugging.setEL(TIMERS,qryTimers);
 		debugging.setEL(TRACES,qryTraces);
 		debugging.setEL(HISTORY,history);
+		debugging.setEL(EXCEPTIONS,arrExceptions);
 		return debugging;
     }
 
@@ -509,7 +565,23 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	 * @see railo.runtime.debug.Debugger#getTraces()
 	 */
 	public DebugTrace[] getTraces() {
-		return (DebugTrace[])traces.toArray(new DebugTrace[traces.size()]);
+		return traces.toArray(new DebugTrace[traces.size()]);
+	}
+
+	// FUTURE add to interface
+	public void addException(Config config,PageException pe) {
+		print.e("set catchpe2");
+		if(exceptions.size()>1000) return;
+		try {
+			exceptions.add(((PageExceptionImpl)pe).getCatchBlock(config));
+		}
+		catch(Throwable t){print.e(t);}
+	}
+	
+	
+	// FUTURE add to interface
+	public CatchBlock[] getExceptions() {
+		return exceptions.toArray(new CatchBlock[exceptions.size()]);
 	}
 
 }
