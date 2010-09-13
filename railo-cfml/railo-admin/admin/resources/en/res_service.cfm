@@ -4,7 +4,7 @@
 <cfset stText.Settings.DatasourceSettings              = "Settings">
 <cfset stText.Settings.DatasourceModify                = "Modify and add datasources">
 <cfset stText.Settings.PreserveSingleQuotes            = "Escape Single Quotes">
-<cfset stText.Settings.PreserveSingleQuotesDescription = "Escapes single quotes (') defined in the SQL inside the cfquery tag. If this option is enabled, Railo will replace all single quotes in variables by doubling them (''). Be careful if you are disabling this feature, as it will make your SQL statements more open to cross site scripting attacks.">
+<cfset stText.Settings.PreserveSingleQuotesDescription = "Escapes single quotes (') defined in the SQL inside the cfquery tag. If this option is enabled, Railo will replace all single quotes in variables by doubling them (''). Be careful if you are disabling this feature, as it will make your SQL statements more open to SQL Injection attacks.">
 
 
 <cfset stText.Settings.ReadOnlyDatasources             = "Global Datasources (Datasources from Server Administrator)">
@@ -82,8 +82,8 @@
 <cfset stText.remote.securityKeyMissing       = "The security key for the remote client is missing">
 <cfset stText.remote.adminPassword.web        = "Password for the remote Web Administrator">
 <cfset stText.remote.adminPassword.server     = "Password for the remote Server Administrator">
-<cfset stText.remote.adminPasswordDesc.web    = "Password für the access to the remote Railo Web Administrator">
-<cfset stText.remote.adminPasswordDesc.server = "Password für the access to the remote Railo Server Administrator">
+<cfset stText.remote.adminPasswordDesc.web    = "Password fï¿¼r the access to the remote Railo Web Administrator">
+<cfset stText.remote.adminPasswordDesc.server = "Password fï¿¼r the access to the remote Railo Server Administrator">
 <cfset stText.remote.securityKey              = "Security Key">
 <cfset stText.remote.securityKeyDesc          = "Please enter the key of the remote clients. You can find it under Remote security key in the administrator of the remote clients">
 <cfset stText.remote.proxyServer              = "Server">
