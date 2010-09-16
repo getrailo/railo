@@ -10,7 +10,6 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.property.Getter;
 import org.hibernate.type.Type;
 
-import railo.print;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;

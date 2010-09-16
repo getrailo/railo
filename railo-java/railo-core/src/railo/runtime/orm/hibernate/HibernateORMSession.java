@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
-import org.hibernate.MappingException;
 import org.hibernate.NonUniqueResultException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -257,6 +256,11 @@ public class HibernateORMSession implements ORMSession{
 			f.evictCollection(role,Caster.toSerializable(id));
 		}
 	}
+	
+	 
+	
+	
+	
 	
 	
 

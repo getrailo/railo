@@ -55,6 +55,15 @@ public class HBMCreator {
 		Struct meta = cfci.getMetaData(pc);
 		
 		Property[] _props = cfci.getProperties(true);
+		
+		if(_props.length==0 && ormConf.useDBForMapping()){
+        	_props=HibernateUtil.createPropertiesFromTable(dc,getTableName(pc, meta, cfci));
+        }
+		
+		
+		
+		
+		
 		Map<String, PropertyCollection> joins=new HashMap<String, PropertyCollection>();
 		PropertyCollection propColl = splitJoins(joins, _props);
 		
@@ -170,6 +179,12 @@ public class HBMCreator {
 
 
 
+	
+
+
+
+
+
 	private static void addId(Document doc, Element clazz, PageContext pc, Struct meta, PropertyCollection propColl, Struct columnsInfo, String tableName, HibernateORMEngine engine) throws PageException {
 		Property[] _ids = getIds(propColl);
 		
@@ -267,7 +282,7 @@ public class HBMCreator {
         } 
         
         // still no id field defined
-        if(ids.size()==0) {
+        if(ids.size()==0 && props.length>0) {
         	String owner = props[0].getOwnerName();
 			if(!StringUtil.isEmpty(owner)) owner=List.last(owner, '.').trim();
         	

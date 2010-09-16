@@ -364,8 +364,6 @@ public class HibernateORMEngine implements ORMEngine {
 				if(tableName2!=null)rows=checkTableFill(md,dbName,tableName2);
 			}
 			
-			
-			
 			if(rows.size()==0)	{
 				//ORMUtil.printError("there is no table with name  ["+tableName+"] defined", engine);
 				return null;
@@ -381,7 +379,7 @@ public class HibernateORMEngine implements ORMEngine {
 	private static Struct checkTableFill(DatabaseMetaData md, String dbName, String tableName) throws SQLException, PageException {
 		Struct rows=new CastableStruct(tableName);
 		ResultSet columns = md.getColumns(dbName, null, tableName, null);
-		
+		//print.o(new QueryImpl(columns,""));
 		try{
 			String name;
 			Object nullable;

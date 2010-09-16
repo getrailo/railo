@@ -22,7 +22,6 @@ import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Member;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.Abort;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.JSONExpressionInterpreter;

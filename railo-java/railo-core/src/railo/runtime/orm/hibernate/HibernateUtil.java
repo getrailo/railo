@@ -1,5 +1,8 @@
 package railo.runtime.orm.hibernate;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -8,9 +11,14 @@ import org.hibernate.HibernateException;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
+import railo.runtime.component.Property;
+import railo.runtime.db.DatasourceConnection;
+import railo.runtime.exp.PageException;
 import railo.runtime.orm.ORMException;
 import railo.runtime.type.Array;
 import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 
 
 public class HibernateUtil {
@@ -86,5 +94,49 @@ public class HibernateUtil {
 		return defaultValue;
 	}
 	
+	// 
+	
+	public static Property[] createPropertiesFromTable(DatasourceConnection dc, String tableName) throws ORMException, PageException {
+		Struct properties = new StructImpl();
+		try {
+			DatabaseMetaData md = dc.getConnection().getMetaData();
+			String dbName=dc.getDatasource().getDatabase();
+			String name;
+			
+			
+			// get all columns
+			ResultSet res = md.getColumns(dbName, null, tableName, null);
+			Property p;
+			while(res.next()) {
+				name=res.getString("COLUMN_NAME");
+				p=new Property();
+				p.setName(name);
+				p.setType(res.getString("TYPE_NAME"));
+				properties.setEL(name, p);
+			}
+			
+			// ids
+			res = md.getPrimaryKeys(null, null, tableName);
+			while(res.next()) {
+				name=res.getString("COLUMN_NAME");
+				p=(Property) properties.get(name,null);
+				if(p!=null) p.getMeta().setEL("fieldtype", "id");
+			}
+			
+			// MUST foreign-key relation
+		
+		}
+		catch(SQLException e){
+			throw new HibernateException(e);
+		}
+		
+		Iterator it = properties.valueIterator();
+		Property[] rtn=new Property[properties.size()];
+		for(int i=0;i<rtn.length;i++){
+			rtn[i]=(Property) it.next();
+		}
+		
+    	return rtn;
+	}
 	
 }

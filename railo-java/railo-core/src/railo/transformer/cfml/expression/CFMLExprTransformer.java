@@ -4,10 +4,8 @@ package railo.transformer.cfml.expression;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import railo.print;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.TemplateException;
-import railo.runtime.functions.other._CreateComponent;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Scope;
 import railo.runtime.type.scope.ScopeSupport;

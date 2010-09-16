@@ -14,7 +14,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.UDFCasterException;
 import railo.runtime.op.Decision;
-import railo.runtime.op.Duplicator;
 import railo.runtime.type.util.ComponentUtil;
 
 public abstract class UDFGSProperty extends UDFImpl {
