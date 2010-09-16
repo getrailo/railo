@@ -22,7 +22,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentPro;
@@ -156,7 +155,6 @@ public class HibernateORMSession implements ORMSession{
 		Component cfc = HibernateCaster.toComponent(obj);
 		//Session session = getSession(pc, cfc);
 		String name = HibernateCaster.getEntityName(pc,cfc);
-		print.o("name:"+name);
 		try {
 			if(forceInsert)
 				session().save(name, cfc);

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import railo.print;
 import railo.commons.io.log.LogUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -291,7 +290,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 			if(withLine)templ +=":"+ Caster.toString(sct.get("line"));
 			return templ;
 		} 
-		catch (Throwable t) {print.e(t);}
+		catch (Throwable t) {}
 		
 		return "";
 	}
@@ -571,12 +570,11 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 
 	// FUTURE add to interface
 	public void addException(Config config,PageException pe) {
-		print.e("set catchpe2");
 		if(exceptions.size()>1000) return;
 		try {
 			exceptions.add(((PageExceptionImpl)pe).getCatchBlock(config));
 		}
-		catch(Throwable t){print.e(t);}
+		catch(Throwable t){}
 	}
 	
 	

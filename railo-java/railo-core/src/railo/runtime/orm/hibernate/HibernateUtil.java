@@ -2,7 +2,6 @@ package railo.runtime.orm.hibernate;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -126,8 +125,8 @@ public class HibernateUtil {
 			// MUST foreign-key relation
 		
 		}
-		catch(SQLException e){
-			throw new HibernateException(e);
+		catch(Throwable t){
+			return new Property[0];
 		}
 		
 		Iterator it = properties.valueIterator();

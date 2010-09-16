@@ -13,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.SizeOf;
@@ -1956,14 +1955,4 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		
 	}
 	
-	@Override
-	public int hashCode() {
-		print.ds();
-		return super.hashCode();
-	}
-	
-	public boolean equals(Object obj){
-		print.ds();
-		return super.equals(obj);
-	}
 }

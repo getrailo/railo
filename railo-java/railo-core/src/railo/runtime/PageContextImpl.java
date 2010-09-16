@@ -38,7 +38,6 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
-import railo.print;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -2313,7 +2312,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	if(pe==null) {
     		undefinedScope().removeEL(CFCATCH);
     	}
-    	else {print.e("set catchpe1");
+    	else {
     		undefinedScope().setEL(CFCATCH,pe.getCatchBlock(this));
     		if(config.debug()) ((DebuggerImpl)debugger).addException(config,exception);
     	}

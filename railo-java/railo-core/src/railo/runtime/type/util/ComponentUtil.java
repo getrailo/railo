@@ -593,6 +593,10 @@ public final class ComponentUtil {
 		if(comp instanceof ComponentPro) return (ComponentPro) comp;
 		throw new ExpressionException("can't cast class ["+Caster.toClassName(comp)+"] to a class of type ComponentPro");
 	}
+	public static ComponentPro toComponentPro(Object obj) throws ExpressionException {
+		if(obj instanceof ComponentPro) return (ComponentPro) obj;
+		throw new ExpressionException("can't cast class ["+Caster.toClassName(obj)+"] to a class of type ComponentPro");
+	}
 	
 	public static ComponentPro toComponentPro(Component comp, ComponentPro defaultValue) {
 		if(comp instanceof ComponentPro) return (ComponentPro) comp;
