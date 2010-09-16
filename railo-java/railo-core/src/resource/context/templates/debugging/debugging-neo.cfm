@@ -134,6 +134,30 @@ a.cfdebuglink {color:blue; background-color:white }
 
 
 
+<!--- Exceptions --->
+<cfif structKeyExists(debugging,"exceptions")  and arrayLen(debugging.exceptions)>
+	<cfset exceptions=debugging.exceptions>
+    
+	<p class="cfdebug"><hr/><b class="cfdebuglge">Caught Exceptions</b></p>
+		<table border="1" cellpadding="2" cellspacing="0" class="cfdebug">
+		<tr>
+			<td class="cfdebug"><b>Type</b></td>
+			<td class="cfdebug"><b>Message</b></td>
+			<td class="cfdebug"><b>Detail</b></td>
+			<td class="cfdebug"><b>Template</b></td>
+		</tr>
+<cfloop array="#exceptions#" index="exp">
+		<tr>
+			<td class="cfdebug" nowrap>#exp.type#</td>
+			<td class="cfdebug" nowrap>#exp.message#</td>
+			<td class="cfdebug" nowrap>#exp.detail#</td>
+			<td class="cfdebug" nowrap>#exp.TagContext[1].template#:#exp.TagContext[1].line#</td>
+		</tr>
+</cfloop>                
+ </table>
+</cfif>
+
+
 <!--- Timers --->
 <cfif timers.recordcount>
 	<p class="cfdebug"><hr/><b class="cfdebuglge">CFTimer Times</b></p>

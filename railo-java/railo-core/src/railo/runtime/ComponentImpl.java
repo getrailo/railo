@@ -82,7 +82,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     private Map _data;//new HashMap();
     private Map _udfs;
 
-    ComponentImpl top=this;
+    
+
+	ComponentImpl top=this;
     ComponentImpl base;
     //private ComponentPage componentPage;
     private PageSource pageSource;
@@ -1952,5 +1954,16 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			//print.printST(t);
 		}
 		
+	}
+	
+	@Override
+	public int hashCode() {
+		print.ds();
+		return super.hashCode();
+	}
+	
+	public boolean equals(Object obj){
+		print.ds();
+		return super.equals(obj);
 	}
 }

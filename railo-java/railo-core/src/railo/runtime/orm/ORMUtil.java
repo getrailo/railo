@@ -15,6 +15,7 @@ import railo.runtime.op.Operator;
 import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.ComponentUtil;
 
@@ -55,22 +56,22 @@ public class ORMUtil {
 		config.resetORMEngine(pc);
 	}
 	
-	public static void printError(Throwable t, ORMEngine engine) throws ORMException {
+	public static void printError(Throwable t, ORMEngine engine) {
 		printError(t, engine, t.getMessage());
 	}
 
-	public static void printError(String msg, ORMEngine engine) throws ORMException {
+	public static void printError(String msg, ORMEngine engine) {
 		printError(null, engine, msg);
 	}
 	
 
-	private static void printError(Throwable t, ORMEngine engine,String msg) throws ORMException {
+	private static void printError(Throwable t, ORMEngine engine,String msg) {
 		SystemOut.printDate("{"+engine.getLabel().toUpperCase()+"} - "+msg,SystemOut.ERR);
 		if(t==null)t=new Throwable();
 		t.printStackTrace(SystemOut.getPrinWriter(SystemOut.ERR));
 	}
 
-	private ThreadLocal<HashSet<Object>> _equuals=new ThreadLocal<HashSet<Object>>();
+	//private ThreadLocal<HashSet<Object>> _equuals=new ThreadLocal<HashSet<Object>>();
 	
 	public static boolean equals(Object left, Object right) {
 		HashSet<Object> done=new HashSet<Object>();
@@ -135,10 +136,10 @@ public class ORMUtil {
 		if(!cpl.getPageSource().equals(cpr.getPageSource())) return false;
 		Property[] props = cpl.getProperties(true);
 		Object l,r;
-		props=HBMCreator.getIds(props);
+		props=HBMCreator.getIds(props,null,true);
 		for(int i=0;i<props.length;i++){
-			l=cpl.getComponentScope().get(props[i].getName(),null);
-			r=cpr.getComponentScope().get(props[i].getName(),null);
+			l=cpl.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
+			r=cpr.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
 			if(!_equals(done,l, r)) return false;
 		}
 		return true;

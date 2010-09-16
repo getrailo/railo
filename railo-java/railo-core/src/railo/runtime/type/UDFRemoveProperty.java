@@ -87,8 +87,9 @@ public class UDFRemoveProperty extends UDFGSProperty {
 	}
 	
 	
-	private boolean remove(PageContext pageContext, Object value) {
+	private boolean remove(PageContext pageContext, Object value) throws PageException {
 		Object propValue = component.getComponentScope().get(propName,null);
+		value=cast(arguments[0],value,1);
 		
 		// struct
 		if(isStruct()) {

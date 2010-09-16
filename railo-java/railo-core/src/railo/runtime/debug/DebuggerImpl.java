@@ -182,7 +182,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	        		type=StringUtil.toStringEmptyIfNull(pe.getTypeAsString());
 	        		msg=StringUtil.toStringEmptyIfNull(pe.getMessage());
 	        		detail=StringUtil.toStringEmptyIfNull(pe.getDetail());
-	        		templ=getTemplate(pageContext.getConfig(),pe);
+	        		templ=getTemplate(pageContext.getConfig(),pe,true);
 	        		tableExceptions.appendRow(0, 
 	        				new SimpleDumpData(type),
 	        				new SimpleDumpData(msg),
@@ -275,7 +275,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		table.appendRow(1,new SimpleDumpData("Pages"),boxPage);
 		
 		
-		if(tableExceptions!=null && !tableExceptions.isEmpty())table.appendRow(1,new SimpleDumpData("Cached Exceptions"),tableExceptions);
+		if(tableExceptions!=null && !tableExceptions.isEmpty())table.appendRow(1,new SimpleDumpData("Caught Exceptions"),tableExceptions);
 		if(tableTimer!=null && !tableTimer.isEmpty())table.appendRow(1,new SimpleDumpData("Timers"),tableTimer);
 		if(tableTraces!=null && !tableTraces.isEmpty())table.appendRow(1,new SimpleDumpData("Traces"),tableTraces);
 		if(tableQuery!=null && !tableQuery.isEmpty())table.appendRow(1,new SimpleDumpData("Queries"),tableQuery);
@@ -283,12 +283,14 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		return table;
 	}
 
-	private String getTemplate(Config config,PageException pe) {
+	private String getTemplate(Config config,PageException pe,boolean withLine) {
 		try {
 			Array arr = ((PageExceptionImpl)pe).getTagContext(config);
 			Struct sct=Caster.toStruct(arr.getE(1));
-			return Caster.toString(sct.get("template"));
 			
+			String templ= Caster.toString(sct.get("template"));
+			if(withLine)templ +=":"+ Caster.toString(sct.get("line"));
+			return templ;
 		} 
 		catch (Throwable t) {print.e(t);}
 		

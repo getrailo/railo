@@ -12,6 +12,9 @@ import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.exp.UDFCasterException;
+import railo.runtime.op.Decision;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.util.ComponentUtil;
 
 public abstract class UDFGSProperty extends UDFImpl {
@@ -192,6 +195,14 @@ public abstract class UDFGSProperty extends UDFImpl {
 	 */
 	public Struct getMetaData(PageContext pc) throws PageException {
 		return UDFImpl.getMetaData(pc, this);
+	}
+	
+	
+
+	final Object cast(FunctionArgument arg,Object value, int index) throws PageException {
+		if(Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) 
+			return value;
+		throw new UDFCasterException(this,arg,value,index);
 	}
 
 }

@@ -118,6 +118,8 @@ public class UDFAddProperty extends UDFGSProperty {
 		
 		// struct
 		if(this.arguments.length==2) {
+			key=cast(arguments[0],key,1);
+			value=cast(arguments[1],value,2);
 			if(propValue==null){
 				HashMap map=new HashMap();
 				component.getComponentScope().setEL(propName,map);
@@ -131,6 +133,7 @@ public class UDFAddProperty extends UDFGSProperty {
 			}
 		}
 		else {
+			value=cast(arguments[0],value,1);
 			if(propValue==null){
 				Array arr=new ArrayImpl();
 				component.getComponentScope().setEL(propName,arr);

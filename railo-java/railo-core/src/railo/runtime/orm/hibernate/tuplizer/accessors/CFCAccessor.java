@@ -5,6 +5,8 @@ import org.hibernate.property.Getter;
 import org.hibernate.property.PropertyAccessor;
 import org.hibernate.property.Setter;
 
+import railo.print;
+
 public class CFCAccessor implements PropertyAccessor {
 	
 	public CFCAccessor(){
