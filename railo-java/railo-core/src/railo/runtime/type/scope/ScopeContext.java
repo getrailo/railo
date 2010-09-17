@@ -166,7 +166,7 @@ public final class ScopeContext {
 			Map context=getSubMap(cfClientContextes,appContext.getName());
 			
 		// get Client
-			String storage = StringUtil.toLowerCase(StringUtil.toStringEmptyIfNull(appContext.getClientstorage()));
+			String storage = StringUtil.toLowerCase(StringUtil.emptyIfNull(appContext.getClientstorage()));
 			client=(Client) context.get(pc.getCFID()+storage);
 			
 			if(client==null) {

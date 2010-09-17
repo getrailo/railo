@@ -140,6 +140,16 @@ public final class StringUtil {
 		return o.toString();
 	}
 	
+	public static String emptyIfNull(String str) {
+		if(str==null)return "";
+		return str;
+	}
+	
+	public static String emptyIfNull(Collection.Key key) {
+		if(key==null)return "";
+		return key.getString();
+	}
+	
 	/**
 	 * escape all special characters of the regular expresson language
 	 * @param str String to escape

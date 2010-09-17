@@ -41,13 +41,13 @@ public class ResourceExecutionLog implements ExecutionLog {
 		createHeader(header,"remote-user",req.getRemoteUser());
 		createHeader(header,"remote-addr",req.getRemoteAddr());
 		createHeader(header,"remote-host",req.getRemoteHost());
-		createHeader(header,"script-name",StringUtil.toStringEmptyIfNull(req.getContextPath())+StringUtil.toStringEmptyIfNull(req.getServletPath()));
+		createHeader(header,"script-name",StringUtil.emptyIfNull(req.getContextPath())+StringUtil.emptyIfNull(req.getServletPath()));
 		createHeader(header,"server-name",req.getServerName());
 		createHeader(header,"protocol",req.getProtocol());
 		createHeader(header,"server-port",Caster.toString(req.getServerPort()));
 		createHeader(header,"path-info",StringUtil.replace(
-				StringUtil.toStringEmptyIfNull(req.getRequestURI()), 
-				StringUtil.toStringEmptyIfNull(req.getServletPath()),"", true));
+				StringUtil.emptyIfNull(req.getRequestURI()), 
+				StringUtil.emptyIfNull(req.getServletPath()),"", true));
 		//createHeader(header,"path-translated",pc.getBasePageSource().getDisplayPath());
 		createHeader(header,"query-string",req.getQueryString());
 		
@@ -108,7 +108,7 @@ public class ResourceExecutionLog implements ExecutionLog {
 	private void createHeader(StringBuffer sb,String name, String value) {
 		sb.append(name);
 		sb.append(":");
-		sb.append(StringUtil.toStringEmptyIfNull(value));
+		sb.append(StringUtil.emptyIfNull(value));
 		sb.append("\n");
 	}
 

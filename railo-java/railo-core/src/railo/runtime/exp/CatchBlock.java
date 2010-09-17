@@ -139,12 +139,12 @@ public class CatchBlock extends StructImpl implements Castable{
 
 	private Object doSpecialItem(Collection.Key key) {
 		
-		if(MESSAGE.equals(key)) 		return setEL(key, StringUtil.toStringEmptyIfNull(pe.getMessage()));
-		if(DETAIL.equals(key)) 		return setEL(key, StringUtil.toStringEmptyIfNull(pe.getDetail()));
-		if(ERROR_CODE.equals(key)) 	return setEL(key, StringUtil.toStringEmptyIfNull(pe.getErrorCode()));
-		if(EXTENDED_INFO.equals(key)) 	return setEL(key, StringUtil.toStringEmptyIfNull(pe.getExtendedInfo()));
-		if(TYPE.equals(key)) 			return setEL(key, StringUtil.toStringEmptyIfNull(pe.getTypeAsString()));
-		if(STACK_TRACE.equals(key)) 	return setEL(key, StringUtil.toStringEmptyIfNull(pe.getStackTraceAsString()));
+		if(MESSAGE.equals(key)) 		return setEL(key, StringUtil.emptyIfNull(pe.getMessage()));
+		if(DETAIL.equals(key)) 		return setEL(key, StringUtil.emptyIfNull(pe.getDetail()));
+		if(ERROR_CODE.equals(key)) 	return setEL(key, StringUtil.emptyIfNull(pe.getErrorCode()));
+		if(EXTENDED_INFO.equals(key)) 	return setEL(key, StringUtil.emptyIfNull(pe.getExtendedInfo()));
+		if(TYPE.equals(key)) 			return setEL(key, StringUtil.emptyIfNull(pe.getTypeAsString()));
+		if(STACK_TRACE.equals(key)) 	return setEL(key, StringUtil.emptyIfNull(pe.getStackTraceAsString()));
 		if(ADDITIONAL.equals(key)) 		return setEL(key, pe.getAdditional());
 		if(TAG_CONTEXT.equals(key)) 	return setEL(key, pe.getTagContext(config)); 	
 		return null;

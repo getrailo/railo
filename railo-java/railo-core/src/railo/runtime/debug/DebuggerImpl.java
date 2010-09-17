@@ -177,9 +177,9 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	        	while(it.hasNext()) {
 	        		block=it.next();
 	        		pe=block.getPageException();
-	        		type=StringUtil.toStringEmptyIfNull(pe.getTypeAsString());
-	        		msg=StringUtil.toStringEmptyIfNull(pe.getMessage());
-	        		detail=StringUtil.toStringEmptyIfNull(pe.getDetail());
+	        		type=StringUtil.emptyIfNull(pe.getTypeAsString());
+	        		msg=StringUtil.emptyIfNull(pe.getMessage());
+	        		detail=StringUtil.emptyIfNull(pe.getDetail());
 	        		templ=getTemplate(pageContext.getConfig(),pe,true);
 	        		tableExceptions.appendRow(0, 
 	        				new SimpleDumpData(type),

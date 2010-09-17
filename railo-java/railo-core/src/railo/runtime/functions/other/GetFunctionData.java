@@ -68,9 +68,9 @@ public final class GetFunctionData implements Function {
 	private static Struct javaBasedFunction(FunctionLibFunction function) throws PageException {
 		Struct sct=new StructImpl();
         sct.set(NAME,function.getName());
-        sct.set(DESCRIPTION,StringUtil.toStringEmptyIfNull(function.getDescription()));
-        sct.set(RETURN_TYPE,StringUtil.toStringEmptyIfNull(function.getReturnTypeAsString()));
-        sct.set(ARGUMENT_TYPE,StringUtil.toStringEmptyIfNull(function.getArgTypeAsString()));
+        sct.set(DESCRIPTION,StringUtil.emptyIfNull(function.getDescription()));
+        sct.set(RETURN_TYPE,StringUtil.emptyIfNull(function.getReturnTypeAsString()));
+        sct.set(ARGUMENT_TYPE,StringUtil.emptyIfNull(function.getArgTypeAsString()));
         sct.set(ARG_MIN,Caster.toDouble(function.getArgMin()));
         sct.set(ARG_MAX,Caster.toDouble(function.getArgMax()));
         sct.set(TYPE,"java");
@@ -84,8 +84,8 @@ public final class GetFunctionData implements Function {
 				FunctionLibFunctionArg arg=args.get(i);
 				Struct _arg=new StructImpl();
 				_arg.set(REQUIRED,arg.getRequired()?Boolean.TRUE:Boolean.FALSE);
-				_arg.set(TYPE,StringUtil.toStringEmptyIfNull(arg.getTypeAsString()));
-				_arg.set(NAME,StringUtil.toStringEmptyIfNull(arg.getName()));
+				_arg.set(TYPE,StringUtil.emptyIfNull(arg.getTypeAsString()));
+				_arg.set(NAME,StringUtil.emptyIfNull(arg.getName()));
 				_arg.set(DESCRIPTION,StringUtil.toStringEmptyIfNull(arg.getDescription()));
 				
 				
@@ -107,8 +107,8 @@ public final class GetFunctionData implements Function {
 		sct.set(NAME,function.getName());
         sct.set(ARGUMENT_TYPE,"fixed");
         
-        sct.set(DESCRIPTION,StringUtil.toStringEmptyIfNull(udf.getHint()));
-        sct.set(RETURN_TYPE,StringUtil.toStringEmptyIfNull(udf.getReturnTypeAsString()));
+        sct.set(DESCRIPTION,StringUtil.emptyIfNull(udf.getHint()));
+        sct.set(RETURN_TYPE,StringUtil.emptyIfNull(udf.getReturnTypeAsString()));
         sct.set(TYPE,"cfml");
         sct.set(SOURCE,udf.getPageSource().getDisplayPath());
 		
@@ -123,9 +123,9 @@ public final class GetFunctionData implements Function {
 			if(fa.isRequired()) min++;
 			max++;
 			_arg.set(REQUIRED,fa.isRequired()?Boolean.TRUE:Boolean.FALSE);
-			_arg.set(TYPE,StringUtil.toStringEmptyIfNull(fa.getTypeAsString()));
-			_arg.set(NAME,StringUtil.toStringEmptyIfNull(fa.getName()));
-			_arg.set(DESCRIPTION,StringUtil.toStringEmptyIfNull(fa.getHint()));
+			_arg.set(TYPE,StringUtil.emptyIfNull(fa.getTypeAsString()));
+			_arg.set(NAME,StringUtil.emptyIfNull(fa.getName()));
+			_arg.set(DESCRIPTION,StringUtil.emptyIfNull(fa.getHint()));
 			
 			
 			_args.append(_arg);

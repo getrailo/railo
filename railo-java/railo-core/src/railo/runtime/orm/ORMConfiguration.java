@@ -394,20 +394,20 @@ public class ORMConfiguration {
 		}
 		Struct sct=new StructImpl();
 		sct.setEL(AUTO_GEN_MAP,this.autogenmap());
-		sct.setEL(CATALOG,StringUtil.toStringEmptyIfNull(getCatalog()));
+		sct.setEL(CATALOG,StringUtil.emptyIfNull(getCatalog()));
 		sct.setEL(CFC_LOCATION,arrLocs);
 		sct.setEL(DB_CREATE,dbCreateAsString(getDbCreate()));
-		sct.setEL(DIALECT,StringUtil.toStringEmptyIfNull(getDialect()));
+		sct.setEL(DIALECT,StringUtil.emptyIfNull(getDialect()));
 		sct.setEL(EVENT_HANDLING,eventHandling());
 		sct.setEL(FLUSH_AT_REQUEST_END,flushAtRequestEnd());
 		sct.setEL(LOG_SQL,logSQL());
 		sct.setEL(SAVE_MAPPING,saveMapping());
-		sct.setEL(SCHEMA,StringUtil.toStringEmptyIfNull(getSchema()));
+		sct.setEL(SCHEMA,StringUtil.emptyIfNull(getSchema()));
 		sct.setEL(SECONDARY_CACHE_ENABLED,secondaryCacheEnabled());
 		sct.setEL(SQL_SCRIPT,StringUtil.toStringEmptyIfNull(getSqlScript()));
 		sct.setEL(USE_DB_FOR_MAPPING,useDBForMapping());
 		sct.setEL(CACHE_CONFIG,getAbsolutePath(getCacheConfig()));
-		sct.setEL(CACHE_PROVIDER,StringUtil.toStringEmptyIfNull(getCacheProvider()));
+		sct.setEL(CACHE_PROVIDER,StringUtil.emptyIfNull(getCacheProvider()));
 		sct.setEL(ORM_CONFIG,getAbsolutePath(getOrmConfig()));
 		
 		

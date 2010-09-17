@@ -63,7 +63,7 @@ public final class WebCrawler {
 					url.getProtocol(),
 					url.getHost(),
 					url.getPort(),
-					path+"/"+StringUtil.toStringEmptyIfNull(url.getQuery())));
+					path+"/"+StringUtil.emptyIfNull(url.getQuery())));
 		}
 		//print.out("rem:"+HTTPUtil.removeRef(url));
 		return HTTPUtil.removeRef(url);

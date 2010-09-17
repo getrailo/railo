@@ -232,7 +232,7 @@ public abstract class PageExceptionImpl extends PageException {
 			template=trace.getFileName();
 			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template).equals("java")) continue;
 			// content
-			if(!StringUtil.toStringEmptyIfNull(tlast).equals(template))index++;
+			if(!StringUtil.emptyIfNull(tlast).equals(template))index++;
 			
 			String[] content=null;
 			try {
@@ -305,7 +305,7 @@ public abstract class PageExceptionImpl extends PageException {
 			tlast=template;
 			template=trace.getFileName();
 			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template).equals("java")) continue;
-			if(!StringUtil.toStringEmptyIfNull(tlast).equals(template))index++;
+			if(!StringUtil.emptyIfNull(tlast).equals(template))index++;
 			
 		}
 		return index;
@@ -325,7 +325,7 @@ public abstract class PageExceptionImpl extends PageException {
 		struct.setEL("HTTPReferer",pc.cgiScope().get("HTTP_REFERER",""));
 		struct.setEL("mailto",ep.getMailto());
 		struct.setEL("message",getMessage());
-		struct.setEL("QueryString",StringUtil.toStringEmptyIfNull(pc. getHttpServletRequest().getQueryString()));
+		struct.setEL("QueryString",StringUtil.emptyIfNull(pc. getHttpServletRequest().getQueryString()));
 		struct.setEL("RemoteAddress",pc.cgiScope().get("REMOTE_ADDR",""));
 		struct.setEL("RootCause",getCatchBlock(pc));
 		struct.setEL("StackTrace",getStackTraceAsString());
