@@ -21,7 +21,6 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
-import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
@@ -495,13 +494,13 @@ public final class ComponentUtil {
         		}
         	}
         }
-        // MUST remove this
+        /* / MUST remove this
         Config config = ThreadLocalPageContext.getConfig();
         if(config!=null)
             SystemOut.print(config.getOutWriter(),_interface.toString().toLowerCase());
         else
         	SystemOut.print("\n"+_interface.toString().toLowerCase()+"\n");
-        //////////////////
+        /////////////////*/
         
 		return  MD5.getDigestAsString(_interface.toString().toLowerCase());
 	}
