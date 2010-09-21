@@ -2103,7 +2103,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
 	 */
 	public Object call(PageContext pc, Key methodName, Object[] arguments) throws PageException {
-		return Reflector.callMethod(this,methodName.getString(),arguments);
+		return Reflector.callMethod(this,methodName,arguments);
 	}
 
 	/**

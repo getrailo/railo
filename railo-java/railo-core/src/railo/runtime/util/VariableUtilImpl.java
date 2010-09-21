@@ -163,7 +163,7 @@ public final class VariableUtilImpl implements VariableUtil {
 				if(rtn!=null) return rtn;
 			}
 			catch(Throwable t) {}
-			return Reflector.getProperty(coll,key.getString(),defaultValue);
+			return Reflector.getField(coll,key.getString(),defaultValue);
 			//return rtn;
 		} 
 		// List
@@ -636,7 +636,7 @@ public final class VariableUtilImpl implements VariableUtil {
 		}
         // call Object Wrapper      
 	    if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
-	    	if(!(coll instanceof Undefined))return Reflector.callMethod(coll,key.getString(),args);
+	    	if(!(coll instanceof Undefined))return Reflector.callMethod(coll,key,args);
 	    }
 		throw new ExpressionException("No matching Method/Function for "+key+"("+Reflector.getDspMethods(Reflector.getClasses(args))+")");
 	}

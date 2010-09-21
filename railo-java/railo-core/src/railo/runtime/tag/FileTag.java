@@ -25,6 +25,8 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -46,6 +48,7 @@ public final class FileTag extends TagImpl {
 	public static final int NAMECONFLICT_SKIP=2;
 	public static final int NAMECONFLICT_OVERWRITE=3;
 	public static final int NAMECONFLICT_MAKEUNIQUE=4;
+	private static final Key SET_ACL = KeyImpl.getInstance("setACL");
     
     //private static final String DEFAULT_ENCODING=Charset.getDefault();
 
@@ -423,7 +426,7 @@ public final class FileTag extends TagImpl {
 		
 		if("s3".equalsIgnoreCase(scheme)){
 			try {
-				Reflector.callMethod(res, "setACL", new Object[]{Caster.toInteger(acl)});
+				Reflector.callMethod(res, SET_ACL, new Object[]{Caster.toInteger(acl)});
 			} 
 			catch (PageException e) {}
 		}

@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
@@ -366,6 +367,7 @@ public final class Reflector {
 	    args=cleanArgs(args);
 		
 		Method[] methods = mStorage.getMethods(clazz,methodName,args.length);//getDeclaredMethods(clazz);
+		//print.ds(methodName.getString());
 		if(methods!=null) {
 		    Class[] clazzArgs = getClasses(args);
 			// exact comparsion
@@ -536,10 +538,14 @@ public final class Reflector {
 	 * @throws PageException
 	 */
 	public static Object callMethod(Object obj, String methodName, Object[] args) throws PageException {
+		return callMethod(obj, KeyImpl.init(methodName), args);
+	}
+	
+	public static Object callMethod(Object obj, Collection.Key methodName, Object[] args) throws PageException {
 		if(obj==null) {
 			throw new ExpressionException("can't call method ["+methodName+"] on object, object is null");
 		}
-		MethodInstance mi=getMethodInstanceEL(obj.getClass(), KeyImpl.init(methodName), args);
+		MethodInstance mi=getMethodInstanceEL(obj.getClass(), methodName, args);
 		if(mi==null)
 		    throw throwCall(obj,methodName,args);
 	    try {
