@@ -9,7 +9,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -46,7 +45,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 	 * @param nodeMap
 	 */
 	public XMLAttributes(Document owner,NamedNodeMap nodeMap,boolean caseSensitive) {
-		this.owner=owner;if(nodeMap==null) print.ds();
+		this.owner=owner;
 		this.nodeMap=nodeMap;
 		this.caseSensitive=caseSensitive;
 	}

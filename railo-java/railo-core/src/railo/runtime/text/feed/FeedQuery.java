@@ -1,6 +1,5 @@
 package railo.runtime.text.feed;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
@@ -213,8 +212,6 @@ public class FeedQuery {
 		
 		String version=Caster.toString(data.get(VERSION,""),"");
 		Array items=null;
-		print.o("version:"+version);
-		print.o(data.keysAsString());
 		if(StringUtil.startsWithIgnoreCase(version,"rss") || StringUtil.startsWithIgnoreCase(version,"rdf"))	{
 			items=Caster.toArray(data.get(ITEM, null),null);
 			if(items==null) {
@@ -245,7 +242,6 @@ public class FeedQuery {
 			qry.addRow();
 			row++;
 			keys=item.keys();
-			print.o(keys);
 			for(int y=0;y<keys.length;y++) {
 				if(isRss)setQueryValueRSS(qry,keys[y],item.get(keys[y],null),row);
 				else setQueryValueAtom(qry,keys[y],item.get(keys[y],null),row);
