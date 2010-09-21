@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.type.http.HTTPResource;
@@ -744,10 +745,12 @@ public final class Feed extends TagImpl	{
 		else is=new InputSource(r=IOUtil.getReader(source, charset));
 		is.setSystemId(source.getPath());
 		
+		print.e("read:"+source);
 		try{
 			FeedHandler feed=new FeedHandler(source);
 			Struct data = feed.getData();
-			
+			//print.e(data.keys());
+			//print.e(data);
 			// properties
 			if(properties!=null) {
 				String strProp = Caster.toString(properties,null);
