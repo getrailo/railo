@@ -64,7 +64,9 @@ import railo.runtime.cache.ServerCacheConnection;
 import railo.runtime.cfx.customtag.CFXTagClass;
 import railo.runtime.cfx.customtag.CPPCFXTagClass;
 import railo.runtime.cfx.customtag.JavaCFXTagClass;
+import railo.runtime.component.ImportDefintion;
 import railo.runtime.config.ajax.AjaxFactory;
+import railo.runtime.config.component.ComponentFactory;
 import railo.runtime.crypt.BlowfishEasy;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
@@ -955,7 +957,8 @@ public final class ConfigWebFactory {
         
         Resource cfcDir = configDir.getRealResource("components");
         if(!cfcDir.exists())cfcDir.mkdirs();
-
+        
+       
         
         /*TrustManager[] trustAllCerts = new TrustManager[]{
 		        new X509TrustManager() {
@@ -1313,6 +1316,20 @@ public final class ConfigWebFactory {
     // Plugin
         Resource pluginDir = adminDir.getRealResource("plugin");
         if(!pluginDir.exists())pluginDir.mkdirs();
+        
+        
+     // deploy org.railo.cfml components
+      	if(config instanceof ConfigWeb){
+      		boolean doNew=doNew(configDir);
+      		ImportDefintion _import = config.getComponentDefaultImport();
+      		String path = _import.getPackageAsPath();
+      		Resource components = config.getConfigDir().getRealResource("components");
+      		Resource dir = components.getRealResource(path);
+      		dir.mkdirs();
+      		//print.o(dir);
+      		ComponentFactory.deploy(dir, doNew);
+      	}
+        
 
 	}
 
@@ -3470,8 +3487,6 @@ public final class ConfigWebFactory {
       	    config.setComponentDataMemberDefaultAccess(configServer.getComponentDataMemberDefaultAccess());  
       	    config.setTriggerComponentDataMember(configServer.getTriggerComponentDataMember());  
       	}
-      	
-      	
       	
      // Web Mapping
 
