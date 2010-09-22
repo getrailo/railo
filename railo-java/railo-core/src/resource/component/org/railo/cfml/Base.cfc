@@ -184,7 +184,7 @@
 				</cfhttp>
 				
 				<cfif structkeyexists(tagAttributes,"name") and tagAttributes["name"] neq "">
-	                  <cfset result.setResult(StructFind(local,tagAttributes["name"]))>
+	                  <cfset result.setResult(StructFind(variables,tagAttributes["name"]))>
 				</cfif>
 				<cfset result.setPrefix(tagResult)>
 				
