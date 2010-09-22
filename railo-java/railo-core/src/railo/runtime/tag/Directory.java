@@ -61,6 +61,10 @@ public final class Directory extends TagImpl  {
 	private static final Key ATTRIBUTES = KeyImpl.getInstance("attributes");
 	private static final Key DIRECTORY = KeyImpl.getInstance("directory");
 	
+
+	private static final Key SET_ACL = KeyImpl.getInstance("setACL");
+	private static final Key SET_STORAGE = KeyImpl.getInstance("setStorage");
+	
 	public static final int LIST_INFO_QUERY_ALL = 1;
 	public static final int LIST_INFO_QUERY_NAME = 2;
 	public static final int LIST_INFO_ARRAY_NAME = 4;
@@ -564,9 +568,9 @@ public final class Directory extends TagImpl  {
 		
 		if("s3".equalsIgnoreCase(scheme)){
 			try {
-				Reflector.callMethod(res, "setACL", new Object[]{Caster.toInteger(acl)});
+				Reflector.callMethod(res, SET_ACL, new Object[]{Caster.toInteger(acl)});
 				if(storage!=S3Constants.STORAGE_UNKNOW)
-					Reflector.callMethod(res, "setStorage", new Object[]{Caster.toInteger(storage)});
+					Reflector.callMethod(res, SET_STORAGE, new Object[]{Caster.toInteger(storage)});
 			} 
 			catch (PageException e) {}
 		}

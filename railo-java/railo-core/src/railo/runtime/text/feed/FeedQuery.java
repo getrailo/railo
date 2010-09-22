@@ -49,6 +49,8 @@ public class FeedQuery {
 	public static final Collection.Key PUBLISHEDDATE = KeyImpl.getInstance("PUBLISHEDDATE");
 	public static final Collection.Key PUBLISHED = KeyImpl.getInstance("PUBLISHED");
 	public static final Collection.Key PUBDATE = KeyImpl.getInstance("pubDate");
+	public static final Collection.Key RDF_ABOUT = KeyImpl.getInstance("rdf:about");
+	
 	public static final Collection.Key RIGHTS = KeyImpl.getInstance("RIGHTS");
 	public static final Collection.Key RSSLINK = KeyImpl.getInstance("RSSLINK");
 	public static final Collection.Key SOURCE = KeyImpl.getInstance("SOURCE");
@@ -210,8 +212,14 @@ public class FeedQuery {
 		
 		String version=Caster.toString(data.get(VERSION,""),"");
 		Array items=null;
-		if(StringUtil.startsWithIgnoreCase(version,"rss"))	{
+		if(StringUtil.startsWithIgnoreCase(version,"rss") || StringUtil.startsWithIgnoreCase(version,"rdf"))	{
 			items=Caster.toArray(data.get(ITEM, null),null);
+			if(items==null) {
+				Struct sct=Caster.toStruct(data.get(version,null),null,false);
+				if(sct!=null){
+					items=Caster.toArray(sct.get(ITEM, null),null);
+				}
+			}
 			return toQuery(true,qry,items);
 		}
 		else if(StringUtil.startsWithIgnoreCase(version,"atom"))	{
@@ -383,13 +391,17 @@ public class FeedQuery {
 		else if(key.equals(PUBDATE)) {
 			qry.setAtEL(PUBLISHEDDATE, row, getValue(value));
 		}
+		else if(key.equals(RDF_ABOUT)) {
+			qry.setAtEL(URI, row, getValue(value));
+		}
 		else if(key.equals(LINK)) {
 			
 			Struct sct=toStruct(value);
 			
 			if(sct!=null){
 				qry.setAtEL(RSSLINK, row, getValue(sct));
-				qry.setAtEL(URI, row, sct.get("rdf:about",null));
+				Object v = sct.get(RDF_ABOUT,null);
+				if(v!=null) qry.setAtEL(URI, row, v);
 			}
 			else qry.setAtEL(RSSLINK, row, getValue(value));
 		}

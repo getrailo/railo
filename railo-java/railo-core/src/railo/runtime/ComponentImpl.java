@@ -1921,6 +1921,8 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		try {
 			// MUST nicht gut
 			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(ThreadLocalPageContext.get(),in.readUTF());
+			
+			
 			this._data=other._data;
 			this._udfs=other._udfs;
 			this.afterConstructor=other.afterConstructor;

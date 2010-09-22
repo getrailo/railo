@@ -28,7 +28,7 @@ public final class JavaCast implements Function {
 			return toArray(pc,type, lcType, obj);
 			
 		}
-		Class clazz = toClass(pc, lcType, lcType);
+		Class clazz = toClass(pc, lcType, type);
 		return to(pc,obj,clazz);
 		
 	}

@@ -138,7 +138,7 @@ public final class Reflector {
             if(src==trg) return true;
             src=src.getSuperclass();
         }
-        return false;
+        return trg==Object.class;
     }
     
     private static boolean _checkInterfaces(Class src, String trg) {
@@ -366,9 +366,11 @@ public final class Reflector {
 	    args=cleanArgs(args);
 		
 		Method[] methods = mStorage.getMethods(clazz,methodName,args.length);//getDeclaredMethods(clazz);
+		
 		if(methods!=null) {
 		    Class[] clazzArgs = getClasses(args);
 			// exact comparsion
+		    //print.o("exact:"+methodName);
 		    outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
 					Class[] parameterTypes = methods[i].getParameterTypes();
@@ -379,16 +381,23 @@ public final class Reflector {
 				}
 			}
 			// like comparsion
+		    MethodInstance mi=null;
+		    //print.o("like:"+methodName);
 		    outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
 					Class[] parameterTypes = methods[i].getParameterTypes();
 					for(int y=0;y<parameterTypes.length;y++) {
 						if(!like(clazzArgs[y],toReferenceClass(parameterTypes[y]))) continue outer;
 					}
-					return new MethodInstance(methods[i],args);
+					mi=create(mi,methods[i],args);
 				}
-			}	
+			}
+		    if(mi!=null) return mi;
+		    
+		    
 			// convert comparsion
+		    //print.o("convert:"+methodName);
+		    mi=null;
 			outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
 					Class[] parameterTypes = methods[i].getParameterTypes();
@@ -402,14 +411,33 @@ public final class Reflector {
 						}
 						//if(newArgs[y]==null) continue outer;
 					}
-					return new MethodInstance(methods[i],newArgs);
+					mi=create(mi,methods[i],newArgs);
+					//return new MethodInstance(methods[i],newArgs);
 				}
 			}
+		    if(mi!=null) return mi;
 		}
 		return null;
 	}
 
-    /**
+    private static MethodInstance create(MethodInstance existing, Method method, Object[] args) {
+		if(existing==null) return new MethodInstance(method,args);
+    	Class[] exTypes = existing.getMethod().getParameterTypes();
+    	Class[] nwTypes = method.getParameterTypes();
+		for(int i=0;i<exTypes.length;i++){
+			if(exTypes[i]==nwTypes[i]) continue;
+			if(isInstaneOf(exTypes[i], nwTypes[i])){
+				return existing;
+			}
+			if(isInstaneOf(nwTypes[i], exTypes[i])){
+				return  new MethodInstance(method,args);
+			}
+		}
+    	return existing;
+	}
+    
+
+	/**
      * gets the MethodInstance matching given Parameter
      * @param clazz Class Of the Method to get
      * @param methodName Name of the Method to get
@@ -536,10 +564,14 @@ public final class Reflector {
 	 * @throws PageException
 	 */
 	public static Object callMethod(Object obj, String methodName, Object[] args) throws PageException {
+		return callMethod(obj, KeyImpl.init(methodName), args);
+	}
+	
+	public static Object callMethod(Object obj, Collection.Key methodName, Object[] args) throws PageException {
 		if(obj==null) {
 			throw new ExpressionException("can't call method ["+methodName+"] on object, object is null");
 		}
-		MethodInstance mi=getMethodInstanceEL(obj.getClass(), KeyImpl.init(methodName), args);
+		MethodInstance mi=getMethodInstanceEL(obj.getClass(), methodName, args);
 		if(mi==null)
 		    throw throwCall(obj,methodName,args);
 	    try {

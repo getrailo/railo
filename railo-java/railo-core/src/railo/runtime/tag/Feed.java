@@ -747,7 +747,8 @@ public final class Feed extends TagImpl	{
 		try{
 			FeedHandler feed=new FeedHandler(source);
 			Struct data = feed.getData();
-			
+			//print.e(data.keys());
+			//print.e(data);
 			// properties
 			if(properties!=null) {
 				String strProp = Caster.toString(properties,null);

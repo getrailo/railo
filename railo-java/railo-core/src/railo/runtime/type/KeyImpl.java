@@ -20,7 +20,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable {
 	private String key;
 	private String lcKey;
 	private String ucKey;
-	private int hashcode;
+	//private int hashcode;
 	
 	
 	
@@ -33,12 +33,69 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable {
 		//this.index=count++;
 		
 		this.key=key;
-		this.lcKey=StringUtil.toLowerCase(key);
-		hashcode = lcKey.hashCode();//&0x7FFFFFFF;
+		this.lcKey=StringUtil.toLowerCase(key).intern();
 		keys.put(key,this);
-		//print.out(key+":"+(count++));
+		
 	}
+	/*public static void main(String[] args) {
+		KeyImpl k1 = (KeyImpl) KeyImpl.init("an");
+		KeyImpl k2 = (KeyImpl) KeyImpl.init("c0");
+		KeyImpl k3 = (KeyImpl) KeyImpl.init("AN");
 
+		print.o(k1.equals(k2));
+		print.o(k1.equals(k3));
+		
+		long start=System.currentTimeMillis();
+		for(int i=0;i<10000000;i++){
+			k1.equals(k3);
+		}
+		print.o(System.currentTimeMillis()-start);
+
+
+		start=System.currentTimeMillis();
+		for(int i=0;i<10000000;i++){
+			k1.equals(k3);
+		}
+		print.o(System.currentTimeMillis()-start);
+
+		
+		
+		
+		start=System.currentTimeMillis();
+		for(int i=0;i<10000000;i++){
+			k1.equals(k2);
+		}
+		print.o(System.currentTimeMillis()-start);
+
+
+		start=System.currentTimeMillis();
+		for(int i=0;i<10000000;i++){
+			k1.equals(k2);
+		}
+		print.o(System.currentTimeMillis()-start);
+		
+	}*/
+
+	
+	/*private static int sunCRC32( byte[] ba )
+    {
+    // create a new CRC-calculating object
+    final CRC32 crc = new CRC32();
+    crc.update( ba );
+    // crc.update( int ) processes only the low order 8-bits. It actually expects an unsigned byte.
+    return ( int ) crc.getValue();
+    }*/
+	
+	/*private static int digest( byte[] theTextToDigestAsBytes )
+    {
+    final Adler32 digester = new Adler32();
+    digester.update( theTextToDigestAsBytes );
+    // digester.update( int ) processes only the low order 8-bits. It actually expects an unsigned byte.
+    // getValue produces a long to conform to the Checksum interface.
+    // Actual result is 32 bits long not 64.
+    return ( int ) digester.getValue();
+    }*/
+	
 	
 	/**
 	 * for dynamic loading of key objects
@@ -60,6 +117,9 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable {
 		Collection.Key k= (Key) keys.get(key);
 		if(k!=null) return k;
 		return new KeyImpl(key);
+		
+		
+		
 	}
 	
 	/**
@@ -114,34 +174,48 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable {
 		if(this==other) {
 			return true;
 		}
-		if(other!=null)return hashcode==other.hashCode();
-		if(other instanceof String)	{
-			return key.equalsIgnoreCase((String)other);
-		}
-		/*if(other instanceof KeyImpl)	{
-			//print.out("slow("+(slow++)+"):"+other);
-			return hashcode==(((KeyImpl)other).hashcode);
-		}
-		if(other instanceof String)	{
-			print.out("veryslow("+(slow++)+"):"+other);
-			return key.equalsIgnoreCase((String)other);
+		//if(other==null) return false;
+		/*if(hashcode!=other.hashCode()) {
+			return false;
 		}*/
+		//return lcKey==(((KeyImpl)other).lcKey);
+		
+		if(other instanceof KeyImpl)	{
+			//print.out("slow("+veryslow+":"+(slow++)+":"+fast+"):"+other);
+			return lcKey==(((KeyImpl)other).lcKey);
+		}
+		else if(other instanceof String)	{
+			//print.out("veryslow("+(veryslow++)+":"+fast+"):"+other);
+			return key.equalsIgnoreCase((String)other);
+		}
+		else if(other instanceof Key)	{
+			//print.out("veryslow("+(veryslow++)+":"+fast+"):"+other);
+			return lcKey.equalsIgnoreCase(((Key)other).getLowerString());
+		}
+		
 		return false;
 	}
 
-	public boolean equals(Key key) {
-		if(this==key) return true;
-		if(key!=null)return hashcode==key.hashCode();
-		return false;
-	}
+	/*public boolean equals(Key other) {
+		if(this==other) return true;
+		if(other==null) return false;
+		if(hashcode!=other.hashCode()) {
+			return false;
+		}
+		//return lcKey==(((KeyImpl)other).lcKey);
+		
+		if(other instanceof KeyImpl)	{
+			//print.out("slow("+veryslow+":"+(slow++)+":"+fast+"):"+other);
+			return lcKey==(((KeyImpl)other).lcKey);
+		}
+		return lcKey.equalsIgnoreCase(((Key)other).getLowerString());
+	}*/
 	
 	/**
 	 * @see railo.runtime.type.Collection.Key#equalsIgnoreCase(railo.runtime.type.Collection.Key)
 	 */
 	public boolean equalsIgnoreCase(Key key) {
-		if(this==key) return true;
-		if(key!=null)return hashcode==key.hashCode();
-		return false;
+		return equals(key);
 	}
 
 	/**
@@ -149,9 +223,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable {
 	 */
 	public int hashCode() {
 	
-		//print.err("count("+(test++)+"):"+key);
-		//print.dumpStack();
-		return hashcode;
+		return lcKey.hashCode();
 	}
 
 	/**
@@ -357,7 +429,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable {
 
 
 	public long sizeOf() {
-		return SizeOf.size(this.hashcode)+
+		return 
 		SizeOf.size(this.key)+
 		SizeOf.size(this.lcKey)+
 		SizeOf.size(this.ucKey);
