@@ -807,7 +807,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		
 		PageContext pc = ThreadLocalPageContext.get();
 		if(pc==null) {
-			CFMLEngineFactory.getInstance().getThreadPageContext();
+			pc=CFMLEngineFactory.getInstance().getThreadPageContext();
 			if(pc==null)throw new RuntimeException("cannot get pid for current thread");
 		}
 		return pc.getId();

@@ -15,10 +15,15 @@ import org.xml.sax.SAXException;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.util.ResourceSupport;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.Util;
+import railo.runtime.engine.CFMLEngineImpl;
+import railo.runtime.op.Caster;
+import railo.runtime.op.CreationImpl;
 import railo.runtime.type.Array;
+import railo.runtime.type.List;
 
 public final class S3Resource extends ResourceSupport {
 
@@ -58,9 +63,8 @@ public final class S3Resource extends ResourceSupport {
 			this.objectName="";
 		}
 		else {
-			CFMLEngine engine = CFMLEngineFactory.getInstance();
-			path=provider.getResourceUtil().translatePath(path, true, false);
-			String[] arr = toStringArray(engine.getCreationUtil().createArray(path,"/",true,true),engine);
+			path=ResourceUtil.translatePath(path, true, false);
+			String[] arr = toStringArray( List.listToArrayRemoveEmpty(path,"/"));
 			bucketName=arr[0];
 			for(int i=1;i<arr.length;i++) {
 				if(Util.isEmpty(objectName))objectName=arr[i];
@@ -72,17 +76,17 @@ public final class S3Resource extends ResourceSupport {
 		
 	}
 
-	public  static String[] toStringArray(Array array, CFMLEngine engine) {
+	public  static String[] toStringArray(Array array) {
         String[] arr=new String[array.size()];
         for(int i=0;i<arr.length;i++) {
-            arr[i]=engine.getCastUtil().toString(array.get(i+1,""),"");
+            arr[i]=Caster.toString(array.get(i+1,""),"");
         }
         return arr;
     }
 
 
 	public void createDirectory(boolean createParentWhenNotExists) throws IOException {
-		provider.getResourceUtil().checkCreateDirectoryOK(this, createParentWhenNotExists);
+		ResourceUtil.checkCreateDirectoryOK(this, createParentWhenNotExists);
 		try {
 			provider.lock(this);
 			if(isBucket()) {
@@ -104,7 +108,7 @@ public final class S3Resource extends ResourceSupport {
 	}
 
 	public void createFile(boolean createParentWhenNotExists) throws IOException {
-		provider.getResourceUtil().checkCreateFileOK(this, createParentWhenNotExists);
+		ResourceUtil.checkCreateFileOK(this, createParentWhenNotExists);
 		if(isBucket()) throw new IOException("can't create file ["+getPath()+"], on this level (Bucket Level) you can only create directories");
 		try {
 			provider.lock(this);
@@ -126,7 +130,7 @@ public final class S3Resource extends ResourceSupport {
 	}
 
 	public InputStream getInputStream() throws IOException {
-		provider.getResourceUtil().checkGetInputStreamOK(this);
+		ResourceUtil.checkGetInputStreamOK(this);
 		provider.read(this);
 		try {
 			return Util.toBufferedInputStream(s3.getInputStream(bucketName, objectName));
@@ -186,7 +190,7 @@ public final class S3Resource extends ResourceSupport {
 	
 	private String getInnerPath() {
 		if(isRoot()) return "/";
-		return provider.getResourceUtil().translatePath(bucketName+"/"+objectName, true, false);
+		return ResourceUtil.translatePath(bucketName+"/"+objectName, true, false);
 	}
 	
 	private String getInnerParent() {
@@ -194,7 +198,7 @@ public final class S3Resource extends ResourceSupport {
 		if(Util.isEmpty(objectName)) return "/";
 		if(objectName.indexOf('/')==-1) return "/"+bucketName;
 		String tmp=objectName.substring(0,objectName.lastIndexOf('/'));
-		return provider.getResourceUtil().translatePath(bucketName+"/"+tmp, true, false);
+		return ResourceUtil.translatePath(bucketName+"/"+tmp, true, false);
 	}
 
 	/**
@@ -222,7 +226,7 @@ public final class S3Resource extends ResourceSupport {
 	
 	public OutputStream getOutputStream(boolean append) throws IOException {
 
-		provider.getResourceUtil().checkGetOutputStreamOK(this);
+		ResourceUtil.checkGetOutputStreamOK(this);
 		//provider.lock(this);
 		
 		try {
@@ -263,7 +267,7 @@ public final class S3Resource extends ResourceSupport {
 	 * @see railo.commons.io.res.Resource#getRealResource(java.lang.String)
 	 */
 	public Resource getRealResource(String realpath) {
-		realpath=provider.getResourceUtil().merge(getInnerPath(), realpath);
+		realpath=ResourceUtil.merge(getInnerPath(), realpath);
 		if(realpath.startsWith("../"))return null;
 		return new S3Resource(s3,S3.STORAGE_UNKNOW,provider,realpath);
 	}
@@ -338,7 +342,7 @@ public final class S3Resource extends ResourceSupport {
 							if(contents.length>0) {
 								boolean has=false;
 								for(int i=0;i<contents.length;i++) {
-									if(provider.getResourceUtil().translatePath(contents[i].getKey(),false,false).equals(path)) {
+									if(ResourceUtil.translatePath(contents[i].getKey(),false,false).equals(path)) {
 										has=true;
 										info=contents[i];
 										infoLastAccess=System.currentTimeMillis()+provider.getCache();
@@ -347,7 +351,7 @@ public final class S3Resource extends ResourceSupport {
 								}
 								if(!has){
 									for(int i=0;i<contents.length;i++) {
-										if(provider.getResourceUtil().translatePath(contents[i].getKey(),false,false).startsWith(path)) {
+										if(ResourceUtil.translatePath(contents[i].getKey(),false,false).startsWith(path)) {
 											info=UNDEFINED_WITH_CHILDREN;
 											infoLastAccess=System.currentTimeMillis()+provider.getCache();
 											break;
@@ -403,7 +407,7 @@ public final class S3Resource extends ResourceSupport {
 				S3Resource r;
 				boolean isb=isBucket();
 				for(int i=0;i<contents.length;i++) {
-					key=provider.getResourceUtil().translatePath(contents[i].getKey(), false, false);
+					key=ResourceUtil.translatePath(contents[i].getKey(), false, false);
 					if(!isb && !key.startsWith(objectName+"/")) continue;
 					if(Util.isEmpty(key)) continue;
 					index=key.indexOf('/',Util.length(objectName)+1);
@@ -455,7 +459,7 @@ public final class S3Resource extends ResourceSupport {
 	public void remove(boolean force) throws IOException {
 		if(isRoot()) throw new IOException("can not remove root of S3 Service");
 
-		provider.getResourceUtil().checkRemoveOK(this);
+		ResourceUtil.checkRemoveOK(this);
 		
 		
 		boolean isd=isDirectory();

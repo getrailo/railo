@@ -10,6 +10,7 @@ import org.xml.sax.SAXException;
 
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
 
 public final class ContentFactory extends S3Factory {
 
@@ -63,7 +64,7 @@ public final class ContentFactory extends S3Factory {
 					else if(inside.equals("LastModified"))	content.setLastModified(
 							S3.toDate(value,s3.getTimeZone()).getTime());
 					else if(inside.equals("ETag"))			content.setETag(value); // MUST HTML Encoder
-					else if(inside.equals("Size")) 			content.setSize(CFMLEngineFactory.getInstance().getCastUtil().toLongValue(value,0L));
+					else if(inside.equals("Size")) 			content.setSize(Caster.toLongValue(value,0L));
 					else if(inside.equals("StorageClass")) 	content.setStorageClass(value);
 				} 
 				catch (PageException e) {
@@ -74,7 +75,7 @@ public final class ContentFactory extends S3Factory {
     	}
 		else {
 			if(inside.equals("Name")) 				bucketName=value;
-			else if(inside.equals("IsTruncated")) 		isTruncated=CFMLEngineFactory.getInstance().getCastUtil().toBooleanValue(value,false);
+			else if(inside.equals("IsTruncated")) 		isTruncated=Caster.toBooleanValue(value,false);
 			
 		}
 		
