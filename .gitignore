@@ -4,9 +4,9 @@
 *.project
 *.class
 *.classpath
-*.ra
 *.rc
 *~
+*.ra
 *.lock
 *.DS_Store
 *.swp
