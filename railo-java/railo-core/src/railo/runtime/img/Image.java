@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.AttributedString;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -1307,6 +1308,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 			throw new PageRuntimeException(e.getMessage());
 		}
 	}
+	
 	
 	
 

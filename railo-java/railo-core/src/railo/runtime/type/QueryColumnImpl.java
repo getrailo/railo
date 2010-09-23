@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
@@ -18,6 +19,7 @@ import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.Operator;
+import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.reflection.pairs.MethodInstance;
@@ -675,20 +677,27 @@ public final class QueryColumnImpl implements QueryColumn,Sizeable,Objects {
     
     public synchronized QueryColumnImpl cloneColumn(QueryImpl query, boolean deepCopy) {
         QueryColumnImpl clone=new QueryColumnImpl();
-
-        clone.key=key;
-        clone.query=query;
-        clone.queryColumnUtil=queryColumnUtil;
-        clone.size=size;
-        clone.type=type;
-        clone.key=key;
         
-        clone.data=new Object[data.length];
-        for(int i=0;i<data.length;i++) {
-            clone.data[i]=deepCopy?Duplicator.duplicate(data[i],true):data[i];
+        ThreadLocalDuplication.set(this, clone);
+        try{
+	        clone.key=key;
+	        clone.query=query;
+	        clone.queryColumnUtil=queryColumnUtil;
+	        clone.size=size;
+	        clone.type=type;
+	        clone.key=key;
+	        
+	        clone.data=new Object[data.length];
+	        for(int i=0;i<data.length;i++) {
+	            clone.data[i]=deepCopy?Duplicator.duplicate(data[i],true):data[i];
+	        }
+	        return clone;   
         }
-        return clone;   
+        finally {
+        	ThreadLocalDuplication.remove(this);
+        }
     }
+	
 
     /**
      * @see java.lang.Object#toString()

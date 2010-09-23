@@ -189,6 +189,8 @@ public  class MapAsStruct extends StructSupport implements Struct {
         return new MapAsStruct(Duplicator.duplicateMap(map,deepCopy),caseSensitive);
     }
 
+	
+
     /**
      * @see railo.runtime.type.Collection#containsKey(java.lang.String)
      */

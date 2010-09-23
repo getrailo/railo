@@ -3,6 +3,7 @@ package railo.runtime.converter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -100,19 +101,21 @@ public final class ScriptConverter {
 	 * serialize a Array
 	 * @param array Array to serialize
 	 * @param sb
+	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serializeArray(Array array, StringBuffer sb) throws ConverterException {
-		_serializeList(array.toList(),sb);
+	private void _serializeArray(Array array, StringBuffer sb, Set<Object> done) throws ConverterException {
+		_serializeList(array.toList(),sb,done);
 	}
 	
 	/**
 	 * serialize a List (as Array)
 	 * @param list List to serialize
 	 * @param sb
+	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serializeList(List list, StringBuffer sb) throws ConverterException {
+	private void _serializeList(List list, StringBuffer sb, Set<Object> done) throws ConverterException {
 		
 	    sb.append(goIn());
 	    sb.append("[");
@@ -121,7 +124,7 @@ public final class ScriptConverter {
 		while(it.hasNext()) {
 		    if(doIt)sb.append(',');
 		    doIt=true;
-			_serialize(it.next(),sb);
+			_serialize(it.next(),sb,done);
 		}
 		
 		sb.append(']');
@@ -131,9 +134,10 @@ public final class ScriptConverter {
      * serialize a Struct
      * @param struct Struct to serialize
      * @param sb
+     * @param done 
      * @throws ConverterException
      */
-    public void _serializeStruct(Struct struct, StringBuffer sb) throws ConverterException {
+    public void _serializeStruct(Struct struct, StringBuffer sb, Set<Object> done) throws ConverterException {
         sb.append(goIn());
         sb.append('{');
         Iterator it=struct.keyIterator();
@@ -147,7 +151,7 @@ public final class ScriptConverter {
             sb.append(escape(key));
             sb.append('\'');
             sb.append(':');
-            _serialize(struct.get(key,null),sb);
+            _serialize(struct.get(key,null),sb,done);
         }
         deep--;
         
@@ -171,7 +175,7 @@ public final class ScriptConverter {
             sb.append(escape(key));
             sb.append('\'');
             sb.append(':');
-            _serialize(struct.get(key,null),sb);
+            _serialize(struct.get(key,null),sb,new HashSet<Object>());
         }
         deep--;
         
@@ -182,9 +186,10 @@ public final class ScriptConverter {
      * serialize a Map (as Struct)
      * @param map Map to serialize
      * @param sb
+     * @param done 
      * @throws ConverterException
      */
-    private void _serializeMap(Map map, StringBuffer sb) throws ConverterException {
+    private void _serializeMap(Map map, StringBuffer sb, Set<Object> done) throws ConverterException {
         sb.append(goIn());
         sb.append("struct(");
         
@@ -199,7 +204,7 @@ public final class ScriptConverter {
             sb.append(escape(key.toString()));
             sb.append('\'');
             sb.append(':');
-            _serialize(map.get(key),sb);
+            _serialize(map.get(key),sb,done);
         }
         deep--;
         
@@ -209,9 +214,10 @@ public final class ScriptConverter {
      * serialize a Component
      * @param component Component to serialize
      * @param sb
+     * @param done 
      * @throws ConverterException
      */
-    private void _serializeComponent(Component c, StringBuffer sb) throws ConverterException {
+    private void _serializeComponent(Component c, StringBuffer sb, Set<Object> done) throws ConverterException {
     	
     	ComponentImpl ci;
 		try {
@@ -243,7 +249,7 @@ public final class ScriptConverter {
             sb.append(escape(key));
             sb.append('\'');
             sb.append(':');
-            _serialize(member,sb);
+            _serialize(member,sb,done);
         }
         sb.append(")");
         deep--;
@@ -266,7 +272,7 @@ public final class ScriptConverter {
                 sb.append(escape(key));
                 sb.append('\'');
                 sb.append(':');
-                _serialize(member,sb);
+                _serialize(member,sb,done);
             }
             sb.append(")");
             deep--;
@@ -284,9 +290,10 @@ public final class ScriptConverter {
 	 * serialize a Query
 	 * @param query Query to serialize
 	 * @param sb
+	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serializeQuery(Query query, StringBuffer sb) throws ConverterException {
+	private void _serializeQuery(Query query, StringBuffer sb, Set<Object> done) throws ConverterException {
 		
 		String[] keys = query.keysAsString();
 		sb.append(goIn());
@@ -309,9 +316,9 @@ public final class ScriptConverter {
 			    if(doIt)sb.append(',');
 			    doIt=true;
 			    try {
-					_serialize(query.getAt(keys[i],y),sb);
+					_serialize(query.getAt(keys[i],y),sb,done);
 				} catch (PageException e) {
-					_serialize(e.getMessage(),sb);
+					_serialize(e.getMessage(),sb,done);
 				}
 			}
 			sb.append(']');
@@ -326,90 +333,139 @@ public final class ScriptConverter {
 	 * serialize a Object to his xml Format represenation
 	 * @param object Object to serialize
 	 * @param sb StringBuffer to write data
+	 * @param done 
 	 * @throws ConverterException
 	 */
-	private void _serialize(Object object, StringBuffer sb) throws ConverterException {
+	private void _serialize(Object object, StringBuffer sb, Set<Object> done) throws ConverterException {
 		//try	{
 			deep++;
 			// NULL
 			if(object==null) {
 			    sb.append(goIn());
-			    sb.append("nullValue()");//sb.append("''");
+			    sb.append("nullValue()");
+			    deep--;
+			    return;
 			}
 			// String
-			else if(object instanceof String) {
+			if(object instanceof String) {
 			    sb.append(goIn());
 			    sb.append("'");
 			    sb.append(escape(object.toString()));
 			    sb.append("'");
+			    deep--;
+			    return;
 			}
 			// Number
-			else if(object instanceof Number) {
+			if(object instanceof Number) {
 			    sb.append(goIn());
 			    sb.append(Caster.toString(((Number)object).doubleValue()));
+			    deep--;
+			    return;
 			}
 			// Boolean
-			else if(object instanceof Boolean) {
+			if(object instanceof Boolean) {
 			    sb.append(goIn());
 			    sb.append(Caster.toString(((Boolean)object).booleanValue()));
+			    deep--;
+			    return;
 			}
 			// DateTime
-			else if(object instanceof DateTime) {
+			if(object instanceof DateTime) {
 				_serializeDateTime((DateTime)object,sb);
+			    deep--;
+			    return;
 			}
 			// Date
-			else if(object instanceof Date) {
+			if(object instanceof Date) {
 				_serializeDate((Date)object,sb);
+			    deep--;
+			    return;
 			}
-	        // Component
-	        else if(object instanceof Component) {
-	            _serializeComponent((Component)object,sb);
-	        }
-	
 	        // XML
-	        else if(object instanceof Node) {
+	        if(object instanceof Node) {
 	            _serializeXML((Node)object,sb);
+			    deep--;
+			    return;
 	        }
-	        // Struct
-	        else if(object instanceof Struct) {
-	            _serializeStruct((Struct)object,sb);
-	        }
-	        // Map
-	        else if(object instanceof Map) {
-	            _serializeMap((Map)object,sb);
-	        }
-			// Array
-			else if(object instanceof Array) {
-				_serializeArray((Array)object,sb);
-			}
-			// List
-			else if(object instanceof List) {
-				_serializeList((List)object,sb);
-			}
-	        // Query
-	        else if(object instanceof Query) {
-	            _serializeQuery((Query)object,sb);
-	        }
-	        // Timespan
-	        else if(object instanceof TimeSpan) {
-	        	_serializeTimeSpan((TimeSpan) object,sb);
-	        }
-			// String Converter
-			else if(object instanceof ScriptConvertable) {
-			    sb.append(((ScriptConvertable)object).serialize());
-			}
-			else if(object instanceof ObjectWrap) {
+			if(object instanceof ObjectWrap) {
 				try {
-					_serialize(((ObjectWrap)object).getEmbededObject(), sb);
+					_serialize(((ObjectWrap)object).getEmbededObject(), sb,done);
 				} catch (PageException e) {
 					throw new ConverterException(e);
 				}
+			    deep--;
+			    return;
 			}
-			else if(object instanceof Serializable) {
-				_serializeSerializable((Serializable)object,sb);
+	        // Timespan
+	        if(object instanceof TimeSpan) {
+	        	_serializeTimeSpan((TimeSpan) object,sb);
+			    deep--;
+			    return;
+	        }
+			
+	        if(done.contains(object)) {
+	        	sb.append(goIn());
+			    sb.append("nullValue()");
+			    deep--;
+			    return;
+	        }
+			
+			done.add(object);
+			try {
+		        // Component
+		        if(object instanceof Component) {
+		            _serializeComponent((Component)object,sb,done);
+				    deep--;
+				    return;
+		        }
+		
+		        // Struct
+		        if(object instanceof Struct) {
+		            _serializeStruct((Struct)object,sb,done);
+				    deep--;
+				    return;
+		        }
+		        // Map
+		        if(object instanceof Map) {
+		            _serializeMap((Map)object,sb,done);
+				    deep--;
+				    return;
+		        }
+				// Array
+				if(object instanceof Array) {
+					_serializeArray((Array)object,sb,done);
+				    deep--;
+				    return;
+				}
+				// List
+				if(object instanceof List) {
+					_serializeList((List)object,sb,done);
+				    deep--;
+				    return;
+				}
+		        // Query
+		        if(object instanceof Query) {
+		            _serializeQuery((Query)object,sb,done);
+				    deep--;
+				    return;
+		        }
+				// String Converter
+				if(object instanceof ScriptConvertable) {
+				    sb.append(((ScriptConvertable)object).serialize());
+				    deep--;
+				    return;
+				}
+				if(object instanceof Serializable) {
+					_serializeSerializable((Serializable)object,sb);
+				    deep--;
+				    return;
+				}
 			}
-			else throw new ConverterException("can't serialize Object of type [ "+Caster.toClassName(object)+" ]");
-			deep--;
+			finally {
+				done.remove(object);
+			}
+			throw new ConverterException("can't serialize Object of type [ "+Caster.toClassName(object)+" ]");
+			//deep--;
 		/*}
 		catch(StackOverflowError soe){
 			throw soe;
@@ -456,7 +512,7 @@ public final class ScriptConverter {
 	public String serialize(Object object) throws ConverterException {
 		deep=0;
 		StringBuffer sb=new StringBuffer();
-		_serialize(object,sb);
+		_serialize(object,sb,new HashSet<Object>());
 		return sb.toString();
 	}
 	

@@ -3,6 +3,7 @@ package railo.runtime.text.xml.struct;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -219,6 +220,7 @@ public class XMLMultiElementArray extends ArraySupport {
 	public Collection duplicate(boolean deepCopy) {
 		return new XMLMultiElementArray((XMLMultiElementStruct)struct.duplicate(deepCopy));
 	}
+	
 
 	/**
 	 * @see railo.runtime.type.Collection#get(java.lang.String)

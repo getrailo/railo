@@ -3,6 +3,7 @@ package railo.runtime.type.scope;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -600,6 +601,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 			return local.duplicate(deepCoppy);
 		return variable.duplicate(deepCoppy);
 	}
+	
 
 	/**
 	 *

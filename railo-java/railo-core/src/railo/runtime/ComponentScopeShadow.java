@@ -361,6 +361,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 //		 MUST muss deepCopy checken
         return new ComponentScopeShadow(component,shadow);//new ComponentScopeThis(component.cloneComponentImpl());
     }
+	
 
 	/**
 	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)

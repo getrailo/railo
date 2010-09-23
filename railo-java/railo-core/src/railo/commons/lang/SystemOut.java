@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.Date;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 
 public final class SystemOut {
@@ -39,12 +40,12 @@ public final class SystemOut {
 	}
 
 	public static void printStack(int type) {
-		PageContext pc=ThreadLocalPageContext.get();
-    	if(pc!=null) {
+		Config config=ThreadLocalPageContext.getConfig();
+    	if(config!=null) {
     		if(type==ERR)
-    			printStack(pc.getConfig().getErrWriter());
+    			printStack(config.getErrWriter());
     		else 
-    			printStack(pc.getConfig().getOutWriter());
+    			printStack(config.getOutWriter());
     	}
     	else {
     		printStack(new PrintWriter((type==ERR)?System.err:System.out));
@@ -65,10 +66,10 @@ public final class SystemOut {
     
 
     public static PrintWriter getPrinWriter(int type) {
-    	PageContext pc=ThreadLocalPageContext.get();
-    	if(pc!=null) {
-    		if(type==ERR) return pc.getConfig().getErrWriter();
-    		return pc.getConfig().getOutWriter();
+    	Config config=ThreadLocalPageContext.getConfig();
+    	if(config!=null) {
+    		if(type==ERR) return config.getErrWriter();
+    		return config.getOutWriter();
     	}
     	return new PrintWriter((type==ERR)?System.err:System.out);
     }

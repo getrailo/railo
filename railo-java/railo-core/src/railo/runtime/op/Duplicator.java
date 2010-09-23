@@ -3,16 +3,24 @@ package railo.runtime.op;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
+import railo.print;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.config.Config;
+import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
+import railo.runtime.type.CollectionPlus;
+import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 
 
@@ -83,22 +91,34 @@ public final class Duplicator {
 	 * @param object object to duplicate
 	 * @return duplicated value
 	 */
+	
 	public static Object duplicate(Object object, boolean deepCopy) {
 		if(object == null) 				return null;
-		if(object instanceof Collection)return ((Collection)object).duplicate(deepCopy);
-		if(object instanceof UDF)return ((UDF)object).duplicate();
         if(object instanceof Number)	return object;
         if(object instanceof String)	return object;
         if(object instanceof Date)		return ((Date)object).clone();
         if(object instanceof Boolean)	return object;
+		
+		
+		
+		Object copy = ThreadLocalDuplication.get(object);
+    	if(copy!=null){
+    		return copy;
+    	}
+    	
+
+    	if(object instanceof CollectionPlus)return ((CollectionPlus)object).duplicate(deepCopy,ThreadLocalDuplication.getMap());
+    	if(object instanceof Collection)return ((Collection)object).duplicate(deepCopy);
+		if(object instanceof UDF)		return ((UDF)object).duplicate();
         if(object instanceof List)		return duplicateList((List)object,deepCopy);
         if(object instanceof Map) 		return duplicateMap((Map)object,deepCopy);
+		
+	        
 	        
 		return object;
     }
 
     public static List duplicateList(List list, boolean deepCopy) {
-    	
     	List newList;
     	try {
     		newList=(List) ClassUtil.loadInstance(list.getClass());
@@ -134,13 +154,14 @@ public final class Duplicator {
     		} catch (ClassException e) {
     			newMap=new HashMap();
     		}
-        	
+    		ThreadLocalDuplication.set(map,newMap);
             Iterator it=map.keySet().iterator();
             while(it.hasNext()) {
                 Object key=it.next();
                 if(deepCopy)newMap.put(StringUtil.toLowerCase(Caster.toString(key)),duplicate(map.get(key), deepCopy));
                 else newMap.put(StringUtil.toLowerCase(Caster.toString(key)),map.get(key));
             }
+            ThreadLocalDuplication.remove(map);
             return newMap;
         }
         return duplicateMap(map,deepCopy);
@@ -153,11 +174,16 @@ public final class Duplicator {
 		} catch (ClassException e) {
 			other=new HashMap();
     	}
-        return duplicateMap(map,other, deepCopy);
+		ThreadLocalDuplication.set(map,other);
+        duplicateMap(map,other, deepCopy);
+        ThreadLocalDuplication.remove(map);
+        return other;
     }
     
     public static Map duplicateMap(Map map,Map newMap,boolean deepCopy){
-        Iterator it=map.keySet().iterator();
+    	
+    	
+    	Iterator it=map.keySet().iterator();
         while(it.hasNext()) {
             Object key=it.next();
             if(deepCopy)newMap.put(key,duplicate(map.get(key),deepCopy));
@@ -166,3 +192,5 @@ public final class Duplicator {
         return newMap;
     }
 }
+
+

@@ -1,5 +1,7 @@
 package railo.runtime.type.scope;
 
+import java.util.Map;
+
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -61,6 +63,7 @@ public final class ClientMemory extends ClientSupport {
 	public Collection duplicate(boolean deepCopy) {
     	return new ClientMemory(this,deepCopy);
 	}
+	
 	
 
 }

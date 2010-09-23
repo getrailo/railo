@@ -1,6 +1,7 @@
 package railo.runtime.type.scope;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -148,6 +149,8 @@ public class ObjectStruct extends StructSupport implements Struct,Objects {
 		throw new PageRuntimeException(new ExpressionException("can't clone object of type ["+jo.getClazz().getName()+"]"));
 		//return null;
 	}
+
+	
 
 	/**
 	 * @see railo.runtime.type.Collection#containsKey(java.lang.String)

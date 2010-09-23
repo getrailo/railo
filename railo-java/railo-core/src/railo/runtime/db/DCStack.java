@@ -26,7 +26,7 @@ class DCStack {
 			if(!rtn.getConnection().isClosed()){
 				if(rtn.getDatasource().getConnectionTimeout()==0){
 					int dcid = ((DatasourceConnectionImpl)rtn).getRequestId();
-					int pcid = ((PageContextImpl)ThreadLocalPageContext.get()).getRequestId();
+					int pcid = ((PageContextImpl)ThreadLocalPageContext.get(pc)).getRequestId();
 					if(dcid==-1){
 						((DatasourceConnectionImpl)rtn).setRequestId(pcid);
 						return rtn;

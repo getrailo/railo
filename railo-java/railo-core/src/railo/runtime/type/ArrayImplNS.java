@@ -3,6 +3,7 @@ package railo.runtime.type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
@@ -17,6 +18,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
+import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.comparator.NumberComparator;
 import railo.runtime.type.comparator.TextComparator;
 import railo.runtime.type.it.KeyIterator;
@@ -631,14 +633,23 @@ public class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 		arr.dimension=dimension;
 		String[] keys=this.keysAsString();
 		
+		ThreadLocalDuplication.set(this, arr);
 		try {
 			for(int i=0;i<keys.length;i++) {
 				String key=keys[i];
 				arr.set(key,Duplicator.duplicate(this.get(key,null),deepCopy));
 			}
-		} catch (ExpressionException e) {}
+		} 
+		catch (ExpressionException e) {}
+		finally{
+			ThreadLocalDuplication.remove(this);
+		}
+		
 		return arr;
 	}
+	
+
+	
 
 	/**
 	 * @see railo.runtime.type.Collection#keyIterator()

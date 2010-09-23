@@ -122,6 +122,10 @@ public  class XMLNodeStruct extends StructSupport implements XMLStruct {
 	public Collection duplicate(boolean deepCopy) {
 		return new XMLNodeStruct(node.cloneNode(deepCopy),caseSensitive);
 	}
+
+
+	
+	
 	
 
 	/**

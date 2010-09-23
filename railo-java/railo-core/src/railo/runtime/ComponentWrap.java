@@ -1,6 +1,7 @@
 package railo.runtime;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import railo.commons.lang.types.RefBoolean;

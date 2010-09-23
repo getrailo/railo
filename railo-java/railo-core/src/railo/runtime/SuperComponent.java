@@ -216,6 +216,7 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	public synchronized Collection duplicate(boolean deepCopy) {
 		return new SuperComponent((ComponentImpl) comp.duplicate(deepCopy));
 	}
+	
 
 	/**
 	 *

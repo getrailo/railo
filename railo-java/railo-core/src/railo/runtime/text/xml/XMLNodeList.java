@@ -3,6 +3,7 @@ package railo.runtime.text.xml;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -343,6 +344,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	public Collection duplicate(boolean deepCopy) {
 		return new XMLNodeList(parent.cloneNode(deepCopy),caseSensitive);
 	}
+	
 
 	/**
 	 * @see railo.runtime.type.Array#getDimension()

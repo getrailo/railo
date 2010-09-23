@@ -3,6 +3,7 @@ package railo.runtime.thread;
 import java.io.IOException;
 import java.lang.Thread.State;
 import java.util.Iterator;
+import java.util.Map;
 
 import railo.commons.io.IOUtil;
 import railo.runtime.PageContext;
@@ -18,6 +19,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
+import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
@@ -98,14 +100,21 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 	 */
 	public Collection duplicate(boolean deepCopy) {
 		StructImpl sct=new StructImpl();
-		Key[] keys = keys();
-		Object value;
-		for(int i=0;i<keys.length;i++) {
-			value=get(keys[i],null);
-			sct.setEL(keys[i],deepCopy?Duplicator.duplicate(value, deepCopy):value);
+		ThreadLocalDuplication.set(this, sct);
+		try{
+			Key[] keys = keys();
+			Object value;
+			for(int i=0;i<keys.length;i++) {
+				value=get(keys[i],null);
+				sct.setEL(keys[i],deepCopy?Duplicator.duplicate(value, deepCopy):value);
+			}
+		}
+		finally {
+			ThreadLocalDuplication.remove(this);
 		}
 		return sct;
 	}
+	
 
 	private Object getMeta(Key key) {
 		if(KEY_ELAPSEDTIME.equalsIgnoreCase(key)) return new Double(System.currentTimeMillis()-ct.getStartTime());

@@ -2,6 +2,7 @@ package railo.runtime.type;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -10,6 +11,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.Operator;
+import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.ref.Reference;
@@ -261,13 +263,23 @@ public final class SVStruct extends StructSupport implements Reference,Struct {
      */
     public Collection duplicate(boolean deepCopy) {
         SVStruct svs = new SVStruct(key);
-        Collection.Key[] keys = keys();
-        for(int i=0;i<keys.length;i++) {
-            if(deepCopy)svs.setEL(keys[i],Duplicator.duplicate(get(keys[i],null),deepCopy));
-            else svs.setEL(keys[i],get(keys[i],null));
+        ThreadLocalDuplication.set(this, svs);
+        try{
+	        Collection.Key[] keys = keys();
+	        for(int i=0;i<keys.length;i++) {
+	            if(deepCopy)svs.setEL(keys[i],Duplicator.duplicate(get(keys[i],null),deepCopy));
+	            else svs.setEL(keys[i],get(keys[i],null));
+	        }
+	        return svs;
         }
-        return svs;
+        finally{
+        	ThreadLocalDuplication.remove(this);
+        }
     }
+
+	
+	
+    
 
 	/**
 	 *

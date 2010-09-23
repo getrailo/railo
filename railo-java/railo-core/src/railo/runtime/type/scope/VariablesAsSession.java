@@ -83,6 +83,7 @@ public class VariablesAsSession implements Session {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
 
 	public Object get(String key) throws PageException {
 		// TODO Auto-generated method stub

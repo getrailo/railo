@@ -61,6 +61,7 @@ import railo.runtime.functions.arrays.ArrayFind;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.query.caster.Cast;
 import railo.runtime.reflection.Reflector;
@@ -1422,42 +1423,38 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
         return cloneQuery(true);
     }
     
+
+	
+    
     /**
      * @return clones the query object
      */
     public QueryImpl cloneQuery(boolean deepCopy) {
-        //int len=this.getRecordcount();
-        //Collection.Key[] keys=this.keys();
         QueryImpl newResult=new QueryImpl();
-        /*try {
-        	Collection.Key key;
-            for(int i=1;i<=len;i++) {
-                for(int y=0;y<keys.length;y++) {
-                    key=keys[y];
-                    newResult.setAt(key,i,Duplicator.duplicate(this.getAt(key,i),deepCopy));
-                }
-            }
-        } 
-        catch (PageException e) {}
-        */
-        if(columnNames!=null){
-	        newResult.columnNames=new Collection.Key[columnNames.length];
-	        newResult.columns=new QueryColumnImpl[columnNames.length];
-	        for(int i=0;i<columnNames.length;i++) {
-	        	newResult.columnNames[i]=columnNames[i];
-	        	newResult.columns[i]=columns[i].cloneColumn(newResult,deepCopy);
+        ThreadLocalDuplication.set(this, newResult);
+        try{
+	        if(columnNames!=null){
+		        newResult.columnNames=new Collection.Key[columnNames.length];
+		        newResult.columns=new QueryColumnImpl[columnNames.length];
+		        for(int i=0;i<columnNames.length;i++) {
+		        	newResult.columnNames[i]=columnNames[i];
+		        	newResult.columns[i]=columns[i].cloneColumn(newResult,deepCopy);
+		        }
 	        }
+	        newResult.sql=sql;
+	        newResult.template=template;
+	        newResult.recordcount=recordcount;
+	        newResult.columncount=columncount;
+	        newResult.isCached=isCached;
+	        newResult.name=name;
+	        newResult.exeTime=exeTime;
+	        newResult.updateCount=updateCount;
+	        if(generatedKeys!=null)newResult.generatedKeys=generatedKeys.cloneQuery(false);
+	        return newResult;
         }
-        newResult.sql=sql;
-        newResult.template=template;
-        newResult.recordcount=recordcount;
-        newResult.columncount=columncount;
-        newResult.isCached=isCached;
-        newResult.name=name;
-        newResult.exeTime=exeTime;
-        newResult.updateCount=updateCount;
-        if(generatedKeys!=null)newResult.generatedKeys=generatedKeys.cloneQuery(false);
-        return newResult;
+        finally {
+        	ThreadLocalDuplication.remove(this);
+        }
     }
 
 	/**
