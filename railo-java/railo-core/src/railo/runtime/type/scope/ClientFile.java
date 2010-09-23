@@ -1,5 +1,7 @@
 package railo.runtime.type.scope;
 
+import java.util.Map;
+
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -144,6 +146,7 @@ public final class ClientFile extends ClientSupport {
 	public Collection duplicate(boolean deepCopy) {
     	return new ClientFile(this,deepCopy);
 	}
+	
 	
 
 }

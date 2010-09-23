@@ -7,7 +7,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.loader.engine.CFMLEngineFactory;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.op.CastImpl;
 
 public final class TemporaryStream extends OutputStream {
 
@@ -190,7 +193,9 @@ public final class TemporaryStream extends OutputStream {
         if(tempFile!=null) return tempFile;
         String tmpStr = System.getProperty("java.io.tmpdir");
         if(tmpStr!=null) {
-        	tempFile=CFMLEngineFactory.getInstance().getCastUtil().toResource(tmpStr,null);
+        	
+        	tempFile=ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), tmpStr);
+        	//tempFile=CFMLEngineFactory.getInstance().getCastUtil().toResource(tmpStr,null);
             
             if(tempFile!=null && tempFile.exists()) {
                 tempFile=getCanonicalResourceEL(tempFile);
@@ -200,7 +205,8 @@ public final class TemporaryStream extends OutputStream {
         File tmp =null;
         try {
         	tmp = File.createTempFile("a","a");
-            tempFile=CFMLEngineFactory.getInstance().getCastUtil().toResource(tmp.getParent(),null);
+        	tempFile=ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), tmp.getParent());
+        	//tempFile=CFMLEngineFactory.getInstance().getCastUtil().toResource(tmp.getParent(),null);
             tempFile=getCanonicalResourceEL(tempFile);   
         }
         catch(IOException ioe) {}

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.converter.LazyConverter;
@@ -276,6 +277,8 @@ public class ListAsArray implements Array,List,Sizeable {
 	public Collection duplicate(boolean deepCopy) {new ArrayImpl().duplicate(deepCopy);
 		return new ListAsArray((List)Duplicator.duplicate(list,deepCopy));
 	}
+
+	
 
 	/**
 	 * @see railo.runtime.type.Collection#get(java.lang.String)

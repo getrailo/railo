@@ -6,6 +6,7 @@ import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.op.Caster;
 import railo.runtime.type.dt.TimeSpan;
 
 /**
@@ -34,7 +35,7 @@ public final class CachePut implements Function {
 			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
 			cache.put(Util.key(key), value, idleTime, timeSpan);
 		} catch (Exception e) {
-			throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(e);
+			throw Caster.toPageException(e);
 		}
 		
 		return "";

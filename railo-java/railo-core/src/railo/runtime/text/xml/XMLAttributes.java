@@ -2,6 +2,7 @@ package railo.runtime.text.xml;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
@@ -22,6 +23,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.XMLException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
+import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
@@ -340,13 +342,20 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 	 */
 	public Collection duplicate(boolean deepCopy) {
 		XMLAttributes sct=new XMLAttributes(owner,nodeMap,caseSensitive);
-		String[] keys=keysAsString();
-		for(int i=0;i<keys.length;i++) {
-			String key=keys[i];
-			sct.setEL(key,Duplicator.duplicate(get(key,null),deepCopy));
+		ThreadLocalDuplication.set(this, sct);
+		try{
+			String[] keys=keysAsString();
+			for(int i=0;i<keys.length;i++) {
+				String key=keys[i];
+				sct.setEL(key,Duplicator.duplicate(get(key,null),deepCopy));
+			}
+		}
+		finally {
+			ThreadLocalDuplication.remove(this);
 		}
 		return sct;
 	}
+	
 	
 	/**
 	 * @return returns named Node map

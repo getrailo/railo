@@ -3,6 +3,7 @@ package railo.runtime.functions.file;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
@@ -143,6 +144,7 @@ public abstract class FileStreamWrapper extends StructSupport implements Struct 
 	public Collection duplicate(boolean deepCopy) {
 		throw new RuntimeException("can't duplicate File Object, Object depends on File Stream");
 	}
+	
 	
 	/**
 	 *

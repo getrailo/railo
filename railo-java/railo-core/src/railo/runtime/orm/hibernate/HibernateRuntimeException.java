@@ -31,9 +31,9 @@ private PageException pe;
 	 * standart excption constructor
 	 * @param message message of the exception
 	 */
-	public HibernateRuntimeException(String message) {
+	public HibernateRuntimeException(HibernateORMEngine engine,String message) {
 		super(message);
-		this.pe=new ORMException(message);
+		this.pe=new railo.runtime.orm.hibernate.HibernateException(engine,message);
 	}
 	
 	/**

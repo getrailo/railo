@@ -1,5 +1,7 @@
 package railo.runtime.type;
 
+import java.util.Map;
+
 import railo.runtime.Component;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
@@ -124,6 +126,8 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
 	
 
 	public UDF duplicate();
+
+	// FUTURE public UDF duplicate(Map<Object,Object> done);
 	
 	/**
 	 * it is the component in whitch this udf is constructed, must not be the same as active udf

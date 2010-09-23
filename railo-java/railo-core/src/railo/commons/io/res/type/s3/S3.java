@@ -24,11 +24,15 @@ import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.xml.sax.SAXException;
 
+import railo.commons.net.URLEncoder;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.Util;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.util.HTTPUtil;
+import railo.runtime.util.HTTPUtilImpl;
 
 public final class S3 implements S3Constants {
 
@@ -43,7 +47,6 @@ public final class S3 implements S3Constants {
 	private final Map infos=new ReferenceMap();
 
 
-	private HTTPUtil util;
 
 	public S3(String secretAccessKey, String accessKeyId,TimeZone tz) {
 		host=DEFAULT_URL;
@@ -55,16 +58,10 @@ public final class S3 implements S3Constants {
 	
 	
 
-	public S3(HTTPUtil util) {
-		this.util=util;
+	public S3() {
+		
 		//testFinal();
 	}
-
-
-	/*private void testFinal() {
-		if(CFMLEngineFactory.getInstance().getVersion().equalsIgnoreCase("final"))
-			throw new RuntimeException("this component is not allowed for the final release of railo");
-	}*/
 	
 	/**
 	 * @return the secretAccessKey
@@ -84,7 +81,7 @@ public final class S3 implements S3Constants {
 	 * @return the tz
 	 */
 	TimeZone getTimeZone() {
-		if(timezone==null)timezone=CFMLEngineFactory.getInstance().getThreadPageContext().getTimeZone();
+		if(timezone==null)timezone=ThreadLocalPageContext.getTimeZone();
 		return timezone;
 	}
 	
@@ -102,7 +99,7 @@ public final class S3 implements S3Constants {
 		//str=StringUtil.replace(str, "\\n", String.valueOf((char)10), false);
 		byte[] digest = HMAC_SHA1(secretAccessKey,str,charset);
 		try {
-			return CFMLEngineFactory.getInstance().getCastUtil().toBase64(digest);
+			return Caster.toBase64(digest);
 		} catch (PageException e) {
 			throw new IOException(e.getMessage());
 		}
@@ -112,7 +109,7 @@ public final class S3 implements S3Constants {
 		String dateTimeString = Util.toHTTPTimeString();
 		String signature = createSignature("GET\n\n\n"+dateTimeString+"\n/", secretAccessKey, "iso-8859-1");
 		
-		HttpMethod method = util.get(new URL("http://"+host), null, null, -1, null, "Railo", null, -1, null, null,
+		HttpMethod method = railo.commons.net.HTTPUtil.invoke(new URL("http://"+host), null, null, -1, null, "Railo", null, -1, null, null,
 				new Header[]{
 					new Header("Date",dateTimeString),
 					new Header("Authorization","AWS "+accessKeyId+":"+signature)
@@ -157,7 +154,7 @@ public final class S3 implements S3Constants {
 			amp='&';
 		}
 		
-		HttpMethod method = util.get(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,(Header[])headers.toArray(new Header[headers.size()]));
+		HttpMethod method = railo.commons.net.HTTPUtil.invoke(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,(Header[])headers.toArray(new Header[headers.size()]));
 		return method.getResponseBodyAsStream();
 		
 	}
@@ -258,7 +255,7 @@ public final class S3 implements S3Constants {
 		
 		
 		
-		HttpMethod method = util.put(new URL(strUrl), null, null, -1, null, 
+		HttpMethod method = railo.commons.net.HTTPUtil.put(new URL(strUrl), null, null, -1, null, 
 				"Railo", null, -1, null, null,headers,re);
 		if(method.getStatusCode()!=200){
 			new ErrorFactory(method.getResponseBodyAsStream());
@@ -328,7 +325,7 @@ public final class S3 implements S3Constants {
 		URL url = new URL(strUrl);
 		
 		
-		HttpMethod method = util.get(url, null, null, -1, null, "Railo", null, -1, null, null,
+		HttpMethod method = railo.commons.net.HTTPUtil.invoke(url, null, null, -1, null, "Railo", null, -1, null, null,
 				new Header[]{
 					new Header("Date",dateTimeString),
 					new Header("Host",bucketName+"."+host),
@@ -392,7 +389,7 @@ public final class S3 implements S3Constants {
 		
 		
 		
-		HttpMethod method = util.delete(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,headers);
+		HttpMethod method = railo.commons.net.HTTPUtil.delete(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,headers);
 		
 		if(method.getStatusCode()!=200)
 			new ErrorFactory(method.getResponseBodyAsStream());
@@ -494,7 +491,7 @@ public final class S3 implements S3Constants {
 		}
 	}
 	private String encode(String name) throws UnsupportedEncodingException {
-		return util.encode(name,"UTF-8");
+		return URLEncoder.encode(name,"UTF-8");
 	}
 
 	/**
@@ -539,7 +536,7 @@ public final class S3 implements S3Constants {
 	public static DateTime toDate(String strDate, TimeZone tz) throws PageException {
 		if(strDate.endsWith("Z"))
 			strDate=strDate.substring(0,strDate.length()-1);
-		return CFMLEngineFactory.getInstance().getCastUtil().toDate(strDate, tz);
+		return Caster.toDate(strDate, tz);
 	}
 }
 

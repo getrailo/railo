@@ -1,6 +1,7 @@
 package railo.runtime.type;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import railo.runtime.dump.Dumpable;
 import railo.runtime.exp.PageException;
@@ -146,6 +147,7 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
 	public Object clone();
 	
 	public Collection duplicate(boolean deepCopy);
+	// FUTURE public Collection duplicate(boolean deepCopy, Map<Object,Object> done);
 	
     /**
      * contains this key

@@ -2,10 +2,12 @@
 package railo.runtime.converter;
 
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.lang.StringUtil;
@@ -25,6 +27,7 @@ import railo.runtime.type.dt.DateTime;
  */
 public final class JSConverter {
 
+	private static final String NULL = "null";
 	private boolean useShortcuts=false;
 	private boolean useWDDX=true;
 
@@ -37,67 +40,87 @@ public final class JSConverter {
 	 */
 	public String serialize(Object object, String clientVariableName) throws ConverterException {
 		StringBuffer sb=new StringBuffer();
-		_serialize(clientVariableName,object,sb);
+		_serialize(clientVariableName,object,sb,new HashSet<Object>());
 		String str = sb.toString().trim();
 		return clientVariableName+"="+str+(StringUtil.endsWith(str, ';')?"":";");
 		//return sb.toString();
 	}
 	
-	private void _serialize(String name,Object object,StringBuffer sb) throws ConverterException {
+	private void _serialize(String name,Object object,StringBuffer sb,Set<Object> done) throws ConverterException {
 		// NULL
 		if(object==null) {
 			sb.append(goIn());
-			sb.append("null;");
+			sb.append(NULL+";");
+			return;
 		}
 		// String
-		else if(object instanceof String || object instanceof StringBuffer) {
+		if(object instanceof String || object instanceof StringBuffer) {
 			sb.append(goIn());
 			sb.append("\"");
 			sb.append(StringUtil.escapeJS(object.toString()));
 			sb.append("\";");
+			return;
 		}
 		// Number
-		else if(object instanceof Number) {
+		if(object instanceof Number) {
 			sb.append(goIn());
 			sb.append("\"");
 			sb.append(Caster.toString(((Number)object).doubleValue()));
 			sb.append("\";");
+			return;
 		}
 		// Date
-		else if(Decision.isDateSimple(object,false)) {
+		if(Decision.isDateSimple(object,false)) {
 			_serializeDateTime(Caster.toDate(object,false,null,null),sb);
+			return;
 		}
 		// Boolean
-		else if(object instanceof Boolean) {
+		if(object instanceof Boolean) {
 			sb.append(goIn());
 			sb.append("\"");
 			sb.append((((Boolean)object).booleanValue()?"true":"false"));
 			sb.append("\";");
+			return;
 		}
 		
-		// Struct
-		else if(object instanceof Struct) {
-			_serializeStruct(name,(Struct)object,sb);
-		}
-		// Map
-		else if(object instanceof Map) {
-			_serializeMap(name,(Map)object,sb);
-		}
-		// List
-		else if(object instanceof List) {
-			_serializeList(name,(List)object,sb);
-		}
-		// Array
-		else if(Decision.isArray(object)) {
-			_serializeArray(name,Caster.toArray(object,null),sb);
-		}
-		// Query
-		else if(object instanceof Query) {
-			_serializeQuery(name,(Query)object,sb);
+		if(done.contains(object)){
+			sb.append(NULL+";");
+			return;
 		}
 		
-		else 
-			throw new ConverterException("can't serialize Object of type ["+Caster.toClassName(object)+"] to a js representation");
+		done.add(object);
+		try {
+			// Struct
+			if(object instanceof Struct) {
+				_serializeStruct(name,(Struct)object,sb,done);
+				return;
+			}
+			// Map
+			if(object instanceof Map) {
+				_serializeMap(name,(Map)object,sb,done);
+				return;
+			}
+			// List
+			if(object instanceof List) {
+				_serializeList(name,(List)object,sb,done);
+				return;
+			}
+			// Array
+			if(Decision.isArray(object)) {
+				_serializeArray(name,Caster.toArray(object,null),sb,done);
+				return;
+			}
+			// Query
+			if(object instanceof Query) {
+				_serializeQuery(name,(Query)object,sb,done);
+				return;
+			}
+		}
+		finally {
+			done.remove(object);
+		}
+		
+		throw new ConverterException("can't serialize Object of type ["+Caster.toClassName(object)+"] to a js representation");
 		//deep--;
 		//return rtn;
 	}
@@ -109,11 +132,12 @@ public final class JSConverter {
 	 * @param name 
 	 * @param array Array to serialize
 	 * @param sb 
+	 * @param done 
 	 * @return serialized array
 	 * @throws ConverterException
 	 */
-	private void _serializeArray(String name, Array array, StringBuffer sb) throws ConverterException {
-		_serializeList(name,array.toList(),sb);
+	private void _serializeArray(String name, Array array, StringBuffer sb, Set<Object> done) throws ConverterException {
+		_serializeList(name,array.toList(),sb,done);
 	}
 	
 	/**
@@ -121,10 +145,13 @@ public final class JSConverter {
 	 * @param name 
 	 * @param list List to serialize
 	 * @param sb 
+	 * @param done 
 	 * @return serialized list
 	 * @throws ConverterException
 	 */
-	private void _serializeList(String name, List list, StringBuffer sb) throws ConverterException {
+	private void _serializeList(String name, List list, StringBuffer sb, Set<Object> done) throws ConverterException {
+		
+		
 		if(useShortcuts)sb.append("[];");
 		else sb.append("new Array();");
 		
@@ -134,7 +161,7 @@ public final class JSConverter {
 			//if(index!=-1)sb.append(",");
 			index = it.nextIndex();
 			sb.append(name+"["+index+"]=");
-			_serialize(name+"["+index+"]",it.next(),sb);
+			_serialize(name+"["+index+"]",it.next(),sb,done);
 			//sb.append(";");
 		}
 	}
@@ -143,11 +170,12 @@ public final class JSConverter {
 	 * serialize a Struct
 	 * @param name 
 	 * @param struct Struct to serialize
+	 * @param done 
 	 * @param sb2 
 	 * @return serialized struct
 	 * @throws ConverterException
 	 */
-	private String _serializeStruct(String name, Struct struct, StringBuffer sb) throws ConverterException {
+	private String _serializeStruct(String name, Struct struct, StringBuffer sb, Set<Object> done) throws ConverterException {
 		if(useShortcuts)sb.append("{};");
 		else sb.append("new Object();");
 		
@@ -157,10 +185,10 @@ public final class JSConverter {
 			String key=StringUtil.escapeJS(Caster.toString(keys[i].getLowerString(),""));
             sb.append(name+"[\""+key+"\"]=");
 			try {
-				_serialize(name+"[\""+key+"\"]",struct.get(keys[i]),sb);
+				_serialize(name+"[\""+key+"\"]",struct.get(keys[i]),sb,done);
 			} 
 			catch (PageException e) {
-				_serialize(name+"[\""+key+"\"]",e.getMessage(),sb);
+				_serialize(name+"[\""+key+"\"]",e.getMessage(),sb,done);
 			}
 		}
         return sb.toString();
@@ -170,11 +198,12 @@ public final class JSConverter {
 	 * serialize a Map (as Struct)
 	 * @param name 
 	 * @param map Map to serialize
+	 * @param done 
 	 * @param sb2 
 	 * @return serialized map
 	 * @throws ConverterException
 	 */
-	private String _serializeMap(String name, Map map, StringBuffer sb) throws ConverterException {
+	private String _serializeMap(String name, Map map, StringBuffer sb, Set<Object> done) throws ConverterException {
 
 		if(useShortcuts)sb.append("{}");
 		else sb.append("new Object();");
@@ -183,7 +212,7 @@ public final class JSConverter {
 			Object key=it.next();
 			String skey=StringUtil.toLowerCase(StringUtil.escapeJS(key.toString()));
             sb.append(name+"[\""+skey+"\"]=");
-			_serialize(name+"[\""+skey+"\"]",map.get(key),sb);
+			_serialize(name+"[\""+skey+"\"]",map.get(key),sb,done);
 			//sb.append(";");
 		}
 		return sb.toString();
@@ -192,15 +221,16 @@ public final class JSConverter {
 	/**
 	 * serialize a Query
 	 * @param query Query to serialize
+	 * @param done 
 	 * @return serialized query
 	 * @throws ConverterException
 	 */
-	private void _serializeQuery(String name,Query query,StringBuffer sb) throws ConverterException {
-		if(useWDDX)_serializeWDDXQuery(name,query,sb);
-		else _serializeASQuery(name,query,sb);
+	private void _serializeQuery(String name,Query query,StringBuffer sb, Set<Object> done) throws ConverterException {
+		if(useWDDX)_serializeWDDXQuery(name,query,sb,done);
+		else _serializeASQuery(name,query,sb,done);
 	}
 
-	private void _serializeWDDXQuery(String name,Query query,StringBuffer sb) throws ConverterException {
+	private void _serializeWDDXQuery(String name,Query query,StringBuffer sb, Set<Object> done) throws ConverterException {
 		
 		Key[] keys = query.keys();
 		sb.append("new WddxRecordset();");
@@ -215,14 +245,14 @@ public final class JSConverter {
 				
 				sb.append("col"+i+"["+y+"]=");
 				
-				_serialize("col"+i+"["+y+"]",query.getAt(keys[i],y+1,null),sb);
+				_serialize("col"+i+"["+y+"]",query.getAt(keys[i],y+1,null),sb,done);
 				
 			}
 			sb.append(name+"[\""+skey+"\"]=col"+i+";col"+i+"=null;");
 		}
 	}
 
-	private void _serializeASQuery(String name,Query query,StringBuffer sb) throws ConverterException {
+	private void _serializeASQuery(String name,Query query,StringBuffer sb, Set<Object> done) throws ConverterException {
 		
 		String[] keys = query.keysAsString();
 		for(int i=0;i<keys.length;i++) {
@@ -238,7 +268,7 @@ public final class JSConverter {
 			
 			for(int y=0;y<keys.length;y++) {
 				sb.append(name+"["+i+"]['"+keys[y]+"']=");
-				_serialize(name+"["+i+"]['"+keys[y]+"']",query.getAt(keys[y],i+1,null),sb);
+				_serialize(name+"["+i+"]['"+keys[y]+"']",query.getAt(keys[y],i+1,null),sb,done);
 			}
 		}
 	}

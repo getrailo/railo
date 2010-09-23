@@ -73,6 +73,7 @@ public class PDFDocument extends StructSupport implements Struct {
 		PDFDocument duplicate=new PDFDocument(barr,resource,password);
 		return duplicate;
 	}
+	
 
 	/**
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)

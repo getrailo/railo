@@ -15,8 +15,11 @@ import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.Util;
 import railo.runtime.cache.util.CacheKeyFilterAll;
 import railo.runtime.cache.util.WildCardFilter;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.TimeSpan;
 // MUST this must be come from configuration
 public class CacheEngine {
@@ -58,15 +61,15 @@ public class CacheEngine {
 			List keys;
 			if(Util.isEmpty(filter)) keys=cache.keys();
 			else keys=cache.keys(new WildCardFilter(filter,false));
-			return CFMLEngineFactory.getInstance().getCastUtil().toArray(keys);
+			return Caster.toArray(keys);
 		} 
 		catch (Exception e) {}
-		return CFMLEngineFactory.getInstance().getCreationUtil().createArray();
+		return new ArrayImpl();
 	}
 
 	public Struct list(String filter) {
 		
-		Struct sct=CFMLEngineFactory.getInstance().getCreationUtil().createStruct();
+		Struct sct=new StructImpl();
 		try {
 			List entries;
 			if(Util.isEmpty(filter)) entries=cache.entries();

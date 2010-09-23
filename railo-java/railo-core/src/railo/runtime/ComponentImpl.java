@@ -44,6 +44,7 @@ import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.Operator;
+import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
@@ -147,7 +148,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * Constructor of the Component, USED ONLY FOR DESERIALIZE
      */
 	 public ComponentImpl() {
-		 
+		
 	 }
 	
     /**
@@ -207,43 +208,48 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		
 		return top;
     }
+	
     
     
     private ComponentImpl _duplicate( boolean deepCopy) {
     	ComponentImpl trg=new ComponentImpl();
-    	
-		// attributes
-    	trg.pageSource=pageSource;
-		trg.threadsWaiting=threadsWaiting;
-        trg.threadUsingLock=threadUsingLock;
-        trg.triggerDataMember=triggerDataMember;
-        trg.useShadow=useShadow;
-        trg.afterConstructor=afterConstructor;
-        trg.dataMemberDefaultAccess=dataMemberDefaultAccess;
-		trg.properties=properties.duplicate();
-		trg.isInit=isInit;
-		trg.interfaceCollection=interfaceCollection;
-    	
-    	if(base!=null){
-			trg.base=base._duplicate(deepCopy);
-		}
-		
-    	// data members
-		trg._data=duplicateMap(trg,_data,new HashMap(),deepCopy);
-		trg._udfs=duplicateMap(trg,_udfs,new HashMap(),deepCopy);
-		if(constructorUDFs!=null)trg.constructorUDFs=duplicateMap(trg,constructorUDFs,new HashMap(),deepCopy);
-		
-		
-		// scope 
-		if(scope instanceof ComponentScopeThis) {
-			trg.scope=new ComponentScopeThis(trg);
-		}
-		else if(scope instanceof ComponentScopeShadow) {
-			ComponentScopeShadow css = (ComponentScopeShadow)scope;
-			trg.scope=new ComponentScopeShadow(trg,duplicateMap(trg,css.getShadow(),ComponentScopeShadow.newMap(),deepCopy));
-		}
-		else trg.scope=(ComponentScope) scope.clone();
-    	
+    	ThreadLocalDuplication.set(this, trg);
+    	try{
+			// attributes
+	    	trg.pageSource=pageSource;
+			trg.threadsWaiting=threadsWaiting;
+	        trg.threadUsingLock=threadUsingLock;
+	        trg.triggerDataMember=triggerDataMember;
+	        trg.useShadow=useShadow;
+	        trg.afterConstructor=afterConstructor;
+	        trg.dataMemberDefaultAccess=dataMemberDefaultAccess;
+			trg.properties=properties.duplicate();
+			trg.isInit=isInit;
+			trg.interfaceCollection=interfaceCollection;
+	    	
+	    	if(base!=null){
+				trg.base=base._duplicate(deepCopy);
+			}
+			
+	    	// data members
+			trg._data=duplicateMap(trg,_data,new HashMap(),deepCopy);
+			trg._udfs=duplicateMap(trg,_udfs,new HashMap(),deepCopy);
+			if(constructorUDFs!=null)trg.constructorUDFs=duplicateMap(trg,constructorUDFs,new HashMap(),deepCopy);
+			
+			
+			// scope 
+			if(scope instanceof ComponentScopeThis) {
+				trg.scope=new ComponentScopeThis(trg);
+			}
+			else if(scope instanceof ComponentScopeShadow) {
+				ComponentScopeShadow css = (ComponentScopeShadow)scope;
+				trg.scope=new ComponentScopeShadow(trg,duplicateMap(trg,css.getShadow(),ComponentScopeShadow.newMap(),deepCopy));
+			}
+			else trg.scope=(ComponentScope) scope.clone();
+    	}
+    	finally {
+    		ThreadLocalDuplication.remove(this);
+    	}
     	
 		return trg;
 	}

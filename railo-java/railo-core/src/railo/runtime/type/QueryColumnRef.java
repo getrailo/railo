@@ -2,6 +2,7 @@ package railo.runtime.type;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -485,6 +486,7 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
         QueryColumn clone=new QueryColumnRef(query,columnName,type);
         return clone;
     }
+	
 
 	/**
 	 * @see railo.runtime.type.Sizeable#sizeOf()

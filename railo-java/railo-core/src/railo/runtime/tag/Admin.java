@@ -2474,8 +2474,8 @@ private void doGetMappings() throws PageException {
 	private void doGetGatewayEntries() throws PageException  {
 		Map entries = config.getGatewayEngine().getEntries();
 		Iterator it = entries.entrySet().iterator();
-		railo.runtime.type.Query qry=CFMLEngineFactory.getInstance().getCreationUtil().
-        	createQuery(new String[]{"class","id","custom","cfcPath","listenerCfcPath","startupMode","state","readOnly"}, 0, "entries");
+		railo.runtime.type.Query qry=
+			new QueryImpl(new String[]{"class","id","custom","cfcPath","listenerCfcPath","startupMode","state","readOnly"}, 0, "entries");
         Map.Entry entry;
         GatewayEntry ge;
         Gateway g;
@@ -2544,8 +2544,7 @@ private void doGetMappings() throws PageException {
 	private void doGetCacheConnections() throws PageException  {
 		Map conns = config.getCacheConnections();
 		Iterator it = conns.entrySet().iterator();
-		railo.runtime.type.Query qry=CFMLEngineFactory.getInstance().getCreationUtil().
-        	createQuery(new String[]{"class","name","custom","default","readOnly"}, 0, "connections");
+		railo.runtime.type.Query qry=new QueryImpl(new String[]{"class","name","custom","default","readOnly"}, 0, "connections");
         Map.Entry entry;
         CacheConnection cc;
         CacheConnection defObj=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_OBJECT);

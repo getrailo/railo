@@ -17,9 +17,9 @@ import railo.runtime.type.dt.DateTimeImpl;
 public final class DateAdd implements Function {
 	//private static Calendar c;
 
-	public static DateTime invoke(String datepart, double number, DateTime date) throws ExpressionException {
-		return call(ThreadLocalPageContext.get() , datepart, number, date);
-	}
+	/*public static DateTime invoke(String datepart, double number, DateTime date) throws ExpressionException {
+		return call(ThreadLocalPageContext .get() , datepart, number, date);
+	}*/
 	
 	public static DateTime call(PageContext pc , String datepart, double number, DateTime date) throws ExpressionException {
 		return _call(pc,pc.getTimeZone(), datepart, number, date);

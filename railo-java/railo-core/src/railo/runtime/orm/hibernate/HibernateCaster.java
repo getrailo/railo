@@ -126,10 +126,10 @@ public class HibernateCaster {
 		return cfc.getName();//.toLowerCase();
 	}
 
-	public static int cascade(String cascade) throws ORMException {
+	public static int cascade(HibernateORMEngine engine,String cascade) throws ORMException {
 		int c=cascade(cascade,-1);
 		if(c!=-1) return c;
-		throw new ORMException("invalid cascade defintion ["+cascade+"], valid values are [all,all-delete-orphan,delete,delete-orphan,refresh,save-update]");
+		throw new HibernateException(engine,"invalid cascade defintion ["+cascade+"], valid values are [all,all-delete-orphan,delete,delete-orphan,refresh,save-update]");
 	}
 	
 	public static int cascade(String cascade, int defaultValue) {
@@ -155,10 +155,10 @@ public class HibernateCaster {
 		return defaultValue;
 	}
 
-	public static int collectionType(String strCollectionType) throws ORMException {
+	public static int collectionType(HibernateORMEngine engine,String strCollectionType) throws ORMException {
 		int ct=collectionType(strCollectionType, -1);
 		if(ct!=-1) return ct;
-		throw new ORMException("invalid collectionType defintion ["+strCollectionType+"], valid values are [array,struct]");
+		throw new ORMException(engine,"invalid collectionType defintion ["+strCollectionType+"], valid values are [array,struct]");
 	}
 	public static int collectionType(String strCollectionType, int defaultValue) {
 		strCollectionType=strCollectionType.trim().toLowerCase();
@@ -261,9 +261,9 @@ public class HibernateCaster {
 		return defaultValue;
 	}
 	
-	public static String toHibernateType(String type) throws ORMException	{
+	public static String toHibernateType(HibernateORMEngine engine,String type) throws ORMException	{
 		String res=toHibernateType(type, null);
-		if(res==null) throw new ORMException("the type ["+type+"] is not supported");
+		if(res==null) throw new ORMException(engine,"the type ["+type+"] is not supported");
 		return res;
 	}
 	

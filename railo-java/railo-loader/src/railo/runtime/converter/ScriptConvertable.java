@@ -11,5 +11,6 @@ public interface ScriptConvertable {
      * @return serialized Object
      */
     public String serialize();
-
+    
+    // FUTURE String serialize(Set<Object> done); 
 }

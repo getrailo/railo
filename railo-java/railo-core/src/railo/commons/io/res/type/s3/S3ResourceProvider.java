@@ -7,6 +7,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceLock;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
+import railo.commons.io.res.util.ResourceUtilImpl;
 import railo.commons.lang.types.RefInteger;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.Util;
@@ -34,20 +35,20 @@ public final class S3ResourceProvider implements ResourceProvider {
 	
 	
 
-	/**
+	/* *
 	 * @return the httpUtil
-	 */
+	 * /
 	public HTTPUtil getHttpUtil() {
-		if(httpUtil==null)httpUtil=CFMLEngineFactory.getInstance().getHTTPUtil();
+		if(httpUtil==null)httpUtil=CFMLEngineFactory. getInstance().getHTTPUtil();
 		return httpUtil;
-	}
+	}*/
 	
 
-	public ResourceUtil getResourceUtil() {
+	/*public ResourceUtil getResourceUtil() {
 		if(_resourceUtil==null)
-			_resourceUtil=CFMLEngineFactory.getInstance().getResourceUtil();
+			_resourceUtil=CFMLEngineFactory. getInstance().getResourceUtil();
 		return _resourceUtil;
-	}
+	}*/
 	
 
 
@@ -108,8 +109,8 @@ public final class S3ResourceProvider implements ResourceProvider {
 	}
 	
 	public Resource getResource(String path) {
-		path=getResourceUtil().removeScheme(scheme, path);
-		S3 s3 = new S3(getHttpUtil());
+		path=railo.commons.io.res.util.ResourceUtil.removeScheme(scheme, path);
+		S3 s3 = new S3();
 		RefInteger storage=new RefIntegerImpl(S3.STORAGE_UNKNOW);
 		path=load(s3,storage,path);
 		

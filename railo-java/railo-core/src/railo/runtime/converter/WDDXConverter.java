@@ -3,11 +3,13 @@ package railo.runtime.converter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.xml.parsers.FactoryConfigurationError;
@@ -126,25 +128,27 @@ public final class WDDXConverter {
 	/**
 	 * serialize a Array
 	 * @param array Array to serialize
+	 * @param done 
 	 * @return serialized array
 	 * @throws ConverterException
 	 */
-	private String _serializeArray(Array array) throws ConverterException {
-		return _serializeList(array.toList());
+	private String _serializeArray(Array array, Set<Object> done) throws ConverterException {
+		return _serializeList(array.toList(),done);
 	}
 	
 	/**
 	 * serialize a List (as Array)
 	 * @param list List to serialize
+	 * @param done 
 	 * @return serialized list
 	 * @throws ConverterException
 	 */
-	private String _serializeList(List list) throws ConverterException {
+	private String _serializeList(List list, Set<Object> done) throws ConverterException {
 		StringBuffer sb=new StringBuffer(goIn()+"<array length="+_+list.size()+_+">");
 				
 		ListIterator it=list.listIterator();
 		while(it.hasNext()) {
-			sb.append(_serialize(it.next()));
+			sb.append(_serialize(it.next(),done));
 		}
 		
 		sb.append(goIn()+"</array>");
@@ -154,10 +158,11 @@ public final class WDDXConverter {
 	/**
 	 * serialize a Component
 	 * @param component Component to serialize
+	 * @param done 
 	 * @return serialized component
 	 * @throws ConverterException 
 	 */
-	private String _serializeComponent(Component component) throws ConverterException {
+	private String _serializeComponent(Component component, Set<Object> done) throws ConverterException {
 		StringBuffer sb=new StringBuffer();
 		
         Iterator it=component.keyIterator();
@@ -168,7 +173,7 @@ public final class WDDXConverter {
         	member = component.get(key,null);
         	if(member instanceof UDF) continue;
             sb.append(goIn()+"<var name="+_+key.toString()+_+">");
-            sb.append(_serialize(member));
+            sb.append(_serialize(member,done));
             sb.append(goIn()+"</var>");
         }
         deep--;
@@ -183,10 +188,11 @@ public final class WDDXConverter {
 	/**
 	 * serialize a Struct
 	 * @param struct Struct to serialize
+	 * @param done 
 	 * @return serialized struct
 	 * @throws ConverterException
 	 */
-	private String _serializeStruct(Struct struct) throws ConverterException {
+	private String _serializeStruct(Struct struct, Set<Object> done) throws ConverterException {
         StringBuffer sb=new StringBuffer(goIn()+"<struct>");
         
         Iterator it=struct.keyIterator();
@@ -195,7 +201,7 @@ public final class WDDXConverter {
         while(it.hasNext()) {
             String key=Caster.toString(it.next(),"");
             sb.append(goIn()+"<var name="+_+key.toString()+_+">");
-            sb.append(_serialize(struct.get(key,null)));
+            sb.append(_serialize(struct.get(key,null),done));
             sb.append(goIn()+"</var>");
         }
         deep--;
@@ -207,10 +213,11 @@ public final class WDDXConverter {
 	/**
 	 * serialize a Map (as Struct)
 	 * @param map Map to serialize
+	 * @param done 
 	 * @return serialized map
 	 * @throws ConverterException
 	 */
-	private String _serializeMap(Map map) throws ConverterException {
+	private String _serializeMap(Map map, Set<Object> done) throws ConverterException {
 		StringBuffer sb=new StringBuffer(goIn()+"<struct>");
 		
 		Iterator it=map.keySet().iterator();
@@ -219,7 +226,7 @@ public final class WDDXConverter {
 		while(it.hasNext()) {
 			Object key=it.next();
 			sb.append(goIn()+"<var name="+_+key.toString()+_+">");
-			sb.append(_serialize(map.get(key)));
+			sb.append(_serialize(map.get(key),done));
 			sb.append(goIn()+"</var>");
 		}
 		deep--;
@@ -231,10 +238,11 @@ public final class WDDXConverter {
 	/**
 	 * serialize a Query
 	 * @param query Query to serialize
+	 * @param done 
 	 * @return serialized query
 	 * @throws ConverterException
 	 */
-	private String _serializeQuery(Query query) throws ConverterException {
+	private String _serializeQuery(Query query, Set<Object> done) throws ConverterException {
 		
 		String[] keys = query.keysAsString();
 		StringBuffer sb=new StringBuffer(goIn()+"<recordset rowCount="+_+query.getRecordcount()+_+" fieldNames="+_+railo.runtime.type.List.arrayToList(keys,",")+_+" type="+_+"coldfusion.sql.QueryTable"+_+">");
@@ -246,9 +254,9 @@ public final class WDDXConverter {
 			sb.append(goIn()+"<field name="+_+keys[i]+_+">");
 				for(int y=1;y<=len;y++) {
 					try {
-						sb.append(_serialize(query.getAt(keys[i],y)));
+						sb.append(_serialize(query.getAt(keys[i],y),done));
 					} catch (PageException e) {
-						sb.append(_serialize(e.getMessage()));
+						sb.append(_serialize(e.getMessage(),done));
 					}
 				}
 			
@@ -263,65 +271,100 @@ public final class WDDXConverter {
 	/**
 	 * serialize a Object to his xml Format represenation
 	 * @param object Object to serialize
+	 * @param done 
 	 * @return serialized Object
 	 * @throws ConverterException
 	 */
-	private String _serialize(Object object) throws ConverterException {
+	private String _serialize(Object object, Set<Object> done) throws ConverterException {
 		String rtn;
 		deep++;
 		// NULL
 		if(object==null) {
 			rtn= goIn()+"<null/>";
+			deep--;
+			return rtn;
 		}
 		// String
-		else if(object instanceof String) {
+		if(object instanceof String) {
 			rtn= goIn()+"<string>"+XMLUtil.escapeXMLString(object.toString())+"</string>";
+			deep--;
+			return rtn;
 		}
 		// Number
-		else if(object instanceof Number) {
+		if(object instanceof Number) {
 			rtn= goIn()+"<number>"+((Number)object).doubleValue()+"</number>";
+			deep--;
+			return rtn;
 		}
 		// Boolean
-		else if(object instanceof Boolean) {
+		if(object instanceof Boolean) {
 			rtn= goIn()+"<boolean value="+_+((Boolean)object).booleanValue()+_+"/>";
+			deep--;
+			return rtn;
 		}
 		// DateTime
-		else if(object instanceof DateTime) {
+		if(object instanceof DateTime) {
 			rtn= _serializeDateTime((DateTime)object);
+			deep--;
+			return rtn;
 		}
 		// Date
-		else if(object instanceof Date) {
+		if(object instanceof Date) {
 			rtn= _serializeDate((Date)object);
-		}
-		// Struct
-		else if(object instanceof Struct) {
-			rtn= _serializeStruct((Struct)object);
-		}
-		// Map
-		else if(object instanceof Map) {
-			rtn= _serializeMap((Map)object);
-		}
-		// Array
-		else if(object instanceof Array) {
-			rtn= _serializeArray((Array)object);
-		}
-		// List
-		else if(object instanceof List) {
-			rtn= _serializeList((List)object);
-		}
-		// Component
-		else if(object instanceof Component) {
-			rtn= _serializeComponent((Component)object);
-		}
-		// Query
-		else if(object instanceof Query) {
-			rtn= _serializeQuery((Query)object);
-		}
-		// Others
-		else  {
-			rtn="<struct type="+_+"L"+object.getClass().getName()+";"+_+"></struct>";
+			deep--;
+			return rtn;
 		}
 		
+		if(done.contains(object)){
+			rtn= goIn()+"<null/>";
+			deep--;
+			return rtn;
+		}
+		
+		done.add(object);
+		try {
+			// Struct
+			if(object instanceof Struct) {
+				rtn= _serializeStruct((Struct)object,done);
+				deep--;
+				return rtn;
+			}
+			// Map
+			if(object instanceof Map) {
+				rtn= _serializeMap((Map)object,done);
+				deep--;
+				return rtn;
+			}
+			// Array
+			if(object instanceof Array) {
+				rtn= _serializeArray((Array)object,done);
+				deep--;
+				return rtn;
+			}
+			// List
+			if(object instanceof List) {
+				rtn= _serializeList((List)object,done);
+				deep--;
+				return rtn;
+			}
+			// Component
+			if(object instanceof Component) {
+				rtn= _serializeComponent((Component)object,done);
+				deep--;
+				return rtn;
+			}
+			// Query
+			if(object instanceof Query) {
+				rtn= _serializeQuery((Query)object,done);
+				deep--;
+				return rtn;
+			}
+		}
+		finally{
+			done.remove(object);
+		}
+		// Others
+		rtn="<struct type="+_+"L"+object.getClass().getName()+";"+_+"></struct>";
 		deep--;
 		return rtn;
 	}
@@ -341,7 +384,7 @@ public final class WDDXConverter {
 		deep++;
 		sb.append(goIn()+"<header/>");
 		sb.append(goIn()+"<data>");
-		sb.append(_serialize(object));
+		sb.append(_serialize(object,new HashSet<Object>()));
 		sb.append(goIn()+"</data>");
 		deep--;
 		sb.append("</wddxPacket>");
