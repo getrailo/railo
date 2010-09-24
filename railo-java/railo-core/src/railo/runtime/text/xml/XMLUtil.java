@@ -953,4 +953,10 @@ public final class XMLUtil {
 			parent.insertBefore(child, first);
 		}
 	}
+
+	public static void setFirst(Node parent, Node node) {
+		Node first = parent.getFirstChild();
+		if(first!=null) parent.insertBefore(node, first);
+		else parent.appendChild(node);
+	}
 }
