@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.jsp.tagext.BodyContent;
 
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.res.Resource;
@@ -34,6 +35,7 @@ import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.UDFImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -107,7 +109,10 @@ public class ModernAppListener extends AppListenerSupport {
 		PageContextImpl pci = (PageContextImpl)pc;
 		if(appPS!=null) {
 			String callPath=appPS.getComponentName();
-			ComponentImpl app = ComponentLoader.loadComponentImpl(pci,null,appPS, callPath, false);
+			
+			
+			ComponentImpl app = ComponentLoader.loadComponentImpl(pci,null,appPS, callPath, false,true);
+			
 			String targetPage=requestedPage.getFullRealpath();
 			// init
 			initApplicationContext(pci,app);

@@ -435,7 +435,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     private int cfcStartTag() throws PageException {
     	
     	callerScope.initialize(pageContext);
-        cfc = ComponentLoader.loadComponentImpl(pageContext,null,source.ps, source.filename.substring(0,source.filename.length()-(pageContext.getConfig().getCFCExtension().length()+1)), false);
+        cfc = ComponentLoader.loadComponentImpl(pageContext,null,source.ps, source.filename.substring(0,source.filename.length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
         validateAttributes(cfc,attributesScope,StringUtil.ucFirst(List.last(source.ps.getComponentName(),'.')));
         
         boolean exeBody = false;

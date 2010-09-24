@@ -294,7 +294,7 @@ public class HibernateSessionFactory {
 					Page p = ps.loadPage(pc.getConfig());
 					String name=res.getName();
 					name=name.substring(0,name.length()-4);
-					ComponentImpl cfc = ComponentLoader.loadComponentImpl(pc, p, ps, name, true);
+					ComponentImpl cfc = ComponentLoader.loadComponentImpl(pc, p, ps, name, true,true);
 					if(cfc.isPersistent()){
 						components.add(cfc);
 					}
