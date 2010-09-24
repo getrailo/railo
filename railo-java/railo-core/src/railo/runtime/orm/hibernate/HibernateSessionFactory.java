@@ -23,8 +23,8 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
-import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
+import railo.runtime.ComponentPro;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
@@ -256,21 +256,21 @@ public class HibernateSessionFactory {
 		done.add(key);
 	}
 
-	public static List<Component> loadComponents(PageContext pc,HibernateORMEngine engine, ORMConfiguration ormConf) {
+	public static List<ComponentPro> loadComponents(PageContext pc,HibernateORMEngine engine, ORMConfiguration ormConf) {
 		ExtensionResourceFilter filter = new ExtensionResourceFilter(pc.getConfig().getCFCExtension(),true);
-		List<Component> components=new ArrayList<Component>();
+		List<ComponentPro> components=new ArrayList<ComponentPro>();
 		loadComponents(pc,engine,components,ormConf.getCfcLocations(),filter);
 		return components;
 		//print.out("CfcLocation:"+ormConf.getCfcLocation());
 	}
 	
-	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<Component> components,Resource[] reses,ExtensionResourceFilter filter) {
+	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource[] reses,ExtensionResourceFilter filter) {
 		for(int i=0;i<reses.length;i++){
 			if(reses[i]!=null && reses[i].isDirectory())loadComponents(pc,engine,components,reses[i], filter);
 		}
 	}
 	
-	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<Component> components,Resource res,ExtensionResourceFilter filter) {
+	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource res,ExtensionResourceFilter filter) {
 		if(res==null) return;
 
 		if(res.isDirectory()){

@@ -22,4 +22,6 @@ public interface ComponentPro extends Component {
 	public String getBaseAbsName();
 	
 	public boolean isBasePeristent();
+	
+	public boolean equalTo(String type);
 }

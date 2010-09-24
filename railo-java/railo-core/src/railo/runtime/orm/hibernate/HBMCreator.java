@@ -623,7 +623,7 @@ public class HBMCreator {
 			key.setAttribute("name",prop.getName());
 			
 			// entity-name
-			setEntityName(pc, engine,cfc,prop, meta, key,false);
+			setForeignEntityName(pc, engine,cfc,prop, meta, key,false);
 			
 			// fkcolum
 			String str=toString(engine,cfc,prop,meta,"fkcolumn");
@@ -1061,22 +1061,16 @@ public class HBMCreator {
 		if(StringUtil.isEmpty(str,true)) str=toString(engine,cfc,prop,meta,"foreignKey");
 		if(!StringUtil.isEmpty(str,true)) x2o.setAttribute("foreign-key", str);
         
-		setEntityName(pc,engine,cfc,prop,meta,x2o,true);
+		setForeignEntityName(pc,engine,cfc,prop,meta,x2o,true);
 		
 		createXMLMappingXToX(engine,x2o, pc,cfc,prop,meta);
 	}
 	
-	private static Element getJoin(Element clazz) {
-		if(clazz.getNodeName().equals("subclass")){
-			NodeList joins = clazz.getElementsByTagName("join");
-			if(joins!=null && joins.getLength()>0)
-				return (Element)joins.item(0);
-			
-		}
-		return clazz;
-	}
 	
-	private static void setEntityName(PageContext pc,HibernateORMEngine engine,Component cfc,Property prop, Struct meta, Element el, boolean cfcRequired) throws PageException {
+	
+	
+	
+	private static void setForeignEntityName(PageContext pc,HibernateORMEngine engine,Component cfc,Property prop, Struct meta, Element el, boolean cfcRequired) throws PageException {
 		// entity
 		String str=cfcRequired?null:toString(engine,cfc,prop,meta,"entityName");
 		if(!StringUtil.isEmpty(str,true)) {
@@ -1113,7 +1107,7 @@ public class HBMCreator {
 
 	      
 		
-		Element join = getJoin(clazz);
+		
         
 		// collection type
 		String str=prop.getType();
@@ -1148,8 +1142,7 @@ public class HBMCreator {
 		else throw invalidValue(engine,cfc,prop,"collectiontype",str,"array,struct");
 		//throw new ORMException(engine,"invalid value ["+str+"] for attribute [collectiontype], valid values are [array,struct]");
 		
-		if(join==clazz) clazz.appendChild(el);
-		else clazz.insertBefore(el, join);
+		setBeforeJoin(clazz,el);
 		
 		
 		// name 
@@ -1220,6 +1213,49 @@ public class HBMCreator {
 	}
 	
 	
+	private static void setBeforeJoin(Element clazz, Element el) {
+		Element join;
+		if(clazz.getNodeName().equals("join")) {
+			join=clazz;
+			clazz = getClazz(clazz);
+		}
+		else {
+			join = getJoin(clazz);
+		}
+		
+		if(join==clazz) clazz.appendChild(el);
+		else clazz.insertBefore(el, join);
+		
+		
+	}
+	
+	private static Element getClazz(Element join) {
+		if(join.getNodeName().equals("join")){
+			return (Element) join.getParentNode();
+		}
+		return join;
+	}
+
+	private static Element getJoin(Element clazz) {
+		if(clazz.getNodeName().equals("subclass")){
+			NodeList joins = clazz.getElementsByTagName("join");
+			if(joins!=null && joins.getLength()>0)
+				return (Element)joins.item(0);
+		}
+		return clazz;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 	private static void createXMLMappingManyToMany(Component cfc,HibernateORMEngine engine,PropertyCollection propColl,Element clazz, PageContext pc,Property prop,ORMConfiguration ormConf) throws PageException {
 		Element el = createXMLMappingXToMany(engine,propColl,clazz, pc, cfc,prop);
 		Struct meta = prop.getMeta();
@@ -1230,7 +1266,7 @@ public class HBMCreator {
 		// link
 		setLink(engine,cfc,prop,el,meta,ormConf,true);
 		
-		setEntityName(pc, engine,cfc,prop, meta, m2m,true);
+		setForeignEntityName(pc, engine,cfc,prop, meta, m2m,true);
 
         // order-by
 		String str = toString(engine,cfc,prop,meta,"orderby");
@@ -1309,7 +1345,8 @@ public class HBMCreator {
 		
 
 		// entity-name
-		setEntityName(pc,engine,cfc,prop,meta,x2m,true);
+		
+		setForeignEntityName(pc,engine,cfc,prop,meta,x2m,true);
 		
 	}
 
@@ -1325,7 +1362,6 @@ public class HBMCreator {
 		Document doc = XMLUtil.getDocument(clazz);
 		Element el=null;
 		
-		Element join = getJoin(clazz);
 		
 		
 	// collection type
@@ -1360,9 +1396,8 @@ public class HBMCreator {
 		else throw invalidValue(engine,cfc,prop,"collectiontype",str,"array,struct");
 		//throw new ORMException(engine,"invalid value ["+str+"] for attribute [collectiontype], valid values are [array,struct]");
 		
-		if(join==clazz) clazz.appendChild(el);
-		else clazz.insertBefore(el, join);
-        
+		setBeforeJoin(clazz,el);
+		
 
 		
 		// batch-size
@@ -1489,7 +1524,7 @@ public class HBMCreator {
 		setColumn(doc, m2o, _columns);
 		
 		// cfc
-		setEntityName(pc,engine,cfc,prop,meta,m2o,true);
+		setForeignEntityName(pc,engine,cfc,prop,meta,m2o,true);
 		
 		// column
 		//String str=toString(prop,meta,"column",true);

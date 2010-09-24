@@ -652,5 +652,10 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	public long sizeOf() {
 		return StructUtil.sizeOf(this);
 	}
+
+
+	public boolean equalTo(String type) {
+		return comp.top.equalTo(type);
+	}
 	
 }
