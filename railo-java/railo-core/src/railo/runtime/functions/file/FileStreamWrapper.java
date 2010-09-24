@@ -3,7 +3,6 @@ package railo.runtime.functions.file;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Map;
 
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;

@@ -1,7 +1,6 @@
 package railo.runtime;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import railo.runtime.component.Member;

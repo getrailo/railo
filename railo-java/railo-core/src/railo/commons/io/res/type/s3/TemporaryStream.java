@@ -8,9 +8,7 @@ import java.io.OutputStream;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.op.CastImpl;
 
 public final class TemporaryStream extends OutputStream {
 

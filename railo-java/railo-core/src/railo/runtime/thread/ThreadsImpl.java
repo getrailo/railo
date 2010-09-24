@@ -3,7 +3,6 @@ package railo.runtime.thread;
 import java.io.IOException;
 import java.lang.Thread.State;
 import java.util.Iterator;
-import java.util.Map;
 
 import railo.commons.io.IOUtil;
 import railo.runtime.PageContext;

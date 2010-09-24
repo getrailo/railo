@@ -1,7 +1,5 @@
 package railo.runtime.type.scope;
 
-import java.util.Map;
-
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;

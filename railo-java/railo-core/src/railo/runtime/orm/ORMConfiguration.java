@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 
+import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -20,6 +23,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
@@ -30,11 +34,12 @@ public class ORMConfiguration {
 	
 	public static final Collection.Key AUTO_GEN_MAP = KeyImpl.getInstance("autogenmap");
 	public static final Collection.Key CATALOG = KeyImpl.getInstance("catalog");
-	public static final Collection.Key CFC_LOCATION = KeyImpl.getInstance("cfclocation");
-	public static final Collection.Key DB_CREATE = KeyImpl.getInstance("dbcreate");
+	public static final Collection.Key CFC_LOCATION = KeyImpl.getInstance("cfcLocation");
+	public static final Collection.Key IS_DEFAULT_CFC_LOCATION = KeyImpl.getInstance("isDefaultCfclocation");
+	public static final Collection.Key DB_CREATE = KeyImpl.getInstance("dbCreate");
 	public static final Collection.Key DIALECT = KeyImpl.getInstance("dialect");
-	public static final Collection.Key FLUSH_AT_REQUEST_END = KeyImpl.getInstance("flushatrequestend");
-	public static final Collection.Key LOG_SQL = KeyImpl.getInstance("logSQL");
+	public static final Collection.Key FLUSH_AT_REQUEST_END = KeyImpl.getInstance("flushAtRequestEnd");
+	public static final Collection.Key LOG_SQL = KeyImpl.getInstance("logSql");
 	public static final Collection.Key SAVE_MAPPING = KeyImpl.getInstance("savemapping");
 	public static final Collection.Key SCHEMA = KeyImpl.getInstance("schema");
 	public static final Collection.Key SECONDARY_CACHE_ENABLED = KeyImpl.getInstance("secondarycacheenabled");
@@ -64,6 +69,7 @@ public class ORMConfiguration {
 	private String cacheProvider;
 	private Resource ormConfig;
 	private String eventHandler;
+	private boolean isDefaultCfcLocation=true;
 
 	private ORMConfiguration(){
 		autogenmap=true;
@@ -89,7 +95,7 @@ public class ORMConfiguration {
 		
 		if(dc==null)dc=new ORMConfiguration();
 		ORMConfiguration c = dc.duplicate();
-		c.cfcLocations=new Resource[]{defaultCFCLocation};
+		c.cfcLocations=defaultCFCLocation==null?new Resource[0]:new Resource[]{defaultCFCLocation};
 		
 		// autogenmap
 		c.autogenmap=Caster.toBooleanValue(settings.get(AUTO_GEN_MAP,dc.autogenmap()),dc.autogenmap());
@@ -101,7 +107,14 @@ public class ORMConfiguration {
 		Object obj = settings.get(CFC_LOCATION,null);
 		if(obj!=null){
 			Resource res;
-			if(Decision.isArray(obj)){
+			if(!Decision.isArray(obj)){
+				String list = Caster.toString(obj,null);
+				if(!StringUtil.isEmpty(list)) {
+					obj=List.listToArray(list, ',');
+				}
+			}
+			
+			if(Decision.isArray(obj)) {
 				Array arr=Caster.toArray(obj,null);
 				java.util.List<Resource> list=new ArrayList<Resource>();
 				//c.cfcLocations=new Resource[arr.size()];
@@ -114,21 +127,25 @@ public class ORMConfiguration {
 					}
 					catch(Throwable t){}
 				}
-				if(list.size()>0)
+				if(list.size()>0){
 					c.cfcLocations=list.toArray(new Resource[list.size()]);
+					c.isDefaultCfcLocation=false;
+				}
 			}
-			else {
+			/*else {
 				try	{
 					res = toResourceExisting(config, obj);
-					if(res!=null) c.cfcLocations=new Resource[]{res};//Caster.toResource(config, obj, true);
+					if(res!=null) {
+						c.cfcLocations=new Resource[]{res};//Caster.toResource(config, obj, true);
+						c.isDefaultCfcLocation=false;
+					}
 				}
 				catch(Throwable t){}
-			}
+			}*/
 			
 		}
-		
 		if(c.cfcLocations == null)
-			c.cfcLocations=new Resource[]{defaultCFCLocation};
+			c.cfcLocations=defaultCFCLocation==null?new Resource[0]:new Resource[]{defaultCFCLocation};
 		
 		// dbcreate
 		obj = settings.get(DB_CREATE,null);
@@ -203,8 +220,8 @@ public class ORMConfiguration {
 	private static Resource toResourceExisting(Config config, Object obj) {
 		//Resource root = config.getRootDirectory();
 		String path = Caster.toString(obj,null);
-		if(StringUtil.isEmpty(path)) return null;
-		
+		if(StringUtil.isEmpty(path,true)) return null;
+		path=path.trim();
 		Resource res = ResourceUtil.toResourceNotExisting(config, path);
 		if(res.isDirectory()) return res;
 		res=config.getRootDirectory().getRealResource(path);
@@ -233,8 +250,10 @@ public class ORMConfiguration {
 		other.autogenmap=autogenmap;
 		other.catalog=catalog;
 		other.cfcLocations=cfcLocations;
+		other.isDefaultCfcLocation=isDefaultCfcLocation;
 		other.dbCreate=dbCreate;
 		other.dialect=dialect;
+		other.eventHandler=eventHandler;
 		other.eventHandling=eventHandling;
 		other.flushAtRequestEnd=flushAtRequestEnd;
 		other.logSQL=logSQL;
@@ -252,7 +271,7 @@ public class ORMConfiguration {
 
 	public String hash() {
 		
-		String data=autogenmap+catalog+cfcLocations+dbCreate+dialect+eventHandling+flushAtRequestEnd+logSQL+saveMapping+schema+secondaryCacheEnabled+sqlScript+useDBForMapping+cacheConfig+cacheProvider+ormConfig;
+		String data=autogenmap+catalog+isDefaultCfcLocation+cfcLocations+dbCreate+dialect+eventHandling+eventHandler+flushAtRequestEnd+logSQL+saveMapping+schema+secondaryCacheEnabled+sqlScript+useDBForMapping+cacheConfig+cacheProvider+ormConfig;
 		try {
 			return MD5.getDigestAsString(data);
 		} catch (IOException e) {
@@ -283,6 +302,9 @@ public class ORMConfiguration {
 	 */
 	public Resource[] getCfcLocations() {
 		return cfcLocations;
+	}
+	public boolean isDefaultCfcLocation() {
+		return isDefaultCfcLocation;
 	}
 
 	/**
@@ -396,9 +418,11 @@ public class ORMConfiguration {
 		sct.setEL(AUTO_GEN_MAP,this.autogenmap());
 		sct.setEL(CATALOG,StringUtil.emptyIfNull(getCatalog()));
 		sct.setEL(CFC_LOCATION,arrLocs);
+		sct.setEL(IS_DEFAULT_CFC_LOCATION,isDefaultCfcLocation());
 		sct.setEL(DB_CREATE,dbCreateAsString(getDbCreate()));
 		sct.setEL(DIALECT,StringUtil.emptyIfNull(getDialect()));
 		sct.setEL(EVENT_HANDLING,eventHandling());
+		sct.setEL(EVENT_HANDLER,eventHandler());
 		sct.setEL(FLUSH_AT_REQUEST_END,flushAtRequestEnd());
 		sct.setEL(LOG_SQL,logSQL());
 		sct.setEL(SAVE_MAPPING,saveMapping());
@@ -486,11 +510,30 @@ class _GetElement implements _Get {
 		this.el=el;
 	}
 	public Object get(Collection.Key name,Object defaultValue){
-		String value = el.getAttribute(name.getString());
-		if(value==null)value = el.getAttribute(StringUtil.camelToHypenNotation(name.getString()));
-		if(value==null)value = el.getAttribute(name.getLowerString());
+		String value=_get(name.getString());
+		if(value==null)value = _get(StringUtil.camelToHypenNotation(name.getString()));
+		if(value==null)value = _get(name.getLowerString());
+		if(value==null){
+			NamedNodeMap map = el.getAttributes();
+			int len=map.getLength();
+			Attr attr;
+			String n;
+			for(int i=0;i<len;i++){
+				attr=(Attr) map.item(i);
+				n=attr.getName();
+				n=StringUtil.replace(n, "-", "", false).toLowerCase();
+				if(n.equalsIgnoreCase(name.getLowerString())) return attr.getValue();
+			}
+			
+		}
+		
 		if(value==null) return defaultValue;
 		return value;
+	}
+	
+	private String _get(String name) {
+		if(el.hasAttribute(name)) return el.getAttribute(name);
+		return null;
 	}
 }
 

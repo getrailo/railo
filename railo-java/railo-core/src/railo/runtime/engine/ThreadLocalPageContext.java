@@ -2,7 +2,6 @@ package railo.runtime.engine;
 
 import java.util.TimeZone;
 
-import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 

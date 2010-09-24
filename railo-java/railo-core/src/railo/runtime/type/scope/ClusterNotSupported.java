@@ -1,7 +1,6 @@
 package railo.runtime.type.scope;
 
 import java.util.Iterator;
-import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigServer;
