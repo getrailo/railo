@@ -57,6 +57,71 @@ If any value of savemapping is specified in CFC, it will override the value spec
 
 
 
+<cfif request.adminType EQ "web">
+	<cfset resetLabel=stText.Buttons.resetServerAdmin>
+<cfelse>
+	<cfset resetLabel=stText.Buttons.reset>
+</cfif>
+    
+<cftry>
+	<cfset stVeritfyMessages = StructNew()>
+	<cfswitch expression="#form.mainAction#">
+	<!--- UPDATE --->
+		<cfcase value="#stText.Buttons.update#">
+        	
+            <cfadmin 
+                action="updateORMSetting"
+                type="#request.adminType#"
+                password="#session["password"&request.adminType]#"
+                
+                autogenmap="#structKeyExists(form,'autogenmap') and form.autogenmap#"
+                eventHandling="#structKeyExists(form,'eventHandling') and form.eventHandling#"
+                flushatrequestend="#structKeyExists(form,'flushatrequestend') and form.flushatrequestend#"
+                logSQL="#structKeyExists(form,'logSQL') and form.logSQL#"
+                savemapping="#structKeyExists(form,'savemapping') and form.savemapping#"
+                useDBForMapping="#structKeyExists(form,'useDBForMapping') and form.useDBForMapping#"
+                 
+                catalog="#form.catalog#"
+                cfclocation="#form.cfclocation#"
+                dbcreate="#form.dbcreate#"
+                schema="#form.schema#"
+                
+				
+                sqlscript="#settings.sqlscript#"
+				cacheconfig="#settings.cacheconfig#"
+				cacheProvider="#settings.cacheProvider#"
+				ormConfig="#settings.ormConfig#"
+				secondarycacheenabled="#settings.secondarycacheenabled#"
+                
+                
+                remoteClients="#request.getRemoteClients()#">	
+		</cfcase>
+	<!--- RESET --->
+		<cfcase value="#resetLabel#">
+        	ddd
+            <cfadmin 
+                action="resetORMSetting"
+                type="#request.adminType#"
+                password="#session["password"&request.adminType]#"
+                
+                remoteClients="#request.getRemoteClients()#">	
+		</cfcase>
+    
+	</cfswitch>
+	<cfcatch><cfrethrow>
+		<cfset error.message=cfcatch.message>
+		<cfset error.detail=cfcatch.Detail>
+	</cfcatch>
+</cftry>
+<!---
+Redirtect to entry  --->
+<cfif cgi.request_method EQ "POST" and error.message EQ "" and form.mainAction neq stText.Buttons.verify>
+	<cflocation url="#request.self#?action=#url.action#" addtoken="no">
+</cfif>
+
+
+
+
 
 <cfoutput>
 <h2>#stText.Settings.orm.title#</h2>
@@ -110,7 +175,7 @@ If any value of savemapping is specified in CFC, it will override the value spec
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.orm.cfclocation#</td>
 	<td class="tblContent">
-			<input type="text" name="cfclocation" size="80" value="#settings.cfclocation#" /><br />
+			<input type="text" name="cfclocation" size="80" value="#settings.isDefaultCfclocation?"":arrayToList(settings.cfclocation)#" /><br />
 			<span class="comment">#stText.Settings.orm.cfclocationDesc#</span>
 		
 		
@@ -199,7 +264,7 @@ makes no sense to define this here
 	</td>
 </tr>
 
-<!--- sqlscript --->
+<!--- sqlscript
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.orm.sqlscript#</td>
 	<td class="tblContent">
@@ -209,7 +274,7 @@ makes no sense to define this here
 		
 	</td>
 </tr>
- 
+  --->
 <!--- 
 	public static final Collection.Key SECONDARY_CACHE_ENABLED = KeyImpl.getInstance("secondarycacheenabled");
 	public static final Collection.Key CACHE_CONFIG = KeyImpl.getInstance("cacheconfig");
@@ -226,9 +291,9 @@ makes no sense to define this here
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction1" value="#stText.Buttons.Update#">
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction1" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<input class="submit" type="submit" class="submit" name="mainAction" value="#resetLabel#">
 	</td>
 </tr>
 </cfif>
@@ -236,74 +301,4 @@ makes no sense to define this here
 </cfform>
 </table>
 <br /><br />
-
-<h2>#stText.application.listener#</h2>
-#stText.application.listenerDescription#
-
-<table class="tbl" width="600">
-
-<cfform action="#request.self#?action=#url.action#" method="post">
-
-<!--- listener type 
-<tr>
-	<td class="tblHead">#stText.application.listenerType#</td>
-	<td class="tblContent">
-	<cfif hasAccess>
-		<span class="comment">#stText.application.listenerTypeDescription#</span><br />
-		<table class="tbl" width="600">
-		<cfloop index="key" list="none,classic,modern,mixed">
-		<tr>
-			<td width="200" class="tblHead" nowrap="nowrap">#stText.application['listenerType_' & key]#</td>
-			<td width="400" class="tblContent"><input type="radio" name="type" value="#key#" <cfif listener.type EQ key>checked="checked"</cfif>>
-			<span class="comment">#stText.application['listenerTypeDescription_' & key]#</span></td>
-		</tr>
-		</cfloop>
-		</table>
-	<cfelse>
-		<input type="hidden" name="type" value="#listener.type#">
-		<b>#listener.type#</b><br />
-		<span class="comment">#stText.application['listenerTypeDescription_' & listener.type]#</span>
-	</cfif>
-	</td>
-</tr>
---->
-
-<!--- listener mode
-<tr>
-	<td class="tblHead">#stText.application.listenerMode#</td>
-	<td class="tblContent">
-	<cfif hasAccess>
-		<span class="comment">#stText.application.listenerModeDescription#</span><br />
-		<table class="tbl" width="600">
-		<cfloop index="key" list="curr,root,curr2root">
-		<tr>
-			<td width="200" class="tblHead" nowrap="nowrap">#stText.application['listenerMode_' & key]#</td>
-			<td width="400" class="tblContent"><input type="radio" name="mode" value="#key#" <cfif listener.mode EQ key>checked="checked"</cfif>>
-			<span class="comment">#stText.application['listenerModeDescription_' & key]#</span></td>
-		</tr>
-		</cfloop>
-		</table>
-	<cfelse>
-		<input type="hidden" name="type" value="#listener.mode#">
-		<b>#listener.mode#</b><br />
-		<span class="comment">#stText.application['listenerModeDescription_' & listener.mode]#</span>
-	</cfif>
-	</td>
-</tr>
-
-
-
- --->
-<cfif hasAccess>
-<cfmodule template="remoteclients.cfm" colspan="3">
-<tr>
-	<td colspan="3">
-		<input type="submit" class="submit" name="mainAction2" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction2" value="#stText.Buttons.resetServerAdmin#"></cfif>
-	</td>
-</tr>
-</cfif>
-</cfform></cfoutput>
-</table>
-<br><br>
+</cfoutput>

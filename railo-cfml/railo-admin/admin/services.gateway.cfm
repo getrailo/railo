@@ -74,9 +74,8 @@
 </cfloop>
 
 <span class="CheckError">
-The Gateway Implementation is currently in Alpha State. Its functionality can change before it's final release.<br />
-If you have any problems while using the Gateway Implementation, please post the bugs and errors in our
-bugtracking system. 
+The Gateway Implementation is currently in Beta State. Its functionality can change before it's final release.
+If you have any problems while using the Gateway Implementation, please post the bugs and errors in our <a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank" class="CheckError">bugtracking system</a>. 
 </span>
 
 <cfswitch expression="#url.action2#">

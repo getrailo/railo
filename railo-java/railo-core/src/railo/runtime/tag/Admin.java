@@ -35,7 +35,6 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
-import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.PageContextImpl;
@@ -89,6 +88,7 @@ import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.date.DateCaster;
+import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
@@ -435,8 +435,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	if(check("connect",ACCESS_FREE) && check2(CHECK_PW)) {/*do nothing more*/}
     	else if(check("surveillance",           ACCESS_FREE) && check2(ACCESS_READ  )) doSurveillance();
     	else if(check("getRegional",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetRegional();
+    	else if(check("resetORMSetting",            ACCESS_FREE) && check2(ACCESS_READ  )) doResetORMSetting();
     	else if(check("getORMSetting",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetORMSetting();
     	else if(check("getORMEngine",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetORMEngine();
+    	else if(check("updateORMSetting",            ACCESS_FREE) && check2(ACCESS_READ  )) doUpdateORMSetting();
         else if(check("getApplicationListener", ACCESS_FREE) && check2(ACCESS_READ  )) doGetApplicationListener();
         else if(check("getProxy",            	ACCESS_FREE) && check2(ACCESS_READ  )) doGetProxy();
         else if(check("getCharset",            	ACCESS_FREE) && check2(ACCESS_READ  )) doGetCharset();
@@ -2405,12 +2407,75 @@ private void doGetMappings() throws PageException {
     private void doGetORMEngine() throws PageException {
         pageContext.setVariable(getString("admin",action,"returnVariable"),config.getORMEngineClass().getName());
     }
+    
+
+    private void doUpdateORMSetting() throws SecurityException, PageException {
+    	ORMConfiguration oc = config.getORMConfig();
+    	Struct settings=new StructImpl();
+    	
+    	settings.set(ORMConfiguration.AUTO_GEN_MAP, getBool("admin",action,"autogenmap"));
+    	settings.set(ORMConfiguration.EVENT_HANDLING, getBool("admin",action,"eventHandling"));
+    	settings.set(ORMConfiguration.FLUSH_AT_REQUEST_END, getBool("admin",action,"flushatrequestend"));
+    	settings.set(ORMConfiguration.LOG_SQL, getBool("admin",action,"logSQL"));
+    	settings.set(ORMConfiguration.SAVE_MAPPING, getBool("admin",action,"savemapping"));
+    	settings.set(ORMConfiguration.USE_DB_FOR_MAPPING, getBool("admin",action,"useDBForMapping"));
+    	settings.set(ORMConfiguration.SECONDARY_CACHE_ENABLED, getBool("admin",action,"secondarycacheenabled"));
+    	
+    	settings.set(ORMConfiguration.CATALOG, getString("admin",action,"catalog"));
+    	settings.set(ORMConfiguration.SCHEMA, getString("admin",action,"schema"));
+    	settings.set(ORMConfiguration.SQL_SCRIPT, getString("admin",action,"sqlscript"));
+    	settings.set(ORMConfiguration.CACHE_CONFIG, getString("admin",action,"cacheconfig"));
+    	settings.set(ORMConfiguration.CACHE_PROVIDER, getString("admin",action,"cacheProvider"));
+    	settings.set(ORMConfiguration.ORM_CONFIG, getString("admin",action,"ormConfig"));
+    	
+    	
+    	// dbcreate
+    	String strDbcreate=getString("admin",action,"dbcreate");
+    	String dbcreate="none";
+    	if("none".equals(strDbcreate))				dbcreate="none";
+    	else if("update".equals(strDbcreate))		dbcreate="update";
+    	else if("dropcreate".equals(strDbcreate))	dbcreate="dropcreate";
+		else throw new ApplicationException("invalid dbcreate definition ["+strDbcreate+"], valid dbcreate definitions are [none,update,dropcreate]");
+    	settings.set(ORMConfiguration.DB_CREATE, getString("admin",action,"dbcreate"));
+    	
+    	// cfclocation
+    	String strCfclocation=getString("admin",action,"cfclocation");
+    	Array arrCfclocation = railo.runtime.type.List.listToArray(strCfclocation, ",\n");
+    	Iterator it = arrCfclocation.valueIterator();
+    	String path;
+    	while(it.hasNext()){
+    		path=(String) it.next();
+    		ResourceUtil.toResourceExisting(config, path);
+    	}
+    	settings.set(ORMConfiguration.CFC_LOCATION, arrCfclocation);
+    	
+    	admin.updateORMSetting(ORMConfiguration.load(config, settings, null, oc));
+        
+    	
+    	store();
+        adminSync.broadcast(attributes, config);
+	}
+    
+    private void doResetORMSetting() throws SecurityException, PageException {
+    	ORMConfiguration oc = config.getORMConfig();
+    	
+    	admin.resetORMSetting();
+    	
+    	store();
+        adminSync.broadcast(attributes, config);
+	}
+    
+    
 
     private void doUpdatePerformanceSettings() throws SecurityException, PageException {
     	admin.updateInspectTemplate(getString("admin",action,"inspectTemplate"));
         store();
         adminSync.broadcast(attributes, config);
 	}
+    
+    
+
+    
 
 	private void doGetPerformanceSettings() throws ApplicationException, PageException {
 		Struct sct=new StructImpl();
