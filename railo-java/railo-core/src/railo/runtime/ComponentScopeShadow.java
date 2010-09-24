@@ -13,6 +13,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyIterator;
@@ -358,8 +359,11 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
+		StructImpl sct = new StructImpl();
+		StructImpl.copy(this, sct, deepCopy);
+		return sct;
 //		 MUST muss deepCopy checken
-        return new ComponentScopeShadow(component,shadow);//new ComponentScopeThis(component.cloneComponentImpl());
+        //return new ComponentScopeShadow(component,shadow);//new ComponentScopeThis(component.cloneComponentImpl());
     }
 	
 

@@ -11,6 +11,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ComponentUtil;
@@ -281,7 +282,11 @@ public final class ComponentScopeThis extends StructSupport implements Component
      * @see railo.runtime.type.Collection#duplicate(boolean)
      */
     public Collection duplicate(boolean deepCopy) {
-    	return new ComponentScopeThis((ComponentImpl) component.duplicate(deepCopy));
+
+		StructImpl sct = new StructImpl();
+		StructImpl.copy(this, sct, deepCopy);
+		return sct;
+    	//return new ComponentScopeThis((ComponentImpl) component.duplicate(deepCopy));
     	//return new ComponentScopeThis(component.cloneComponentImpl(deepCopy));
     }
 
