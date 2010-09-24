@@ -9,8 +9,6 @@ function printError(error,boolean longversion=false) {
 	if(not StructKeyExists(error,'detail'))error.detail="";
 	else if(error.message EQ error.detail)error.detail="";
 
-	
-
 	if(StructKeyExists(arguments.error,'message') and arguments.error.message NEQ "") {
 		writeOutput('<span class="CheckError">');
 		writeOutput(br(arguments.error.message));
@@ -30,10 +28,6 @@ function printError(error,boolean longversion=false) {
 		}
 		//ErrorCode,addional,TagContext,StackTrace,type,Detail,Message,ExtendedInfo
 		writeOutput('</span><br><br>');
-		
-		
-		
-		
 	}
 }
 
