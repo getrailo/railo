@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -682,7 +683,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		//TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,"function");
 			
 		// attributes
-		Attribute[] attrs = attributes(null,null,data,true,EMPTY_STRING,true,null);
+		Attribute[] attrs = attributes(null,null,data,true,EMPTY_STRING,true,null,false);
 		for(int i=0;i<attrs.length;i++){
 			func.addAttribute(attrs[i]);
 		}
@@ -812,7 +813,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		
 		// attributes
 		//attributes(func,data);
-		Attribute[] attrs = attributes(tag,tlt,data,true,EMPTY_STRING,allowExpression,null);
+		Attribute[] attrs = attributes(tag,tlt,data,true,EMPTY_STRING,allowExpression,null,false);
 		
 		for(int i=0;i<attrs.length;i++){
 			tag.addAttribute(attrs[i]);
@@ -885,16 +886,38 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		
 		TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,"property");
 		Tag property=new TagBase(line);
+		
+		
+
+		boolean hasName=false,hasType=false;
+
+		// TODO allow the following pattern property "a.b.C" d;
+		//Expression t = string(data);
+		// print.o("name:"+t.getClass().getName());
+		
+		int pos = data.cfml.getPos();
+		String tmp=variableDeclaration(data, true, false);
+		if(!StringUtil.isEmpty(tmp)) {
+			if(tmp.indexOf('.')!=-1) {
+				property.addAttribute(new Attribute(false,"type",LitString.toExprString(tmp),"string"));
+				hasType=true;
+			}
+			else {
+				data.cfml.setPos(pos);
+			}
+		}
+		else data.cfml.setPos(pos);
+		
+		
+		
 		// folgend wird tlt extra nicht Ÿbergeben, sonst findet prŸfung statt
-		Attribute[] attrs = attributes(property,tlt,data,false,	NULL,false,"name");
+		Attribute[] attrs = attributes(property,tlt,data,false,	NULL,false,"name",true);
 		
 		checkSemiColonLineFeed(data,true);
 
 		property.setTagLibTag(tlt);
 		property.setScriptBase(true);
 		
-		Attribute name=null,type=null;
-		boolean hasName=false,hasType=false;
 		
 		Attribute attr;
 		
@@ -916,32 +939,43 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		}
 		
 		// now fill name named attributes -> attr1 attr2
-		boolean checkForNT=true;
-		for(int i=attrs.length-1;i>=0;i--){
+		
+		String first=null,second=null;
+		for(int i=0;i<attrs.length;i++){
 			attr=attrs[i];
 			
 			if(attr.getValue().equals(NULL)){
-				// name
-				if(checkForNT && !hasName){
-					hasName=true;
-					name=new Attribute(false,"name",LitString.toExprString(attr.getName()),"string");
-					property.addAttribute(name);
-				}
 				// type
-				else if(checkForNT && !hasType){
-					hasType=true;
-					type=new Attribute(false,"type",LitString.toExprString(attr.getName()),"string");
-					property.addAttribute(type);
+				if(first==null && (!hasName || !hasType)){
+					first=attr.getName();
+					//type=new Attribute(false,"type",LitString.toExprString(attr.getName()),"string");
+					//property.addAttribute(type);
+				}
+				// name
+				else if(second==null && !hasName && !hasType){
+					second=attr.getName();
+					//name=new Attribute(false,"name",LitString.toExprString(attr.getName()),"string");
+					//property.addAttribute(name);
 				}
 				// attr with no value
 				else {
 					attr=new Attribute(true,attr.getName(),EMPTY_STRING,"string");
-					//property.addAttribute(attr);
+					property.addAttribute(attr);
 				}
-				
+			}
+		}
+
+		
+		
+		if(first!=null) {
+				hasName=true;
+			if(second!=null){
+				hasType=true;
+				property.addAttribute(new Attribute(false,"name",LitString.toExprString(second),"string"));
+				property.addAttribute(new Attribute(false,"type",LitString.toExprString(first),"string"));
 			}
 			else {
-				checkForNT=false;
+				property.addAttribute(new Attribute(false,"name",LitString.toExprString(first),"string"));
 			}
 		}
 		
@@ -956,6 +990,8 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		property.addAttribute(new Attribute(false,"name",LitString.toExprString(name),"string"));
 		property.addAttribute(new Attribute(false,"type",LitString.toExprString(type),"string"));
 		*/
+		
+		
 		return property;
 	}
 
@@ -1152,7 +1188,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	protected Statement _singleAttrStatement(Body parent, Data data, String tagName,String attrName,int attrType, boolean allowExpression) throws TemplateException   {
 		int pos = data.cfml.getPos();
 		try {
-			return __singleAttrStatement(parent,data,tagName,attrName,attrType,allowExpression);
+			return __singleAttrStatement(parent,data,tagName,attrName,attrType,allowExpression, false);
 		} 
 		catch (ProcessingDirectiveException e) {
 			throw e;
@@ -1169,7 +1205,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	
 	
 
-	protected Statement __singleAttrStatement(Body parent, Data data, String tagName,String attrName,int attrType, boolean allowExpression) throws TemplateException {
+	protected Statement __singleAttrStatement(Body parent, Data data, String tagName,String attrName,int attrType, boolean allowExpression, boolean allowTwiceAttr) throws TemplateException {
 		
 		if(data.cfml.forwardIfCurrent(tagName)){
 			if(!data.cfml.isCurrent(' ') && !data.cfml.isCurrent(';')){
@@ -1208,7 +1244,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		checkSemiColonLineFeed(data,true);
 		if(!StringUtil.isEmpty(tlt.getTteClassName()))data.ep.add(tlt, tag, data.fld, data.cfml);
 		
-		if(!StringUtil.isEmpty(attrName))validateAttributeName(attrName, data.cfml, new ArrayList<String>(), tlt, new RefBooleanImpl(false), new StringBuffer());
+		if(!StringUtil.isEmpty(attrName))validateAttributeName(attrName, data.cfml, new ArrayList<String>(), tlt, new RefBooleanImpl(false), new StringBuffer(), allowTwiceAttr);
 		
 		eval(tlt,data,tag);
 		return tag;
@@ -1445,7 +1481,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	
 	
 	public Attribute[] attributes(Tag tag,TagLibTag tlt, Data data, boolean allowBlock,Expression defaultValue,boolean allowExpression, 
-			String ignoreAttrReqFor) throws TemplateException {
+			String ignoreAttrReqFor, boolean allowTwiceAttr) throws TemplateException {
 		ArrayList<Attribute> attrs=new ArrayList<Attribute>();
 		ArrayList<String> ids=new ArrayList<String>();
 		
@@ -1453,7 +1489,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 			data.cfml.removeSpace();
 			// if no more attributes break
 			if((allowBlock && data.cfml.isCurrent('{')) || data.cfml.isCurrent(';')) break;
-			Attribute attr = attribute(tlt,data,ids,defaultValue,allowExpression);
+			Attribute attr = attribute(tlt,data,ids,defaultValue,allowExpression, allowTwiceAttr);
 			attrs.add(attr);
 		}
 		
@@ -1485,12 +1521,12 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		return false;
 	}
 
-	private Attribute attribute(TagLibTag tlt, Data data, ArrayList<String> args, Expression defaultValue,boolean allowExpression) throws TemplateException {
+	private Attribute attribute(TagLibTag tlt, Data data, ArrayList<String> args, Expression defaultValue,boolean allowExpression, boolean allowTwiceAttr) throws TemplateException {
 		StringBuffer sbType=new StringBuffer();
     	RefBoolean dynamic=new RefBooleanImpl(false);
     	
 		// Name
-    	String name=attributeName(data.cfml,args,tlt,dynamic,sbType);
+    	String name=attributeName(data.cfml,args,tlt,dynamic,sbType, allowTwiceAttr);
     	Expression value=null;
     	
     	CFMLTransformer.comment(data.cfml,true);
@@ -1550,15 +1586,15 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		return id;
 	}*/
 	
-	private String attributeName(CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType) throws TemplateException {
+	private String attributeName(CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr) throws TemplateException {
 		String id=StringUtil.toLowerCase(CFMLTransformer.identifier(cfml,true));
-		return validateAttributeName(id, cfml, args, tag, dynamic, sbType);
+		return validateAttributeName(id, cfml, args, tag, dynamic, sbType,allowTwiceAttr);
 	}
 	
 	
 	
-	private String validateAttributeName(String id,CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType) throws TemplateException {
-		if(args.contains(id)) throw new TemplateException(cfml,"you can't use the same attribute ["+id+"] twice");
+	private String validateAttributeName(String id,CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr) throws TemplateException {
+		if(args.contains(id) && !allowTwiceAttr) throw new TemplateException(cfml,"you can't use the same attribute ["+id+"] twice");
 		args.add(id);
 		
 		
