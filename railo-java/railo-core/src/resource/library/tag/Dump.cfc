@@ -76,7 +76,8 @@
         </cftry>
          
 		<!--- create output --->
-        <cfset result=this[attributes.format](meta,context,attributes.expand,attributes.output)>
+        <cfset var hasReference=structKeyExists(meta,'hasReference') && meta.hasReference>
+        <cfset result=this[attributes.format](meta,context,attributes.expand,attributes.output,hasReference)>
 		
         
         </cfsilent><!--- output chanel
@@ -97,6 +98,7 @@
 	<cfargument name="context" type="string" required="no" default="">
 	<cfargument name="expand" type="string" required="no" default="">
 	<cfargument name="output" type="string" required="no" default="">
+	<cfargument name="hasReference" type="boolean" required="no" default="#false#">
 	<cfargument name="inside" type="boolean" required="no" default="#false#">
     <cfset var columncount=StructKeyExists(arguments.meta,'data')?listLen(arguments.meta.data.columnlist):0>
     <cfset var rtn="">
@@ -123,7 +125,7 @@ function dumpOC(name){
 <!--- title --->
 <cfif structKeyExists(arguments.meta,'title')><tr>
 	<td title="#arguments.context#" onclick="dumpOC('#id#');" colspan="#columncount#" bgcolor="#arguments.meta.highLightColor#" style="border : 1px solid #arguments.meta.borderColor#; empty-cells:show;">
-		<span style="font-weight:bold;">#arguments.meta.title#</span>
+		<span style="font-weight:bold;">#arguments.meta.title#<cfif arguments.hasReference and structKeyExists(arguments.meta,'id')> [#arguments.meta.id#]</cfif></span>
         <cfif structKeyExists(arguments.meta,'comment')><br /> #replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all')#</cfif>
     </td>
 </tr>
@@ -136,7 +138,7 @@ function dumpOC(name){
 <cfif columncount><cfloop query="arguments.meta.data">
 <tr #len(id)?'name="_#id#"':''#<cfif len(id)> name="_#id#"<cfif not arguments.expand> style="display:none"</cfif></cfif>>
 <cfset c=1><cfloop index="col" from="1" to="#columncount-1#"><cfset value=arguments.meta.data["data"&col]>
-	<td valign="top" #!arguments.inside?'title="#arguments.context#"':''# bgcolor="#bgColor(arguments.meta,c)#" style="border : 1px solid #arguments.meta.borderColor#;empty-cells:show;"><cfif isStruct(value)>#this.html(value,"",arguments.expand,arguments.output,false)#<cfelse>#HTMLEditFormat(value)#</cfif></td><cfset c*=2>
+	<td valign="top" #!arguments.inside?'title="#arguments.context#"':''# bgcolor="#bgColor(arguments.meta,c)#" style="border : 1px solid #arguments.meta.borderColor#;empty-cells:show;"><cfif isStruct(value)>#this.html(value,"",arguments.expand,arguments.output,arguments.hasReference,false)#<cfelse>#HTMLEditFormat(value)#</cfif></td><cfset c*=2>
 </cfloop>
 </tr>
 </cfloop></cfif>
@@ -156,6 +158,7 @@ function dumpOC(name){
 	<cfargument name="context" type="string" required="no" default="">
 	<cfargument name="expand" type="string" required="no" default="">
 	<cfargument name="output" type="string" required="no" default="">
+	<cfargument name="hasReference" type="boolean" required="no" default="#false#">
 	<cfargument name="inside" type="boolean" required="no" default="#false#">
     <cfset var columncount=StructKeyExists(arguments.meta,'data')?listLen(arguments.meta.data.columnlist):0>
     <cfset var rtn="">
@@ -193,7 +196,7 @@ function dumpOC(name){
 <!--- title --->
 <cfif structKeyExists(arguments.meta,'title')><tr>
 	<td title="#arguments.context#" onclick="dumpOC('#id#');" colspan="#columncount#" bgcolor="#h1Color#" style="color:white;border : 1px solid #borderColor#; empty-cells:show;">
-		<span style="font-weight:bold;">#arguments.meta.title#</span>
+		<span style="font-weight:bold;">#arguments.meta.title#<cfif arguments.hasReference and structKeyExists(arguments.meta,'id')> [#arguments.meta.id#]</cfif></span>
         <cfif structKeyExists(arguments.meta,'comment')><br />#replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all')#</cfif>
     </td>
 </tr>
@@ -206,7 +209,7 @@ function dumpOC(name){
 <cfif columncount><cfloop query="arguments.meta.data">
 <tr #len(id)?'name="_#id#"':''#>
 <cfset c=1><cfloop index="col" from="1" to="#columncount-1#"><cfset value=arguments.meta.data["data"&col]>
-	<td valign="top" #!arguments.inside?'title="#arguments.context#"':''# bgcolor="#bgColor(arguments.meta,c,h2Color)#" style="border : 1px solid #borderColor#;empty-cells:show;"><cfif isStruct(value)>#this.classic(value,"",arguments.expand,arguments.output,false)#<cfelse>#HTMLEditFormat(value)#</cfif></td><cfset c*=2>
+	<td valign="top" #!arguments.inside?'title="#arguments.context#"':''# bgcolor="#bgColor(arguments.meta,c,h2Color)#" style="border : 1px solid #borderColor#;empty-cells:show;"><cfif isStruct(value)>#this.classic(value,"",arguments.expand,arguments.output,arguments.hasReference,false)#<cfelse>#HTMLEditFormat(value)#</cfif></td><cfset c*=2>
 </cfloop>
 </tr>
 </cfloop></cfif>
@@ -224,6 +227,7 @@ function dumpOC(name){
 	<cfargument name="context" type="string" required="no" default="">
 	<cfargument name="expand" type="string" required="no" default="">
 	<cfargument name="output" type="string" required="no" default="">
+	<cfargument name="hasReference" type="boolean" required="no" default="#false#">
     <cfset var columncount=StructKeyExists(arguments.meta,'data')?listLen(arguments.meta.data.columnlist):0>
     <cfset var rtn="">
 	
@@ -233,7 +237,7 @@ function dumpOC(name){
 <cfif structKeyExists(arguments.meta,'title')>
 <tr>
 	<td title="#arguments.context#" colspan="#columncount#" bgcolor="#arguments.meta.highLightColor#">
-		<b>#arguments.meta.title#</b>
+		<b>#arguments.meta.title#<cfif arguments.hasReference and structKeyExists(arguments.meta,'id')> [#arguments.meta.id#]</cfif></b>
         <cfif structKeyExists(arguments.meta,'comment')><br />#replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all')#</cfif>
     </td>
 </tr>
@@ -244,7 +248,7 @@ function dumpOC(name){
 <cfif columncount><cfloop query="arguments.meta.data">
 <tr><cfset c=1><cfloop index="col" from="1" to="#columncount-1#">
 	<cfset value=arguments.meta.data["data"&col]><!---
-	---><td title="#arguments.context#" bgcolor="#bgColor(arguments.meta,c)#"><cfif isStruct(value)>#this.simple(value,"",arguments.expand)#<cfelseif len(value)>#HTMLEditFormat(value)#<cfelse>&nbsp;</cfif></td><!---
+	---><td title="#arguments.context#" bgcolor="#bgColor(arguments.meta,c)#"><cfif isStruct(value)>#this.simple(value,"",arguments.expand,arguments.output,arguments.hasReference)#<cfelseif len(value)>#HTMLEditFormat(value)#<cfelse>&nbsp;</cfif></td><!---
     ---><cfset c*=2><!---
 ---></cfloop>
 </tr>
@@ -263,6 +267,7 @@ function dumpOC(name){
 	<cfargument name="context" type="string" required="no" default="">
 	<cfargument name="expand" type="string" required="no" default="">
 	<cfargument name="output" type="string" required="no" default="">
+	<cfargument name="hasReference" type="boolean" required="no" default="#false#">
 	<cfargument name="level" type="numeric" required="no" default="0">
     
     
@@ -272,7 +277,9 @@ function dumpOC(name){
 
 	<!--- title --->
 	<cfif structKeyExists(arguments.meta,'title')>
-		<cfset rtn=arguments.meta.title><cfif structKeyExists(arguments.meta,'comment')><cfset rtn&=NL&arguments.meta.comment></cfif>
+		<cfset rtn=arguments.meta.title>
+		<cfif arguments.hasReference and structKeyExists(arguments.meta,'id')><cfset rtn&=" [#arguments.meta.id#]"></cfif>
+		<cfif structKeyExists(arguments.meta,'comment')><cfset rtn&=NL&arguments.meta.comment></cfif>
         <cfset rtn&=NL&bq>
 	</cfif>
 	<!--- data --->
@@ -284,7 +291,7 @@ function dumpOC(name){
 			<cfset c=1>
             <cfloop index="col" from="1" to="#columncount-1#">
                 <cfset value=arguments.meta.data["data"&col]>
-                <cfif isStruct(value)><cfset rtn&=this.text(value,"",arguments.expand,"console",level+1)><cfelse><cfset rtn&=value></cfif>
+                <cfif isStruct(value)><cfset rtn&=this.text(value,"",arguments.expand,"console",arguments.hasReference,level+1)><cfelse><cfset rtn&=value></cfif>
                 <cfset rtn&=" ">
 				<cfset c*=2>
             </cfloop>

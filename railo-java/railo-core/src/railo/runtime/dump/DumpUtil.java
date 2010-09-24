@@ -23,6 +23,7 @@ import org.w3c.dom.NodeList;
 
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.converter.WDDXConverter;
@@ -50,34 +51,15 @@ public class DumpUtil {
 			table.appendRow(new DumpRow(0,new SimpleDumpData("Empty:null")));
 			return table;
 		}
-		else if(o instanceof DumpData) {
+		if(o instanceof DumpData) {
 			return ((DumpData)o);
 		}
-		// Printable
-		else if(o instanceof Dumpable) {
-			return ((Dumpable)o).toDumpData(pageContext,maxlevel,props);
-		}
-		// Map
-		else if(o instanceof Map) {
-			Map map=(Map) o;
-			Iterator it=map.keySet().iterator();
-
-			DumpTable table = new DumpTablePro("struct","#ffb200","#ffcc00","#000000");
-			table.setTitle("Map ("+Caster.toClassName(o)+")");
-			
-			while(it.hasNext()) {
-				Object next=it.next();
-				table.appendRow(1,toDumpData(next,pageContext,maxlevel,props),toDumpData(map.get(next),pageContext,maxlevel,props));
-			}
-			return table;
-		}
 		// Date
-		else if(o instanceof Date) {
+		if(o instanceof Date) {
 			return new DateTimeImpl((Date) o).toDumpData(pageContext,maxlevel,props);
 		}
-
 		// Calendar
-		else if(o instanceof Calendar) {
+		if(o instanceof Calendar) {
 			Calendar c=(Calendar)o;
 			
 			SimpleDateFormat df = new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH);
@@ -90,36 +72,15 @@ public class DumpUtil {
 	        
 			return table;
 		}
-		
-		// List
-		else if(o instanceof List) {
-			List list=(List) o;
-			ListIterator it=list.listIterator();
-			
-			DumpTable table = new DumpTablePro("array","#ffb200","#ffcc00","#000000");
-			table.setTitle("Array (List)");
-			
-			while(it.hasNext()) {
-				table.appendRow(1,new SimpleDumpData(it.nextIndex()+1),toDumpData(it.next(),pageContext,maxlevel,props));
-			}
-			return table;
-		}
-		// Number
-		else if(o instanceof Number) {
-			DumpTable table = new DumpTablePro("numeric","#ff4400","#ff954f","#000000");
-			table.appendRow(1,new SimpleDumpData("number"),new SimpleDumpData(Caster.toString(((Number)o).doubleValue())));
-			return table;
-		}
-
-		// String
-		else if(o instanceof StringBuffer) {
+		// StringBuffer
+		if(o instanceof StringBuffer) {
 			DumpTable dt=(DumpTable)toDumpData(o.toString(), pageContext, maxlevel, props);
 			if(StringUtil.isEmpty(dt.getTitle()))
 				dt.setTitle(Caster.toClassName(o));
 			return dt;
 		}
 		// String
-		else if(o instanceof String) {
+		if(o instanceof String) {
 			String str=(String) o;
 			if(str.startsWith("<wddxPacket ")) {
 				try {
@@ -141,55 +102,37 @@ public class DumpUtil {
 			return table;
 		}
 		// Character
-		else if(o instanceof Character) {
+		if(o instanceof Character) {
 			DumpTable table = new DumpTablePro("character","#ff4400","#ff954f","#000000");
 			table.appendRow(1,new SimpleDumpData("character"),new SimpleDumpData(o.toString()));
 			return table;
 		}
-		// Resultset
-		else if(o instanceof ResultSet) {
-			try {
-				DumpData dd = new QueryImpl((ResultSet)o,"query").toDumpData(pageContext,maxlevel,props);
-				if(dd instanceof DumpTable)
-					((DumpTable)dd).setTitle(Caster.toClassName(o));
-				return dd;
-			} 
-			catch (PageException e) {
-				
-			}
+		// Number
+		if(o instanceof Number) {
+			DumpTable table = new DumpTablePro("numeric","#ff4400","#ff954f","#000000");
+			table.appendRow(1,new SimpleDumpData("number"),new SimpleDumpData(Caster.toString(((Number)o).doubleValue())));
+			return table;
 		}
 		// Boolean
-		else if(o instanceof Boolean) {
+		if(o instanceof Boolean) {
 			DumpTable table = new DumpTablePro("boolean","#ff4400","#ff954f","#000000");
 			table.appendRow(1,new SimpleDumpData("boolean"),new SimpleDumpData(((Boolean)o).booleanValue()));
 			return table;
 		}
 		// File
-		else if(o instanceof File) {
+		if(o instanceof File) {
 			DumpTable table = new DumpTablePro("file","#979EAA","#DEE9FB","#000000");
 			table.appendRow(1,new SimpleDumpData("File"),new SimpleDumpData(o.toString()));
 			return table;
 		}
 		// Resource
-		else if(o instanceof Resource) {
+		if(o instanceof Resource) {
 			DumpTable table = new DumpTablePro("resource","#979EAA","#DEE9FB","#000000");
 			table.appendRow(1,new SimpleDumpData("Resource"),new SimpleDumpData(o.toString()));
 			return table;
 		}
-		// Enumeration
-		else if(o instanceof Enumeration) {
-			Enumeration e=(Enumeration)o;
-			
-			DumpTable table = new DumpTablePro("enumeration","#ffb200","#ffcc00","#000000");
-			table.setTitle("Enumeration");
-			
-			while(e.hasMoreElements()) {
-				table.appendRow(0,toDumpData(e.nextElement(),pageContext,maxlevel,props));
-			}
-			return table;
-		}
 		// byte[]
-		else if(o instanceof byte[]) {
+		if(o instanceof byte[]) {
 			byte[] bytes=(byte[]) o;
 			
 			DumpTable table = new DumpTablePro("array","#ffb200","#ffcc00","#000000");
@@ -205,78 +148,145 @@ public class DumpUtil {
 				}
 			}
 			table.appendRow(0,new SimpleDumpData(sb.toString()));
-			return table;
-			 
-			
+			return table;	
 		}
-		// Object[]
-		else if(Decision.isNativeArray(o)) {
-			Array arr;
-			try {
-				arr = Caster.toArray(o);
-				DumpTable htmlBox = new DumpTablePro("array","#ffb200","#ffcc00","#000000");
-				htmlBox.setTitle("Native Array");
-			
-				int length=arr.size();
-			
-				for(int i=1;i<=length;i++) {
-					Object ox=null;
-					try {
-						ox = arr.getE(i);
-					} catch (Exception e) {}
-					htmlBox.appendRow(1,new SimpleDumpData(i),toDumpData(ox,pageContext,maxlevel,props));
-				}
-				return htmlBox;
-			} 
-			catch (PageException e) {
-				return new SimpleDumpData("");
-			}
-		}
-		// Node
-		else if(o instanceof Node) {
-		    return XMLCaster.toDumpData((Node)o, pageContext,maxlevel,props);			
-		}
-		// ObjectWrap
-		else if(o instanceof ObjectWrap) {
-			maxlevel++;
-		    return toDumpData(((ObjectWrap)o).getEmbededObject(null), pageContext,maxlevel,props);			
-		}
-		// NodeList
-		if(o instanceof NodeList) {
-			NodeList list=(NodeList)o;
-			int len=list.getLength();
-			DumpTable table = new DumpTablePro("xml","#C2AF94","#F3EFEA","#000000");
-			for(int i=0;i<len;i++) {
-				table.appendRow(1,new SimpleDumpData(i),toDumpData(list.item(i),pageContext,maxlevel,props));
-			}
-			return table;
-			
-		}
-		// AttributeMap
-		else if(o instanceof AttributeMap) {
-			return new XMLAttributes((AttributeMap)o,false).toDumpData(pageContext, maxlevel,props);			
-		}
-		// HttpSession
-		else if(o instanceof HttpSession) {
-		    HttpSession hs = (HttpSession)o;
-		    Enumeration e = hs.getAttributeNames();
-		    
-		    DumpTable htmlBox = new DumpTablePro("httpsession","#5965e4","#9999ff","#000000");
-			htmlBox.setTitle("HttpSession");
-		    while(e.hasMoreElements()) {
-		        String key=e.nextElement().toString();
-		        htmlBox.appendRow(1,new SimpleDumpData(key),toDumpData(hs.getAttribute(key), pageContext,maxlevel,props));
-		    }
-		    return htmlBox;
-		}
-		
 		// Collection.Key
-		else if(o instanceof Collection.Key) {
+		if(o instanceof Collection.Key) {
 			Collection.Key key=(Collection.Key) o;
 			DumpTable table = new DumpTablePro("string","#ff4400","#ff954f","#000000");
 			table.appendRow(1,new SimpleDumpData("Collection.Key"),new SimpleDumpData(key.getString()));
 			return table;
 		}
+		
+		
+		String id=""+IDGenerator.intId();
+		String refid=ThreadLocalDump.get(o);
+		if(refid!=null) {
+			DumpTablePro table = new DumpTablePro("ref","#eeeeee","#cccccc","#000000");
+			table.appendRow(1,new SimpleDumpData("Reference"),new SimpleDumpData(refid));
+			table.setRef(refid);
+			return setId(id,table);
+		}
+		
+		ThreadLocalDump.set(o,id);
+		try{
+			// Printable
+			if(o instanceof Dumpable) {
+				return setId(id,((Dumpable)o).toDumpData(pageContext,maxlevel,props));
+			}
+			// Map
+			if(o instanceof Map) {
+				Map map=(Map) o;
+				Iterator it=map.keySet().iterator();
+	
+				DumpTable table = new DumpTablePro("struct","#ffb200","#ffcc00","#000000");
+				table.setTitle("Map ("+Caster.toClassName(o)+")");
+				
+				while(it.hasNext()) {
+					Object next=it.next();
+					table.appendRow(1,toDumpData(next,pageContext,maxlevel,props),toDumpData(map.get(next),pageContext,maxlevel,props));
+				}
+				return setId(id,table);
+			}
+		
+			// List
+			if(o instanceof List) {
+				List list=(List) o;
+				ListIterator it=list.listIterator();
+				
+				DumpTable table = new DumpTablePro("array","#ffb200","#ffcc00","#000000");
+				table.setTitle("Array (List)");
+				
+				while(it.hasNext()) {
+					table.appendRow(1,new SimpleDumpData(it.nextIndex()+1),toDumpData(it.next(),pageContext,maxlevel,props));
+				}
+				return setId(id,table);
+			}
+			// Resultset
+			if(o instanceof ResultSet) {
+				try {
+					DumpData dd = new QueryImpl((ResultSet)o,"query").toDumpData(pageContext,maxlevel,props);
+					if(dd instanceof DumpTable)
+						((DumpTable)dd).setTitle(Caster.toClassName(o));
+					return setId(id,dd);
+				} 
+				catch (PageException e) {
+					
+				}
+			}
+			// Enumeration
+			if(o instanceof Enumeration) {
+				Enumeration e=(Enumeration)o;
+				
+				DumpTable table = new DumpTablePro("enumeration","#ffb200","#ffcc00","#000000");
+				table.setTitle("Enumeration");
+				
+				while(e.hasMoreElements()) {
+					table.appendRow(0,toDumpData(e.nextElement(),pageContext,maxlevel,props));
+				}
+				return setId(id,table);
+			}
+			// Object[]
+			if(Decision.isNativeArray(o)) {
+				Array arr;
+				try {
+					arr = Caster.toArray(o);
+					DumpTable htmlBox = new DumpTablePro("array","#ffb200","#ffcc00","#000000");
+					htmlBox.setTitle("Native Array");
+				
+					int length=arr.size();
+				
+					for(int i=1;i<=length;i++) {
+						Object ox=null;
+						try {
+							ox = arr.getE(i);
+						} catch (Exception e) {}
+						htmlBox.appendRow(1,new SimpleDumpData(i),toDumpData(ox,pageContext,maxlevel,props));
+					}
+					return setId(id,htmlBox);
+				} 
+				catch (PageException e) {
+					return setId(id,new SimpleDumpData(""));
+				}
+			}
+			// Node
+			if(o instanceof Node) {
+			    return setId(id,XMLCaster.toDumpData((Node)o, pageContext,maxlevel,props));			
+			}
+			// ObjectWrap
+			if(o instanceof ObjectWrap) {
+				maxlevel++;
+			    return setId(id,toDumpData(((ObjectWrap)o).getEmbededObject(null), pageContext,maxlevel,props));			
+			}
+			// NodeList
+			if(o instanceof NodeList) {
+				NodeList list=(NodeList)o;
+				int len=list.getLength();
+				DumpTable table = new DumpTablePro("xml","#C2AF94","#F3EFEA","#000000");
+				for(int i=0;i<len;i++) {
+					table.appendRow(1,new SimpleDumpData(i),toDumpData(list.item(i),pageContext,maxlevel,props));
+				}
+				return setId(id,table);
+				
+			}
+		// AttributeMap
+		if(o instanceof AttributeMap) {
+			return setId(id,new XMLAttributes((AttributeMap)o,false).toDumpData(pageContext, maxlevel,props));			
+		}
+			// HttpSession
+			if(o instanceof HttpSession) {
+			    HttpSession hs = (HttpSession)o;
+			    Enumeration e = hs.getAttributeNames();
+			    
+			    DumpTable htmlBox = new DumpTablePro("httpsession","#5965e4","#9999ff","#000000");
+				htmlBox.setTitle("HttpSession");
+			    while(e.hasMoreElements()) {
+			        String key=e.nextElement().toString();
+			        htmlBox.appendRow(1,new SimpleDumpData(key),toDumpData(hs.getAttribute(key), pageContext,maxlevel,props));
+			    }
+			    return setId(id,htmlBox);
+			}
+		
 		
 		// reflect
 		//else {
@@ -353,10 +363,20 @@ public class DumpUtil {
 			inherited.appendRow(7,new SimpleDumpData("Methods inherited from java.lang.Object"));
 			inherited.appendRow(0,new SimpleDumpData(objMethods.toString()));
 			table.appendRow(1,new SimpleDumpData(""),inherited);
-			
-			
-			return table;
+			return setId(id,table);
 		//}
+		}
+		finally{
+			ThreadLocalDump.remove(o);
+		}
+	}
+
+	private static DumpData setId(String id, DumpData data) {
+		if(data instanceof DumpTablePro) {
+			((DumpTablePro)data).setId(id);
+		}
+		// TODO Auto-generated method stub
+		return data;
 	}
 
 	public static boolean keyValid(DumpProperties props,int level, String key) {
