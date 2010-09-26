@@ -38,7 +38,7 @@ public class HttpUtil {
 		String name;
 		while(e.hasMoreElements()){
 			name=(String) e.nextElement();// MUST (hhlhgiug) can throw ConcurrentModificationException
-			attributes.setEL(name, req.getAttribute(name));
+			if(name!=null)attributes.setEL(name, req.getAttribute(name));
 		}
 		return attributes;
 	}

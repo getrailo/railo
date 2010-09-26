@@ -170,16 +170,21 @@ public final class HTTPUtil {
         
         // file
         String path=url.getPath();
-        String file=url.getFile();
+        //String file=url.getFile();
         String query = url.getQuery();
         String ref = url.getRef();
         String user=url.getUserInfo();
         if(port<=0) port=url.getPort();
 
-        
-        
         // decode path
         if(!StringUtil.isEmpty(path)) {
+        	int sqIndex=path.indexOf(';');
+        	String q=null;
+        	if(sqIndex!=-1) {
+        		q=path.substring(sqIndex+1);
+        		path=path.substring(0,sqIndex);
+        	} 
+        	
         	StringBuffer res=new StringBuffer();
         	
         	StringList list = List.toListTrim(path, '/');
@@ -196,32 +201,18 @@ public final class HTTPUtil {
         	if(StringUtil.endsWith(path, '/')) res.append('/');      		
         	path=res.toString();
         	
+        	if(sqIndex!=-1) {
+        		path+=decodeQuery(q,';');
+        	}
+        	
         }
         
         // decode query	
-        if(!StringUtil.isEmpty(query)) {
-        	StringBuffer res=new StringBuffer();
-        	
-        	StringList list = List.toList(query, '&');
-        	String str;
-        	int index;
-        	char del='?';
-        	while(list.hasNext()){
-        		res.append(del);
-        		del='&';
-        		str=list.next();
-        		index=str.indexOf('=');
-        		if(index==-1)res.append(escapeQSValue(str));
-        		else {
-        			res.append(escapeQSValue(str.substring(0,index)));
-        			res.append('=');
-        			res.append(escapeQSValue(str.substring(index+1)));
-        		}
-        	}
-        	query=res.toString();
-        }
-        else query="";
-        file=path+query;
+        query=decodeQuery(query,'?');
+       
+        
+        
+        String file=path+query;
         
      // decode ref/anchor	
         if(ref!=null) {
@@ -251,7 +242,34 @@ public final class HTTPUtil {
        		       
     }
     
-    public static URI toURI(String strUrl) throws URISyntaxException {
+    private static String decodeQuery(String query,char startDelimeter) {
+    	if(!StringUtil.isEmpty(query)) {
+        	StringBuffer res=new StringBuffer();
+        	
+        	StringList list = List.toList(query, '&');
+        	String str;
+        	int index;
+        	char del=startDelimeter;
+        	while(list.hasNext()){
+        		res.append(del);
+        		del='&';
+        		str=list.next();
+        		index=str.indexOf('=');
+        		if(index==-1)res.append(escapeQSValue(str));
+        		else {
+        			res.append(escapeQSValue(str.substring(0,index)));
+        			res.append('=');
+        			res.append(escapeQSValue(str.substring(index+1)));
+        		}
+        	}
+        	query=res.toString();
+        }
+        else query="";
+    	return query;
+	}
+
+
+	public static URI toURI(String strUrl) throws URISyntaxException {
 		 return toURI(strUrl,-1);
 	 }
     
@@ -269,16 +287,18 @@ public final class HTTPUtil {
     	String userInfo = uri.getRawUserInfo();
     	if(port<=0) port=uri.getPort();
 
-    	
-    	
-    	
-        // file
-        
-
-        
-        
+    
         // decode path
         if(!StringUtil.isEmpty(path)) {
+        	
+        	int sqIndex=path.indexOf(';');
+        	String q=null;
+        	if(sqIndex!=-1) {
+        		q=path.substring(sqIndex+1);
+        		path=path.substring(0,sqIndex);
+        	} 
+        	
+        	
         	StringBuffer res=new StringBuffer();
         	
         	StringList list = List.toListTrim(path, '/');
@@ -294,30 +314,15 @@ public final class HTTPUtil {
         	}
         	if(StringUtil.endsWith(path, '/')) res.append('/');      		
         	path=res.toString();
+        	
+        	if(sqIndex!=-1) {
+        		path+=decodeQuery(q,';');
+        	}
         }
         
         // decode query	
-        if(!StringUtil.isEmpty(query)) {
-        	StringBuffer res=new StringBuffer();
-        	
-        	StringList list = List.toList(query, '&');
-        	String str;
-        	int index;
-        	char del='?';
-        	while(list.hasNext()){
-        		res.append(del);
-        		del='&';
-        		str=list.next();
-        		index=str.indexOf('=');
-        		if(index==-1)res.append(escapeQSValue(str));
-        		else {
-        			res.append(escapeQSValue(str.substring(0,index)));
-        			res.append('=');
-        			res.append(escapeQSValue(str.substring(index+1)));
-        		}
-        	}
-        	query=res.toString();
-        }
+        query=decodeQuery(query,'?');
+    
         
         
      // decode ref/anchor	
@@ -411,7 +416,9 @@ public final class HTTPUtil {
 	}
 
 	public static void main(String[] args) throws Exception {
+		
 		// valid urls
+		test("http://localhost:8080/jm/test/tags/_http.cfm;jsessionid=48lhqe568il0d?CFID=2fa614d8-9deb-4051-92e9-100ed44fd2df&CFTOKEN=0&jsessionid=48lhqe568il0d");
 		test("http://www.railo.ch");
 		test("http://www.railo.ch/");
 		test("http://www.railo.ch/a.cfm");
