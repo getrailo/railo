@@ -2,6 +2,7 @@ package railo.runtime.type.scope;
 
 import railo.runtime.Info;
 import railo.runtime.PageContext;
+import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.i18n.LocaleFactory;
@@ -17,6 +18,9 @@ import railo.runtime.type.dt.DateTimeImpl;
 public final class ServerImpl extends ScopeSupport implements Server {
 
     private PageContext pc;
+
+
+	private static final DateTimeImpl expired=new DateTimeImpl(2145913200000L,false);
 
 
 	private static final Key PRODUCT_NAME = KeyImpl.getInstance("productname");
@@ -77,16 +81,23 @@ public final class ServerImpl extends ScopeSupport implements Server {
 	    
 	    ReadOnlyStruct coldfusion=new ReadOnlyStruct();
 			coldfusion.setEL(PRODUCT_LEVEL,Info.getLevel());
-			coldfusion.setEL(PRODUCT_CONTEXT_COUNT,"inf");
-			coldfusion.setEL(PRODUCT_VERSION,"8,0,0,1");
+			//coldfusion.setEL(PRODUCT_CONTEXT_COUNT,"inf");
+			coldfusion.setEL(PRODUCT_VERSION,"9,0,0,1");
+			//coldfusion.setEL(PRODUCT_VERSION,"8,0,0,1");
 			coldfusion.setEL(SERIAL_NUMBER,"0");
 			coldfusion.setEL(PRODUCT_NAME,"Railo");
 			
 			// TODO scope server missing values
 			coldfusion.setEL(APP_SERVER,"");// Jrun
-			coldfusion.setEL(EXPIRATION,new DateTimeImpl(pc,System.currentTimeMillis(),false));// 
+			coldfusion.setEL(EXPIRATION,expired);// 
 			coldfusion.setEL(INSTALL_KIT,"");// 
-			coldfusion.setEL(ROOT_DIR,"");// 
+			
+			String rootdir="";
+			try{
+				rootdir=ThreadLocalConfig.get().getRootDirectory().getAbsolutePath();
+			}
+			catch(Throwable t){}
+			coldfusion.setEL(ROOT_DIR,rootdir);// 
 			
 			
 			
