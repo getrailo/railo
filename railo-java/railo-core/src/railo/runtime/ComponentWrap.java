@@ -1,7 +1,6 @@
 package railo.runtime;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import railo.commons.lang.types.RefBoolean;
@@ -488,5 +487,9 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 	 */
 	public void setProperty(Property property) {
 		component.setProperty(property);
+	}
+
+	public boolean equalTo(String type) {
+		return component.equalTo(type);
 	}
 }

@@ -325,7 +325,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		
 		PageSource ps = m.getPageSource(requestURI);
 		Page p = ((PageSourceImpl)ps).loadPage(pc,(ConfigWeb)config);
-		cfc= ComponentLoader.loadComponentImpl(pc, p, ps, cfcPath, false);
+		cfc= ComponentLoader.loadComponentImpl(pc, p, ps, cfcPath, false,true);
 		if(peristent) cfcs.put(requestURI+id, cfc);
 		return cfc;
 	}

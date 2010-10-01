@@ -108,7 +108,7 @@ public class HBMCreator {
 		        
 		        String joincolumn = toString(engine,cfc,null,meta,"joincolumn",false);
 		        if(!StringUtil.isEmpty(joincolumn)){
-			        join = doc.createElement("join");
+		        	join = doc.createElement("join");
 			        clazz.appendChild(join);
 			        doTable=true;
 			        Element key = doc.createElement("key");
@@ -145,7 +145,7 @@ public class HBMCreator {
         if(ormConf.useDBForMapping()){
         	columnsInfo = engine.getTableInfo(dc,getTableName(engine,pc, meta, cfci),engine);
         }
-        
+
         if(isClass)setCacheStrategy(engine,cfc,null,doc, meta, clazz);
         
 		// id
@@ -168,6 +168,7 @@ public class HBMCreator {
 		
 		// join
 		addJoin(cfc,clazz,pc, joins,columnsInfo,tableName,engine,ormConf);
+
 		
 	}
 	
@@ -201,22 +202,51 @@ public class HBMCreator {
 		ArrayList<Property> others = new ArrayList<Property>();
 		java.util.List<Property> list;
 		String table;
+		Property prop;
+		String fieldType;
+		boolean isJoin;
 		for(int i=0;i<props.length;i++){
-			table=getTable(engine,cfc,props[i]);
+			prop=props[i];
+			table=getTable(engine,cfc,prop);
 			// joins
 			if(!StringUtil.isEmpty(table,true)){
-				table=table.trim();
-				list = (java.util.List<Property>) sct.get(table,null);
-				if(list==null){
-					list=new ArrayList<Property>();
-					sct.setEL(table, list);
+				isJoin=true;
+				// wrong field type
+				try {
+					fieldType = toString(engine, cfc, prop, sct, FIELD_TYPE,false);
+					
+					if("collection".equalsIgnoreCase(fieldType)) isJoin=false;
+					else if("primary".equals(fieldType)) isJoin=false;
+					else if("version".equals(fieldType)) isJoin=false;
+					else if("timestamp".equals(fieldType)) isJoin=false;
+				} 
+				catch (ORMException e) {}
+				
+				// missing column
+				String columns=null;
+				try {
+					if(isRelation(props[i])){
+			        	columns=toString(engine,cfc,props[i], prop.getMeta(), "fkcolumn");
+			        }
+			        else {
+			        	columns=toString(engine,cfc,props[i], prop.getMeta(), "joincolumn");
+			        }
 				}
-				list.add(props[i]);
+				catch(ORMException e){}
+				if(StringUtil.isEmpty(columns)) isJoin=false;
+				
+				if(isJoin){
+					table=table.trim();
+					list = (java.util.List<Property>) sct.get(table,null);
+					if(list==null){
+						list=new ArrayList<Property>();
+						sct.setEL(table, list);
+					}
+					list.add(prop);
+					continue;
+				}
 			}
-			// others
-			else {
-				others.add(props[i]);
-			}
+			others.add(prop);
 		}
 		
 		// fill to joins
@@ -245,7 +275,14 @@ public class HBMCreator {
 	}
 	private static boolean hasTable(HibernateORMEngine engine,Component cfc,Property prop,String tableName) {
 		String t = getTable(engine,cfc,prop);
-		return (StringUtil.isEmpty(t,true) && StringUtil.isEmpty(tableName,true)) || tableName.trim().equalsIgnoreCase(t.trim());
+		boolean left=StringUtil.isEmpty(t,true);
+		boolean right=StringUtil.isEmpty(tableName,true);
+		if(left && right) return true;
+		if(left || right) return false;
+		
+		
+		
+		return tableName.trim().equalsIgnoreCase(t.trim());
 	}
 	
 	
@@ -347,6 +384,7 @@ public class HBMCreator {
 		if(properties.length==0) return;
 		
 		Document doc = XMLUtil.getDocument(clazz);
+		
 		Element join = doc.createElement("join");
         clazz.appendChild(join);
 		
@@ -623,7 +661,7 @@ public class HBMCreator {
 			key.setAttribute("name",prop.getName());
 			
 			// entity-name
-			setEntityName(pc, engine,cfc,prop, meta, key,false);
+			setForeignEntityName(pc, engine,cfc,prop, meta, key,false);
 			
 			// fkcolum
 			String str=toString(engine,cfc,prop,meta,"fkcolumn");
@@ -1061,22 +1099,16 @@ public class HBMCreator {
 		if(StringUtil.isEmpty(str,true)) str=toString(engine,cfc,prop,meta,"foreignKey");
 		if(!StringUtil.isEmpty(str,true)) x2o.setAttribute("foreign-key", str);
         
-		setEntityName(pc,engine,cfc,prop,meta,x2o,true);
+		setForeignEntityName(pc,engine,cfc,prop,meta,x2o,true);
 		
 		createXMLMappingXToX(engine,x2o, pc,cfc,prop,meta);
 	}
 	
-	private static Element getJoin(Element clazz) {
-		if(clazz.getNodeName().equals("subclass")){
-			NodeList joins = clazz.getElementsByTagName("join");
-			if(joins!=null && joins.getLength()>0)
-				return (Element)joins.item(0);
-			
-		}
-		return clazz;
-	}
 	
-	private static void setEntityName(PageContext pc,HibernateORMEngine engine,Component cfc,Property prop, Struct meta, Element el, boolean cfcRequired) throws PageException {
+	
+	
+	
+	private static void setForeignEntityName(PageContext pc,HibernateORMEngine engine,Component cfc,Property prop, Struct meta, Element el, boolean cfcRequired) throws PageException {
 		// entity
 		String str=cfcRequired?null:toString(engine,cfc,prop,meta,"entityName");
 		if(!StringUtil.isEmpty(str,true)) {
@@ -1113,13 +1145,12 @@ public class HBMCreator {
 
 	      
 		
-		Element join = getJoin(clazz);
+		
         
 		// collection type
 		String str=prop.getType();
 		if(StringUtil.isEmpty(str,true) || "any".equalsIgnoreCase(str) || "object".equalsIgnoreCase(str))str="array";
 		else str=str.trim().toLowerCase();
-		
 		
 		
 		
@@ -1148,9 +1179,7 @@ public class HBMCreator {
 		else throw invalidValue(engine,cfc,prop,"collectiontype",str,"array,struct");
 		//throw new ORMException(engine,"invalid value ["+str+"] for attribute [collectiontype], valid values are [array,struct]");
 		
-		if(join==clazz) clazz.appendChild(el);
-		else clazz.insertBefore(el, join);
-		
+		setBeforeJoin(clazz,el);
 		
 		// name 
 		el.setAttribute("name", prop.getName());
@@ -1174,7 +1203,7 @@ public class HBMCreator {
 		// order-by
 		str=toString(engine,cfc,prop,meta, "orderby");
 		if(!StringUtil.isEmpty(str,true))el.setAttribute("order-by",str);
-        
+		
 		// element-column
 		str=toString(engine,cfc,prop,meta,"elementcolumn");
 		if(!StringUtil.isEmpty(str,true)){
@@ -1191,15 +1220,15 @@ public class HBMCreator {
 		
         // batch-size
         Integer i=toInteger(engine,cfc,meta, "batchsize");
-        if(i!=0){
-        	if(i.intValue()>1) el.setAttribute("batch-size", Caster.toString(i.intValue()));
-		
+        if(i!=null && i.intValue()>1) el.setAttribute("batch-size", Caster.toString(i.intValue()));
+ 
 		// column
 		str=toString(engine,cfc,prop,meta,"fkcolumn");
 		if(StringUtil.isEmpty(str,true)) str=toString(engine,cfc,prop,meta,"column");
 		if(!StringUtil.isEmpty(str,true)){
 			Element key = doc.createElement("key");
-			el.appendChild(key);
+			XMLUtil.setFirst(el,key);
+			//el.appendChild(key);
 			
 			// column
 			key.setAttribute("column", formatColumn(str));
@@ -1215,11 +1244,54 @@ public class HBMCreator {
 		// optimistic-lock
 		b=toBoolean(engine,cfc,meta, "optimisticlock");
         if(b!=null && !b.booleanValue()) el.setAttribute("optimistic-lock", "false");
-        }
+        
        
 	}
 	
 	
+	private static void setBeforeJoin(Element clazz, Element el) {
+		Element join;
+		if(clazz.getNodeName().equals("join")) {
+			join=clazz;
+			clazz = getClazz(clazz);
+		}
+		else {
+			join = getJoin(clazz);
+		}
+		
+		if(join==clazz) clazz.appendChild(el);
+		else clazz.insertBefore(el, join);
+		
+		
+	}
+	
+	private static Element getClazz(Element join) {
+		if(join.getNodeName().equals("join")){
+			return (Element) join.getParentNode();
+		}
+		return join;
+	}
+
+	private static Element getJoin(Element clazz) {
+		if(clazz.getNodeName().equals("subclass")){
+			NodeList joins = clazz.getElementsByTagName("join");
+			if(joins!=null && joins.getLength()>0)
+				return (Element)joins.item(0);
+		}
+		return clazz;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 	private static void createXMLMappingManyToMany(Component cfc,HibernateORMEngine engine,PropertyCollection propColl,Element clazz, PageContext pc,Property prop,ORMConfiguration ormConf) throws PageException {
 		Element el = createXMLMappingXToMany(engine,propColl,clazz, pc, cfc,prop);
 		Struct meta = prop.getMeta();
@@ -1230,7 +1302,7 @@ public class HBMCreator {
 		// link
 		setLink(engine,cfc,prop,el,meta,ormConf,true);
 		
-		setEntityName(pc, engine,cfc,prop, meta, m2m,true);
+		setForeignEntityName(pc, engine,cfc,prop, meta, m2m,true);
 
         // order-by
 		String str = toString(engine,cfc,prop,meta,"orderby");
@@ -1309,7 +1381,8 @@ public class HBMCreator {
 		
 
 		// entity-name
-		setEntityName(pc,engine,cfc,prop,meta,x2m,true);
+		
+		setForeignEntityName(pc,engine,cfc,prop,meta,x2m,true);
 		
 	}
 
@@ -1325,14 +1398,12 @@ public class HBMCreator {
 		Document doc = XMLUtil.getDocument(clazz);
 		Element el=null;
 		
-		Element join = getJoin(clazz);
 		
 		
 	// collection type
 		String str=prop.getType();
 		if(StringUtil.isEmpty(str,true) || "any".equalsIgnoreCase(str) || "object".equalsIgnoreCase(str))str="array";
 		else str=str.trim().toLowerCase();
-		
 		
 		Element mapKey=null;
 		// bag
@@ -1360,9 +1431,8 @@ public class HBMCreator {
 		else throw invalidValue(engine,cfc,prop,"collectiontype",str,"array,struct");
 		//throw new ORMException(engine,"invalid value ["+str+"] for attribute [collectiontype], valid values are [array,struct]");
 		
-		if(join==clazz) clazz.appendChild(el);
-		else clazz.insertBefore(el, join);
-        
+		setBeforeJoin(clazz,el);
+		
 
 		
 		// batch-size
@@ -1427,6 +1497,7 @@ public class HBMCreator {
 			strategy=strategy.trim().toLowerCase();
 			if("read-only".equals(strategy) || "nonstrict-read-write".equals(strategy) || "read-write".equals(strategy) || "transactional".equals(strategy)){
 				Element cache = doc.createElement("cache");
+				XMLUtil.setFirst(el, cache);
 				el.appendChild(cache);
 				cache.setAttribute("usage", strategy);
 				String name = toString(engine,cfc,prop,meta,"cacheName");
@@ -1489,7 +1560,7 @@ public class HBMCreator {
 		setColumn(doc, m2o, _columns);
 		
 		// cfc
-		setEntityName(pc,engine,cfc,prop,meta,m2o,true);
+		setForeignEntityName(pc,engine,cfc,prop,meta,m2o,true);
 		
 		// column
 		//String str=toString(prop,meta,"column",true);

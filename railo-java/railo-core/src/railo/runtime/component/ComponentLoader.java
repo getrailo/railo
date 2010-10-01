@@ -2,6 +2,8 @@ package railo.runtime.component;
 
 import java.util.Map;
 
+import javax.servlet.jsp.tagext.BodyContent;
+
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.ComponentImpl;
@@ -22,6 +24,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.writer.BodyContentUtil;
 
 public class ComponentLoader {
 	
@@ -214,8 +217,21 @@ public class ComponentLoader {
 	}
 
 
-	
-    
+	//
+
+	public static ComponentImpl loadComponentImpl(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath, boolean silent) throws PageException  {
+		if(silent) {
+			// TODO is there a more direct way
+			BodyContent bc =  pc.pushBody();
+			try {
+				return loadComponentImpl(pc,page,ps,callPath,isRealPath);
+			}
+			finally {
+				BodyContentUtil.clearAndPop(pc, bc);
+			}
+		}
+		return loadComponentImpl(pc,page,ps,callPath,isRealPath);
+	}
 
 	public static ComponentImpl loadComponentImpl(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath) throws PageException  {
         ComponentImpl rtn=null;
@@ -350,6 +366,7 @@ public class ComponentLoader {
     	}
 		
     	ComponentPage cp = (ComponentPage)page;
+    	
 		ComponentImpl c = cp.newInstance(pc,callPath,isRealPath);
         c.setInitalized(true);
         return c;

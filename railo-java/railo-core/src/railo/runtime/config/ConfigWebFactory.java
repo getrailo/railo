@@ -80,7 +80,6 @@ import railo.runtime.engine.ConsoleExecutionLog;
 import railo.runtime.engine.ExecutionLog;
 import railo.runtime.engine.ExecutionLogFactory;
 import railo.runtime.engine.ThreadLocalConfig;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;

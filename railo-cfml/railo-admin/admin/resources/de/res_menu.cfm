@@ -15,12 +15,12 @@
 		struct(
 			action:"services",label:"Dienste",
 			children:array(
-				struct(action:"gateway",label:"Event Gateway (Alpha)"),
-				struct(action:"cache",label:"Cache (Beta)"),
+				struct(action:"gateway",label:"Event Gateway (Beta)"),
+				struct(action:"cache",label:"Cache"),
 				struct(action:"datasource",label:"Datenquellen"),
 				//struct(action:"gateway",label:"Gateway (Beta)"),
 				struct(action:"search",label:"Suche",hidden: request.adminType NEQ "web"),
-				//struct(action:"orm",label:"ORM (Alpha)"),
+				struct(action:"orm",label:"ORM (Beta)"),
 				struct(action:"mail",label:"Mail"),
 				struct(action:"tasks",label:"Tasks",xhidden:  	 server.ColdFusion.ProductLevel eq "community" or server.ColdFusion.ProductLevel eq "professional"),
 				//struct(action:"video",label:"Video",hidden:server.ColdFusion.ProductLevel eq "community"),

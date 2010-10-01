@@ -16,12 +16,8 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.util.ResourceSupport;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.loader.engine.CFMLEngine;
-import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.Util;
-import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.op.Caster;
-import railo.runtime.op.CreationImpl;
 import railo.runtime.type.Array;
 import railo.runtime.type.List;
 

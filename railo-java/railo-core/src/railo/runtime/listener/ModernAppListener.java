@@ -107,7 +107,10 @@ public class ModernAppListener extends AppListenerSupport {
 		PageContextImpl pci = (PageContextImpl)pc;
 		if(appPS!=null) {
 			String callPath=appPS.getComponentName();
-			ComponentImpl app = ComponentLoader.loadComponentImpl(pci,null,appPS, callPath, false);
+			
+			
+			ComponentImpl app = ComponentLoader.loadComponentImpl(pci,null,appPS, callPath, false,true);
+			
 			String targetPage=requestedPage.getFullRealpath();
 			// init
 			initApplicationContext(pci,app);

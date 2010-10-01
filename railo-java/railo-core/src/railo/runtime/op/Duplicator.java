@@ -3,24 +3,17 @@ package railo.runtime.op;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
 
-import railo.print;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
-import railo.runtime.config.Config;
-import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.CollectionPlus;
-import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 
 

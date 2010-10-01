@@ -65,13 +65,7 @@
 	password="#session["password"&request.adminType]#"
 	returnVariable="access"
 	secType="cache">
-<span class="CheckError">
-The Cache Implementation is currently in Beta State. Its functionality can change before it's final release.
-For addional Cache Implementation (EHCache,MemCache,JBossCache) check the Extension/Application page.<br />
-If you have any problems while using the Cache Implementation, please post the bugs and errors in our
-<a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank" class="CheckError">bugtracking system</a>. 
-<br /><br />
-</span>
+
 <cfswitch expression="#url.action2#">
 	<cfcase value="list"><cfinclude template="services.cache.list.cfm"/></cfcase>
 	<cfcase value="create"><cfinclude template="services.cache.create.cfm"/></cfcase>

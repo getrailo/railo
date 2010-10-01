@@ -15,6 +15,8 @@ import java.util.Set;
 
 import javax.servlet.http.Cookie;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
@@ -195,6 +197,7 @@ public class aprint {
     	else if(o instanceof Set) _(ps,(Set)o);
     	else if(o instanceof List) _(ps,(List)o);
     	else if(o instanceof Map) _(ps,(Map)o);
+    	else if(o instanceof NamedNodeMap) _(ps,(NamedNodeMap)o);
     	else if(o instanceof ResultSet) _(ps,(ResultSet)o);
     	else if(o instanceof Node) _(ps,(Node)o);
     	else if(o instanceof Throwable) _(ps,(Throwable)o);
@@ -368,5 +371,26 @@ public class aprint {
         }
         ps.println("}");
     }
+
+    private static void _(PrintStream ps,NamedNodeMap map) {
+    	if(map==null) {
+    		ps.println("null");
+    		return;
+    	}
+        int len = map.getLength();
+        ps.print(map.getClass().getName()+" {");
+        Attr attr;
+        for(int i=0;i<len;i++) {
+        	attr=(Attr)map.item(i);
+
+        	ps.print(attr.getName());
+        	ps.print(":");
+        	ps.print(attr.getValue());
+            ps.println(";");
+        }
+        ps.println("}");
+    }
+    
+    
 
 }

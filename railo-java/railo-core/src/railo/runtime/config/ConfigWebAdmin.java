@@ -55,6 +55,7 @@ import railo.runtime.gateway.GatewayEntryImpl;
 import railo.runtime.listener.ApplicationContextUtil;
 import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.op.Caster;
+import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
@@ -2823,6 +2824,50 @@ public final class ConfigWebAdmin {
 
 
 	}
+	
+
+	public void resetORMSetting() {
+		Element orm=_getRootElement("orm");
+		orm.getParentNode().removeChild(orm);
+	}
+	
+
+	public void updateORMSetting(ORMConfiguration oc) {
+		Element orm=_getRootElement("orm");
+		orm.setAttribute("autogenmap",Caster.toString(oc.autogenmap(),"true"));
+		orm.setAttribute("event-handler",Caster.toString(oc.eventHandler(),""));
+		orm.setAttribute("event-handling",Caster.toString(oc.eventHandling(),"false"));
+		orm.setAttribute("flush-at-request-end",Caster.toString(oc.flushAtRequestEnd(),"true"));
+		orm.setAttribute("cache-provider",Caster.toString(oc.getCacheProvider(),""));
+		orm.setAttribute("cache-config",Caster.toString(oc.getCacheConfig(),"true"));
+		orm.setAttribute("catalog",Caster.toString(oc.getCatalog(),""));
+		orm.setAttribute("db-create",ORMConfiguration.dbCreateAsString(oc.getDbCreate()));
+		orm.setAttribute("dialect",Caster.toString(oc.getDialect(),""));
+		orm.setAttribute("schema",Caster.toString(oc.getSchema(),""));
+		orm.setAttribute("log-sql",Caster.toString(oc.logSQL(),"false"));
+		orm.setAttribute("save-mapping",Caster.toString(oc.saveMapping(),"false"));
+		orm.setAttribute("secondary-cache-enable",Caster.toString(oc.secondaryCacheEnabled(),"false"));
+		orm.setAttribute("use-db-for-mapping",Caster.toString(oc.useDBForMapping(),"true"));
+		orm.setAttribute("orm-config",Caster.toString(oc.getOrmConfig(),""));
+		orm.setAttribute("sql-script",Caster.toString(oc.getSqlScript(),"true"));
+		
+		if(oc.isDefaultCfcLocation()) {
+			orm.removeAttribute("cfc-location");
+		}
+		else {
+			Resource[] locations = oc.getCfcLocations();
+			StringBuilder sb=new StringBuilder();
+			for(int i=0;i<locations.length;i++) {
+				if(i!=0)sb.append(",");
+				sb.append(locations[i].getAbsolutePath());
+			}
+			orm.setAttribute("cfc-location",sb.toString());
+		}
+		
+		
+		orm.setAttribute("sql-script",Caster.toString(oc.getSqlScript(),"true"));
+		
+	}
 
 
 	public void removeExtension(String provider, String id) throws SecurityException {
@@ -3063,6 +3108,8 @@ public final class ConfigWebAdmin {
         	}
         	catch(Throwable t){}
 	    }
+
+
 
 
 

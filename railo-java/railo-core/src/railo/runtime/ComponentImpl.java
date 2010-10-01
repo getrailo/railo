@@ -1063,13 +1063,10 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	
     	ComponentImpl c=top;
     	do {
-    		
-    		
-            	if(type.equalsIgnoreCase(c.properties.callPath)) return true;
-                if(type.equalsIgnoreCase(c.pageSource.getComponentName())) return true;
-                if(type.equalsIgnoreCase(c._getName())) return true;       
+        	if(type.equalsIgnoreCase(c.properties.callPath)) return true;
+            if(type.equalsIgnoreCase(c.pageSource.getComponentName())) return true;
+            if(type.equalsIgnoreCase(c._getName())) return true;       
             
-    		
     		// check interfaces
     		if(c.interfaceCollection!=null){
 	    		InterfaceImpl[] interfaces = c.interfaceCollection.getInterfaces();
@@ -1088,6 +1085,29 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	}
     	return false;
     }
+    
+    public boolean equalTo(String type) {
+    	ComponentImpl c=top;
+    	
+    	if(type.equalsIgnoreCase(c.properties.callPath)) return true;
+        if(type.equalsIgnoreCase(c.pageSource.getComponentName())) return true;
+        if(type.equalsIgnoreCase(c._getName())) return true;       
+            
+		// check interfaces
+		if(c.interfaceCollection!=null){
+    		InterfaceImpl[] interfaces = c.interfaceCollection.getInterfaces();
+    		if(interfaces!=null)for(int i=0;i<interfaces.length;i++){
+        		if(interfaces[i].instanceOf(type))return true;
+        	}
+		}
+		
+    	if(StringUtil.endsWithIgnoreCase(type, "component")){
+    		if(type.equalsIgnoreCase("component"))							return true;
+    		if(type.equalsIgnoreCase("web-inf.cftags.component"))			return true;
+    	}
+    	return false;
+    }
+    
 
     /**
      * @see railo.runtime.Component#isValidAccess(int)

@@ -6,6 +6,8 @@ public class DumpTablePro extends DumpTable {
 
 
 	private String type;
+	private String id;
+	private String ref;
 
 	public DumpTablePro(String type,String highLightColor, String normalColor,String borderColor) {
 		super(highLightColor, normalColor, borderColor);
@@ -22,6 +24,21 @@ public class DumpTablePro extends DumpTable {
 	 */
 	public String getType() {
 		return type;
+	}
+
+	public void setId(String id) {
+		this.id=id;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setRef(String ref) {
+		this.ref=ref;
+	}
+	public String getRef() {
+		return ref;
 	}
 
 

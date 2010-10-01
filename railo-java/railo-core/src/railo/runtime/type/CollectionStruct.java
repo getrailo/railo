@@ -1,7 +1,6 @@
 package railo.runtime.type;
 
 import java.util.Iterator;
-import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;

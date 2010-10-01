@@ -924,7 +924,6 @@ public final class Http extends BodyTagImpl {
 		}	
 	
 	// parse url (also query string)
-		
 		URL _url=null;
 		try {
 			_url = HTTPUtil.toURL(url,port);
@@ -934,9 +933,6 @@ public final class Http extends BodyTagImpl {
 		} catch (MalformedURLException mue) {
 			throw Caster.toPageException(mue);
 		}
-		
-		
-		
 		
 		
 	// QS

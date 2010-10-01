@@ -1,2 +1,1 @@
-<cfcomponent displayname="Component" hint="This is the Base Component">
-</cfcomponent>
+<cfcomponent displayname="Component" hint="This is the Base Component"></cfcomponent>

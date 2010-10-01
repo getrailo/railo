@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.runtime.type.Sizeable;
 
@@ -120,7 +121,19 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
     }
 
     public Class<?> loadClass(String name, byte[] barr) throws ClassNotFoundException   {
-    	defineClass(name,barr,0,barr.length);
+    	try {
+    		defineClass(name,barr,0,barr.length);
+			
+		} 
+        catch (Throwable t) {
+			t.printStackTrace();
+			SystemUtil.sleep(1);
+			defineClass(name,barr,0,barr.length);
+			SystemUtil.sleep(1);
+		}
+    	
+    	
+    	
         return loadClass(name,false);
     }
     

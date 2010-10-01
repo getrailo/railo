@@ -226,7 +226,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		return ComponentUtil.getPage(pageContext, properties.pageSource).udfCall(pageContext,this,properties.index);
 	}
 
-	private final Object castToAndClone(FunctionArgument arg,Object value, int index) throws PageException {
+	private final Object castToAndClone(PageContext pc,FunctionArgument arg,Object value, int index) throws PageException {
 		//if(value instanceof Array)print.out(count++);
 		if(Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) 
 			return arg.isPassByReference()?value:Duplicator.duplicate(value,false);
@@ -243,7 +243,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		for(int i=0;i<funcArgs.length;i++) {
 			// argument defined
 			if(args.length>i) {
-				newArgs.setEL(funcArgs[i].getName(),castToAndClone(funcArgs[i], args[i],i+1));
+				newArgs.setEL(funcArgs[i].getName(),castToAndClone(pc,funcArgs[i], args[i],i+1));
 			}
 			// argument not defined
 			else {
@@ -279,7 +279,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			name=funcArgs[i].getName();
 			value=values.removeEL(name); 
 			if(value!=null) {
-				newArgs.set(name,castToAndClone(funcArgs[i], value,i+1));
+				newArgs.set(name,castToAndClone(pageContext,funcArgs[i], value,i+1));
 				continue;
 			}
 			/*

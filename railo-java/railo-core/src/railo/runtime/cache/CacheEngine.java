@@ -11,7 +11,6 @@ import org.apache.oro.text.regex.MalformedPatternException;
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.exp.CacheException;
-import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.Util;
 import railo.runtime.cache.util.CacheKeyFilterAll;
 import railo.runtime.cache.util.WildCardFilter;

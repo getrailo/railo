@@ -5,7 +5,6 @@ package railo.runtime.type.scope;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.apache.commons.fileupload.disk.DiskFileItem;
 

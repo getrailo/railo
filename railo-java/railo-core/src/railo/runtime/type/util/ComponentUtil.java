@@ -597,6 +597,18 @@ public final class ComponentUtil {
 		throw new ExpressionException("can't cast class ["+Caster.toClassName(obj)+"] to a class of type ComponentPro");
 	}
 	
+
+
+	public static PageSource getPageSource(Component cfc) {
+		// TODO Auto-generated method stub
+		try {
+			return toComponentPro(cfc).getPageSource();
+		} catch (ExpressionException e) {
+			return null;
+		}
+	}
+	
+	
 	public static ComponentPro toComponentPro(Component comp, ComponentPro defaultValue) {
 		if(comp instanceof ComponentPro) return (ComponentPro) comp;
 		return defaultValue;

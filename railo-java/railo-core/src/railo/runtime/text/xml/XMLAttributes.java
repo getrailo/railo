@@ -2,7 +2,6 @@ package railo.runtime.text.xml;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;

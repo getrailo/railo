@@ -56,8 +56,7 @@ ACTIONS --->
 			verify="#verifiy#"
 			custom="#custom#"
 			remoteClients="#request.getRemoteClients()#">
-            
-        <cfset v="">
+            <cfset form.mark="update">
         <cfif verifiy>
         	<cfset v="&verified="&form.name>
         </cfif>
@@ -76,7 +75,8 @@ Error Output--->
 <cfset printError(error)>
 
 <cfsilent>
-<cfset isInsert=structKeyExists(form,'mark')>
+<cfset isInsert=structKeyExists(form,'mark') and form.mark EQ "create">
+
 <cfif isInsert>
 	<cfset actionType="create">
 	<cfset datasource=struct()>
@@ -390,6 +390,7 @@ Allow --->
 </tr>
 <tr>
 	<td colspan="2">
+    <input type="hidden" name="mark" value="#structKeyExists(form,'mark')?form.mark:"update"#">
 	<input type="hidden" name="run" value="create2">
 	<input type="submit" class="submit" name="_run" value="#stText.Buttons[actionType]#">
 	<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#"></td>

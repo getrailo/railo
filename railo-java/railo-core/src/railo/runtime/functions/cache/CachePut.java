@@ -1,7 +1,6 @@
 package railo.runtime.functions.cache;
 
 import railo.commons.io.cache.Cache;
-import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;

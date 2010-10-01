@@ -7,6 +7,8 @@ import java.util.Set;
 
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.types.RefBoolean;
+import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -67,16 +69,18 @@ public final class DumpStruct implements Function {
 			table.appendRow(0,dd);
 			dd=table;
 		}
-		
-		return (Struct)toCFML(dd,object);
+		RefBoolean hasReference=new RefBooleanImpl(false);
+		Struct sct = (Struct)toCFML(dd,object,hasReference);
+		sct.setEL("hasReference", hasReference.toBoolean());
+		return sct;
 	}
-	private static Object toCFML(DumpData dd, Object object) {
-		if(dd instanceof DumpTable)return toCFML((DumpTable) dd,object);
+	private static Object toCFML(DumpData dd, Object object, RefBoolean hasReference) {
+		if(dd instanceof DumpTable)return toCFML((DumpTable) dd,object,hasReference);
 		if(dd==null) return new SimpleDumpData("null");
 		return dd.toString();
 	}
 	
-	private static Struct toCFML(DumpTable dt, Object object) {
+	private static Struct toCFML(DumpTable dt, Object object, RefBoolean hasReference) {
 		Struct sct=new StructImpl(); 
 		sct.setEL("borderColor", dt.getBorderColor());
 		sct.setEL("comment", dt.getComment());
@@ -88,7 +92,15 @@ public final class DumpStruct implements Function {
 		
 		sct.setEL("width", dt.getWidth());
 		if(dt instanceof DumpTablePro){
-			sct.setEL("type", ((DumpTablePro)dt).getType());
+			DumpTablePro dtp = (DumpTablePro)dt;
+			sct.setEL("type", dtp.getType());
+			sct.setEL("id", dtp.getId());
+			
+			if("ref".equals(dtp.getType())){
+				hasReference.setValue(true);
+				sct.setEL("ref", dtp.getRef());
+			}
+			
 		}
 		
 		DumpRow[] drs = dt.getRows();
@@ -100,7 +112,7 @@ public final class DumpStruct implements Function {
 			items = dr.getItems();
 			if(qry==null)qry=new QueryImpl(toColumns(items),drs.length,"data");
 			for(int c=1;c<=items.length;c++){
-				qry.setAtEL("data"+c, r+1, toCFML(items[c-1],object));
+				qry.setAtEL("data"+c, r+1, toCFML(items[c-1],object,hasReference));
 			}
 			qry.setAtEL("highlight", r+1, new Double(dr.getHighlightType()));
 			

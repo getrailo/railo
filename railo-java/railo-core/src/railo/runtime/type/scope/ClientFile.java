@@ -1,7 +1,5 @@
 package railo.runtime.type.scope;
 
-import java.util.Map;
-
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;

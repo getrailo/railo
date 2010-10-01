@@ -25,14 +25,11 @@ import org.apache.commons.httpclient.methods.RequestEntity;
 import org.xml.sax.SAXException;
 
 import railo.commons.net.URLEncoder;
-import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.Util;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.util.HTTPUtil;
-import railo.runtime.util.HTTPUtilImpl;
 
 public final class S3 implements S3Constants {
 

@@ -82,7 +82,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 	private DataSource ds;
 
-	private List<Component> arr;
+	private List<ComponentPro> arr;
 
 	private Object hash;
 
@@ -182,7 +182,7 @@ public class HibernateORMEngine implements ORMEngine {
 			DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
 			this.ds=dc.getDatasource();
 			try {
-				Iterator<Component> it = arr.iterator();
+				Iterator<ComponentPro> it = arr.iterator();
 				while(it.hasNext()){
 					createMapping(pc,it.next(),dc,ormConf);
 					/*try {
@@ -337,15 +337,16 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 
 	public void createMapping(PageContext pc,Component cfc, DatasourceConnection dc, ORMConfiguration ormConf) throws PageException {
-		String id=id(HibernateCaster.getEntityName(pc, cfc));
+		ComponentPro cfcp=ComponentUtil.toComponentPro(cfc);
+		String id=id(HibernateCaster.getEntityName(pc, cfcp));
 		CFCInfo info=cfcs.get(id);
 		//Long modified=cfcs.get(id);
 		String xml;
-		long cfcCompTime = ComponentUtil.getCompileTime(pc,((ComponentPro)cfc).getPageSource());
-		if(info==null || (info.getCFC().equals(cfc) && info.getModified()!=cfcCompTime))	{
+		long cfcCompTime = ComponentUtil.getCompileTime(pc,cfcp.getPageSource());
+		if(info==null || (info.getCFC().equals(cfcp) && info.getModified()!=cfcCompTime))	{
 			StringBuilder sb=new StringBuilder();
 			
-			long xmlLastMod = loadMapping(sb,ormConf, cfc);
+			long xmlLastMod = loadMapping(sb,ormConf, cfcp);
 			Element root;
 			// create maaping
 			if(true || xmlLastMod< cfcCompTime) {
@@ -357,15 +358,15 @@ public class HibernateORMEngine implements ORMEngine {
 				
 				root=doc.createElement("hibernate-mapping");
 				doc.appendChild(root);
-				pc.addPageSource(ComponentUtil.toComponentPro(cfc).getPageSource(), true);
+				pc.addPageSource(cfcp.getPageSource(), true);
 				try{
-					HBMCreator.createXMLMapping(pc,dc,cfc,ormConf,root, this);
+					HBMCreator.createXMLMapping(pc,dc,cfcp,ormConf,root, this);
 				}
 				finally{
 					pc.removeLastPageSource(true);
 				}
 				xml=XMLCaster.toString(root.getChildNodes(),true);
-				saveMapping(ormConf,cfc,root);
+				saveMapping(ormConf,cfcp,root);
 			}
 			// load
 			else {
@@ -380,7 +381,7 @@ public class HibernateORMEngine implements ORMEngine {
 			}
 			
 			
-			cfcs.put(id, new CFCInfo(ComponentUtil.getCompileTime(pc,((ComponentPro)cfc).getPageSource()),xml,cfc));
+			cfcs.put(id, new CFCInfo(ComponentUtil.getCompileTime(pc,cfcp.getPageSource()),xml,cfcp));
 			
 		}
 		
@@ -633,24 +634,20 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 
 	public Component getEntityByCFCName(String cfcname,boolean unique) throws PageException {
-		Component cfc;
-		
+		ComponentPro cfc;
 		String[] names=null;
 		// search array (array exist when cfcs is in generation)
 		
 		if(arr!=null){
 			names=new String[arr.size()];
 			int index=0;
-			Iterator<Component> it2 = arr.iterator();
+			Iterator<ComponentPro> it2 = arr.iterator();
 			while(it2.hasNext()){
 				cfc=it2.next();
 				names[index++]=cfc.getName();
-				//print.e(names[index-1]+":"+cfcname);
-				if(cfc.instanceOf(cfcname))
+				if(cfc.equalTo(cfcname))
 					return unique?(Component)cfc.duplicate(false):cfc;
 			}
-			
-			
 		}
 		else {
 			// search cfcs
@@ -699,9 +696,9 @@ public class HibernateORMEngine implements ORMEngine {
 class CFCInfo {
 	private String xml;
 	private long modified;
-	private Component cfc;
+	private ComponentPro cfc;
 	
-	public CFCInfo(long modified, String xml, Component cfc) {
+	public CFCInfo(long modified, String xml, ComponentPro cfc) {
 		this.modified=modified;
 		this.xml=xml;
 		this.cfc=cfc;
@@ -709,7 +706,7 @@ class CFCInfo {
 	/**
 	 * @return the cfc
 	 */
-	public Component getCFC() {
+	public ComponentPro getCFC() {
 		return cfc;
 	}
 	/**
