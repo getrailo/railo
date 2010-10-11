@@ -22,11 +22,11 @@ import railo.runtime.type.util.StructSupport;
  * cold fusion data type struct
  */
 public class StructImpl extends StructSupport {
-
+	private static final long serialVersionUID = 1421746759512286393L;
 
 	public static final int TYPE_SOFT=4;//FUTURE move to Struct interface
 	
-	private Map map;
+	private Map<Collection.Key,Object> map;
 	
 	/**
 	 * default constructor
@@ -43,8 +43,8 @@ public class StructImpl extends StructSupport {
      * @param doubleLinked
      */
     public StructImpl(int type) {
-    	if(type==TYPE_LINKED)		map=new LinkedHashMap();
-    	else if(type==TYPE_WEAKED)	map=new java.util.WeakHashMap(); 
+    	if(type==TYPE_LINKED)		map=new LinkedHashMap<Collection.Key,Object>();
+    	else if(type==TYPE_WEAKED)	map=new java.util.WeakHashMap<Collection.Key,Object>(); 
     	else if(type==TYPE_SOFT)	map=new ReferenceMap();
         else if(type==TYPE_SYNC)	map=new HashTable();
         else 						map=new HashTableNotSync();
@@ -104,7 +104,7 @@ public class StructImpl extends StructSupport {
 	public Collection.Key[] keys() {
 		try	{
 			Collection.Key[] keys = new Collection.Key[size()];
-			Iterator it = map.keySet().iterator();
+			Iterator<Key> it = map.keySet().iterator();
 			int count=0;
 			while(it.hasNext() && keys.length>count) {
 				keys[count++]=KeyImpl.toKey(it.next(), null);
@@ -112,13 +112,13 @@ public class StructImpl extends StructSupport {
 			return keys;
 		}
 		catch(Throwable t) {
-			Map old = map;
+			Map<Key, Object> old = map;
 			try{	
 				map=Collections.synchronizedMap(map);
-				Set set = map.keySet();
+				Set<Key> set = map.keySet();
 				Collection.Key[] keys = new Collection.Key[size()];
 				synchronized(map){
-					Iterator it = set.iterator();
+					Iterator<Key> it = set.iterator();
 					int count=0;
 					while(it.hasNext() && keys.length>count) {
 						keys[count++]=KeyImpl.toKey(it.next(), null);
@@ -138,9 +138,9 @@ public class StructImpl extends StructSupport {
 	 */
 	public String[] keysAsString() {
 		try	{
-			if(true)throw new RuntimeException("");
+			//if(true)throw new RuntimeException("");
 			String[] keys = new String[size()];
-			Iterator it = map.keySet().iterator();
+			Iterator<Key> it = map.keySet().iterator();
 			int count=0;
 			while(it.hasNext() && keys.length>count) {
 				keys[count++]=Caster.toString(it.next(), "");
@@ -148,7 +148,7 @@ public class StructImpl extends StructSupport {
 			return keys;
 		}
 		catch(Throwable t) {
-			Map old = map;
+			Map<Key, Object> old = map;
 			try{	
 				map=Collections.synchronizedMap(map);
 				Object[] arr = map.keySet().toArray();
