@@ -284,7 +284,6 @@
 							#server.coldfusion.productname#
 							#uCaseFirst(server.coldfusion.productlevel)# 
 							#uCase(server.railo.state)#
-							<cfif server.coldfusion.productcontextcount NEQ "inf">(#server.coldfusion.productcontextcount#)</cfif>
 							#server.railo.version#
 							(CFML Version #server.ColdFusion.ProductVersion#)</b>
 							</td>
