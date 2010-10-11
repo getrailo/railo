@@ -1549,7 +1549,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		if (checkLibrary && flf.getArgMin() > count)
 			throw new TemplateException(
 				data.cfml,
-				"to few Attributes in function [" + name + "]");
+				"too few attributes in function [" + name + "]");
 
         comments(data.cfml);
         
