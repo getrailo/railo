@@ -1,5 +1,9 @@
 package railo.runtime.type;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,12 +19,29 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 
-public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable {
+public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Externalizable {
 	
 	private String key;
 	private String lcKey;
 	private String ucKey;
 	//private int hashcode;
+	
+	public KeyImpl() {
+		// DO NOT USE, JUST FOR UNSERIALIZE
+	}
+	
+	
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeObject(key);
+		out.writeObject(lcKey);
+		out.writeObject(ucKey);
+	}
+	public void readExternal(ObjectInput in) throws IOException,ClassNotFoundException {
+		key=(String) in.readObject();
+		lcKey=((String) in.readObject()).intern();
+		ucKey=(String) in.readObject();
+		
+	}
 	
 	
 	
@@ -434,4 +455,5 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable {
 		SizeOf.size(this.lcKey)+
 		SizeOf.size(this.ucKey);
 	}
+	
 }
