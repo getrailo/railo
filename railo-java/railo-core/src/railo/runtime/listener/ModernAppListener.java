@@ -387,6 +387,7 @@ public class ModernAppListener extends AppListenerSupport {
 		Object o;
 		boolean initORM=false;
 		pc.addPageSource(app.getPageSource(), true);
+		boolean hasError=false;
 		try {
 			
 			// name
@@ -488,7 +489,7 @@ public class ModernAppListener extends AppListenerSupport {
 					appContext.setORMConfiguration(ormConfig);
 					
 					// datasource
-					o=settings.get(DATA_SOURCE);
+					o=settings.get(DATA_SOURCE,null);
 					if(o!=null) appContext.setORMDataSource(Caster.toString(o));
 				//}
 			}
@@ -496,15 +497,19 @@ public class ModernAppListener extends AppListenerSupport {
 			
 		}
 		catch(Throwable t) {
+			hasError=true;
 			pc.removeLastPageSource(true);
 		}
+		
 		pc.setApplicationContext(appContext);
 		if(initORM) {
-			
-			ORMUtil.resetEngine(pc);
-			/*try {} catch (PageException e) {
-				 e.printStackTrace();
-			}*/
+			if(hasError)pc.addPageSource(app.getPageSource(), true);
+			try{
+				ORMUtil.resetEngine(pc);
+			}
+			finally {
+				if(hasError)pc.removeLastPageSource(true);
+			}
 		}
 	}
 

@@ -354,7 +354,7 @@ public abstract class ConfigImpl implements Config {
 	private boolean componentRootSearch=true;
 	private LogAndSource mappingLogger;
 	private LogAndSource ormLogger;
-
+	
 	
 	
 	/**
@@ -2951,15 +2951,26 @@ public abstract class ConfigImpl implements Config {
 		ORMEngine engine = ormengines.get(name);
 		if(engine==null){
 			//try {
-				try {
-					engine=(ORMEngine)ClassUtil.loadInstance(ormEngineClass);
-				}
-				catch (Throwable t) {
-					throw new ORMException(
-							"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
-							"Update your jars with the jars located in Railo's download section at [Railo Custom] at [railo-x.x.x.xxx-jars.zip]");
-				}
+			boolean hasError=false;	
+			try {
+				engine=(ORMEngine)ClassUtil.loadInstance(ormEngineClass);
 				engine.init(pc);
+			}
+			catch (ClassException t) {
+				hasError=true;	
+			}
+			catch (NoClassDefFoundError t) {
+				hasError=true;	
+			}
+			
+			if(hasError) {
+				
+				throw new ORMException(
+				"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
+				"Update your jars with the jars located in Railo's download section at [Railo Custom] at [railo-x.x.x.xxx-jars.zip]");
+			
+			
+			}
 				ormengines.put(name,engine);
 			/*}
 			catch (PageException pe) {
