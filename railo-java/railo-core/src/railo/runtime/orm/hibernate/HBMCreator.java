@@ -700,8 +700,10 @@ public class HBMCreator {
     	ColumnInfo info=getColumnInfo(columnsInfo,tableName,str,engine,null);
     	StringBuilder foreignCFC=new StringBuilder();
 		String generator=createXMLMappingGenerator(engine,id,pc,cfc,prop,foreignCFC);
-        	
-		
+
+		str = toString(engine,cfc,prop,meta,"length");
+    	if(!StringUtil.isEmpty(str,true)) column.setAttribute("length",str);
+        
 		// type    
 		String type = getType(engine,info,cfc,prop,meta,getDefaultTypeForGenerator(engine,generator,foreignCFC));
 		//print.o(prop.getName()+":"+type+"::"+getDefaultTypeForGenerator(engine,generator,foreignCFC));
