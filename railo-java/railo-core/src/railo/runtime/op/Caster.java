@@ -501,6 +501,12 @@ public final class Caster {
 		if(date==null)throw new CasterException("can't cast ["+str+"] string to a number value");
     	return date.castToDoubleValue(0);
 	}
+    
+    private static double toDoubleValueViaDate(String str,double defaultValue) {
+		DateTime date = DateCaster.toDateSimple(str, false, null, null);// not advanced here, neo also only support simple
+		if(date==null)return defaultValue;
+    	return date.castToDoubleValue(0);
+	}
 
 	/**
      * cast a Object to a double value (primitive value Type)
@@ -561,12 +567,12 @@ public final class Caster {
             
             if(curr<'0') {
                 if(curr=='.') { 
-                    if(pos+1>=len || hasDot) return defaultValue; 
+                	if(hasDot) return toDoubleValueViaDate(str,defaultValue);
                     hasDot=true; 
                 } 
                 else {
                     if(pos==0 && Decision.isBoolean(str)) return toBooleanValue(str,false)?1.0D:0.0D;
-                    return defaultValue;
+                    return toDoubleValueViaDate(str,defaultValue);
                 }
             }
             else if(curr>'9') {
@@ -575,12 +581,12 @@ public final class Caster {
                 		return Double.parseDouble(str);
                 	}
                 	catch( NumberFormatException e){
-                		return defaultValue;
+                		return toDoubleValueViaDate(str,defaultValue);
                 	} 
                 }
                 //else {
                     if(pos==0 && Decision.isBoolean(str)) return toBooleanValue(str,false)?1.0D:0.0D;
-                    return defaultValue;
+                    return toDoubleValueViaDate(str,defaultValue);
                 //}
             }
             else if(!hasDot) {
