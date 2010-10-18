@@ -30,6 +30,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
 import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
@@ -113,7 +114,9 @@ public abstract class ComponentPage extends PagePlus  {
             
             // Include MUST
             Array path = pc.getTemplatePath();
-            if(path.size()>1) {
+            //if(path.size()>1 ) {
+            if(path.size()>1 && !(path.size()==3 && List.last(path.getE(2).toString(),"/\\").equalsIgnoreCase("application.cfc")) ) {// MUSTMUST bad impl -> check with and without application.cfc
+            	
             	ComponentWrap c = new ComponentWrap(Component.ACCESS_PRIVATE,component.getComponentImpl());
             	Key[] keys = c.keys();
             	Object el;
@@ -124,12 +127,15 @@ public abstract class ComponentPage extends PagePlus  {
             			var.set(keys[i], el);
             		
             	}
+                
             	return;
             }
+           
             
 			// DUMP
 			//TODO component.setAccess(pc,Component.ACCESS_PUBLIC);
 			String cdf = pc.getConfig().getComponentDumpTemplate();
+			
 			if(cdf!=null && cdf.trim().length()>0) {
 			    pc.variablesScope().set("component",component);
 			    pc.doInclude(pc.getRelativePageSource(cdf));
