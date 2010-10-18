@@ -3,9 +3,7 @@ package railo.runtime.functions.other;
 import java.io.IOException;
 import java.util.Iterator;
 
-import railo.print;
 import railo.commons.io.log.LogResource;
-import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -16,28 +14,19 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
-import railo.runtime.functions.system.GetCurrentContext;
-import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.Operator;
-import railo.runtime.tag.Log;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Array;
-import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
 
 public class TraceObject implements Objects, Collection,UDF {

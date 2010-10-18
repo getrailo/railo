@@ -19,7 +19,7 @@ public final class GetCurrentContext implements Function {
 		return arr;
 	}
 	
-	private static void _getTagContext(PageContext pc, Array tagContext, Throwable t) {
+	public static void _getTagContext(PageContext pc, Array tagContext, Throwable t) {
 		//Throwable root = t.getRootCause();
 		Throwable cause = t.getCause(); 
 		if(cause!=null)_getTagContext(pc, tagContext, cause);
