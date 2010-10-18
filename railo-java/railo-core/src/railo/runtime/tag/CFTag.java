@@ -144,8 +144,8 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 
         attributesScope=new StructImpl();//.clear();
         callerScope = new CallerImpl();
-        if(thistagScope!=null)thistagScope.clear();
-        if(ctVariablesScope!=null)ctVariablesScope.clear();  
+        if(thistagScope!=null)thistagScope=null;
+        if(ctVariablesScope!=null)ctVariablesScope=null;  
         
 
         isEndTag=false;     
