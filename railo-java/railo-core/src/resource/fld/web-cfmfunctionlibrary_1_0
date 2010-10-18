@@ -9363,6 +9363,34 @@
 			<type>string</type>
 		</return>
 	</function>
+	<!-- traceObject -->
+	<function>
+		<name>traceObject</name>
+		<class>railo.runtime.functions.other.TraceObject</class>
+		<description/>
+		<argument>
+			<name>object</name>
+			<type>any</type>
+			<required>Yes</required>
+			<description>Object to trace</description>
+		</argument>
+		<argument>
+			<name>label</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>label for the entry in log</description>
+		</argument>
+		<argument>
+			<name>logFile</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>path to the log file</description>
+		</argument>
+		<return>
+			<type>object</type>
+		</return>
+	</function>
+	
 	<!-- trim -->
 	<function>
 		<name>trim</name>
