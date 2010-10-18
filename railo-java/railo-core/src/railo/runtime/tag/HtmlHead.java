@@ -75,7 +75,7 @@ public final class HtmlHead extends TagImpl {
 			else if(action.equals("reset")) actionReset();
 			else if(action.equals("write")) actionWrite();
 			else if(action.equals("read")) actionRead();
-	        else throw new ApplicationException("invalid value ["+action+"] for attribute action","values for attribute action are:append,read,reset");
+	        else throw new ApplicationException("invalid value ["+action+"] for attribute action","values for attribute action are:append,read,reset,write");
 		} 
 		catch (IOException e) {
 			throw Caster.toPageException(e);
