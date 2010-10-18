@@ -41,9 +41,9 @@ public final class DocumentItem extends BodyTagImpl {
 		if("pagebreak".equals(strType))		type=TYPE_PAGE_BREAK;
 		else if("header".equals(strType))	type=TYPE_HEADER;
 		else if("footer".equals(strType))	type=TYPE_FOOTER;
-		//else if("bookmark".equals(strType))	type=TYPE_BOOKMARK;
-		//else throw new ApplicationException("invalid type ["+strType+"], valid types are [pagebreak,header,footer,bookmark]");
-		else throw new ApplicationException("invalid type ["+strType+"], valid types are [pagebreak,header,footer]");
+		else if("bookmark".equals(strType))	type=TYPE_BOOKMARK;
+		else throw new ApplicationException("invalid type ["+strType+"], valid types are [pagebreak,header,footer,bookmark]");
+		//else throw new ApplicationException("invalid type ["+strType+"], valid types are [pagebreak,header,footer]");
 		
 	}
 
@@ -108,8 +108,8 @@ public final class DocumentItem extends BodyTagImpl {
 		}
 		else if(TYPE_BOOKMARK==type) {
 			if(StringUtil.isEmpty(name))
-				throw new ApplicationException("attribute [name] is required when tpe is [bookmark]");
-			//pageContext.write("<pd4ml:bookmark>"+name+"</pd4ml:bookmark>");
+				throw new ApplicationException("attribute [name] is required when type is [bookmark]");
+			pageContext.write("<pd4ml:bookmark>"+name+"</pd4ml:bookmark>");
 		}
 		else if(body!=null) {
 			provideDocumentItem();
