@@ -2,7 +2,6 @@ package railo.runtime.tag;
 
 import java.io.IOException;
 
-import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogConsole;
 import railo.commons.io.log.LogResource;
 import railo.commons.io.res.Resource;
@@ -41,7 +40,7 @@ public final class Log extends TagImpl {
 
 	/** Specifies whether to log the application name if one has been specified in a cfapplication tag. */
 	private boolean application;
-	private String charset=SystemUtil.getCharset();
+	private String charset=null;
 	
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
@@ -52,6 +51,7 @@ public final class Log extends TagImpl {
 		type=railo.commons.io.log.Log.LEVEL_INFO;
 		file=null;
 		application=false;
+		charset=null;
 	}
 
 	/** set the value log
@@ -164,6 +164,7 @@ public final class Log extends TagImpl {
 	        
 	    }
 	    else {
+	    	if(charset==null) charset=pageContext.getConfig().getResourceCharset();
 	    	Resource logDir=config.getConfigDir().getRealResource("logs");
 	        if(!logDir.exists())logDir.mkdirs();
 	        try {
