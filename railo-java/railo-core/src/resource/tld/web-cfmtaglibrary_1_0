@@ -753,16 +753,6 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description></description>
 		</attribute>
-		<!--
-		<attribute>
-			<type>boolean</type>
-			<name>Legendmultiline</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description></description>
-		</attribute>
-		-->
-		
 		<attribute>
 			<type>number</type>
 			<name>chartHeight</name>
@@ -1214,15 +1204,6 @@
 		<description>Creates and defines a component object; encloses functionality that you build in CFML and enclose within cffunction tags. This tag contains one or more cffunction tags that define methods. Code within the body of this tag, other than cffunction tags, is executed when the component is instantiated. </description>
 		<att-class>railo.transformer.cfml.attributes.impl.Component</att-class>
 		<attribute-type>mixed</attribute-type>
-		<!--
-		<attribute>
-			<type>string</type>
-			<name>name</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description></description>
-		</attribute>
-		-->
 		<attribute>
 			<type>boolean</type>
 			<name>synchronized</name>
@@ -3358,15 +3339,6 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>description of the Function</description>
 		</attribute>
-		<!--
-		<attribute>
-			<type>string</type>
-			<name>throws</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Exceptions throwd by the function</description>
-		</attribute>
-		-->
 		<attribute>
 			<type>string</type>
 			<name>returnFormat</name>
@@ -7853,15 +7825,6 @@ Permits searching collections by title or displaying a separate title from the k
 			<rtexprvalue>true</rtexprvalue>
 			<description>Host name biff.upperlip.com or IP address 192.1.2.225 of the POP server.</description>
 		</attribute>
-		<!--
-		<attribute>
-			<type>boolean</type>
-			<name>debug</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description></description>
-		</attribute>
-		-->
 		<attribute>
 			<type>string</type>
 			<name>uid</name>
@@ -9553,6 +9516,7 @@ dWord: creates a value of 0 (zero)</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>This attribute has been deprecated and is non-functional.</description>
+		</attribute>
 	</tag>
 	<!-- ServletParam -->
 	<tag>
