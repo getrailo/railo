@@ -53,7 +53,6 @@ a.cfdebuglink {color:blue; background-color:white }
 			<cfif StructKeyExists(server.railo,'versionName')>(<a href="#server.railo.versionNameExplanation#" target="_blank">#server.railo.versionName#</a>)</cfif>
 			#uCaseFirst(server.coldfusion.productlevel)# 
 			#uCase(server.railo.state)#
-			<cfif server.coldfusion.productcontextcount NEQ "inf">(#server.coldfusion.productcontextcount#)</cfif>
 			#server.railo.version#
 			(CFML Version #server.ColdFusion.ProductVersion#)
 			</td>

@@ -84,12 +84,14 @@ import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.ObjectWrap;
+import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.QueryPro;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
@@ -501,6 +503,12 @@ public final class Caster {
 		if(date==null)throw new CasterException("can't cast ["+str+"] string to a number value");
     	return date.castToDoubleValue(0);
 	}
+    
+    private static double toDoubleValueViaDate(String str,double defaultValue) {
+		DateTime date = DateCaster.toDateSimple(str, false, null, null);// not advanced here, neo also only support simple
+		if(date==null)return defaultValue;
+    	return date.castToDoubleValue(0);
+	}
 
 	/**
      * cast a Object to a double value (primitive value Type)
@@ -561,12 +569,12 @@ public final class Caster {
             
             if(curr<'0') {
                 if(curr=='.') { 
-                    if(pos+1>=len || hasDot) return defaultValue; 
+                	if(hasDot) return toDoubleValueViaDate(str,defaultValue);
                     hasDot=true; 
                 } 
                 else {
                     if(pos==0 && Decision.isBoolean(str)) return toBooleanValue(str,false)?1.0D:0.0D;
-                    return defaultValue;
+                    return toDoubleValueViaDate(str,defaultValue);
                 }
             }
             else if(curr>'9') {
@@ -575,12 +583,12 @@ public final class Caster {
                 		return Double.parseDouble(str);
                 	}
                 	catch( NumberFormatException e){
-                		return defaultValue;
+                		return toDoubleValueViaDate(str,defaultValue);
                 	} 
                 }
                 //else {
                     if(pos==0 && Decision.isBoolean(str)) return toBooleanValue(str,false)?1.0D:0.0D;
-                    return defaultValue;
+                    return toDoubleValueViaDate(str,defaultValue);
                 //}
             }
             else if(!hasDot) {
@@ -4161,6 +4169,17 @@ public final class Caster {
 		
 		return Caster.castTo(pc, trgClass.getName(), obj,false);
 	}
+
+	public static Objects toObjects(PageContext pc,Object obj) throws PageException {
+		if(obj instanceof Objects) return (Objects) obj;
+		if(obj instanceof ObjectWrap) return toObjects(pc,((ObjectWrap)obj).getEmbededObject());
+		return new JavaObject(pc.getVariableUtil(), obj);
+	}
+
+	public static UDF toUDF(Object o) throws CasterException {
+		if(o instanceof UDF) return (UDF) o;
+		 throw new CasterException(o,"UDF");
+    }
 
 
 	

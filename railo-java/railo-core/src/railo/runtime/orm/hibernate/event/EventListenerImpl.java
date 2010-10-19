@@ -89,24 +89,21 @@ public class EventListenerImpl
     
     
     private boolean invoke(Collection.Key name, Object obj) {
+    	Component c=allEvents?component:Caster.toComponent(obj,null);
+    	if(c==null) return false;
     	
-    		
-    		try {
-    			PageContext pc = ThreadLocalPageContext.get();
-    			Object[] args=allEvents?new Object[]{obj}:new Object[]{};
-    			
-    			
-    			
-    			if(!allEvents) {
-    				if(!ComponentUtil.toComponentPro(component).getPageSource().equals(ComponentUtil.toComponentPro(obj).getPageSource()))
-    					return true;
-    			}
-    			return Caster.toBooleanValue(component.call(pc, name, args),false);
-			} catch (Throwable e) {}
-    	
-    	//print.e("event:"+name);
-    	//print.e(obj.getClass().getName());
-    	//print.e(obj);
+		try {
+			PageContext pc = ThreadLocalPageContext.get();
+			Object[] args=allEvents?new Object[]{obj}:new Object[]{};
+			
+			if(!allEvents) {
+				if(!ComponentUtil.toComponentPro(component).getPageSource().equals(ComponentUtil.toComponentPro(obj).getPageSource()))
+					return true;
+			}
+			return Caster.toBooleanValue(c.call(pc, name, args),false);
+		}
+		catch (Throwable e) {}
+		
     	return false;
 	}
     

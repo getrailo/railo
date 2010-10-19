@@ -171,7 +171,7 @@ public final class SMTPClient implements Serializable  {
 	 * @see mail.Mail#setHost(java.lang.String)
 	 */
 	public void setHost(String host) throws PageException {
-		this.host = List.toStringArray(List.listToArrayRemoveEmpty(host, ','));
+		if(!StringUtil.isEmpty(host,true))this.host = List.toStringArray(List.listToArrayRemoveEmpty(host, ','));
 	} 
 
 	/**
@@ -696,8 +696,8 @@ public final class SMTPClient implements Serializable  {
         	servers=nServers;
         }
 		if(servers.length==0) {
-			return;
-			//throw new MailException("no SMTP Server defined");
+			//return;
+			throw new MailException("no SMTP Server defined");
 		}
 		
 		boolean _ssl,_tls;

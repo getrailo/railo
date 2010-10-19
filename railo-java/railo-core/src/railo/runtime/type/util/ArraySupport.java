@@ -7,6 +7,8 @@ import java.util.ListIterator;
 import railo.runtime.converter.LazyConverter;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -175,15 +177,79 @@ public abstract class ArraySupport implements Array,List,Sizeable {
 	public final List subList(int fromIndex, int toIndex) {
 		throw new RuntimeException("method subList is not supported");
 	}
+	
+
+	public static final short TYPE_OBJECT = 0;
+	public static final short TYPE_BOOLEAN = 1;
+	public static final short TYPE_BYTE = 2;
+	public static final short TYPE_SHORT = 3;
+	public static final short TYPE_INT = 4;
+	public static final short TYPE_LONG = 5;
+	public static final short TYPE_FLOAT = 6;
+	public static final short TYPE_DOUBLE = 7;
+	public static final short TYPE_CHARACTER = 8;
+	public static final short TYPE_STRING = 9;
 
 	/**
 	 * @see java.util.List#toArray(T[])
 	 */
 	public final Object[] toArray(Object[] a) {
+		if(a==null) return toArray();
+		
+		
+		Class trgClass=a.getClass().getComponentType();
+		short type=TYPE_OBJECT;
+		if(trgClass==Boolean.class) type=TYPE_BOOLEAN;
+		else if(trgClass==Byte.class) type=TYPE_BYTE;
+		else if(trgClass==Short.class) type=TYPE_SHORT;
+		else if(trgClass==Integer.class) type=TYPE_INT;
+		else if(trgClass==Long.class) type=TYPE_LONG;
+		else if(trgClass==Float.class) type=TYPE_FLOAT;
+		else if(trgClass==Double.class) type=TYPE_DOUBLE;
+		else if(trgClass==Character.class) type=TYPE_CHARACTER;
+		else if(trgClass==String.class) type=TYPE_STRING;
+		
+		
 		Iterator it = iterator();
 		int i=0;
-		while(it.hasNext()) {
-			a[i++]=it.next();
+		Object o;
+		try {
+			while(it.hasNext()) {
+				o=it.next();
+				switch(type){
+				case TYPE_BOOLEAN:
+					o=Caster.toBoolean(o);
+				break;
+				case TYPE_BYTE:
+					o=Caster.toByte(o);
+				break;
+				case TYPE_CHARACTER:
+					o=Caster.toCharacter(o);
+				break;
+				case TYPE_DOUBLE:
+					o=Caster.toDouble(o);
+				break;
+				case TYPE_FLOAT:
+					o=Caster.toFloat(o);
+				break;
+				case TYPE_INT:
+					o=Caster.toInteger(o);
+				break;
+				case TYPE_LONG:
+					o=Caster.toLong(o);
+				break;
+				case TYPE_SHORT:
+					o=Caster.toShort(o);
+				break;
+				case TYPE_STRING:
+					o=Caster.toString(o);
+				break;
+				}
+				a[i++]=o;
+			}
+		}
+		catch(PageException pe){
+			throw new PageRuntimeException(pe);
 		}
 		return a;
 	}

@@ -360,16 +360,30 @@ public class aprint {
     		return;
     	}
         Iterator it = map.keySet().iterator();
-        ps.print("java.util.Map {");
-        while(it.hasNext()) {
-            Object key = it.next();
+        
+        if(map.size()<2) {
+        	ps.print(map.getClass().getName()+" {");
+            while(it.hasNext()) {
+                Object key = it.next();
 
-            ps.print(key);
-            ps.print(":");
-            ps.print(map.get(key));
-            ps.println(";");
+                ps.print(key);
+                ps.print(":");
+                ps.print(map.get(key));
+            }
+            ps.println("}");
+        } 
+        else {
+	        ps.println(map.getClass().getName()+" {");
+	        while(it.hasNext()) {
+	            Object key = it.next();
+	            ps.print("	");
+	            ps.print(key);
+	            ps.print(":");
+	            ps.print(map.get(key));
+	            ps.println(";");
+	        }
+	        ps.println("}");
         }
-        ps.println("}");
     }
 
     private static void _(PrintStream ps,NamedNodeMap map) {

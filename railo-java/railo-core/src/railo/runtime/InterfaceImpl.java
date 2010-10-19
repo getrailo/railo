@@ -94,7 +94,7 @@ public class InterfaceImpl implements Dumpable {
 
     	while(it.hasNext()) {
     		extend=((String) it.next()).trim();
-    		ic=ComponentLoader.loadInterface(pc,extend,true,interfaceUdfs);
+    		ic=ComponentLoader.loadInterface(pc,extend,interfaceUdfs);
     		interfaces.add(ic);
     		ic.setUDFListener(interfaceUdfs);
     		if(!StringUtil.isEmpty(ic.extend)) {

@@ -73,8 +73,8 @@ public final class Controler extends Thread {
             boolean doHour=(lastHourInterval+(1000*60*60))<now;
             if(doHour)lastHourInterval=now;
             
-            if(doMinute) System.gc();
-            // broadcar cluster scope
+            // if(doMinute) System.gc();
+            // broadcast cluster scope
             factories=toFactories(factories,contextes);
             try {
 				ScopeContext.getClusterScope(configServer,true).broadcast();

@@ -215,6 +215,9 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	public void setDbvarname(String dbvarname) {
 		DeprecatedUtil.tagAttribute(pageContext,"storedproc","dbvarname");
 	}
+	public void setDbtype(String dbtype) {
+		DeprecatedUtil.tagAttribute(pageContext,"storedproc","dbtype");
+	}
 
 	public void addProcParam(ProcParamBean param) {
 		params.add(param);

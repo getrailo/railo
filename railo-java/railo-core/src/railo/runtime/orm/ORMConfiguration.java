@@ -56,7 +56,7 @@ public class ORMConfiguration {
 	private Resource[] cfcLocations;
 	private int dbCreate=DBCREATE_NONE;
 	private String dialect;
-	private boolean eventHandling;
+	private Boolean eventHandling=null;
 	private boolean flushAtRequestEnd=true;
 	private boolean logSQL;
 	private boolean saveMapping;
@@ -156,11 +156,20 @@ public class ORMConfiguration {
 		// dialect
 		c.dialect = StringUtil.trim(Caster.toString(settings.get(DIALECT,dc.getDialect()),dc.getDialect()),dc.getDialect());
 		
-		// eventHandling
-		c.eventHandling=Caster.toBooleanValue(settings.get(EVENT_HANDLING,dc.eventHandling()),dc.eventHandling());
 		
 		// eventHandler
 		c.eventHandler=Caster.toString(settings.get(EVENT_HANDLER,dc.eventHandler()),dc.eventHandler());
+		
+		// eventHandling
+		
+		Boolean b=Caster.toBoolean(settings.get(EVENT_HANDLING,null),null);
+		if(b==null) {
+			if(dc.eventHandling!=null && dc.eventHandling) 
+				b=Boolean.TRUE;
+			else 
+				b=!StringUtil.isEmpty(c.eventHandler,true);
+		}
+		c.eventHandling=b;
 		
 		// flushatrequestend
 		c.flushAtRequestEnd=Caster.toBooleanValue(settings.get(FLUSH_AT_REQUEST_END,dc.flushAtRequestEnd()),dc.flushAtRequestEnd());
@@ -324,7 +333,7 @@ public class ORMConfiguration {
 	 * @return the eventHandling
 	 */
 	public boolean eventHandling() {
-		return eventHandling;
+		return eventHandling==null?false:eventHandling;
 	}
 
 	public String eventHandler() {

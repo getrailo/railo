@@ -26,7 +26,7 @@ public final class GetComponentMetaData implements Function {
 		}
 		// TODO better solution
 		catch(ApplicationException ae){
-			return ComponentLoader.loadInterface(pc, Caster.toString(obj), true, new HashMap()).getMetaData(pc);
+			return ComponentLoader.loadInterface(pc, Caster.toString(obj), new HashMap()).getMetaData(pc);
 		}
 	}
 }

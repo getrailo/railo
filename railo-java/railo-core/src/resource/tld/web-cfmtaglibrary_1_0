@@ -125,8 +125,7 @@
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>
 			Used in a cfform tag, cfapplet lets you reference custom Java applets that you have registered 
-			using the ColdFusion Administrator.
-			To register a Java applet, open the ColdFusion Administrator and click Applets.
+			using the Railo Administrator.
 		</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -190,7 +189,7 @@
 			<name>paramn</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The name of a registered parameter for the applet. Specify a parameter only to override parameter values already defined for the applet in the ColdFusion Administrator.</description>
+			<description>The name of a registered parameter for the applet. </description>
 		</attribute>
 	</tag>
 	<!-- Application-->
@@ -200,7 +199,7 @@
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>
-			Defines scoping for a ColdFusion application, enables or disables storing client variables, 
+			Defines scoping for a application, enables or disables storing client variables, 
 			and specifies a client variable storage mechanism. 
 			By default, client variables are disabled. Also, enables session variables and sets timeouts 
 			for session and application variables. Session and application variables are stored in memory.
@@ -254,7 +253,7 @@
 			<name>clientStorage</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies how ColdFusion stores client variables</description>
+			<description>Specifies how Railo stores client variables</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -262,7 +261,7 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Yes or No. Yes enables client cookies. Default is Yes. If you set this attribute to 
-		"No", ColdFusion does not automatically send the CFID and CFTOKEN cookies to the client browser;
+		"No", Railo does not automatically send the CFID and CFTOKEN cookies to the client browser;
 		you must manually code CFID and CFTOKEN on the URL for every page that uses Session or Client variables.</description>
 		</attribute>
 		<attribute>
@@ -279,7 +278,7 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>Enter the CreateTimeSpan function and values in days, hours, minutes, and seconds, separated 
 		by commas, to specify the lifespan of session variables. The default value is specified in the
-		Variables page of the ColdFusion Administrator.</description>
+		Variables page of the Railo Administrator.</description>
 		</attribute>
 		<attribute>
 			<type>timespan</type>
@@ -288,7 +287,7 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>Enter the CreateTimeSpan function and values in days, hours, minutes, and seconds, separated 
 		by commas, to specify the lifespan of application variables. The default value is specified in
-		the Variables page of the ColdFusion Administrator.</description>
+		the Variables page of the Railo Administrator.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -449,7 +448,7 @@
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Speeds up page rendering when dynamic content does not have to be retrieved each time a user accesses
   the page. To accomplish this, cfcache creates temporary files that contain the static HTML returned from
-  a ColdFusion page. You can use cfcache for simple URLs and URLs that contain URL parameters.</description>
+  a page. You can use cfcache for simple URLs and URLs that contain URL parameters.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -553,6 +552,7 @@
 			<name>timeout</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -753,14 +753,6 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description></description>
 		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>Legendmultiline</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description></description>
-		</attribute>
-		
 		<attribute>
 			<type>number</type>
 			<name>chartHeight</name>
@@ -1212,14 +1204,6 @@
 		<description>Creates and defines a component object; encloses functionality that you build in CFML and enclose within cffunction tags. This tag contains one or more cffunction tags that define methods. Code within the body of this tag, other than cffunction tags, is executed when the component is instantiated. </description>
 		<att-class>railo.transformer.cfml.attributes.impl.Component</att-class>
 		<attribute-type>mixed</attribute-type>
-		
-		<attribute>
-			<type>string</type>
-			<name>name</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description></description>
-		</attribute>
 		<attribute>
 			<type>boolean</type>
 			<name>synchronized</name>
@@ -1629,7 +1613,7 @@
 			<name>recurse</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Whether ColdFusion performs the action on subdirectories</description>
+			<description>Whether Railo performs the action on subdirectories</description>
 		</attribute>
 	</tag>
 	<!-- Div -->
@@ -2246,7 +2230,7 @@
 		<tag-class>railo.runtime.tag.Execute</tag-class>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Enables ColdFusion developers to execute a process on a server computer.</description>
+		<description>Enables developers to execute a process on a server computer.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -2277,9 +2261,9 @@
 			<name>timeout</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Indicates how long, in seconds, the ColdFusion executing thread waits for the spawned process. 
+			<description>Indicates how long, in seconds, the executing thread waits for the spawned process. 
 		A timeout of 0 is equivalent to the non-blocking mode of executing. A very high timeout value is 
-		equivalent to a blocking mode of execution. The default is 0; therefore, the ColdFusion thread spawns 
+		equivalent to a blocking mode of execution. The default is 0; therefore, the thread spawns 
 		a process and returns without waiting for the process to terminate.If no output file is specified, 
 		and the timeout value is 0, the program output is discarded.</description>
 		</attribute>
@@ -2619,7 +2603,7 @@ The browser uses file extension to determine file type. </description>
 			<name>action</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The name of the ColdFusion page that executed when the form is submitted for processing.</description>
+			<description>The name of the page that executed when the form is submitted for processing.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -2683,7 +2667,7 @@ The browser uses file extension to determine file type. </description>
 			<name>archive</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>URL for a downloadable Java classes for ColdFusion controls. Default is /CFIDE/classes/CFJava2.jar.</description>
+			<description>URL for a downloadable Java classes for controls.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -3307,8 +3291,7 @@ The browser uses file extension to determine file type. </description>
 			<name>roles</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>This attribute is used only for a component.
-A comma-delimited list of ColdFusion security roles that can invoke the method. If this attribute is omitted, all roles can invoke the method.</description>
+			<description>This attribute is used only for a component. If this attribute is omitted, all roles can invoke the method.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -3347,7 +3330,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<name>abstract</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>is the function abstract or not, abstract functions are only allowed inside interface a component tags</description>
+			<description>is the function abstract or not, abstract functions are only allowed inside interface or component tags</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -3355,13 +3338,6 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>description of the Function</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>throws</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Exceptions throwd by the function</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -3743,7 +3719,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<tag-class>railo.runtime.tag.Grid</tag-class>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Used inside cfform, cfgrid lets you place a grid control in a ColdFusion form. A grid control is 
+		<description>Used inside cfform, cfgrid lets you place a grid control in a form. A grid control is 
   	a table of data divided into rows and columns. The cfgrid tag column data is specified with cfgridcolumn tags.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -3782,9 +3758,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<description>Optional. Yes or No. Default is No.
 	If Yes, automatically sets the width of each column so that all the columns are visible within the 
 	grid's specified width. All columns are initially set to equal widths. Users can resize any column. 
-	No horizontal scroll bars are available since all columns are visible. 
-	note that if you explicitly specify the width of a column and set autoWidth to Yes, ColdFusion will 
-	set the column to the explicit width, if possible.</description>
+	No horizontal scroll bars are available since all columns are visible. </description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -4487,7 +4461,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The contents of a connection string to send to the ODBC server. When connecting to a data 
-	source defined in the ColdFusion Administrator, you can use this attribute to specify additional 
+	source defined in the Railo Administrator, you can use this attribute to specify additional 
 	connection details or to override connection information specified in the Administrator. If you are 
 	dynamically connecting to a datasource by specifying dbType = "dynamic", the connection string must 
 	specify all required ODBC connection attributes.</description>
@@ -4726,13 +4700,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<name>columns</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies the column names for a query when creating a query as a result of a cfhttp GET. 
-	By default, the first row of a text file is interpreted as column headings. If there are column 
-	headers in the text file from which the query is drawn, do not specify this attribute except to overwrite them. 
-	When duplicate column heading names are encountered, ColdFusion appends an underscore character to 
-	the duplicate column name to make it unique. If there are no column headers in the text file, or to 
-	override those in the file, you must specify the columns attribute. However ColdFusion never treats 
-	the first row of the file as data, even if you specify the columns attribute.</description>
+			<description>Specifies the column names for a query when creating a query as a result of a cfhttp GET. </description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -4831,8 +4799,8 @@ no: the function is processed as if it were within a cfsilent tag </description>
 	to No and throwOnError = "yes", execution stops if cfhttp fails, and the status code and associated 
 	error message are returned in the variable cfhttp.statuscode. To see where execution would have been 
 	redirected, use the variable cfhttp.responseHeader[LOCATION]. The key LOCATION identifies the path of 
-	redirection. ColdFusion will follow up to five redirections on a request. if this limit is exceeded, 
-	ColdFusion behaves as if redirect = "no".</description>
+	redirection. Railo will follow up to five redirections on a request. if this limit is exceeded, 
+	Railo behaves as if redirect = "no".</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -4840,12 +4808,12 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>A value, in seconds. When a URL timeout is specified in the browser, the timeout attribute setting 
-		takes precedence over the ColdFusion Administrator timeout. The ColdFusion server then uses the lesser 
+		takes precedence over the Railo Administrator timeout. The server then uses the lesser 
 		of the URL timeout and the timeout passed in the timeout attribute, so that the request always times 
-		out before or at the same time as the page times out. If there is no URL timeout specified, ColdFusion 
-		takes the lesser of the ColdFusion Administrator timeout and the timeout passed in the timeout attribute.
-		If there is no timeout set on the URL in the browser, no timeout set in the ColdFusion Administrator, 
-		and no timeout set with the timeout attribute, ColdFusion waits indefinitely for the cfhttp request to 
+		out before or at the same time as the page times out. If there is no URL timeout specified, Railo 
+		takes the lesser of the Railo Administrator timeout and the timeout passed in the timeout attribute.
+		If there is no timeout set on the URL in the browser, no timeout set in the Railo Administrator, 
+		and no timeout set with the timeout attribute, Railo waits indefinitely for the cfhttp request to 
 		process.</description>
 		</attribute>
 		<attribute>
@@ -5006,7 +4974,8 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<name>fonts</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>One or more valid fonts to use for the CAPTCHA text. Separate multiple fonts with commas. ColdFusion supports only the system fonts that the JDK can recognize. For example, TTF fonts in the Windows directory are supported on Windows.</description>
+			<description>One or more valid fonts to use for the CAPTCHA text. Separate multiple fonts with commas. 
+			Railo supports only the system fonts that the JDK can recognize. For example, TTF fonts in the Windows directory are supported on Windows.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -5054,7 +5023,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<name>overwrite</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>If the destination file already exists, ColdFusion generates an error if the overwrite action is not set to yes.</description>
+			<description>If the destination file already exists, Railo generates an error if the overwrite action is not set to yes.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -5075,14 +5044,14 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<name>structName</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Name of the ColdFusion structure to be created.</description>
+			<description>Name of the structure to be created.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>result</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Name of the ColdFusion structure to be created (alias for structname).</description>
+			<description>Name of the structure to be created (alias for structname).</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -5274,8 +5243,11 @@ If you import a CFML custom tag directory and specify an empty value, "", for th
 			<name>extends</name>
 			<required>no</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>A comma-delimited list of one or more interfaces that this interface extends. Any CFC that implements an interface must also implement all the functions in the interfaces specified by this property.
-If an interface extends another interface, and the child interface specifies a function with the same name as one in the parent interface, both functions must have the same attributes; otherwise ColdFusion generates an error.</description>
+			<description>A comma-delimited list of one or more interfaces that this interface extends. 
+			Any CFC that implements an interface must also implement all the functions in the interfaces specified by this property.
+If an interface extends another interface, and the child interface specifies a function with the same name as one in the parent interface, 
+both functions must have the same attributes; otherwise 
+ generates an error.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -5292,7 +5264,7 @@ If an interface extends another interface, and the child interface specifies a f
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagInclude</ttt-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Lets you embed references to ColdFusion pages in CFML. You can embed cfinclude tags recursively. 
+		<description>Lets you embed references to pages in CFML. You can embed cfinclude tags recursively. 
   For an additional method of encapsulating CFML</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -5309,10 +5281,10 @@ If an interface extends another interface, and the child interface specifies a f
 		<tag-class>railo.runtime.tag.Index</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Populates collections with indexed data. The cfindex and cfsearch tags encapsulate the Verity 
-  indexing and searching utilities. Verity collections can be populated from text files in a directory 
-  you specify, or from a query generated by a ColdFusion query. Before you can populate a Verity collection, 
-  you must create the collection using either the cfcollection tag or the ColdFusion Administrator. Use 
+		<description>Populates collections with indexed data. The cfindex and cfsearch tags encapsulate the 
+  indexing and searching utilities. Collections can be populated from text files in a directory 
+  you specify, or from a query generated by a query. Before you can populate a collection, 
+  you must create the collection using either the cfcollection tag or the Railo Administrator. Use 
   cfsearch to search collections you populate with cfindex.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -5411,7 +5383,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>extensions</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies the comma-separated list of file extensions that ColdFusion uses to index files if 
+			<description>Specifies the comma-separated list of file extensions that Railo uses to index files if 
 	type = "Path". Default is HTM, HTML, CFM, CFML, DBM, DBML.
 	An entry of "*." returns files with no extension</description>
 		</attribute>
@@ -5435,15 +5407,14 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>external</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Yes or No. Yes indicates that the collection specified in collection was created outside of 
-	ColdFusion using native Verity indexing tools.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>language</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>To use the language attribute you must have the ColdFusion International Search Pack installed.</description>
+			<description></description>
 		</attribute>
 		
 		<attribute>
@@ -5486,7 +5457,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>throwontimeout</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>YSpecifies how timeout conditions are handled. If the value is true, an exception is enerated to provide notification of the timeout. If the value is No, execution continues. Default is no.</description>
+			<description>Specifies how timeout conditions are handled. If the value is true, an exception is enerated to provide notification of the timeout. If the value is No, execution continues. Default is no.</description>
 		</attribute>
 	</tag>
 	
@@ -6126,7 +6097,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>
-			Invokes component methods from within a ColdFusion page or component. 
+			Invokes component methods from within a page or component. 
 			You use this tag to reference a WSDL file and consume a web service from within a block of CFML code. 
 		</description>
 		<attribute-type>mixed</attribute-type>
@@ -6390,7 +6361,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Used in conjunction with action = "Query". Specifies the first row of the LDAP query to insert 
-		into the ColdFusion query. The default is 1.</description>
+		into the query. The default is 1.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -6438,8 +6409,8 @@ Permits searching collections by title or displaying a separate title from the k
 		<tag-class>railo.runtime.tag.Location</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Opens a ColdFusion page or HTML file. For example, you might use cflocation to specify a standard 
-  message or response that you use in several ColdFusion applications. Use the addToken attribute to verify 
+		<description>Opens a CFML page or HTML file. For example, you might use cflocation to specify a standard 
+  message or response that you use in several applications. Use the addToken attribute to verify 
   client requests.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -6548,7 +6519,7 @@ Permits searching collections by title or displaying a separate title from the k
   lock. An exclusive lock single-threads access to the CFML constructs in its body. Single-threaded access 
   implies that the body of the tag can be executed by at most one request at a time. A request executing 
   inside a cflock tag has an "exclusive lock" on the tag. No other requests can start executing inside the 
-  tag while a request has an exclusive lock. ColdFusion issues exclusive locks on a first-come, first-served 
+  tag while a request has an exclusive lock. Railo issues exclusive locks on a first-come, first-served 
   basis. A read-only lock allows multiple requests to access the CFML constructs inside its body concurrently. 
   Therefore, read-only locks should be used only when the shared data is read only and not modified. If another 
   request already has an exclusive lock on the shared data, the request waits for the exclusive lock to be 
@@ -6578,7 +6549,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies the name of the lock. Only one request can execute inside a cflock tag with a given 
 	name. Therefore, providing the name attribute allows for synchronizing access to resources from 
-	different parts of an application. Lock names are global to a ColdFusion server. They are shared 
+	different parts of an application. Lock names are global to a server. They are shared 
 	between applications and user sessions, but not across clustered servers. This attribute is mutually 
 	exclusive with the scope attribute. Therefore, do not specify the scope attribute and the name attribute 
 	in a tag. The value of name cannot be an empty string.</description>
@@ -6700,7 +6671,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>index</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Index value. ColdFusion sets it to from value and increments or decrements by step value, until it equals to value.</description>
+			<description>Index value. Railo sets it to from value and increments or decrements by step value, until it equals to value.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -6949,7 +6920,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The address of the SMTP server to use for sending messages. If no server is specified, the 
-		server name specified in the ColdFusion Administrator is used.</description>
+		server name specified in the Railo Administrator is used.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -6964,7 +6935,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies a mailer ID to be passed in the X-Mailer SMTP header, which identifies the mailer 
-		application. The default is ColdFusion Application Server.</description>
+		application.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -7206,10 +7177,9 @@ Permits searching collections by title or displaying a separate title from the k
 		<handle-exception>true</handle-exception>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Invokes a custom tag for use in ColdFusion application pages. The cfmodule tag can help deal with 
-  custom tag name conflicts. Use the template attribute to name a ColdFusion page that contains the custom 
-  tag definition, including its path. Use the name attribute to refer to the custom tag using a dot 
-  notation scheme to indicate the location of the custom tag in the ColdFusion installation directory.</description>
+		<description>Invokes a custom tag for use in cfml templates. The cfmodule tag can help deal with 
+  custom tag name conflicts. Use the template attribute to name a template that contains the custom 
+  tag definition, including its path..</description>
 		<attribute-type>dynamic</attribute-type>
 		<attribute-min>1</attribute-min>
 	</tag>
@@ -7621,7 +7591,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>image</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Image used as a watermark. You can specify a pathname, a variable that contains an image file, or a ColdFusion image variable</description>
+			<description>Image used as a watermark. You can specify a pathname, a variable that contains an image file, or a image variable</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -7789,7 +7759,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>stopOnError</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Valid only if the directory attribute is specified. If the specified directory contains files other then ColdFusion-readable PDF files, ColdFusion either stops merge process or continues.</description>
+			<description>Valid only if the directory attribute is specified. If the specified directory contains files other then readable PDF files, Railo either stops merge process or continues.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -7854,13 +7824,6 @@ Permits searching collections by title or displaying a separate title from the k
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Host name biff.upperlip.com or IP address 192.1.2.225 of the POP server.</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>debug</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description></description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -8007,7 +7970,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>variable</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The ColdFusion variable name that you use to reference the value that the output parameter 
+			<description>The variable name that you use to reference the value that the output parameter 
 	represents after the call is made to the stored procedure.</description>
 		</attribute>
 		<attribute>
@@ -8015,14 +7978,14 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>dbVarName</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The parameter name corresponding to the name of the parameter in the stored procedure.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>any</type>
 			<name>value</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Corresponds to the actual value that ColdFusion passes to the stored procedure.</description>
+			<description>Corresponds to the actual value that Railo passes to the stored procedure.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -8061,7 +8024,7 @@ Permits searching collections by title or displaying a separate title from the k
 		
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Specifies a result set name that other ColdFusion tags, such as cfoutput and cftable, use to access 
+		<description>Specifies a result set name that other tags, such as cfoutput and cftable, use to access 
   the result set. It also lets you optionally identify which of the stored procedure's result sets to 
   return. The cfprocresult tag is nested within a cfstoredproc tag.</description>
 		<attribute-type>fixed</attribute-type>
@@ -8348,27 +8311,21 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>dbServer</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>For native database drivers and the SQLOLEDB provider, specifies the name of the database server 
-		computer. If specified, dbServer overrides the server specified in the data source.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>dbName</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The database name, Sybase System 11 driver and SQLOLEDB provider only. If specified, dbName 
-		overrides the default database specified in the data source.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>connectString</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The contents of a connection string to send to the ODBC server. When connecting to a data source 
-		defined in the ColdFusion Administrator, you can use this attribute to specify additional connection 
-		details or to override connection information specified in the Administrator. If you are dynamically 
-		connecting to a datasource by specifying dbType = "dynamic", the connection string must specify all 
-		required ODBC connection attributes.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -8428,14 +8385,14 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>provider</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>COM provider, OLE-DB only.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>providerDSN</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Data source name for the COM provider, OLE-DB only.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -8450,7 +8407,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>cachename</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>This is specific to JTags, and allows you to give the cache a specific name</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -8464,14 +8421,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>unique</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies if the object parameter is unique, used only for dbtype=orm</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>unique</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description></description>
+			<description>Specifies if the object parameter is unique, used only for dbtype=orm or hql</description>
 		</attribute>
 		<attribute>
 			<type>struct</type>
@@ -8504,7 +8454,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>value</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies the actual value that ColdFusion passes to the right of the comparison operator in a 
+			<description>Specifies the actual value that Railo passes to the right of the comparison operator in a 
 	where clause.</description>
 		</attribute>
 		<attribute>
@@ -8736,8 +8686,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>report</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies the report path. Store Crystal Reports files in the same directories as ColdFusion 
-		page files.</description>
+			<description>Specifies the report path. Store Crystal Reports files in the same directories as cfml templates.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -8752,7 +8701,7 @@ dWord: creates a value of 0 (zero)</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The username required for entry into the database from which the report is created. Overrides 
-		the default settings for the data source in the ColdFusion Administrator.</description>
+		the default settings for the data source in the Railo Administrator.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -8760,7 +8709,7 @@ dWord: creates a value of 0 (zero)</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The password that corresponds to a username required for database access. Overrides the default 
-		settings for the data source in the ColdFusion Administrator.</description>
+		settings for the data source in the Railo Administrator.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -8786,7 +8735,6 @@ dWord: creates a value of 0 (zero)</description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>
 				Variable name for data that is passed. 
-				The ColdFusion Report Builder report definition must include an input parameter that matches this name.
 			</description>
 		</attribute>
 		<attribute>
@@ -8855,16 +8803,11 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Schedule</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Provides a programmatic interface to the ColdFusion scheduling engine. You can run a specified 
+		<description>Provides a programmatic interface to the scheduling engine. You can run a specified 
   page at scheduled intervals with the option to write out static HTML pages. This lets you offer users 
   access to pages that publish data, such as reports, without forcing users to wait while a database transaction 
   is performed in order to populate the data on the page. 
-  ColdFusion scheduled events are registered using the ColdFusion Administrator. Execution of cfschedule 
-  can be disabled in the Administrator. 
-  Information supplied by the user includes the scheduled ColdFusion page to execute, the time and frequency 
-  for executing the page, and whether the output from the task is published. If the output is published, 
-  a path and file are specified. 
-  The event submission and its success or failure status is written to the cfusion-log-schedule.log file.</description>
+  </description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -9077,10 +9020,7 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Search</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Executes searches against data indexed in Verity collections. Collections can be created by 
-  calling the cfcollection tag, by using the ColdFusion Administrator, or through native Verity indexing 
-  tools. Collections are populated with data either with the cfindex tag, or externally, using native 
-  Verity indexing tools. Collections must be created and populated before any searches can be executed.</description>
+		<description>Executes searches against data indexed </description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -9132,15 +9072,14 @@ dWord: creates a value of 0 (zero)</description>
 			<name>external</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Yes or No. Yes indicates that the collection you are searching was created outside of ColdFusion 
-		using native Verity indexing tools. The default is No.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>language</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>To use the language attribute you must have the ColdFusion International Search Pack installed.</description>
+			<description></description>
 		</attribute>
 		
 		
@@ -9541,51 +9480,42 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Servlet</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Executes a Java servlet on a JRun engine. This tag is used in conjunction with the 
-  cfserletparam tag, which passes data to the servlet.</description>
+		<description>This tag has been deprecated and is non-functional.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>code</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The class name of the Java servlet to execute.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>jrunProxy</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>A remote computer where the JRun engine is executing. By default, the JRun engine is assumed to 
-		be on the host running ColdFusion. To indicate the name of a remote host, specify the IP address of 
-		the remote host followed by a colon and the port number at which JRun is listening. By default, for 
-		the JCP server, JRun 2.3.3 listens at port 8081; JRun 3.0 listens at port 51000.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
 			<name>timeout</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies how many seconds JRun waits for the servlet to complete before timing out.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
 			<name>writeOutput</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Boolean specifying whether the text output of the tag should appear as inline text on the 
-		generated page or returned inside a ColdFusion variable for further processing . The default value, 
-		Yes, means output is returned as text to appear inline on the generated page. Setting it to No means 
-		no visible text is returned but, instead, the text is returned as the value of the cfservlet.output 
-		variable</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
 			<name>debug</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Boolean specifying whether additional information about the JRun connection status and 
-		activity is to be written to the JRun error log</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 	</tag>
 	<!-- ServletParam -->
@@ -9594,40 +9524,35 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.ServletParam</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>A child of cfservlet. It passes data to the servlet. Each cfservletparam tag within the cfservlet 
-  block passes a separate piece of data to the servlet.</description>
+		<description>This tag has been deprecated and is non-functional.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>If used with the value attribute, it is the name of the servlet parameter. If used with the variable attribute, it is 
-		the name of the servlet attribute</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>value</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Value of a name-value pair passed to the servlet as a parameter.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>variable</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The name of a ColdFusion variable. See the Usage section for details on passing parameters. The 
-		value appears in the servlet as an attribute</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>type</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The data type of the ColdFusion variable being passed. By default, ColdFusion usually passes variables 
-		as strings; however, to ensure that the data is the correct type on the Java side, you can specify any 
-		of the following types: INT, DOUBLE, BOOL, DATE, or STRING.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 	</tag>
 	<!-- Set -->
@@ -9637,7 +9562,7 @@ dWord: creates a value of 0 (zero)</description>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagSet</ttt-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Define a ColdFusion variable. If the variable exists, cfset resets it to the specified value.</description>
+		<description>Define a CFML variable. If the variable exists, cfset resets it to the specified value.</description>
 		<attribute-type>noname</attribute-type>
 		<attribute>
 			<type>any</type>
@@ -9652,7 +9577,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Controls various aspects of page processing, such as the output of HTML code in pages. One 
-  benefit of this option is managing whitespace that can occur in output pages served by ColdFusion.</description>
+  benefit of this option is managing whitespace that can occur in output pages served by CFML.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute-min>1</attribute-min>
 		<attribute>
@@ -9675,7 +9600,8 @@ dWord: creates a value of 0 (zero)</description>
 			<name>requestTimeOut</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Integer; number of seconds. Time limit, after which ColdFusion processes the page as an unresponsive thread. Overrides the timeout set in the ColdFusion Administrator. </description>
+			<description>Integer; number of seconds. Time limit, after which CFML processes the page as an unresponsive thread. 
+			Overrides the timeout set in the Railo Administrator. </description>
 		</attribute>
 	</tag>
 	<!-- Sleep -->
@@ -9719,7 +9645,7 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Slider</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Used inside cfform, cfslider lets you place a slider control in a ColdFusion form. A slider 
+		<description>Used inside cfform, cfslider lets you place a slider control in a CFML form. A slider 
   control is like a sliding volume control. The slider groove is the area over which the slider moves.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -9974,13 +9900,6 @@ dWord: creates a value of 0 (zero)</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
-			<name>dbType</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>The database driver type.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
 			<name>username</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -9994,49 +9913,12 @@ dWord: creates a value of 0 (zero)</description>
 			<description>If specified, password overrides the password value specified in the data source setup.</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
-			<name>dbServer</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>For native database drivers, specifies the name of the database server computer. If specified, 
-		dbServer overrides the server specified in the data source.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>connectString</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>The contents of a connection string to send to the ODBC server.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>dbName</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>The database name 'Sybase System 11 driver onl'. If specified, dbName overrides the default 
-		database specified in the data source.</description>
-		</attribute>
-		<attribute>
 			<type>number</type>
 			<name>blockFactor</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Specifies the maximum number of rows to fetch at a time from the server. The range is 1 
 		which is the default to 100. The ODBC driver may dynamically reduce the block factor at runtime.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>provider</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>COM provider 'OLE-DB only'.</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>providerDSN</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Data source name for the COM provider 'OLE-DB only'.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -10078,7 +9960,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>cachename</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>This is specific to JTags, and allows you to give the cache a specific name</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 	</tag>
 	<!-- switch -->
@@ -10099,7 +9981,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>expression</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Any ColdFusion expression that yields a scalar value. ColdFusion converts integers, real numbers, 
+			<description>Any CFML expression that yields a scalar value. CFML converts integers, real numbers, 
 		Booleans, and dates to numeric values.</description>
 		</attribute>
 	</tag>
@@ -10110,7 +9992,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<handle-exception>true</handle-exception>
-		<description>Builds a table in a ColdFusion page. Use the cfcol tag to define table column and row 
+		<description>Builds a table in a CFML page. Use the cfcol tag to define table column and row 
   characteristics. The cftable tag renders data either as preformatted text, or, with the HTMLTable 
   attribute, as an HTML table. Use cftable to create tables if you don't want to write HTML table tag 
   code, or if your data can be well presented as preformatted text.</description>
@@ -10860,7 +10742,7 @@ dWord: creates a value of 0 (zero)</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>A custom type or the predefined type Application. Do not enter any other predefined types because 
-		they are not generated by ColdFusion applications. If you specify the exception type Application, you 
+		they are not generated by CFML applications. If you specify the exception type Application, you 
 		need not specify a type for cfcatch, because the Application type is the default cfcatch type</description>
 		</attribute>
 		<attribute>
@@ -10875,7 +10757,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>detail</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>A detailed description of the event. The ColdFusion server appends the position of the error to 
+			<description>A detailed description of the event. The CFML server appends the position of the error to 
 		this description; the server uses this parameter if an error is not caught by your code.</description>
 		</attribute>
 		<attribute>
@@ -10955,8 +10837,9 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Tree</tag-class>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Lets you put a tree control in a cfform. Validates user selections. Tree items are created with 
-  cftreeitem tags inside the cftree tag block. You can use a ColdFusion query to supply data to the tree.</description>
+		<description>This Tag is not supported yet.
+		Lets you put a tree control in a cfform. Validates user selections. Tree items are created with 
+  cftreeitem tags inside the cftree tag block. You can use a CFML query to supply data to the tree.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -10996,14 +10879,6 @@ dWord: creates a value of 0 (zero)</description>
 			<description>Yes or No. When used with href, Yes passes the CFTREEITEMKEY variable along with the value of 
 	the selected tree item in the URL to the application page specified in the cfform action attribute. 
 	The default is Yes.</description>
-		</attribute>
-		<attribute>
-			<type>boolean</type>
-			<name>highlightref</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Yes highlights links associated with a cftreeitem with a URL attribute value. No disables 
-	highlight. Default is Yes.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -11184,7 +11059,7 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Populates a tree control, created with cftree, with elements. You can use the img values 
-  supplied with ColdFusion or reference your own icons.</description>
+  supplied with CFML or reference your own icons.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -11339,8 +11214,8 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Used with one or more cfcatch tags, the cftry tag lets you catch and process exceptions in 
-  ColdFusion pages. Exceptions include events that disrupt the normal flow of instructions in a 
-  ColdFusion page, such as failed database operations, missing include files, and developer-specified 
+  CFML pages. Exceptions include events that disrupt the normal flow of instructions in a 
+  CFML page, such as failed database operations, missing include files, and developer-specified 
   events.</description>
 		<attribute-type>fixed</attribute-type>
 	</tag>
@@ -12112,7 +11987,8 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Xml</tag-class>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Creates a ColdFusion XML document object that contains the markup in the tag body. This tag can include XML and CFML tags. ColdFusion processes the CFML code in the tag body, then assigns the resulting text to an XML document object variable. </description>
+		<description>Creates a CFML XML document object that contains the markup in the tag body. This tag can include XML and CFML tags. 
+		Railo processes the CFML code in the tag body, then assigns the resulting text to an XML document object variable. </description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -12143,7 +12019,7 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.CFXTag</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Creates a ColdFusion CFX Tag</description>
+		<description>Creates a CFX Tag</description>
 		<attribute-type>dynamic</attribute-type>
 	</tag>
 	<!-- _ -->
@@ -12154,7 +12030,7 @@ dWord: creates a value of 0 (zero)</description>
 		<handle-exception>true</handle-exception>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Creates a ColdFusion Custom Tag</description>
+		<description>Creates a Custom Tag</description>
 		<attribute-type>dynamic</attribute-type>
 	</tag>
 	<!-- c_  
@@ -12165,7 +12041,7 @@ dWord: creates a value of 0 (zero)</description>
 		<handle-exception>true</handle-exception>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Creates a ColdFusion Custom Tag based on a CF Component (CFC)</description>
+		<description>Creates a Custom Tag based on a CF Component (CFC)</description>
 		<attribute-type>dynamic</attribute-type>
 	</tag>-->
 	<!-- While -->

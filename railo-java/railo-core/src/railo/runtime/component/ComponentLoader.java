@@ -28,7 +28,17 @@ import railo.runtime.writer.BodyContentUtil;
 
 public class ComponentLoader {
 	
-    public static ComponentImpl loadComponentImpl(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {//, boolean isInterfaces
+
+    public static ComponentImpl loadComponentImpl(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
+    	return (ComponentImpl)load(pc, rawPath, searchLocal, searchRoot,null);
+    }
+    
+
+    public static InterfaceImpl loadInterface(PageContext pc,String rawPath, Map interfaceUDFs) throws PageException  {
+    	return (InterfaceImpl)load(pc, rawPath, Boolean.TRUE, Boolean.TRUE,interfaceUDFs);
+    }
+	
+    private static Object load(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot, Map interfaceUDFs) throws PageException  {
     	ConfigImpl config=(ConfigImpl) pc.getConfig();
     	//print.o(rawPath);
     	String appName=pc.getApplicationContext().getName();
@@ -56,7 +66,7 @@ public class ComponentLoader {
 		    localCacheName=currPS.getDisplayPath().replace('\\', '/');
 	    	localCacheName=localCacheName.substring(0,localCacheName.lastIndexOf('/')+1).concat(pathWithCFC);
 	    	page=config.getCachedPage(pc, localCacheName);
-	    	if(page!=null) return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
+	    	if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 	    }
 	    
     	// check import cache
@@ -68,10 +78,10 @@ public class ComponentLoader {
 	    		
 	    		if(impDef.isWildcard() || impDef.getName().equalsIgnoreCase(path)){
 	    			page=config.getCachedPage(pc, "import:"+impDef.getPackageAsPath()+pathWithCFC);
-	    			if(page!=null) return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
+	    			if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 	    			
 	    			page=config.getCachedPage(pc, "import:"+appName+":"+impDef.getPackageAsPath()+pathWithCFC);
-	    			if(page!=null) return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
+	    			if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 		    	}
 		    	impDef=++i<impDefs.length?impDefs[i]:null;
 	    	}
@@ -81,11 +91,11 @@ public class ComponentLoader {
     	
     	// check global in cache
     	page=config.getCachedPage(pc, pathWithCFC);
-    	if(page!=null) return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
+    	if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
     	
     	// get pages from application mappings
     	page=config.getCachedPage(pc, ":"+appName+":"+pathWithCFC);
-    	if(page!=null) return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
+    	if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
     	
     // SEARCH
     	// search from local
@@ -97,7 +107,7 @@ public class ComponentLoader {
 
 				if(page!=null){
 					config.putCachedPageSource(localCacheName, page.getPageSource());
-					return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
+					return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 				}
 			}
     	}
@@ -121,7 +131,7 @@ public class ComponentLoader {
 			    		page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
 			    		if(page!=null)	{
 			    			config.putCachedPageSource("import:"+impDef.getPackageAsPath()+pathWithCFC, page.getPageSource());
-			    			return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
+			    			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 			        	}
 	    			}
 	    			
@@ -133,7 +143,7 @@ public class ComponentLoader {
 	    	    		if(((MappingImpl)ps.getMapping()).isAppMapping())key=appName+":"+key;
 	    	    		
 	    	    		config.putCachedPageSource("import:"+key, page.getPageSource());
-	    				return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
+	    				return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 	    	    	}
 		    		
 	    			// search component mappings
@@ -144,7 +154,7 @@ public class ComponentLoader {
 		        		page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
 			    		if(page!=null)	{    
 			    			config.putCachedPageSource("import:"+impDef.getPackageAsPath()+pathWithCFC, page.getPageSource());
-			    			return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
+			    			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 			        	}
 		        	}
 		    	}
@@ -164,7 +174,7 @@ public class ComponentLoader {
     	if(page!=null){
     		String key=((MappingImpl)ps.getMapping()).isAppMapping()?":"+appName+":"+pathWithCFC:pathWithCFC;
     		config.putCachedPageSource(key, page.getPageSource());
-			return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
+			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
     	}
         
 		
@@ -177,13 +187,23 @@ public class ComponentLoader {
     		
     		if(page!=null){
         		config.putCachedPageSource(pathWithCFC, page.getPageSource());
-    			return loadComponentImpl(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath);
+    			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
         	}
     	}
     	
+    	if(StringUtil.startsWithIgnoreCase(rawPath, "cfide.")) {
+    		String rpm="org.railo.cfml."+rawPath.substring(6);
+    		try{
+    			return load(pc,rpm, searchLocal, searchRoot, interfaceUDFs);
+        	}
+        	catch(ExpressionException ee){
+        		throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+rawPath+" or "+rpm);
+        	}
+    	}
+    	else throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+rawPath);
     	
 		
-    	throw new ExpressionException("invalid component definition, can't find "+rawPath);
+    	
 	}
     
     private static String trim(String str) {
@@ -232,6 +252,12 @@ public class ComponentLoader {
 		}
 		return loadComponentImpl(pc,page,ps,callPath,isRealPath);
 	}
+	
+
+	private static Object load(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath, Map interfaceUDFs) throws PageException  {
+		if(interfaceUDFs==null) return loadComponentImpl(pc,page, ps,callPath, isRealPath);
+		else return loadInterface(pc,page, ps, callPath, isRealPath, interfaceUDFs);
+	}
 
 	public static ComponentImpl loadComponentImpl(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath) throws PageException  {
         ComponentImpl rtn=null;
@@ -271,47 +297,7 @@ public class ComponentLoader {
        
 		return rtn;
     }
-    
-
-
-	/**
-     * load a component
-     * @param rawPath
-     * @return loaded component
-     * @throws PageException
-     */
-    public static InterfaceImpl loadInterface(PageContext pc,String rawPath,boolean allowRemovingExt, Map interfaceUDFs) throws PageException  {
-    	String fullName=rawPath;
-    	boolean hasRemovedExt=false;
-    	if(allowRemovingExt && StringUtil.endsWithIgnoreCase(fullName, ".cfc")){
-    		fullName=fullName.substring(0,fullName.length()-4);
-    		hasRemovedExt=true;
-    	}
-    	fullName=fullName.trim().replace('\\','/').replace('.','/');
-	    String path=fullName.concat(".cfc");
-	    
-	    
-	    boolean isRealPath=!StringUtil.startsWith(fullName,'/');
-	    
-	    PageSource res=pc.getRelativePageSource(path);
-	    Page page=null;
-	    //try {
-	    	page=((PageSourceImpl)res).loadPage(pc,pc.getConfig(),null);
-		    if(page==null && isRealPath) {
-		    	isRealPath=false;
-	        	PageSource resOld = res;
-	        	res=pc.getPageSource('/'+path);
-	    	    page=((PageSourceImpl)res).loadPage(pc,pc.getConfig(),null);
-	        	if(page==null) {
-			    	if(hasRemovedExt)return loadInterface(pc,rawPath, false,interfaceUDFs);
-	            	String detail="search for "+res.getDisplayPath();
-	            	if(resOld!=null)detail+=" and "+resOld.getDisplayPath();
-	    			throw new ExpressionException("invalid interface definition, can't find "+rawPath,detail);
-	    	    }
-	        }
-	    return loadInterface(pc,page,res,fullName.replace('/', '.'),isRealPath,interfaceUDFs);
-	}
-    
+	
     public static InterfaceImpl loadInterface(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath, Map interfaceUDFs) throws PageException  {
     	InterfaceImpl rtn=null;
         if(pc.getConfig().debug()) {
@@ -347,6 +333,59 @@ public class ComponentLoader {
         }
         return rtn;
     }
+    
+
+
+	/* *
+     * load a component
+     * @param rawPath
+     * @return loaded component
+     * @throws PageException
+     * /
+    public static InterfaceImpl loadInterface(PageContext pc,String rawPath,boolean allowRemovingExt, Map interfaceUDFs) throws PageException  {
+    	// MUSTMUST sync code with extends
+    	
+    	String fullName=rawPath;
+    	boolean hasRemovedExt=false;
+    	
+    	fullName=fullName.trim().replace('\\','/').replace('.','/');
+	    String path=fullName.concat(".cfc");
+	    
+	    
+	    boolean isRealPath=!StringUtil.startsWith(fullName,'/');
+	    
+	    PageSource res=pc.getRelativePageSource(path);
+	    Page page=null;
+	    //try {
+	    	page=((PageSourceImpl)res).loadPage(pc,pc.getConfig(),null);
+		    if(page==null && isRealPath) {
+		    	isRealPath=false;
+	        	PageSource resOld = res;
+	        	res=pc.getPageSource('/'+path);
+	    	    page=((PageSourceImpl)res).loadPage(pc,pc.getConfig(),null);
+	        	if(page==null) {
+			    	if(hasRemovedExt)return loadInterface(pc,rawPath, false,interfaceUDFs);
+	            	String detail="search for "+res.getDisplayPath();
+	            	if(resOld!=null)detail+=" and "+resOld.getDisplayPath();
+	            	
+	            	if(StringUtil.startsWithIgnoreCase(rawPath, "cfide.")) {
+	            		String rpm="org.railo.cfml."+rawPath.substring(6);
+	            		try{
+	            			return loadInterface(pc,rpm,allowRemovingExt, interfaceUDFs);
+		            	}
+		            	catch(ExpressionException ee){
+		            		throw new ExpressionException("invalid interface definition, can't find "+rawPath+" or "+rpm,detail);
+		            	}
+	            	}
+	            	else throw new ExpressionException("invalid interface definition, can't find "+rawPath,detail);
+	            	
+	    			
+	    	    }
+	        }
+	    return loadInterface(pc,page,res,fullName.replace('/', '.'),isRealPath,interfaceUDFs);
+	}*/
+    
+
 	
 	
 

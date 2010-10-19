@@ -135,7 +135,7 @@ public final class TagLibFactory extends DefaultHandler {
 			if(fileName!=null) message+="In File ["+fileName+"], ";
 			throw new TagLibException(e);
 		} catch (SAXException e) {
-			
+			e.printStackTrace();
 			String fileName=is.getSystemId();
 			String message="SAXException: ";
 			if(fileName!=null) message+="In File ["+fileName+"], ";

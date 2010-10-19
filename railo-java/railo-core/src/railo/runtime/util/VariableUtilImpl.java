@@ -21,6 +21,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ArrayUtil;
@@ -535,6 +536,56 @@ public final class VariableUtilImpl implements VariableUtil {
 		}
 		return null;
     }
+    
+    // FUTURE add to interface
+    public Object setEL(PageContext pc, Object coll, Collection.Key key,Object value) {
+        // Objects
+        if(coll instanceof Objects) { 
+            ((Objects)coll).setEL(pc,key,value);
+            return value;
+        }
+        // Collection
+        else if(coll instanceof Collection) { 
+			((Collection)coll).setEL(key,value);
+			return value;
+		}
+		// Map
+		else if(coll instanceof Map) {
+			try {
+				Reflector.setProperty(coll,key.getString(),value);
+				return value;
+			}
+			catch(Throwable t) {}
+			((Map)coll).put(key,value);
+			return value;
+		} 
+		// List
+		else if(coll instanceof List) {
+		    List list=((List)coll);
+		    int index=Caster.toIntValue(key,Integer.MIN_VALUE);
+		    if(index==Integer.MIN_VALUE) return null;
+		    if(list.size()>=index)list.set(index-1,value);
+		    else {
+		        while(list.size()<index-1)list.add(null);
+		        list.add(value);
+		    }
+			return value;
+		}
+		// Native Array
+		else if(Decision.isNativeArray(coll)) {
+			return ArrayUtil.setEL(coll,Caster.toIntValue(key,Integer.MIN_VALUE)-1,value);
+		}
+		// Node
+		else if(coll instanceof Node) {
+			return XMLUtil.setPropertyEL((Node)coll,key,value);
+		}
+        // Direct Object Access
+		if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
+			Reflector.setPropertyEL(coll,key.getString(),value);
+			return value; 
+		}
+		return null;
+    }
 
     /**
      *
@@ -559,6 +610,27 @@ public final class VariableUtilImpl implements VariableUtil {
 		}
 		return null;
     }
+    
+    public Object removeEL(Object coll, Collection.Key key) {
+        // Collection
+        if(coll instanceof Collection) { 
+			return ((Collection)coll).removeEL(key);
+		}
+		// Map
+		else if(coll instanceof Map) { 
+			Object obj = ((Map)coll).remove(key.getString());
+			//if(obj==null)obj=((Map)coll).remove(MapAsStruct.getCaseSensitiveKey((Map)coll, key));
+			return obj;
+		}
+		// List
+		else if(coll instanceof List) {
+		    int i=Caster.toIntValue(key,Integer.MIN_VALUE);
+		    if(i==Integer.MIN_VALUE) return null;
+		    return ((List)coll).remove(i);
+		}
+		return null;
+    }
+    
 
     /**
      * @see railo.runtime.util.VariableUtil#remove(java.lang.Object, java.lang.String)
@@ -571,6 +643,37 @@ public final class VariableUtilImpl implements VariableUtil {
 		// Map
 		else if(coll instanceof Map) { 
 			Object obj=((Map)coll).remove(key);
+			//if(obj==null)obj=((Map)coll).remove(MapAsStruct.getCaseSensitiveKey((Map)coll, key));
+			if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from map");
+			return obj;
+		}
+		// List
+		else if(coll instanceof List) {
+		    int i=Caster.toIntValue(key);
+		    Object obj=((List)coll).remove(i);
+			if(obj==null) throw new ExpressionException("can't remove index ["+key+"] from list");
+			return obj;
+		}
+		/*/ Native Array TODO this below
+		else if(Decision.isNativeArray(o)) {
+			try {
+				return ArrayUtil.set(o,Caster.toIntValue(key)-1,value);
+			} catch (Exception e) {
+				return getDirectProperty(o, key, new ExpressionException("Key doesn't exist in Native Array"),false);
+			}
+		}*/
+		// TODO Support for Node
+		throw new ExpressionException("can't remove key ["+key+"] from Object of type ["+Caster.toTypeName(coll)+"]");
+    }
+    
+    public Object remove(Object coll, Collection.Key key) throws PageException {
+        // Collection
+		if(coll instanceof Collection) { 
+			return ((Collection)coll).remove(key);
+		}
+		// Map
+		else if(coll instanceof Map) { 
+			Object obj=((Map)coll).remove(key.getString());
 			//if(obj==null)obj=((Map)coll).remove(MapAsStruct.getCaseSensitiveKey((Map)coll, key));
 			if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from map");
 			return obj;
@@ -639,6 +742,8 @@ public final class VariableUtilImpl implements VariableUtil {
 	    	if(!(coll instanceof Undefined))return Reflector.callMethod(coll,key,args);
 	    }
 		throw new ExpressionException("No matching Method/Function for "+key+"("+Reflector.getDspMethods(Reflector.getClasses(args))+")");
+
+    
 	}
 	
 	/**
@@ -670,6 +775,20 @@ public final class VariableUtilImpl implements VariableUtil {
         }
         throw new ExpressionException("No matching Method/Function for call with named arguments found");
 	}
+
+	public Object callFunctionWithNamedValues(PageContext pc, Object coll, Collection.Key key, Struct args) throws PageException {
+		// Objects
+        if(coll instanceof Objects) {
+            return ((Objects)coll).callWithNamedValues(pc,key, args);
+        }
+        // call UDF
+		Object prop=getLight(pc,coll,key,null);	
+        if(prop instanceof UDF) 		{
+            return ((UDF)prop).callWithNamedValues(pc,args,false);
+        }
+        throw new ExpressionException("No matching Method/Function for call with named arguments found");
+	}
+	
 	/*
 	public Object get(Scope scope,Collection.Key key1) throws PageException{
 		return scope.get(key1);

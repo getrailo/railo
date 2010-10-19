@@ -6,6 +6,7 @@ import java.io.OutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -29,6 +30,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
 import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
@@ -112,7 +114,9 @@ public abstract class ComponentPage extends PagePlus  {
             
             // Include MUST
             Array path = pc.getTemplatePath();
-            if(path.size()>1) {
+            //if(path.size()>1 ) {
+            if(path.size()>1 && !(path.size()==3 && List.last(path.getE(2).toString(),"/\\").equalsIgnoreCase("application.cfc")) ) {// MUSTMUST bad impl -> check with and without application.cfc
+            	
             	ComponentWrap c = new ComponentWrap(Component.ACCESS_PRIVATE,component.getComponentImpl());
             	Key[] keys = c.keys();
             	Object el;
@@ -123,12 +127,15 @@ public abstract class ComponentPage extends PagePlus  {
             			var.set(keys[i], el);
             		
             	}
+                
             	return;
             }
+           
             
 			// DUMP
 			//TODO component.setAccess(pc,Component.ACCESS_PUBLIC);
 			String cdf = pc.getConfig().getComponentDumpTemplate();
+			
 			if(cdf!=null && cdf.trim().length()>0) {
 			    pc.variablesScope().set("component",component);
 			    pc.doInclude(pc.getRelativePageSource(cdf));
@@ -166,9 +173,10 @@ public abstract class ComponentPage extends PagePlus  {
 	}
 	
 	
-    private void callWDDX(PageContext pc, Component component, String method) throws IOException, ConverterException, PageException {
+    private void callWDDX(PageContext pc, Component component, String methodName) throws IOException, ConverterException, PageException {
         Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
         
+        // define args
         url.removeEL(FIELDNAMES);
         url.removeEL(METHOD);
         Object args=url.get(ARGUMENT_COLLECTION,null);
@@ -181,8 +189,8 @@ public abstract class ComponentPage extends PagePlus  {
         
         Object rtn=null;
         if(args==null){
-        	url=translate(component,method,url);
-        	rtn = component.callWithNamedValues(pc, method, url);
+        	url=translate(component,methodName,url);
+        	rtn = component.callWithNamedValues(pc, methodName, url);
         }
         else if(args instanceof String){
         	try {
@@ -191,35 +199,94 @@ public abstract class ComponentPage extends PagePlus  {
 			} catch (PageException e) {}
         }
         
+        //content-type
+        Object o = component.get(methodName,null);
+        Props props = getProps(pc, o, returnFormat);
+        HttpServletResponse rsp = pc.getHttpServletResponse();
+        switch(props.format){
+        case UDF.RETURN_FORMAT_WDDX:
+        	rsp.setContentType("text/xml; charset=UTF-8");
+        	rsp.setHeader("Return-Format", "wddx");
+        break;
+        case UDF.RETURN_FORMAT_JSON:
+        	rsp.setContentType("application/json");
+        	rsp.setHeader("Return-Format", "json");
+        break;
+        case UDF.RETURN_FORMAT_PLAIN:
+        	rsp.setContentType("text/plain; charset=UTF-8");
+        	rsp.setHeader("Return-Format", "plain");
+        break;
+        case UDF.RETURN_FORMAT_SERIALIZE:
+        	rsp.setContentType("text/plain; charset=UTF-8");
+        	rsp.setHeader("Return-Format", "serialize");
+        break;
+        }
+        
+        
+        // call
         if(args!=null) {
         	if(Decision.isCastableToStruct(args)){
-	        	rtn = component.callWithNamedValues(pc, method.toString(), Caster.toStruct(args,false));
+	        	rtn = component.callWithNamedValues(pc, methodName, Caster.toStruct(args,false));
 	        }
 	        else if(Decision.isCastableToArray(args)){
-	        	rtn = component.call(pc, method.toString(), Caster.toNativeArray(args));
+	        	rtn = component.call(pc, methodName, Caster.toNativeArray(args));
 	        }
 	        else {
 	        	Object[] ac=new Object[1];
 	        	ac[0]=args;
-	        	rtn = component.call(pc, method.toString(), ac);
+	        	rtn = component.call(pc, methodName, ac);
 	        }
         }
         
+        // convert result
         if(rtn!=null){
         	if(pc.getHttpServletRequest().getHeader("AMF-Forward")!=null) {
         		pc.variablesScope().setEL("AMF-Forward", rtn);
         		//ThreadLocalWDDXResult.set(rtn);
         	}
         	else {
-        		pc.forceWrite(convertResult(pc,component,method.toString(),returnFormat,queryFormat,rtn));
+        		pc.forceWrite(convertResult(pc, props, queryFormat, rtn));
         	}
         }
         
     }
     
-    public static String convertResult(PageContext pc,Component component, String method,Object returnFormat,Object queryFormat,Object rtn) throws ConverterException, PageException {
+    private static Props getProps(PageContext pc, Object o,Object returnFormat) throws PageException {
+    	Props props = new Props();
+    	
+		props.strType="any";
+		props.secureJson=pc.getApplicationContext().getSecureJson();
+		if(o instanceof UDF) {
+			UDF udf = ((UDF)o);
+			props.format=udf.getReturnFormat();
+			props.type=udf.getReturnType();
+			props.strType=udf.getReturnTypeAsString();
+			if(udf.getSecureJson()!=null)props.secureJson=udf.getSecureJson().booleanValue();
+		}
+		if(!StringUtil.isEmpty(returnFormat)){
+			props.format=UDFImpl.toReturnFormat(Caster.toString(returnFormat));
+		}
+    	
+		// return type XML ignore WDDX
+		if(props.type==CFTypes.TYPE_XML) {
+			if(UDF.RETURN_FORMAT_WDDX==props.format)
+				props.format=UDF.RETURN_FORMAT_PLAIN;
+		}
+    	
+    	
+    	
+    	return props;
+    }
+    
+    public static String convertResult(PageContext pc,Component component, String methodName,Object returnFormat,Object queryFormat,Object rtn) throws ConverterException, PageException {
+    	Object o = component.get(methodName,null);
+    	Props p = getProps(pc, o, returnFormat);
+    	return convertResult(pc, p, queryFormat, rtn);
+    }
+    
+    private static String convertResult(PageContext pc,Props props,Object queryFormat,Object rtn) throws ConverterException, PageException {
 
-    	Object o = component.get(method.toString(),null);
+    	/*Object o = component.get(methodName,null);
 		int format=UDF.RETURN_FORMAT_WDDX;
 		int type=CFTypes.TYPE_ANY;
 		String strType="any";
@@ -233,28 +300,25 @@ public abstract class ComponentPage extends PagePlus  {
 		}
 		if(!StringUtil.isEmpty(returnFormat)){
 			format=UDFImpl.toReturnFormat(Caster.toString(returnFormat));
-		}
-    	
-    	
+		}*/
     	
     	
 		// return type XML ignore WDDX
-		if(type==CFTypes.TYPE_XML) {
-			if(UDF.RETURN_FORMAT_WDDX==format)
-				format=UDF.RETURN_FORMAT_PLAIN;
+		if(props.type==CFTypes.TYPE_XML) {
+			//if(UDF.RETURN_FORMAT_WDDX==format) format=UDF.RETURN_FORMAT_PLAIN;
 			rtn=Caster.toString(Caster.toXML(rtn));
 		}
 		// function does no real cast, only check it
-		else rtn=Caster.castTo(pc, (short)type, strType, rtn);
+		else rtn=Caster.castTo(pc, (short)props.type, props.strType, rtn);
     	
     	// WDDX
-		if(UDF.RETURN_FORMAT_WDDX==format) {
-    		WDDXConverter converter = new WDDXConverter(pc.getTimeZone(),false);
+		if(UDF.RETURN_FORMAT_WDDX==props.format) {
+			WDDXConverter converter = new WDDXConverter(pc.getTimeZone(),false);
             converter.setTimeZone(pc.getTimeZone());
     		return converter.serialize(rtn);
 		}
 		// JSON
-		else if(UDF.RETURN_FORMAT_JSON==format) {
+		else if(UDF.RETURN_FORMAT_JSON==props.format) {
 			boolean byColumn = false;
     		if(queryFormat instanceof String){
     			String strQF=((String) queryFormat).trim();
@@ -262,19 +326,18 @@ public abstract class ComponentPage extends PagePlus  {
     			else if(strQF.equalsIgnoreCase("column"))byColumn=true;
     			else throw new ApplicationException("invalid queryformat definition ["+strQF+"], valid formats are [row,column]");
     		}
-			
-			JSONConverter converter = new JSONConverter();
-    		if(secureJson)
+    		JSONConverter converter = new JSONConverter();
+    		if(props.secureJson)
     			return pc.getApplicationContext().getSecureJsonPrefix();
             return converter.serialize(pc,rtn,byColumn);
 		}
 		// Serialize
-		else if(UDF.RETURN_FORMAT_SERIALIZE==format) {
+		else if(UDF.RETURN_FORMAT_SERIALIZE==props.format) {
 			ScriptConverter converter = new ScriptConverter();
 			return converter.serialize(rtn);
 		}
 		// Plain
-		else if(UDF.RETURN_FORMAT_PLAIN==format) {
+		else if(UDF.RETURN_FORMAT_PLAIN==props.format) {
     		return Caster.toString(rtn);
 		}
 		return null;
@@ -352,4 +415,13 @@ public abstract class ComponentPage extends PagePlus  {
 	public long lastCheck() {
 		return lastCheck;
 	}
+	
 }
+	class Props {
+
+		public String strType="any";
+		public boolean secureJson;
+		public int type=CFTypes.TYPE_ANY;
+		public int format=UDF.RETURN_FORMAT_WDDX;
+		
+	}
