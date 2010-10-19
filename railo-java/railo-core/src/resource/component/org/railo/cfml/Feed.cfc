@@ -11,7 +11,7 @@ component extends="Base" accessors="true"{
 	result = {query = query:Query, name = name:Struct, properties = properties:Struct, xmlvar = xmlVar:XML};
 	*/					
 	public Struct function read(){
-		this.addAttributes(argumentCollection=arguments);
+		this.setAttributes(argumentCollection=arguments);
 		this.setAction('read');
 		return super.invokeTag();
 	}
@@ -22,7 +22,7 @@ component extends="Base" accessors="true"{
 	*/					
 
 	public Struct function create(){
-		this.addAttributes(argumentCollection=arguments);
+		this.setAttributes(argumentCollection=arguments);
 		this.setAction('create');
 		return super.invokeTag();
 	}
