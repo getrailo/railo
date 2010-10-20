@@ -14,6 +14,22 @@ public final class QueryStackImpl implements QueryStack {
 	Query[] queries=new Query[20];
 	int start=queries.length;
 	
+	// FUTURE add to interface
+	public QueryStack duplicate(boolean deepCopy){
+		QueryStackImpl qs=new QueryStackImpl();
+		if(deepCopy) {
+			qs.queries=new Query[queries.length];
+			for(int i=0;i<queries.length;i++) {
+				qs.queries[i]=(Query)queries[i].duplicate(deepCopy);
+			}
+		}
+		else qs.queries=queries;
+		
+		qs.start=start;
+		return qs;
+	}
+	
+	
 	/**
      * @see railo.runtime.util.QueryStack#addQuery(railo.runtime.type.Query)
      */

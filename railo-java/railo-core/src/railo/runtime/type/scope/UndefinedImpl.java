@@ -66,6 +66,17 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 	
 
+	// FUTURE add to interface
+	public ArgumentPro argumentsScope() {
+		// TODO Auto-generated method stub
+		return argument;
+	}
+
+	// FUTURE add to interface
+	public Variables variablesScope() {
+		return (Variables) variable;
+	}
+
 	/*
      * @see railo.runtime.type.scope.Undefined#check Arguments(boolean)
      * /
@@ -595,10 +606,28 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCoppy) {
-		if(checkArguments)
-			return local.duplicate(deepCoppy);
-		return variable.duplicate(deepCoppy);
+	public Collection duplicate(boolean deepCopy) {
+		UndefinedImpl dupl = new UndefinedImpl(pc, type);
+		dupl.allowImplicidQueryCall=allowImplicidQueryCall;
+		dupl.checkArguments=checkArguments;
+		dupl.argument=deepCopy?(ArgumentPro)argument.duplicate(deepCopy):argument;
+		dupl.isInit=isInit;
+		dupl.local=deepCopy?(Scope)local.duplicate(deepCopy):local;
+		dupl.localAlways=localAlways;
+		dupl.qryStack= (deepCopy?(QueryStackImpl)qryStack.duplicate(deepCopy):qryStack);
+		
+		dupl.variable=deepCopy?(Scope)variable.duplicate(deepCopy):variable;
+		
+		// scopes
+		if(deepCopy) {
+			dupl.scopes=new Collection[scopes.length];
+			for(int i=0;i<scopes.length;i++) {
+				dupl.scopes[i]=scopes[i].duplicate(deepCopy);
+			}
+		}
+		else dupl.scopes=scopes;
+		
+		return dupl;
 	}
 	
 
@@ -742,4 +771,6 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public boolean getCheckArguments() {
 		return checkArguments;
 	}
+
+
 }

@@ -40,6 +40,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Caller;
 import railo.runtime.type.scope.CallerImpl;
 import railo.runtime.type.scope.Undefined;
+import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
 import railo.runtime.type.util.ArrayUtil;
@@ -457,7 +458,10 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 	        if(cfc.contains(pageContext, ON_START_TAG)){
 	        	Struct args=new StructImpl();
 	        	args.set(ATTRIBUTES, attributesScope);
-	        	args.set(CALLER, pageContext.variablesScope());
+	        	setCaller(pageContext,args);
+	        	
+	        	
+	        	
 	        	rtn=cfc.callWithNamedValues(pageContext, ON_START_TAG, args);	
 		    }
 	        exeBody=Caster.toBooleanValue(rtn,true);
@@ -468,7 +472,14 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         return exeBody?EVAL_BODY_BUFFERED:SKIP_BODY;
     }
     
-    private static void validateAttributes(ComponentPro cfc,StructImpl attributesScope,String tagName) throws ApplicationException, ExpressionException {
+    private static void setCaller(PageContext pageContext, Struct args) throws PageException {
+    	UndefinedImpl undefined=(UndefinedImpl) pageContext.undefinedScope();
+    	args.set(CALLER, undefined.duplicate(false));
+    	//args.set(CALLER, pageContext.variablesScope());
+    	
+	}
+
+	private static void validateAttributes(ComponentPro cfc,StructImpl attributesScope,String tagName) throws ApplicationException, ExpressionException {
 		
 		TagLibTag tag=getAttributeRequirments(cfc,false);
 		if(tag==null) return;
@@ -610,7 +621,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		            
 		            Struct args=new StructImpl(StructImpl.TYPE_LINKED);
 		        	args.set(ATTRIBUTES, attributesScope);
-		        	args.set(CALLER, pageContext.variablesScope());
+		        	setCaller(pageContext, args);
 		        	args.set(GENERATED_CONTENT, output);
 		        	rtn=cfc.callWithNamedValues(pageContext, ON_END_TAG, args);	
 			    
