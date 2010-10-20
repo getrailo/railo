@@ -2254,6 +2254,65 @@
 			<type>any</type>
 		</return>
 	</function>
+	<!-- _dump -->
+	<function>
+		<name>_dump</name>
+		<class>railo.runtime.functions.other.Dump</class>
+		<description/>
+		<argument>
+			<name>value</name>
+			<type>any</type>
+			<required>Yes</required>
+		</argument>
+		<argument>
+			<name>label</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>expand</name>
+			<type>boolean</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>show</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>hide</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>output</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>format</name>
+			<type>string</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>keys</name>
+			<type>number</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>metainfo</name>
+			<type>boolean</type>
+			<required>No</required>
+		</argument>
+		<argument>
+			<name>showUDFs</name>
+			<type>boolean</type>
+			<required>No</required>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
 	<!-- dump -->
 	<function>
 		<name>dump</name>

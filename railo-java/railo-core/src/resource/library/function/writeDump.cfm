@@ -12,5 +12,5 @@
 	<cfargument name="top" type="numeric" required="no">
 	<cfargument name="abort" type="boolean" required="no">
 
-    <cfdump attributeCollection="#arguments#">
+    <cfdump attributeCollection="#arguments#" contextlevel="3">
 </cffunction>

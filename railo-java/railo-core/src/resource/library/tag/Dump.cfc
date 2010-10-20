@@ -50,7 +50,9 @@
         
         <!--- context --->
         <cfset var context=GetCurrentContext()>
-		<cfset context=context[2].template& ":"& context[2].line>
+        <cfset var contextLevel=structKeyExists(attributes,'contextLevel')?attributes.contextLevel:2>
+		<cfset context=context[contextLevel].template& ":"& context[contextLevel].line>
+    	
     	
         
         <!--- format --->

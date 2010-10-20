@@ -13,5 +13,5 @@
 	<cfargument name="abort" type="boolean" required="no">
     <cfargument name="eval" type="string" required="no">
 
-    <cfdump attributeCollection="#arguments#">
+    <cfdump attributeCollection="#arguments#" contextlevel="3">
 </cffunction>
