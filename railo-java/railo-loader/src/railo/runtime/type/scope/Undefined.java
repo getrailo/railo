@@ -20,6 +20,8 @@ public interface Undefined extends Scope {
      * @return returns the current local scope defined in the undefined scope
      */
     public abstract Scope localScope();
+    
+    // FUTURE public Argument argumentsScope();
 
     /**
      * sets mode of scope

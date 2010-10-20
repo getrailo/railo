@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -27,8 +26,6 @@ import railo.loader.TP;
 import railo.loader.classloader.RailoClassLoader;
 import railo.loader.util.ExtensionFilter;
 import railo.loader.util.Util;
-import railo.runtime.type.Struct;
-import railo.runtime.util.ResourceUtil;
 
 import com.intergral.fusiondebug.server.FDControllerFactory;
 

@@ -1,7 +1,5 @@
 package railo.runtime.type;
 
-import java.util.Map;
-
 import railo.runtime.Component;
 import railo.runtime.Page;
 import railo.runtime.PageContext;

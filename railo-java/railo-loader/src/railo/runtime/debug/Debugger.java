@@ -7,7 +7,6 @@ import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.db.SQL;
 import railo.runtime.dump.Dumpable;
-import railo.runtime.exp.PageException;
 import railo.runtime.type.Struct;
 
 /**

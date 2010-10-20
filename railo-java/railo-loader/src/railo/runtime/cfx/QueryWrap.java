@@ -24,7 +24,6 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 
 import com.allaire.cfx.Query;
