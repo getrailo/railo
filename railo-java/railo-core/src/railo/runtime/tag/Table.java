@@ -67,6 +67,7 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
     private int initRow;
 
     private int count=0;
+	private boolean startNewRow;
 
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
@@ -159,6 +160,7 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws PageException	{
+		startNewRow=true;
 		initRow=query.getRecordcount();
 		query.go(startrow);
 		pageContext.undefinedScope().addCollection(query);
@@ -169,7 +171,7 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
 	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
 	*/
 	public void doInitBody()	{
-	    if(htmltable) body.append("<tr>\n");
+		//if(htmltable) body.append("<tr>\n");
 	}
 
 	/**
@@ -178,6 +180,7 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
 	public int doAfterBody() throws PageException	{
 	    if(htmltable) body.append("</tr>\n");
 	    else body.append('\n');
+	    startNewRow=true;
 	    //print.out(query.getCurrentrow()+"-"+query.getRecordcount());
 		return ++count<maxrows && query.next()?EVAL_BODY_AGAIN:SKIP_BODY;
 	}
@@ -248,6 +251,11 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
                 header.append(strHeader);
                 header.append("</th>\n");
             }
+            if(htmltable && startNewRow) {
+            	body.append("<tr>\n");
+            	startNewRow=false;
+            }
+            
             body.append("\t<td");
             addAlign(body,align);
             addWidth(body,width);
