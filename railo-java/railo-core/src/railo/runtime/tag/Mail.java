@@ -149,6 +149,7 @@ public final class Mail extends BodyTagImpl {
 	 * @throws PageException 
 	**/
 	public void setFrom(Object from) throws PageException	{
+		if(isEmpty(from)) return;
 		try {
 			smtp.setFrom(from);
 		} catch (Exception e) {
@@ -162,6 +163,7 @@ public final class Mail extends BodyTagImpl {
 	 * @throws ApplicationException
 	**/
 	public void setTo(Object to) throws ApplicationException	{
+		if(isEmpty(to)) return;
 		try {
 			smtp.addTo(to);
 		} catch (Exception e) {
@@ -175,12 +177,18 @@ public final class Mail extends BodyTagImpl {
 	 * @throws ApplicationException
 	**/
 	public void setCc(Object cc) throws ApplicationException	{
+		if(isEmpty(cc)) return;
 		try {
 			smtp.addCC(cc);
 		} catch (Exception e) {
 			throw new ApplicationException("invalid definition for attribute cc at tag mail",e.getMessage());
 		}
 	}
+
+	private boolean isEmpty(Object obj) {
+		return obj instanceof String && obj.toString().trim().length()==0;
+	}
+
 
 	/** set the value bcc
 	*  Indicates addresses to copy the e-mail message to, without listing them in the message header. 
@@ -189,6 +197,7 @@ public final class Mail extends BodyTagImpl {
 	 * @throws ApplicationException
 	**/
 	public void setBcc(Object bcc) throws ApplicationException	{
+		if(isEmpty(bcc)) return;
 		try {
 			smtp.addBCC(bcc);
 		} catch (Exception e) {
@@ -201,6 +210,7 @@ public final class Mail extends BodyTagImpl {
 	 * @throws ApplicationException
 	 */
 	public void setFailto(Object failto) throws ApplicationException {
+		if(isEmpty(failto)) return;
 		try {
 			smtp.addFailTo(failto);
 		} catch (Exception e) {
@@ -212,6 +222,7 @@ public final class Mail extends BodyTagImpl {
 	 * @throws ApplicationException
 	 */
 	public void setReplyto(Object replyto) throws ApplicationException {
+		if(isEmpty(replyto)) return;
 		try {
 			smtp.addReplyTo(replyto);
 		} catch (Exception e) {

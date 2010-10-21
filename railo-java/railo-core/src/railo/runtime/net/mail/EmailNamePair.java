@@ -165,6 +165,7 @@ public final class EmailNamePair {
 	 * @throws MailException
 	 */
 	private static EmailNamePair[] _factory(String strEmails) throws MailException {
+		if(StringUtil.isEmpty(strEmails,true)) return new EmailNamePair[0];
 		Array raw = List.listWithQuotesToArray(strEmails,",;","\"");
 		
 		
