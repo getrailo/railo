@@ -2442,7 +2442,9 @@ public final class Caster {
         else {
         	String str = toString(o,null);
         	if(str!=null)return toBase64(str,defaultValue);
-        	return defaultValue;
+        	
+        	b=toBinary(o,null);
+        	if(b==null)return defaultValue;
         }
         
         byte[] bytes=Base64.encodeBase64(b);
