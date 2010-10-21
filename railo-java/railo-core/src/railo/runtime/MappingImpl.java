@@ -30,7 +30,11 @@ import railo.runtime.op.Caster;
  */
 public final class MappingImpl implements Mapping {
 
-    private static final Object NULL = new Object();
+    
+
+
+
+	private static final Object NULL = new Object();
 	private String virtual;
     private String lcVirtual;
     private boolean topLevel;
@@ -400,12 +404,10 @@ public final class MappingImpl implements Mapping {
 		return topLevel;
 	}
 
-	public PageSource getCustomTagPath(String name, boolean doCustomTagDeepSearch) {
+	/*public PageSource getCustomTagPath(String name, boolean doCustomTagDeepSearch) {
 		String lcName=name.toLowerCase().trim();
 		Object o = customTagPath.get(lcName);
-		
-		
-		
+
 		if(o==null){
 			PageSource ps=searchFor(name, lcName, doCustomTagDeepSearch);
 			if(ps!=null){
@@ -420,6 +422,10 @@ public final class MappingImpl implements Mapping {
 		else if(o==NULL) return null;
 		
 		return (PageSource) o;
+	}*/
+	
+	public PageSource getCustomTagPath(String name, boolean doCustomTagDeepSearch) {
+		return searchFor(name, name.toLowerCase().trim(), doCustomTagDeepSearch);
 	}
 	
 	
@@ -469,7 +475,12 @@ public final class MappingImpl implements Mapping {
     	return null;    	
 	}
 	
-	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		return toString().hashCode();
+	}
 
 	/**
 	 *
@@ -481,6 +492,10 @@ public final class MappingImpl implements Mapping {
 		 "Virtual:"+getVirtual()+";"+
 		 "Archive:"+getArchive()+";"+
 		 "Physical:"+getPhysical()+";"+
-		 super.toString();
+		 "topLevel:"+topLevel+";"+
+		 "trusted:"+trusted+";"+
+		 "physicalFirst:"+physicalFirst+";"+
+		 "readonly:"+readonly+";"+
+		 "hidden:"+hidden+";";
 	}
 }

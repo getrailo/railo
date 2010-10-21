@@ -2087,6 +2087,15 @@ public final class ConfigWebFactory {
         //String virtualx="/custom-tag/";
         
 
+        // do patch cache
+        String strDoPathcache=customTag.getAttribute("use-cache-path");
+        if(!StringUtil.isEmpty(strDoPathcache,true)) {
+        	config.setUseCTPathCache(Caster.toBooleanValue(strDoPathcache.trim(),true));
+        }
+        else if(hasCS) {
+            config.setUseCTPathCache(configServer.useCTPathCache());
+        }
+
         // do custom tag local search
         String strDoCTLocalSearch=customTag.getAttribute("custom-tag-local-search");
         if(!StringUtil.isEmpty(strDoCTLocalSearch)) {
@@ -3470,6 +3479,13 @@ public final class ConfigWebFactory {
 	    	if(ls!=null)config.setComponentLocalSearch(ls.booleanValue());
 	    	else if(configServer!=null) {
 	    		config.setComponentLocalSearch(((ConfigServerImpl)configServer).getComponentLocalSearch()); 
+      	    }
+
+	    	// use component shadow
+	    	Boolean ucp = Caster.toBoolean(component.getAttribute("use-cache-path"),null);
+	    	if(ucp!=null)config.setUseComponentPathCache(ucp.booleanValue());
+	    	else if(configServer!=null) {
+	    		config.setUseComponentPathCache(((ConfigServerImpl)configServer).useComponentPathCache()); 
       	    }
 
 	    	// use component shadow

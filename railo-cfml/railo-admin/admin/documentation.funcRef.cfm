@@ -2,7 +2,7 @@
 
 <cfset funcList=getFunctionList()>
 
-
+   
 <cfoutput>
 
 <script language="javascript">
@@ -24,7 +24,7 @@ function detail(field){
 	<cfset ArraySort(arr,'textnocase')>
 	
 	<cfloop array="#arr#" index="key">
-		<option value="#key#" <cfif url.func EQ key>selected="selected"</cfif>>#key#</option>
+		<cfif left(key,1) NEQ "_"><option value="#key#" <cfif url.func EQ key>selected="selected"</cfif>>#key#</option></cfif>
 	</cfloop>
 </select>
 </td>

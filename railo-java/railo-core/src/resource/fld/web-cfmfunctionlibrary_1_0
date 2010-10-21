@@ -1366,6 +1366,25 @@
 			<type>struct</type>
 		</return>
 	</function>
+	
+	<!-- ctCacheClear -->
+	<function>
+		<name>ctCacheClear</name>
+		<class>railo.runtime.functions.other.CTCacheClear</class>
+		<description/>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- ctCacheList -->
+	<function>
+		<name>ctCacheList</name>
+		<class>railo.runtime.functions.other.CTCacheList</class>
+		<description/>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
 	<!-- compress -->
 	<function>
 		<name>compress</name>

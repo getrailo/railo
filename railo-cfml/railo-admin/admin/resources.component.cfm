@@ -22,6 +22,9 @@
 	password="#session["password"&request.adminType]#"
 	returnVariable="mappings">
 
+
+<cfset flushName="#stText.Buttons.flush# (#structCount(componentCacheList())#)">
+
 <!--- 
 Defaults --->
 <cfparam name="url.action2" default="list">
@@ -31,7 +34,12 @@ Defaults --->
 <cftry>
 	<cfswitch expression="#form.mainAction#">
 	<!--- UPDATE --->
-		<cfcase value="#stText.Buttons.Update#">
+		<cfcase value="#flushName#">
+           <cfset componentCacheClear()>
+            
+            
+        </cfcase>
+        <cfcase value="#stText.Buttons.Update#">
         	
             
             <cfif form.subaction EQ stText.Buttons.Delete>
@@ -53,7 +61,7 @@ Defaults --->
 						<!--- <cfset admin.removeCustomTag(data.virtuals[idx])> --->
 					</cfif>
 				</cfloop>
-            <cfelseif form.subaction EQ stText.Buttons.Update>
+           <cfelseif form.subaction EQ stText.Buttons.Update>
             	
                 
                 <cfset data.virtuals=toArrayFromForm("virtual")>
@@ -94,6 +102,8 @@ Defaults --->
                     useShadow="#isDefined('form.useShadow')#"
                     componentDefaultImport="#form.componentDefaultImport#"
                     componentLocalSearch="#isDefined('form.componentLocalSearch')#"
+                    componentPathCache="#isDefined('form.componentPathCache')#"
+                    
                     
                     remoteClients="#request.getRemoteClients()#"
                     >
@@ -118,7 +128,9 @@ Defaults --->
 				componentDataMemberDefaultAccess=""
 				triggerDataMember=""
 				useShadow=""
-                
+                componentPathCache=""
+                componentDefaultImport=""
+                componentLocalSearch=""
 				remoteClients="#request.getRemoteClients()#">
 		
 		</cfcase>
@@ -243,9 +255,18 @@ Create Datasource --->
 <tr>
 	<td class="tblHead" width="150">#stText.Components.componentPathCache#</td>
 	<td class="tblContent">
+		<cfif hasAccess>
+			<input type="checkbox" class="checkbox" name="componentPathCache" value="yes" <cfif component.componentPathCache>checked</cfif>>
+            <span class="comment">#stText.Components.componentPathCacheDesc#</span>
+            <cfif component.componentPathCache><br />
+            <input type="submit" class="submit" name="mainAction" value="#flushName#">
+            </cfif>
+            
+		<cfelse>
+			<b>#YesNoFormat(component.componentPathCache)#</b><br />
+            <span class="comment">#stText.Components.componentPathCacheDesc#</span>
+		</cfif>
 		
-		<b>Yes (cooming soon)</b><br />
-		<span class="comment">#stText.Components.componentPathCacheDesc#</span>
 	</td>
 </tr>
 

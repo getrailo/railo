@@ -23,6 +23,9 @@
 <cfset stText.CustomTags.customTagLocalSearchDesc="Search in the caller directory for the custom tag">
 
 
+<cfset stText.CustomTags.customTagPathCache="Cache">
+<cfset stText.CustomTags.customTagPathCacheDesc="component path is cached and not resolved again">
+
 <cfset stText.CustomTags.extensions="Extensions">
 <cfset stText.CustomTags.extensionsDesc="These are the extensions used for Custom Tags, in the order they are searched.">
 

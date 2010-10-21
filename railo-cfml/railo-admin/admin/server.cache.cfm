@@ -29,6 +29,7 @@ Defaults --->
 </cfif>
 
 <cfset btnClearComponentCache=replace(stText.setting.componentCacheClear,'{count}',structCount(componentCacheList()))>
+<cfset btnClearCTCache=replace(stText.setting.ctCacheClear,'{count}',structCount(ctCacheList()))>
 
 
 
@@ -38,6 +39,9 @@ Defaults --->
 	
 		<cfcase value="#btnClearComponentCache#">
 			<cfset componentCacheClear()>
+		</cfcase>
+		<cfcase value="#btnClearCTCache#">
+			<cfset ctCacheClear()>
 		</cfcase>
         <cfcase value="#btnClearTemplateCache#">
 			<cfset pagePoolClear()>
@@ -161,6 +165,15 @@ Create Datasource --->
 	<td class="tblContent" style="padding:10px">
         <input class="submit" type="submit" class="submit" name="mainAction" value="#btnClearComponentCache#">
         <br /><span class="comment">#stText.setting.componentCacheClearDesc#</span>
+	</td>
+</tr>
+
+<!--- Customtag Cache --->
+<tr>
+	<td class="tblHead" width="150">#stText.setting.ctCache#</td>
+	<td class="tblContent" style="padding:10px">
+        <input class="submit" type="submit" class="submit" name="mainAction" value="#btnClearCTCache#">
+        <br /><span class="comment">#stText.setting.ctCacheClearDesc#</span>
 	</td>
 </tr>
 

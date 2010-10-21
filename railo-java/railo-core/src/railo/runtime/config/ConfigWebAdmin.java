@@ -1976,7 +1976,30 @@ public final class ConfigWebAdmin {
         Element scope=_getRootElement("component");
         scope.setAttribute("local-search",Caster.toString(componentLocalSearch,""));
 	}
-    
+	
+	public void updateComponentPathCache(Boolean componentPathCache) throws SecurityException {
+		checkWriteAccess();
+		boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+		if(!hasAccess)
+            throw new SecurityException("no access to update component Cache Path");
+        
+        Element scope=_getRootElement("component");
+        if(!Caster.toBooleanValue(componentPathCache,false))
+        	config.clearComponentCache();
+        scope.setAttribute("use-cache-path",Caster.toString(componentPathCache,""));
+	}
+	public void updateCTPathCache(Boolean ctPathCache) throws SecurityException {
+		checkWriteAccess();
+		boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+		if(!hasAccess)
+            throw new SecurityException("no access to update Custom Tag Cache Path");
+        
+		 if(!Caster.toBooleanValue(ctPathCache,false))
+	        	config.clearCTCache();
+	        Element scope=_getRootElement("custom-tag");
+        scope.setAttribute("use-cache-path",Caster.toString(ctPathCache,""));
+	}
+
 	
 	
 	
@@ -3109,6 +3132,8 @@ public final class ConfigWebAdmin {
         	catch(Throwable t){}
 	    }
 
+
+	
 
 
 

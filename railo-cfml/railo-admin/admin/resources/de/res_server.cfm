@@ -234,3 +234,7 @@ When checked, any requested files found to currently reside in the template cach
 <cfset stText.setting.componentCache="Komponentenpfad Cache">
 <cfset stText.setting.componentCacheClear="Komponentenpfad Cache leeren ( {count} Element(e) )">
 <cfset stText.setting.componentCacheClearDesc="Drücken Sie den Button oberhalb um den Komponentenpfad Cache zu leeren.">
+
+<cfset stText.setting.ctCache="Customtag Pfad Cache">
+<cfset stText.setting.ctCacheClear="Customtag Pfad Cache leeren ( {count} Element(e) )">
+<cfset stText.setting.ctCacheClearDesc="Drücken Sie den Button oberhalb um den Customtag Pfad Cache zu leeren.">

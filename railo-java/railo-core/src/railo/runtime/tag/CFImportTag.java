@@ -5,6 +5,8 @@ import java.io.File;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.customtag.CustomTagUtil;
+import railo.runtime.customtag.InitFile;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.List;
@@ -21,7 +23,7 @@ public final class CFImportTag extends CFTag {
 	public void initFile() throws PageException {
 		ConfigWeb config = pageContext.getConfig();
         
-		String[] filenames=CFTag.getFileNames(config, getAppendix());// = appendix+'.'+config.getCFMLExtension();
+		String[] filenames=CustomTagUtil.getFileNames(config, getAppendix());// = appendix+'.'+config.getCFMLExtension();
         
 		
 		String strRealPathes=attributesScope.remove("__custom_tag_path").toString();
@@ -29,8 +31,8 @@ public final class CFImportTag extends CFTag {
 	    for(int i=0;i<realPathes.length;i++){
 	    	if(!StringUtil.endsWith(realPathes[i],'/'))realPathes[i]=realPathes[i]+"/";
 	    }
-		//if(!StringUtil.endsWith(realPath,'/'))realPath=realPath+"/";
 	    
+	    // MUSTMUST use cache like regular ct
 		// page source
 	    PageSource ps;
 	    for(int rp=0;rp<realPathes.length;rp++){
@@ -47,13 +49,13 @@ public final class CFImportTag extends CFTag {
 	    // message
 	    
         StringBuffer msg=new StringBuffer("could not find template [");
-        msg.append(getDisplayName(config, getAppendix()));
+        msg.append(CustomTagUtil.getDisplayName(config, getAppendix()));
         msg.append("] in the following directories [");
         msg.append(strRealPathes.replace(File.pathSeparatorChar, ','));
         msg.append(']');
         
 	    
-		throw new ExpressionException(msg.toString(),getDetail(config));
+		throw new ExpressionException(msg.toString(),CustomTagUtil.getDetail(config));
 	    
 	}
 

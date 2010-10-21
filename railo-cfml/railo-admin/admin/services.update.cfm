@@ -35,7 +35,7 @@
 			remoteClients="#request.getRemoteClients()#">
 	</cfcase>
 </cfswitch>
-	<cfcatch>
+	<cfcatch><cfrethrow>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>

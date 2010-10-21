@@ -56,6 +56,7 @@ import railo.runtime.cache.CacheConnection;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.cfx.customtag.CFXTagPoolImpl;
 import railo.runtime.component.ImportDefintion;
+import railo.runtime.customtag.InitFile;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.dump.DumpWriter;
@@ -354,6 +355,8 @@ public abstract class ConfigImpl implements Config {
 	private boolean componentRootSearch=true;
 	private LogAndSource mappingLogger;
 	private LogAndSource ormLogger;
+	private boolean useComponentPathCache=true;
+	private boolean useCTPathCache=true;
 	
 	
 	
@@ -2366,6 +2369,30 @@ public abstract class ConfigImpl implements Config {
 		return useComponentShadow;
 	}
 
+	public boolean useComponentPathCache() {
+		return useComponentPathCache;
+	}
+	
+	public boolean useCTPathCache() {
+		return useCTPathCache;
+	}
+	
+	public void flushComponentPathCache() {
+		if(componentPathCache!=null)componentPathCache.clear();
+	}
+	
+	public void flushCTPathCache() {
+		if(ctPatchCache!=null)ctPatchCache.clear();
+	}
+	
+
+	protected void setUseCTPathCache(boolean useCTPathCache) {
+		this.useCTPathCache = useCTPathCache;
+	}
+	protected void setUseComponentPathCache(boolean useComponentPathCache) {
+		this.useComponentPathCache = useComponentPathCache;
+	}
+
 	/**
 	 * @param useComponentShadow the useComponentShadow to set
 	 */
@@ -3086,27 +3113,65 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	
-	
-	private Map<String,PageSource> pages=null;//new ArrayList<Page>();
+
+	private Map<String,PageSource> componentPathCache=null;//new ArrayList<Page>();
+	private Map<String,InitFile> ctPatchCache=null;//new ArrayList<Page>();
 	
 	
 	public Page getCachedPage(PageContext pc,String pathWithCFC) throws PageException {
-		if(pages==null) return null; 
+		if(componentPathCache==null) return null; 
 		
-		PageSource ps = pages.get(pathWithCFC.toLowerCase());
+		PageSource ps = componentPathCache.get(pathWithCFC.toLowerCase());
 		if(ps==null) return null;
 		return ((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
 	}
 	
 	public void putCachedPageSource(String pathWithCFC,PageSource ps) {
-		if(pages==null) pages=Collections.synchronizedMap(new HashMap<String, PageSource>());//MUSTMUST new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT); 
-		pages.put(pathWithCFC.toLowerCase(),ps);
+		if(componentPathCache==null) componentPathCache=Collections.synchronizedMap(new HashMap<String, PageSource>());//MUSTMUST new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT); 
+		componentPathCache.put(pathWithCFC.toLowerCase(),ps);
 	}
+	
+	public InitFile getCTInitFile(PageContext pc,String key) throws PageException {
+		if(ctPatchCache==null) return null; 
+		
+		InitFile initFile = ctPatchCache.get(key.toLowerCase());
+		if(initFile!=null){
+			if(MappingImpl.isOK(initFile.getPageSource()))return initFile;
+			ctPatchCache.remove(key.toLowerCase());
+		}
+		return null;
+	}
+	
+	public void putCTInitFile(String key,InitFile initFile) {
+		if(ctPatchCache==null) ctPatchCache=Collections.synchronizedMap(new HashMap<String, InitFile>());//MUSTMUST new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT); 
+		ctPatchCache.put(key.toLowerCase(),initFile);
+	}
+	
+	
+
+	public Struct listCTCache() {
+		Struct sct=new StructImpl();
+		if(ctPatchCache==null) return sct; 
+		Iterator<Entry<String, InitFile>> it = ctPatchCache.entrySet().iterator();
+		
+		Entry<String, InitFile> entry;
+		while(it.hasNext()){
+			entry = it.next();
+			sct.setEL(entry.getKey(),entry.getValue().getPageSource().getDisplayPath());
+		}
+		return sct;
+	}
+	
+	public void clearCTCache() {
+		if(ctPatchCache==null) return; 
+		ctPatchCache.clear();
+	}
+	
 	
 	public Struct listComponentCache() {
 		Struct sct=new StructImpl();
-		if(pages==null) return sct; 
-		Iterator<Entry<String, PageSource>> it = pages.entrySet().iterator();
+		if(componentPathCache==null) return sct; 
+		Iterator<Entry<String, PageSource>> it = componentPathCache.entrySet().iterator();
 		
 		Entry<String, PageSource> entry;
 		while(it.hasNext()){
@@ -3117,8 +3182,8 @@ public abstract class ConfigImpl implements Config {
 	}
 	
 	public void clearComponentCache() {
-		if(pages==null) return; 
-		pages.clear();
+		if(componentPathCache==null) return; 
+		componentPathCache.clear();
 	}
 	
 	

@@ -20,6 +20,10 @@
 <cfset stText.CustomTags.customTagLocalSearch="Lokales Verzeichnis einbeziehen">
 <cfset stText.CustomTags.customTagLocalSearchDesc="Lokales Verzeichnisse aus welchen der Customtag aufgerufen wird, nach dem Customtag durchsuchen">
 
+<cfset stText.CustomTags.customTagPathCache="Cache">
+<cfset stText.CustomTags.customTagPathCacheDesc="Customtag Pfade werden gecached und nicht wieder geprüft">
+
+
 <cfset stText.CustomTags.extensions="Extensions">
 <cfset stText.CustomTags.extensionsDesc="Dies sind die Extensions welche für Customtags verwendet werden und die Rheinefolge in welcher sie gesucht werden.">
 

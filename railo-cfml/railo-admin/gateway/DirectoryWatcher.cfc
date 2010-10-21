@@ -68,7 +68,8 @@
     	<cfargument name="extensions" type="string" required="no" default="*">
     	
         <cfset var dir="">
-        <cfdirectory directory="#arguments.directory#" action="list" name="dir" filter="#arguments.extensions#" recurse="#arguments.recurse#">
+        <cfset variables._filter=cleanExtensions(arguments.extensions)>
+        <cfdirectory directory="#arguments.directory#" action="list" name="dir" filter="#filter#" recurse="#arguments.recurse#">
         <cfset var sct={}>
         <cfloop query="dir">
         	<cfif dir.type EQ "file">
@@ -87,7 +88,8 @@
     	<cfargument name="extensions" type="string" required="no" default="*">
     	
         <cfset var dir="">
-        <cfdirectory directory="#arguments.directory#" action="list" name="dir" filter="#arguments.extensions#" recurse="#arguments.recurse#">
+        <cfset variables._filter=cleanExtensions(arguments.extensions)>
+        <cfdirectory directory="#arguments.directory#" action="list" name="dir" filter="#filter#" recurse="#arguments.recurse#">
         <cfset var sct={}>
         <cfset var diff={}>
         <cfset var name="">
@@ -146,5 +148,43 @@
 		<cfargument name="data" required="false" type="struct">
 		<cfreturn "ERROR: sendMessage not supported">
 	</cffunction>
+    
+    
+	<cffunction name="cleanExtensions" access="private" output="no" returntype="array">
+		<cfargument name="extensions" required="true" type="string">
+		<cfset arguments.extensions=trim(arguments.extensions)>
+        <cfif len(arguments.extensions) EQ 0 or arguments.extensions EQ "*"><cfreturn []></cfif>
+        <cfset var ext="">
+        <cfset var arr=[]>
+        <cfloop list="#arguments.extensions#" index="ext">
+        	<cfset ext=trim(ext)>
+            <cfif ext EQ "*"><cfreturn []></cfif>
+            
+            <!--- remove *. --->
+			<cfif left(ext,2) EQ "*.">
+				<cfset ext=trim(mid(ext,3,len(ext)))>
+            <cfelseif left(ext,1) EQ ".">
+				<cfset ext=trim(mid(ext,2,len(ext)))>
+            </cfif>
+            
+            <cfset ArrayAppend(arr,ext)>
+        </cfloop>
+        <cfreturn arr>
+	</cffunction>
+    
+    <cffunction name="filter" output="no" access="private">
+        <cfargument name="path">
+        <cfset var ext="">
+        <cfif arrayLen(variables._filter) EQ 0><cfreturn true></cfif>
+        <cfloop array="#variables._filter#" index="ext">
+            <cfif right(arguments.path,len(ext)+1) EQ "."&ext>
+                <cfreturn true>
+            </cfif>
+        </cfloop>
+        <cfreturn false>
+    </cffunction>
+
+    
+    
 
 </cfcomponent>

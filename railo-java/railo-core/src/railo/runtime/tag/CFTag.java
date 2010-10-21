@@ -7,20 +7,15 @@ import java.util.Map.Entry;
 
 import javax.servlet.jsp.tagext.Tag;
 
-import railo.commons.io.res.Resource;
-import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentPro;
-import railo.runtime.Mapping;
-import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
-import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Member;
-import railo.runtime.config.Config;
-import railo.runtime.config.ConfigWeb;
+import railo.runtime.customtag.CustomTagUtil;
+import railo.runtime.customtag.InitFile;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.ExpressionException;
@@ -173,7 +168,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		try{
 			initFile();
 	    	callerScope.initialize(pageContext);
-	        if(source.isCFC)return cfcStartTag();
+	        if(source.isCFC())return cfcStartTag();
 	        return cfmlStartTag();	
 		}
 		finally{
@@ -192,7 +187,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	PageContextImpl pci=(PageContextImpl) pageContext;
 		boolean old=pci.useSpecialMappings(true);
 		try{
-			if(source.isCFC)_doCFCFinally();
+			if(source.isCFC())_doCFCFinally();
 	        return EVAL_PAGE;
 		}
 		finally{
@@ -211,7 +206,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     * @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
     */
     public int doAfterBody() throws PageException   {
-    	if(source.isCFC)return cfcEndTag();
+    	if(source.isCFC())return cfcEndTag();
         return cfmlEndTag();
     }
     
@@ -220,7 +215,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 	 * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doCatch(java.lang.Throwable)
 	 */
     public void doCatch(Throwable t) throws Throwable {
-    	if(source.isCFC){
+    	if(source.isCFC()){
 	    	String source=isEndTag?"end":"body";
 	    	isEndTag=false;
 	    	_doCFCCatch(t,source);
@@ -233,10 +228,16 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     }
 
     public InitFile initFile(PageContext pageContext) throws PageException {
+    	 
+    	return CustomTagUtil.loadInitFile(pageContext, appendix);
+    	
+    	
+    	
+    	
+    	/*
     	ConfigWeb config = pageContext.getConfig();
-        
-        // filenames
-        
+       
+    	// filenames
         String[] filenames=getFileNames(config,appendix);
         
         
@@ -252,11 +253,10 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         // search in custom tag directory
         boolean doCustomTagDeepSearch = config.doCustomTagDeepSearch();
         
-        // local mappings
+        // per application mappings
         Mapping[] ctms = pageContext.getApplicationContext().getCustomTagMappings();
         if(ctms!=null){
-        	
-            for(int i=0;i<filenames.length;i++){
+        	for(int i=0;i<filenames.length;i++){
             	source=getMapping(ctms, filenames[i],doCustomTagDeepSearch);
                 if(source!=null) return new InitFile(source,filenames[i],filenames[i].endsWith('.'+config.getCFCExtension()));
             }
@@ -285,10 +285,10 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         	msg.append("\"");
         }
         throw new ExpressionException(msg.toString(),getDetail(config));
-     
+    	 */
     }
 
-    public static String getDetail(Config config) {
+    /*public static String getDetail(Config config) {
     	boolean hasCFC=false,hasCFML=false;
     	
     	String[] extensions=config.getCustomTagExtensions();
@@ -300,18 +300,18 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	if(!hasCFC)sb.append("Component based Custom Tags are not enabled;");
     	if(!hasCFML)sb.append("CFML based Custom Tags are not enabled;");
     	return sb.toString();
-	}
+	}*/
 
     
 
-	public static  String getDisplayName(Config config,String name) {
+	/*public static  String getDisplayName(Config config,String name) {
 		String[] extensions=config.getCustomTagExtensions();
         if(extensions.length==0) return name;
         
 		return name+".["+List.arrayToList(extensions, "|")+"]";
-	}
+	}*/
 
-	public static String[] getFileNames(Config config, String name) throws ExpressionException {
+	/*public static String[] getFileNames(Config config, String name) throws ExpressionException {
 		String[] extensions=config.getCustomTagExtensions();
         if(extensions.length==0) throw new ExpressionException("Custom Tags are disabled");
         String[] fileNames=new String[extensions.length];
@@ -320,10 +320,10 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     		fileNames[i]=name+'.'+extensions[i];
     	}
     	return fileNames;
-	}
+	}*/
 
 	
-    private static PageSource getMapping(Mapping[] ctms, String filename, boolean doCustomTagDeepSearch) {
+    /*private static PageSource getMapping(Mapping[] ctms, String filename, boolean doCustomTagDeepSearch) {
     	//print.o("filename:"+filename);
     	//MappingImpl ctm;
     	PageSource ps;
@@ -335,11 +335,11 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 			if(ps!=null) return ps;
         }
 		return null;
-	}
+	}*/
 
    
 
-	static String toString(Mapping[] ctms) {
+	/*static String toString(Mapping[] ctms) {
 		if(ctms==null) return "";
     	StringBuffer sb=new StringBuffer();
     	Resource p;
@@ -350,7 +350,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     			sb.append(p.toString());
         }
         return sb.toString();
-	}
+	}*/
 
 	private int cfmlStartTag() throws PageException {
 		callerScope.initialize(pageContext);
@@ -414,7 +414,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         }
             
         try {
-            pageContext.doInclude(source.ps);
+            pageContext.doInclude(source.getPageSource());
         }
         catch (Throwable t) {
             throw Caster.toPageException(t);
@@ -436,8 +436,8 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     private int cfcStartTag() throws PageException {
     	
     	callerScope.initialize(pageContext);
-        cfc = ComponentLoader.loadComponentImpl(pageContext,null,source.ps, source.filename.substring(0,source.filename.length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
-        validateAttributes(cfc,attributesScope,StringUtil.ucFirst(List.last(source.ps.getComponentName(),'.')));
+        cfc = ComponentLoader.loadComponentImpl(pageContext,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
+        validateAttributes(cfc,attributesScope,StringUtil.ucFirst(List.last(source.getPageSource().getComponentName(),'.')));
         
         boolean exeBody = false;
         try	{
@@ -779,7 +779,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 	}
 	
 	public boolean isCFCBasedCustomTag() {
-		return getSource().isCFC;
+		return getSource().isCFC();
 	}
 	
 	private InitFile getSource() {
@@ -793,7 +793,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		return source;
 	}
 
-	class InitFile {
+	/*class InitFile {
 		PageSource ps;
 		String filename;
 		boolean isCFC;
@@ -803,7 +803,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 			this.filename=filename;
 			this.isCFC=isCFC;
 		}
-	}
+	}*/
 	
 	
 }

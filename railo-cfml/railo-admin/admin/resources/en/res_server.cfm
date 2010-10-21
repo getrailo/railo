@@ -235,3 +235,7 @@ When checked, any requested files found to currently reside in the template cach
 <cfset stText.setting.componentCache="Component path Cache">
 <cfset stText.setting.componentCacheClear="Clear component path cache ( {count} element(s) )">
 <cfset stText.setting.componentCacheClearDesc="Press the button above to clear the component path cache.">
+
+<cfset stText.setting.ctCache="Custom tag path Cache">
+<cfset stText.setting.ctCacheClear="Clear custom tag path cache ( {count} element(s) )">
+<cfset stText.setting.ctCacheClearDesc="Press the button above to clear the custom tag path cache.">

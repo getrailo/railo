@@ -503,7 +503,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("verifyMailServer",       ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyMailServer();
         else if(check("verifyExtensionProvider",ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyExtensionProvider();
         else if(check("verifyJavaCFX",			ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyJavaCFX();
-        
+
         else if(check("resetId",				ACCESS_FREE) && check2(ACCESS_WRITE  )) doResetId();
         else if(check("updateJar",         		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateJar();
         else if(check("updateTLD",         		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateTLD();
@@ -618,6 +618,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
 
 	
+
 
 	private boolean check2(short accessRW) throws SecurityException {
     	if(accessRW==ACCESS_READ) ConfigWebUtil.checkGeneralReadAccess(config,password);
@@ -1347,6 +1348,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 getString("admin",action,"class")
         );
     }
+    
+
     
     
 
@@ -2497,6 +2500,7 @@ private void doGetMappings() throws PageException {
         
         sct.set("deepSearch",Caster.toBoolean(config.doCustomTagDeepSearch()));
         sct.set("localSearch",Caster.toBoolean(config.doLocalCustomTag()));
+        sct.set("customTagPathCache",Caster.toBoolean(config.useCTPathCache()));
         sct.set("extensions",new ArrayImpl(config.getCustomTagExtensions()));
     }
 
@@ -3052,6 +3056,7 @@ private void doGetMappings() throws PageException {
     private void doUpdateCustomTagSetting() throws PageException {
     	admin.updateCustomTagDeepSearch(getBool("admin", action, "deepSearch"));
     	admin.updateCustomTagLocalSearch(getBool("admin", action, "localSearch"));
+    	admin.updateCTPathCache(getBool("admin", action, "customTagPathCache"));
     	admin.updateCustomTagExtensions(getString("admin", action, "extensions"));
         store();
         adminSync.broadcast(attributes, config);
@@ -3212,6 +3217,7 @@ private void doGetMappings() throws PageException {
         admin.updateComponentUseShadow(getBoolObject("admin",action,"useShadow"));
         admin.updateComponentDefaultImport(getString("admin",action,"componentDefaultImport"));
         admin.updateComponentLocalSearch(getBoolObject("admin",action,"componentLocalSearch"));
+        admin.updateComponentPathCache(getBoolObject("admin",action,"componentPathCache"));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -3249,6 +3255,7 @@ private void doGetMappings() throws PageException {
         sct.set("useShadow",Caster.toBoolean(config.useComponentShadow()));
         sct.set("ComponentDefaultImport",config.getComponentDefaultImport());
         sct.set("componentLocalSearch",config.getComponentLocalSearch());
+        sct.set("componentPathCache",config.useComponentPathCache());
         
     }
 

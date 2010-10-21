@@ -18,6 +18,7 @@
 <cfset stText.Buttons.filter        = "filter">
 <cfset stText.Buttons.reset         = "zur￼cksetzen">
 <cfset stText.Buttons.refresh         = "neu laden">
+<cfset stText.Buttons.flush         = "leeren">
 <cfset stText.Buttons.ok         = "OK">
 <cfset stText.Buttons.compileAll = "kompilieren">
 <cfset stText.Buttons.install = "installieren">

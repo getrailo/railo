@@ -28,9 +28,13 @@ Defaults --->
 	secValue="yes">
 
 
+<cfset flushName="#stText.Buttons.flush# (#structCount(ctCacheList())#)">
 <cftry>
 	<cfswitch expression="#form.mainAction#">
 	<!--- UPDATE --->
+    <cfcase value="#flushName#">
+    	 <cfset ctCacheClear()>
+    </cfcase>
 		<cfcase value="#stText.Buttons.Update#">
 		<!--- update --->
 			<cfif form.subAction EQ "setting">
@@ -45,6 +49,10 @@ Defaults --->
 						
 						deepSearch="#isDefined('form.customTagDeepSearchDesc') and form.customTagDeepSearchDesc EQ true#"
 						localSearch="#isDefined('form.customTagLocalSearchDesc') and form.customTagLocalSearchDesc EQ true#"
+						customTagPathCache="#isDefined('form.customTagPathCache') and form.customTagPathCache EQ true#"
+                        
+                        
+                        
 						extensions="#form.extensions#"
 			remoteClients="#request.getRemoteClients()#">
 			<cfelseif form.subAction EQ "#stText.Buttons.Update#">
@@ -186,6 +194,16 @@ function checkTheRadio(field) {
 	<input type="checkbox" class="checkbox" name="customTagLocalSearchDesc" value="yes" <cfif setting.localsearch>checked</cfif>>
 	<span class="comment">#stText.CustomTags.customTagLocalSearchDesc#</span></td>
 	
+</tr>
+
+<!--- component path cache ---->
+<tr>
+	<td class="tblHead" width="150">#stText.CustomTags.customTagPathCache#</td>
+	<td class="tblContent">
+	<input type="checkbox" class="checkbox" name="customTagPathCache" value="yes" <cfif setting.customTagPathCache>checked</cfif>>
+	<span class="comment">#stText.CustomTags.customTagPathCacheDesc#</span>
+	<cfif setting.customTagPathCache><br />
+            <input type="submit" class="submit" name="mainAction" value="#flushName#"></cfif></td>
 </tr>
 
 
