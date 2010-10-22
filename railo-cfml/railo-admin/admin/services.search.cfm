@@ -164,7 +164,7 @@ function selectAll(field) {
 				<table border="0" cellpadding="0" cellspacing="0">
 				<tr>
 					<td><input type="checkbox" class="checkbox" name="name[]" value="#collections.name#"></td>
-					<td><a href="#request.self#?action=#url.action#&collection=#collections.name#"><img hspace="2" src="resources/img/edit.png.cfm" border="0"></a></td>
+					<td><a href="#request.self#?action=#url.action#&collection=#collections.name#"><cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
 				</tr>
 				</table>
 				
@@ -184,14 +184,14 @@ function selectAll(field) {
 				<cfoutput> <table border="0" cellpadding="0" cellspacing="0">
 				 <tr>
 					<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-					<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="20"></td>
+					<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="20"></td>
 					<td></td>
 				 </tr>
 				 
 				 <tr>
 				 
 					<td></td>
-					<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
+					<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 					<td>&nbsp;
 					
 					<input type="hidden" name="run" value="action">
@@ -236,14 +236,16 @@ function selectAll(field) {
 		<tr>
 			<td class="tblHead" width="50"><cfoutput>#stText.Search.Language#</cfoutput></td>
 			<td class="tblContent" width="300"><select name="collLanguage">
+				<cfset aLangs = StructKeyArray(stText.SearchLng)>
+				<cfset ArraySort(aLangs, "text")>
 				<cfoutput>
 					<cfloop from="1" to="25" index="iLng">
-						<option value="#stText.SearchLng[iLng][1]#" <cfif stText.SearchLng[iLng][1] eq "english">selected</cfif>>#stText.SearchLng[iLng][2]#</option>
+						<option value="#aLangs[iLng]#" <cfif aLangs[iLng] eq "english">selected</cfif>>#stText.SearchLng[aLangs[iLng]]#</option>
 					</cfloop>
 				</cfoutput>
 			</select></td>
 		</tr>
-<cfmodule template="remoteclients.cfm" colspan="2">
+		<cfmodule template="remoteclients.cfm" colspan="2">
 		<tr>
 			<cfoutput><td colspan="2">
 				<input type="submit" class="submit" name="run" value="#stText.Buttons.Create#">

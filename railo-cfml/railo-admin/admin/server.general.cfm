@@ -1,24 +1,3 @@
-
-<cfset stText.setting.general.web="Hier sehen Sie eine Übersicht alle Settings welche Einfluss auf das Verhalten von Railo haben, sie können diese nach vordefinierten kriterien anpassen">
-<cfset stText.setting.general.server=stText.setting.general.web>
-
-<cfset stText.setting.general.compatibility="Compatibility">
-<cfset stText.setting.general.compatibilityDesc="Mit diesem Wert werden alle Settings so gesetzt, dass sie möglichst dem CFML2009 Standard entsprechen und mit Implementationen anderer Hersteller kombatibel sind.">
-<cfset stText.setting.general.strict="Strict">
-<cfset stText.setting.general.strictDesc="Mit diesem Wert werden alle Settings so gesetzt, dass Railo so streng wie möglich mit der Umsetzung des Code ist.">
-<cfset stText.setting.general.speed="Speed">
-<cfset stText.setting.general.speedDesc="Mit diesem Wert werden alle Settings so gesetzt, dass sie eine möglichst schnelle Ausführung des Code erlauben.">
-
-
-
-
-
-<cfset stText.setting.general.component="Component">
-<cfset stText.setting.general.charset="Charset">
-<cfset stText.setting.general.scope="Scope">
-<cfset stText.setting.general.datasource="Datasource">
-<cfset stText.setting.general.customtag="Custom Tag">
-
 <cfset error.message="">
 <cfset error.detail="">
 

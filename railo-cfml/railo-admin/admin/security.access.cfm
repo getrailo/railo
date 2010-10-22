@@ -140,8 +140,6 @@ Redirtect to entry --->
 Error Output --->
 <cfset printError(error)>
 
-
-
 <cfoutput>#stText.Security.desc#</cfoutput>
 <br><br>
 <cfset prefix="default">

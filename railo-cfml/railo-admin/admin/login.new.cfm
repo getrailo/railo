@@ -17,7 +17,7 @@
 <cfset f="">
 <cfloop collection="#languages#" item="key"><cfif f EQ "" or key EQ session.railo_admin_lang><cfset f=key></cfif></cfloop>
 <tr>
-	<td class="tblHead" width="100" align="right"><img name="flag" src="resources/img/#f#.gif.cfm" width="23" height="14"></td>
+	<td class="tblHead" width="100" align="right"><cfmodule template="img.cfm" src="#f#.gif" width="23" name="flag" height="14"></td>
 	<td class="tblContent" width="200"><select name="lang" onchange="changePic(this.options[this.selectedIndex].value)">
 	<cfloop collection="#languages#" item="key"><option value="#key#" <cfif key EQ session.railo_admin_lang>selected</cfif>>#languages[key]#</option></cfloop>
 	</select></td>

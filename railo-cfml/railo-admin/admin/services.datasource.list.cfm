@@ -229,7 +229,7 @@ function selectAll(field) {
 				<cfif StructKeyExists(stVeritfyMessages, srcGlobal.name)>
 					#stVeritfyMessages[srcGlobal.name].label#
 					<cfif stVeritfyMessages[srcGlobal.name].label neq "OK">
-						&nbsp;<img src="#cgi.context_path#/railo-context/admin/resources/img/red-info.gif.cfm" 
+						&nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
 							width="9" 
 							height="9" 
 							border="0" 
@@ -246,13 +246,12 @@ function selectAll(field) {
 			 <table border="0" cellpadding="0" cellspacing="0">
 			 <tr>
 				<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-				<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="20"></td>
+				<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="20"></td>
 				<td></td>
 			 </tr>
 			 <tr>
 				<td></td>
-				<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img 
-				src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
+				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 				<td>&nbsp;
 				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Verify#">
 				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
@@ -298,7 +297,7 @@ function selectAll(field) {
 				<input type="hidden" name="password_#srcLocal.currentrow#" value="#srcLocal.Password#">
 				</td>
 				<td><a href="#request.self#?action=#url.action#&action2=create&name=#srcLocal.name#">
-			<img hspace="2" src="resources/img/edit.png.cfm" border="0"></a></td>
+			<cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
 			</tr>
 			</table>
 			</td>
@@ -311,7 +310,7 @@ function selectAll(field) {
 						<span class="CheckOk">#stVeritfyMessages[srcLocal.name].label#</span>
 					<cfelse>
 						<span class="CheckError" title="#stVeritfyMessages[srcLocal.name].message##Chr(13)#">#stVeritfyMessages[srcLocal.name].label#</span>
-						&nbsp;<img src="#cgi.context_path#/railo-context/admin/resources/img/red-info.gif.cfm" 
+						&nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
 							width="9" 
 							height="9" 
 							border="0" 
@@ -330,12 +329,12 @@ function selectAll(field) {
 			 <table border="0" cellpadding="0" cellspacing="0">
 			 <tr>
 				<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-				<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="10"></td>
+				<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="10"></td>
 				<td></td>
 			 </tr>
 			 <tr>
 				<td></td>
-				<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
+				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 				<td>&nbsp;
 				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Verify#">
 				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">

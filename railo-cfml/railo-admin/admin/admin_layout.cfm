@@ -21,9 +21,9 @@ other=iif(request.adminType EQ "web","'server'","'web'");
 		
 		<cfset yellowColor=iif(request.adminType EQ "web",de('FFFF66'),de('FFFF66	'))>
 		
-		
-		
-		body {background-image:url('resources/img/#ad#-back.png.cfm');background-repeat:repeat-x;background-color:##f7f7f7;margin-top:0px;margin-left:0px;}
+	  
+	  
+		body {background-image:url(<cfmodule type="css" template="img.cfm" src="#ad#-back.png" />);background-repeat:repeat-x;background-color:##f7f7f7;margin-top:0px;margin-left:0px;}
 		body, tr, td,div {font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 9pt;color:##3c3e40;}
 		h1 {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 20pt;color:##568bc1;}
 		h2 {height:6pt;font-size : 14pt;font-weight:normal;color:##568bc1;}
@@ -60,12 +60,12 @@ other=iif(request.adminType EQ "web","'server'","'web'");
 		.CheckError{font-weight:bold;color:##cc0000;font-size : 12px;}
 		
 		input{
-		background: url('resources/img/input-shadow.png.cfm') repeat-x 0 0;
+		background: url(<cfmodule type="css" template="img.cfm" src="input-shadow.png" />) repeat-x 0 0;
 background-color:white;
 		
 		padding-left:3px;padding-right:2px;padding-top:3px;padding-bottom:3px;margin:3px 1px 3px 1px;color:##3c3e40;border-style:solid;border-width:1px;border-color:##e0e0e0;}
 		.button,.submit,.reset {
-		background: url('resources/img/input-button.png.cfm') repeat-x 0 0;
+		background: url(<cfmodule type="css" template="img.cfm" src="input-button.png" />) repeat-x 0 0;
 		background-color:##f2f2f2;color:##3c3e40;font-weight:bold;padding-left:10px;padding-right:10px;margin:0px;}
 		select {font-size : 11px;color:##3c3e40;margin:3px 0px 3px 0px;}
 		.checkbox,.radio {border:0px;}
@@ -103,9 +103,9 @@ background-color:white;
 </tr>
 <tr>
 	<td rowspan="2" width="4" valign="top"><cfmodule template="img.cfm" vspace="77" src="shadow-left.gif" /></td>
-	<td valign="top"  width="158" style="background-image:url(resources/img/back-left.png.cfm);"><cfmodule template="img.cfm" src="left.png" />
+	<td valign="top"  width="158" style="background-image:url(<cfmodule type="css" template="img.cfm" src="back-left.png" />);"><cfmodule template="img.cfm" src="left.png" />
 		<cfif hasNavigation><div style="margin:10px 0px 0px 20px;">
-			<cfoutput>#attributes.navigation#<div style="padding-top:30px;padding-bottom:30px;"><a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout"><img border="0" src="resources/img/arrow.gif.cfm"  width="4" height="7" /> Logout</a></div></cfoutput>
+			<cfoutput>#attributes.navigation#<div style="padding-top:30px;padding-bottom:30px;"><a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout"><cfmodule template="img.cfm" src="arrow.gif" border="0" width="4" height="7" /> Logout</a></div></cfoutput>
 		</div></cfif><br><br>
 	</td>
 	<cfif hasNavigation><td rowspan="1" width="1" style="background-color:##d2d2d2;"></td></cfif>
@@ -132,12 +132,21 @@ background-color:white;
 			<td colspan="#iif(hasNavigation,de(6),de(5))#" align="center" class="copy"><cfoutput>&copy; #Year(Now())# <a href="http://www.getrailo.com" target="_blank">Railo Technologies GmbH Switzerland</a>. All Rights Reserved. | Designed by <a href="http://www.blueriver.com/from/railo/" target="_blank">Blue River Interactive Group, Inc.</a>
 			</cfoutput><br><br></td>
 		</tr>
-</cfoutput>
+
 </table>
 </body>
 </html>
+<cfif StructKeyExists(application,'notTranslated')>
+<cfset keys=structKeyArray(application.notTranslated)>
+<cfset ArraySort(keys,'textnocase')>
+<!--
+The following text is not translated the the current language
+<cfloop  array="#keys#" index="key"><data key="#key#">#trim(application.notTranslated[key])#</data>
+</cfloop>
+-->
+</cfif>
 
-
+</cfoutput>
 
 
 <cfset thistag.generatedcontent="">

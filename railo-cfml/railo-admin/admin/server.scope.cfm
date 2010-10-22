@@ -66,7 +66,7 @@ Defaults --->
 				clientManagement=""
 				clientCookies=""
 				domaincookies=""
-                
+                clientTimeout=""
 				remoteClients="#request.getRemoteClients()#">
 			
 		</cfcase>

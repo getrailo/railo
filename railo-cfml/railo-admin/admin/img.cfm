@@ -14,7 +14,21 @@
 <cfif isDefined("attributes.valign")><cfset valign=" valign="""&attributes.valign&""""></cfif>
 <cfset style="">
 <cfif isDefined("attributes.style")><cfset style=" style="""&attributes.style&""""></cfif>
+<cfset name="">
+<cfif isDefined("attributes.name")><cfset name=" name="""&attributes.name&""""></cfif>
 
 <cfparam name="attributes.border" default="0">
+<cfparam name="attributes.type" default="img">
 
-</cfsilent><cfoutput><img src="resources/img/#attributes.src#.cfm" #width##height##hspace##vspace##title##valign##style# border="#attributes.border#" /></cfoutput></cfif>
+
+<cfset path="resources/img/#attributes.src#.cfm">
+<cfparam name="application.adminimages" default="#{}#">
+<cfif StructKeyExists(application.adminimages,path) and false>
+	<cfset str=application.adminimages[path]>
+<cfelse>
+	<cfsavecontent variable="str" trim><cfinclude template="#path#"></cfsavecontent>
+    <cfset application.adminimages[path]=str>
+</cfif>
+
+
+</cfsilent><cfoutput><cfif attributes.type EQ "css">#str#<cfelse><img src="#str#" #name##width##height##hspace##vspace##title##valign##style# border="#attributes.border#" /></cfif></cfoutput></cfif>

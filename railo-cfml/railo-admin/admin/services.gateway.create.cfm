@@ -89,13 +89,6 @@ Redirtect to entry --->
 <cfoutput>
 
 
-<cfset stText.Settings.gateway.ListenerCfcPath="Listener CFC Path">
-<cfset stText.Settings.gateway.startupMode="Startup Mode">
-<cfset stText.Settings.gateway.startupModeAutomatic="Automatic">
-<cfset stText.Settings.gateway.startupModeManual="Manual">
-<cfset stText.Settings.gateway.startupModeDisabled="Disabled">
-
-
 
 <!--- 
 Error Output--->

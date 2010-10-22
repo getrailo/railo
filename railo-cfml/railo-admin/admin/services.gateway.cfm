@@ -4,34 +4,6 @@
 <cfparam name="form.mainAction" default="none">
 <cfparam name="form.subAction" default="none">
 
-
-<cfset stText.Settings.gateway.noDriver="There is no Gateway Type Available">
-<cfset stText.Settings.gateway.title="Gateway">
-<cfset stText.Settings.gateway.description="Verwalten der Gateways">
-<cfset stText.Settings.gateway.id="ID">
-<cfset stText.Settings.gateway.class="Class">
-<cfset stText.Settings.gateway.titleCreate="Create a new Gateway instance">
-<cfset stText.Settings.gateway.titleExisting="List of existing gateway instances">
-
-<cfset stText.Settings.gateway.descExisting="List of all existing gateways for ths enviroment">
-<cfset stText.Settings.gateway.nameMissing="Cancel">
-
-
-<cfset stText.Settings.gateway.type="Type">
-<cfset stText.Settings.gateway.state="State">
-
-
-
-<cfset stText.Settings.gateway.Default="Default">
-<cfset stText.Settings.gateway.DefaultTitle="Default cache connection">
-<cfset stText.Settings.gateway.noDefault="no default cache">
-<cfset stText.Settings.gateway.noAccess="no access to create gateway instances">
-<cfset stText.Settings.gateway.defaultDesc2="Define if this connection will be the default cache connection, the default cache connection is used when no cache name is explicit defined">
-<cfset stText.Settings.gateway.titleReadOnly             = "Readonly cache connections">
-<cfset stText.Settings.gateway.descReadOnly  = "Readonly cache connections are generated within the ""server administrator"" for all web instances and can not be modified by the ""web administrator"".">
-<cfset stText.Settings.gateway.Buttons.default="set as default">
-
-
 <cfadmin 
 	action="getGatewayEntries"
 	type="#request.adminType#"
