@@ -197,14 +197,6 @@ public class StructImpl extends StructSupport {
 		map.clear();
 	}
 
-	/**
-	 * throw exception for invalid key
-	 * @param key Invalid key
-	 * @return returns a invalid key Exception
-	 */
-	protected ExpressionException invalidKey(Key key) {
-		return new ExpressionException("key ["+key.getString()+"] doesn't exist in struct (keys:"+List.arrayToList(keysAsString(), ",")+")");
-	}
 	
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)

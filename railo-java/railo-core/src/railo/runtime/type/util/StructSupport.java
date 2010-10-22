@@ -12,6 +12,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
@@ -19,6 +20,17 @@ import railo.runtime.type.dt.DateTime;
 public abstract class StructSupport implements Map,Struct,Sizeable {
 
 
+
+	/**
+	 * throw exception for invalid key
+	 * @param key Invalid key
+	 * @return returns a invalid key Exception
+	 */
+	protected ExpressionException invalidKey(Key key) {
+		return new ExpressionException("key ["+key.getString()+"] doesn't exist in struct (keys:"+List.arrayToList(keysAsString(), ",")+")");
+	}
+	
+	
 	/**
 	 * @see railo.runtime.type.Sizeable#sizeOf()
 	 */

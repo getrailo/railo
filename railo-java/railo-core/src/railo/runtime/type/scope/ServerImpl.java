@@ -1,6 +1,5 @@
 package railo.runtime.type.scope;
 
-import railo.print;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalConfig;
