@@ -3,7 +3,7 @@ package railo;
 /**
  *  
  */
-public final class print {
+public final class print extends aprint {
 
 
 }	 

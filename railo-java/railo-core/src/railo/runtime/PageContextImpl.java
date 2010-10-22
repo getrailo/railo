@@ -325,9 +325,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @param queryCache Query Cache Object
 	 * @param id identity of the pageContext
 	 */
-	public PageContextImpl(ScopeContext scopeContext, ConfigWebImpl config, QueryCache queryCache,int id) {
+	public PageContextImpl(ScopeContext scopeContext, ConfigWebImpl config, QueryCache queryCache,int id,HttpServlet servlet) {
 		// must be first because is used after
-        this.id=id;
+
+        this.servlet=servlet;
+		this.id=id;
 		//this.factory=factory;
 		
         bodyContentStack=new BodyContentStack();

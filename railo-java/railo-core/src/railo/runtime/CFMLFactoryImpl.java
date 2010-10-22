@@ -123,7 +123,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		        //runningCount++;
 				PageContextImpl pc;
         		synchronized (pcs) {
-		            if(pcs.isEmpty()) pc=new PageContextImpl(scopeContext,config,queryCache,idCounter++);
+		            if(pcs.isEmpty()) pc=new PageContextImpl(scopeContext,config,queryCache,idCounter++,servlet);
 		            else pc=((PageContextImpl)pcs.pop());
 		            runningPcs.setEL(ArgumentIntKey.init(pc.getId()),pc);
 		            this.servlet=servlet;

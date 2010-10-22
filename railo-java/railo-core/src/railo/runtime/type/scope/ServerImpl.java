@@ -1,8 +1,10 @@
 package railo.runtime.type.scope;
 
+import railo.print;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalConfig;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.i18n.LocaleFactory;
@@ -35,6 +37,7 @@ public final class ServerImpl extends ScopeSupport implements Server {
     private static final Key SUPPORTED_LOCALES = KeyImpl.getInstance("supportedlocales");
     private static final Key  COLDFUSION= KeyImpl.getInstance("coldfusion");
     private static final Key  NAME= KeyImpl.getInstance("name");
+    private static final Key  SERVLET= KeyImpl.getInstance("servlet");
     private static final Key  ARCH= KeyImpl.getInstance("arch");
     private static final Key  VERSION= KeyImpl.getInstance("version");
     private static final Key  ADDITIONAL_INFORMATION= KeyImpl.getInstance("additionalinformation");
@@ -68,16 +71,20 @@ public final class ServerImpl extends ScopeSupport implements Server {
 	 * constructor of the server scope
 	 * @param sn
 	 */
-	public ServerImpl() {
+	public ServerImpl(PageContext pc) {
 		super(true,"server",SCOPE_SERVER);
-		reload();
+		reload(pc);
 
 	}
 	
 	/**
      * @see railo.runtime.type.scope.Server#reload(railo.runtime.security.SerialNumber)
      */
-	public void reload() {		
+	public void reload() {	
+		reload(ThreadLocalPageContext.get());
+	}
+	
+	public void reload(PageContext pc) {		
 	    
 	    ReadOnlyStruct coldfusion=new ReadOnlyStruct();
 			coldfusion.setEL(PRODUCT_LEVEL,Info.getLevel());
@@ -141,10 +148,20 @@ public final class ServerImpl extends ScopeSupport implements Server {
 			java.setEL(TOTAL_MEMORY,new Double(rt.totalMemory()));
 			java.setEL(MAX_MEMORY,new Double(rt.maxMemory()));
 			java.setReadOnly(true);
+			super.setEL (JAVA,java);
+		
+
+			ReadOnlyStruct servlet=new ReadOnlyStruct();
+			String name="";
+			try{
+				name=pc.getServletContext().getServerInfo();
+			}
+			catch(Throwable t){}
+			servlet.setEL(NAME,name);
+			servlet.setReadOnly(true);
 			
 			
-			
-		super.setEL (JAVA,java);
+			super.setEL (SERVLET,servlet);
 	    
 	}
 
