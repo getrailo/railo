@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/1.5.0"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Railo-Core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Railo-Loader"/>
 	<classpathentry kind="lib" path="/Railo-Libs/antlr.jar"/>
