@@ -54,7 +54,7 @@ public final class CFMLEngineFactoryDummy extends CFMLEngineFactory {
      */
     public File getResourceRoot() throws IOException {
     	
-    	String path=SystemUtil.parsePlaceHolder("{web-root}", config.getServletContext());
+    	String path=SystemUtil.parsePlaceHolder(config.getInitParameter("railo-server-directory"), config.getServletContext());
     	path=StringUtil.replace(path, "webroot", "work", true);
     	//print.err(path);
         return new File(path);

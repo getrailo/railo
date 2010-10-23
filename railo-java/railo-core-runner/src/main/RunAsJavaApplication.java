@@ -15,9 +15,11 @@ import org.mortbay.util.MultiException;
  */
 public class RunAsJavaApplication {
         
-    public static void addContext(HttpServer server, String strContext,String host,String path, String home,String serverdir) {
+    public static void addContext(HttpServer server, String strContext,String host,String path, String appDir,String webContextDir, String adminContextDir) {
         
-    	if(home==null) home="./web";
+    	if(appDir==null) appDir="./web";
+    	if(webContextDir==null) webContextDir = appDir+"/WEB-INF/railo";
+    	if(adminContextDir==null) adminContextDir =appDir+"/WEB-INF/lib/railo";
         
         HttpContext context = new HttpContext();
         context.setContextPath(strContext);
@@ -42,9 +44,9 @@ public class RunAsJavaApplication {
         
         //servlet = servlets.addServlet("FileServlet","/","servlet.FileServlet");
         
-        if(serverdir==null) serverdir=home;
-        servlet.setInitParameter("railo-server-root",serverdir+"/context-server");
-        servlet.setInitParameter("railo-web-directory",serverdir+"/context-web");
+        if(adminContextDir==null) webContextDir=appDir;
+        servlet.setInitParameter("railo-server-directory",adminContextDir);
+        servlet.setInitParameter("railo-web-directory",webContextDir);
                 
         //servlet = servlets.addServlet("openamf","/flashservices/gateway/*,/openamf/gateway/*","servlet.AMFServlet");
         servlet = servlets.addServlet("openamf","/openamf/gateway/*","main.servlet.AMFServlet");
@@ -55,8 +57,8 @@ public class RunAsJavaApplication {
         servlet = servlets.addServlet("MessageBrokerServlet","/flashservices/gateway/*,/messagebroker/*,/flex2gateway/*","flex.messaging.MessageBrokerServlet");
         servlet.setInitParameter("services.configuration.file", "/WEB-INF/flex/services-config.xml");
         
-        home+=path;
-           context.setResourceBase(home);
+        appDir+=path;
+           context.setResourceBase(appDir);
            context.addHandler(new ResourceHandler());
            
     }
@@ -76,27 +78,44 @@ public static void main (String[] args) throws Exception {
         for(int i=0;i<len;i++) {
             ((Throwable)list.get(i)).printStackTrace();
         }
-        
     }
     catch (Exception e) {
         throw e;
     }
 }
-
+// 10407 4th street (el pinto)  further north 221-0639
 public static void _main (String[] args)
     throws Exception { 
     // Create the server
     HttpServer server=new HttpServer();
+    String portArg = "8080";
+    String appDir = "./web";
+    String webContextDir = appDir+"/railo";
+    String serverContextDir = appDir+"/WEB-INF/lib/railo";
+    if(args.length > 0) {
+    	portArg = args[0];
+    }
+    if(args.length > 1) {
+    	appDir = args[1];
+        webContextDir = appDir+"/railo";
+        serverContextDir = appDir+"/WEB-INF/lib/railo-server";
+    }
+    if(args.length > 1) {
+    	webContextDir = args[1];
+    }
+    if(args.length > 2) {
+    	serverContextDir = args[2];
+    }
       
     // Create a port listener
     SocketListener listener=new SocketListener();
-    int port=8080; 
+    int port= Integer.parseInt(portArg); 
     
     listener.setPort(port);
     server.addListener(listener);
     
     // Create a context 
-    addContext(server,"/","localhost","/",null,null);
+    addContext(server,"/","localhost","/",appDir,webContextDir,serverContextDir);
 
     //addContext(server,"/susi/","localhost","/jm/",null,null);
     //addContext(server,"/sub1/","localhost","/subweb1/",null,null);
