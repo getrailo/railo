@@ -99,7 +99,8 @@ public final class SQLImpl implements SQL,Serializable,Sizeable {
                 break;
             }
             sb.append(strSQL.substring(last,pos));
-            sb.append(SQLCaster.toString(items[i]));
+            if(items[i].isNulls()) sb.append("null");
+            else sb.append(SQLCaster.toString(items[i]));
             last=pos+1;
         }
         sb.append(strSQL.substring(last));
