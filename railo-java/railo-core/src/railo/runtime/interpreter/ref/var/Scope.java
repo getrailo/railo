@@ -31,9 +31,6 @@ public final class Scope extends RefSupport implements Set {
 	 */
 	public Object getValue() throws PageException {
 		return VariableInterpreter.scope(pc, scope, false);
-		//if(scope==railo.runtime.type.Scope.SCOPE_LOCAL)
-    	//	return ((PageContextImpl)pc).localGet();
-        //return pc.scope(scope);
 	}
 
 	/**
@@ -48,9 +45,6 @@ public final class Scope extends RefSupport implements Set {
      */
     public Object touchValue() throws PageException {
     	return VariableInterpreter.scope(pc, scope, true);
-		//if(scope==railo.runtime.type.Scope.SCOPE_LOCAL)
-    	//	return ((PageContextImpl)pc).localTouch();
-        //return pc.scope(scope);
     }
 
     /**
