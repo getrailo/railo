@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletInputStream;
@@ -15,18 +16,13 @@ import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.type.KeyImpl;
-import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.scope.FormImpl;
-import railo.runtime.type.scope.Request;
+import railo.runtime.util.EnumerationWrapper;
 
 /**
  * extends a existing {@link HttpServletRequest} with the possibility to reread the input as many you want.
  */
 public final class HTTPServletRequestWrap extends HttpServletRequestWrapper implements Serializable {
-
-
-
 
 	private boolean firstRead=true;
 	private byte[] barr;
@@ -39,8 +35,10 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	private String context_path;
 	private String path_info;
 	private String query_string;
+	private HashMap<String, Object> disconnectedData;
+	private boolean disconnected;
 	private HttpServletRequest req;
-	private Request _request;
+	//private Request _request;
 
 	/**
 	 * Constructor of the class
@@ -99,10 +97,10 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		return res.toString();
 	}
 	
-	private static HttpServletRequest pure(HttpServletRequest req) {
+	public static HttpServletRequest pure(HttpServletRequest req) {
 		HttpServletRequest req2;
 		while(req instanceof HTTPServletRequestWrap){
-			req2 = (HttpServletRequest) ((HTTPServletRequestWrap)req).getRequest();
+			req2 = (HttpServletRequest) ((HTTPServletRequestWrap)req).getOriginalRequest();
 			if(req2==req) break;
 			req=req2;
 		}
@@ -163,6 +161,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	}
 	
 	public RequestDispatcher getOriginalRequestDispatcher(String realpath) {
+		if(disconnected) return null;
 		return req.getRequestDispatcher(realpath);
 	}
 
@@ -170,35 +169,34 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	 * @see javax.servlet.ServletRequestWrapper#removeAttribute(java.lang.String)
 	 */
 	public void removeAttribute(String name) {
-		if(_request!=null) _request.removeEL(KeyImpl.init(name));
+		if(disconnected) disconnectedData.remove(name); 
 		else req.removeAttribute(name);
 	}
 
 	/**
 	 * @see javax.servlet.ServletRequestWrapper#setAttribute(java.lang.String, java.lang.Object)
 	 */
-	public void setAttribute(String name, Object o) {
-		if(_request!=null) _request.setEL(KeyImpl.init(name), o);
-		else req.setAttribute(name, o);
+	public void setAttribute(String name, Object value) {
+		if(disconnected) disconnectedData.put(name, value);
+		else req.setAttribute(name, value);
 	}
 	
-	public void setAttributes(Request request) {
+	/*public void setAttributes(Request request) {
 		this._request=request;
-	}
+	}*/
 
 
 	/**
 	 * @see javax.servlet.ServletRequestWrapper#getAttribute(java.lang.String)
 	 */
 	public Object getAttribute(String name) {
-		if(_request!=null) return _request.get(name,null);
+		if(disconnected) return disconnectedData.get(name);
 		return req.getAttribute(name);
 	}
 
 	public Enumeration getAttributeNames() {
-		if(_request==null)
-			return req.getAttributeNames();
-		return new KeyIterator(_request.keys());
+		if(disconnected) return new EnumerationWrapper(disconnectedData);
+		return req.getAttributeNames();
 		
 	}
 
@@ -279,5 +277,18 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 
 	public HttpServletRequest getOriginalRequest() {
 		return req;
+	}
+
+	public void disconnect() {
+		if(disconnected) return;
+		Enumeration<String> names = req.getAttributeNames();
+		disconnectedData=new HashMap<String, Object>();
+		String k;
+		while(names.hasMoreElements()){
+			k=names.nextElement();
+			disconnectedData.put(k, req.getAttribute(k));
+		}
+		disconnected=true;
+		req=null;
 	}
 }

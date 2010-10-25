@@ -2020,6 +2020,7 @@ private void doGetMappings() throws PageException {
         
         String dsn=getString("admin",action,"dsn");
         String name=getString("admin",action,"name");
+        String newName=getString("admin",action,"newName");
         String username=getString("admin",action,"dbusername");
         String password=getString("admin",action,"dbpassword");
         String host=getString("host","");
@@ -2044,7 +2045,8 @@ private void doGetMappings() throws PageException {
         if(verify)_doVerifyDatasource(classname,ds.getDsnTranslated(),username,password);
         //print.out("limit:"+connLimit);
         admin.updateDataSource(
-                name,
+        		name,
+        		newName,
                 classname,
                 dsn,
                 username,

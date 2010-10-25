@@ -35,7 +35,7 @@
 			remoteClients="#request.getRemoteClients()#">
 	</cfcase>
 </cfswitch>
-	<cfcatch><cfrethrow>
+	<cfcatch>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>
@@ -115,32 +115,6 @@ Settings --->
 <tr>
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-
-
-<cfset stText.services.update.provider="Update Provider">
-<cfset stText.services.update.location_www="Stable releases">
-<cfset stText.services.update.location_wwwDesc="Dieser Update Provider (www.getrailo.org) gibt nur stabile Versionen zurück, welche ausführlich getestet wurden, diese Quelle sollte für produktive Systeme verwendet werden.">
-<cfset stText.services.update.location_preview="Preview releases">
-<cfset stText.services.update.location_previewDesc="Dieser Update Provider (preview.getrailo.org) gibt vorab Versionen zurück, dabei handelt es sich um Versionen die zwar getestet wurden aber noch nicht die Reife einer stable release besitzen, diese Quelle sollte nur bedingt für produktive Systeme verwendet werden.">
-<cfset stText.services.update.location_dev="Develop releases (Bleeding Edge)">
-<cfset stText.services.update.location_devDesc="Dieser Update Provider (dev.getrailo.org) gibt ""Bleeding Edge"" Versionen zurück, dabei handelt es sich um Versionen die wenig bis gar nicht getestet wurden, diese Quelle sollte nicht für produktive Systeme verwendet werden.">
-
-<cfset stText.services.update.location_custom="Custom">
-<cfset stText.services.update.location_customDesc="Hier können Sie ihren eigenen Update Provider definieren, dies ist eine URL in der Form ""http://my.domainname.org""">
-
-
-
-<cfset stText.services.update.provider="Update Provider">
-<cfset stText.services.update.location_www="Stable releases">
-<cfset stText.services.update.location_wwwDesc="This Update Provider (www.getrailo.org ) returns only stable versions. The versions found here are deeply tested. This source is recommended for production environments.">
-
-<cfset stText.services.update.location_preview="Preview releases">
-<cfset stText.services.update.location_previewDesc="This Update Provider (preview.getrailo.org) returns public preview versions. Versions are tested, but not as deeply as stable releases. This source could be used for production environments. Please use caution.">
-<cfset stText.services.update.location_dev="Development releases (Bleeding Edge)">
-<cfset stText.services.update.location_devDesc="This Update Provider (dev.getrailo.org) returns ""Bleeding Edge"" versions. Usually only a small amount of testing has been performed on these versions. This source should NOT be used for production environments.">
-<cfset stText.services.update.location_custom="Custom">
-<cfset stText.services.update.location_customDesc="Here you can define your own Update Provider. This is a URL of the form ""http://my.domainname.org""">
-
 
 
 <cfform action="#go(url.action,"settings")#" method="post">

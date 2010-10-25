@@ -32,6 +32,8 @@ ACTIONS --->
 			dsn="#driver.getDSN()#"
 						
 			name="#form.name#"
+			newName="#form.newName#"
+            
 			host="#form.host#"
 			database="#form.database#"
 			port="#form.port#"
@@ -178,7 +180,8 @@ Error Output--->
 
 <tr>
 	<td class="tblHead" width="150">Name</td>
-	<td class="tblContent" width="300">#datasource.name#</td>
+	<td class="tblContent" width="300"><cfinput type="text" name="newName" 
+		value="#datasource.name#" style="width:300px" ></td>
 </tr>
 <!--- 
 

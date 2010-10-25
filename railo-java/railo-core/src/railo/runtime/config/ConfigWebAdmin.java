@@ -946,7 +946,7 @@ public final class ConfigWebAdmin {
      * @throws ExpressionException
      * @throws SecurityException
      */
-    public void updateDataSource(String name, String clazzName, String dsn, String username,String password,
+    public void updateDataSource(String name, String newName, String clazzName, String dsn, String username,String password,
             String host,String database,int port,int connectionLimit, int connectionTimeout,
             boolean blob,boolean clob,int allow,Struct custom) throws ExpressionException, SecurityException {
 
@@ -996,6 +996,8 @@ public final class ConfigWebAdmin {
 	      		if(password.equalsIgnoreCase("****************"))
 	            	password=el.getAttribute("password");
 	            
+	      		if(!StringUtil.isEmpty(newName) && !newName.equals(name))
+	      			el.setAttribute("name",newName);
 	      		el.setAttribute("class",clazzName);
 	      		el.setAttribute("dsn",dsn);
 	      		el.setAttribute("username",username);
@@ -1021,7 +1023,10 @@ public final class ConfigWebAdmin {
       	// Insert
       	Element el=doc.createElement("data-source");
       	datasources.appendChild(el);
-      	el.setAttribute("name",name);
+      	if(!StringUtil.isEmpty(newName))
+      		el.setAttribute("name",newName);
+      	else 
+      		el.setAttribute("name",name);
   		el.setAttribute("class",clazzName);
   		el.setAttribute("dsn",dsn);
   		if(username.length()>0)el.setAttribute("username",username);

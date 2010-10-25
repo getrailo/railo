@@ -265,8 +265,6 @@ Mail Settings
 Existing Collection --->
 <h2>#stText.Mail.MailServers#</h2>
 #stText.Mail.MailServersDescription#
-<cfset stText.Mail.tls="TLS">
-<cfset stText.Mail.ssl="SSL">
 <table class="tbl" width="600">
 <tr>
 	<td colspan="5"><cfmodule template="tp.cfm"  width="1" height="1"></td>
@@ -330,7 +328,7 @@ Existing Collection --->
 						<span class="CheckOk">#stVeritfyMessages[ms.hostName].label#</span>
 					<cfelse>
 						<span class="CheckError" title="#stVeritfyMessages[ms.hostName].message##Chr(13)#">#stVeritfyMessages[ms.hostName].label#</span>
-						&nbsp;<img src="#cgi.context_path#/railo-context/admin/resources/img/red-info.gif.cfm" 
+						&nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
 							width="9" 
 							height="9" 
 							border="0" 
@@ -372,12 +370,12 @@ Existing Collection --->
 			 <table border="0" cellpadding="0" cellspacing="0">
 			 <tr>
 				<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-				<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="10"></td>
+				<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="10"></td>
 				<td></td>
 			 </tr>
 			 <tr>
 				<td></td>
-				<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
+				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 				<td>&nbsp;
 				<input type="hidden" name="mainAction" value="#stText.Buttons.Update#">
 				<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Verify#">

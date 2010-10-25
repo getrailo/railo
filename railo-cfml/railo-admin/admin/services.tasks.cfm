@@ -8,9 +8,6 @@
 <cfparam name="form.mainAction" default="none">
 <cfparam name="session.taskRange" default="10">
 <cfparam name="form.subAction" default="none">
-
-
-
 <cfparam name="url.startrow" default="1">
 <cfparam name="url.maxrow" default="100">
 
@@ -83,7 +80,7 @@
 			</cfif>
 		</cfcase>
 	</cfswitch>
-	<cfcatch>
+	<cfcatch><cfrethrow>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>
@@ -385,12 +382,12 @@ function selectAll(field) {
         	<table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
             	<td width="100">
-                <cfif url.startrow GT 1><a href="#request.self#?action=#url.action#&startrow=#startrow-url.maxrow#" class="comment"><img src="resources/img/arrow-left.gif.cfm" border="0" hspace="4">#stText.remote.previous#</a><cfelse>&nbsp;</cfif>
+                <cfif url.startrow GT 1><a href="#request.self#?action=#url.action#&startrow=#startrow-url.maxrow#" class="comment"><cfmodule template="img.cfm" src="arrow-left.gif" border="0" hspace="4">#stText.remote.previous#</a><cfelse>&nbsp;</cfif>
                 
                 </td>
             	<td align="center"><span class="comment">#url.startrow# #stText.remote.to# #to# #stText.remote.from# #result.open+result.closed#</span></td>
             	<td width="100" align="right">
-                <cfif to LT result.open+result.closed><a href="#request.self#?action=#url.action#&startrow=#startrow+url.maxrow#" class="comment">#stText.remote.next#<img src="resources/img/arrow-right.gif.cfm" border="0" hspace="4"></a><cfelse>&nbsp;</cfif>
+                <cfif to LT result.open+result.closed><a href="#request.self#?action=#url.action#&startrow=#startrow+url.maxrow#" class="comment">#stText.remote.next#<cfmodule template="img.cfm" src="arrow-right.gif" border="0" hspace="4"></a><cfelse>&nbsp;</cfif>
                 </td>
             </tr>
             </table>
@@ -426,7 +423,7 @@ function selectAll(field) {
 		<tr>
 			<td><input type="checkbox" class="checkbox" name="row_#tasks.currentrow#" value="#tasks.currentrow#"></td>
 			<td><a href="#request.self#?action=#url.action#&action2=edit&id=#tasks.id#">
-			<img hspace="2" src="resources/img/edit.png.cfm" border="0"></a></td>
+			<cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
 		</tr>
 		</table>
 		</td>
@@ -459,7 +456,7 @@ function selectAll(field) {
 						<span class="CheckOk">#stVeritfyMessages[tasks.id].label#</span>
 					<cfelse>
 						<span class="CheckError" title="#stVeritfyMessages[tasks.id].message##Chr(13)#">#stVeritfyMessages[tasks.id].label#</span>
-						&nbsp;<img src="#cgi.context_path#/railo-context/admin/resources/img/red-info.gif.cfm" 
+						&nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
 							width="9" 
 							height="9" 
 							border="0" 
@@ -481,12 +478,12 @@ function selectAll(field) {
 		 <table border="0" cellpadding="0" cellspacing="0">
 		 <tr>
 			<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-			<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="20"></td>
+			<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="20"></td>
 			<td></td>
 		 </tr>
 		 <tr>
 			<td></td>
-			<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
+			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 			<td>&nbsp;
 			<cfoutput>
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">

@@ -1,7 +1,0 @@
-
-		<cfapplication name="webadmin" 
-		sessionmanagement="yes" 
-		clientmanagement="no" 
-		setclientcookies="yes" 
-		setdomaincookies="no"><cfsetting showdebugoutput="no"><cfcontent type="image/gif" content="#evaluateJava('rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAEfR0lGODlhCQAQANUiAJbFXJ7WXqTmYGRYTGdaTnV5UnJ0UKTkYHuFVKHgX5nPXYSlVKLhYKbrYaLfYHeIUHmNUYKdVI+3WZrRXXmBU5nKXYeiV57XXqHdX3eBU3iDUpfLW25rUGVjSXBuUWltSltORaz2Y////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAACIALAAAAAAJABAAAAY8wFBIsFl8REihcgIBiZTKxuMJFSY6VWUkK1RwQ4zv5Sv5ariAQRZjoCoBGWTg4KhYOEhRAUHxEPKAgSJBADs=')#">
-	

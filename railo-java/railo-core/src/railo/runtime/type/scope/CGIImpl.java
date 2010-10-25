@@ -54,6 +54,11 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	private static final Collection.Key REMOTE_HOST = KeyImpl.getInstance("remote_host");
 	private static final Collection.Key REQUEST_METHOD = KeyImpl.getInstance("request_method");
 	private static final Collection.Key REQUEST_URI = KeyImpl.getInstance("request_uri");
+	private static final Collection.Key REDIRECT_URL = KeyImpl.getInstance("REDIRECT_URL");
+	private static final Collection.Key REDIRECT_QUERY_STRING = KeyImpl.getInstance("REDIRECT_QUERY_STRING");
+	
+	
+	
 	private static final Collection.Key LOCAL_ADDR = KeyImpl.getInstance("local_addr");
 	private static final Collection.Key LOCAL_HOST = KeyImpl.getInstance("local_host");
 	private static final Collection.Key SERVER_NAME = KeyImpl.getInstance("server_name");
@@ -148,6 +153,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 
 		if(req==null) {
 			req=pc. getHttpServletRequest();
+			
 			Enumeration e = req.getHeaderNames();
 			https=new StructImpl();
 			headers=new StructImpl();
@@ -193,7 +199,24 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
                 if(key.equals(REMOTE_HOST))		return toString(req.getRemoteHost());
                 if(key.equals(REQUEST_METHOD))		return req.getMethod();
                 if(key.equals(REQUEST_URI))		return toString(req.getAttribute("javax.servlet.include.request_uri"));
+                if(key.getUpperString().startsWith("REDIRECT_")){
+                	// from attributes (key sensitive)
+                	Object value = req.getAttribute(key.getString());
+                	if(!StringUtil.isEmpty(value)) return toString(value);
+                	
+                	// from attributes (key insensitive)
+                	Enumeration<String> names = req.getAttributeNames();
+            		String k;
+            		while(names.hasMoreElements()){
+            			k=names.nextElement();
+            			if(k.equalsIgnoreCase(key.getString())) {
+            				return toString(req.getAttribute(k));
+            			}
+            		}
+                }
             }
+            
+            
             else if(first=='l') {
                 if(key.equals(LOCAL_ADDR))		return toString(localAddress);
                 if(key.equals(LOCAL_HOST))		return toString(localHost);

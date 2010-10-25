@@ -83,7 +83,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		boolean needsSession,
 		int bufferSize,
 		boolean autoflush) {
-			return getPageContextImpl((HttpServlet)servlet,(HttpServletRequest)req,(HttpServletResponse)rsp,errorPageURL,needsSession,bufferSize,autoflush,true);
+			return getPageContextImpl((HttpServlet)servlet,(HttpServletRequest)req,(HttpServletResponse)rsp,errorPageURL,needsSession,bufferSize,autoflush,true,false);
 	}
 	
 	/**
@@ -108,7 +108,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		boolean autoflush)  {
         //runningCount++;
         synchronized (pcs) {
-            return getPageContextImpl(servlet, req, rsp, errorPageURL, needsSession, bufferSize, autoflush,true);
+            return getPageContextImpl(servlet, req, rsp, errorPageURL, needsSession, bufferSize, autoflush,true,false);
         }
 	}
 	
@@ -119,18 +119,18 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		        String errorPageURL,
 				boolean needsSession,
 				int bufferSize,
-				boolean autoflush,boolean registerPageContext2Thread)  {
+				boolean autoflush,boolean registerPageContext2Thread,boolean isChild)  {
 		        //runningCount++;
 				PageContextImpl pc;
         		synchronized (pcs) {
-		            if(pcs.isEmpty()) pc=new PageContextImpl(scopeContext,config,queryCache,idCounter++);
+		            if(pcs.isEmpty()) pc=new PageContextImpl(scopeContext,config,queryCache,idCounter++,servlet);
 		            else pc=((PageContextImpl)pcs.pop());
 		            runningPcs.setEL(ArgumentIntKey.init(pc.getId()),pc);
 		            this.servlet=servlet;
 		            if(registerPageContext2Thread)ThreadLocalPageContext.register(pc);
 		    		
 		        }
-		        pc.initialize(servlet,req,rsp,errorPageURL,needsSession,bufferSize,autoflush);
+		        pc.initialize(servlet,req,rsp,errorPageURL,needsSession,bufferSize,autoflush,isChild);
 		        return pc;
 			}
 

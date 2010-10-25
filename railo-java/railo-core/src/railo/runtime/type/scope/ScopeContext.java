@@ -72,7 +72,7 @@ public final class ScopeContext {
 	 */
 	public static Server getServerScope(PageContext pc) {
 	    if(server==null) {
-	        server=new ServerImpl();
+	        server=new ServerImpl(pc);
 	    }
 		return server;
 	}

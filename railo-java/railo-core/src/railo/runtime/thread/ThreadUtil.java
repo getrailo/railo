@@ -23,7 +23,7 @@ import railo.runtime.type.Struct;
 public class ThreadUtil {
 	
 
-	public static  PageContextImpl clonePageContext(PageContext pc, OutputStream os, boolean stateless,boolean registerPC)  {
+	public static  PageContextImpl clonePageContext(PageContext pc, OutputStream os, boolean stateless,boolean registerPC,boolean isChild)  {
 		// TODO stateless
 		CFMLFactoryImpl factory = (CFMLFactoryImpl) ((ConfigImpl)pc.getConfig()).getFactory();
         HttpServletRequest	req=new HTTPServletRequestWrap(cloneHttpServletRequest(pc));
@@ -32,7 +32,7 @@ public class ThreadUtil {
         
         // copy state
         PageContextImpl pci = (PageContextImpl) pc;
-		PageContextImpl dest = factory.getPageContextImpl(factory.getServlet(), req, rsp, null, false, -1, false,registerPC);
+		PageContextImpl dest = factory.getPageContextImpl(factory.getServlet(), req, rsp, null, false, -1, false,registerPC, isChild);
 		pci.copyStateTo(dest);
 		return dest;
 	}

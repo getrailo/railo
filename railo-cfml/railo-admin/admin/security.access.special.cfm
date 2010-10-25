@@ -86,7 +86,7 @@ Overview
 				<td><input type="checkbox" class="checkbox" name="ids_#contextes.currentrow#" value="#contextes.id#">
 				</td>
 				<td><a href="#go(url.action,"edit",struct(id:contextes.id))#">
-			<img hspace="2" src="resources/img/edit.png.cfm" border="0"></a></td>
+			<cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
 			</tr>
 			</table>
 			</td>
@@ -101,12 +101,12 @@ Overview
 			 <table border="0" cellpadding="0" cellspacing="0">
 			 <tr>
 				<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-				<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="20"></td>
+				<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="20"></td>
 				<td></td>
 			 </tr>
 			 <tr>
 				<td></td>
-				<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
+				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 				<td>&nbsp;
 				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">

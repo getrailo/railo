@@ -87,10 +87,10 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			if(parent!=null){
 				output = new ByteArrayOutputStream();
 				try{
-					this.parent=ThreadUtil.clonePageContext(parent, output,false,false);
+					this.parent=ThreadUtil.clonePageContext(parent, output,false,false,true);
 				}
 				catch(ConcurrentModificationException e){// MUST search for:hhlhgiug
-					this.parent=ThreadUtil.clonePageContext(parent, output,false,false);
+					this.parent=ThreadUtil.clonePageContext(parent, output,false,false,true);
 				}
 				//this.parent=parent;
 			}

@@ -1,10 +1,6 @@
 <cfoutput>
 #stText.Overview.introdesc[request.adminType]#
 <br />
-<cfif server.ColdFusion.ProductLevel EQ "develop" or server.ColdFusion.ProductLevel EQ "community">
-<!--- <a href="http://www.railo.ch/direct/purchase.cfm?language=#session.railo_admin_lang#" target="_blank" title="#stText.Overview.purchase#"><cfmodule template="img.cfm" src="purchase.gif" width="105" height="29" style="margin:10px 0px 10px 470px;" /></a>--->
-</cfif>
-
   
 <h2>#stText.Overview.Info#</h2>
 <table class="tbl">
@@ -59,7 +55,14 @@
 	<td class="tblHead" width="150">#stText.Overview.server_name#</td>
 	<td class="tblContent" width="571">#cgi.server_name#</td>
 </tr>
-
+<tr>
+	<td class="tblHead" width="150">#stText.overview.servletContainer#</td>
+	<td class="tblContent" width="571">#server.servlet.name#</td>
+</tr>
+<tr>
+	<td class="tblHead" width="150">#stText.overview.railoID#</td>
+	<td class="tblContent" width="571">#getRailoId().server.id#</td>
+</tr>
 
 <tr>
 	<td class="tblHead" width="150">#stText.Overview.InstalledTLs#</td>
@@ -178,25 +181,44 @@
 	<td class="tblContent" width="571"><a href="http://www.railo-technologies.com/blog/" target="_blank">railo-technologies.com.blog</a></td>
 </tr>
 
-
-
-<!---
-<tr>
-	<td class="tblHead" width="150">#stText.Overview.ContactInfo#</td>
-	<td class="tblContent" width="400"><a href="mailto:info@railo.ch">#stText.Overview.InfoMail#</a></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">#stText.Overview.Sales#</td>
-	<td class="tblContent" width="400"><a href="mailto:sale@railo.ch">#stText.Overview.SalesMail#</a></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">#stText.Overview.BugReport#</td>
-	<td class="tblContent" width="400"><a href="mailto:bug.report@railo.ch">#stText.Overview.BugReportMail#</a></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">#stText.Overview.FeatureRequest#</td>
-	<td class="tblContent" width="400"><a href="mailto:feature.request@railo.ch">#stText.Overview.FeatureRequestMail#</a></td>
-</tr>
---->
 </table>
+
+<cfif request.admintype EQ "server">
+	<h2>#stText.Overview.LanguageSupport#</h2>
+	<!--- this comes then the form has been filled out and uploaded --->
+	<cfinclude template="overview.uploadNewLangFile.cfm">
+	<table class="tbl">
+		<tr>
+			<td class="tblHead" width="150">#stText.Overview.ShortLabel#</td>
+			<td class="tblHead" width="400">#stText.Overview.LanguageName#</td>
+		</tr>
+		<cfset stLangs = readLanguages()>
+		<cfset aLangs = structKeyArray(stLangs)>
+		<cfset arraySort(aLangs, "text")>
+		<cfloop array="#aLangs#" index="sKey">
+			<tr>
+				<td class="tblContent" width="150">#sKey#</td>
+				<td class="tblContent" width="400">#stLangs[sKey]#</td>
+			</tr>
+		</cfloop>
+		<tr>
+			<td class="tblHead">#stText.Overview.AddNewLanguage#</td>
+			<form action="#cgi.script_name#?#cgi.query_string#" method="post" enctype="multipart/form-data">
+			<td class="tblContent"><input type="File" name="newLangFile"><br>
+			<input type="submit" value="#stText.Overview.Submit#"></td>
+			</form>
+		</tr>
+	</table>
+</cfif>
 </cfoutput>
+
+<cffunction name="readLanguages" output="No" returntype="struct">
+	<cfdirectory name="local.getLangs" directory="resources/language/" action="list" mode="listnames" filter="*.xml">
+	<cfset var stRet = {}>
+	<cfloop query="getLangs">
+		<cffile action="read" file="resources/language/#getLangs.name#" variable="local.sContent">
+		<cfset local.sXML = XMLParse(sContent)>
+		<cfset stRet[sXML.language.XMLAttributes.Key] = sXML.language.XMLAttributes.label>
+	</cfloop>
+	<cfreturn stRet>
+</cffunction>

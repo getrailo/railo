@@ -24,10 +24,13 @@
 	</cfif>
 </cfif>
 
-<cfinclude template="resources/text.cfm">
-<!--- Includes the Menu --->
-<cfinclude template="resources/#session.railo_admin_lang#/res_menu.cfm">
+<cfif not StructKeyExists(session,'railo_admin_lang')>
+	<cfset session.railo_admin_lang ='en'>
+</cfif>
 </cfsilent>
+<cfinclude template="resources/text.cfm">
+
+
 <cfset request.self = request.adminType & ".cfm">
 <!--- includes several functions --->
 <cfinclude template="web_functions.cfm">
@@ -36,40 +39,43 @@
 <!--- Load Plugins --->
 <cfset plugins=array()>
 <cfif StructKeyExists(session,"password"&request.adminType)>
-<cftry><cfadmin 
-    action="getPluginDirectory"
-    type="#request.adminType#"
-    password="#session["password"&request.adminType]#"
-    returnVariable="pluginDir">	
-    
-<cfset mappings['/railo_plugin_directory/']=pluginDir>
-<cfapplication action="update" mappings="#mappings#">
-
-
-	<cfdirectory directory="#plugindir#" action="list" name="plugindirs" recurse="no">
-    
-	<cfcatch >
-		<cfset plugindirs=queryNew('name')>
-	</cfcatch>
-</cftry>
-
-<cfloop query="plugindirs">
-	<cfif plugindirs.type EQ "dir">
-		<cfset varTitle="application.pluginlanguage[session.railo_admin_lang][plugindirs.name].title">
-		<cfset item=struct(
-			label:iif(isDefined(varTitle),(varTitle),de(plugindirs.name)),
-			action:plugindirs.name,
-			_action:'plugin&plugin='&plugindirs.name
-		)>
-		<cfset plugins[arrayLen(plugins)+1]=item>
-	</cfif>
-</cfloop>
-<cfset plugin=struct(
-	label:"Plugin",
-	children:plugins,
-	action:"plugin"
-)>
+	<cftry><cfadmin 
+	    action="getPluginDirectory"
+	    type="#request.adminType#"
+	    password="#session["password"&request.adminType]#"
+	    returnVariable="pluginDir">	
+	    
+	<cfset mappings['/railo_plugin_directory/']=pluginDir>
+	<cfapplication action="update" mappings="#mappings#">
+	
+	
+		<cfdirectory directory="#plugindir#" action="list" name="plugindirs" recurse="no">
+	    
+		<cfcatch >
+			<cfset plugindirs=queryNew('name')>
+		</cfcatch>
+	</cftry>
+	
+	<cfloop query="plugindirs">
+		<cfif plugindirs.type EQ "dir">
+			<cfset varTitle="application.pluginlanguage[session.railo_admin_lang][plugindirs.name].title">
+			<cfset item=struct(
+				label:iif(isDefined(varTitle),(varTitle),de(plugindirs.name)),
+				action:plugindirs.name,
+				_action:'plugin&plugin='&plugindirs.name
+			)>
+			<cfset plugins[arrayLen(plugins)+1]=item>
+		</cfif>
+	</cfloop>
+	<cfset plugin=struct(
+		label:"Plugin",
+		children:plugins,
+		action:"plugin"
+	)>
 </cfif>
+
+<cfsavecontent variable="arrow"><cfmodule template="img.cfm" src="arrow.gif" width="4" height="7" /></cfsavecontent>
+
 <cfscript>
 
 isRestrictedLevel=server.ColdFusion.ProductLevel EQ "community" or server.ColdFusion.ProductLevel EQ "professional";
@@ -79,12 +85,12 @@ isRestricted=isRestrictedLevel and request.adminType EQ "server";
 // Navigation
 // As a Set of Array and Structures, so that it is sorted
 navigation = stText.MenuStruct;
-if(arrayLen(plugins))navigation[arrayLen(navigation)+1]=plugin;
+
+if(arrayLen(plugins) and navigation[arrayLen(navigation)].action neq "plugin")navigation[arrayLen(navigation)+1]=plugin;
 
 context=''; 
 // write Naviagtion
 strNav='';
-arrow='<img src="resources/img/arrow.gif.cfm"  width="4" height="7" />';
 current.label="Overview";
 if(isDefined("url.action"))current.action=url.action;
 else current.action="overview";

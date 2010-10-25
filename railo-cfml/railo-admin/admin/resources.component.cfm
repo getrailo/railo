@@ -445,12 +445,12 @@ Use Shadow --->
 		 <table border="0" cellpadding="0" cellspacing="0">
 		 <tr>
 			<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-			<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="10"></td>
+			<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="10"></td>
 			<td></td>
 		 </tr>
 		 <tr>
 			<td></td>
-			<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
+			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 			<td>&nbsp;
 			<input type="hidden" name="mainAction" value="#stText.Buttons.Update#">
 			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Update#">

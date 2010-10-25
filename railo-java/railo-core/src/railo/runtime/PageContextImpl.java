@@ -267,6 +267,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	
 
 	private ORMSession ormSession;
+	private boolean isChild;
 
 	public long sizeOf() {
 		
@@ -325,9 +326,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @param queryCache Query Cache Object
 	 * @param id identity of the pageContext
 	 */
-	public PageContextImpl(ScopeContext scopeContext, ConfigWebImpl config, QueryCache queryCache,int id) {
+	public PageContextImpl(ScopeContext scopeContext, ConfigWebImpl config, QueryCache queryCache,int id,HttpServlet servlet) {
 		// must be first because is used after
-        this.id=id;
+
+        this.servlet=servlet;
+		this.id=id;
 		//this.factory=factory;
 		
         bodyContentStack=new BodyContentStack();
@@ -367,9 +370,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			 String errorPageURL, 
 			 boolean needsSession, 
 			 int bufferSize, 
-			 boolean autoFlush) {
+			 boolean autoFlush,boolean isChild) {
 		requestId=counter++;
 		rsp.setContentType("text/html; charset=UTF-8");
+		
+		this.isChild=isChild;
 		
         //rsp.setHeader("Connection", "close");
         applicationContext=defaultApplicationContext;
@@ -472,6 +477,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         
         // Scopes
         if(hasFamily) {
+        	if(!isChild){
+        		req.disconnect();
+        	}
         	/*if(!isChild && threads!=null){
                	synchronized (threads) {
                		print.ds("isChild:"+isChild);
@@ -833,11 +841,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
     	
     	// scopes
-    	other.req.setAttributes(request);
+    	//other.req.setAttributes(request);
     	/*HttpServletRequest org = other.req.getOriginalRequest();
     	if(org instanceof HttpServletRequestDummy) {
     		((HttpServletRequestDummy)org).setAttributes(request);
     	}*/
+    	other.req=req;
     	other.request=request;
     	other.form=form;
     	other.url=url;
