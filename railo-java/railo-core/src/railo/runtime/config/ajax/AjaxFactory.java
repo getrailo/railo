@@ -3,6 +3,7 @@ package railo.runtime.config.ajax;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.config.ConfigWebFactory;
+import railo.runtime.config.ConfigWebUtil;
 
 public class AjaxFactory {
 
@@ -40,12 +41,12 @@ public static void deployTags(Resource dir, boolean doNew) {
         f = dir.getRealResource("LayoutArea.cfc");
         if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/LayoutArea.cfc",f);
         f = dir.getRealResource("Window.cfc");
-        if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/Window.cfc",f);
+        if(!f.exists() || doNew){
+        	//String md5 = ConfigWebUtil.createMD5FromResource(f);
+        	ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/Window.cfc",f);
+        }
         
-        //f = dir.getRealResource("JavaScript.cfc");
-        //if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/JavaScript.cfc",f);
-        //f = dir.getRealResource("StyleSheet.cfc");
-        //if(!f.exists() || doNew)ConfigWebFactory.createFileFromResourceEL("/resource/library/tag/StyleSheet.cfc",f);
+        
         
         
         // helper files

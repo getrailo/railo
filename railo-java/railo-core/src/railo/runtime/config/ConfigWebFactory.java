@@ -88,6 +88,7 @@ import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionImpl;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
+import railo.runtime.functions.string.Hash;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
@@ -839,17 +840,7 @@ public final class ConfigWebFactory {
     	}
     }
     
-    static String createMD5FromResource(Resource resource) throws IOException {
-    	InputStream is=null;
-    	try{
-    		is=resource.getInputStream();	
-    		byte[] barr = IOUtil.toBytes(is);
-    		return MD5.getDigestAsString(barr);
-    	}
-    	finally{
-    		IOUtil.closeEL(is);
-    	}
-    }
+   
     
     static String createContentFromResource(Resource resource) throws IOException {
     	return IOUtil.toString(resource,null);
@@ -1005,7 +996,7 @@ public final class ConfigWebFactory {
 	    
 	    if(!f.exists())
 	    	createFileFromResourceEL("/resource/context/Component.cfc",f);
-	    else if(doNew && badVersion.equals(createMD5FromResource(f))){
+	    else if(doNew && badVersion.equals(ConfigWebUtil.createMD5FromResource(f))){
 	    	createFileFromResourceEL("/resource/context/Component.cfc",f);
 	    }
 	    else if(doNew && badContent.equals(createContentFromResource(f).trim())){
