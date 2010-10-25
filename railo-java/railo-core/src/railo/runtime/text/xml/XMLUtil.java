@@ -49,6 +49,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.XMLException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.text.xml.struct.XMLMultiElementStruct;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.text.xml.struct.XMLStructFactory;
@@ -530,7 +531,28 @@ public final class XMLUtil {
 				return XMLStructFactory.newInstance(node,caseSensitive);
 			}
 		}
+		else if(node.getNodeType()==Node.ELEMENT_NODE && Decision.isInteger(k)){
+			int index=Caster.toIntValue(k,0);
+			int count=0;
+			Node parent = node.getParentNode();
+			String nodeName=node.getNodeName();
+			Element[] children = XMLUtil.getChildElementsAsArray(parent);
+				
+			for(int i=0;i<children.length;i++){
+				if(XMLUtil.nameEqual(children[i],nodeName,caseSensitive)) count++;
+				
+				if(count==index) return XMLCaster.toXMLStruct(children[i],caseSensitive);
+			}
+			String detail;
+			if(count==0)detail="there are no Elements with this name";
+			else if(count==1)detail="there is only 1 Element with this name";
+			else detail="there are only "+count+" Elements with this name";
+			throw new SAXException("invalid index ["+k.getString()+"] for Element with name ["+node.getNodeName()+"], "+detail);
+		}
 		else {	
+			
+			
+			
 			XMLNodeList xmlNodeList=new XMLNodeList(node,caseSensitive);
 			Array array=new ArrayImpl();
 			
@@ -559,7 +581,7 @@ public final class XMLUtil {
 			} 
             catch (ExpressionException e) {}
 		}
-		throw new SAXException("Attribute ["+k.getString()+"] not found in XML Node ("+Caster.toClassName(node)+")");
+		throw new SAXException("Attribute ["+k.getString()+"] not found");
 	}
 
 
