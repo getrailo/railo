@@ -284,7 +284,6 @@
 							#server.coldfusion.productname#
 							#uCaseFirst(server.coldfusion.productlevel)# 
 							#uCase(server.railo.state)#
-							<cfif server.coldfusion.productcontextcount NEQ "inf">(#server.coldfusion.productcontextcount#)</cfif>
 							#server.railo.version#
 							(CFML Version #server.ColdFusion.ProductVersion#)</b>
 							</td>
@@ -603,11 +602,11 @@ function uCaseFirst(String str) {
 		<cfset sSql = Replace(sSql, "#CHR(13)# #CHR(13)#", CHR(13), "ALL")>
 	</cfloop>
 	<cfset sSql = Replace(sSql, "#CHR(13)# #CHR(13)#", CHR(13), "ALL")>
-	<cfset aWords = array('select','from','where','order by','group by','having')>
+	<cfset var aWords = array('select','from','where','order by','group by','having')>
 	<cfloop collection="#aWords#" item="sWord">
 		<cfset sSql = ReplaceNoCase(sSQL, aWords[sWord], "#UCase(aWords[sWord])##chr(9)#", "ALL")>
 	</cfloop>
-	<cfset stRet = StructNew()>
+	<cfset var stRet = StructNew()>
 	<cfset stRet.sSql        = Trim(sSql)>
 	<cfset stRet.Executeable = True>
 	<cfset aWords = array("drop ,delete ,update ,insert ,alter database ,alter table ")>
