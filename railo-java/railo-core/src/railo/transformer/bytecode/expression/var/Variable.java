@@ -164,7 +164,7 @@ public class Variable extends ExpressionBase implements Invoker {
     	}
     	
 		rtn=_writeOutFirst(bc, ((Member)members.get(0)),mode,count==1,doOnlyScope);
-
+		
 		// pc.get(
 		for(int i=doOnlyScope?0:1;i<count;i++) {
 			Member member=((Member)members.get(i));
@@ -335,7 +335,7 @@ public class Variable extends ExpressionBase implements Invoker {
 		// pc.getFunction (Object,String,Object[])
 	    // pc.getFunctionWithNamedValues (Object,String,Object[])
 		adapter.loadArg(0);
-		adapter.loadArg(0);
+		if(!doOnlyScope)adapter.loadArg(0);
 		Type rtn = TypeScope.invokeScope(adapter, scope);
 		if(doOnlyScope) return rtn;
 		
@@ -348,7 +348,9 @@ public class Variable extends ExpressionBase implements Invoker {
 	}
 
 	static Type _writeOutFirstDataMember(BytecodeContext bc, DataMember member, int scope, boolean last, boolean doOnlyScope) throws BytecodeException {
-    	GeneratorAdapter adapter = bc.getAdapter();
+    	
+		
+		GeneratorAdapter adapter = bc.getAdapter();
 		adapter.loadArg(0);
 		Type rtn = TypeScope.invokeScope(adapter, scope);
 		if(doOnlyScope) return rtn;

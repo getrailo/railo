@@ -86,13 +86,13 @@ public class CustomTagUtil {
 	    	}
 	        
 	    	// cache application mapping
-	        for(int i=0;i<actms.length;i++){
+	        if(actms!=null)for(int i=0;i<actms.length;i++){
 	        	initFile=config.getCTInitFile(pc,"application:"+actms[i].hashCode()+"/"+name);
 	        	if(initFile!=null)return initFile;
 	        }
 	        
 	    	// cache config mapping
-	        for(int i=0;i<cctms.length;i++){
+	        if(cctms!=null)for(int i=0;i<cctms.length;i++){
 	        	initFile=config.getCTInitFile(pc,"config:"+cctms[i].hashCode()+"/"+name);
 	        	if(initFile!=null)return initFile;
 	        }

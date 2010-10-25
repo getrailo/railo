@@ -1,10 +1,13 @@
 package railo.runtime.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
+import railo.commons.digest.MD5;
+import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
@@ -371,7 +374,18 @@ public final class ConfigWebUtil {
             throw new SecurityException("no acccess, password is invalid");
         }
     }
-
+    
+    public static String createMD5FromResource(Resource resource) throws IOException {
+    	InputStream is=null;
+    	try{
+    		is=resource.getInputStream();	
+    		byte[] barr = IOUtil.toBytes(is);
+    		return MD5.getDigestAsString(barr);
+    	}
+    	finally{
+    		IOUtil.closeEL(is);
+    	}
+    }
     
     
 }

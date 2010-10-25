@@ -26,6 +26,7 @@ import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.cast.CastDouble;
@@ -115,6 +116,7 @@ public final class ASMUtil {
 	/**
 	 * get ancestor LoopStatement 
 	 * @param stat
+	 * @param ingoreScript 
 	 * @return
 	 */
 	public static FlowControl getAncestorFlowControlStatement(Statement stat) {
@@ -123,6 +125,13 @@ public final class ASMUtil {
 			parent=parent.getParent();
 			if(parent==null)return null;
 			if(parent instanceof FlowControl)	{
+				if(parent instanceof ScriptBody){
+					FlowControl scriptBodyParent = getAncestorFlowControlStatement(parent);
+					if(scriptBodyParent!=null) return scriptBodyParent;
+					return (FlowControl)parent;
+				}
+				
+				
 				return (FlowControl) parent;
 			}
 		}

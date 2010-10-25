@@ -1695,7 +1695,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			
 			if(getConfig().getErrorStatusCode())rsp.setStatus(statusCode);
 			
-			
 			ErrorPage ep=errorPagePool.getErrorPage(pe);
 			ExceptionHandler.printStackTrace(this,pe);
 			ExceptionHandler.log(getConfig(),pe);
@@ -1707,10 +1706,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 					doInclude(ep.getTemplate());
 					return;
 				} catch (Throwable t) {
+					if(t instanceof Abort) return;
 					pe=Caster.toPageException(t);
 				}
 				
 			}
+			
 			try {
 				if(statusCode!=404)
 					forceWrite("<!-- Railo ["+Info.getVersionAsString()+"] Error -->");
