@@ -3,7 +3,6 @@ package railo.runtime.config.ajax;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.config.ConfigWebFactory;
-import railo.runtime.config.ConfigWebUtil;
 
 public class AjaxFactory {
 
