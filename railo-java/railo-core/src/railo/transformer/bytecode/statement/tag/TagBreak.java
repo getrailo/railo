@@ -29,9 +29,10 @@ public final class TagBreak extends TagBase {
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 
-		FlowControl ls = ASMUtil.getAncestorFlowControlStatement(this);
-		if(ls!=null)
-			bc.getAdapter().visitJumpInsn(Opcodes.GOTO, ls.getBreakLabel());
+		FlowControl fc = ASMUtil.getAncestorFlowControlStatement(this);
+		
+		if(fc!=null)
+			bc.getAdapter().visitJumpInsn(Opcodes.GOTO, fc.getBreakLabel());
 		else throw new BytecodeException("break must be inside a loop (for,while,do-while,<cfloop>,<cfwhile> ...)",getLine());
 	}
 	
