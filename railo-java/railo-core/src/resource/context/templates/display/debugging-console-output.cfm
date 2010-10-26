@@ -77,9 +77,13 @@
 	<cfset sError = "">
 	<cfset iTimer = GetTickCount()>
 	<cftry>
-		<cfquery name="qry" datasource="#form.datasource#" psq="no">
-			#form.sql#
-		</cfquery>
+		<cfif FindListNoCase("INSERT ,DROP , DELETE ,ALTER ,UPDATE ,CREATE ,DROP ,REVOKE ,GRANT ", form.sql)>
+			<cfthrow message="Query is not executable">
+		<cfelse>
+			<cfquery name="qry" datasource="#form.datasource#" psq="no" result="result">
+				#form.sql#
+			</cfquery>
+		</cfif>
 		<cfset iTimer = GetTickCount() - iTimer>
 		<cfcatch type="Database">
 			<cfsavecontent variable="sError">
@@ -96,14 +100,26 @@
 		</table>
 		#sError#
 	<cfelse>
-		<tr>
-			<td class="tdhead">Serialized Result:</td>
-			<td class="tddetail">#serialize(qry)#</td>
-		</tr>
+		<cftry>
+			<tr>
+				<td class="tdhead">Serialized Result:</td>
+				<td class="tddetail">#serialize(qry)#</td>
+			</tr>
+			<cfcatch></cfcatch>
+		</cftry>
 		</table>
 		<br><br>
-		Records of executed query:<br>
-		<cfdump var="#qry#" label="#form.queryName#">
+		<cftry>
+			<cfsavecontent variable="susi">
+				Records of executed query:<br>
+				<cfdump var="#qry#" label="#form.queryName#">
+			</cfsavecontent>
+			<cfoutput>#susi#</cfoutput>
+			<cfcatch>
+				No records in the resultset, update or insert statement...<br>
+				<cfdump var="#result#" label="#form.queryName#">
+			</cfcatch>
+		</cftry>
 		Execution time: #iTimer#ms
 	</cfif>
 	</cfoutput>
@@ -433,7 +449,6 @@ function uCaseFirst(String str) {
 							#server.coldfusion.productname#
 							#uCaseFirst(server.coldfusion.productlevel)# 
 							#uCase(server.railo.state)#
-							<cfif server.coldfusion.productcontextcount NEQ "inf">(#server.coldfusion.productcontextcount#)</cfif>
 							#server.railo.version#
 							(CFML Version #server.ColdFusion.ProductVersion#)</b>
 							</td>
@@ -564,4 +579,17 @@ function uCaseFirst(String str) {
 		if (getCookie('TIMERTIMES') == '1') { toggleObject(document.getElementById('timerTimesImage'),document.getElementById('TIMERTIMES'), 1); }
 	</script>
 	</cfoutput>
+</cffunction>
+
+<cffunction name="FindListNoCase" returntype="numeric" output="No">
+	<cfargument name="lstElements" required="Yes" type="string">
+	<cfargument name="sString" required="Yes" type="string">
+	<cfset var iFound = 0>
+	<cfloop list="#arguments.lstElements#" index="local.lst">
+		<cfset iFound = FindNoCase(lst, arguments.sString)>
+		<cfif iFound neq 0>
+			<cfbreak>
+		</cfif>
+	</cfloop>
+	<cfreturn iFound>
 </cffunction>
