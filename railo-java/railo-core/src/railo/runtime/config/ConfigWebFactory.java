@@ -1115,7 +1115,14 @@ public final class ConfigWebFactory {
             f=dir.getRealResource("MailWatcherListener.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/gateway/MailWatcherListener.cfc",f);
 	        
-	        
+        // resources/language
+            Resource langDir = adminDir.getRealResource("resources/language");
+            langDir.mkdirs();
+            f=langDir.getRealResource("en.xml");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/resources/language/en.xml",f);
+            
+            f=langDir.getRealResource("de.xml");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/resources/language/de.xml",f);
 
         // G DRIVER
             Resource gDir = adminDir.getRealResource("gdriver");
