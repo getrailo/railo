@@ -284,7 +284,6 @@
 							#server.coldfusion.productname#
 							#uCaseFirst(server.coldfusion.productlevel)# 
 							#uCase(server.railo.state)#
-							<cfif server.coldfusion.productcontextcount NEQ "inf">(#server.coldfusion.productcontextcount#)</cfif>
 							#server.railo.version#
 							(CFML Version #server.ColdFusion.ProductVersion#)</b>
 							</td>
@@ -596,21 +595,21 @@ function uCaseFirst(String str) {
 </cfscript>
 <cffunction name="ReplaceSQLStatements" output="No" returntype="struct">
 	<cfargument name="sSql" required="Yes" type="string">
-	<cfset sSql = Replace(arguments.sSql, Chr(9), " ", "ALL")>
-	<cfloop from="1" to="3" index="i">
+	<cfset var sSql = Replace(arguments.sSql, Chr(9), " ", "ALL")>
+	<cfset var aWords = ['select','from','where','order by','group by','having']>
+	<cfloop from="1" to="3" index="local.i">
 		<cfset sSql = Replace(sSql, "  ", " ", "ALL")>
 		<cfset sSql = Replace(sSql, Chr(10), "", "ALL")>
 		<cfset sSql = Replace(sSql, "#CHR(13)# #CHR(13)#", CHR(13), "ALL")>
 	</cfloop>
 	<cfset sSql = Replace(sSql, "#CHR(13)# #CHR(13)#", CHR(13), "ALL")>
-	<cfset aWords = array('select','from','where','order by','group by','having')>
-	<cfloop collection="#aWords#" item="sWord">
+	<cfloop collection="#aWords#" item="local.sWord">
 		<cfset sSql = ReplaceNoCase(sSQL, aWords[sWord], "#UCase(aWords[sWord])##chr(9)#", "ALL")>
 	</cfloop>
-	<cfset stRet = StructNew()>
+	<cfset local.stRet       = {}>
 	<cfset stRet.sSql        = Trim(sSql)>
 	<cfset stRet.Executeable = True>
-	<cfset aWords = array("drop ,delete ,update ,insert ,alter database ,alter table ")>
+	<cfset aWords = ["drop ,delete ,update ,insert ,alter database ,alter table "]>
 	<cfloop collection="#aWords#" item="sWord">
 		<cfif FindNoCase(aWords[sWord], sSql)>
 			<cfset stRet.Executeable = False>
