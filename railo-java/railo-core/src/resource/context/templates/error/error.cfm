@@ -67,6 +67,7 @@ function oc(id) {
 		The Error Occurred in<br />
 		<cfloop index="idx" from="1" to="#len#">
 			<cfset tc=catch.tagcontext[idx]>
+			<cfparam name="tc.codeprinthtml" default="">
 		<cfif len(tc.codeprinthtml)>
 		<img src="#cgi.context_path#/railo-context/admin/resources/img/debug_#iif(idx EQ 1,de('minus'),de('plus'))#.gif.cfm" 
 			style="margin-top:2px;" 
