@@ -8,8 +8,8 @@ import railo.runtime.exp.PageException;
  * Handle Page Errors
  */
 public final class ErrorPagePool {
-	
-	private ArrayList pages=new ArrayList();
+
+	private ArrayList<ErrorPage> pages=new ArrayList<ErrorPage>();
 	private boolean hasChanged=false;
 	
 	/**
@@ -17,9 +17,7 @@ public final class ErrorPagePool {
 	 * @param errorPage
 	 */
 	public void setErrorPage(ErrorPage errorPage) {
-		//railo.print.ln("set:"+errorPage.getTypeAsString());
 		pages.add(errorPage);
-		//pages.put(Caster.toLowerCase(errorPage.getTypeAsString()),errorPage);
 		hasChanged=true;
 	}
 	
@@ -28,13 +26,21 @@ public final class ErrorPagePool {
 	 * @param pe Page Exception
 	 * @return
 	 */
-	public ErrorPage getErrorPage(PageException pe) {
+	public ErrorPage getErrorPage(PageException pe, short type) {
 		for(int i=pages.size()-1;i>=0;i--) {
-			ErrorPage ep=(ErrorPage) pages.get(i);
-			if(pe.typeEqual(ep.getTypeAsString())) return ep;
+			ErrorPageImpl ep=(ErrorPageImpl) pages.get(i);
+			if(ep.getType()==type) {
+				if(type==ErrorPageImpl.TYPE_EXCEPTION){
+					if(pe.typeEqual(ep.getTypeAsString()))return ep;
+				}
+				else return ep;
+				
+			}
 		}
 		return null;
 	}
+	
+	
 	
 	/**
 	 * clear the error page pool
@@ -51,8 +57,25 @@ public final class ErrorPagePool {
 	 * @param type
 	 */
 	public void removeErrorPage(PageException pe) {
-		pages.remove(getErrorPage(pe));
-		hasChanged=true;
+		// exception
+		ErrorPage ep = getErrorPage(pe,ErrorPageImpl.TYPE_EXCEPTION);
+		if(ep!=null){
+			pages.remove(ep);
+			hasChanged=true;
+		}
+		// request
+		ep = getErrorPage(pe,ErrorPageImpl.TYPE_REQUEST);
+		if(ep!=null){
+			pages.remove(ep);
+			hasChanged=true;
+		}
+		// validation
+		ep = getErrorPage(pe,ErrorPageImpl.TYPE_VALIDATION);
+		if(ep!=null){
+			pages.remove(ep);
+			hasChanged=true;
+		}
+		
 	}
 	
 }

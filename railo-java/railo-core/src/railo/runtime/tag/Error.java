@@ -1,7 +1,6 @@
 package railo.runtime.tag;
 
 import railo.runtime.PageSource;
-import railo.runtime.err.ErrorPage;
 import railo.runtime.err.ErrorPageImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.tag.TagImpl;
@@ -14,15 +13,12 @@ import railo.runtime.ext.tag.TagImpl;
 *
 **/
 public final class Error extends TagImpl {
+
+
+	private ErrorPageImpl errorPage=new ErrorPageImpl();
+
+
 	
-	private static final short TYPE_EXCEPTION=0;
-
-	private ErrorPage errorPage=new ErrorPageImpl();
-
-
-	/** The type of error that the custom error page handles. */
-	private short type;
-
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
 	*/
@@ -30,7 +26,6 @@ public final class Error extends TagImpl {
 		super.release();
 		errorPage=new ErrorPageImpl();
 		//exception="any";
-		type=0;
 		//template=null;
 		//mailto="";
 		
@@ -52,10 +47,14 @@ public final class Error extends TagImpl {
 	**/
 	public void setType(String type) throws ExpressionException	{
 		type=type.toLowerCase().trim();
-		if(type.equals("exception")) this.type=TYPE_EXCEPTION;
+		if(type.equals("exception")) {
+			errorPage.setType(ErrorPageImpl.TYPE_EXCEPTION);
+		}
+		else if(type.equals("request")) {
+			errorPage.setType(ErrorPageImpl.TYPE_REQUEST);
+		}
 		//else if(type.equals("validation")) this.type=VALIDATION;
-		//else if(type.equals("request")) this.type=REQUEST;
-		else throw new ExpressionException("invalid type for tag error","only exception is supported");
+		else throw new ExpressionException("invalid type ["+type+"] for tag error, use one of the following types [exception,request]");
 	}
 
 	/** set the value template
@@ -85,8 +84,8 @@ public final class Error extends TagImpl {
 	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag()	{
-		if(type==TYPE_EXCEPTION)pageContext.setErrorPage(errorPage);
-		
+		if(errorPage.getType()==ErrorPageImpl.TYPE_REQUEST) errorPage.setException("any");
+		pageContext.setErrorPage(errorPage);
 		return SKIP_BODY;
 	}
 

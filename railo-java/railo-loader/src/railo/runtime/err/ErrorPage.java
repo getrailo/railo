@@ -23,7 +23,7 @@ public interface ErrorPage {
      * sets the exception attribute
      * @param exception
      */
-    public abstract void setTypeAsString(String exception);
+    public abstract void setTypeAsString(String exception);// FUTURE change to setException and mark this as deprecated
 
     /**
      * @return Returns the mailto.
@@ -38,6 +38,6 @@ public interface ErrorPage {
     /**
      * @return Returns the exception type.
      */
-    public abstract String getTypeAsString();
+    public abstract String getTypeAsString();// FUTURE change to getException and mark this as deprecated
 
 }
