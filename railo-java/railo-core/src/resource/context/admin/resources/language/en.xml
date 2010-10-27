@@ -735,6 +735,14 @@
 	<data key="settings.dbport">Port</data>
 	<data key="settings.preservesinglequotesdescription">Preserve single quotes (&quot;) in the SQL defined with the tag cfquery</data>
 	<data key="settings.dbconntimeout">Connection timeout (in minutes)</data>
+	
+	<data key="settings.dbMetaCacheTimeout">Caching Meta Data</data>
+	<data key="settings.dbMetaCacheTimeoutDesc">define how long Stored Procedures Meta Data are strored in cache</data>
+	<data key="settings.minutes">minute(s)</data>
+	<data key="settings.hours">hour(s)</data>
+	<data key="settings.days">day(s)</data>
+	<data key="settings.flushCache">flush cache</data>
+	
 	<data key="settings.datasourcemodify">Create new datasource</data>
 	<data key="settings.verifyconnection">Verify connection</data>
 	<data key="settings.namemissing">Please enter a name for the datasource</data>

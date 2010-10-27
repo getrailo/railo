@@ -724,6 +724,15 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.dbuser">Benutzername</data>
 	<data key="settings.preservesinglequotes">Single Quotes erhalten</data>
 	<data key="settings.dbconnlimit">Verbindungslimitierung (max)</data>
+	
+	<data key="settings.dbMetaCacheTimeout">Caching Meta Data</data>
+	<data key="settings.dbMetaCacheTimeoutDesc">definiert wielange Stored Procedures Meta Data gecached werden</data>
+	<data key="settings.minutes">Minute(n)</data>
+	<data key="settings.hours">Stunden(n)</data>
+	<data key="settings.days">Tag(e)</data>
+	<data key="settings.flushCache">cache leeren</data>
+	
+	
 	<data key="settings.dbconntimeoutdesc">Definiert wie lange eine stehende Verbindung aufrechterhalten wird, bevor Sie beendet wird.</data>
 	<data key="settings.dbportdesc">Der Port der Datenbank die angesprochen werden soll.</data>
 	<data key="settings.dbconnlimitdesc">Beschränkt die Anzahl Verbindungen die zur Datenbank aufgebaut werden.</data>
