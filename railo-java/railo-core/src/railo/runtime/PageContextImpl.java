@@ -1771,7 +1771,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 					}
 					
 				}
-				else pe=new ApplicationException("error page template for type request only works when this files exist as source code, use type exception instead when file is in a archive");
+				else pe=new ApplicationException("The error page template for type request only works if the actual source file also exists . If the exception file is in an Railo archive (.rc/.rcs), you need to use type exception instead.");
 			}
 			
 			
