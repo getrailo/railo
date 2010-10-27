@@ -1696,6 +1696,21 @@
 			<type>string</type>
 		</return>
 	</function>
+	<!-- datasourceFlushMetaCache -->
+	<function>
+		<name>datasourceFlushMetaCache</name>
+		<class>railo.runtime.functions.other.DatasourceFlushMetaCache</class>
+		<description>Flush the meta data stored for a certain datasource used for stored procedures, this is only supported for Oracle datasources</description>
+		<argument>
+			<name>datasourceName</name>
+			<type>string</type>
+			<required>no</required>
+			<description>name of the datasource to flush, when not defined all caches are flushed</description>
+		</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
 	<!-- dateAdd -->
 	<function>
 		<name>dateAdd</name>
