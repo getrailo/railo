@@ -1,5 +1,9 @@
 package railo.runtime.db;
 
+import java.util.Map;
+
+import org.apache.commons.collections.map.ReferenceMap;
+
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
@@ -31,6 +35,8 @@ public final class DataSourceImpl implements Cloneable, DataSource {
     private int allow;
     private Struct custom;
     private String name;
+	private long metaCacheTimeout;
+	private Map<String,ProcMetaCollection> procedureColumnCache;
     
 	/**
 	 * constructor of the class
@@ -52,8 +58,8 @@ public final class DataSourceImpl implements Cloneable, DataSource {
 	 * @throws ClassException 
 	 */
     public DataSourceImpl(String name,String className, String host, String dsn, String database, int port, String username, String password, 
-            int connectionLimit, int connectionTimeout, boolean blob, boolean clob, int allow, Struct custom, boolean readOnly) throws ClassException {
-        this(name, toClass(className), host, dsn, database, port, username, password, connectionLimit, connectionTimeout, blob, clob, allow, custom, readOnly);
+            int connectionLimit, int connectionTimeout,long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom, boolean readOnly) throws ClassException {
+        this(name, toClass(className), host, dsn, database, port, username, password, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, custom, readOnly);
     	
 	}
     
@@ -69,7 +75,7 @@ public final class DataSourceImpl implements Cloneable, DataSource {
 	}
 
 	private DataSourceImpl(String name,Class clazz, String host, String dsn, String database, int port, String username, String password, 
-            int connectionLimit, int connectionTimeout, boolean blob, boolean clob, int allow, Struct custom, boolean readOnly) {
+            int connectionLimit, int connectionTimeout,long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom, boolean readOnly) {
         if(allow<0) allow=ALLOW_ALL;
         this.name=name;
         this.clazz=clazz;
@@ -89,6 +95,7 @@ public final class DataSourceImpl implements Cloneable, DataSource {
         this.custom=custom;
         
         this.dsnTranslated=dsn; 
+        this.metaCacheTimeout= metaCacheTimeout;
         translateDsn();
         
         //	throw new DatabaseException("can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder",e.getMessage(),null,null,null);
@@ -190,14 +197,14 @@ public final class DataSourceImpl implements Cloneable, DataSource {
      * @see railo.runtime.db.DataSource#clone()
      */
     public Object clone() {
-        return new DataSourceImpl(name,clazz, host, dsn, database, port, username, password, connectionLimit, connectionTimeout, blob, clob, allow, custom, readOnly);
+        return new DataSourceImpl(name,clazz, host, dsn, database, port, username, password, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, custom, readOnly);
     }
 
     /**
      * @see railo.runtime.db.DataSource#cloneReadOnly()
      */
     public DataSource cloneReadOnly() {
-        return new DataSourceImpl(name,clazz, host, dsn, database, port, username, password, connectionLimit, connectionTimeout, blob, clob, allow,custom, true);
+        return new DataSourceImpl(name,clazz, host, dsn, database, port, username, password, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow,custom, true);
     }
 
     /**
@@ -227,6 +234,12 @@ public final class DataSourceImpl implements Cloneable, DataSource {
     public int getConnectionTimeout() {
         return connectionTimeout;
     }
+
+
+	//FUTURE add to interface
+	public long getMetaCacheTimeout() {
+		return metaCacheTimeout;
+	} 
 
     /**
      * @see railo.runtime.db.DataSource#getCustomValue(java.lang.String)
@@ -289,6 +302,11 @@ public final class DataSourceImpl implements Cloneable, DataSource {
 		return this.getDsnTranslated().equals(ds.getDsnTranslated());
 	} 
 
+	public Map<String,ProcMetaCollection> getProcedureColumnCache() {
+		if(procedureColumnCache==null)
+			procedureColumnCache=new ReferenceMap();
+		return procedureColumnCache;
+	}
 	/* *
 	 *
 	 * @see railo.runtime.db.DataSource#getMaxConnection()

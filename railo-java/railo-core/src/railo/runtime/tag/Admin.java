@@ -2028,6 +2028,7 @@ private void doGetMappings() throws PageException {
         int port=getInt("port",-1);
         int connLimit=getInt("connectionLimit",-1);
         int connTimeout=getInt("connectionTimeout",-1);
+        long metaCacheTimeout=getLong("metaCacheTimeout",60000);
         boolean blob=getBool("blob",false);
         boolean clob=getBool("clob",false);
         boolean verify=getBool("verify",true);
@@ -2037,7 +2038,7 @@ private void doGetMappings() throws PageException {
         //config.getConnectionPool().remove(name);
         DataSource ds=null;
 		try {
-			ds = new DataSourceImpl(name,classname,host,dsn,database,port,username,password,connLimit,connTimeout,blob,clob,allow,custom,false);
+			ds = new DataSourceImpl(name,classname,host,dsn,database,port,username,password,connLimit,connTimeout,metaCacheTimeout,blob,clob,allow,custom,false);
 		} catch (ClassException e) {
 			throw new DatabaseException("can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder",e.getMessage(),null,null,null);
 		}
@@ -2056,6 +2057,7 @@ private void doGetMappings() throws PageException {
                 port,
                 connLimit,
                 connTimeout,
+                metaCacheTimeout,
                 blob,
                 clob,
                 allow,
@@ -2746,7 +2748,7 @@ private void doGetMappings() throws PageException {
         while(it.hasNext()) {
             String key=(String)it.next();
             if(key.equalsIgnoreCase(name)) {
-                DataSource d=(DataSource) ds.get(key);
+                DataSourceImpl d=(DataSourceImpl) ds.get(key);
                 Struct sct=new StructImpl();
                 
                 sct.setEL("name",key);
@@ -2772,6 +2774,7 @@ private void doGetMappings() throws PageException {
     
                 sct.setEL("connectionLimit",d.getConnectionLimit()<1?"":Caster.toString(d.getConnectionLimit()));
                 sct.setEL("connectionTimeout",d.getConnectionTimeout()<1?"":Caster.toString(d.getConnectionTimeout()));
+                sct.setEL("metaCacheTimeout",Caster.toDouble(d.getMetaCacheTimeout()));
                 sct.setEL("custom",d.getCustoms());
                 sct.setEL("blob",Boolean.valueOf(d.isBlob()));
                 sct.setEL("clob",Boolean.valueOf(d.isClob()));
@@ -3688,11 +3691,16 @@ private void doGetMappings() throws PageException {
             throw new ApplicationException("Attribute ["+attributeName+"] for tag ["+tagName+"] is required if attribute action has the value ["+actionName+"]");
         return (int)Caster.toDoubleValue(value);
     }
-    
+
     private int getInt(String attributeName, int defaultValue) {
         Object value=attributes.get(attributeName,null);
         if(value==null) return defaultValue;
-        return (int)Caster.toDoubleValue(value,defaultValue);
+        return Caster.toIntValue(value,defaultValue);
+    }
+    private long getLong(String attributeName, long defaultValue) {
+        Object value=attributes.get(attributeName,null);
+        if(value==null) return defaultValue;
+        return Caster.toLongValue(value,defaultValue);
     }
     
     private double getDouble(String attributeName, double defaultValue) {
