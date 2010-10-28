@@ -9,14 +9,25 @@ public class FeedStruct extends StructImpl {
 	private String path;
 	private Key inside;
 
-	private StringBuffer content;
+	private StringBuilder content;
+	private String uri;
 	
-	public FeedStruct(String path, Key inside) {
+
+	public FeedStruct(String path, Key inside, String uri) {
 		this.path=path;
 		this.inside=inside;
+		this.uri=uri;
 	}
 
 	public FeedStruct() {
+	}
+	
+
+	/**
+	 * @return the uri
+	 */
+	public String getUri() {
+		return uri;
 	}
 
 	/**
@@ -45,7 +56,7 @@ public class FeedStruct extends StructImpl {
 	}
 	
 	public void append(String str) {
-		if(content==null) content=new StringBuffer();
+		if(content==null) content=new StringBuilder();
 		content.append(str);
 	}
 	
@@ -58,7 +69,7 @@ public class FeedStruct extends StructImpl {
 	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
-		FeedStruct trg=new FeedStruct(path,inside);
+		FeedStruct trg=new FeedStruct(path,inside,uri);
 		trg.hasAttribute=hasAttribute;
 		copy(this, trg, deepCopy);
 		return trg;

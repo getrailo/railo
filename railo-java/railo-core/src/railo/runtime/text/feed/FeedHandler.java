@@ -41,16 +41,15 @@ public final class FeedHandler extends DefaultHandler {
 
 	//private StringBuffer content=new StringBuffer();
 
-
+	private int deep=0;
 	private FeedStruct data;
 	private String path=""; 
 	private Collection.Key inside;
-	private Stack parents=new Stack();
+	private Stack<FeedStruct> parents=new Stack<FeedStruct>();
 	private FeedDeclaration decl;
-
-	private Map root=new HashMap();
-
+	private Map<String,String> root=new HashMap<String,String>();
 	private boolean hasDC;
+	private boolean isAtom;
 	
 	
 	/**
@@ -64,6 +63,7 @@ public final class FeedHandler extends DefaultHandler {
 		try {
 			InputSource source=new InputSource(is=res.getInputStream());
 			source.setSystemId(res.getPath());
+			
 			init(DEFAULT_SAX_PARSER,source);
 		} 
 		finally {
@@ -114,10 +114,18 @@ public final class FeedHandler extends DefaultHandler {
 	 * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
 	 */
 	public void startElement(String uri, String name, String qName, Attributes atts) {
+		deep++;
+		
+		
+		
+		
 		if(qName.startsWith("dc:")){
 			name="dc_"+name;
 			hasDC=true;
 		}
+		//print.o("iniside("+deep+"):"+name+"->"+uri);
+		
+		
 		inside = KeyImpl.init(name);
 		if(StringUtil.isEmpty(path))path=name;
 		else {
@@ -135,46 +143,50 @@ public final class FeedHandler extends DefaultHandler {
 			}
 			decl=FeedDeclaration.getInstance(decName);
 			root.put("version",decName);
-			
+			isAtom=decl.getType().equals("atom");
 			
 		}
 		
 		
-		FeedStruct sct=new FeedStruct(path,inside);
+		FeedStruct sct=new FeedStruct(path,inside,uri);
+		
 		// attributes
-		Map attrs = getAttributes(atts, path);
+		Map<String,String> attrs = getAttributes(atts, path);
 		if(attrs!=null){
-			Map.Entry entry;
-			Iterator it = attrs.entrySet().iterator();
+			Entry<String, String>  entry;
+			Iterator<Entry<String, String>> it = attrs.entrySet().iterator();
 			sct.setHasAttribute(true);
 			while(it.hasNext()){
-				entry=(Entry) it.next();
-				sct.setEL((String)entry.getKey(), entry.getValue());
+				entry = it.next();
+				sct.setEL(entry.getKey(), entry.getValue());
 			}
 		}
 		
-		Object obj = data.get(inside, null);
-		if(obj instanceof Array)	{
-			((Array)obj).appendEL(sct);
-		}
-		else if(obj instanceof FeedStruct){
-			Array arr = new ArrayImpl();
-			arr.appendEL(obj);
-			arr.appendEL(sct);
-			data.setEL(inside, arr);
-		}
-		else if(obj instanceof String){
-			// wenn wert schon existiert wird castableArray in serContent erstellt
-		}
-		else {
-			El el=(El) decl.getDeclaration().get(path);
-			if(el!=null && (el.getQuantity()==El.QUANTITY_0_N || el.getQuantity()==El.QUANTITY_1_N)){
+		// assign
+		if(!isAtom || deep<4) {
+			Object obj = data.get(inside, null);
+			if(obj instanceof Array)	{
+				((Array)obj).appendEL(sct);
+			}
+			else if(obj instanceof FeedStruct){
 				Array arr = new ArrayImpl();
+				arr.appendEL(obj);
 				arr.appendEL(sct);
 				data.setEL(inside, arr);
 			}
-			else data.setEL(inside, sct);
-			
+			else if(obj instanceof String){
+				// wenn wert schon existiert wird castableArray in setContent erstellt
+			}
+			else {
+				El el=(El) decl.getDeclaration().get(path);
+				if(el!=null && (el.getQuantity()==El.QUANTITY_0_N || el.getQuantity()==El.QUANTITY_1_N)){
+					Array arr = new ArrayImpl();
+					arr.appendEL(sct);
+					data.setEL(inside, arr);
+				}
+				else data.setEL(inside, sct);
+				
+			}
 		}
 		parents.add(data);
 		data=sct;
@@ -184,9 +196,58 @@ public final class FeedHandler extends DefaultHandler {
 	
 
 	public void endElement(String uri, String name, String qName) {
+		deep--;
+		if(isAtom && deep>=3) {
+			String content = data.getString();
+			Key[] keys = data.keys();
+			StringBuilder sb=new StringBuilder();
+			sb.append("<");
+			sb.append(qName);
+			
+			// xmlns
+			if(!parents.peek().getUri().equals(uri)) {
+				sb.append(" xmlns=\"");
+				sb.append(uri);
+				sb.append("\"");
+			}
+			
+			for(int i=0;i<keys.length;i++){
+				sb.append(" ");
+				sb.append(keys[i].getString());
+				sb.append("=\"");
+				sb.append(Caster.toString(data.get(keys[i],""),""));
+				sb.append("\"");
+				
+			}
+			
+			
+			if(!StringUtil.isEmpty(content)) {
+				sb.append(">");
+				sb.append(content);
+				sb.append("</"+qName+">");
+			}
+			else sb.append("/>");
+			
+			
+			
+			
+			
+			
+			data= parents.pop();
+			data.append(sb.toString().trim());
+			//setContent(sb.toString().trim());
+			
+			path=data.getPath();
+			inside=data.getInside();
+			return;
+		}
+		
+		
 		
 		//setContent(content.toString().trim());
 		setContent(data.getString().trim());
+		
+		
 		
 		data=(FeedStruct) parents.pop();
 		path=data.getPath();
@@ -239,13 +300,13 @@ public final class FeedHandler extends DefaultHandler {
 		else*/
 	}
 	
-	private Map getAttributes(Attributes attrs, String path) {
+	private Map<String,String> getAttributes(Attributes attrs, String path) {
 		El el = (El) decl.getDeclaration().get(path);
 		
 		int len=attrs.getLength();
 		if((el==null || el.getAttrs()==null) && len==0) return null;
 		
-		Map map=new HashMap();
+		Map<String,String> map=new HashMap<String,String>();
 		if(el!=null) {
 			Attr[] defaults = el.getAttrs();
 			if(defaults!=null) {
@@ -284,4 +345,6 @@ public final class FeedHandler extends DefaultHandler {
 		}
 		data.putAll(root);
 	}
+	
+
 }
