@@ -235,7 +235,7 @@ public final class ClassUtil {
 		}
 		catch (NoSuchMethodException e) {
 			
-			StringBuffer sb=new StringBuffer(clazz.getName());
+			StringBuilder sb=new StringBuilder(clazz.getName());
 			char del='(';
 			for(int i=0;i<cArgs.length;i++) {
 				sb.append(del);
@@ -349,7 +349,7 @@ public final class ClassUtil {
 		
 		// get all pathes
 		URL[] urls=ucl.getURLs();
-		//StringBuffer sb=new StringBuffer();
+		
 		for(int i=0;i<urls.length;i++) {
 			File file=FileUtil.toFile(urls[i].getPath());
 			if(file.exists())

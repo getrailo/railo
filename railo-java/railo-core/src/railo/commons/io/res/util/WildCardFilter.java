@@ -35,7 +35,7 @@ public class WildCardFilter implements ResourceAndResourceNameFilter {
      */
     public WildCardFilter(String wildcard,boolean ignoreCase) throws MalformedPatternException {
         this.wildcard=wildcard;
-        StringBuffer sb = new StringBuffer(wildcard.length());
+        StringBuilder sb = new StringBuilder(wildcard.length());
         int len=wildcard.length();
         
         for(int i=0;i<len;i++) {

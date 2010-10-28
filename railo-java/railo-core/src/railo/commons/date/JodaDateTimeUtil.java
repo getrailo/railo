@@ -143,7 +143,7 @@ public class JodaDateTimeUtil extends DateTimeUtil {
     	":"+dt.getMinuteOfHour()+
     	":"+dt.getSecondOfMinute()+"'}";*/
 		
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		DateTime dt = new DateTime(date.getTime(),getDateTimeZone(tz));
     	sb.append("{ts '");
     	jreUtil.toString(sb,dt.getYear(),4);

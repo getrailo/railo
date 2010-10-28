@@ -33,6 +33,7 @@ public final class Len implements Function {
 		if(obj instanceof char[])return ((char[])obj).length;
 		if(obj instanceof boolean[])return ((boolean[])obj).length;
 		if(obj instanceof StringBuffer)return ((StringBuffer)obj).length();
+		if(obj instanceof StringBuilder)return ((StringBuilder)obj).length();
 		throw new FunctionException(pc,"len",1,"object","this type  ["+Caster.toTypeName(obj)+"] is not supported for returning the len");
 	}
 }

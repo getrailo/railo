@@ -47,7 +47,7 @@ public class URLDecoder {
     	//if(true) return java.net.URLDecoder.decode(s, enc);
     	
 	boolean needToChange = false;
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	int numChars = s.length();
 	int i = 0;
 

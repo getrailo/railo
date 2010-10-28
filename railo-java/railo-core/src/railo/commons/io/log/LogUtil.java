@@ -36,7 +36,7 @@ public final class LogUtil {
      * @return line
      */
     public static String getLine(int type,String application, String message) {
-        StringBuffer data=new StringBuffer();
+    	StringBuilder data=new StringBuilder();
         if(application==null)application="";
         if(message==null)message="";
         

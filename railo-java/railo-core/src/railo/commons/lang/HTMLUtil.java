@@ -67,7 +67,7 @@ public final class HTMLUtil {
 	private void getSingleUrl(List urls,CFMLString cfml, Tag tag,URL url) {
 		char quote=0;
 		boolean inside=false;
-		StringBuffer value=new StringBuffer();
+		StringBuilder value=new StringBuilder();
 		
 		while(!cfml.isAfterLast()) {
 			if(inside) {
@@ -103,7 +103,7 @@ public final class HTMLUtil {
 							cfml.removeSpace();
 							
 							quote=cfml.getCurrent();
-							value=new StringBuffer();
+							value=new StringBuilder();
 							if(quote!='"' && quote!='\'')quote=0;
 							else {
 								cfml.next();

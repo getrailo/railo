@@ -207,7 +207,6 @@ public final class SystemUtil {
         ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
         // get all pathes
         URL[] urls=ucl.getURLs();
-        //StringBuffer sb=new StringBuffer();
         for(int i=0;i<urls.length;i++) {
             Resource file=frp.getResource(urls[i].getPath());
             if(file.exists())

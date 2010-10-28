@@ -371,7 +371,7 @@ public final class ResourceUtil {
         }
         
         short[] flags=new short[5];
-        //StringBuffer sb=new StringBuffer();
+        
         if(hasReadOnly)flags[READ_ONLY]=YES;
         else if(hasNormal)flags[READ_ONLY]=NO;
         
@@ -398,7 +398,7 @@ public final class ResourceUtil {
     public static String translateAttribute(String attributes) throws IOException {
         short[] flags = strAttrToBooleanFlags(attributes);
        
-        StringBuffer sb=new StringBuffer();
+        StringBuilder sb=new StringBuilder();
         if(flags[READ_ONLY]==YES)sb.append(" +R");
         else if(flags[READ_ONLY]==NO)sb.append(" -R");
         

@@ -85,7 +85,7 @@ public final class StringUtil {
 	 */
 	public static String escapeJS(String str) {
 		char[] arr=str.toCharArray();
-		StringBuffer rtn=new StringBuffer(arr.length);
+		StringBuilder rtn=new StringBuilder(arr.length);
 		for(int i=0;i<arr.length;i++) {
 			switch(arr[i]) {
 				case '\\': rtn.append("\\\\"); break;
@@ -109,7 +109,6 @@ public final class StringUtil {
 	 * @return reapted string
 	 */
     public static String repeatString(String str,int count) {
-        //StringBuffer rtn=new StringBuffer();
         if(count<=0) return "";
         char[] chars = str.toCharArray();
         char[] rtn=new char[chars.length*count];
@@ -120,16 +119,7 @@ public final class StringUtil {
         }
         return new String(rtn);
     }
-    /*
-    public static String repeatString(String str,int count) {
-        if(count<=0) return "";
-        StringBuffer rtn=new StringBuffer(str.length()*count);
-        for(int i=0;i<count;i++) {
-            rtn.append(str);
-        }
-        return new String(rtn);
-    }
-	*/
+
 	/**
 	 * translate, like method toString, a object to a string, but when value is null value will be translated to a empty String (""). 
 	 * @param o Object to convert
@@ -157,7 +147,7 @@ public final class StringUtil {
 	 */
 	public static String reqExpEscape(String str) {
 		char[] arr = str.toCharArray();
-		StringBuffer sb=new StringBuffer(str.length()*2);
+		StringBuilder sb=new StringBuilder(str.length()*2);
 		
 		for(int i=0;i<arr.length;i++) {
 			sb.append('\\');
@@ -176,7 +166,7 @@ public final class StringUtil {
 		char[] chars=varName.toCharArray();
 		long changes=0;
 
-		StringBuffer rtn=new StringBuffer(chars.length+2);
+		StringBuilder rtn=new StringBuilder(chars.length+2);
 		rtn.append("CF");		
 		
 		for(int i=0;i<chars.length;i++) {
@@ -197,7 +187,7 @@ public final class StringUtil {
 	 * @return translated String
 	 */
 	public static String toClassName(String str) {
-		StringBuffer rtn=new StringBuffer();
+		StringBuilder rtn=new StringBuilder();
 		String[] arr=str.split("[\\\\|//]");
 		for(int i=0;i<arr.length;i++) {
 			if(arr[i].length()==0)continue;
@@ -230,7 +220,7 @@ public final class StringUtil {
 	}
 	public static String toVariableName(String str, boolean addIdentityNumber) {
 		
-		StringBuffer rtn=new StringBuffer();
+		StringBuilder rtn=new StringBuilder();
 		char[] chars=str.toCharArray();
 		long changes=0;
 		boolean doCorrect=true;
@@ -405,7 +395,7 @@ public final class StringUtil {
      */
     public static String suppressWhiteSpace(String str) {
         int len=str.length();
-        StringBuffer sb=new StringBuffer(len);
+        StringBuilder sb=new StringBuilder(len);
         //boolean wasWS=false;
         
         char c;
@@ -485,7 +475,7 @@ public final class StringUtil {
         if(!onlyFirst && sub1.length()==1 && sub2.length()==1)return str.replace(sub1.charAt(0),sub2.charAt(0));
         
         
-        StringBuffer sb=new StringBuffer();
+        StringBuilder sb=new StringBuilder();
         int start=0;
         int pos;
         int sub1Length=sub1.length();
@@ -740,7 +730,7 @@ public final class StringUtil {
 
 	public static String removeWhiteSpace(String str) {
 		if(isEmpty(str)) return str;
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		char[] carr = str.trim().toCharArray();
 		for(int i=0;i<carr.length;i++) {
 			if(!isWhiteSpace(carr[i]))sb.append(carr[i]);
@@ -777,6 +767,7 @@ public final class StringUtil {
 		if(obj==null) return true;
 		if(obj instanceof String)return isEmpty((String)obj,trim);
 		if(obj instanceof StringBuffer)return isEmpty((StringBuffer)obj,trim);
+		if(obj instanceof StringBuilder)return isEmpty((StringBuilder)obj,trim);
 		if(obj instanceof Collection.Key)return isEmpty(((Collection.Key)obj).getString(),trim);
 		return false;
 	}
@@ -791,6 +782,10 @@ public final class StringUtil {
 	}
 
 	public static boolean isEmpty(StringBuffer sb,boolean trim) {
+		if(trim) return sb==null || sb.toString().trim().length()==0;
+		return sb==null || sb.length()==0;
+	}
+	public static boolean isEmpty(StringBuilder sb,boolean trim) {
 		if(trim) return sb==null || sb.toString().trim().length()==0;
 		return sb==null || sb.length()==0;
 	}
