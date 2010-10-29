@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -139,5 +140,14 @@ public class ImageUtil {
 
 		if(StringUtil.isEmpty(mt))throw new IOException("can't find Format of given image");//31
 		throw new IOException("can't find Format ("+mt+") of given image");
+	}
+
+	public static void closeEL(ImageInputStream iis) {
+		 try {
+    		 if(iis!=null)iis.close();
+    	 } 
+    	 catch (Throwable t) {}
+		
+		
 	}
 }

@@ -46,6 +46,7 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.media.jai.BorderExtender;
@@ -267,7 +268,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		sctCM.setEL("num_components",Caster.toDouble(cm.getNumComponents()));
 		sctCM.setEL("num_color_components",Caster.toDouble(cm.getNumColorComponents()));
 		sctCM.setEL("colorspace",toStringColorSpace(cm.getColorSpace()));
-
+		
 	    //bits_component
 		int[] bitspercomponent = cm.getComponentSize();
 		Array arr=new ArrayImpl();
@@ -284,23 +285,31 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		else if (cm instanceof PackedColorModel)	sctCM.setEL("colormodel_type", "PackedColorModel");
 		else sctCM.setEL("colormodel_type", List.last(cm.getClass().getName(), '.'));
 
+		print.o("format:"+format);
+		
 		metadata(sctInfo);
+		
+		ImageMeta.addInfo(format,source,sctInfo);
+		
 		this.sctInfo=sctInfo;
 		return sctInfo;
 	}
 	
 	private void metadata(Struct parent) {
 		if(StringUtil.isEmpty(format)) return;
-		Iterator it = ImageIO.getImageReadersBySuffix(format);
+		Iterator<ImageReader> it = ImageIO.getImageReadersBySuffix(format);
 		while(it.hasNext()) {
 			ImageReader ir=(ImageReader) it.next();
+			ImageInputStream iis=null;
 			try {
 				IIOMetadata metadata=null;
 				synchronized (sync) {
 					if(source instanceof File) { // TODO create ResourceImageInputStream
-						ir.setInput(new FileImageInputStream((File) source));
+						iis=new FileImageInputStream((File) source);
 					}
-					else ir.setInput(new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format))));
+					else iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format)));
+					ir.setInput(iis);
+					
 					metadata=ir.getImageMetadata(0);
 					ir.reset();
 				}
@@ -311,8 +320,9 @@ public class Image extends StructSupport implements Cloneable,Struct {
 					addMetaddata(parent,"metadata",root);
 				}
 			} 
-			catch (Throwable t) {
-				
+			catch (Throwable t) {}
+			finally {
+				ImageUtil.closeEL(iis);
 			}
 		}
 	}
