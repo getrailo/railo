@@ -14,6 +14,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageOutputStream;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
@@ -718,7 +721,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 			else if(format==FORMAT_JPG)	ChartUtilities.writeBufferedImageAsJPEG(os, bi);
 			else if(format==FORMAT_GIF)	{
 				img = new railo.runtime.img.Image(bi);
-				img.writeOut(os, "gif",1);
+				img.writeOut(os, "gif",1,true);
 				
 				//throw new ApplicationException("format gif not supported");
 			}
