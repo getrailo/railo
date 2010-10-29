@@ -1751,7 +1751,7 @@
 			<required>Yes</required>
 		</argument>
 		<argument>
-			<name>arg3</name>
+			<name>datepart</name>
 			<type>string</type>
 			<required>No</required>
 		</argument>
@@ -3991,7 +3991,7 @@
 			<type>string</type>
 		</return>
 	</function>
-	<!-- GetSystemInfo -->
+	<!-- GetSystemInfo
 	<function>
 		<name>GetSystemInfo</name>
 		<class>railo.runtime.functions.system.GetSystemInfo</class>
@@ -4000,6 +4000,7 @@
 			<type>struct</type>
 		</return>
 	</function>
+	 -->
 	<!-- getTempFile -->
 	<function>
 		<name>getTempFile</name>
@@ -7487,7 +7488,7 @@
 	<function>
 		<name>nowServer</name>
 		<class>railo.runtime.functions.dateTime.NowServer</class>
-		<description>returns the actuell time on the server independend on railo timezone definition</description>
+		<description>this function is deprecated;returns the current time on the server independend on railo timezone definition</description>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -9890,7 +9891,7 @@
 		<class>railo.runtime.functions.xml.HtmlParse</class>
 		<description/>
 		<argument>
-			<name>xmlString</name>
+			<name>html</name>
 			<type>string</type>
 			<required>Yes</required>
 		</argument>
