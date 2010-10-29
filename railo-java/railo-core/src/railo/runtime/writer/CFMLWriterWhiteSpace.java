@@ -7,16 +7,16 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * JSP Writer that Remove WhiteSpace from given content
  */
-public final class CFMLWriterWhiteSpace extends CFMLWriterImpl {
+public final class CFMLWriterWhiteSpace extends CFMLWriterImpl implements WhiteSpaceWriter {
 	
 
-	private static final char CHAR_EMPTY=0;
-	private static final char CHAR_NL='\n';
-	private static final char CHAR_SPACE=' ';
-	private static final char CHAR_TAB='\t';
-	private static final char CHAR_BS='\b'; // \x0B\
-	private static final char CHAR_FW='\f';
-	private static final char CHAR_RETURN='\r';
+	public static final char CHAR_EMPTY=0;
+	public static final char CHAR_NL='\n';
+	public static final char CHAR_SPACE=' ';
+	public static final char CHAR_TAB='\t';
+	public static final char CHAR_BS='\b'; // \x0B\
+	public static final char CHAR_FW='\f';
+	public static final char CHAR_RETURN='\r';
 	char charBuffer=CHAR_EMPTY;
 	
 	/**
@@ -306,5 +306,12 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl {
 		}
 	}
 
+	/**
+	 * @see railo.runtime.writer.WhiteSpaceWriter#writeRaw(java.lang.String)
+	 */
+	public void writeRaw(String str) throws IOException {
+		printBuffer();
+		super.write(str);
+	}
 	
 }
