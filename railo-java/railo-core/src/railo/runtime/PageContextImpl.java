@@ -65,6 +65,7 @@ import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.engine.ExecutionLog;
 import railo.runtime.err.ErrorPage;
+import railo.runtime.err.ErrorPageImpl;
 import railo.runtime.err.ErrorPagePool;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.ApplicationException;
@@ -159,6 +160,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private static final Key CFID = KeyImpl.getInstance("cfid");
 	private static final Key CFTOKEN = KeyImpl.getInstance("cftoken");
 	private static final Key LOCAL = KeyImpl.getInstance("local");
+	private static final Key ERROR = KeyImpl.getInstance("error");
+	private static final Key CFERROR = KeyImpl.getInstance("cferror");
 	
 	private static int counter=0;
 	
@@ -1684,6 +1687,34 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return servlet.getServletContext();
 	}
 
+	/*public static void main(String[] args) {
+		repl(" susi #error.susi# sorglos","susi", "Susanne");
+		repl(" susi #error.Susi# sorglos","susi", "Susanne");
+	}*/
+	private static String repl(String haystack, String needle, String replacement) {
+		//print.o("------------");
+		//print.o(haystack);
+		//print.o(needle);
+		StringBuilder regex=new StringBuilder("#[\\s]*error[\\s]*\\.[\\s]*");
+		
+		char[] carr = needle.toCharArray();
+		for(int i=0;i<carr.length;i++){
+			regex.append("[");
+			regex.append(Character.toLowerCase(carr[i]));
+			regex.append(Character.toUpperCase(carr[i]));
+			regex.append("]");
+		}
+		
+		
+		regex.append("[\\s]*#");
+		//print.o(regex);
+		
+		
+		haystack=haystack.replaceAll(regex.toString(), replacement);
+		//print.o(haystack);
+		return haystack;
+	}
+	
 	
 	/**
 	 * @see railo.runtime.PageContext#handlePageException(railo.runtime.exp.PageException)
@@ -1695,14 +1726,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			
 			if(getConfig().getErrorStatusCode())rsp.setStatus(statusCode);
 			
-			ErrorPage ep=errorPagePool.getErrorPage(pe);
+			ErrorPage ep=errorPagePool.getErrorPage(pe,ErrorPageImpl.TYPE_EXCEPTION);
+			
 			ExceptionHandler.printStackTrace(this,pe);
 			ExceptionHandler.log(getConfig(),pe);
+			// error page exception
 			if(ep!=null) {
 				try {
 					Struct sct=pe.getErrorBlock(this,ep);
-					variablesScope().setEL("error",sct);
-					variablesScope().setEL("cferror",sct);
+					variablesScope().setEL(ERROR,sct);
+					variablesScope().setEL(CFERROR,sct);
+					
 					doInclude(ep.getTemplate());
 					return;
 				} catch (Throwable t) {
@@ -1711,6 +1745,35 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				}
 				
 			}
+			
+			// error page request
+			
+			ep=errorPagePool.getErrorPage(pe,ErrorPageImpl.TYPE_REQUEST);
+			if(ep!=null) {
+				PageSource ps = ep.getTemplate();
+				if(ps.physcalExists()){
+					Resource res = ps.getFile();
+					try {
+						String content = IOUtil.toString(res, getConfig().getTemplateCharset());
+						Struct sct=pe.getErrorBlock(this,ep);
+						Key[] keys = sct.keys();
+						String v;
+						for(int i=0;i<keys.length;i++){
+							v=Caster.toString(sct.get(keys[i],null),null);
+							if(v!=null)content=repl(content, keys[i].getString(), v);
+						}
+						
+						write(content);
+						return;
+					} catch (Throwable t) {
+						pe=Caster.toPageException(t);
+						
+					}
+					
+				}
+				else pe=new ApplicationException("The error page template for type request only works if the actual source file also exists . If the exception file is in an Railo archive (.rc/.rcs), you need to use type exception instead.");
+			}
+			
 			
 			try {
 				if(statusCode!=404)

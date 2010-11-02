@@ -1,4 +1,9 @@
+
+<cfsavecontent variable="minus"><cfinclude template="../../admin/resources/img/debug_minus.gif.cfm"></cfsavecontent>
+
+
 <cfset request._debugQueryInfo = ArrayNew(1)>
+<cfset bPlainSQL = (BitAnd(cookie.display_options, 32) eq 32)>
 <cfoutput>
 <cfsavecontent variable="sTempQueries">
 	<table cellpadding="0" cellspacing="0" border="0" width="100%" id="queryDebugTimesTable">
@@ -25,39 +30,43 @@
 		<cfif iDebug lte sMAx>
 			<cfif not bHideStatements>
 				<cfset stDisplaySQL = ReplaceSQLStatements(queries.sql)>
-				<cfif stDisplaySQL.Executeable>
-					<cfif structKeyExists(url, "requestID")>
-						<cfset sAction = cgi.script_name & "?_debug_action=query&requestID=" & url.requestID> 
-					<cfelse>
-						<cfset sAction = cgi.script_name & "?_debug_action=query"> 
-					</cfif>
-					<form name="sqlForm#iDebug#" action="#sAction#" method="post" target="_blank">
-					<input type="Hidden" name="datasource" value="#queries.datasource#">
-					<input type="Hidden" name="queryName" value="#queries.name#">
-					<input type="Hidden" name="executionTime" value="#queries.time#">
-					<input type="Hidden" name="Records" value="#queries.count#">
-					<input type="Hidden" name="src" value="#queries.src#">
-				</cfif>
-				<tr>
-					<td width="20">
-						<div class="rdebug_switch" onclick="toggleObject(this,document.getElementById('sql#iDebug#'))" id="sqlImage#iDebug#" title="#Left(stDisplaySQL.sSql, 50)#...">#sImgPlus#</div>
-					</td><td width="20">
-						<cfif stDisplaySQL.Executeable>
-							<input type="Image" width="9" height="9" border="0" src="#cgi.context_path#/railo-context/admin/resources/img/debug_execute.gif.cfm" alt="Execute Query">
+				<cfif bPlainSQL>
+					#queries.sql#<br>
+				<cfelse>
+					<cfif stDisplaySQL.Executeable>
+						<cfif structKeyExists(url, "requestID")>
+							<cfset sAction = cgi.script_name & "?_debug_action=query&requestID=" & url.requestID> 
 						<cfelse>
-							<img src="#cgi.context_path#/railo-context/admin/resources/img/debug_minus.gif.cfm" width="9" height="9" border="0" alt="Execution not possible, DML-Query">
+							<cfset sAction = cgi.script_name & "?_debug_action=query"> 
 						</cfif>
-					</td>
-					<td align="left" class="cfdebug">
-						<b>#queries.name#</b> (Datasource=<cftry>#queries.datasource#<cfcatch></cfcatch></cftry>, Time=#queries.time#ms, Records=#queries.count#) in #queries.src#
-					</td>
-				</tr><tr id="sql#iDebug#" style="display:none">
-					<td colspan="3">
-						<textarea name="sql" style="width:100%;height:100px;background-color:##DDDDDD;">#stDisplaySQL.sSql#</textarea>
-					</td>
-				</tr>
-				<cfif stDisplaySQL.Executeable>
-					</form>
+						<form name="sqlForm#iDebug#" action="#sAction#" method="post" target="_blank">
+						<input type="Hidden" name="datasource" value="#queries.datasource#">
+						<input type="Hidden" name="queryName" value="#queries.name#">
+						<input type="Hidden" name="executionTime" value="#queries.time#">
+						<input type="Hidden" name="Records" value="#queries.count#">
+						<input type="Hidden" name="src" value="#queries.src#">
+					</cfif>
+					<tr>
+						<td width="20">
+							<div class="rdebug_switch" onclick="toggleObject(this,document.getElementById('sql#iDebug#'))" id="sqlImage#iDebug#" title="#Left(stDisplaySQL.sSql, 50)#...">#sImgPlus#</div>
+						</td><td width="20">
+							<cfif stDisplaySQL.Executeable>
+								<input type="Image" width="9" height="9" border="0" src="#cgi.context_path#/railo-context/admin/resources/img/debug_execute.gif.cfm" alt="Execute Query">
+							<cfelse>
+								<img src="#minus#" width="9" height="9" border="0" alt="Execution not possible, DML-Query">
+							</cfif>
+						</td>
+						<td align="left" class="cfdebug">
+							<b>#queries.name#</b> (Datasource=<cftry>#queries.datasource#<cfcatch></cfcatch></cftry>, Time=#queries.time#ms, Records=#queries.count#) in #queries.src#
+						</td>
+					</tr><tr id="sql#iDebug#" style="display:none">
+						<td colspan="3">
+							<textarea name="sql" style="width:100%;height:100px;background-color:##DDDDDD;">#stDisplaySQL.sSql#</textarea>
+						</td>
+					</tr>
+					<cfif stDisplaySQL.Executeable>
+						</form>
+					</cfif>
 				</cfif>
 			<cfelse>
 				<cfset bChanged = true>

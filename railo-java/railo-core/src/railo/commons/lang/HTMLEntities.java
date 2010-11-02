@@ -363,7 +363,7 @@ public final class HTMLEntities {
     public static String escapeHTML(String str,short version) {
       	String[][] data;
       	int[] offset;
-      	StringBuffer rtn=new StringBuffer(str.length());
+      	StringBuilder rtn=new StringBuilder(str.length());
       	char[] chars=str.toCharArray();
       	
       	if(version==HTMLV20) {
@@ -405,7 +405,7 @@ public final class HTMLEntities {
      */
     public static String unescapeHTML(String str) {
       	
-      	StringBuffer rtn=new StringBuffer();
+    	StringBuilder rtn=new StringBuilder();
       	int posStart=-1;
       	int posFinish=-1;
       	while((posStart=str.indexOf('&',posStart))!=-1) {

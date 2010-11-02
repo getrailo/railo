@@ -20,17 +20,9 @@ import railo.runtime.img.interpolation.Triangle;
 public class ImageResizer	{
     
     private static class ContributionInfo {
-	int pixel;
-	double weight;
+    	int pixel;
+    	double weight;
 	
-	public ContributionInfo() {
-	    /* empty */
-	}
-	
-	public ContributionInfo(int pixel, double weight) {
-	    this.pixel = pixel;
-	    this.weight = weight;
-	}
 	
 	public void setPixel(int pixel) {
 	    this.pixel = pixel;
@@ -192,110 +184,82 @@ public class ImageResizer	{
 	return destination.getHeight();
     }
     
-    public static BufferedImage scale(BufferedImage image, double scale,int filterType, double blur) throws ExpressionException {
-		if (scale == 0.0)
-		    throw new ExpressionException("invalid size for image");
-		int columns = (int) (image.getWidth() * scale);
-		int rows = (int) ( image.getHeight() * scale);
-		BufferedImage resizeImage = createBufferedImage(image, columns, rows);
-		if (scale == 1.0) {
-		    resizeImage.setData(image.getData());
-		    return resizeImage;
-		}
-		Interpolation filter = getInterpolation(filterType);
-		double scaleInverse = blur * Math.max(1.0 / scale, 1.0);
-		double support = Math.max(scaleInverse * filter.getSupport(), 0.5);
-		support
-		    = support < filter.getSupport() ? filter.getSupport() : support;
-		ContributionInfo[] contribution
-		    = new ContributionInfo[(int) support * 2 + 3];
+
+    
+    public static BufferedImage resize(BufferedImage image, int columns, int rows, int interpolation, double blur) throws ExpressionException {
+    	if (columns == 0 || rows == 0)
+    		throw new ExpressionException("invalid size for image");
+		
+    	BufferedImage resizeImage = createBufferedImage(image, columns, rows);
+		
+		Interpolation inter = getInterpolation(interpolation);
+		double xFactor = (double) columns / (double) image.getWidth();
+		double scale = blur * Math.max(1.0 / xFactor, 1.0);
+		double xSupport = Math.max(scale * inter.getSupport(), 0.5);
+		double yFactor = (double) rows / (double) image.getHeight();
+		scale = blur * Math.max(1.0 / yFactor, 1.0);
+		double ySupport = Math.max(scale * inter.getSupport(), 0.5);
+		double support = Math.max(xSupport, ySupport);
+		if (support < inter.getSupport())
+		    support = inter.getSupport();
+		ContributionInfo[] contribution = new ContributionInfo[(int) support * 2 + 3];
+		
 		for (int cloop = 0; cloop < (int) support * 2 + 3; cloop++)
 		    contribution[cloop] = new ContributionInfo();
-		BufferedImage sourceImage
-		    = createBufferedImage(image, image.getWidth(), rows);
-		int status = vertical(image, sourceImage, scale, filter, blur,
-					    contribution);
-		status |= horizontal(sourceImage, resizeImage, scale, filter, blur, contribution);
-		if (status == 0)
-		    throw new ExpressionException("invalid size for image");
+		
+		int status;
+		if (columns * (image.getHeight() + rows) < rows * (image.getWidth() + columns)) {
+		    BufferedImage sourceImage = createBufferedImage(image, columns, image.getHeight());
+		    status = horizontal(image, sourceImage, xFactor, inter, blur, contribution);
+		    status |= vertical(sourceImage, resizeImage, yFactor,inter, blur, contribution);
+		} 
+		else {
+		    BufferedImage sourceImage = createBufferedImage(image, image.getWidth(), rows);
+		    status = vertical(image, sourceImage, yFactor, inter, blur, contribution);
+		    status |= horizontal(sourceImage, resizeImage, xFactor, inter, blur, contribution);
+		}
+		
+		if (status == 0) throw new ExpressionException("can't resize image");
 		return resizeImage;
     }
     
-    public static BufferedImage resize(BufferedImage image, int columns, int rows, int interpolation, double blur) throws ExpressionException {
-	if (columns == 0 || rows == 0)
-	    throw new ExpressionException("invalid size for image");
-	BufferedImage resizeImage = createBufferedImage(image, columns, rows);
-	/*fails
-	 * if (columns == image.getWidth() && rows == image.getHeight()) {
-	    resizeImage.setData(image.getData());
-	    return resizeImage;
-	}*/
-	Interpolation filter = getInterpolation(interpolation);
-	double x_factor = (double) columns / (double) image.getWidth();
-	double scale = blur * Math.max(1.0 / x_factor, 1.0);
-	double x_support = Math.max(scale * filter.getSupport(), 0.5);
-	double y_factor = (double) rows / (double) image.getHeight();
-	scale = blur * Math.max(1.0 / y_factor, 1.0);
-	double y_support = Math.max(scale * filter.getSupport(), 0.5);
-	double support = Math.max(x_support, y_support);
-	if (support < filter.getSupport())
-	    support = filter.getSupport();
-	ContributionInfo[] contribution
-	    = new ContributionInfo[(int) support * 2 + 3];
-	for (int cloop = 0; cloop < (int) support * 2 + 3; cloop++)
-	    contribution[cloop] = new ContributionInfo();
-	int status;
-	if (columns * (image.getHeight() + rows)
-	    < rows * (image.getWidth() + columns)) {
-	    BufferedImage sourceImage
-		= createBufferedImage(image, columns, image.getHeight());
-	    status = horizontal(image, sourceImage, x_factor, filter,
-				      blur, contribution);
-	    status |= vertical(sourceImage, resizeImage, y_factor,
-				     filter, blur, contribution);
-	} else {
-	    BufferedImage sourceImage
-		= createBufferedImage(image, image.getWidth(), rows);
-	    status = vertical(image, sourceImage, y_factor, filter, blur,
-				    contribution);
-	    status |= horizontal(sourceImage, resizeImage, x_factor,
-				       filter, blur, contribution);
-	}
-	if (status == 0)
-	    throw new ExpressionException("can't resize image");
-	return resizeImage;
-    }
-    
-    private static BufferedImage createBufferedImage(BufferedImage imgSrc, int columns, int rows) {
-    	ColorModel cm = imgSrc.getColorModel();
-    	if (cm instanceof IndexColorModel) {
-    		if (cm.getTransparency() != 1)	return new BufferedImage(columns, rows, 2);
-    		return new BufferedImage(columns, rows, 1);
-    	} 
-    	return  (new BufferedImage(cm,imgSrc.getRaster().createCompatibleWritableRaster(columns,rows),cm.isAlphaPremultiplied(), null));
+    private static BufferedImage createBufferedImage(BufferedImage image, int columns, int rows) {
+        ColorModel colormodel = image.getColorModel();
+        BufferedImage newImage;
+        if(colormodel instanceof IndexColorModel) {
+            if(colormodel.getTransparency() != 1)
+                newImage = new BufferedImage(columns, rows, 2);
+            else
+                newImage = new BufferedImage(columns, rows, 1);
+        } 
+        else {
+            newImage = new BufferedImage(colormodel, image.getRaster().createCompatibleWritableRaster(columns, rows), colormodel.isAlphaPremultiplied(), null);
+        }
+        return newImage;
     }
     
     
-    private static Interpolation getInterpolation(int filter) throws ExpressionException {
-	//print.out(filter);
-    switch (filter) {
-	
-		case 0:	return new Triangle();
-		case Image.IP_HERMITE:	return new Hermite();
-		case Image.IP_HANNING:	return new Hanning();
-		case Image.IP_MEDIUMQUALITY:
-		case Image.IP_HIGHPERFORMANCE:
-		case Image.IP_HAMMING:	return new Hamming();
-		case Image.IP_BLACKMAN:	return new Blackman();
-		case Image.IP_QUADRATIC:return new Quadratic();
-		case Image.IP_HIGHQUALITY:
-		case Image.IP_MEDIUMPERFORMANCE:
-		case Image.IP_MITCHELL:	return new Mitchell();
-		case Image.IP_HIGHESTQUALITY:
-		case Image.IP_LANCZOS:	return new Lanczos();
-		case Image.IP_BESSEL:	return new Bessel();
-		default:	throw new ExpressionException("invalid interpolation definition");
-	}
+   
+    
+    private static Interpolation getInterpolation(int interpolation) throws ExpressionException {
+		switch (interpolation) {
+		
+			case 0:	return new Triangle();
+			case Image.IP_HERMITE:	return new Hermite();
+			case Image.IP_HANNING:	return new Hanning();
+			case Image.IP_MEDIUMQUALITY:
+			case Image.IP_HIGHPERFORMANCE:
+			case Image.IP_HAMMING:	return new Hamming();
+			case Image.IP_BLACKMAN:	return new Blackman();
+			case Image.IP_QUADRATIC:return new Quadratic();
+			case Image.IP_HIGHQUALITY:
+			case Image.IP_MEDIUMPERFORMANCE:
+			case Image.IP_MITCHELL:	return new Mitchell();
+			case Image.IP_HIGHESTQUALITY:
+			case Image.IP_LANCZOS:	return new Lanczos();
+			case Image.IP_BESSEL:	return new Bessel();
+			default:	throw new ExpressionException("invalid interpolation definition");
+		}
     }
     
     

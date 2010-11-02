@@ -44,7 +44,7 @@ public final class Captcha extends AbstractCaptcha {
 	 * @return
 	 */
 	public static String randomString(int length) {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		for(int i=0;i<length;i++) {
 			sb.append(chars[AbstractCaptcha.rnd(0,chars.length-1)]);
 		}

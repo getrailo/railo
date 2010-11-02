@@ -111,7 +111,7 @@ public final class SourceFileImpl implements SourceFile {
 				if(arr.length>i) {
 					String tmp="/"+list(arr,0,i);
 					if(strRoot.lastIndexOf(tmp)==rootLen-tmp.length()) {
-						StringBuffer rtn=new StringBuffer();
+						StringBuilder rtn=new StringBuilder();
 						for(int y=0;i<count-i;y++) rtn.append("../");
 						isOutSide=rtn.length()!=0;
 						return rtn.toString()+(rtn.length()==0?"/":"")+list(arr,i,arr.length);
@@ -132,7 +132,7 @@ public final class SourceFileImpl implements SourceFile {
 	 * @return String list
 	 */
 	private String list(String[] arr,int from, int len) {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		for(int i=from;i<len;i++) {
 			sb.append(arr[i]);
 			if(i+1!=arr.length)sb.append('/');
@@ -222,8 +222,8 @@ public final class SourceFileImpl implements SourceFile {
 	
 	private void createClassAndPackage() {
 		String str=realpath;
-		StringBuffer packageName=new StringBuffer();
-		StringBuffer javaName=new StringBuffer();
+		StringBuilder packageName=new StringBuilder();
+		StringBuilder javaName=new StringBuilder();
 		while(str.indexOf('/')==0)str=str.substring(1);
 		while(str.lastIndexOf('/')==str.length()-1)str=str.substring(0,str.length()-1);
 		

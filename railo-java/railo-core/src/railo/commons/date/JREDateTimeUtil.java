@@ -184,7 +184,7 @@ public class JREDateTimeUtil extends DateTimeUtil {
 			string.setTimeZone(tz);
 			string.setTimeInMillis(dt.getTime());
 			//"HH:mm:ss"
-        	StringBuffer sb=new StringBuffer();
+			StringBuilder sb=new StringBuilder();
     		
         	sb.append("{ts '");
         	toString(sb,string.get(Calendar.YEAR),4);
@@ -242,7 +242,7 @@ public class JREDateTimeUtil extends DateTimeUtil {
 		return c;
 	}*/
 
-	void toString(StringBuffer sb,int i, int amount) {
+	void toString(StringBuilder sb,int i, int amount) {
 		String str = Caster.toString(i);
 		while(str.length()<(amount--)){
 			sb.append( '0');

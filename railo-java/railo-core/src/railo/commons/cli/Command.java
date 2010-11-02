@@ -66,8 +66,8 @@ public class Command {
     private static String[] toArray(String str) {
     	if(StringUtil.isEmpty(str)) return new String[]{""};
     	str=str.trim();
-    	StringBuffer sb=new StringBuffer();
-    	ArrayList list=new ArrayList();
+    	StringBuilder sb=new StringBuilder();
+    	ArrayList<String> list=new ArrayList<String>();
 		char[] carr = str.toCharArray();
 		char c,last=0;
 		char inside=0;
@@ -120,7 +120,7 @@ public class Command {
     	return (String[]) list.toArray(new String[list.size()]);
 	}
     
-    private static void populateList(StringBuffer sb, ArrayList list) {
+    private static void populateList(StringBuilder sb, ArrayList<String> list) {
 
 		String tmp = sb.toString();
 		tmp=tmp.trim();

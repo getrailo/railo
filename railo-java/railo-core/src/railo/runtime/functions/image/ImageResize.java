@@ -26,8 +26,7 @@ public class ImageResize implements Function {
 		if(name instanceof String)
 			name=pc.getVariable(Caster.toString(name));
 		Image image=Image.toImage(name);
-		ColorModel cm=image.getColorModel();
-
+		
 		interpolation = interpolation.toLowerCase().trim();
 		
 		

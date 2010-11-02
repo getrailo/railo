@@ -1115,7 +1115,14 @@ public final class ConfigWebFactory {
             f=dir.getRealResource("MailWatcherListener.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/gateway/MailWatcherListener.cfc",f);
 	        
-	        
+        // resources/language
+            Resource langDir = adminDir.getRealResource("resources/language");
+            langDir.mkdirs();
+            f=langDir.getRealResource("en.xml");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/resources/language/en.xml",f);
+            
+            f=langDir.getRealResource("de.xml");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/resources/language/de.xml",f);
 
         // G DRIVER
             Resource gDir = adminDir.getRealResource("gdriver");
@@ -1659,6 +1666,7 @@ public final class ConfigWebFactory {
 			,""
             ,-1
             ,-1
+            ,60000
             ,true
             ,true
             ,DataSource.ALLOW_ALL,
@@ -1714,6 +1722,7 @@ public final class ConfigWebFactory {
                         ,decrypt(dataSource.getAttribute("password"))
                         ,toInt(dataSource.getAttribute("connectionLimit"),-1)
                         ,toInt(dataSource.getAttribute("connectionTimeout"),-1)
+                        ,toLong(dataSource.getAttribute("metaCacheTimeout"),60000)
                         ,toBoolean(dataSource.getAttribute("blob"),true)
                         ,toBoolean(dataSource.getAttribute("clob"),true)
                         ,toInt(dataSource.getAttribute("allow"),DataSource.ALLOW_ALL)
@@ -2045,19 +2054,19 @@ public final class ConfigWebFactory {
 
     private static void setDatasource(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
             String databasename, int port, String dsn, String user, String pass, 
-            int connectionLimit, int connectionTimeout, boolean blob, boolean clob, int allow, Struct custom) throws ClassException {
+            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom) throws ClassException {
 		
         
 		datasources.put(datasourceName.toLowerCase(),
-          new DataSourceImpl(datasourceName,className, server, dsn, databasename, port, user, pass,connectionLimit,connectionTimeout,blob,clob, allow,custom, false));
+          new DataSourceImpl(datasourceName,className, server, dsn, databasename, port, user, pass,connectionLimit,connectionTimeout,metaCacheTimeout,blob,clob, allow,custom, false));
 
     }
     private static void setDatasourceEL(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
             String databasename, int port, String dsn, String user, String pass, 
-            int connectionLimit, int connectionTimeout, boolean blob, boolean clob, int allow, Struct custom) {
+            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom) {
     	try {
 			setDatasource(config,datasources,datasourceName,className, server, 
-			        databasename, port, dsn, user, pass, connectionLimit, connectionTimeout, blob, clob, allow, custom);
+			        databasename, port, dsn, user, pass, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, custom);
 		} catch (Throwable t) {}
     }
     
@@ -3833,6 +3842,14 @@ public final class ConfigWebFactory {
 		int intValue=Caster.toIntValue(value.trim(),Integer.MIN_VALUE);
 		if(intValue==Integer.MIN_VALUE) return defaultValue;
 		return intValue;
+	}
+	
+	public static long toLong(String value, long defaultValue) {
+		
+		if(value==null || value.trim().length()==0) return defaultValue;
+		long longValue=Caster.toLongValue(value.trim(),Long.MIN_VALUE);
+		if(longValue==Long.MIN_VALUE) return defaultValue;
+		return longValue;
 	}
 
 	/**

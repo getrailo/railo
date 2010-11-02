@@ -14,7 +14,7 @@ import railo.commons.lang.CharBuffer;
 /**
  * implementation of the BodyContent
  */
-public final class BodyContentImpl extends BodyContent {
+public class BodyContentImpl extends BodyContent {
 	
 	CharBuffer charBuffer=new CharBuffer(128);
 	JspWriter enclosingWriter;
@@ -318,6 +318,44 @@ public final class BodyContentImpl extends BodyContent {
 	 */
 	public void setCharBuffer(CharBuffer charBuffer) {
 		this.charBuffer=charBuffer;
+	}
+
+	/**
+	 * @see javax.servlet.jsp.JspWriter#getBufferSize()
+	 */
+	public int getBufferSize() {
+		return charBuffer.size();
+	}
+
+	/**
+	 * @see javax.servlet.jsp.JspWriter#isAutoFlush()
+	 */
+	public boolean isAutoFlush() {
+		return super.isAutoFlush();
+	}
+
+	/**
+	 * @see java.io.Writer#append(java.lang.CharSequence)
+	 */
+	public Writer append(CharSequence csq) throws IOException {
+		write(csq.toString());
+		return this;
+	}
+
+	/**
+	 * @see java.io.Writer#append(java.lang.CharSequence, int, int)
+	 */
+	public Writer append(CharSequence csq, int start, int end) throws IOException {
+		write(csq.subSequence(start, end).toString());
+		return this;
+	}
+
+	/**
+	 * @see java.io.Writer#append(char)
+	 */
+	public Writer append(char c) throws IOException {
+		write(c);
+		return this;
 	}
 	
 

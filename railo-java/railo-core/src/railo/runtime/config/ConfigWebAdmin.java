@@ -947,7 +947,7 @@ public final class ConfigWebAdmin {
      * @throws SecurityException
      */
     public void updateDataSource(String name, String newName, String clazzName, String dsn, String username,String password,
-            String host,String database,int port,int connectionLimit, int connectionTimeout,
+            String host,String database,int port,int connectionLimit, int connectionTimeout,long metaCacheTimeout,
             boolean blob,boolean clob,int allow,Struct custom) throws ExpressionException, SecurityException {
 
     	checkWriteAccess();
@@ -1008,6 +1008,7 @@ public final class ConfigWebAdmin {
                 el.setAttribute("port",Caster.toString(port));
                 el.setAttribute("connectionLimit",Caster.toString(connectionLimit));
                 el.setAttribute("connectionTimeout",Caster.toString(connectionTimeout));
+                el.setAttribute("metaCacheTimeout",Caster.toString(metaCacheTimeout));
                 el.setAttribute("blob",Caster.toString(blob));
                 el.setAttribute("clob",Caster.toString(clob));
                 el.setAttribute("allow",Caster.toString(allow));
@@ -1037,6 +1038,10 @@ public final class ConfigWebAdmin {
         if(port>-1)el.setAttribute("port",Caster.toString(port));
         if(connectionLimit>-1)el.setAttribute("connectionLimit",Caster.toString(connectionLimit));
         if(connectionTimeout>-1)el.setAttribute("connectionTimeout",Caster.toString(connectionTimeout));
+        if(metaCacheTimeout>-1)el.setAttribute("metaCacheTimeout",Caster.toString(metaCacheTimeout));
+        
+        
+        
         el.setAttribute("blob",Caster.toString(blob));
         el.setAttribute("clob",Caster.toString(clob));
         if(allow>-1)el.setAttribute("allow",Caster.toString(allow));

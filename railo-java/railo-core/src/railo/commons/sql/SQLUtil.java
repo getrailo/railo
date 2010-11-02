@@ -22,7 +22,7 @@ public class SQLUtil {
 		
 		char[] carr = pstr.toCharArray();
 		char c;
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		for(int i=0;i<carr.length;i++) {
 			c=carr[i];
 			if(ESCAPE_CHARS.indexOf(c)!=-1) {
@@ -60,7 +60,7 @@ public class SQLUtil {
 	}
 
 	private static String removeLiterals(ParserString ps, boolean escapeMysql) {
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		char c,p=(char)0;
 		boolean inside=false;
 		do {

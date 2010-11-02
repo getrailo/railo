@@ -13,14 +13,15 @@ import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 
-import org.apache.commons.collections.map.ReferenceMap;
-
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.db.CFTypes;
+import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
+import railo.runtime.db.ProcMeta;
+import railo.runtime.db.ProcMetaCollection;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItemImpl;
@@ -89,7 +90,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	private String cachename="";
 	private DateTime cachedafter;
 	private ProcParamBean returnValue=null;
-	private Map<String,ProcMetaCollection> procedureColumnCache;
+	//private Map<String,ProcMetaCollection> procedureColumnCache;
 	
 	public void release() {
 		params.clear();
@@ -252,16 +253,23 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			try {
 				DatabaseMetaData md = conn.getMetaData();
 				
-				if(procedureColumnCache==null)procedureColumnCache=new ReferenceMap();
+				//if(procedureColumnCache==null)procedureColumnCache=new ReferenceMap();
+				//ProcMetaCollection coll=procedureColumnCache.get(procedure);
+				DataSourceImpl d = ((DataSourceImpl)dc.getDatasource());
+				long cacheTimeout = d.getMetaCacheTimeout();
+				Map<String, ProcMetaCollection> procedureColumnCache = d.getProcedureColumnCache();
 				ProcMetaCollection coll=procedureColumnCache.get(procedure);
-				if(coll==null || (coll.created+60000)<System.currentTimeMillis()) {
+				
+				
+				
+				if(coll==null || (cacheTimeout>=0 && (coll.created+cacheTimeout)<System.currentTimeMillis())) {
 					ResultSet res = md.getProcedureColumns(pack, null, name, null);
 					coll=createProcMetaCollection(res);
 					procedureColumnCache.put(procedure,coll);
 				}
 				index=-1;
 				//int inOutCount=0;
-				for(int i=0;i<coll.metas.length;i++) {
+				for(int i=0;i<coll.metas.length;i++) { 
 					index++;
 					
 					// Return
@@ -573,22 +581,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		this.timeout = timeout;
 	}
 	
-	class ProcMetaCollection {
-		private ProcMeta[] metas;
-		private long created=System.currentTimeMillis();
-		
-		public ProcMetaCollection(ProcMeta[] metas) {
-			this.metas=metas;
-		}
-	}
 	
-	class ProcMeta {
-		private int columnType;
-		private int dataType;
-		
-		public ProcMeta(int columnType, int dataType) {
-			this.columnType=columnType;
-			this.dataType=dataType;
-		}
-	}
 }
+
+

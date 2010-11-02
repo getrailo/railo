@@ -185,7 +185,7 @@ public final class HTTPUtil {
         		path=path.substring(0,sqIndex);
         	} 
         	
-        	StringBuffer res=new StringBuffer();
+        	StringBuilder res=new StringBuilder();
         	
         	StringList list = List.toListTrim(path, '/');
         	String str;
@@ -244,7 +244,7 @@ public final class HTTPUtil {
     
     private static String decodeQuery(String query,char startDelimeter) {
     	if(!StringUtil.isEmpty(query)) {
-        	StringBuffer res=new StringBuffer();
+    		StringBuilder res=new StringBuilder();
         	
         	StringList list = List.toList(query, '&');
         	String str;
@@ -299,7 +299,7 @@ public final class HTTPUtil {
         	} 
         	
         	
-        	StringBuffer res=new StringBuffer();
+        	StringBuilder res=new StringBuilder();
         	
         	StringList list = List.toListTrim(path, '/');
         	String str;
@@ -802,7 +802,7 @@ public final class HTTPUtil {
 			query=query.substring(0,sIndex);
 		}
 		
-		StringBuffer res=new StringBuffer(file);
+		StringBuilder res=new StringBuilder(file);
     	
 		
         // query

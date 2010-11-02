@@ -1,85 +1,6 @@
 <cfsilent>
 <cfparam name="cookie.RAILO_ADMIN_LANG" default="en">
-<cfif cookie.RAILO_ADMIN_LANG eq "en">
-	<cfset sNoDebugInfoAvailable = "No debug information available...">
-	<cfset sTitleRequestTime     = "Request Time">
-	<cfset sTitleExecTime        = "Execution Time">
-	<cfset sTitleCalledURL       = "Called URL">
-	<cfset sTitleOptions         = "Options">
-	<cfset sCallersIPAddress     = "The caller's IP address">
-	<cfset sTimeStampRecorded    = "Recording timestamp of the request">
-	<cfset sTotalRequestTime     = "Total time of the request">
-	<cfset sRequestedURL         = "Requested URL. Click on it in order to see the Debug output">
-	<cfset sReplay               = "replay request (new window)">
-	<cfset sStore2File           = "Stores the debugging output to a file">
-	<cfset sReload               = "Reload Page">
-	<cfset sEvery                = "every">
-	<cfset sSeconds              = "seconds">
-	<cfset sExecTimes            = "Execution times">
-	<cfset sTitleExecTimes       = "Show execution times in debug output">
-	<cfset sDisplayAsTree        = "display as tree">
-	<cfset sTitleDispAsTree      = "Displays the templates as a tree hierarchy in calling order">
-	<cfset sShowSQLStatements    = "SQL">
-	<cfset sTitleShowSQL         = "Show SQL queries in debug output">
-	<cfset sHideSQLStatements    = "Hide statements">
-	<cfset sTitleHideSQL         = "Hides the SQL statements. Additional information for sortorder 'queryname' and 'file'">
-	<cfset sDisplay              = "Display">
-	<cfset sTitleDisplay         = "Elements exceeding this number according sortorder will be supressed">
-	<cfset sFiles                = "templates">
-	<cfset sQueries              = "queries">
-	<cfset sSortOrder            = "Sortorder">
-	<cfset sFilterOwnAddress     = "Filter own IP Address">
-	<cfset sTitleOwnAddress      = "Displays only requests from your current IP address">
-	<cfset sFilterTemplates      = "Filter strings (separated by comma)">
-	<cfset sTitleFilterTemplates = "Only URL's matching one of the patterns will be debugged">
-	<cfset sIncludeOnlyTemplates = "include all except">
-	<cfset sTitleIncludeOnly     = "Debug all URL's that do not contain one of the following strings">
-	<cfset sExcludeOnlyTemplates = "exclude all except">
-	<cfset sTitleExcludeOnly     = "Debug all URL's that contain one of the following strings">
-	<cfset sSave                 = "save settings">
-	<cfset sResetSettings        = "reset settings">
-	<cfset sExecutionTimeLimit   = "Display only requests running more than: ">
-<cfelse>
-	<cfset sNoDebugInfoAvailable = "Keine debug Informationen vorhanden...">
-	<cfset sTitleRequestTime     = "Request Zeit">
-	<cfset sTitleExecTime        = "Ausführungszeit">
-	<cfset sTitleCalledURL       = "Aufgerufene URL">
-	<cfset sTitleOptions         = "Optionen">
-	<cfset sCallersIPAddress     = "IP Adresse des Aufrufers">
-	<cfset sTimeStampRecorded    = "Zeitstempel des Request">
-	<cfset sTotalRequestTime     = "Gesamtzeit für den Request">
-	<cfset sRequestedURL         = "Aufgerufene URL. Klicken Sie drauf, um die Debugging Informationen anzusehen">
-	<cfset sReplay               = "Request aufrufen (neues Fenster)">
-	<cfset sStore2File           = "Speichert die Debuggingausgabe in einer Datei">
-	<cfset sReload               = "Seite neu laden">
-	<cfset sEvery                = "Alle">
-	<cfset sSeconds              = "Sekunden">
-	<cfset sExecTimes            = "Ausführungszeiten">
-	<cfset sTitleExecTimes       = "Zeigt die Ausführungszeiten der einzelnen Templates in der Debugging Ausgabe an">
-	<cfset sDisplayAsTree        = "als Baum">
-	<cfset sTitleDispAsTree      = "Stellt die aufgerufenen Templates als Baumstruktur entsprechend der Aufrufreihenfolge dar">
-	<cfset sShowSQLStatements    = "SQL">
-	<cfset sTitleShowSQL         = "Zeigt die aufgerufenen SQL Queries in der Debugging Ausgabe an">
-	<cfset sHideSQLStatements    = "Statements verbergen">
-	<cfset sTitleHideSQL         = "Verbirgt die SQL Statements. Zusätzliche Informationen bei Sortierung 'queryname' und 'file'">
-	<cfset sDisplay              = "Zeige">
-	<cfset sTitleDisplay         = "Elemente die diese zahl entsprechend der Sortierung übersteigen werden unterdrückt">
-	<cfset sFiles                = "Templates">
-	<cfset sQueries              = "Queries">
-	<cfset sSortOrder            = "Sortierung">
-	<cfset sFilterOwnAddress     = "Eigene IP Adresse filtern">
-	<cfset sTitleOwnAddress      = "Zeigt nur requests der eigenen IP Adress an">
-	<cfset sFilterTemplates      = "Filtermuster (getrennt durch Komma)">
-	<cfset sTitleFilterTemplates = "Nur URL's die einem der Muster entsprechen werden debuggt">
-	<cfset sIncludeOnlyTemplates = "alle ausser">
-	<cfset sTitleIncludeOnly     = "Debuggt alle URL's, die keine der folgenden Zeichenketten enthalten">
-	<cfset sExcludeOnlyTemplates = "keine ausser">
-	<cfset sTitleExcludeOnly     = "Debuggt nur URL's die eine der folgenden Zeichenketten enthalten">
-	<cfset sSave                 = "Zeichenketten speichern">
-	<cfset sResetSettings        = "Zeichenketten zurücksetzen">
-	<cfset sExecutionTimeLimit   = "Nur Requests anzeigen die länger dauern als:">
-</cfif>
-
+<cfinclude template="debugging-console-lang.cfm">
 <cfif isDefined("form.storeSettings")>
     <cfset server.stDebugOptions = struct("iTime":"#form.filterTime#","bExclude":"#form.filterType#","lstDebugFilters":"#form.templates#")>
 	<cflocation addtoken="No" url="#cgi.script_name#">
@@ -107,12 +28,13 @@
 </cfsilent>
 <html>
 	<head>
-		<title>Railo 3.0 - Debugging console</title>
+		<title>Railo 3.2 - Debugging console</title>
 		<style type="text/css">
 			.checkbox {color:black;background-color:white;font-family:"Verdana", Times, serif;font-size:10px;}
 			.cfdebug {color:black;background-color:white;font-family:"Verdana", Times, serif;font-size:10px;}
 			.cfdebuglge {color:#6699BB;background-color:white;font-family:"Verdana", Times, serif; font-size:small;}
 			.cfdebug_head {color:#224499;background-color:white;font-family:"Verdana", Times, serif; font-size:small;font-weight: bold; }
+			a {color:#0099FF;}
 			a.cfdebuglink {color:blue; background-color:white;}
 			.template {	color: black; font-family: "Verdana", Times, serif; font-weight: normal; }
 			.template_overage {	background-color:white; font-family: "Verdana", Times, serif; font-weight: bold; }
@@ -120,7 +42,7 @@
 			.tblContent{padding-left:5px;padding-right:5px;border:1px solid #CFD7E2;background-color:#DFE9F6;font-size:12px;}
 			.tbl{border:0px solid #CFD7E2;}
 			.tblHead{padding-left:5px;padding-right:5px;background-color:#CFD7E2;border:1px solid #CFD7E2;font-weight:bold;font-size:12px;}
-			.btn {background-color:#99CCFF;color:#000066}
+			.btn {background-color:#99CCFF;color:#0000CC}
 		</style>
 	</head><body>
 	<cfoutput>
@@ -129,13 +51,13 @@
 		#sNoDebugInfoAvailable#
 	<cfelse>
 		<cfset iStart = server[sWeb_ID].debugEntryCount>
-		<td valign="top">
-			<table class="tbl">
+		<td valign="top" width="100%">
+			<table class="tbl" width="100%">
 				<tr>
-					<td class="tblHead">#sTitleRequestTime#</td>
-					<td class="tblHead">#sTitleExecTime#</td>
-					<td class="tblHead" colspan="2">#sTitleCalledURL#</td>
-					<td class="tblHead">#sTitleOptions#</td>
+					<td class="tblHead" width="15%">#sTitleRequestTime#</td>
+					<td class="tblHead" width="15%">#sTitleExecTime#</td>
+					<td class="tblHead" colspan="2" width="60%">#sTitleCalledURL#</td>
+					<td class="tblHead" width="10%">#sTitleOptions#</td>
 				</tr>
 				<cfset bDrawn = False>
 				<cfloop from="1" to="10" index="i">
@@ -168,10 +90,10 @@
 								<span title="#sTimeStampRecorded#" alt="#sTimeStampRecorded#">#DateFormat(stDebug.recorded, "dd.mm.yyyy")#&nbsp;
 								#TimeFormat(stDebug.recorded, "HH.mm.ss")#</span>
 								<cfif sIPAddress neq "">
-									<br><span title="#sCallersIPAddress#" alt="#sCallersIPAddress#">#sIPAddress#</span>
+									<span title="#sCallersIPAddress#" alt="#sCallersIPAddress#">#sIPAddress#</span>
 								</cfif>
 								</td>
-								<td class="tblContent" align="right" valign="top"><span title="#sTotalRequestTime#" alt="#sTotalRequestTime#">#Numberformat(iTotal, "9,990")#ms</span><br>
+								<td class="tblContent" align="right" valign="top"><span title="#sTotalRequestTime#" alt="#sTotalRequestTime#">#Numberformat(iTotal, "9,990")#ms</span>&nbsp;&nbsp;&nbsp;
 									<span title="Total template execution time" alt="Total template execution time"><b>T:</b> #iTotal-iQry#ms</span>&nbsp;&nbsp;
 									<span title="Total query execution time" alt="Total query execution time"><b>Q:</b> #iQry#ms</span>
 								</td>
@@ -184,13 +106,13 @@
 										#stDebug.calledURL#
 									</cfif>
 									</a>
-									</span><br>
-									<a href="#stDebug.calledURL#" target="_blank">#sReplay#</a>
+									</span>
+									
 								</td>
 								<td class="tblContent" valign="top">
 									<span title="#sStore2File#" alt="#sStore2File#">
 									<a href="debugging-console-output.cfm?requestID=#iStart#&_debug_action=store" target="dsp_debug">store2file</a>
-									</span>
+									</span>&nbsp;<a href="#stDebug.calledURL#" target="_blank">#sReplay#</a>
 								</td>
 								<cfif not bDrawn>
 									<cfset bDrawn = True>
@@ -211,65 +133,73 @@
 		</td>
 	</cfif>
 	<td valign="top" align="right">
-		<table class="tbl" bgcolor="white" align="right" border="1" cellpadding="3" cellspacing="0" id="DEBUGOPTIONS" style="border-collapse:collapse"><!---
-			---><tr><td class="tblHead" colspan="2"><!---
-				---><b>Display Options:</b><!---
-			---></td></tr><!---
-			---><tr><td class="tblContent"><!---
-				---><input type="Checkbox" id="outputexecution" value="1" onclick="enableOption()" class="checkbox" checked><span title="#sTitleExecTimes#" alt="#sTitleExecTimes#">#sExecTimes#</span>&nbsp;<!---
-				---><input type="Checkbox" id="outputastree" value="8" onclick="enableOption()" class="checkbox" checked><span title="#sTitleDispAsTree#" alt="#sTitleDispAsTree#">#sDisplayAsTree#</span>&nbsp;&nbsp;<!---
-			---></td><td class="tblContent"><!---
-				---><input type="Checkbox" id="outputsql" value="2" onclick="enableOption()" class="checkbox" checked><span title="#sTitleShowSQL#" alt="#sTitleShowSQL#">#sShowSQLStatements#</span>&nbsp;<!---
-				---><input type="Checkbox" id="hidestatements" value="4" onclick="enableOption()" class="checkbox" checked><span title="#sTitleHideSQL#" alt="#sTitleHideSQL#">#sHideSQLStatements#</span><!---
-			---></td></tr><!---
-			---><tr><td class="tblContent"><!---
-				---><span title="#sTitleDisplay#" alt="#sTitleDisplay#">#sDisplay#&nbsp;<select name="outputMaxFiles" id="outputMaxFiles" onchange="enableOption()">
-					<option value="-1">all</option>
-					<option value="10">10</option>
-					<option value="50">50</option>
-					<option value="100">100</option>
-					<option value="500">500</option>
-					<option value="1000">1000</option>
-				</select>&nbsp;#sFiles#</span><!---
-			---></td><td class="tblContent"><!---
-				---><span title="#sTitleDisplay#" alt="#sTitleDisplay#">#sDisplay#&nbsp;<select name="outputMaxQueries" id="outputMaxQueries" onchange="enableOption()">
-					<option value="-1">all</option>
-					<option value="10">10</option>
-					<option value="50">50</option>
-					<option value="100">100</option>
-					<option value="500">500</option>
-					<option value="1000">1000</option>
-				</select>&nbsp;#sQueries#</span><!---
-			---></td></tr><!---
-			---><tr><!---
-				---><td class="tblContent">#sSortOrder#:<br><select id="filenamesortorder" onchange="enableOption()" class="cfdebug"><!---
-					---><option value="1">ExecutionTime (desc)</option><!---
-					---><option value="2">FileName (asc)</option><!---
-					---><option value="3">Count (desc)</option><!---
-					---><option value="4">Average (desc)</option><!---
-				---></select></td><!---
-				---><td class="tblContent">#sSortorder#:<br><select id="querysortorder" onchange="enableOption()" class="cfdebug"><!---
-					---><option value="1">ExecutionTime (desc)</option><!---
-					---><option value="2">QueryName (asc)</option><!---
-					---><option value="3">Records (desc)</option><!---
-					---><option value="4">File (asc)</option><!---
-					---><option value="5">Chronological</option><!---
-				---></select></td><!---
-			---></tr><tr><td class="tblContent" colspan="2"><!---
-				---><input type="Checkbox" id="filter4myip" value="16" onclick="enableOption()" class="checkbox" checked><span title="#sTitleOwnAddress#" alt="#sTitleOwnAddress#">#sFilterOwnAddress#</span>&nbsp;<!---
-			---></td></tr><tr><form action="#cgi.script_name#" method="post"><td class="tblContent" colspan="2"><!---
-				---><cfparam name="form.templates" default=""><!--- 
-				---><cfparam name="form.filterType" default="0"><!--- 
-				---><cfparam name="form.filterTime" default="0"><!--- 
-				---><span title="#sTitleFilterTemplates#" alt="#sTitleFilterTemplates#">#sFilterTemplates#</span>:<br><!---
-				---><input type="Radio" name="filterType" value="0" class="checkbox" <cfif trim(form.filterType) eq 0>checked</cfif>><span title="#sTitleIncludeOnly#" alt="#sTitleIncludeOnly#">#sIncludeOnlyTemplates#</span>&nbsp;<!---
-				---><input type="Radio" name="filterType" value="1" class="checkbox" <cfif trim(form.filterType) neq 0>checked</cfif>><span title="#sTitleExcludeOnly#" alt="#sTitleExcludeOnly#">#sExcludeOnlyTemplates#</span><br><!---
-				---><textarea name="templates" style="width:380px;height:50px">#form.templates#</textarea><br><!---
-				--->#sExecutionTimeLimit#<input type="Text" name="filterTime" class="cfdebug" value="#form.filterTime#">ms<br><!---
-				---><input type="Submit" value="#sSave#" name="storeSettings" class="btn">&nbsp;<!---
-				---><input type="Submit" value="#sResetSettings#" name="resetSettings" class="btn"><!---
-			---></td></form></tr></table></td></tr><!---
-		---></table>
+		<table cellpadding="0" cellspacing="0" height="312"><tr>
+			<td class="tblHead" style="border-right: 1px solid ##ffffff;cursor:pointer;" id="DEBUGOPTIONS_TD" onclick="javascript:toggle('DEBUGOPTIONS')">></td>
+			<td>
+				<table class="tbl" bgcolor="white" align="right" border="1" cellpadding="3" cellspacing="0" id="DEBUGOPTIONS" style="border-collapse:collapse"><!---
+					---><tr><!---
+					---><td class="tblHead" colspan="2"><!---
+						---><b>Display Options:</b><!---
+					---></td></tr><!---
+					---><tr><!---
+					---><td class="tblContent"><!---
+						---><input type="Checkbox" id="outputexecution" value="1" onclick="enableOption()" class="checkbox" checked><span title="#sTitleExecTimes#" alt="#sTitleExecTimes#">#sExecTimes#</span><br><!---
+						---><input type="Checkbox" id="outputastree" value="8" onclick="enableOption()" class="checkbox" checked><span title="#sTitleDispAsTree#" alt="#sTitleDispAsTree#">#sDisplayAsTree#</span><br><!---
+					---></td><td class="tblContent"><!---
+						---><input type="Checkbox" id="outputsql" value="2" onclick="enableOption()" class="checkbox" checked><span title="#sTitleShowSQL#" alt="#sTitleShowSQL#">#sShowSQLStatements#</span><br><!---
+						---><input type="Checkbox" id="hidestatements" value="4" onclick="enableOption()" class="checkbox" checked><span title="#sTitleHideSQL#" alt="#sTitleHideSQL#">#sHideSQLStatements#</span><br><!---
+						---><input type="Checkbox" id="plainoutput" value="32" onclick="enableOption()" class="checkbox" checked><span title="#sTitleHideSQL#" alt="#sTitleHideSQL#">#sPlainSQLStatements#</span><!---
+					---></td></tr><!---
+					---><tr><td class="tblContent"><!---
+						---><span title="#sTitleDisplay#" alt="#sTitleDisplay#">#sDisplay#&nbsp;<select name="outputMaxFiles" id="outputMaxFiles" onchange="enableOption()">
+							<option value="-1">all</option>
+							<option value="10">10</option>
+							<option value="50">50</option>
+							<option value="100">100</option>
+							<option value="500">500</option>
+							<option value="1000">1000</option>
+						</select>&nbsp;#sFiles#</span><!---
+					---></td><td class="tblContent"><!---
+						---><span title="#sTitleDisplay#" alt="#sTitleDisplay#">#sDisplay#&nbsp;<select name="outputMaxQueries" id="outputMaxQueries" onchange="enableOption()">
+							<option value="-1">all</option>
+							<option value="10">10</option>
+							<option value="50">50</option>
+							<option value="100">100</option>
+							<option value="500">500</option>
+							<option value="1000">1000</option>
+						</select>&nbsp;#sQueries#</span><!---
+					---></td></tr><!---
+					---><tr><!---
+						---><td class="tblContent">#sSortOrder#:<br><select id="filenamesortorder" onchange="enableOption()" class="cfdebug"><!---
+							---><option value="1">ExecutionTime (desc)</option><!---
+							---><option value="2">FileName (asc)</option><!---
+							---><option value="3">Count (desc)</option><!---
+							---><option value="4">Average (desc)</option><!---
+						---></select></td><!---
+						---><td class="tblContent">#sSortorder#:<br><select id="querysortorder" onchange="enableOption()" class="cfdebug"><!---
+							---><option value="1">ExecutionTime (desc)</option><!---
+							---><option value="2">QueryName (asc)</option><!---
+							---><option value="3">Records (desc)</option><!---
+							---><option value="4">File (asc)</option><!---
+							---><option value="5">Chronological</option><!---
+						---></select></td><!---
+					---></tr><tr><td class="tblContent" colspan="2"><!---
+						---><input type="Checkbox" id="filter4myip" value="16" onclick="enableOption()" class="checkbox" checked><span title="#sTitleOwnAddress#" alt="#sTitleOwnAddress#">#sFilterOwnAddress#</span>&nbsp;<!---
+					---></td></tr><tr><form action="#cgi.script_name#" method="post"><td class="tblContent" colspan="2"><!---
+						---><cfparam name="form.templates" default=""><!--- 
+						---><cfparam name="form.filterType" default="0"><!--- 
+						---><cfparam name="form.filterTime" default="0"><!--- 
+						---><span title="#sTitleFilterTemplates#" alt="#sTitleFilterTemplates#">#sFilterTemplates#</span>:<br><!---
+						---><input type="Radio" name="filterType" value="0" class="checkbox" <cfif trim(form.filterType) eq 0>checked</cfif>><span title="#sTitleIncludeOnly#" alt="#sTitleIncludeOnly#">#sIncludeOnlyTemplates#</span>&nbsp;<!---
+						---><input type="Radio" name="filterType" value="1" class="checkbox" <cfif trim(form.filterType) neq 0>checked</cfif>><span title="#sTitleExcludeOnly#" alt="#sTitleExcludeOnly#">#sExcludeOnlyTemplates#</span><br><!---
+						---><textarea name="templates" style="width:380px;height:50px">#form.templates#</textarea><br><!---
+						--->#sExecutionTimeLimit#<input type="Text" name="filterTime" class="cfdebug" value="#form.filterTime#">ms<br><!---
+						---><input type="Submit" value="#sSave#" name="storeSettings" class="btn">&nbsp;<!---
+						---><input type="Submit" value="#sResetSettings#" name="resetSettings" class="btn"><!---
+					---></td></form></tr></table></td></tr><!---
+				---></table>
+			</td>
+		</tr></table>
 	</td></tr></table>
 	Debugging output:
 	<script language="JavaScript">
@@ -360,7 +290,7 @@
 		}
 
 		function enableOption() {
-			var aOptions = new Array('outputexecution','outputsql','hidestatements','outputastree','filter4myip');
+			var aOptions = new Array('outputexecution','outputsql','hidestatements','outputastree','filter4myip','plainoutput');
 			var iOptions = 0;
 			for (var i = 0; i < aOptions.length; ++i) {
 				if (document.getElementById(aOptions[i]).checked) {
@@ -387,6 +317,22 @@
 	<iframe style="width:100%;height:1200;border:0px;padding:0px;overflow:auto" name="dsp_debug">
 	</iframe>
 	<cfflush>
+
+<script language="JavaScript">
+	function toggle(sID) {
+		var oObj = document.getElementById(sID);
+		var oObjTD = document.getElementById(sID + "_TD");
+		if (oObj.style.display == "none") {
+			oObj.style.display = "";
+			oObjTD.innerHTML = '&gt;';
+		} else {
+			oObj.style.display = "none";
+			oObjTD.innerHTML = '&lt;';
+		}
+	
+	}
+</script>
+
 	</cfoutput>
 	</body>
 </html>

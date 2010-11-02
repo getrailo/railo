@@ -15,14 +15,14 @@ public class FeedDeclaration {
 
 
 
-	private static Map declarations = new HashMap();
+	private static Map<String,FeedDeclaration> declarations = new HashMap<String,FeedDeclaration>();
 	private static FeedDeclaration defaultDeclaration;
 	static {
 		
 		
 		
 // RSS 2.0
-		Map decl=new HashMap();
+		Map<String,El> decl=new HashMap<String,El>();
 		decl.put("rss", 		new El(El.QUANTITY_1,new Attr("version")));
 		// rss.channel *
 		decl.put("rss.channel.item", 		new El(El.QUANTITY_0_N,true));
@@ -63,14 +63,14 @@ public class FeedDeclaration {
 		decl.put("rss.channel.textInput.name", new El(El.QUANTITY_1));
 		decl.put("rss.channel.textInput.link", new El(El.QUANTITY_1));
 		
-		FeedDeclaration fd = new FeedDeclaration(decl,"rss.channel");
+		FeedDeclaration fd = new FeedDeclaration(decl,"rss.channel","rss_2.0");
 		declarations.put("rss", fd);
 		declarations.put("rss_2.0", fd);
 		declarations.put("rss_2", fd);
 		
 	
 	// RSS 0.92
-			decl=new HashMap();
+			decl=new HashMap<String, El>();
 			decl.put("rss", 		new El(El.QUANTITY_1,new Attr("version")));
 			// rss.channel *
 			decl.put("rss.channel.item", 		new El(El.QUANTITY_0_N));
@@ -110,12 +110,12 @@ public class FeedDeclaration {
 			decl.put("rss.channel.textInput.name", new El(El.QUANTITY_1));
 			decl.put("rss.channel.textInput.link", new El(El.QUANTITY_1));
 			
-			fd = new FeedDeclaration(decl,"rss.channel");
+			fd = new FeedDeclaration(decl,"rss.channel","rss_0.92");
 			declarations.put("rss_0.92", fd);
 			
 
 	// RSS 0.91
-			decl=new HashMap();
+			decl=new HashMap<String, El>();
 			decl.put("rss", 		new El(El.QUANTITY_1,new Attr("version")));
 			// rss.channel *
 			decl.put("rss.channel.item", 		new El(El.QUANTITY_0_N));
@@ -149,13 +149,13 @@ public class FeedDeclaration {
 			decl.put("rss.channel.textInput.name", new El(El.QUANTITY_1));
 			decl.put("rss.channel.textInput.link", new El(El.QUANTITY_1));
 			
-			fd = new FeedDeclaration(decl,"rss.channel");
+			fd = new FeedDeclaration(decl,"rss.channel","rss_0.91");
 			declarations.put("rss_0.91", fd);
 					
 
 
 	// ATOM
-			decl=new HashMap();
+			decl=new HashMap<String, El>();
 			decl.put("feed", 		new El(El.QUANTITY_1,new Attr("version")));
 			
 			decl.put("feed.author.name", new El(El.QUANTITY_1));
@@ -169,19 +169,20 @@ public class FeedDeclaration {
 			decl.put("feed.entry.title", new El(El.QUANTITY_1,new Attr[]{}));
 			decl.put("feed.entry.summary", new El(El.QUANTITY_1,new Attr[]{new Attr("type","text/plain"),new Attr("mode","xml")}));
 			
-			fd = new FeedDeclaration(decl,"feed");
+			fd = new FeedDeclaration(decl,"feed","atom");
 			declarations.put("atom", fd);
 
 
 			
-		defaultDeclaration=new FeedDeclaration(new HashMap(),null);
+		defaultDeclaration=new FeedDeclaration(new HashMap<String, El>(),null,"custom");
 	}
 
 
-	private Map declaration;
+	private Map<String, El> declaration;
 	private Key[] entryLevel;
+	private String type;
 	
-	public FeedDeclaration(Map declaration, String entryLevel) {
+	private FeedDeclaration(Map<String,El> declaration, String entryLevel,String type) {
 		this.declaration=declaration;
 		
 		if(!StringUtil.isEmpty(entryLevel)) {
@@ -192,6 +193,7 @@ public class FeedDeclaration {
 	        }
 		}
 		else this.entryLevel=new Collection.Key[0];
+		this.type=type;
 	}
 
 
@@ -219,7 +221,7 @@ public class FeedDeclaration {
 	/**
 	 * @return the declaration
 	 */
-	public Map getDeclaration() {
+	public Map<String, El> getDeclaration() {
 		return declaration;
 	}
 
@@ -229,5 +231,10 @@ public class FeedDeclaration {
 	 */
 	public Key[] getEntryLevel() {
 		return entryLevel;
+	}
+
+
+	public String getType() {
+		return type;
 	}
 }

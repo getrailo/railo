@@ -8,6 +8,8 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.img.Image;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
 import railo.runtime.type.ObjectWrap;
@@ -50,6 +52,11 @@ public final class GetMetaData implements Function {
 	        else if(object instanceof Query) {
 	            return ((Query)object).getMetaDataSimple();
 	        }
+			// Image
+	        else if(object instanceof Image) {
+	            return ((Image)object).info();
+	        }
+			
 			return object.getClass();
 		}
 		String str = Caster.toString(object,null);

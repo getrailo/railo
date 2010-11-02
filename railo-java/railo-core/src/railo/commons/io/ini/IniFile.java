@@ -228,7 +228,7 @@ public static Struct getProfileSections(Resource file) throws IOException {
          String strSection=(String) it.next();
          Map section = ini.getSectionEL(strSection);
          Iterator iit = section.keySet().iterator();
-         StringBuffer sb=new StringBuffer();
+         StringBuilder sb=new StringBuilder();
          while(iit.hasNext()) {
              if(sb.length()!=0)sb.append(',');
              sb.append(iit.next());

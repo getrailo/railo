@@ -115,12 +115,12 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 	 */
 	public Resource getResource(String path) {
 		// ds://[ username [: password ]@]datasource/dir/file.cfm
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		return new DatasourceResource(this,parse(sb,path),sb.toString());
 	}
 	
 	
-	public ConnectionData parse(StringBuffer subPath,String path) {
+	public ConnectionData parse(StringBuilder subPath,String path) {
 		path=ResourceUtil.removeScheme(scheme,path);
 		
 		ConnectionData data=new ConnectionData();
