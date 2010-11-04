@@ -27,7 +27,6 @@ import java.awt.image.ComponentColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.PackedColorModel;
 import java.awt.image.PixelGrabber;
-import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.ByteArrayInputStream;
@@ -38,7 +37,6 @@ import java.io.OutputStream;
 import java.text.AttributedString;
 import java.util.Iterator;
 
-import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
@@ -65,7 +63,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
