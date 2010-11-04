@@ -78,6 +78,7 @@
 	<function>
 		<name>_jsonArray</name>
 		<class>railo.runtime.functions.arrays.JsonArray</class>
+		<status>hidden</status>
 		<description/>
 		<argument-type>dynamic</argument-type>
 		<return>
@@ -1532,6 +1533,7 @@
 	<function>
 		<name>_createComponent</name>
 		<class>railo.runtime.functions.other._CreateComponent</class>
+		<status>hidden</status>
 		<description/>
 		<argument-type>dynamic</argument-type>
 		<return>
@@ -2292,6 +2294,7 @@
 	<function>
 		<name>_dump</name>
 		<class>railo.runtime.functions.other.Dump</class>
+		<status>hidden</status>
 		<description/>
 		<argument>
 			<name>value</name>
@@ -8936,6 +8939,7 @@
 	<function>
 		<name>_jsonStruct</name>
 		<class>railo.runtime.functions.struct.JsonStruct</class>
+		<status>hidden</status>
 		<description/>
 		<argument-type>dynamic</argument-type>
 		<return>
