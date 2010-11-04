@@ -89,8 +89,8 @@ public final class Throw extends TagImpl {
 		this.message=message;
 	}
 	
-	/*
-	 * @deprecated this metho should no longer be used.
+	/**
+	 * @deprecated this method should no longer be used.
 	 * */
 	public void setMessage(String message)	{
 		this.message=message;
