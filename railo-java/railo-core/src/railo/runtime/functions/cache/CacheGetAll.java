@@ -11,6 +11,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
@@ -19,6 +20,8 @@ import railo.runtime.type.StructImpl;
  */
 public final class CacheGetAll implements Function {
 	
+	private static final long serialVersionUID = 6395709569356486777L;
+
 	public static Struct call(PageContext pc) throws PageException {
 		return call(pc, null,null);
 	}
@@ -27,17 +30,15 @@ public final class CacheGetAll implements Function {
 	}
 	
 	public static Struct call(PageContext pc,String filter, String cacheName) throws PageException {
-		CacheGet.checkRestriction(pc);
-		
 		try {
 			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
-			List entries = CacheGetAllIds.isFilter(filter)?cache.entries(new WildCardFilter(filter,true)):cache.entries();
-			Iterator it=entries.iterator();
+			List<CacheEntry> entries = CacheGetAllIds.isFilter(filter)?cache.entries(new WildCardFilter(filter,true)):cache.entries();
+			Iterator<CacheEntry> it=entries.iterator();
 			Struct sct = new StructImpl();
 			CacheEntry entry;
 			while(it.hasNext()){
-				entry=(CacheEntry) it.next();
-				sct.setEL(entry.getKey(),entry.getValue());
+				entry= it.next();
+				sct.setEL(KeyImpl.init(entry.getKey()),entry.getValue());
 			}
 			return sct;
 		} catch (Exception e) {

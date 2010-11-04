@@ -13,6 +13,8 @@ import railo.runtime.op.Caster;
  */
 public final class CacheCount implements Function {
 	
+	private static final long serialVersionUID = 4192649311671009474L;
+
 	public static double call(PageContext pc) throws PageException {
 		return call(pc,null);
 		

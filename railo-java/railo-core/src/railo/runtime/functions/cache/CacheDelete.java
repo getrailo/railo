@@ -15,6 +15,8 @@ import railo.runtime.op.Caster;
  */
 public final class CacheDelete implements Function {
 	
+	private static final long serialVersionUID = 4148677299207997607L;
+
 	public static String call(PageContext pc, String id) throws PageException {
 		return call(pc, id, false,null);
 	}
@@ -23,7 +25,6 @@ public final class CacheDelete implements Function {
 	}
 	
 	public static String call(PageContext pc, String id, boolean throwOnError, String cacheName) throws PageException {
-		CacheGet.checkRestriction(pc);
 		try {
 			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
 			if(!cache.remove(Util.key(id)) && throwOnError){

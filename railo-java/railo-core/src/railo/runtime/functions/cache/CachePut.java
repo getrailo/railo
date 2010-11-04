@@ -13,6 +13,8 @@ import railo.runtime.type.dt.TimeSpan;
  */
 public final class CachePut implements Function {
 
+	private static final long serialVersionUID = -8636947330333269874L;
+
 	public static String call(PageContext pc, String key,Object value) throws PageException {
 		return _call(pc,key, value, null, null,null);
 	}
@@ -27,7 +29,6 @@ public final class CachePut implements Function {
 	}
 	
 	private static String _call(PageContext pc, String key,Object value,Long timeSpan, Long idleTime,String cacheName) throws PageException {
-		CacheGet.checkRestriction(pc);
 		//if(timeSpan!=null && timeSpan.longValue()==0L) return "";
 		//if(idleTime!=null && idleTime.longValue()==0L) return "";
 		try {

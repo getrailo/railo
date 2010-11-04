@@ -20,7 +20,6 @@ public class CacheSetProperties {
 	private static final Key OBJECT_TYPE = KeyImpl.getInstance("objecttype");
 
 	public static Object call(PageContext pc,Struct properties) throws PageException {
-		CacheGet.checkRestriction(pc);
 		try {
 			Object obj=properties.removeEL(OBJECT_TYPE); 
 			String objectType=Caster.toString(obj);
@@ -50,10 +49,10 @@ public class CacheSetProperties {
 					config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_TEMPLATE)
 			}
 			;
-			// MUST welcher muss zuers sein
+			// MUST which one is first
 		}
 		
-		ArrayList list=new ArrayList();
+		ArrayList<CacheConnection> list=new ArrayList<CacheConnection>();
 		String name;
 		String[] names=List.listToStringArray(cacheName, ',');
 		for(int i=0;i<names.length;i++){
@@ -68,6 +67,6 @@ public class CacheSetProperties {
 				list.add(cc);
 			}
 		}
-		return (CacheConnection[]) list.toArray(new CacheConnection[list.size()]);
+		return list.toArray(new CacheConnection[list.size()]);
 	}
 }

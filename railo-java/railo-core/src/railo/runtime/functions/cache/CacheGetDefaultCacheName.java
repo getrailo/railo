@@ -13,6 +13,8 @@ import railo.runtime.ext.function.Function;
  */
 public final class CacheGetDefaultCacheName implements Function {
 
+	private static final long serialVersionUID = 6115589794465960484L;
+
 	public static String call(PageContext pc, String strType) throws PageException {
 		int type = Util.toType(strType,ConfigImpl.CACHE_DEFAULT_NONE);
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE)
