@@ -1,8 +1,6 @@
 package railo.runtime.functions.image;
 
 
-import java.awt.image.ColorModel;
-
 import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
