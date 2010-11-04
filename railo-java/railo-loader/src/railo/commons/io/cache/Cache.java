@@ -109,35 +109,35 @@ public interface Cache {
 	 * @param filter 
 	 * @return a set of the keys contained in this cache.
 	 */
-	public List keys(CacheEntryFilter filter);//FUTURE throws IOException;
+	public List keys(CacheEntryFilter filter);//FUTURE throws IOException; // FUTURE List<CacheEntry>
 	
 	/**
 	 * Returns a List of values containing in this cache. 
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List values();//FUTURE throws IOException;
+	public List values();//FUTURE throws IOException; // FUTURE List<CacheEntry>
 	
 	/**
 	 * Returns a list of values containing in this cache that match the given filter.
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List values(CacheKeyFilter filter);//FUTURE throws IOException;
+	public List values(CacheKeyFilter filter);//FUTURE throws IOException; // FUTURE List<CacheEntry>
 	
 	/**
 	 * Returns a list of values containing in this cache that match the given filter.
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List values(CacheEntryFilter filter);//FUTURE throws IOException;
+	public List values(CacheEntryFilter filter);//FUTURE throws IOException;  List<CacheEntry>
 	
 	/**
 	 * Returns a List of entries containing in this cache Each element in the returned list is a CacheEntry. 
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List entries();
+	public List entries();// FUTURE public List<CacheEntry> entries();
 	
 	/**
 	 * Returns a list of entries containing in this cache that match the given filter.
@@ -145,7 +145,7 @@ public interface Cache {
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List entries(CacheKeyFilter filter);
+	public List entries(CacheKeyFilter filter); // FUTURE List<CacheEntry>
 	
 	/**
 	 * Returns a list of entries containing in this cache that match the given filter.
@@ -153,7 +153,7 @@ public interface Cache {
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List entries(CacheEntryFilter filter);
+	public List entries(CacheEntryFilter filter); // FUTURE List<CacheEntry>
 
 
 	/**
