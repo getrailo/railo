@@ -3775,6 +3775,7 @@
 	<function>
 		<name>getK2ServerDocCount</name>
 		<class>railo.runtime.functions.other.GetK2ServerDocCount</class>
+		<status>deprecated</status>
 		<description/>
 		<return>
 			<type>number</type>
@@ -3784,6 +3785,7 @@
 	<function>
 		<name>getK2ServerDocCountLimit</name>
 		<class>railo.runtime.functions.other.GetK2ServerDocCountLimit</class>
+		<status>deprecated</status>
 		<description/>
 		<return>
 			<type>number</type>
@@ -4020,7 +4022,7 @@
 			<type>string</type>
 		</return>
 	</function>
-	<!-- getTemplatePath (Deprecated) -->
+	<!-- getTemplatePath -->
 	<function>
 		<name>getTemplatePath</name>
 		<class>railo.runtime.functions.system.GetTemplatePath</class>
@@ -5927,6 +5929,7 @@
 	<function>
 		<name>isK2ServerABroker</name>
 		<class>railo.runtime.functions.decision.IsK2ServerABroker</class>
+		<status>deprecated</status>
 		<description/>
 		<return>
 			<type>boolean</type>
@@ -5936,6 +5939,7 @@
 	<function>
 		<name>isK2ServerDocCountExceeded</name>
 		<class>railo.runtime.functions.decision.IsK2ServerDocCountExceeded</class>
+			<status>deprecated</status>
 		<description/>
 		<return>
 			<type>boolean</type>
@@ -5945,6 +5949,7 @@
 	<function>
 		<name>isK2ServerOnline</name>
 		<class>railo.runtime.functions.decision.IsK2ServerOnline</class>
+			<status>deprecated</status>
 		<description/>
 		<return>
 			<type>boolean</type>
@@ -6891,7 +6896,8 @@
 	<function>
 		<name>listTrim</name>
 		<class>railo.runtime.functions.list.ListTrim</class>
-		<description>remove empty items at the and and at the start of the list</description>
+		<status>deprecated</status>
+		<description>this function isdeprecated, use instead ListCompact</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -7488,6 +7494,7 @@
 	<function>
 		<name>nowServer</name>
 		<class>railo.runtime.functions.dateTime.NowServer</class>
+		<status>deprecated</status>
 		<description>this function is deprecated;returns the current time on the server independend on railo timezone definition</description>
 		<return>
 			<type>datetime</type>
@@ -9533,6 +9540,7 @@
 	<function>
 		<name>unserializeJava</name>
 		<class>railo.runtime.functions.dynamicEvaluation.UnserializeJava</class>
+		<status>deprecated</status>
 		<description/>
 		<argument>
 			<name>string</name>
