@@ -13,6 +13,8 @@ import railo.runtime.engine.ThreadLocalPageContext;
 
 public final class ResourceLockImpl implements ResourceLock {
 	
+	private static final long serialVersionUID = 6888529579290798651L;
+	
 	private long lockTimeout;
 	private boolean caseSensitive;
 
@@ -75,6 +77,7 @@ public final class ResourceLockImpl implements ResourceLock {
 				Config config = ThreadLocalPageContext.getConfig();
 				if(config!=null)
 					SystemOut.printDate(config.getErrWriter(),"conflict in same thread: on "+path);
+				
 				//throw new RuntimeException("conflict in same thread: on "+res);
 				return;
 			}
