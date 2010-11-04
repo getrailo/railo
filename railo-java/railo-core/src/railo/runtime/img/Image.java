@@ -285,7 +285,6 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		else if (cm instanceof PackedColorModel)	sctCM.setEL("colormodel_type", "PackedColorModel");
 		else sctCM.setEL("colormodel_type", List.last(cm.getClass().getName(), '.'));
 
-		print.o("format:"+format);
 		
 		metadata(sctInfo);
 		
