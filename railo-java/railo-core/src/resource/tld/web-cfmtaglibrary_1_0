@@ -9031,6 +9031,23 @@ dWord: creates a value of 0 (zero)</description>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+	<!-- ScriptJava -->
+	<tag>
+		<name>ScriptJava</name>
+		<tag-class>railo.runtime.tag.ScriptJava</tag-class>
+		<tdbt-class>railo.transformer.cfml.script.JavaScriptTransformer</tdbt-class>
+		<ttt-class>railo.transformer.bytecode.statement.tag.TagJavaScript</ttt-class>
+		<body-content>tagdependent</body-content>
+		<body-rtexprvalue>false</body-rtexprvalue>
+		<description>Encloses a code segment containing cfscript.</description>
+		<attribute-type>fixed</attribute-type>
+		<attribute>
+			<type>string</type>
+			<name>language</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
 	<!-- Search -->
 	<tag>
 		<name>Search</name>

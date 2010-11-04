@@ -28,7 +28,7 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/openamf.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/openamf-astranslator.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/ojdbc14.jar"/>
-	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/objectweb-asm-all.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/objectweb-asm-all.jar" sourcepath="/Users/mic/libs/src/asm-2.2.3/src.zip"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/mysql-connector-java-bin.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/microsoft-sqljdbc.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/microsoft-msutil.jar"/>
@@ -95,5 +95,7 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/dom4j.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/hibernate.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/metadata-extractor.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Downloads/javaparser-1.0.8/javaparser-1.0.8.jar" sourcepath="/Users/mic/Downloads/javaparser-1.0.8-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
