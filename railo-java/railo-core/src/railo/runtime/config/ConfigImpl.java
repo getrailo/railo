@@ -2407,6 +2407,13 @@ public abstract class ConfigImpl implements Config {
 		de.setAdditional("Datasource",datasource);
 		throw de;
 	}
+	
+	// FUTURE add to interface
+	public DataSource getDataSource(String datasource, DataSource defaultValue) {
+		DataSource ds=(datasource==null)?null:(DataSource) datasources.get(datasource.toLowerCase());
+		if(ds!=null) return ds;
+		return defaultValue;
+	}
 
 	/**
 	 *
