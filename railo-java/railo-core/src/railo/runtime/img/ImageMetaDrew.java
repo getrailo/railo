@@ -1,13 +1,15 @@
 package railo.runtime.img;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
-import javax.imageio.stream.FileImageInputStream;
-import javax.imageio.stream.MemoryCacheImageInputStream;
+import railo.commons.io.IOUtil;
+import railo.commons.io.res.Resource;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
@@ -16,15 +18,6 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.Tag;
-
-import railo.print;
-import railo.commons.io.IOUtil;
-import railo.commons.io.res.Resource;
-import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
-import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
 
 public class ImageMetaDrew {
 
