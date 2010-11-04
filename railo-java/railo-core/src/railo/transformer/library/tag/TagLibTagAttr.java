@@ -23,7 +23,22 @@ public final class TagLibTagAttr {
     private TagLibTag tag;
 	private boolean hidden;
 	private boolean _default;
+	private short status=TagLib.STATUS_IMPLEMENTED;
 
+	/**
+	 * @return the status (TagLib.,TagLib.STATUS_IMPLEMENTED,TagLib.STATUS_DEPRECATED,TagLib.STATUS_UNIMPLEMENTED)
+	 */
+	public short getStatus() {
+		return status;
+	}
+
+
+	/**
+	 * @param status the status to set (TagLib.,TagLib.STATUS_IMPLEMENTED,TagLib.STATUS_DEPRECATED,TagLib.STATUS_UNIMPLEMENTED)
+	 */
+	public void setStatus(short status) {
+		this.status = status;
+	}
 
 	/**
 	 * Geschützer Konstruktor ohne Argumente.
@@ -191,4 +206,5 @@ public final class TagLibTagAttr {
 	public boolean isDefault() {
 		return _default;
 	}
+
 }

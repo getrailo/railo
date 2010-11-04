@@ -22,6 +22,7 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.runtime.functions.other.GetFunctionData;
 import railo.runtime.op.Caster;
 import railo.runtime.type.util.ArrayUtil;
 
@@ -208,9 +209,11 @@ public final class TagLibFactory extends DefaultHandler {
 				else if(inside.equals("type")) att.setType(value);
 				// Default-Value
 				else if(inside.equals("default-value")) att.setDefaultValue(value);
-				// Description
+    			// status
+				else if(inside.equals("status")) att.setStatus(toStatus(value));
+    			// Description
 				else if(inside.equals("description")) att.setDescription(value);
-				// Description
+				// default
 				else if(inside.equals("default")) att.isDefault(Caster.toBooleanValue(value,false));
     		}
     		// Tag Args
@@ -221,7 +224,9 @@ public final class TagLibFactory extends DefaultHandler {
 				// TAG - Class
     			else if(inside.equals("tag-class"))	tag.setTagClass(value);
     			else if(inside.equals("tagclass"))	tag.setTagClass(value);
-				// TAG - description
+    			// status
+				else if(inside.equals("status"))	tag.setStatus(toStatus(value));
+    			// TAG - description
 				else if(inside.equals("description"))	tag.setDescription(value);
     			// TTE - Class
 				else if(inside.equals("tte-class"))	tag.setTteClass(value);
@@ -310,6 +315,7 @@ public final class TagLibFactory extends DefaultHandler {
     	}
     }	
 	
+
 	/**
 	 * Wird jedesmal wenn das Tag tag beginnt aufgerufen, um intern in einen anderen Zustand zu gelangen.
 	 */
@@ -525,6 +531,30 @@ public final class TagLibFactory extends DefaultHandler {
 			newTL.setTag(tlt);
 		}
 	}
+	
+
+	public static short toStatus(String value) {
+		value=value.trim().toLowerCase();
+		if("deprecated".equals(value)) return TagLib.STATUS_DEPRECATED;
+		if("dep".equals(value)) return TagLib.STATUS_DEPRECATED;
+		
+		if("unimplemented".equals(value)) return TagLib.STATUS_UNIMPLEMENTED;
+		if("unimplemeted".equals(value)) return TagLib.STATUS_UNIMPLEMENTED;
+		if("notimplemented".equals(value)) return TagLib.STATUS_UNIMPLEMENTED;
+		if("not-implemented".equals(value)) return TagLib.STATUS_UNIMPLEMENTED;
+		if("hidden".equals(value)) return TagLib.STATUS_HIDDEN;
+		
+		return TagLib.STATUS_IMPLEMENTED;
+	}
+	public static String toStatus(short value) {
+		switch(value){
+		case TagLib.STATUS_DEPRECATED: return "deprecated";
+		case TagLib.STATUS_UNIMPLEMENTED: return "unimplemeted";
+		case TagLib.STATUS_HIDDEN: return "hidden";
+		}
+		return "implemeted";
+	}
+	
 }
 
 
