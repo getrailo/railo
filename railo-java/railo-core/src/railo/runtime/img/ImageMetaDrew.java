@@ -49,7 +49,6 @@ public class ImageMetaDrew {
 			fill(info,JpegMetadataReader.readMetadata(is));
 		}
 		catch(Throwable t) {
-			print.e(t);
 			//throw Caster.toPageException(t);
 		}
 		finally {
@@ -64,7 +63,6 @@ public class ImageMetaDrew {
 			fill(info,TiffMetadataReader.readMetadata(is));
 		}
 		catch(Throwable t) {
-			print.e(t);
 			//throw Caster.toPageException(t);
 		}
 		finally {
