@@ -346,9 +346,9 @@ public final class IOUtil {
     	 catch (Throwable t) {}
      }
      
-     public static void closeEL(InputStream is) {
+     public static void closeEL(ZipFile zip) {
     	 try {
-    		 if(is!=null)is.close();
+    		 if(zip!=null)zip.close();
     	 } 
     	 //catch (AlwaysThrow at) {throw at;}
     	 catch (Throwable t) {}
@@ -434,12 +434,7 @@ public final class IOUtil {
          else if(obj instanceof Writer)         IOUtil.closeEL((Writer)obj);
          else if(obj instanceof Reader)         IOUtil.closeEL((Reader)obj);
          else if(obj instanceof Closeable)         IOUtil.closeEL((Closeable)obj);
-         else if(obj instanceof ZipFile)        {
-        	 try {
-                 ((ZipFile)obj).close();
-             } 
-             catch (Throwable e) {}
-         }
+         else if(obj instanceof ZipFile)        IOUtil.closeEL((ZipFile)obj);
          else {
              try {
                  Method method = obj.getClass().getMethod("close",new Class[0]);
