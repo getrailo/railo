@@ -95,5 +95,6 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/dom4j.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/hibernate.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/metadata-extractor.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

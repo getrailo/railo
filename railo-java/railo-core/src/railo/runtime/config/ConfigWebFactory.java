@@ -3301,7 +3301,9 @@ public final class ConfigWebFactory {
         }
         
         if(hasAccess) {
-        	System.setProperty("cfx.bin.path","C:/Temp");
+        	if(configServer==null) {
+        		System.setProperty("cfx.bin.path",config.getConfigDir().getRealResource("bin").getAbsolutePath());
+        	}
         	
 	        // Java CFX Tags
         	Element cfxTagsParent=getChildByName(doc.getDocumentElement(),"ext-tags",false,true);
