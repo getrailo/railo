@@ -80,7 +80,9 @@ public final class TagLibTag {
 	private Constructor  tttConstructor;
 	private boolean allowRemovingLiteral;
 	private TagLibTagAttr defaultAttribute;
-    
+	private short status=TagLib.STATUS_IMPLEMENTED;
+
+	
 	/**
 	 * Geschützer Konstruktor ohne Argumente.
 	 * @param tagLib
@@ -164,6 +166,20 @@ public final class TagLibTag {
 			tagType=Type.getType(ClassUtil.loadClass(tagClass));
 		}
 		return tagType;
+	}
+	/**
+	 * @return the status (TagLib.,TagLib.STATUS_IMPLEMENTED,TagLib.STATUS_DEPRECATED,TagLib.STATUS_UNIMPLEMENTED)
+	 */
+	public short getStatus() {
+		return status;
+	}
+
+
+	/**
+	 * @param status the status to set (TagLib.,TagLib.STATUS_IMPLEMENTED,TagLib.STATUS_DEPRECATED,TagLib.STATUS_UNIMPLEMENTED)
+	 */
+	public void setStatus(short status) {
+		this.status = status;
 	}
 	
 	/**

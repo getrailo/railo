@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.text.AttributedString;
 import java.util.Iterator;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
@@ -63,6 +64,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
@@ -289,6 +291,33 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		
 		this.sctInfo=sctInfo;
 		return sctInfo;
+	}
+	
+	private IIOMetadata metadata(String format) {
+		if(StringUtil.isEmpty(format)) return null;
+		Iterator<ImageReader> it = ImageIO.getImageReadersBySuffix(format);
+		while(it.hasNext()) {
+			ImageReader ir=(ImageReader) it.next();
+			ImageInputStream iis=null;
+			IIOMetadata metadata=null;
+			try {
+				
+				if(source instanceof File) { // TODO create ResourceImageInputStream
+					iis=new FileImageInputStream((File) source);
+				}
+				else iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format)));
+				ir.setInput(iis);
+				
+				metadata = ir.getImageMetadata(0);
+				ir.reset();
+			} 
+			catch (Throwable t) {}
+			finally {
+				ImageUtil.closeEL(iis);
+			}
+			if(metadata!=null) return metadata;
+		}
+		return null;
 	}
 	
 	private void metadata(Struct parent) {
@@ -823,7 +852,8 @@ public class Image extends StructSupport implements Cloneable,Struct {
 			writeOut(ios, format, quality);
 		}
 		finally {
-			IOUtil.closeEL(ios);
+			ImageUtil.closeEL(ios);
+			IOUtil.closeEL(os);
 		}		
 	}
 
@@ -864,10 +894,12 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		if(StringUtil.isEmpty(format))	throw new IOException("missing format");
 		
 		
-		
 		BufferedImage im = image();
 		
-    	ImageWriter writer = null;
+		
+		IIOMetadata meta = metadata(format);
+		
+		ImageWriter writer = null;
     	ImageTypeSpecifier type =ImageTypeSpecifier.createFromRenderedImage(im);
     	Iterator<ImageWriter> iter = ImageIO.getImageWriters(type, format);
     	if (iter.hasNext()) {
@@ -875,18 +907,16 @@ public class Image extends StructSupport implements Cloneable,Struct {
     	}
     	if (writer == null) throw new IOException("no writer for format ["+format+"] available");
 
-    	
 		ImageWriteParam iwp = writer.getDefaultWriteParam();
 		try {
 			iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
 			iwp.setCompressionQuality(quality);
 		}
 		catch(Throwable t) {}
-    	
-    	
-    	
+
     	writer.setOutput(ios);
     	try {
+    		if(meta!=null) writer.write(null, new IIOImage(im, null, meta), iwp);
     		writer.write(im);
     	} finally {
     		writer.dispose();
@@ -1259,16 +1289,21 @@ public class Image extends StructSupport implements Cloneable,Struct {
 					pc.getConfig().getSecurityManager().checkFileLocation(res);
 					return new Image(res);
 				} 
-				catch (ExpressionException ee) {
+				catch (ExpressionException ee) {ee.printStackTrace();
 					if(check4Var && Decision.isVariableName(Caster.toString(obj))) {
 						try {
 							return createImage(pc, pc.getVariable(Caster.toString(obj)), false,clone,checkAccess);
 						}
-						catch (PageException pe) {
+						catch (Throwable t) {
 							throw ee;
 						}
 					}
-					return new Image(Caster.toString(obj));
+					try {
+						return new Image(Caster.toString(obj));
+					}
+					catch (Throwable t) {
+						throw ee;
+					}
 				}
 			}
 			if(obj instanceof Image)	{

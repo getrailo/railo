@@ -21,6 +21,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.type.util.ArrayUtil;
+import railo.transformer.library.tag.TagLibFactory;
 
 
 
@@ -216,6 +217,7 @@ public final class FunctionLibFactory extends DefaultHandler {
 				if(inside.equals("type")) arg.setType(value);
 				else if(inside.equals("name")) arg.setName(value);
 				else if(inside.equals("default-value")) arg.setDefaultValue(value);
+				else if(inside.equals("status")) arg.setStatus(TagLibFactory.toStatus(value));
 				else if(inside.equals("description")) arg.setDescription(value);
 				
 				else if(inside.equals("required"))	{
@@ -243,6 +245,9 @@ public final class FunctionLibFactory extends DefaultHandler {
 				
 				else if(inside.equals("description"))
 					function.setDescription(value);
+				
+				else if(inside.equals("status"))
+					function.setStatus(TagLibFactory.toStatus(value));
 				
 				else if(inside.equals("argument-type"))
 					function.setArgType(value.equalsIgnoreCase("dynamic")?FunctionLibFunction.ARG_DYNAMIC:FunctionLibFunction.ARG_FIX);

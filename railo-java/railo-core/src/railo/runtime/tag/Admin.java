@@ -569,7 +569,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("storageSet",             ACCESS_FREE) && check2(ACCESS_WRITE  )) doStorageSet();
         
         else if(check("getdefaultpassword",     ACCESS_FREE) && check2(ACCESS_READ            )) doGetDefaultPassword();
-        else if(check("getContextes",           ACCESS_FREE) && check2(ACCESS_READ            )) doGetContextes();
+        else if(check("getContexts",           ACCESS_FREE) && check2(ACCESS_READ            )) doGetContexts();
+        else if(check("getContextes",           ACCESS_FREE) && check2(ACCESS_READ            )) doGetContexts();
         else if(check("updatedefaultpassword",  ACCESS_FREE) && check2(ACCESS_WRITE            )) doUpdateDefaultPassword();
         else if(check("hasindividualsecurity",  ACCESS_FREE) && check2(ACCESS_READ            )) doHasIndividualSecurity();
         else if(check("resetpassword",          ACCESS_FREE) && check2(ACCESS_WRITE            )) doResetPassword();
@@ -806,7 +807,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     /**
      * @throws PageException
      */
-    private void doGetContextes() throws PageException {
+    private void doGetContexts() throws PageException {
         
         if(config instanceof ConfigServerImpl) {
             ConfigServerImpl cs=(ConfigServerImpl) config;

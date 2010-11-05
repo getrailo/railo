@@ -16,8 +16,10 @@ import railo.commons.lang.types.RefBoolean;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.db.DataSource;
 import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -150,8 +152,16 @@ public final class ScopeContext {
 					client=ClientMemory.getInstance(pc);
 				}
 				else{
+					
+					// OLD client=ClientDatasource.getInstance(storage,appContext.getName(),pc);
+					
+					// NEW
+					DataSource ds = ((ConfigImpl)pc.getConfig()).getDataSource(storage,null);
+					if(ds!=null)client=ClientDatasource.getInstance(storage,appContext.getName(),pc);
+					else client=ClientCache.getInstance(storage,appContext.getName(),pc);
+					// /NEW
 					//storage="db";
-					client=ClientDatasource.getInstance(storage,appContext.getName(),pc);
+					
 				}
 				context.put(pc.getCFID()+storage,client);
 			}
@@ -180,8 +190,15 @@ public final class ScopeContext {
 					client=ClientMemory.getInstance(pc);
 				}
 				else{
-					//storage="db";
-					client=ClientDatasource.getInstanceEL(storage,appContext.getName(),pc);
+					// OLD client=ClientDatasource.getInstanceEL(storage,appContext.getName(),pc);
+					
+					// NEW
+					DataSource ds = ((ConfigImpl)pc.getConfig()).getDataSource(storage,null);
+					if(ds!=null)client=ClientDatasource.getInstanceEL(storage,appContext.getName(),pc);
+					else client=ClientCache.getInstanceEL(storage,appContext.getName(),pc);
+					// /NEW
+					
+					
 				}
 				context.put(pc.getCFID()+storage,client);
 			}

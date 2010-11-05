@@ -9,6 +9,7 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.cfml.evaluator.FunctionEvaluator;
+import railo.transformer.library.tag.TagLib;
 
 
 
@@ -43,7 +44,9 @@ public final class FunctionLibFunction {
 	private String description;
 	private boolean hasDefaultValues;
 	private FunctionEvaluator eval;
-	private String tteClass;
+	private String tteClass;	
+	private short status=TagLib.STATUS_IMPLEMENTED;
+
 	
 	/**
 	 * Geschützer Konstruktor ohne Argumente.
@@ -85,6 +88,22 @@ public final class FunctionLibFunction {
 	public int getArgMax() {
 		return argMax;
 	}
+	
+	/**
+	 * @return the status (TagLib.,TagLib.STATUS_IMPLEMENTED,TagLib.STATUS_DEPRECATED,TagLib.STATUS_UNIMPLEMENTED)
+	 */
+	public short getStatus() {
+		return status;
+	}
+
+
+	/**
+	 * @param status the status to set (TagLib.,TagLib.STATUS_IMPLEMENTED,TagLib.STATUS_DEPRECATED,TagLib.STATUS_UNIMPLEMENTED)
+	 */
+	public void setStatus(short status) {
+		this.status = status;
+	}
+	
 	
 	/**
 	 * Gibt die argument art zurück.

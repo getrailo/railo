@@ -25,6 +25,7 @@ import railo.runtime.type.UDFImpl;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
+import railo.transformer.library.tag.TagLibFactory;
 
 public final class GetFunctionData implements Function {
 	private static final Collection.Key NAME = KeyImpl.getInstance("name");
@@ -37,6 +38,7 @@ public final class GetFunctionData implements Function {
 	private static final Collection.Key ARGUMENT_TYPE = KeyImpl.getInstance("argumentType");
 	private static final Collection.Key ARG_MIN = KeyImpl.getInstance("argMin");
 	private static final Collection.Key ARG_MAX = KeyImpl.getInstance("argMax");
+	private static final Collection.Key STATUS = KeyImpl.getInstance("status");
 	
 	public static Struct call(PageContext pc , String strFunctionName) throws PageException {
 		FunctionLib[] flds;
@@ -68,7 +70,8 @@ public final class GetFunctionData implements Function {
 	private static Struct javaBasedFunction(FunctionLibFunction function) throws PageException {
 		Struct sct=new StructImpl();
         sct.set(NAME,function.getName());
-        sct.set(DESCRIPTION,StringUtil.emptyIfNull(function.getDescription()));
+        sct.set(STATUS,TagLibFactory.toStatus(function.getStatus()));
+		sct.set(DESCRIPTION,StringUtil.emptyIfNull(function.getDescription()));
         sct.set(RETURN_TYPE,StringUtil.emptyIfNull(function.getReturnTypeAsString()));
         sct.set(ARGUMENT_TYPE,StringUtil.emptyIfNull(function.getArgTypeAsString()));
         sct.set(ARG_MIN,Caster.toDouble(function.getArgMin()));
@@ -86,6 +89,7 @@ public final class GetFunctionData implements Function {
 				_arg.set(REQUIRED,arg.getRequired()?Boolean.TRUE:Boolean.FALSE);
 				_arg.set(TYPE,StringUtil.emptyIfNull(arg.getTypeAsString()));
 				_arg.set(NAME,StringUtil.emptyIfNull(arg.getName()));
+				_arg.set(STATUS,TagLibFactory.toStatus(arg.getStatus()));
 				_arg.set(DESCRIPTION,StringUtil.toStringEmptyIfNull(arg.getDescription()));
 				
 				

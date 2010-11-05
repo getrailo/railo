@@ -3,6 +3,7 @@ package railo.transformer.library.function;
 import java.io.IOException;
 
 import railo.commons.lang.Md5;
+import railo.transformer.library.tag.TagLib;
 
 
 
@@ -24,7 +25,8 @@ public final class FunctionLibFunctionArg {
 	private String name;
 	private String description="";
 	private String defaultValue=null;
-	private boolean hidden;
+	private boolean hidden;	
+	private short status=TagLib.STATUS_IMPLEMENTED;
 
 	
 	/**
@@ -49,6 +51,21 @@ public final class FunctionLibFunctionArg {
 	 */
 	public String getType() {
 		return strType;
+	}
+
+	/**
+	 * @return the status (TagLib.,TagLib.STATUS_IMPLEMENTED,TagLib.STATUS_DEPRECATED,TagLib.STATUS_UNIMPLEMENTED)
+	 */
+	public short getStatus() {
+		return status;
+	}
+
+
+	/**
+	 * @param status the status to set (TagLib.,TagLib.STATUS_IMPLEMENTED,TagLib.STATUS_DEPRECATED,TagLib.STATUS_UNIMPLEMENTED)
+	 */
+	public void setStatus(short status) {
+		this.status = status;
 	}
 
 	/**
