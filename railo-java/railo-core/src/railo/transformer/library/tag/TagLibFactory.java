@@ -22,7 +22,6 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.runtime.functions.other.GetFunctionData;
 import railo.runtime.op.Caster;
 import railo.runtime.type.util.ArrayUtil;
 
