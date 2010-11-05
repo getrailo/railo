@@ -336,8 +336,7 @@ public final class Zip extends BodyTagImpl {
             }
         }
         finally {
-        	zip.close();
-            //Util.closeEL(zis);
+        	IOUtil.closeEL(zip);
         }   
 	}
 
@@ -347,21 +346,26 @@ public final class Zip extends BodyTagImpl {
 		required("entrypath",variable);
 		ZipFile zip = getZip(file);
 		
-		
-		ZipEntry ze = zip.getEntry(entryPath);
-		if(ze==null)ze = zip.getEntry(entryPath+"/");
-		if(ze==null) throw new ApplicationException("zip file ["+file+"] has no entry with name ["+entryPath+"]");
-		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
-		InputStream is = zip.getInputStream(ze);
-		IOUtil.copy(is, baos,true,false);
-		
-		if(binary)
-			pageContext.setVariable(variable, baos.toByteArray());
-		else {
-			if(charset==null)charset=pageContext.getConfig().getResourceCharset();
-			pageContext.setVariable(variable, new String(baos.toByteArray(),charset));
+		try {
+			ZipEntry ze = zip.getEntry(entryPath);
+			if(ze==null)ze = zip.getEntry(entryPath+"/");
+			if(ze==null) throw new ApplicationException("zip file ["+file+"] has no entry with name ["+entryPath+"]");
+			
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			
+			InputStream is = zip.getInputStream(ze);
+			IOUtil.copy(is, baos,true,false);
+			zip.close();
+			
+			if(binary)
+				pageContext.setVariable(variable, baos.toByteArray());
+			else {
+				if(charset==null)charset=pageContext.getConfig().getResourceCharset();
+				pageContext.setVariable(variable, new String(baos.toByteArray(),charset));
+			}
+		}
+		finally {
+			IOUtil.closeEL(zip);
 		}
 		
 	}

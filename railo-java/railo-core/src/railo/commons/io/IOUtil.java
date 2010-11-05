@@ -346,6 +346,14 @@ public final class IOUtil {
     	 catch (Throwable t) {}
      }
      
+     public static void closeEL(InputStream is) {
+    	 try {
+    		 if(is!=null)is.close();
+    	 } 
+    	 //catch (AlwaysThrow at) {throw at;}
+    	 catch (Throwable t) {}
+     }
+     
      /**
       * close outputstream without a Exception
       * @param os 
