@@ -857,6 +857,10 @@
 	<data key="doc.attrtitle">Attributes</data>
 	<data key="doc.argtitle">Arguments</data>
 	<data key="doc.bodytitle">Body</data>
+	<data key="doc.depFunction">This Function is deprecated</data>
+	<data key="doc.depTag">This Tag is deprecated</data>
+	<data key="doc.depAttr">This Attribute is deprecated</data>
+	<data key="doc.depArg">This Argument is deprecated</data>
 	<data key="help.logotitle">Railo help</data>
 	<data key="help.closewindow">Close window</data>
 	<data key="help.videohelp">Railo - online video help</data>
