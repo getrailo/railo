@@ -123,6 +123,7 @@
 		<tag-class>railo.runtime.tag.Applet</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<status>unimplemented</status>
 		<description>
 			Used in a cfform tag, cfapplet lets you reference custom Java applets that you have registered 
 			using the Railo Administrator.
@@ -422,6 +423,7 @@
 		<tag-class>railo.runtime.tag.Authenticate</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<status>deprecated</status>
 		<description>
 			Authenticates a user, setting a security context for the application. 
 			For more information, see the descriptions of IsAuthenticated and AuthenticatedContext.
@@ -552,6 +554,7 @@
 			<name>timeout</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -1355,7 +1358,8 @@
 			<name>content</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>the content to output as binary</description>
+			<status>deprecated</status>
+			<description>this attribute is deprecated, use variable instead</description>
 		</attribute>
 		<attribute>
 			<type>any</type>
@@ -2621,6 +2625,7 @@ The browser uses file extension to determine file type. </description>
 			<name>enableCAB</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -3374,6 +3379,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<tag-class>railo.runtime.tag.Graph</tag-class>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<status>deprecated</status>
 		<description>Displays a graphical representation of data.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -3679,6 +3685,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<tag-class>railo.runtime.tag.GraphData</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<status>deprecated</status>
 		<description>Specifies a data point to be displayed by a cfgraph tag.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -5407,6 +5414,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>external</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -6330,9 +6338,8 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>filterFile</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies the name of a filter file and of the stanza tag within the file that contains the 
-		LDAP filter string specification. You can specify an absolute pathname or a simple filename to identify 
-		the file.</description>
+			<status>deprecated</status>
+			<description>this attribute is deprecated and no longer supported.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -6627,6 +6634,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>thread</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>Specifies whether to log the thread ID. The thread ID identifies which internal service thread logged a 
 		message. Since a service thread normally services a CFML page request to completion, then moves on to 
 		the next queued request, the thread ID serves as a rough indication of which request logged a message. 
@@ -6637,6 +6645,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>date</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>Specifies whether to log the system date.</description>
 		</attribute>
 		<attribute>
@@ -6644,6 +6653,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>time</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>Specifies whether to log the system time.</description>
 		</attribute>
 		<attribute>
@@ -7978,6 +7988,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>dbVarName</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -8311,6 +8322,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>dbServer</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -8318,6 +8330,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>dbName</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -8325,6 +8338,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>connectString</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -8385,6 +8399,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>provider</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -8392,6 +8407,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>providerDSN</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -8407,6 +8423,7 @@ Permits searching collections by title or displaying a separate title from the k
 			<name>cachename</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -9072,6 +9089,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>external</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -9079,6 +9097,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>language</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description></description>
 		</attribute>
 		
@@ -9480,6 +9499,7 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Servlet</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<status>deprecated</status>
 		<description>This tag has been deprecated and is non-functional.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -9487,6 +9507,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>code</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -9494,6 +9515,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>jrunProxy</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -9501,6 +9523,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>timeout</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -9508,6 +9531,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>writeOutput</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -9515,6 +9539,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>debug</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 	</tag>
@@ -9524,6 +9549,7 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.ServletParam</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<status>deprecated</status>
 		<description>This tag has been deprecated and is non-functional.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -9531,6 +9557,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>name</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -9538,6 +9565,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>value</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -9545,6 +9573,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>variable</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
@@ -9552,6 +9581,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>type</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 	</tag>
@@ -9960,6 +9990,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>cachename</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 	</tag>
@@ -10694,6 +10725,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>retryIntervall</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<status>deprecated</status>
 			<description>deprecated, alias for retryInterval</description>
 		</attribute>
 		<attribute>

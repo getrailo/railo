@@ -17,12 +17,13 @@ import railo.runtime.type.List;
  */
 public final class CacheGetProperties implements Function {
 	
+	private static final long serialVersionUID = -8665995702411192700L;
+
 	public static Array call(PageContext pc) throws PageException {
 		return call(pc, null);
 	}
 	
 	public static Array call(PageContext pc, String cacheName) throws PageException {
-		CacheGet.checkRestriction(pc);
 		Array arr = new ArrayImpl();
 		try {
 			if(StringUtil.isEmpty(cacheName)){

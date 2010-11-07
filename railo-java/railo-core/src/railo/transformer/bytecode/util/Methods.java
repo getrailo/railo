@@ -68,6 +68,7 @@ public final class Methods {
     
 
     final public static Method METHOD_TO_INTEGER_FROM_INT = new Method("toInteger",Types.INTEGER,new Type[]{Types.INT_VALUE});
+    final public static Method METHOD_TO_LONG_FROM_LONG_VALUE = new Method("toLong",Types.LONG,new Type[]{Types.LONG_VALUE});
     
     // Double toDouble (double)
     final public static Method METHOD_TO_DOUBLE_FROM_DOUBLE = new Method("toDouble",Types.DOUBLE,new Type[]{Types.DOUBLE_VALUE});

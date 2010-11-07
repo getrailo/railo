@@ -19,6 +19,8 @@ import railo.runtime.type.List;
  */
 public final class CacheRemove implements Function {
 	
+	private static final long serialVersionUID = -5823359978885018762L;
+	
 	public static String call(PageContext pc, Object ids) throws PageException {
 		return call(pc, ids, false,null);
 	}
@@ -28,8 +30,6 @@ public final class CacheRemove implements Function {
 	
 	
 	public static String call(PageContext pc, Object ids, boolean throwOnError, String cacheName) throws PageException {
-		CacheGet.checkRestriction(pc);
-		
 		Array arr = toArray(ids);//
 		Iterator it = arr.valueIterator();
 		String id;

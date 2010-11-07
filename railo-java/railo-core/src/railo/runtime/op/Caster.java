@@ -1405,6 +1405,16 @@ public final class Caster {
     }
 
     /**
+     * cast a long to a Long Object(reference type)
+     * @param l long to cast
+     * @return casted Long Object
+     */
+    public static Long toLong(long l) {
+        return Long.valueOf(l);
+        
+    }
+
+    /**
      * cast a Object to a Long Object(reference type)
      * @param o Object to cast
      * @param defaultValue 

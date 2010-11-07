@@ -58,7 +58,7 @@ public class CacheConnectionImpl implements CacheConnection  {
 					ioe.setStackTrace(target.getStackTrace());
 					throw ioe;
 				} 
-				catch (Exception e) {
+				catch (Throwable e) {
 					
 					cache.init(getName(), getCustom());
 				}

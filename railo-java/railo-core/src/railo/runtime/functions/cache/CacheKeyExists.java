@@ -13,8 +13,9 @@ import railo.runtime.op.Caster;
  */
 public final class CacheKeyExists implements Function {
 	
+	private static final long serialVersionUID = -5656876871645994195L;
+
 	public static boolean call(PageContext pc, String key) throws PageException {
-		CacheGet.checkRestriction(pc);
 		return call(pc, key, null);
 	}
 	

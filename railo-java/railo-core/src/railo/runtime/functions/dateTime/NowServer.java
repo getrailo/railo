@@ -5,6 +5,7 @@ import java.util.TimeZone;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 
@@ -19,7 +20,7 @@ public final class NowServer implements Function {
 	 * @throws ExpressionException 
 	 */
 	public static DateTime call(PageContext pc ) throws ExpressionException {
-		//throw new ExpressionException("function nowServer is deprecated");
+		DeprecatedUtil.function(pc,"nowServer");
 		long now = System.currentTimeMillis();
 		int railo = pc.getTimeZone().getOffset(now);
 		int server = TimeZone.getDefault().getOffset(now);

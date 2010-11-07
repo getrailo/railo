@@ -15,6 +15,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.transformer.library.tag.TagLib;
+import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
 
@@ -42,6 +43,8 @@ public final class GetTagData implements Function {
 		
 		sct.set("name",tag.getName());
 		sct.set("description",tag.getDescription());
+		sct.set("status",TagLibFactory.toStatus(tag.getStatus()));
+		
 		sct.set("attributeType",getAttributeType(tag));
 		sct.set("parseBody",Caster.toBoolean(tag.getParseBody()));
 		sct.set("bodyType",getBodyType(tag));
@@ -67,6 +70,7 @@ public final class GetTagData implements Function {
 		    if(attr.getHidden()) continue;
 		//for(int i=0;i<args.size();i++) {
 			Struct _arg=new StructImpl();
+			_arg.set("status",TagLibFactory.toStatus(attr.getStatus()));
 			_arg.set("description",attr.getDescription());
 			_arg.set("type",attr.getType());
 			_arg.set("required",attr.isRequired()?Boolean.TRUE:Boolean.FALSE);

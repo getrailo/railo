@@ -14,13 +14,13 @@ import railo.runtime.op.Caster;
  */
 public final class CacheGet implements Function {
 
+	private static final long serialVersionUID = -7164470356423036571L;
+
 	public static Object call(PageContext pc, String key) throws PageException {
-		CacheGet.checkRestriction(pc);
 		return call(pc, key,false, null);
 	}
 	
 	public static Object call(PageContext pc, String key, boolean throwWhenNotExist) throws PageException {
-		CacheGet.checkRestriction(pc);
 		return call(pc, key,throwWhenNotExist, null);
 	}
 	
@@ -31,18 +31,5 @@ public final class CacheGet implements Function {
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}
-	}
-	
-
-	public static void checkRestriction(PageContext pc) {
-		/*boolean enable = false;
-		try {
-			enable=Caster.toBooleanValue(pc.serverScope().get("enableCache", Boolean.FALSE), false);
-		} 
-		catch (PageException e) {}
-		//enable=false;
-		if(!enable)
-			throw new PageRuntimeException(new railo.runtime.exp.SecurityException("this functionality is not supported"));
-		*/
 	}
 }

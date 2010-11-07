@@ -19,6 +19,8 @@ import railo.runtime.type.StructImpl;
  */
 public final class CacheGetMetadata implements Function {
 	
+	private static final long serialVersionUID = -470089623854482521L;
+	
 	private static final Collection.Key CACHE_HITCOUNT = KeyImpl.getInstance("cache_hitcount");
 	private static final Collection.Key CACHE_MISSCOUNT = KeyImpl.getInstance("cache_misscount");
 	private static final Collection.Key CACHE_CUSTOM = KeyImpl.getInstance("cache_custom");
@@ -36,8 +38,6 @@ public final class CacheGetMetadata implements Function {
 	}
 	
 	public static Struct call(PageContext pc, String id, String cacheName) throws PageException {
-		CacheGet.checkRestriction(pc);
-		
 		try {
 			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
 			CacheEntry entry = cache.getCacheEntry(Util.key(id));

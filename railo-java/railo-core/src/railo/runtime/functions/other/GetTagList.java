@@ -13,6 +13,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.transformer.library.tag.TagLib;
+import railo.transformer.library.tag.TagLibTag;
 
 public final class GetTagList implements Function {
 	
@@ -25,6 +26,7 @@ public final class GetTagList implements Function {
 			//synchronized(sct) {
 				//hasSet=true;
 				TagLib[] tlds;
+				TagLibTag tag;
 				tlds = ((ConfigImpl)pc.getConfig()).getTLDs();
 				
 				for(int i=0;i<tlds.length;i++) {
@@ -37,7 +39,9 @@ public final class GetTagList implements Function {
                     sct.set(ns,inner);
 					while(it.hasNext()){
 						Object n=it.next();
-						inner.set(n.toString(),"");
+						tag = tlds[i].getTag(n.toString());
+						if(tag.getStatus()!=TagLib.STATUS_HIDDEN && tag.getStatus()!=TagLib.STATUS_UNIMPLEMENTED)
+							inner.set(n.toString(),"");
 					}
 					
 				}

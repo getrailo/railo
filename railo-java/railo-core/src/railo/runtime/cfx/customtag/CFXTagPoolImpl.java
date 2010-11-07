@@ -1,11 +1,13 @@
 package railo.runtime.cfx.customtag;
 
 import java.util.Map;
+import java.util.Set;
 
 import railo.commons.collections.HashTable;
 import railo.runtime.cfx.CFXTagException;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.config.Config;
+import railo.runtime.type.List;
 
 import com.allaire.cfx.CustomTag;
 
@@ -40,7 +42,12 @@ public final class CFXTagPoolImpl implements CFXTagPool {
 		name=name.toLowerCase();
 		
 		Object o=classes.get(name);
-		if(o==null) throw new CFXTagException("there is no Custom Tag (CFX) with name ["+name+"]");
+		if(o==null) {
+			Set<String> set = classes.keySet();
+			String names = List.arrayToList(set.toArray(new String[set.size()]),",");
+			
+			throw new CFXTagException("there is no Custom Tag (CFX) with name ["+name+"], available Custom Tags are ["+names+"]");
+		}
 		CFXTagClass ctc=(CFXTagClass) o;
 		CustomTag ct = ctc.newInstance();
 		//if(!(o instanceof CustomTag))throw new CFXTagException("["+name+"] is not of type ["+CustomTag.class.getName()+"]");

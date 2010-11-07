@@ -27,14 +27,5 @@ public interface GatewayEngine {
 	 * @param message
 	 */
 	public void log(Gateway gateway,int level,String message);
-	
-	
-    //public static GatewayServices getGatewayServices();
-    
-    //public boolean addEvent(CFEvent msg);
-    
-    //public int getQueueSize();
-    
-    //public int getMaxQueueSize();
     
 }

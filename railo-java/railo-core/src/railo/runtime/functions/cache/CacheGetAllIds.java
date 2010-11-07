@@ -18,6 +18,9 @@ import railo.runtime.type.ArrayImpl;
  */
 public final class CacheGetAllIds implements Function {
 	
+	private static final long serialVersionUID = 4831944874663718056L;
+
+
 	public static Array call(PageContext pc) throws PageException {
 		return call(pc, null,null);
 	}
@@ -28,8 +31,6 @@ public final class CacheGetAllIds implements Function {
 	}
 	
 	public static Array call(PageContext pc, String filter, String cacheName) throws PageException {
-		CacheGet.checkRestriction(pc);
-		
 		try {
 			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
 			List keys = isFilter(filter)?cache.keys(new WildCardFilter(filter,true)):cache.keys();

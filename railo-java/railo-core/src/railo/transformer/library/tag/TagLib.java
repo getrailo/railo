@@ -21,7 +21,14 @@ import railo.transformer.cfml.ExprTransformer;
  * mit ihrer Hilfe kann man alle Informationen, zu einer TLD Abfragen. 
  */
 public class TagLib implements Cloneable {
-    /**
+
+	public static final short STATUS_IMPLEMENTED=0;
+	public static final short STATUS_DEPRECATED=1;
+	public static final short STATUS_UNIMPLEMENTED=2;
+	public static final short STATUS_HIDDEN=4;
+	
+	
+	/**
      * Field <code>EXPR_TRANSFORMER</code>
      */
     public static String EXPR_TRANSFORMER="railo.transformer.cfml.expression.CFMLExprTransformer";

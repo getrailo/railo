@@ -16,6 +16,11 @@ public class DeprecatedUtil {
 		SystemOut.printDate(pc.getConfig().getErrWriter(), "attribute "+attrName+" of the tag "+tagName+" is deprecated and will be ignored");
 	}
 
+	public static void function(PageContext pc, String old) {
+		pc = ThreadLocalPageContext.get(pc);
+		if(pc==null) return;
+		SystemOut.printDate(pc.getConfig().getErrWriter(), "function "+old+"is deprecated");
+	}
 	public static void function(PageContext pc, String old, String replacement) {
 		pc = ThreadLocalPageContext.get(pc);
 		if(pc==null) return;
