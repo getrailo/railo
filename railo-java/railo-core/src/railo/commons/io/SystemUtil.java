@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 import railo.commons.digest.MD5;
@@ -17,9 +18,13 @@ import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
+import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * 
@@ -290,7 +295,73 @@ public final class SystemUtil {
         return path;
     }
     
-    public static String parsePlaceHolder(String path, ServletContext sc) {
+    public static String addPlaceHolder(Resource file, String defaultValue) {
+     // Temp
+        String path=addPlaceHolder(getTempDirectory(),file,"{temp-directory}");
+        if(!StringUtil.isEmpty(path)) return path;
+     // System
+        path=addPlaceHolder(getSystemDirectory(),file,"{system-directory}");
+        if(!StringUtil.isEmpty(path)) return path;
+     // Home
+        path=addPlaceHolder(getHomeDirectory(),file,"{home-directory}");
+        if(!StringUtil.isEmpty(path)) return path;
+        
+      
+        return defaultValue;
+    }
+    
+    private static String addPlaceHolder(Resource dir, Resource file,String placeholder) {
+    	if(ResourceUtil.isChildOf(file, dir)){
+        	try {
+				return StringUtil.replace(file.getCanonicalPath(), dir.getCanonicalPath(), placeholder, true);
+			} 
+        	catch (IOException e) {}
+        }
+    	return null;
+	}
+    
+
+	public static String addPlaceHolder(Resource file,  Config config, String defaultValue) {
+    	ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
+    	
+        // temp
+        	Resource dir = config.getTempDirectory();
+        	String path = addPlaceHolder(dir,file,"{temp-directory}");
+        	if(!StringUtil.isEmpty(path)) return path;
+            	
+        // Config 
+        	dir = config.getConfigDir();
+        	path = addPlaceHolder(dir,file,"{railo-config-directory}");
+        	if(!StringUtil.isEmpty(path)) return path;
+
+        /* / Config WEB
+        	dir = config.getConfigDir();
+        	path = addPlaceHolder(dir,file,"{railo-server-directory}");
+        	if(!StringUtil.isEmpty(path)) return path;
+*/
+        // Web root
+        	dir = config.getRootDirectory();
+        	path = addPlaceHolder(dir,file,"{web-root-directory}");
+        	if(!StringUtil.isEmpty(path)) return path;
+
+        	
+        
+        	/* TODO
+        else if(str.startsWith("{railo-server")) {
+            cs=((ConfigImpl)config).getConfigServerImpl();
+            //if(config instanceof ConfigServer && cs==null) cs=(ConfigServer) cw;
+            if(cs!=null) {
+                if(str.startsWith("}",13)) str=cs.getConfigDir().getReal(str.substring(14));
+                else if(str.startsWith("-dir}",13)) str=cs.getConfigDir().getReal(str.substring(18));
+                else if(str.startsWith("-directory}",13)) str=cs.getConfigDir().getReal(str.substring(24));
+            }
+        }*/
+        
+    	
+        return addPlaceHolder(file, defaultValue);
+    }
+    
+	public static String parsePlaceHolder(String path, ServletContext sc) {
     	ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
     	
     	

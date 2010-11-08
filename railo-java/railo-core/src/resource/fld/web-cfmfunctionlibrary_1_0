@@ -2869,6 +2869,12 @@
 			<type>string</type>
 			<required>Yes</required>
 		</argument>
+		<argument>
+			<name>placeholder</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>If true (default false), Railo also tries to create a placeholder for the begining of the Tag</description>
+		</argument>
 		<return>
 			<type>string</type>
 		</return>
