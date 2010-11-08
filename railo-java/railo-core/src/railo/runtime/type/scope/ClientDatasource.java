@@ -107,7 +107,7 @@ public final class ClientDatasource extends ClientSupport {
 	}
 	
 	
-	private static Struct _loadData(PageContext pcd, String datasourceName, boolean mxStyle) throws PageException	{
+	private static Struct _loadData(PageContext pc, String datasourceName, boolean mxStyle) throws PageException	{
 		DatasourceConnection dc=null;
 		Query query=null;
 	    
