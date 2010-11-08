@@ -29,7 +29,7 @@ public class CPPCustomTag implements CustomTag {
 		if(processRequest==null){
 			Class clazz = null;
 			try {
-				clazz = ClassUtil.loadClass("org.openbd.extension.cfx.CFXNativeLib");
+				clazz = ClassUtil.loadClass("com.naryx.tagfusion.cfx.CFXNativeLib");
 			} catch (ClassException e) {
 				throw new CFXTagException("C++ Custom tag library is missing, get the newest jars-zip from getrailo.org download");
 			}

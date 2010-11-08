@@ -942,7 +942,7 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getScheduleLogger()
      */
     public LogAndSource getScheduleLogger() {
-        return scheduler.getLogger();
+    	return scheduler.getLogger();
     }
     
     /**
