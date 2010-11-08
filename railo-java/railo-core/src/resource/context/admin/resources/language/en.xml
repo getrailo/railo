@@ -777,6 +777,10 @@
 	<data key="cfx.name">Name</data>
 	<data key="cfx.class">Class</data>
 	<data key="cfx.noaccess">No access to CFX functionality</data>
+	<data key="cfx.cpp.CFXTags">C++ CFX tags</data>
+	<data key="cfx.procedure">Procedure</data>
+	<data key="cfx.serverlibrary">Server Library</data>
+	<data key="cfx.keepAlive">Keep Alive</data>
 	<data key="overview.installedtls">Installed tag&lt;br/&gt; libraries</data>
 	<data key="overview.bugreport">Bug report</data>
 	<data key="overview.issuetracker">Issue Tracker</data>

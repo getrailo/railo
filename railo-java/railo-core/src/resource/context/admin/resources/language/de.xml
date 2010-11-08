@@ -775,6 +775,10 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="cfx.name">Name</data>
 	<data key="cfx.class">Klasse</data>
 	<data key="cfx.noaccess">Kein Zugriff auf die CFX Funktionalität</data>
+	<data key="cfx.cpp.CFXTags">C++ CFX tags</data>
+	<data key="cfx.procedure">Prozedur</data>
+	<data key="cfx.serverlibrary">Server Library</data>
+	<data key="cfx.keepAlive">Keep Alive</data>
 	<data key="doc.attr.name">Name</data>
 	<data key="doc.attr.minmax">Es muss mindestens {min} Attribut(e), jedoch maximal {max.} haben</data>
 	<data key="doc.attr.min">Es muss mindestens {min} Attribut(e) haben.</data>
