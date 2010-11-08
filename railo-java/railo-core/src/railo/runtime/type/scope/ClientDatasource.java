@@ -39,8 +39,8 @@ public final class ClientDatasource extends ClientSupport {
 	private static boolean structOk;
 	
 	private String datasourceName;
-	private String appName;
-	private String cfid;
+	//private String appName;
+	//private String cfid;
 	private PageContext pc;
 	
 	
@@ -51,7 +51,7 @@ public final class ClientDatasource extends ClientSupport {
 	 * @param sct
 	 * @param b 
 	 */
-	private ClientDatasource(PageContext pc,String datasourceName, String appName,Struct sct) { 
+	private ClientDatasource(PageContext pc,String datasourceName, Struct sct) { 
 		super(
 				sct,
 				doNowIfNull(pc,Caster.toDate(sct.get(TIMECREATED,null),false,pc.getTimeZone(),null)),
@@ -60,10 +60,7 @@ public final class ClientDatasource extends ClientSupport {
 				Caster.toIntValue(sct.get(HITCOUNT,"1"),1));
 
 		//this.isNew=isNew;
-		this.appName=appName;
 		this.datasourceName=datasourceName;
-		this.cfid=pc.getCFID();
-		this.pc=pc;
 		//this.manager = (DatasourceManagerImpl) pc.getDataSourceManager(); 
 	}
 
@@ -74,9 +71,7 @@ public final class ClientDatasource extends ClientSupport {
 	private ClientDatasource(ClientDatasource other,boolean deepCopy) {
 		super(other,deepCopy);
 		
-		this.appName=other.appName;
 		this.datasourceName=other.datasourceName;
-		this.cfid=other.cfid;
 		this.pc=other.pc;
 		//this.manager=other.manager;
 	}
@@ -94,25 +89,25 @@ public final class ClientDatasource extends ClientSupport {
 	 * @return client datasource scope
 	 * @throws PageException
 	 */
-	public static Client getInstance(String datasourceName, String appName, PageContext pc) throws PageException {
-			Struct _sct = _loadData(pc, datasourceName, appName, false);
+	public static Client getInstance(String datasourceName, PageContext pc) throws PageException {
+			
+			Struct _sct = _loadData(pc, datasourceName, false);
 			structOk=true;
 			if(_sct==null) _sct=new StructImpl();
 			
-		return new ClientDatasource(pc,datasourceName,appName,_sct);
+		return new ClientDatasource(pc,datasourceName,_sct);
 	}
 	
-
-	public static Client getInstanceEL(String datasourceName, String appName, PageContext pc) {
+	public static Client getInstanceEL(String datasourceName, PageContext pc) {
 		try {
-			return getInstance(datasourceName, appName, pc);
+			return getInstance(datasourceName, pc);
 		}
 		catch (PageException e) {}
-		return new ClientDatasource(pc,datasourceName,appName,new StructImpl());
+		return new ClientDatasource(pc,datasourceName,new StructImpl());
 	}
 	
 	
-	private static Struct _loadData(PageContext pc, String datasourceName, String appName, boolean mxStyle) throws PageException	{
+	private static Struct _loadData(PageContext pcd, String datasourceName, boolean mxStyle) throws PageException	{
 		DatasourceConnection dc=null;
 		Query query=null;
 	    
@@ -122,7 +117,7 @@ public final class ClientDatasource extends ClientSupport {
 				new SQLImpl("select data from railo_client_data where cfid=? and name=?"
 						,new SQLItem[]{
 			 		new SQLItemImpl(pc.getCFID(),Types.VARCHAR),
-					new SQLItemImpl(appName,Types.VARCHAR)
+					new SQLItemImpl(pc.getApplicationContext().getName(),Types.VARCHAR)
 				});
 		
 		ConfigImpl config = (ConfigImpl)pc.getConfig();
@@ -182,18 +177,19 @@ public final class ClientDatasource extends ClientSupport {
 		catch (Exception e) {}
 		finally {
 			if(dc!=null) pool.releaseDatasourceConnection(dc);
+			pc=null;
 		}
 	}
 
 	private int executeUpdate(Connection conn, String strSQL, boolean ignoreData) throws SQLException, PageException, ConverterException {
-		
+		String appName = pc.getApplicationContext().getName();
 		SQLImpl sql = new SQLImpl(strSQL,new SQLItem[]{
 			new SQLItemImpl(new ScriptConverter().serializeStruct(sct,ignoreSet),Types.VARCHAR),
-			new SQLItemImpl(cfid,Types.VARCHAR),
+			new SQLItemImpl(pc.getCFID(),Types.VARCHAR),
 			new SQLItemImpl(appName,Types.VARCHAR)
 		});
 		if(ignoreData)sql = new SQLImpl(strSQL,new SQLItem[]{
-				new SQLItemImpl(cfid,Types.VARCHAR),
+				new SQLItemImpl(pc.getCFID(),Types.VARCHAR),
 				new SQLItemImpl(appName,Types.VARCHAR)
 			});
 		
@@ -274,7 +270,7 @@ public final class ClientDatasource extends ClientSupport {
 		this.pc=pc;
 		//print.out(isNew);
 		try {
-			if(!structOk)sct=_loadData(pc, datasourceName, appName, false);
+			if(!structOk)sct=_loadData(pc, datasourceName, false);
 			
 		} catch (PageException e) {
 			//
