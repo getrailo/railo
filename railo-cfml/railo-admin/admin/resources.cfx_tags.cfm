@@ -46,10 +46,9 @@ Defaults --->
                 
 		<!--- update --->
 			<cfif form.subAction EQ "#stText.Buttons.save#">
-				
-                <cfloop index="idx" from="1" to="#arrayLen(data.names)#">
+				<cfloop index="idx" from="1" to="#arrayLen(data.names)#">
 					<cfif isDefined("data.rows[#idx#]") and data.names[idx] NEQ "">
-					<cfif data.types[idx] EQ "com">
+					<cfif data.types[idx] EQ "cpp">
                         <cfadmin 
                             action="updateCPPCFX"
                             type="#request.adminType#"
@@ -113,7 +112,7 @@ Defaults --->
 			</cfif>
 		</cfcase>
 	</cfswitch>
-	<cfcatch>
+	<cfcatch><cfrethrow>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>
@@ -176,7 +175,7 @@ function selectAll(field) {
 	<td colspan="4"><cfoutput><h2>#stText.CFX.CFXTags#</h2></cfoutput></td>
 </tr>
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform name="java" action="#request.self#?action=#url.action#" method="post">
 <cfoutput>
 	<tr>
 		<td><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></td>
@@ -257,7 +256,7 @@ function selectAll(field) {
 			<td></td>
 			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 			<td>&nbsp;
-			<input type="hidden" name="type_#idx#" value="#jtags.displayname#">
+			<input type="hidden" name="type_#idx#" value="java">
 			<input type="hidden" name="mainAction" value="updateJava">
 			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Verify#">
 			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.save#">
@@ -281,7 +280,7 @@ function selectAll(field) {
 	<td colspan="4"><cfoutput><h2>#stText.CFX.cpp.CFXTags#</h2></cfoutput></td>
 </tr>
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform name="cpp" action="#request.self#?action=#url.action#" method="post">
 <cfoutput>
 	<tr>
 		<td><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></td>
@@ -386,7 +385,7 @@ function selectAll(field) {
 			<td></td>
 			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 			<td>&nbsp;
-			<input type="hidden" name="type_#idx#" value="#ctags.displayname#">
+			<input type="hidden" name="type_#idx#" value="cpp">
 			<input type="hidden" name="mainAction" value="updateJava">
 			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Verify#">
 			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.save#">

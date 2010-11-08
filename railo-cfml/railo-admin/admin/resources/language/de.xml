@@ -300,6 +300,10 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="remote.securitykeytitledesc">Falls dieser Web Administrator von einem anderen Server aus synchronisiert werden soll, müssen sie den unten angegebenen Schlüssel bei der Definition der Remote Client Verbindung angeben.</data>
 	<data key="remote.securitykeydesc">Geben Sie hier den Schlüssel des Remote Clients an. Sie finden ihn unter Remote-Scherheitsschlüssel im Administrator des Remote Clients</data>
 	<data key="remote.urlpathdesc">Pfad zur Admin.cfc (Beispiel: /railo-context/admin.cfc?wsdl)</data>
+	<data key="remote.from">von</data>
+	<data key="remote.to">bis</data>
+	<data key="remote.previous">vorherige</data>
+	<data key="remote.next">nächste</data>
 	<data key="application.web">Hier können Sie verschiedene Standardeinstellungen für den Applikations Kontext erfassen. Diese Einstellungen können von dem Tag CFApplication oder der Application.cfc übersteuert werden.</data>
 	<data key="application.scriptprotectcustom">Definieren Sie individuell welche Scopes geprüft werden sollen und welche nicht</data>
 	<data key="application.listener">Application Listener</data>

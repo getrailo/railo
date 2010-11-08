@@ -296,6 +296,11 @@
 	<data key="remote.detail.update">Update Remote Client</data>
 	<data key="remote.securitykeydesc">Please enter the key of the remote clients. You can find it under Remote security key in the administrator of the remote clients</data>
 	<data key="remote.urlpathdesc">Path to Admin.cfc (example: /railo-context/admin.cfc?wsdl)</data>
+	<data key="remote.from">from</data>
+	<data key="remote.to">to</data>
+	<data key="remote.previous">previous</data>
+	<data key="remote.next">next</data>
+	
 	<data key="application.web">Here you can define several default settings for the application context. These settings can be overridden with the tag cfapplication or the Application.cfc.</data>
 	<data key="application.scriptprotectcustom">You can define the scopes to be checked individually</data>
 	<data key="application.listener">Application listener</data>
