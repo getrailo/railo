@@ -99,13 +99,14 @@ Error Output --->
 <cfoutput>	
 <!--- 
 Create Datasource --->
-<h2>#stText.Settings.DatasourceSettings#</h2>
-<table class="tbl" width="600">
+
+<table class="tbl" width="740">
+<colgroup>
+    <col width="150">
+    <col width="590">
+</colgroup>
 <tr>
-	<td colspan="2"></td>
-</tr>
-<tr>
-	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+	<td colspan="2"><h2>#stText.Settings.DatasourceSettings#</h2></td>
 </tr>
 
 <cfform action="#request.self#?action=#url.action#" method="post">
@@ -192,10 +193,11 @@ function selectAll(field) {
 
 <cfif request.adminType EQ "web" and srcGlobal.recordcount>
 	<cfoutput>
-	<h2>#stText.Settings.ReadOnlyDatasources#</h2>
-	<table class="tbl" width="650">
+	
+	<table class="tbl" width="740">
+ 
 	<tr>
-		<td colspan="4">#stText.Settings.ReadOnlyDatasourcesDescription#</td>
+		<td colspan="4"><h2>#stText.Settings.ReadOnlyDatasources#</h2>#stText.Settings.ReadOnlyDatasourcesDescription#</td>
 	</tr>
 	<tr>
 		<td colspan="4"><cfmodule template="tp.cfm"  width="1" height="1"></td>
@@ -245,7 +247,7 @@ function selectAll(field) {
 			<td colspan="4">
 			 <table border="0" cellpadding="0" cellspacing="0">
 			 <tr>
-				<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
+				<td><cfmodule template="tp.cfm"  width="6" height="1"></td>		
 				<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="20"></td>
 				<td></td>
 			 </tr>
@@ -269,21 +271,17 @@ function selectAll(field) {
 
 <cfif srcLocal.recordcount>
 	<cfoutput>
-	<h2>#stText.Settings.ListDatasources#</h2>
-	#stText.Settings['ListDatasourcesDesc'& request.adminType ]#
-	<table class="tbl" width="650">
+	
+	<table class="tbl" width="740">
 	<tr>
-		<td colspan="3"></td> 
-	</tr>
-	<tr>
-		<td colspan="3"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+		<td colspan="4"><h2>#stText.Settings.ListDatasources#</h2>#stText.Settings['ListDatasourcesDesc'& request.adminType ]#</td> 
 	</tr>
 	<cfform action="#request.self#?action=#url.action#" method="post">
 		<tr>
-			<td width="20"><input type="checkbox" class="checkbox" name="rowread" onclick="selectAll(this)"></td>
+			<td width="60"><input type="checkbox" class="checkbox" name="rowread" onclick="selectAll(this)"></td>
 			<td width="205" class="tblHead" nowrap>#stText.Settings.Name#</td>
-			<td width="365" class="tblHead" nowrap>#stText.Settings.Type#</td>
-			<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
+			<td width="405" class="tblHead" nowrap>#stText.Settings.Type#</td>
+			<td width="70" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 		</tr>
 		<cfloop query="srcLocal">
 			<!--- and now display --->

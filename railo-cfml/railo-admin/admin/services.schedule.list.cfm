@@ -133,13 +133,13 @@ function checkTheBox(field) {
 <!--- 
 List --->
 <cfif tasks.recordcount>
-<cfoutput><h2>#stText.Schedule.Detail#</h2>
-#stText.Schedule.DetailDescription#</cfoutput>
 
 
-<table class="tbl" width="600">
+
+<table class="tbl" width="740">
 <tr>
-	<td colspan="4"></td>
+	<td colspan="4"><cfoutput><h2>#stText.Schedule.Detail#</h2>
+#stText.Schedule.DetailDescription#</cfoutput></td>
 </tr>
 <tr>
 	<td colspan="4"><cfmodule template="tp.cfm"  width="1" height="1"></td>
@@ -212,13 +212,10 @@ List --->
 <!--- 
 Create Task --->
 <cfoutput>
-<h2>#stText.Schedule.CreateTask#</h2>
-<table class="tbl" width="600">
+
+<table class="tbl" width="740">
 <tr>
-	<td colspan="2"></td>
-</tr>
-<tr>
-	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+	<td colspan="2"><h2>#stText.Schedule.CreateTask#</h2></td>
 </tr>
 <cfform action="#request.self#?action=#url.action#&action2=create" method="post">
 <tr>
@@ -290,3 +287,6 @@ Create Task --->
 </cfform>
 </cfoutput>
 </table>
+<!---
+<cfmodule template="log.cfm" name="scheduled-task" title="Log" description="this is ...">
+--->

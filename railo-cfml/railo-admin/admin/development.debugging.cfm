@@ -85,7 +85,7 @@ Error Output --->
 <!--- @todo text ---><br><br>
 <!--- 
 Create Datasource --->
-<table class="tbl">
+<table class="tbl" width="740">
 <cfoutput><cfform action="#request.self#?action=#url.action#" method="post" name="debug_settings">
 <tr>
 	<td class="tblHead" width="150">#stText.Debug.EnableDebugging#</td>
@@ -112,7 +112,7 @@ Create Datasource --->
 		
 		
 	</td>
-</tr> 
+</tr>
 <tr>
 	<td class="tblHead" width="150" height="28">#stText.Debug.DebugTemplate#</td>
 	<cfset css=iif(len(debug.debugTemplate) EQ 0 and len(debug.strdebugTemplate) NEQ 0,de('Red'),de(''))>

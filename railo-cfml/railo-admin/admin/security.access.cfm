@@ -1,6 +1,5 @@
-<cfif request.adminType EQ "web">
-	<cfthrow message="no access to this functionality">
-</cfif>
+<cfif request.admintype EQ "web"><cflocation url="#request.self#" addtoken="no"></cfif>
+
 <cfscript>
 function isYes(accessor) {
 	return accessor EQ ACCESS.YES;

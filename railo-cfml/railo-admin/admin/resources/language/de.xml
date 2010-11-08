@@ -84,8 +84,9 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.server.output">Ausgabe</data>
 	<data key="menu.server.error">Error</data>
 	<data key="menu.services.label">Dienste</data>
-	<data key="menu.services.gateway">Event Gateway (Alpha)</data>
-	<data key="menu.services.cache">Cache (Beta)</data>
+	<data key="menu.services.gateway">Event Gateway (Beta)</data>
+	<data key="menu.services.cache">Cache</data>
+	<data key="menu.services.orm">ORM (Beta)</data>
 	<data key="menu.services.datasource">Datenquellen</data>
 	<data key="menu.services.search">Suche</data>
 	<data key="menu.services.mail">Mail</data>
@@ -723,6 +724,15 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.dbuser">Benutzername</data>
 	<data key="settings.preservesinglequotes">Single Quotes erhalten</data>
 	<data key="settings.dbconnlimit">Verbindungslimitierung (max)</data>
+	
+	<data key="settings.dbMetaCacheTimeout">Caching Meta Data</data>
+	<data key="settings.dbMetaCacheTimeoutDesc">definiert wielange Stored Procedures Meta Data gecached werden</data>
+	<data key="settings.minutes">Minute(n)</data>
+	<data key="settings.hours">Stunden(n)</data>
+	<data key="settings.days">Tag(e)</data>
+	<data key="settings.flushCache">cache leeren</data>
+	
+	
 	<data key="settings.dbconntimeoutdesc">Definiert wie lange eine stehende Verbindung aufrechterhalten wird, bevor Sie beendet wird.</data>
 	<data key="settings.dbportdesc">Der Port der Datenbank die angesprochen werden soll.</data>
 	<data key="settings.dbconnlimitdesc">Beschränkt die Anzahl Verbindungen die zur Datenbank aufgebaut werden.</data>
@@ -765,6 +775,10 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="cfx.name">Name</data>
 	<data key="cfx.class">Klasse</data>
 	<data key="cfx.noaccess">Kein Zugriff auf die CFX Funktionalität</data>
+	<data key="cfx.cpp.CFXTags">C++ CFX tags</data>
+	<data key="cfx.procedure">Prozedur</data>
+	<data key="cfx.serverlibrary">Server Library</data>
+	<data key="cfx.keepAlive">Keep Alive</data>
 	<data key="doc.attr.name">Name</data>
 	<data key="doc.attr.minmax">Es muss mindestens {min} Attribut(e), jedoch maximal {max.} haben</data>
 	<data key="doc.attr.min">Es muss mindestens {min} Attribut(e) haben.</data>
@@ -794,6 +808,10 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="doc.attrtitle">Attribute</data>
 	<data key="doc.argtitle">Argumente</data>
 	<data key="doc.bodytitle">Body</data>
+	<data key="doc.depFunction">This Function is deprecated</data>
+	<data key="doc.depTag">This Tag is deprecated</data>
+	<data key="doc.depAttr">This Attribute is deprecated</data>
+	<data key="doc.depArg">This Argument is deprecated</data>
 	<data key="overview.installedtls">Installierte Tag&lt;br&gt;Bibliotheken</data>
 	<data key="overview.bugreport">Fehlerreport</data>
 	<data key="overview.issuetracker">Issue Tracker</data>

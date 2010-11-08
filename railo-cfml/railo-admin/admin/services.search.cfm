@@ -1,3 +1,5 @@
+<cfif request.admintype EQ "server"><cflocation url="#request.self#" addtoken="no"></cfif>
+
 <cfparam name="form.run" default="none">
 <cfparam name="error" default="#struct(message:"",detail:"")#">
 
@@ -129,7 +131,7 @@ function selectAll(field) {
 	
 }
 	</script>
-	<cfoutput>#stText.Search.Description#<br><br></cfoutput>
+	<cfoutput><div style="width:740px">#stText.Search.Description#</div><br><br></cfoutput>
 	
 	<cfcollection action="list" name="collections">
 	<cfif not StructKeyExists(url,"collection")>
@@ -139,10 +141,10 @@ function selectAll(field) {
 <cfif collections.recordcount>
 		<!--- 
 		Existing Collection --->
-		<h2><cfoutput>#stText.Search.Collections#</cfoutput></h2>
-		<table class="tbl">
+		
+		<table class="tbl" width="740">
 		<tr>
-			<td colspan="8"><!--- @todo text ---></td>
+			<td colspan="8"><h2><cfoutput>#stText.Search.Collections#</cfoutput></h2></td>
 		</tr>
 		<tr>
 			<td colspan="8"><cfmodule template="tp.cfm"  width="1" height="1"></td>
@@ -214,13 +216,10 @@ function selectAll(field) {
         
 		<!--- 
 		Create Collection --->
-		<h2><cfoutput>#stText.Search.CreateCol#</cfoutput></h2>
+		
 		<table class="tbl" width="350">
-		<!--- <tr>
-			<td colspan="2">&nbsp;@todo text</td>
-		</tr> --->
 		<tr>
-			<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+			<td colspan="2"><h2><cfoutput>#stText.Search.CreateCol#</cfoutput></h2></td>
 		</tr>
 		<cfform action="#request.self#?action=#url.action#" method="post">
 		<cfoutput>

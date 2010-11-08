@@ -11,6 +11,10 @@ ad=request.adminType;
 hasNavigation=len(attributes.navigation) GT 0;
 
 other=iif(request.adminType EQ "web","'server'","'web'");
+otherURL=other&".cfm"
+if(structKeyExists(url,'action'))otherURL&="?action="&url.action;
+
+
 </cfscript>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
@@ -25,8 +29,9 @@ other=iif(request.adminType EQ "web","'server'","'web'");
 	  
 		body {background-image:url(<cfmodule type="css" template="img.cfm" src="#ad#-back.png" />);background-repeat:repeat-x;background-color:##f7f7f7;margin-top:0px;margin-left:0px;}
 		body, tr, td,div {font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 9pt;color:##3c3e40;}
+		.box {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 14pt;color:##568bc1;}
 		h1 {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 20pt;color:##568bc1;}
-		h2 {height:6pt;font-size : 14pt;font-weight:normal;color:##568bc1;}
+		h2 {height:6pt;font-size : 12pt;font-weight:normal;color:##568bc1;}
 		
 		div.navtop		{margin-top:8px;margin-bottom:3px;color:##333333;font-weight:bold;font-size : 9pt;}
     	a.navtop		{text-decoration:none;font-weight:bold;font-size : 9pt;}
@@ -92,28 +97,50 @@ background-color:white;
 	<col width="1">
 	<col width="9">
 </colgroup>
+
 <tr>
-	<td colspan="6" align="right"><a href="#other#.cfm"><cfmodule template="img.cfm" src="#ad#-to.png" vspace="5" /></a></td>
-</tr>
-<tr>
-	<td colspan="6" width="162" height="91" valign="bottom">
-    <a href="#request.self#"><cfmodule template="img.cfm" src="railo.png" width="92" height="59" vspace="10"/></a>
-    <cfmodule template="img.cfm" src="hr.png"  hspace="25" vspace="10" />
-    <cfmodule template="img.cfm" src="#ad#-admin.png"  vspace="17" /></td>
+	<td colspan="#hasNavigation?3:2#" width="162" height="91" valign="bottom"><cfmodule template="tp.cfm" width="1" height="34" /><br>
+    <a href="#request.self#"><cfmodule template="img.cfm" src="railo.png" width="92" height="59" vspace="10"/></a></td>
+    
+    <td colspan="2" width="162" height="91" align="right" valign="bottom"><a <cfif ad EQ "web">href="#otherURL#"</cfif>><cfmodule template="img.cfm" src="left-tab-#ad#.png" /></a><a <cfif ad EQ "server">href="#otherURL#"</cfif>><cfmodule template="img.cfm" src="right-tab-#ad#.png" /></a></td>
+    <td><cfmodule template="tp.cfm" width="1" height="1" /></td>
 </tr>
 <tr>
 	<td rowspan="2" width="4" valign="top"><cfmodule template="img.cfm" vspace="77" src="shadow-left.gif" /></td>
 	<td valign="top"  width="158" style="background-image:url(<cfmodule type="css" template="img.cfm" src="back-left.png" />);"><cfmodule template="img.cfm" src="left.png" />
 		<cfif hasNavigation><div style="margin:10px 0px 0px 20px;">
-			<cfoutput>#attributes.navigation#<div style="padding-top:30px;padding-bottom:30px;"><a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout"><cfmodule template="img.cfm" src="arrow.gif" border="0" width="4" height="7" /> Logout</a></div></cfoutput>
+			<cfoutput>#attributes.navigation#<!---<div style="padding-top:30px;padding-bottom:30px;"><a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout"><cfmodule template="img.cfm" src="arrow.gif" border="0" width="4" height="7" /> Logout</a></div>---></cfoutput>
 		</div></cfif><br><br>
 	</td>
 	<cfif hasNavigation><td rowspan="1" width="1" style="background-color:##d2d2d2;"></td></cfif>
 	<td width="815" height="31" valign="top" align="right" style="background-color:white" >
     <cfmodule template="img.cfm" src="tp.gif" width="8" height="8" align="top" style="margin:0px 4px 18px 0px;" />
-		<div id="content" style="text-align:left;margin:0px 10px 10px 20px;">
-			<cfoutput><cfif len(attributes.title) GT 0><h1>#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></h1></cfif>
-					#thistag.generatedContent#</cfoutput>
+		
+        
+			<cfoutput>
+			<div id="title" style="text-align:left;margin:0px 10px 10px 20px;">
+            <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+            	<td><cfmodule template="img.cfm" src="box-left.png" /></td>
+            	<td width="352" style="background-image:url(<cfmodule type="css" template="img.cfm" src="box-bg.png" />);background-repeat:repeat-x;">
+               
+				<cfif len(attributes.title) GT 0><span class="box"><cfmodule template="img.cfm" src="tp.gif" width="7" height="1" />#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></span></cfif>
+                </td>
+            	<cfif hasNavigation>
+                <td width="352" align="right" style="background-image:url(<cfmodule type="css" template="img.cfm" src="box-bg.png" />);background-repeat:repeat-x;"><cfmodule template="img.cfm" src="box-del.png" /></td>
+            	<td width="65" align="center" style="background-image:url(<cfmodule type="css" template="img.cfm" src="box-bg.png" />);background-repeat:repeat-x;"><a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout">Logout</a></td>
+                </cfif>
+                
+            	<td><cfmodule template="img.cfm" src="box-right.png" /></td>
+                <td><cfmodule template="img.cfm" src="tp.gif" width="20" height="1" /></td>
+            </tr>
+            </table><br><br>
+            </div>
+		<!---<div id="title" style="text-align:left;margin:0px 10px 10px 20px;">
+			<cfif len(attributes.title) GT 0><h1>#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></h1></cfif><!------>
+		</div>--->
+         <div id="content" style="text-align:left;margin:0px 10px 10px 30px;">         
+           #thistag.generatedContent#</cfoutput>
 		
 		</div>
 	</td>

@@ -119,16 +119,16 @@ function selectAll(field) {
 </script>
 <cfoutput>
 
-#stText.ext.prov.IntroText#
-<table class="tbl">
+
+<table class="tbl" width="740">
 <tr>
-	<td colspan="2"><cfmodule template="tp.cfm" width="1" height="1"></td>
+	<td colspan="3">#stText.ext.prov.IntroText#</td>
 </tr>
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<tr>
-		<td><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"><cfmodule template="tp.cfm"  width="10" height="1"></td>
-		<td class="tblHead" nowrap>#stText.ext.prov.url#</td>
-		<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
+		<td width="30"><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"><cfmodule template="tp.cfm"  width="10" height="1"></td>
+		<td width="640" class="tblHead" nowrap>#stText.ext.prov.url#</td>
+		<td width="70" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 	</tr>
     
 	<cfloop query="providers">

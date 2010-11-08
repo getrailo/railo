@@ -181,7 +181,7 @@ Error Output --->
 <cfset printError(error)>
 <!--- 
 Create Datasource --->
-<cfoutput><table class="tbl" width="600">
+<cfoutput><table class="tbl" width="740">
 <tr>
 	<td colspan="2">
 <cfif request.adminType EQ "server">
@@ -358,15 +358,13 @@ Use Shadow --->
 
 
 <cfoutput>
-<h2>#stText.Components.componentMappings#</h2>
-#stText.Components.componentMappingsDesc#
-<table class="tbl" width="600">
+
+<table class="tbl" width="740">
 <tr>
-	<td colspan="5"></td>
+	<td colspan="5"><h2>#stText.Components.componentMappings#</h2>
+#stText.Components.componentMappingsDesc#</td>
 </tr>
-<tr>
-	<td colspan="5"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
+
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td><input type="checkbox" class="checkbox" 

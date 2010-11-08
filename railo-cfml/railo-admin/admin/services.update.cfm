@@ -1,3 +1,5 @@
+<cfif request.admintype EQ "web"><cflocation url="#request.self#" addtoken="no"></cfif>
+
 <cfparam name="url.action2" default="none">
 <cfset error.message="">
 <cfset error.detail="">
@@ -107,13 +109,10 @@ Error Output --->
 
 <!--- 
 Settings --->
-<h2>#stText.services.update.setTitle#</h2>
-<table class="tbl" width="600">
+
+<table class="tbl" width="740">
 <tr>
-	<td colspan="2">#stText.services.update.setDesc#</td>
-</tr>
-<tr>
-	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+	<td colspan="2"><h2>#stText.services.update.setTitle#</h2>#stText.services.update.setDesc#</td>
 </tr>
 
 
@@ -223,10 +222,10 @@ catch(e){}
 <cfif hasUpdate>
 <!--- 
 run update --->
-<h2>#stText.services.update.exe#</h2>
-<table class="tbl" width="600">
+
+<table class="tbl" width="740">
 <tr>
-	<td colspan="2">#stText.services.update.exeDesc#</td>
+	<td colspan="2"><h2>#stText.services.update.exe#</h2>#stText.services.update.exeDesc#</td>
 </tr>
 <tr>
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
@@ -250,13 +249,15 @@ remove update --->
 <cfif size>
 
 
-<h2>#stText.services.update.remove#</h2>
-#stText.services.update.removeDesc#
-<table class="tbl" width="600">
+
+<table class="tbl" width="740">
 
 <tr>
+	<td colspan="2"><h2>#stText.services.update.remove#</h2>
+#stText.services.update.removeDesc#</td>
+</tr>
+<tr>
 	<td class="tblHead" colspan="2">#stText.services.update.patch#</td>
-	
 </tr>
 
 <cfloop index="i" from="1" to="#size#">

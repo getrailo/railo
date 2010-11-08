@@ -149,8 +149,9 @@
 	<data key="menu.server.output">Output</data>
 	<data key="menu.server.error">Error</data>
 	<data key="menu.services.label">Services</data>
-	<data key="menu.services.gateway">Event Gateway (Alpha)</data>
-	<data key="menu.services.cache">Cache (Beta)</data>
+	<data key="menu.services.gateway">Event Gateway (Beta)</data>
+	<data key="menu.services.cache">Cache</data>
+	<data key="menu.services.orm">ORM (Beta)</data>
 	<data key="menu.services.datasource">Datasource</data>
 	<data key="menu.services.search">Search</data>
 	<data key="menu.services.mail">Mail</data>
@@ -734,6 +735,14 @@
 	<data key="settings.dbport">Port</data>
 	<data key="settings.preservesinglequotesdescription">Preserve single quotes (&quot;) in the SQL defined with the tag cfquery</data>
 	<data key="settings.dbconntimeout">Connection timeout (in minutes)</data>
+	
+	<data key="settings.dbMetaCacheTimeout">Caching Meta Data</data>
+	<data key="settings.dbMetaCacheTimeoutDesc">define how long Stored Procedures Meta Data are strored in cache</data>
+	<data key="settings.minutes">minute(s)</data>
+	<data key="settings.hours">hour(s)</data>
+	<data key="settings.days">day(s)</data>
+	<data key="settings.flushCache">flush cache</data>
+	
 	<data key="settings.datasourcemodify">Create new datasource</data>
 	<data key="settings.verifyconnection">Verify connection</data>
 	<data key="settings.namemissing">Please enter a name for the datasource</data>
@@ -768,6 +777,10 @@
 	<data key="cfx.name">Name</data>
 	<data key="cfx.class">Class</data>
 	<data key="cfx.noaccess">No access to CFX functionality</data>
+	<data key="cfx.cpp.CFXTags">C++ CFX tags</data>
+	<data key="cfx.procedure">Procedure</data>
+	<data key="cfx.serverlibrary">Server Library</data>
+	<data key="cfx.keepAlive">Keep Alive</data>
 	<data key="overview.installedtls">Installed tag&lt;br/&gt; libraries</data>
 	<data key="overview.bugreport">Bug report</data>
 	<data key="overview.issuetracker">Issue Tracker</data>
@@ -848,6 +861,10 @@
 	<data key="doc.attrtitle">Attributes</data>
 	<data key="doc.argtitle">Arguments</data>
 	<data key="doc.bodytitle">Body</data>
+	<data key="doc.depFunction">This Function is deprecated</data>
+	<data key="doc.depTag">This Tag is deprecated</data>
+	<data key="doc.depAttr">This Attribute is deprecated</data>
+	<data key="doc.depArg">This Argument is deprecated</data>
 	<data key="help.logotitle">Railo help</data>
 	<data key="help.closewindow">Close window</data>
 	<data key="help.videohelp">Railo - online video help</data>
