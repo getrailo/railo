@@ -89,7 +89,7 @@ public final class CPPCFXTagClass implements CFXTagClass {
      * @see railo.runtime.cfx.customtag.CFXTagClass#getDisplayType()
      */
     public String getDisplayType() {
-        return "COM";
+        return "cpp";
     }
 
     /**
