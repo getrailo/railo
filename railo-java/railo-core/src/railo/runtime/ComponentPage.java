@@ -42,6 +42,8 @@ import railo.runtime.type.util.StructUtil;
  */
 public abstract class ComponentPage extends PagePlus  {
 	
+	private static final long serialVersionUID = -3483642653131058030L;
+	
 	public static final railo.runtime.type.Collection.Key FIELDNAMES = KeyImpl.getInstance("fieldnames");
 	public static final railo.runtime.type.Collection.Key METHOD = KeyImpl.getInstance("method");
 	public static final railo.runtime.type.Collection.Key ARGUMENT_COLLECTION = KeyImpl.getInstance("argumentCollection");
@@ -187,6 +189,35 @@ public abstract class ComponentPage extends PagePlus  {
         	args=pc.getHttpServletRequest().getAttribute("argumentCollection");
         }
         
+        
+      //content-type
+        Object o = component.get(methodName,null);
+        Props props = getProps(pc, o, returnFormat);
+        HttpServletResponse rsp = pc.getHttpServletResponse();
+        if(!props.output) {
+	        switch(props.format){
+	        case UDF.RETURN_FORMAT_WDDX:
+	        	rsp.setContentType("text/xml; charset=UTF-8");
+	        	rsp.setHeader("Return-Format", "wddx");
+	        break;
+	        case UDF.RETURN_FORMAT_JSON:
+	        	rsp.setContentType("application/json");
+	        	rsp.setHeader("Return-Format", "json");
+	        break;
+	        case UDF.RETURN_FORMAT_PLAIN:
+	        	rsp.setContentType("text/plain; charset=UTF-8");
+	        	rsp.setHeader("Return-Format", "plain");
+	        break;
+	        case UDF.RETURN_FORMAT_SERIALIZE:
+	        	rsp.setContentType("text/plain; charset=UTF-8");
+	        	rsp.setHeader("Return-Format", "serialize");
+	        break;
+	        }
+        }
+        
+        
+        
+        
         Object rtn=null;
         if(args==null){
         	url=translate(component,methodName,url);
@@ -199,28 +230,10 @@ public abstract class ComponentPage extends PagePlus  {
 			} catch (PageException e) {}
         }
         
-        //content-type
-        Object o = component.get(methodName,null);
-        Props props = getProps(pc, o, returnFormat);
-        HttpServletResponse rsp = pc.getHttpServletResponse();
-        switch(props.format){
-        case UDF.RETURN_FORMAT_WDDX:
-        	rsp.setContentType("text/xml; charset=UTF-8");
-        	rsp.setHeader("Return-Format", "wddx");
-        break;
-        case UDF.RETURN_FORMAT_JSON:
-        	rsp.setContentType("application/json");
-        	rsp.setHeader("Return-Format", "json");
-        break;
-        case UDF.RETURN_FORMAT_PLAIN:
-        	rsp.setContentType("text/plain; charset=UTF-8");
-        	rsp.setHeader("Return-Format", "plain");
-        break;
-        case UDF.RETURN_FORMAT_SERIALIZE:
-        	rsp.setContentType("text/plain; charset=UTF-8");
-        	rsp.setHeader("Return-Format", "serialize");
-        break;
-        }
+        
+        
+        
+        
         
         
         // call
@@ -261,6 +274,7 @@ public abstract class ComponentPage extends PagePlus  {
 			props.format=udf.getReturnFormat();
 			props.type=udf.getReturnType();
 			props.strType=udf.getReturnTypeAsString();
+			props.output=udf.getOutput();
 			if(udf.getSecureJson()!=null)props.secureJson=udf.getSecureJson().booleanValue();
 		}
 		if(!StringUtil.isEmpty(returnFormat)){
@@ -423,5 +437,6 @@ public abstract class ComponentPage extends PagePlus  {
 		public boolean secureJson;
 		public int type=CFTypes.TYPE_ANY;
 		public int format=UDF.RETURN_FORMAT_WDDX;
+		public boolean output=true;
 		
 	}
