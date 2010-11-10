@@ -8,7 +8,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 import railo.commons.digest.MD5;
@@ -19,12 +18,9 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigWeb;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.List;
-import railo.runtime.type.Struct;
 
 /**
  * 
