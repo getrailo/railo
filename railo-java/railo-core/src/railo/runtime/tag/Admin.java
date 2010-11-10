@@ -19,7 +19,6 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.opencfml.eventgateway.Gateway;
 
-import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.SystemUtil;
@@ -66,7 +65,6 @@ import railo.runtime.dump.DumpWriter;
 import railo.runtime.engine.Surveillance;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.SecurityException;
@@ -3210,7 +3208,6 @@ private void doGetMappings() throws PageException {
     private void doUpdateUpdateLogSettings() throws PageException  {
     	int level=LogUtil.toIntType(getString("admin", "updateUpdateLogSettings", "level"), -1);
     	String source=getString("admin", "updateUpdateLogSettings", "path");
-    	print.o(source);
     	if(source.indexOf("{")==-1){
     		Resource res = ResourceUtil.toResourceNotExisting(pageContext, source, false);
     		String tmp=SystemUtil.addPlaceHolder(res, config, null);
@@ -3219,7 +3216,6 @@ private void doGetMappings() throws PageException {
         	if(tmp!=null) source=tmp;
         	else source=ContractPath.call(pageContext, source);
     	}
-    	print.o(source);
     	
     	admin.updateLogSettings(
     			getString("admin", "updateUpdateLogSettings", "name"),
