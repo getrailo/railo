@@ -2290,7 +2290,7 @@
 			<type>any</type>
 		</return>
 	</function>
-	<!-- _dump -->
+	<!-- _javabaseddump -->
 	<function>
 		<name>_dump</name>
 		<class>railo.runtime.functions.other.Dump</class>
