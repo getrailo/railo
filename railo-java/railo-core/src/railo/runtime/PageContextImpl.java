@@ -1721,7 +1721,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public void handlePageException(PageException pe) {
 		if(!(pe instanceof Abort)) {
-			
+			getHttpServletResponse().setContentType("text/html");
 			int statusCode=getStatusCode(pe);
 			
 			if(getConfig().getErrorStatusCode())rsp.setStatus(statusCode);
