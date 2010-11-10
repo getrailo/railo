@@ -534,7 +534,7 @@ public final class CFMLTransformer {
 		
 		if(tagLibTag.hasAttributeEvaluator()) {
 			try {
-				tagLibTag.getAttributeEvaluator().evaluate(tagLibTag,tag);
+				tagLibTag=tagLibTag.getAttributeEvaluator().evaluate(tagLibTag,tag);
 			} catch (AttributeEvaluatorException e) {
 				
 				throw new TemplateException(data.cfml, e);
@@ -596,6 +596,7 @@ public final class CFMLTransformer {
 			else {
 				// get body of Tag
 				Body body=new BodyBase();
+				tag.setBody(body);
 					//parseExpression=(tagLibTag.getParseBody())?true:parseExpression;
 				if(tagLibTag.getParseBody())parseExpression=true;
 				
@@ -674,7 +675,7 @@ public final class CFMLTransformer {
 					body.addPrintOut("</",data.cfml.getLine());
 					
 				}
-				tag.setBody(body);
+				//tag.setBody(body);
 				
 			}
 		}

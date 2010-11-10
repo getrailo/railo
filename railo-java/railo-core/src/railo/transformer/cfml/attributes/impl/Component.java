@@ -16,7 +16,7 @@ public final class Component implements AttributeEvaluator {
     /**
      * @see railo.transformer.cfml.attributes.AttributeEvaluator#evaluate(railo.transformer.library.tag.TagLibTag, org.w3c.dom.Element)
      */
-    public void evaluate( TagLibTag tagLibTag, Tag tag) throws AttributeEvaluatorException {
+    public TagLibTag evaluate( TagLibTag tagLibTag, Tag tag) throws AttributeEvaluatorException {
 		tagLibTag.setParseBody(false);
 		Attribute attr = tag.getAttribute("output");
 		if(attr!=null) {
@@ -27,5 +27,6 @@ public final class Component implements AttributeEvaluator {
 			if(((LitBoolean)expr).getBooleanValue())
 				tagLibTag.setParseBody(true);
 		}
+        return tagLibTag;
     }
 }
