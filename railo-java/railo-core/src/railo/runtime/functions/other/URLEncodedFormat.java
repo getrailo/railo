@@ -13,11 +13,6 @@ import railo.runtime.op.Caster;
 
 public final class URLEncodedFormat implements Function {
 	
-	
-	
-	
-	
-	
 	public static String call(PageContext pc , String str) throws PageException {
 		return call(pc,str, "UTF-8",true);
 	}
