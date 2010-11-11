@@ -595,8 +595,9 @@ public final class CFMLTransformer {
 			}
 			else {
 				// get body of Tag
-				Body body=new BodyBase();
-				tag.setBody(body);
+				BodyBase body=new BodyBase();
+				body.setParent(tag);
+				//tag.setBody(body);
 					//parseExpression=(tagLibTag.getParseBody())?true:parseExpression;
 				if(tagLibTag.getParseBody())parseExpression=true;
 				
@@ -614,7 +615,9 @@ public final class CFMLTransformer {
 					
 
 					// call body
+					
 				    body(data,body,parseExpression,transfomer);
+				   
 				    
 				    // no End Tag
 					if(data.cfml.isAfterLast()) {
@@ -675,7 +678,7 @@ public final class CFMLTransformer {
 					body.addPrintOut("</",data.cfml.getLine());
 					
 				}
-				//tag.setBody(body);
+				tag.setBody(body);
 				
 			}
 		}
