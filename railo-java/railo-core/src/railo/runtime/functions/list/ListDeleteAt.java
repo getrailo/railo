@@ -72,7 +72,7 @@ public final class ListDeleteAt implements Function {
     	}
     	
     	
-    	// supress item
+    	// suppress item
     	for(;i<len;i++){
     		if(equal(del,list.charAt(i))) break;
     	}
