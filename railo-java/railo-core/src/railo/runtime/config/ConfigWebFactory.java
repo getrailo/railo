@@ -2521,8 +2521,20 @@ public final class ConfigWebFactory {
         Element setting=hasAccess?getChildByName(doc.getDocumentElement(),"setting"):null;
         boolean hasCS=configServer!=null;
         
-        // supress whitespace
+        
+
+        // suppress whitespace
         String str=null;
+        if(setting!=null){
+        	str=setting.getAttribute("suppress-content");
+        }
+        if(!StringUtil.isEmpty(str) && hasAccess) {
+          config.setSuppressContent(toBoolean(str,false));
+        }
+        else if(hasCS)config.setSuppressContent(configServer.isSuppressContent());
+        
+        // suppress whitespace
+        str=null;
         if(setting!=null){
         	str=setting.getAttribute("suppress-whitespace");
         	if(StringUtil.isEmpty(str))str=setting.getAttribute("suppresswhitespace");

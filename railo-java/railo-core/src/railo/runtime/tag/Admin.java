@@ -36,6 +36,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.net.JarLoader;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.PageContextImpl;
@@ -141,8 +142,24 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Collection.Key KEY = KeyImpl.getInstance("key");
 	private static final Collection.Key VALUE = KeyImpl.getInstance("value");
 	private static final Collection.Key TIME = KeyImpl.getInstance("time");
+	public static final String[] UPDATE_JARS = new String[]{"antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","metadata-extractor.jar","icepdf-core.jar","com.naryx.tagfusion.cfx.jar"};
     
-    
+	/*
+	others:
+	PDFRenderer.jar
+	?
+	xmlparserv2.jar
+	
+	not needed:
+	slf4j-simple.jar
+	xdb.jar
+	
+	
+	
+	*/
+	
+	
+	
     private Struct attributes=new StructImpl();
     private String action=null;
     private short type;
@@ -615,6 +632,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("removeUpdate",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doRemoveUpdate();
         else if(check("getUpdate",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doGetUpdate();
         else if(check("listPatches",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ     )) listPatches();
+        else if(check("needNewJars",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ     )) needNewJars();
+        else if(check("updateJars",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateJars();
         else if(check("updateupdate",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateUpdate();
         else if(check("getSerial",              ACCESS_FREE) && check2(ACCESS_READ     )) doGetSerial();
         else if(check("updateSerial",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateSerial();
@@ -661,7 +680,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
 
     private void doRunUpdate() throws PageException {
-        admin.runUpdate();
+    	doUpdateJars();
+    	admin.runUpdate();
         adminSync.broadcast(attributes, config);
     }
     
@@ -1857,9 +1877,30 @@ private void doGetMappings() throws PageException {
 		} catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
-        
-        
     }
+    
+    private void needNewJars() throws PageException  {
+    	
+    	boolean exists = JarLoader.exists(pageContext, UPDATE_JARS);
+    	
+    	try {
+			pageContext.setVariable(getString("admin",action,"returnVariable"),!Caster.toBoolean(exists));
+		}
+    	catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
+    }
+
+    private void doUpdateJars() throws PageException  {
+    	try {
+			JarLoader.download(pageContext, UPDATE_JARS);
+		} catch (IOException e) {
+			throw Caster.toPageException(e);
+		}
+    	
+    }
+    
+    
     
     private void doGetMailServers() throws PageException {
         
@@ -3190,7 +3231,8 @@ private void doGetMappings() throws PageException {
     }
 
     private void doUpdateOutputSettings() throws PageException {
-        admin.updateSupressWhitespace(getBoolObject("admin",action, "supressWhitespace"));
+    	admin.updateSuppressWhitespace(getBoolObject("admin",action, "suppressWhitespace"));
+    	admin.updateSuppressContent(getBoolObject("admin",action, "suppressContent"));
         admin.updateShowVersion(getBoolObject("admin",action, "showVersion"));
         store();
         adminSync.broadcast(attributes, config);
@@ -3317,7 +3359,8 @@ private void doGetMappings() throws PageException {
         
         Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
-        sct.set("supressWhitespace",Caster.toBoolean(config.isSuppressWhitespace()));
+        sct.set("suppressWhitespace",Caster.toBoolean(config.isSuppressWhitespace()));
+        sct.set("suppressContent",Caster.toBoolean(config.isSuppressContent()));
         sct.set("showVersion",Caster.toBoolean(config.isShowVersion()));
         
         

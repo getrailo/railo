@@ -13,6 +13,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.JSONConverter;
 import railo.runtime.converter.ScriptConverter;
@@ -77,6 +78,8 @@ public abstract class ComponentPage extends PagePlus  {
             boolean isPost=pc. getHttpServletRequest().getMethod().equalsIgnoreCase("POST");
             Object method;
             
+            boolean suppressContent = ((ConfigImpl)pc.getConfig()).isSuppressContent();
+            if(suppressContent)pc.clear();
             
             //pc.getHttpServletRequest().getHeader("");
             
@@ -90,7 +93,7 @@ public abstract class ComponentPage extends PagePlus  {
             	}
     			// WDDX
                 else if((method=pc.urlFormScope().get("method",null))!=null) {
-                    callWDDX(pc,component,Caster.toString(method));
+                    callWDDX(pc,component,Caster.toString(method),suppressContent);
             		//close(pc);
                     return;
                 }
@@ -107,8 +110,8 @@ public abstract class ComponentPage extends PagePlus  {
                 } 
     			// WDDX
                 else if((method=pc.urlFormScope().get("method",null))!=null) {
-                    callWDDX(pc,component,Caster.toString(method));
-                    //close(pc);
+                    callWDDX(pc,component,Caster.toString(method),suppressContent);
+                    //close(pc); 
                     return;
                 } 
             }
@@ -175,7 +178,7 @@ public abstract class ComponentPage extends PagePlus  {
 	}
 	
 	
-    private void callWDDX(PageContext pc, Component component, String methodName) throws IOException, ConverterException, PageException {
+    private void callWDDX(PageContext pc, Component component, String methodName, boolean suppressContent) throws IOException, ConverterException, PageException {
         Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
         
         // define args
@@ -191,7 +194,7 @@ public abstract class ComponentPage extends PagePlus  {
         
         
       //content-type
-        Object o = component.get(methodName,null);
+        Object o = component.get(KeyImpl.init(methodName),null);
         Props props = getProps(pc, o, returnFormat);
         HttpServletResponse rsp = pc.getHttpServletResponse();
         if(!props.output) {
@@ -215,42 +218,40 @@ public abstract class ComponentPage extends PagePlus  {
 	        }
         }
         
-        
-        
-        
         Object rtn=null;
-        if(args==null){
-        	url=translate(component,methodName,url);
-        	rtn = component.callWithNamedValues(pc, methodName, url);
-        }
-        else if(args instanceof String){
-        	try {
-				args=new JSONExpressionInterpreter().interpret(pc, (String)args);
-				
-			} catch (PageException e) {}
-        }
+        try{
+    		if(suppressContent)pc.setSilent();
         
-        
-        
-        
-        
-        
-        
-        // call
-        if(args!=null) {
-        	if(Decision.isCastableToStruct(args)){
-	        	rtn = component.callWithNamedValues(pc, methodName, Caster.toStruct(args,false));
+	        
+	        if(args==null){
+	        	url=translate(component,methodName,url);
+	        	rtn = component.callWithNamedValues(pc, methodName, url);
 	        }
-	        else if(Decision.isCastableToArray(args)){
-	        	rtn = component.call(pc, methodName, Caster.toNativeArray(args));
+	        else if(args instanceof String){
+	        	try {
+					args=new JSONExpressionInterpreter().interpret(pc, (String)args);
+					
+				} catch (PageException e) {}
 	        }
-	        else {
-	        	Object[] ac=new Object[1];
-	        	ac[0]=args;
-	        	rtn = component.call(pc, methodName, ac);
+	        
+	        // call
+	        if(args!=null) {
+	        	if(Decision.isCastableToStruct(args)){
+		        	rtn = component.callWithNamedValues(pc, methodName, Caster.toStruct(args,false));
+		        }
+		        else if(Decision.isCastableToArray(args)){
+		        	rtn = component.call(pc, methodName, Caster.toNativeArray(args));
+		        }
+		        else {
+		        	Object[] ac=new Object[1];
+		        	ac[0]=args;
+		        	rtn = component.call(pc, methodName, ac);
+		        }
 	        }
         }
-        
+    	finally {
+    		if(suppressContent)pc.unsetSilent();
+    	}
         // convert result
         if(rtn!=null){
         	if(pc.getHttpServletRequest().getHeader("AMF-Forward")!=null) {
@@ -261,6 +262,7 @@ public abstract class ComponentPage extends PagePlus  {
         		pc.forceWrite(convertResult(pc, props, queryFormat, rtn));
         	}
         }
+        //pc.setSilent();
         
     }
     

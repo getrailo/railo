@@ -1749,8 +1749,8 @@ public final class ConfigWebAdmin {
     }
     
     
-    
-    public void updateSupressWhitespace(Boolean value) throws SecurityException {
+
+    public void updateSuppressWhitespace(Boolean value) throws SecurityException {
     	checkWriteAccess();
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
         
@@ -1758,6 +1758,15 @@ public final class ConfigWebAdmin {
         
         Element scope=_getRootElement("setting");
         scope.setAttribute("suppress-whitespace",Caster.toString(value,""));
+    }
+    public void updateSuppressContent(Boolean value) throws SecurityException {
+    	checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        
+        Element scope=_getRootElement("setting");
+        scope.setAttribute("suppress-content",Caster.toString(value,""));
     }
     
     public void updateShowVersion(Boolean value) throws SecurityException {
