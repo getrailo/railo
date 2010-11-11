@@ -35,7 +35,7 @@ public class aprint {
 		Thread.dumpStack();
 	}
 	
-	public static void ds(String label) {
+	public static void ds(Object label) {
 		err(label);
 		Thread.dumpStack();
 	}
