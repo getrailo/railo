@@ -33,14 +33,14 @@ public final class ResourceClassLoader extends URLClassLoader implements Closeab
 	 * @param parent
 	 * @throws PageException
 	 */
-	ResourceClassLoader(Resource[] resources, ClassLoader parent) throws IOException {
+	public ResourceClassLoader(Resource[] resources, ClassLoader parent) throws IOException {
 		super(doURLs(resources), parent);
 		for(int i=0;i<resources.length;i++){
 			this.resources.add(resources[i]);
 		}
 	}
 	
-	ResourceClassLoader(ClassLoader parent) {
+	public ResourceClassLoader(ClassLoader parent) {
 		super(new URL[0], parent);
 	}
 

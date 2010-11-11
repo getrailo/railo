@@ -1227,5 +1227,13 @@ public final class ResourceUtil {
 		if(filter==null) return dir.list().length;
 		return dir.list(filter).length;
 	}
+	
+	public static String[] names(Resource[] resources) {
+		String[] names=new String[resources.length];
+		for(int i=0;i<names.length;i++){
+			names[i]=resources[i].getName();
+		}
+		return names;
+	}
 
 }
