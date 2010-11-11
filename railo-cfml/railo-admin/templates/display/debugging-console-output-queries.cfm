@@ -1,3 +1,7 @@
+
+<cfsavecontent variable="minus"><cfinclude template="../../admin/resources/img/debug_minus.gif.cfm"></cfsavecontent>
+
+
 <cfset request._debugQueryInfo = ArrayNew(1)>
 <cfset bPlainSQL = (BitAnd(cookie.display_options, 32) eq 32)>
 <cfoutput>
@@ -49,7 +53,7 @@
 							<cfif stDisplaySQL.Executeable>
 								<input type="Image" width="9" height="9" border="0" src="#cgi.context_path#/railo-context/admin/resources/img/debug_execute.gif.cfm" alt="Execute Query">
 							<cfelse>
-								<img src="#cgi.context_path#/railo-context/admin/resources/img/debug_minus.gif.cfm" width="9" height="9" border="0" alt="Execution not possible, DML-Query">
+								<img src="#minus#" width="9" height="9" border="0" alt="Execution not possible, DML-Query">
 							</cfif>
 						</td>
 						<td align="left" class="cfdebug">
