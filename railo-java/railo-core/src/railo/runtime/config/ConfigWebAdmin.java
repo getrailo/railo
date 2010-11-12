@@ -28,6 +28,7 @@ import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.filter.ResourceNameFilter;
+import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
@@ -328,11 +329,11 @@ public final class ConfigWebAdmin {
     
     private synchronized void store(ConfigImpl config) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
     	renameOldstyleCFX();
+    	fixS3();
     	checkWriteAccess();
         createAbort();
         if(config instanceof ConfigServerImpl) {
         	XMLCaster.writeTo(doc,config.getConfigFile());
-            //SystemUtil.sleep(10);
             
             ConfigServerImpl cs=(ConfigServerImpl) config;
             ConfigServerFactory.reloadInstance(cs);
@@ -901,37 +902,63 @@ public final class ConfigWebAdmin {
         if(tags==null) return;
         
         
-        //if(oldStyle){
-        	Element newTags = _getRootElement("ext-tags");
-        	Element[] children = ConfigWebFactory.getChildren(tags,"cfx-tag");
-        	String type;
-          	// copy
-        	for(int i=0;i<children.length;i++) {
-          	    Element el=doc.createElement("ext-tag");
-          	    newTags.appendChild(el);
-          	    type=children[i].getAttribute("type");
-          	    // java
-          	    if(type.equalsIgnoreCase("java")){
-          	    	el.setAttribute("class",children[i].getAttribute("class"));
-          	    }
-          	    // c++
-          	    else {
-          	    	el.setAttribute("server-library",children[i].getAttribute("server-library"));
-          	    	el.setAttribute("procedure",children[i].getAttribute("procedure"));
-          	    	el.setAttribute("keep-alive",children[i].getAttribute("keep-alive"));
-          	    	
-          	    }
-              	el.setAttribute("name",children[i].getAttribute("name"));
-          		el.setAttribute("type",children[i].getAttribute("type"));  
-          	}
-        	
-        	// remove old
-        	for(int i=0;i<children.length;i++) {
-        		tags.removeChild(children[i]);
-        	}
-        	tags.getParentNode().removeChild(tags);
-        //} 
+        
+    	Element newTags = _getRootElement("ext-tags");
+    	Element[] children = ConfigWebFactory.getChildren(tags,"cfx-tag");
+    	String type;
+      	// copy
+    	for(int i=0;i<children.length;i++) {
+      	    Element el=doc.createElement("ext-tag");
+      	    newTags.appendChild(el);
+      	    type=children[i].getAttribute("type");
+      	    // java
+      	    if(type.equalsIgnoreCase("java")){
+      	    	el.setAttribute("class",children[i].getAttribute("class"));
+      	    }
+      	    // c++
+      	    else {
+      	    	el.setAttribute("server-library",children[i].getAttribute("server-library"));
+      	    	el.setAttribute("procedure",children[i].getAttribute("procedure"));
+      	    	el.setAttribute("keep-alive",children[i].getAttribute("keep-alive"));
+      	    	
+      	    }
+          	el.setAttribute("name",children[i].getAttribute("name"));
+      		el.setAttribute("type",children[i].getAttribute("type"));  
+      	}
+    	
+    	// remove old
+    	for(int i=0;i<children.length;i++) {
+    		tags.removeChild(children[i]);
+    	}
+    	tags.getParentNode().removeChild(tags);
 	}
+
+    
+    private void fixS3() {
+    	
+        Element resources=_getRootElement("resources",false,true);
+        Element[] providers = ConfigWebFactory.getChildren(resources,"resource-provider");
+        
+        // replace extension class with core class
+        for(int i=0;i<providers.length;i++) {
+        	if("s3".equalsIgnoreCase(providers[i].getAttribute("scheme"))) {
+        		if("railo.extension.io.resource.type.s3.S3ResourceProvider".equalsIgnoreCase(providers[i].getAttribute("class")))
+        			providers[i].setAttribute("class", S3ResourceProvider.class.getName());
+        		return;
+        	}
+        }
+        
+        
+        // FUTURE remove this part for version 4.0
+        // add s3 when not
+        Element el=doc.createElement("resource-provider");
+        el.setAttribute("scheme", "s3");
+        el.setAttribute("class", S3ResourceProvider.class.getName());
+        el.setAttribute("arguments", "lock-timeout:10000;");
+        resources.appendChild(el);
+        
+	}
+
     
     
   

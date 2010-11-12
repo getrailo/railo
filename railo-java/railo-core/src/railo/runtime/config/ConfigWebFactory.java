@@ -40,6 +40,7 @@ import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
+import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
@@ -378,9 +379,15 @@ public final class ConfigWebFactory {
         	String strProviderScheme;
         	String httpClass=null;
         	Map httpArgs=null;
-        	boolean hasHTTPs = false;
+        	boolean hasHTTPs = false, hasS3=false;
+        	String s3Class="railo.commons.io.res.type.s3.S3ResourceProvider";
         	for(int i=0;i<providers.length;i++) {        	
         		strProviderClass=providers[i].getAttribute("class");
+        		
+        		// ignore S3 extension
+        		if("railo.extension.io.resource.type.s3.S3ResourceProvider".equals(strProviderClass))
+        			strProviderClass=S3ResourceProvider.class.getName();
+        		
         		strProviderScheme=providers[i].getAttribute("scheme");
         		if(!StringUtil.isEmpty(strProviderClass) && !StringUtil.isEmpty(strProviderScheme)) {
         			strProviderClass=strProviderClass.trim();
@@ -394,13 +401,19 @@ public final class ConfigWebFactory {
             		}
     	        	else if(strProviderScheme.equalsIgnoreCase("https"))
     	        		hasHTTPs=true;
+    	        	else if(strProviderScheme.equalsIgnoreCase("s3"))
+    	        		hasS3=true;
         		}
             }
         	
-        	if(!hasHTTPs && httpClass!=null)
+        	// adding https when not exists
+        	if(!hasHTTPs && httpClass!=null){
         		config.addResourceProvider("https",httpClass,httpArgs);
-    		
-        	
+        	}
+        	// adding s3 when not exist
+    		if(!hasS3 && config instanceof ConfigServer) {
+    			config.addResourceProvider("s3",s3Class,toArguments("lock-timeout:10000;"));
+    		}
         }
 	}
     
@@ -2621,7 +2634,7 @@ public final class ConfigWebFactory {
 	        
 	        if(!hasAccess) clients=new Element[0];
 	        else clients = getChildren(_clients,"remote-client");
-	        java.util.List list=new ArrayList();
+	        java.util.List<RemoteClient> list=new ArrayList<RemoteClient>();
 	        for(int i=0;i<clients.length;i++) {
 	        	client=clients[i];
 	        	// type
