@@ -14,7 +14,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
@@ -462,13 +461,6 @@ public final class ASMUtil {
 		String name = property.getName();
 		Type type = property.getASMType();
 		Class clazz = property.getClazz();
-		
-		print.o("name:"+name);
-		print.o("type:"+property.getASMType());
-		print.o("clazz:"+clazz.getName());
-		print.o("classType:"+classType);
-		
-		
 		
 		cw.visitField(Opcodes.ACC_PRIVATE, name, type.toString(), null, null).visitEnd();
 		
