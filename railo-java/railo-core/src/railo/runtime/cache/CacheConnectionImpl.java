@@ -11,7 +11,6 @@ import railo.commons.net.JarLoader;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.op.Caster;
-import railo.runtime.orm.ORMException;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.tag.Admin;
 import railo.runtime.type.Struct;
