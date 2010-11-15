@@ -299,6 +299,15 @@ public final class ConfigWebFactory {
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	ThreadLocalConfig.register(config);
     	
+    	// add S3 Resource
+    	if(ConfigWebAdmin.fixS3(doc)) {
+    		XMLCaster.writeTo(doc,config.getConfigFile());
+    		try {
+				doc=ConfigWebFactory.loadDocument(config.getConfigFile());
+			} catch (SAXException e) {}
+    	}
+    	
+    	
     	loadConstants(configServer,config,doc);
     	
     	loadId(config);
@@ -771,9 +780,10 @@ public final class ConfigWebFactory {
      * @throws IOException
      */
     static Document loadDocument(Resource xmlFile) throws SAXException, IOException {
-        InputStream is=null;
+        
+    	InputStream is=null;
     	try {
-    		return loadDocument(is=IOUtil.toBufferedInputStream(xmlFile.getInputStream()));
+    		return _loadDocument(is=IOUtil.toBufferedInputStream(xmlFile.getInputStream()));
     	}
         finally {
         	IOUtil.closeEL(is);
@@ -787,7 +797,7 @@ public final class ConfigWebFactory {
      * @throws SAXException
      * @throws IOException
      */
-    static Document loadDocument(InputStream is) throws SAXException, IOException {
+    private static Document _loadDocument(InputStream is) throws SAXException, IOException {
         DOMParser parser = new DOMParser();
 	    InputSource source = new InputSource(is);
 	    parser.parse(source);
@@ -1165,6 +1175,9 @@ public final class ConfigWebFactory {
             
             f=cDir.getRealResource("RamCache.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/cdriver/RamCache.cfc",f);
+            
+            f=cDir.getRealResource("EHCacheLite.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/cdriver/EHCacheLite.cfc",f);
 
             f=cDir.getRealResource("Field.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/cdriver/Field.cfc",f);

@@ -329,7 +329,7 @@ public final class ConfigWebAdmin {
     
     private synchronized void store(ConfigImpl config) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
     	renameOldstyleCFX();
-    	fixS3();
+    	
     	checkWriteAccess();
         createAbort();
         if(config instanceof ConfigServerImpl) {
@@ -349,7 +349,8 @@ public final class ConfigWebAdmin {
             ConfigWebFactory.reloadInstance(config,false);
         }
     }
-
+    
+    
 
     private void createAbort() {
     	try {
@@ -933,18 +934,19 @@ public final class ConfigWebAdmin {
     	tags.getParentNode().removeChild(tags);
 	}
 
-    
-    private void fixS3() {
-    	
-        Element resources=_getRootElement("resources",false,true);
+    public static boolean fixS3(Document doc) {
+    	Element resources=ConfigWebFactory.getChildByName(doc.getDocumentElement(),"resources",false,true);
+        
         Element[] providers = ConfigWebFactory.getChildren(resources,"resource-provider");
         
         // replace extension class with core class
         for(int i=0;i<providers.length;i++) {
         	if("s3".equalsIgnoreCase(providers[i].getAttribute("scheme"))) {
-        		if("railo.extension.io.resource.type.s3.S3ResourceProvider".equalsIgnoreCase(providers[i].getAttribute("class")))
+        		if("railo.extension.io.resource.type.s3.S3ResourceProvider".equalsIgnoreCase(providers[i].getAttribute("class"))){
         			providers[i].setAttribute("class", S3ResourceProvider.class.getName());
-        		return;
+        			return true;
+        		}
+        		return false;
         	}
         }
         
@@ -957,6 +959,7 @@ public final class ConfigWebAdmin {
         el.setAttribute("arguments", "lock-timeout:10000;");
         resources.appendChild(el);
         
+        return true;
 	}
 
     
