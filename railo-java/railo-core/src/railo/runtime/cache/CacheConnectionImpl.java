@@ -7,9 +7,13 @@ import java.lang.reflect.Method;
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.exp.CacheException;
 import railo.commons.lang.ClassUtil;
+import railo.commons.net.JarLoader;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.op.Caster;
+import railo.runtime.orm.ORMException;
 import railo.runtime.reflection.Reflector;
+import railo.runtime.tag.Admin;
 import railo.runtime.type.Struct;
 
 
@@ -43,7 +47,20 @@ public class CacheConnectionImpl implements CacheConnection  {
 		 */
 		public Cache getInstance(Config config) throws IOException  {
 			if(cache==null){
+				try{
 				cache=(Cache) ClassUtil.loadInstance(clazz);
+				}
+				catch(NoClassDefFoundError e){
+					if(!(config instanceof ConfigWeb)) throw e;
+					if(!JarLoader.exists((ConfigWeb)config, Admin.UPDATE_JARS))
+						throw new IOException(
+							"cannot initilaize Cache ["+clazz.getName()+"], make sure you have added all the required jars files. "+
+							"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\".");
+					else 
+						throw new IOException(
+								"cannot initilaize Cache ["+clazz.getName()+"], make sure you have added all the required jars files. "+
+								"if you have updated the JAR's in the Railo Administrator, please restart your Servlet Engine.");
+				}
 				
 				try {
 					// FUTURE Workaround to provide config oject, add to interface

@@ -3025,7 +3025,7 @@ public abstract class ConfigImpl implements Config {
 						t.printStackTrace();;
 					}
 				}*/
-				if(!JarLoader.exists(pc, Admin.UPDATE_JARS))
+				if(!JarLoader.exists(pc.getConfig(), Admin.UPDATE_JARS))
 					throw new ORMException(
 						"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
 						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\"");

@@ -16,6 +16,7 @@ import railo.loader.TP;
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 
 public class JarLoader {
@@ -87,24 +88,24 @@ public class JarLoader {
         return jar;
     }
 	
-	public static boolean exists(PageContext pc,String[] jarNames) {
+	public static boolean exists(ConfigWeb config,String[] jarNames) {
 		for(int i=0;i<jarNames.length;i++){
-			if(!exists(pc, jarNames[i])) return false;
+			if(!exists(config, jarNames[i])) return false;
 		}
 		return true;
 		
 	}
 	
-	private static boolean exists(PageContext pc,String jarName) {
+	private static boolean exists(ConfigWeb config,String jarName) {
     	// some variables nned later
-		ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
-    	CFMLEngine engine=config.getCFMLEngineImpl();
-		PrintWriter out = pc.getConfig().getOutWriter();
+		ConfigWebImpl configImpl=(ConfigWebImpl) config;
+    	CFMLEngine engine=configImpl.getCFMLEngineImpl();
+		PrintWriter out = config.getOutWriter();
         
 		// destination file
 		ClassLoader mainClassLoader = new TP().getClass().getClassLoader();
 		try {
-			Resource lib = ResourceUtil.toResourceNotExisting(pc,CFMLEngineFactory.getClassLoaderRoot(mainClassLoader).getCanonicalPath(),false);
+			Resource lib = ResourceUtil.toResourceNotExisting(config,CFMLEngineFactory.getClassLoaderRoot(mainClassLoader).getCanonicalPath());
 			Resource jar=lib.getRealResource(jarName);
 			return jar.exists();
 		} catch (IOException e) {
