@@ -99,10 +99,10 @@ background-color:white;
 </colgroup>
 
 <tr>
-	<td colspan="#hasNavigation?3:2#" width="162" height="91" valign="bottom"><cfmodule template="tp.cfm" width="1" height="34" /><br>
+	<td colspan="#hasNavigation?3:2#" height="91" valign="bottom"><cfmodule template="tp.cfm" width="1" height="34" /><br>
     <a href="#request.self#"><cfmodule template="img.cfm" src="railo.png" width="92" height="59" vspace="10"/></a></td>
     
-    <td colspan="2" width="162" height="91" align="right" valign="bottom"><a <cfif ad EQ "web">href="#otherURL#"</cfif>><cfmodule template="img.cfm" src="left-tab-#ad#.png" /></a><a <cfif ad EQ "server">href="#otherURL#"</cfif>><cfmodule template="img.cfm" src="right-tab-#ad#.png" /></a></td>
+    <td colspan="2" height="91" align="right" valign="bottom"><a <cfif ad EQ "web">href="#otherURL#"</cfif>><cfmodule template="img.cfm" src="left-tab-#ad#.png" /></a><a <cfif ad EQ "server">href="#otherURL#"</cfif>><cfmodule template="img.cfm" src="right-tab-#ad#.png" /></a></td>
     <td><cfmodule template="tp.cfm" width="1" height="1" /></td>
 </tr>
 <tr>
