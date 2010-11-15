@@ -14,6 +14,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
@@ -459,65 +460,91 @@ public final class ASMUtil {
     
     private static void createProperty(ClassWriter cw,String classType, ASMProperty property) throws PageException {
 		String name = property.getName();
-		Type type = Types.OBJECT;//property.getASMType();
+		Type type = property.getASMType();
 		Class clazz = property.getClazz();
+		
+		print.o("name:"+name);
+		print.o("type:"+property.getASMType());
+		print.o("clazz:"+clazz.getName());
+		print.o("classType:"+classType);
+		
+		
+		
 		cw.visitField(Opcodes.ACC_PRIVATE, name, type.toString(), null, null).visitEnd();
 		
-    	// get<PropertyName>():object
+		int load=loadFor(type);
+		int sizeOf=sizeOf(type);
+		
+    	// get<PropertyName>():<type>
     		Type[] types=new Type[0];
     		Method method = new Method((clazz==boolean.class?"get":"get")+StringUtil.ucFirst(name),type,types);
             GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC , method, null, null, cw);
             
             Label start = new Label();
             adapter.visitLabel(start);
-			adapter.visitVarInsn(Opcodes.ALOAD, 0);
+            
+            adapter.visitVarInsn(Opcodes.ALOAD, 0);
 			adapter.visitFieldInsn(Opcodes.GETFIELD, classType, name, type.toString());
 			adapter.returnValue();
 			Label end = new Label();
 			adapter.visitLabel(end);
-			
-			adapter.visitLabel(end);
 			adapter.visitLocalVariable("this", "L"+classType+";", null, start, end, 0);
-			adapter.visitMaxs(1, 1);
+			adapter.visitMaxs(sizeOf, 1);
+			
 			adapter.visitEnd();
+			
+			
+			
+			
+			
+			
 		
 		// set<PropertyName>(object):void
-	    	
 			types=new Type[]{type};
 			method = new Method("set"+StringUtil.ucFirst(name),Types.VOID,types);
             adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC , method, null, null, cw);
             
-            Label l0 = new Label();
-            adapter.visitLabel(l0);
+            start = new Label();
+            adapter.visitLabel(start);
             adapter.visitVarInsn(Opcodes.ALOAD, 0);
-            if(clazz==boolean.class || clazz==int.class || clazz==char.class || clazz==short.class)
-            	adapter.visitVarInsn(Opcodes.ILOAD, 1);
-            else if(clazz==float.class)
-            	adapter.visitVarInsn(Opcodes.FLOAD, 1);
-            else if(clazz==long.class)
-            	adapter.visitVarInsn(Opcodes.LLOAD, 1);
-            else if(clazz==double.class)
-            	adapter.visitVarInsn(Opcodes.DLOAD, 1);
-            else 
-            	adapter.visitVarInsn(Opcodes.ALOAD, 1);
-            
+            adapter.visitVarInsn(load, 1);
             adapter.visitFieldInsn(Opcodes.PUTFIELD, classType, name, type.toString());
-			Label l1 = new Label();
-			adapter.visitLabel(l1);
 			
 			adapter.visitInsn(Opcodes.RETURN);
-			Label l2 = new Label();
-			adapter.visitLabel(l2);
-			adapter.visitLocalVariable("this", "L"+classType+";", null, l0, l2, 0);
-			adapter.visitLocalVariable(name, type.toString(), null, l0, l2, 1);
-			adapter.visitMaxs(2, 2);
-			
-			
+			end = new Label();
+			adapter.visitLabel(end);
+			adapter.visitLocalVariable("this", "L"+classType+";", null, start, end, 0);
+			adapter.visitLocalVariable(name, type.toString(), null, start, end, 1);
+			adapter.visitMaxs(sizeOf+1, sizeOf+1);
 			adapter.visitEnd();
         
+			
+			
+			
+			
+			
 	}
 
-    /**
+    public static int loadFor(Type type) {
+    	if(type.equals(Types.BOOLEAN_VALUE) || type.equals(Types.INT_VALUE) || type.equals(Types.CHAR) || type.equals(Types.SHORT_VALUE))
+    		return Opcodes.ILOAD;
+    	if(type.equals(Types.FLOAT_VALUE))
+    		return Opcodes.FLOAD;
+    	if(type.equals(Types.LONG_VALUE))
+    		return Opcodes.LLOAD;
+    	if(type.equals(Types.DOUBLE_VALUE))
+    		return Opcodes.DLOAD;
+    	return Opcodes.ALOAD;
+	}
+
+    public static int sizeOf(Type type) {
+    	if(type.equals(Types.LONG_VALUE) || type.equals(Types.DOUBLE_VALUE))
+    		return 2;
+    	return 1;
+	}
+
+
+	/**
      * translate a string cfml type definition to a Type Object
      * @param cfType
      * @param axistype
