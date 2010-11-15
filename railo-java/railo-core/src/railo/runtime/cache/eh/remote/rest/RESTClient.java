@@ -12,10 +12,10 @@ import java.util.Date;
 import org.xml.sax.SAXException;
 
 import railo.commons.io.cache.CacheEntry;
+import railo.loader.util.Util;
 import railo.runtime.cache.eh.remote.Converter;
 import railo.runtime.cache.eh.remote.rest.sax.CacheFactory;
 import railo.runtime.cache.eh.remote.rest.sax.CacheMeta;
-import railo.loader.util.Util;
 
 public class RESTClient {
 	

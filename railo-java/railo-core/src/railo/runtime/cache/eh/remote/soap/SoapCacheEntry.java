@@ -5,8 +5,8 @@ import java.io.ObjectInputStream;
 import java.util.Date;
 
 import railo.commons.io.cache.CacheEntry;
-import railo.runtime.cache.CacheUtil;
 import railo.loader.util.Util;
+import railo.runtime.cache.CacheUtil;
 import railo.runtime.type.Struct;
 
 public class SoapCacheEntry implements CacheEntry {
