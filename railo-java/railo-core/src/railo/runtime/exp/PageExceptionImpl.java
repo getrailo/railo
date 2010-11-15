@@ -109,7 +109,7 @@ public abstract class PageExceptionImpl extends PageException {
 	 * @param customType CUstom Type as String
 	 */
 	public PageExceptionImpl(Throwable e,String type, String customType) {
-		super(e.getMessage()==null || e.getMessage().trim().length()==0?e.getClass().getName():e.getMessage());
+		super(StringUtil.isEmpty(e.getMessage(),true)?e.getClass().getName():e.getMessage());
 		if(e instanceof InvocationTargetException)e=((InvocationTargetException)e).getTargetException();
         
         //this.i
@@ -127,7 +127,7 @@ public abstract class PageExceptionImpl extends PageException {
 		//else if(e.getCause()!=null)rootCause=e.getCause();
 		//else rootCause=e;
 
-		this.type=type.toLowerCase().trim();
+		this.type=type.trim();
 		this.customType=(customType==null)?this.type:customType;
 	}
     
