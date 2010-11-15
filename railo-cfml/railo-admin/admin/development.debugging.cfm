@@ -152,7 +152,8 @@ Create Datasource --->
 			<tr>
 				<td><input type="radio" class="radio" name="DebugType" value="Select" onclick="disableField(this)" <cfif isFromTemplate>checked</cfif>></td>
 				<td>
-					
+                
+					<cfset path=replace(path,cgi.context_path,'')>
 					<select name="debugTemplate_Select" id="debugTemplate_Select" <cfif not isFromTemplate>disabled</cfif>>
 						<cfloop query="debug_Templates">
 							<cfif mid(debug_Templates.Name,1,1) EQ "."><cfcontinue></cfif>
