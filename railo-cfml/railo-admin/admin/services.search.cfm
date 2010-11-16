@@ -326,8 +326,8 @@ function selectAll(field) {
 				<td class="tblHead" width="50"><cfoutput>#stText.Search.Language#</cfoutput></td>
 				<td class="tblContent" width="300"><select name="language">
 						<cfoutput>
-							<cfloop from="1" to="25" index="iLng">
-								<option value="#stText.SearchLng[iLng][1]#" <cfif stText.SearchLng[iLng][1] eq "english">selected</cfif>>#stText.SearchLng[iLng][2]#</option>
+							<cfloop collection="#stText.SearchLng#" item="key">
+								<option value="#key#" <cfif key eq "english">selected</cfif>>#stText.SearchLng[key]#</option>
 							</cfloop>
 						</cfoutput>
 					</select></td>
