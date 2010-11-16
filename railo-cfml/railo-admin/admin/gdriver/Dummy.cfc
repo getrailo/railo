@@ -3,17 +3,15 @@
 	
     <cfset fields=array(
 		field("Directory","directory","",true,"The directory you want to watch","text")
-		,field("Watch subdirectory","recurse","true",true,"Should we watch the directory and all subdirectories too","checkbox")
+		,field("Watch subdirectories","recurse","true",true,"Should we watch the directory and all subdirectories too","checkbox")
 		,field("Interval (ms)","interval","60000",true,"The interval between checks, in miliseconds","text")
-		,field("Extensions","extensions","*",true,"The comma separated list of extensions to match (* = all files).","text")
+		,field("File filter","extensions","*",true,"The comma separated list of file filters to match (* = all files). Examples: *user*,*.gif,2010*,myfilename.txt","text")
 		
-		,group("CFC Listener Function Defintion","Definitation for the CFC Listener Functions, when empty no listener is called",3)
+		,group("CFC Listener Function Defintion","Definition for the CFC Listener Functions, when empty no listener is called",3)
 		
 		,field("Change","changeFunction","onChange",true,"called when a file change","text")
 		,field("Add","addFunction","onAdd",true,"called when a file is added","text")
 		,field("Delete","deleteFunction","onDelete",true,"called when a file is removed","text")
-		
-		
 	)>
 
 	<cffunction name="getClass" returntype="string">
