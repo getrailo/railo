@@ -4,7 +4,9 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.List;
+import railo.runtime.type.Scope;
 import railo.runtime.util.ApplicationContext;
+import railo.runtime.util.ApplicationContextPro;
 
 public class ApplicationContextUtil {
 	/**
@@ -65,5 +67,11 @@ public class ApplicationContextUtil {
 		}
 		
 		return scriptProtect;
+	}
+	
+
+	public static String translateLoginStorage(int loginStorage) {
+		if(loginStorage==Scope.SCOPE_SESSION) return "session";
+		return "cookie";
 	}
 }

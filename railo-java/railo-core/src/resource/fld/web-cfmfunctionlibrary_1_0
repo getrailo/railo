@@ -3416,6 +3416,21 @@
 			<type>string</type>
 		</return>
 	</function>
+	<!-- GetApplicationSettings -->
+	<function>
+		<name>GetApplicationSettings</name>
+		<class>railo.runtime.functions.system.GetApplicationSettings</class>
+		<description>return all data from this scope, when using a application.cfc ar all setting defined in tag cfapplication</description>
+		<argument>
+			<name>suppressFunction</name>
+			<type>boolean</type>
+			<required>no</required>
+			<description>if true only data members from this sope are returned (no functions), default is false</description>
+		</argument>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
 	<!-- getBaseTagData -->
 	<function>
 		<name>getBaseTagData</name>
