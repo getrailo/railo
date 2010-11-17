@@ -3420,7 +3420,7 @@
 	<function>
 		<name>GetApplicationSettings</name>
 		<class>railo.runtime.functions.system.GetApplicationSettings</class>
-		<description>return all data from this scope, when using a application.cfc ar all setting defined in tag cfapplication</description>
+		<description>return all data from this scope, when using a application.cfc or all setting defined in tag cfapplication</description>
 		<argument>
 			<name>suppressFunction</name>
 			<type>boolean</type>
