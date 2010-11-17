@@ -11,11 +11,12 @@
 	<function>
 		<name>abs</name>
 		<class>railo.runtime.functions.math.Abs</class>
-		<description/>
+		<description>Absolute-value function. The absolute value of a number is the number without its sign.</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>Number to find the absolute value of</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -25,11 +26,12 @@
 	<function>
 		<name>aCos</name>
 		<class>railo.runtime.functions.math.ACos</class>
-		<description/>
+		<description>Returns the angle whose cosine is the value passed as the argument.</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>The value to be converted into an angle. Must be between -1 and 1.</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -40,11 +42,12 @@
 	<function>
 		<name>AjaxLink</name>
 		<class>railo.runtime.functions.displayFormatting.AjaxLink</class>
-		<description/>
+		<description>Causes an HTML href attribute to display link results in the current Ajax container.</description>
 		<argument>
 			<name>url</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>The URL of the link.</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -54,7 +57,7 @@
 	<function>
 		<name>AjaxOnLoad</name>
 		<class>railo.runtime.functions.displayFormatting.AjaxOnLoad</class>
-		<description/>
+		<description>Causes the specified JavaScript function to run when the page loads.</description>
 		<argument>
 			<name>functionName</name>
 			<type>string</type>
@@ -68,7 +71,7 @@
 	<function>
 		<name>array</name>
 		<class>railo.runtime.functions.arrays.Array_</class>
-		<description/>
+		<description>Creates a new array</description>
 		<argument-type>dynamic</argument-type>
 		<return>
 			<type>array</type>
@@ -79,7 +82,7 @@
 		<name>_jsonArray</name>
 		<class>railo.runtime.functions.arrays.JsonArray</class>
 		<status>hidden</status>
-		<description/>
+		<description></description>
 		<argument-type>dynamic</argument-type>
 		<return>
 			<type>array</type>
@@ -89,16 +92,18 @@
 	<function>
 		<name>arrayAppend</name>
 		<class>railo.runtime.functions.arrays.ArrayAppend</class>
-		<description/>
+		<description>Appends an array element to an array.</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
+			<description>The array to which the element should be appended.</description>
 		</argument>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
+			<description>The element to append. Can be any type.</description>
 		</argument>
 		<return>
 			<type>boolean</type>
@@ -108,11 +113,13 @@
 	<function>
 		<name>arrayAvg</name>
 		<class>railo.runtime.functions.arrays.ArrayAvg</class>
-		<description/>
+		<description>Calculates the average of the values in an array.
+All elements in the array must contain values that can be automatically converted to numeric.</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
+			<description>The array to calculate the average values from</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -122,7 +129,7 @@
 	<function>
 		<name>arrayClear</name>
 		<class>railo.runtime.functions.arrays.ArrayClear</class>
-		<description/>
+		<description>Removes all elements from an array.</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -136,16 +143,18 @@
 	<function>
 		<name>ArrayContains</name>
 		<class>railo.runtime.functions.arrays.ArrayContains</class>
-		<description/>
+		<description>Returns true if specified object is present is given array</description>
 		<argument>
 			<name>haystack</name>
 			<type>array</type>
 			<required>Yes</required>
+			<description>The array that we are looking for the item</description>
 		</argument>
 		<argument>
 			<name>needle</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>The item that we are looking for in the array</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -155,16 +164,18 @@
 	<function>
 		<name>ArrayContainsNoCase</name>
 		<class>railo.runtime.functions.arrays.ArrayContainsNoCase</class>
-		<description/>
+		<description>Search an array to find a case insensitive item</description>
 		<argument>
 			<name>haystack</name>
 			<type>array</type>
 			<required>Yes</required>
+			<description>The array that we are looking for the item</description>
 		</argument>
 		<argument>
 			<name>needle</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>The item that we are looking for in the array</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -174,16 +185,18 @@
 	<function>
 		<name>arrayDelete</name>
 		<class>railo.runtime.functions.arrays.ArrayDelete</class>
-		<description/>
+		<description>Deletes specified object from given array</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
+			<description>The array to delete from</description>
 		</argument>
 		<argument>
 			<name>value</name>
 			<type>object</type>
 			<required>Yes</required>
+			<description>The value to delete</description>
 		</argument>
 		<argument>
 			<name>scope</name>
@@ -202,16 +215,18 @@
 	<function>
 		<name>arrayDeleteAt</name>
 		<class>railo.runtime.functions.arrays.ArrayDeleteAt</class>
-		<description/>
+		<description>Deletes an element from an array and resizes the array so that the deleted element doesn't leave a gap.</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
+			<description>The array that the element will be deleted from.</description>
 		</argument>
 		<argument>
 			<name>position</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>The numeric position of the element. Remember that Railo arrays start at 1 not 0.</description>
 		</argument>
 		<return>
 			<type>boolean</type>
@@ -221,16 +236,18 @@
 	<function>
 		<name>arrayFind</name>
 		<class>railo.runtime.functions.arrays.ArrayFind</class>
-		<description/>
+		<description>These functions searches the array for the specified object.</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
+			<description>The array to search in</description>
 		</argument>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
+			<description>The value to find</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -240,16 +257,18 @@
 	<function>
 		<name>arrayFindNoCase</name>
 		<class>railo.runtime.functions.arrays.ArrayFindNoCase</class>
-		<description/>
+		<description>These functions performs a case-insensitive search in the array for the specified object.</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
+			<description>The array to search in</description>
 		</argument>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
+			<description>The value to find</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -259,11 +278,12 @@
 	<function>
 		<name>arrayFirst</name>
 		<class>railo.runtime.functions.arrays.ArrayFirst</class>
-		<description/>
+		<description>Returns the first item from an array. Throws an error if the array is empty.</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
+			<description>The array to obtain the first Item from</description>
 		</argument>
 		<return>
 			<type>any</type>
@@ -273,16 +293,18 @@
 	<function>
 		<name>ArrayIndexExists</name>
 		<class>railo.runtime.functions.arrays.ArrayIndexExists</class>
-		<description/>
+		<description>Returns whether there exists an item in the array at the selected index.</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
+			<description>The array to search</description>
 		</argument>
 		<argument>
 			<name>index</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>The index which to check</description>
 		</argument>
 		<return>
 			<type>boolean</type>
@@ -298,11 +320,13 @@
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
+			<description>The array to search</description>
 		</argument>
 		<argument>
 			<name>index</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>The index which to check</description>
 		</argument>
 		<return>
 			<type>boolean</type>
@@ -315,7 +339,7 @@
 	<function>
 		<name>arrayLast</name>
 		<class>railo.runtime.functions.arrays.ArrayLast</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -329,21 +353,27 @@
 	<function>
 		<name>arrayInsertAt</name>
 		<class>railo.runtime.functions.arrays.ArrayInsertAt</class>
-		<description/>
+		<description>Inserts a value at the specified position in the array.
+If the element is inserted before the end of the array, Railo Server shifts the positions of all elements with a higher index to make room.</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
+			<description>The array which will have the new element inserted.</description>
 		</argument>
 		<argument>
 			<name>position</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>The numerical index in the array where the new element will be inserted.
+Must be less than or equal to the length of the array.
+Remember Railo Server arrays start at 1 not 0.</description>
 		</argument>
 		<argument>
-			<name>arg3</name>
+			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
+			<description>value to insert</description>
 		</argument>
 		<return>
 			<type>boolean</type>
@@ -353,7 +383,7 @@
 	<function>
 		<name>arrayIsEmpty</name>
 		<class>railo.runtime.functions.arrays.ArrayIsEmpty</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -367,7 +397,7 @@
 	<function>
 		<name>arrayLen</name>
 		<class>railo.runtime.functions.arrays.ArrayLen</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -381,7 +411,7 @@
 	<function>
 		<name>arrayMax</name>
 		<class>railo.runtime.functions.arrays.ArrayMax</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -395,7 +425,7 @@
 	<function>
 		<name>arrayMin</name>
 		<class>railo.runtime.functions.arrays.ArrayMin</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -409,7 +439,7 @@
 	<function>
 		<name>arrayMerge</name>
 		<class>railo.runtime.functions.arrays.ArrayMerge</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array1</name>
 			<type>array</type>
@@ -447,7 +477,7 @@
 	<function>
 		<name>arrayPrepend</name>
 		<class>railo.runtime.functions.arrays.ArrayPrepend</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -466,7 +496,7 @@
 	<function>
 		<name>arrayResize</name>
 		<class>railo.runtime.functions.arrays.ArrayResize</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -485,7 +515,7 @@
 	<function>
 		<name>arrayReverse</name>
 		<class>railo.runtime.functions.arrays.ArrayReverse</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -499,7 +529,7 @@
 	<function>
 		<name>arraySet</name>
 		<class>railo.runtime.functions.arrays.ArraySet</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -528,7 +558,7 @@
 	<function>
 		<name>arraySlice</name>
 		<class>railo.runtime.functions.arrays.ArraySlice</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -552,7 +582,7 @@
 	<function>
 		<name>arraySort</name>
 		<class>railo.runtime.functions.arrays.ArraySort</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -576,7 +606,7 @@
 	<function>
 		<name>arraySum</name>
 		<class>railo.runtime.functions.arrays.ArraySum</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -590,7 +620,7 @@
 	<function>
 		<name>arraySwap</name>
 		<class>railo.runtime.functions.arrays.ArraySwap</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -614,7 +644,7 @@
 	<function>
 		<name>arrayToList</name>
 		<class>railo.runtime.functions.list.ArrayToList</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -633,7 +663,7 @@
 	<function>
 		<name>arrayToStruct</name>
 		<class>railo.runtime.functions.arrays.ArrayToStruct</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -647,7 +677,7 @@
 	<function>
 		<name>asc</name>
 		<class>railo.runtime.functions.string.Asc</class>
-		<description/>
+		<description>Determines the value of a character.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -661,7 +691,7 @@
 	<function>
 		<name>aSin</name>
 		<class>railo.runtime.functions.math.ASin</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -675,7 +705,7 @@
 	<function>
 		<name>atn</name>
 		<class>railo.runtime.functions.math.Atn</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -797,7 +827,7 @@
 	<function>
 		<name>bitAnd</name>
 		<class>railo.runtime.functions.math.BitAnd</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number1</name>
 			<type>number</type>
@@ -816,7 +846,7 @@
 	<function>
 		<name>bitMaskClear</name>
 		<class>railo.runtime.functions.math.BitMaskClear</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -840,7 +870,7 @@
 	<function>
 		<name>bitMaskRead</name>
 		<class>railo.runtime.functions.math.BitMaskRead</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -864,7 +894,7 @@
 	<function>
 		<name>bitMaskSet</name>
 		<class>railo.runtime.functions.math.BitMaskSet</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -893,7 +923,7 @@
 	<function>
 		<name>bitNot</name>
 		<class>railo.runtime.functions.math.BitNot</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -907,7 +937,7 @@
 	<function>
 		<name>bitOr</name>
 		<class>railo.runtime.functions.math.BitOr</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number1</name>
 			<type>number</type>
@@ -926,7 +956,7 @@
 	<function>
 		<name>bitSHLN</name>
 		<class>railo.runtime.functions.math.BitSHLN</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -945,7 +975,7 @@
 	<function>
 		<name>bitSHRN</name>
 		<class>railo.runtime.functions.math.BitSHRN</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -964,7 +994,7 @@
 	<function>
 		<name>bitXor</name>
 		<class>railo.runtime.functions.math.BitXor</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number1</name>
 			<type>number</type>
@@ -1045,7 +1075,7 @@
 	<function>
 		<name>cacheGet</name>
 		<class>railo.runtime.functions.cache.CacheGet</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>id</name>
 			<type>string</type>
@@ -1194,7 +1224,7 @@
 	<function>
 		<name>cachePut</name>
 		<class>railo.runtime.functions.cache.CachePut</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>id</name>
 			<type>string</type>
@@ -1229,7 +1259,7 @@
 	<function>
 		<name>cacheRemove</name>
 		<class>railo.runtime.functions.cache.CacheRemove</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>ids</name>
 			<type>object</type>
@@ -1254,7 +1284,7 @@
 	<function>
 		<name>ceiling</name>
 		<class>railo.runtime.functions.math.Ceiling</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -1268,7 +1298,7 @@
 	<function>
 		<name>chr</name>
 		<class>railo.runtime.functions.string.Chr</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -1282,7 +1312,7 @@
 	<function>
 		<name>cJustify</name>
 		<class>railo.runtime.functions.string.CJustify</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -1301,7 +1331,7 @@
 	<function>
 		<name>compare</name>
 		<class>railo.runtime.functions.string.Compare</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string1</name>
 			<type>string</type>
@@ -1320,7 +1350,7 @@
 	<function>
 		<name>compareNoCase</name>
 		<class>railo.runtime.functions.string.CompareNoCase</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string1</name>
 			<type>string</type>
@@ -1339,7 +1369,7 @@
 	<function>
 		<name>componentInfo</name>
 		<class>railo.runtime.functions.component.ComponentInfo</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>component</name>
 			<type>component</type>
@@ -1353,7 +1383,7 @@
 	<function>
 		<name>componentCacheClear</name>
 		<class>railo.runtime.functions.component.ComponentCacheClear</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>void</type>
 		</return>
@@ -1362,7 +1392,7 @@
 	<function>
 		<name>componentCacheList</name>
 		<class>railo.runtime.functions.component.ComponentCacheList</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -1372,7 +1402,7 @@
 	<function>
 		<name>ctCacheClear</name>
 		<class>railo.runtime.functions.other.CTCacheClear</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>void</type>
 		</return>
@@ -1381,7 +1411,7 @@
 	<function>
 		<name>ctCacheList</name>
 		<class>railo.runtime.functions.other.CTCacheList</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -1390,7 +1420,7 @@
 	<function>
 		<name>compress</name>
 		<class>railo.runtime.functions.system.Compress</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>format</name>
 			<type>string</type>
@@ -1439,7 +1469,7 @@
 	<function>
 		<name>cos</name>
 		<class>railo.runtime.functions.math.Cos</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -1453,7 +1483,7 @@
 	<function>
 		<name>createDate</name>
 		<class>railo.runtime.functions.dateTime.CreateDate</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>year</name>
 			<type>number</type>
@@ -1482,7 +1512,7 @@
 	<function>
 		<name>createDateTime</name>
 		<class>railo.runtime.functions.dateTime.CreateDateTime</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>year</name>
 			<type>number</type>
@@ -1534,7 +1564,7 @@
 		<name>_createComponent</name>
 		<class>railo.runtime.functions.other._CreateComponent</class>
 		<status>hidden</status>
-		<description/>
+		<description></description>
 		<argument-type>dynamic</argument-type>
 		<return>
 			<type>any</type>
@@ -1545,7 +1575,7 @@
 	<function>
 		<name>createObject</name>
 		<class>railo.runtime.functions.other.CreateObject</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>arg1</name>
 			<type>string</type>
@@ -1574,7 +1604,7 @@
 	<function>
 		<name>createODBCDate</name>
 		<class>railo.runtime.functions.dateTime.CreateODBCDate</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -1588,7 +1618,7 @@
 	<function>
 		<name>createODBCDateTime</name>
 		<class>railo.runtime.functions.dateTime.CreateODBCDateTime</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -1602,7 +1632,7 @@
 	<function>
 		<name>createODBCTime</name>
 		<class>railo.runtime.functions.dateTime.CreateODBCTime</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -1616,7 +1646,7 @@
 	<function>
 		<name>createTime</name>
 		<class>railo.runtime.functions.dateTime.CreateTime</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>hour</name>
 			<type>number</type>
@@ -1650,7 +1680,7 @@
 	<function>
 		<name>createTimeSpan</name>
 		<class>railo.runtime.functions.dateTime.CreateTimeSpan</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>days</name>
 			<type>number</type>
@@ -1684,7 +1714,7 @@
 	<function>
 		<name>createUUID</name>
 		<class>railo.runtime.functions.other.CreateUUID</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>string</type>
 		</return>
@@ -1693,7 +1723,7 @@
 	<function>
 		<name>createGUID</name>
 		<class>railo.runtime.functions.other.CreateGUID</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>string</type>
 		</return>
@@ -1717,7 +1747,7 @@
 	<function>
 		<name>dateAdd</name>
 		<class>railo.runtime.functions.dateTime.DateAdd</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>datepart</name>
 			<type>string</type>
@@ -1741,7 +1771,7 @@
 	<function>
 		<name>dateCompare</name>
 		<class>railo.runtime.functions.dateTime.DateCompare</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date1</name>
 			<type>datetime</type>
@@ -1765,7 +1795,7 @@
 	<function>
 		<name>dateConvert</name>
 		<class>railo.runtime.functions.dateTime.DateConvert</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>conversion_type</name>
 			<type>string</type>
@@ -1784,7 +1814,7 @@
 	<function>
 		<name>dateDiff</name>
 		<class>railo.runtime.functions.dateTime.DateDiff</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>datepart</name>
 			<type>string</type>
@@ -1808,7 +1838,7 @@
 	<function>
 		<name>dateFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DateFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>object</name>
 			<type>any</type>
@@ -1832,7 +1862,7 @@
 	<function>
 		<name>datePart</name>
 		<class>railo.runtime.functions.dateTime.DatePart</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>datepart</name>
 			<type>string</type>
@@ -1856,7 +1886,7 @@
 	<function>
 		<name>day</name>
 		<class>railo.runtime.functions.dateTime.Day</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -1875,7 +1905,7 @@
 	<function>
 		<name>dayOfWeek</name>
 		<class>railo.runtime.functions.dateTime.DayOfWeek</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -1894,7 +1924,7 @@
 	<function>
 		<name>lsdayOfWeek</name>
 		<class>railo.runtime.functions.international.LSDayOfWeek</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -1918,7 +1948,7 @@
 	<function>
 		<name>dayOfWeekAsString</name>
 		<class>railo.runtime.functions.string.DayOfWeekAsString</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>day_of_week</name>
 			<type>number</type>
@@ -1937,7 +1967,7 @@
 	<function>
 		<name>dayOfWeekShortAsString</name>
 		<class>railo.runtime.functions.string.DayOfWeekShortAsString</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>day_of_week</name>
 			<type>number</type>
@@ -1956,7 +1986,7 @@
 	<function>
 		<name>dayOfYear</name>
 		<class>railo.runtime.functions.dateTime.DayOfYear</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -1975,7 +2005,7 @@
 	<function>
 		<name>daysInMonth</name>
 		<class>railo.runtime.functions.dateTime.DaysInMonth</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -1994,7 +2024,7 @@
 	<function>
 		<name>daysInYear</name>
 		<class>railo.runtime.functions.dateTime.DaysInYear</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -2013,7 +2043,7 @@
 	<function>
 		<name>dE</name>
 		<class>railo.runtime.functions.dynamicEvaluation.DE</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -2027,7 +2057,7 @@
 	<function>
 		<name>decimalFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DecimalFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>any</type>
@@ -2041,7 +2071,7 @@
 	<function>
 		<name>decrementValue</name>
 		<class>railo.runtime.functions.math.DecrementValue</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -2055,7 +2085,7 @@
 	<function>
 		<name>decrypt</name>
 		<class>railo.runtime.functions.other.Decrypt</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>encrypted_string</name>
 			<type>string</type>
@@ -2084,7 +2114,7 @@
 	<function>
 		<name>decryptBinary</name>
 		<class>railo.runtime.functions.other.DecryptBinary</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>input</name>
 			<type>any</type>
@@ -2108,7 +2138,7 @@
 	<function>
 		<name>deleteClientVariable</name>
 		<class>railo.runtime.functions.other.DeleteClientVariable</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>"name"</name>
 			<type>string</type>
@@ -2122,7 +2152,7 @@
 	<function>
 		<name>DirectoryCreate</name>
 		<class>railo.runtime.functions.file.DirectoryCreate</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>path</name>
 			<type>string</type>
@@ -2143,7 +2173,7 @@
 	<function>
 		<name>DirectoryDelete</name>
 		<class>railo.runtime.functions.file.DirectoryDelete</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>path</name>
 			<type>string</type>
@@ -2164,7 +2194,7 @@
 	<function>
 		<name>directoryExists</name>
 		<class>railo.runtime.functions.system.DirectoryExists</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>absolute_path</name>
 			<type>string</type>
@@ -2185,7 +2215,7 @@
 	<function>
 		<name>DirectoryList</name>
 		<class>railo.runtime.functions.file.DirectoryList</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>absolute_path</name>
 			<type>string</type>
@@ -2223,7 +2253,7 @@
 	<function>
 		<name>DirectoryRename</name>
 		<class>railo.runtime.functions.file.DirectoryRename</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>oldPath</name>
 			<type>string</type>
@@ -2266,7 +2296,7 @@
 	<function>
 		<name>dollarFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DollarFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>string</type>
@@ -2280,7 +2310,7 @@
 	<function>
 		<name>DotNetToCFType</name>
 		<class>railo.runtime.functions.system.DotNetToCFType</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>input</name>
 			<type>any</type>
@@ -2295,7 +2325,7 @@
 		<name>_dump</name>
 		<class>railo.runtime.functions.other.Dump</class>
 		<status>hidden</status>
-		<description/>
+		<description></description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -2354,7 +2384,7 @@
 	<function>
 		<name>dump</name>
 		<class>railo.runtime.functions.other.Dump</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -2415,7 +2445,7 @@
 	<function>
 		<name>dumpStruct</name>
 		<class>railo.runtime.functions.other.DumpStruct</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -2465,7 +2495,7 @@
 	<function>
 		<name>duplicate</name>
 		<class>railo.runtime.functions.struct.Duplicate</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>variable_name</name>
 			<type>any</type>
@@ -2484,7 +2514,7 @@
 	<function>
 		<name>cfusion_encrypt</name>
 		<class>railo.runtime.functions.other.CFusionEncrypt</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -2503,7 +2533,7 @@
 	<function>
 		<name>cfusion_decrypt</name>
 		<class>railo.runtime.functions.other.CFusionDecrypt</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -2524,7 +2554,7 @@
 	<function>
 		<name>encrypt</name>
 		<class>railo.runtime.functions.other.Encrypt</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -2553,7 +2583,7 @@
 	<function>
 		<name>encryptBinary</name>
 		<class>railo.runtime.functions.other.EncryptBinary</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>bytes</name>
 			<type>any</type>
@@ -2578,7 +2608,7 @@
 	<function>
 		<name>EntityDelete</name>
 		<class>railo.runtime.functions.orm.EntityDelete</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>name</name>
 			<type>object</type>
@@ -2593,7 +2623,7 @@
 	<function>
 		<name>entityLoad</name>
 		<class>railo.runtime.functions.orm.EntityLoad</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>name</name>
 			<type>string</type>
@@ -2623,7 +2653,7 @@
 	<function>
 		<name>EntityLoadByPK</name>
 		<class>railo.runtime.functions.orm.EntityLoadByPK</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>name</name>
 			<type>string</type>
@@ -2648,7 +2678,7 @@
 	<function>
 		<name>EntityLoadByExample</name>
 		<class>railo.runtime.functions.orm.EntityLoadByExample</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>sampleEntity</name>
 			<type>object</type>
@@ -2668,7 +2698,7 @@
 	<function>
 		<name>EntityMerge</name>
 		<class>railo.runtime.functions.orm.EntityMerge</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>entity</name>
 			<type>any</type>
@@ -2683,7 +2713,7 @@
 	<function>
 		<name>EntityNew</name>
 		<class>railo.runtime.functions.orm.EntityNew</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>entityName</name>
 			<type>string</type>
@@ -2698,7 +2728,7 @@
 	<function>
 		<name>EntityNameArray</name>
 		<class>railo.runtime.functions.orm.EntityNameArray</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>array</type>
 		</return>
@@ -2708,7 +2738,7 @@
 	<function>
 		<name>EntityNameList</name>
 		<class>railo.runtime.functions.orm.EntityNameList</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>delimeter</name>
 			<type>string</type>
@@ -2723,7 +2753,7 @@
 	<function>
 		<name>EntityReload</name>
 		<class>railo.runtime.functions.orm.EntityReload</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>entity</name>
 			<type>object</type>
@@ -2738,7 +2768,7 @@
 	<function>
 		<name>EntitySave</name>
 		<class>railo.runtime.functions.orm.EntitySave</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>entity</name>
 			<type>object</type>
@@ -2758,7 +2788,7 @@
 	<function>
 		<name>EntityToQuery</name>
 		<class>railo.runtime.functions.orm.EntityToQuery</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>entity</name>
 			<type>object</type>
@@ -2781,7 +2811,7 @@
 	<function>
 		<name>evaluate</name>
 		<class>railo.runtime.functions.dynamicEvaluation.Evaluate</class>
-		<description/>
+		<description></description>
 		<argument-type>dynamic</argument-type>
 		<argument-min>1</argument-min>
 		
@@ -2801,7 +2831,7 @@
 	<function>
 		<name>evaluateComponent</name>
 		<class>railo.runtime.functions.dynamicEvaluation.EvaluateComponent</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>name</name>
 			<type>string</type>
@@ -2832,7 +2862,7 @@
 	<function>
 		<name>evaluateJava</name>
 		<class>railo.runtime.functions.dynamicEvaluation.EvaluateJava</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -2849,7 +2879,7 @@
 	<function>
 		<name>exp</name>
 		<class>railo.runtime.functions.math.Exp</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -2863,7 +2893,7 @@
 	<function>
 		<name>ContractPath</name>
 		<class>railo.runtime.functions.system.ContractPath</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>absolute_path</name>
 			<type>string</type>
@@ -2884,7 +2914,7 @@
 	<function>
 		<name>expandPath</name>
 		<class>railo.runtime.functions.system.ExpandPath</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>relative_path</name>
 			<type>string</type>
@@ -2898,7 +2928,7 @@
 	<function>
 		<name>extract</name>
 		<class>railo.runtime.functions.system.Extract</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>format</name>
 			<type>string</type>
@@ -2933,7 +2963,7 @@
 	<function>
 		<name>fileOpen</name>
 		<class>railo.runtime.functions.file.FileOpen</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>path</name>
 			<type>string</type>
@@ -2962,7 +2992,7 @@
 	<function>
 		<name>fileRead</name>
 		<class>railo.runtime.functions.file.FileRead</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>object</name>
 			<type>any</type>
@@ -2981,7 +3011,7 @@
 	<function>
 		<name>fileReadLine</name>
 		<class>railo.runtime.functions.file.FileReadLine</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>fileObj</name>
 			<type>any</type>
@@ -2995,7 +3025,7 @@
 	<function>
 		<name>FileSeek</name>
 		<class>railo.runtime.functions.file.FileSeek</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>fileObj</name>
 			<type>any</type>
@@ -3014,7 +3044,7 @@
 	<function>
 		<name>FileSkipBytes</name>
 		<class>railo.runtime.functions.file.FileSkipBytes</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>fileObj</name>
 			<type>any</type>
@@ -3034,7 +3064,7 @@
 	<function>
 		<name>fileClose</name>
 		<class>railo.runtime.functions.file.FileClose</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>fileObj</name>
 			<type>any</type>
@@ -3048,7 +3078,7 @@
 	<function>
 		<name>fileCopy</name>
 		<class>railo.runtime.functions.file.FileCopy</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3067,7 +3097,7 @@
 	<function>
 		<name>fileCopy</name>
 		<class>railo.runtime.functions.file.FileCopy</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3106,7 +3136,7 @@
 	<function>
 		<name>FileDelete</name>
 		<class>railo.runtime.functions.file.FileDelete</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3120,7 +3150,7 @@
 	<function>
 		<name>FileExists</name>
 		<class>railo.runtime.functions.file.FileExists</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3142,7 +3172,7 @@
 	<function>
 		<name>FileIsEOF</name>
 		<class>railo.runtime.functions.file.FileIsEOF</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3156,7 +3186,7 @@
 	<function>
 		<name>FileReadBinary</name>
 		<class>railo.runtime.functions.file.FileReadBinary</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3170,7 +3200,7 @@
 	<function>
 		<name>FileSetAccessMode</name>
 		<class>railo.runtime.functions.file.FileSetAccessMode</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3189,7 +3219,7 @@
 	<function>
 		<name>FileSetAttribute</name>
 		<class>railo.runtime.functions.file.FileSetAttribute</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3208,7 +3238,7 @@
 	<function>
 		<name>FileSetLastModified</name>
 		<class>railo.runtime.functions.file.FileSetLastModified</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3227,7 +3257,7 @@
 	<function>
 		<name>FileWrite</name>
 		<class>railo.runtime.functions.file.FileWrite</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>file</name>
 			<type>any</type>
@@ -3252,7 +3282,7 @@
 	<function>
 		<name>FileWriteLine</name>
 		<class>railo.runtime.functions.file.FileWriteLine</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>file</name>
 			<type>any</type>
@@ -3271,7 +3301,7 @@
 	<function>
 		<name>find</name>
 		<class>railo.runtime.functions.string.Find</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>substring</name>
 			<type>string</type>
@@ -3295,7 +3325,7 @@
 	<function>
 		<name>findNoCase</name>
 		<class>railo.runtime.functions.string.FindNoCase</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>substring</name>
 			<type>string</type>
@@ -3319,7 +3349,7 @@
 	<function>
 		<name>findOneOf</name>
 		<class>railo.runtime.functions.string.FindOneOf</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>set</name>
 			<type>string</type>
@@ -3343,7 +3373,7 @@
 	<function>
 		<name>firstDayOfMonth</name>
 		<class>railo.runtime.functions.dateTime.FirstDayOfMonth</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -3362,7 +3392,7 @@
 	<function>
 		<name>fix</name>
 		<class>railo.runtime.functions.math.Fix</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -3376,7 +3406,7 @@
 	<function>
 		<name>formatBaseN</name>
 		<class>railo.runtime.functions.displayFormatting.FormatBaseN</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -3411,7 +3441,7 @@
 	<function>
 		<name>getAuthUser</name>
 		<class>railo.runtime.functions.other.GetAuthUser</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3435,7 +3465,7 @@
 	<function>
 		<name>getBaseTagData</name>
 		<class>railo.runtime.functions.other.GetBaseTagData</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>tagname</name>
 			<type>string</type>
@@ -3454,7 +3484,7 @@
 	<function>
 		<name>getBaseTagList</name>
 		<class>railo.runtime.functions.other.GetBaseTagList</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>delimeter</name>
 			<type>string</type>
@@ -3468,7 +3498,7 @@
 	<function>
 		<name>getBaseTemplatePath</name>
 		<class>railo.runtime.functions.system.GetBaseTemplatePath</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3477,7 +3507,7 @@
 	<function>
 		<name>getClassPath</name>
 		<class>railo.runtime.functions.system.GetClassPath</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>array</type>
 		</return>
@@ -3486,7 +3516,7 @@
 	<function>
 		<name>GetComponentMetaData</name>
 		<class>railo.runtime.functions.other.GetComponentMetaData</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>pathOrCFC</name>
 			<type>object</type>
@@ -3511,7 +3541,7 @@
 	<function>
 		<name>getClientVariablesList</name>
 		<class>railo.runtime.functions.other.GetClientVariablesList</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3520,7 +3550,7 @@
 	<function>
 		<name>getCurrentTemplatePath</name>
 		<class>railo.runtime.functions.system.GetCurrentTemplatePath</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3529,7 +3559,7 @@
 	<function>
 		<name>getCurrentContext</name>
 		<class>railo.runtime.functions.system.GetCurrentContext</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>array</type>
 		</return>
@@ -3538,7 +3568,7 @@
 	<function>
 		<name>getDirectoryFromPath</name>
 		<class>railo.runtime.functions.system.GetDirectoryFromPath</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>path</name>
 			<type>string</type>
@@ -3552,7 +3582,7 @@
 	<function>
 		<name>getEncoding</name>
 		<class>railo.runtime.functions.international.GetEncoding</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
@@ -3566,7 +3596,7 @@
 	<function>
 		<name>getException</name>
 		<class>railo.runtime.functions.system.GetException</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>object</name>
 			<type>any</type>
@@ -3580,7 +3610,7 @@
 	<function>
 		<name>getFileFromPath</name>
 		<class>railo.runtime.functions.file.GetFileFromPath</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>path</name>
 			<type>string</type>
@@ -3594,7 +3624,7 @@
 	<function>
 		<name>GetFileInfo</name>
 		<class>railo.runtime.functions.file.GetFileInfo</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>file</name>
 			<type>any</type>
@@ -3608,7 +3638,7 @@
 	<function>
 		<name>getFunctionData</name>
 		<class>railo.runtime.functions.other.GetFunctionData</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>functionName</name>
 			<type>string</type>
@@ -3622,7 +3652,7 @@
 	<function>
 		<name>getLocaleDisplayName</name>
 		<class>railo.runtime.functions.displayFormatting.GetLocaleDisplayName</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
@@ -3642,7 +3672,7 @@
 	<function>
 		<name>GetLocalHostIP</name>
 		<class>railo.runtime.functions.system.GetLocalHostIP</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3652,7 +3682,7 @@
 	<function>
 		<name>GetVFSMetaData</name>
 		<class>railo.runtime.functions.file.GetVFSMetaData</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>scheme</name>
 			<type>string</type>
@@ -3669,7 +3699,7 @@
 	<function>
 		<name>GetPrinterInfo</name>
 		<class>railo.runtime.functions.system.GetPrinterInfo</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>printer</name>
 			<type>string</type>
@@ -3684,7 +3714,7 @@
 	<function>
 		<name>GetRailoId</name>
 		<class>railo.runtime.functions.other.GetRailoId</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -3693,7 +3723,7 @@
 	<function>
 		<name>GetReadableImageFormats</name>
 		<class>railo.runtime.functions.image.GetReadableImageFormats</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3702,7 +3732,7 @@
 	<function>
 		<name>GetUserRoles</name>
 		<class>railo.runtime.functions.system.GetUserRoles</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3711,7 +3741,7 @@
 	<function>
 		<name>GetWriteableImageFormats</name>
 		<class>railo.runtime.functions.image.GetWriteableImageFormats</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3741,7 +3771,7 @@
 	<function>
 		<name>getFunctionList</name>
 		<class>railo.runtime.functions.other.GetFunctionList</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -3776,7 +3806,7 @@
 	<function>
 		<name>getHTTPRequestData</name>
 		<class>railo.runtime.functions.other.GetHTTPRequestData</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -3785,7 +3815,7 @@
 	<function>
 		<name>getHttpTimeString</name>
 		<class>railo.runtime.functions.dateTime.GetHttpTimeString</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date_time_object</name>
 			<type>datetime</type>
@@ -3800,7 +3830,7 @@
 		<name>getK2ServerDocCount</name>
 		<class>railo.runtime.functions.other.GetK2ServerDocCount</class>
 		<status>deprecated</status>
-		<description/>
+		<description></description>
 		<return>
 			<type>number</type>
 		</return>
@@ -3810,7 +3840,7 @@
 		<name>getK2ServerDocCountLimit</name>
 		<class>railo.runtime.functions.other.GetK2ServerDocCountLimit</class>
 		<status>deprecated</status>
-		<description/>
+		<description></description>
 		<return>
 			<type>number</type>
 		</return>
@@ -3819,7 +3849,7 @@
 	<function>
 		<name>getLocale</name>
 		<class>railo.runtime.functions.international.GetLocale</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3828,7 +3858,7 @@
 	<function>
 		<name>getMetadata</name>
 		<class>railo.runtime.functions.other.GetMetaData</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>arg1</name>
 			<type>any</type>
@@ -3848,7 +3878,7 @@
 	<function>
 		<name>getMetricData</name>
 		<class>railo.runtime.functions.system.GetMetricData</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>monitor_name</name>
 			<type>string</type>
@@ -3862,7 +3892,7 @@
 	<function>
 		<name>getNumericDate</name>
 		<class>railo.runtime.functions.other.GetNumericDate</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>arg1</name>
 			<type>any</type>
@@ -3876,7 +3906,7 @@
 	<function>
 		<name>getPageContext</name>
 		<class>railo.runtime.functions.other.GetPageContext</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>any</type>
 		</return>
@@ -3885,7 +3915,7 @@
 	<function>
 		<name>getProfileSections</name>
 		<class>railo.runtime.functions.other.GetProfileSections</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>arg1</name>
 			<type>string</type>
@@ -3899,7 +3929,7 @@
 	<function>
 		<name>getProfileString</name>
 		<class>railo.runtime.functions.system.GetProfileString</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>iniPath</name>
 			<type>string</type>
@@ -4012,7 +4042,7 @@
 	<function>
 		<name>getTempDirectory</name>
 		<class>railo.runtime.functions.system.GetTempDirectory</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>string</type>
 		</return>
@@ -4021,7 +4051,7 @@
 	<function>
 		<name>GetSystemInfo</name>
 		<class>railo.runtime.functions.system.GetSystemInfo</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -4031,7 +4061,7 @@
 	<function>
 		<name>getTempFile</name>
 		<class>railo.runtime.functions.system.GetTempFile</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>dir</name>
 			<type>string</type>
@@ -4050,7 +4080,7 @@
 	<function>
 		<name>getTemplatePath</name>
 		<class>railo.runtime.functions.system.GetTemplatePath</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>any</type>
 		</return>
@@ -4059,7 +4089,7 @@
 	<function>
 		<name>getTickCount</name>
 		<class>railo.runtime.functions.other.GetTickCount</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>number</type>
 		</return>
@@ -4068,7 +4098,7 @@
 	<function>
 		<name>getTimeZoneInfo</name>
 		<class>railo.runtime.functions.international.GetTimeZoneInfo</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -4077,7 +4107,7 @@
 	<function>
 		<name>getTimeZone</name>
 		<class>railo.runtime.functions.dateTime.GetTimeZone</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>string</type>
 		</return>
@@ -4086,7 +4116,7 @@
 	<function>
 		<name>setTimeZone</name>
 		<class>railo.runtime.functions.dateTime.SetTimeZone</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
@@ -4100,7 +4130,7 @@
 	<function>
 		<name>getToken</name>
 		<class>railo.runtime.functions.string.GetToken</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -4124,7 +4154,7 @@
 	<function>
 		<name>getVariable</name>
 		<class>railo.runtime.functions.dynamicEvaluation.GetVariable</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>name</name>
 			<type>string</type>
@@ -4138,7 +4168,7 @@
 	<function>
 		<name>hash</name>
 		<class>railo.runtime.functions.string.Hash</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -4162,7 +4192,7 @@
 	<function>
 		<name>hour</name>
 		<class>railo.runtime.functions.dateTime.Hour</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>Date</name>
 			<type>datetime</type>
@@ -4181,7 +4211,7 @@
 	<function>
 		<name>hTMLCodeFormat</name>
 		<class>railo.runtime.functions.displayFormatting.HTMLCodeFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -4205,7 +4235,7 @@
 	<function>
 		<name>hTMLEditFormat</name>
 		<class>railo.runtime.functions.displayFormatting.HTMLEditFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -4224,7 +4254,7 @@
 	<function>
 		<name>iIf</name>
 		<class>railo.runtime.functions.dynamicEvaluation.IIf</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>condition</name>
 			<type>boolean</type>
@@ -5748,7 +5778,7 @@
 	<function>
 		<name>incrementValue</name>
 		<class>railo.runtime.functions.math.IncrementValue</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -5762,7 +5792,7 @@
 	<function>
 		<name>inputBaseN</name>
 		<class>railo.runtime.functions.math.InputBaseN</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -5781,7 +5811,7 @@
 	<function>
 		<name>insert</name>
 		<class>railo.runtime.functions.string.Insert</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>substring</name>
 			<type>string</type>
@@ -5805,7 +5835,7 @@
 	<function>
 		<name>int</name>
 		<class>railo.runtime.functions.math.Int</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -5819,7 +5849,7 @@
 	<function>
 		<name>isArray</name>
 		<class>railo.runtime.functions.decision.IsArray</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -5838,7 +5868,7 @@
 	<function>
 		<name>isBinary</name>
 		<class>railo.runtime.functions.decision.IsBinary</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -5852,7 +5882,7 @@
 	<function>
 		<name>isBoolean</name>
 		<class>railo.runtime.functions.decision.IsBoolean</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -5866,7 +5896,7 @@
 	<function>
 		<name>isCustomFunction</name>
 		<class>railo.runtime.functions.decision.IsCustomFunction</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>name</name>
 			<type>any</type>
@@ -5880,7 +5910,7 @@
 	<function>
 		<name>isDate</name>
 		<class>railo.runtime.functions.decision.IsDate</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>any</type>
@@ -5894,7 +5924,7 @@
 	<function>
 		<name>IsDDX</name>
 		<class>railo.runtime.functions.decision.IsDDX</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>pathOrString</name>
 			<type>string</type>
@@ -5908,7 +5938,7 @@
 	<function>
 		<name>IsInstanceOf</name>
 		<class>railo.runtime.functions.decision.IsInstanceOf</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>obj</name>
 			<type>any</type>
@@ -5929,7 +5959,7 @@
 	<function>
 		<name>isDebugMode</name>
 		<class>railo.runtime.functions.decision.IsDebugMode</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5939,7 +5969,7 @@
 		<name>isDefined</name>
 		<class>railo.runtime.functions.decision.IsDefined</class>
 		<tte-class>railo.transformer.cfml.evaluator.func.impl.IsDefined</tte-class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>variable</name>
 			<type>string</type>
@@ -5954,7 +5984,7 @@
 		<name>isK2ServerABroker</name>
 		<class>railo.runtime.functions.decision.IsK2ServerABroker</class>
 		<status>deprecated</status>
-		<description/>
+		<description></description>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5964,7 +5994,7 @@
 		<name>isK2ServerDocCountExceeded</name>
 		<class>railo.runtime.functions.decision.IsK2ServerDocCountExceeded</class>
 			<status>deprecated</status>
-		<description/>
+		<description></description>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5974,7 +6004,7 @@
 		<name>isK2ServerOnline</name>
 		<class>railo.runtime.functions.decision.IsK2ServerOnline</class>
 			<status>deprecated</status>
-		<description/>
+		<description></description>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5983,7 +6013,7 @@
 	<function>
 		<name>isLeapYear</name>
 		<class>railo.runtime.functions.decision.IsLeapYear</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>year</name>
 			<type>number</type>
@@ -5997,7 +6027,7 @@
 	<function>
 		<name>isLocalHost</name>
 		<class>railo.runtime.functions.decision.IsLocalHost</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>ip</name>
 			<type>String</type>
@@ -6012,7 +6042,7 @@
 	<function>
 		<name>isNotMap</name>
 		<class>railo.runtime.functions.other.IsNotMap</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>arg1</name>
 			<type>any</type>
@@ -6027,7 +6057,7 @@
 		<name>isNull</name>
 		<class>railo.runtime.functions.other.IsNull</class>
 		<tte-class>railo.transformer.cfml.evaluator.func.impl.IsNull</tte-class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>object</name>
 			<type>any</type>
@@ -6041,7 +6071,7 @@
 	<function>
 		<name>isNumeric</name>
 		<class>railo.runtime.functions.decision.IsNumeric</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>any</type>
@@ -6055,7 +6085,7 @@
 	<function>
 		<name>isNumericDate</name>
 		<class>railo.runtime.functions.decision.IsNumericDate</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>any</type>
@@ -6069,7 +6099,7 @@
 	<function>
 		<name>isObject</name>
 		<class>railo.runtime.functions.decision.IsObject</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -6083,7 +6113,7 @@
 	<function>
 		<name>isQuery</name>
 		<class>railo.runtime.functions.query.IsQuery</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -6097,7 +6127,7 @@
 	<function>
 		<name>isSimpleValue</name>
 		<class>railo.runtime.functions.decision.IsSimpleValue</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -6122,7 +6152,7 @@
 	<function>
 		<name>isStruct</name>
 		<class>railo.runtime.functions.struct.IsStruct</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>variable</name>
 			<type>any</type>
@@ -6136,7 +6166,7 @@
 	<function>
 		<name>isUserInRole</name>
 		<class>railo.runtime.functions.decision.IsUserInRole</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>role_name</name>
 			<type>any</type>
@@ -6150,7 +6180,7 @@
 	<function>
 		<name>isUserInAnyRole</name>
 		<class>railo.runtime.functions.decision.isUserInAnyRole</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6159,7 +6189,7 @@
 	<function>
 		<name>IsUserLoggedIn</name>
 		<class>railo.runtime.functions.decision.IsUserLoggedIn</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6201,7 +6231,7 @@
 	<function>
 		<name>isWddx</name>
 		<class>railo.runtime.functions.decision.IsWddx</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -6263,7 +6293,7 @@
 	<function>
 		<name>isXmlDoc</name>
 		<class>railo.runtime.functions.decision.IsXmlDoc</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -6277,7 +6307,7 @@
 	<function>
 		<name>isXmlElem</name>
 		<class>railo.runtime.functions.decision.IsXmlElem</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -6307,7 +6337,7 @@
 	<function>
 		<name>isXmlRoot</name>
 		<class>railo.runtime.functions.decision.IsXmlRoot</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -6321,7 +6351,7 @@
 	<function>
 		<name>javaCast</name>
 		<class>railo.runtime.functions.string.JavaCast</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>type</name>
 			<type>string</type>
@@ -6340,7 +6370,7 @@
 	<function>
 		<name>jSStringFormat</name>
 		<class>railo.runtime.functions.string.JSStringFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -6354,7 +6384,7 @@
 	<function>
 		<name>lCase</name>
 		<class>railo.runtime.functions.string.LCase</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -6368,7 +6398,7 @@
 	<function>
 		<name>left</name>
 		<class>railo.runtime.functions.string.Left</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -6387,7 +6417,7 @@
 	<function>
 		<name>len</name>
 		<class>railo.runtime.functions.string.Len</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -6401,7 +6431,7 @@
 	<function>
 		<name>listAppend</name>
 		<class>railo.runtime.functions.list.ListAppend</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6425,7 +6455,7 @@
 	<function>
 		<name>listAvg</name>
 		<class>railo.runtime.functions.list.ListAvg</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6444,7 +6474,7 @@
 	<function>
 		<name>listChangeDelims</name>
 		<class>railo.runtime.functions.list.ListChangeDelims</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6487,7 +6517,7 @@
 	<function>
 		<name>listContains</name>
 		<class>railo.runtime.functions.list.ListContains</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6511,7 +6541,7 @@
 	<function>
 		<name>listContainsNoCase</name>
 		<class>railo.runtime.functions.list.ListContainsNoCase</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6535,7 +6565,7 @@
 	<function>
 		<name>listDeleteAt</name>
 		<class>railo.runtime.functions.list.ListDeleteAt</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6559,7 +6589,7 @@
 	<function>
 		<name>listFind</name>
 		<class>railo.runtime.functions.list.ListFind</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6583,7 +6613,7 @@
 	<function>
 		<name>listFindNoCase</name>
 		<class>railo.runtime.functions.list.ListFindNoCase</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6607,7 +6637,7 @@
 	<function>
 		<name>listFirst</name>
 		<class>railo.runtime.functions.list.ListFirst</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6626,7 +6656,7 @@
 	<function>
 		<name>listGetAt</name>
 		<class>railo.runtime.functions.list.ListGetAt</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6650,7 +6680,7 @@
 	<function>
 		<name>listInsertAt</name>
 		<class>railo.runtime.functions.list.ListInsertAt</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6679,7 +6709,7 @@
 	<function>
 		<name>ListIndexExists</name>
 		<class>railo.runtime.functions.list.ListIndexExists</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6703,7 +6733,7 @@
 	<function>
 		<name>ListItemTrim</name>
 		<class>railo.runtime.functions.list.ListItemTrim</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6722,7 +6752,7 @@
 	<function>
 		<name>listLast</name>
 		<class>railo.runtime.functions.list.ListLast</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6741,7 +6771,7 @@
 	<function>
 		<name>listLen</name>
 		<class>railo.runtime.functions.list.ListLen</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6760,7 +6790,7 @@
 	<function>
 		<name>listPrepend</name>
 		<class>railo.runtime.functions.list.ListPrepend</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6784,7 +6814,7 @@
 	<function>
 		<name>listQualify</name>
 		<class>railo.runtime.functions.list.ListQualify</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6813,7 +6843,7 @@
 	<function>
 		<name>listRest</name>
 		<class>railo.runtime.functions.list.ListRest</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6832,7 +6862,7 @@
 	<function>
 		<name>listSetAt</name>
 		<class>railo.runtime.functions.list.ListSetAt</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6861,7 +6891,7 @@
 	<function>
 		<name>listSort</name>
 		<class>railo.runtime.functions.list.ListSort</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6890,7 +6920,7 @@
 	<function>
 		<name>listToArray</name>
 		<class>railo.runtime.functions.list.ListToArray</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6921,7 +6951,7 @@
 		<name>listTrim</name>
 		<class>railo.runtime.functions.list.ListTrim</class>
 		<status>deprecated</status>
-		<description>this function isdeprecated, use instead ListCompact</description>
+		<description>this function is deprecated, use instead ListCompact</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6940,7 +6970,7 @@
 	<function>
 		<name>listValueCount</name>
 		<class>railo.runtime.functions.list.ListValueCount</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6964,7 +6994,7 @@
 	<function>
 		<name>listValueCountNoCase</name>
 		<class>railo.runtime.functions.list.ListValueCountNoCase</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6988,7 +7018,7 @@
 	<function>
 		<name>lJustify</name>
 		<class>railo.runtime.functions.string.LJustify</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7008,7 +7038,7 @@
 	<function>
 		<name>location</name>
 		<class>railo.runtime.functions.flow.Location</class>
-		<description/>
+		<description></description>
 		<argument-type>dynamic</argument-type>
 		<return>
 			<type>boolean</type>
@@ -7019,7 +7049,7 @@
 	<function>
 		<name>log</name>
 		<class>railo.runtime.functions.math.Log</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -7033,7 +7063,7 @@
 	<function>
 		<name>log10</name>
 		<class>railo.runtime.functions.math.Log10</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -7047,7 +7077,7 @@
 	<function>
 		<name>lSCurrencyFormat</name>
 		<class>railo.runtime.functions.international.LSCurrencyFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>object</type>
@@ -7071,7 +7101,7 @@
 	<function>
 		<name>lSDateFormat</name>
 		<class>railo.runtime.functions.international.LSDateFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>any</type>
@@ -7100,7 +7130,7 @@
 	<function>
 		<name>lSEuroCurrencyFormat</name>
 		<class>railo.runtime.functions.international.LSEuroCurrencyFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>currency_number</name>
 			<type>object</type>
@@ -7124,7 +7154,7 @@
 	<function>
 		<name>lSIsCurrency</name>
 		<class>railo.runtime.functions.international.LSIsCurrency</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7143,7 +7173,7 @@
 	<function>
 		<name>lSIsDate</name>
 		<class>railo.runtime.functions.international.LSIsDate</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>any</type>
@@ -7167,7 +7197,7 @@
 	<function>
 		<name>lSIsNumeric</name>
 		<class>railo.runtime.functions.international.LSIsNumeric</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7186,7 +7216,7 @@
 	<function>
 		<name>lSNumberFormat</name>
 		<class>railo.runtime.functions.international.LSNumberFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>any</type>
@@ -7210,7 +7240,7 @@
 	<function>
 		<name>lSParseCurrency</name>
 		<class>railo.runtime.functions.international.LSParseCurrency</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7229,7 +7259,7 @@
 	<function>
 		<name>lSParseDateTime</name>
 		<class>railo.runtime.functions.international.LSParseDateTime</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>object</type>
@@ -7253,7 +7283,7 @@
 	<function>
 		<name>lSParseEuroCurrency</name>
 		<class>railo.runtime.functions.international.LSParseEuroCurrency</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>currency_string</name>
 			<type>string</type>
@@ -7272,7 +7302,7 @@
 	<function>
 		<name>lSParseNumber</name>
 		<class>railo.runtime.functions.international.LSParseNumber</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7291,7 +7321,7 @@
 	<function>
 		<name>lSTimeFormat</name>
 		<class>railo.runtime.functions.international.LSTimeFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>time</name>
 			<type>any</type>
@@ -7320,7 +7350,7 @@
 	<function>
 		<name>lTrim</name>
 		<class>railo.runtime.functions.string.LTrim</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7334,7 +7364,7 @@
 	<function>
 		<name>max</name>
 		<class>railo.runtime.functions.math.Max</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number1</name>
 			<type>number</type>
@@ -7353,7 +7383,7 @@
 	<function>
 		<name>metaphone</name>
 		<class>railo.runtime.functions.string.Metaphone</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>str</name>
 			<type>string</type>
@@ -7367,7 +7397,7 @@
 	<function>
 		<name>mid</name>
 		<class>railo.runtime.functions.string.Mid</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7391,7 +7421,7 @@
 	<function>
 		<name>min</name>
 		<class>railo.runtime.functions.math.Min</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number1</name>
 			<type>number</type>
@@ -7410,7 +7440,7 @@
 	<function>
 		<name>minute</name>
 		<class>railo.runtime.functions.dateTime.Minute</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -7429,7 +7459,7 @@
 	<function>
 		<name>millisecond</name>
 		<class>railo.runtime.functions.dateTime.MilliSecond</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -7448,7 +7478,7 @@
 	<function>
 		<name>month</name>
 		<class>railo.runtime.functions.dateTime.Month</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>Date</name>
 			<type>datetime</type>
@@ -7467,7 +7497,7 @@
 	<function>
 		<name>monthAsString</name>
 		<class>railo.runtime.functions.string.MonthAsString</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>monthnumber</name>
 			<type>number</type>
@@ -7486,7 +7516,7 @@
 	<function>
 		<name>monthShortAsString</name>
 		<class>railo.runtime.functions.string.MonthShortAsString</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>monthnumber</name>
 			<type>number</type>
@@ -7500,7 +7530,7 @@
 	<function>
 		<name>newLine</name>
 		<class>railo.runtime.functions.string.NewLine</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>string</type>
 		</return>
@@ -7509,7 +7539,7 @@
 	<function>
 		<name>now</name>
 		<class>railo.runtime.functions.dateTime.Now</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -7519,7 +7549,7 @@
 		<name>nowServer</name>
 		<class>railo.runtime.functions.dateTime.NowServer</class>
 		<status>deprecated</status>
-		<description>this function is deprecated;returns the current time on the server independend on railo timezone definition</description>
+		<description>this function is deprecated, returns the current time on the server independend on railo timezone definition</description>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -7528,7 +7558,7 @@
 	<function>
 		<name>numberFormat</name>
 		<class>railo.runtime.functions.displayFormatting.NumberFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>any</type>
@@ -7721,7 +7751,7 @@
 	<function>
 		<name>paragraphFormat</name>
 		<class>railo.runtime.functions.displayFormatting.ParagraphFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7735,7 +7765,7 @@
 	<function>
 		<name>parameterExists</name>
 		<class>railo.runtime.functions.other.ParameterExists</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>parameter</name>
 			<type>variable_string</type>
@@ -7749,7 +7779,7 @@
 	<function>
 		<name>parseDateTime</name>
 		<class>railo.runtime.functions.string.ParseDateTime</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>object</type>
@@ -7802,7 +7832,7 @@
 	<function>
 		<name>PrecisionEvaluate</name>
 		<class>railo.runtime.functions.dynamicEvaluation.PrecisionEvaluate</class>
-		<description/>
+		<description></description>
 		<argument-type>dynamic</argument-type>
 		<argument-min>1</argument-min>
 		<return>
@@ -7813,7 +7843,7 @@
 	<function>
 		<name>pi</name>
 		<class>railo.runtime.functions.math.Pi</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>number</type>
 		</return>
@@ -7822,7 +7852,7 @@
 	<function>
 		<name>preserveSingleQuotes</name>
 		<class>railo.runtime.functions.other.PreserveSingleQuotes</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7836,7 +7866,7 @@
 	<function>
 		<name>quarter</name>
 		<class>railo.runtime.functions.dateTime.Quarter</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -7855,7 +7885,7 @@
 	<function>
 		<name>query</name>
 		<class>railo.runtime.functions.query.Query_</class>
-		<description/>
+		<description></description>
 		<argument-type>dynamic</argument-type>
 		<return>
 			<type>query</type>
@@ -7865,7 +7895,7 @@
 	<function>
 		<name>queryAddColumn</name>
 		<class>railo.runtime.functions.query.QueryAddColumn</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -7899,7 +7929,7 @@
 	<function>
 		<name>queryAddRow</name>
 		<class>railo.runtime.functions.query.QueryAddRow</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -7918,7 +7948,7 @@
 	<function>
 		<name>queryColumnCount</name>
 		<class>railo.runtime.functions.query.QueryColumnCount</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -7934,7 +7964,7 @@
 	<function>
 		<name>QueryConvertForGrid</name>
 		<class>railo.runtime.functions.query.QueryConvertForGrid</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -7958,7 +7988,7 @@
 	<function>
 		<name>queryColumnArray</name>
 		<class>railo.runtime.functions.query.QueryColumnArray</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -7972,7 +8002,7 @@
 	<function>
 		<name>queryColumnList</name>
 		<class>railo.runtime.functions.query.QueryColumnList</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8012,7 +8042,7 @@
 	<function>
 		<name>QueryDeleteRow</name>
 		<class>railo.runtime.functions.query.QueryDeleteRow</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8031,7 +8061,7 @@
 	<function>
 		<name>queryGetCell</name>
 		<class>railo.runtime.functions.query.QueryGetCell</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8055,7 +8085,7 @@
 	<function>
 		<name>queryNew</name>
 		<class>railo.runtime.functions.query.QueryNew</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>columnlist</name>
 			<type>string</type>
@@ -8074,7 +8104,7 @@
 	<function>
 		<name>queryRecordCount</name>
 		<class>railo.runtime.functions.query.QueryRecordCount</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8088,7 +8118,7 @@
 	<function>
 		<name>querySetCell</name>
 		<class>railo.runtime.functions.query.QuerySetCell</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8117,7 +8147,7 @@
 	<function>
 		<name>querySlice</name>
 		<class>railo.runtime.functions.query.QuerySlice</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8141,7 +8171,7 @@
 	<function>
 		<name>querySort</name>
 		<class>railo.runtime.functions.query.QuerySort</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8165,7 +8195,7 @@
 	<function>
 		<name>quotedValueList</name>
 		<class>railo.runtime.functions.other.QuotedValueList</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query_column</name>
 			<type>variable_string</type>
@@ -8184,7 +8214,7 @@
 	<function>
 		<name>rand</name>
 		<class>railo.runtime.functions.math.Rand</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
@@ -8198,7 +8228,7 @@
 	<function>
 		<name>randomize</name>
 		<class>railo.runtime.functions.math.Randomize</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -8217,7 +8247,7 @@
 	<function>
 		<name>randRange</name>
 		<class>railo.runtime.functions.math.RandRange</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number1</name>
 			<type>number</type>
@@ -8241,7 +8271,7 @@
 	<function>
 		<name>releaseComObject</name>
 		<class>railo.runtime.functions.other.ReleaseComObject</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>comObject</name>
 			<type>any</type>
@@ -8255,7 +8285,7 @@
 	<function>
 		<name>rEFind</name>
 		<class>railo.runtime.functions.string.REFind</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>reg_expression</name>
 			<type>string</type>
@@ -8284,7 +8314,7 @@
 	<function>
 		<name>rEFindNoCase</name>
 		<class>railo.runtime.functions.string.REFindNoCase</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>reg_expression</name>
 			<type>string</type>
@@ -8313,7 +8343,7 @@
 	<function>
 		<name>REMatch</name>
 		<class>railo.runtime.functions.string.REMatch</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>reg_expression</name>
 			<type>string</type>
@@ -8332,7 +8362,7 @@
 	<function>
 		<name>REMatchNoCase</name>
 		<class>railo.runtime.functions.string.REMatchNoCase</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>reg_expression</name>
 			<type>string</type>
@@ -8351,7 +8381,7 @@
 	<function>
 		<name>removeChars</name>
 		<class>railo.runtime.functions.string.RemoveChars</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8375,7 +8405,7 @@
 	<function>
 		<name>repeatString</name>
 		<class>railo.runtime.functions.string.RepeatString</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8394,7 +8424,7 @@
 	<function>
 		<name>replace</name>
 		<class>railo.runtime.functions.string.Replace</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8423,7 +8453,7 @@
 	<function>
 		<name>replaceList</name>
 		<class>railo.runtime.functions.string.ReplaceList</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8447,7 +8477,7 @@
 	<function>
 		<name>replaceNoCase</name>
 		<class>railo.runtime.functions.string.ReplaceNoCase</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8476,7 +8506,7 @@
 	<function>
 		<name>rEReplace</name>
 		<class>railo.runtime.functions.string.REReplace</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8505,7 +8535,7 @@
 	<function>
 		<name>rEReplaceNoCase</name>
 		<class>railo.runtime.functions.string.REReplaceNoCase</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8534,7 +8564,7 @@
 	<function>
 		<name>reverse</name>
 		<class>railo.runtime.functions.string.Reverse</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8548,7 +8578,7 @@
 	<function>
 		<name>right</name>
 		<class>railo.runtime.functions.string.Right</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8567,7 +8597,7 @@
 	<function>
 		<name>rJustify</name>
 		<class>railo.runtime.functions.string.RJustify</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8586,7 +8616,7 @@
 	<function>
 		<name>round</name>
 		<class>railo.runtime.functions.math.Round</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -8600,7 +8630,7 @@
 	<function>
 		<name>rTrim</name>
 		<class>railo.runtime.functions.string.RTrim</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8615,7 +8645,7 @@
 	<function>
 		<name>second</name>
 		<class>railo.runtime.functions.dateTime.Second</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -8634,7 +8664,7 @@
 	<function>
 		<name>SendGatewayMessage</name>
 		<class>railo.runtime.functions.gateway.SendGatewayMessage</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>gatewayID</name>
 			<type>string</type>
@@ -8653,7 +8683,7 @@
 	<function>
 		<name>serialize</name>
 		<class>railo.runtime.functions.dynamicEvaluation.Serialize</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>object</name>
 			<type>any</type>
@@ -8689,7 +8719,7 @@
 	<function>
 		<name>setEncoding</name>
 		<class>railo.runtime.functions.international.SetEncoding</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
@@ -8708,7 +8738,7 @@
 	<function>
 		<name>setLocale</name>
 		<class>railo.runtime.functions.international.SetLocale</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>new_locale</name>
 			<type>string</type>
@@ -8722,7 +8752,7 @@
 	<function>
 		<name>setProfileString</name>
 		<class>railo.runtime.functions.system.SetProfileString</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>iniPath</name>
 			<type>string</type>
@@ -8751,7 +8781,7 @@
 	<function>
 		<name>setVariable</name>
 		<class>railo.runtime.functions.dynamicEvaluation.SetVariable</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>name</name>
 			<type>string</type>
@@ -8770,7 +8800,7 @@
 	<function>
 		<name>sgn</name>
 		<class>railo.runtime.functions.math.Sgn</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -8784,7 +8814,7 @@
 	<function>
 		<name>sin</name>
 		<class>railo.runtime.functions.math.Sin</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -8798,7 +8828,7 @@
 	<function>
 		<name>sizeOf</name>
 		<class>railo.runtime.functions.system.SizeOf</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>obj</name>
 			<type>object</type>
@@ -8812,7 +8842,7 @@
 	<function>
 		<name>soundex</name>
 		<class>railo.runtime.functions.string.Soundex</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>str</name>
 			<type>string</type>
@@ -8826,7 +8856,7 @@
 	<function>
 		<name>spanExcluding</name>
 		<class>railo.runtime.functions.string.SpanExcluding</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8845,7 +8875,7 @@
 	<function>
 		<name>spanIncluding</name>
 		<class>railo.runtime.functions.string.SpanIncluding</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8864,7 +8894,7 @@
 	<function>
 		<name>sqr</name>
 		<class>railo.runtime.functions.math.Sqr</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -8878,7 +8908,7 @@
 	<function>
 		<name>Sleep</name>
 		<class>railo.runtime.functions.system.Sleep</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>duration</name>
 			<type>number</type>
@@ -8892,7 +8922,7 @@
 	<function>
 		<name>SSLCertificateList</name>
 		<class>railo.runtime.functions.other.SSLCertificateList</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>host</name>
 			<type>string</type>
@@ -8911,7 +8941,7 @@
 	<function>
 		<name>SSLCertificateInstall</name>
 		<class>railo.runtime.functions.other.SSLCertificateInstall</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>host</name>
 			<type>string</type>
@@ -8930,7 +8960,7 @@
 	<function>
 		<name>stripCr</name>
 		<class>railo.runtime.functions.other.StripCr</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8945,7 +8975,7 @@
 	<function>
 		<name>stringlen</name>
 		<class>railo.runtime.functions.string.StringLen</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8961,7 +8991,7 @@
 		<name>_jsonStruct</name>
 		<class>railo.runtime.functions.struct.JsonStruct</class>
 		<status>hidden</status>
-		<description/>
+		<description></description>
 		<argument-type>dynamic</argument-type>
 		<return>
 			<type>struct</type>
@@ -8971,7 +9001,7 @@
 	<function>
 		<name>struct</name>
 		<class>railo.runtime.functions.struct.Struct_</class>
-		<description/>
+		<description></description>
 		<argument-type>dynamic</argument-type>
 		<return>
 			<type>struct</type>
@@ -8981,7 +9011,7 @@
 	<function>
 		<name>structAppend</name>
 		<class>railo.runtime.functions.struct.StructAppend</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>Struct1</name>
 			<type>struct</type>
@@ -9005,7 +9035,7 @@
 	<function>
 		<name>structClear</name>
 		<class>railo.runtime.functions.struct.StructClear</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9019,7 +9049,7 @@
 	<function>
 		<name>structCopy</name>
 		<class>railo.runtime.functions.struct.StructCopy</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9033,7 +9063,7 @@
 	<function>
 		<name>structCount</name>
 		<class>railo.runtime.functions.struct.StructCount</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9047,7 +9077,7 @@
 	<function>
 		<name>structDelete</name>
 		<class>railo.runtime.functions.struct.StructDelete</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9071,7 +9101,7 @@
 	<function>
 		<name>structFind</name>
 		<class>railo.runtime.functions.struct.StructFind</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9090,7 +9120,7 @@
 	<function>
 		<name>structFindKey</name>
 		<class>railo.runtime.functions.struct.StructFindKey</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>Top</name>
 			<type>struct</type>
@@ -9114,7 +9144,7 @@
 	<function>
 		<name>structFindValue</name>
 		<class>railo.runtime.functions.struct.StructFindValue</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>Top</name>
 			<type>struct</type>
@@ -9138,7 +9168,7 @@
 	<function>
 		<name>structGet</name>
 		<class>railo.runtime.functions.struct.StructGet</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>PathDesired</name>
 			<type>string</type>
@@ -9152,7 +9182,7 @@
 	<function>
 		<name>structInsert</name>
 		<class>railo.runtime.functions.struct.StructInsert</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9181,7 +9211,7 @@
 	<function>
 		<name>structIsEmpty</name>
 		<class>railo.runtime.functions.struct.StructIsEmpty</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9195,7 +9225,7 @@
 	<function>
 		<name>structKeyArray</name>
 		<class>railo.runtime.functions.struct.StructKeyArray</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9210,7 +9240,7 @@
 		<name>structKeyExists</name>
 		<class>railo.runtime.functions.struct.StructKeyExists</class>
 		<tte-class>railo.transformer.cfml.evaluator.func.impl.StructKeyExists</tte-class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9229,7 +9259,7 @@
 	<function>
 		<name>structKeyList</name>
 		<class>railo.runtime.functions.struct.StructKeyList</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9248,7 +9278,7 @@
 	<function>
 		<name>structKeyTranslate</name>
 		<class>railo.runtime.functions.struct.StructKeyTranslate</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9280,7 +9310,7 @@
 	<function>
 		<name>structNew</name>
 		<class>railo.runtime.functions.struct.StructNew</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>type</name>
 			<type>string</type>
@@ -9297,7 +9327,7 @@
 	<function>
 		<name>structSort</name>
 		<class>railo.runtime.functions.struct.StructSort</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>base</name>
 			<type>struct</type>
@@ -9326,7 +9356,7 @@
 	<function>
 		<name>structUpdate</name>
 		<class>railo.runtime.functions.struct.StructUpdate</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9350,7 +9380,7 @@
 	<function>
 		<name>SystemOutput</name>
 		<class>railo.runtime.functions.other.SystemOutput</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>str</name>
 			<type>string</type>
@@ -9374,7 +9404,7 @@
 	<function>
 		<name>tan</name>
 		<class>railo.runtime.functions.math.Tan</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -9388,7 +9418,7 @@
 	<function>
 		<name>timeFormat</name>
 		<class>railo.runtime.functions.displayFormatting.TimeFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>time</name>
 			<type>any</type>
@@ -9412,7 +9442,7 @@
 	<function>
 		<name>toBase64</name>
 		<class>railo.runtime.functions.string.ToBase64</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>any</type>
@@ -9431,7 +9461,7 @@
 	<function>
 		<name>toBinary</name>
 		<class>railo.runtime.functions.other.ToBinary</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>any</type>
@@ -9445,7 +9475,7 @@
 	<function>
 		<name>ToScript</name>
 		<class>railo.runtime.functions.conversion.ToScript</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>cfvar</name>
 			<type>any</type>
@@ -9474,7 +9504,7 @@
 	<function>
 		<name>toString</name>
 		<class>railo.runtime.functions.string.ToString</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>any</type>
@@ -9493,7 +9523,7 @@
 	<function>
 		<name>traceObject</name>
 		<class>railo.runtime.functions.other.TraceObject</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>object</name>
 			<type>any</type>
@@ -9521,11 +9551,12 @@
 	<function>
 		<name>trim</name>
 		<class>railo.runtime.functions.string.Trim</class>
-		<description/>
+		<description>Removes leading and trailing spaces from a string.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>the string to trim</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -9535,7 +9566,7 @@
 	<function>
 		<name>uCase</name>
 		<class>railo.runtime.functions.string.UCase</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9549,7 +9580,7 @@
 	<function>
 		<name>ucFirst</name>
 		<class>railo.runtime.functions.string.UCFirst</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9566,7 +9597,7 @@
 		<name>unserializeJava</name>
 		<class>railo.runtime.functions.dynamicEvaluation.UnserializeJava</class>
 		<status>deprecated</status>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9580,7 +9611,7 @@
 	<function>
 		<name>uRLDecode</name>
 		<class>railo.runtime.functions.other.URLDecode</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9599,7 +9630,7 @@
 	<function>
 		<name>uRLEncode</name>
 		<class>railo.runtime.functions.other.URLEncode</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9623,7 +9654,7 @@
 	<function>
 		<name>uRLEncodedFormat</name>
 		<class>railo.runtime.functions.other.URLEncodedFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9647,7 +9678,7 @@
 	<function>
 		<name>uRLSessionFormat</name>
 		<class>railo.runtime.functions.other.URLSessionFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>url</name>
 			<type>string</type>
@@ -9661,7 +9692,7 @@
 	<function>
 		<name>val</name>
 		<class>railo.runtime.functions.string.Val</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -9675,7 +9706,7 @@
 	<function>
 		<name>valueArray</name>
 		<class>railo.runtime.functions.query.ValueArray</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query_column</name>
 			<type>variable_string</type>
@@ -9689,7 +9720,7 @@
 	<function>
 		<name>valueList</name>
 		<class>railo.runtime.functions.query.ValueList</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>query_column</name>
 			<type>variable_string</type>
@@ -9708,7 +9739,7 @@
 	<function>
 		<name>VerifyClient</name>
 		<class>railo.runtime.functions.other.VerifyClient</class>
-		<description/>
+		<description></description>
 		<return>
 			<type>void</type>
 		</return>
@@ -9717,7 +9748,7 @@
 	<function>
 		<name>week</name>
 		<class>railo.runtime.functions.dateTime.Week</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -9737,7 +9768,7 @@
 	<function>
 		<name>lsweek</name>
 		<class>railo.runtime.functions.international.LSWeek</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -9761,21 +9792,24 @@
 	<function>
 		<name>wrap</name>
 		<class>railo.runtime.functions.string.Wrap</class>
-		<description/>
+		<description>Wraps text so that each line has a specified maximum number of characters.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>String or variable that contains one. The text to wrap.</description>
 		</argument>
 		<argument>
 			<name>limit</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>Positive integer maximum number of characters to allow on a line.</description>
 		</argument>
 		<argument>
 			<name>strip</name>
 			<type>boolean</type>
 			<required>No</required>
+			<description>Whether to remove all existing newline and carriage return characters in the input string with spaces before wrapping the text.</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -9785,7 +9819,7 @@
 	<function>
 		<name>writeOutput</name>
 		<class>railo.runtime.functions.other.WriteOutput</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9799,7 +9833,7 @@
 	<function>
 		<name>echo</name>
 		<class>railo.runtime.functions.other.WriteOutput</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9813,7 +9847,7 @@
 	<function>
 		<name>xmlChildPos</name>
 		<class>railo.runtime.functions.xml.XmlChildPos</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>node</name>
 			<type>node</type>
@@ -9837,7 +9871,7 @@
 	<function>
 		<name>xmlElemNew</name>
 		<class>railo.runtime.functions.xml.XmlElemNew</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>xmlObj</name>
 			<type>node</type>
@@ -9856,7 +9890,7 @@
 	<function>
 		<name>xMLFormat</name>
 		<class>railo.runtime.functions.other.XMLFormat</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9870,7 +9904,7 @@
 	<function>
 		<name>XmlGetNodeType</name>
 		<class>railo.runtime.functions.xml.XmlGetNodeType</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>xmlObj</name>
 			<type>node</type>
@@ -9884,7 +9918,7 @@
 	<function>
 		<name>xmlNew</name>
 		<class>railo.runtime.functions.xml.XmlNew</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>caseSensitive</name>
 			<type>boolean</type>
@@ -9898,7 +9932,7 @@
 	<function>
 		<name>xmlParse</name>
 		<class>railo.runtime.functions.xml.XmlParse</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>xmlString</name>
 			<type>string</type>
@@ -9922,7 +9956,7 @@
 	<function>
 		<name>htmlParse</name>
 		<class>railo.runtime.functions.xml.HtmlParse</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>html</name>
 			<type>string</type>
@@ -9941,7 +9975,7 @@
 	<function>
 		<name>xmlSearch</name>
 		<class>railo.runtime.functions.xml.XmlSearch</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>node</name>
 			<type>node</type>
@@ -9960,7 +9994,7 @@
 	<function>
 		<name>xmlTransform</name>
 		<class>railo.runtime.functions.xml.XmlTransform</class>
-		<description/>
+		<description></description>
 		<argument>
 			<name>xmlObj</name>
 			<type>any</type>
@@ -9984,16 +10018,21 @@
 	<function>
 		<name>XmlValidate</name>
 		<class>railo.runtime.functions.xml.XmlValidate</class>
-		<description/>
+		<description>Uses a Document Type Definition (DTD) or XML Schema to validate an XML text document or an XML document object.</description>
 		<argument>
 			<name>xml</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>The XML to validate</description>
 		</argument>
 		<argument>
 			<name>validator</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Any of the following:
+ - A string containing a DTD or Schema.
+ - The name of a DTD or Schema file.
+ - The URL of a DTD or Schema file; valid protocol identifiers include http, https, ftp, and file.</description>
 		</argument>
 		<return>
 			<type>struct</type>
@@ -10003,16 +10042,18 @@
 	<function>
 		<name>year</name>
 		<class>railo.runtime.functions.dateTime.Year</class>
-		<description/>
+		<description>From a date/time object, gets the year value.</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
+			<description>The date from which to extract the year</description>
 		</argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
+			<description>The timezone that the date is based on</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -10022,11 +10063,12 @@
 	<function>
 		<name>yesNoFormat</name>
 		<class>railo.runtime.functions.displayFormatting.YesNoFormat</class>
-		<description/>
+		<description>Yes, for a non-zero value; No, otherwise.</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
+			<description>a value that can be casted to a boolean</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -10036,11 +10078,12 @@
 	<function>
 		<name>trueFalseFormat</name>
 		<class>railo.runtime.functions.displayFormatting.TrueFalseFormat</class>
-		<description/>
+		<description>True, for a non-zero value; False, otherwise.</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
+			<description>a value that can be casted to a boolean</description>
 		</argument>
 		<return>
 			<type>string</type>
