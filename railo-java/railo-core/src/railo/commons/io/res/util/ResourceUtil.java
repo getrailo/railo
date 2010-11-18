@@ -15,6 +15,7 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.ContentType;
 import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
@@ -621,14 +622,21 @@ public final class ResourceUtil {
      * @throws IOException
      */
     public static void touch(Resource res) throws IOException {
-    	
-        if(res.exists()) {
-            res.setLastModified(System.currentTimeMillis());
-        }
-        else {
-            res.createFile(true);
-        }
+    	ResourceProvider provider = res.getResourceProvider();
+    	try{
+    		provider.lock(res);
+	        if(res.exists()) {
+	            res.setLastModified(System.currentTimeMillis());
+	        }
+	        else {
+	            res.createFile(true);
+	        }
+    	}
+    	finally {
+    		provider.unlock(res);
+    	}
     }
+    	
     
 
     /**
