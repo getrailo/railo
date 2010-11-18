@@ -135,7 +135,7 @@ public class ModernAppListener extends AppListenerSupport {
 			}
 	    	
 			// onRequest
-			boolean isCFC=ResourceUtil.getExtension(targetPage).equalsIgnoreCase(pc.getConfig().getCFCExtension());
+			boolean isCFC=ResourceUtil.getExtension(targetPage,"").equalsIgnoreCase(pc.getConfig().getCFCExtension());
 			Object method;
 			if(isCFC && app.contains(pc,ON_CFCREQUEST) && (method=pc.urlFormScope().get(ComponentPage.METHOD,null))!=null) {
 				
