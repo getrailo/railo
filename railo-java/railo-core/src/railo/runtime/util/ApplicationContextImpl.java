@@ -342,11 +342,12 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 	}
 
 
-	public void setS3(String accessKeyId, String awsSecretKey, String defaultLocation) {
+	public void setS3(String accessKeyId, String awsSecretKey, String defaultLocation, String host) {
 		this.s3=new Properties();
 		if(!StringUtil.isEmpty(accessKeyId))s3.setAccessKeyId(accessKeyId);
 		if(!StringUtil.isEmpty(awsSecretKey))s3.setSecretAccessKey(awsSecretKey);
-		if(!StringUtil.isEmpty(defaultLocation))s3.setHost(defaultLocation);
+		if(!StringUtil.isEmpty(defaultLocation))s3.setDefaultLocation(defaultLocation);
+		if(!StringUtil.isEmpty(host))s3.setHost(host);
 	}
 
 

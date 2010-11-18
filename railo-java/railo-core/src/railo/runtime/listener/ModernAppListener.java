@@ -82,6 +82,8 @@ public class ModernAppListener extends AppListenerSupport {
 	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.getInstance("accessKeyId");
 	private static final Collection.Key AWS_SECRET_KEY = KeyImpl.getInstance("awsSecretKey");
 	private static final Collection.Key DEFAULT_LOCATION = KeyImpl.getInstance("defaultLocation");
+	private static final Collection.Key HOST = KeyImpl.getInstance("host");
+	private static final Collection.Key SERVER = KeyImpl.getInstance("server");
 	
 	
 	//private ComponentImpl app;
@@ -467,10 +469,14 @@ public class ModernAppListener extends AppListenerSupport {
 			if(o!=null && Decision.isStruct(o)){
 				Struct sct=Caster.toStruct(o);
 				
+				String host=Caster.toString(sct.get(HOST,null));
+				if(StringUtil.isEmpty(host))host=Caster.toString(sct.get(SERVER,null));
+				
 				appContext.setS3(
 						Caster.toString(sct.get(ACCESS_KEY_ID,null)),
 						Caster.toString(sct.get(AWS_SECRET_KEY,null)),
-						Caster.toString(sct.get(DEFAULT_LOCATION,null))
+						Caster.toString(sct.get(DEFAULT_LOCATION,null)),
+						host
 					);
 			}
 			

@@ -122,16 +122,16 @@ public final class S3ResourceProvider implements ResourceProvider {
 		}
 		path=prettifyPath(path.substring(atIndex+1));
 		index=path.indexOf('/');
-		s3.setHost(S3Constants.HOST);
+		s3.setHost(prop.getHost());
 		if(index==-1){
-			if(path.equalsIgnoreCase(S3Constants.HOST)){
+			if(path.equalsIgnoreCase(S3Constants.HOST) || path.equalsIgnoreCase(prop.getHost())){
 				s3.setHost(path);
 				path="/";
 			}
 		}
 		else {
 			String host=path.substring(0,index);
-			if(host.equalsIgnoreCase(S3Constants.HOST)){
+			if(host.equalsIgnoreCase(S3Constants.HOST) || host.equalsIgnoreCase(prop.getHost())){
 				s3.setHost(host);
 				path=path.substring(index);
 			}

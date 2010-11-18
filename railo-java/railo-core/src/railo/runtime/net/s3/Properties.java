@@ -8,11 +8,24 @@ public class Properties {
 	private String accessKeyId;
 	private String secretAccessKey;
 	private int defaultLocation=S3Constants.STORAGE_UNKNOW;
+	private String host=S3.HOST;
 	/**
 	 * @return the accessKeyId
 	 */
 	public String getAccessKeyId() {
 		return accessKeyId;
+	}
+	/**
+	 * @return the host
+	 */
+	public String getHost() {
+		return host;
+	}
+	/**
+	 * @param host the host to set
+	 */
+	public void setHost(String host) {
+		this.host = host;
 	}
 	/**
 	 * @return the defaultLocation
