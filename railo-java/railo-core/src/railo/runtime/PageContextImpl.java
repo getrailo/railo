@@ -2192,6 +2192,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
     
 
+    /**
+     * @see railo.runtime.PageContext#setLocale(java.lang.String)
+     */
     public void setLocale(String strLocale) throws ExpressionException {
 		setLocale(Caster.toLocale(strLocale));
 	}
