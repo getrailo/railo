@@ -339,7 +339,7 @@ All elements in the array must contain values that can be automatically converte
 	<function>
 		<name>arrayLast</name>
 		<class>railo.runtime.functions.arrays.ArrayLast</class>
-		<description></description>
+		<description>Returns the last element of an array</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -383,7 +383,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayIsEmpty</name>
 		<class>railo.runtime.functions.arrays.ArrayIsEmpty</class>
-		<description></description>
+		<description>Determines if the array or xml object is empty of all elements</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -397,7 +397,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayLen</name>
 		<class>railo.runtime.functions.arrays.ArrayLen</class>
-		<description></description>
+		<description>Returns the length of the array</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -411,7 +411,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayMax</name>
 		<class>railo.runtime.functions.arrays.ArrayMax</class>
-		<description></description>
+		<description>Returns the maximum value represented in the array</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -425,7 +425,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayMin</name>
 		<class>railo.runtime.functions.arrays.ArrayMin</class>
-		<description></description>
+		<description>Returns the minimum value represented in the array</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -439,7 +439,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayMerge</name>
 		<class>railo.runtime.functions.arrays.ArrayMerge</class>
-		<description></description>
+		<description>merge 2 arrays together</description>
 		<argument>
 			<name>array1</name>
 			<type>array</type>
@@ -477,7 +477,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayPrepend</name>
 		<class>railo.runtime.functions.arrays.ArrayPrepend</class>
-		<description></description>
+		<description>Inserts the given data at the start of the array or XML object</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -496,7 +496,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayResize</name>
 		<class>railo.runtime.functions.arrays.ArrayResize</class>
-		<description></description>
+		<description>Grows the size of the array to the value givens</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -515,7 +515,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayReverse</name>
 		<class>railo.runtime.functions.arrays.ArrayReverse</class>
-		<description></description>
+		<description>Returns a new array, with all the elements reversed</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -529,7 +529,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arraySet</name>
 		<class>railo.runtime.functions.arrays.ArraySet</class>
-		<description></description>
+		<description>Sets the range of elements to the value given</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -558,7 +558,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arraySlice</name>
 		<class>railo.runtime.functions.arrays.ArraySlice</class>
-		<description></description>
+		<description>Returns a new array, from the start position up to the count of elements</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -582,7 +582,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arraySort</name>
 		<class>railo.runtime.functions.arrays.ArraySort</class>
-		<description></description>
+		<description>Reorders the elements in the array according to the sort type and direction</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -606,7 +606,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arraySum</name>
 		<class>railo.runtime.functions.arrays.ArraySum</class>
-		<description></description>
+		<description>Adds up all the values in the array and returns the sum</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -620,7 +620,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arraySwap</name>
 		<class>railo.runtime.functions.arrays.ArraySwap</class>
-		<description></description>
+		<description>Swaps the elements around at the given index position</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -644,7 +644,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayToList</name>
 		<class>railo.runtime.functions.list.ArrayToList</class>
-		<description></description>
+		<description>Transform the array to a list of elements delimiter by the given string</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -663,7 +663,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayToStruct</name>
 		<class>railo.runtime.functions.arrays.ArrayToStruct</class>
-		<description></description>
+		<description>Transform the array to a struct, the index of the array is the key of the struct</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -691,7 +691,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>aSin</name>
 		<class>railo.runtime.functions.math.ASin</class>
-		<description></description>
+		<description>Returns the arc sine value of the number given</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -705,7 +705,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>atn</name>
 		<class>railo.runtime.functions.math.Atn</class>
-		<description></description>
+		<description>Returns the arc tangent value of the number given</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -827,7 +827,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>bitAnd</name>
 		<class>railo.runtime.functions.math.BitAnd</class>
-		<description></description>
+		<description>Apply a logical AND on the two numbers given</description>
 		<argument>
 			<name>number1</name>
 			<type>number</type>
@@ -846,7 +846,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>bitMaskClear</name>
 		<class>railo.runtime.functions.math.BitMaskClear</class>
-		<description></description>
+		<description>Clears the bits from the given bit position for the number of bits given</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -870,7 +870,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>bitMaskRead</name>
 		<class>railo.runtime.functions.math.BitMaskRead</class>
-		<description></description>
+		<description>Reads the bit mask at the given position and length</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -894,7 +894,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>bitMaskSet</name>
 		<class>railo.runtime.functions.math.BitMaskSet</class>
-		<description></description>
+		<description>Set a mask on the given number covering the range given</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -923,7 +923,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>bitNot</name>
 		<class>railo.runtime.functions.math.BitNot</class>
-		<description></description>
+		<description>Returns the logical NOT of the given number</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -937,7 +937,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>bitOr</name>
 		<class>railo.runtime.functions.math.BitOr</class>
-		<description></description>
+		<description>Apply a logical OR on the two numbers given</description>
 		<argument>
 			<name>number1</name>
 			<type>number</type>
@@ -956,7 +956,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>bitSHLN</name>
 		<class>railo.runtime.functions.math.BitSHLN</class>
-		<description></description>
+		<description>Shifts the given number the number of bits to the left</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -975,7 +975,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>bitSHRN</name>
 		<class>railo.runtime.functions.math.BitSHRN</class>
-		<description></description>
+		<description>Shifts the given number the number of bits to the right</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -994,7 +994,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>bitXor</name>
 		<class>railo.runtime.functions.math.BitXor</class>
-		<description></description>
+		<description>Apply a logical XOR on the two numbers given</description>
 		<argument>
 			<name>number1</name>
 			<type>number</type>
@@ -1014,16 +1014,18 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>CacheClear</name>
 		<class>railo.runtime.functions.cache.CacheClear</class>
-		<description>remove all elements from cache</description>
+		<description>Flushes the cache</description>
 		<argument>
 			<name>filter</name>
 			<type>string</type>
 			<required>No</required>
+			<description>You can specify a key filter for the elements in the cache to flush, the filter follow the same rules as for cfdirectory-filter</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
 			<type>string</type>
 			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -1035,11 +1037,12 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>CacheCount</name>
 		<class>railo.runtime.functions.cache.CacheCount</class>
-		<description></description>
+		<description>Returns the amount (integer) of keys stored in the cache.</description>
 		<argument>
 			<name>cacheName</name>
 			<type>string</type>
 			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -1050,21 +1053,24 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>CacheDelete</name>
 		<class>railo.runtime.functions.cache.CacheDelete</class>
-		<description>delete a single entry from cache</description>
+		<description>Deletes a single element from the cache.</description>
 		<argument>
 			<name>id</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>the id of the element to delete, can also contain a "," (not used as separator)</description>
 		</argument>
 		<argument>
 			<name>throwOnError</name>
 			<type>boolean</type>
 			<required>No</required>
+			<description>define if the functions throws a exception when the element does not exist (default is false).</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
 			<type>string</type>
 			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -1075,21 +1081,24 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>cacheGet</name>
 		<class>railo.runtime.functions.cache.CacheGet</class>
-		<description></description>
+		<description>Returns a element from Cache that match the given key.</description>
 		<argument>
 			<name>id</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>name of the element to return</description>
 		</argument>
 		<argument>
 			<name>throwWhenNotExist</name>
 			<type>boolean</type>
 			<required>no</required>
+			<description>define if the functions throws a exception when the element does not exist (default is false).</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
 			<type>string</type>
 			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
 		</argument>
 		<return>
 			<type>object</type>
@@ -1105,6 +1114,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 			<name>type</name>
 			<type>string</type>
 			<required>yes</required>
+			<description>cache type, valid values are [object,resource,template,query]</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -1115,16 +1125,18 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>CacheGetAll</name>
 		<class>railo.runtime.functions.cache.CacheGetAll</class>
-		<description>Gets all entries as struct.</description>
+		<description>this function return a structure containing all elements inside the cache.</description>
 		<argument>
 			<name>filter</name>
 			<type>string</type>
 			<required>No</required>
+			<description>key filter for the elements, the filter follow the same rules as for cfdirectory-filter.</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
 			<type>string</type>
 			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
 		</argument>
 		<return>
 			<type>struct</type>
@@ -1135,16 +1147,18 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>CacheGetAllIds</name>
 		<class>railo.runtime.functions.cache.CacheGetAllIds</class>
-		<description>Gets the IDs of all objects stored in the cache.</description>
+		<description>this function return a array containing all keys inside the cache.</description>
 		<argument>
 			<name>filter</name>
 			<type>string</type>
 			<required>No</required>
+			<description>key filter for the elements, the filter follow the same rules as for cfdirectory-filter.</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
 			<type>string</type>
 			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
 		</argument>
 		<return>
 			<type>array</type>
@@ -1155,16 +1169,18 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>CacheGetMetadata</name>
 		<class>railo.runtime.functions.cache.CacheGetMetadata</class>
-		<description>Gets the metadata values for a cached object.</description>
+		<description>returns a structure with some Metadata regarding the cache elements (keys returned depends on the Cache type used).</description>
 		<argument>
 			<name>id</name>
 			<type>string</type>
 			<required>yes</required>
+			<description>name of the element you need metadat for</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
 			<type>string</type>
 			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
 		</argument>
 		<return>
 			<type>struct</type>
@@ -1174,11 +1190,18 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>CacheGetProperties</name>
 		<class>railo.runtime.functions.cache.CacheGetProperties</class>
-		<description>Gets the cache properties for the object cache, the page cache, or both. The information is application-specific</description>
+		<description>returns array with different properties about the cache (keys returned depends on the Cache type used).</description>
 		<argument>
 			<name>type</name>
 			<type>string</type>
 			<required>no</required>
+			<description>define which cache instances information are returned
+- "" or not set - information to all default caches (object,template,resource,query)
+- "object" - information to  "Default Object" Cache
+- "template" - information to  "Default Template" Cache
+- "query" - information to  "Default Query" Cache
+- "resource" - information to  "Default Resource" Cache
+- {cache name} - information to  a specific cache </description>
 		</argument>
 		<return>
 			<type>array</type>
@@ -1189,16 +1212,18 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>CacheKeyExists</name>
 		<class>railo.runtime.functions.cache.CacheKeyExists</class>
-		<description>return if given key exist</description>
+		<description>Returns true/false whether the cache contains an element with the certain keyname.</description>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>yes</required>
+			<description>key to check</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
 			<type>string</type>
 			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
 		</argument>
 		<return>
 			<type>boolean</type>
@@ -1209,11 +1234,15 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>CacheSetProperties</name>
 		<class>railo.runtime.functions.cache.CacheSetProperties</class>
-		<description>Sets the cache properties for the object cache, the page cache, or both. If a cache does not yet exist, creates it. The cache and properties are application-specific.</description>
+		<description>
+		This function is not supported by Railo, because we see this as a security risk, you can modifie cache configuration without a password,
+you can use tag cfadmin instead. we will add support for this function in a future release, but then you can enable,disable this  function in admin for every single cache instance. 
+Sets the cache properties for the object cache, the page cache, or both. If a cache does not yet exist, creates it. The cache and properties are application-specific.</description>
 		<argument>
 			<name>type</name>
 			<type>struct</type>
 			<required>yes</required>
+			<description></description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -1224,31 +1253,36 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>cachePut</name>
 		<class>railo.runtime.functions.cache.CachePut</class>
-		<description></description>
+		<description>Stores an object in the cache, with a life time and a idle time.</description>
 		<argument>
 			<name>id</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>The id for the cache object.</description>
 		</argument>
 		<argument>
 			<name>value</name>
 			<type>object</type>
 			<required>Yes</required>
+			<description>The value of the object.</description>
 		</argument>
 		<argument>
 			<name>timeSpan</name>
 			<type>timespan</type>
 			<required>No</required>
+			<description>The interval until the object is flushed from the cache, as a decimal number of days. One way to set the value is to use the return value from the CreateTimeSpan function. The default is to not time out the object.</description>
 		</argument>
 		<argument>
 			<name>idleTime</name>
 			<type>timespan</type>
 			<required>No</required>
+			<description>A decimal number of days after which the object is flushed from the cache if it is not accessed during that time. One way to set the value is to use the return value from the CreateTimeSpan function.</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
 			<type>string</type>
 			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -1259,21 +1293,24 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>cacheRemove</name>
 		<class>railo.runtime.functions.cache.CacheRemove</class>
-		<description></description>
+		<description>removes elements from cache defined with argument ids, this can be a string list of multiple elements or a array containing keys.</description>
 		<argument>
 			<name>ids</name>
 			<type>object</type>
 			<required>Yes</required>
+			<description></description>
 		</argument>
 		<argument>
 			<name>throwOnError</name>
 			<type>boolean</type>
 			<required>No</required>
+			<description>define if the functions throws a exception when the element does not exist (default is false)</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
 			<type>string</type>
 			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -1284,7 +1321,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>ceiling</name>
 		<class>railo.runtime.functions.math.Ceiling</class>
-		<description></description>
+		<description>Returns the smallest number that is greater than the given parameter</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -1298,7 +1335,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>chr</name>
 		<class>railo.runtime.functions.string.Chr</class>
-		<description></description>
+		<description>Returns the character represented by the ascii value</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -1312,7 +1349,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>cJustify</name>
 		<class>railo.runtime.functions.string.CJustify</class>
-		<description></description>
+		<description>Returns the given string justified to the center, padding out the words with spaces accordingly</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -1331,7 +1368,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>compare</name>
 		<class>railo.runtime.functions.string.Compare</class>
-		<description></description>
+		<description>Performs a lexical comparison. If string1 is less than string2 then -1 returned. If string1 greater than string then 1 is return. 0 if equals</description>
 		<argument>
 			<name>string1</name>
 			<type>string</type>
@@ -1350,7 +1387,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>compareNoCase</name>
 		<class>railo.runtime.functions.string.CompareNoCase</class>
-		<description></description>
+		<description>Performs a lexical comparison, ignoring the case. If string1 is less than string2 then -1 returned. If string1 greater than string then 1 is return. 0 if equals</description>
 		<argument>
 			<name>string1</name>
 			<type>string</type>
@@ -1369,7 +1406,8 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>componentInfo</name>
 		<class>railo.runtime.functions.component.ComponentInfo</class>
-		<description></description>
+		<status>deprecated</status>
+		<description>this function is deprecated, use function getMetadata instead.</description>
 		<argument>
 			<name>component</name>
 			<type>component</type>
@@ -1383,7 +1421,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>componentCacheClear</name>
 		<class>railo.runtime.functions.component.ComponentCacheClear</class>
-		<description></description>
+		<description>flush the component path cache</description>
 		<return>
 			<type>void</type>
 		</return>
@@ -1392,7 +1430,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>componentCacheList</name>
 		<class>railo.runtime.functions.component.ComponentCacheList</class>
-		<description></description>
+		<description>list elements in the component path cache</description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -1402,7 +1440,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>ctCacheClear</name>
 		<class>railo.runtime.functions.other.CTCacheClear</class>
-		<description></description>
+		<description>flush the customtag path cache</description>
 		<return>
 			<type>void</type>
 		</return>
@@ -1411,7 +1449,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>ctCacheList</name>
 		<class>railo.runtime.functions.other.CTCacheList</class>
-		<description></description>
+		<description>list elements in the customtag path cache</description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -1420,7 +1458,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>compress</name>
 		<class>railo.runtime.functions.system.Compress</class>
-		<description></description>
+		<description>Compress given source to different formats.</description>
 		<argument>
 			<name>format</name>
 			<type>string</type>
@@ -1469,7 +1507,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>cos</name>
 		<class>railo.runtime.functions.math.Cos</class>
-		<description></description>
+		<description>Returns the trigonometric cosine of an angle</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -1483,7 +1521,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>createDate</name>
 		<class>railo.runtime.functions.dateTime.CreateDate</class>
-		<description></description>
+		<description>Creates a CFML date object from the given year, month and day</description>
 		<argument>
 			<name>year</name>
 			<type>number</type>
@@ -1512,7 +1550,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>createDateTime</name>
 		<class>railo.runtime.functions.dateTime.CreateDateTime</class>
-		<description></description>
+		<description>Creates a CFML date/time object from the given year, month, day, hour, minute and second</description>
 		<argument>
 			<name>year</name>
 			<type>number</type>
@@ -1575,7 +1613,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>createObject</name>
 		<class>railo.runtime.functions.other.CreateObject</class>
-		<description></description>
+		<description>Creates an object and makes it available in the CFML space. Defaults type to a 'component'</description>
 		<argument>
 			<name>arg1</name>
 			<type>string</type>
@@ -1604,7 +1642,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>createODBCDate</name>
 		<class>railo.runtime.functions.dateTime.CreateODBCDate</class>
-		<description></description>
+		<description>Creates a date object for use with ODBC</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -1618,7 +1656,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>createODBCDateTime</name>
 		<class>railo.runtime.functions.dateTime.CreateODBCDateTime</class>
-		<description></description>
+		<description>Creates a date/time object for use with ODBC</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -1632,7 +1670,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>createODBCTime</name>
 		<class>railo.runtime.functions.dateTime.CreateODBCTime</class>
-		<description></description>
+		<description>Creates a time object for use with ODBC</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -1646,7 +1684,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>createTime</name>
 		<class>railo.runtime.functions.dateTime.CreateTime</class>
-		<description></description>
+		<description>Creates a CFML time object from the given hour, minute and second</description>
 		<argument>
 			<name>hour</name>
 			<type>number</type>
@@ -1680,7 +1718,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>createTimeSpan</name>
 		<class>railo.runtime.functions.dateTime.CreateTimeSpan</class>
-		<description></description>
+		<description>Creates a CFML time object that represents a time span/range</description>
 		<argument>
 			<name>days</name>
 			<type>number</type>
@@ -1714,7 +1752,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>createUUID</name>
 		<class>railo.runtime.functions.other.CreateUUID</class>
-		<description></description>
+		<description>Creates a string that represents an immutable universally unique identifier (UUID). A UUID represents a 128-bit value</description>
 		<return>
 			<type>string</type>
 		</return>
@@ -1723,7 +1761,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>createGUID</name>
 		<class>railo.runtime.functions.other.CreateGUID</class>
-		<description></description>
+		<description>A globally unique identifier or GUID is a special type of identifier used in software applications to provide a unique reference number. The value is represented as a 32 character hexadecimal string, such as {21EC2020-3AEA-1069-A2DD-08002B30309D} and usually stored as a 128 bit integer.</description>
 		<return>
 			<type>string</type>
 		</return>
@@ -1747,7 +1785,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>dateAdd</name>
 		<class>railo.runtime.functions.dateTime.DateAdd</class>
-		<description></description>
+		<description>Adds/Subtracts date units from a given date</description>
 		<argument>
 			<name>datepart</name>
 			<type>string</type>
@@ -1771,7 +1809,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>dateCompare</name>
 		<class>railo.runtime.functions.dateTime.DateCompare</class>
-		<description></description>
+		<description>Compares to date, to the given optional resolution. Returns -1 if date1 is before date2. Returns 1 if date1 is after date2. Returns 0 if equal</description>
 		<argument>
 			<name>date1</name>
 			<type>datetime</type>
@@ -1795,7 +1833,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>dateConvert</name>
 		<class>railo.runtime.functions.dateTime.DateConvert</class>
-		<description></description>
+		<description>Converts a date to the given locale</description>
 		<argument>
 			<name>conversion_type</name>
 			<type>string</type>
@@ -1814,7 +1852,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>dateDiff</name>
 		<class>railo.runtime.functions.dateTime.DateDiff</class>
-		<description></description>
+		<description>Determines the number of given date parts between two different dates</description>
 		<argument>
 			<name>datepart</name>
 			<type>string</type>
@@ -1838,7 +1876,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>dateFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DateFormat</class>
-		<description></description>
+		<description>Formats a date string to a given output</description>
 		<argument>
 			<name>object</name>
 			<type>any</type>
@@ -1862,7 +1900,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>datePart</name>
 		<class>railo.runtime.functions.dateTime.DatePart</class>
-		<description></description>
+		<description>Extracts the given date part from the date object</description>
 		<argument>
 			<name>datepart</name>
 			<type>string</type>
@@ -1886,7 +1924,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>day</name>
 		<class>railo.runtime.functions.dateTime.Day</class>
-		<description></description>
+		<description>Returns the day number referenced by the given date</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -1905,7 +1943,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>dayOfWeek</name>
 		<class>railo.runtime.functions.dateTime.DayOfWeek</class>
-		<description></description>
+		<description>Returns the day of the week the date represents</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -1948,7 +1986,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>dayOfWeekAsString</name>
 		<class>railo.runtime.functions.string.DayOfWeekAsString</class>
-		<description></description>
+		<description>Returns the string representation of the given day index</description>
 		<argument>
 			<name>day_of_week</name>
 			<type>number</type>
@@ -1967,7 +2005,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>dayOfWeekShortAsString</name>
 		<class>railo.runtime.functions.string.DayOfWeekShortAsString</class>
-		<description></description>
+		<description>Returns the string representation of the given day index in short form</description>
 		<argument>
 			<name>day_of_week</name>
 			<type>number</type>
@@ -1986,7 +2024,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>dayOfYear</name>
 		<class>railo.runtime.functions.dateTime.DayOfYear</class>
-		<description></description>
+		<description>Returns the year number referenced by the given date</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -2005,7 +2043,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>daysInMonth</name>
 		<class>railo.runtime.functions.dateTime.DaysInMonth</class>
-		<description></description>
+		<description>Returns the number of days in the month that the date object represents</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -2024,7 +2062,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>daysInYear</name>
 		<class>railo.runtime.functions.dateTime.DaysInYear</class>
-		<description></description>
+		<description>Returns the number of days in the year of the given date object (taking into account of leap years)</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -2043,7 +2081,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>dE</name>
 		<class>railo.runtime.functions.dynamicEvaluation.DE</class>
-		<description></description>
+		<description>Escapes the string, and places the result in quote marks. For use with IIF/Evaluate</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -2057,7 +2095,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>decimalFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DecimalFormat</class>
-		<description></description>
+		<description>Returns a formatted string of the number with 2 decimal points and thousand markers (000,000.00)</description>
 		<argument>
 			<name>number</name>
 			<type>any</type>
@@ -2071,7 +2109,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>decrementValue</name>
 		<class>railo.runtime.functions.math.DecrementValue</class>
-		<description></description>
+		<description>Decrements the current number by one</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -2085,7 +2123,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>decrypt</name>
 		<class>railo.runtime.functions.other.Decrypt</class>
-		<description></description>
+		<description>Decrypts the given string with the optional parameters</description>
 		<argument>
 			<name>encrypted_string</name>
 			<type>string</type>
@@ -2114,7 +2152,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>decryptBinary</name>
 		<class>railo.runtime.functions.other.DecryptBinary</class>
-		<description></description>
+		<description>Decrypts the given binary with the optional parameters</description>
 		<argument>
 			<name>input</name>
 			<type>any</type>
@@ -2138,7 +2176,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>deleteClientVariable</name>
 		<class>railo.runtime.functions.other.DeleteClientVariable</class>
-		<description></description>
+		<description>Removes the element represented by the key from the [client] scope</description>
 		<argument>
 			<name>"name"</name>
 			<type>string</type>
@@ -2152,7 +2190,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>DirectoryCreate</name>
 		<class>railo.runtime.functions.file.DirectoryCreate</class>
-		<description></description>
+		<description>Creates a directory on the file system given {supports Amazon S3}</description>
 		<argument>
 			<name>path</name>
 			<type>string</type>
@@ -2173,7 +2211,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>DirectoryDelete</name>
 		<class>railo.runtime.functions.file.DirectoryDelete</class>
-		<description></description>
+		<description>Deletes the file at the given location {supports Amazon S3}</description>
 		<argument>
 			<name>path</name>
 			<type>string</type>
@@ -2194,7 +2232,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>directoryExists</name>
 		<class>railo.runtime.functions.system.DirectoryExists</class>
-		<description></description>
+		<description>Checks to see if the given directory exists</description>
 		<argument>
 			<name>absolute_path</name>
 			<type>string</type>
@@ -2215,7 +2253,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>DirectoryList</name>
 		<class>railo.runtime.functions.file.DirectoryList</class>
-		<description></description>
+		<description>For the given directory get the file contents {supports Amazon S3}</description>
 		<argument>
 			<name>absolute_path</name>
 			<type>string</type>
@@ -2253,7 +2291,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>DirectoryRename</name>
 		<class>railo.runtime.functions.file.DirectoryRename</class>
-		<description></description>
+		<description>Renames a directory.</description>
 		<argument>
 			<name>oldPath</name>
 			<type>string</type>
@@ -2296,7 +2334,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>dollarFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DollarFormat</class>
-		<description></description>
+		<description>Returns a formatted string of the number with 2 decimal points and thousand markers $000,000.00</description>
 		<argument>
 			<name>number</name>
 			<type>string</type>
@@ -2310,11 +2348,13 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>DotNetToCFType</name>
 		<class>railo.runtime.functions.system.DotNetToCFType</class>
-		<description></description>
+		<status>unimplemeted</status>
+		<description>Explicitly converts a value returned by a .NET method to the corresponding ColdFusion data type.</description>
 		<argument>
 			<name>input</name>
 			<type>any</type>
 			<required>Yes</required>
+			<description>Name of the .NET variable to convert</description>
 		</argument>
 		<return>
 			<type>any</type>
@@ -2384,7 +2424,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>dump</name>
 		<class>railo.runtime.functions.other.Dump</class>
-		<description></description>
+		<description>Use the dump function to display objects. Useful for debugging. You can display the contents of simple and complex variables, objects, components, user-defined functions, and other elements.</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -2495,7 +2535,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>duplicate</name>
 		<class>railo.runtime.functions.struct.Duplicate</class>
-		<description></description>
+		<description>Returns a new duplicated version of the given object, removing all references to the old one</description>
 		<argument>
 			<name>variable_name</name>
 			<type>any</type>
@@ -2554,7 +2594,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>encrypt</name>
 		<class>railo.runtime.functions.other.Encrypt</class>
-		<description></description>
+		<description>Encrypts the given string with the optional parameters</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -2583,7 +2623,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>encryptBinary</name>
 		<class>railo.runtime.functions.other.EncryptBinary</class>
-		<description></description>
+		<description>Encrypts the given binary with the optional parameters</description>
 		<argument>
 			<name>bytes</name>
 			<type>any</type>
@@ -2811,7 +2851,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>evaluate</name>
 		<class>railo.runtime.functions.dynamicEvaluation.Evaluate</class>
-		<description></description>
+		<description>Evaluates the list of expressions, one by one.</description>
 		<argument-type>dynamic</argument-type>
 		<argument-min>1</argument-min>
 		
@@ -2879,7 +2919,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>exp</name>
 		<class>railo.runtime.functions.math.Exp</class>
-		<description></description>
+		<description>Returns Euler's number e raised to the power of a double value</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -2893,11 +2933,12 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>ContractPath</name>
 		<class>railo.runtime.functions.system.ContractPath</class>
-		<description></description>
+		<description>Does the opposite of the function expandPath(), tries to match given absolute path, to the mappings in the enviroment, when no mapping match, railo creates a relatie path from the current position,</description>
 		<argument>
 			<name>absolute_path</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a absolute path</description>
 		</argument>
 		<argument>
 			<name>placeholder</name>
@@ -2914,7 +2955,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>expandPath</name>
 		<class>railo.runtime.functions.system.ExpandPath</class>
-		<description></description>
+		<description>Translates the given web path to a real file system path</description>
 		<argument>
 			<name>relative_path</name>
 			<type>string</type>
@@ -2963,7 +3004,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>fileOpen</name>
 		<class>railo.runtime.functions.file.FileOpen</class>
-		<description></description>
+		<description>Opens up the file at the given locatio for either reading or writing</description>
 		<argument>
 			<name>path</name>
 			<type>string</type>
@@ -2992,7 +3033,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>fileRead</name>
 		<class>railo.runtime.functions.file.FileRead</class>
-		<description></description>
+		<description>If a file object is passed in, will read the number of bytes given. If a path to a file name will read in the full file into memory. For reading text based files</description>
 		<argument>
 			<name>object</name>
 			<type>any</type>
@@ -3011,7 +3052,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>fileReadLine</name>
 		<class>railo.runtime.functions.file.FileReadLine</class>
-		<description></description>
+		<description>For an existing open file, reads and returns the next line of text</description>
 		<argument>
 			<name>fileObj</name>
 			<type>any</type>
@@ -3064,7 +3105,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>fileClose</name>
 		<class>railo.runtime.functions.file.FileClose</class>
-		<description></description>
+		<description>For an existing open file, this function closes off all handles</description>
 		<argument>
 			<name>fileObj</name>
 			<type>any</type>
@@ -3078,7 +3119,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>fileCopy</name>
 		<class>railo.runtime.functions.file.FileCopy</class>
-		<description></description>
+		<description>Makes a copy of the srcFile landing it in the destFile position. Must be a file path for the destination</description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3097,7 +3138,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>fileCopy</name>
 		<class>railo.runtime.functions.file.FileCopy</class>
-		<description></description>
+		<description>Makes a copy of the srcFile landing it in the destFile position. Must be a file path for the destination</description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3136,7 +3177,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>FileDelete</name>
 		<class>railo.runtime.functions.file.FileDelete</class>
-		<description></description>
+		<description>Deletes the file at the given location {supports Amazon S3}</description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3150,7 +3191,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>FileExists</name>
 		<class>railo.runtime.functions.file.FileExists</class>
-		<description></description>
+		<description>Determines if the file represented by the full path exists on the file system</description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3172,7 +3213,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>FileIsEOF</name>
 		<class>railo.runtime.functions.file.FileIsEOF</class>
-		<description></description>
+		<description>For the given open file object, determines if it has reached the end of its file/stream</description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3186,7 +3227,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>FileReadBinary</name>
 		<class>railo.runtime.functions.file.FileReadBinary</class>
-		<description></description>
+		<description>Read the file at the path into memory. For use with binary files</description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3200,7 +3241,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>FileSetAccessMode</name>
 		<class>railo.runtime.functions.file.FileSetAccessMode</class>
-		<description></description>
+		<description>For the given path, sets the file attributes {for *NIX systems only}</description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3219,7 +3260,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>FileSetAttribute</name>
 		<class>railo.runtime.functions.file.FileSetAttribute</class>
-		<description></description>
+		<description>For the given path, sets the file attributes {for Windows only}</description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3238,7 +3279,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>FileSetLastModified</name>
 		<class>railo.runtime.functions.file.FileSetLastModified</class>
-		<description></description>
+		<description>For the given file, set the last modification date</description>
 		<argument>
 			<name>source</name>
 			<type>any</type>
@@ -3257,7 +3298,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>FileWrite</name>
 		<class>railo.runtime.functions.file.FileWrite</class>
-		<description></description>
+		<description>If a file object is passed in, will write the object given. If a path to a file name will write the full data and close the file. For writing binary and test based files. Will append to an existing file.</description>
 		<argument>
 			<name>file</name>
 			<type>any</type>
@@ -3282,7 +3323,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>FileWriteLine</name>
 		<class>railo.runtime.functions.file.FileWriteLine</class>
-		<description></description>
+		<description>Opens up the file (or uses the existing file object) and appends the given line of text</description>
 		<argument>
 			<name>file</name>
 			<type>any</type>
@@ -3301,7 +3342,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>find</name>
 		<class>railo.runtime.functions.string.Find</class>
-		<description></description>
+		<description>Looks for the given substring in the string, starting optionally at the index position</description>
 		<argument>
 			<name>substring</name>
 			<type>string</type>
@@ -3325,7 +3366,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>findNoCase</name>
 		<class>railo.runtime.functions.string.FindNoCase</class>
-		<description></description>
+		<description>Looks for the given substring in the string (case insensitive), starting optionally at the index position</description>
 		<argument>
 			<name>substring</name>
 			<type>string</type>
@@ -3349,7 +3390,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>findOneOf</name>
 		<class>railo.runtime.functions.string.FindOneOf</class>
-		<description></description>
+		<description>Looks for the given characters in the string, starting optionally at the index position</description>
 		<argument>
 			<name>set</name>
 			<type>string</type>
@@ -3373,7 +3414,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>firstDayOfMonth</name>
 		<class>railo.runtime.functions.dateTime.FirstDayOfMonth</class>
-		<description></description>
+		<description>Returns the number of the day in the year, the first day of this month falls on</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -3392,7 +3433,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>fix</name>
 		<class>railo.runtime.functions.math.Fix</class>
-		<description></description>
+		<description>Returns the number associated with the value</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -3406,7 +3447,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>formatBaseN</name>
 		<class>railo.runtime.functions.displayFormatting.FormatBaseN</class>
-		<description></description>
+		<description>Converts the given number to the new given base</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -3441,7 +3482,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getAuthUser</name>
 		<class>railo.runtime.functions.other.GetAuthUser</class>
-		<description></description>
+		<description>Returns the currently logged in authenicated user</description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3465,7 +3506,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getBaseTagData</name>
 		<class>railo.runtime.functions.other.GetBaseTagData</class>
-		<description></description>
+		<description>Returns back the data associated with the parent tag, at the given depth level back</description>
 		<argument>
 			<name>tagname</name>
 			<type>string</type>
@@ -3484,7 +3525,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getBaseTagList</name>
 		<class>railo.runtime.functions.other.GetBaseTagList</class>
-		<description></description>
+		<description>Returns the list of all the parent tags upto the current point</description>
 		<argument>
 			<name>delimeter</name>
 			<type>string</type>
@@ -3498,7 +3539,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getBaseTemplatePath</name>
 		<class>railo.runtime.functions.system.GetBaseTemplatePath</class>
-		<description></description>
+		<description>Returns the filepath of the base template in this request</description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3541,7 +3582,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getClientVariablesList</name>
 		<class>railo.runtime.functions.other.GetClientVariablesList</class>
-		<description></description>
+		<description>Returns back a string of all the non-read-only items in the current 'client' scope</description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3550,7 +3591,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getCurrentTemplatePath</name>
 		<class>railo.runtime.functions.system.GetCurrentTemplatePath</class>
-		<description></description>
+		<description>Returns the filepath of the current template</description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3568,7 +3609,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getDirectoryFromPath</name>
 		<class>railo.runtime.functions.system.GetDirectoryFromPath</class>
-		<description></description>
+		<description>Returns the path only of the full path</description>
 		<argument>
 			<name>path</name>
 			<type>string</type>
@@ -3582,7 +3623,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getEncoding</name>
 		<class>railo.runtime.functions.international.GetEncoding</class>
-		<description></description>
+		<description>Returns back the character encoding of the scope specified</description>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
@@ -3610,7 +3651,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getFileFromPath</name>
 		<class>railo.runtime.functions.file.GetFileFromPath</class>
-		<description></description>
+		<description>Returns the filename only of the full path</description>
 		<argument>
 			<name>path</name>
 			<type>string</type>
@@ -3624,7 +3665,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>GetFileInfo</name>
 		<class>railo.runtime.functions.file.GetFileInfo</class>
-		<description></description>
+		<description>Reads the file at the given path and returns back a structure of details (name, path, parent, size, lastmodified, canread, canwrite, ishidden, type)</description>
 		<argument>
 			<name>file</name>
 			<type>any</type>
@@ -3652,7 +3693,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getLocaleDisplayName</name>
 		<class>railo.runtime.functions.displayFormatting.GetLocaleDisplayName</class>
-		<description></description>
+		<description>Returns back the display name of the locale, optionally in the locale specfied</description>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
@@ -3672,7 +3713,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>GetLocalHostIP</name>
 		<class>railo.runtime.functions.system.GetLocalHostIP</class>
-		<description></description>
+		<description>Returns local host label for this network</description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3771,7 +3812,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getFunctionList</name>
 		<class>railo.runtime.functions.other.GetFunctionList</class>
-		<description></description>
+		<description>Returns all the currently registered functions</description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -3806,7 +3847,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getHTTPRequestData</name>
 		<class>railo.runtime.functions.other.GetHTTPRequestData</class>
-		<description></description>
+		<description>Returns back a structure describing the current request; method, protocol, content, headers</description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -3815,7 +3856,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getHttpTimeString</name>
 		<class>railo.runtime.functions.dateTime.GetHttpTimeString</class>
-		<description></description>
+		<description>Returns back the time given (or the current time) in the format of the HTTP header</description>
 		<argument>
 			<name>date_time_object</name>
 			<type>datetime</type>
@@ -3849,7 +3890,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getLocale</name>
 		<class>railo.runtime.functions.international.GetLocale</class>
-		<description></description>
+		<description>Returns the current locale</description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3858,7 +3899,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getMetadata</name>
 		<class>railo.runtime.functions.other.GetMetaData</class>
-		<description></description>
+		<description>Returns back meta information depending on the object passed in</description>
 		<argument>
 			<name>arg1</name>
 			<type>any</type>
@@ -3892,7 +3933,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getNumericDate</name>
 		<class>railo.runtime.functions.other.GetNumericDate</class>
-		<description></description>
+		<description>Returns a real number whose integer part represents the number of days since the EPOCH and whose fractional part represents the time value expressed in hours then divided by 24</description>
 		<argument>
 			<name>arg1</name>
 			<type>any</type>
@@ -3906,7 +3947,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getPageContext</name>
 		<class>railo.runtime.functions.other.GetPageContext</class>
-		<description></description>
+		<description>Returns the current underlying Java request context object</description>
 		<return>
 			<type>any</type>
 		</return>
@@ -3915,7 +3956,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getProfileSections</name>
 		<class>railo.runtime.functions.other.GetProfileSections</class>
-		<description></description>
+		<description>Returns the sections within the INI file as a structure</description>
 		<argument>
 			<name>arg1</name>
 			<type>string</type>
@@ -3929,7 +3970,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getProfileString</name>
 		<class>railo.runtime.functions.system.GetProfileString</class>
-		<description></description>
+		<description>Returns given property within the INI file given</description>
 		<argument>
 			<name>iniPath</name>
 			<type>string</type>
@@ -3953,8 +3994,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getSOAPRequest</name>
 		<class>railo.runtime.functions.xml.GetSOAPRequest</class>
-		<description>
-		</description>
+		<description>Returns back the original SOAP request for this object, or the current one if processing.</description>
 		<argument>
 			<name>webservice</name>
 			<type>any</type>
@@ -3969,8 +4009,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getSOAPRequestHeader</name>
 		<class>railo.runtime.functions.xml.GetSOAPRequestHeader</class>
-		<description>
-		</description>
+		<description>Returns back the SOAP header request. Use only inside a WebServices call</description>
 		<argument>
 			<name>namespace</name>
 			<type>string</type>
@@ -3996,8 +4035,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getSOAPResponse</name>
 		<class>railo.runtime.functions.xml.GetSOAPResponse</class>
-		<description>
-		</description>
+		<description>Returns back the full SOAP response</description>
 		<argument>
 			<name>webservice</name>
 			<type>any</type>
@@ -4012,8 +4050,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getSOAPResponseHeader</name>
 		<class>railo.runtime.functions.xml.GetSOAPResponseHeader</class>
-		<description>
-		</description>
+		<description>Returns back the SOAP header response</description>
 		<argument>
 			<name>webservice</name>
 			<type>any</type>
@@ -4042,7 +4079,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getTempDirectory</name>
 		<class>railo.runtime.functions.system.GetTempDirectory</class>
-		<description></description>
+		<description>Returns the full path to the currently assigned temporary directory</description>
 		<return>
 			<type>string</type>
 		</return>
@@ -4061,7 +4098,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getTempFile</name>
 		<class>railo.runtime.functions.system.GetTempFile</class>
-		<description></description>
+		<description>Creates a new unique file in the given directory with the prefix. Extension of the new file is '.tmp'</description>
 		<argument>
 			<name>dir</name>
 			<type>string</type>
@@ -4080,7 +4117,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getTemplatePath</name>
 		<class>railo.runtime.functions.system.GetTemplatePath</class>
-		<description></description>
+		<description>Returns the filepath of the base template in this request</description>
 		<return>
 			<type>any</type>
 		</return>
@@ -4089,7 +4126,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getTickCount</name>
 		<class>railo.runtime.functions.other.GetTickCount</class>
-		<description></description>
+		<description>Returns the number of milliseconds since the start of the application server</description>
 		<return>
 			<type>number</type>
 		</return>
@@ -4098,7 +4135,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getTimeZoneInfo</name>
 		<class>railo.runtime.functions.international.GetTimeZoneInfo</class>
-		<description></description>
+		<description>Returns back a structure regarding the current timezone; utctotaloffset, utchouroffset, utcminuteoffset, isdston</description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -4130,7 +4167,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getToken</name>
 		<class>railo.runtime.functions.string.GetToken</class>
-		<description></description>
+		<description>Returns the token at the given position</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -4154,7 +4191,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>getVariable</name>
 		<class>railo.runtime.functions.dynamicEvaluation.GetVariable</class>
-		<description></description>
+		<description>Gets the variable referenced by the given parameter; may be fully qualified</description>
 		<argument>
 			<name>name</name>
 			<type>string</type>
@@ -4168,7 +4205,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>hash</name>
 		<class>railo.runtime.functions.string.Hash</class>
-		<description></description>
+		<description>Determines the hash of the given string (or binary object) using the current encoding and algorithm</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -4192,7 +4229,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>hour</name>
 		<class>railo.runtime.functions.dateTime.Hour</class>
-		<description></description>
+		<description>Returns the hour of the referenced by the date in 24 hour format</description>
 		<argument>
 			<name>Date</name>
 			<type>datetime</type>
@@ -4211,7 +4248,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>hTMLCodeFormat</name>
 		<class>railo.runtime.functions.displayFormatting.HTMLCodeFormat</class>
-		<description></description>
+		<description>Wraps the given string inside of the HTML &lt;pre&gt; .. &lt;/pre&gt; tags, escaping the string accordingly</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -4235,7 +4272,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>hTMLEditFormat</name>
 		<class>railo.runtime.functions.displayFormatting.HTMLEditFormat</class>
-		<description></description>
+		<description>Escapes the given HTML string, replacing &amp;, &lt;, &gt;, and quotes. For use inside of the HTML form elements</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -4254,7 +4291,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>iIf</name>
 		<class>railo.runtime.functions.dynamicEvaluation.IIf</class>
-		<description></description>
+		<description>Evaluates the list of expressions, one by one.</description>
 		<argument>
 			<name>condition</name>
 			<type>boolean</type>
@@ -5778,7 +5815,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>incrementValue</name>
 		<class>railo.runtime.functions.math.IncrementValue</class>
-		<description></description>
+		<description>Increments the current number by one</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -5792,7 +5829,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>inputBaseN</name>
 		<class>railo.runtime.functions.math.InputBaseN</class>
-		<description></description>
+		<description>Attempts to convert the string specified, using the radix, to a number</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -5811,7 +5848,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>insert</name>
 		<class>railo.runtime.functions.string.Insert</class>
-		<description></description>
+		<description>Inserts the substring into the given string at the given position</description>
 		<argument>
 			<name>substring</name>
 			<type>string</type>
@@ -5835,7 +5872,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>int</name>
 		<class>railo.runtime.functions.math.Int</class>
-		<description></description>
+		<description>Returns the largest (closest to positive infinity) double value that is less than or equal to the argument and is equal to a mathematical integer</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -5849,7 +5886,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isArray</name>
 		<class>railo.runtime.functions.decision.IsArray</class>
-		<description></description>
+		<description>Determines if the object is a an array or xml object</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -5868,7 +5905,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isBinary</name>
 		<class>railo.runtime.functions.decision.IsBinary</class>
-		<description></description>
+		<description>Determines if the object is a binary object</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -5882,7 +5919,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isBoolean</name>
 		<class>railo.runtime.functions.decision.IsBoolean</class>
-		<description></description>
+		<description>Determines if the object represents a boolean value</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -5896,7 +5933,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isCustomFunction</name>
 		<class>railo.runtime.functions.decision.IsCustomFunction</class>
-		<description></description>
+		<description>Determines if the object represents a user defined function</description>
 		<argument>
 			<name>name</name>
 			<type>any</type>
@@ -5910,7 +5947,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isDate</name>
 		<class>railo.runtime.functions.decision.IsDate</class>
-		<description></description>
+		<description>Determines if the object is a date object</description>
 		<argument>
 			<name>string</name>
 			<type>any</type>
@@ -5938,7 +5975,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>IsInstanceOf</name>
 		<class>railo.runtime.functions.decision.IsInstanceOf</class>
-		<description></description>
+		<description>Determines if the object passed in is an instance of the type passed in</description>
 		<argument>
 			<name>obj</name>
 			<type>any</type>
@@ -5959,7 +5996,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isDebugMode</name>
 		<class>railo.runtime.functions.decision.IsDebugMode</class>
-		<description></description>
+		<description>Determines if debug mode has been enabled</description>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5969,7 +6006,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 		<name>isDefined</name>
 		<class>railo.runtime.functions.decision.IsDefined</class>
 		<tte-class>railo.transformer.cfml.evaluator.func.impl.IsDefined</tte-class>
-		<description></description>
+		<description>Determines if the string represents a defined variable</description>
 		<argument>
 			<name>variable</name>
 			<type>string</type>
@@ -6013,7 +6050,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isLeapYear</name>
 		<class>railo.runtime.functions.decision.IsLeapYear</class>
-		<description></description>
+		<description>Determines if the given date object ocurrs on a leap year</description>
 		<argument>
 			<name>year</name>
 			<type>number</type>
@@ -6027,7 +6064,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isLocalHost</name>
 		<class>railo.runtime.functions.decision.IsLocalHost</class>
-		<description></description>
+		<description>Determines if the string represents a the localhost ('127.0.0.1', '::1', or 'localhost')</description>
 		<argument>
 			<name>ip</name>
 			<type>String</type>
@@ -6057,7 +6094,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 		<name>isNull</name>
 		<class>railo.runtime.functions.other.IsNull</class>
 		<tte-class>railo.transformer.cfml.evaluator.func.impl.IsNull</tte-class>
-		<description></description>
+		<description>Determines if the object represents a NULL value</description>
 		<argument>
 			<name>object</name>
 			<type>any</type>
@@ -6071,7 +6108,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isNumeric</name>
 		<class>railo.runtime.functions.decision.IsNumeric</class>
-		<description></description>
+		<description>Determines if the object represents a numeric</description>
 		<argument>
 			<name>string</name>
 			<type>any</type>
@@ -6085,7 +6122,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isNumericDate</name>
 		<class>railo.runtime.functions.decision.IsNumericDate</class>
-		<description></description>
+		<description>Determines if the object represents a numeric date</description>
 		<argument>
 			<name>number</name>
 			<type>any</type>
@@ -6099,7 +6136,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isObject</name>
 		<class>railo.runtime.functions.decision.IsObject</class>
-		<description></description>
+		<description>Determines if the object represents a CFC or Java object</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -6113,7 +6150,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isQuery</name>
 		<class>railo.runtime.functions.query.IsQuery</class>
-		<description></description>
+		<description>Determines if the object represents a query</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -6127,7 +6164,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isSimpleValue</name>
 		<class>railo.runtime.functions.decision.IsSimpleValue</class>
-		<description></description>
+		<description>Determines if the object represents a simple value like a string, number, boolean etc</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -6152,7 +6189,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isStruct</name>
 		<class>railo.runtime.functions.struct.IsStruct</class>
-		<description></description>
+		<description>Determines if the object is a structure</description>
 		<argument>
 			<name>variable</name>
 			<type>any</type>
@@ -6166,7 +6203,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isUserInRole</name>
 		<class>railo.runtime.functions.decision.IsUserInRole</class>
-		<description></description>
+		<description>Determines if the user specified is logged in (CFLOGINUSER)</description>
 		<argument>
 			<name>role_name</name>
 			<type>any</type>
@@ -6231,7 +6268,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isWddx</name>
 		<class>railo.runtime.functions.decision.IsWddx</class>
-		<description></description>
+		<description>Determines if the object is a WDDX object</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -6293,7 +6330,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isXmlDoc</name>
 		<class>railo.runtime.functions.decision.IsXmlDoc</class>
-		<description></description>
+		<description>Determines if the object type passed in is XML node element</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -6307,7 +6344,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isXmlElem</name>
 		<class>railo.runtime.functions.decision.IsXmlElem</class>
-		<description></description>
+		<description>Determines if the object passed in is XML element</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -6337,7 +6374,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>isXmlRoot</name>
 		<class>railo.runtime.functions.decision.IsXmlRoot</class>
-		<description></description>
+		<description>Determines if the object passed in is the top level XML root node</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -6351,7 +6388,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>javaCast</name>
 		<class>railo.runtime.functions.string.JavaCast</class>
-		<description></description>
+		<description>Returns back a duplicate variable of the java object casting it to the specific type</description>
 		<argument>
 			<name>type</name>
 			<type>string</type>
@@ -6370,7 +6407,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>jSStringFormat</name>
 		<class>railo.runtime.functions.string.JSStringFormat</class>
-		<description></description>
+		<description>Returns the given string escaped to work within Javascript blocks safely</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -6384,7 +6421,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lCase</name>
 		<class>railo.runtime.functions.string.LCase</class>
-		<description></description>
+		<description>Returns the lower cased version of the string</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -6398,7 +6435,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>left</name>
 		<class>railo.runtime.functions.string.Left</class>
-		<description></description>
+		<description>Returns the given string trimmed to the size given from the left of the string</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -6417,7 +6454,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>len</name>
 		<class>railo.runtime.functions.string.Len</class>
-		<description></description>
+		<description>Returns the length of the given string, binary, struct or array object</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -6431,7 +6468,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listAppend</name>
 		<class>railo.runtime.functions.list.ListAppend</class>
-		<description></description>
+		<description>Adds the given value to the end of the list, with the given delimiter</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6474,7 +6511,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listChangeDelims</name>
 		<class>railo.runtime.functions.list.ListChangeDelims</class>
-		<description></description>
+		<description>Converts the given list delimitor to the new one</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6517,7 +6554,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listContains</name>
 		<class>railo.runtime.functions.list.ListContains</class>
-		<description></description>
+		<description>Determines if the substring is within the list, returning the list index of where the item was found; 0 if not found</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6541,7 +6578,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listContainsNoCase</name>
 		<class>railo.runtime.functions.list.ListContainsNoCase</class>
-		<description></description>
+		<description>Determines if the substring is within the list (case insensitive search), returning the list index of where the item was found; 0 if not found</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6565,7 +6602,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listDeleteAt</name>
 		<class>railo.runtime.functions.list.ListDeleteAt</class>
-		<description></description>
+		<description>Removes item from the list at the given position, returning back the new list</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6589,7 +6626,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listFind</name>
 		<class>railo.runtime.functions.list.ListFind</class>
-		<description></description>
+		<description>Determines if the element exists within the list (an exact match)</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6613,7 +6650,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listFindNoCase</name>
 		<class>railo.runtime.functions.list.ListFindNoCase</class>
-		<description></description>
+		<description>Determines if the element exists within the list (an exact case insenstive match)</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6637,7 +6674,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listFirst</name>
 		<class>railo.runtime.functions.list.ListFirst</class>
-		<description></description>
+		<description>Returns the first element in the list</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6656,7 +6693,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listGetAt</name>
 		<class>railo.runtime.functions.list.ListGetAt</class>
-		<description></description>
+		<description>Returns the element at the given position</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6680,7 +6717,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listInsertAt</name>
 		<class>railo.runtime.functions.list.ListInsertAt</class>
-		<description></description>
+		<description>Inserts a new element into the list at the given position, returning the newly created list</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6709,7 +6746,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>ListIndexExists</name>
 		<class>railo.runtime.functions.list.ListIndexExists</class>
-		<description></description>
+		<description>Determines if an element at the given position exists or not</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6733,7 +6770,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>ListItemTrim</name>
 		<class>railo.runtime.functions.list.ListItemTrim</class>
-		<description></description>
+		<description>Removes all the white space surrounding each element, returning back the new list</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6752,7 +6789,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listLast</name>
 		<class>railo.runtime.functions.list.ListLast</class>
-		<description></description>
+		<description>Returns the last element in the list</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6771,7 +6808,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listLen</name>
 		<class>railo.runtime.functions.list.ListLen</class>
-		<description></description>
+		<description>Returns the number of the elements in the list</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6790,7 +6827,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listPrepend</name>
 		<class>railo.runtime.functions.list.ListPrepend</class>
-		<description></description>
+		<description>Adds the given element to the start of the list, returning the new list</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6814,7 +6851,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listQualify</name>
 		<class>railo.runtime.functions.list.ListQualify</class>
-		<description></description>
+		<description>Returns the list, of only that match the type, prefixed and postfixed with the qualifier</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6843,7 +6880,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listRest</name>
 		<class>railo.runtime.functions.list.ListRest</class>
-		<description></description>
+		<description>Returns all the elements in the list, minus the first element</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6862,7 +6899,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listSetAt</name>
 		<class>railo.runtime.functions.list.ListSetAt</class>
-		<description></description>
+		<description>Inserts the given element at the given position, returning the newly created list</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6891,7 +6928,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listSort</name>
 		<class>railo.runtime.functions.list.ListSort</class>
-		<description></description>
+		<description>Sorts the array using the criteria given returning the new sorted list</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6920,7 +6957,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listToArray</name>
 		<class>railo.runtime.functions.list.ListToArray</class>
-		<description></description>
+		<description>Converts the list into an array, optionally including the empty elements</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6970,7 +7007,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listValueCount</name>
 		<class>railo.runtime.functions.list.ListValueCount</class>
-		<description></description>
+		<description>Counts the number of times the given element appears in the list</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -6994,7 +7031,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>listValueCountNoCase</name>
 		<class>railo.runtime.functions.list.ListValueCountNoCase</class>
-		<description></description>
+		<description>Counts the number of times the given element appears in the list using a case-insensitive search</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
@@ -7018,7 +7055,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lJustify</name>
 		<class>railo.runtime.functions.string.LJustify</class>
-		<description></description>
+		<description>Returns the given string justified to the left, padding out the words with spaces accordingly</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7049,7 +7086,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>log</name>
 		<class>railo.runtime.functions.math.Log</class>
-		<description></description>
+		<description>Performs a log on the given number</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -7063,7 +7100,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>log10</name>
 		<class>railo.runtime.functions.math.Log10</class>
-		<description></description>
+		<description>Performs a base 10 log on the given number</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -7077,7 +7114,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lSCurrencyFormat</name>
 		<class>railo.runtime.functions.international.LSCurrencyFormat</class>
-		<description></description>
+		<description>Returns back the formatted currency representation of the number in the current session locale</description>
 		<argument>
 			<name>number</name>
 			<type>object</type>
@@ -7101,7 +7138,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lSDateFormat</name>
 		<class>railo.runtime.functions.international.LSDateFormat</class>
-		<description></description>
+		<description>Formats a date string to a given output using the current sessions locale</description>
 		<argument>
 			<name>date</name>
 			<type>any</type>
@@ -7130,7 +7167,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lSEuroCurrencyFormat</name>
 		<class>railo.runtime.functions.international.LSEuroCurrencyFormat</class>
-		<description></description>
+		<description>Returns back the formatted EURO currency representation of the number</description>
 		<argument>
 			<name>currency_number</name>
 			<type>object</type>
@@ -7154,7 +7191,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lSIsCurrency</name>
 		<class>railo.runtime.functions.international.LSIsCurrency</class>
-		<description></description>
+		<description>Determines if the string passed in, represents a currency in the current locale</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7173,7 +7210,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lSIsDate</name>
 		<class>railo.runtime.functions.international.LSIsDate</class>
-		<description></description>
+		<description>Determines if the string passed in, represents a date in the current locale</description>
 		<argument>
 			<name>string</name>
 			<type>any</type>
@@ -7197,7 +7234,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lSIsNumeric</name>
 		<class>railo.runtime.functions.international.LSIsNumeric</class>
-		<description></description>
+		<description>Determines if the string passed in, represents a number in the current locale</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7216,7 +7253,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lSNumberFormat</name>
 		<class>railo.runtime.functions.international.LSNumberFormat</class>
-		<description></description>
+		<description>Formats a number to the given format mask in the current session locale</description>
 		<argument>
 			<name>number</name>
 			<type>any</type>
@@ -7240,7 +7277,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lSParseCurrency</name>
 		<class>railo.runtime.functions.international.LSParseCurrency</class>
-		<description></description>
+		<description>Attempts to convert the current represented in the string to a number using the current sessions locale</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7259,7 +7296,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lSParseDateTime</name>
 		<class>railo.runtime.functions.international.LSParseDateTime</class>
-		<description></description>
+		<description>Formats a date string to a given output using the current session locale</description>
 		<argument>
 			<name>date</name>
 			<type>object</type>
@@ -7283,7 +7320,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lSParseEuroCurrency</name>
 		<class>railo.runtime.functions.international.LSParseEuroCurrency</class>
-		<description></description>
+		<description>Attempts to convert the EURO represented in the string to a number</description>
 		<argument>
 			<name>currency_string</name>
 			<type>string</type>
@@ -7302,7 +7339,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lSParseNumber</name>
 		<class>railo.runtime.functions.international.LSParseNumber</class>
-		<description></description>
+		<description>Attempts to convert the string represented to a number using the current sessions locale</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7321,7 +7358,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lSTimeFormat</name>
 		<class>railo.runtime.functions.international.LSTimeFormat</class>
-		<description></description>
+		<description>Formats a time string to a given output using the current session locale</description>
 		<argument>
 			<name>time</name>
 			<type>any</type>
@@ -7350,7 +7387,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>lTrim</name>
 		<class>railo.runtime.functions.string.LTrim</class>
-		<description></description>
+		<description>Trims the whitespace from the left side of the string only, returning the new string</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7364,7 +7401,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>max</name>
 		<class>railo.runtime.functions.math.Max</class>
-		<description></description>
+		<description>Returns the largest of the two given numbers</description>
 		<argument>
 			<name>number1</name>
 			<type>number</type>
@@ -7397,7 +7434,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>mid</name>
 		<class>railo.runtime.functions.string.Mid</class>
-		<description></description>
+		<description>Returns substring within the string from the start position for the number of characters</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7421,7 +7458,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>min</name>
 		<class>railo.runtime.functions.math.Min</class>
-		<description></description>
+		<description>Returns the smallest of the two given numbers</description>
 		<argument>
 			<name>number1</name>
 			<type>number</type>
@@ -7440,7 +7477,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>minute</name>
 		<class>railo.runtime.functions.dateTime.Minute</class>
-		<description></description>
+		<description>Returns the minute of the referenced by the date</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -7478,7 +7515,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>month</name>
 		<class>railo.runtime.functions.dateTime.Month</class>
-		<description></description>
+		<description>Returns the month of the referenced date (1=Jan .. 12=Dec)</description>
 		<argument>
 			<name>Date</name>
 			<type>datetime</type>
@@ -7497,7 +7534,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>monthAsString</name>
 		<class>railo.runtime.functions.string.MonthAsString</class>
-		<description></description>
+		<description>Returns the string label for the given month index in the given locale (if supplied)</description>
 		<argument>
 			<name>monthnumber</name>
 			<type>number</type>
@@ -7539,7 +7576,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>now</name>
 		<class>railo.runtime.functions.dateTime.Now</class>
-		<description></description>
+		<description>Returns the current date and time</description>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -7558,7 +7595,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>numberFormat</name>
 		<class>railo.runtime.functions.displayFormatting.NumberFormat</class>
-		<description></description>
+		<description>Formats a number to the given format mask</description>
 		<argument>
 			<name>number</name>
 			<type>any</type>
@@ -7751,7 +7788,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>paragraphFormat</name>
 		<class>railo.runtime.functions.displayFormatting.ParagraphFormat</class>
-		<description></description>
+		<description>Formats the carriage returns in a string to a HTML alternatives</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7765,7 +7802,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>parameterExists</name>
 		<class>railo.runtime.functions.other.ParameterExists</class>
-		<description></description>
+		<description>Determines if the parameter exists</description>
 		<argument>
 			<name>parameter</name>
 			<type>variable_string</type>
@@ -7779,7 +7816,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>parseDateTime</name>
 		<class>railo.runtime.functions.string.ParseDateTime</class>
-		<description></description>
+		<description>Formats a date string to a given output</description>
 		<argument>
 			<name>date</name>
 			<type>object</type>
@@ -7843,7 +7880,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>pi</name>
 		<class>railo.runtime.functions.math.Pi</class>
-		<description></description>
+		<description>Returns the mathematical constant PI (22/7)</description>
 		<return>
 			<type>number</type>
 		</return>
@@ -7852,7 +7889,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>preserveSingleQuotes</name>
 		<class>railo.runtime.functions.other.PreserveSingleQuotes</class>
-		<description></description>
+		<description>Returns back string without letting the engine escape the single quotes. Used within CFQUERY blocks usually</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -7866,7 +7903,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>quarter</name>
 		<class>railo.runtime.functions.dateTime.Quarter</class>
-		<description></description>
+		<description>Returns the quarter the referenced date falls within (1,2,3,4)</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -7895,7 +7932,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>queryAddColumn</name>
 		<class>railo.runtime.functions.query.QueryAddColumn</class>
-		<description></description>
+		<description>Adds a new column of data to the exist query object, returning the column number</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -7929,7 +7966,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>queryAddRow</name>
 		<class>railo.runtime.functions.query.QueryAddRow</class>
-		<description></description>
+		<description>Adds the specified the number of rows to the end of the query</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -7988,7 +8025,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>queryColumnArray</name>
 		<class>railo.runtime.functions.query.QueryColumnArray</class>
-		<description></description>
+		<description>Returns all the data in a query for a given column</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8002,7 +8039,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>queryColumnList</name>
 		<class>railo.runtime.functions.query.QueryColumnList</class>
-		<description></description>
+		<description>Returns all the data in a query for a given column as a list</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8042,7 +8079,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>QueryDeleteRow</name>
 		<class>railo.runtime.functions.query.QueryDeleteRow</class>
-		<description></description>
+		<description>Deletes the row within a query object. Modifies the original query object</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8085,7 +8122,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>queryNew</name>
 		<class>railo.runtime.functions.query.QueryNew</class>
-		<description></description>
+		<description>Creates a new query object with the columns past in of the optional types</description>
 		<argument>
 			<name>columnlist</name>
 			<type>string</type>
@@ -8118,7 +8155,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>querySetCell</name>
 		<class>railo.runtime.functions.query.QuerySetCell</class>
-		<description></description>
+		<description>Sets the given column within a query with the value at the given row, or the last row if not specified</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8171,7 +8208,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>querySort</name>
 		<class>railo.runtime.functions.query.QuerySort</class>
-		<description></description>
+		<description>Sorts the query based on the column specified and the order criteria given. Modifies the original query object</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8195,7 +8232,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>quotedValueList</name>
 		<class>railo.runtime.functions.other.QuotedValueList</class>
-		<description></description>
+		<description>Returns a quoted list of all the values, for a given column within the query, delimited by the value given</description>
 		<argument>
 			<name>query_column</name>
 			<type>variable_string</type>
@@ -8214,7 +8251,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>rand</name>
 		<class>railo.runtime.functions.math.Rand</class>
-		<description></description>
+		<description>Returns a random number</description>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
@@ -8228,7 +8265,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>randomize</name>
 		<class>railo.runtime.functions.math.Randomize</class>
-		<description></description>
+		<description>Returns a random number seeding the random number generator</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -8247,7 +8284,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>randRange</name>
 		<class>railo.runtime.functions.math.RandRange</class>
-		<description></description>
+		<description>Returns a random number between the two numbers using the given optional random generator</description>
 		<argument>
 			<name>number1</name>
 			<type>number</type>
@@ -8285,7 +8322,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>rEFind</name>
 		<class>railo.runtime.functions.string.REFind</class>
-		<description></description>
+		<description>Performs a case-sensitive regular expression match to the given string. If subexpression=true then it returns a structure (pos,len)</description>
 		<argument>
 			<name>reg_expression</name>
 			<type>string</type>
@@ -8314,7 +8351,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>rEFindNoCase</name>
 		<class>railo.runtime.functions.string.REFindNoCase</class>
-		<description></description>
+		<description>Performs a case-insensitive regular expression match to the given string. If subexpression=true then it returns a structure (pos,len)</description>
 		<argument>
 			<name>reg_expression</name>
 			<type>string</type>
@@ -8343,7 +8380,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>REMatch</name>
 		<class>railo.runtime.functions.string.REMatch</class>
-		<description></description>
+		<description>Returns an array of strings of all the matches that the given regular expression found performing a case-sensitive match</description>
 		<argument>
 			<name>reg_expression</name>
 			<type>string</type>
@@ -8362,7 +8399,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>REMatchNoCase</name>
 		<class>railo.runtime.functions.string.REMatchNoCase</class>
-		<description></description>
+		<description>Returns an array of strings of all the matches that the given regular expression found performing a case-insensitive match</description>
 		<argument>
 			<name>reg_expression</name>
 			<type>string</type>
@@ -8381,7 +8418,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>removeChars</name>
 		<class>railo.runtime.functions.string.RemoveChars</class>
-		<description></description>
+		<description>Removes the substring from the given string, at the position for the characters count</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8405,7 +8442,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>repeatString</name>
 		<class>railo.runtime.functions.string.RepeatString</class>
-		<description></description>
+		<description>Returns a new string, made up of the string repeated the number of times specified</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8424,7 +8461,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>replace</name>
 		<class>railo.runtime.functions.string.Replace</class>
-		<description></description>
+		<description>Looks for the occurences of a given substring within a string, replacing it with a new one</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8453,7 +8490,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>replaceList</name>
 		<class>railo.runtime.functions.string.ReplaceList</class>
-		<description></description>
+		<description>Peforms a series of search'n'replace on a single string using the comma-separated lists passed in</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8477,7 +8514,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>replaceNoCase</name>
 		<class>railo.runtime.functions.string.ReplaceNoCase</class>
-		<description></description>
+		<description>Looks for the occurences of a given substring within a string, replacing it with a new one, ignoring all case issues</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8506,7 +8543,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>rEReplace</name>
 		<class>railo.runtime.functions.string.REReplace</class>
-		<description></description>
+		<description>Runs a regular expression replacement against the string</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8535,7 +8572,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>rEReplaceNoCase</name>
 		<class>railo.runtime.functions.string.REReplaceNoCase</class>
-		<description></description>
+		<description>Runs a regular expression replacement against the string</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8564,7 +8601,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>reverse</name>
 		<class>railo.runtime.functions.string.Reverse</class>
-		<description></description>
+		<description>Returns the given string but in reverse order</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8578,7 +8615,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>right</name>
 		<class>railo.runtime.functions.string.Right</class>
-		<description></description>
+		<description>Returns the given string trimmed to the size given from the right of the string</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8597,7 +8634,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>rJustify</name>
 		<class>railo.runtime.functions.string.RJustify</class>
-		<description></description>
+		<description>Returns the given string justified to the right, padding out the words with spaces accordingly</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8616,7 +8653,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>round</name>
 		<class>railo.runtime.functions.math.Round</class>
-		<description></description>
+		<description>Rounds the given number down</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -8630,7 +8667,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>rTrim</name>
 		<class>railo.runtime.functions.string.RTrim</class>
-		<description></description>
+		<description>Trims the whitespace from the right side of the string only, returning the new string</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8645,7 +8682,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>second</name>
 		<class>railo.runtime.functions.dateTime.Second</class>
-		<description></description>
+		<description>Returns the second of the date referenced</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -8719,7 +8756,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>setEncoding</name>
 		<class>railo.runtime.functions.international.SetEncoding</class>
-		<description></description>
+		<description>Sets the encoding of the given scope with the encoding type</description>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
@@ -8738,7 +8775,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>setLocale</name>
 		<class>railo.runtime.functions.international.SetLocale</class>
-		<description></description>
+		<description>Sets the local for the current request, returning the previous one</description>
 		<argument>
 			<name>new_locale</name>
 			<type>string</type>
@@ -8752,7 +8789,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>setProfileString</name>
 		<class>railo.runtime.functions.system.SetProfileString</class>
-		<description></description>
+		<description>Sets the given property/value within the INI file given</description>
 		<argument>
 			<name>iniPath</name>
 			<type>string</type>
@@ -8781,7 +8818,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>setVariable</name>
 		<class>railo.runtime.functions.dynamicEvaluation.SetVariable</class>
-		<description></description>
+		<description>Sets the value of the variable indicated by address</description>
 		<argument>
 			<name>name</name>
 			<type>string</type>
@@ -8800,7 +8837,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>sgn</name>
 		<class>railo.runtime.functions.math.Sgn</class>
-		<description></description>
+		<description>Determines the sign of the number; return -1 if negative, 1 if positive, or 0</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -8814,7 +8851,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>sin</name>
 		<class>railo.runtime.functions.math.Sin</class>
-		<description></description>
+		<description>Returns the trigonometric sine of an angle</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -8856,7 +8893,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>spanExcluding</name>
 		<class>railo.runtime.functions.string.SpanExcluding</class>
-		<description></description>
+		<description>Returns back the string up to the point where any of the strings in sub-string is matched</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8875,7 +8912,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>spanIncluding</name>
 		<class>railo.runtime.functions.string.SpanIncluding</class>
-		<description></description>
+		<description>Returns back the string up to the point where any of the strings in sub-string is matched, including the substring</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -8894,7 +8931,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>sqr</name>
 		<class>railo.runtime.functions.math.Sqr</class>
-		<description></description>
+		<description>Performs the square root of the number given</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -8908,7 +8945,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>Sleep</name>
 		<class>railo.runtime.functions.system.Sleep</class>
-		<description></description>
+		<description>pauses the current request for the amount of time specified</description>
 		<argument>
 			<name>duration</name>
 			<type>number</type>
@@ -8960,7 +8997,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>stripCr</name>
 		<class>railo.runtime.functions.other.StripCr</class>
-		<description></description>
+		<description>Removes all the carriage returns from a string</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9011,7 +9048,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structAppend</name>
 		<class>railo.runtime.functions.struct.StructAppend</class>
-		<description></description>
+		<description>Appends all the data from struct2 into struct2, replacing duplicate keys unless specified by the overwrite flag</description>
 		<argument>
 			<name>Struct1</name>
 			<type>struct</type>
@@ -9035,7 +9072,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structClear</name>
 		<class>railo.runtime.functions.struct.StructClear</class>
-		<description></description>
+		<description>Removes all the data from the given structure</description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9049,7 +9086,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structCopy</name>
 		<class>railo.runtime.functions.struct.StructCopy</class>
-		<description></description>
+		<description>Makes a copy of the structure and returns a brand new structure, copying all the data held within</description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9063,7 +9100,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structCount</name>
 		<class>railo.runtime.functions.struct.StructCount</class>
-		<description></description>
+		<description>Returns the number of elements within the structure</description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9077,7 +9114,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structDelete</name>
 		<class>railo.runtime.functions.struct.StructDelete</class>
-		<description></description>
+		<description>Deletes the given key from the structure, optionally returning whether or not it was found before deletion</description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9101,7 +9138,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structFind</name>
 		<class>railo.runtime.functions.struct.StructFind</class>
-		<description></description>
+		<description>Returns the data at the given key, throwing an exception if it does not exist</description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9120,7 +9157,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structFindKey</name>
 		<class>railo.runtime.functions.struct.StructFindKey</class>
-		<description></description>
+		<description>Returns the data (or an array of all the values) at the given key, throwing an exception if it does not exist</description>
 		<argument>
 			<name>Top</name>
 			<type>struct</type>
@@ -9144,7 +9181,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structFindValue</name>
 		<class>railo.runtime.functions.struct.StructFindValue</class>
-		<description></description>
+		<description>Returns the data (or an array of all the values) that matches the value, throwing an exception if it does not exist</description>
 		<argument>
 			<name>Top</name>
 			<type>struct</type>
@@ -9168,7 +9205,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structGet</name>
 		<class>railo.runtime.functions.struct.StructGet</class>
-		<description></description>
+		<description>Returns a new structure, or heirarchy of structures to match the given key path</description>
 		<argument>
 			<name>PathDesired</name>
 			<type>string</type>
@@ -9182,7 +9219,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structInsert</name>
 		<class>railo.runtime.functions.struct.StructInsert</class>
-		<description></description>
+		<description>Inserts the key and value into the given structure, overwriting if already exists</description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9211,7 +9248,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structIsEmpty</name>
 		<class>railo.runtime.functions.struct.StructIsEmpty</class>
-		<description></description>
+		<description>Returns whether or not the structure is empty of all keys</description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9225,7 +9262,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structKeyArray</name>
 		<class>railo.runtime.functions.struct.StructKeyArray</class>
-		<description></description>
+		<description>Returns back an array of all the keys in the structure</description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9240,7 +9277,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 		<name>structKeyExists</name>
 		<class>railo.runtime.functions.struct.StructKeyExists</class>
 		<tte-class>railo.transformer.cfml.evaluator.func.impl.StructKeyExists</tte-class>
-		<description></description>
+		<description>Determines whether the given key exists in the structure</description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9259,7 +9296,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structKeyList</name>
 		<class>railo.runtime.functions.struct.StructKeyList</class>
-		<description></description>
+		<description>Returns all the keys in the structure as a delimited string</description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9310,7 +9347,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structNew</name>
 		<class>railo.runtime.functions.struct.StructNew</class>
-		<description></description>
+		<description>Creates a new structure</description>
 		<argument>
 			<name>type</name>
 			<type>string</type>
@@ -9327,7 +9364,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structSort</name>
 		<class>railo.runtime.functions.struct.StructSort</class>
-		<description></description>
+		<description>Returns an array of all the keys, ordered by the sort criteria of the values in the structure</description>
 		<argument>
 			<name>base</name>
 			<type>struct</type>
@@ -9356,7 +9393,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>structUpdate</name>
 		<class>railo.runtime.functions.struct.StructUpdate</class>
-		<description></description>
+		<description>Inserts the key/value into the structure, overwritting if already exists</description>
 		<argument>
 			<name>structure</name>
 			<type>struct</type>
@@ -9404,7 +9441,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>tan</name>
 		<class>railo.runtime.functions.math.Tan</class>
-		<description></description>
+		<description>Returns the trigonometric tan of an angle</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -9418,7 +9455,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>timeFormat</name>
 		<class>railo.runtime.functions.displayFormatting.TimeFormat</class>
-		<description></description>
+		<description>Formats a time string to a given output</description>
 		<argument>
 			<name>time</name>
 			<type>any</type>
@@ -9442,7 +9479,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>toBase64</name>
 		<class>railo.runtime.functions.string.ToBase64</class>
-		<description></description>
+		<description>This takes in a string/binary object and attempts to convert it to a Base64 string</description>
 		<argument>
 			<name>string</name>
 			<type>any</type>
@@ -9461,7 +9498,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>toBinary</name>
 		<class>railo.runtime.functions.other.ToBinary</class>
-		<description></description>
+		<description>Converts the Base64 string to a binary object</description>
 		<argument>
 			<name>string</name>
 			<type>any</type>
@@ -9475,7 +9512,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>ToScript</name>
 		<class>railo.runtime.functions.conversion.ToScript</class>
-		<description></description>
+		<description>Used to convert the given input to Actionscript/Javascript variable</description>
 		<argument>
 			<name>cfvar</name>
 			<type>any</type>
@@ -9504,7 +9541,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>toString</name>
 		<class>railo.runtime.functions.string.ToString</class>
-		<description></description>
+		<description>For the given object, return back the string representation of the it</description>
 		<argument>
 			<name>string</name>
 			<type>any</type>
@@ -9566,7 +9603,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>uCase</name>
 		<class>railo.runtime.functions.string.UCase</class>
-		<description></description>
+		<description>Returns the upper cased version of the string</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9611,7 +9648,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>uRLDecode</name>
 		<class>railo.runtime.functions.other.URLDecode</class>
-		<description></description>
+		<description>Decodes the URL string to the original string, using the given encoding</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9654,7 +9691,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>uRLEncodedFormat</name>
 		<class>railo.runtime.functions.other.URLEncodedFormat</class>
-		<description></description>
+		<description>Encodes the string for use within a URL parameter, using the given encoding</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9678,7 +9715,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>uRLSessionFormat</name>
 		<class>railo.runtime.functions.other.URLSessionFormat</class>
-		<description></description>
+		<description>Encodes the URL with the CFTOKEN/CFID/JSESSIONID</description>
 		<argument>
 			<name>url</name>
 			<type>string</type>
@@ -9692,7 +9729,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>val</name>
 		<class>railo.runtime.functions.string.Val</class>
-		<description></description>
+		<description>Attempts to convert the string to a number</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -9720,7 +9757,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>valueList</name>
 		<class>railo.runtime.functions.query.ValueList</class>
-		<description></description>
+		<description>Returns a list of all the values, for a given column within the query, delimited by the value given</description>
 		<argument>
 			<name>query_column</name>
 			<type>variable_string</type>
@@ -9748,7 +9785,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>week</name>
 		<class>railo.runtime.functions.dateTime.Week</class>
-		<description></description>
+		<description>Returns the week number in the year of the date referenced</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -9819,7 +9856,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>writeOutput</name>
 		<class>railo.runtime.functions.other.WriteOutput</class>
-		<description></description>
+		<description>Writes the given string out to the main response buffer. see also function echo.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9833,7 +9870,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>echo</name>
 		<class>railo.runtime.functions.other.WriteOutput</class>
-		<description></description>
+		<description>Writes the given string out to the main response buffer. see also function writeOutput.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9847,7 +9884,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>xmlChildPos</name>
 		<class>railo.runtime.functions.xml.XmlChildPos</class>
-		<description></description>
+		<description>Finds the given occurence number of the node within the XML object, returning -1 if not found</description>
 		<argument>
 			<name>node</name>
 			<type>node</type>
@@ -9871,7 +9908,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>xmlElemNew</name>
 		<class>railo.runtime.functions.xml.XmlElemNew</class>
-		<description></description>
+		<description>Creates a new child element for the XML object</description>
 		<argument>
 			<name>xmlObj</name>
 			<type>node</type>
@@ -9890,7 +9927,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>xMLFormat</name>
 		<class>railo.runtime.functions.other.XMLFormat</class>
-		<description></description>
+		<description>Encodes the given string for safe usage within XML nodes; escapes &gt;, &lt;, ', ", &amp; and also any high ASCII characters</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9904,7 +9941,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>XmlGetNodeType</name>
 		<class>railo.runtime.functions.xml.XmlGetNodeType</class>
-		<description></description>
+		<description>For the given XML node passed in, determines the type; returns NULL if not determined</description>
 		<argument>
 			<name>xmlObj</name>
 			<type>node</type>
@@ -9918,7 +9955,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>xmlNew</name>
 		<class>railo.runtime.functions.xml.XmlNew</class>
-		<description></description>
+		<description>Creates a new XML document with optional case-sensitivity elements</description>
 		<argument>
 			<name>caseSensitive</name>
 			<type>boolean</type>
@@ -9932,7 +9969,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>xmlParse</name>
 		<class>railo.runtime.functions.xml.XmlParse</class>
-		<description></description>
+		<description>Determines if the object passed in is an XML node</description>
 		<argument>
 			<name>xmlString</name>
 			<type>string</type>
@@ -9975,7 +10012,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>xmlSearch</name>
 		<class>railo.runtime.functions.xml.XmlSearch</class>
-		<description></description>
+		<description>Performs an XPATH search against the XML, returning back an array of found nodes, or boolean, or count, or string depending on the search type</description>
 		<argument>
 			<name>node</name>
 			<type>node</type>
@@ -9994,7 +10031,7 @@ Remember Railo Server arrays start at 1 not 0.</description>
 	<function>
 		<name>xmlTransform</name>
 		<class>railo.runtime.functions.xml.XmlTransform</class>
-		<description></description>
+		<description>Runs the given XSLT against the XML document specified</description>
 		<argument>
 			<name>xmlObj</name>
 			<type>any</type>
