@@ -16,12 +16,15 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.util.ResourceSupport;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.StringUtil;
 import railo.loader.util.Util;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.List;
 
 public final class S3Resource extends ResourceSupport {
+
+	private static final long serialVersionUID = 2265457088552587701L;
 
 	private static final long FUTURE=50000000000000L;
 	
@@ -40,19 +43,22 @@ public final class S3Resource extends ResourceSupport {
 	private int storage=S3.STORAGE_UNKNOW;
 	private int acl=S3.ACL_PUBLIC_READ;
 
-	private S3Resource(S3 s3,int storage, S3ResourceProvider provider, String buckedName,String objectName) {
+	private boolean newPattern;
+
+	private S3Resource(S3 s3,int storage, S3ResourceProvider provider, String buckedName,String objectName, boolean newPattern) {
 		this.s3=s3;
 		this.provider=provider;
 		this.bucketName=buckedName;
 		this.objectName=objectName;
 		this.storage=storage;
+		this.newPattern=newPattern;
 	}
 	
 
-	S3Resource(S3 s3,int storage, S3ResourceProvider provider, String path) {
+	S3Resource(S3 s3,int storage, S3ResourceProvider provider, String path, boolean newPattern) {
 		this.s3=s3;
 		this.provider=provider;
-		
+		this.newPattern=newPattern;
 		
 		if(path.equals("/") || Util.isEmpty(path,true)) {
 			this.bucketName=null;
@@ -164,15 +170,27 @@ public final class S3Resource extends ResourceSupport {
 		return getPrefix().concat(getInnerPath());
 	}
 	
-	private String getPrefix() {
-		return provider.getScheme()
-			.concat("://")
-			.concat(s3.getAccessKeyId())
-			.concat(":")
-			.concat(s3.getSecretAccessKey())
-			.concat(storage!=S3.STORAGE_UNKNOW?":"+S3.toStringStorage(storage,"us"):"")
-			.concat("@")
-			.concat(s3.getHost());
+	private String getPrefix()  {
+		
+		String aki=s3.getAccessKeyId();
+		String sak=s3.getSecretAccessKey();
+		
+		StringBuilder sb=new StringBuilder(provider.getScheme()).append("://");
+		
+		if(!StringUtil.isEmpty(aki)){
+			sb.append(aki);
+			if(!StringUtil.isEmpty(sak)){
+				sb.append(":").append(sak);
+				if(storage!=S3.STORAGE_UNKNOW){
+					sb.append(":").append(S3.toStringStorage(storage,"us"));
+				}
+			}
+			sb.append("@");
+		}
+		if(!newPattern)
+			sb.append(s3.getHost());
+		
+		return sb.toString();
 	}
 
 
@@ -202,7 +220,7 @@ public final class S3Resource extends ResourceSupport {
 	 */
 	public Resource getParentResource() {
 		if(isRoot()) return null;
-		return new S3Resource(s3,isBucket()?S3.STORAGE_UNKNOW:storage,provider,getInnerParent());// MUST direkter machen
+		return new S3Resource(s3,isBucket()?S3.STORAGE_UNKNOW:storage,provider,getInnerParent(),newPattern);// MUST direkter machen
 	}
 
 	private boolean isRoot() {
@@ -265,7 +283,7 @@ public final class S3Resource extends ResourceSupport {
 	public Resource getRealResource(String realpath) {
 		realpath=ResourceUtil.merge(getInnerPath(), realpath);
 		if(realpath.startsWith("../"))return null;
-		return new S3Resource(s3,S3.STORAGE_UNKNOW,provider,realpath);
+		return new S3Resource(s3,S3.STORAGE_UNKNOW,provider,realpath,newPattern);
 	}
 
 	/**
@@ -389,17 +407,17 @@ public final class S3Resource extends ResourceSupport {
 				Bucket[] buckets = s3.listBuckets();
 				children=new S3Resource[buckets.length];
 				for(int i=0;i<children.length;i++) {
-					children[i]=new S3Resource(s3,storage,provider,buckets[i].getName(),"");
+					children[i]=new S3Resource(s3,storage,provider,buckets[i].getName(),"",newPattern);
 					s3.setInfo(children[i].getInnerPath(),buckets[i]);
 				}
 			}
 			else if(isDirectory()){
 				Content[] contents = s3.listContents(bucketName, isBucket()?null:objectName+"/");
-				ArrayList tmp = new ArrayList();
+				ArrayList<S3Resource> tmp = new ArrayList<S3Resource>();
 				String key,name,path;
 				int index;
-				Set names=new LinkedHashSet();
-				Set pathes=new LinkedHashSet();
+				Set<String> names=new LinkedHashSet<String>();
+				Set<String> pathes=new LinkedHashSet<String>();
 				S3Resource r;
 				boolean isb=isBucket();
 				for(int i=0;i<contents.length;i++) {
@@ -421,7 +439,7 @@ public final class S3Resource extends ResourceSupport {
 					//print.out("name:"+name);
 					if(path==null){
 						names.add(name);
-						tmp.add(r=new S3Resource(s3,storage,provider,contents[i].getBucketName(),key));
+						tmp.add(r=new S3Resource(s3,storage,provider,contents[i].getBucketName(),key,newPattern));
 						s3.setInfo(r.getInnerPath(),contents[i]);
 					}
 					else {
@@ -429,17 +447,17 @@ public final class S3Resource extends ResourceSupport {
 					}
 				}
 				
-				Iterator it = pathes.iterator();
+				Iterator<String> it = pathes.iterator();
 				while(it.hasNext()) {
-					path=(String) it.next();
+					path=it.next();
 					if(names.contains(path)) continue;
-					tmp.add(r=new S3Resource(s3,storage,provider,bucketName,path));
+					tmp.add(r=new S3Resource(s3,storage,provider,bucketName,path,newPattern));
 					s3.setInfo(r.getInnerPath(),UNDEFINED_WITH_CHILDREN2);
 				}
 				
 				//if(tmp.size()==0 && !isDirectory()) return null;
 				
-				children=(S3Resource[]) tmp.toArray(new S3Resource[tmp.size()]);
+				children=tmp.toArray(new S3Resource[tmp.size()]);
 			}
 		}
 		catch(Exception t) {

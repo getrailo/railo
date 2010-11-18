@@ -24,6 +24,7 @@ import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.xml.sax.SAXException;
 
+import railo.commons.lang.StringUtil;
 import railo.commons.net.URLEncoder;
 import railo.loader.util.Util;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -41,9 +42,11 @@ public final class S3 implements S3Constants {
 	private String host;
 
 
-	private final Map infos=new ReferenceMap();
+	private final Map<String,S3Info> infos=new ReferenceMap();
 
-
+	public String toString(){
+		return "secretAccessKey:"+secretAccessKey+";accessKeyId:"+accessKeyId+";host:"+host+";timezone:"+timezone;
+	}
 
 	public S3(String secretAccessKey, String accessKeyId,TimeZone tz) {
 		host=DEFAULT_URL;
@@ -62,13 +65,31 @@ public final class S3 implements S3Constants {
 	
 	/**
 	 * @return the secretAccessKey
+	 * @throws S3Exception 
 	 */
+	String getSecretAccessKeyValidate() throws S3Exception {
+		if(StringUtil.isEmpty(secretAccessKey))
+			throw new S3Exception("secretAccessKey is not defined, define in application.cfc (s3.awsSecretKey) or as part of the path.");
+		return secretAccessKey;
+	}
+	
+	/**
+	 * @return the accessKeyId
+	 * @throws S3Exception 
+	 */
+	String getAccessKeyIdValidate() throws S3Exception {
+		if(StringUtil.isEmpty(accessKeyId))
+			throw new S3Exception("accessKeyId is not defined, define in application.cfc (this.s3.accessKeyId) or as part of the path.");
+		return accessKeyId;
+	}
+	
 	String getSecretAccessKey() {
 		return secretAccessKey;
 	}
-
+	
 	/**
 	 * @return the accessKeyId
+	 * @throws S3Exception 
 	 */
 	String getAccessKeyId() {
 		return accessKeyId;
@@ -104,12 +125,12 @@ public final class S3 implements S3Constants {
 	
 	public InputStream listBucketsRaw() throws MalformedURLException, IOException, InvalidKeyException, NoSuchAlgorithmException {
 		String dateTimeString = Util.toHTTPTimeString();
-		String signature = createSignature("GET\n\n\n"+dateTimeString+"\n/", secretAccessKey, "iso-8859-1");
+		String signature = createSignature("GET\n\n\n"+dateTimeString+"\n/", getSecretAccessKeyValidate(), "iso-8859-1");
 		
 		HttpMethod method = railo.commons.net.HTTPUtil.invoke(new URL("http://"+host), null, null, -1, null, "Railo", null, -1, null, null,
 				new Header[]{
 					new Header("Date",dateTimeString),
-					new Header("Authorization","AWS "+accessKeyId+":"+signature)
+					new Header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature)
 				}
 		);
 		
@@ -121,12 +142,12 @@ public final class S3 implements S3Constants {
 	public InputStream listContentsRaw(String bucketName,String prefix,String marker,int maxKeys) throws MalformedURLException, IOException, InvalidKeyException, NoSuchAlgorithmException {
 		bucketName=checkBucket(bucketName);
 		String dateTimeString = Util.toHTTPTimeString();
-		String signature = createSignature("GET\n\n\n"+dateTimeString+"\n/"+bucketName+"/", secretAccessKey, "iso-8859-1");
+		String signature = createSignature("GET\n\n\n"+dateTimeString+"\n/"+bucketName+"/", getSecretAccessKeyValidate(), "iso-8859-1");
 		
 		
-		List headers=new ArrayList();
+		List<Header> headers=new ArrayList<Header>();
 		headers.add(new Header("Date",dateTimeString));
-		headers.add(new Header("Authorization","AWS "+accessKeyId+":"+signature));
+		headers.add(new Header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature));
 		headers.add(new Header("Host",bucketName+"."+host));
 		
 		///if(!StringUtil.isEmpty(prefix)) headers.add(new Header("prefix",prefix));
@@ -161,7 +182,7 @@ public final class S3 implements S3Constants {
 		String marker=null,last=null;
 		ContentFactory factory;
 		Content[] contents;
-		List list = new ArrayList();
+		List<Content[]> list = new ArrayList<Content[]>();
 		int size=0;
 		while(true) {
 			factory = new ContentFactory(listContentsRaw(bucketName, prefix, marker, -1),this);
@@ -180,10 +201,10 @@ public final class S3 implements S3Constants {
 		if(list.size()==0) return new Content[0];
 		
 		Content[] rtn=new Content[size];
-		Iterator it = list.iterator();
+		Iterator<Content[]> it = list.iterator();
 		int index=0;
 		while(it.hasNext()) {
-			contents=(Content[]) it.next();
+			contents=it.next();
 			for(int i=0;i<contents.length;i++) {
 				rtn[index++]=contents[i];
 			}
@@ -238,13 +259,13 @@ public final class S3 implements S3Constants {
 		String dateTimeString = Util.toHTTPTimeString();
 		// Create a canonical string to send based on operation requested 
 		String cs = "PUT\n\n"+re.getContentType()+"\n"+dateTimeString+"\nx-amz-acl:"+toStringACL(acl)+"\n/"+bucketName+"/"+objectName;
-		String signature = createSignature(cs, secretAccessKey, "iso-8859-1");
+		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
 		Header[] headers = new Header[]{
 				new Header("Content-Type",re.getContentType()),
 				new Header("Content-Length",Long.toString(re.getContentLength())),
 				new Header("Date",dateTimeString),
 				new Header("x-amz-acl",toStringACL(acl)),
-				new Header("Authorization","AWS "+accessKeyId+":"+signature),
+				new Header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature),
 		};
 		
 		String strUrl="http://"+bucketName+"."+host+"/"+objectName;
@@ -268,7 +289,7 @@ public final class S3 implements S3Constants {
 		String dateTimeString = Util.toHTTPTimeString();
 		// Create a canonical string to send based on operation requested 
 		String cs = "PUT\n\n"+contentType+"\n"+dateTimeString+"\nx-amz-acl:"+toStringACL(acl)+"\n/"+bucketName+"/"+objectName;
-		String signature = createSignature(cs, secretAccessKey, "iso-8859-1");
+		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
 		
 		String strUrl="http://"+bucketName+"."+host+"/"+objectName;
 		if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/"+objectName;
@@ -286,7 +307,7 @@ public final class S3 implements S3Constants {
 		//conn.setRequestProperty("Transfer-Encoding", "chunked" );
 		conn.setRequestProperty("Date", dateTimeString);
 		conn.setRequestProperty("x-amz-acl", toStringACL(acl));
-		conn.setRequestProperty("Authorization", "AWS "+accessKeyId+":"+signature);
+		conn.setRequestProperty("Authorization", "AWS "+getAccessKeyIdValidate()+":"+signature);
 		return conn;
 	}
 
@@ -297,13 +318,13 @@ public final class S3 implements S3Constants {
 		//String dateTimeString = GetHttpTimeString.invoke();
 		long epoch = (System.currentTimeMillis()/1000)+(secondsValid);
 		String cs = "GET\n\n\n"+epoch+"\n/"+bucketName+"/"+objectName;
-		String signature = createSignature(cs, secretAccessKey, "iso-8859-1");
+		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
 		
 		String strUrl="http://"+bucketName+"."+host+"/"+objectName;
 		if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/"+objectName;
 		
 		
-		return strUrl+"?AWSAccessKeyId="+accessKeyId+"&Expires="+epoch+"&Signature="+signature;
+		return strUrl+"?AWSAccessKeyId="+getAccessKeyIdValidate()+"&Expires="+epoch+"&Signature="+signature;
 	}
 
 	public InputStream getInputStream(String bucketName,String objectName) throws InvalidKeyException, NoSuchAlgorithmException, IOException, SAXException  {
@@ -315,7 +336,7 @@ public final class S3 implements S3Constants {
 		String cs = "GET\n\n\n"+dateTimeString+"\n/"+bucketName+"/"+objectName;
 		    
 		
-		String signature = createSignature(cs, secretAccessKey, "iso-8859-1");
+		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
 		
 		String strUrl="http://"+bucketName+"."+host+"/"+objectName;
 		if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/"+objectName;
@@ -326,7 +347,7 @@ public final class S3 implements S3Constants {
 				new Header[]{
 					new Header("Date",dateTimeString),
 					new Header("Host",bucketName+"."+host),
-					new Header("Authorization","AWS "+accessKeyId+":"+signature)
+					new Header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature)
 				}
 		);
 		if(method.getStatusCode()!=200)
@@ -374,11 +395,11 @@ public final class S3 implements S3Constants {
 		// Create a canonical string to send based on operation requested 
 		String cs ="DELETE\n\n\n"+dateTimeString+"\n/"+bucketName+"/"+objectName;
 		//print.out(cs);
-		String signature = createSignature(cs, secretAccessKey, "iso-8859-1");
+		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
 		
 		Header[] headers = new Header[]{
 				new Header("Date",dateTimeString),
-				new Header("Authorization","AWS "+accessKeyId+":"+signature),
+				new Header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature),
 		};
 		
 		String strUrl="http://"+bucketName+"."+host+"/"+objectName;
@@ -494,21 +515,21 @@ public final class S3 implements S3Constants {
 	/**
 	 * @param secretAccessKey the secretAccessKey to set
 	 */
-	void setSecretAccessKey(String secretAccessKey) {
+	public void setSecretAccessKey(String secretAccessKey) {
 		this.secretAccessKey = secretAccessKey;
 	}
 
 	/**
 	 * @param accessKeyId the accessKeyId to set
 	 */
-	void setAccessKeyId(String accessKeyId) {
+	public void setAccessKeyId(String accessKeyId) {
 		this.accessKeyId = accessKeyId;
 	}
 
 	/**
 	 * @param url the url to set
 	 */
-	void setHost(String host) {
+	public void setHost(String host) {
 		this.host=host;
 	}
 

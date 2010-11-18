@@ -10,6 +10,7 @@ public interface S3Constants {
 	public static final int STORAGE_EU=0;//
 	public static final int STORAGE_US=1;//
 	public static final int STORAGE_UNKNOW = -1;
+	public static final String HOST = "s3.amazonaws.com";
 }
 
 

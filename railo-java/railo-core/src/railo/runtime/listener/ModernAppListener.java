@@ -77,7 +77,11 @@ public class ModernAppListener extends AppListenerSupport {
 	private static final Collection.Key DATA_SOURCE = KeyImpl.getInstance("datasource");
 	private static final Collection.Key ORM_ENABLED = KeyImpl.getInstance("ormenabled");
 	private static final Collection.Key ORM_SETTINGS = KeyImpl.getInstance("ormsettings");
-	
+
+	private static final Collection.Key S3 = KeyImpl.getInstance("s3");
+	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.getInstance("accessKeyId");
+	private static final Collection.Key AWS_SECRET_KEY = KeyImpl.getInstance("awsSecretKey");
+	private static final Collection.Key DEFAULT_LOCATION = KeyImpl.getInstance("defaultLocation");
 	
 	
 	//private ComponentImpl app;
@@ -380,9 +384,8 @@ public class ModernAppListener extends AppListenerSupport {
 	private void initApplicationContext(PageContextImpl pc, ComponentImpl app) throws PageException {
 		
 		// use existing app context
-		ApplicationContextImpl appContext = new ApplicationContextImpl(pc.getConfig(),false);
+		ApplicationContextImpl appContext = new ApplicationContextImpl(pc.getConfig(),app,false);
 
-		
 		
 		Object o;
 		boolean initORM=false;
@@ -458,6 +461,19 @@ public class ModernAppListener extends AppListenerSupport {
 			// secureJson
 			o=get(app,SECURE_JSON,null);
 			if(o!=null) appContext.setSecureJson(Caster.toBooleanValue(o));
+			
+			// S3
+			o=get(app,S3,null);
+			if(o!=null && Decision.isStruct(o)){
+				Struct sct=Caster.toStruct(o);
+				
+				appContext.setS3(
+						Caster.toString(sct.get(ACCESS_KEY_ID,null)),
+						Caster.toString(sct.get(AWS_SECRET_KEY,null)),
+						Caster.toString(sct.get(DEFAULT_LOCATION,null))
+					);
+			}
+			
 			
 			
 	///////////////////////////////// ORM /////////////////////////////////
