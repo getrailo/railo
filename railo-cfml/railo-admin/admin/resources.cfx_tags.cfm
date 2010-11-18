@@ -272,7 +272,7 @@ function selectAll(field) {
 </cfform>
 </table>
 
-
+<cfif structKeyExists(session,'enable') and session.enable EQ "cfxcpp">
 <!------------------------------ C++ ------------------------------->
 <br />
 <table class="tbl" width="740">
@@ -400,13 +400,8 @@ function selectAll(field) {
 </cfif>
 </cfform>
 </table>
+</cfif>
 
 </cfif>
 
-<ext-tag 
-	keep-alive="false" 
-    name="directorylist" 
-    procedure="ProcessTagRequest" 
-    server-library="/Users/mic/libs/directorylist/unix/macos/directorylist.dynlib" 
-    type="cpp"/>
     

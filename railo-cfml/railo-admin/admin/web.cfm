@@ -4,6 +4,12 @@
 	clientmanagement="no" 
 	setclientcookies="yes" 
 	setdomaincookies="no">
+    
+<cfif structKeyExists(url,'enable')>
+	<cfset session.enable=url.enable>
+</cfif>
+    
+    
 <cfset cookieKey="sdfsdf789sdfsd">
 <cfparam name="request.adminType" default="web">
 <cfparam name="form.rememberMe" default="s">

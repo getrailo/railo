@@ -106,7 +106,8 @@ function detail(field){
 	<td class="tblContent">#attr.name	#</td>
 	<td class="tblContent">#attr.type#&nbsp;</td>
 	<td class="tblContent">#YesNoFormat(attr.required)#</td>
-	<td class="tblContent"><cfif attr.status EQ "deprecated"><b class="error">#stText.doc.depArg#</b><cfelse>#attr.description#</cfif>&nbsp;</td>
+	<td class="tblContent"><cfif attr.status EQ "deprecated"><b class="error">#stText.doc.depArg#</b><cfelse>#replace(trim(attr.description),'
+','<br />','all')#</cfif>&nbsp;</td>
 </tr>
 </cfloop>
 
