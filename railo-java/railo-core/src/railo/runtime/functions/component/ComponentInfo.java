@@ -6,7 +6,6 @@ package railo.runtime.functions.component;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
-import railo.runtime.functions.other.GetMetaData;
 import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;

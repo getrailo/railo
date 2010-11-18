@@ -13,12 +13,10 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.util.ComponentUtil;
-import railo.runtime.util.ApplicationContext;
 import railo.runtime.util.ApplicationContextPro;
 
 public class GetApplicationSettings {

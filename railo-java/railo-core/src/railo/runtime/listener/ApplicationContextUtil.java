@@ -6,7 +6,6 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Scope;
 import railo.runtime.util.ApplicationContext;
-import railo.runtime.util.ApplicationContextPro;
 
 public class ApplicationContextUtil {
 	/**

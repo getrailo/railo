@@ -20,7 +20,6 @@ import railo.runtime.img.MarpleCaptcha;
 import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
-import railo.runtime.type.scope.CGIImpl;
 import railo.runtime.type.util.ArrayUtil;
 
 // GetWriteableImageFormats

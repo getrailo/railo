@@ -1,23 +1,13 @@
 package railo.runtime.type.scope;
 
-import java.util.Iterator;
 import java.util.Map;
 
-
-import railo.runtime.Component;
-import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.PageException;
 import railo.runtime.functions.system.GetApplicationSettings;
-import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
-import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.util.ApplicationContext;
-import railo.runtime.util.ApplicationContextPro;
 
 
 

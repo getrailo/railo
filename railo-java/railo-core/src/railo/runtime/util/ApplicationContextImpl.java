@@ -1,6 +1,5 @@
 package railo.runtime.util;
 
-import railo.commons.io.res.type.s3.S3;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.Mapping;
@@ -8,9 +7,8 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.listener.ApplicationContextUtil;
+import railo.runtime.net.s3.Properties;
 import railo.runtime.orm.ORMConfiguration;
-import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Scope;
 import railo.runtime.type.dt.TimeSpan;
 
@@ -45,7 +43,7 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 	private Component component;
 
 
-	private S3 s3;
+	private Properties s3;
     
     /**
      * constructor of the class
@@ -345,17 +343,18 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 
 
 	public void setS3(String accessKeyId, String awsSecretKey, String defaultLocation) {
-		this.s3=new S3();
-		if(StringUtil.isEmpty(accessKeyId))s3.setAccessKeyId(accessKeyId);
-		if(StringUtil.isEmpty(awsSecretKey))s3.setSecretAccessKey(awsSecretKey);
-		if(StringUtil.isEmpty(defaultLocation))s3.setHost(defaultLocation);
+		this.s3=new Properties();
+		if(!StringUtil.isEmpty(accessKeyId))s3.setAccessKeyId(accessKeyId);
+		if(!StringUtil.isEmpty(awsSecretKey))s3.setSecretAccessKey(awsSecretKey);
+		if(!StringUtil.isEmpty(defaultLocation))s3.setHost(defaultLocation);
 	}
 
 
 	/**
 	 * @return the s3
 	 */
-	public S3 getS3() {
+	public Properties getS3() {
+		if(s3==null) s3=new Properties();
 		return s3;
 	}
 	
