@@ -91,7 +91,7 @@ public final class Import extends EvaluatorSupport {
         textTagLib=textTagLib.replace('\\','/');
         textTagLib=ConfigWebUtil.replacePlaceholder(textTagLib, config);
         // File TagLib
-        String ext=ResourceUtil.getExtension(textTagLib);
+        String ext=ResourceUtil.getExtension(textTagLib,null);
         boolean hasTldExtension="tld".equalsIgnoreCase(ext);
         
         Resource absFile=config.getResource(textTagLib);
@@ -137,7 +137,7 @@ public final class Import extends EvaluatorSupport {
      */
     private TagLib _executeTLD(Config config, Resource fileTagLib,String nameSpace,String nameSpaceSeparator, CFMLString cfml) throws TemplateException {
         // change extesnion
-        String ext=ResourceUtil.getExtension(fileTagLib);
+        String ext=ResourceUtil.getExtension(fileTagLib,null);
         if("jar".equalsIgnoreCase(ext)) {
             // check anchestor file
         	Resource newFileTagLib = ResourceUtil.changeExtension(fileTagLib,"tld");

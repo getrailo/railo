@@ -741,8 +741,8 @@ public final class ResourceUtil {
      * @param res
      * @return extension of file
      */
-    public static String getExtension(Resource res) {
-        return getExtension(res.getName());
+    public static String getExtension(Resource res, String defaultValue) {
+        return getExtension(res.getName(),defaultValue);
     }
 
     /**
@@ -750,9 +750,9 @@ public final class ResourceUtil {
      * @param strFile
      * @return extension of file
      */
-    public static String getExtension(String strFile) {
+    public static String getExtension(String strFile, String defaultValue) {
         int pos=strFile.lastIndexOf('.');
-        if(pos==-1)return null;
+        if(pos==-1)return defaultValue;
         return strFile.substring(pos+1);
     }
     
@@ -782,7 +782,7 @@ public final class ResourceUtil {
      * @return  file with new Extension
      */
     public static Resource changeExtension(Resource file, String newExtension) {
-        String ext=getExtension(file);
+        String ext=getExtension(file,null);
         if(ext==null) return file.getParentResource().getRealResource(file.getName()+'.'+newExtension);
         //new File(file.getParentFile(),file.getName()+'.'+newExtension);
         String name=file.getName();

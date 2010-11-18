@@ -230,7 +230,7 @@ public abstract class PageExceptionImpl extends PageException {
 			trace=traces[i];
 			tlast=template;
 			template=trace.getFileName();
-			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template).equals("java")) continue;
+			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
 			// content
 			if(!StringUtil.emptyIfNull(tlast).equals(template))index++;
 			
@@ -304,7 +304,7 @@ public abstract class PageExceptionImpl extends PageException {
 			trace=traces[i];
 			tlast=template;
 			template=trace.getFileName();
-			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template).equals("java")) continue;
+			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
 			if(!StringUtil.emptyIfNull(tlast).equals(template))index++;
 			
 		}

@@ -96,7 +96,7 @@ public class FDThreadImpl implements IFDThread {
 			ps=null;
 			if(trace.getLineNumber()<=0) continue;
 			template=trace.getFileName();
-			if(template==null || ResourceUtil.getExtension(template).equals("java")) continue;
+			if(template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
 			
 			if(index>0)ps=(PageSource) stack.get(--index);
 			// inside the if is the old way, that only work when the cfm is inside the mapping, but i'm not shure woth the new way 
@@ -130,7 +130,7 @@ public class FDThreadImpl implements IFDThread {
 			trace=traces[i];
 			if(trace.getLineNumber()<=0) continue;
 			template=trace.getFileName();
-			if(template==null || ResourceUtil.getExtension(template).equals("java")) continue;
+			if(template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
 			
 			if(ps==null || !(ps.getFullClassName().equals(trace.getClassName()) && ps.getPhyscalFile().getAbsolutePath().equals(template))){
 				res = ResourceUtil.toResourceNotExisting(pc, template);

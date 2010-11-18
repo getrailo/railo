@@ -95,7 +95,7 @@ public class ImageUtil {
 	}
 
 	public static String getFormatFromExtension(Resource res, String defaultValue) {
-		String ext=ResourceUtil.getExtension(res);
+		String ext=ResourceUtil.getExtension(res,null);
 		if("gif".equalsIgnoreCase(ext))return "gif";
 		if("jpg".equalsIgnoreCase(ext))return "jpg";
 		if("jpe".equalsIgnoreCase(ext))return "jpg";

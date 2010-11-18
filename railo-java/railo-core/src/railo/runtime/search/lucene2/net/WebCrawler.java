@@ -278,7 +278,7 @@ public final class WebCrawler {
 
 	private static boolean validExtension(String[] extensions, String file) {
 		
-		String ext = ResourceUtil.getExtension(file);
+		String ext = ResourceUtil.getExtension(file,"");
 		ext=railo.runtime.type.List.first(ext,"/");
 		
 		if(StringUtil.isEmpty(ext))return true;

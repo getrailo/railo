@@ -119,7 +119,7 @@ public class TraceObject implements Objects, Collection,UDF {
 		for(int i=0;i<traces.length;i++) {
 			trace=traces[i];
 			template=trace.getFileName();
-			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template).equals("java") ||
+			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java") ||
 					template.endsWith("Dump.cfc"))// MUST bad impl 
 				continue;
 			line=trace.getLineNumber();

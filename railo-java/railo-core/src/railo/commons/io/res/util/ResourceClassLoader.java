@@ -60,7 +60,7 @@ public final class ResourceClassLoader extends URLClassLoader implements Closeab
 	public static URL[] doURLs(Resource[] reses) throws IOException {
 		List<URL> list=new ArrayList<URL>();
 		for(int i=0;i<reses.length;i++) {
-			if(reses[i].isDirectory() || "jar".equalsIgnoreCase(ResourceUtil.getExtension(reses[i])))
+			if(reses[i].isDirectory() || "jar".equalsIgnoreCase(ResourceUtil.getExtension(reses[i],null)))
 				list.add(doURL(reses[i]));
 		}
 		return list.toArray(new URL[list.size()]);
