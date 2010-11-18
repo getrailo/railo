@@ -439,6 +439,7 @@ public final class S3 implements S3Constants {
 		switch(storage) {
 			case STORAGE_EU:return "eu";
 			case STORAGE_US:return "us";
+			case STORAGE_US_WEST:return "us-west";
 		}
 		return defaultValue;
 	}
@@ -479,6 +480,11 @@ public final class S3 implements S3Constants {
 		if("euro.".equals(storage)) return STORAGE_EU;
 		if("e.u.".equals(storage)) return STORAGE_EU;
 		if("united states of america".equals(storage)) return STORAGE_US;
+		
+		if("us-west".equals(storage)) return STORAGE_US_WEST;
+		if("usa-west".equals(storage)) return STORAGE_US_WEST;
+		
+		
 		return defaultValue;
 	}
 	

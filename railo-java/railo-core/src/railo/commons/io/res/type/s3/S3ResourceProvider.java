@@ -91,6 +91,8 @@ public final class S3ResourceProvider implements ResourceProvider {
 	public static String loadWithNewPattern(S3 s3,RefInteger storage, String path) {
 		Properties prop=((ApplicationContextPro)ThreadLocalPageContext.get().getApplicationContext()).getS3();
 		
+		int defaultLocation = prop.getDefaultLocation();
+		storage.setValue(defaultLocation);
 		String accessKeyId = prop.getAccessKeyId();
 		String secretAccessKey = prop.getSecretAccessKey();
 		
@@ -113,28 +115,29 @@ public final class S3ResourceProvider implements ResourceProvider {
 					String strStorage=secretAccessKey.substring(index+1).trim().toLowerCase();
 					secretAccessKey=secretAccessKey.substring(0,index);
 					//print.out("storage:"+strStorage);
-					storage.setValue(S3.toIntStorage(strStorage, S3.STORAGE_UNKNOW));
+					storage.setValue(S3.toIntStorage(strStorage, defaultLocation));
 				}
 			}
 			else accessKeyId=path.substring(0,atIndex);
 		}
 		path=prettifyPath(path.substring(atIndex+1));
 		index=path.indexOf('/');
+		s3.setHost(S3Constants.HOST);
 		if(index==-1){
-			if(path.equalsIgnoreCase(prop.getHost()) || path.equalsIgnoreCase(S3Constants.HOST)){
+			if(path.equalsIgnoreCase(S3Constants.HOST)){
 				s3.setHost(path);
 				path="/";
 			}
 		}
 		else {
 			String host=path.substring(0,index);
-			if(host.equalsIgnoreCase(prop.getHost()) || host.equalsIgnoreCase(S3Constants.HOST)){
+			if(host.equalsIgnoreCase(S3Constants.HOST)){
 				s3.setHost(host);
 				path=path.substring(index);
 			}
 		}
 		
-		s3.setHost(prop.getHost());
+		
 		s3.setSecretAccessKey(secretAccessKey);
 		s3.setAccessKeyId(accessKeyId);
 		
