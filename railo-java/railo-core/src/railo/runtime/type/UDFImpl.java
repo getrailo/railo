@@ -476,6 +476,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		} 
 		catch (ExpressionException e) {}
 		func.setTitle(f+udf.getFunctionName());
+		if(udf instanceof UDFImpl)func.setComment("source:"+((UDFImpl)udf).getPageSource().getDisplayPath());
 		
 		
 		if(!StringUtil.isEmpty(udf.getDescription()))func.setComment(udf.getDescription());
