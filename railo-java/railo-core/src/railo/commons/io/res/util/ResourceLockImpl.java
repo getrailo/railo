@@ -74,7 +74,7 @@ public final class ResourceLockImpl implements ResourceLock {
 				return;
 			}
 			if(t==Thread.currentThread()) {
-				aprint.err(path);
+				//aprint.err(path);
 				Config config = ThreadLocalPageContext.getConfig();
 				if(config!=null)
 					SystemOut.printDate(config.getErrWriter(),"conflict in same thread: on "+path);
