@@ -65,12 +65,16 @@ Redirtect to entry  --->
 
 
 <cfoutput>
-<h2>#stText.Settings.orm.title#</h2>
 
 
-<table class="tbl" width="600">
+
+<table class="tbl" width="740">
+<colgroup>
+    <col width="150">
+    <col width="590">
+</colgroup>
 <tr>
-	<td colspan="2">#stText.Settings.orm.desc#</td>
+	<td colspan="2"><h2>#stText.Settings.orm.title#</h2>#stText.Settings.orm.desc#</td>
 </tr>
 <tr>
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>

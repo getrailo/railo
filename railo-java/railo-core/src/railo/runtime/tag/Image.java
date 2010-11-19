@@ -381,8 +381,9 @@ public final class Image extends TagImpl {
 			if(!folder.exists())folder.createDirectory(true);
 			destination = folder.getRealResource(name);
 			cleanOld(folder);
-
-			return "/railo-context/graph.cfm?img="+name+"&type=x-png";
+			String cp = pageContext.getHttpServletRequest().getContextPath();
+			if(StringUtil.isEmpty(cp)) cp="";
+			return cp+"/railo-context/graph.cfm?img="+name+"&type=x-png";
 		}
 		return ContractPath.call(pageContext, destination.getAbsolutePath());
 	}

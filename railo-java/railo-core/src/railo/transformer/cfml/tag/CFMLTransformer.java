@@ -153,7 +153,7 @@ public final class CFMLTransformer {
 		}
 		
 		// if cfc has no component tag or is script without cfscript
-		if(p.isPage() && ResourceUtil.getExtension(sf.getFile()).equalsIgnoreCase(config.getCFCExtension())){
+		if(p.isPage() && ResourceUtil.getExtension(sf.getFile(),"").equalsIgnoreCase(config.getCFCExtension())){
 			cfml.setPos(0);
 			TagLibTag tlt;
 			CFMLString original = cfml; 
@@ -534,7 +534,7 @@ public final class CFMLTransformer {
 		
 		if(tagLibTag.hasAttributeEvaluator()) {
 			try {
-				tagLibTag.getAttributeEvaluator().evaluate(tagLibTag,tag);
+				tagLibTag=tagLibTag.getAttributeEvaluator().evaluate(tagLibTag,tag);
 			} catch (AttributeEvaluatorException e) {
 				
 				throw new TemplateException(data.cfml, e);
@@ -595,7 +595,9 @@ public final class CFMLTransformer {
 			}
 			else {
 				// get body of Tag
-				Body body=new BodyBase();
+				BodyBase body=new BodyBase();
+				body.setParent(tag);
+				//tag.setBody(body);
 					//parseExpression=(tagLibTag.getParseBody())?true:parseExpression;
 				if(tagLibTag.getParseBody())parseExpression=true;
 				
@@ -613,7 +615,9 @@ public final class CFMLTransformer {
 					
 
 					// call body
+					
 				    body(data,body,parseExpression,transfomer);
+				   
 				    
 				    // no End Tag
 					if(data.cfml.isAfterLast()) {

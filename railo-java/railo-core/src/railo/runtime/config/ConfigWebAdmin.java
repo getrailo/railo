@@ -24,9 +24,11 @@ import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.Cache;
+import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.filter.ResourceNameFilter;
+import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
@@ -38,6 +40,8 @@ import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.ExtensionFilter;
 import railo.runtime.Info;
 import railo.runtime.cache.CacheConnection;
+import railo.runtime.cfx.CFXTagException;
+import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.crypt.BlowfishEasy;
@@ -324,12 +328,12 @@ public final class ConfigWebAdmin {
     }
     
     private synchronized void store(ConfigImpl config) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
-    	renameOldstyleJavaCFX();
+    	renameOldstyleCFX();
+    	
     	checkWriteAccess();
         createAbort();
         if(config instanceof ConfigServerImpl) {
         	XMLCaster.writeTo(doc,config.getConfigFile());
-            //SystemUtil.sleep(10);
             
             ConfigServerImpl cs=(ConfigServerImpl) config;
             ConfigServerFactory.reloadInstance(cs);
@@ -345,7 +349,8 @@ public final class ConfigWebAdmin {
             ConfigWebFactory.reloadInstance(config,false);
         }
     }
-
+    
+    
 
     private void createAbort() {
     	try {
@@ -813,7 +818,7 @@ public final class ConfigWebAdmin {
         if(name==null || name.length()==0)
             throw new ExpressionException("class name can't be a empty value");
         
-        renameOldstyleJavaCFX();
+        renameOldstyleCFX();
         
         
         Element tags=_getRootElement("ext-tags");
@@ -825,7 +830,8 @@ public final class ConfigWebAdmin {
       	    
       	    if(n!=null && n.equalsIgnoreCase(name)) {
 	      		Element el=children[i];
-	      		el.setAttribute("class",strClass);
+	      		if(!"java".equalsIgnoreCase(el.getAttribute("type"))) throw new ExpressionException("there is already a c++ cfx tag with this name");
+      	    	el.setAttribute("class",strClass);
 	      		el.setAttribute("type","java");
 	      		return ;
   			}
@@ -840,7 +846,56 @@ public final class ConfigWebAdmin {
   		el.setAttribute("type","java");  		
     }
     
-    private void renameOldstyleJavaCFX() {
+    public void updateCPPCFX(String name, String procedure, String strServerLibrary, boolean keepAlive) throws PageException {
+    	checkWriteAccess();
+    	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_CFX_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to change cfx settings");
+        
+        // name
+        if(StringUtil.isEmpty(name))
+            throw new ExpressionException("name cannot be a empty value");
+        
+        // serverLibrary
+        if(StringUtil.isEmpty(strServerLibrary)) throw new ExpressionException("serverLibrary cannot be a empty value");
+        Resource serverLibrary = ResourceUtil.toResourceExisting(config, strServerLibrary);
+        
+        // procedure
+        if(StringUtil.isEmpty(procedure)) throw new ExpressionException("procedure cannot be a empty value");
+        
+        renameOldstyleCFX();
+        
+        
+        Element tags=_getRootElement("ext-tags");
+        
+        // Update
+        Element[] children = ConfigWebFactory.getChildren(tags,"ext-tag");
+      	for(int i=0;i<children.length;i++) {
+      	    String n=children[i].getAttribute("name");
+      	    
+      	    if(n!=null && n.equalsIgnoreCase(name)) {
+	      		Element el=children[i];
+	      		if(!"cpp".equalsIgnoreCase(el.getAttribute("type"))) throw new ExpressionException("there is already a java cfx tag with this name");
+      	    	el.setAttribute("server-library",serverLibrary.getAbsolutePath());
+      	    	el.setAttribute("procedure",procedure);
+      	    	el.setAttribute("keep-alive",Caster.toString(keepAlive));
+      	    	el.setAttribute("type","cpp");
+	      		return ;
+  			}
+      	    
+      	}
+      	
+      	// Insert
+      	Element el=doc.createElement("ext-tag");
+      	tags.appendChild(el);
+      	el.setAttribute("server-library",serverLibrary.getAbsolutePath());
+    	el.setAttribute("procedure",procedure);
+    	el.setAttribute("keep-alive",Caster.toString(keepAlive));
+    	el.setAttribute("name",name);
+  		el.setAttribute("type","cpp"); 
+	}
+    
+    private void renameOldstyleCFX() {
     	
         Element tags=_getRootElement("ext-tags",false,true);
         if(tags!=null) return;
@@ -848,41 +903,82 @@ public final class ConfigWebAdmin {
         if(tags==null) return;
         
         
-        //if(oldStyle){
-        	Element newTags = _getRootElement("ext-tags");
-        	Element[] children = ConfigWebFactory.getChildren(tags,"cfx-tag");
-        	String type;
-          	// copy
-        	for(int i=0;i<children.length;i++) {
-          	    Element el=doc.createElement("ext-tag");
-          	    newTags.appendChild(el);
-          	    type=children[i].getAttribute("type");
-          	    // java
-          	    if(type.equalsIgnoreCase("java")){
-          	    	el.setAttribute("class",children[i].getAttribute("class"));
-          	    }
-          	    // c++
-          	    else {
-          	    	el.setAttribute("server-library",children[i].getAttribute("server-library"));
-          	    	el.setAttribute("procedure",children[i].getAttribute("procedure"));
-          	    	el.setAttribute("keep-alive",children[i].getAttribute("keep-alive"));
-          	    	
-          	    }
-              	el.setAttribute("name",children[i].getAttribute("name"));
-          		el.setAttribute("type",children[i].getAttribute("type"));  
-          	}
-        	
-        	// remove old
-        	for(int i=0;i<children.length;i++) {
-        		tags.removeChild(children[i]);
-        	}
-        	tags.getParentNode().removeChild(tags);
-        //} 
+        
+    	Element newTags = _getRootElement("ext-tags");
+    	Element[] children = ConfigWebFactory.getChildren(tags,"cfx-tag");
+    	String type;
+      	// copy
+    	for(int i=0;i<children.length;i++) {
+      	    Element el=doc.createElement("ext-tag");
+      	    newTags.appendChild(el);
+      	    type=children[i].getAttribute("type");
+      	    // java
+      	    if(type.equalsIgnoreCase("java")){
+      	    	el.setAttribute("class",children[i].getAttribute("class"));
+      	    }
+      	    // c++
+      	    else {
+      	    	el.setAttribute("server-library",children[i].getAttribute("server-library"));
+      	    	el.setAttribute("procedure",children[i].getAttribute("procedure"));
+      	    	el.setAttribute("keep-alive",children[i].getAttribute("keep-alive"));
+      	    	
+      	    }
+          	el.setAttribute("name",children[i].getAttribute("name"));
+      		el.setAttribute("type",children[i].getAttribute("type"));  
+      	}
+    	
+    	// remove old
+    	for(int i=0;i<children.length;i++) {
+    		tags.removeChild(children[i]);
+    	}
+    	tags.getParentNode().removeChild(tags);
 	}
+
+    public static boolean fixS3(Document doc) {
+    	Element resources=ConfigWebFactory.getChildByName(doc.getDocumentElement(),"resources",false,true);
+        
+        Element[] providers = ConfigWebFactory.getChildren(resources,"resource-provider");
+        
+        // replace extension class with core class
+        for(int i=0;i<providers.length;i++) {
+        	if("s3".equalsIgnoreCase(providers[i].getAttribute("scheme"))) {
+        		if("railo.extension.io.resource.type.s3.S3ResourceProvider".equalsIgnoreCase(providers[i].getAttribute("class"))){
+        			providers[i].setAttribute("class", S3ResourceProvider.class.getName());
+        			return true;
+        		}
+        		return false;
+        	}
+        }
+        
+        
+        // FUTURE remove this part for version 4.0
+        // add s3 when not
+        Element el=doc.createElement("resource-provider");
+        el.setAttribute("scheme", "s3");
+        el.setAttribute("class", S3ResourceProvider.class.getName());
+        el.setAttribute("arguments", "lock-timeout:10000;");
+        resources.appendChild(el);
+        
+        return true;
+	}
+
     
     
   
-    
+    public void verifyCFX(String name) throws PageException {
+    	CFXTagPool pool=config.getCFXTagPool();
+		CustomTag ct=null;
+		try {
+			ct = pool.getCustomTag(name);
+		} 
+        catch (CFXTagException e) {
+			throw Caster.toPageException(e);
+		}
+        finally {
+        	if(ct!=null)pool.releaseCustomTag(ct);
+        }
+		
+	}
     
 
 
@@ -914,7 +1010,7 @@ public final class ConfigWebAdmin {
         if(name==null || name.length()==0)
             throw new ExpressionException("name for CFX Tag can be a empty value");
         
-        renameOldstyleJavaCFX();
+        renameOldstyleCFX();
         
         Element mappings=_getRootElement("ext-tags");
 
@@ -1683,8 +1779,8 @@ public final class ConfigWebAdmin {
     }
     
     
-    
-    public void updateSupressWhitespace(Boolean value) throws SecurityException {
+
+    public void updateSuppressWhitespace(Boolean value) throws SecurityException {
     	checkWriteAccess();
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
         
@@ -1692,6 +1788,15 @@ public final class ConfigWebAdmin {
         
         Element scope=_getRootElement("setting");
         scope.setAttribute("suppress-whitespace",Caster.toString(value,""));
+    }
+    public void updateSuppressContent(Boolean value) throws SecurityException {
+    	checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        
+        Element scope=_getRootElement("setting");
+        scope.setAttribute("suppress-content",Caster.toString(value,""));
     }
     
     public void updateShowVersion(Boolean value) throws SecurityException {
@@ -2986,7 +3091,76 @@ public final class ConfigWebAdmin {
 			ConfigWebFactory.reloadLib(this.config);
 		}
 	}
-	
+
+
+	public void updateLogSettings(String name, int level,String virtualpath, int maxfile, int maxfilesize) throws ApplicationException {
+		name=name.toLowerCase().trim();
+		
+		
+		
+		
+		if("application".equals(name)) {
+			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","application") ;
+		}
+		else if("exception".equals(name)) {
+			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","exception") ;
+		}
+		else if("trace".equals(name)) {
+			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","trace") ;
+		}
+		else if("thread".equals(name)) {
+			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","thread") ;
+		}
+		else if("orm".equals(name)) {
+			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "orm") ;
+		}
+		else if("gateway".equals(name)) {
+			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "gateways") ;
+		}
+		else if("mail".equals(name)) {
+			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "mail") ;
+		}  
+		else if("mapping".equals(name)) {
+			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "mappings") ;
+		}  
+		else if("remote-client".equals(name)) {
+			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "remote-clients") ;
+		}  
+		else if("request-timeout".equals(name)) {
+			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","requesttimeout") ;
+		}  
+		else if("request-timeout".equals(name)) {
+			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "application","requesttimeout") ;
+		}  
+		else if("schedule-task".equals(name)) {
+			if(config instanceof ConfigServer)
+				throw new ApplicationException("scheduled task logger is not supported for server context");
+			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "scheduler") ;
+		}  
+		else if("search".equals(name)) {
+			if(config instanceof ConfigServer)
+				throw new ApplicationException("search logger is not supported for server context");
+			updateLogSettings(name, level,virtualpath, maxfile, maxfilesize, "search") ;
+		}  
+		else {
+			throw new ApplicationException("invalid logger name ["+name+"], supported names are [application,exception,trace,thread,orm,gateway,mail,mapping,remote-client,request-timeout,request-timeout,schedule-task,search]");
+		}
+	}
+
+	private void updateLogSettings(String name, int level, String virtualpath,int maxfile, int maxfilesize, String elName){
+		updateLogSettings(name, level, virtualpath,maxfile,maxfilesize,elName, null);
+	}
+
+	private void updateLogSettings(String name, int level, String virtualpath,int maxfile, int maxfilesize, String elName, String prefix) {
+		if(StringUtil.isEmpty(prefix)) prefix="";
+		else prefix+="-";
+		
+		Element el = _getRootElement(elName);
+		el.setAttribute(prefix+"log", virtualpath);
+		el.setAttribute(prefix+"log-level", LogUtil.toStringType(level, ""));
+		el.setAttribute(prefix+"log-max-file", Caster.toString(maxfile));
+		el.setAttribute(prefix+"log-max-file-size", Caster.toString(maxfilesize));
+	}
 
 
 	public void updateRemoteClientUsage(String code, String displayname) {
@@ -3144,13 +3318,6 @@ public final class ConfigWebAdmin {
 
 
 	
-
-
-
-
-
-
-
 
 
 	

@@ -28,7 +28,7 @@ public final class ResourcesImpl implements Resources {
 	 * @param provider
 	 */
 	public void registerResourceProvider(ResourceProvider provider) {
-		//if(provider.getScheme().equals("s3"))print.dumpStack();
+		
 		provider.setResources(this);
 		String scheme = provider.getScheme();
 		if(scheme==null) return;

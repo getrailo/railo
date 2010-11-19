@@ -19,12 +19,12 @@ public class DeprecatedUtil {
 	public static void function(PageContext pc, String old) {
 		pc = ThreadLocalPageContext.get(pc);
 		if(pc==null) return;
-		SystemOut.printDate(pc.getConfig().getErrWriter(), "function "+old+"is deprecated");
+		SystemOut.printDate(pc.getConfig().getErrWriter(), "function "+old+" is deprecated");
 	}
 	public static void function(PageContext pc, String old, String replacement) {
 		pc = ThreadLocalPageContext.get(pc);
 		if(pc==null) return;
-		SystemOut.printDate(pc.getConfig().getErrWriter(), "function "+old+"is deprecated, please use instead function "+replacement);
+		SystemOut.printDate(pc.getConfig().getErrWriter(), "function "+old+" is deprecated, please use instead function "+replacement);
 	}
 
 }

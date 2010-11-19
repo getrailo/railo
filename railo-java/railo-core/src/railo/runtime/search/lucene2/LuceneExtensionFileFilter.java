@@ -60,7 +60,7 @@ public final class LuceneExtensionFileFilter implements ResourceFilter {
     public boolean accept(Resource res) {
         if(res.isDirectory()) return recurse;
         else if(res.isFile()) {
-            String ext=ResourceUtil.getExtension(res);
+            String ext=ResourceUtil.getExtension(res,null);
             if(ext==null) return noExtension;
             else if(allExtension) return true;
                         

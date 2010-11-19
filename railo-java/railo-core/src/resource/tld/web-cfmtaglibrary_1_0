@@ -10859,6 +10859,9 @@ dWord: creates a value of 0 (zero)</description>
 	<tag>
 		<name>Transaction</name>
 		<tag-class>railo.runtime.tag.Transaction</tag-class>
+		<att-class>railo.transformer.cfml.attributes.impl.Transaction</att-class>
+		
+		
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>

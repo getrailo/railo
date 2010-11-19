@@ -64,7 +64,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
@@ -1289,7 +1288,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 					pc.getConfig().getSecurityManager().checkFileLocation(res);
 					return new Image(res);
 				} 
-				catch (ExpressionException ee) {ee.printStackTrace();
+				catch (ExpressionException ee) {
 					if(check4Var && Decision.isVariableName(Caster.toString(obj))) {
 						try {
 							return createImage(pc, pc.getVariable(Caster.toString(obj)), false,clone,checkAccess);

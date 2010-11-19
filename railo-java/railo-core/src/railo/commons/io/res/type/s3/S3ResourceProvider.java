@@ -7,16 +7,15 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceLock;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
+import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
-import railo.loader.util.Util;
-import railo.runtime.util.Cast;
-import railo.runtime.util.HTTPUtil;
-import railo.runtime.util.ResourceUtil;
+import railo.commons.lang.types.RefIntegerImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.net.s3.Properties;
+import railo.runtime.util.ApplicationContextPro;
 
 public final class S3ResourceProvider implements ResourceProvider {
 	
-
-	private static Cast cast;
 	
 	private int socketTimeout=-1;
 	private int lockTimeout=20000;
@@ -25,38 +24,8 @@ public final class S3ResourceProvider implements ResourceProvider {
 	private String scheme="s3";
 	private Map arguments;
 
-	private ResourceUtil _resourceUtil;
-	private HTTPUtil httpUtil;
-
 	
 
-	
-	
-
-	/* *
-	 * @return the httpUtil
-	 * /
-	public HTTPUtil getHttpUtil() {
-		if(httpUtil==null)httpUtil=CFMLEngineFactory. getInstance().getHTTPUtil();
-		return httpUtil;
-	}*/
-	
-
-	/*public ResourceUtil getResourceUtil() {
-		if(_resourceUtil==null)
-			_resourceUtil=CFMLEngineFactory. getInstance().getResourceUtil();
-		return _resourceUtil;
-	}*/
-	
-
-
-	/*private ResourceLock getLock() {
-		if(_lock==null){
-			_lock=getResourceUtil().createResourceLock(lockTimeout,true);
-			_lock.setLockTimeout(lockTimeout);
-		}
-		return _lock;
-	}*/
 	
 	/**
 	 * initalize ram resource
@@ -65,7 +34,7 @@ public final class S3ResourceProvider implements ResourceProvider {
 	 * @return RamResource
 	 */
 	public ResourceProvider init(String scheme,Map arguments) {
-		if(!Util.isEmpty(scheme))this.scheme=scheme;
+		if(!StringUtil.isEmpty(scheme))this.scheme=scheme;
 		
 		if(arguments!=null) {
 			this.arguments=arguments;
@@ -110,12 +79,123 @@ public final class S3ResourceProvider implements ResourceProvider {
 		path=railo.commons.io.res.util.ResourceUtil.removeScheme(scheme, path);
 		S3 s3 = new S3();
 		RefInteger storage=new RefIntegerImpl(S3.STORAGE_UNKNOW);
-		path=load(s3,storage,path);
 		
-		return new S3Resource(s3,storage.toInt(),this,path);
+		
+		//path=loadWithOldPattern(s3,storage,path);
+		path=loadWithNewPattern(s3,storage,path);
+		
+		return new S3Resource(s3,storage.toInt(),this,path,true);
 	}
 
-	public String load(S3 s3,RefInteger storage, String path) {
+	
+	public static String loadWithNewPattern(S3 s3,RefInteger storage, String path) {
+		Properties prop=((ApplicationContextPro)ThreadLocalPageContext.get().getApplicationContext()).getS3();
+		
+		int defaultLocation = prop.getDefaultLocation();
+		storage.setValue(defaultLocation);
+		String accessKeyId = prop.getAccessKeyId();
+		String secretAccessKey = prop.getSecretAccessKey();
+		
+		int atIndex=path.indexOf('@');
+		int slashIndex=path.indexOf('/');
+		if(slashIndex==-1){
+			slashIndex=path.length();
+			path+="/";
+		}
+		int index;
+		
+		// key/id
+		if(atIndex!=-1) {
+			index=path.indexOf(':');
+			if(index!=-1 && index<atIndex) {
+				accessKeyId=path.substring(0,index);
+				secretAccessKey=path.substring(index+1,atIndex);
+				index=secretAccessKey.indexOf(':');
+				if(index!=-1) {
+					String strStorage=secretAccessKey.substring(index+1).trim().toLowerCase();
+					secretAccessKey=secretAccessKey.substring(0,index);
+					//print.out("storage:"+strStorage);
+					storage.setValue(S3.toIntStorage(strStorage, defaultLocation));
+				}
+			}
+			else accessKeyId=path.substring(0,atIndex);
+		}
+		path=prettifyPath(path.substring(atIndex+1));
+		index=path.indexOf('/');
+		s3.setHost(prop.getHost());
+		if(index==-1){
+			if(path.equalsIgnoreCase(S3Constants.HOST) || path.equalsIgnoreCase(prop.getHost())){
+				s3.setHost(path);
+				path="/";
+			}
+		}
+		else {
+			String host=path.substring(0,index);
+			if(host.equalsIgnoreCase(S3Constants.HOST) || host.equalsIgnoreCase(prop.getHost())){
+				s3.setHost(host);
+				path=path.substring(index);
+			}
+		}
+		
+		
+		s3.setSecretAccessKey(secretAccessKey);
+		s3.setAccessKeyId(accessKeyId);
+		
+		return path;
+	}
+
+	/*public static void main(String[] args) {
+		// s3://bucket/x/y/sample.txt
+		// s3://accessKeyId:awsSecretKey@bucket/x/y/sample.txt
+		String secretAccessKey="R/sOy3hgimrI8D9c0lFHchoivecnOZ8LyVmJpRFQ";
+		String accessKeyId="1DHC5C5FVD7YEPR4DBG2";
+		
+		Properties prop=new Properties();
+		prop.setAccessKeyId(accessKeyId);
+		prop.setSecretAccessKey(secretAccessKey);
+		
+		
+		test("s3://"+accessKeyId+":"+secretAccessKey+"@s3.amazonaws.com/dudi/peter.txt");
+		test("s3://"+accessKeyId+":"+secretAccessKey+"@dudi/peter.txt");
+		test("s3:///dudi/peter.txt");
+		test("s3://dudi/peter.txt");
+		
+		
+	}
+	
+	
+	
+	private static void test(String path) {
+
+		Properties prop=new Properties();
+		prop.setAccessKeyId("123456");
+		prop.setSecretAccessKey("abcdefghji");
+		
+		
+		
+		String scheme="s3";
+		path=railo.commons.io.res.util.ResourceUtil.removeScheme(scheme, path);
+		S3 s3 = new S3();
+		RefInteger storage=new RefIntegerImpl(S3.STORAGE_UNKNOW);
+		path=loadWithNewPattern(s3,prop,storage,path);
+		
+
+		print.o(s3);
+		print.o(path);
+	}*/
+
+	private static String prettifyPath(String path) {
+		path=path.replace('\\','/');
+		return StringUtil.replace(path, "//", "/", false);
+		// TODO /aaa/../bbb/
+	}
+	
+	
+	
+
+	public static String loadWithOldPattern(S3 s3,RefInteger storage, String path) {
+		
+		
 		String accessKeyId = null;
 		String secretAccessKey = null;
 		String host = null;
@@ -164,13 +244,6 @@ public final class S3ResourceProvider implements ResourceProvider {
 		
 		return path;
 	}
-	
-	private static String prettifyPath(String path) {
-		path=path.replace('\\','/');
-		return Util.replace(path, "//", "/", false);
-		// TODO /aaa/../bbb/
-	}
-	
 	/**
 	 * @see railo.commons.io.res.ResourceProvider#isAttributesSupported()
 	 */
@@ -246,79 +319,6 @@ public final class S3ResourceProvider implements ResourceProvider {
 	}
 
 	
-	class RefIntegerImpl implements RefInteger{
-
-
-	    private int value;
-
-	    /**
-	     * @param value
-	     */
-	    public RefIntegerImpl(int value) {
-	        this.value=value;
-	    }
-	    public RefIntegerImpl() {
-	    }
-	    
-	    /**
-	     * @param value
-	     */
-	    public void setValue(int value) {
-	        this.value = value;
-	    }
-	    
-	    /**
-	     * operation plus
-	     * @param value
-	     */
-	    public void plus(int value) {
-	        this.value+=value;
-	    }
-	    
-	    /**
-	     * operation minus
-	     * @param value
-	     */
-	    public void minus(int value) {
-	        this.value-=value;
-	    }
-
-	    /**
-	     * @return returns value as integer
-	     */
-	    public Integer toInteger() {
-	        return new Integer(value);
-	    }
-	    /**
-	     * @return returns value as integer
-	     */
-	    public Double toDouble() {
-	        return new Double(value);
-	    }
-	    
-
-		/**
-		 * @see railo.commons.lang.types.RefInteger#toDoubleValue()
-		 */
-		public double toDoubleValue() {
-			return value;
-		}
-		
-		/**
-		 * @see railo.commons.lang.types.RefInteger#toInt()
-		 */
-		public int toInt() {
-			return value;
-		}
-	    
-	    
-	    /**
-	     * @see java.lang.Object#toString()
-	     */
-	    public String toString() {
-	        return String.valueOf(value);
-	    }
-		
-	}
+	
 
 }

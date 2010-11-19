@@ -1,13 +1,11 @@
 package railo.runtime.config;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ClassException;
@@ -60,17 +58,8 @@ public final class ConfigServerFactory {
 			);
 		}
 		//print.out(configFile);
-        InputStream is = null;
-        Document doc=null;
-        try {
-        	is = IOUtil.toBufferedInputStream(configFile.getInputStream());
-        	doc=ConfigWebFactory.loadDocument(is);
-        }
-        finally {
-        	IOUtil.closeEL(is);
-        }
-		//ConfigWebFactory.createContextFiles(configDir);
-		
+        Document doc=ConfigWebFactory.loadDocument(configFile);
+       
         ConfigServerImpl config=new ConfigServerImpl(engine,initContextes,contextes,configDir,configFile);
 		load(config,doc);
 	    
@@ -94,17 +83,7 @@ public final class ConfigServerFactory {
         if(configFile==null) return ;
         if(second(configServer.getLoadTime())>second(configFile.lastModified())) return ;
         
-        InputStream is = null;
-        Document doc = null;
-        try {
-        	is = IOUtil.toBufferedInputStream(configFile.getInputStream());
-        	doc=ConfigWebFactory.loadDocument(is);
-        }
-        finally {
-        	IOUtil.closeEL(is);
-        }
-		// createContextFiles(configDir);
-		load(configServer,doc);
+        load(configServer,ConfigWebFactory.loadDocument(configFile));
     }
     
     private static long second(long ms) {

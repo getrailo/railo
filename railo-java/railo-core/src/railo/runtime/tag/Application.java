@@ -196,11 +196,6 @@ public final class Application extends TagImpl {
      * @throws ApplicationException
      */
     public void setLoginstorage(String loginstorage) throws ApplicationException {
-        //loginstorage=loginstorage.toLowerCase();
-        //if(loginstorage.equals("session"))getAppContext().setLoginStorage(Scope.SCOPE_SESSION);
-        //else if(loginstorage.equals("cookie"))getAppContext().setLoginStorage(Scope.SCOPE_COOKIE);
-        //else throw new ApplicationException("invalid loginStorage definition ["+loginstorage+"] for tag application, valid values are [session,cookie]");
-        
         loginstorage=loginstorage.toLowerCase();
         if(loginstorage.equals("session"))this.loginstorage=Scope.SCOPE_SESSION;
         else if(loginstorage.equals("cookie"))this.loginstorage=Scope.SCOPE_COOKIE;

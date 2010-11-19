@@ -1,3 +1,5 @@
+<cfif request.admintype EQ "web"><cflocation url="#request.self#" addtoken="no"></cfif>
+
 <cfparam name="url.action2" default="none">
 <cfset error.message="">
 <cfset error.detail="">
@@ -32,7 +34,7 @@ Error Output --->
 <!--- 
 restart --->
 <cfoutput>
-<table class="tbl" width="600">
+<table class="tbl" width="740">
 <tr>
 	<td colspan="2">#stText.services.update.restartDesc#</td>
 </tr>

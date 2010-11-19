@@ -9,9 +9,9 @@
 		,field("Attachment path","attachmentpath",expandPath('{temp-directory}/mailwatcher-attachments'),false,"a directory in which to save any attachments","text")
 		,field("Interval (ms)","interval","60000",true,"The interval between checks, in miliseconds","text")
 		
-		,group("CFC Listener Function Defintion","Definitation for the CFC Listener Function, when empty no listener is called",3)
+		,group("CFC Listener Function Definition","Definition for the CFC Listener Function, when empty no listener is called",3)
 		
-		,field("Function Name","functionName","invoke",true,"function to call when there is a new mail","text")
+		,field("Function Name","functionName","invoke",false,"function to call when there is a new mail","text")
 		
 		
 	)>

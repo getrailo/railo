@@ -11,13 +11,14 @@
 	requestID has not been passed...
 	<cfabort>
 </cfif>
+
+
+<cfsavecontent variable="plus"><cfinclude template="../../admin/resources/img/debug_plus.gif.cfm"></cfsavecontent>
+<cfsavecontent variable="minus"><cfinclude template="../../admin/resources/img/debug_minus.gif.cfm"></cfsavecontent>
+
 <cfparam name="url._debug_action" default="display_debug">
-<cfoutput><cfsavecontent variable="sImgPlus"><!---
-	---><img src="#cgi.context_path#/railo-context/admin/resources/img/debug_plus.gif.cfm" style="margin:2px 2px 0px 0px;"><!---
----></cfsavecontent>
-<cfsavecontent variable="sImgMinus"><!---
-	---><img src="#cgi.context_path#/railo-context/admin/resources/img/debug_minus.gif.cfm" style="margin:2px 2px 0px 0px;"><!---
----></cfsavecontent></cfoutput>
+<cfoutput><cfsavecontent variable="sImgPlus"><img src="#plus#" style="margin:2px 2px 0px 0px;"></cfsavecontent>
+<cfsavecontent variable="sImgMinus"><img src="#minus#" style="margin:2px 2px 0px 0px;"></cfsavecontent></cfoutput>
 <cfif url._debug_action eq "display_debug">
 	<cfset callDebugOutput(sImgMinus, sImgPlus)>
 <cfelseif url._debug_action eq "query">

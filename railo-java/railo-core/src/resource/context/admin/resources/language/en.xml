@@ -296,6 +296,11 @@
 	<data key="remote.detail.update">Update Remote Client</data>
 	<data key="remote.securitykeydesc">Please enter the key of the remote clients. You can find it under Remote security key in the administrator of the remote clients</data>
 	<data key="remote.urlpathdesc">Path to Admin.cfc (example: /railo-context/admin.cfc?wsdl)</data>
+	<data key="remote.from">from</data>
+	<data key="remote.to">to</data>
+	<data key="remote.previous">previous</data>
+	<data key="remote.next">next</data>
+	
 	<data key="application.web">Here you can define several default settings for the application context. These settings can be overridden with the tag cfapplication or the Application.cfc.</data>
 	<data key="application.scriptprotectcustom">You can define the scopes to be checked individually</data>
 	<data key="application.listener">Application listener</data>
@@ -777,6 +782,10 @@
 	<data key="cfx.name">Name</data>
 	<data key="cfx.class">Class</data>
 	<data key="cfx.noaccess">No access to CFX functionality</data>
+	<data key="cfx.cpp.CFXTags">C++ CFX tags</data>
+	<data key="cfx.procedure">Procedure</data>
+	<data key="cfx.serverlibrary">Server Library</data>
+	<data key="cfx.keepAlive">Keep Alive</data>
 	<data key="overview.installedtls">Installed tag&lt;br/&gt; libraries</data>
 	<data key="overview.bugreport">Bug report</data>
 	<data key="overview.issuetracker">Issue Tracker</data>
@@ -857,6 +866,10 @@
 	<data key="doc.attrtitle">Attributes</data>
 	<data key="doc.argtitle">Arguments</data>
 	<data key="doc.bodytitle">Body</data>
+	<data key="doc.depFunction">This Function is deprecated</data>
+	<data key="doc.depTag">This Tag is deprecated</data>
+	<data key="doc.depAttr">This Attribute is deprecated</data>
+	<data key="doc.depArg">This Argument is deprecated</data>
 	<data key="help.logotitle">Railo help</data>
 	<data key="help.closewindow">Close window</data>
 	<data key="help.videohelp">Railo - online video help</data>
@@ -975,7 +988,8 @@
 	<data key="services.update.location_devDesc">This Update Provider (dev.getrailo.org) returns ""Bleeding Edge"" versions. Usually only a small amount of testing has been performed on these versions. This source should NOT be used for production environments.</data>
 	<data key="services.update.location_custom">Custom</data>
 	<data key="services.update.location_customDesc">Here you can define your own Update Provider. This is a URL of the form ""http://my.domainname.org""</data>
-	
+		<data key="services.update.lib">Update JAR's</data>
+	<data key="services.update.libDesc">Your JAR's are out of date. In order to update your JAR's, please click the button below. This might not work if you do not have a proper internet connection. If the download did not succeed, please download the latest JAR's from our download section and update the JAR's manually. You have to restart your Servlet engine, so that the changes take effect.</data>
 	<data key="settings.gateway.ListenerCfcPath">Listener CFC Path</data>
 	<data key="settings.gateway.startupMode">Startup Mode</data>
 	<data key="settings.gateway.startupModeAutomatic">Automatic</data>

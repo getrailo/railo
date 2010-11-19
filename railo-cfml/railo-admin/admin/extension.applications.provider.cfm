@@ -5,10 +5,10 @@
 
 
 <cfoutput>
-<h2>#info.title#</h2>
-<table width="600">   
+
+<table width="740">   
 <tr>
-    <td colspan="2">#info.description#<br /><br /></td>
+    <td colspan="2"><h2>#info.title#</h2>#info.description#<br /><br /></td>
 </tr>
 <tr>
     <td><cfif structKeyExists(info,'image')><img src="#info.image#" /></cfif></td>

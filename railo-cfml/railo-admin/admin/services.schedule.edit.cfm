@@ -156,27 +156,11 @@ Error Output--->
 <cfset translateDateTime(task,"startdate","starttime","start")>
 <cfset translateDateTime(task,"enddate","endtime","end")>
 
-<!--- 
 
-<style type="text/css">
- form {padding:0px;}
- input, select, textarea
-   { font-size:13px; font-family:Verdana,sans-serif; font-weight:bold; }
- input, select, textarea
-   { background-color:#999999;color:#ffffff;border:1px solid #DDDDDD; }
- .Bereich, .Feld
-   { background-color:#FFFFAA; width:300px; border:6px solid #DDDDDD; }
- .Auswahl
-   { background-color:#DDFFFF; width:300px; border:6px solid #DDDDDD; }
- .Check, .Radio
-   { background-color:#DDFFFF; border:1px solid #DDDDDD; }
- .Button
-   { background-color:#AAAAAA; color:#FFFFFF; width:200px; border:6px solid #DDDDDD; }
-</style> --->
 
 
 <cfoutput>
-<table class="tbl" width="600">
+<table class="tbl" width="740">
 <cfform action="#request.self#?action=#url.action#&action2=#url.action2#&task=#url.task#" method="post">
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.Name#</td>
@@ -216,10 +200,10 @@ Error Output--->
 		required="no"><br /><span class="comment">#stText.Schedule.PasswordDescription#</span></td>
 </tr>
 </table>
-<br><h2>#stText.Schedule.Proxy#</h2>
-<table class="tbl" width="600">
+<br>
+<table class="tbl" width="740">
 <tr>
-	<td colspan="2">#stText.Schedule.ProxyDesc#</td>
+	<td colspan="2"><h2>#stText.Schedule.Proxy#</h2>#stText.Schedule.ProxyDesc#</td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.Server#</td>
@@ -245,11 +229,11 @@ Error Output--->
 		required="no"><br><span class="comment">#stText.Schedule.ProxyPassword#</span></td>
 </tr>
 </table>
-<br><h2>#stText.Schedule.Output#</h2>
+<br>
 
-<table class="tbl" width="600">
+<table class="tbl" width="740">
 <tr>
-	<td colspan="2">#stText.Schedule.OutputDesc#</td>
+	<td colspan="2"><h2>#stText.Schedule.Output#</h2>#stText.Schedule.OutputDesc#</td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.Publish#</td>
@@ -267,10 +251,10 @@ Error Output--->
 		<span class="comment">#stText.Schedule.ResolveDescription#</span></td>
 </tr>
 </table>
-<br><h2>#stText.Schedule.ExecutionDate# <cfif isNumeric(task.interval)>(Every...)<cfelse>(#ucFirst(task.interval)#)</cfif></h2>
-<table class="tbl" width="600">
+<br>
+<table class="tbl" width="740">
 <tr>
-	<td colspan="2"><cfif isNumeric(task.interval)>#stText.Schedule['ExecutionDescEvery']#<cfelse>#stText.Schedule['ExecutionDesc'& task.interval]#</cfif></td>
+	<td colspan="2"><h2>#stText.Schedule.ExecutionDate# <cfif isNumeric(task.interval)>(Every...)<cfelse>(#ucFirst(task.interval)#)</cfif></h2><cfif isNumeric(task.interval)>#stText.Schedule['ExecutionDescEvery']#<cfelse>#stText.Schedule['ExecutionDesc'& task.interval]#</cfif></td>
 </tr>
 <tr>
 	<td colspan="2">

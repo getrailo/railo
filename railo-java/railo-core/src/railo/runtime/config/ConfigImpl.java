@@ -39,6 +39,7 @@ import railo.commons.lang.Md5;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
+import railo.commons.net.JarLoader;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
@@ -90,6 +91,7 @@ import railo.runtime.schedule.SchedulerImpl;
 import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.spooler.SpoolerEngine;
+import railo.runtime.tag.Admin;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.TimeSpan;
@@ -163,8 +165,9 @@ public abstract class ConfigImpl implements Config {
     private boolean _mergeFormAndURL=false;
 
     private int _debug;
-    
+
     private boolean suppresswhitespace = false;
+    private boolean suppressContent = false;
     private boolean showVersion = true;
     
 	private Resource tempDirectory;
@@ -942,7 +945,7 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getScheduleLogger()
      */
     public LogAndSource getScheduleLogger() {
-        return scheduler.getLogger();
+    	return scheduler.getLogger();
     }
     
     /**
@@ -1903,6 +1906,16 @@ public abstract class ConfigImpl implements Config {
     protected void setSuppressWhitespace(boolean suppresswhitespace) {
         this.suppresswhitespace = suppresswhitespace;
     }
+    
+
+    public boolean isSuppressContent() {
+        return suppressContent;
+    }
+    
+    protected void setSuppressContent(boolean suppressContent) {
+        this.suppressContent = suppressContent;
+    }
+    
 
 	/**
 	 * @see railo.runtime.config.Config#getDefaultEncoding()
@@ -2998,11 +3011,28 @@ public abstract class ConfigImpl implements Config {
 			}
 			
 			if(hasError) {
-				
-				throw new ORMException(
-				"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
-				"Update your jars with the jars located in Railo's download section at [Railo Custom] at [railo-x.x.x.xxx-jars.zip]");
-			
+				// try to load hibernate jars
+				/*if(ormEngineClass.getName().equals("railo.runtime.orm.hibernate.HibernateORMEngine")){
+					try {
+						Resource[] jars = JarLoader.download(pc,new String[]{"antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar"});
+						
+						if(!ArrayUtil.isEmpty(jars))
+							throw new ORMException(
+									"Railo cannot initialize the ORM Engine ["+ormEngineClass.getName()+"], please restart your servlet engine",
+									"Railo has downloaded the following jars ["+ResourceUtil.names(jars)+"] into directory ["+jars[0].getParent()+"]");
+					} 
+					catch (Throwable t) {
+						t.printStackTrace();;
+					}
+				}*/
+				if(!JarLoader.exists(pc.getConfig(), Admin.UPDATE_JARS))
+					throw new ORMException(
+						"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
+						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\"");
+				else 
+					throw new ORMException(
+							"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
+							"if you have updated the JAR's in the Railo Administrator, please restart your Servlet Engine");
 			
 			}
 				ormengines.put(name,engine);

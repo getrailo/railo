@@ -1,6 +1,8 @@
-<cfset stMenu = stText.menu>
 
-<cfset stText.MenuStruct = 
+<cffunction name="createMenu" returntype="array">
+	<cfargument name="stMenu" type="struct" required="yes">
+	<cfargument name="adminType" type="string" required="yes">
+	<cfset var MenuStruct = 
 	array(
 		struct(
 			action:"server",label:stMenu.server.label,
@@ -20,12 +22,13 @@
 				struct(action:"gateway",label:stMenu.services.gateway),
 				struct(action:"cache",label:stMenu.services.cache),
 				struct(action:"datasource",label:stMenu.services.datasource),
-				struct(action:"search",label:stMenu.services.search,hidden: request.adminType NEQ "web"),
+				struct(action:"orm",label:stMenu.services.orm),
+				struct(action:"search",label:stMenu.services.search,hidden: adminType NEQ "web"),
 				struct(action:"mail",label:stMenu.services.mail),
-				struct(action:"tasks",label:stMenu.services.tasks,xhidden: server.ColdFusion.ProductLevel eq "community" or server.ColdFusion.ProductLevel eq "professional"),
-				struct(action:"schedule",label:stMenu.services.schedule,hidden:request.adminType NEQ "web"),
-				struct(action:"update",label:stMenu.services.update,hidden:request.adminType EQ "web",display:true),
-				struct(action:"restart",label:stMenu.services.restart,hidden:request.adminType EQ "web",display:true)
+				struct(action:"tasks",label:stMenu.services.tasks),
+				struct(action:"schedule",label:stMenu.services.schedule,hidden:adminType NEQ "web"),
+				struct(action:"update",label:stMenu.services.update,hidden:adminType EQ "web",display:true),
+				struct(action:"restart",label:stMenu.services.restart,hidden:adminType EQ "web",display:true)
 			)
 		),
 		struct(
@@ -59,9 +62,9 @@
 		),
 		struct(action:"security",label:stMenu.security.label,
 			children:array(
-				struct(action:"access",label:stMenu.security.access,hidden:request.adminType NEQ "server"),
+				struct(action:"access",label:stMenu.security.access,hidden:adminType NEQ "server"),
 				struct(action:"password",label:stMenu.security.password,display:true)
-				,struct(action:"serial",label:stMenu.security.serial,hidden:request.adminType NEQ "server" or server.ColdFusion.ProductLevel NEQ "enterprise",display:true)
+				,struct(action:"serial",label:stMenu.security.serial,hidden:adminType NEQ "server" or server.ColdFusion.ProductLevel NEQ "enterprise",display:true)
 			)
 		),
 		struct(action:"documentation",label:stMenu.documentation.label,
@@ -71,3 +74,10 @@
 			)
 		)
 	)>
+    <cfreturn MenuStruct>
+</cffunction>
+
+
+
+
+

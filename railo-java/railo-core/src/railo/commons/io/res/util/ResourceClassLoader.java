@@ -33,14 +33,14 @@ public final class ResourceClassLoader extends URLClassLoader implements Closeab
 	 * @param parent
 	 * @throws PageException
 	 */
-	ResourceClassLoader(Resource[] resources, ClassLoader parent) throws IOException {
+	public ResourceClassLoader(Resource[] resources, ClassLoader parent) throws IOException {
 		super(doURLs(resources), parent);
 		for(int i=0;i<resources.length;i++){
 			this.resources.add(resources[i]);
 		}
 	}
 	
-	ResourceClassLoader(ClassLoader parent) {
+	public ResourceClassLoader(ClassLoader parent) {
 		super(new URL[0], parent);
 	}
 
@@ -60,7 +60,7 @@ public final class ResourceClassLoader extends URLClassLoader implements Closeab
 	public static URL[] doURLs(Resource[] reses) throws IOException {
 		List<URL> list=new ArrayList<URL>();
 		for(int i=0;i<reses.length;i++) {
-			if(reses[i].isDirectory() || "jar".equalsIgnoreCase(ResourceUtil.getExtension(reses[i])))
+			if(reses[i].isDirectory() || "jar".equalsIgnoreCase(ResourceUtil.getExtension(reses[i],null)))
 				list.add(doURL(reses[i]));
 		}
 		return list.toArray(new URL[list.size()]);

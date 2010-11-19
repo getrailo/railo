@@ -32,7 +32,7 @@ public final class GetCurrentContext implements Function {
 		for(int i=0;i<traces.length;i++) {
 			trace=traces[i];
 			template=trace.getFileName();
-			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template).equals("java")) continue;
+			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
 			
 			item=new StructImpl();
 			line=trace.getLineNumber();
