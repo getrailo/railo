@@ -30,5 +30,14 @@
     <cfset application.adminimages[path]=str>
 </cfif>
 
+<cfif not structKeyExists(session,'oldStyle')>
+	<cfset session.oldStyle=false>
+	<cfif structKeyExists(cgi,'http_user_agent') and findNocase('MSIE',cgi.http_user_agent)>
+    	<cfif findNocase('MSIE 4',cgi.http_user_agent) or findNocase('MSIE 5',cgi.http_user_agent) or findNocase('MSIE 6',cgi.http_user_agent)>
+        	<cfset session.oldStyle=true>
+    	</cfif>
+    </cfif>
+</cfif> 
+<cfif session.oldStyle><cfset str=path></cfif>
 
 </cfsilent><cfoutput><cfif attributes.type EQ "css">#str#<cfelse><img src="#str#" #name##width##height##hspace##vspace##title##valign##style# border="#attributes.border#" /></cfif></cfoutput></cfif>

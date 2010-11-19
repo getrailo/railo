@@ -12,12 +12,9 @@ import railo.commons.io.res.Resource;
 public class LogResource implements Log {
     
     private Resource res;
-    
-    /**
-     * maximal file size of for a log file
-     */
-    public static final long MAX_FILE_SIZE=1024*1024;
-    /**
+
+
+	/**
      * maximal count of files (history of files) 
      */
     public static final int MAX_FILES=10;
@@ -187,4 +184,22 @@ public class LogResource implements Log {
     public String toString(){
     	return res.getAbsolutePath();
     }
+    
+    /**
+     * maximal file size of for a log file
+     */
+    public static final long MAX_FILE_SIZE=1024*1024;
+    /**
+	 * @return the maxFileSize
+	 */
+	public long getMaxFileSize() {
+		return maxFileSize;
+	}
+
+	/**
+	 * @return the maxFiles
+	 */
+	public int getMaxFiles() {
+		return maxFiles;
+	}
 }

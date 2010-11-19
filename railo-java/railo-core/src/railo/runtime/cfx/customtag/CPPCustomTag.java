@@ -23,18 +23,28 @@ public class CPPCustomTag implements CustomTag {
 		this.serverLibrary=serverLibrary;
 		this.procedure=procedure;
 		this.keepAlive=keepAlive;
-	}
-	
-	public void processRequest(Request request, Response response) throws Exception {
 		if(processRequest==null){
 			Class clazz = null;
 			try {
-				clazz = ClassUtil.loadClass("org.openbd.extension.cfx.CFXNativeLib");
+				clazz = ClassUtil.loadClass("com.naryx.tagfusion.cfx.CFXNativeLib");
 			} catch (ClassException e) {
-				throw new CFXTagException("C++ Custom tag library is missing, get the newest jars-zip from getrailo.org download");
+				
+
+				throw new CFXTagException(
+					"cannot initilaize C++ Custom tag library, make sure you have added all the required jars files. "+
+					"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\"");
+				
 			}
-			processRequest=clazz.getMethod("processRequest", new Class[]{String.class,String.class,Request.class,Response.class,boolean.class});
+			try {
+				processRequest=clazz.getMethod("processRequest", new Class[]{String.class,String.class,Request.class,Response.class,boolean.class});
+			} catch (NoSuchMethodException e) {
+				throw new CFXTagException(e);
+			}
 		}
+	}
+	
+	public void processRequest(Request request, Response response) throws Exception {
+		
 		processRequest.invoke(null, new Object[]{serverLibrary, procedure, request, response, keepAlive});
 		//CFXNativeLib.processRequest(serverLibrary, procedure, request, response, keepAlive);
 	} 

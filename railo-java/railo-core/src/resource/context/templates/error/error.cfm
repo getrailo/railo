@@ -26,7 +26,7 @@ function oc(id) {
 </script>
 <table border="0" cellpadding="4" cellspacing="2" style="font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;font-size : 11px;background-color:red;border : 1px solid black;;">
 <tr>
-	<td colspan="2" style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Railo #server.railo.version# Error (#ucFirst(catch.type)#)</td>
+	<td colspan="2" style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Railo #server.railo.version# Error (#(catch.type)#)</td>
 </tr>
 <cfparam name="catch.message" default="">
 <tr>

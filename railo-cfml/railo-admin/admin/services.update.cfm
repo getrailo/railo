@@ -1,3 +1,5 @@
+<cfif request.admintype EQ "web"><cflocation url="#request.self#" addtoken="no"></cfif>
+
 <cfparam name="url.action2" default="none">
 <cfset error.message="">
 <cfset error.detail="">
@@ -22,6 +24,14 @@
 		<cfsetting requesttimeout="10000">
 		<cfadmin 
 			action="runUpdate"
+			type="#request.adminType#"
+			password="#session["password"&request.adminType]#"
+			remoteClients="#request.getRemoteClients()#">
+	</cfcase>
+	<cfcase value="updateJars">
+		<cfsetting requesttimeout="10000">
+		<cfadmin 
+			action="updateJars"
 			type="#request.adminType#"
 			password="#session["password"&request.adminType]#"
 			remoteClients="#request.getRemoteClients()#">
@@ -55,6 +65,12 @@ Error Output --->
 <cfadmin 
 			action="listPatches"
 			returnvariable="patches"
+            type="#request.adminType#"
+            password="#session["password"&request.adminType]#">
+            
+<cfadmin 
+			action="needNewJars"
+			returnvariable="needNewJars"
             type="#request.adminType#"
             password="#session["password"&request.adminType]#">
 
@@ -107,13 +123,10 @@ Error Output --->
 
 <!--- 
 Settings --->
-<h2>#stText.services.update.setTitle#</h2>
-<table class="tbl" width="600">
+
+<table class="tbl" width="740">
 <tr>
-	<td colspan="2">#stText.services.update.setDesc#</td>
-</tr>
-<tr>
-	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+	<td colspan="2"><h2>#stText.services.update.setTitle#</h2>#stText.services.update.setDesc#</td>
 </tr>
 
 
@@ -179,8 +192,9 @@ Settings --->
 
 <!--- 
 Info --->
-<h2>#stText.services.update.infoTitle#</h2>
+
 <cfif hasUpdate>
+<h2>#stText.services.update.infoTitle#</h2>
 #replace(replace(replace(stText.services.update.update,'{available}','<b>#avi#</b>'),'{current}','<b>#curr#</b>'),'{avaiable}','<b>#avi#</b>')#
 <cfscript>
 // Jira
@@ -215,18 +229,20 @@ catch(e){}
 <div class="tblContent" style="overflow:auto;width:740px;height:200px;border-style:solid;border-width:1px;padding:10px"><pre>#trim(content)#</pre></div>
 #jira#
 
-<cfelse>
+<cfelseif not needNewJars>
+<h2>#stText.services.update.infoTitle#</h2>
 #replace(stText.services.update.noUpdate,'{current}',curr)#
 </cfif>
-<br><br>
+
 
 <cfif hasUpdate>
+<br><br>
 <!--- 
 run update --->
-<h2>#stText.services.update.exe#</h2>
-<table class="tbl" width="600">
+
+<table class="tbl" width="740">
 <tr>
-	<td colspan="2">#stText.services.update.exeDesc#</td>
+	<td colspan="2"><h2>#stText.services.update.exe#</h2>#stText.services.update.exeDesc#</td>
 </tr>
 <tr>
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
@@ -242,21 +258,50 @@ run update --->
 </tr>
 </cfform>
 </table>
+
+<cfelseif needNewJars>
+<br><br>
+    <table class="tbl" width="740">
+    <tr>
+        <td colspan="2"><h2>#stText.services.update.lib#</h2>#stText.services.update.libDesc#</td>
+    </tr>
+    <tr>
+        <td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+    </tr>
+    
+    
+    <cfform action="#go(url.action,"updateJars")#" method="post">
+    
+    <cfmodule template="remoteclients.cfm" colspan="2">
+    <tr>
+        <td colspan="2">
+            <input type="submit" class="submit" name="mainAction" value="#stText.services.update.lib#">
+        </td>
+    </tr>
+    </cfform>
+    </table>
+
 </cfif>
+
+
+
+
 
 <!--- 
 remove update --->
 <cfset size=arrayLen(patches)>
 <cfif size>
 
+<br><br>
 
-<h2>#stText.services.update.remove#</h2>
-#stText.services.update.removeDesc#
-<table class="tbl" width="600">
+<table class="tbl" width="740">
 
 <tr>
+	<td colspan="2"><h2>#stText.services.update.remove#</h2>
+#stText.services.update.removeDesc#</td>
+</tr>
+<tr>
 	<td class="tblHead" colspan="2">#stText.services.update.patch#</td>
-	
 </tr>
 
 <cfloop index="i" from="1" to="#size#">

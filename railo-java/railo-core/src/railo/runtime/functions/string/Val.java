@@ -14,8 +14,8 @@ public final class Val implements Function {
 	public static double call(PageContext pc , Object value) throws PageException {
 	    //if(value instanceof Boolean || value instanceof Number) return Caster.toDoubleValue(value);
 	    
-        double dbl=Caster.toDoubleValue(value,Double.NaN);
-        if(Decision.isValid(dbl)) return dbl;
+        //double dbl=Caster.toDoubleValue(value,Double.NaN);
+        //if(Decision.isValid(dbl)) return dbl;
         
         String str=Caster.toString(value);
         

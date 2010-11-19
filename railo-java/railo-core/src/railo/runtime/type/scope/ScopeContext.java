@@ -151,7 +151,7 @@ public final class ScopeContext {
 				}
 				else{
 					//storage="db";
-					client=ClientDatasource.getInstance(storage,appContext.getName(),pc);
+					client=ClientDatasource.getInstance(storage,pc);
 				}
 				context.put(pc.getCFID()+storage,client);
 			}
@@ -181,7 +181,7 @@ public final class ScopeContext {
 				}
 				else{
 					//storage="db";
-					client=ClientDatasource.getInstanceEL(storage,appContext.getName(),pc);
+					client=ClientDatasource.getInstanceEL(storage,pc);
 				}
 				context.put(pc.getCFID()+storage,client);
 			}

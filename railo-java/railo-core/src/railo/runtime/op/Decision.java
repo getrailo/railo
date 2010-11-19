@@ -443,9 +443,8 @@ public final class Decision {
 		if(Decision.isSimpleValue(o)){
 			return false;
 		}
-		if(Decision.isArray(o))
-        	return false;
-        return true;
+		//if(isArray(o) || isQuery(o)) return false;
+        return false;
 	}
 
 	/**

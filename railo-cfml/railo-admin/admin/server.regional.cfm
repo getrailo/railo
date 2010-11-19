@@ -103,7 +103,11 @@ Create Datasource --->
 
 
 
-<table class="tbl" width="600">
+<table class="tbl" width="740">
+<colgroup>
+    <col width="150">
+    <col width="590">
+</colgroup>
 <tr>
 	<td colspan="2">
 <cfif request.adminType EQ "server">
@@ -183,7 +187,7 @@ replaced with encoding output
 	<td class="tblHead" width="150">#stText.Regional.TimeServer#</td>
 	<td class="tblContent"><span class="comment">#stText.Regional.TimeServerDescription#</span>
 	<cfif hasAccess>
-		<cfinput type="text" name="timeserver" value="#regional.timeserver#" 
+		<br /><cfinput type="text" name="timeserver" value="#regional.timeserver#" 
 			style="width:200px" required="no" message="#stText.Regional.TimeServerMissing#">
 			
 	<cfelse>

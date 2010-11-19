@@ -7,10 +7,10 @@ import railo.runtime.type.Collection;
 
 public class SimpleVarRef implements Reference {
 
-	private PageContextImpl pc;
+	//private PageContextImpl pc;
 
 	public SimpleVarRef(PageContextImpl pc, String key) {
-		this.pc=pc;
+		//this.pc=pc;
 	}
 	
 	public Object get(PageContext pc) throws PageException {

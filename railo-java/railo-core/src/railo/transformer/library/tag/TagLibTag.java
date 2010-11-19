@@ -66,8 +66,8 @@ public final class TagLibTag {
 	private Evaluator eval;
 	private TagDependentBodyTransformer tdbt;
 
-	private Map attributes=new HashMap();
-	private Map setters=new HashMap();
+	private Map<String,TagLibTagAttr> attributes=new HashMap<String,TagLibTagAttr>();
+	private Map<String,String> setters=new HashMap<String,String>();
 	private TagLibTagAttr attrFirst;
 	private TagLibTagAttr attrLast;
 	
@@ -82,6 +82,75 @@ public final class TagLibTag {
 	private TagLibTagAttr defaultAttribute;
 	private short status=TagLib.STATUS_IMPLEMENTED;
 
+	public TagLibTag duplicate(boolean cloneAttributes) {
+		TagLibTag tlt = new TagLibTag(tagLib);
+
+		tlt.attributeType=attributeType;
+		tlt.name=name;
+		tlt.hasBody=hasBody;
+		tlt.isBodyReq=isBodyReq;
+		tlt.isTagDependent=isTagDependent;
+		tlt.bodyFree=bodyFree;
+		tlt.parseBody=parseBody;
+		tlt.hasAppendix=hasAppendix;
+		tlt.description=description;
+		tlt.tagClass=tagClass;
+		tlt.tteClass=tteClass;
+		tlt.tdbtClass=tdbtClass;
+		tlt.min=min;
+		tlt.max=max;
+		tlt.strAttributeEvaluator=strAttributeEvaluator;
+		tlt.handleException=handleException;
+		tlt.hasDefaultValue=hasDefaultValue;
+		tlt.tagType=tagType;
+		tlt.tttClass=tttClass;
+		tlt.tttConstructor=tttConstructor;
+		tlt.allowRemovingLiteral=allowRemovingLiteral;
+		tlt.status=status;
+		
+		tlt.eval=null;
+		tlt.tdbt=null;
+		tlt.attributeEvaluator=null;
+		
+		
+		Iterator<Entry<String, TagLibTagAttr>> it = attributes.entrySet().iterator();
+		if(cloneAttributes) {
+			while(it.hasNext()){
+				tlt.setAttribute(it.next().getValue().duplicate(tlt));
+			}
+			if(defaultAttribute!=null)tlt.defaultAttribute=defaultAttribute.duplicate(tlt);
+		}
+		else {
+			while(it.hasNext()){
+				tlt.setAttribute(it.next().getValue());
+				tlt.attrFirst=attrFirst;
+				tlt.attrLast=attrLast;
+			}
+			tlt.defaultAttribute=defaultAttribute;
+		}
+		
+		
+		// setter
+		Iterator<Entry<String, String>> sit = setters.entrySet().iterator();
+		Entry<String, String> se;
+		while(sit.hasNext()){
+			se = sit.next();
+			tlt.setters.put(se.getKey(), se.getValue());
+		}
+		
+		
+		
+/*
+		private Map attributes=new HashMap();
+		private TagLibTagAttr attrFirst;
+		private TagLibTagAttr attrLast;
+		
+		private Map setters=new HashMap();
+		private TagLibTagAttr defaultAttribute;
+	*/	
+		return tlt;
+	}
+	
 	
 	/**
 	 * Geschützer Konstruktor ohne Argumente.
@@ -587,7 +656,7 @@ public final class TagLibTag {
 	}
 
 	public String getAttributeNames() {
-		Iterator it = attributes.keySet().iterator();
+		Iterator<String> it = attributes.keySet().iterator();
 		StringBuffer sb=new StringBuffer();
 		while(it.hasNext()) {
 			if(sb.length()>0)sb.append(",");

@@ -40,7 +40,7 @@ public final class CPPCFXTagClass implements CFXTagClass {
         this.procedure = procedure;
         this.keepAlive = keepAlive;
     }
-    
+
 	public CPPCFXTagClass(String name, String serverLibrary, String procedure, boolean keepAlive) {
 		if(name.startsWith("cfx_"))name=name.substring(4);
 		this.name=name;
@@ -49,6 +49,20 @@ public final class CPPCFXTagClass implements CFXTagClass {
 		this.keepAlive=keepAlive;
 	}
 	
+	/**
+	 * @return the serverLibrary
+	 */
+	public String getServerLibrary() {
+		return serverLibrary;
+	}
+
+	/**
+	 * @return the procedure
+	 */
+	public String getProcedure() {
+		return procedure;
+	}
+
 	/**
 	 * @see railo.runtime.cfx.customtag.CFXTagClass#newInstance()
 	 */
@@ -75,7 +89,7 @@ public final class CPPCFXTagClass implements CFXTagClass {
      * @see railo.runtime.cfx.customtag.CFXTagClass#getDisplayType()
      */
     public String getDisplayType() {
-        return "COM";
+        return "cpp";
     }
 
     /**
@@ -91,4 +105,19 @@ public final class CPPCFXTagClass implements CFXTagClass {
     public boolean isValid() {
         return false;
     }
+    
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @return the keepAlive
+	 */
+	public boolean getKeepAlive() {
+		return keepAlive;
+	}
+	
 }

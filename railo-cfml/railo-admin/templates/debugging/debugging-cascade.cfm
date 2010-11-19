@@ -6,12 +6,14 @@
 <cfparam name="request.bDebugQueryOutput" default="False">
 <cfif request.bDebugQueryOutput><cfabort></cfif>
 <cfparam name="url._debug_action" default="display_debug">
-<cfoutput><cfsavecontent variable="sImgPlus"><!---
-	---><img src="#cgi.context_path#/railo-context/admin/resources/img/debug_plus.gif.cfm" style="margin:2px 2px 0px 0px;"><!---
----></cfsavecontent>
-<cfsavecontent variable="sImgMinus"><!---
-	---><img src="#cgi.context_path#/railo-context/admin/resources/img/debug_minus.gif.cfm" style="margin:2px 2px 0px 0px;"><!---
----></cfsavecontent></cfoutput>
+
+<cfsavecontent variable="plus"><cfinclude template="../../admin/resources/img/debug_plus.gif.cfm"></cfsavecontent>
+<cfsavecontent variable="minus"><cfinclude template="../../admin/resources/img/debug_minus.gif.cfm"></cfsavecontent>
+
+<cfoutput>
+<cfsavecontent variable="sImgPlus"><img src="#plus#" style="margin:2px 2px 0px 0px;"></cfsavecontent>
+<cfsavecontent variable="sImgMinus"><img src="#minus#" style="margin:2px 2px 0px 0px;"></cfsavecontent>
+</cfoutput>
 <cfif url._debug_action eq "display_debug">
 	<cfset time=getTickCount()>
 	<cfadmin 

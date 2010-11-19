@@ -87,7 +87,12 @@ Redirtect to entry --->
 <!--- 
 Error Output --->
 <cfset printError(error)>
-<cfoutput><table class="tbl" width="600">
+<cfoutput>
+<table class="tbl" width="740">
+<colgroup>
+    <col width="150">
+    <col width="590">
+</colgroup>
 <tr>
 	<td colspan="2">
 <cfif request.adminType EQ "server">

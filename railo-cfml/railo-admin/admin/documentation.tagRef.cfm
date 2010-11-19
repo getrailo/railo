@@ -44,12 +44,18 @@ function detail(field){
 
 
 <cfif len(url.tag)>
+<div style="width:740px">
 	<cfset data=getTagData(listFirst(url.tag),listLast(url.tag))>
-
+	
 <!--- Desc --->
+<cfif data.status EQ "deprecated"><b class="error">
+#stText.doc.depTag#</b><br />
+</cfif>
+
 #data.description#
 
 <style>
+.error{color:red;}
 .syntaxTag{color:##993300;}
 .syntaxText {color:##CC0000;}
 .syntaxAttr {color:##000099;}
@@ -128,14 +134,14 @@ function detail(field){
 	<td class="tblContent">#key#</td>
 	<td class="tblContent"><cfif attr.type EQ "object">any<cfelse>#attr.type#</cfif></td>
 	<td class="tblContent">#YesNoFormat(attr.required)#</td>
-	<td class="tblContent">#attr.description#&nbsp;</td>
+	<td class="tblContent"><cfif attr.status EQ "deprecated"><b class="error">#stText.doc.depAttr#</b><cfelse>#attr.description#</cfif>&nbsp;</td>
 </tr>
 </cfloop>
 
 </table>
 
 </cfif>
-
+</div>
 </cfif>
 
 

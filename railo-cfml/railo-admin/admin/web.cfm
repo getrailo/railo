@@ -4,6 +4,12 @@
 	clientmanagement="no" 
 	setclientcookies="yes" 
 	setdomaincookies="no">
+    
+<cfif structKeyExists(url,'enable')>
+	<cfset session.enable=url.enable>
+</cfif>
+    
+    
 <cfset cookieKey="sdfsdf789sdfsd">
 <cfparam name="request.adminType" default="web">
 <cfparam name="form.rememberMe" default="s">
@@ -84,7 +90,7 @@ isRestricted=isRestrictedLevel and request.adminType EQ "server";
 
 // Navigation
 // As a Set of Array and Structures, so that it is sorted
-navigation = stText.MenuStruct;
+navigation = stText.MenuStruct[request.adminType];
 
 if(arrayLen(plugins) and navigation[arrayLen(navigation)].action neq "plugin")navigation[arrayLen(navigation)+1]=plugin;
 

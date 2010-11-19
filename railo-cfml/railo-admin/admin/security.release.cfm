@@ -15,7 +15,7 @@ function fb(key) {
 
 
 <cfadmin 
-	action="getContextes"
+	action="getContexts"
 	type="#request.adminType#"
 	password="#session["password"&request.adminType]#"
 	returnVariable="contextes">

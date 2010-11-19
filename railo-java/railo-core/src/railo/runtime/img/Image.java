@@ -824,6 +824,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		}
 		finally {
 			IOUtil.closeEL(ios);
+			IOUtil.closeEL(os);
 		}		
 	}
 

@@ -230,7 +230,6 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		Body body=new BodyBase();
 		Contition cont=new Contition(contition(data),body,line);
 		
-		
 		if(!data.cfml.forwardIfCurrent(')')) throw new TemplateException(data.cfml,"if statement must end with a [)]");
 		// ex block
 		statement(data,body,CTX_IF);
@@ -706,6 +705,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	
 	private Statement tagStatement(Data data, Body parent) throws TemplateException {
 		Statement child;
+		// MUSTMUST add this to tld
 		if((child=_singleAttrStatement(parent,data,"abort","showerror",ATTR_TYPE_OPTIONAL,true))!=null)		return child;
 		else if((child=_singleAttrStatement(parent,data,"break",null,ATTR_TYPE_NONE,false))!=null)			return child;
 		else if((child=_multiAttrStatement(parent,data,"collection",CTX_OTHER,true,true))!=null)			return child;
@@ -1166,7 +1166,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	    Return rtn;
 	    
 	    comments(data.cfml);
-	    if(data.cfml.getCurrent()==';') rtn=new Return(line);
+	    if(data.cfml.forwardIfCurrent(';')) rtn=new Return(line);
 	    else {
 	    	Expression expr = expression(data);
 	    	

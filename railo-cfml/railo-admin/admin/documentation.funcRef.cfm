@@ -2,7 +2,7 @@
 
 <cfset funcList=getFunctionList()>
 
-   
+
 <cfoutput>
 
 <script language="javascript">
@@ -38,17 +38,28 @@ function detail(field){
 
 
 <cfif len(url.func)>
+<div style="width:740px">
 	<cfset data=getFunctionData(url.func)>
 
+
+
+<cfif data.status EQ "deprecated"><b class="error">
+#stText.doc.depFunction#</b><br />
+</cfif>
 <!--- Desc --->
 #data.description#
 
-
 <style>
+.error{color:red;}
 .syntaxFunc{color:##993300;}
 .syntaxText {color:##CC0000;}
 .syntaxType {color:##000099;}
 </style>
+
+
+
+
+
 
 
 <cfset first=true>
@@ -95,14 +106,15 @@ function detail(field){
 	<td class="tblContent">#attr.name	#</td>
 	<td class="tblContent">#attr.type#&nbsp;</td>
 	<td class="tblContent">#YesNoFormat(attr.required)#</td>
-	<td class="tblContent"><!--- --->#attr.description#&nbsp;</td>
+	<td class="tblContent"><cfif attr.status EQ "deprecated"><b class="error">#stText.doc.depArg#</b><cfelse>#replace(trim(attr.description),'
+','<br />','all')#</cfif>&nbsp;</td>
 </tr>
 </cfloop>
 
 </table>
 
 </cfif>
-
+</div>
 </cfif>
 
 
