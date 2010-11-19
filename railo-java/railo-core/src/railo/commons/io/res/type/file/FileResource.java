@@ -559,6 +559,7 @@ public final class FileResource extends File implements Resource {
 		try {
 			provider.read(this);
 		} catch (IOException e) {}
+		
 		return super.exists();
 	}
 
@@ -694,7 +695,6 @@ public final class FileResource extends File implements Resource {
 	 * @see java.io.File#setLastModified(long)
 	 */
 	public boolean setLastModified(long time) {
-		
 		try {
 			provider.lock(this);
 			return super.setLastModified(time);
@@ -705,6 +705,7 @@ public final class FileResource extends File implements Resource {
 		finally {
 			provider.unlock(this);
 		}
+		
 	}
 
 	/**
