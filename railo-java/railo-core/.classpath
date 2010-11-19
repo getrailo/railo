@@ -98,5 +98,6 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/metadata-extractor.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/com.naryx.tagfusion.cfx.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/ehcache.jar"/>
+	<classpathentry kind="lib" path="/Users/mic/libs/javaparser-1.0.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
