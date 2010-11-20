@@ -82,7 +82,7 @@
 		<name>_jsonArray</name>
 		<class>railo.runtime.functions.arrays.JsonArray</class>
 		<status>hidden</status>
-		<description></description>
+		<description>internal function used for literal array defintion</description>
 		<argument-type>dynamic</argument-type>
 		<return>
 			<type>array</type>
@@ -226,7 +226,7 @@ All elements in the array must contain values that can be automatically converte
 			<name>position</name>
 			<type>number</type>
 			<required>Yes</required>
-			<description>The numeric position of the element. Remember that Railo arrays start at 1 not 0.</description>
+			<description>The numeric position of the element. Remember that CFML arrays start at 1 not 0.</description>
 		</argument>
 		<return>
 			<type>boolean</type>
@@ -354,7 +354,7 @@ All elements in the array must contain values that can be automatically converte
 		<name>arrayInsertAt</name>
 		<class>railo.runtime.functions.arrays.ArrayInsertAt</class>
 		<description>Inserts a value at the specified position in the array.
-If the element is inserted before the end of the array, Railo Server shifts the positions of all elements with a higher index to make room.</description>
+If the element is inserted before the end of the array, Railo shifts the positions of all elements with a higher index to make room.</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -367,7 +367,7 @@ If the element is inserted before the end of the array, Railo Server shifts the 
 			<required>Yes</required>
 			<description>The numerical index in the array where the new element will be inserted.
 Must be less than or equal to the length of the array.
-Remember Railo Server arrays start at 1 not 0.</description>
+Remember CFML arrays start at 1 not 0.</description>
 		</argument>
 		<argument>
 			<name>value</name>
@@ -1293,12 +1293,12 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>cacheRemove</name>
 		<class>railo.runtime.functions.cache.CacheRemove</class>
-		<description>removes elements from cache defined with argument ids, this can be a string list of multiple elements or a array containing keys.</description>
+		<description>removes elements from cache defined with argument ids.</description>
 		<argument>
 			<name>ids</name>
 			<type>object</type>
 			<required>Yes</required>
-			<description></description>
+			<description>This can be a string list of multiple elements or a array containing the keys</description>
 		</argument>
 		<argument>
 			<name>throwOnError</name>
@@ -1602,7 +1602,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<name>_createComponent</name>
 		<class>railo.runtime.functions.other._CreateComponent</class>
 		<status>hidden</status>
-		<description></description>
+		<description>literal component definition, used by the serialize function</description>
 		<argument-type>dynamic</argument-type>
 		<return>
 			<type>any</type>
@@ -1962,7 +1962,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>lsdayOfWeek</name>
 		<class>railo.runtime.functions.international.LSDayOfWeek</class>
-		<description></description>
+		<description>Returns the day of the week the date represents in locale format</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -2365,7 +2365,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<name>_dump</name>
 		<class>railo.runtime.functions.other.Dump</class>
 		<status>hidden</status>
-		<description></description>
+		<description>Use the dump function to display objects. Useful for debugging. You can display the contents of simple and complex variables, objects, components, user-defined functions, and other elements.</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -2485,7 +2485,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>dumpStruct</name>
 		<class>railo.runtime.functions.other.DumpStruct</class>
-		<description></description>
+		<description>creates out of given object dump infomration as struct</description>
 		<argument>
 			<name>value</name>
 			<type>any</type>
@@ -2554,7 +2554,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>cfusion_encrypt</name>
 		<class>railo.runtime.functions.other.CFusionEncrypt</class>
-		<description></description>
+		<description>alias for function call encrypt(string,key,"cfmx_compat","hex")</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -2573,7 +2573,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>cfusion_decrypt</name>
 		<class>railo.runtime.functions.other.CFusionDecrypt</class>
-		<description></description>
+		<description>alias for function call decrypt(string,key,"cfmx_compat","hex")</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -2648,7 +2648,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>EntityDelete</name>
 		<class>railo.runtime.functions.orm.EntityDelete</class>
-		<description></description>
+		<description>Deletes the record from the database for the specified entity. Depending on the cascade attribute specified in the mapping, it deletes the associated objects also.</description>
 		<argument>
 			<name>name</name>
 			<type>object</type>
@@ -2663,7 +2663,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>entityLoad</name>
 		<class>railo.runtime.functions.orm.EntityLoad</class>
-		<description></description>
+		<description>Loads and returns an array of entities for the specified entity name. You can also specify a filter criteria and sort order. All EntityLoad methods take the entity name as input.</description>
 		<argument>
 			<name>name</name>
 			<type>string</type>
@@ -2693,7 +2693,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>EntityLoadByPK</name>
 		<class>railo.runtime.functions.orm.EntityLoadByPK</class>
-		<description></description>
+		<description>Loads and returns an array of objects for the specified primary key. Use this function to avoid specifying the boolean parameter that you must specify with the EntityLoad() function.</description>
 		<argument>
 			<name>name</name>
 			<type>string</type>
@@ -2718,7 +2718,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>EntityLoadByExample</name>
 		<class>railo.runtime.functions.orm.EntityLoadByExample</class>
-		<description></description>
+		<description>Loads and returns an array of objects that match the sampleentity.The filter criteria is constructed by ANDing all the non-null properties of the sampleentity.</description>
 		<argument>
 			<name>sampleEntity</name>
 			<type>object</type>
@@ -2738,7 +2738,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>EntityMerge</name>
 		<class>railo.runtime.functions.orm.EntityMerge</class>
-		<description></description>
+		<description>Attaches the specified entity to the current ORM session. It copies the state of the given object onto the persistent object with the same identifier and returns the persistent object. </description>
 		<argument>
 			<name>entity</name>
 			<type>any</type>
@@ -2753,7 +2753,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>EntityNew</name>
 		<class>railo.runtime.functions.orm.EntityNew</class>
-		<description></description>
+		<description>Adds an entity instance to the existing data source</description>
 		<argument>
 			<name>entityName</name>
 			<type>string</type>
@@ -2768,7 +2768,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>EntityNameArray</name>
 		<class>railo.runtime.functions.orm.EntityNameArray</class>
-		<description></description>
+		<description>return all loaded entities as array</description>
 		<return>
 			<type>array</type>
 		</return>
@@ -2778,7 +2778,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>EntityNameList</name>
 		<class>railo.runtime.functions.orm.EntityNameList</class>
-		<description></description>
+		<description>return all loaded entities as string list</description>
 		<argument>
 			<name>delimeter</name>
 			<type>string</type>
@@ -2793,7 +2793,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>EntityReload</name>
 		<class>railo.runtime.functions.orm.EntityReload</class>
-		<description></description>
+		<description>Reloads data for an entity that is already loaded. This method refetches data from the database and repopulates the entity with the refreshed data.</description>
 		<argument>
 			<name>entity</name>
 			<type>object</type>
@@ -2808,7 +2808,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>EntitySave</name>
 		<class>railo.runtime.functions.orm.EntitySave</class>
-		<description></description>
+		<description>Saves or updates data of the object and all related objects to the database. This also saves all the related entities, which includes the entire graph. When entities are loaded, default constructors are called.Railo automatically tries to find if a new record should be inserted or an existing record be updated for the given entity. If you set forceinsert=true, then Railo tries to insert the entity as a new record.Calling this method may not run the insert or update SQL immediately. It is possible that various SQL statements are queued and then run as a batch for performance reasons. The SQL statements are run when the ORM session is flushed.</description>
 		<argument>
 			<name>entity</name>
 			<type>object</type>
@@ -2828,7 +2828,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>EntityToQuery</name>
 		<class>railo.runtime.functions.orm.EntityToQuery</class>
-		<description></description>
+		<description>Converts the input entity object or the input array of entity objects to a query object.</description>
 		<argument>
 			<name>entity</name>
 			<type>object</type>
@@ -2871,7 +2871,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>evaluateComponent</name>
 		<class>railo.runtime.functions.dynamicEvaluation.EvaluateComponent</class>
-		<description></description>
+		<description>literal representation of a component, used by the serialize method.</description>
 		<argument>
 			<name>name</name>
 			<type>string</type>
@@ -2902,7 +2902,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>evaluateJava</name>
 		<class>railo.runtime.functions.dynamicEvaluation.EvaluateJava</class>
-		<description></description>
+		<description>literal representation of a serializable Java Object, used by the serialize method.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -2969,7 +2969,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>extract</name>
 		<class>railo.runtime.functions.system.Extract</class>
-		<description></description>
+		<description>extract data out of a compressed file</description>
 		<argument>
 			<name>format</name>
 			<type>string</type>
@@ -3066,7 +3066,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>FileSeek</name>
 		<class>railo.runtime.functions.file.FileSeek</class>
-		<description></description>
+		<description>Seeks the position for read or write operation of an file.</description>
 		<argument>
 			<name>fileObj</name>
 			<type>any</type>
@@ -3085,7 +3085,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>FileSkipBytes</name>
 		<class>railo.runtime.functions.file.FileSkipBytes</class>
-		<description></description>
+		<description>Skips over the data before a read or write operation of an file.</description>
 		<argument>
 			<name>fileObj</name>
 			<type>any</type>
@@ -3548,7 +3548,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>getClassPath</name>
 		<class>railo.runtime.functions.system.GetClassPath</class>
-		<description></description>
+		<description>returns a array containing the Java classpath of the current enviroment.</description>
 		<return>
 			<type>array</type>
 		</return>
@@ -3557,7 +3557,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>GetComponentMetaData</name>
 		<class>railo.runtime.functions.other.GetComponentMetaData</class>
-		<description></description>
+		<description>Gets metadata (such as the functions and implemented interfaces of a component) for a CFC or Interface. </description>
 		<argument>
 			<name>pathOrCFC</name>
 			<type>object</type>
@@ -3600,7 +3600,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>getCurrentContext</name>
 		<class>railo.runtime.functions.system.GetCurrentContext</class>
-		<description></description>
+		<description>return the context (stacktrace) of the current position.</description>
 		<return>
 			<type>array</type>
 		</return>
@@ -3637,7 +3637,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>getException</name>
 		<class>railo.runtime.functions.system.GetException</class>
-		<description></description>
+		<description>Used with the cftry and cfcatch tags. Retrieves a Java exception object from a Java object. </description>
 		<argument>
 			<name>object</name>
 			<type>any</type>
@@ -3679,11 +3679,12 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>getFunctionData</name>
 		<class>railo.runtime.functions.other.GetFunctionData</class>
-		<description></description>
+		<description>returns information to a single function</description>
 		<argument>
 			<name>functionName</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>name of the function getting information for</description>
 		</argument>
 		<return>
 			<type>struct</type>
@@ -3723,7 +3724,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>GetVFSMetaData</name>
 		<class>railo.runtime.functions.file.GetVFSMetaData</class>
-		<description></description>
+		<description>Gets virtual file system metadata.</description>
 		<argument>
 			<name>scheme</name>
 			<type>string</type>
@@ -3740,7 +3741,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>GetPrinterInfo</name>
 		<class>railo.runtime.functions.system.GetPrinterInfo</class>
-		<description></description>
+		<description>Determines which print attributes are supported by a selected printer.</description>
 		<argument>
 			<name>printer</name>
 			<type>string</type>
@@ -3755,7 +3756,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>GetRailoId</name>
 		<class>railo.runtime.functions.other.GetRailoId</class>
-		<description></description>
+		<description>return ids of the current context</description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -3764,7 +3765,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>GetReadableImageFormats</name>
 		<class>railo.runtime.functions.image.GetReadableImageFormats</class>
-		<description></description>
+		<description>Returns a list of image formats that Railo can read on the operating system where Railo is deployed.</description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3773,7 +3774,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>GetUserRoles</name>
 		<class>railo.runtime.functions.system.GetUserRoles</class>
-		<description></description>
+		<description>Retrieves the list of roles for the current user.</description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3782,7 +3783,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>GetWriteableImageFormats</name>
 		<class>railo.runtime.functions.image.GetWriteableImageFormats</class>
-		<description></description>
+		<description>Returns a list of image formats that Railo can write on the operating system where Railo is deployed.</description>
 		<return>
 			<type>string</type>
 		</return>
@@ -3821,8 +3822,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>getGatewayHelper</name>
 		<class>railo.runtime.functions.gateway.GetGatewayHelper</class>
-		<description>
-		</description>
+		<description>Gets a Java GatewayHelper object that provides methods and properties for use with a event gateways.</description>
 		<argument>
 			<name>gatewayID</name>
 			<type>string</type>
@@ -3871,7 +3871,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<name>getK2ServerDocCount</name>
 		<class>railo.runtime.functions.other.GetK2ServerDocCount</class>
 		<status>deprecated</status>
-		<description></description>
+		<description>This function is deprecated. </description>
 		<return>
 			<type>number</type>
 		</return>
@@ -3881,7 +3881,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<name>getK2ServerDocCountLimit</name>
 		<class>railo.runtime.functions.other.GetK2ServerDocCountLimit</class>
 		<status>deprecated</status>
-		<description></description>
+		<description>This function is deprecated.</description>
 		<return>
 			<type>number</type>
 		</return>
@@ -3919,7 +3919,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>getMetricData</name>
 		<class>railo.runtime.functions.system.GetMetricData</class>
-		<description></description>
+		<description>Gets server performance metrics.</description>
 		<argument>
 			<name>monitor_name</name>
 			<type>string</type>
@@ -4144,7 +4144,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>getTimeZone</name>
 		<class>railo.runtime.functions.dateTime.GetTimeZone</class>
-		<description></description>
+		<description>returns the timezone defined for the current request.</description>
 		<return>
 			<type>string</type>
 		</return>
@@ -4153,7 +4153,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>setTimeZone</name>
 		<class>railo.runtime.functions.dateTime.SetTimeZone</class>
-		<description></description>
+		<description>change the timezone defintion for the current request.</description>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
@@ -5699,7 +5699,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>IntergralContext</name>
 		<class>railo.runtime.functions.other.IntergralContext</class>
-		<description></description>
+		<description>return the integral context information, FusionDebug has do be installed for this.</description>
 		
 		<return>
 			<type>struct</type>
@@ -5752,7 +5752,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>IsIPv6</name>
 		<class>railo.runtime.functions.decision.IsIPv6</class>
-		<description></description>
+		<description>Determines whether the host supports IPv6.</description>
 		<argument>
 			<name>hostname</name>
 			<type>string</type>
@@ -5961,7 +5961,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>IsDDX</name>
 		<class>railo.runtime.functions.decision.IsDDX</class>
-		<description></description>
+		<description>Determines whether a DDX file exists and is valid, or if a string contains valid DDX instructions.</description>
 		<argument>
 			<name>pathOrString</name>
 			<type>string</type>
@@ -6021,7 +6021,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<name>isK2ServerABroker</name>
 		<class>railo.runtime.functions.decision.IsK2ServerABroker</class>
 		<status>deprecated</status>
-		<description></description>
+		<description>This function is deprecated. </description>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6031,7 +6031,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<name>isK2ServerDocCountExceeded</name>
 		<class>railo.runtime.functions.decision.IsK2ServerDocCountExceeded</class>
 			<status>deprecated</status>
-		<description></description>
+		<description>This function is deprecated. </description>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6041,7 +6041,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<name>isK2ServerOnline</name>
 		<class>railo.runtime.functions.decision.IsK2ServerOnline</class>
 			<status>deprecated</status>
-		<description></description>
+		<description>This function is deprecated.</description>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6079,7 +6079,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>isNotMap</name>
 		<class>railo.runtime.functions.other.IsNotMap</class>
-		<description></description>
+		<description>return true if the given Object is not of Type java.util.Map</description>
 		<argument>
 			<name>arg1</name>
 			<type>any</type>
@@ -6217,7 +6217,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>isUserInAnyRole</name>
 		<class>railo.runtime.functions.decision.isUserInAnyRole</class>
-		<description></description>
+		<description>Determines whether an authenticated user belongs to any role in a list of roles.</description>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6226,7 +6226,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>IsUserLoggedIn</name>
 		<class>railo.runtime.functions.decision.IsUserLoggedIn</class>
-		<description></description>
+		<description>Determines whether a user is logged in.</description>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -7420,7 +7420,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>metaphone</name>
 		<class>railo.runtime.functions.string.Metaphone</class>
-		<description></description>
+		<description>Metaphone is a phonetic algorithm, an algorithm published in 1990 for indexing words by their English pronunciation. The algorithm produces variable length keys as its output, as opposed to Soundex's fixed-length keys. Similar sounding words share the same keys.</description>
 		<argument>
 			<name>str</name>
 			<type>string</type>
@@ -7496,7 +7496,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>millisecond</name>
 		<class>railo.runtime.functions.dateTime.MilliSecond</class>
-		<description></description>
+		<description>Returns the milliseconds of the referenced date</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -7534,7 +7534,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>monthAsString</name>
 		<class>railo.runtime.functions.string.MonthAsString</class>
-		<description>Returns the string label for the given month index in the given locale (if supplied)</description>
+		<description>Returns the string label for the given month</description>
 		<argument>
 			<name>monthnumber</name>
 			<type>number</type>
@@ -7553,7 +7553,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>monthShortAsString</name>
 		<class>railo.runtime.functions.string.MonthShortAsString</class>
-		<description></description>
+		<description>Returns the string label for the given month in short format</description>
 		<argument>
 			<name>monthnumber</name>
 			<type>number</type>
@@ -7567,7 +7567,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>newLine</name>
 		<class>railo.runtime.functions.string.NewLine</class>
-		<description></description>
+		<description>returns a new line</description>
 		<return>
 			<type>string</type>
 		</return>
@@ -7624,7 +7624,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>ORMExecuteQuery</name>
 		<class>railo.runtime.functions.orm.ORMExecuteQuery</class>
-		<description></description>
+		<description>Runs queries based on the Hibernate Query Language (HQL) directly on a database. </description>
 		<argument>
 			<name>hql</name>
 			<type>string</type>
@@ -7653,7 +7653,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>ORMClearSession</name>
 		<class>railo.runtime.functions.orm.ORMClearSession</class>
-		<description></description>
+		<description>ORMClearSession removes all the entities that are loaded or created in the session. This clears the first level cache and removes the objects that are not yet saved to the database.</description>
 		<return>
 			<type>void</type>
 		</return>
@@ -7662,7 +7662,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>ORMCloseSession</name>
 		<class>railo.runtime.functions.orm.ORMCloseSession</class>
-		<description></description>
+		<description>Closes the current ORM session associated with the data source specified in the application.</description>
 		<return>
 			<type>void</type>
 		</return>
@@ -7671,7 +7671,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>ORMEvictCollection</name>
 		<class>railo.runtime.functions.orm.ORMEvictCollection</class>
-		<description></description>
+		<description>This method is used to evict all the collection or association data for the given component name and collection name, from the secondary cache. If the primary key is specified, then, the collection or association data of the entity with the primary key is evicted.</description>
 		
 		<argument>
 			<name>entityName</name>
@@ -7697,7 +7697,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>ORMEvictEntity</name>
 		<class>railo.runtime.functions.orm.ORMEvictEntity</class>
-		<description></description>
+		<description>This method is used to evict items for the given component name, from the secondary cache. If the primary key is specified, then the data of the entity with that primary key is evicted. Primary key should be a value in case of simple primary key or should be a struct in case of composite primary key.</description>
 		
 		<argument>
 			<name>entityName</name>
@@ -7718,7 +7718,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>ORMEvictQueries</name>
 		<class>railo.runtime.functions.orm.ORMEvictQueries</class>
-		<description></description>
+		<description>This method is used to evict the data of all the queries from the default query cache. If cache name is specified, then, the data of all the queries belonging to the cache region with the given cache name are evicted.</description>
 		<argument>
 			<name>cacheName</name>
 			<type>String</type>
@@ -7732,7 +7732,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>ORMFlush</name>
 		<class>railo.runtime.functions.orm.ORMFlush</class>
-		<description></description>
+		<description>Flushes the current ORM session associated with the data source specified in the application. ORMFlush flushes all the pending CRUD operations in that request.</description>
 		<return>
 			<type>void</type>
 		</return>
@@ -7741,7 +7741,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>ORMGetSession</name>
 		<class>railo.runtime.functions.orm.ORMGetSession</class>
-		<description></description>
+		<description>Returns the current ORM session, which is the Session associated with the data source specified in the application.</description>
 		<return>
 			<type>object</type>
 		</return>
@@ -7750,7 +7750,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>ORMGetSessionFactory</name>
 		<class>railo.runtime.functions.orm.ORMGetSessionFactory</class>
-		<description></description>
+		<description>ORMGetSessionFactory returns the underlying Hibernate SessionFactory object. For information on Session API see:</description>
 		<return>
 			<type>object</type>
 		</return>
@@ -7759,7 +7759,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>ORMReload</name>
 		<class>railo.runtime.functions.orm.ORMReload</class>
-		<description></description>
+		<description>Reloads ORM objects dynamically.</description>
 		<return>
 			<type>void</type>
 		</return>
@@ -7869,7 +7869,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>PrecisionEvaluate</name>
 		<class>railo.runtime.functions.dynamicEvaluation.PrecisionEvaluate</class>
-		<description></description>
+		<description>Evaluates one or more string expressions, dynamically, from left to right, using BigDecimal precision arithmetic to calculate the values of arbitrary precision arithmetic expressions.</description>
 		<argument-type>dynamic</argument-type>
 		<argument-min>1</argument-min>
 		<return>
@@ -7922,7 +7922,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>query</name>
 		<class>railo.runtime.functions.query.Query_</class>
-		<description></description>
+		<description>create ans populates a query object in the form query(columnName1:[1,2,3],columnName2:[4,5,6])</description>
 		<argument-type>dynamic</argument-type>
 		<return>
 			<type>query</type>
@@ -7985,7 +7985,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>queryColumnCount</name>
 		<class>railo.runtime.functions.query.QueryColumnCount</class>
-		<description></description>
+		<description>column count of given query</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8001,7 +8001,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>QueryConvertForGrid</name>
 		<class>railo.runtime.functions.query.QueryConvertForGrid</class>
-		<description></description>
+		<description>Converts query data to a structure that contains a paged subset of the query. Used in CFC functions that return data to Ajax format cfgrid controls in response to a bind expression.</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8098,21 +8098,24 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>queryGetCell</name>
 		<class>railo.runtime.functions.query.QueryGetCell</class>
-		<description></description>
+		<description>return the value of a specific query cell</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
+			<description>query to get cell value from</description>
 		</argument>
 		<argument>
 			<name>column_name</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>name of the column</description>
 		</argument>
 		<argument>
 			<name>row_number</name>
 			<type>number</type>
 			<required>No</required>
+			<description>row number (1-n)</description>
 		</argument>
 		<return>
 			<type>any</type>
@@ -8141,7 +8144,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>queryRecordCount</name>
 		<class>railo.runtime.functions.query.QueryRecordCount</class>
-		<description></description>
+		<description>row count of given query</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8184,7 +8187,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>querySlice</name>
 		<class>railo.runtime.functions.query.QuerySlice</class>
-		<description></description>
+		<description>creates a new query containing a part of the given query</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -8308,7 +8311,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>releaseComObject</name>
 		<class>railo.runtime.functions.other.ReleaseComObject</class>
-		<description></description>
+		<description>Releases a COM Object and frees up resources that it used. </description>
 		<argument>
 			<name>comObject</name>
 			<type>any</type>
@@ -8701,7 +8704,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>SendGatewayMessage</name>
 		<class>railo.runtime.functions.gateway.SendGatewayMessage</class>
-		<description></description>
+		<description>Sends an outgoing message through a event gateway.</description>
 		<argument>
 			<name>gatewayID</name>
 			<type>string</type>
@@ -8720,7 +8723,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>serialize</name>
 		<class>railo.runtime.functions.dynamicEvaluation.Serialize</class>
-		<description></description>
+		<description>opposite of evaluate, this function serialize all cfml object and all serializble Java objects. can also serilize Components.</description>
 		<argument>
 			<name>object</name>
 			<type>any</type>
@@ -8865,7 +8868,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>sizeOf</name>
 		<class>railo.runtime.functions.system.SizeOf</class>
-		<description></description>
+		<description>this function is experimentell, to not use in productive enviroment. this function returns the size in bytes of a given object.</description>
 		<argument>
 			<name>obj</name>
 			<type>object</type>
@@ -8879,7 +8882,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>soundex</name>
 		<class>railo.runtime.functions.string.Soundex</class>
-		<description></description>
+		<description>Soundex is a phonetic algorithm for indexing names by sound, as pronounced in English. The goal is for homophones to be encoded to the same representation so that they can be matched despite minor differences in spelling. The algorithm mainly encodes consonants; a vowel will not be encoded unless it is the first letter. Soundex is the most widely known of all phonetic algorithms, as it is a standard feature of MS SQL and Oracle, and is often used (incorrectly) as a synonym for "phonetic algorithm".</description>
 		<argument>
 			<name>str</name>
 			<type>string</type>
@@ -8959,16 +8962,18 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>SSLCertificateList</name>
 		<class>railo.runtime.functions.other.SSLCertificateList</class>
-		<description></description>
+		<description>list all Certificates availble on a specific host</description>
 		<argument>
 			<name>host</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>host to get Certificates from</description>
 		</argument>
 		<argument>
 			<name>port</name>
 			<type>number</type>
 			<required>no</required>
+			<description>port of the host, default is 443</description>
 		</argument>
 		<return>
 			<type>query</type>
@@ -8978,16 +8983,18 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>SSLCertificateInstall</name>
 		<class>railo.runtime.functions.other.SSLCertificateInstall</class>
-		<description></description>
+		<description>install certificates of a specific host</description>
 		<argument>
 			<name>host</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>host to get Certificates from</description>
 		</argument>
 		<argument>
 			<name>port</name>
 			<type>number</type>
 			<required>no</required>
+			<description>port of the host, default is 443</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -9012,7 +9019,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>stringlen</name>
 		<class>railo.runtime.functions.string.StringLen</class>
-		<description></description>
+		<description>returns the len of a string</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9028,7 +9035,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<name>_jsonStruct</name>
 		<class>railo.runtime.functions.struct.JsonStruct</class>
 		<status>hidden</status>
-		<description></description>
+		<description>internal function used as for literal struct defintion.</description>
 		<argument-type>dynamic</argument-type>
 		<return>
 			<type>struct</type>
@@ -9038,7 +9045,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>struct</name>
 		<class>railo.runtime.functions.struct.Struct_</class>
-		<description></description>
+		<description>used to create and populate a struct at the same time, example struct(key1:1,key2:2)</description>
 		<argument-type>dynamic</argument-type>
 		<return>
 			<type>struct</type>
@@ -9417,7 +9424,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>SystemOutput</name>
 		<class>railo.runtime.functions.other.SystemOutput</class>
-		<description></description>
+		<description>writes the given string to the output stream</description>
 		<argument>
 			<name>str</name>
 			<type>string</type>
@@ -9560,7 +9567,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>traceObject</name>
 		<class>railo.runtime.functions.other.TraceObject</class>
-		<description></description>
+		<status>unimplemeted</status>
+		<description>wrapper to trace the usage of a soecific object</description>
 		<argument>
 			<name>object</name>
 			<type>any</type>
@@ -9617,7 +9625,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>ucFirst</name>
 		<class>railo.runtime.functions.string.UCFirst</class>
-		<description></description>
+		<description>does the first character of the given string upper case.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9634,7 +9642,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<name>unserializeJava</name>
 		<class>railo.runtime.functions.dynamicEvaluation.UnserializeJava</class>
 		<status>deprecated</status>
-		<description></description>
+		<description>literal defintion of a serialized Java Object by function serialize</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9667,7 +9675,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>uRLEncode</name>
 		<class>railo.runtime.functions.other.URLEncode</class>
-		<description></description>
+		<description>encode a url</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -9743,7 +9751,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>valueArray</name>
 		<class>railo.runtime.functions.query.ValueArray</class>
-		<description></description>
+		<description>Returns a array of all the values, for a given column within the query.</description>
 		<argument>
 			<name>query_column</name>
 			<type>variable_string</type>
@@ -9776,7 +9784,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>VerifyClient</name>
 		<class>railo.runtime.functions.other.VerifyClient</class>
-		<description></description>
+		<description>Requires remote invocations of the page or calls to functions on the page to include an encrypted security token.</description>
 		<return>
 			<type>void</type>
 		</return>
@@ -9805,7 +9813,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>lsweek</name>
 		<class>railo.runtime.functions.international.LSWeek</class>
-		<description></description>
+		<description>Returns the week number in the year of the date referenced, based on the loal influence. not everywhere the wekk begins on Monday by defintion.</description>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
@@ -9993,7 +10001,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>htmlParse</name>
 		<class>railo.runtime.functions.xml.HtmlParse</class>
-		<description></description>
+		<description>parse the given html (not only xhtml) as xml Object, work similar to xmlParse, but this function is very forgiving with the syntax..</description>
 		<argument>
 			<name>html</name>
 			<type>string</type>
