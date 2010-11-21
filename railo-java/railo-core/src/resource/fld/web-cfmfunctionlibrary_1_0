@@ -9530,7 +9530,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>radix</name>
 			<type>any</type>
 			<required>no</required>
-			<description>the base for tranlation of the given value, default is 10, possible values are [2-36,bin,oct,dec.hex]</description>
+			<description>the base for tranlation of the given value, default is 10, possible values are [2-36,bin,oct,dec,hex]</description>
 		</argument>
 		<return>
 			<type>number</type>

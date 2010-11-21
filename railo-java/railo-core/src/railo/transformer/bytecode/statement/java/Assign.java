@@ -64,8 +64,8 @@ public class Assign extends ExpressionBase {
 		}
 		print.o(from+"->"+to);
 		if(to!=null && !from.equals(to)){
-			//box/unbox
-			//bc.getAdapter().cast(from, to);
+			box/unbox
+			bc.getAdapter().cast(from, to);
 		}
 		return from;
 	}
