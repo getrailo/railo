@@ -9515,6 +9515,27 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<type>binary</type>
 		</return>
 	</function>
+	<!-- ToNumeric -->
+	<function>
+		<name>ToNumeric</name>
+		<class>railo.runtime.functions.other.ToNumeric</class>
+		<description>Converts given value to a number</description>
+		<argument>
+			<name>value</name>
+			<type>any</type>
+			<required>Yes</required>
+			<description>value that should be translated to a numeric value</description>
+		</argument>
+		<argument>
+			<name>radix</name>
+			<type>any</type>
+			<required>no</required>
+			<description>the base for tranlation of the given value, default is 10, possible values are [2-36,bin,oct,dec.hex]</description>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
 	<!-- ToScript -->
 	<function>
 		<name>ToScript</name>

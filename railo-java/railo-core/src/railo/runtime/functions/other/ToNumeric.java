@@ -1,5 +1,6 @@
 package railo.runtime.functions.other;
 
+import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
@@ -14,6 +15,8 @@ public class ToNumeric {
 		int radix;
 		if(Decision.isNumeric(oRadix)){
 			radix=Caster.toIntValue(oRadix);
+			if(radix<Character.MIN_RADIX || radix>Character.MAX_RADIX)
+				throw invalidRadix(pc, Caster.toString(radix));
 		}
 		else {
 			String str = Caster.toString(oRadix).trim().toLowerCase();
@@ -21,9 +24,13 @@ public class ToNumeric {
 			else if("oct".equals(str)) radix=8;
 			else if("dec".equals(str)) radix=10;
 			else if("hex".equals(str)) radix=16;
-			else throw new FunctionException(pc, "ToNumeric", 2, "radix", "invalid value ["+str+"], valid values are [<number>,bin,oct,dec.hex]");
+			else throw invalidRadix(pc,str);
 		}
 		
 		return (double)Integer.parseInt(Caster.toString(value), radix);
+	}
+	
+	private static FunctionException invalidRadix(PageContext pc , String radix) {
+		return new FunctionException(pc, "ToNumeric", 2, "radix", "invalid value ["+radix+"], valid values are ["+Character.MIN_RADIX+"-"+Character.MAX_RADIX+",bin,oct,dec,hex]");
 	}
 }
