@@ -1512,10 +1512,35 @@ public class CFMLExprTransformer implements ExprTransformer {
 				}
 			// Fix
 				else {
-					if(libLen <= count)
-						throw new TemplateException(
+					if(libLen <= count){
+						ArrayList<FunctionLibFunctionArg> args=flf.getArg();
+						Iterator<FunctionLibFunctionArg> it = args.iterator();
+						StringBuilder pattern=new StringBuilder(flf.getName());
+						StringBuilder end=new StringBuilder();
+						pattern.append("(");
+						FunctionLibFunctionArg arg;
+						int c=0;
+						while(it.hasNext()){
+							arg = it.next();
+							if(!arg.isRequired()) {
+								pattern.append("[");
+								end.append("]");
+							}
+							if(c++>0)pattern.append(" ,");
+							pattern.append(arg.getType());
+							pattern.append(" ");
+							pattern.append(arg.getName());
+							
+						}
+						pattern.append(end);
+						pattern.append(")");
+						
+						TemplateException te = new TemplateException(
 							data.cfml,
-							"too many Attributes in function [" + name + "]");
+							"too many Attributes in function call [" + name + "]");
+						te.setAdditional("pattern", pattern.toString());
+						throw te;
+					}
 				}
 				
 			}
