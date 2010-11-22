@@ -120,7 +120,7 @@ public abstract class ComponentPage extends PagePlus  {
             // Include MUST
             Array path = pc.getTemplatePath();
             //if(path.size()>1 ) {
-            if(path.size()>1 && !(path.size()==3 && List.last(path.getE(2).toString(),"/\\").equalsIgnoreCase("application.cfc")) ) {// MUSTMUST bad impl -> check with and without application.cfc
+            if(path.size()>1 && !(path.size()==3 && List.last(path.getE(2).toString(),"/\\",true).equalsIgnoreCase("application.cfc")) ) {// MUSTMUST bad impl -> check with and without application.cfc
             	
             	ComponentWrap c = new ComponentWrap(Component.ACCESS_PRIVATE,component.getComponentImpl());
             	Key[] keys = c.keys();

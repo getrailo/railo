@@ -6473,16 +6473,19 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>value</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string value</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -6497,11 +6500,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -6516,16 +6521,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>new_delimiter</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>new delimeter to set. a delimeter is a characters that separate list elements.</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>existing delimeter to replace. a delimeter is a characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -6540,11 +6554,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -6559,16 +6575,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>substring</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>the string to search in the list</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -6583,16 +6608,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>substring</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>the string to search in the list</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -6607,16 +6641,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>position</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>position of the element to delete</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -6631,16 +6674,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>value</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>element for which to search</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -6655,16 +6707,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>value</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>element for which to search</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -6679,11 +6740,19 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -6698,16 +6767,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>position</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>position of the element to return</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -6722,21 +6800,31 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>position</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>Position at which to insert element. The first list position is 1.</description>
 		</argument>
 		<argument>
 			<name>value</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>An element or a list of elements.</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -6751,16 +6839,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>index</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>index to check for.</description>
 		</argument>
 		<argument>
 			<name>delimeter</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>boolean</type>
@@ -6775,11 +6872,19 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -6794,11 +6899,19 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -6813,11 +6926,19 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -6832,16 +6953,19 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>value</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>An element or a list of elements.</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -6856,21 +6980,35 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>qualifier</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>string to insert before and after the list elements specified in the elements parameter.</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>no</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
 			<name>elements</name>
 			<type>string</type>
 			<required>no</required>
+			<description>
+			which type of element are qualified
+			 - all (all elements)
+			 - char (elements that are composed of alphabetic characters)
+			 </description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -6885,11 +7023,19 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -6904,21 +7050,31 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>position</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>Position at which to set a value. The first list position is 1.</description>
 		</argument>
 		<argument>
 			<name>value</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>An element or a list of elements to set.</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -6933,21 +7089,38 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>sort_type</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>
+			there are different sort types:
+			- numeric (sort by number)
+			- text (sorts text alphabetically and case sensitive)
+			- textnocase (sorts text alphabetically and ignore case sensitivity)
+			</description>
 		</argument>
 		<argument>
 			<name>sort_order</name>
 			<type>string</type>
 			<required>No</required>
+			<description>sort direction:
+			- asc (ascending sort order; default value)
+			- desc (descending sort order) </description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -6962,21 +7135,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
 			<name>includeEmptyFields</name>
 			<type>boolean</type>
 			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<argument>
 			<name>multiCharacterDelimiter</name>
 			<type>boolean</type>
 			<required>No</required>
+			<description>specifying whether the delimiters parameter specifies a multi-character delimiter. The default is false. If this parameter is true, the delimiters parameter must specify a single delimiter consisting of multiple characters. This parameter enables the ListToArray function to convert a list such as the following to an array of color names: red:|orange:|yellow:|green:|blue:|indigo:|violet.</description>
 		</argument>
 		
 		<return>
@@ -6993,11 +7170,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -7007,21 +7186,30 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>listValueCount</name>
 		<class>railo.runtime.functions.list.ListValueCount</class>
-		<description>Counts the number of times the given element appears in the list</description>
+		<description>Counts the number of times the given element appears in the list. When you set argument includeEmptyFields to true, you can also search for empty strings.</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>value</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>Item for which to search</description>
 		</argument>
 		<argument>
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -7031,21 +7219,30 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>listValueCountNoCase</name>
 		<class>railo.runtime.functions.list.ListValueCountNoCase</class>
-		<description>Counts the number of times the given element appears in the list using a case-insensitive search</description>
+		<description>Counts the number of times the given element appears in the list using a case-insensitive search. When you set argument includeEmptyFields to true, you can also search for empty strings.</description>
 		<argument>
 			<name>list</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>a string list</description>
 		</argument>
 		<argument>
 			<name>value</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>Item for which to search</description>
 		</argument>
 		<argument>
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Characters that separate list elements. The default value is comma.</description>
+		</argument>
+		<argument>
+			<name>includeEmptyFields</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
 			<type>number</type>

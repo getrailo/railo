@@ -1523,7 +1523,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 						while(it.hasNext()){
 							arg = it.next();
 							if(!arg.isRequired()) {
-								pattern.append("[");
+								pattern.append(" [");
 								end.append("]");
 							}
 							if(c++>0)pattern.append(" ,");

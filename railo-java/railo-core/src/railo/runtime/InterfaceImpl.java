@@ -149,7 +149,7 @@ public class InterfaceImpl implements Dumpable {
 
 	private String _getName() { // MUST nicht so toll
 	    if(callPath==null) return "";
-	    return railo.runtime.type.List.last(callPath,"./");
+	    return railo.runtime.type.List.last(callPath,"./",true);
 	}
     
     public void registerUDF(String key, UDF udf) {

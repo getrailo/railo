@@ -10,15 +10,19 @@ import railo.runtime.type.Array;
 import railo.runtime.type.List;
 
 public final class ListValueCount implements Function {
+
+	private static final long serialVersionUID = -1808030347105091742L;
+
 	public static double call(PageContext pc , String list, String value) throws PageException {
-		return call(pc,list,value,",");
+		return call(pc,list,value,",",false);
 	}
+
 	public static double call(PageContext pc , String list, String value, String delimeter) throws PageException {
-		
-		
+		return call(pc,list,value,delimeter,false);
+	}
+	public static double call(PageContext pc , String list, String value, String delimeter,boolean includeEmptyFields) throws PageException {
 		int count=0;
-		//String[] arr= List.listToArray(list,delimeter);
-		Array arr= List.listToArray(list,delimeter);
+		Array arr= includeEmptyFields?List.listToArray(list,delimeter):List.listToArrayRemoveEmpty(list,delimeter);
 		int len=arr.size();
 		
 		for(int i=1;i<=len;i++) {

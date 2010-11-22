@@ -129,8 +129,8 @@ public final class HTMLParser extends Parser {
                         String[] arr=List.toStringArray(List.listToArrayRemoveEmpty(value,';'));
                         for(int i=0;i<arr.length;i++) {
                             el=arr[i];
-                            n=List.first(el,"=").trim();
-                            v=List.last(el,"=").trim();
+                            n=List.first(el,"=",true).trim();
+                            v=List.last(el,"=",true).trim();
                             if(n.equalsIgnoreCase("charset")) {
                                 charset=v;
                                 hasChanged=true;

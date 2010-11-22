@@ -115,7 +115,7 @@ public class HibernateCaster {
 		ComponentPro cp = ComponentUtil.toComponentPro(cfc,null);
 		if(cp!=null){
 			String name = cp.getPageSource().getDisplayPath();
-	        name=railo.runtime.type.List.last(name, "\\/");
+	        name=railo.runtime.type.List.last(name, "\\/",true);
 	        int index=name.lastIndexOf('.');
 	        name= name.substring(0,index);
 			return name;
