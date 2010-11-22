@@ -10,8 +10,10 @@ import railo.commons.io.res.Resources;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
+import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.net.s3.Properties;
+import railo.runtime.util.ApplicationContext;
 import railo.runtime.util.ApplicationContextPro;
 
 public final class S3ResourceProvider implements ResourceProvider {
@@ -89,7 +91,12 @@ public final class S3ResourceProvider implements ResourceProvider {
 
 	
 	public static String loadWithNewPattern(S3 s3,RefInteger storage, String path) {
-		Properties prop=((ApplicationContextPro)ThreadLocalPageContext.get().getApplicationContext()).getS3();
+		PageContext pc = ThreadLocalPageContext.get();
+		Properties prop=null; 
+		if(pc!=null){
+			prop=((ApplicationContextPro)pc.getApplicationContext()).getS3();
+		}
+		else prop=new Properties();
 		
 		int defaultLocation = prop.getDefaultLocation();
 		storage.setValue(defaultLocation);
