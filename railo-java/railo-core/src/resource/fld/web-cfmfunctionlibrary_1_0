@@ -62,7 +62,8 @@
 			<name>functionName</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>The name of the function to run when the page loads. The specified function does not take a parameter.</description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -134,7 +135,8 @@ All elements in the array must contain values that can be automatically converte
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an array </description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -344,7 +346,8 @@ All elements in the array must contain values that can be automatically converte
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+			<description>a array</description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -388,7 +391,8 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an array</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -402,7 +406,8 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an array</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -416,7 +421,8 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an array</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -430,7 +436,8 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an array </description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -439,22 +446,25 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayMerge</name>
 		<class>railo.runtime.functions.arrays.ArrayMerge</class>
-		<description>merge 2 arrays together</description>
+		<description>This function merges two arrays to a single one.</description>
 		<argument>
 			<name>array1</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+			<description>first array</description>
+    </argument>
 		<argument>
 			<name>array2</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+			<description>second array</description>
+    </argument>
 		<argument>
 			<name>leaveIndex</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+			<description>defines whether the merged arrays will maintain their index values or if the second array will simply append to the first one. If both arrays contain the same index and you specified the parameter leaveIndex to true, the corresponding index in the resulting array will always contain the value of the index of the first array.</description>
+    </argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -468,7 +478,8 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>dimension</name>
 			<type>number</type>
 			<required>no</required>
-		</argument>
+		<description>Number of dimensions in new array: 1, 2, or 3</description>
+    </argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -482,12 +493,14 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an array</description>
+    </argument>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+			<description>value to prepend</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -501,12 +514,14 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an array </description>
+    </argument>
 		<argument>
 			<name>minimum_size</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+			<description>minimum size of the array</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -520,7 +535,8 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -534,22 +550,26 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an array.</description>
+    </argument>
 		<argument>
 			<name>start_pos</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>end_pos</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -563,17 +583,20 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>offset</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>length</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -587,17 +610,20 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an array </description>
+    </argument>
 		<argument>
 			<name>sort_type</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>sort_order</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -611,7 +637,8 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an array </description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -625,17 +652,20 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an array </description>
+    </argument>
 		<argument>
 			<name>position1</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>position2</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -649,12 +679,14 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of array </description>
+    </argument>
 		<argument>
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -668,7 +700,8 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>struct</type>
 		</return>
@@ -682,7 +715,8 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -696,7 +730,8 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Sine of an angle. The value must be between -1 and 1, inclusive.</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -710,7 +745,8 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Tangent of an angle</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -748,12 +784,14 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>encoded_binary</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string containing encoded binary data.</description>
+    </argument>
 		<argument>
 			<name>binaryencoding</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>binary</type>
 		</return>
@@ -769,12 +807,14 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>binary</name>
 			<type>binary</type>
 			<required>Yes</required>
-		</argument>
+		<description>A variable containing the binary data to encode.</description>
+    </argument>
 		<argument>
 			<name>binaryencoding</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -791,12 +831,14 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>encoded_binary</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string containing data to encode in binary format.</description>
+    </argument>
 		<argument>
 			<name>encoding</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>binary</type>
 		</return>
@@ -813,12 +855,14 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>binary</name>
 			<type>binary</type>
 			<required>Yes</required>
-		</argument>
+		<description>A variable containing binary data to decode into text.</description>
+    </argument>
 		<argument>
 			<name>encoding</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -832,12 +876,14 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number1</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>32-bit signed integer</description>
+    </argument>
 		<argument>
 			<name>number2</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -851,17 +897,20 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>32-bit signed integer</description>
+    </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>length</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -875,17 +924,20 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>32-bit signed integer to mask</description>
+    </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>length</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -899,22 +951,26 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>32-bit signed integer</description>
+    </argument>
 		<argument>
 			<name>mask</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>length</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -928,7 +984,8 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>32-bit signed integer</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -942,12 +999,14 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number1</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>32-bit signed integer</description>
+    </argument>
 		<argument>
 			<name>number2</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -961,12 +1020,14 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>32-bit signed integer</description>
+    </argument>
 		<argument>
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -980,12 +1041,14 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>32-bit signed integer</description>
+    </argument>
 		<argument>
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -999,12 +1062,14 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number1</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>32-bit signed integer</description>
+    </argument>
 		<argument>
 			<name>number2</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -1239,10 +1304,10 @@ Remember CFML arrays start at 1 not 0.</description>
 you can use tag cfadmin instead. we will add support for this function in a future release, but then you can enable,disable this  function in admin for every single cache instance. 
 Sets the cache properties for the object cache, the page cache, or both. If a cache does not yet exist, creates it. The cache and properties are application-specific.</description>
 		<argument>
-			<name>type</name>
+			<name>propsSruct</name>
 			<type>struct</type>
 			<required>yes</required>
-			<description></description>
+			<description>A structure specifying the cache properties plus identifying information</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -1326,7 +1391,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>A real number</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -1340,7 +1406,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>A value (a number in the range 0 - 65535, inclusive)</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -1354,12 +1421,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>May be empty. If it is a variable that is defined as a number, the function processes it as a string. </description>
+    </argument>
 		<argument>
 			<name>length</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -1373,12 +1442,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string1</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one </description>
+    </argument>
 		<argument>
 			<name>string2</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -1392,12 +1463,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string1</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one </description>
+    </argument>
 		<argument>
 			<name>string2</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -1412,7 +1485,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>component</name>
 			<type>component</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>struct</type>
 		</return>
@@ -1512,7 +1586,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Angle, in radians, for which to calculate the cosine</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -1526,22 +1601,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>year</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Integer in the range 0-9999. Integers in the range 0-29 are converted to 2000-2029. Integers in the range 30-99 are converted to 1930-1999. You cannot specify dates before AD 100.</description>
+    </argument>
 		<argument>
 			<name>month</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>day</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>NO</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -1555,42 +1634,50 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>year</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Integer in the range 0-9999. Integers in the range 0-29 are converted to 2000-2029. Integers in the range 30-99 are converted to 1930-1999. You cannot specify dates before AD 100.</description>
+    </argument>
 		<argument>
 			<name>month</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>day</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>hour</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>minute</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>second</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>millis</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>NO</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -1618,22 +1705,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>arg1</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>arg2</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>arg3</name>
 			<type>object</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>arg4</name>
 			<type>object</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -1647,7 +1738,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>date object</description>
+    </argument>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -1661,7 +1753,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>date object</description>
+    </argument>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -1675,7 +1768,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>date object</description>
+    </argument>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -1689,27 +1783,32 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>hour</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Number in the range 0-23</description>
+    </argument>
 		<argument>
 			<name>minute</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>second</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>millis</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -1723,26 +1822,31 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>days</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>number of days in time period</description>
+    </argument>
 		<argument>
 			<name>hours</name>
 			<type>number</type>
 			<required>Yes</required>
+		<description>number of hours in time period</description>
 		</argument>
 		<argument>
 			<name>minutes</name>
 			<type>number</type>
 			<required>Yes</required>
+		<description>number of minutes in time period</description>
 		</argument>
 		<argument>
 			<name>seconds</name>
 			<type>number</type>
 			<required>Yes</required>
+		<description>number of seconds in time period</description>
 		</argument>
 		<argument>
 			<name>milliseconds</name>
 			<type>number</type>
 			<required>no</required>
+		<description>number of milliseconds in time period</description>
 		</argument>
 		<return>
 			<type>timespan</type>
@@ -1790,17 +1894,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>datepart</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String:</description>
+    </argument>
 		<argument>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -1814,17 +1921,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date1</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>date object</description>
+    </argument>
 		<argument>
 			<name>date2</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>datepart</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -1838,12 +1948,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>conversion_type</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -1857,17 +1969,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>datepart</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String that specifies the units in which to count; for example yyyy requests a date difference in whole years.</description>
+    </argument>
 		<argument>
 			<name>date1</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>date2</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -1878,20 +1993,23 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<class>railo.runtime.functions.displayFormatting.DateFormat</class>
 		<description>Formats a date string to a given output</description>
 		<argument>
-			<name>object</name>
+			<name>date</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Date object</description>
+    </argument>
 		<argument>
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -1905,17 +2023,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>datepart</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String:</description>
+    </argument>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -1929,12 +2050,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>Date/time object</description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -1948,12 +2071,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>Date/time object</description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -1967,17 +2092,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -1991,12 +2119,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>day_of_week</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Integer, in the range 1 (Sunday) - 7 (Saturday).</description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -2010,12 +2140,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>day_of_week</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -2029,12 +2161,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>Date/time object</description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -2048,12 +2182,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>Date/time object</description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -2067,12 +2203,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>Dateobject</description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -2086,7 +2224,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String to evaluate, after delay</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -2100,7 +2239,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Number to format</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -2114,7 +2254,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Number to decrement</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -2128,22 +2269,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>encrypted_string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String to decrypt.</description>
+    </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -2157,17 +2302,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>input</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Binary data to decrypt.</description>
+    </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -2178,10 +2326,11 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<class>railo.runtime.functions.other.DeleteClientVariable</class>
 		<description>Removes the element represented by the key from the [client] scope</description>
 		<argument>
-			<name>"name"</name>
+			<name>name</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of a client variable to delete, surrounded by double-quotation marks</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -2237,7 +2386,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>absolute_path</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>An absolute path. Alternatively, you can specify IP address as in the following example: DirectoryExists(\"//12.3.123.123/c_drive/test\");</description>
+    </argument>
 		<argument>
 			<name>allowRealPath</name>
 			<type>boolean</type>
@@ -2258,7 +2408,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>absolute_path</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>The absolute path of the directory for which to list the contents. Alternatively, you can specify IP address as in the following example: DirectoryList(\"//12.3.123.123/c_drive/test\");.</description>
+    </argument>
 		<argument>
 			<name>recurse</name>
 			<type>boolean</type>
@@ -2339,7 +2490,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Number to format</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -2370,52 +2522,62 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>label</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>expand</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>show</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>hide</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>output</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>format</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>keys</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>metainfo</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>showUDFs</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -2429,52 +2591,62 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>label</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>expand</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>show</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>hide</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>output</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>format</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>keys</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>metainfo</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>showUDFs</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -2490,42 +2662,50 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>top</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>show</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>hide</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>keys</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>metainfo</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>showUDFs</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>label</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>struct</type>
 		</return>
@@ -2540,12 +2720,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>variable_name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of a variable to duplicate</description>
+    </argument>
 		<argument>
 			<name>deepcopy</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -2559,12 +2741,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -2578,12 +2762,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -2599,22 +2785,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String to encrypt.</description>
+    </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -2628,17 +2818,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>bytes</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Binary data to encrypt.</description>
+    </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -2653,7 +2846,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>object</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of the entity being deleted.</description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -2668,22 +2862,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of the entity to be loaded.</description>
+    </argument>
 		<argument>
 			<name>idOrFilter</name>
 			<type>any</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>uniqueOrOrder</name>
 			<type>any</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>options</name>
 			<type>any</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -2698,17 +2896,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of the entity to be loaded.</description>
+    </argument>
 		<argument>
 			<name>id</name>
 			<type>string</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>unique</name>
 			<type>boolean</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -2723,12 +2924,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>sampleEntity</name>
 			<type>object</type>
 			<required>yes</required>
-		</argument>
+		<description>Name of the sample entity that is used to match and filter similar entities to load.</description>
+    </argument>
 		<argument>
 			<name>unique</name>
 			<type>boolean</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -2743,7 +2946,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>entity</name>
 			<type>any</type>
 			<required>yes</required>
-		</argument>
+		<description>The entity that must be attached to the ORM session.</description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -2758,7 +2962,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>entityName</name>
 			<type>string</type>
 			<required>yes</required>
-		</argument>
+		<description>Name of the instance being created.</description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -2783,7 +2988,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>delimeter</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -2798,7 +3004,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>entity</name>
 			<type>object</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -2808,17 +3015,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>EntitySave</name>
 		<class>railo.runtime.functions.orm.EntitySave</class>
-		<description>Saves or updates data of the object and all related objects to the database. This also saves all the related entities, which includes the entire graph. When entities are loaded, default constructors are called.Railo automatically tries to find if a new record should be inserted or an existing record be updated for the given entity. If you set forceinsert=true, then Railo tries to insert the entity as a new record.Calling this method may not run the insert or update SQL immediately. It is possible that various SQL statements are queued and then run as a batch for performance reasons. The SQL statements are run when the ORM session is flushed.</description>
+		<description>Saves or updates data of the object and all related objects to the database. This also saves all the related entities, which includes the entire graph. 
+		When entities are loaded, default constructors are called.Railo automatically tries to find if a new record should be inserted or an existing record be updated for the given entity. If you set forceinsert=true, then Railo tries to insert the entity as a new record.Calling this method may not run the insert or update SQL immediately. It is possible that various SQL statements are queued and then run as a batch for performance reasons. The SQL statements are run when the ORM session is flushed.</description>
 		<argument>
 			<name>entity</name>
 			<type>object</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>forceInsert</name>
 			<type>boolean</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -2833,12 +3043,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>entity</name>
 			<type>object</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>name</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>query</type>
 		</return>
@@ -2876,22 +3088,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>md5</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>thisData</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>variablesData</name>
 			<type>struct</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -2907,7 +3123,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -2924,7 +3141,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Exponent to apply to the base e </description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -2960,7 +3178,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>relative_path</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Relative or absolute directory reference or filename, within the current directory, (.\\ and ..\\) to convert to an absolute path. Can include forward or backward slashes.</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -3009,22 +3228,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>path</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>a file path</description>
+    </argument>
 		<argument>
 			<name>mode</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>charset</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>seekable</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -3035,14 +3258,16 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<class>railo.runtime.functions.file.FileRead</class>
 		<description>If a file object is passed in, will read the number of bytes given. If a path to a file name will read in the full file into memory. For reading text based files</description>
 		<argument>
-			<name>object</name>
+			<name>file</name>
 			<type>any</type>
 			<required>Yes</required>
+			<description>file path or object</description>
 		</argument>
 		<argument>
-			<name>charsetOrSize</name>
+			<name>charsetOrBufferSize</name>
 			<type>any</type>
 			<required>No</required>
+			<description>the charset used or the size of the buffer.</description>
 		</argument>
 		<return>
 			<type>any</type>
@@ -3057,7 +3282,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>fileObj</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The file object</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -3071,12 +3297,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>fileObj</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The file object.</description>
+    </argument>
 		<argument>
 			<name>pos</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -3090,12 +3318,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>fileObj</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The file object.</description>
+    </argument>
 		<argument>
 			<name>len</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -3110,7 +3340,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>fileObj</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The file to close.</description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -3124,12 +3355,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>source</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>path to copy.</description>
+    </argument>
 		<argument>
 			<name>destination</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -3143,12 +3376,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>source</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>file to copy</description>
+    </argument>
 		<argument>
 			<name>destination</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -3162,7 +3397,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>source</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>file to move.</description>
+    </argument>
 		<argument>
 			<name>destination</name>
 			<type>any</type>
@@ -3182,7 +3418,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>source</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>file to delete.</description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -3196,7 +3433,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>source</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>a file path.</description>
+    </argument>
 		<argument>
 			<name>allowRealPath</name>
 			<type>boolean</type>
@@ -3218,7 +3456,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>source</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The file object.</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -3232,7 +3471,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>source</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>file path</description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -3246,12 +3486,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>source</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>file path</description>
+    </argument>
 		<argument>
 			<name>mode</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -3265,12 +3507,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>source</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>file path</description>
+    </argument>
 		<argument>
 			<name>attribute</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -3284,12 +3528,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>source</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>file path</description>
+    </argument>
 		<argument>
 			<name>date</name>
 			<type>date</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -3303,16 +3549,19 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>file</name>
 			<type>any</type>
 			<required>Yes</required>
+			<description>file path or object</description>
 		</argument>
 		<argument>
 			<name>data</name>
 			<type>any</type>
 			<required>Yes</required>
+			<description>data o write to the file</description>
 		</argument>
 		<argument>
 			<name>charset</name>
 			<type>string</type>
 			<required>no</required>
+			<description>The character encoding in which the file contents is encoded.</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -3328,11 +3577,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>file</name>
 			<type>any</type>
 			<required>Yes</required>
+			<description>the file object to which to write the line.</description>
 		</argument>
 		<argument>
 			<name>data</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>data to add to the file object.</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -3347,17 +3598,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>substring</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String for which to search.</description>
+    </argument>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description></description>
 		</argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -3371,17 +3625,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>substring</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String for which to search.</description>
+    </argument>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -3395,17 +3652,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>set</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String that contains one or more characters to search for.</description>
+    </argument>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -3419,12 +3679,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>Date object</description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -3438,7 +3700,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>A number</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -3452,12 +3715,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Number to convert</description>
+    </argument>
 		<argument>
 			<name>radix</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -3473,7 +3738,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>algorithm</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>The encryption algorithm for which to generate the key.</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -3511,12 +3777,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>tagname</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Ancestor tag name for which to return data</description>
+    </argument>
 		<argument>
 			<name>instancenumber</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>struct</type>
 		</return>
@@ -3530,7 +3798,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>delimeter</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -3562,6 +3831,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>pathOrCFC</name>
 			<type>object</type>
 			<required>yes</required>
+			<description>path to a component or component itself</description>
 		</argument>
 		<return>
 			<type>struct</type>
@@ -3614,7 +3884,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>path</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>file path</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -3628,7 +3899,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>scope</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -3642,7 +3914,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>object</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A Java object.</description>
+    </argument>
 		<return>
 			<type>throwable</type>
 		</return>
@@ -3656,7 +3929,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>path</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>file path</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -3670,7 +3944,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>file</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>file path</description>
+    </argument>
 		<return>
 			<type>struct</type>
 		</return>
@@ -3699,12 +3974,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description>The locale whose name you want.</description>
+    </argument>
 		<argument>
 			<name>dspLocale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -3729,6 +4006,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>scheme</name>
 			<type>string</type>
 			<required>yes</required>
+			<description>the scheme of the virtual filesystem (ram,file,s3,http,https,zip,tar ...).</description>
 		</argument>
 		<return>
 			<type>struct</type>
@@ -3827,7 +4105,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>gatewayID</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Identifier of the gateway that provides the GatewayHelper object.</description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -3861,7 +4140,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date_time_object</name>
 			<type>datetime</type>
 			<required>No</required>
-		</argument>
+		<description>A date-time value</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -3901,9 +4181,10 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<class>railo.runtime.functions.other.GetMetaData</class>
 		<description>Returns back meta information depending on the object passed in</description>
 		<argument>
-			<name>arg1</name>
+			<name>object</name>
 			<type>any</type>
 			<required>No</required>
+			<description>A component, user-defined function, query object, XML, ... . Within a CFC, the parameter can also specify the This scope</description>
 		</argument>
 		<argument>
 			<name>source</name>
@@ -3924,7 +4205,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>monitor_name</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -3938,7 +4220,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>arg1</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -3958,9 +4241,10 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<class>railo.runtime.functions.other.GetProfileSections</class>
 		<description>Returns the sections within the INI file as a structure</description>
 		<argument>
-			<name>arg1</name>
+			<name>iniFile</name>
 			<type>string</type>
 			<required>Yes</required>
+			<description>path to a ini file.</description>
 		</argument>
 		<return>
 			<type>struct</type>
@@ -3975,17 +4259,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>iniPath</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Absolute path (drive, directory, filename, extension) of initialization file; for example, C:\\boot.ini</description>
+    </argument>
 		<argument>
 			<name>section</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>entry</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -3999,7 +4286,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>webservice</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A webservice object as returned from the cfobject tag or the CreateObject function.</description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -4014,17 +4302,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>namespace</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A String that is the namespace for the header.</description>
+    </argument>
 		<argument>
 			<name>name</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>asXML</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -4040,7 +4331,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>webservice</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A webservice object as returned from the cfobject tag or the CreateObject function.</description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -4055,22 +4347,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>webservice</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A webservice object as returned from the cfobject tag or the CreateObject function.</description>
+    </argument>
 		<argument>
 			<name>namespace</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>name</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>asXML</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -4088,7 +4384,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>GetSystemInfo</name>
 		<class>railo.runtime.functions.system.GetSystemInfo</class>
-		<description></description>
+		<status>deprecated</status>
+		<description>This function is deprecated. </description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -4103,12 +4400,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>dir</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Directory name</description>
+    </argument>
 		<argument>
 			<name>prefix</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -4158,7 +4457,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -4172,17 +4472,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String in which to search. </description>
+    </argument>
 		<argument>
 			<name>index</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -4196,7 +4499,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -4210,17 +4514,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String to hash.</description>
+    </argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -4234,12 +4541,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>Date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>Date object</description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -4253,17 +4562,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one.</description>
+    </argument>
 		<argument>
 			<name>version</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>version</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -4277,12 +4589,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one.</description>
+    </argument>
 		<argument>
 			<name>version</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -4296,17 +4610,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>condition</name>
 			<type>boolean</type>
 			<required>Yes</required>
-		</argument>
+		<description>An expression that can be evaluated as a Boolean.</description>
+    </argument>
 		<argument>
 			<name>string_expression1</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>string_expression2</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -4321,22 +4638,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>thickness</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>color</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>borderType</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4350,12 +4671,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>blurRadius</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4369,27 +4692,32 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4403,37 +4731,44 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>dx</name>
 			<type>number</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>dy</name>
 			<type>number</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -4447,27 +4782,32 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4481,42 +4821,50 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>startAngle</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>arcAngle</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>filled</name>
 			<type>boolean</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4530,37 +4878,44 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>raised</name>
 			<type>boolean</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>filled</name>
 			<type>boolean</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4574,47 +4929,56 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>x1</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y1</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>ctrlx1</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>ctrly1</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>ctrlx2</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>ctrly2</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>x2</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y2</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4629,22 +4993,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>image</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<!-- <argument>
 			<name>width</name>
 			<type>number</type>
@@ -4674,27 +5042,32 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>x1</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y1</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>x2</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y2</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4708,27 +5081,32 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>xcoords</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>ycoords</name>
 			<type>array</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>isPolygon</name>
 			<type>boolean</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>filled</name>
 			<type>boolean</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4742,32 +5120,38 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>filled</name>
 			<type>boolean</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4781,17 +5165,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4805,37 +5192,44 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>x1</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y1</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>ctrlx</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>ctrly</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>x2</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y2</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4849,32 +5243,38 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>filled</name>
 			<type>boolean</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4888,42 +5288,50 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>arcWidth</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>arcHeight</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>filled</name>
 			<type>boolean</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4937,27 +5345,32 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>str</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>attributeCollection</name>
 			<type>struct</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4971,12 +5384,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>transpose</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -4990,7 +5405,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>source</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -5004,7 +5420,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -5018,12 +5435,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>tagName</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -5037,7 +5456,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -5051,7 +5471,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -5065,12 +5486,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>tagName</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -5084,7 +5507,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5116,7 +5540,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<return>
 			<type>struct</type>
 		</return>
@@ -5130,7 +5555,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5141,30 +5567,35 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<class>railo.runtime.functions.image.ImageNew</class>
 		<description>Creates a image.</description>
 		<argument>
-			<name>name</name>
+			<name>source</name>
 			<type>any</type>
 			<required>no</required>
-		</argument>
+		<description>The source image path, URL, a variable that is read into the new image, or a Java buffered image.</description>
+    </argument>
 		<argument>
 			<name>width</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>height</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>imageType</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>canvasColor</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -5178,12 +5609,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>source1</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image that is the bottom layer in the image.</description>
+    </argument>
 		<argument>
 			<name>source2</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5197,22 +5630,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>image1</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The bottom image.</description>
+    </argument>
 		<argument>
 			<name>image2</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5226,7 +5663,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>b64str</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>a variable or Base64 string.</description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -5240,7 +5678,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>path</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>On-disk or in-memory pathname or URL of the source image.</description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -5254,27 +5693,32 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>width</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>height</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>blurFactor</name>
 			<type>number</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5288,27 +5732,32 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>angle</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5322,22 +5771,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>angle</name>
 			<type>number</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5351,27 +5804,32 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>fitWidth</name>
 			<type>string</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>fitHeight</name>
 			<type>string</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>blurFactor</name>
 			<type>number</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5385,17 +5843,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>destination</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>quality</name>
 			<type>number</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5409,22 +5870,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>destination</name>
 			<type>string</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>format</name>
 			<type>string</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>inHTMLFormat</name>
 			<type>boolean</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -5438,12 +5903,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>antialias</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5459,12 +5926,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>color</name>
 			<type>string</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5478,12 +5947,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>alpha</name>
 			<type>number</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5497,12 +5968,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>color</name>
 			<type>string</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5516,12 +5989,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>attributeCollection</name>
 			<type>struct</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5535,12 +6010,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>percent</name>
 			<type>number</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5554,12 +6031,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>gain</name>
 			<type>number</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5576,22 +6055,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>shear</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>direction</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5605,17 +6088,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>shx</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>shy</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5629,22 +6115,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>xTrans</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>yTrans</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5659,17 +6149,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5683,12 +6176,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The image on which this operation is performed.</description>
+    </argument>
 		<argument>
 			<name>color</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -5715,7 +6210,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The variable that is checked.</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5729,7 +6225,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>path</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>The pathname of the file to be checked. The pathname can be absolute or relative to the CFM page and must be enclosed in quotation marks.</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5743,7 +6240,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>var</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or variable that represents one.</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5757,7 +6255,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>hostname</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5774,7 +6273,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>path</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Pathname to a PDF file. The pathname can be absolute or relative to the CFM page and must be enclosed in quotation marks.</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5788,7 +6288,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A value, typically the PDF object stored as a variable name.</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5802,7 +6303,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>path</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5820,7 +6322,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Number to increment</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -5834,12 +6337,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String that represents a number, in the base specified by radix.</description>
+    </argument>
 		<argument>
 			<name>radix</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -5853,17 +6358,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>substring</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String to insert.</description>
+    </argument>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>position</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -5877,7 +6385,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Real number to round down to an integer.</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -5891,12 +6400,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Variable or array name</description>
+    </argument>
 		<argument>
 			<name>number</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5910,7 +6421,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Number or string</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5924,7 +6436,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Number or string</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5938,7 +6451,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of a custom function. Must not be in quotation marks. If not a defined variable or function name, Railo generates an error.</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5952,7 +6466,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one. </description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5966,7 +6481,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>pathOrString</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Pathname to the DDX file or a string of DDX instructions. The pathname can be absolute or relative to the CFM page that calls it and must be enclosed in quotation marks.</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -5980,12 +6496,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>obj</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>The CFC instance or Java object that you are testing</description>
+    </argument>
 		<argument>
 			<name>type</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6011,7 +6529,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>variable</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String, enclosed in quotation marks. Name of variable to test for.</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6055,7 +6574,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>year</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Number representing a year</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6069,7 +6589,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>ip</name>
 			<type>String</type>
 			<required>Yes</required>
-		</argument>
+		<description>Valid IP address.</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6084,7 +6605,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>arg1</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6099,7 +6621,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>object</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Object for which you perform the null check. </description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6113,7 +6636,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one. </description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6127,7 +6651,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A real number</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6141,7 +6666,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A value, typically the name of a variable.</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6155,7 +6681,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Query variable</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6169,7 +6696,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Variable or expression</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6194,7 +6722,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>variable</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Variable name</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6208,7 +6737,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>role_name</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of a security role</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6244,22 +6774,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>type</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>The valid format for the data; one of the following. For detailed information on validation algorithms, see Validating form data using hidden fields in the .</description>
+    </argument>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>min_or_pattern</name>
 			<type>any</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>max</name>
 			<type>any</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6273,7 +6807,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A WDDX packet</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6289,7 +6824,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6305,7 +6841,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string containing the XML document text</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6321,7 +6858,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an XML attribute</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6335,7 +6873,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an XML document object</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6349,7 +6888,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an XML document object element</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6365,7 +6905,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an XML document object node.</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6379,7 +6920,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an XML document object</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -6393,12 +6935,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>type</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Data type to which to convert variable:</description>
+    </argument>
 		<argument>
 			<name>variable</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -6412,7 +6956,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one.</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -6426,7 +6971,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -6440,12 +6986,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one. </description>
+    </argument>
 		<argument>
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -6459,7 +7007,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string, the name of a string, or a binary object </description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -7257,27 +7806,18 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one</description>
+    </argument>
 		<argument>
 			<name>length</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
 	</function>
-	
-	<!-- location
-	<function>
-		<name>location</name>
-		<class>railo.runtime.functions.flow.Location</class>
-		<description></description>
-		<argument-type>dynamic</argument-type>
-		<return>
-			<type>boolean</type>
-		</return>
-	</function> -->
 	
 	<!-- log -->
 	<function>
@@ -7288,7 +7828,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Positive real number for which to calculate the natural logarithm</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -7302,7 +7843,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Positive real number for which to calculate the logarithm</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -7316,17 +7858,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>object</type>
 			<required>Yes</required>
-		</argument>
+		<description>Currency value</description>
+    </argument>
 		<argument>
 			<name>type</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -7340,22 +7885,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>date object</description>
+    </argument>
 		<argument>
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -7369,16 +7918,23 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>currency_number</name>
 			<type>object</type>
 			<required>Yes</required>
+			<description>Currency value</description>
 		</argument>
 		<argument>
 			<name>type</name>
 			<type>string</type>
 			<required>No</required>
+			<description>
+			one of the following:
+			- local (the currency format used in the locale. (default) )
+			- international (the international standard currency format of the locale)
+			- none (the currency format used in the locale; no currency symbol)</description>
 		</argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
+			<description>Locale to use instead of the locale of the page when processing the function</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -7393,12 +7949,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A currency string</description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -7412,17 +7970,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one </description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -7436,12 +7997,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one</description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -7455,17 +8018,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Number to format</description>
+    </argument>
 		<argument>
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -7479,12 +8045,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A locale-specific string</description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -7498,17 +8066,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>object</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string in a format that is readable in the current locale. </description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -7522,12 +8093,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>currency_string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Locale-specific string</description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -7541,12 +8114,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one</description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -7560,22 +8135,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>time</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>date object</description>
+    </argument>
 		<argument>
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -7589,7 +8168,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -7603,11 +8183,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number1</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>first number</description>
 		</argument>
 		<argument>
 			<name>number2</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>second number</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -7622,7 +8204,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>str</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -7636,17 +8219,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Must be single-quotation mark or double-quotation mark delimited. </description>
+    </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -7660,11 +8246,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number1</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>first number</description>
 		</argument>
 		<argument>
 			<name>number2</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>second number</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -7679,12 +8267,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>date object</description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -7698,12 +8288,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -7717,12 +8309,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>Date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>date object</description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -7736,12 +8330,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>monthnumber</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>a number between 1 and 12</description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -7755,7 +8351,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>monthnumber</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -7797,12 +8394,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A number.</description>
+    </argument>
 		<argument>
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -7826,22 +8425,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>hql</name>
 			<type>string</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>paramsOrUnique</name>
 			<type>any</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>uniqueOrQueryOptions</name>
 			<type>any</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>queryOptions</name>
 			<type>any</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -7874,17 +8477,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>entityName</name>
 			<type>String</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>collectionName</name>
 			<type>String</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>primaryKey</name>
 			<type>String</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		
 		<return>
 			<type>void</type>
@@ -7900,12 +8506,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>entityName</name>
 			<type>String</type>
 			<required>yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>primaryKey</name>
 			<type>String</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		
 		<return>
 			<type>void</type>
@@ -7920,7 +8528,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>cacheName</name>
 			<type>String</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -7990,7 +8599,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one </description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8004,7 +8614,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>parameter</name>
 			<type>variable_string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -8018,17 +8629,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>object</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string containing a date/time value formatted according to U.S. locale conventions.</description>
+    </argument>
 		<argument>
-			<name>string2</name>
+			<name>popConversion</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>datetime</type>
 		</return>
@@ -8091,7 +8705,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Variable that contains a string in which to preserve single-quotation marks.</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8105,12 +8720,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>date object</description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -8134,12 +8751,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of a query object.</description>
+    </argument>
 		<argument>
 			<name>column</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<!-- argument>
 			<name>array</name>
 			<type>array</type>
@@ -8149,12 +8768,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>datatype_or_array</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>array</name>
 			<type>any</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -8168,12 +8789,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an executed query.</description>
+    </argument>
 		<argument>
 			<name>number</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>		
+		<description></description>
+    </argument>		
 		<return>
 			<type>number</type>
 		</return>
@@ -8187,7 +8810,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		</argument>	
+		<description></description>
+    </argument>	
 		<return>
 			<type>number</type>
 		</return>
@@ -8203,17 +8827,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		</argument>	
+		<description>Name of the query whose data is returned.</description>
+    </argument>	
 		<argument>
 			<name>page</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>		
+		<description></description>
+    </argument>		
 		<argument>
 			<name>pageSize</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>	
+		<description></description>
+    </argument>	
 		<return>
 			<type>struct</type>
 		</return>
@@ -8227,7 +8854,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		</argument>	
+		<description></description>
+    </argument>	
 		<return>
 			<type>array</type>
 		</return>
@@ -8241,12 +8869,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>delimeter</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>	
+		<description></description>
+    </argument>	
 		<return>
 			<type>string</type>
 		</return>
@@ -8262,12 +8892,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>column</name>
 			<type>String</type>
 			<required>yes</required>
-		</argument>	
+		<description></description>
+    </argument>	
 		<return>
 			<type>array</type>
 		</return>
@@ -8281,12 +8913,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>row</name>
 			<type>number</type>
 			<required>no</required>
-		</argument>	
+		<description></description>
+    </argument>	
 		<return>
 			<type>boolean</type>
 		</return>
@@ -8327,12 +8961,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>columnlist</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Comma-delimited list of column names, or an empty string. </description>
+    </argument>
 		<argument>
 			<name>columntypelist</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>query</type>
 		</return>
@@ -8346,7 +8982,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		</argument>	
+		<description></description>
+    </argument>	
 		<return>
 			<type>number</type>
 		</return>
@@ -8360,22 +8997,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an executed query. </description>
+    </argument>
 		<argument>
 			<name>column_name</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>row_number</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -8389,17 +9030,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>offset</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>length</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>query</type>
 		</return>
@@ -8413,17 +9057,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>column_name</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>direction</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -8437,12 +9084,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query_column</name>
 			<type>variable_string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an executed query and column. Separate query name and column name with a period.</description>
+    </argument>
 		<argument>
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8456,7 +9105,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description>The algorithm to use to generate the random number.</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -8470,12 +9120,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>a number</description>
+    </argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -8489,16 +9141,23 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number1</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>smaller number</description>
 		</argument>
 		<argument>
 			<name>number2</name>
 			<type>number</type>
 			<required>Yes</required>
+			<description>bigger number</description>
 		</argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
+			<description>
+			The algorithm to use to generate the random number.
+			- CFMX_COMPAT (very simple and not very secure algorithm (default)).
+            - SHA1PRNG (generates a number using the Sun Java SHA1PRNG algorithm. This algorithm provides greater randomness than the default algorithm)
+            - IBMSecureRandom (IBM JVM does not support the SHA1PRNG algorithm)</description>
 		</argument>
 		<return>
 			<type>number</type>
@@ -8513,7 +9172,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>comObject</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>Variable name of a COM object that was created using the function or tag. </description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -8527,22 +9187,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>reg_expression</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Regular expression for which to search. Case sensitive.</description>
+    </argument>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>arg4</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -8556,22 +9220,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>reg_expression</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Regular expression for which to search. Case-insensitive.</description>
+    </argument>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>returnsubexpressions</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -8585,12 +9253,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>reg_expression</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Regular expression for which to search. Case sensitive.</description>
+    </argument>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -8604,12 +9274,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>reg_expression</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Regular expression for which to search. Case-insensitive.</description>
+    </argument>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -8623,17 +9295,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String in which to search.</description>
+    </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8647,12 +9322,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one. </description>
+    </argument>
 		<argument>
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8666,22 +9343,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String in which to search. </description>
+    </argument>
 		<argument>
 			<name>substring1</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>substring2</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8695,17 +9376,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string</description>
+    </argument>
 		<argument>
 			<name>list1</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>list2</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8719,22 +9403,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string (or variable that contains one) within which to replace substring.</description>
+    </argument>
 		<argument>
 			<name>substring1</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>substring2</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8748,22 +9436,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>String within which to search. </description>
+    </argument>
 		<argument>
 			<name>reg_expression</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>substring</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8777,22 +9469,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one.</description>
+    </argument>
 		<argument>
 			<name>reg_expression</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>substring</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8806,7 +9502,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one </description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8820,12 +9517,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one. </description>
+    </argument>
 		<argument>
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8839,12 +9538,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string enclosed in quotation marks</description>
+    </argument>
 		<argument>
 			<name>length</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8858,7 +9559,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Number to round </description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -8872,7 +9574,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one </description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8887,12 +9590,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>A date/time object</description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -8906,12 +9611,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>gatewayID</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Identifier of the gateway to send the message.</description>
+    </argument>
 		<argument>
 			<name>data</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8925,7 +9632,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>object</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8961,12 +9669,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>scope</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>encoding</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8980,7 +9690,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>new_locale</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>The name of a locale; for example, \"English (US)\"</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -8994,22 +9705,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>iniPath</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Absolute path of initialization file</description>
+    </argument>
 		<argument>
 			<name>section</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>entry</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>value</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9023,12 +9738,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Variable name</description>
+    </argument>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -9042,7 +9759,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>A number</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -9056,7 +9774,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Angle, in radians for which to calculate the sine.</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -9070,7 +9789,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>obj</name>
 			<type>object</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -9084,7 +9804,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>str</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>String</type>
 		</return>
@@ -9098,12 +9819,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one</description>
+    </argument>
 		<argument>
 			<name>set</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9117,12 +9840,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains the search string.</description>
+    </argument>
 		<argument>
 			<name>set</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9136,7 +9861,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>A positive integer. Number whose square root to get.</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -9150,7 +9876,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>duration</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Time, in milliseconds, to stop processing the thread.</description>
+    </argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -9206,7 +9933,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9221,7 +9949,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -9257,17 +9986,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>Struct1</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>Structure to which struct2 is appended.</description>
+    </argument>
 		<argument>
 			<name>Struct2</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>OverwriteFlag</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -9281,7 +10013,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>Structure to clear</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -9295,7 +10028,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>Structure to copy</description>
+    </argument>
 		<return>
 			<type>object</type>
 		</return>
@@ -9309,7 +10043,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>Structure to access</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -9323,17 +10058,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>Structure contains element to remove.</description>
+    </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>indicatenotexisting</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -9347,12 +10085,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>Structure that contains the value to return</description>
+    </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -9366,17 +10106,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>Top</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>object (structure or array) from which to start search. This parameter requires an object, not a name of an object.</description>
+    </argument>
 		<argument>
 			<name>Key</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>Scope</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -9390,17 +10133,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>Top</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>structure from which to start search. This parameter requires an object, not a name of an object.</description>
+    </argument>
 		<argument>
 			<name>Key</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>Scope</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -9414,7 +10160,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>PathDesired</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Pathname of variable that contains structure or array from which Railo retrieves structure.</description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -9428,22 +10175,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>Structure to contain the new key-value pair.</description>
+    </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>allowoverwrite</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -9457,7 +10208,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>Structure to test</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -9471,7 +10223,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>Structure from which to extract a list of keys</description>
+    </argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -9486,12 +10239,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of structure to test</description>
+    </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -9505,12 +10260,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>Structure from which to extract a list of keys.</description>
+    </argument>
 		<argument>
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9524,7 +10281,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>deepTranslation</name>
 			<type>boolean</type>
@@ -9573,22 +10331,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>base</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>A structure with one field (an associative array).</description>
+    </argument>
 		<argument>
 			<name>sortOrder</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>sortType</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>pathToSubElement</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -9602,17 +10364,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>structure</name>
 			<type>struct</type>
 			<required>Yes</required>
-		</argument>
+		<description>Structure to update</description>
+    </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -9626,17 +10391,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>str</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>addNewLine</name>
 			<type>boolean</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>doErrorStream</name>
 			<type>boolean</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -9650,7 +10418,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description>Angle, in radians, for which to calculate the tangent.</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -9664,17 +10433,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>time</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A date/time value or string to convert</description>
+    </argument>
 		<argument>
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9685,15 +10457,17 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<class>railo.runtime.functions.string.ToBase64</class>
 		<description>This takes in a string/binary object and attempts to convert it to a Base64 string</description>
 		<argument>
-			<name>string</name>
+			<name>strOrBin</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string, the name of a string, or a binary object.</description>
+    </argument>
 		<argument>
-			<name>arg2</name>
+			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9704,10 +10478,11 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<class>railo.runtime.functions.other.ToBinary</class>
 		<description>Converts the Base64 string to a binary object</description>
 		<argument>
-			<name>string</name>
+			<name>data</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A variable representing data in Base64-encoded format or a PDF document.</description>
+    </argument>
 		<return>
 			<type>binary</type>
 		</return>
@@ -9721,22 +10496,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>cfvar</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A variable.</description>
+    </argument>
 		<argument>
 			<name>javascriptvar</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>outputformat</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>ASFormat</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9747,15 +10526,17 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<class>railo.runtime.functions.string.ToString</class>
 		<description>For the given object, return back the string representation of the it</description>
 		<argument>
-			<name>string</name>
+			<name>value</name>
 			<type>any</type>
 			<required>No</required>
-		</argument>
+		<description>Value to convert to a string; can be a simple value such as an integer, a binary object, or an XML document object.</description>
+    </argument>
 		<argument>
-			<name>arg2</name>
+			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9813,7 +10594,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9827,7 +10609,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9844,7 +10627,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -9858,12 +10642,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>URL-encoded string.</description>
+    </argument>
 		<argument>
-			<name>arg2</name>
+			<name>charset</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9877,17 +10663,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>charset</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>force</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9901,17 +10690,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one</description>
+    </argument>
 		<argument>
 			<name>charset</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>force</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9925,7 +10717,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>url</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>URL of a cfml template</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9939,7 +10732,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one</description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -9953,7 +10747,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query_column</name>
 			<type>variable_string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -9967,12 +10762,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>query_column</name>
 			<type>variable_string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of an executed query and column. Separate query name and column name with a period.</description>
+    </argument>
 		<argument>
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -9995,12 +10792,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description>date object</description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -10015,17 +10814,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -10039,7 +10841,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-			<description>String or variable that contains one. The text to wrap.</description>
+			<description>The text to wrap.</description>
 		</argument>
 		<argument>
 			<name>limit</name>
@@ -10066,7 +10868,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one</description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -10080,7 +10883,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -10094,17 +10898,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>node</name>
 			<type>node</type>
 			<required>Yes</required>
-		</argument>
+		<description>XML element within which to search.</description>
+    </argument>
 		<argument>
 			<name>childName</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>index</name>
 			<type>number</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -10118,12 +10925,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>xmlObj</name>
 			<type>node</type>
 			<required>Yes</required>
-		</argument>
+		<description>Name of the XML document object in which you are creating the element</description>
+    </argument>
 		<argument>
 			<name>childName</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>org.w3c.dom.Element</type>
 		</return>
@@ -10137,7 +10946,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>A string or a variable that contains one</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -10151,7 +10961,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>xmlObj</name>
 			<type>node</type>
 			<required>Yes</required>
-		</argument>
+		<description>An XML DOM object node</description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -10165,7 +10976,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>caseSensitive</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description>Determines how Railo processes the case of XML document object component identifiers:</description>
+    </argument>
 		<return>
 			<type>node</type>
 		</return>
@@ -10179,17 +10991,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>xmlString</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description>Any of the following:</description>
+    </argument>
 		<argument>
 			<name>caseSensitive</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>validator</name>
 			<type>string</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>node</type>
 		</return>
@@ -10203,12 +11018,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>html</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>caseSensitive</name>
 			<type>boolean</type>
 			<required>No</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>node</type>
 		</return>
@@ -10222,12 +11039,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>node</name>
 			<type>node</type>
 			<required>Yes</required>
-		</argument>
+		<description>XML document object</description>
+    </argument>
 		<argument>
 			<name>xPathString</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>object</type>
 		</return>
@@ -10241,17 +11060,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>xmlObj</name>
 			<type>any</type>
 			<required>Yes</required>
-		</argument>
+		<description>An XML document in string format, or an XML document object</description>
+    </argument>
 		<argument>
 			<name>xslString</name>
 			<type>string</type>
 			<required>Yes</required>
-		</argument>
+		<description></description>
+    </argument>
 		<argument>
 			<name>parameters</name>
 			<type>array</type>
 			<required>false</required>
-		</argument>
+		<description></description>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>
