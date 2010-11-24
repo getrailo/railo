@@ -535,7 +535,7 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		<description></description>
+		<description>the array to reverse</description>
     </argument>
 		<return>
 			<type>array</type>
