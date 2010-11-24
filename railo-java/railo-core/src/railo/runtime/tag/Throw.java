@@ -137,23 +137,9 @@ public final class Throw extends TagImpl {
 	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws PageException	{
-		if(!StringUtil.isEmpty(message)){
-			PageException pe = toPageException(message,null);
-			if(pe!=null) throw pe;
-			
-			CustomTypeException exception = new CustomTypeException(Caster.toString(message),detail,errorcode,type);
-			if(extendedinfo!=null)exception.setExtendedInfo(extendedinfo);
-			throw exception;
-		}
 		
-		if(!StringUtil.isEmpty(message)){
-			PageException pe = toPageException(object,null);
-			if(pe!=null) throw pe;
-			
-			CustomTypeException exception = new CustomTypeException(Caster.toString(object),detail,errorcode,type);
-			if(extendedinfo!=null)exception.setExtendedInfo(extendedinfo);
-			throw exception;
-		}
+		_doStartTag(message);
+		_doStartTag(object);
 		
 		throw new CustomTypeException( "",detail,errorcode,type);
 		
@@ -161,6 +147,19 @@ public final class Throw extends TagImpl {
 		
 		
 	}
+
+	private void _doStartTag(Object obj) throws PageException {
+		if(!StringUtil.isEmpty(obj)){
+			PageException pe = toPageException(obj,null);
+			if(pe!=null) throw pe;
+			
+			CustomTypeException exception = new CustomTypeException(Caster.toString(obj),detail,errorcode,type);
+			if(extendedinfo!=null)exception.setExtendedInfo(extendedinfo);
+			throw exception;
+		}
+	}
+
+
 
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#doEndTag()

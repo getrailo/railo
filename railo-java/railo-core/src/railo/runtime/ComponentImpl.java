@@ -1026,11 +1026,11 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      */
     public String getName() {
 	    if(top.properties.callPath==null) return "";
-	    return List.last(top.properties.callPath,"./");
+	    return List.last(top.properties.callPath,"./",true);
 	}
     public String _getName() { // MUST nicht so toll
 	    if(properties.callPath==null) return "";
-	    return List.last(properties.callPath,"./");
+	    return List.last(properties.callPath,"./",true);
 	}
 	
     /**

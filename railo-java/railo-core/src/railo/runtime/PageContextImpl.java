@@ -657,7 +657,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			writer.write(Caster.toString(o));
 		}
 		else {
-            writer.write(psq?StringUtil.replace(Caster.toString(o),"'","''",false):Caster.toString(o));
+            writer.write(psq?Caster.toString(o):StringUtil.replace(Caster.toString(o),"'","''",false));
 		}
 	} 
 	

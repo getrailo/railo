@@ -197,6 +197,7 @@ public class aprint {
     	else if(o instanceof Set) _(ps,(Set)o);
     	else if(o instanceof List) _(ps,(List)o);
     	else if(o instanceof Map) _(ps,(Map)o);
+    	else if(o instanceof Iterator) _(ps,(Iterator)o);
     	else if(o instanceof NamedNodeMap) _(ps,(NamedNodeMap)o);
     	else if(o instanceof ResultSet) _(ps,(ResultSet)o);
     	else if(o instanceof Node) _(ps,(Node)o);
@@ -330,6 +331,16 @@ public class aprint {
             ps.print(index);
             ps.print(":");
             ps.print(list.get(index));
+            ps.println(";");
+        }
+        _(ps,"}");
+    }
+    
+    private static void _(PrintStream ps,Iterator it) {
+        
+        _(ps,it.getClass().getName()+" {");
+        while(it.hasNext()) {
+            ps.print(it.next());
             ps.println(";");
         }
         _(ps,"}");

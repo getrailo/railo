@@ -10762,6 +10762,7 @@ dWord: creates a value of 0 (zero)</description>
 	<tag>
 		<name>Throw</name>
 		<tag-class>railo.runtime.tag.Throw</tag-class>
+		<tte-class>railo.transformer.cfml.evaluator.impl.Throw</tte-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>The cfthrow tag raises a developer-specified exception that can be caught with cfcatch tag 

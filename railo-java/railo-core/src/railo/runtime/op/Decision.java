@@ -468,7 +468,7 @@ public final class Decision {
 	 */
 	public static boolean isCastableToArray(Object o) {
         if(isArray(o)) return true;
-        else if(o instanceof XMLStruct) return true;
+        //else if(o instanceof XMLStruct) return true;
         else if(o instanceof Struct) {
             Struct sct=(Struct) o;
             Collection.Key[] keys=sct.keys();

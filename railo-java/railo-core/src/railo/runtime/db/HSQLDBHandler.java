@@ -296,20 +296,17 @@ public final class HSQLDBHandler {
 		    	tables=hsql.getInvokedTables();
 				isUnion=hsql.isUnion();
 			}
-			try {
-				return _execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,false);
-			}
-			catch(PageException pe) {
-				if(isUnion){
-					return _execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,true);
-				}
 
-				//print.out("hsqldbhandler crash at:");
-				//print.out("--------------------------------");
-				//print.out(sql.getSQLString().trim());
-				//print.out("--------------------------------");
-				throw pe;
+			String strSQL=StringUtil.replace(sql.getSQLString(),"[","",false);
+			strSQL=StringUtil.replace(strSQL,"]","",false);
+			sql.setSQLString(strSQL);
+			try {
+				return  _execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,isUnion);
 			}
+			catch(PageException pe){
+				return _execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,isUnion);
+			}
+			
 		}
     	catch(ParseException e) {
     		throw  new DatabaseException(e.getMessage(),null,sql,null);
@@ -317,7 +314,19 @@ public final class HSQLDBHandler {
 		
     }
     
-    public QueryImpl _execute(PageContext pc, SQL sql, int maxrows, int fetchsize, int timeout,Stopwatch stopwatch, Set tables, boolean doSimpleTypes) throws PageException {
+    private QueryImpl _execute(PageContext pc, SQL sql, int maxrows, int fetchsize, int timeout, Stopwatch stopwatch, Set tables, boolean isUnion) throws PageException {
+    	try {
+			return __execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,false);
+		}
+		catch(PageException pe) {
+			if(isUnion){
+				return __execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,true);
+			}
+			throw pe;
+		}
+	}
+
+	public QueryImpl __execute(PageContext pc, SQL sql, int maxrows, int fetchsize, int timeout,Stopwatch stopwatch, Set tables, boolean doSimpleTypes) throws PageException {
 
 		synchronized(lock) {
 		    	
