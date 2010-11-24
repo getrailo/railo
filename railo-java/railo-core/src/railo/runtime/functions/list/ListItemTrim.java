@@ -3,7 +3,6 @@
  */
 package railo.runtime.functions.list;
 
-import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;

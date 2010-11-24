@@ -4,7 +4,6 @@
 package railo.runtime.functions.list;
 
 
-import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -26,9 +25,5 @@ public final class ListSort implements Function {
 	public static String call(PageContext pc , String list, String sortType, String sortOrder, String delimiter , boolean includeEmptyFields) throws PageException {
 		if(includeEmptyFields) return List.sort(list,sortType, sortOrder,delimiter);
 		return List.sortIgnoreEmpty(List.trim(list,delimiter),sortType, sortOrder,delimiter);
-	}
-	
-	public static void main(String[] args) {
-		print.o(List.listToArray(",,a,b,c,,", ','));
 	}
 }

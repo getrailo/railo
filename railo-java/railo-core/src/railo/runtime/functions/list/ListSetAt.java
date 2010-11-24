@@ -3,7 +3,6 @@
  */
 package railo.runtime.functions.list;
 
-import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
@@ -32,7 +31,6 @@ public final class ListSetAt implements Function {
 		//int[] removedInfo=new int[2];
 		
 		Array arr = List.listToArray(list,delimeter);
-		print.o(arr);
 		int len=arr.size();
 		
 		// invalid index
