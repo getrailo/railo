@@ -15,19 +15,27 @@ public final class ListQualify implements Function {
 	private static final long serialVersionUID = -7450079285934992224L;
 	
 	public static String call(PageContext pc , String list, String qualifier) {
-		return call(pc,list,qualifier,",","all", false);
+		return call(pc,list,qualifier,",","all", false, false);
 	}
 
 	public static String call(PageContext pc , String list, String qualifier, String delimeter) {
-		return call(pc,list,qualifier,delimeter,"all", false);
+		return call(pc,list,qualifier,delimeter,"all", false, false);
 	}
 
 	public static String call(PageContext pc , String list, String qualifier, String delimeter, String elements) {
-		return call(pc, list, qualifier, delimeter, elements, false);
+		return call(pc, list, qualifier, delimeter, elements, false, false);
 	}
 	
 	public static String call(PageContext pc , String list, String qualifier, String delimeter, String elements, boolean includeEmptyFields) {
-	   	if(list.length()==0) return "";
+		return call(pc, list, qualifier, delimeter, elements, false, false);
+	}
+	
+	public static String call(PageContext pc , String list, String qualifier, String delimeter, String elements, boolean includeEmptyFields, 
+			boolean psq // this is used only internally by railo, search for "PSQ-BIF" in code
+			) {
+	   	
+		if(list.length()==0) return "";
+		if(psq)list=StringUtil.replace(list, "'", "''", false);
 		
 	   	Array arr=includeEmptyFields?List.listToArray(list,delimeter):List.listToArrayRemoveEmpty(list,delimeter);
 		

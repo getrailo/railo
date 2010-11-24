@@ -933,6 +933,19 @@ public final class ConfigWebAdmin {
     	}
     	tags.getParentNode().removeChild(tags);
 	}
+    
+    
+    public static boolean fixPSQ(Document doc) throws SecurityException {
+    	
+    	Element datasources=ConfigWebFactory.getChildByName(doc.getDocumentElement(),"data-sources",false,true);
+        if(datasources.hasAttribute("preserve-single-quote")){
+        	Boolean b=Caster.toBoolean(datasources.getAttribute("preserve-single-quote"),null);
+        	if(b!=null)datasources.setAttribute("psq",Caster.toString(!b.booleanValue()));
+        	datasources.removeAttribute("preserve-single-quote");
+        	return true;
+        }
+    	return false;
+    }
 
     public static boolean fixS3(Document doc) {
     	Element resources=ConfigWebFactory.getChildByName(doc.getDocumentElement(),"resources",false,true);
@@ -1634,8 +1647,9 @@ public final class ConfigWebAdmin {
         if(!hasAccess) throw new SecurityException("no access to update datsource connections");
         
         Element datasources=_getRootElement("data-sources");
-        datasources.setAttribute("preserve-single-quote",Caster.toString(psq,""));
-
+        datasources.setAttribute("psq",Caster.toString(psq,""));
+        if(datasources.hasAttribute("preserve-single-quote"))
+        	datasources.removeAttribute("preserve-single-quote");
     }
 
 
