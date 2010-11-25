@@ -4,6 +4,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.Method;
+
 import railo.commons.date.DateTimeUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -13,6 +16,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.CollectionUtil;
+import railo.transformer.bytecode.util.Types;
 
 /**
  * class to compare objects and primitive value types
@@ -717,4 +721,43 @@ public final class Operator {
     public static double bitor(double left, double right) {
         return (int)left|(int)right;
     }
+    
+    
+
+    public static Double divRef(Object left, Object right) throws PageException {
+		double r = Caster.toDoubleValue(right);
+    	if(r==0d)
+			throw new ArithmeticException("Division by zero is not possible");
+		return Caster.toDouble(Caster.toDoubleValue(left)/r);
+	}
+    
+    public static Double exponentRef(Object left, Object right) throws PageException {
+		return Caster.toDouble(StrictMath.pow(Caster.toDoubleValue(left),Caster.toDoubleValue(right)));
+	}
+    
+    public static Double intdivRef(Object left, Object right) throws PageException {
+		return Caster.toDouble(Caster.toIntValue(left)/Caster.toIntValue(right));
+	}
+    
+    public static Double plusRef(Object left, Object right) throws PageException {
+		return Caster.toDouble(Caster.toDoubleValue(left)+Caster.toDoubleValue(right));
+	}
+    
+    public static Double minusRef(Object left, Object right) throws PageException {
+		return Caster.toDouble(Caster.toDoubleValue(left)-Caster.toDoubleValue(right));
+	}
+    
+    public static Double modulusRef(Object left, Object right) throws PageException {
+		return Caster.toDouble(Caster.toDoubleValue(left)%Caster.toDoubleValue(right));
+	}
+    
+    public static Double divideRef(Object left, Object right) throws PageException {
+		return Caster.toDouble(Caster.toDoubleValue(left)/Caster.toDoubleValue(right));
+	}
+    
+    public static Double multiplyRef(Object left, Object right) throws PageException {
+		return Caster.toDouble(Caster.toDoubleValue(left)*Caster.toDoubleValue(right));
+	}
+    
+    
 }

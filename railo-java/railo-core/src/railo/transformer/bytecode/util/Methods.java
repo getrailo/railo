@@ -88,6 +88,9 @@ public final class Methods {
     final public static Method METHOD_TO_DOUBLE_VALUE_FROM_BOOLEAN = new Method("toDoubleValue",Types.DOUBLE_VALUE,new Type[]{Types.BOOLEAN_VALUE});
     final public static Method METHOD_TO_FLOAT_VALUE_FROM_BOOLEAN = new Method("toFloatValue",Types.FLOAT_VALUE,new Type[]{Types.BOOLEAN_VALUE});
     
+
+    final public static Method METHOD_TO_DOUBLE_VALUE_FROM_DOUBLE = new Method("toDoubleValue",Types.DOUBLE_VALUE,new Type[]{Types.DOUBLE});
+    
     // Double toDouble (String)
     final public static Method METHOD_TO_DOUBLE_FROM_STRING = new Method("toDouble",Types.DOUBLE,new Type[]{Types.STRING});
     final public static Method METHOD_TO_FLOAT_FROM_STRING = new Method("toFloat",Types.FLOAT,new Type[]{Types.STRING});

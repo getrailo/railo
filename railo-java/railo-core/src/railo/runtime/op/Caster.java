@@ -413,6 +413,11 @@ public final class Caster {
         throw new CasterException(o,"number");
     }
 
+    public static double toDoubleValue(Double d) throws PageException {
+        if(d == null) return 0;
+        return d.doubleValue();
+    }
+    
     /**
      * cast a Object to a double value (primitive value Type)
      * @param str String to cast
@@ -4192,6 +4197,17 @@ public final class Caster {
 		if(o instanceof UDF) return (UDF) o;
 		 throw new CasterException(o,"UDF");
     }
+
+	public static BigDecimal toBigDecimal(Object o) throws PageException {
+		if(o instanceof BigDecimal) return (BigDecimal) o;
+		if(o instanceof Number) return new BigDecimal(((Number)o).doubleValue());
+        else if(o instanceof Boolean) return new BigDecimal(((Boolean)o).booleanValue()?1:0);
+        else if(o instanceof String) return new BigDecimal(o.toString());
+        else if(o instanceof Castable) return new BigDecimal(((Castable)o).castToDoubleValue());
+        else if(o == null) return BigDecimal.ZERO;
+        else if(o instanceof ObjectWrap) return toBigDecimal(((ObjectWrap)o).getEmbededObject());
+        throw new CasterException(o,"number");
+	}
 
 
 	
