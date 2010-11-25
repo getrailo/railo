@@ -57,7 +57,7 @@
 		<tag-class>railo.runtime.tag.AjaxImport</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>Controls the JavaScript files that are imported for use on pages that use ColdFusion AJAX tags and features.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -84,7 +84,7 @@
 		<tag-class>railo.runtime.tag.AjaxProxy</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>Creates a JavaScript proxy for a ColdFusion component, for use in an AJAX client. Alternatively, creates a proxy for a single CFC method, JavaScript function, or URL that is bound to one or more control attribute values.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -576,7 +576,9 @@
 		<tag-class>railo.runtime.tag.Calendar</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<status>unimplemented</status>
+		<description>Puts an interactive Flash format calendar in an HTML or Flash form. 
+		Not supported in XML format forms. The calendar lets a user select a date for submission as a form variable.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -747,7 +749,7 @@
 		<tag-class>railo.runtime.tag.Chart</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>Generates and displays a chart.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -1312,7 +1314,7 @@
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagContinue</ttt-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>Used within a cfloop tag. Returns processing to the top of a loop.</description>
 		<attribute-type>fixed</attribute-type>
 	</tag>
 	<!-- Content -->
@@ -1626,7 +1628,8 @@
 		<tag-class>railo.runtime.tag.Div</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<status>unimplemented</status>
+		<description>Creates an HTML div tag or other HTML container tag and lets you use asynchronous form submission or a bind expression to dynamically control the tag contents.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -1671,7 +1674,7 @@
 		<!-- tte-class>railo.transformer.cfml.evaluator.impl.Directory</tte-class -->
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>Creates a PDF document from a text block containing CFML and HTML.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>boolean</type>
@@ -1937,21 +1940,27 @@
 		<tag-class>railo.runtime.tag.DocumentItem</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>
+		Specifies action items for a PDF document created by the cfdocument tag.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>type</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description></description>
+			<description>Specifies the action:
+- pagebreak (starts a new page at the location of the tag)
+- header (uses the text between in the body of the tag as the running header)
+- footer (uses the text between the the body of the tag as the running footer)
+- bookmark (set a boomark, use the attribute name to define the name of the bookmark)
+</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description></description>
+			<description>used only for type bookmark, name of the bookmark to define.</description>
 		</attribute>
 	</tag>
 	<!-- DocumentSection -->
@@ -1960,7 +1969,8 @@
 		<tag-class>railo.runtime.tag.DocumentSection</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>Divides a PDF document into sections. 
+		By using this tag in conjunction with a cfdocumentitem tag, each section can have unique headers, footers, and page numbers.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>number</type>
@@ -2312,7 +2322,8 @@
 		<tag-class>railo.runtime.tag.Feed</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>Reads or creates an RSS or Atom syndication feed. 
+		This tag can read various RSS and Atom 0.3 versions. It can create RSS 2.0 or Atom 1.0 feeds.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -2430,7 +2441,9 @@
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>Used inside a cftry tag. 
+		Code in the cffinally block is processed after the main cftry code and, if an exception occurs, the cfcatch code. 
+		The cffinally block code always executes, whether or not there is an exception.</description>
 		<attribute-type>fixed</attribute-type>
 	</tag>
 	<!-- File -->
@@ -2896,7 +2909,9 @@ The browser uses file extension to determine file type. </description>
 		<tag-class>railo.runtime.tag.Formgroup</tag-class>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<status>unimplemented</status>
+		<description>Creates a container control for multiple form controls. 
+		Ignored in HTML forms.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -3003,7 +3018,8 @@ The browser uses file extension to determine file type. </description>
 		<tag-class>railo.runtime.tag.Formitem</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<status>unimplemented</status>
+		<description>Inserts a horizontal line, a vertical line, a spacer, or text in a Flash form. Used in the cfform or cfformgroup tag body for Flash and XML forms. Ignored in HTML forms.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -5236,7 +5252,8 @@ If you import a CFML custom tag directory and specify an empty value, "", for th
 		<tte-class>railo.transformer.cfml.evaluator.impl.Interface</tte-class>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>Defines an interface that consists of a set of signatures for functions. 
+		The interface does not include the full function definitions; instead, you implement the functions in a Component. The interfaces that you define by using this tag can make up the structure of a reusable application framework.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -6450,28 +6467,30 @@ Permits searching collections by title or displaying a separate title from the k
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>A container for user login and authentication code. 
+		Railo runs the code in this tag if a user is not already logged in.
+		You put code in the tag that authenticates the user and identifies the user with a set of roles. Used with cfloginuser tag.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>number</type>
 			<name>idletimeout</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description></description>
+			<description>Time interval, in seconds, after which ColdFusion logs off the user.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>applicationtoken</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description></description>
+			<description>The login that applies to the application. To let users log in to only one application, specify a unique value for that application. To let users log in to multiple applications, specify the same value for those applications. If you do not set a value for the applicationtoken attribute, the default value is CFAUTHORIZATION_applicationname.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>cookiedomain</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description></description>
+			<description>Domain of the cookie that is used to mark a user as logged in. Use this attribute to enable a user login cookie to work with multiple clustered servers in the same domain.</description>
 		</attribute>
 	</tag>
 	<!-- Loginuser -->
@@ -6480,7 +6499,7 @@ Permits searching collections by title or displaying a separate title from the k
 		<tag-class>railo.runtime.tag.Loginuser</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>Identifies an authenticated user to ColdFusion. Specifies the user ID and roles. Used within a cflogin tag.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -6510,7 +6529,8 @@ Permits searching collections by title or displaying a separate title from the k
 		<tag-class>railo.runtime.tag.Logout</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>Logs the current user out. Removes knowledge of the user ID, password, and roles from the server. 
+		If you do not use this tag, the user is automatically logged out when the session ends.</description>
 		<attribute-type>fixed</attribute-type>
 	</tag>
 	<!-- Lock -->
@@ -7200,7 +7220,8 @@ Permits searching collections by title or displaying a separate title from the k
 		<tag-class>railo.runtime.tag.NTAuthenticate</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<status>unimplemented</status>
+		<description>Authenticates a user name and password against the Windows NT domain on which the ColdFusion server is running, and optionally retrieves the user's groups.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -7524,7 +7545,21 @@ Permits searching collections by title or displaying a separate title from the k
 		<tag-class>railo.runtime.tag.PDF</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>
+Manipulates existing PDF documents. The following list describes some of the tasks you can perform with the cfpdf tag:
+- Merge several PDF documents into one PDF document.
+- Delete pages from a PDF document.
+- Merge pages from one or more PDF documents and generate a new PDF document.
+- Linearize PDF documents for faster web display.
+- Remove interactivity from forms created in Acrobat(c) to generate flat PDF documents.
+- Encrypt and add password protection to PDF documents.
+- Generate thumbnail images from PDF documents or pages.
+- Add or remove watermarks from PDF documents or pages.
+- Retrieve information associated with a PDF document, such as the software used to generate the file or the author, and set information for a PDF document, such as the title, author and keywords.
+- Create PDF portfolios
+- Add and remove header/footer from PDF documents
+- Optimize PDF documents	
+		</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -10697,7 +10732,8 @@ dWord: creates a value of 0 (zero)</description>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagThread</ttt-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>The cfthread tag enables you to create threads, independent streams of code execution, in your application. 
+		You use this tag to run or end a thread, temporarily stop thread execution, or join together multiple threads.</description>
 		<attribute-type>mixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -10822,7 +10858,8 @@ dWord: creates a value of 0 (zero)</description>
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>Displays execution time for a specified section of CFML code. 
+		Railo displays the timing information along with any output produced by the timed code.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -12102,7 +12139,9 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Zip</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>Manipulates ZIP and Java Archive (JAR) files. 
+		In addition to the basic zip and unzip functions, use the cfzip tag to delete entries from an archive, filter files, 
+		read files in binary format, list the contents of an archive, and specify an entry path used in an executable JAR file.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -12195,7 +12234,7 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.ZipParam</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description></description>
+		<description>The cfzipparam tag is always a child tag of the cfzip tag. see tag zip for more details.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>

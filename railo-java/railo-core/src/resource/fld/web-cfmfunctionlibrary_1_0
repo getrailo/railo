@@ -4457,7 +4457,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>the timezone to be set.</description>
     </argument>
 		<return>
 			<type>string</type>
