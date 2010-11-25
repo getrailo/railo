@@ -707,6 +707,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		Statement child;
 		// MUSTMUST add this to tld
 		if((child=_singleAttrStatement(parent,data,"abort","showerror",ATTR_TYPE_OPTIONAL,true))!=null)		return child;
+		else if((child=_multiAttrStatement(parent,data,"admin",CTX_OTHER,false,true))!=null)				return child;
 		else if((child=_singleAttrStatement(parent,data,"break",null,ATTR_TYPE_NONE,false))!=null)			return child;
 		else if((child=_multiAttrStatement(parent,data,"collection",CTX_OTHER,true,true))!=null)			return child;
 		else if((child=_multiAttrStatement(parent,data,"cookie",CTX_OTHER,false,true))!=null)				return child;
