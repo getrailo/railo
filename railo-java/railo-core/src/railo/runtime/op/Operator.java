@@ -4,9 +4,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.Method;
-
 import railo.commons.date.DateTimeUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -16,7 +13,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.CollectionUtil;
-import railo.transformer.bytecode.util.Types;
 
 /**
  * class to compare objects and primitive value types

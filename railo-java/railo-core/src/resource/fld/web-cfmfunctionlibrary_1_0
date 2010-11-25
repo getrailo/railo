@@ -8692,7 +8692,6 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>PrecisionEvaluate</name>
 		<class>railo.runtime.functions.dynamicEvaluation.PrecisionEvaluate</class>
-		<status>unimplemeted</status>
 		<description>Evaluates one or more string expressions, dynamically, from left to right, using BigDecimal precision arithmetic to calculate the values of arbitrary precision arithmetic expressions.</description>
 		<argument-type>dynamic</argument-type>
 		<argument-min>1</argument-min>
@@ -8700,6 +8699,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<type>any</type>
 		</return>
 	</function>
+	
 	<!-- pi -->
 	<function>
 		<name>pi</name>

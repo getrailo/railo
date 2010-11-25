@@ -10,13 +10,11 @@ import railo.runtime.op.Operator;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
-import railo.transformer.bytecode.cast.CastDouble;
 import railo.transformer.bytecode.expression.ExprDouble;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.util.Methods;
-import railo.transformer.bytecode.util.Methods_Operator;
 import railo.transformer.bytecode.util.Types;
 
 public final class OpDouble extends ExpressionBase implements ExprDouble {
