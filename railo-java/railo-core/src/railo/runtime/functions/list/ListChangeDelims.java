@@ -9,10 +9,17 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.type.List;
 
 public final class ListChangeDelims implements Function {
+	
+	private static final long serialVersionUID = 8979553735693035787L;
+	
 	public static String call(PageContext pc , String list, String newDel) throws PageException {
 		return call(pc , list, newDel, ",");
 	}
 	public static String call(PageContext pc , String list, String newDel, String oldDel) throws PageException {
+		return List.arrayToList(List.listToArrayRemoveEmpty(list,oldDel),newDel);
+	}
+	public static String call(PageContext pc , String list, String newDel, String oldDel, boolean includeEmptyFields) throws PageException {
+		if(includeEmptyFields)return List.arrayToList(List.listToArray(list,oldDel),newDel);
 		return List.arrayToList(List.listToArrayRemoveEmpty(list,oldDel),newDel);
 	}
 }

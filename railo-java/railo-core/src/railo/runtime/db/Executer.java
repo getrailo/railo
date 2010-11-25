@@ -748,7 +748,7 @@ public final class Executer {
 				    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statment",null,sql,null);
 				    return sql.getItems()[pos].getValueForCF();
 				}
-		        return qr.getAt(List.last(constant.getValue(),"."),row);
+		        return qr.getAt(List.last(constant.getValue(),".",true),row);
 			}
 			case ZConstant.NULL:			return null;
 			case ZConstant.NUMBER:			return Caster.toDouble(constant.getValue());

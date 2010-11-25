@@ -71,7 +71,7 @@ public final class GetBaseTagList implements Function {
                 }
             }
         }
-        return List.last(className,".").toUpperCase();
+        return List.last(className,".",true).toUpperCase();
         
     }
 }

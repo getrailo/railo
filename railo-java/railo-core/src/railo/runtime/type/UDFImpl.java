@@ -272,8 +272,6 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
     	Object value;
     	Collection.Key name;
 		
-    	
-    	
     	for(int i=0;i<funcArgs.length;i++) {
 			// argument defined
 			name=funcArgs[i].getName();
@@ -282,16 +280,15 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 				newArgs.set(name,castToAndClone(pageContext,funcArgs[i], value,i+1));
 				continue;
 			}
-			/*
-			// numeric key
-			value=values.removeEL(ArgumentIntKey.init(i+1)); 
-			if(value!=null) {
-				newArgs.set(name,castToAndClone(funcArgs[i], value,i+1));
-				continue;
+			else {
+				value=values.removeEL(ArgumentIntKey.init(i+1)); 
+				if(value!=null) {
+					newArgs.set(name,castToAndClone(pageContext,funcArgs[i], value,i+1));
+					continue;
+				}
 			}
-			*/
+			
 			// default argument or exception
-			//else {
 			Object defaultValue=getDefaultValue(pageContext,i);//funcArgs[i].getDefaultValue();
 			if(defaultValue==null) { 
 				if(funcArgs[i].isRequired()) {
@@ -299,9 +296,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 				}
 				newArgs.set(name,ArgumentPro.NULL);
 			}
-			else newArgs.set(name,castTo(funcArgs[i],defaultValue,i+1));
-			//}
-				
+			else newArgs.set(name,castTo(funcArgs[i],defaultValue,i+1));	
 		}
 		
 		

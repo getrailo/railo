@@ -3,7 +3,6 @@ package railo.commons.io.res.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import railo.aprint;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceLock;
 import railo.commons.lang.SerializableObject;

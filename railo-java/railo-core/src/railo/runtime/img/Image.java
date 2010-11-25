@@ -901,10 +901,11 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		ImageWriter writer = null;
     	ImageTypeSpecifier type =ImageTypeSpecifier.createFromRenderedImage(im);
     	Iterator<ImageWriter> iter = ImageIO.getImageWriters(type, format);
+    	
     	if (iter.hasNext()) {
     		writer = (ImageWriter)iter.next();
     	}
-    	if (writer == null) throw new IOException("no writer for format ["+format+"] available");
+    	if (writer == null) throw new IOException("no writer for format ["+format+"] available, available writer formats are ["+List.arrayToList(ImageUtil.getWriterFormatNames(), ",")+"]");
 
 		ImageWriteParam iwp = writer.getDefaultWriteParam();
 		try {

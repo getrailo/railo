@@ -206,7 +206,7 @@ public abstract class ConfigImpl implements Config {
 
     private Locale locale;
 
-    private boolean psq=true;
+    private boolean psq=false;
 
     private String debugTemplate;
     private Map errorTemplates=new HashMap();

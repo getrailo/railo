@@ -299,8 +299,8 @@ public final class ConfigWebFactory {
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	ThreadLocalConfig.register(config);
     	
-    	// add S3 Resource
-    	if(ConfigWebAdmin.fixS3(doc)) {
+    	// fix
+    	if(ConfigWebAdmin.fixS3(doc) | ConfigWebAdmin.fixPSQ(doc)) {
     		XMLCaster.writeTo(doc,config.getConfigFile());
     		try {
 				doc=ConfigWebFactory.loadDocument(config.getConfigFile());
@@ -1708,7 +1708,19 @@ public final class ConfigWebFactory {
 	  	
 	  	
 	  	// PSQ 
-	  	String strPSQ=databases.getAttribute("preserve-single-quote");
+	  	String strPSQ=databases.getAttribute("psq");
+	  	if(StringUtil.isEmpty(strPSQ)){
+	  		
+	  		// prior version was buggy, was the opposite
+	  		strPSQ=databases.getAttribute("preserve-single-quote");
+	  		if(!StringUtil.isEmpty(strPSQ)){
+	  			Boolean b=Caster.toBoolean(strPSQ,null);
+	  			if(b!=null)strPSQ=b.booleanValue()?"false":"true";
+	  		}
+	  	}
+	  	
+	  	
+	  	
 	  	if(!StringUtil.isEmpty(strPSQ)) {
 	  	  config.setPSQL(toBoolean(strPSQ,true));
 	  	}
