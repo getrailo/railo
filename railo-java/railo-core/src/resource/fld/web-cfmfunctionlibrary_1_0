@@ -42,6 +42,7 @@
 	<function>
 		<name>AjaxLink</name>
 		<class>railo.runtime.functions.displayFormatting.AjaxLink</class>
+		<status>unimplemeted</status>
 		<description>Causes an HTML href attribute to display link results in the current Ajax container.</description>
 		<argument>
 			<name>url</name>
@@ -57,6 +58,7 @@
 	<function>
 		<name>AjaxOnLoad</name>
 		<class>railo.runtime.functions.displayFormatting.AjaxOnLoad</class>
+		<status>unimplemeted</status>
 		<description>Causes the specified JavaScript function to run when the page loads.</description>
 		<argument>
 			<name>functionName</name>
@@ -3909,6 +3911,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>getException</name>
 		<class>railo.runtime.functions.system.GetException</class>
+		<status>unimplemeted</status>
 		<description>Used with the cftry and cfcatch tags. Retrieves a Java exception object from a Java object. </description>
 		<argument>
 			<name>object</name>
@@ -4019,6 +4022,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>GetPrinterInfo</name>
 		<class>railo.runtime.functions.system.GetPrinterInfo</class>
+		<status>unimplemeted</status>
 		<description>Determines which print attributes are supported by a selected printer.</description>
 		<argument>
 			<name>printer</name>
@@ -4100,6 +4104,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>getGatewayHelper</name>
 		<class>railo.runtime.functions.gateway.GetGatewayHelper</class>
+		<status>unimplemeted</status>
 		<description>Gets a Java GatewayHelper object that provides methods and properties for use with a event gateways.</description>
 		<argument>
 			<name>gatewayID</name>
@@ -4281,6 +4286,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>getSOAPRequest</name>
 		<class>railo.runtime.functions.xml.GetSOAPRequest</class>
+		<status>unimplemeted</status>
 		<description>Returns back the original SOAP request for this object, or the current one if processing.</description>
 		<argument>
 			<name>webservice</name>
@@ -4297,6 +4303,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>getSOAPRequestHeader</name>
 		<class>railo.runtime.functions.xml.GetSOAPRequestHeader</class>
+		<status>unimplemeted</status>
 		<description>Returns back the SOAP header request. Use only inside a WebServices call</description>
 		<argument>
 			<name>namespace</name>
@@ -4326,6 +4333,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>getSOAPResponse</name>
 		<class>railo.runtime.functions.xml.GetSOAPResponse</class>
+		<status>unimplemeted</status>
 		<description>Returns back the full SOAP response</description>
 		<argument>
 			<name>webservice</name>
@@ -4342,6 +4350,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>getSOAPResponseHeader</name>
 		<class>railo.runtime.functions.xml.GetSOAPResponseHeader</class>
+		<status>unimplemeted</status>
 		<description>Returns back the SOAP header response</description>
 		<argument>
 			<name>webservice</name>
@@ -6268,6 +6277,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>IsPDFFile</name>
 		<class>railo.runtime.functions.decision.IsPDFFile</class>
+		<status>unimplemeted</status>
 		<description>Verifies whether a PDF file is valid.</description>
 		<argument>
 			<name>path</name>
@@ -6476,6 +6486,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>IsDDX</name>
 		<class>railo.runtime.functions.decision.IsDDX</class>
+		<status>unimplemeted</status>
 		<description>Determines whether a DDX file exists and is valid, or if a string contains valid DDX instructions.</description>
 		<argument>
 			<name>pathOrString</name>
@@ -6706,6 +6717,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>IsSOAPRequest</name>
 		<class>railo.runtime.functions.decision.IsSOAPRequest</class>
+		<status>unimplemeted</status>
 		<description>
 		Returns if actuell call of a CFC is a Request via Webservice
 		</description>
@@ -8680,6 +8692,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>PrecisionEvaluate</name>
 		<class>railo.runtime.functions.dynamicEvaluation.PrecisionEvaluate</class>
+		<status>unimplemeted</status>
 		<description>Evaluates one or more string expressions, dynamically, from left to right, using BigDecimal precision arithmetic to calculate the values of arbitrary precision arithmetic expressions.</description>
 		<argument-type>dynamic</argument-type>
 		<argument-min>1</argument-min>
@@ -8822,6 +8835,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>QueryConvertForGrid</name>
 		<class>railo.runtime.functions.query.QueryConvertForGrid</class>
+		<status>unimplemeted</status>
 		<description>Converts query data to a structure that contains a paged subset of the query. Used in CFC functions that return data to Ajax format cfgrid controls in response to a bind expression.</description>
 		<argument>
 			<name>query</name>
