@@ -3084,7 +3084,9 @@ The browser uses file extension to determine file type. </description>
 		<tag-class>railo.runtime.tag.Forward</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>forward the request to a other path.</description>
+		Leads the request to a different page. 
+		This tag acts like the tag cflocation except that the relocation is done directly on the server. 
+		</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -5109,7 +5111,14 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<tag-class>railo.runtime.tag.Imap</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Retrieves and deletes e-mail messages from a Imap mail server.</description>
+		<description>Retrieves and deletes e-mail messages from a Imap mail server.
+		This tag works exactly the same way as the cfmail tag. It has the same attributes.
+		The Internet Message Access Protocol or IMAP is one of two of the most prevalent Internet standard protocols for e-mail retrieval, 
+		the other being POP3. Virtually all modern e-mail clients and servers support both protocols as a means of transferring e-mail messages from a server, 
+		such as those used by Gmail, to a client, such as Mozilla Thunderbird and Microsoft Outlook.
+		Many implementations of webmail use IMAP to retrieve e-mail messages from a server and display them within a web browser, 
+		making the use of this protocol transparent to the user.
+		</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -11363,7 +11372,8 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.VideoPlayerJW</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>play a video</description>
+		<description>The tag CFVIDEOPLAYER allows you to display a video in flash (flv) format. 
+		It includes the complete functionality to display the player with the necessary html code. Read more on the multimedia functionality.</description>
 		<attribute-type>fixed</attribute-type>
 		
 		<!-- JW -->
@@ -12125,7 +12135,7 @@ dWord: creates a value of 0 (zero)</description>
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>same like loop-contition but easier to use</description>
+		<description>Simplification of the tag cfloop-contition, analog to the cfscript "while" loop.</description>
 		<attribute-type>noname</attribute-type>
 		<attribute>
 			<type>boolean</type>
