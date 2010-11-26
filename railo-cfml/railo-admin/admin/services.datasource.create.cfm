@@ -72,7 +72,7 @@ ACTIONS --->
         </cfif>
 		<cflocation url="#request.self#?action=#url.action##v#" addtoken="no">
 	</cfif>
-	<cfcatch><cfrethrow>
+	<cfcatch>
 		<cfset driver.onBeforeError(cfcatch)>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
