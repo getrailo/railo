@@ -3084,6 +3084,7 @@ The browser uses file extension to determine file type. </description>
 		<tag-class>railo.runtime.tag.Forward</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<description>
 		Leads the request to a different page. 
 		This tag acts like the tag cflocation except that the relocation is done directly on the server. 
 		</description>

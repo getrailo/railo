@@ -81,6 +81,7 @@ public final class TagLibTag {
 	private boolean allowRemovingLiteral;
 	private TagLibTagAttr defaultAttribute;
 	private short status=TagLib.STATUS_IMPLEMENTED;
+	private Class clazz;
 
 	public TagLibTag duplicate(boolean cloneAttributes) {
 		TagLibTag tlt = new TagLibTag(tagLib);
@@ -230,9 +231,18 @@ public final class TagLibTag {
 		return tagClass;
 	}
 	
+
+	public Class getClazz() throws ClassException {
+		if(clazz==null) {
+			clazz=ClassUtil.loadClass(tagClass);
+		}
+		return clazz;
+	}
+	
+	
 	public Type getTagType() throws ClassException {
 		if(tagType==null) {
-			tagType=Type.getType(ClassUtil.loadClass(tagClass));
+			tagType=Type.getType(getClazz());
 		}
 		return tagType;
 	}

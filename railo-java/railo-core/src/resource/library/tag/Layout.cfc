@@ -7,20 +7,21 @@
 	
 	<!--- Meta data --->
 	<cfset this.metadata.attributetype="fixed">
+	<cfset this.metadata.hint="">
     <cfset this.metadata.attributes={
-		type:			{required:true,type:"string"},
-		name:			{required:false,type:"string",default:"_cf_layout_#randRange(1,999999999)#"},
-		style:      	{required:false,type:"string",default:""},
-		jsLib:  		{required:false,type:"string",default:"jquery"},	
+		type:			{required:true,type:"string",hint=""},
+		name:			{required:false,type:"string",default:"_cf_layout_#randRange(1,999999999)#",hint=""},
+		style:      	{required:false,type:"string",default:"",hint=""},
+		jsLib:  		{required:false,type:"string",default:"jquery",hint=""},	
 		
 		/* tab only */
-		tabHeight : 	{required:false,type:"numeric",default:50},
-		tabsselect :	{required:false,type:"string",default:""},
-		tabsadd : 		{required:false,type:"string",default:""},
-		tabsremove :	{required:false,type:"string",default:""},
-		tabsenable :	{required:false,type:"string",default:""},
-		tabsdisable : 	{required:false,type:"string",default:""},
-		tabsload : 		{required:false,type:"string",default:""}
+		tabHeight : 	{required:false,type:"numeric",default:50,hint=""},
+		tabsselect :	{required:false,type:"string",default:"",hint=""},
+		tabsadd : 		{required:false,type:"string",default:"",hint=""},
+		tabsremove :	{required:false,type:"string",default:"",hint=""},
+		tabsenable :	{required:false,type:"string",default:"",hint=""},
+		tabsdisable : 	{required:false,type:"string",default:"",hint=""},
+		tabsload : 		{required:false,type:"string",default:"",hint=""}
 								
 	}>
          

@@ -10,21 +10,22 @@
 <cfset this.indexCount=0>
 
 <!--- Meta data --->
+	<cfset this.metadata.hint="Outputs the elements, variables and values of most kinds of CFML objects. Useful for debugging. You can display the contents of simple and complex variables, objects, components, user-defined functions, and other elements.">
 	<cfset this.metadata.attributetype="fixed">
     <cfset this.metadata.attributes={
-		var:{required:false,type:"any"},
-		eval:{required:false,type:"any"},
-		expand:{required:false,type:"boolean",default:true},
-		label:{required:false,type:"string",default:""},
-		top:{required:false,type:"number",default:9999},
-		showUDFs:{required:false,type:"boolean",default:true},
-		show:{required:false,type:"string",default:"all"},
-		output:{required:false,type:"string",default:"browser"},
-		metainfo:{required:false,type:"boolean",default:true},
-		keys:{required:false,type:"number",default:9999},
-		hide:{required:false,type:"string",default:"all"},
-		format:{required:false,type:"string",default:""},
-		abort:{required:false,type:"boolean",default:false}
+		var:{required:false,type:"any",hint="Variable to display. Enclose a variable name in pound signs."},
+		eval:{required:false,type:"any",hint="name of the variable to display, also used as label, when no label defined."},
+		expand:{required:false,type:"boolean",default:true,hint="expands views"},
+		label:{required:false,type:"string",default:"",hint="A string; header for the dump output."},
+		top:{required:false,type:"number",default:9999,hint="The number of rows to display."},
+		showUDFs:{required:false,type:"boolean",default:true,hint="show UDFs in cfdump output."},
+		show:{required:false,type:"string",default:"all",hint="show column or keys."},
+		output:{required:false,type:"string",default:"browser",hint="Where to send the results of cfdump."},
+		metainfo:{required:false,type:"boolean",default:true,hint="Includes information about the query in the cfdump results."},
+		keys:{required:false,type:"number",default:9999,hint="For a structure, number of keys to display."},
+		hide:{required:false,type:"string",default:"all",hint="hide column or keys."},
+		format:{required:false,type:"string",default:"",hint="specify whether to save the results of a cfdump to a file in text or HTML format"},
+		abort:{required:false,type:"boolean",default:false,hint="stops further processing of page"}
 	}>
 
     <cffunction name="init" output="yes" returntype="void"
