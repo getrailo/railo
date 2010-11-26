@@ -38,8 +38,8 @@ public class Operation extends ExpressionBase {
 	}
 
 	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
-		Type l = Assign.writeOut(db,bc,null,mode,left,getLine());
-		Type r = Assign.writeOut(db,bc,null,mode,right,getLine());
+		Type l = Assign.writeOut(db,bc,null,mode,left,getLine(),false);
+		Type r = Assign.writeOut(db,bc,null,mode,right,getLine(),false);
 		Type t = result(l,r);
 		
 		bc.getAdapter().math(op,t);

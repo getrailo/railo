@@ -9055,6 +9055,7 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Script</tag-class>
 		<tdbt-class>railo.transformer.cfml.script.CFMLScriptTransformer</tdbt-class>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagScript</ttt-class>
+		<tte-class>railo.transformer.cfml.evaluator.impl.Script</tte-class>
 		<body-content>tagdependent</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Encloses a code segment containing cfscript.</description>
