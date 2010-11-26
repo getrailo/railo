@@ -119,6 +119,7 @@ public final class TagOutput extends TagBase {
 			"setCurrent",
 			Types.VOID,
 			new Type[]{Types.INT_VALUE});
+	
 
 	// void reset()
 	public static final Method RESET = new Method(
@@ -462,10 +463,16 @@ public final class TagOutput extends TagBase {
 	
 		wv.visitAfterBody(bc,getEndLine());
 	
+		
 		// ni.setCurrent(currentOuter);
 		adapter.loadLocal(numberIterator);
 		adapter.loadLocal(currentOuter);
 		adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.SET_CURRENT);
+		
+		adapter.loadLocal(query);
+		adapter.loadLocal(currentOuter);
+		adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
+		adapter.pop();
 		//adapter.pop();
 	}
 

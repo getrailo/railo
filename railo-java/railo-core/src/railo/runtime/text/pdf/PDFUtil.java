@@ -193,7 +193,7 @@ public class PDFUtil {
 	private static boolean removeBookmarks(Map bookmark, Set pages, boolean removePages) {
 		List kids=(List) bookmark.get("Kids");
 		if(kids!=null)removeBookmarks(kids,pages,removePages);
-		Integer page=Caster.toInteger(railo.runtime.type.List.first((String) bookmark.get("Page")," "),Constants.INTEGER_MINUS_ONE);
+		Integer page=Caster.toInteger(railo.runtime.type.List.first((String) bookmark.get("Page")," ",true),Constants.INTEGER_MINUS_ONE);
 		return removePages==(pages!=null && pages.contains(page));
 	}
 

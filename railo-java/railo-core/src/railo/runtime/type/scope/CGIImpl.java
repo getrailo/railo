@@ -316,6 +316,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		isInit=false;
 		this.req=null;
 		scriptProtected=ScriptProtected.UNDEFINED; 
+		pc=null;
 	}
 	
 	/**

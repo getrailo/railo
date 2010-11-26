@@ -13,6 +13,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.JSONConverter;
 import railo.runtime.converter.ScriptConverter;
@@ -41,6 +42,8 @@ import railo.runtime.type.util.StructUtil;
  * A Page that can produce Components
  */
 public abstract class ComponentPage extends PagePlus  {
+	
+	private static final long serialVersionUID = -3483642653131058030L;
 	
 	public static final railo.runtime.type.Collection.Key FIELDNAMES = KeyImpl.getInstance("fieldnames");
 	public static final railo.runtime.type.Collection.Key METHOD = KeyImpl.getInstance("method");
@@ -75,6 +78,8 @@ public abstract class ComponentPage extends PagePlus  {
             boolean isPost=pc. getHttpServletRequest().getMethod().equalsIgnoreCase("POST");
             Object method;
             
+            boolean suppressContent = ((ConfigImpl)pc.getConfig()).isSuppressContent();
+            if(suppressContent)pc.clear();
             
             //pc.getHttpServletRequest().getHeader("");
             
@@ -88,7 +93,7 @@ public abstract class ComponentPage extends PagePlus  {
             	}
     			// WDDX
                 else if((method=pc.urlFormScope().get("method",null))!=null) {
-                    callWDDX(pc,component,Caster.toString(method));
+                    callWDDX(pc,component,Caster.toString(method),suppressContent);
             		//close(pc);
                     return;
                 }
@@ -105,8 +110,8 @@ public abstract class ComponentPage extends PagePlus  {
                 } 
     			// WDDX
                 else if((method=pc.urlFormScope().get("method",null))!=null) {
-                    callWDDX(pc,component,Caster.toString(method));
-                    //close(pc);
+                    callWDDX(pc,component,Caster.toString(method),suppressContent);
+                    //close(pc); 
                     return;
                 } 
             }
@@ -115,7 +120,7 @@ public abstract class ComponentPage extends PagePlus  {
             // Include MUST
             Array path = pc.getTemplatePath();
             //if(path.size()>1 ) {
-            if(path.size()>1 && !(path.size()==3 && List.last(path.getE(2).toString(),"/\\").equalsIgnoreCase("application.cfc")) ) {// MUSTMUST bad impl -> check with and without application.cfc
+            if(path.size()>1 && !(path.size()==3 && List.last(path.getE(2).toString(),"/\\",true).equalsIgnoreCase("application.cfc")) ) {// MUSTMUST bad impl -> check with and without application.cfc
             	
             	ComponentWrap c = new ComponentWrap(Component.ACCESS_PRIVATE,component.getComponentImpl());
             	Key[] keys = c.keys();
@@ -173,7 +178,7 @@ public abstract class ComponentPage extends PagePlus  {
 	}
 	
 	
-    private void callWDDX(PageContext pc, Component component, String methodName) throws IOException, ConverterException, PageException {
+    private void callWDDX(PageContext pc, Component component, String methodName, boolean suppressContent) throws IOException, ConverterException, PageException {
         Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
         
         // define args
@@ -187,57 +192,66 @@ public abstract class ComponentPage extends PagePlus  {
         	args=pc.getHttpServletRequest().getAttribute("argumentCollection");
         }
         
-        Object rtn=null;
-        if(args==null){
-        	url=translate(component,methodName,url);
-        	rtn = component.callWithNamedValues(pc, methodName, url);
-        }
-        else if(args instanceof String){
-        	try {
-				args=new JSONExpressionInterpreter().interpret(pc, (String)args);
-				
-			} catch (PageException e) {}
-        }
         
-        //content-type
-        Object o = component.get(methodName,null);
+      //content-type
+        Object o = component.get(KeyImpl.init(methodName),null);
         Props props = getProps(pc, o, returnFormat);
         HttpServletResponse rsp = pc.getHttpServletResponse();
-        switch(props.format){
-        case UDF.RETURN_FORMAT_WDDX:
-        	rsp.setContentType("text/xml; charset=UTF-8");
-        	rsp.setHeader("Return-Format", "wddx");
-        break;
-        case UDF.RETURN_FORMAT_JSON:
-        	rsp.setContentType("application/json");
-        	rsp.setHeader("Return-Format", "json");
-        break;
-        case UDF.RETURN_FORMAT_PLAIN:
-        	rsp.setContentType("text/plain; charset=UTF-8");
-        	rsp.setHeader("Return-Format", "plain");
-        break;
-        case UDF.RETURN_FORMAT_SERIALIZE:
-        	rsp.setContentType("text/plain; charset=UTF-8");
-        	rsp.setHeader("Return-Format", "serialize");
-        break;
-        }
-        
-        
-        // call
-        if(args!=null) {
-        	if(Decision.isCastableToStruct(args)){
-	        	rtn = component.callWithNamedValues(pc, methodName, Caster.toStruct(args,false));
-	        }
-	        else if(Decision.isCastableToArray(args)){
-	        	rtn = component.call(pc, methodName, Caster.toNativeArray(args));
-	        }
-	        else {
-	        	Object[] ac=new Object[1];
-	        	ac[0]=args;
-	        	rtn = component.call(pc, methodName, ac);
+        if(!props.output) {
+	        switch(props.format){
+	        case UDF.RETURN_FORMAT_WDDX:
+	        	rsp.setContentType("text/xml; charset=UTF-8");
+	        	rsp.setHeader("Return-Format", "wddx");
+	        break;
+	        case UDF.RETURN_FORMAT_JSON:
+	        	rsp.setContentType("application/json");
+	        	rsp.setHeader("Return-Format", "json");
+	        break;
+	        case UDF.RETURN_FORMAT_PLAIN:
+	        	rsp.setContentType("text/plain; charset=UTF-8");
+	        	rsp.setHeader("Return-Format", "plain");
+	        break;
+	        case UDF.RETURN_FORMAT_SERIALIZE:
+	        	rsp.setContentType("text/plain; charset=UTF-8");
+	        	rsp.setHeader("Return-Format", "serialize");
+	        break;
 	        }
         }
         
+        Object rtn=null;
+        try{
+    		if(suppressContent)pc.setSilent();
+        
+	        
+	        if(args==null){
+	        	url=translate(component,methodName,url);
+	        	rtn = component.callWithNamedValues(pc, methodName, url);
+	        }
+	        else if(args instanceof String){
+	        	try {
+					args=new JSONExpressionInterpreter().interpret(pc, (String)args);
+					
+				} catch (PageException e) {}
+	        }
+	        
+	        // call
+	        if(args!=null) {
+	        	if(Decision.isCastableToStruct(args)){
+		        	rtn = component.callWithNamedValues(pc, methodName, Caster.toStruct(args,false));
+		        }
+		        else if(Decision.isCastableToArray(args)){
+		        	rtn = component.call(pc, methodName, Caster.toNativeArray(args));
+		        }
+		        else {
+		        	Object[] ac=new Object[1];
+		        	ac[0]=args;
+		        	rtn = component.call(pc, methodName, ac);
+		        }
+	        }
+        }
+    	finally {
+    		if(suppressContent)pc.unsetSilent();
+    	}
         // convert result
         if(rtn!=null){
         	if(pc.getHttpServletRequest().getHeader("AMF-Forward")!=null) {
@@ -248,6 +262,7 @@ public abstract class ComponentPage extends PagePlus  {
         		pc.forceWrite(convertResult(pc, props, queryFormat, rtn));
         	}
         }
+        //pc.setSilent();
         
     }
     
@@ -261,6 +276,7 @@ public abstract class ComponentPage extends PagePlus  {
 			props.format=udf.getReturnFormat();
 			props.type=udf.getReturnType();
 			props.strType=udf.getReturnTypeAsString();
+			props.output=udf.getOutput();
 			if(udf.getSecureJson()!=null)props.secureJson=udf.getSecureJson().booleanValue();
 		}
 		if(!StringUtil.isEmpty(returnFormat)){
@@ -423,5 +439,6 @@ public abstract class ComponentPage extends PagePlus  {
 		public boolean secureJson;
 		public int type=CFTypes.TYPE_ANY;
 		public int format=UDF.RETURN_FORMAT_WDDX;
+		public boolean output=true;
 		
 	}

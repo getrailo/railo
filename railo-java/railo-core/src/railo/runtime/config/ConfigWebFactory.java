@@ -40,6 +40,7 @@ import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
+import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
@@ -298,6 +299,15 @@ public final class ConfigWebFactory {
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	ThreadLocalConfig.register(config);
     	
+    	// fix
+    	if(ConfigWebAdmin.fixS3(doc) | ConfigWebAdmin.fixPSQ(doc)) {
+    		XMLCaster.writeTo(doc,config.getConfigFile());
+    		try {
+				doc=ConfigWebFactory.loadDocument(config.getConfigFile());
+			} catch (SAXException e) {}
+    	}
+    	
+    	
     	loadConstants(configServer,config,doc);
     	
     	loadId(config);
@@ -378,9 +388,15 @@ public final class ConfigWebFactory {
         	String strProviderScheme;
         	String httpClass=null;
         	Map httpArgs=null;
-        	boolean hasHTTPs = false;
+        	boolean hasHTTPs = false, hasS3=false;
+        	String s3Class="railo.commons.io.res.type.s3.S3ResourceProvider";
         	for(int i=0;i<providers.length;i++) {        	
         		strProviderClass=providers[i].getAttribute("class");
+        		
+        		// ignore S3 extension
+        		if("railo.extension.io.resource.type.s3.S3ResourceProvider".equals(strProviderClass))
+        			strProviderClass=S3ResourceProvider.class.getName();
+        		
         		strProviderScheme=providers[i].getAttribute("scheme");
         		if(!StringUtil.isEmpty(strProviderClass) && !StringUtil.isEmpty(strProviderScheme)) {
         			strProviderClass=strProviderClass.trim();
@@ -394,13 +410,19 @@ public final class ConfigWebFactory {
             		}
     	        	else if(strProviderScheme.equalsIgnoreCase("https"))
     	        		hasHTTPs=true;
+    	        	else if(strProviderScheme.equalsIgnoreCase("s3"))
+    	        		hasS3=true;
         		}
             }
         	
-        	if(!hasHTTPs && httpClass!=null)
+        	// adding https when not exists
+        	if(!hasHTTPs && httpClass!=null){
         		config.addResourceProvider("https",httpClass,httpArgs);
-    		
-        	
+        	}
+        	// adding s3 when not exist
+    		if(!hasS3 && config instanceof ConfigServer) {
+    			config.addResourceProvider("s3",s3Class,toArguments("lock-timeout:10000;"));
+    		}
         }
 	}
     
@@ -758,9 +780,10 @@ public final class ConfigWebFactory {
      * @throws IOException
      */
     static Document loadDocument(Resource xmlFile) throws SAXException, IOException {
-        InputStream is=null;
+        
+    	InputStream is=null;
     	try {
-    		return loadDocument(is=IOUtil.toBufferedInputStream(xmlFile.getInputStream()));
+    		return _loadDocument(is=IOUtil.toBufferedInputStream(xmlFile.getInputStream()));
     	}
         finally {
         	IOUtil.closeEL(is);
@@ -774,7 +797,7 @@ public final class ConfigWebFactory {
      * @throws SAXException
      * @throws IOException
      */
-    static Document loadDocument(InputStream is) throws SAXException, IOException {
+    private static Document _loadDocument(InputStream is) throws SAXException, IOException {
         DOMParser parser = new DOMParser();
 	    InputSource source = new InputSource(is);
 	    parser.parse(source);
@@ -1152,6 +1175,9 @@ public final class ConfigWebFactory {
             
             f=cDir.getRealResource("RamCache.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/cdriver/RamCache.cfc",f);
+            
+            f=cDir.getRealResource("EHCacheLite.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/cdriver/EHCacheLite.cfc",f);
 
             f=cDir.getRealResource("Field.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/cdriver/Field.cfc",f);
@@ -1682,7 +1708,19 @@ public final class ConfigWebFactory {
 	  	
 	  	
 	  	// PSQ 
-	  	String strPSQ=databases.getAttribute("preserve-single-quote");
+	  	String strPSQ=databases.getAttribute("psq");
+	  	if(StringUtil.isEmpty(strPSQ)){
+	  		
+	  		// prior version was buggy, was the opposite
+	  		strPSQ=databases.getAttribute("preserve-single-quote");
+	  		if(!StringUtil.isEmpty(strPSQ)){
+	  			Boolean b=Caster.toBoolean(strPSQ,null);
+	  			if(b!=null)strPSQ=b.booleanValue()?"false":"true";
+	  		}
+	  	}
+	  	
+	  	
+	  	
 	  	if(!StringUtil.isEmpty(strPSQ)) {
 	  	  config.setPSQL(toBoolean(strPSQ,true));
 	  	}
@@ -2521,8 +2559,20 @@ public final class ConfigWebFactory {
         Element setting=hasAccess?getChildByName(doc.getDocumentElement(),"setting"):null;
         boolean hasCS=configServer!=null;
         
-        // supress whitespace
+        
+
+        // suppress whitespace
         String str=null;
+        if(setting!=null){
+        	str=setting.getAttribute("suppress-content");
+        }
+        if(!StringUtil.isEmpty(str) && hasAccess) {
+          config.setSuppressContent(toBoolean(str,false));
+        }
+        else if(hasCS)config.setSuppressContent(configServer.isSuppressContent());
+        
+        // suppress whitespace
+        str=null;
         if(setting!=null){
         	str=setting.getAttribute("suppress-whitespace");
         	if(StringUtil.isEmpty(str))str=setting.getAttribute("suppresswhitespace");
@@ -2609,7 +2659,7 @@ public final class ConfigWebFactory {
 	        
 	        if(!hasAccess) clients=new Element[0];
 	        else clients = getChildren(_clients,"remote-client");
-	        java.util.List list=new ArrayList();
+	        java.util.List<RemoteClient> list=new ArrayList<RemoteClient>();
 	        for(int i=0;i<clients.length;i++) {
 	        	client=clients[i];
 	        	// type

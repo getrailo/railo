@@ -2,30 +2,31 @@
 <cfparam name="request.stLocalHelp" default="#structNew()#">
 <cfparam name="request.stWebMediaHelp" default="#structNew()#">
 <cfparam name="request.stWebHelp" default="#structNew()#">
-
-<ecfset structDelete(application, "stText")>
+<cfparam name="application.stText" default="#structNew()#">
+<!---
+<cfset structDelete(application, "stText")>
 <cfset structDelete(application, "stWebHelp")>
-
-<cfif not structKeyExists(application, "stText") or structKeyExists(url, "reinit")>
+--->
+<cfif not structKeyExists(application.stText, session.railo_admin_lang) or  not structKeyExists(application, "languages") or structKeyExists(url, "reinit")>
+	<cfinclude template="menu.cfm">
 	<cfset languages = readLanguages()>
+    <cfset application.languages=languages>
 	<!--- This makes sure that the texts are there at least in English --->
 	<cffile action="READ" file="language/en.xml" variable="sXML">
 	<cfset StructDelete(application,"notTranslated")>
-	<cfset stText = GetFromXMLNode(XMLParse(sXML).XMLRoot.XMLChildren)>
-	
-    
+	<cfset application.stText[session.railo_admin_lang] = GetFromXMLNode(XMLParse(sXML).XMLRoot.XMLChildren)>
+	<cfset stText=application.stText[session.railo_admin_lang]>
 	<!--- now read the actual file when not english--->
     <cfif session.railo_admin_lang NEQ "en">
         <cffile action="READ" file="language/#session.railo_admin_lang#.xml" variable="sXML">
-        
-        <cfset stText = GetFromXMLNode(XMLParse(sXML).XMLRoot.XMLChildren,stText)>
-        
+        <cfset application.stText[session.railo_admin_lang] = GetFromXMLNode(XMLParse(sXML).XMLRoot.XMLChildren,stText)>
 	</cfif>
+    <cfset stText.menuStruct.web = createMenu(stText.menu,"web")>
+	<cfset stText.menuStruct.server = createMenu(stText.menu, "server")>
     
-    <cfinclude template="menu.cfm">
-	<cfset application.stText = stText>
 <cfelse>
-	<cfset stText = application.stText>
+    <cfset languages=application.languages>
+	<cfset stText = application.stText[session.railo_admin_lang]>
 </cfif>
 
 <cfif not structKeyExists(application, "stWebHelp") or structKeyExists(url, "reinit")>
@@ -105,10 +106,6 @@ You can use this code in order to write the structs into an XML file correspondi
 			</cfif>
 			
 			<cfcatch>
-<!--- 				<cfdump var="#arguments.stXML#">
-				<cfdump var="#stRet#">
-				<cfdump var="#el#">
-				<cfdump var="#cfcatch#" abort> --->
 			</cfcatch>
 		</cftry>
 	</cfloop>
@@ -122,7 +119,7 @@ You can use this code in order to write the structs into an XML file correspondi
 	<cfargument name="hidden" required="Yes" type="boolean">
 	<cfset var menu = "">
 	<cfset var el = "">
-	<cfloop array="#stText.MenuStruct#" index="menu">
+	<cfloop array="#stText.MenuStruct[request.adminType]#" index="menu">
 		<cfif menu.action eq arguments.sMenu>
 			<cfloop array="#menu.children#" index="el">
 				<cfif el.action eq arguments.action>
@@ -164,6 +161,7 @@ You can use this code in order to write the structs into an XML file correspondi
 
 <cffunction name="readLanguages" output="No" returntype="struct">
 	<cfdirectory name="local.getLangs" directory="language" action="list" mode="listnames" filter="*.xml">
+    
 	<cfset var stRet = {}>
 	<cfloop query="getLangs">
 		<cffile action="read" file="language/#getLangs.name#" variable="local.sContent">

@@ -657,7 +657,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			writer.write(Caster.toString(o));
 		}
 		else {
-            writer.write(psq?StringUtil.replace(Caster.toString(o),"'","''",false):Caster.toString(o));
+            writer.write(psq?Caster.toString(o):StringUtil.replace(Caster.toString(o),"'","''",false));
 		}
 	} 
 	
@@ -1721,7 +1721,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public void handlePageException(PageException pe) {
 		if(!(pe instanceof Abort)) {
-			
+			getHttpServletResponse().setContentType("text/html");
 			int statusCode=getStatusCode(pe);
 			
 			if(getConfig().getErrorStatusCode())rsp.setStatus(statusCode);
@@ -2192,6 +2192,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
     
 
+    /**
+     * @see railo.runtime.PageContext#setLocale(java.lang.String)
+     */
     public void setLocale(String strLocale) throws ExpressionException {
 		setLocale(Caster.toLocale(strLocale));
 	}

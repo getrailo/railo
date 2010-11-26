@@ -6,7 +6,7 @@ package railo.commons.io.log;
 public interface Log {
 
     /**
-     * Field <code>LEVEL_DEBUG</code>
+     * Field <code>LEVEL_INFO</code>
      */
     public static final int LEVEL_INFO=0;
     /**
@@ -22,7 +22,7 @@ public interface Log {
      */
     public static final int LEVEL_ERROR=3;
     /**
-     * Field <code>LEVEL_ERROR</code>
+     * Field <code>LEVEL_FATAL</code>
      */
     public static final int LEVEL_FATAL=4;
 

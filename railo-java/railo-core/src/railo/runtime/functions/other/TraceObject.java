@@ -14,6 +14,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
@@ -31,7 +32,7 @@ import railo.runtime.util.VariableUtilImpl;
 
 public class TraceObject implements Objects, Collection,UDF {
 	public synchronized static Object call(PageContext pc , Object obj,String label,String logFile) throws PageException {
-		
+		if(true) throw new ApplicationException("this function is not supported yet");
 		// Resource
 		Resource res = ResourceUtil.toResourceNotExisting(pc.getConfig(), logFile);
 		if(!res.exists()){
@@ -118,7 +119,7 @@ public class TraceObject implements Objects, Collection,UDF {
 		for(int i=0;i<traces.length;i++) {
 			trace=traces[i];
 			template=trace.getFileName();
-			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template).equals("java") ||
+			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java") ||
 					template.endsWith("Dump.cfc"))// MUST bad impl 
 				continue;
 			line=trace.getLineNumber();

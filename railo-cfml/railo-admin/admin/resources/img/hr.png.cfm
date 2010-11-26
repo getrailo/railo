@@ -1,1 +1,1 @@
-data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAA0CAIAAADEwMXAAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABRJREFUeNpiiE9MYmJgYBguGCDAABOoAYm1FIUoAAAAAElFTkSuQmCC
+<cfsavecontent variable="c">iVBORw0KGgoAAAANSUhEUgAAAAEAAAA0CAIAAADEwMXAAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABRJREFUeNpiiE9MYmJgYBguGCDAABOoAYm1FIUoAAAAAElFTkSuQmCC</cfsavecontent><cfoutput><cfif getBaseTemplatePath() EQ getCurrentTemplatePath()><cfcontent type="image/x-png" variable="#toBinary(c)#"><cfsetting showdebugoutput="no"><cfelse>data:image/x-png;base64,#c#</cfif></cfoutput>

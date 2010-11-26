@@ -276,7 +276,7 @@ public final class PDFDocument {
 		pd4ml.generateOutlines(generateOutlines);
 		pd4ml.enableTableBreaks(true);
 		pd4ml.interpolateImages(true);
-		pd4ml.adjustHtmlWidth();
+		// DO NOT ENABLE pd4ml.adjustHtmlWidth();
 		
 		//check size
 		int mTop = 	toPoint(margintop,unitFactor);
@@ -322,6 +322,7 @@ public final class PDFDocument {
     		try {
     			body=beautifyHTML(new InputSource(new StringReader(body)),base);
 			}catch (Throwable t) {}
+			
     		pd4ml.render(body, os,base);
 			
     	}
@@ -406,10 +407,8 @@ public final class PDFDocument {
 		Document xml = XMLUtil.parse(is,null,true);
 		patchPD4MLProblems(xml);
 		
-		
 		if(base!=null)URLResolver.getInstance().transform(xml, base);
 		String html = XMLCaster.toHTML(xml);
-		//print.err("->"+html+"<-");
 		return html;
 	}
 

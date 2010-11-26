@@ -2,6 +2,7 @@ package railo.runtime.type.util;
 
 import railo.runtime.Component;
 import railo.runtime.reflection.Reflector;
+import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Array;
 import railo.runtime.type.Query;
 import railo.runtime.type.Scope;
@@ -19,7 +20,10 @@ public final class Type {
         else if(o instanceof Array) return "Array";
         else if(o instanceof Component) return "Component "+((Component)o).getAbsName();
         else if(o instanceof Scope) return ((Scope)o).getTypeAsString();
-        else if(o instanceof Struct) return "Struct";
+        else if(o instanceof Struct) {
+        	if(o instanceof XMLStruct)return "XML";
+        	return "Struct";
+        }
         else if(o instanceof Query) return "Query";
         else if(o instanceof DateTime) return "DateTime";
         else if(o instanceof byte[]) return "Binary";

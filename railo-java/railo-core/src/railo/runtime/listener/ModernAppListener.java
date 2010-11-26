@@ -77,7 +77,13 @@ public class ModernAppListener extends AppListenerSupport {
 	private static final Collection.Key DATA_SOURCE = KeyImpl.getInstance("datasource");
 	private static final Collection.Key ORM_ENABLED = KeyImpl.getInstance("ormenabled");
 	private static final Collection.Key ORM_SETTINGS = KeyImpl.getInstance("ormsettings");
-	
+
+	private static final Collection.Key S3 = KeyImpl.getInstance("s3");
+	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.getInstance("accessKeyId");
+	private static final Collection.Key AWS_SECRET_KEY = KeyImpl.getInstance("awsSecretKey");
+	private static final Collection.Key DEFAULT_LOCATION = KeyImpl.getInstance("defaultLocation");
+	private static final Collection.Key HOST = KeyImpl.getInstance("host");
+	private static final Collection.Key SERVER = KeyImpl.getInstance("server");
 	
 	
 	//private ComponentImpl app;
@@ -129,7 +135,7 @@ public class ModernAppListener extends AppListenerSupport {
 			}
 	    	
 			// onRequest
-			boolean isCFC=ResourceUtil.getExtension(targetPage).equalsIgnoreCase(pc.getConfig().getCFCExtension());
+			boolean isCFC=ResourceUtil.getExtension(targetPage,"").equalsIgnoreCase(pc.getConfig().getCFCExtension());
 			Object method;
 			if(isCFC && app.contains(pc,ON_CFCREQUEST) && (method=pc.urlFormScope().get(ComponentPage.METHOD,null))!=null) {
 				
@@ -380,9 +386,8 @@ public class ModernAppListener extends AppListenerSupport {
 	private void initApplicationContext(PageContextImpl pc, ComponentImpl app) throws PageException {
 		
 		// use existing app context
-		ApplicationContextImpl appContext = new ApplicationContextImpl(pc.getConfig(),false);
+		ApplicationContextImpl appContext = new ApplicationContextImpl(pc.getConfig(),app,false);
 
-		
 		
 		Object o;
 		boolean initORM=false;
@@ -458,6 +463,23 @@ public class ModernAppListener extends AppListenerSupport {
 			// secureJson
 			o=get(app,SECURE_JSON,null);
 			if(o!=null) appContext.setSecureJson(Caster.toBooleanValue(o));
+			
+			// S3
+			o=get(app,S3,null);
+			if(o!=null && Decision.isStruct(o)){
+				Struct sct=Caster.toStruct(o);
+				
+				String host=Caster.toString(sct.get(HOST,null));
+				if(StringUtil.isEmpty(host))host=Caster.toString(sct.get(SERVER,null));
+				
+				appContext.setS3(
+						Caster.toString(sct.get(ACCESS_KEY_ID,null)),
+						Caster.toString(sct.get(AWS_SECRET_KEY,null)),
+						Caster.toString(sct.get(DEFAULT_LOCATION,null)),
+						host
+					);
+			}
+			
 			
 			
 	///////////////////////////////// ORM /////////////////////////////////

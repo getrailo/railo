@@ -4,6 +4,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
@@ -18,6 +21,9 @@ import railo.runtime.exp.ExpressionException;
 
 public class ImageUtil {
 	
+	private static String[] writerFormatNames;
+	private static String[] readerFormatNames;
+
 	/**
 	 * translate a file resource to a buffered image
 	 * @param res
@@ -95,7 +101,7 @@ public class ImageUtil {
 	}
 
 	public static String getFormatFromExtension(Resource res, String defaultValue) {
-		String ext=ResourceUtil.getExtension(res);
+		String ext=ResourceUtil.getExtension(res,null);
 		if("gif".equalsIgnoreCase(ext))return "gif";
 		if("jpg".equalsIgnoreCase(ext))return "jpg";
 		if("jpe".equalsIgnoreCase(ext))return "jpg";
@@ -149,5 +155,26 @@ public class ImageUtil {
     	 catch (Throwable t) {}
 		
 		
+	}
+
+	public static String[] getWriterFormatNames() {
+		if(writerFormatNames==null)
+			writerFormatNames=_getFormatNames(ImageIO.getWriterFormatNames());
+		return writerFormatNames;
+	}
+	public static String[] getReaderFormatNames() {
+		if(readerFormatNames==null)
+			readerFormatNames=_getFormatNames(ImageIO.getReaderFormatNames());
+		return readerFormatNames;
+	}
+	
+	private static String[] _getFormatNames(String[] names) {
+		Set<String> set=new HashSet<String>();
+		if(names!=null)for(int i=0;i<names.length;i++){
+			set.add(names[i].toLowerCase());
+		}
+		names= set.toArray(new String[set.size()]);
+		Arrays.sort(names);
+		return names;
 	}
 }

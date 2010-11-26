@@ -152,7 +152,7 @@ public final class DocumentUtil {
      * @throws IOException
      */
     public static Document toDocument(Resource file,String url,String charset) throws IOException {
-        String ext = ResourceUtil.getExtension(file);
+        String ext = ResourceUtil.getExtension(file,null);
         Document doc=null;
         if(ext!=null) {
             ext=ext.toLowerCase();

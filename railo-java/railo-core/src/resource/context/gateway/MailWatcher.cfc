@@ -32,7 +32,7 @@
         	<cftry>
 				<cfset mails=getMailsNewerThan(config.server,config.port,config.username,config.password,config.attachmentpath,last)>
                 <cfloop array="#mails#" index="el">
-                	<cfset variables.listener[config.functionName](el)>
+                	<cfif len(trim(config.functionName))><cfset variables.listener[config.functionName](el)></cfif>
                 </cfloop>
                 
                 <cfcatch>

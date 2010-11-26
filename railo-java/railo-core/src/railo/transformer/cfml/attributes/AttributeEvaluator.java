@@ -13,5 +13,5 @@ public interface AttributeEvaluator {
 	 * @param tag
 	 * @throws AttributeEvaluatorException
 	 */
-	void evaluate( TagLibTag tagLibTag, Tag tag) throws AttributeEvaluatorException;
+	TagLibTag evaluate( TagLibTag tagLibTag, Tag tag) throws AttributeEvaluatorException;
 }

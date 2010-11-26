@@ -23,6 +23,7 @@ import org.w3c.dom.Text;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.HTMLEntities;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -40,6 +41,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.text.xml.struct.XMLStructFactory;
 import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 
 /**
@@ -154,7 +156,7 @@ public final class XMLCaster {
 			for(int i=0;i<keys.length;i++) {
 				String key=keys[i];
 				attres[i]=doc.createAttribute(IsNumeric.call(null,key)?"attribute-"+key:key);
-				attres[i].setValue(Caster.toString(coll.get(key,null)));
+				attres[i].setValue(Caster.toString(coll.get(KeyImpl.init(key),null)));
 			}
 			return attres;
 		}
@@ -469,7 +471,7 @@ public final class XMLCaster {
 			}
         }
         else if(node instanceof CharacterData) {
-        	sb.append(((CharacterData)node).getData());
+        	sb.append(HTMLEntities.escapeHTML(node.getNodeValue()));
 		}
 	}
 	

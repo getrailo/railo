@@ -50,7 +50,7 @@ public final class Slider extends TagImpl {
      */
     public void setAlign(String align) throws ApplicationException {
         align=align.trim().toLowerCase();
-        if(List.listFind("top,left,bottom,baseline,texttop,absbottom,middle,absmiddle,right",align,",")>0) {
+        if(List.listFind("top,left,bottom,baseline,texttop,absbottom,middle,absmiddle,right",align,",")>-1) {
             params.setEL("align",align);
         }
         else

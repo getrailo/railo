@@ -89,11 +89,13 @@ Error Output --->
 
 
 <cfoutput>
-#stText.err.descr#
-<!--- @todo text ---><br><br>
+
 <!--- 
 Create Datasource --->
-<table class="tbl">
+<table class="tbl" width="740">
+<tr>
+	<td colspan="2">#stText.err.descr#</td>
+</tr>
 <cfform action="#request.self#?action=#url.action#" method="post">
 <cfloop list="500,404" index="statusCode">
 <tr>

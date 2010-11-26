@@ -286,7 +286,7 @@ public final class LDAPClient {
             SortKey keys[] = new SortKey[sort.length];
             for(int i=0;i<sort.length;i++) {
                 String item=sort[i].equalsIgnoreCase("dn")?"name":sort[i];
-                if(item.indexOf(' ')!=-1)item=List.first(item," ");
+                if(item.indexOf(' ')!=-1)item=List.first(item," ",true);
                 keys[i] = new SortKey(item,isSortAsc ,sortType==LDAPClient.SORT_TYPE_CASE?null/*"CASE"*/:null);
                 //keys[i] = new SortKey(item);
             }

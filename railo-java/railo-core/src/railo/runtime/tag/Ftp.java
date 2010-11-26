@@ -656,7 +656,7 @@ public final class Ftp extends TagImpl {
         if(transferMode==FTPConstant.TRANSFER_MODE_BINARY) return FTP.BINARY_FILE_TYPE;
         else if(transferMode==FTPConstant.TRANSFER_MODE_ASCCI) return FTP.ASCII_FILE_TYPE;
         else {
-            String ext=ResourceUtil.getExtension(file);
+            String ext=ResourceUtil.getExtension(file,null);
             if(ext==null || List.listContainsNoCase(ASCIIExtensionList,ext,";")==-1)
                 return FTP.BINARY_FILE_TYPE;
             	return FTP.ASCII_FILE_TYPE;

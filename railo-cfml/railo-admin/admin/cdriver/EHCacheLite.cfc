@@ -22,7 +22,7 @@
 	)>
 
 	<cffunction name="getClass" returntype="string">
-    	<cfreturn "railo.extension.io.cache.eh.EHCacheLite">
+    	<cfreturn "railo.runtime.cache.eh.EHCacheLite">
     </cffunction>
     
 	<cffunction name="getLabel" returntype="string" output="no">

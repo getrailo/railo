@@ -12,17 +12,20 @@ import railo.runtime.op.date.DateCaster;
  * Implements the Cold Fusion Function parsedatetime
  */
 public final class ParseDateTime implements Function {
+
+	private static final long serialVersionUID = -2623323893206022437L;
+	
 	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate) throws PageException {
 		return _call(oDate,pc.getTimeZone());
 	}
-	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate, String string2) throws PageException {
+	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate, String popConversion) throws PageException {
 		return _call(oDate,pc.getTimeZone());
 	}
-	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate, String string2,String strTimezone) throws PageException {
+	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate, String popConversion,String strTimezone) throws PageException {
 		return _call(oDate,TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	private static railo.runtime.type.dt.DateTime _call( Object oDate,TimeZone tz) throws PageException {
-		
+		// MUSt implement popConversion
 		return DateCaster.toDateAdvanced(oDate,tz);
 	}
 }

@@ -1,3 +1,5 @@
+<cfif request.admintype EQ "server"><cflocation url="#request.self#" addtoken="no"></cfif>
+
 <cfset error.message="">
 <cfset error.detail="">
 <cfif request.adminType EQ "web">

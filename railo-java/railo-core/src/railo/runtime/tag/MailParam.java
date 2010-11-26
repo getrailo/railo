@@ -144,7 +144,7 @@ public final class MailParam extends TagImpl {
 		
 		if(content!=null){
 			required("mailparam", "file", file);
-			String filename = List.last(file, "/\\");
+			String filename = List.last(file, "/\\",true);
 			Resource res = SystemUtil.getTempDirectory().getRealResource(filename);
 			if(res.exists())ResourceUtil.removeEL(res, true);
 			try {

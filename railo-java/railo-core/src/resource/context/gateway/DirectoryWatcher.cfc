@@ -46,7 +46,7 @@
                 <cfset var funcName="">
                 <cfloop collection="#coll.diff#" item="name">
                     <cfset funcName=coll.diff[name].action>
-                    <cfset variables.listener[funcName](coll.diff[name])>
+                    <cfif len(trim(funcName))><cfset variables.listener[funcName](coll.diff[name])></cfif>
                 </cfloop>
                 <cfcatch>
                 	<cflog text="#cfcatch.message#" type="Error" file="DirectoryWatcher">

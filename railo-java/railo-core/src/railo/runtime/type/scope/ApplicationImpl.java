@@ -1,6 +1,10 @@
 package railo.runtime.type.scope;
 
+import java.util.Map;
+
 import railo.runtime.PageContext;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.functions.system.GetApplicationSettings;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.util.ApplicationContext;
@@ -12,6 +16,8 @@ import railo.runtime.util.ApplicationContext;
  */
 public final class ApplicationImpl extends ScopeSupport implements Application {
 
+	private static final long serialVersionUID = 700830188207594563L;
+	
 	private static final Collection.Key APPLICATION_NAME = KeyImpl.getInstance("applicationname");
 	private long lastAccess;
 	private long timeSpan;
@@ -76,5 +82,13 @@ public final class ApplicationImpl extends ScopeSupport implements Application {
 	 */
 	public void touch() {
 		lastAccess=System.currentTimeMillis();
+	}
+	
+	/**
+	 * undocumented Feature in ACF
+	 * @return
+	 */
+	public Map getApplicationSettings(){
+		return GetApplicationSettings.call(ThreadLocalPageContext.get());
 	}
 }

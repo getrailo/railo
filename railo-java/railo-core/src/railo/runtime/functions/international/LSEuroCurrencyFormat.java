@@ -11,10 +11,10 @@ public final class LSEuroCurrencyFormat implements Function {
 	public static String call(PageContext pc , Object number) throws PageException {
 		return LSCurrencyFormat.call(pc,number);
 	}
-	public static String call(PageContext pc , Object number, String string) throws PageException {
-		return LSCurrencyFormat.call(pc,number,string);
+	public static String call(PageContext pc , Object number, String type) throws PageException {
+		return LSCurrencyFormat.call(pc,number,type);
 	}
-	public static String call(PageContext pc , Object number, String string,String locale) throws PageException {
-		return LSCurrencyFormat.call(pc,number,string,locale);
+	public static String call(PageContext pc , Object number, String type,String locale) throws PageException {
+		return LSCurrencyFormat.call(pc,number,type,locale);
 	}
 }

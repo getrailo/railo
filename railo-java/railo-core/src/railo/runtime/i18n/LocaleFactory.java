@@ -79,7 +79,7 @@ public final class LocaleFactory {
         localeAlias.put("norwegian (nynorsk)",new Locale("no","NO"));
         localeAlias.put("portuguese (brazilian)",new Locale("pt","BR"));
         localeAlias.put("portuguese (brazil)",new Locale("pt","BR"));
-		localeAlias.put("portuguese (standard)",new Locale("pt"));
+		localeAlias.put("portuguese (standard)",new Locale("pt","PT"));
         localeAlias.put("rhaeto-romance (swiss)",new Locale("rm","CH"));
         locales.put("rhaeto-romance (swiss)",new Locale("rm","CH"));
         localeAlias.put("spanish (modern)",new Locale("es","ES"));

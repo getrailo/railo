@@ -88,15 +88,13 @@ Error Output --->
 <!--- 
 change password --->
 <cfoutput>
-<h2>#stText.Login.ChangePassword#</h2>
-<table class="tbl" width="600">
+
+<table class="tbl" width="740">
 <tr>
-	<td colspan="3">#stText.Login.ChangePasswordDescription#</td>
+	<td colspan="3"><h2>#stText.Login.ChangePassword#</h2>#stText.Login.ChangePasswordDescription#</td>
 </tr>
 </cfoutput>
-<tr>
-	<td colspan="3"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
+
 <cfoutput><cfform action="#request.self#?action=#url.action#" method="post">
 <tr>
 	<td class="tblHead" width="150">#stText.Login.OldPassword#</td>

@@ -25,6 +25,10 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="services.update.exerun">Update ausführen</data>
 	<data key="services.update.remove">Installierte Patches entfernen</data>
 	<data key="services.update.typedesc">Definieren Sie hier wie Railo gepatcht werden soll, &apos;Automatisch&apos; steht dafür, dass Railo automatisch, täglich nach updates sucht. &apos;Manuell&apos; bedeutet, dass ein Update nur manuell ausgeführt werden kann.</data>
+	
+		<data key="services.update.lib">Update JAR's</data>
+	<data key="services.update.libDesc">Ihre JAR's sind nicht mehr aktuell. Um Ihre JAR's auf den aktuellsten stand zu bringen, klicken sie bitte auf den folgenden Button. Das funktioniert unter Umständen nicht, wenn sie keine saubere Internetverbindung haben. Falls dies fehlschlägt holen Sie sich die aktiuellen JAR's von unserer Webseite und frischen Sie dies manuell auf. Dieses Update benötigt ein restart der kompletten Servlet Engine.</data>
+	
 	<data key="mappings.archivesecuredesc">Source Dateien aus dem Archiv ausschliessen. Die Source Dateien werden nur für die Ausgabe von Codeprints bei Fehlern verwendet.</data>
 	<data key="mappings.topleveldesc">Macht dieses Mapping zugreifbar übers Web (Zugreifbar über Browser oder andere HTTP Zugriffe)</data>
 	<data key="mappings.archiveheaddescription">Name der Archivdatei (ra oder ras)  (Absolut oder relativ zum Webroot).</data>
@@ -300,6 +304,10 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="remote.securitykeytitledesc">Falls dieser Web Administrator von einem anderen Server aus synchronisiert werden soll, müssen sie den unten angegebenen Schlüssel bei der Definition der Remote Client Verbindung angeben.</data>
 	<data key="remote.securitykeydesc">Geben Sie hier den Schlüssel des Remote Clients an. Sie finden ihn unter Remote-Scherheitsschlüssel im Administrator des Remote Clients</data>
 	<data key="remote.urlpathdesc">Pfad zur Admin.cfc (Beispiel: /railo-context/admin.cfc?wsdl)</data>
+	<data key="remote.from">von</data>
+	<data key="remote.to">bis</data>
+	<data key="remote.previous">vorherige</data>
+	<data key="remote.next">nächste</data>
 	<data key="application.web">Hier können Sie verschiedene Standardeinstellungen für den Applikations Kontext erfassen. Diese Einstellungen können von dem Tag CFApplication oder der Application.cfc übersteuert werden.</data>
 	<data key="application.scriptprotectcustom">Definieren Sie individuell welche Scopes geprüft werden sollen und welche nicht</data>
 	<data key="application.listener">Application Listener</data>
@@ -775,6 +783,10 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="cfx.name">Name</data>
 	<data key="cfx.class">Klasse</data>
 	<data key="cfx.noaccess">Kein Zugriff auf die CFX Funktionalität</data>
+	<data key="cfx.cpp.CFXTags">C++ CFX tags</data>
+	<data key="cfx.procedure">Prozedur</data>
+	<data key="cfx.serverlibrary">Server Library</data>
+	<data key="cfx.keepAlive">Keep Alive</data>
 	<data key="doc.attr.name">Name</data>
 	<data key="doc.attr.minmax">Es muss mindestens {min} Attribut(e), jedoch maximal {max.} haben</data>
 	<data key="doc.attr.min">Es muss mindestens {min} Attribut(e) haben.</data>
@@ -804,6 +816,10 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="doc.attrtitle">Attribute</data>
 	<data key="doc.argtitle">Argumente</data>
 	<data key="doc.bodytitle">Body</data>
+	<data key="doc.depFunction">This Function is deprecated</data>
+	<data key="doc.depTag">This Tag is deprecated</data>
+	<data key="doc.depAttr">This Attribute is deprecated</data>
+	<data key="doc.depArg">This Argument is deprecated</data>
 	<data key="overview.installedtls">Installierte Tag&lt;br&gt;Bibliotheken</data>
 	<data key="overview.bugreport">Fehlerreport</data>
 	<data key="overview.issuetracker">Issue Tracker</data>

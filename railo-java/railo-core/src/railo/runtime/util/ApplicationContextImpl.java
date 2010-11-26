@@ -1,10 +1,13 @@
 package railo.runtime.util;
 
+import railo.commons.lang.StringUtil;
+import railo.runtime.Component;
 import railo.runtime.Mapping;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.listener.ApplicationContextUtil;
+import railo.runtime.net.s3.Properties;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.type.Scope;
 import railo.runtime.type.dt.TimeSpan;
@@ -14,6 +17,9 @@ import railo.runtime.type.dt.TimeSpan;
  */
 public class ApplicationContextImpl implements ApplicationContextPro {
    
+
+	private static final long serialVersionUID = 940663152793150953L;
+	
 
 	private String name;
     private boolean setClientCookies;
@@ -34,13 +40,18 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 	private boolean ormEnabled;
 	private String ormdatasource;
 	private ORMConfiguration config;
+	private Component component;
+
+
+	private Properties s3;
     
     /**
      * constructor of the class
      * @param config
      */
-    public ApplicationContextImpl(Config config, boolean isDefault) {
-        setClientCookies=config.isClientCookies();
+    public ApplicationContextImpl(Config config, Component component,boolean isDefault) {
+    	this.component=component;
+    	setClientCookies=config.isClientCookies();
         setDomainCookies=config.isDomainCookies();
         setSessionManagement=config.isSessionManagement();
         setClientManagement=config.isClientManagement();
@@ -51,6 +62,11 @@ public class ApplicationContextImpl implements ApplicationContextPro {
         this.isDefault=isDefault;
         this.defaultDataSource=((ConfigImpl)config).getDefaultDataSource();
         
+    }
+    
+
+    public ApplicationContextImpl(Config config, boolean isDefault) {
+    	this(config,null,isDefault);
     }
     
     /**
@@ -318,5 +334,29 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 		this.ormEnabled=ormEnabled;
 	}
 
+	/**
+	 * @see railo.runtime.util.ApplicationContextPro#getComponent()
+	 */
+	public Component getComponent() {
+		return component;
+	}
 
+
+	public void setS3(String accessKeyId, String awsSecretKey, String defaultLocation, String host) {
+		this.s3=new Properties();
+		if(!StringUtil.isEmpty(accessKeyId))s3.setAccessKeyId(accessKeyId);
+		if(!StringUtil.isEmpty(awsSecretKey))s3.setSecretAccessKey(awsSecretKey);
+		if(!StringUtil.isEmpty(defaultLocation))s3.setDefaultLocation(defaultLocation);
+		if(!StringUtil.isEmpty(host))s3.setHost(host);
+	}
+
+
+	/**
+	 * @return the s3
+	 */
+	public Properties getS3() {
+		if(s3==null) s3=new Properties();
+		return s3;
+	}
+	
 }

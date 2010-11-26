@@ -25,6 +25,24 @@ public final class TagLibTagAttr {
 	private boolean _default;
 	private short status=TagLib.STATUS_IMPLEMENTED;
 
+	
+	public TagLibTagAttr duplicate(TagLibTag tag) {
+		TagLibTagAttr tlta=new TagLibTagAttr(tag);
+		tlta.name=name;
+		tlta.type=type;
+		tlta.description=description;
+		tlta.required=required;
+		tlta.rtexpr=rtexpr;
+		tlta.defaultValue=defaultValue;
+		tlta.hidden=hidden;
+		tlta._default=_default;
+		tlta.status=status;
+		
+		
+		return tlta;
+	}
+	
+	
 	/**
 	 * @return the status (TagLib.,TagLib.STATUS_IMPLEMENTED,TagLib.STATUS_DEPRECATED,TagLib.STATUS_UNIMPLEMENTED)
 	 */

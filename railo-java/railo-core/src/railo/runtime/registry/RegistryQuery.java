@@ -158,7 +158,7 @@ public final class RegistryQuery {
 			else if(line.indexOf(branch)==0 && (type==RegistryEntry.TYPE_ANY || type==RegistryEntry.TYPE_KEY)) {
 			    line=List.trim(line,"\\");
 			    if(branch.length()<line.length()) {
-			        array.add(new RegistryEntry(RegistryEntry.TYPE_KEY,List.last(line,"\\"),""));
+			        array.add(new RegistryEntry(RegistryEntry.TYPE_KEY,List.last(line,"\\",true),""));
 			    }
 			}
 		}

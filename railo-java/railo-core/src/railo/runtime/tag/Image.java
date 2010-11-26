@@ -196,13 +196,13 @@ public final class Image extends TagImpl {
 	 */
 	public void setFormat(String format) throws ApplicationException {
 		format=format.trim().toLowerCase();
-		if("gif".equalsIgnoreCase(format))		this.format =  "GIF";
-		else if("jpg".equalsIgnoreCase(format))	this.format =  "JPG";
-		else if("jpe".equalsIgnoreCase(format))	this.format =  "JPG";
-		else if("jpeg".equalsIgnoreCase(format))this.format =  "JPG";
-		else if("png".equalsIgnoreCase(format))	this.format =  "PNG";
-		else if("tiff".equalsIgnoreCase(format))this.format =  "TIFF";
-		else if("bmg".equalsIgnoreCase(format))	this.format =  "BMG";
+		if("gif".equalsIgnoreCase(format))		this.format =  "gif";
+		else if("jpg".equalsIgnoreCase(format))	this.format =  "jpg";
+		else if("jpe".equalsIgnoreCase(format))	this.format =  "jpg";
+		else if("jpeg".equalsIgnoreCase(format))this.format =  "jpg";
+		else if("png".equalsIgnoreCase(format))	this.format =  "png";
+		else if("tiff".equalsIgnoreCase(format))this.format =  "tiff";
+		else if("bmg".equalsIgnoreCase(format))	this.format =  "bmg";
 		else throw new ApplicationException("invalid format ["+format+"], " +
 		"valid formats are [gif,jpg,png,tiff,bmg]");
 	}
@@ -376,13 +376,16 @@ public final class Image extends TagImpl {
 
 	private String touchDestination() throws IOException {
 		if(destination==null) {
-			String name=CreateUUID.call(pageContext)+".png";
+			String name=CreateUUID.call(pageContext)+"."+format;
 			Resource folder = pageContext.getConfig().getTempDirectory().getRealResource("graph");
 			if(!folder.exists())folder.createDirectory(true);
 			destination = folder.getRealResource(name);
 			cleanOld(folder);
-
-			return "/railo-context/graph.cfm?img="+name+"&type=x-png";
+			
+			// create path
+			String cp = pageContext.getHttpServletRequest().getContextPath();
+			if(StringUtil.isEmpty(cp)) cp="";
+			return cp+"/railo-context/graph.cfm?img="+name+"&type="+(List.last(ImageUtil.getMimeTypeFromFormat(format),'/').trim());
 		}
 		return ContractPath.call(pageContext, destination.getAbsolutePath());
 	}
@@ -473,6 +476,7 @@ public final class Image extends TagImpl {
 		
 		// create destination
 		path=touchDestination();
+		
 		write();
 		// link destination
 		if(StringUtil.isEmpty(name))writeLink(path);
