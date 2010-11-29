@@ -69,9 +69,7 @@ ACTIONS --->
 		
 		<cfset form.mark="update">
 		
-		<cfif verify>
-			<cfset v="&verified="&form.name />
-		</cfif>
+		<cfset v = verifiy ? "&verified=" & form.name : '' />
 		
 		<cflocation url="#request.self#?action=#url.action##v#" addtoken="no">
 	</cfif>
