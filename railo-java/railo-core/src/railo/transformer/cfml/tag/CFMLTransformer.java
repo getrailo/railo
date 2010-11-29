@@ -106,13 +106,15 @@ public final class CFMLTransformer {
 		private EvaluatorPool ep=new EvaluatorPool();
 		private SimpleExprTransformer set;
 	    private Config config;
+		private Page page;
 	 
-	    public Data(TagLib[][] tlibs, FunctionLib[] flibs, CFMLString cfml,Config config) {
+	    public Data(TagLib[][] tlibs, FunctionLib[] flibs, CFMLString cfml,Config config,Page page) {
 			super();
 			this.tlibs = tlibs;
 			this.flibs = flibs;
 			this.cfml = cfml;
 			this.config = config;
+			this.page = page;
 		}
     }
 	
@@ -256,13 +258,15 @@ public final class CFMLTransformer {
 		if(_tlibs[TAG_LIB_PAGE].length>0) {
 			_tlibs[TAG_LIB_PAGE]=new TagLib[0];
 		}
-		Data data = new Data(_tlibs,flibs,cfml,config);
+		
 		
 		
 
-		SourceFile source=data.cfml.getSourceFile(); 
+		SourceFile source=cfml.getSourceFile(); 
 		
 		Page page=new Page(source.getPhyscalFile().getAbsolutePath(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog());
+		Data data = new Data(_tlibs,flibs,cfml,config,page);
+		
 		//Body body=page;
 		try {
 			do {
@@ -519,8 +523,9 @@ public final class CFMLTransformer {
 		 else {
 			 tag.setFullname(tagLibTag.getFullName());		 
 		 }
-		 
-		 
+		 if(tag.getFullname().equalsIgnoreCase("cfcomponent"))data.page.setIsComponent(true);	// MUST to hardcoded, to better
+		 else if(tag.getFullname().equalsIgnoreCase("cfinterface"))data.page.setIsInterface(true);	// MUST to hardcoded, to better
+			 
 		tag.setTagLibTag(tagLibTag);
 		comment(data.cfml,true);
 		
