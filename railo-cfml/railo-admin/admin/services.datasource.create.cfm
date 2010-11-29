@@ -5,8 +5,7 @@
 ACTIONS --->
 <cftry>
 	<cfif StructKeyExists(form,"_run") and form._run EQ stText.Settings.flushCache>
-    	<cfset DatasourceFlushMetaCache(form.name)>
-       
+		<cfset DatasourceFlushMetaCache(form.name)>
 	<cfelseif StructKeyExists(form,"run") and form.run EQ "create2">
 		<cfset driver=createObject("component","dbdriver."&form.type)>
 		<cfset driver.onBeforeUpdate()>
@@ -17,6 +16,7 @@ ACTIONS --->
 				<cfset custom[mid(key,8,l-8+1)]=form[key]>
 			</cfif>
 		</cfloop>
+		
 		<cfif form.password EQ "****************">
 			<cfadmin 
 				action="getDatasource"
@@ -26,10 +26,11 @@ ACTIONS --->
 				returnVariable="existing">
 			<cfset form.password=existing.password>
 		</cfif>
-		<cfset verifiy=getForm('verify',false)>
-        <cfparam name="form.metaCacheTimeout" default="60000">
-        
-        
+		
+		<cfset verify=getForm('verify',false)>
+		
+		<cfparam name="form.metaCacheTimeout" default="60000">
+		
 		<cfadmin 
 			action="updateDatasource"
 			type="#request.adminType#"
@@ -40,7 +41,7 @@ ACTIONS --->
 						
 			name="#form.name#"
 			newName="#form.newName#"
-            
+			
 			host="#form.host#"
 			database="#form.database#"
 			port="#form.port#"
@@ -53,7 +54,6 @@ ACTIONS --->
 			blob="#getForm('blob',false)#"
 			clob="#getForm('clob',false)#"
 			
-			
 			allowed_select="#getForm('allowed_select',false)#"
 			allowed_insert="#getForm('allowed_insert',false)#"
 			allowed_update="#getForm('allowed_update',false)#"
@@ -63,13 +63,14 @@ ACTIONS --->
 			allowed_revoke="#getForm('allowed_revoke',false)#"
 			allowed_create="#getForm('allowed_create',false)#"
 			allowed_grant="#getForm('allowed_grant',false)#"
-			verify="#verifiy#"
+			verify="#verify#"
 			custom="#custom#"
 			remoteClients="#request.getRemoteClients()#">
-            <cfset form.mark="update">
-        <cfif verifiy>
-        	<cfset v="&verified="&form.name>
-        </cfif>
+		
+		<cfset form.mark="update">
+		
+		<cfset v = verifiy ? "&verified=" & form.name : '' />
+		
 		<cflocation url="#request.self#?action=#url.action##v#" addtoken="no">
 	</cfif>
 	<cfcatch><cfrethrow>
