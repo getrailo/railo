@@ -27,7 +27,7 @@ ACTIONS --->
 			<cfset form.password=existing.password>
 		</cfif>
 		
-		<cfset verifiy=getForm('verify',false)>
+		<cfset verify=getForm('verify',false)>
 		
 		<cfparam name="form.metaCacheTimeout" default="60000">
 		
@@ -63,13 +63,13 @@ ACTIONS --->
 			allowed_revoke="#getForm('allowed_revoke',false)#"
 			allowed_create="#getForm('allowed_create',false)#"
 			allowed_grant="#getForm('allowed_grant',false)#"
-			verify="#verifiy#"
+			verify="#verify#"
 			custom="#custom#"
 			remoteClients="#request.getRemoteClients()#">
 		
 		<cfset form.mark="update">
-			
-		<cfif verifiy>
+		
+		<cfif verify>
 			<cfset v="&verified="&form.name />
 		</cfif>
 		
