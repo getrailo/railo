@@ -1,6 +1,7 @@
 package railo.runtime.tag;
 
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.TagImpl;
 
 /**
@@ -33,10 +34,10 @@ public final class GridUpdate extends TagImpl {
 	/**
 	* constructor for the tag class
 	**/
-	public GridUpdate() throws ExpressionException {
-		// TODO implement tag
-		throw new ExpressionException("tag cfgridupdate ( railo.runtime.tag.GridUpdate ) not implemented yet");
+	public GridUpdate() throws TagNotSupported {
+		throw new TagNotSupported("GridUpdate");
 	}
+	
 
 	/** set the value password
 	*  If specified, password overrides the password value specified in the ODBC setup.

@@ -1,6 +1,7 @@
 package railo.runtime.tag;
 
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.BodyTagImpl;
 
 /**
@@ -46,10 +47,11 @@ public final class Report extends BodyTagImpl {
 
 	/**
 	* constructor for the tag class
+	 * @throws TagNotSupported 
 	**/
-	public Report() throws ExpressionException {
+	public Report() throws TagNotSupported {
 		// TODO implement tag
-		throw new ExpressionException("tag cfreport ( railo.runtime.tag.Report ) is not supported");
+		throw new TagNotSupported("report");
 	}
 
 	/** set the value password
