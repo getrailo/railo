@@ -308,14 +308,14 @@ public final class DBInfo extends TagImpl {
 		pageContext.setVariable(name, qry);
 	}
 
-	private Map toMap(ResultSet result,String columnName,String[] additional) throws SQLException {
-		HashMap map=new HashMap();
-		HashMap inner;
+	private Map<String,Map<String, SVArray>> toMap(ResultSet result,String columnName,String[] additional) throws SQLException {
+		Map<String,Map<String, SVArray>> map=new HashMap<String,Map<String, SVArray>>();
+		Map<String, SVArray> inner;
 		String col;
 		SVArray item;
 		while(result.next()){
 			col=result.getString(columnName);
-			inner=(HashMap) map.get(col);
+			inner=map.get(col);
 			if(inner!=null) {
 				for(int i=0;i<additional.length;i++) {
 					item=(SVArray) inner.get(additional[i]);
@@ -324,7 +324,7 @@ public final class DBInfo extends TagImpl {
 				}
 			}
 			else {
-				inner=new HashMap();
+				inner=new HashMap<String, SVArray>();
 				map.put(col, inner);
 				for(int i=0;i<additional.length;i++) {
 					item=new SVArray();
@@ -336,8 +336,8 @@ public final class DBInfo extends TagImpl {
 		return map;
 	}
 	
-	private Set toSet(ResultSet result,String columnName) throws SQLException {
-		HashSet set = new HashSet();
+	private Set<String> toSet(ResultSet result,String columnName) throws SQLException {
+		Set<String> set = new HashSet<String>();
 		while(result.next()){
 			set.add(result.getString(columnName)); 
 		}
@@ -369,7 +369,7 @@ public final class DBInfo extends TagImpl {
 			if(!matchPattern(value,p)) continue;
 			qry.addRow();
 			qry.setAt("database_name", row, value);
-			qry.setAt("type", row, "CATALOG");
+			qry.setAt(KeyImpl.init("type"), row, "CATALOG");
 			row++;
 		}
 		// scheme

@@ -67,6 +67,7 @@ ACTIONS --->
 			custom="#custom#"
 			remoteClients="#request.getRemoteClients()#">
             <cfset form.mark="update">
+        <cfset v="">
         <cfif verifiy>
         	<cfset v="&verified="&form.name>
         </cfif>

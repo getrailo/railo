@@ -11017,7 +11017,10 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>validator</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Any of the following:
+- A string containing a DTD or Schema
+- The name of a DTD or Schema file
+- The URL of a DTD or Schema file; valid protocol identifiers include http, https, ftp, and file</description>
     </argument>
 		<return>
 			<type>node</type>
