@@ -1,6 +1,7 @@
 package railo.runtime.tag;
 
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.BodyTagImpl;
 
 /**
@@ -271,10 +272,11 @@ public final class Grid extends BodyTagImpl {
 
 	/**
 	* constructor for the tag class
+	 * @throws TagNotSupported 
 	**/
-	public Grid() throws ExpressionException {
+	public Grid() throws TagNotSupported {
 		// TODO implement tag
-		throw new ExpressionException("tag cfgrid ( railo.runtime.tag.Grid ) not implemented yet");
+		throw new TagNotSupported("grid");
 	}
 
 	/** set the value width

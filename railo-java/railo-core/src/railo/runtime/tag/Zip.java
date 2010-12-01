@@ -60,8 +60,8 @@ public final class Zip extends BodyTagImpl {
 	private boolean showDirectory;
 	private boolean storePath=true;
 	private String variable;
-	private List params;
-	private Set alreadyUsed;
+	private List<Object> params;
+	private Set<String> alreadyUsed;
 	private Resource source;
 	private static int id=0;
 	
@@ -567,7 +567,7 @@ public final class Zip extends BodyTagImpl {
 	}
 	
 	private void add(ZipOutputStream zos, ZipEntry entry,InputStream is, boolean closeInput) throws IOException {
-		if(alreadyUsed==null)alreadyUsed=new HashSet();
+		if(alreadyUsed==null)alreadyUsed=new HashSet<String>();
 		else if(alreadyUsed.contains(entry.getName())) return;
 		zos.putNextEntry(entry);
         try {
@@ -667,8 +667,8 @@ public final class Zip extends BodyTagImpl {
 
 	public void setParam(Object param) {
 		if(params==null) {
-			params=new ArrayList();
-			alreadyUsed=new HashSet();
+			params=new ArrayList<Object>();
+			alreadyUsed=new HashSet<String>();
 		}
 		params.add(param);
 	}

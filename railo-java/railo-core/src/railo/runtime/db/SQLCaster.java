@@ -555,9 +555,9 @@ public final class SQLCaster {
 		else if(strType.equals("CF_SQL_BIGINT"))	return Types.BIGINT;
 		else if(strType.equals("CF_SQL_BINARY"))	return Types.BINARY;
 		else if(strType.equals("CF_SQL_BIT"))		return Types.BIT;
-		else if(strType.equals("CF_SQL_CHAR"))		return Types.CHAR;
 		else if(strType.equals("CF_SQL_BLOB"))		return Types.BLOB;
 		else if(strType.equals("CF_SQL_BOOLEAN"))	return Types.BOOLEAN;
+		else if(strType.equals("CF_SQL_CHAR"))		return Types.CHAR;
 		else if(strType.equals("CF_SQL_CLOB"))		return Types.CLOB;
 		else if(strType.equals("CF_SQL_DATALINK"))	return Types.DATALINK;
 		else if(strType.equals("CF_SQL_DATE"))		return Types.DATE;
@@ -569,7 +569,6 @@ public final class SQLCaster {
 		else if(strType.equals("CF_SQL_INTEGER"))	return Types.INTEGER;
 		else if(strType.equals("CF_SQL_INT"))	return Types.INTEGER;
 		else if(strType.equals("CF_SQL_LONGVARBINARY"))return Types.LONGVARBINARY;
-		else if(strType.equals("CF_SQL_VARBINARY"))	return Types.VARBINARY;
 		else if(strType.equals("CF_SQL_LONGVARCHAR"))return Types.LONGVARCHAR;
 		else if(strType.equals("CF_SQL_MONEY"))		return Types.DOUBLE;
 		else if(strType.equals("CF_SQL_MONEY4"))	return Types.DOUBLE;

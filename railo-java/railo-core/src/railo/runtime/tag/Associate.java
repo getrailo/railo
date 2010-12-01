@@ -24,8 +24,6 @@ import railo.runtime.type.Struct;
 public final class Associate extends TagImpl {
 
 	private static final Key ASSOC_ATTRS = KeyImpl.getInstance("AssocAttribs");
-	private static final Key ATTRIBUTES = KeyImpl.getInstance("attributes");
-	
 	
 
 	/** The name of the structure in which the base tag stores subtag data. */

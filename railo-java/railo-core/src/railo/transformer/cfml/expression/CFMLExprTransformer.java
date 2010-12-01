@@ -159,6 +159,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		public boolean insideFunction;
 		public String tagName;
 		public boolean isCFC;
+		public boolean isInterface;
 		public EvaluatorPool ep;
 		public short context=CTX_NONE;
 		

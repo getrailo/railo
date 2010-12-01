@@ -3,11 +3,18 @@ package railo.runtime.tag;
 import javax.servlet.jsp.tagext.Tag;
 
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.TagImpl;
 
 public final class ReportParam extends TagImpl {
 	
 	private ReportParamBean param=new ReportParamBean();
+	
+
+	public ReportParam() throws TagNotSupported {
+		// TODO implement tag
+		throw new TagNotSupported("ReportParam");
+	}
 	
 	/**
 	 *

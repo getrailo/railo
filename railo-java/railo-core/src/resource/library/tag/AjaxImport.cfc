@@ -3,13 +3,14 @@
 	<cfset variables.tags = 'CFAJAXPROXY,CFDIV,CFWINDOW,CFMAP,CFMENU' />
 	
 	<!--- Meta data --->
+    <cfset this.metadata.hint="Controls the JavaScript files that are imported for use on pages that use Railox AJAX tags and features.">
 	<cfset this.metadata.attributetype="fixed">
     <cfset this.metadata.attributes={
-		scriptSrc:	{required:false,type:"string",default:""},
-		tags:       {required:false,type:"string",default:""},
-		cssSrc:     {required:false,type:"string",default:""},
-		adapter:    {required:false,type:"string",default:""},
-		params :    {required:false,type:"struct",default:{}}
+		scriptSrc:	{required:false,type:"string",default:"",hint="Specifies the URL, relative to the web root, of the directory that contains the JavaScript files used used by Railo."},
+		tags:       {required:false,type:"string",default:"",hint="A comma-delimited list of tags or tag-attribute combinations for which to import the supporting JavaScript files on this page."},
+		cssSrc:     {required:false,type:"string",default:"",hint="Specifies the URL, relative to the web root, of the directory that contains the CSS files used by AJAX features"},
+		adapter:    {required:false,type:"string",default:"",hint=""},
+		params :    {required:false,type:"struct",default:{},hint=""}
 	}>
          
     <cffunction name="init" output="no" returntype="void" hint="invoked after tag is constructed">

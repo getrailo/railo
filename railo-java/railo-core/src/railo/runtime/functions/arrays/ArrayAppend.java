@@ -12,6 +12,9 @@ import railo.runtime.type.Array;
  * implementation of the Function arrayAppend
  */
 public final class ArrayAppend implements Function {
+	
+	private static final long serialVersionUID = 5989673419120862625L;
+
 	/**
 	 * @param pc
 	 * @param array

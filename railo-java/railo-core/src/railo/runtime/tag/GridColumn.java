@@ -6,6 +6,7 @@ import railo.commons.color.ColorCaster;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.type.List;
 
@@ -19,6 +20,11 @@ import railo.runtime.type.List;
 public final class GridColumn extends TagImpl {
 
 	private GridColumnBean column=new GridColumnBean();
+	
+	public GridColumn() throws TagNotSupported {
+		throw new TagNotSupported("GridColumn");
+	}
+
 	private String valuesdelimiter=",";
 	private String valuesdisplay;
 	private String values;
