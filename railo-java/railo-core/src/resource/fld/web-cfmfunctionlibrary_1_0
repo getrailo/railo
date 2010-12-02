@@ -558,19 +558,19 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>start_pos</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Starting index position of range to set.</description>
     </argument>
 		<argument>
 			<name>end_pos</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Ending index position of range to set. If this value is greater than array length, Railo adds elements to array.</description>
     </argument>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Value to which to set each element in the range.</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -585,19 +585,19 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		<description></description>
+		<description>array to slice</description>
     </argument>
 		<argument>
 			<name>offset</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>start position in the original array to slice</description>
     </argument>
 		<argument>
 			<name>length</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
+		<description>maximal elements to slice from offset</description>
     </argument>
 		<return>
 			<type>array</type>
@@ -618,13 +618,20 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>sort_type</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>
+		define one of the following:
+- numeric: sorts numbers
+- text: sorts text alphabetically, taking case into account (case sensitive)
+- textnocase: sorts text alphabetically, without regard to case (case insensitive)</description>
     </argument>
 		<argument>
 			<name>sort_order</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+sort direction:		
+- asc(default): ascending sort order
+- desc: descending sort order.</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -654,19 +661,19 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		<description>Name of an array </description>
+		<description>Array to Swap</description>
     </argument>
 		<argument>
 			<name>position1</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+			<description>Position of first element to swap</description>
     </argument>
 		<argument>
 			<name>position2</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+			<description>Position of second element to swap</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -687,7 +694,7 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Character or multicharacter string to separate list elements. The default value is comma.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -702,7 +709,7 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>array</name>
 			<type>array</type>
 			<required>Yes</required>
-		<description></description>
+		<description>array to translate</description>
     </argument>
 		<return>
 			<type>struct</type>
@@ -792,7 +799,11 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>binaryencoding</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A string specifying the algorithm used to encode the original
+            binary data into a string; must be one of the following:
+- hex: characters 0-9 and A-F represent the hexadecimal value of each byte
+- UU: data is encoded using the UNIX UUencode algorithm
+- base64: data is encoded using the Base64 algorithm</description>
     </argument>
 		<return>
 			<type>binary</type>
@@ -812,10 +823,13 @@ Remember CFML arrays start at 1 not 0.</description>
 		<description>A variable containing the binary data to encode.</description>
     </argument>
 		<argument>
-			<name>binaryencoding</name>
+			<name>encoding</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A string that specifies the encoding method to use to represent the data; one of the following:
+- Hex: use the characters 0-9 and A-F to represent the hexadecimal value of each byte.
+- UU: use the UNIX UUencode algorithm to convert the data
+- Base64: use the Base64 algorithm to convert the data, as specified by IETF RFC 2045, at www.ietf.org/rfc/rfc2045.txt.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -839,7 +853,7 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>encoding</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A string specifying encoding of the input data.</description>
     </argument>
 		<return>
 			<type>binary</type>
@@ -863,7 +877,7 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>encoding</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The character encoding that was used to encode the string into binary format.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -878,13 +892,13 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number1</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description>32-bit signed integer</description>
+		<description>a integer</description>
     </argument>
 		<argument>
 			<name>number2</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>a integer</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -899,19 +913,19 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description>32-bit signed integer</description>
+		<description>a integer</description>
     </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer, in the range 0-31, inclusive; start bit for mask</description>
     </argument>
 		<argument>
 			<name>length</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer, in the range 0-31, inclusive; length of mask</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -926,19 +940,19 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description>32-bit signed integer to mask</description>
+		<description>a integer to mask</description>
     </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer, in the range 0-31, inclusive; start bit for read</description>
     </argument>
 		<argument>
 			<name>length</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer, in the range 0-31, inclusive; length of mask</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -953,25 +967,25 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description>32-bit signed integer</description>
+		<description>a integer</description>
     </argument>
 		<argument>
 			<name>mask</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>integer mask</description>
     </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer, in the range 0-31, inclusive; start bit for mask</description>
     </argument>
 		<argument>
 			<name>length</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer, in the range 0-31, inclusive; length of mask</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -986,7 +1000,7 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description>32-bit signed integer</description>
+		<description>a integer</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -1001,13 +1015,13 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number1</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description>32-bit signed integer</description>
+		<description>a integer</description>
     </argument>
 		<argument>
 			<name>number2</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>a integer</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -1022,13 +1036,13 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description>32-bit signed integer</description>
+		<description>a integer</description>
     </argument>
 		<argument>
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer, in the range 0-31, inclusive; number of bits to shift the number</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -1043,13 +1057,13 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description>32-bit signed integer</description>
+		<description>a integer</description>
     </argument>
 		<argument>
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer, in the range 0-31, inclusive. Number of bits to shift the number</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -1064,13 +1078,13 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>number1</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description>32-bit signed integer</description>
+		<description>a integer</description>
     </argument>
 		<argument>
 			<name>number2</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>a integer</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -1429,7 +1443,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>length</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A positive integer. Length of field.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -1450,7 +1464,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string2</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A string or a variable that contains one</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -1471,7 +1485,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string2</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A string or a variable that contains one</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -1487,7 +1501,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>component</name>
 			<type>component</type>
 			<required>Yes</required>
-		<description></description>
+		<description>component to return info for it</description>
     </argument>
 		<return>
 			<type>struct</type>
@@ -1609,19 +1623,27 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>month</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer in the range 1-12</description>
     </argument>
 		<argument>
 			<name>day</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer in the range 1-31</description>
     </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>NO</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>datetime</type>
@@ -1642,43 +1664,51 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>month</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer in the range 1-12</description>
     </argument>
 		<argument>
 			<name>day</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer in the range 1-31</description>
     </argument>
 		<argument>
 			<name>hour</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer in the range 0-23</description>
     </argument>
 		<argument>
 			<name>minute</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer in the range 0-59</description>
     </argument>
 		<argument>
 			<name>second</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer in the range 0-59</description>
     </argument>
 		<argument>
 			<name>millis</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
+		<description>Integer in the range 0-999</description>
     </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>NO</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>datetime</type>
@@ -1704,28 +1734,50 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<class>railo.runtime.functions.other.CreateObject</class>
 		<description>Creates an object and makes it available in the CFML space. Defaults type to a 'component'</description>
 		<argument>
-			<name>arg1</name>
+			<name>type</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>one of the following:
+- com: for loading a com Object
+- java: for loading a java object
+- webservice: for loading a remote webservice 
+- component: for loading a Component</description>
     </argument>
 		<argument>
-			<name>arg2</name>
+			<name>classname</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+the usage of this argument depend on type defined with argument "type":
+- com: Component ProgID for the object to invoke.
+- java: java class to load
+- webservice: WSDL url to call
+- component: The CFC name; corresponds to the name of the file that defines the component
+		
+		</description>
     </argument>
 		<argument>
-			<name>arg3</name>
+			<name>context</name>
 			<type>object</type>
 			<required>No</required>
-		<description></description>
+		<description>
+the usage of this argument depend on type defined with argument "type":
+- com: not used (ignored)
+- java: classpath used to load the defined class, this can be a list of multiple pathes (directory containg class files or jar files)
+- webservice: a struct containing the following optional keys (username,password,proxyServer,proxyPort,proxyUser,proxyPassword) 
+- component: not used (ignored)
+</description>
     </argument>
 		<argument>
 			<name>arg4</name>
 			<type>object</type>
 			<required>No</required>
-		<description></description>
+		<description>
+the usage of this argument depend on type defined with argument "type":
+- com: not used (ignored)
+- java: delimter used for the classpath (default comma)
+- webservice: not used (ignored)
+- component: not used (ignored)</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -1791,25 +1843,33 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>minute</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Number in the range 0-59</description>
     </argument>
 		<argument>
 			<name>second</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Number in the range 0-59</description>
     </argument>
 		<argument>
 			<name>millis</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
+		<description>Number in the range 0-999</description>
     </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>datetime</type>
@@ -1896,19 +1956,31 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>datepart</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>String:</description>
+		<description>one of the following:
+- yyyy: Year
+- q: Quarter
+- m: Month
+- y: Day of year
+- d: Day
+- w: Weekday
+- ww: Week
+- h: Hour
+- n: Minute
+- s: Second
+- l: Millisecond
+		</description>
     </argument>
 		<argument>
 			<name>number</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Number of units of datepart to add to date (positive, to get dates in the future; negative, to get dates in the past). Number must be an integer.</description>
     </argument>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		<description></description>
+		<description>a datetime object</description>
     </argument>
 		<return>
 			<type>datetime</type>
@@ -1923,19 +1995,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date1</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		<description>date object</description>
+		<description>datetime object</description>
     </argument>
 		<argument>
 			<name>date2</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		<description></description>
+		<description>datetime object</description>
     </argument>
 		<argument>
 			<name>datepart</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Precision of the comparison:
+- s (default): Precise to the second
+- n: Precise to the minute
+- h: Precise to the hour
+- d: Precise to the day
+- m: Precise to the month
+- yyyy: Precise to the year</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -1945,18 +2023,22 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>dateConvert</name>
 		<class>railo.runtime.functions.dateTime.DateConvert</class>
-		<description>Converts a date to the given locale</description>
+		<description>Converts a date to the given locale; 
+		this function only exists for compatiblity reasion and should no be used, the timezone is not part of the datetime object. the function simple add/subtract the time between the local time and the UTC from the date Object.</description>
 		<argument>
 			<name>conversion_type</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>
+- local2Utc: Converts local time to UTC time.
+- utc2Local: Converts UTC time to local time.
+		</description>
     </argument>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		<description></description>
+		<description>a datetime object</description>
     </argument>
 		<return>
 			<type>datetime</type>
@@ -1971,19 +2053,30 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>datepart</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>String that specifies the units in which to count; for example yyyy requests a date difference in whole years.</description>
+		<description>String that specifies the units in which to count:
+- yyyy: Years
+- q: Quarters
+- m: Months
+- y: Days of year (same as d)
+- d: Days
+- w: Weekdays (same as ww)
+- ww: Weeks
+- h: Hours
+- n: Minutes
+- s: Seconds
+</description>
     </argument>
 		<argument>
 			<name>date1</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		<description></description>
+		<description>date time object to compare</description>
     </argument>
 		<argument>
 			<name>date2</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		<description></description>
+		<description>date time object to compare</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -2004,13 +2097,37 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+Characters that show how Railo displays a date:
+- d: Day of the month as digits; no leading zero for single-digit days.
+- dd: Day of the month as digits; leading zero for single-digit days.
+- ddd: Day of the week as a three-letter abbreviation.
+- dddd: Day of the week as its full name.
+- m: Month as digits; no leading zero for single-digit months.
+- mm: Month as digits; leading zero for single-digit months.
+- mmm: Month as a three-letter abbreviation.
+- mmmm: Month as its full name.
+- yy: Year as last two digits; leading zero for years less than 10.
+- yyyy: Year represented by four digits.
+- gg: Period/era string. Ignored. Reserved. The following masks tell how to format the full date and cannot be combined with other masks:
+- short: equivalent to m/d/y
+- medium: equivalent to mmm d, yyyy
+- long: equivalent to mmmm d, yyyy
+- full: equivalent to dddd, mmmm d, yyyy</description>
     </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -2025,19 +2142,39 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>datepart</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>String:</description>
+		<description>one of the following:
+- yyyy: Year
+- q: Quarter
+- m: Month
+- y: Day of year
+- d: Day
+- w: Weekday
+- ww: Week
+- h: Hour
+- n: Minute
+- s: Second
+- l: Millisecond
+</description>
     </argument>
 		<argument>
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		<description></description>
+		<description>dateobject the get part from</description>
     </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -2058,7 +2195,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -2079,7 +2224,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -2094,19 +2247,27 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>datetime</type>
 			<required>Yes</required>
-		<description></description>
+		<description>datetime object</description>
     </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -2127,7 +2288,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -2142,13 +2303,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>day_of_week</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Integer, in the range 1 (Sunday) - 7 (Saturday).</description>
     </argument>
 		<argument>
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -2169,7 +2330,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -2190,7 +2359,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -2211,7 +2388,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -2251,7 +2436,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>decrementValue</name>
 		<class>railo.runtime.functions.math.DecrementValue</class>
-		<description>Decrements the current number by one</description>
+		<status>deprecated</status>
+		<description>this function is deprecated, use instead the -- operator;Decrements the current number by one</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -2277,19 +2463,31 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Key or seed used to encrypt the string.
+- For the CFMX_COMPAT algorithm, any combination of any number of characters; used as a seed used to generate a 32-bit encryption key.
+- For all other algorithms, a key in the format used by the algorithm. For these algorithms, use the GenerateSecretKey function to generate the key.</description>
     </argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
+- CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
+- AES: the Advanced Encryption Standard specified by the National Institute of Standards and Technology (NIST) FIPS-197
+- BLOWFISH: the Blowfish algorithm defined by Bruce Schneier
+- DES: the Data Encryption Standard algorithm defined by NIST FIPS-46-3
+- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3</description>
     </argument>
 		<argument>
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+The binary encoding used to represent the data as a string. Must be the same as the algorithm used to encrypt the string.
+- Base64: the Base64 algorithm, as specified by IETF RFC 2045
+- Hex: the characters A-F and 0-9 represent the hexadecimal byte values
+- UU(default): the UNIX standard UUEncode algorithm</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -2310,13 +2508,22 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>
+Key or seed used to encrypt the string.
+- For the CFMX_COMPAT algorithm, any combination of any number of characters; used as a seed used to generate a 32-bit encryption key.
+- For all other algorithms, a key in the format used by the algorithm. For these algorithms, use the GenerateSecretKey function to generate the key.</description>
     </argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
+- CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
+- AES: the Advanced Encryption Standard specified by the National Institute of Standards and Technology (NIST) FIPS-197
+- BLOWFISH: the Blowfish algorithm defined by Bruce Schneier
+- DES: the Data Encryption Standard algorithm defined by NIST FIPS-46-3
+- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -2416,25 +2623,34 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>recurse</name>
 			<type>boolean</type>
 			<required>no</required>
-			<description></description>
+			<description>Whether Railo performs the action on subdirectories: If true, contents of all subdirectories are also listed.</description>
 		</argument>
 		<argument>
 			<name>listInfo</name>
 			<type>string</type>
 			<required>no</required>
-			<description></description>
+			<description>name: returns an array of names of files and directories.
+path: returns an array of paths of files and directories.
+query: returns a query.</description>
 		</argument>
 		<argument>
 			<name>filter</name>
 			<type>any</type>
 			<required>no</required>
-			<description></description>
+			<description>
+Filter to be used to filter the results:
+- A string that Êuses "*" as a wildcard, for example, "*.cfm"
+- a UDF (User defined Function) using the following pattern "functioname(String path):boolean", the function is run for every single file, if the function returns true, then the file is will be added to the list otherwise it will be omitted</description>
 		</argument>
 		<argument>
 			<name>sort</name>
 			<type>string</type>
 			<required>no</required>
-			<description></description>
+			<description>Query columns by which to sort a directory listing. Delimited list of columns from query output.
+To qualify a column, use one of the following values:
+asc: ascending (a to z) sort order.
+dec: descending (z to a) sort order.
+</description>
 		</argument>
 		<return>
 			<type>any</type>
@@ -2728,7 +2944,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>deepcopy</name>
 			<type>boolean</type>
 			<required>No</required>
-		<description></description>
+		<description>if set to true (default) also the child elements are cloned, otherwise the child elements are still the same as in the original object</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -2738,18 +2954,18 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>cfusion_encrypt</name>
 		<class>railo.runtime.functions.other.CFusionEncrypt</class>
-		<description>alias for function call encrypt(string,key,"cfmx_compat","hex")</description>
+		<description>Encrypts the given string, alias for function call encrypt(string,key,"cfmx_compat","hex")</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>string to encrypt</description>
     </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>yes</required>
-		<description></description>
+		<description>key to use for encryption</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -2759,18 +2975,18 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>cfusion_decrypt</name>
 		<class>railo.runtime.functions.other.CFusionDecrypt</class>
-		<description>alias for function call decrypt(string,key,"cfmx_compat","hex")</description>
+		<description>Decrypts the given string, alias for function call decrypt(string,key,"cfmx_compat","hex")</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>string to decrypt</description>
     </argument>
 		<argument>
 			<name>key</name>
 			<type>string</type>
 			<required>yes</required>
-		<description></description>
+		<description>key to use for decryption</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -2793,19 +3009,32 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>
+Key or seed used to encrypt the string.
+- For the CFMX_COMPAT algorithm, any combination of any number of characters; used as a seed used to generate a 32-bit encryption key.
+- For all other algorithms, a key in the format used by the algorithm. For these algorithms, use the GenerateSecretKey function to generate the key.</description>
     </argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
+- CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
+- AES: the Advanced Encryption Standard specified by the National Institute of Standards and Technology (NIST) FIPS-197
+- BLOWFISH: the Blowfish algorithm defined by Bruce Schneier
+- DES: the Data Encryption Standard algorithm defined by NIST FIPS-46-3
+- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3</description>
     </argument>
 		<argument>
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+The binary encoding used to represent the data as a string. Must be the same as the algorithm used to encrypt the string.
+- Base64: the Base64 algorithm, as specified by IETF RFC 2045.
+- Hex: the characters A-F and 0-9 represent the hexadecimal byte values.
+- UU(default): the UNIX standard UUEncode algorithm .</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -2826,13 +3055,22 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>
+Key or seed used to encrypt the string.
+- For the CFMX_COMPAT algorithm, any combination of any number of characters; used as a seed used to generate a 32-bit encryption key.
+- For all other algorithms, a key in the format used by the algorithm. For these algorithms, use the GenerateSecretKey function to generate the key.</description>
     </argument>
 		<argument>
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
+- CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
+- AES: the Advanced Encryption Standard specified by the National Institute of Standards and Technology (NIST) FIPS-197
+- BLOWFISH: the Blowfish algorithm defined by Bruce Schneier
+- DES: the Data Encryption Standard algorithm defined by NIST FIPS-46-3
+- DESEDE: the "Triple DES" algorithm defined by NIST FIPS-46-3</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -2870,19 +3108,38 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>idOrFilter</name>
 			<type>any</type>
 			<required>no</required>
-		<description></description>
+		<description>The primary key value of the entity that must be loaded or Key-value pair (Struct) of property names and values. 
+		If there are more than one key-value pair, then the AND operator is used.If specified, loads and returns an array of entities of the specified entity name that matches the filtercriteria.</description>
     </argument>
 		<argument>
 			<name>uniqueOrOrder</name>
 			<type>any</type>
 			<required>no</required>
-		<description></description>
+		<description>when the second argument is a id then this argument defines the boolean "unique" otherwise it defines the order.
+		
+- unique:
+If unique is set to true, then the entity is returned.
+If you are sure that only one record exists that matches this filtercriteria, then you can specify unique=true, so that a single entity is returned instead of an array.
+If you set unique=true and multiple records are returned, then an exception occurs.
+
+- order:
+String used to specify the sortorder of the entities that are returned.If specified, loads and returns an array of entities that satisfy the filtercriteria sorted as specified by the sortorder.
+		
+		</description>
     </argument>
 		<argument>
 			<name>options</name>
 			<type>any</type>
 			<required>no</required>
-		<description></description>
+		<description>
+The following options to customize the output (only used when second argument is "id"):
+- ignorecase: Ignores the case of sort order when set to true. Use only if you specify the sortorder parameter.
+- offset: Specifies the position from which to retrieve the objects.
+- maxResults: Specifies the maximum number of objects to be retrieved.
+- cacheable: Whether the result has to be cached in the secondary cache. Default is false.
+- cachename: Name of the cache in secondary cache.
+- timeout: Specifies the timeout value (in seconds) for the query.
+		</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -2904,13 +3161,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>id</name>
 			<type>string</type>
 			<required>yes</required>
-		<description></description>
+		<description>The primary key value of the entity that must be loaded</description>
     </argument>
 		<argument>
 			<name>unique</name>
 			<type>boolean</type>
 			<required>no</required>
-		<description></description>
+		<description>If unique is set to true, then the entity is returned.
+If you are sure that only one record exists that matches this filtercriteria, then you can specify unique=true, so that a single entity is returned instead of an array.
+If you set unique=true and multiple records are returned, then an exception occurs.</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -2932,7 +3191,9 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>unique</name>
 			<type>boolean</type>
 			<required>no</required>
-		<description></description>
+		<description>If unique is set to true, then the entity is returned.
+If you are sure that only one record exists that matches this filtercriteria, then you can specify unique=true, so that a single entity is returned instead of an array.
+If you set unique=true and multiple records are returned, then an exception occurs.</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -2990,7 +3251,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>delimeter</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>delimter used for the list</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -3006,7 +3267,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>entity</name>
 			<type>object</type>
 			<required>yes</required>
-		<description></description>
+		<description>name of the entity</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -3023,13 +3284,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>entity</name>
 			<type>object</type>
 			<required>yes</required>
-		<description></description>
+		<description>Name of the entity that must be saved in the database.</description>
     </argument>
 		<argument>
 			<name>forceInsert</name>
 			<type>boolean</type>
 			<required>no</required>
-		<description></description>
+		<description>If true, then Railo always tries to insert the entity as a new record.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -3045,13 +3306,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>entity</name>
 			<type>object</type>
 			<required>yes</required>
-		<description></description>
+		<description>entity or array of entities</description>
     </argument>
 		<argument>
 			<name>name</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>name of the entities</description>
     </argument>
 		<return>
 			<type>query</type>
@@ -3236,19 +3497,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>mode</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+Action to perform on the file, including the following:
+- read
+- readBinary
+- write
+- append
+
+If you do not specify the mode, Railo opens the file in read mode.</description>
     </argument>
 		<argument>
 			<name>charset</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>The character set of the file.</description>
     </argument>
-		<argument>
+	<argument>
 			<name>seekable</name>
 			<type>boolean</type>
 			<required>No</required>
-		<description></description>
+		<description>can be used for function fileseek</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -3305,7 +3573,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>pos</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The position in a file within a stream where the following read and write operation must occur.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -3326,7 +3594,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>len</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The number of bytes that must be skipped before the next file operation.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -3363,33 +3631,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>destination</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Pathname of the destination file.</description>
     </argument>
 		<return>
 			<type>void</type>
 		</return>
 	</function>
-	<!-- fileCopy -->
-	<function>
-		<name>fileCopy</name>
-		<class>railo.runtime.functions.file.FileCopy</class>
-		<description>Makes a copy of the srcFile landing it in the destFile position. Must be a file path for the destination</description>
-		<argument>
-			<name>source</name>
-			<type>any</type>
-			<required>Yes</required>
-		<description>file to copy</description>
-    </argument>
-		<argument>
-			<name>destination</name>
-			<type>any</type>
-			<required>Yes</required>
-		<description></description>
-    </argument>
-		<return>
-			<type>void</type>
-		</return>
-	</function>
+
 	<!-- fileMove -->
 	<function>
 		<name>fileMove</name>
@@ -3494,7 +3742,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>mode</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>
+A three-digit value, in which each digit specifies the file access for individuals and groups:
+- The first digit represents the owner.
+- The second digit represents a group.
+- The third digit represents anyone.
+
+Each digit of this code sets permissions for the appropriate individual or group:
+- 4 specifies read permission.
+- 2 specifies write permission.
+- 1 specifies execute permission.
+
+You use the sums of these numbers to indicate combinations of the permissions:
+- 3 specifies write and execute permission.
+- 5 specifies read and execute permission.
+- 6 indicates read and write permission.
+- 7 indicates read, write, and execute permission.
+
+For example, 400 specifies that only the owner can read the file; 004 specifies that anyone can read the file.
+</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -3515,7 +3781,11 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>attribute</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>One of the following:
+- readOnly
+- hidden
+- normal
+Set the attribute to normal to make a file not read-only and not hidden.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -3536,7 +3806,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>date</name>
 			<type>date</type>
 			<required>Yes</required>
-		<description></description>
+		<description>last modified date</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -3606,13 +3876,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-			<description></description>
+			<description>String in which to search.</description>
 		</argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
+		<description>Start position of search.</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -3633,13 +3903,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>String in which to search.</description>
     </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
+		<description>Start position of search.</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -3660,13 +3930,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>String in which to search.</description>
     </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
+		<description>Start position of search.</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -3687,7 +3957,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -3723,7 +4001,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>radix</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Base of the result</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -3785,7 +4063,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>instancenumber</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
+		<description>Number of ancestor levels to jump before returning data. The default value is 1 (closest ancestor).</description>
     </argument>
 		<return>
 			<type>struct</type>
@@ -3800,7 +4078,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>delimeter</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>delimeter used for the list</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -3901,7 +4179,9 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>scope</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>one of the following
+- form
+- url</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -3977,13 +4257,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		<description>The locale whose name you want.</description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<argument>
 			<name>dspLocale</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>The locale in which to return the name. The default is the locale defined for the request.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -4201,16 +4481,17 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<type>any</type>
 		</return>
 	</function>
-	<!-- getMetricData (depreceated) -->
+	<!-- getMetricData -->
 	<function>
 		<name>getMetricData</name>
 		<class>railo.runtime.functions.system.GetMetricData</class>
+		<status>deprecated</status>
 		<description>Gets server performance metrics.</description>
 		<argument>
 			<name>monitor_name</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>name of the monitor</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -4225,7 +4506,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>arg1</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description></description>
+		<description>datetime object</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -4270,13 +4551,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>section</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Section of initialization file from which to extract information</description>
     </argument>
 		<argument>
 			<name>entry</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Name of value to get</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -4315,13 +4596,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A String that is the name of the header</description>
     </argument>
 		<argument>
 			<name>asXML</name>
 			<type>boolean</type>
 			<required>No</required>
-		<description></description>
+		<description>If True, the header is returned as a XML object;
+        if false (default), the header is returned as a Java object.</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -4362,19 +4644,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>namespace</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A String that is the namespace for the header.</description>
     </argument>
 		<argument>
 			<name>name</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A String that is the name of the SOAP header.</description>
     </argument>
 		<argument>
 			<name>asXML</name>
 			<type>boolean</type>
 			<required>No</required>
-		<description></description>
+		<description>If True, the header is returned as a XML object;
+            if false (default), the header is returned as a Java object.</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -4415,7 +4698,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>prefix</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Prefix of a temporary file to create in the dir directory</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -4487,13 +4770,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>index</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Positive integer. The position of a token.</description>
     </argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>A string or a variable that contains one. A delimited list of delimiters. Elements may consist of multiple characters.
+Default list of delimiters: space character, tab character, newline character; or their codes: "chr(32)", "chr(9)", chr(10).
+Default list delimiter: comma character.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -4508,7 +4793,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>name of the variable to return</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -4529,13 +4814,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>The algorithm to use to hash the string. ColdFusion installs a cryptography library with the following algorithms:
+- CFMX_COMPAT: generating a hash string using classic CFML algorithm.
+- MD5: (default) Generates a 32-character, hexadecimal string, using the MD5 algorithm (The algorithm used in ColdFusion MX and prior releases).
+- SHA: Generates a 28-character string using the Secure Hash Standard SHA-1 algorithm specified by Nation Institute of Standards and Technology (NIST) FIPS-180-2.
+- SHA-256: Generates a 44-character string using the SHA-256 algorithm specified by FIPS-180-2.
+- SHA-384: Generates a 64-character string using the SHA-384 algorithm specified by FIPS-180-2.
+- SHA-512: Generates an 88-character string using the SHA-1 algorithm specified by FIPS-180-2.</description>
     </argument>
 		<argument>
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>A string specifying the encoding to use when converting
+            the string to byte data used by the hash algorithm.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -4556,7 +4848,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -4577,13 +4877,10 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>version</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
-    </argument>
-		<argument>
-			<name>version</name>
-			<type>number</type>
-			<required>No</required>
-		<description></description>
+		<description>HTML version to use:
+-1: The latest implementation of HTML
+2.0: HTML 2.0 (default)
+3.2: HTML 3.2</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -4604,7 +4901,10 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>version</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
+		<description>HTML version to use:
+-1: The latest implementation of HTML
+2.0: HTML 2.0 (default)
+3.2: HTML 3.2</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -4625,13 +4925,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string_expression1</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Expression to evaluate and return if condition is true.</description>
     </argument>
 		<argument>
 			<name>string_expression2</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Expression to evaluate and return if condition is false.</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -4653,19 +4953,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>thickness</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
+		<description>Thickness of the border in pixels. The default value is 1. The border is added to the outside edge of the image; the image area is increased accordingly.</description>
     </argument>
 		<argument>
 			<name>color</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Optional. Border color. The default border color is black. See Usage.
+Only valid if the borderType is not specified or if borderType = "constant".</description>
     </argument>
 		<argument>
 			<name>borderType</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>The type of border:
+- zero: Sets the border color to black.
+- constant: Sets the border to the specified color (default).
+- copy: Sets sample values to copies of the nearest valid pixel. For example, pixels to the left of the valid rectangle assume the value of the valid edge pixel in the same row. Pixels both above and to the left of the valid rectangle assume the value of the upper-left pixel.
+- reflect: Mirrors the edges of the source image. For example, if the left edge of the valid rectangle is located at x = 10, pixel (9, y) is a copy of pixel (10, y) and pixel (6, y) is a copy of pixel (13, y).
+- wrap: Tiles the source image in the plane.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -4686,7 +4992,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>blurRadius</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
+		<description>The size of the blur radius.
+Value must be greater than or equal to 3 and less than or equal to 10. The default value is 3.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -4707,25 +5014,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>x</name>
 			<type>number</type>
 			<required>yes</required>
-		<description></description>
+		<description>The X coordinate of the rectangle to clear.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>yes</required>
-		<description></description>
+		<description>The Y coordinate of the rectangle to clear.</description>
     </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>yes</required>
-		<description></description>
+		<description>The width of the rectangle to clear.</description>
     </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>yes</required>
-		<description></description>
+		<description>The height of the rectangle to clear.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -4746,37 +5053,37 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the source rectangle.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the source rectangle.</description>
     </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The width of the source rectangle.</description>
     </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The height of the source rectangle.</description>
     </argument>
 		<argument>
 			<name>dx</name>
 			<type>number</type>
 			<required>no</required>
-		<description></description>
+		<description>The x coordinate of the destination rectangle.</description>
     </argument>
 		<argument>
 			<name>dy</name>
 			<type>number</type>
 			<required>no</required>
-		<description></description>
+		<description>The y coordinate of the destination rectangle.</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -4797,25 +5104,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The X origin of the crop area.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The Y origin of the crop area.</description>
     </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The width of the crop area.</description>
     </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The height of the crop area.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -4836,43 +5143,45 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the upper-left corner of the arc.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the upper-left corner of the arc.</description>
     </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The width of the arc.</description>
     </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The height of the arc.</description>
     </argument>
 		<argument>
 			<name>startAngle</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The beginning angle in degrees.</description>
     </argument>
 		<argument>
 			<name>arcAngle</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The angular extent of the arc, relative to the start angle.</description>
     </argument>
 		<argument>
 			<name>filled</name>
 			<type>boolean</type>
 			<required>no</required>
-		<description></description>
+		<description>Specify whether the arc is filled:
+- true: The arc is filled with the specified drawing color.
+- false (default): Only the outline of the arc is drawn.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -4893,37 +5202,41 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the rectangle.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the rectangle.</description>
     </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The width of the rectangle.</description>
     </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The height of the rectangle.</description>
     </argument>
 		<argument>
 			<name>raised</name>
 			<type>boolean</type>
 			<required>no</required>
-		<description></description>
+		<description>Specify whether the rectangle appears raised above the surface or sunk into the surface:
+- true: The rectangle is raised.
+- false (default): The rectangle is sunk.</description>
     </argument>
 		<argument>
 			<name>filled</name>
 			<type>boolean</type>
 			<required>no</required>
-		<description></description>
+		<description>Specify whether the rectangle is filled:
+- true: The rectangle is filled with the specified drawing color.
+- false (default): Only the outline of the rectangle is drawn.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -4944,49 +5257,49 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>x1</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the start point of the cubic curve segment.</description>
     </argument>
 		<argument>
 			<name>y1</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the start point of the cubic curve segment.</description>
     </argument>
 		<argument>
 			<name>ctrlx1</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the first control point of the cubic curve segment.</description>
     </argument>
 		<argument>
 			<name>ctrly1</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the first control point of the cubic curve segment.</description>
     </argument>
 		<argument>
 			<name>ctrlx2</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the second control point of the cubic curve segment.</description>
     </argument>
 		<argument>
 			<name>ctrly2</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the second control point of the cubic curve segment.</description>
     </argument>
 		<argument>
 			<name>x2</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the end point of the cubic curve segment.</description>
     </argument>
 		<argument>
 			<name>y2</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the end point of the cubic curve segment.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -4997,41 +5310,32 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>ImageDrawImage</name>
 		<class>railo.runtime.functions.image.ImageDrawImage</class>
-		<description>Draws a image on a image with the baseline of the first character positioned at (x,y) in the image.</description>
+		<status>deprecated</status>
+		<description>this function is deprecated, use ImagePaste instead. Draws a image on a image with the baseline of the first character positioned at (x,y) in the image.</description>
 		<argument>
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description></description>
+		<description>the image to draw on it</description>
     </argument>
 		<argument>
 			<name>image</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description></description>
+		<description>the image to draw</description>
     </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the of the top left corner of the image to draw.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the of the top left corner of the image to draw.</description>
     </argument>
-		<!-- <argument>
-			<name>width</name>
-			<type>number</type>
-			<required>no</required>
-		</argument>
-		<argument>
-			<name>height</name>
-			<type>number</type>
-			<required>no</required>
-		</argument> -->
 		<return>
 			<type>void</type>
 		</return>
@@ -5057,25 +5361,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>x1</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate for the start point of the line.</description>
     </argument>
 		<argument>
 			<name>y1</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate for the start point of the line.</description>
     </argument>
 		<argument>
 			<name>x2</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate for the end point of the line.</description>
     </argument>
 		<argument>
 			<name>y2</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate for the end point of the line.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5096,25 +5400,29 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>xcoords</name>
 			<type>array</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A array of x coordinates.</description>
     </argument>
 		<argument>
 			<name>ycoords</name>
 			<type>array</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A array of y coordinates.</description>
     </argument>
 		<argument>
 			<name>isPolygon</name>
 			<type>boolean</type>
 			<required>no</required>
-		<description></description>
+		<description>Specify whether the lines form a polygon:
+- true: The lines are connected to form a polygon.
+- false (default): The lines do not form a polygon.</description>
     </argument>
 		<argument>
 			<name>filled</name>
 			<type>boolean</type>
 			<required>no</required>
-		<description></description>
+		<description>Specify whether the polygon is filled:
+- true: The polygon is filled with the specified drawing color.
+- false (default): Only the outline of the polygon is drawn.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5135,31 +5443,33 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the upper left corner of the oval to draw.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the upper left corner of the oval to draw.</description>
     </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The width of the oval to draw.</description>
     </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The height of the oval to draw.</description>
     </argument>
 		<argument>
 			<name>filled</name>
 			<type>boolean</type>
 			<required>no</required>
-		<description></description>
+		<description>Specify whether the oval is filled:
+- true: The oval is filled with the specified drawing color.
+- false (default): Only the outline of the oval is drawn.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5180,13 +5490,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the point.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the point.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5207,37 +5517,37 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>x1</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the start point of the quadratic curve segment.</description>
     </argument>
 		<argument>
 			<name>y1</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the start point of the quadratic curve segment.</description>
     </argument>
 		<argument>
 			<name>ctrlx</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the first control point of the quadratic curve segment.</description>
     </argument>
 		<argument>
 			<name>ctrly</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the first control point of the quadratic curve segment.</description>
     </argument>
 		<argument>
 			<name>x2</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the end point of the quadratic curve segment.</description>
     </argument>
 		<argument>
 			<name>y2</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the end point of the quadratic curve segment.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5258,31 +5568,33 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the rectangle.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the rectangle.</description>
     </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The width of the rectangle.</description>
     </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The height of the rectangle.</description>
     </argument>
 		<argument>
 			<name>filled</name>
 			<type>boolean</type>
 			<required>no</required>
-		<description></description>
+		<description>Specify whether the rectangle is filled:
+- true: The rectangle is filled with the specified drawing color.
+- false (default): Only the outline of the rectangle is drawn.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5303,43 +5615,47 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate of the rectangle.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate of the rectangle.</description>
     </argument>
 		<argument>
 			<name>width</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The width of the rectangle.</description>
     </argument>
 		<argument>
 			<name>height</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The height of the rectangle.</description>
     </argument>
 		<argument>
 			<name>arcWidth</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The horizontal diameter of the arc at the four corners.</description>
     </argument>
 		<argument>
 			<name>arcHeight</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The vertical diameter of the arc at the four corners.</description>
     </argument>
 		<argument>
 			<name>filled</name>
 			<type>boolean</type>
 			<required>no</required>
-		<description></description>
+		<description>Specify whether the rectangle is filled:
+- true: The rectangle is filled with the specified drawing color.
+- false (default): Only the outline of the rectangle is drawn.
+
+		</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5360,25 +5676,30 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>str</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>the text to draw.</description>
     </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The x coordinate for the start point of the string.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The y coordinate for the start point of the string.</description>
     </argument>
 		<argument>
 			<name>attributeCollection</name>
 			<type>struct</type>
 			<required>no</required>
-		<description></description>
+		<description>a structure used to specify the text characteristics. the following keys are supported:
+- font: The name of the font used to draw the text string. If you do not specify the font attribute, the text is drawn in the default system font.
+- size: The font size for the text string. The default value is 10 points.
+- style: The style to apply to the font ( bold,italic,boldItalic,plain (default) ).
+- strikethrough: a boolean that specify whether strikethrough is applied to the text image, default is false.
+- underline: a boolean that specify whether underline is applied to the text image, default is false.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5399,7 +5720,12 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>transpose</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>Transpose the image:
+- vertical (default): Flip an image across an imaginary horizontal line that runs through the center of the image.
+- horizontal: Flip an image across an imaginary vertical line that runs through the center of the image.
+- diagonal: Flip an image across its main diagonal that runs from the upper-left to the lower-right corner.
+- antidiagonal: Flip an image across its main diagonal that runs from the upper-right to the lower-left corner.
+- ("90|180|270"): Rotate an image clockwise by 90, 180, or 270 degrees.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5450,7 +5776,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>tagName</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The EXIF tag name to be returned.</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -5501,7 +5827,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>tagName</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The IPTC tag name whose value is returned.</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -5585,25 +5911,31 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>width</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>The width of the new image. Valid when the height is specified and the source is not.</description>
     </argument>
 		<argument>
 			<name>height</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>The height of the new image. Valid when the width is specified and the source is not.</description>
     </argument>
 		<argument>
 			<name>imageType</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>The type of the ColdFusion image to create (Valid only when width and height are specified):
+- rgb
+- argb
+- grayscale</description>
     </argument>
 		<argument>
 			<name>canvasColor</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>Color of the image canvas (The default value is "black"):
+- Hexadecimal value of RGB color. For example, specify the color white as ##FFFFFF or FFFFFF.
+- String value of color (for example, "black", "red", "green").
+- List of three numbers for (R,G,B) values. Each value must be in the range 0-255.</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -5624,7 +5956,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>source2</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description></description>
+		<description>the image that is the top layer (overlaid on the source1 image) in the image.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5645,19 +5977,19 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>image2</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The image that is pasted on top of image1.</description>
     </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>no</required>
-		<description></description>
+		<description> The x coordinate where the upper-left corner of image2 is pasted.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>no</required>
-		<description></description>
+		<description> The y coordinate where the upper-left corner of image2 is pasted.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5708,25 +6040,43 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>width</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>New width of the image. If this value is blank, the width is calculated proportionately to the height.</description>
     </argument>
 		<argument>
 			<name>height</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>New height of the image. If this value is blank, the height is calculated proportionately to the width.</description>
     </argument>
 		<argument>
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>the interpolation method for resampling. You can specify a specific interpolation algorithm by name (for example, hamming), by image quality (for example, mediumQuality), or by performance (for example, highestPerformance). Valid values are:
+- highestQuality (default)
+- highQuality
+- mediumQuality
+- highestPerformance
+- highPerformance
+- mediumPerformance
+- nearest
+- bilinear
+- bicubic
+- bessel
+- blackman
+- hamming
+- hanning
+- hermite
+- lanczos
+- mitchell
+- quadratic
+</description>
     </argument>
 		<argument>
 			<name>blurFactor</name>
 			<type>number</type>
 			<required>no</required>
-		<description></description>
+		<description>The blur factor used for resampling. The higher the blur factor, the more blurred the image (also, the longer it takes to resize the image). Valid values are 1-10.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5747,25 +6097,28 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>x</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>The x coordinate for the point of rotation. The default value is 2.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>The y coordinate for the point of rotation. The default value is 2.</description>
     </argument>
 		<argument>
 			<name>angle</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>The rotation angle in degrees.</description>
     </argument>
 		<argument>
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>Type of interpolation:
+- nearest (default): Applies the nearest neighbor method of interpolation. Image quality is lower than the other interpolation methods, but processing is fastest.
+- bilinear: Applies the bilinear method of interpolation. The quality of the image is less pixelated than the default, but processing is slower.
+- bicubic: Applies the bicubic method of interpolation. Generally, the quality of image is highest with this method and processing is slowest.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5786,19 +6139,19 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>angle</name>
 			<type>number</type>
 			<required>no</required>
-		<description></description>
+		<description>The rotation angle in degrees.</description>
     </argument>
 		<argument>
 			<name>x</name>
 			<type>number</type>
 			<required>no</required>
-		<description></description>
+		<description>The x coordinate for the point of rotation. The default value is 0.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>no</required>
-		<description></description>
+		<description>The y coordinate for the point of rotation. The default value is 0.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5819,25 +6172,42 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>fitWidth</name>
 			<type>string</type>
 			<required>yes</required>
-		<description></description>
+		<description>The width of the bounding box in pixels. You can specify an integer, or an empty string ("") if the fitHeight is specified.</description>
     </argument>
 		<argument>
 			<name>fitHeight</name>
 			<type>string</type>
 			<required>yes</required>
-		<description></description>
+		<description>The height of the bounding box in pixels. You can specify an integer, or an empty string ("") if the fitWidth is specified. </description>
     </argument>
 		<argument>
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>The interpolation method for resampling. You can specify a specific interpolation algorithm by name (for example, hamming), by image quality (for example, mediumQuality), or by performance (for example, highestPerformance). Valid values are:
+- highestQuality (default)
+- highQuality
+- mediumQuality
+- highestPerformance
+- highPerformance
+- mediumPerformance
+- nearest
+- bilinear
+- bicubic
+- bessel
+- blackman
+- hamming
+- hanning
+- hermite
+- lanczos
+- mitchell
+- quadratic</description>
     </argument>
 		<argument>
 			<name>blurFactor</name>
 			<type>number</type>
 			<required>no</required>
-		<description></description>
+		<description>The blur factor used for resampling. The higher the blur factor, the more blurred the image (also, the longer it takes to resize the image). Valid values are 1-10.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5858,13 +6228,22 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>destination</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>The path to write the file.
+
+If you create the image with the ImageNew function or another operation where you do not specify the filename, specify the destination parameter.
+The file format is derived from the extension of the filename. The default value for this parameter is the filename of the original image source.</description>
     </argument>
 		<argument>
 			<name>quality</name>
 			<type>number</type>
 			<required>no</required>
-		<description></description>
+		<description>Defines the JPEG quality used to encode the image. This parameter applies only to destination files with an extension of JPG or JPEG. Valid values are fractions that range from 0 through 1 (the lower the number, the lower the quality). The default value is 0.75.</description>
+    </argument>
+		<argument>
+			<name>overwrite</name>
+			<type>boolean</type>
+			<required>no</required>
+		<description>If set to true (default), overwrites the destination file.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5885,19 +6264,21 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>destination</name>
 			<type>string</type>
 			<required>yes</required>
-		<description></description>
+		<description>The path for the destination file.</description>
     </argument>
 		<argument>
 			<name>format</name>
 			<type>string</type>
 			<required>yes</required>
-		<description></description>
+		<description>the image format</description>
     </argument>
 		<argument>
 			<name>inHTMLFormat</name>
 			<type>boolean</type>
 			<required>no</required>
-		<description></description>
+		<description>Specify whether Base64 output includes the headers used by the Base64 images in the HTML "img" tag ("data:image/{format};base64,...") :
+- true
+- false (default)</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -5918,7 +6299,9 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>antialias</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>Antialiasing switch:
+- on,true: (default)
+- off,false:</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5941,7 +6324,10 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>color</name>
 			<type>string</type>
 			<required>yes</required>
-		<description></description>
+		<description>Background color (The default value is "black"):
+- Hexadecimal value of RGB color. For example, specify the color white as ##FFFFFF or FFFFFF.
+- String value of color (for example, "black", "red", "green"). 
+- List of three numbers for (R,G,B) values. Each value must be in the range 0-255.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5956,13 +6342,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>name</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The image on which this operation is performed.</description>
     </argument>
 		<argument>
 			<name>alpha</name>
 			<type>number</type>
 			<required>yes</required>
-		<description></description>
+		<description>a floating point number in range 0-1</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -5983,7 +6369,10 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>color</name>
 			<type>string</type>
 			<required>yes</required>
-		<description></description>
+		<description>Drawing color (The default value is "black"):
+- Hexadecimal value of RGB color. For example, specify the color white as ##FFFFFF or FFFFFF.
+- String value of color (for example, "black", "red", "green"). 
+- List of three numbers for (R,G,B) values. Each value must be in the range 0-255.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -6004,7 +6393,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>attributeCollection</name>
 			<type>struct</type>
 			<required>no</required>
-		<description></description>
+		<description>The structure used to specify the line attributes:
+- width: Pen width, which is measured perpendicularly to the pen trajectory.
+- endcaps: Decoration applied to the ends of unclosed subpaths and dash segments. Subpaths that start and end on the same point are considered unclosed if they do not have a close segment, valid values are ( butt.round,square )
+- lineJoins: Type of line joins, valid values are (bevel,miter,join)
+- miterLimit:The limit to trim a line join that has a mitered join decoration. (Use only when lineJoins = "miter".) A line join is trimmed when the ratio of miter length to stroke width is greater than the miterLimit value. The miter length is the diagonal length of the miter, which is the distance between the inside corner and the outside corner of the intersection. The smaller the angle formed by two line segments, the longer the miter length and the sharper the angle of intersection. The default value is 10.0, which trims all angles less than 11 degrees. Trimming miters converts the decoration of the line join to bevel.
+- dashArray: An array of numbers that indicates the dash pattern. For example. if dashArray is (8,4), the dash pattern is 8 pixels solid, 4 pixels blank, 8 pixels solid, 4 pixels blank, and so on.
+- dash_phases: An offset into the dash pattern. For example, a dash_phase of 2, and a dashArray of (8,4) produces the dash pattern of 6 pixels solid, 4 pixels blank, 8 pixels solid, 4 pixels blank, and so on.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -6025,7 +6420,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>percent</name>
 			<type>number</type>
 			<required>no</required>
-		<description></description>
+		<description>Percent of transparency, a floating point number in range 0-100</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -6046,7 +6441,11 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>gain</name>
 			<type>number</type>
 			<required>no</required>
-		<description></description>
+		<description>Gain values can be integers or real numbers. The default value is 1.0.
+The value determines whether the image is blurred or sharpened:
+- if &gt; 0, the image is sharpened
+- if = 0, no effect
+- if &lt; 0, the image is blurred</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -6070,19 +6469,24 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>shear</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Shear value. Coordinates can be integers or real numbers.</description>
     </argument>
 		<argument>
 			<name>direction</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>Shear direction:
+- horizontal (default)
+- vertical</description>
     </argument>
 		<argument>
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>Type of interpolation:
+- nearest (default): Applies the nearest neighbor method of interpolation. Image quality is lower than the other interpolation methods, but processing is fastest.
+- bilinear: Applies the bilinear method of interpolation. The quality of the image is less pixelated than the default, but processing is slower.
+- bicubic: Applies the bicubic method of interpolation. Generally, the quality of image is highest with this method and processing is slowest.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -6103,13 +6507,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>shx</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The multiplier by which coordinates are shifted in the positive x axis direction as a function of the y coordinate.</description>
     </argument>
 		<argument>
 			<name>shy</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>the multiplier by which coordinates are shifted in the positive y axis direction as a function of the x coordinate.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -6130,19 +6534,22 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>xTrans</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Displacement in the x direction.</description>
     </argument>
 		<argument>
 			<name>yTrans</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Displacement in the y direction.</description>
     </argument>
 		<argument>
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>Type of interpolation:
+- nearest (default): Applies the nearest neighbor method of interpolation. Image quality is lower than the other interpolation methods, but processing is fastest.
+- bilinear: Applies the bilinear method of interpolation. The quality of the image is less pixelated than the default, but processing is slower.
+- bicubic: Applies the bicubic method of interpolation. Generally, the quality of image is highest with this method and processing is slowest.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -6164,13 +6571,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>x</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>x coordinate</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>y coordinate</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -6191,7 +6598,10 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>color</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>the color (The default value is "black"):
+- Hexadecimal value of RGB color. For example, specify the color white as ##FFFFFF or FFFFFF.
+- String value of color (for example, "black", "red", "green"). 
+- List of three numbers for (R,G,B) values. Each value must be in the range 0-255.</description>
     </argument>
 		<return>
 			<type>void</type>
@@ -6264,7 +6674,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>hostname</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>the hostname to check</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -6313,7 +6723,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>path</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>path to the zip file</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -6327,7 +6737,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 	<function>
 		<name>incrementValue</name>
 		<class>railo.runtime.functions.math.IncrementValue</class>
-		<description>Increments the current number by one</description>
+		<status>deprecated</status>
+		<description>this function is deprecated, use instead the ++ operator;Increments the current number by one</description>
 		<argument>
 			<name>number</name>
 			<type>number</type>
@@ -6353,7 +6764,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>radix</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Base of the number represented by string, in the range 2-36.</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -6374,13 +6785,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>String into which to insert substring.</description>
     </argument>
 		<argument>
 			<name>position</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>position in string after which to insert substring.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -6413,10 +6824,10 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<description>Variable or array name</description>
     </argument>
 		<argument>
-			<name>number</name>
+			<name>dimension</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
+		<description>function tests whether the array has exactly this dimension.</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -6513,7 +6924,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>type</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The name of the interface, component, or Java class of which the object might be an instance.</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -6613,10 +7024,10 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 		<class>railo.runtime.functions.other.IsNotMap</class>
 		<description>return true if the given Object is not of Type java.util.Map</description>
 		<argument>
-			<name>arg1</name>
+			<name>obj</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description></description>
+		<description>object to check</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -6792,19 +7203,21 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The value to test.</description>
     </argument>
 		<argument>
 			<name>min_or_pattern</name>
 			<type>any</type>
 			<required>No</required>
-		<description></description>
+		<description>
+		The minimum valid value; used only for range validation or 
+		a JavaScript regular expression that the parameter must match; used only for regex or regular_expression validation.</description>
     </argument>
 		<argument>
 			<name>max</name>
 			<type>any</type>
 			<required>no</required>
-		<description></description>
+		<description>The maximum valid value; used only for range validation.</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -6836,7 +7249,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>file to check</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -6947,13 +7360,26 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>type</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>Data type to which to convert variable:</description>
+		<description>Data type to which to convert variable:
+		bigdecimal (converts to java.math.BigDecimal)
+- boolean
+- byte
+- char
+- int
+- long
+- float
+- double
+- short
+- string
+- null
+- xxx[] where xxx is one of the following: any of the preceding types, except for null
+- a Java class name</description>
     </argument>
 		<argument>
 			<name>variable</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description></description>
+		<description>the object to cast</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -7004,7 +7430,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A positive integer. Number of characters to return.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -7824,7 +8250,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>length</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Length of field in which to justify string</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -7882,7 +8308,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -7909,13 +8335,21 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -7988,13 +8422,21 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -8015,7 +8457,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -8042,7 +8484,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -8063,7 +8505,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -8084,13 +8526,21 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>datetime</type>
@@ -8111,7 +8561,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -8132,7 +8582,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -8159,13 +8609,21 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -8237,13 +8695,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>start</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The position of the first character to retrieve.</description>
     </argument>
 		<argument>
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The number of characters to retrieve.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -8285,7 +8743,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -8306,7 +8772,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -8327,7 +8801,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -8348,7 +8830,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -8653,7 +9135,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>datetime</type>
@@ -8739,7 +9229,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -8981,7 +9479,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>columntypelist</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Comma-delimited list specifying column data types.</description>
     </argument>
 		<return>
 			<type>query</type>
@@ -9140,7 +9638,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>The algorithm to use to generated the random number.</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -9207,13 +9705,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>String in which
+            to search.</description>
     </argument>
 		<argument>
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
+		<description>A positive integer. Position in the string at which to start search. The default value is 1.</description>
     </argument>
 		<argument>
 			<name>arg4</name>
@@ -9240,7 +9739,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>String in which
+            to search.</description>
     </argument>
 		<argument>
 			<name>start</name>
@@ -9252,7 +9752,17 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>returnsubexpressions</name>
 			<type>boolean</type>
 			<required>No</required>
-		<description></description>
+		<description>True: if the regular expression is found, the first array
+                element contains the length and position, respectively,
+                of the first match.
+                If the regular expression contains parentheses that
+                    group subexpressions, each subsequent array element
+                    contains the length and position, respectively, of
+                    the first occurrence of each group.
+                If the regular expression is not found, the arrays each
+                    contain one element with the value 0.
+            False: the function returns the position in the string
+                where the match begins. Default.</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -9273,7 +9783,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>String in which to search.</description>
     </argument>
 		<return>
 			<type>array</type>
@@ -9294,7 +9804,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>String in which to search.</description>
     </argument>
 		<return>
 			<type>array</type>
@@ -9363,19 +9873,24 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>substring1</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>String for which to search.</description>
     </argument>
 		<argument>
 			<name>substring2</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>string replacement</description>
     </argument>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+			<description>scope for the execution:
+- one (default): replaces only the first occurrence	
+- all: replaces all occurrences</description>
+			
+
+
     </argument>
 		<return>
 			<type>string</type>
@@ -9435,7 +9950,9 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>scope for the execution:
+- one (default): Replace the first occurrence
+- all: Replace all occurrences</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -9456,19 +9973,21 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>reg_expression</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Regular expression to replace.</description>
     </argument>
 		<argument>
 			<name>substring</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>replacement</description>
     </argument>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+- one (default): Replace the first occurrence of the regular expression.
+- all: Replace all occurrences of the regular expression.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -9489,19 +10008,21 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>reg_expression</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Regular expression to replace.</description>
     </argument>
 		<argument>
 			<name>substring</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>replacement</description>
     </argument>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+- one (default): Replace the first occurrence of the regular expression.
+- all: Replace all occurrences of the regular expression.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -9537,7 +10058,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>count</name>
 			<type>number</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A positive integer. Number of characters to return.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -9610,7 +10131,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -9631,7 +10160,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>data</name>
 			<type>struct</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A structure.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -9725,19 +10254,20 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>section</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Section of the initialization file in which the entry is
+            to be set</description>
     </argument>
 		<argument>
 			<name>entry</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Name of the entry to set</description>
     </argument>
 		<argument>
 			<name>value</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Value to which to set the entry</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -9758,7 +10288,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A string, the name of a string, or a number</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -9839,7 +10369,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>set</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A string or a variable that contains a set of characters.
+            Must contain one or more characters</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -9860,7 +10391,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>set</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A string or a variable that contains a set of characters.
+            Must contain one or more characters</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -10006,13 +10538,14 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>Struct2</name>
 			<type>struct</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Structure that contains the data to append to struct1</description>
     </argument>
 		<argument>
 			<name>OverwriteFlag</name>
 			<type>boolean</type>
 			<required>No</required>
-		<description></description>
+		<description>
+- true (default): values in struct2 overwrite corresponding values in struct1. </description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -10078,7 +10611,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Element to remove</description>
     </argument>
 		<argument>
 			<name>indicatenotexisting</name>
@@ -10105,7 +10638,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Key whose value to return</description>
     </argument>
 		<return>
 			<type>any</type>
@@ -10132,7 +10665,9 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>Scope</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+- one (default): returns one matching key.
+- all: returns all matching keys</description>
     </argument>
 		<return>
 			<type>array</type>
@@ -10159,7 +10694,9 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>Scope</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+- one (default): function returns one matching key
+- all: function returns all matching keys</description>
     </argument>
 		<return>
 			<type>array</type>
@@ -10195,19 +10732,19 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Key that contains the inserted value.</description>
     </argument>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Value to add.</description>
     </argument>
 		<argument>
 			<name>allowoverwrite</name>
 			<type>boolean</type>
 			<required>No</required>
-		<description></description>
+		<description>Whether to allow overwriting a key. Default: False.</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -10259,7 +10796,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Key to test</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -10280,7 +10817,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Character that separates keys in list. Default: comma.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -10351,19 +10888,27 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>sortOrder</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>sort direction:
+_- asc (default): ascending (a to z) sort order
+- desc: descending (z to a) sort order</description>
     </argument>
 		<argument>
 			<name>sortType</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+
+		define one of the following:
+- numeric: sorts numbers
+- text: sorts text alphabetically, taking case into account (case sensitive)
+- textnocase: sorts text alphabetically, without regard to case (case insensitive)
+</description>
     </argument>
 		<argument>
 			<name>pathToSubElement</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>String or a variable that contains one</description>
     </argument>
 		<return>
 			<type>array</type>
@@ -10384,13 +10929,13 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>key</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>Key, the value of which to update</description>
     </argument>
 		<argument>
 			<name>value</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description></description>
+		<description>New value</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -10453,13 +10998,21 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Masking characters that determine the format</description>
     </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -10480,7 +11033,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>For a string, defines how characters are represented in a
+            byte array.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -10516,19 +11070,25 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>javascriptvar</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A string that specifies the name of the JavaScript variable
+            that the ToScript function creates.</description>
     </argument>
 		<argument>
 			<name>outputformat</name>
 			<type>boolean</type>
 			<required>No</required>
-		<description></description>
+		<description>A Boolean value that determines whether to create
+            WDDX (JavaScript) or ActionScript style output for
+            structures and queries.
+            Default: true</description>
     </argument>
 		<argument>
 			<name>ASFormat</name>
 			<type>boolean</type>
 			<required>No</required>
-		<description></description>
+		<description>A Boolean value that specifies whether to use
+            ActionScript shortcuts in the script.
+            Default: false</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -10549,7 +11109,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>The character encoding (character set) of the string.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -10662,7 +11222,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>charset</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>The character encoding in which the string is encoded.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -10710,7 +11270,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>charset</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>The character encoding in which the string is encoded.</description>
     </argument>
 		<argument>
 			<name>force</name>
@@ -10782,7 +11342,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>A delimiter character to separate column data items.
+            Default: comma (,).</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -10812,7 +11373,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -10834,13 +11403,21 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>locale</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
     </argument>
 		<argument>
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
     </argument>
 		<return>
 			<type>number</type>
@@ -10918,7 +11495,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>childName</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>XML child element for which to search</description>
     </argument>
 		<argument>
 			<name>index</name>
@@ -10945,7 +11522,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>childName</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>The name of the element to create. This element becomes a
+            child element of xmlObj in the tree.</description>
     </argument>
 		<return>
 			<type>org.w3c.dom.Element</type>
@@ -11011,7 +11589,8 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>caseSensitive</name>
 			<type>boolean</type>
 			<required>No</required>
-		<description></description>
+		<description>Maintains the case of document elements and attributes.
+            Default: false</description>
     </argument>
 		<argument>
 			<name>validator</name>
@@ -11062,7 +11641,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>xPathString</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>XPath expression</description>
     </argument>
 		<return>
 			<type>object</type>
@@ -11089,7 +11668,10 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>parameters</name>
 			<type>array</type>
 			<required>false</required>
-		<description></description>
+		<description>A structure containing XSL template parameter name-value
+            pairs to use in transforming the document. The XSL transform
+            defined in the xslString parameter uses these parameter values
+            in processing the xml.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -11134,7 +11716,15 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>timezone</name>
 			<type>string</type>
 			<required>no</required>
-			<description>The timezone that the date is based on</description>
+			<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
 		</argument>
 		<return>
 			<type>number</type>
