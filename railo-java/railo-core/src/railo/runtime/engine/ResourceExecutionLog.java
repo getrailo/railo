@@ -62,7 +62,7 @@ public class ResourceExecutionLog implements ExecutionLog {
 		Resource dir=null;
 		content=new StringBuffer();
 		try {
-			dir = ResourceUtil.toResourceExisting(pc, strDirectory);
+			dir = ResourceUtil.toResourceNotExisting(pc, strDirectory,false);
 			if(!dir.exists()){
 				dir.createDirectory(true);
 			}
