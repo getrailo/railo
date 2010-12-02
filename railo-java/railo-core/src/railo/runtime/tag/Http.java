@@ -611,7 +611,7 @@ public final class Http extends BodyTagImpl {
 				throw toPageException(e.t);	
 			}
 			
-			
+			httpMethod=e.httpMethod;
 			
 			
 			if(!e.done){
@@ -815,7 +815,6 @@ public final class Http extends BodyTagImpl {
 	        cfhttp.set(HEADER,raw.toString());
 	        
 	    
-	        //httpMethod.releaseConnection();
 
         if(status!=STATUS_OK){
             cfhttp.setEL(ERROR_DETAIL,httpMethod.getStatusCode()+" "+httpMethod.getStatusText());
@@ -823,7 +822,7 @@ public final class Http extends BodyTagImpl {
         }
 		}
 		finally {
-			releaseConnection(httpMethod,manager);
+			releaseConnection(httpMethod);
 		}
 	    
 	}
@@ -881,7 +880,7 @@ public final class Http extends BodyTagImpl {
 		return httpMethod;
 	}*/
 
-	private void releaseConnection(HttpMethod httpMethod, HttpConnectionManager manager) {
+	public static void releaseConnection(HttpMethod httpMethod) {
 		httpMethod.releaseConnection();
 		//manager.closeIdleConnections(0);
 	}
@@ -1343,10 +1342,10 @@ class MultipartRequestEntityFlex extends MultipartRequestEntity {
 
 class Executor extends Thread {
 	
-	 Http http;
-	 HttpClient client;
-	HttpMethod httpMethod;
-	 boolean redirect;
+	 final Http http;
+	 final HttpClient client;
+	 HttpMethod httpMethod;
+	 final boolean redirect;
 	 Throwable t;
 	 boolean done;
 
@@ -1377,7 +1376,9 @@ class Executor extends Thread {
         URL lu;
         while(Http.isRedirect(client.executeMethod(httpMethod)) && redirect && count++ < Http.MAX_REDIRECT) { 
         	lu=Http.locationURL(httpMethod);
+        	HttpMethod oldHttpMethod = httpMethod;
         	httpMethod=Http.createMethod(http,client,lu.toExternalForm(),-1);
+        	Http.releaseConnection(oldHttpMethod);
         }
         
 	}

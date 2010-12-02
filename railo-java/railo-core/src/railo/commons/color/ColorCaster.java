@@ -243,6 +243,9 @@ public final class ColorCaster {
 				return new Color(i1,i2,i3);
 			}
 		}
+		
+		
+		
 
 		// fff
 		if(strColor.length()==3) {
@@ -277,9 +280,18 @@ public final class ColorCaster {
 			if(i1!=-1 && i2!=-1 && i3!=-1 && i4!=-1) return new Color(i1,i2,i3,i4);
 		}
 		
+		// 255,0,0
+		String[] arr = List.listToStringArray(strColor, ',');
+		if(arr.length==3){
+			int i1 = Caster.toIntValue(arr[0],-1);
+			int i2 = Caster.toIntValue(arr[1],-1);
+			int i3 = Caster.toIntValue(arr[2],-1);
+			if(i1>-1 && i2>-1 && i3>-1) return new Color(i1,i2,i3);
+		}
 		
 		
-		throw new ExpressionException("invalid color definition ["+strColor+"]","color must be a know constant label (blue,green,yellow ...), a hexadecimal value (#ffffff) or a RGB value (rgb(255,255,255))");
+		throw new ExpressionException("invalid color definition ["+strColor+"]",
+				"color must be a know constant label (blue,green,yellow ...), a hexadecimal value (#ffffff) or a RGB value (rgb(255,255,255)), 255,255,255");
 	}
     /*private static int hexToInt(String s, boolean throwException) throws ExpressionException {
         int[] n = new int[s.length()];

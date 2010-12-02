@@ -241,6 +241,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		// no open tasks
 		if(records==0) {
 			startrow-=getOpenTaskCount();
+			if(startrow<1) startrow=1;
 		}
 		else {
 			startrow=1;
@@ -267,6 +268,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		
 		int to=startrow+maxrow;
 		if(to>children.length)to=children.length;
+		if(startrow<1)startrow=1;
 		
 		for(int i=startrow-1;i<to;i++){
 			task = getTaskByName(dir, children[i]);
