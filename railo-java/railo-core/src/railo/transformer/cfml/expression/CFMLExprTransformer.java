@@ -309,7 +309,10 @@ public class CFMLExprTransformer implements ExprTransformer {
             comments(data.cfml);
             if(data.mode==STATIC) expr=new DynAssign(expr,assignOp(data));
 			else {
-				expr=new Assign((Variable)expr,assignOp(data));
+				if(expr instanceof Variable)
+					expr=new Assign((Variable)expr,assignOp(data));
+				else
+					throw new TemplateException(data.cfml,"invalid assignment left-hand side ("+expr.getClass().getName()+")");
 			}
 		}
 		return expr;
