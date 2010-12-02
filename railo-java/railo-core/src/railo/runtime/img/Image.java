@@ -36,13 +36,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.AttributedString;
 import java.util.Iterator;
+import java.util.Locale;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
@@ -878,18 +881,21 @@ public class Image extends StructSupport implements Cloneable,Struct {
     	if (writer == null) throw new IOException("no writer for format ["+format+"] available, available writer formats are ["+List.arrayToList(ImageUtil.getWriterFormatNames(), ",")+"]");
 
     	
-		ImageWriteParam iwp = writer.getDefaultWriteParam();
-		try {
-			iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-			iwp.setCompressionQuality(quality);
-		}
-		catch(Throwable t) {}
+    	ImageWriteParam iwp=null;
+    	if("jpg".equalsIgnoreCase(format)) {
+    		JPEGImageWriteParam jiwp = new JPEGImageWriteParam(Locale.getDefault());
+    		jiwp.setOptimizeHuffmanTables(true);
+    		iwp=jiwp;
+    	}
+    	else iwp = writer.getDefaultWriteParam();
     	
-    	
+    	setCompressionModeEL(iwp,ImageWriteParam.MODE_EXPLICIT);
+    	setCompressionQualityEL(iwp,quality);
     	
     	writer.setOutput(ios);
     	try {
-    		writer.write(im);
+    		writer.write(null, new IIOImage(im, null, null), iwp);
+    		//writer.write(im);
     	} finally {
     		writer.dispose();
     		ios.flush();
@@ -897,6 +903,20 @@ public class Image extends StructSupport implements Cloneable,Struct {
 }
 	
 	
+
+	private void setCompressionModeEL(ImageWriteParam iwp, int mode) {
+		try {
+			iwp.setCompressionMode(mode);
+		}
+		catch(Throwable t) {}
+	}
+
+	private void setCompressionQualityEL(ImageWriteParam iwp, float quality) {
+		try {
+			iwp.setCompressionQuality(quality);
+		}
+		catch(Throwable t) {}
+	}
 
 	public void convert(String format) {
 		this.format=format;
