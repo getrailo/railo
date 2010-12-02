@@ -2997,6 +2997,7 @@ private void doGetMappings() throws PageException {
     
     private void doGetSpoolerTasks() throws PageException {
     	int startrow = getInt("startrow",1);
+    	if(startrow <1) startrow=1;
     	int maxrow = getInt("maxrow",-1);
     	String result=getString("result", null);
     	SpoolerEngineImpl engine = (SpoolerEngineImpl) config.getSpoolerEngine();
