@@ -86,13 +86,15 @@ ACTIONS --->
 			<cfset data.tlss=toArrayFromForm("tls")>
 			<cfset data.ssls=toArrayFromForm("ssl")>
 			<cfset data.rows=toArrayFromForm("row")>
+			<cfset data.ids=toArrayFromForm("id")>
+            
 			<cfloop index="idx" from="1" to="#arrayLen(data.hosts)#">
 			
 					
 				<cfif isDefined("data.rows[#idx#]") and data.hosts[idx] NEQ "">
 					<cfparam name="data.ports[#idx#]" default="25">
 					<cfif trim(data.ports[idx]) EQ ""><cfset data.ports[idx]=25></cfif>
-			
+					
 					<cfadmin 
 						action="updateMailServer"
 						type="#request.adminType#"
@@ -102,6 +104,7 @@ ACTIONS --->
 						dbusername="#data.usernames[idx]#"
 						dbpassword="#toPassword(data.hosts[idx],data.passwords[idx])#"
 						port="#data.ports[idx]#"
+						id="#isDefined("data.ids[#idx#]")?data.ids[idx]:''#"
 						tls="#isDefined("data.tlss[#idx#]") and data.tlss[idx]#"
 						ssl="#isDefined("data.ssls[#idx#]") and data.ssls[idx]#"
 						remoteClients="#request.getRemoteClients()#">
@@ -188,20 +191,19 @@ function checkTheBox(field) {
 Mail Settings
 		
 		@todo help text --->
-<cfoutput><h2>#stText.Mail.Settings#</h2>
-<table class="tbl" width="600">
+<cfoutput>
+<table class="tbl" width="740">
+
 <tr>
-	<td colspan="2"></td>
+	<td colspan="2"><h2>#stText.Mail.Settings#</h2></td>
 </tr>
-<tr>
-	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
+
 <cfform action="#request.self#?action=#url.action#" method="post">
 <cfset css=iif(len(mail.logfile) EQ 0 and len(mail.strlogfile) NEQ 0,de('Red'),de(''))>
 <tr>
 	<td class="tblHead" width="150">#stText.mail.DefaultEncoding#</td>
 	<td class="tblContent">
-		<span class="comment">#stText.mail.DefaultEncodingDescription#</span>
+		<span class="comment">#stText.mail.DefaultEncodingDescription#</span><br />
 		<cfif hasAccess>
 		<cfinput type="text" name="defaultencoding" value="#mail.defaultEncoding#" 
 			style="width:200px" required="no" message="#stText.mail.missingEncoding#">
@@ -263,11 +265,11 @@ Mail Settings
 <cfoutput>
 <!--- 		
 Existing Collection --->
-<h2>#stText.Mail.MailServers#</h2>
-#stText.Mail.MailServersDescription#
-<table class="tbl" width="600">
+
+<table class="tbl" width="740">
 <tr>
-	<td colspan="5"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+	<td colspan="5"><h2>#stText.Mail.MailServers#</h2>
+#stText.Mail.MailServersDescription#</td>
 </tr>
 <tr>
 	<td></td>
@@ -283,6 +285,7 @@ Existing Collection --->
 	<cfloop query="ms">
 		<tr>
 			<td height="26">
+            <input type="hidden" name="id_#ms.currentrow#" value="#hash(ms.hostName&":"&ms.username&":"&ms.password&":"&ms.tls&":"&ms.ssl)#">
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td><cfif not ms.readonly><input type="checkbox" class="checkbox" name="row_#ms.currentrow#" 
@@ -348,7 +351,7 @@ Existing Collection --->
 				<td><input type="checkbox" class="checkbox" name="row_#ms.recordcount+1#" value="0"></td>
 			</tr>
 			</table>
-			
+			<input type="hidden" name="id_#ms.recordcount+1#" value="new">
 			</td>
 			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)"  
 			type="text" name="hostName_#ms.recordcount+1#" value="" required="no"  style="width:220px"></td>

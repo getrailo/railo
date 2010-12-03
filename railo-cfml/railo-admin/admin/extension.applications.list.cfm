@@ -13,12 +13,12 @@
 <cfif extensions.recordcount>
 <!--- 
 Installed Applications --->
-<h2>#stText.ext.installed#</h2>
-#stText.ext.installeddesc#
 
-<table class="tbl" width="650">
+
+<table class="tbl" width="740">
 <tr>
-    <td colspan="5"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+    <td colspan="5"><h2>#stText.ext.installed#</h2>
+#stText.ext.installeddesc#</td>
 </tr>
 <cfform action="#request.self#?action=#url.action#" method="post">
 
@@ -134,12 +134,12 @@ Installed Applications --->
 <!--- 
 Not Installed Applications --->
 
-<h2>#stText.ext.notInstalled#</h2>
-#stText.ext.notInstalleddesc#
 
-<table class="tbl" width="650">
+
+<table class="tbl" width="740">
 <tr>
-    <td colspan="5"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+    <td colspan="5"><h2>#stText.ext.notInstalled#</h2>
+#stText.ext.notInstalleddesc#</td>
 </tr>
 <cfform action="#request.self#?action=#url.action#" method="post">
 

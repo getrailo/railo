@@ -23,6 +23,7 @@ import railo.commons.collections.HashTable;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.Cache;
+import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogResource;
 import railo.commons.io.log.LogUtil;
@@ -35,6 +36,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.net.JarLoader;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.PageContextImpl;
@@ -42,6 +44,7 @@ import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.cfx.customtag.CFXTagClass;
+import railo.runtime.cfx.customtag.CPPCFXTagClass;
 import railo.runtime.cfx.customtag.JavaCFXTagClass;
 import railo.runtime.config.AdminSync;
 import railo.runtime.config.Config;
@@ -72,6 +75,7 @@ import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionImpl;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.functions.cache.Util;
+import railo.runtime.functions.system.ContractPath;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
@@ -138,8 +142,24 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Collection.Key KEY = KeyImpl.getInstance("key");
 	private static final Collection.Key VALUE = KeyImpl.getInstance("value");
 	private static final Collection.Key TIME = KeyImpl.getInstance("time");
+	public static final String[] UPDATE_JARS = new String[]{"ehcache.jar","antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","metadata-extractor.jar","icepdf-core.jar","com.naryx.tagfusion.cfx.jar"};
     
-    
+	/*
+	others:
+	PDFRenderer.jar
+	?
+	xmlparserv2.jar
+	
+	not needed:
+	slf4j-simple.jar
+	xdb.jar
+	
+	
+	
+	*/
+	
+	
+	
     private Struct attributes=new StructImpl();
     private String action=null;
     private short type;
@@ -458,6 +478,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getRemoteClientUsage",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClientUsage();
         else if(check("getSpoolerTasks",   		ACCESS_FREE) && check2(ACCESS_READ  )) doGetSpoolerTasks();
         else if(check("getPerformanceSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetPerformanceSettings();
+        else if(check("getLogSetting", ACCESS_FREE) && check2(ACCESS_READ  )) doGetLogSetting();
+        else if(check("getLogSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetLogSettings();
         else if(check("updatePerformanceSettings",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdatePerformanceSettings();
         else if(check("getGatewayentries",    ACCESS_FREE) && check2(ACCESS_READ  )) doGetGatewayEntries();
         else if(check("getGatewayentry",     ACCESS_FREE) && check2(ACCESS_READ  )) doGetGatewayEntry();
@@ -494,6 +516,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getCustomTagMappings",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetCustomTagMappings();
         else if(check("getComponentMappings",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetComponentMappings();
         else if(check("getCfxTags",             ACCESS_FREE) && check2(ACCESS_READ  )) doGetCFXTags();
+        else if(check("getCPPCfxTags",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetCPPCFXTags();
         else if(check("getJavaCfxTags",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetJavaCFXTags();
         else if(check("getDebug",               ACCESS_FREE) && check2(ACCESS_READ  )) doGetDebug();
         else if(check("getError",               ACCESS_FREE) && check2(ACCESS_READ  )) doGetError();
@@ -503,6 +526,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("verifyMailServer",       ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyMailServer();
         else if(check("verifyExtensionProvider",ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyExtensionProvider();
         else if(check("verifyJavaCFX",			ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyJavaCFX();
+        else if(check("verifyCFX",			ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyCFX();
 
         else if(check("resetId",				ACCESS_FREE) && check2(ACCESS_WRITE  )) doResetId();
         else if(check("updateJar",         		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateJar();
@@ -530,6 +554,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	
     	
         else if(check("updatejavacfx",          ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateJavaCFX();
+        else if(check("updatecppcfx",          ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCPPCFX();
         else if(check("updatedebug",            ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateDebug();
         else if(check("updateerror",            ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateError();
         else if(check("updateCustomTagSetting",	ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCustomTagSetting();
@@ -537,6 +562,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateExtensionProvider",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionProvider();
         else if(check("updateExtensionInfo",	ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionInfo();
         else if(check("updateGatewayEntry",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateGatewayEntry();
+        else if(check("updateLogSettings",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateUpdateLogSettings();
         
     	
         //else if(check("removeproxy",       		ACCESS_NOT_WHEN_SERVER  )) doRemoveProxy();
@@ -606,6 +632,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("removeUpdate",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doRemoveUpdate();
         else if(check("getUpdate",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doGetUpdate();
         else if(check("listPatches",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ     )) listPatches();
+        else if(check("needNewJars",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ     )) needNewJars();
+        else if(check("updateJars",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateJars();
         else if(check("updateupdate",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateUpdate();
         else if(check("getSerial",              ACCESS_FREE) && check2(ACCESS_READ     )) doGetSerial();
         else if(check("updateSerial",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateSerial();
@@ -652,7 +680,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
 
     private void doRunUpdate() throws PageException {
-        admin.runUpdate();
+    	doUpdateJars();
+    	admin.runUpdate();
         adminSync.broadcast(attributes, config);
     }
     
@@ -1341,7 +1370,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         store();
         adminSync.broadcast(attributes, config);
     }
-    
+
     private void doVerifyJavaCFX() throws PageException {
         String name=getString("admin",action,"name");
         admin.verifyJavaCFX(
@@ -1349,8 +1378,25 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 getString("admin",action,"class")
         );
     }
+    private void doVerifyCFX() throws PageException {
+        String name=getString("admin",action,"name");
+        if(StringUtil.startsWithIgnoreCase(name,"cfx_"))name=name.substring(4);
+        admin.verifyCFX(name);
+    }
     
 
+    private void doUpdateCPPCFX() throws PageException {
+    	String name=getString("admin",action,"name");
+    	String procedure=getString("admin",action,"procedure");
+    	String serverLibrary=getString("admin",action,"serverLibrary");
+    	boolean keepAlive=getBool("admin",action,"keepAlive");
+    	
+    	
+        if(StringUtil.startsWithIgnoreCase(name,"cfx_"))name=name.substring(4);
+        admin.updateCPPCFX(name,procedure,serverLibrary,keepAlive);
+        store();
+        adminSync.broadcast(attributes, config);
+    }
     
     
 
@@ -1403,13 +1449,40 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     }
+    
+    private void doGetCPPCFXTags() throws PageException {
+        Map map = config.getCFXTagPool().getClasses();
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"displayname","sourcename","readonly","procedure","name","isvalid","serverlibrary","keepalive"},0,"query");
+        Iterator it = map.keySet().iterator();
+        
+        int row=0;
+        while(it.hasNext()) {
+            CFXTagClass tag=(CFXTagClass) map.get(it.next());
+            if(tag instanceof CPPCFXTagClass) {
+                row++;
+                qry.addRow(1);
+                CPPCFXTagClass ctag =(CPPCFXTagClass) tag;
+                qry.setAt("displayname",row,tag.getDisplayType());
+                qry.setAt("sourcename",row,tag.getSourceName());
+                qry.setAt("readonly",row,Caster.toBoolean(tag.isReadOnly()));
+                qry.setAt("isvalid",row,Caster.toBoolean(tag.isValid()));
+                qry.setAt("name",row,ctag.getName());
+                qry.setAt("procedure",row,ctag.getProcedure());
+                qry.setAt("serverlibrary",row,ctag.getServerLibrary());
+                qry.setAt("keepalive",row,Caster.toBoolean(ctag.getKeepAlive()));
+            }
+            
+        }
+        pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+    }
+    
     /**
      * @throws PageException
      * 
      */
     private void doGetCFXTags() throws PageException {
         Map map = config.getCFXTagPool().getClasses();
-        railo.runtime.type.Query qry=new QueryImpl(new String[]{"displayname","sourcename","readonly","isvalid"},map.size(),"query");
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"displayname","sourcename","readonly","isvalid","name","procedure_class","keep_alive"},map.size(),"query");
         Iterator it = map.keySet().iterator();
         
         int row=0;
@@ -1421,6 +1494,19 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAt("sourcename",row,tag.getSourceName());
             qry.setAt("readonly",row,Caster.toBoolean(tag.isReadOnly()));
             qry.setAt("isvalid",row,Caster.toBoolean(tag.isValid()));
+            
+            if(tag instanceof CPPCFXTagClass) {
+                CPPCFXTagClass ctag =(CPPCFXTagClass) tag;
+                qry.setAt("name",row,ctag.getName());
+                qry.setAt("procedure_class",row,ctag.getProcedure());
+                qry.setAt("keepalive",row,Caster.toBoolean(ctag.getKeepAlive()));
+            }
+            else if(tag instanceof JavaCFXTagClass) {
+                JavaCFXTagClass jtag =(JavaCFXTagClass) tag;
+                qry.setAt("name",row,jtag.getName());
+                qry.setAt("procedure_class",row,jtag.getStrClass());
+            }
+            
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     } 
@@ -1791,9 +1877,30 @@ private void doGetMappings() throws PageException {
 		} catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
-        
-        
     }
+    
+    private void needNewJars() throws PageException  {
+    	
+    	boolean exists = JarLoader.exists(pageContext.getConfig(), UPDATE_JARS);
+    	
+    	try {
+			pageContext.setVariable(getString("admin",action,"returnVariable"),!Caster.toBoolean(exists));
+		}
+    	catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
+    }
+
+    private void doUpdateJars() throws PageException  {
+    	try {
+			JarLoader.download(pageContext, UPDATE_JARS);
+		} catch (IOException e) {
+			throw Caster.toPageException(e);
+		}
+    	
+    }
+    
+    
     
     private void doGetMailServers() throws PageException {
         
@@ -2481,9 +2588,80 @@ private void doGetMappings() throws PageException {
         adminSync.broadcast(attributes, config);
 	}
     
+    private void doGetLogSetting() throws PageException {
+    	String name=getString("admin", "GetLogSetting", "name");
+    	name=name.trim().toLowerCase();
+    	Query qry=_doGetLogSettings();
+        
+    	int records = qry.getRecordcount();
+    	for(int row=1;row<=records;row++){
+    		String n = Caster.toString(qry.getAt("name", row, null),null);
+    		if(!StringUtil.isEmpty(n) && n.trim().equalsIgnoreCase(name)) {
+    			Struct sct=new StructImpl();
+    			String returnVariable=getString("admin",action,"returnVariable");
+    			pageContext.setVariable(returnVariable,sct);
+
+    			sct.setEL("name", qry.getAt("name", row, ""));
+    			sct.setEL("level", qry.getAt("level", row, ""));
+    			sct.setEL("virtualpath", qry.getAt("virtualpath", row, ""));
+    			sct.setEL("class", qry.getAt("class", row, ""));
+    			sct.setEL("maxFile", qry.getAt("maxFile", row, ""));
+    			sct.setEL("maxFileSize", qry.getAt("maxFileSize", row, ""));
+    			sct.setEL("path", qry.getAt("path", row, ""));
+    			
+    			return;
+    		}
+    	}
+    	throw new ApplicationException("invalig log name ["+name+"]");
+    	
+	}
+    
+    private void doGetLogSettings() throws  PageException {
+    	String returnVariable=getString("admin",action,"returnVariable");
+		pageContext.setVariable(returnVariable,_doGetLogSettings());
+    }
+    
+    private Query _doGetLogSettings() throws  PageException {
+    	Query qry=new QueryImpl(
+				new String[]{"name","level","path","virtualpath","class","maxFile","maxFileSize"},
+				new String[]{"varchar","varchar","varchar","varchar","varchar","varchar","varchar"},
+				0,railo.runtime.type.List.last("logs", '.'));
+        int row=0;
+        
+        doGetLogSettings(qry,"application",config.getApplicationLogger(),++row);
+        doGetLogSettings(qry,"exception",config.getExceptionLogger(),++row);
+        doGetLogSettings(qry,"gateway",config.getGatewayLogger(),++row);
+        doGetLogSettings(qry,"mail",config.getMailLogger(),++row);
+        doGetLogSettings(qry,"mapping",config.getMappingLogger(),++row);
+        doGetLogSettings(qry,"orm",config.getORMLogger(),++row);
+        doGetLogSettings(qry,"remote-client",config.getRemoteClientLog(),++row);
+        doGetLogSettings(qry,"request-timeout",config.getRequestTimeoutLogger(),++row);
+        if(config instanceof ConfigWeb){
+        	doGetLogSettings(qry,"schedule-task",config.getScheduleLogger(),++row);
+        	doGetLogSettings(qry,"search",config.getSearchEngine().getLogger(),++row);
+        }
+        doGetLogSettings(qry,"thread",config.getThreadLogger(),++row);
+        doGetLogSettings(qry,"trace",config.getTraceLogger(),++row);
+        return qry;
+	}
     
 
-    
+	private void doGetLogSettings(Query qry, String name,LogAndSource log, int row) {
+		qry.addRow();
+		qry.setAtEL("name", row, name);
+		qry.setAtEL("level", row, LogUtil.toStringType(log.getLogLevel(), ""));
+		qry.setAtEL("virtualpath", row, log.getSource());
+		qry.setAtEL("class", row, log.getLog().getClass().getName());
+        Log l = log.getLog();
+        if(l instanceof LogResource){
+        	LogResource lr = (LogResource)l;
+        	qry.setAtEL("maxFile", row, Caster.toString(lr.getMaxFiles()));
+        	qry.setAtEL("maxFileSize", row, Caster.toString(lr.getMaxFileSize()));
+        	qry.setAtEL("path", row, lr.getResource().getAbsolutePath());
+        }
+        
+        
+	}
 
 	private void doGetPerformanceSettings() throws ApplicationException, PageException {
 		Struct sct=new StructImpl();
@@ -3053,7 +3231,8 @@ private void doGetMappings() throws PageException {
     }
 
     private void doUpdateOutputSettings() throws PageException {
-        admin.updateSupressWhitespace(getBoolObject("admin",action, "supressWhitespace"));
+    	admin.updateSuppressWhitespace(getBoolObject("admin",action, "suppressWhitespace"));
+    	admin.updateSuppressContent(getBoolObject("admin",action, "suppressContent"));
         admin.updateShowVersion(getBoolObject("admin",action, "showVersion"));
         store();
         adminSync.broadcast(attributes, config);
@@ -3067,6 +3246,31 @@ private void doGetMappings() throws PageException {
         store();
         adminSync.broadcast(attributes, config);
     }
+    
+    private void doUpdateUpdateLogSettings() throws PageException  {
+    	int level=LogUtil.toIntType(getString("admin", "updateUpdateLogSettings", "level"), -1);
+    	String source=getString("admin", "updateUpdateLogSettings", "path");
+    	if(source.indexOf("{")==-1){
+    		Resource res = ResourceUtil.toResourceNotExisting(pageContext, source, false);
+    		String tmp=SystemUtil.addPlaceHolder(res, config, null);
+			
+    		
+        	if(tmp!=null) source=tmp;
+        	else source=ContractPath.call(pageContext, source);
+    	}
+    	
+    	admin.updateLogSettings(
+    			getString("admin", "updateUpdateLogSettings", "name"),
+    			level,
+    			source,
+    			getInt("admin", "updateUpdateLogSettings", "maxfile"),
+    			getInt("admin", "updateUpdateLogSettings", "maxfilesize")
+    	);
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+    
+    
     
     private void doUpdateExtension() throws PageException {
     	
@@ -3155,7 +3359,8 @@ private void doGetMappings() throws PageException {
         
         Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
-        sct.set("supressWhitespace",Caster.toBoolean(config.isSuppressWhitespace()));
+        sct.set("suppressWhitespace",Caster.toBoolean(config.isSuppressWhitespace()));
+        sct.set("suppressContent",Caster.toBoolean(config.isSuppressContent()));
         sct.set("showVersion",Caster.toBoolean(config.isShowVersion()));
         
         

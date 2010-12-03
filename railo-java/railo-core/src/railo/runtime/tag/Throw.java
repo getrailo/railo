@@ -1,7 +1,6 @@
 package railo.runtime.tag;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.CustomTypeException;
 import railo.runtime.exp.PageException;
@@ -139,28 +138,8 @@ public final class Throw extends TagImpl {
 	*/
 	public int doStartTag() throws PageException	{
 		
-		if(message instanceof String){
-			CustomTypeException exception = new CustomTypeException( (String)message,detail,errorcode,type);
-			if(extendedinfo!=null)exception.setExtendedInfo(extendedinfo);
-			throw exception;
-		}
-		else if(message!=null) {
-			PageException pe = toPageException(message,null);
-			if(pe!=null) throw pe;
-
-			throw new ApplicationException("attribute message of type cfthrow must define a String message, now ("+Caster.toClassName(message)+")");
-		}
-		
-		if(object instanceof String && !StringUtil.isEmpty(object)){
-			CustomTypeException exception = new CustomTypeException( (String)object,detail,errorcode,type);
-			if(extendedinfo!=null)exception.setExtendedInfo(extendedinfo);
-			throw exception;
-		}
-		else if(object!=null) {
-			PageException pe = toPageException(object,null);
-			if(pe!=null) throw pe;
-			throw new ApplicationException("attribute object of type cfthrow must define a Exception Object, now ("+Caster.toClassName(object)+")");
-		}
+		_doStartTag(message);
+		_doStartTag(object);
 		
 		throw new CustomTypeException( "",detail,errorcode,type);
 		
@@ -168,6 +147,19 @@ public final class Throw extends TagImpl {
 		
 		
 	}
+
+	private void _doStartTag(Object obj) throws PageException {
+		if(!StringUtil.isEmpty(obj)){
+			PageException pe = toPageException(obj,null);
+			if(pe!=null) throw pe;
+			
+			CustomTypeException exception = new CustomTypeException(Caster.toString(obj),detail,errorcode,type);
+			if(extendedinfo!=null)exception.setExtendedInfo(extendedinfo);
+			throw exception;
+		}
+	}
+
+
 
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#doEndTag()

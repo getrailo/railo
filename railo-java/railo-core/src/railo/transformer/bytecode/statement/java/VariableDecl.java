@@ -2,6 +2,7 @@ package railo.transformer.bytecode.statement.java;
 
 import org.objectweb.asm.Type;
 
+import railo.print;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.ExpressionBase;
@@ -20,6 +21,7 @@ public class VariableDecl extends ExpressionBase {
 		this.name=name;
 		this.value=value;
 		this.db = db;
+		
 	}
 
 	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
@@ -40,7 +42,7 @@ public class VariableDecl extends ExpressionBase {
 		//bc.getAdapter().visitLocalVariable(name, strType, null, db.start,db.end,x);
 		
 		if(value!=null){
-			Type rtn = Assign.writeOut(db, bc, t,mode, value, getLine());
+			Type rtn = Assign.writeOut(db, bc, t,mode, value, getLine(),false);
 			
 			bc.getAdapter().storeLocal(local,t);
 		}

@@ -170,14 +170,12 @@ function checkTheRadio(field) {
 </script>
 
 <cfoutput>
-<h2>#stText.CustomTags.CustomtagSetting#</h2>
-<table class="tbl" width="600">
+
+<table class="tbl" width="740">
 <tr>
-	<td colspan="2"></td>
+	<td colspan="2"><h2>#stText.CustomTags.CustomtagSetting#</h2></td>
 </tr>
-<tr>
-	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
+
 
 <cfform action="#request.self#?action=#url.action#" method="post">
 <input type="hidden" name="subAction" value="setting" />
@@ -268,14 +266,11 @@ function checkTheRadio(field) {
 
 
 <cfoutput>
-<h2>#stText.CustomTags.CustomtagMappings#</h2>
-#stText.CustomTags.CustomtagMappingsDesc#
-<table class="tbl" width="600">
+
+<table class="tbl" width="740">
 <tr>
-	<td colspan="5"></td>
-</tr>
-<tr>
-	<td colspan="5"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+	<td colspan="5"><h2>#stText.CustomTags.CustomtagMappings#</h2>
+#stText.CustomTags.CustomtagMappingsDesc#</td>
 </tr>
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<tr>
@@ -306,14 +301,14 @@ function checkTheRadio(field) {
 		<td class="tblContent#css#" title="#mappings.strphysical#
 #mappings.physical#" nowrap><cfif mappings.ReadOnly>#cut(mappings.strphysical,40)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="physical_#mappings.currentrow#" value="#mappings.strphysical#" required="no"  
-			style="width:270px" 
+			style="width:260px" 
 			message="#stText.CustomTags.PhysicalMissing##mappings.currentrow#)"></cfif></td>
 		
 		<cfset css=iif(len(mappings.archive) EQ 0 and len(mappings.strArchive) NEQ 0,de('Red'),de(''))>
 		<td class="tblContent#css#" title="#mappings.strarchive#
 #mappings.archive#" nowrap><cfif mappings.ReadOnly>#cut(mappings.strarchive,40)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="archive_#mappings.currentrow#" value="#mappings.strarchive#" required="no"  
-			style="width:270px" 
+			style="width:260px" 
 			message="#stText.CustomTags.ArchiveMissing##mappings.currentrow#)"></cfif></td>
 		
 		<td class="tblContent" nowrap><cfif mappings.ReadOnly><cfif mappings.physicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onChange="checkTheBox(this)">
@@ -337,9 +332,9 @@ function checkTheRadio(field) {
 		
 		</td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:270px"></td>
+			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:260px"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:270px" ></td>
+			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:260px" ></td>
 		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onChange="checkTheBox(this)">
 			<option value="physical" selected>#stText.CustomTags.physical#</option>
 			<option value="archive">#stText.CustomTags.archive#</option>

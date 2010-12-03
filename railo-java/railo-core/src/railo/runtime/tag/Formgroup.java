@@ -1,6 +1,6 @@
 package railo.runtime.tag;
 
-import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.BodyTagImpl;
 
 public final class Formgroup extends BodyTagImpl {
@@ -20,8 +20,8 @@ public final class Formgroup extends BodyTagImpl {
 	private String tooltip;
 	private  String id;
 	
-	public Formgroup() throws ApplicationException {
-		throw new ApplicationException("Tag formgroup is not supported yet");
+	public Formgroup() throws TagNotSupported {
+		throw new TagNotSupported("formgroup");
 		// TODO impl tag formgroup
 	}
 	

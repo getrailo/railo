@@ -149,7 +149,7 @@ public final class Dump implements Function {
 		for(int i=0;i<traces.length;i++) {
 			trace=traces[i];
 			template=trace.getFileName();
-			if((line=trace.getLineNumber())<=0 || template==null || ResourceUtil.getExtension(template).equals("java")) continue;
+			if((line=trace.getLineNumber())<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
 			return template+":"+line;
 		}
 		return null;

@@ -850,7 +850,7 @@ public final class FileTag extends TagImpl {
 		} catch (PageException e) {
 			arr=null;
 		}
-		if(arr.length<2) return null;
+		if(arr.length<2) return "";
 		
 		return arr[arr.length-1];
 	}

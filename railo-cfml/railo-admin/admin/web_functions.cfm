@@ -94,8 +94,10 @@ function nullIfNoDate(fieldName) {
 function nullIfNoTime(fieldName) {
 	var h=trim(form[fieldName&"_hour"]);
 	var m=trim(form[fieldName&"_minute"]);
+	var s=0;
+	if(structKeyExists(form,fieldName&"_second") and isNumeric(trim(form[fieldName&"_second"]))) s=trim(form[fieldName&"_second"]);
 	if(isNumeric(h) and isNumeric(m)) {
-		return CreateTime(h,m,0);
+		return CreateTime(h,m,s);
 	}
 }
 

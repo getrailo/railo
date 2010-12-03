@@ -1,7 +1,9 @@
 package railo.runtime.cfx.customtag;
 
-//xxximport org.openbd.extension.cfx.CFXNativeLib;
+import java.lang.reflect.Method;
 
+import railo.commons.lang.ClassException;
+import railo.commons.lang.ClassUtil;
 import railo.runtime.cfx.CFXTagException;
 
 import com.allaire.cfx.CustomTag;
@@ -10,6 +12,9 @@ import com.allaire.cfx.Response;
 
 public class CPPCustomTag implements CustomTag {
 
+	// this is loaded dynamic, because the lib is optional
+	private static Method processRequest;
+	
 	private boolean keepAlive;
 	private String procedure;
 	private String serverLibrary;
@@ -18,17 +23,30 @@ public class CPPCustomTag implements CustomTag {
 		this.serverLibrary=serverLibrary;
 		this.procedure=procedure;
 		this.keepAlive=keepAlive;
-		try{
-			// invoked to make sure jar is available
-			//xxxnew CFXNativeLib();
-		}
-		catch(Throwable t){
-			throw new CFXTagException("C++ Custom tag library is missing, get the newest jars-zip from getrailo.org download");
+		if(processRequest==null){
+			Class clazz = null;
+			try {
+				clazz = ClassUtil.loadClass("com.naryx.tagfusion.cfx.CFXNativeLib");
+			} catch (ClassException e) {
+				
+
+				throw new CFXTagException(
+					"cannot initilaize C++ Custom tag library, make sure you have added all the required jars files. "+
+					"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\"");
+				
+			}
+			try {
+				processRequest=clazz.getMethod("processRequest", new Class[]{String.class,String.class,Request.class,Response.class,boolean.class});
+			} catch (NoSuchMethodException e) {
+				throw new CFXTagException(e);
+			}
 		}
 	}
 	
-	public void processRequest(Request request, Response response)throws Exception {
-		//xxxCFXNativeLib.processRequest(serverLibrary, procedure, request, response, keepAlive);
-	}
+	public void processRequest(Request request, Response response) throws Exception {
+		
+		processRequest.invoke(null, new Object[]{serverLibrary, procedure, request, response, keepAlive});
+		//CFXNativeLib.processRequest(serverLibrary, procedure, request, response, keepAlive);
+	} 
 
 }

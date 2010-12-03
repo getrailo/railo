@@ -11,12 +11,13 @@ import railo.runtime.i18n.LocaleFactory;
  * Implements the Cold Fusion Function setlocale
  */
 public final class SetLocale implements Function {
+	
+	private static final long serialVersionUID = -4941933470300726563L;
+
 	public static String call(PageContext pc , String strLocale) throws PageException {
 	       	Locale old=pc.getLocale();
-            pc.setLocale(strLocale);
+	       	pc.setLocale(LocaleFactory.getLocale(strLocale));
 	       	return LocaleFactory.toString(old);
 			
 	}
-	
-	
 }

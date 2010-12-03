@@ -3,7 +3,6 @@ package railo.commons.io.res.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import railo.aprint;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceLock;
 import railo.commons.lang.SerializableObject;
@@ -24,13 +23,14 @@ public final class ResourceLockImpl implements ResourceLock {
 	}
 
 	private Object token=new SerializableObject();
-	private Map resources=new HashMap();
+	private Map<String,Thread> resources=new HashMap<String,Thread>();
 	
 	/**
 	 * @see railo.commons.io.res.ResourceLock#lock(railo.commons.io.res.Resource)
 	 */
 	public void lock(Resource res) {
 		String path=getPath(res);
+		
 		synchronized(token)  {
 			_read(path);
 			resources.put(path,Thread.currentThread());
@@ -68,16 +68,15 @@ public final class ResourceLockImpl implements ResourceLock {
 		long start=-1,now;
 		Thread t;
 		do {
-			if((t=(Thread) resources.get(path))==null) {
+			if((t=resources.get(path))==null) {
 				//print.ln("read ok");
 				return;
 			}
 			if(t==Thread.currentThread()) {
-				aprint.err(path);
+				//aprint.err(path);
 				Config config = ThreadLocalPageContext.getConfig();
 				if(config!=null)
 					SystemOut.printDate(config.getErrWriter(),"conflict in same thread: on "+path);
-				
 				//throw new RuntimeException("conflict in same thread: on "+res);
 				return;
 			}

@@ -66,7 +66,7 @@ public class FDSignal {
 			ps=null;
 			if(trace.getLineNumber()<=0) continue;
 			template=trace.getFileName();
-			if(template==null || ResourceUtil.getExtension(template).equals("java")) continue;
+			if(template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
 			
 			res = ResourceUtil.toResourceNotExisting(pc, template);
 			ps = pc.toPageSource(res, null);

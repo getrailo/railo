@@ -1,6 +1,12 @@
 </TD></TD></TD></TH></TH></TH></TR></TR></TR></TABLE></TABLE></TABLE></A></ABBREV></ACRONYM></ADDRESS></APPLET></AU></B></BANNER></BIG></BLINK></BLOCKQUOTE></BQ></CAPTION></CENTER></CITE></CODE></COMMENT></DEL></DFN></DIR></DIV></DL></EM></FIG></FN></FONT></FORM></FRAME></FRAMESET></H1></H2></H3></H4></H5></H6></HEAD></I></INS></KBD></LISTING></MAP></MARQUEE></MENU></MULTICOL></NOBR></NOFRAMES></NOSCRIPT></NOTE></OL></P></PARAM></PERSON></PLAINTEXT></PRE></Q></S></SAMP></SCRIPT></SELECT></SMALL></STRIKE></STRONG></SUB></SUP></TABLE></TD></TEXTAREA></TH></TITLE></TR></TT></U></UL></VAR></WBR></XMP>
 <cfoutput>
+<cfsavecontent variable="plus"><cfinclude template="../../admin/resources/img/debug_plus.gif.cfm"></cfsavecontent>
+<cfsavecontent variable="minus"><cfinclude template="../../admin/resources/img/debug_minus.gif.cfm"></cfsavecontent>
 <script>
+<cfoutput>
+var plus='#plus#';
+var minus='#minus#';
+</cfoutput>
 function oc(id) {
 	var code=document.getElementById('__cp'+id);
 	var button=document.images['__btn'+id];
@@ -8,19 +14,19 @@ function oc(id) {
 		if(code.style.position=='absolute') {
 			code.style.position='relative';
 			code.style.visibility='visible';
-			button.src=button.src.replace('plus','minus');
 		}
 		else {
 			code.style.position='absolute';
 			code.style.visibility='hidden';
-			button.src=button.src.replace('minus','plus');
 		}
+		if(button.src==plus)button.src=minus;
+		else button.src=plus;
 	}
 }
 </script>
 <table border="0" cellpadding="4" cellspacing="2" style="font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;font-size : 11px;background-color:red;border : 1px solid black;;">
 <tr>
-	<td colspan="2" style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Railo #server.railo.version# Error (#ucFirst(catch.type)#)</td>
+	<td colspan="2" style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Railo #server.railo.version# Error (#(catch.type)#)</td>
 </tr>
 <cfparam name="catch.message" default="">
 <tr>
@@ -69,7 +75,7 @@ function oc(id) {
 			<cfset tc=catch.tagcontext[idx]>
 			<cfparam name="tc.codeprinthtml" default="">
 		<cfif len(tc.codeprinthtml)>
-		<img src="#cgi.context_path#/railo-context/admin/resources/img/debug_#iif(idx EQ 1,de('minus'),de('plus'))#.gif.cfm" 
+		<img src="#variables[idx EQ 1?'minus':'plus']#" 
 			style="margin-top:2px;" 
 			onclick="oc('#idx#');" 
 			name="__btn#idx#"/>

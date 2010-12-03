@@ -225,26 +225,24 @@ a.cfdebuglink {color:blue; background-color:white }
  --->
 <p class="cfdebug"><hr/><b class="cfdebuglge"><a name="cfdebug_scopevars">Scope Variables</a></b></p>
 
-<pre><b>CGI Variables:</b><cfloop index="key" list="#ListSort(StructKeyList(cgi),"textnocase")#">
-#uCase(key)#=#cgi[key]#</cfloop>
-</pre>
+<cfloop list="Application,CGI,Client,Cookie,Form,Request,Server,Session,URL" index="name">
+<cfset doPrint=true>
+<cftry>
+	<cfset scp=evaluate(name)>
+    <cfcatch><cfset doPrint=false></cfcatch>
+</cftry>
 
-<pre><b>Client Variables:</b><cftry><cfloop index="key" list="#ListSort(StructKeyList(client),"textnocase")#">
-#(key)#=#client[key]#</cfloop><cfcatch>Client Scope is disabled</cfcatch></cftry>
+<cfif doPrint and structCount(scp)>
+<pre><b>#name# Variables:</b><cftry><cfloop index="key" list="#ListSort(StructKeyList(scp),"textnocase")#">
+#(key)#=<cftry><cfif IsSimpleValue(scp[key])>#scp[key]#<!--- 
+---><cfelseif isArray(scp[key])>Array (#arrayLen(scp[key])#)<!--- 
+---><cfelseif isValid('component',scp[key])>Component (#GetMetaData(scp[key]).name#)<!--- 
+---><cfelseif isStruct(scp[key])>Struct (#StructCount(scp[key])#)<!--- 
+---><cfelseif IsQuery(scp[key])>Query (#scp[key].recordcount#)<!--- 
+---><cfelse>Complex type</cfif><cfcatch></cfcatch></cftry></cfloop><cfcatch>error (#cfcatch.message#) occurred while displaying Scope #name#</cfcatch></cftry>
 </pre>
-
-<pre><b>Cookie Variables:</b><cftry><cfloop index="key" list="#ListSort(StructKeyList(cookie),"textnocase")#">
-#uCase(key)#=#cookie[key]#</cfloop><cfcatch>Cookie Scope is disabled</cfcatch></cftry>
-</pre>
-
-<pre><b>Session Variables:</b><cftry><cfloop index="key" list="#ListSort(StructKeyList(session),"textnocase")#">
-#(key)#=<cftry><cfif IsSimpleValue(session[key])>#session[key]#<!--- 
----><cfelseif isArray(session[key])>Array (#arrayLen(session[key])#)<!--- 
----><cfelseif isValid('component',session[key])>Component (#GetMetaData(session[key]).name#)<!--- 
----><cfelseif isStruct(session[key])>Struct (#StructCount(session[key])#)<!--- 
----><cfelseif IsQuery(session[key])>Query (#session[key].recordcount#)<!--- 
----><cfelse>Complex type</cfif><cfcatch></cfcatch></cftry></cfloop><cfcatch>Session Scope is disabled</cfcatch></cftry>
-</pre>
+</cfif>
+</cfloop>
 
 <font size="-1" class="cfdebug"><i>Debug Rendering Time: #getTickCount()-time# ms</i></font><br />
 	</td>

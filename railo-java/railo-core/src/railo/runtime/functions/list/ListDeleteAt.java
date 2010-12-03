@@ -13,33 +13,22 @@ public final class ListDeleteAt implements Function {
 	private static char[] DEFAULT_DELIMETER=new char[]{','};
 	
 	public static String call(PageContext pc , String list, double pos) throws ExpressionException {
-		return _call(pc,list,(int)pos,DEFAULT_DELIMETER);
+		return _call(pc,list,(int)pos,DEFAULT_DELIMETER,false);
 	}
 	
-
 	public static String call(PageContext pc, String list, double posNumber, String del) throws ExpressionException {
-		return _call(pc, list, (int)posNumber, del.toCharArray());
+		return _call(pc, list, (int)posNumber, del.toCharArray(),false);
+	}
+	
+	public static String call(PageContext pc, String list, double posNumber, String del, boolean includeEmptyFields) throws ExpressionException {
+		return _call(pc, list, (int)posNumber, del.toCharArray(),includeEmptyFields);
 	}
 	
 	
-	/*public static void main(String[] args) throws ExpressionException {
-		
-		print( ",,,.;;,,bbb,ccc,,,",2,",.;");
-		print(",,,.;;,,aaa,,,",1,",.;");
-		
-		
-	}
+
 	
 
-    private static void print(String str, int pos,String del) throws ExpressionException {
-    	print.out("--------------");
-    	print.out(_call(null, str, pos,del.toCharArray()));
-    	print.out(_call(null, str, pos,del));
-		
-	}*/
-
-
-	public static String _call(PageContext pc, String list, int pos, char[] del) throws ExpressionException {
+	public static String _call(PageContext pc, String list, int pos, char[] del, boolean includeEmptyFields) throws ExpressionException {
     	
     	StringBuilder sb = new StringBuilder();
     	int len=list.length();
@@ -53,7 +42,7 @@ public final class ListDeleteAt implements Function {
     	int i=0;
     	
     	// ignore all delimeter at start
-    	for(;i<len;i++){
+    	if(!includeEmptyFields)for(;i<len;i++){
     		c=list.charAt(i);
     		if(!equal(del,c)) break;
     		sb.append(c);
@@ -65,14 +54,15 @@ public final class ListDeleteAt implements Function {
     		c=list.charAt(i);
     		if(index==pos && !equal(del,c)) break;
     		if(equal(del,c)) {
-    			if(!equal(del,last))index++;
+    			if(includeEmptyFields || !equal(del,last))
+    				index++;
     		}
     		sb.append(c);
     		last=c;
     	}
     	
     	
-    	// supress item
+    	// suppress item
     	for(;i<len;i++){
     		if(equal(del,list.charAt(i))) break;
     	}

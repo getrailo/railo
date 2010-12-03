@@ -299,16 +299,21 @@ public final class Caster {
      * @throws PageException 
      */
     public static boolean toBooleanValue(String str) throws PageException {
-        try {
-            return stringToBooleanValue(str.toString());
-        } catch(ExpressionException e) {
-            try {
-                return toBooleanValue(toDoubleValue(str));
-            } catch(ExpressionException ee) {
-                throw new CasterException("Can't cast String ["+str+"] to a boolean");
-            }
-        }
+    	Boolean b = toBoolean(str,null);
+    	if(b!=null) return b.booleanValue();
+    	throw new CasterException("Can't cast String ["+str+"] to a boolean");
     }
+    
+    public static Boolean toBoolean(String str, Boolean defaultValue) {
+    	int i=stringToBooleanValueEL(str);
+    	if(i!=-1) return (i==1)?Boolean.TRUE:Boolean.FALSE;
+    	
+    	double d=toDoubleValue(str,Double.NaN);
+    	if(!Double.isNaN(d)) return toBoolean(d);
+    	
+    	return defaultValue;
+    }
+    
 
     /**
      * cast a Object to a Double Object (reference Type)
@@ -408,6 +413,11 @@ public final class Caster {
         throw new CasterException(o,"number");
     }
 
+    public static double toDoubleValue(Double d) throws PageException {
+        if(d == null) return 0;
+        return d.doubleValue();
+    }
+    
     /**
      * cast a Object to a double value (primitive value Type)
      * @param str String to cast
@@ -939,13 +949,8 @@ public final class Caster {
         else if(o instanceof Double) return toBooleanValue(((Double)o).doubleValue());
         else if(o instanceof Number) return toBooleanValue(((Number)o).doubleValue());
         else if(o instanceof String) {
-            try {
-                return stringToBooleanValue(o.toString());
-            } catch(ExpressionException e) {
-                try {
-                    return toBooleanValue(toDoubleValue(o));
-                } catch(PageException ee) {}
-            }
+            Boolean b = toBoolean(o.toString(),null);
+        	if(b!=null) return b;
         }
         //else if(o instanceof Clob) return toBooleanValueEL(toStringEL(o));
         else if(o instanceof Castable) {
@@ -4192,6 +4197,17 @@ public final class Caster {
 		if(o instanceof UDF) return (UDF) o;
 		 throw new CasterException(o,"UDF");
     }
+
+	public static BigDecimal toBigDecimal(Object o) throws PageException {
+		if(o instanceof BigDecimal) return (BigDecimal) o;
+		if(o instanceof Number) return new BigDecimal(((Number)o).doubleValue());
+        else if(o instanceof Boolean) return new BigDecimal(((Boolean)o).booleanValue()?1:0);
+        else if(o instanceof String) return new BigDecimal(o.toString());
+        else if(o instanceof Castable) return new BigDecimal(((Castable)o).castToDoubleValue());
+        else if(o == null) return BigDecimal.ZERO;
+        else if(o instanceof ObjectWrap) return toBigDecimal(((ObjectWrap)o).getEmbededObject());
+        throw new CasterException(o,"number");
+	}
 
 
 	

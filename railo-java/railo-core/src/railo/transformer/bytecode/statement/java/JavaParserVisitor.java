@@ -14,6 +14,7 @@ import japa.parser.ast.expr.LongLiteralExpr;
 import japa.parser.ast.expr.LongLiteralMinValueExpr;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.NullLiteralExpr;
+import japa.parser.ast.expr.ObjectCreationExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
 import japa.parser.ast.expr.UnaryExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
@@ -27,13 +28,16 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 import org.objectweb.asm.Label;
 
+import railo.print;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
+import railo.commons.lang.StringUtil;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.NullExpression;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
+import railo.transformer.bytecode.literal.LitFloat;
 import railo.transformer.bytecode.literal.LitInteger;
 import railo.transformer.bytecode.literal.LitLong;
 import railo.transformer.bytecode.literal.LitString;
@@ -102,7 +106,7 @@ public class JavaParserVisitor extends VoidVisitorAdapter {
 		db.rtn.clear();
 	}
 	
-	/*3
+	/**
 	 * @see japa.parser.ast.visitor.VoidVisitorAdapter#visit(japa.parser.ast.body.VariableDeclaratorId, java.lang.Object)
 	 */
 	public void visit(VariableDeclaratorId n, Object arg) {
@@ -194,7 +198,8 @@ public class JavaParserVisitor extends VoidVisitorAdapter {
 			Object value=db.rtn.pop();
 			String name = (String) db.rtn.pop();
 			Class type = (Class) db.rtn.pop();
-			
+			print.e("type:"+n.getType());
+			print.e("value:"+value);
 			append(db, new VariableDecl(n.getBeginLine(), type, name, value,db));
 		}
 		else {
@@ -202,11 +207,17 @@ public class JavaParserVisitor extends VoidVisitorAdapter {
 			Class type = (Class) db.rtn.pop();
 			append(db, new VariableDecl(n.getBeginLine(), type, name, null,db));
 		}
-		
-		
 	}
 	
-
+	/* (non-Javadoc)
+	 * @see japa.parser.ast.visitor.VoidVisitorAdapter#visit(japa.parser.ast.expr.ObjectCreationExpr, java.lang.Object)
+	 */
+	public void visit(ObjectCreationExpr n, Object arg) {
+		System.err.println("ObjectCreationExpr:"+n);
+		
+		
+		super.visit(n, arg);
+	}
 	
 	
 	// LITERAL
@@ -243,14 +254,22 @@ public class JavaParserVisitor extends VoidVisitorAdapter {
 	 * @see japa.parser.ast.visitor.VoidVisitorAdapter#visit(japa.parser.ast.expr.DoubleLiteralExpr, java.lang.Object)
 	 */
 	public void visit(DoubleLiteralExpr n, Object arg) {
-		String str=n.getValue();
-		str=str.substring(0,str.length()-1);
-		
-
+		String str=n.getValue().trim();
 		DataBag db=toDataBag(arg);
-		append(db, LitDouble.toExprDouble(Double.valueOf(str),n.getBeginLine()));// TODO 0X 0
+
+		// float
+		if(StringUtil.endsWithIgnoreCase(str, "f")) {
+			str=str.substring(0,str.length()-1);
+			append(db, LitFloat.toExprFloat(Float.valueOf(str),n.getBeginLine()));
+			return;
+		}
 		
-		//super.visit(n, arg);
+		// double
+		if(StringUtil.endsWithIgnoreCase(str, "d")) {
+			str=str.substring(0,str.length()-1);	
+		}
+		append(db, LitDouble.toExprDouble(Double.valueOf(str),n.getBeginLine()));
+		
 	}
 
 	/* (non-Javadoc)
@@ -302,23 +321,7 @@ public class JavaParserVisitor extends VoidVisitorAdapter {
 
 	private void append(DataBag db, Object o) {
 		db.rtn.add(o);
-		/*if(db.rtn!=null) {
-			Stack<Object> stack;
-			if(db.rtn instanceof Stack) {
-				stack=(Stack<Object>) db.rtn;
-			}
-			else {
-				stack=new Stack<Object>();
-				stack.add(db.rtn);
-				db.rtn=stack;
-			}
-			stack.add(o);
-		}
-		else db.rtn=o;*/
 	}
-	/*private void set(DataBag db, Object o) {
-		db.rtn=o;
-	}*/
 
 	private DataBag setLine(DataBag db) {
 		// TODO Auto-generated method stub
@@ -346,6 +349,7 @@ public class JavaParserVisitor extends VoidVisitorAdapter {
 		}
 	}
 	private static Class loadPrimitiveClass(String type)  {
+		if("byte".equalsIgnoreCase(type)) return byte.class;
 		if("boolean".equalsIgnoreCase(type)) return boolean.class;
 		if("char".equalsIgnoreCase(type)) return char.class;
 		if("short".equalsIgnoreCase(type)) return short.class;

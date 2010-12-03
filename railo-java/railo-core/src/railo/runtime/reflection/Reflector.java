@@ -1089,5 +1089,39 @@ public final class Reflector {
 		return (Method[]) list.toArray(new Method[list.size()]);
 	}
 
+	/**
+	 * check if given class "from" can be converted to class "to" without explicit casting
+	 * @param from source class
+	 * @param to target class
+	 * @return is it possible to convert from "from" to "to"
+	 */
+	public static boolean canConvert(Class from, Class to) {
+		// Identity Conversions
+		if(from==to) return true;
+		
+		// Widening Primitive Conversion
+		if(from==byte.class) {
+			return to==short.class || to==int.class || to==long.class || to==float.class || to==double.class ;
+		}
+		if(from==short.class) {
+			return to==int.class || to==long.class || to==float.class || to==double.class ;
+		}
+		if(from==char.class) {
+			return to==int.class || to==long.class || to==float.class || to==double.class ;
+		}
+		if(from==int.class) {
+			return to==long.class || to==float.class || to==double.class ;
+		}
+		if(from==long.class) {
+			return to==float.class || to==double.class ;
+		}
+		if(from==float.class) {
+			return to==double.class ;
+		}
+		return false;
+	}
+
+	
+
 	 
 }

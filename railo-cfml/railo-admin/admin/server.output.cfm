@@ -32,7 +32,8 @@ Defaults --->
 				type="#request.adminType#"
 				password="#session["password"&request.adminType]#"
 				
-				supressWhiteSpace="#isDefined('form.supressWhitespace') and form.supressWhitespace#"
+				suppressWhiteSpace="#isDefined('form.suppressWhitespace') and form.suppressWhitespace#"
+				suppressContent="#isDefined('form.suppressContent') and form.suppressContent#"
 				showVersion="#isDefined('form.showVersion') and form.showVersion#"
 				remoteClients="#request.getRemoteClients()#">
 	
@@ -45,7 +46,8 @@ Defaults --->
 				type="#request.adminType#"
 				password="#session["password"&request.adminType]#"
 				
-				supressWhiteSpace=""
+				suppressWhiteSpace=""
+				suppressContent=""
 				showVersion=""
                 
 				remoteClients="#request.getRemoteClients()#">
@@ -74,7 +76,11 @@ Redirtect to entry --->
 
 <!--- 
 Create Datasource --->
-<cfoutput><table class="tbl" width="600">
+<cfoutput><table class="tbl" width="740">
+<colgroup>
+    <col width="250">
+    <col width="490">
+</colgroup>
 <tr>
 	<td colspan="2">#stText.setting[request.adminType]#</td>
 </tr>
@@ -89,15 +95,14 @@ Create Datasource --->
 	<td class="tblContent">
 		<span class="comment">
 		<cfif hasAccess>
-			<input type="checkbox" name="supressWhitespace" value="true" <cfif setting.supressWhitespace>checked="checked"</cfif>>
+			<input type="checkbox" name="suppressWhitespace" value="true" <cfif setting.suppressWhitespace>checked="checked"</cfif>>
 		<cfelse>
-			<input type="hidden" name="supressWhitespace" value="#setting.supressWhitespace#">
+			<input type="hidden" name="suppressWhitespace" value="#setting.suppressWhitespace#">
 		</cfif>#stText.setting.whitespaceDescription#</span>
 	</td>
 </tr>
 
 <!--- Show Version --->
-<cfif server.ColdFusion.ProductLevel NEQ "community">
 <tr>
 	<td class="tblHead" width="150">#stText.setting.showVersion#</td>
 	<td class="tblContent">
@@ -110,9 +115,22 @@ Create Datasource --->
 		</cfif><span class="comment">#stText.setting.showVersionDescription#</span>
 	</td>
 </tr>
-<cfelse>
-<input type="hidden" name="showVersion" value="true">
-</cfif>
+
+<cfset stText.setting.suppressContent="Supress Content for CFC Remoting">
+<cfset stText.setting.suppressContentDescription="Suppress content written to response stream when a Component is invoked remotely. Only work when content not was flushed before.">
+<!--- Supress Content when CFC Remoting --->
+<tr>
+	<td class="tblHead" width="150">#stText.setting.suppressContent#</td>
+	<td class="tblContent">
+		
+		<cfif hasAccess>
+			<input type="checkbox" name="suppressContent" value="true" <cfif setting.suppressContent>checked="checked"</cfif>>
+		<cfelse>
+			<b>#iif(setting.suppressContent,de('Yes'),de('No'))#</b>
+			<input type="hidden" name="showVersion" value="#setting.suppressContent#">
+		</cfif><span class="comment">#stText.setting.suppressContentDescription#</span>
+	</td>
+</tr>
 
 <cfif hasAccess>
 <cfmodule template="remoteclients.cfm" colspan="2">

@@ -26,7 +26,7 @@ public final class ToBase64 implements Function {
 	 * @throws PageException
 	 */
 	public static String call(PageContext pc , Object object, String encoding) throws PageException {
-		return Caster.toBase64(object);
+		return Caster.toBase64(object);// MUST encoding support
 		//throw new ExpressionException("method tobase64 not implemented yet");
 	}
 }

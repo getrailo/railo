@@ -10,6 +10,9 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.List;
 
 public final class ListToArray implements Function {
+	
+	private static final long serialVersionUID = 5883854318455975404L;
+
 	public static Array call(PageContext pc , String list) {
 		if(list.length()==0) 
 			return new ArrayImpl();

@@ -119,10 +119,12 @@ function selectAll(field) {
 
 <!---- READ ONLY ---->
 <cfif request.adminType EQ "web" and srcGlobal.recordcount>
-	<h2>#stText.Settings.cache.titleReadOnly#</h2>
-	#stText.Settings.cache.descReadOnly#
-<table class="tbl" width="570">
 
+<table class="tbl" width="740">
+<tr>
+		<td colspan="4"><h2>#stText.Settings.cache.titleReadOnly#</h2>
+	#stText.Settings.cache.descReadOnly#</td>
+	</tr>
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<cfif access EQ "yes"><td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td></cfif>
@@ -185,21 +187,23 @@ function selectAll(field) {
 	</tr>
     </cfif>
 </cfform>
-</table>
+</table><br /><br />
 </cfif>
 
 <!--- LIST CACHE --->
 <cfif srcLocal.recordcount and access EQ "yes">
-	<h2>#stText.Settings.cache.titleExisting#</h2>
-	#stText.Settings.cache.descExisting#
-<table class="tbl" width="570">
 
+<table class="tbl" width="740" border="0">
+<tr>
+		<td colspan="4"><h2>#stText.Settings.cache.titleExisting#</h2>#stText.Settings.cache.descExisting#</td>
+	</tr>
+	
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<tr>
-		<td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td>
-		<td width="240" class="tblHead" nowrap>#stText.Settings.cache.name#</td>
-		<td width="240" class="tblHead" nowrap># stText.Settings.cache.type#</td>
-		<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
+		<td width="60"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td>
+		<td width="305" class="tblHead" nowrap>#stText.Settings.cache.name#</td>
+		<td width="305" class="tblHead" nowrap># stText.Settings.cache.type#</td>
+		<td width="70" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 	</tr>
 	<cfloop query="srcLocal">
     	<cftry>
@@ -275,10 +279,12 @@ function selectAll(field) {
 <cfif connections.recordcount and access EQ "yes">
 <cfoutput>
 	
-	<h2>#stText.Settings.cache.defaultTitle#</h2>
-    #stText.Settings.cache.defaultDesc#
-	<table class="tbl" width="350">
+	
     
+	<table class="tbl" width="740">
+    <tr>
+		<td colspan="2"><h2>#stText.Settings.cache.defaultTitle#</h2>#stText.Settings.cache.defaultDesc#</td>
+	</tr>
 	<cfform action="#request.self#?action=#url.action#" method="post">
     <cfloop index="type" list="object,template,query,resource"><!---  --->
 	<tr>
@@ -310,8 +316,12 @@ function selectAll(field) {
 	<cfset _drivers=ListSort(StructKeyList(drivers),'textnocase')>
 	
     <cfif listLen(_drivers)>
-    <h2>#stText.Settings.cache.titleCreate#</h2>
+    
 	<table class="tbl" width="350">
+    
+	<tr>
+		<td colspan="2"><h2>#stText.Settings.cache.titleCreate#</h2></td>
+	</tr>
 	<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.cache.Name#</td>

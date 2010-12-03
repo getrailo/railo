@@ -72,7 +72,12 @@ Error Output --->
 <cfset printError(error)>
 <!--- 
 Create Datasource --->
-<cfoutput><table class="tbl" width="600">
+<cfoutput>
+<table class="tbl" width="740">
+<colgroup>
+    <col width="150">
+    <col width="590">
+</colgroup>
 <tr>
 	<td colspan="2">#stText.charset[request.adminType]#</td>
 </tr>

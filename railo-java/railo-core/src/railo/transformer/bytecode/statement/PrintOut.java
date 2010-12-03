@@ -23,18 +23,9 @@ public final class PrintOut extends StatementBase {
     
     Expression expr;
 
-	private boolean preserveSingleQuote;
+	private boolean checkPSQ;
 
-    /**
-     * constructor of the class
-     * @param expr
-     * @param line 
-     */
-    public PrintOut(Expression expr, boolean preserveSingleQuote, int line) {
-        super(line);
-        this.preserveSingleQuote=preserveSingleQuote;
-        this.expr=expr;
-    }
+  
     
     /**
      * constructor of the class
@@ -53,11 +44,11 @@ public final class PrintOut extends StatementBase {
     public void _writeOut(BytecodeContext bc) throws BytecodeException {
     	GeneratorAdapter adapter = bc.getAdapter();
         adapter.loadArg(0);
-        if(preserveSingleQuote)
+        if(checkPSQ)
         	expr.writeOut(bc,Expression.MODE_REF);
         else
         	CastString.toExprString(expr).writeOut(bc,Expression.MODE_REF);
-        adapter.invokeVirtual(Types.PAGE_CONTEXT,preserveSingleQuote?METHOD_WRITE_PSQ:METHOD_WRITE);
+        adapter.invokeVirtual(Types.PAGE_CONTEXT,checkPSQ?METHOD_WRITE_PSQ:METHOD_WRITE);
     }
 
 
@@ -75,17 +66,11 @@ public final class PrintOut extends StatementBase {
 		this.expr = expr;
 	}
 
-	/**
-	 * @return the preserveSingleQuote
-	 */
-	public boolean isPreserveSingleQuote() {
-		return preserveSingleQuote;
-	}
 
 	/**
 	 * @param preserveSingleQuote the preserveSingleQuote to set
 	 */
-	public void setPreserveSingleQuote(boolean preserveSingleQuote) {
-		this.preserveSingleQuote = preserveSingleQuote;
+	public void setCheckPSQ(boolean checkPSQ) {
+		this.checkPSQ = checkPSQ;
 	}
 }

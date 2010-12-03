@@ -152,16 +152,9 @@ public final class ScopeContext {
 					client=ClientMemory.getInstance(pc);
 				}
 				else{
-					
-					// OLD client=ClientDatasource.getInstance(storage,appContext.getName(),pc);
-					
-					// NEW
 					DataSource ds = ((ConfigImpl)pc.getConfig()).getDataSource(storage,null);
-					if(ds!=null)client=ClientDatasource.getInstance(storage,appContext.getName(),pc);
+					if(ds!=null)client=ClientDatasource.getInstance(storage,pc);
 					else client=ClientCache.getInstance(storage,appContext.getName(),pc);
-					// /NEW
-					//storage="db";
-					
 				}
 				context.put(pc.getCFID()+storage,client);
 			}
@@ -190,15 +183,10 @@ public final class ScopeContext {
 					client=ClientMemory.getInstance(pc);
 				}
 				else{
-					// OLD client=ClientDatasource.getInstanceEL(storage,appContext.getName(),pc);
-					
-					// NEW
 					DataSource ds = ((ConfigImpl)pc.getConfig()).getDataSource(storage,null);
-					if(ds!=null)client=ClientDatasource.getInstanceEL(storage,appContext.getName(),pc);
+					if(ds!=null)client=ClientDatasource.getInstanceEL(storage,pc);
 					else client=ClientCache.getInstanceEL(storage,appContext.getName(),pc);
-					// /NEW
-					
-					
+
 				}
 				context.put(pc.getCFID()+storage,client);
 			}

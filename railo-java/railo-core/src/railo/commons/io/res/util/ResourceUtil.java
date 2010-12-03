@@ -15,6 +15,7 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.ContentType;
 import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
@@ -621,14 +622,21 @@ public final class ResourceUtil {
      * @throws IOException
      */
     public static void touch(Resource res) throws IOException {
-    	
-        if(res.exists()) {
-            res.setLastModified(System.currentTimeMillis());
-        }
-        else {
-            res.createFile(true);
-        }
+    	ResourceProvider provider = res.getResourceProvider();
+    	try{
+    		provider.lock(res);
+	        if(res.exists()) {
+	            res.setLastModified(System.currentTimeMillis());
+	        }
+	        else {
+	            res.createFile(true);
+	        }
+    	}
+    	finally {
+    		provider.unlock(res);
+    	}
     }
+    	
     
 
     /**
@@ -733,8 +741,8 @@ public final class ResourceUtil {
      * @param res
      * @return extension of file
      */
-    public static String getExtension(Resource res) {
-        return getExtension(res.getName());
+    public static String getExtension(Resource res, String defaultValue) {
+        return getExtension(res.getName(),defaultValue);
     }
 
     /**
@@ -742,9 +750,9 @@ public final class ResourceUtil {
      * @param strFile
      * @return extension of file
      */
-    public static String getExtension(String strFile) {
+    public static String getExtension(String strFile, String defaultValue) {
         int pos=strFile.lastIndexOf('.');
-        if(pos==-1)return null;
+        if(pos==-1)return defaultValue;
         return strFile.substring(pos+1);
     }
     
@@ -774,7 +782,7 @@ public final class ResourceUtil {
      * @return  file with new Extension
      */
     public static Resource changeExtension(Resource file, String newExtension) {
-        String ext=getExtension(file);
+        String ext=getExtension(file,null);
         if(ext==null) return file.getParentResource().getRealResource(file.getName()+'.'+newExtension);
         //new File(file.getParentFile(),file.getName()+'.'+newExtension);
         String name=file.getName();
@@ -1226,6 +1234,14 @@ public final class ResourceUtil {
 		if(dir==null || !dir.isDirectory()) return 0;
 		if(filter==null) return dir.list().length;
 		return dir.list(filter).length;
+	}
+	
+	public static String[] names(Resource[] resources) {
+		String[] names=new String[resources.length];
+		for(int i=0;i<names.length;i++){
+			names[i]=resources[i].getName();
+		}
+		return names;
 	}
 
 }

@@ -30,6 +30,8 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
     private int isolation=Connection.TRANSACTION_NONE;
     private int action=ACTION_NONE;
     private boolean innerTag=false;
+
+	private boolean ignore=false;
     
     /**
      * @see railo.runtime.ext.tag.BodyTagImpl#release()
@@ -40,6 +42,7 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
         action=ACTION_NONE;
         innerTag=false;
         super.release();
+        ignore=false;
     }
 
     /**
@@ -87,10 +90,17 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
         // inside transaction
         innerTag=true;
         switch(action){
+        /* nested transaction no longer throw a exception, they are simply ignored
         case ACTION_NONE:
         	throw new DatabaseException("you can't have a nested transaction with no action defined",null,null,null);
         case ACTION_BEGIN:
             throw new DatabaseException("you can't start a transaction inside a transaction tag",null,null,null);
+        */
+        case ACTION_NONE:
+        case ACTION_BEGIN:
+            ignore=true;
+            break;
+        
         case ACTION_COMMIT:
         	manager.commit();
         break;
@@ -109,9 +119,9 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
      * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doCatch(java.lang.Throwable)
      */
     public void doCatch(Throwable t) throws Throwable {
-    	
-        DataSourceManager manager = pageContext.getDataSourceManager();
-        if(innerTag) throw t;
+    	if(innerTag || ignore) throw t;
+        
+    	DataSourceManager manager = pageContext.getDataSourceManager();
         try {
             manager.rollback();
         } catch (DatabaseException e) {
@@ -131,9 +141,8 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
      * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doFinally()
      */
     public void doFinally() {
-        DataSourceManager manager = pageContext.getDataSourceManager();
-        if(!innerTag) {
-            manager.end();
+    	if(!ignore && !innerTag) {
+        	pageContext.getDataSourceManager().end();
         }
         super.doFinally();
     }
@@ -142,9 +151,9 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
      * @see railo.runtime.ext.tag.BodyTagImpl#doAfterBody()
      */
     public int doAfterBody() throws JspException {
-        DataSourceManager manager = pageContext.getDataSourceManager();
-        if(!innerTag) {
-            manager.commit();
+    	
+        if(!ignore && !innerTag) {
+        	pageContext.getDataSourceManager().commit();
         }
         return super.doAfterBody();
     }

@@ -17,11 +17,11 @@ public final class Function implements AttributeEvaluator {
 	/**
 	 * @see railo.transformer.cfml.attributes.AttributeEvaluator#evaluate(railo.transformer.library.tag.TagLibTag, org.w3c.dom.Element)
 	 */
-	public void evaluate( TagLibTag tagLibTag, Tag tag) throws AttributeEvaluatorException {
+	public TagLibTag evaluate( TagLibTag tagLibTag, Tag tag) throws AttributeEvaluatorException {
 		tagLibTag.setParseBody(false);
 		
 		Attribute attrOutput = tag.getAttribute("output");
-		if(attrOutput==null) return;
+		if(attrOutput==null) return tagLibTag;
 		
 		Expression expr = CastBoolean.toExprBoolean(attrOutput.getValue());
 		
@@ -30,5 +30,7 @@ public final class Function implements AttributeEvaluator {
 		boolean output = ((LitBoolean)expr).getBooleanValue();
 		if(output)
 			tagLibTag.setParseBody(true);
+		
+		return tagLibTag;
 	}
 }

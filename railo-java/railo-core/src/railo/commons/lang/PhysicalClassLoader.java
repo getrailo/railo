@@ -126,10 +126,11 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
 			
 		} 
         catch (Throwable t) {
-			t.printStackTrace();
 			SystemUtil.sleep(1);
-			defineClass(name,barr,0,barr.length);
-			SystemUtil.sleep(1);
+			try {
+	    		defineClass(name,barr,0,barr.length);
+			} 
+	        catch (Throwable t2) {SystemUtil.sleep(1);}
 		}
     	
     	

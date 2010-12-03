@@ -1,1 +1,1 @@
-data:image/gif;base64,R0lGODlhCgAKAIAAAFlfcwAAACH5BAAAAAAALAAAAAAKAAoAAAIIhI+py+0PYysAOw==
+<cfsavecontent variable="c">R0lGODlhCgAKAIAAAFlfcwAAACH5BAAAAAAALAAAAAAKAAoAAAIIhI+py+0PYysAOw==</cfsavecontent><cfoutput><cfif getBaseTemplatePath() EQ getCurrentTemplatePath()><cfcontent type="image/gif" variable="#toBinary(c)#"><cfsetting showdebugoutput="no"><cfelse>data:image/gif;base64,#c#</cfif></cfoutput>

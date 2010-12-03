@@ -1,6 +1,6 @@
 package railo.runtime.tag;
 
-import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.BodyTagImpl;
 
 public final class Formitem extends BodyTagImpl {
@@ -15,8 +15,8 @@ public final class Formitem extends BodyTagImpl {
 	private  String bind;
 	
 
-	public Formitem() throws ApplicationException {
-		throw new ApplicationException("Tag formitem is not supported yet");
+	public Formitem() throws TagNotSupported {
+		throw new TagNotSupported("formitem");
 		// TODO impl. Tag formItem
 	}
 	

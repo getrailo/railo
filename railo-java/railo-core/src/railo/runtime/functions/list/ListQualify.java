@@ -11,38 +11,49 @@ import railo.runtime.type.List;
  * Implements the Cold Fusion Function listqualify
  */
 public final class ListQualify implements Function {
+	
+	private static final long serialVersionUID = -7450079285934992224L;
+	
 	public static String call(PageContext pc , String list, String qualifier) {
-		return call(pc,list,qualifier,",","all", false);
+		return call(pc,list,qualifier,",","all", false, false);
 	}
+
 	public static String call(PageContext pc , String list, String qualifier, String delimeter) {
-		return call(pc,list,qualifier,delimeter,"all", false);
+		return call(pc,list,qualifier,delimeter,"all", false, false);
 	}
 
-
-	public static String call(PageContext pc , String list, String qualifier, String delimeter, String scope) {
-		return call(pc, list, qualifier, delimeter, scope, false);
+	public static String call(PageContext pc , String list, String qualifier, String delimeter, String elements) {
+		return call(pc, list, qualifier, delimeter, elements, false, false);
 	}
 	
-	public static String call(PageContext pc , String list, String qualifier, String delimeter, String scope, boolean psq) {
-	   		if(list.length()==0) return "";
+	public static String call(PageContext pc , String list, String qualifier, String delimeter, String elements, boolean includeEmptyFields) {
+		return call(pc, list, qualifier, delimeter, elements, false, false);
+	}
+	
+	public static String call(PageContext pc , String list, String qualifier, String delimeter, String elements, boolean includeEmptyFields, 
+			boolean psq // this is used only internally by railo, search for "PSQ-BIF" in code
+			) {
+	   	
+		if(list.length()==0) return "";
 		if(psq)list=StringUtil.replace(list, "'", "''", false);
-		Array arr=List.listToArrayRemoveEmpty(list,delimeter);
+		
+	   	Array arr=includeEmptyFields?List.listToArray(list,delimeter):List.listToArrayRemoveEmpty(list,delimeter);
 		
 		boolean isQChar=qualifier.length()==1;
 		boolean isDChar=delimeter.length()==1;
 		
-		if(isQChar && isDChar) return doIt(arr,qualifier.charAt(0),delimeter.charAt(0),scope);
-		else if(isQChar && !isDChar) return doIt(arr,qualifier.charAt(0),delimeter,scope);
-		else if(!isQChar && isDChar) return doIt(arr,qualifier,delimeter.charAt(0),scope);
-		else return doIt(arr,qualifier,delimeter,scope);
+		if(isQChar && isDChar) return doIt(arr,qualifier.charAt(0),delimeter.charAt(0),elements);
+		else if(isQChar && !isDChar) return doIt(arr,qualifier.charAt(0),delimeter,elements);
+		else if(!isQChar && isDChar) return doIt(arr,qualifier,delimeter.charAt(0),elements);
+		else return doIt(arr,qualifier,delimeter,elements);
 		
 	}
 
-    private static String doIt(Array arr, char qualifier, char delimeter, String scope) {
+    private static String doIt(Array arr, char qualifier, char delimeter, String elements) {
         StringBuffer rtn=new StringBuffer();
         int len=arr.size();
         
-		if(StringUtil.toLowerCase(scope).equals("all")) {
+		if(StringUtil.toLowerCase(elements).equals("all")) {
 			rtn.append(qualifier);
 			rtn.append(arr.get(1,""));
 			rtn.append(qualifier);

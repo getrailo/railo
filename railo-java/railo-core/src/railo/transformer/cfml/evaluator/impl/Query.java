@@ -63,12 +63,19 @@ public final class Query extends EvaluatorSupport {
 							else if(bif.getClassName().equals(ListQualify.class.getName())) {
 								Argument[] args = bif.getArguments();
 								List<Argument> arr=new ArrayList<Argument>();
+								
+								// first get existing arguments
 								arr.add(args[0]);
 								arr.add(args[1]);
 								if(args.length>=3)arr.add(args[2]);
 								else arr.add(new Argument(LitString.toExprString(","),"string"));
 								if(args.length>=4)arr.add(args[3]);
 								else arr.add(new Argument(LitString.toExprString("all"),"string"));
+								if(args.length>=5)arr.add(args[4]);
+								else arr.add(new Argument(LitBoolean.toExprBoolean(false),"boolean"));
+								
+								
+								// PSQ-BIF DO NOT REMOVE THIS COMMENT
 								arr.add(new Argument(LitBoolean.toExprBoolean(true),"boolean"));
 								bif.setArguments(arr.toArray(new Argument[arr.size()]));
 								continue;
@@ -86,7 +93,7 @@ public final class Query extends EvaluatorSupport {
 						member= ((Variable)expr).getLastMember();
 						if(member instanceof UDF) continue;
 					}
-					printOut.setPreserveSingleQuote(true);
+					printOut.setCheckPSQ(true);
 					if(e!=expr)printOut.setExpr(expr);
 				}
 			}

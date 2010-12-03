@@ -224,7 +224,7 @@ public final class List {
 	 * @param delimeter delimter of the list
 	 * @return Array Object
 	 */
-	public static String rest(String list, String delimeter) {
+	public static String rest(String list, String delimeter, boolean ignoreEmpty) {
 	    //if(delimeter.length()==1)return rest(list, delimeter.charAt(0));
 		int len=list.length();
 		if(len==0) return "";
@@ -233,7 +233,7 @@ public final class List {
 		char[] del = delimeter.toCharArray();
 		char c;
 		
-		list=ltrim(list,del);
+		if(ignoreEmpty)list=ltrim(list,del);
 		len=list.length();
 		
 		
@@ -241,7 +241,7 @@ public final class List {
 		    c=list.charAt(i);
 		    for(int y=0;y<del.length;y++) {
 				if(c==del[y]) {
-					return ltrim(list.substring(i+1),del);
+					return ignoreEmpty?ltrim(list.substring(i+1),del):list.substring(i+1);
 				}
 		    }
 		}
@@ -378,44 +378,46 @@ public final class List {
      * @return Array Object
      * @throws ExpressionException 
      */
-    public static String listInsertAt(String list, int pos, String value, String delimeter) throws ExpressionException {
+    public static String listInsertAt(String list, int pos, String value, String delimeter, boolean ignoreEmpty) throws ExpressionException {
         if(pos<1)
             throw new ExpressionException("invalid string list index ["+(pos)+"]");
    
-        
-        //if(delimeter.length()==1)return listToArrayTrim(list, delimeter.charAt(0),info);
-        //if(list.length()==0) return new ArrayImpl();
         char[] del = delimeter.toCharArray();
         char c;
         StringBuffer result=new StringBuffer();
         String end="";
+        int len;
         
         // remove at start
-        outer:while(list.length()>0) {
-            c=list.charAt(0);
-            for(int i=0;i<del.length;i++) {
-                if(c==del[i]) {
-                    list=list.substring(1);
-                    result.append(c);
-                    continue outer;
-                }
-            }
-            break;
+        if(ignoreEmpty){
+	        outer:while(list.length()>0) {
+	            c=list.charAt(0);
+	            for(int i=0;i<del.length;i++) {
+	                if(c==del[i]) {
+	                    list=list.substring(1);
+	                    result.append(c);
+	                    continue outer;
+	                }
+	            }
+	            break;
+	        }
         }
         
-        int len;
-        outer:while(list.length()>0) {
-            c=list.charAt(list.length()-1);
-            for(int i=0;i<del.length;i++) {
-                if(c==del[i]) {
-                    len=list.length();
-                    list=list.substring(0,len-1<0?0:len-1);
-                    end=c+end;
-                    continue outer;
-                }
-         
-            }
-            break;
+        // remove at end
+        if(ignoreEmpty){
+	        outer:while(list.length()>0) {
+	            c=list.charAt(list.length()-1);
+	            for(int i=0;i<del.length;i++) {
+	                if(c==del[i]) {
+	                    len=list.length();
+	                    list=list.substring(0,len-1<0?0:len-1);
+	                    end=c+end;
+	                    continue outer;
+	                }
+	         
+	            }
+	            break;
+	        }
         }
         
         len=list.length();
@@ -426,10 +428,13 @@ public final class List {
             c=list.charAt(i);
             for(int y=0;y<del.length;y++) {
                 if(c==del[y]) {
-                    if(pos==++count){
-                        result.append(value);
-                        result.append(del[0]);
-                    }
+                    
+                	if(!ignoreEmpty || last<i) {
+                		if(pos==++count){
+                            result.append(value);
+                            result.append(del[0]);
+                        }
+					}
                     result.append(list.substring(last,i));
                     result.append(c);
                     last=i+1;
@@ -598,7 +603,7 @@ public final class List {
 		Array arr = trim?listToArrayTrim(list,delimeter):listToArray(list,delimeter);
 		int len=arr.size();
 		for(int i=1;i<=len;i++) {
-			if(((String)arr.get(i,"")).equalsIgnoreCase(value)) return i;
+			if(((String)arr.get(i,"")).equalsIgnoreCase(value)) return i-1;
 		}
 		return -1;
 	}
@@ -703,7 +708,7 @@ public final class List {
 		Array arr = listToArrayTrim(list,delimeter);
 		int len=arr.size();
 		for(int i=1;i<=len;i++) {
-			if(arr.get(i,"").equals(value)) return i;
+			if(arr.get(i,"").equals(value)) return i-1;
 		}
 
 		return -1;
@@ -782,7 +787,15 @@ public final class List {
 	 * @return position in list or 0
 	 */
 	public static int listContainsNoCase(String list, String value, String delimeter) {
-		return listContains(list.toLowerCase(),value.toLowerCase(),StringUtil.toLowerCase(delimeter));
+		if(StringUtil.isEmpty(value)) return -1;
+		
+		Array arr=listToArray(list,delimeter);
+		int len=arr.size();
+		
+		for(int i=1;i<=len;i++) {
+			if(StringUtil.indexOfIgnoreCase(arr.get(i,"").toString(), value)!=-1) return i-1;
+		}
+		return -1;
 	}
 	
 	/**
@@ -793,7 +806,17 @@ public final class List {
 	 * @return position in list or 0
 	 */
 	public static int listContainsIgnoreEmptyNoCase(String list, String value, String delimeter) {
-		return listContainsIgnoreEmpty(list.toLowerCase(),value.toLowerCase(),StringUtil.toLowerCase(delimeter));
+		if(StringUtil.isEmpty(value)) return -1;
+		Array arr=listToArrayRemoveEmpty(list,delimeter);
+		int count=0;
+		int len=arr.size();
+		
+		for(int i=1;i<=len;i++) {
+			String item=arr.get(i,"").toString();
+			if(StringUtil.indexOfIgnoreCase(item, value)!=-1) return count;
+			count++;
+		}
+		return -1;
 	}
 
 	/**
@@ -810,7 +833,7 @@ public final class List {
 			int len=arr.size();
 			
 			for(int i=1;i<=len;i++) {
-				if(arr.get(1,"").toString().indexOf(value)!=-1) return i;
+				if(arr.get(i,"").toString().indexOf(value)!=-1) return i-1;
 			}
 		return -1;
 		
@@ -835,7 +858,6 @@ public final class List {
 			count++;
 		}
 		return -1;
-		
 	}
 
 	/**
@@ -1158,18 +1180,33 @@ public final class List {
 	 * @param list
 	 * @param delimeter
 	 * @return returns the first element of the list
+	 * @deprecated use instead  first(String list, String delimeter, boolean ignoreEmpty)
 	 */
 	public static String first(String list, String delimeter) {
-
-		if(list==null || list.length()==0) return "";
+		return first(list, delimeter,true);
+	}
+	
+	/**
+	 * return first element of the list
+	 * @param list
+	 * @param delimeter
+	 * @param ignoreEmpty
+	 * @return returns the first element of the list
+	 */
+	public static String first(String list, String delimeter, boolean ignoreEmpty) {
+		
+		if(StringUtil.isEmpty(list)) return "";
+		
 		char[] del;
-		if(delimeter==null || delimeter.length()==0) {
+		if(StringUtil.isEmpty(delimeter)) {
 		    del=new char[]{','};
 		}
-		else del=delimeter.toCharArray();
+		else {
+			del=delimeter.toCharArray();
+		}
 		
 		int offset=0;
-		int index=0;
+		int index;
 		int x;
 		while(true) {
 		    index=-1;
@@ -1179,9 +1216,12 @@ public final class List {
 		        if(x!=-1 && (x<index || index==-1))index=x;
 		    }
 			//index=list.indexOf(index,offset);
-			if(index==-1) {
+		    if(index==-1) {
 				if(offset>0) return list.substring(offset);
 				return list;
+			}
+		    if(!ignoreEmpty && index==0) {
+				return "";
 			}
 			else if(index==offset) {
 				offset++;
@@ -1199,18 +1239,31 @@ public final class List {
 	 * @param list
 	 * @param delimeter
 	 * @return returns the last Element of a list
+	 * @deprecated use instead last(String list, String delimeter, boolean ignoreEmpty)
 	 */
 	public static String last(String list, String delimeter) {
+		return last(list, delimeter, true);
+	}
+	
+	/**
+	 * return last element of the list
+	 * @param list
+	 * @param delimeter
+	 * @param ignoreEmpty
+	 * @return returns the last Element of a list
+	 */
+	public static String last(String list, String delimeter, boolean ignoreEmpty) {
 
+		if(StringUtil.isEmpty(list)) return "";
 		int len=list.length();
-		if(len==0) return "";
+		
 		char[] del;
-		if(delimeter==null || delimeter.length()==0) {
+		if(StringUtil.isEmpty(delimeter)) {
 		    del=new char[]{','};
 		}
 		else del=delimeter.toCharArray();
-		int index=0;
 		
+		int index;
 		int x;
 		while(true) {
 		    index=-1;
@@ -1218,13 +1271,14 @@ public final class List {
 		    for(int i=0;i<del.length;i++) {
 		        x=list.lastIndexOf(del[i]);
 		        if(x>index)index=x;
-                //if(x!=-1 && (x<index || index==-1))index=x;
 		    }
-			//index=list.lastIndexOf(delimeter);
+
 			if(index==-1) {
 				return list;
 			}
+			
 			else if(index+1==len) {
+				if(!ignoreEmpty) return"";
 				list=list.substring(0,len-1);
 				len--;
 			}
@@ -1240,6 +1294,8 @@ public final class List {
      * @param delimeter
      * @return returns the last Element of a list
      */
+	
+	
     public static String last(String list, char delimeter) {
 
         int len=list.length();
@@ -1267,7 +1323,7 @@ public final class List {
 	 * @param delimeter
 	 * @return list len
 	 */
-	public static int len(String list, char delimeter) {
+	public static int len(String list, char delimeter,boolean ignoreEmpty) {
 		int len=list.length();
 		if(list==null || len==0) return 0;
 
@@ -1276,11 +1332,11 @@ public final class List {
 		
 		for(int i=0;i<len;i++) {
 			if(list.charAt(i)==delimeter) {
-				if(last<i)count++;
+				if(!ignoreEmpty || last<i)count++;
 				last=i+1;
 			}
 		}
-		if(last<len)count++;
+		if(!ignoreEmpty || last<len)count++;
 		return count;
 	}
 
@@ -1290,8 +1346,8 @@ public final class List {
 	 * @param delimeter
 	 * @return list len
 	 */
-	public static int len(String list, String delimeter) {
-	    if(delimeter.length()==1)return len(list, delimeter.charAt(0));
+	public static int len(String list, String delimeter, boolean ignoreEmpty) {
+	    if(delimeter.length()==1)return len(list, delimeter.charAt(0),ignoreEmpty);
 		char[] del=delimeter.toCharArray();
 	    int len=list.length();
 		if(list==null || len==0) return 0;
@@ -1304,12 +1360,12 @@ public final class List {
 		    c=list.charAt(i);
 		    for(int y=0;y<del.length;y++) {
 				if(c==del[y]) {
-				    if(last<i)count++;
+				    if(!ignoreEmpty || last<i)count++;
 					last=i+1;
 				}
 		    }
 		}
-		if(last<len)count++;
+		if(!ignoreEmpty || last<len)count++;
 		return count;
 	}
 	
@@ -1329,8 +1385,8 @@ public final class List {
 	 * @param position
 	 * @return Array Object
 	 */
-	public static String getAt(String list, String delimeter, int position) {
-	    if(delimeter.length()==1)return getAt(list, delimeter.charAt(0), position);
+	public static String getAt(String list, String delimeter, int position, boolean ignoreEmpty) {
+	    if(delimeter.length()==1)return getAt(list, delimeter.charAt(0), position,ignoreEmpty);
 		int len=list.length();
 		
 		if(len==0) return null;
@@ -1343,7 +1399,7 @@ public final class List {
 		    c=list.charAt(i);
 		    for(int y=0;y<del.length;y++) {
 				if(c==del[y]) {
-					if(last<i) {
+					if(!ignoreEmpty || last<i) {
 					    if(count++==position) {
 					        return list.substring(last,i);
 					    }
@@ -1364,7 +1420,7 @@ public final class List {
 	 * @param position
 	 * @return Array Object
 	 */
-	public static String getAt(String list, char delimeter, int position) {
+	public static String getAt(String list, char delimeter, int position, boolean ignoreEmpty) {
 		int len=list.length();
 		if(len==0) return null;
 		int last=0;
@@ -1372,7 +1428,7 @@ public final class List {
 		
 		for(int i=0;i<len;i++) {
 			if(list.charAt(i)==delimeter) {
-				if(last<i) {
+				if(!ignoreEmpty || last<i) {
 				    if(count++==position) {
 				        return list.substring(last,i);
 				    }

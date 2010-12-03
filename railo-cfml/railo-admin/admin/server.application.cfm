@@ -128,7 +128,11 @@ function selectCustom(form) {
 	
 }
 </script>
-<table class="tbl" width="600">
+<table class="tbl" width="740">
+<colgroup>
+    <col width="150">
+    <col width="590">
+</colgroup>
 <tr>
 	<td colspan="2">
 <cfif request.adminType EQ "server">
@@ -271,7 +275,7 @@ function selectCustom(form) {
 <h2>#stText.application.listener#</h2>
 #stText.application.listenerDescription#
 
-<table class="tbl" width="600">
+<table class="tbl" width="740">
 
 <cfform action="#request.self#?action=#url.action#" method="post">
 
@@ -281,8 +285,8 @@ function selectCustom(form) {
 	<td class="tblContent">
 	<cfif hasAccess>
 		<span class="comment">#stText.application.listenerTypeDescription#</span><br />
-		<table class="tbl" width="600">
-		<cfloop index="key" list="none,classic,modern,mixed">
+		<table class="tbl" width="100%">
+        <cfloop index="key" list="none,classic,modern,mixed">
 		<tr>
 			<td width="200" class="tblHead" nowrap="nowrap">#stText.application['listenerType_' & key]#</td>
 			<td width="400" class="tblContent"><input type="radio" name="type" value="#key#" <cfif listener.type EQ key>checked="checked"</cfif>>
@@ -305,7 +309,7 @@ function selectCustom(form) {
 	<td class="tblContent">
 	<cfif hasAccess>
 		<span class="comment">#stText.application.listenerModeDescription#</span><br />
-		<table class="tbl" width="600">
+		<table class="tbl" width="100%">
 		<cfloop index="key" list="curr,root,curr2root">
 		<tr>
 			<td width="200" class="tblHead" nowrap="nowrap">#stText.application['listenerMode_' & key]#</td>

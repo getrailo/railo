@@ -1,9 +1,12 @@
 <cfparam name="error" default="#struct(message:"",detail:"")#">
 
+
 <!--- 
 ACTIONS --->
 <cftry>
-	<cfif StructKeyExists(form,"run") and form.run EQ "create2">
+	<cfif StructKeyExists(form,"_run") and form._run EQ stText.Settings.flushCache>
+		<cfset DatasourceFlushMetaCache(form.name)>
+	<cfelseif StructKeyExists(form,"run") and form.run EQ "create2">
 		<cfset driver=createObject("component","dbdriver."&form.type)>
 		<cfset driver.onBeforeUpdate()>
 		<cfset custom=struct()>
@@ -13,6 +16,7 @@ ACTIONS --->
 				<cfset custom[mid(key,8,l-8+1)]=form[key]>
 			</cfif>
 		</cfloop>
+		
 		<cfif form.password EQ "****************">
 			<cfadmin 
 				action="getDatasource"
@@ -22,7 +26,11 @@ ACTIONS --->
 				returnVariable="existing">
 			<cfset form.password=existing.password>
 		</cfif>
-		<cfset verifiy=getForm('verify',false)>
+		
+		<cfset verify=getForm('verify',false)>
+		
+		<cfparam name="form.metaCacheTimeout" default="60000">
+		
 		<cfadmin 
 			action="updateDatasource"
 			type="#request.adminType#"
@@ -33,7 +41,7 @@ ACTIONS --->
 						
 			name="#form.name#"
 			newName="#form.newName#"
-            
+			
 			host="#form.host#"
 			database="#form.database#"
 			port="#form.port#"
@@ -42,9 +50,9 @@ ACTIONS --->
 			
 			connectionLimit="#form.connectionLimit#"
 			connectionTimeout="#form.connectionTimeout#"
+			metaCacheTimeout="#form.metaCacheTimeout#"
 			blob="#getForm('blob',false)#"
 			clob="#getForm('clob',false)#"
-			
 			
 			allowed_select="#getForm('allowed_select',false)#"
 			allowed_insert="#getForm('allowed_insert',false)#"
@@ -55,16 +63,17 @@ ACTIONS --->
 			allowed_revoke="#getForm('allowed_revoke',false)#"
 			allowed_create="#getForm('allowed_create',false)#"
 			allowed_grant="#getForm('allowed_grant',false)#"
-			verify="#verifiy#"
+			verify="#verify#"
 			custom="#custom#"
 			remoteClients="#request.getRemoteClients()#">
-            <cfset form.mark="update">
-        <cfif verifiy>
-        	<cfset v="&verified="&form.name>
-        </cfif>
+		
+		<cfset form.mark="update">
+		
+		<cfset v = verifiy ? "&verified=" & form.name : '' />
+		
 		<cflocation url="#request.self#?action=#url.action##v#" addtoken="no">
 	</cfif>
-	<cfcatch>
+	<cfcatch><cfrethrow>
 		<cfset driver.onBeforeError(cfcatch)>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
@@ -150,7 +159,11 @@ Error Output--->
 	#stText.Settings.DatasourceDescriptionCreate#
 	</cfif> #driver.getName()#</h2>
 
-<table class="tbl" width="450">
+<table class="tbl" width="740">
+<colgroup>
+    <col width="150">
+    <col width="590">
+</colgroup>
 <tr>
 	<td colspan="2">#driver.getDescription()#</td>
 </tr>
@@ -250,8 +263,8 @@ Password --->
 
 Connection Limit --->
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.dbConnLimit#</td>
-	<td class="tblContent" width="300">
+	<td class="tblHead" >#stText.Settings.dbConnLimit#</td>
+	<td class="tblContent">
 		<select name="ConnectionLimit" class="select">
 			<option value="-1" <cfif datasource.ConnectionLimit EQ -1>selected</cfif>>#stText.Settings.dbConnLimitInf#</option>
 			<cfloop index="idx" from="1" to="10"><option  <cfif datasource.ConnectionLimit EQ idx>selected</cfif>>#idx#</option></cfloop>
@@ -277,6 +290,33 @@ Connection Timeout --->
 </tr>
 <!--- 
 
+Meta Cache--->
+<cfif datasource.type EQ "oracle">
+<tr>
+	<td class="tblHead" width="150">#stText.Settings.dbMetaCacheTimeout#</td>
+	<td class="tblContent" width="300">
+    	<cfset selected=false>
+		<select name="metaCacheTimeout" class="select">
+			<option value="-1" <cfif datasource.metaCacheTimeout EQ -1><cfset selected=true>selected</cfif>>#stText.Settings.dbConnLimitInf#</option>
+            
+			<optgroup label="#stText.Settings.minutes#">
+            <cfloop index="idx" from="1" to="10"><option value="#idx*60000#"  <cfif datasource.metaCacheTimeout EQ idx*60000><cfset selected=true>selected</cfif>>#idx# #stText.Settings.minutes#</option></cfloop>
+			<cfloop index="idx" from="20" to="50" step="10"><option value="#idx*60000#"  <cfif datasource.metaCacheTimeout EQ idx*60000><cfset selected=true>selected</cfif>>#idx# #stText.Settings.minutes#</option></cfloop>
+            </optgroup>
+            <optgroup label="#stText.Settings.hours#">
+			<cfloop index="idx" from="1" to="23"><option value="#idx*60000*60#"  <cfif datasource.metaCacheTimeout EQ idx*60000*60><cfset selected=true>selected</cfif>>#idx# #stText.Settings.hours#</option></cfloop>
+            </optgroup>
+            <optgroup label="#stText.Settings.days#">
+            <cfloop index="idx" from="1" to="30"><option value="#idx*60000*60*24#"  <cfif datasource.metaCacheTimeout EQ idx*60000*60*24><cfset selected=true>selected</cfif>>#idx# #stText.Settings.days#</option></cfloop></optgroup>
+		</select>
+		<br /><span class="comment">#stText.Settings.dbMetaCacheTimeoutDesc#</span>
+        
+	<cfif actionType EQ "update"><br /><br /><input type="submit" class="submit" name="_run" value="#stText.Settings.flushCache#"></cfif>
+	</td>
+</tr>
+</cfif>
+<!--- 
+
 Blob --->
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.dbBlob#</td>
@@ -299,35 +339,31 @@ Clob --->
 
 Allow --->
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.dbAllowed#</td>
-	<td class="tblContent" width="300">
+	<td class="tblHead">#stText.Settings.dbAllowed#</td>
+	<td class="tblContent">
 		<table width="100%">
-		<tr>
-			<td class="darker" align="right">Select:<cfinput type="checkbox" class="checkbox" name="allowed_select" value="yes" 
+		
+        <tr>
+			<td class="darker" >Select:<cfinput type="checkbox" class="checkbox" name="allowed_select" value="yes" 
 			checked="#datasource.select#"></td>
-			<td class="darker" align="right">Insert:<cfinput type="checkbox" class="checkbox" name="allowed_insert" value="yes" 
+			<td class="darker" >Insert:<cfinput type="checkbox" class="checkbox" name="allowed_insert" value="yes" 
 			checked="#datasource.insert#"></td>
-			<td class="darker" align="right">Update:<cfinput type="checkbox" class="checkbox" name="allowed_update" value="yes" 
+			<td class="darker" >Update:<cfinput type="checkbox" class="checkbox" name="allowed_update" value="yes" 
 			checked="#datasource.update#"></td>
-			<td class="darker" align="right">Delete:<cfinput type="checkbox" class="checkbox" name="allowed_delete" value="yes" 
+			<td class="darker" >Delete:<cfinput type="checkbox" class="checkbox" name="allowed_delete" value="yes" 
 			checked="#datasource.delete#"></td>
-		</tr>
-		<tr>
-			<td class="darker" align="right">Create:<cfinput type="checkbox" class="checkbox" name="allowed_create" value="yes" 
+			<td class="darker" >Create:<cfinput type="checkbox" class="checkbox" name="allowed_create" value="yes" 
 			checked="#datasource.create#"></td>
-			<td class="darker" align="right">Drop:<cfinput type="checkbox" class="checkbox" name="allowed_drop" value="yes" 
+			<td class="darker" >Drop:<cfinput type="checkbox" class="checkbox" name="allowed_drop" value="yes" 
 			checked="#datasource.drop#"></td>
-			<td class="darker" align="right">Revoke:<cfinput type="checkbox" class="checkbox" name="allowed_revoke" value="yes" 
+			<td class="darker" >Revoke:<cfinput type="checkbox" class="checkbox" name="allowed_revoke" value="yes" 
 			checked="#datasource.revoke#"></td>
-			<td class="darker" align="right">Alter:<cfinput type="checkbox" class="checkbox" name="allowed_alter" value="yes" 
+			<td class="darker" >Alter:<cfinput type="checkbox" class="checkbox" name="allowed_alter" value="yes" 
 			checked="#datasource.alter#"></td>
+			<td class="darker" >Grant:<cfinput type="checkbox" class="checkbox" name="allowed_grant" value="yes" 
+			checked="#datasource.grant#"></td>
 		</tr>
 		<tr>
-			<td class="darker" align="right">Grant:<cfinput type="checkbox" class="checkbox" name="allowed_grant" value="yes" 
-			checked="#datasource.grant#"></td>
-			<td class="darker" align="right">&nbsp;</td>
-			<td class="darker" align="right">&nbsp;</td>
-			<td class="darker" align="right">&nbsp;</td>
 		</tr>
 		</table>
 		
