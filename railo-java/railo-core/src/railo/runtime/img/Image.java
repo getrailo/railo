@@ -921,23 +921,6 @@ public class Image extends StructSupport implements Cloneable,Struct {
     	setCompressionQualityEL(iwp,quality);
     	
     	writer.setOutput(ios);
-    	
-    	try {
-    		writer.write(null, new IIOImage(im, null, meta), iwp);
-    		
-    	
-    	ImageWriteParam iwp=null;
-    	if("jpg".equalsIgnoreCase(format)) {
-    		JPEGImageWriteParam jiwp = new JPEGImageWriteParam(Locale.getDefault());
-    		jiwp.setOptimizeHuffmanTables(true);
-    		iwp=jiwp;
-    	}
-    	else iwp = writer.getDefaultWriteParam();
-    	
-    	setCompressionModeEL(iwp,ImageWriteParam.MODE_EXPLICIT);
-    	setCompressionQualityEL(iwp,quality);
-    	
-    	writer.setOutput(ios);
     	try {
     		writer.write(null, new IIOImage(im, null, meta), iwp);
     		
