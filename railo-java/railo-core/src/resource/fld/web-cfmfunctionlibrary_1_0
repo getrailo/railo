@@ -480,8 +480,9 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>dimension</name>
 			<type>number</type>
 			<required>no</required>
-		<description>Number of dimensions in new array: 1, 2, or 3</description>
-    </argument>
+			<default>1</default>
+			<description>Number of dimensions in new array: 1, 2, or 3</description>
+    	</argument>
 		<return>
 			<type>array</type>
 		</return>
@@ -628,6 +629,7 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>sort_order</name>
 			<type>string</type>
 			<required>No</required>
+			<default>asc</default>
 		<description>
 sort direction:		
 - asc(default): ascending sort order
@@ -2007,6 +2009,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>datepart</name>
 			<type>string</type>
 			<required>No</required>
+			<default>s</default>
 		<description>Precision of the comparison:
 - s (default): Precise to the second
 - n: Precise to the minute
@@ -2693,6 +2696,7 @@ dec: descending (z to a) sort order.
 			<name>strictMapping</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 			<description>A Boolean value that specifies whether to convert the JSON strictly</description>
 		</argument>
 		<return>
@@ -10417,7 +10421,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>Sleep</name>
 		<class>railo.runtime.functions.system.Sleep</class>
-		<description>pauses the current request for the amount of time specified</description>
+		<description>pauses the current thread for the amount of time specified</description>
 		<argument>
 			<name>duration</name>
 			<type>number</type>
@@ -11098,6 +11102,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>outputformat</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description>A Boolean value that determines whether to create
             WDDX (JavaScript) or ActionScript style output for
             structures and queries.

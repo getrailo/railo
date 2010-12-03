@@ -18,7 +18,7 @@ public final class DatePart implements Function {
 	}
 	
 	public static double call(PageContext pc , String datepart, DateTime date,String strTimezone) throws ExpressionException {
-		return _call(pc, datepart, date, TimeZoneUtil.toTimeZone(strTimezone));
+		return _call(pc, datepart, date, strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	
 	private static double _call(PageContext pc , String datepart, DateTime date,TimeZone tz) throws ExpressionException {

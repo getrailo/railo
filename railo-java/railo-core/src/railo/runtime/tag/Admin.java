@@ -142,7 +142,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Collection.Key KEY = KeyImpl.getInstance("key");
 	private static final Collection.Key VALUE = KeyImpl.getInstance("value");
 	private static final Collection.Key TIME = KeyImpl.getInstance("time");
-	public static final String[] UPDATE_JARS = new String[]{"ehcache.jar","antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","metadata-extractor.jar","icepdf-core.jar","com.naryx.tagfusion.cfx.jar"};
+	public static final String[] UPDATE_JARS = new String[]{"ehcache.jar","antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","railo-sl4j.jar","metadata-extractor.jar","icepdf-core.jar","com.naryx.tagfusion.cfx.jar"};
     
 	/*
 	others:
