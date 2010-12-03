@@ -2,13 +2,9 @@ package railo.transformer.bytecode.statement.java;
 
 import org.objectweb.asm.Type;
 
-import railo.print;
-import railo.commons.lang.ClassException;
-import railo.commons.lang.ClassUtil;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.util.ASMUtil;
 
 public class CastOp extends ExpressionBase {
 

@@ -21,6 +21,7 @@ import javax.servlet.ServletConfig;
 import org.apache.xerces.parsers.DOMParser;
 import org.jfree.chart.block.LabelBlockImpl;
 import org.safehaus.uuid.UUIDGenerator;
+import org.slf4j.impl.StaticLoggerBinder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -358,6 +359,9 @@ public final class ConfigWebFactory {
     	loadGateway(configServer,config,doc);
     	loadExeLog(configServer,config,doc);
     	config.setLoadTime(System.currentTimeMillis());
+    	
+    	// this call is needed to make sure the railo StaticLoggerBinder is loaded
+    	StaticLoggerBinder.getSingleton();
     	
     	ThreadLocalConfig.release();
     }

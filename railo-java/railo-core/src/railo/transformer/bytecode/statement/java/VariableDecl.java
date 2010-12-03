@@ -2,7 +2,6 @@ package railo.transformer.bytecode.statement.java;
 
 import org.objectweb.asm.Type;
 
-import railo.print;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.ExpressionBase;

@@ -1,23 +1,16 @@
 package railo.transformer.cfml.evaluator.impl;
 
-import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagJavaScript;
-import railo.transformer.bytecode.statement.tag.TagLoop;
-import railo.transformer.bytecode.util.ASMUtil;
-import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorSupport;
 import railo.transformer.cfml.script.JavaScriptTransformer;
 import railo.transformer.library.function.FunctionLib;
-import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibTag;
-import railo.transformer.util.CFMLString;
 
 
 
