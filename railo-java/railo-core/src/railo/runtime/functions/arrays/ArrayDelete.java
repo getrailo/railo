@@ -10,6 +10,9 @@ import railo.runtime.type.Array;
 
 
 public final class ArrayDelete implements Function {
+
+	private static final long serialVersionUID = 1120923916196967210L;
+	
 	public static boolean call(PageContext pc , Array array, Object value) throws PageException {
 		return call(pc, array, value,null);
 	}

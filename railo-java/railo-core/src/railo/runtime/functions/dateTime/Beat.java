@@ -16,9 +16,11 @@ public final class Beat implements Function {
     private static final TimeZone BMD=TimeZone.getTimeZone("GMT+1");
 
     public static double call(PageContext pc) throws PageException {
-    	return call(pc,new DateTimeImpl(pc));
+    	return call(pc,null);
     }
     public static double call(PageContext pc, Object obj) throws PageException {
+    	if(obj==null)obj=new DateTimeImpl(pc);
+    	
     	TimeZone tz = ThreadLocalPageContext.getTimeZone(pc);
     	DateTime date = DateCaster.toDateAdvanced(obj,tz);
     	return format(date);

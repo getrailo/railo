@@ -20,7 +20,6 @@ public final class DateCompare implements Function {
 		return call(pc , left, right,"s");
 	}
 	
-	
 	public static double call(PageContext pc , DateTime left, DateTime right, String datepart) throws ExpressionException {
 		datepart=datepart.toLowerCase().trim();
 		TimeZone tz=ThreadLocalPageContext.getTimeZone(pc);

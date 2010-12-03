@@ -31,7 +31,6 @@ public final class ArraySlice implements Function {
 		return call(pc ,arr,len+offset,length);
 	}
 	
-
 	private static Array get(Array arr, int from, int to) throws PageException {
 		Array rtn=new ArrayImpl(arr.getDimension());
 		int[] keys=arr.intKeys();
@@ -44,5 +43,4 @@ public final class ArraySlice implements Function {
 		return rtn;
 	}
 	
-
 }
