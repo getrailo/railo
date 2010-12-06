@@ -22,7 +22,9 @@ public final class LSWeek implements Function {
 	}
 	
 	public static double call(PageContext pc , DateTime date, String strLocale, String strTimezone) throws ExpressionException {
-		return _call(pc, date, LocaleFactory.getLocale(strLocale),TimeZoneUtil.toTimeZone(strTimezone));
+		return _call(pc, date, 
+				strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),
+				strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	
 	private static double _call(PageContext pc , DateTime date,Locale locale,TimeZone tz) {

@@ -15,7 +15,7 @@ public final class DayOfWeekShortAsString implements Function {
 	}
 	
 	public static String call(PageContext pc , double dow, String strLocale) throws ExpressionException {
-		return DayOfWeekAsString.call(pc,dow, LocaleFactory.getLocale(strLocale),false);
+		return DayOfWeekAsString.call(pc,dow, strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),false);
 	}
 	
 }

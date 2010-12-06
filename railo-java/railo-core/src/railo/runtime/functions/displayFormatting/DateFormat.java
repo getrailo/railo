@@ -24,7 +24,7 @@ public final class DateFormat implements Function {
 		return _call(pc, object, mask, ThreadLocalPageContext.getTimeZone(pc));
 	}
 	public static String call(PageContext pc , Object object, String mask,String strTimezone) throws PageException {
-		return _call(pc, object, mask, TimeZoneUtil.toTimeZone(strTimezone));
+		return _call(pc, object, mask, strTimezone==null?ThreadLocalPageContext.getTimeZone(pc):TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	private static String _call(PageContext pc , Object object, String mask,TimeZone tz) throws PageException {
 	    Locale locale=Locale.US;

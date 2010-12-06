@@ -31,22 +31,22 @@ public final class DumpStruct implements Function {
 	}
 
 	public static Struct call(PageContext pc , Object object, double maxLevel) {
-		return call(pc, object,maxLevel,null,null,9999,true);
+		return call(pc, object,maxLevel,null,null,9999,true,true,null);
 	}
 
 	public static Struct call(PageContext pc , Object object, double maxLevel, String show) {
-		return call(pc, object,maxLevel,show,null,9999,true,true);
+		return call(pc, object,maxLevel,show,null,9999,true,true,null);
 	}
 
 	public static Struct call(PageContext pc , Object object, double maxLevel, String show, String hide) {
-		return call(pc,object,maxLevel,show,hide,9999,true,true);
+		return call(pc,object,maxLevel,show,hide,9999,true,true,null);
 	}
 
 	public static Struct call(PageContext pc , Object object, double maxLevel, String show, String hide,double keys) {
-		return call(pc , object, maxLevel, show, hide,keys,true,true);
+		return call(pc , object, maxLevel, show, hide,keys,true,true,null);
 	}
 	public static Struct call(PageContext pc , Object object, double maxLevel, String show, String hide,double keys,boolean metainfo) {
-		return call(pc , object, maxLevel, show, hide,keys,metainfo,true);	
+		return call(pc , object, maxLevel, show, hide,keys,metainfo,true,null);	
 	}
 	
 	public static Struct call(PageContext pc , Object object, double maxLevel, String show, String hide,double keys,boolean metainfo, boolean showUDFs) {

@@ -696,6 +696,7 @@ sort direction:
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 		<description>Character or multicharacter string to separate list elements. The default value is comma.</description>
     </argument>
 		<return>
@@ -1579,6 +1580,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>includeBaseFolder</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 			<description>
 			take the folder or only content of folder
 			</description>
@@ -1587,6 +1589,7 @@ Sets the cache properties for the object cache, the page cache, or both. If a ca
 			<name>mode</name>
 			<type>string</type>
 			<required>no</required>
+			<default>777</default>
 			<description>
 			mode of the values
 			</description>
@@ -2100,6 +2103,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
+			<default>dd-mmm-yy</default>
 		<description>
 Characters that show how Railo displays a date:
 - d: Day of the month as digits; no leading zero for single-digit days.
@@ -2474,6 +2478,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
+			<default>cfmx_compat</default>
 		<description>
 The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
@@ -2486,6 +2491,7 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
+			<default>uu</default>
 		<description>
 The binary encoding used to represent the data as a string. Must be the same as the algorithm used to encrypt the string.
 - Base64: the Base64 algorithm, as specified by IETF RFC 2045
@@ -2520,6 +2526,7 @@ Key or seed used to encrypt the string.
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
+			<default>cfmx_compat</default>
 		<description>
 The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
@@ -2562,6 +2569,7 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 			<name>doParent</name>
 			<type>boolean</type>
 			<required>no</required>
+			<default>true</default>
 			<description>create parent directory when not exist</description>
 		</argument>
 		<return>
@@ -2602,9 +2610,9 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
     </argument>
 		<argument>
 			<name>allowRealPath</name>
-			<type>boolean</type>
+			<type>object</type>
 			<required>no</required>
-			<description>defines if relative paths are interpreted or not</description>
+			<description>boolean that defines if relative paths are interpreted or not</description>
 		</argument>
 		<return>
 			<type>boolean</type>
@@ -2825,6 +2833,14 @@ dec: descending (z to a) sort order.
 			<name>expand</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
+		<description></description>
+    </argument>
+		<argument>
+			<name>top</name>
+			<type>number</type>
+			<required>No</required>
+			<default>9999</default>
 		<description></description>
     </argument>
 		<argument>
@@ -2855,18 +2871,21 @@ dec: descending (z to a) sort order.
 			<name>keys</name>
 			<type>number</type>
 			<required>No</required>
+			<default>9999</default>
 		<description></description>
     </argument>
 		<argument>
 			<name>metainfo</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description></description>
     </argument>
 		<argument>
 			<name>showUDFs</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description></description>
     </argument>
 		<return>
@@ -2890,6 +2909,7 @@ dec: descending (z to a) sort order.
 			<name>top</name>
 			<type>number</type>
 			<required>No</required>
+			<default>9999</default>
 		<description></description>
     </argument>
 		<argument>
@@ -2908,18 +2928,21 @@ dec: descending (z to a) sort order.
 			<name>keys</name>
 			<type>number</type>
 			<required>No</required>
+			<default>9999</default>
 		<description></description>
     </argument>
 		<argument>
 			<name>metainfo</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description></description>
     </argument>
 		<argument>
 			<name>showUDFs</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description></description>
     </argument>
 		<argument>
@@ -2948,6 +2971,7 @@ dec: descending (z to a) sort order.
 			<name>deepcopy</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description>if set to true (default) also the child elements are cloned, otherwise the child elements are still the same as in the original object</description>
     </argument>
 		<return>
@@ -3022,6 +3046,7 @@ Key or seed used to encrypt the string.
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
+			<default>cfmx_compat</default>
 		<description>
 The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
@@ -3034,6 +3059,7 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
+			<default>uu</default>
 		<description>
 The binary encoding used to represent the data as a string. Must be the same as the algorithm used to encrypt the string.
 - Base64: the Base64 algorithm, as specified by IETF RFC 2045.
@@ -3068,6 +3094,7 @@ Key or seed used to encrypt the string.
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
+			<default>cfmx_compat</default>
 		<description>
 The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
@@ -3501,6 +3528,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 			<name>mode</name>
 			<type>string</type>
 			<required>No</required>
+			<default>read</default>
 		<description>
 Action to perform on the file, including the following:
 - read
@@ -3691,9 +3719,9 @@ If you do not specify the mode, Railo opens the file in read mode.</description>
     </argument>
 		<argument>
 			<name>allowRealPath</name>
-			<type>boolean</type>
+			<type>object</type>
 			<required>no</required>
-			<description>defines if relative paths are interpreted or not</description>
+			<description>boolean that defines if relative paths are interpreted or not</description>
 		</argument>
 		<return>
 			<type>boolean</type>
@@ -3886,6 +3914,7 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
+			<default>1</default>
 		<description>Start position of search.</description>
     </argument>
 		<return>
@@ -3913,6 +3942,7 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
+			<default>1</default>
 		<description>Start position of search.</description>
     </argument>
 		<return>
@@ -3940,6 +3970,7 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
+			<default>1</default>
 		<description>Start position of search.</description>
     </argument>
 		<return>
@@ -4067,6 +4098,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>instancenumber</name>
 			<type>number</type>
 			<required>No</required>
+			<default>1</default>
 		<description>Number of ancestor levels to jump before returning data. The default value is 1 (closest ancestor).</description>
     </argument>
 		<return>
@@ -4082,6 +4114,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>delimeter</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 		<description>delimeter used for the list</description>
     </argument>
 		<return>
@@ -4957,12 +4990,14 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>thickness</name>
 			<type>number</type>
 			<required>No</required>
+			<default>1</default>
 		<description>Thickness of the border in pixels. The default value is 1. The border is added to the outside edge of the image; the image area is increased accordingly.</description>
     </argument>
 		<argument>
 			<name>color</name>
 			<type>string</type>
 			<required>No</required>
+			<default>black</default>
 		<description>Optional. Border color. The default border color is black. See Usage.
 Only valid if the borderType is not specified or if borderType = "constant".</description>
     </argument>
@@ -4970,6 +5005,7 @@ Only valid if the borderType is not specified or if borderType = "constant".</de
 			<name>borderType</name>
 			<type>string</type>
 			<required>No</required>
+			<default>constant</default>
 		<description>The type of border:
 - zero: Sets the border color to black.
 - constant: Sets the border to the specified color (default).
@@ -4996,6 +5032,7 @@ Only valid if the borderType is not specified or if borderType = "constant".</de
 			<name>blurRadius</name>
 			<type>number</type>
 			<required>No</required>
+			<default>3</default>
 		<description>The size of the blur radius.
 Value must be greater than or equal to 3 and less than or equal to 10. The default value is 3.</description>
     </argument>
@@ -5081,12 +5118,14 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<name>dx</name>
 			<type>number</type>
 			<required>no</required>
+			<default>-999</default>
 		<description>The x coordinate of the destination rectangle.</description>
     </argument>
 		<argument>
 			<name>dy</name>
 			<type>number</type>
 			<required>no</required>
+			<default>-999</default>
 		<description>The y coordinate of the destination rectangle.</description>
     </argument>
 		<return>
@@ -5724,6 +5763,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<name>transpose</name>
 			<type>string</type>
 			<required>no</required>
+			<default>vertical</default>
 		<description>Transpose the image:
 - vertical (default): Flip an image across an imaginary horizontal line that runs through the center of the image.
 - horizontal: Flip an image across an imaginary vertical line that runs through the center of the image.
@@ -6056,6 +6096,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
+			<default>highestQuality</default>
 		<description>the interpolation method for resampling. You can specify a specific interpolation algorithm by name (for example, hamming), by image quality (for example, mediumQuality), or by performance (for example, highestPerformance). Valid values are:
 - highestQuality (default)
 - highQuality
@@ -6080,6 +6121,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<name>blurFactor</name>
 			<type>number</type>
 			<required>no</required>
+			<default>1</default>
 		<description>The blur factor used for resampling. The higher the blur factor, the more blurred the image (also, the longer it takes to resize the image). Valid values are 1-10.</description>
     </argument>
 		<return>
@@ -6100,7 +6142,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 		<argument>
 			<name>x</name>
 			<type>string</type>
-			<required>no</required>
+			<required>yes</required>
 		<description>The x coordinate for the point of rotation. The default value is 2.</description>
     </argument>
 		<argument>
@@ -6188,6 +6230,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
+			<default>highestQuality</default>
 		<description>The interpolation method for resampling. You can specify a specific interpolation algorithm by name (for example, hamming), by image quality (for example, mediumQuality), or by performance (for example, highestPerformance). Valid values are:
 - highestQuality (default)
 - highQuality
@@ -6211,6 +6254,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<name>blurFactor</name>
 			<type>number</type>
 			<required>no</required>
+			<default>1</default>
 		<description>The blur factor used for resampling. The higher the blur factor, the more blurred the image (also, the longer it takes to resize the image). Valid values are 1-10.</description>
     </argument>
 		<return>
@@ -6241,12 +6285,14 @@ The file format is derived from the extension of the filename. The default value
 			<name>quality</name>
 			<type>number</type>
 			<required>no</required>
+			<default>0.75</default>
 		<description>Defines the JPEG quality used to encode the image. This parameter applies only to destination files with an extension of JPG or JPEG. Valid values are fractions that range from 0 through 1 (the lower the number, the lower the quality). The default value is 0.75.</description>
     </argument>
 		<argument>
 			<name>overwrite</name>
 			<type>boolean</type>
 			<required>no</required>
+			<default>true</default>
 		<description>If set to true (default), overwrites the destination file.</description>
     </argument>
 		<return>
@@ -6303,6 +6349,7 @@ The file format is derived from the extension of the filename. The default value
 			<name>antialias</name>
 			<type>string</type>
 			<required>no</required>
+			<default>on</default>
 		<description>Antialiasing switch:
 - on,true: (default)
 - off,false:</description>
@@ -6424,6 +6471,7 @@ The file format is derived from the extension of the filename. The default value
 			<name>percent</name>
 			<type>number</type>
 			<required>no</required>
+			<default>1</default>
 		<description>Percent of transparency, a floating point number in range 0-100</description>
     </argument>
 		<return>
@@ -6445,6 +6493,7 @@ The file format is derived from the extension of the filename. The default value
 			<name>gain</name>
 			<type>number</type>
 			<required>no</required>
+			<default>1</default>
 		<description>Gain values can be integers or real numbers. The default value is 1.0.
 The value determines whether the image is blurred or sharpened:
 - if &gt; 0, the image is sharpened
@@ -6479,6 +6528,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>direction</name>
 			<type>string</type>
 			<required>no</required>
+			<default>horizontal</default>
 		<description>Shear direction:
 - horizontal (default)
 - vertical</description>
@@ -6487,6 +6537,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
+			<default>nearest</default>
 		<description>Type of interpolation:
 - nearest (default): Applies the nearest neighbor method of interpolation. Image quality is lower than the other interpolation methods, but processing is fastest.
 - bilinear: Applies the bilinear method of interpolation. The quality of the image is less pixelated than the default, but processing is slower.
@@ -6550,6 +6601,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
+			<default>nearest</default>
 		<description>Type of interpolation:
 - nearest (default): Applies the nearest neighbor method of interpolation. Image quality is lower than the other interpolation methods, but processing is fastest.
 - bilinear: Applies the bilinear method of interpolation. The quality of the image is less pixelated than the default, but processing is slower.
@@ -6831,6 +6883,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>dimension</name>
 			<type>number</type>
 			<required>No</required>
+			<default>-999</default>
 		<description>function tests whether the array has exactly this dimension.</description>
     </argument>
 		<return>
@@ -7211,6 +7264,7 @@ The value determines whether the image is blurred or sharpened:
     </argument>
 		<argument>
 			<name>min_or_pattern</name>
+			<alias>min,pattern</alias>
 			<type>any</type>
 			<required>No</required>
 		<description>
@@ -7476,6 +7530,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
@@ -7497,6 +7552,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
@@ -7524,12 +7580,14 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>existing delimeter to replace. a delimeter is a characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
 			<name>includeEmptyFields</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>false</default>
 			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
@@ -7551,6 +7609,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
@@ -7578,6 +7637,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7611,6 +7671,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7644,6 +7705,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7677,6 +7739,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7710,6 +7773,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7737,6 +7801,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7770,6 +7835,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7809,6 +7875,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7842,6 +7909,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimeter</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7869,6 +7937,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7896,6 +7965,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7923,6 +7993,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7956,6 +8027,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
@@ -7983,16 +8055,18 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>no</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
 			<name>elements</name>
 			<type>string</type>
 			<required>no</required>
+			<default>all</default>
 			<description>
 			which type of element are qualified
-			 - all (all elements)
-			 - char (elements that are composed of alphabetic characters)
+			 - all (default): all elements
+			 - char: elements that are composed of alphabetic characters
 			 </description>
 		</argument>
 		<argument>
@@ -8020,6 +8094,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8059,6 +8134,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8097,14 +8173,16 @@ The value determines whether the image is blurred or sharpened:
 			<name>sort_order</name>
 			<type>string</type>
 			<required>No</required>
+			<default>asc</default>
 			<description>sort direction:
-			- asc (ascending sort order; default value)
-			- desc (descending sort order) </description>
+			- asc(default): ascending sort order
+			- desc: descending sort order </description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8132,6 +8210,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8167,6 +8246,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiters</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
@@ -8194,6 +8274,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8227,6 +8308,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8306,6 +8388,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>type</name>
 			<type>string</type>
 			<required>No</required>
+			<default>local</default>
 		<description></description>
     </argument>
 		<argument>
@@ -9281,6 +9364,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</argument -->
 		<argument>
 			<name>datatype_or_array</name>
+			<alias>datatype,array</alias>
 			<type>any</type>
 			<required>Yes</required>
 		<description></description>
@@ -9310,7 +9394,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>number</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
+			<default>1</default>
+		<description>number of rows to add, default is 1</description>
     </argument>		
 		<return>
 			<type>number</type>
@@ -9391,7 +9476,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>delimeter</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+			<default>,</default>
+		<description>delimiter used to separate elements in list</description>
     </argument>	
 		<return>
 			<type>string</type>
@@ -9435,6 +9521,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>row</name>
 			<type>number</type>
 			<required>no</required>
+			<default>-9999</default>
 		<description></description>
     </argument>	
 		<return>
@@ -9462,6 +9549,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>row_number</name>
 			<type>number</type>
 			<required>No</required>
+			<default>-9999</default>
 			<description>row number (1-n)</description>
 		</argument>
 		<return>
@@ -9531,6 +9619,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>row_number</name>
 			<type>number</type>
 			<required>No</required>
+			<default>-9999</default>
 		<description></description>
     </argument>
 		<return>
@@ -9585,6 +9674,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>direction</name>
 			<type>string</type>
 			<required>No</required>
+			<default>asc</default>
 		<description></description>
     </argument>
 		<return>
@@ -9606,6 +9696,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 		<description></description>
     </argument>
 		<return>
@@ -9716,10 +9807,11 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
+			<default>1</default>
 		<description>A positive integer. Position in the string at which to start search. The default value is 1.</description>
     </argument>
 		<argument>
-			<name>arg4</name>
+			<name>returnsubexpressions</name>
 			<type>boolean</type>
 			<required>No</required>
 		<description></description>
@@ -9750,6 +9842,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
+			<default>1</default>
 		<description></description>
     </argument>
 		<argument>
@@ -9889,6 +9982,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
+			<default>one</default>
 			<description>scope for the execution:
 - one (default): replaces only the first occurrence	
 - all: replaces all occurrences</description>
@@ -9954,6 +10048,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
+			<default>one</default>
 		<description>scope for the execution:
 - one (default): Replace the first occurrence
 - all: Replace all occurrences</description>
@@ -9989,6 +10084,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
+			<default>one</default>
 		<description>
 - one (default): Replace the first occurrence of the regular expression.
 - all: Replace all occurrences of the regular expression.</description>
@@ -10024,6 +10120,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
+			<default>one</default>
 		<description>
 - one (default): Replace the first occurrence of the regular expression.
 - all: Replace all occurrences of the regular expression.</description>
@@ -10447,6 +10544,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>port</name>
 			<type>number</type>
 			<required>no</required>
+			<default>443</default>
 			<description>port of the host, default is 443</description>
 		</argument>
 		<return>
@@ -10468,6 +10566,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>port</name>
 			<type>number</type>
 			<required>no</required>
+			<default>443</default>
 			<description>port of the host, default is 443</description>
 		</argument>
 		<return>
@@ -10548,6 +10647,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>OverwriteFlag</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description>
 - true (default): values in struct2 overwrite corresponding values in struct1. </description>
     </argument>
@@ -10669,6 +10769,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>Scope</name>
 			<type>string</type>
 			<required>No</required>
+			<default>one</default>
 		<description>
 - one (default): returns one matching key.
 - all: returns all matching keys</description>
@@ -10698,6 +10799,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>Scope</name>
 			<type>string</type>
 			<required>No</required>
+			<default>one</default>
 		<description>
 - one (default): function returns one matching key
 - all: function returns all matching keys</description>
@@ -10817,11 +10919,12 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<required>Yes</required>
 		<description>Structure from which to extract a list of keys.</description>
     </argument>
-		<argument>
+	<argument>
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
-		<description>Character that separates keys in list. Default: comma.</description>
+			<default>,</default>
+			<description>Character that separates keys in list. Default: comma.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -10869,6 +10972,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>type</name>
 			<type>string</type>
 			<required>No</required>
+			<default>normal</default>
 			<description>
 			the type the new struct (normal,weak,linked)
 			</description>
@@ -10889,24 +10993,25 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>A structure with one field (an associative array).</description>
     </argument>
 		<argument>
-			<name>sortOrder</name>
-			<type>string</type>
-			<required>No</required>
-		<description>sort direction:
-_- asc (default): ascending (a to z) sort order
-- desc: descending (z to a) sort order</description>
-    </argument>
-		<argument>
 			<name>sortType</name>
 			<type>string</type>
 			<required>No</required>
+			<default>text</default>
 		<description>
-
 		define one of the following:
 - numeric: sorts numbers
 - text: sorts text alphabetically, taking case into account (case sensitive)
 - textnocase: sorts text alphabetically, without regard to case (case insensitive)
 </description>
+    </argument>
+		<argument>
+			<name>sortOrder</name>
+			<type>string</type>
+			<required>No</required>
+			<default>asc</default>
+		<description>sort direction:
+_- asc (default): ascending (a to z) sort order
+- desc: descending (z to a) sort order</description>
     </argument>
 		<argument>
 			<name>pathToSubElement</name>
@@ -11002,6 +11107,7 @@ _- asc (default): ascending (a to z) sort order
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
+			<default>"hh:mm tt</default>
 		<description>Masking characters that determine the format</description>
     </argument>
 		<argument>
@@ -11248,6 +11354,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>charset</name>
 			<type>string</type>
 			<required>No</required>
+			<default>utf-8</default>
 		<description>The character encoding in which the string is encoded.</description>
     </argument>
 		<return>
@@ -11269,12 +11376,14 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>charset</name>
 			<type>string</type>
 			<required>No</required>
+			<default>utf-8</default>
 		<description></description>
     </argument>
 		<argument>
 			<name>force</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description></description>
     </argument>
 		<return>
@@ -11296,12 +11405,14 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>charset</name>
 			<type>string</type>
 			<required>No</required>
+			<default>utf-8</default>
 		<description>The character encoding in which the string is encoded.</description>
     </argument>
 		<argument>
 			<name>force</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description></description>
     </argument>
 		<return>
@@ -11368,6 +11479,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 		<description>A delimiter character to separate column data items.
             Default: comma (,).</description>
     </argument>
@@ -11694,6 +11806,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>parameters</name>
 			<type>array</type>
 			<required>false</required>
+			<status>unimplemeted</status>
 		<description>A structure containing XSL template parameter name-value
             pairs to use in transforming the document. The XSL transform
             defined in the xslString parameter uses these parameter values

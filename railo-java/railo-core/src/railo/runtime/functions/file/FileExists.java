@@ -3,6 +3,7 @@ package railo.runtime.functions.file;
 import railo.commons.io.res.Resource;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.system.DirectoryExists;
 import railo.runtime.op.Caster;
 
 public class FileExists {
@@ -11,19 +12,12 @@ public class FileExists {
 		return call(pc, obj, pc.getConfig().allowRealPath());
 	}
 	
-	public static boolean call(PageContext pc , Object obj, boolean allowRealPath) throws PageException {
-		Resource res;
-		/*if(!allowRealPath && obj instanceof String){
-			res=pc.getConfig().getResource((String)obj);
-			if(res!=null && !res.isAbsolute()) return false;
-		}
-		else*/
-			res=Caster.toResource(pc,obj, false,allowRealPath);
+	public static boolean call(PageContext pc , Object obj, Object oAllowRealPath) throws PageException {
+		if(oAllowRealPath==null) return call(pc, obj);
 		
-		
-	    if(res==null) return false;
+		Resource res=Caster.toResource(pc,obj, false,Caster.toBooleanValue(oAllowRealPath));
+		if(res==null) return false;
         pc.getConfig().getSecurityManager().checkFileLocation(res);
-        
-		return res.isFile() && res.exists();
+        return res.isFile() && res.exists();
 	}
 }

@@ -16,6 +16,7 @@ public final class QueryAddColumn implements Function {
 		return query.size();
 	}
 	public static double call(PageContext pc , Query query, String string, Object datatype, Object array) throws PageException {
+		
 		query.addColumn(string,Caster.toArray(array),SQLCaster.toIntType(Caster.toString(datatype)));
 		return query.size();
 	}

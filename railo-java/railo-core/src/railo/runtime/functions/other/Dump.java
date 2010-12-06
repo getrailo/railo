@@ -34,17 +34,17 @@ public final class Dump implements Function {
 	private static final int FORMAT_TYPE_TEXT = 1;
 
 	public static String call(PageContext pc , Object object) throws PageException {
-		return call(pc, object,null,true,9999,null,null,null,null,9999,true);
+		return call(pc, object,null,true,9999,null,null,null,null,9999,true,true);
 	}
 	public static String call(PageContext pc , Object object, String label) throws PageException {
-		return call(pc, object,label,true,9999,null,null,null,null,9999,true);
+		return call(pc, object,label,true,9999,null,null,null,null,9999,true,true);
 	}
 	public static String call(PageContext pc , Object object, String label,boolean expand) throws PageException {
-		return call(pc, object,label,expand,9999,null,null,null,null,9999,true);
+		return call(pc, object,label,expand,9999,null,null,null,null,9999,true,true);
 	}
 
 	public static String call(PageContext pc , Object object, String label,boolean expand,double maxLevel) throws PageException {
-		return call(pc, object,label,expand,maxLevel,null,null,null,null,9999,true);
+		return call(pc, object,label,expand,maxLevel,null,null,null,null,9999,true,true);
 	}
 
 	public static String call(PageContext pc , Object object, String label,boolean expand,double maxLevel, String show) throws PageException {

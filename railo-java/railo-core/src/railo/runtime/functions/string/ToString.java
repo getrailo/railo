@@ -16,11 +16,14 @@ public final class ToString implements Function {
 		return "";
 	}
 	public static String call(PageContext pc , Object object) throws PageException {
-		String encoding = pc.getResponse().getCharacterEncoding();
-		if(StringUtil.isEmpty(encoding,true))encoding="UTF-8";
-		return call(pc,object,encoding);
+		return call(pc,object,null);
 	}
 	public static String call(PageContext pc , Object object, String encoding) throws PageException {
+		if(StringUtil.isEmpty(encoding)) {
+			encoding = pc.getResponse().getCharacterEncoding();
+			if(StringUtil.isEmpty(encoding,true))encoding="UTF-8";
+		}
+		
 		if(object instanceof byte[]){
 			if(encoding!=null) {
         		try {

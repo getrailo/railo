@@ -12,12 +12,7 @@ import railo.runtime.op.Decision;
 public final class Val implements Function {
 	
 	public static double call(PageContext pc , Object value) throws PageException {
-	    //if(value instanceof Boolean || value instanceof Number) return Caster.toDoubleValue(value);
-	    
-        //double dbl=Caster.toDoubleValue(value,Double.NaN);
-        //if(Decision.isValid(dbl)) return dbl;
-        
-        String str=Caster.toString(value);
+	    String str=Caster.toString(value);
         
 	    int pos=getPos(str);
 	    if(pos<=0) {

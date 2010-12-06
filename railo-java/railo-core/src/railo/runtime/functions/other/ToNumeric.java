@@ -11,6 +11,7 @@ public class ToNumeric {
 		return Caster.toDoubleValue(value);
 	}
 	public static double call(PageContext pc , Object value, Object oRadix) throws PageException {
+		if(oRadix==null) return call(pc, value);
 		int radix;
 		if(Decision.isNumeric(oRadix)){
 			radix=Caster.toIntValue(oRadix);

@@ -21,6 +21,7 @@ public class FileOpen {
 	}
 	
 	public static Object call(PageContext pc, String path,String strMode, String charset,boolean seekable) throws PageException {
+		
 		strMode=strMode.trim().toLowerCase();
 		if(StringUtil.isEmpty(charset,true))
 			charset=pc.getConfig().getResourceCharset();

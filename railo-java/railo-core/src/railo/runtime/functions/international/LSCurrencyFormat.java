@@ -23,7 +23,8 @@ public final class LSCurrencyFormat implements Function {
 		return format( toDouble(number), type, pc.getLocale());
 	}
 	public static String call(PageContext pc , Object number, String type,String strLocale) throws PageException {
-		return format(toDouble(number), type, LocaleFactory.getLocale(strLocale));
+		Locale locale=StringUtil.isEmpty(strLocale)?pc.getLocale():LocaleFactory.getLocale(strLocale);
+		return format(toDouble(number), type, locale);
 	}
 	
 	public static String format( double number, String type,Locale locale) throws ExpressionException {

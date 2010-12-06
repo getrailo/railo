@@ -13,6 +13,8 @@ public final class IsArray implements Function {
 		return Decision.isArray(object);
 	}
 	public static boolean call(PageContext pc , Object object, double dimension) {
+		if(dimension==-999) return Decision.isArray(object); // -999 == default value for named argument 
+		
 		
 		if((object instanceof Array)) {
 			return ((Array)object).getDimension()==(int)dimension;

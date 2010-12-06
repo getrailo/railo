@@ -5552,6 +5552,13 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Width in pixels of the image.</description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>base64</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>should action "writetobrowser" embed the source of the image as base64 encoded string, default is false.</description>
+		</attribute>
 		
 	</tag>
 	

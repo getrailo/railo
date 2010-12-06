@@ -35,7 +35,7 @@ public final class GetHttpTimeString implements Function {
 	}
 
 	public static String call(PageContext pc , DateTime datetime) {
-        return toHTTPTimeString(datetime);
+        return toHTTPTimeString(datetime==null?new DateTimeImpl(pc):datetime);
     }
 	
 	public static String invoke(DateTime datetime) {

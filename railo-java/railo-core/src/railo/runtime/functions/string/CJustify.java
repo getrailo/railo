@@ -25,23 +25,6 @@ public final class CJustify implements Function {
 			return new String(chrs);
 		}
 	}
-
-	/*public static void main(String[] args) throws ExpressionException {
-
-		
-		for(int i=1;i<11;i++) {
-			print.ln(i+"->"+call(null,"abc",i)+"<-");
-		}
-		
-		
-		long start;
-		
-		start=System.currentTimeMillis();
-		for(int i=1;i<100000;i++) {
-			call(null,"abc",10);
-		}
-		print.ln(System.currentTimeMillis()-start);
-	}*/
 }
 
 

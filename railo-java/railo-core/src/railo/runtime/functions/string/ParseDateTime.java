@@ -22,7 +22,7 @@ public final class ParseDateTime implements Function {
 		return _call(oDate,pc.getTimeZone());
 	}
 	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate, String popConversion,String strTimezone) throws PageException {
-		return _call(oDate,TimeZoneUtil.toTimeZone(strTimezone));
+		return _call(oDate,strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	private static railo.runtime.type.dt.DateTime _call( Object oDate,TimeZone tz) throws PageException {
 		// MUSt implement popConversion
