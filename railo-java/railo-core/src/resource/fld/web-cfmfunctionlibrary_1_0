@@ -6256,24 +6256,28 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<name>x</name>
 			<type>string</type>
 			<required>yes</required>
-		<description>The x coordinate for the point of rotation. The default value is 2.</description>
+			<default>2</default>
+			<description>The x coordinate for the point of rotation. The default value is 2.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>string</type>
 			<required>no</required>
-		<description>The y coordinate for the point of rotation. The default value is 2.</description>
+			<default>2</default>
+			<description>The y coordinate for the point of rotation. The default value is 2.</description>
     </argument>
 		<argument>
 			<name>angle</name>
 			<type>string</type>
 			<required>no</required>
-		<description>The rotation angle in degrees.</description>
+			<default>0</default>
+			<description>The rotation angle in degrees.</description>
     </argument>
 		<argument>
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
+			<default>nearest</default>
 		<description>Type of interpolation:
 - nearest (default): Applies the nearest neighbor method of interpolation. Image quality is lower than the other interpolation methods, but processing is fastest.
 - bilinear: Applies the bilinear method of interpolation. The quality of the image is less pixelated than the default, but processing is slower.
@@ -8931,8 +8935,9 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<argument>
 			<name>count</name>
 			<type>number</type>
-			<required>Yes</required>
-		<description>The number of characters to retrieve.</description>
+			<required>no</required>
+			<default>-1</default>
+		<description>The number of characters to retrieve. If not set, all characters until the end of the string will be returned.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -9521,14 +9526,9 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<required>Yes</required>
 		<description></description>
     </argument>
-		<!-- argument>
-			<name>array</name>
-			<type>array</type>
-			<required>Yes</required>
-		</argument -->
 		<argument>
 			<name>datatype_or_array</name>
-			<alias>datatype,array</alias>
+			<alias>datatype</alias>
 			<type>any</type>
 			<required>Yes</required>
 		<description></description>

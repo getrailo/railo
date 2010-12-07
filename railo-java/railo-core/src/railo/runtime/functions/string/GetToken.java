@@ -12,9 +12,11 @@ import railo.runtime.ext.function.Function;
 
 public final class GetToken implements Function {
 	public static String call(PageContext pc , String str, double index) throws ExpressionException {
-		return call(pc,str,index,"\r\n\t ");
+		return call(pc,str,index,null);
 	}
 	public static String call(PageContext pc , String str, double index, String delimeters) throws ExpressionException {
+		if(delimeters==null) delimeters="\r\n\t ";
+		
 		if(index<1)
 			throw new FunctionException(pc,"getToken",2,"index","index must be a positive number now ("+((int)index)+")");
 		
