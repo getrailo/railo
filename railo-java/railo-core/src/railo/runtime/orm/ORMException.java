@@ -2,6 +2,7 @@ package railo.runtime.orm;
 
 
 import railo.runtime.Component;
+import railo.runtime.db.DataSource;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -86,8 +87,11 @@ public class ORMException extends ApplicationException {
 		
 		if(pe instanceof PageExceptionImpl){
 			PageExceptionImpl pei = (PageExceptionImpl)pe;
+			String dsn=null;
+			DataSource ds = engine.getDataSource();
+			if(ds!=null) dsn=ds.getName();
 			pei.setAdditional("Entities", List.arrayToList(names, ", "));
-			pei.setAdditional("Datasource", engine.getDataSource().getName());
+			if(dsn!=null)pei.setAdditional("Datasource", dsn);
 		}
 	}
 

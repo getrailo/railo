@@ -13,6 +13,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.comparator.NumberComparator;
 import railo.runtime.type.comparator.TextComparator;
+import railo.runtime.type.util.ArrayUtil;
 
 /**
  * List is not a type, only some static method to manipulate String lists
@@ -877,7 +878,7 @@ public final class List {
 	 * @return list generated from string array
 	 */
 	public static String arrayToList(String[] array, String delimeter) {
-		if(array.length==0) return "";
+		if(ArrayUtil.isEmpty(array)) return "";
 		StringBuffer sb=new StringBuffer(array[0]);
 		
 		if(delimeter.length()==1) {

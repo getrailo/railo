@@ -115,13 +115,13 @@ public final class GetFunctionData implements Function {
 		
 		sct.set(NAME,function.getName());
         sct.set(ARGUMENT_TYPE,"fixed");
-        
         sct.set(DESCRIPTION,StringUtil.emptyIfNull(udf.getHint()));
         sct.set(RETURN_TYPE,StringUtil.emptyIfNull(udf.getReturnTypeAsString()));
         sct.set(TYPE,"cfml");
         sct.set(SOURCE,udf.getPageSource().getDisplayPath());
+		sct.set(STATUS,"implemeted");
 		
-        
+		
         FunctionArgument[] fas = udf.getFunctionArguments();
         Array _args=new ArrayImpl();
 		sct.set(ARGUMENTS,_args);
@@ -135,7 +135,7 @@ public final class GetFunctionData implements Function {
 			_arg.set(TYPE,StringUtil.emptyIfNull(fa.getTypeAsString()));
 			_arg.set(NAME,StringUtil.emptyIfNull(fa.getName()));
 			_arg.set(DESCRIPTION,StringUtil.emptyIfNull(fa.getHint()));
-			
+			_arg.set(STATUS,"implemeted");
 			
 			_args.append(_arg);
 		}
