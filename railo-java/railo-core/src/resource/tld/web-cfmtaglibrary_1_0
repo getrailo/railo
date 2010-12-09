@@ -11702,7 +11702,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>extendedInfo</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>A custom error code that you supply.</description>
+			<description>extended information to the exception.</description>
 		</attribute>
 		<attribute>
 			<type>any</type>

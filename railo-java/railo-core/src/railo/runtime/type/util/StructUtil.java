@@ -102,14 +102,7 @@ public final class StructUtil {
 	
 	public static DumpTable toDumpTable(Struct sct,String title,PageContext pageContext, int maxlevel, DumpProperties dp) {
 		Key[] keys = order(sct.keys());
-		//"#5965e4","#9999ff","#000000"
-		try {
-			pageContext.write(maxlevel+"<br>");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			// e.printStackTrace();
-		}
-	    DumpTable table = new DumpTablePro("struct","#5965e4","#9999ff","#000000");//new DumpTable("#669900","#99cc00","#263300");
+		DumpTable table = new DumpTablePro("struct","#5965e4","#9999ff","#000000");//new DumpTable("#669900","#99cc00","#263300");
 		if(sct.size()>10 && dp.getMetainfo())table.setComment("Entries:"+sct.size());
 	    if(!StringUtil.isEmpty(title))table.setTitle(title);
 		maxlevel--;
