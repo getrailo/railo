@@ -1,5 +1,6 @@
 railo-java/railo/build
 railo-java/railo-core/bin/
+railo-java/railo-core/bin/*
 railo-java/railo-core/dist
 railo-java/railo-core/build
 railo-java/railo-loader/bin
@@ -24,4 +25,3 @@ va specific
 *.DS_Store
 *.swp
 *.out
-
