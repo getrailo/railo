@@ -9,6 +9,7 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.commons.lang.CFTypes;
+import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -93,19 +94,15 @@ public final class ExpressionUtil {
 	}
   
     public static void writeLog(BytecodeContext bc, int line) {
+    	if(!bc.writeLog() || line<0 || (StringUtil.indexOfIgnoreCase(bc.getMethod().getName(),"call")==-1))return;
     	
-    	if(!bc.writeLog() || line<0)return;
     	try{
 	    	GeneratorAdapter adapter = bc.getAdapter();
 	    	adapter.loadArg(0);
 	        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
-	        if(false){
-	            //adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, START);
-			}	
-			else{
-				adapter.push(line);
-		        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, END_LINE);
-			}
+	        adapter.push(line);
+		    adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, END_LINE);
+			
 		}
 		catch(Throwable t) {
 			t.printStackTrace();

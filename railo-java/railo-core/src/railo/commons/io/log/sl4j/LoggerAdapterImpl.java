@@ -12,11 +12,12 @@ import railo.runtime.op.Caster;
 
 public final class LoggerAdapterImpl extends MarkerIgnoringBase implements LocationAwareLogger {
 
+	private static final long serialVersionUID = 3875268250734654111L;
+	
 	private LogAndSource logger;
 	private String _name;
 
 	public LoggerAdapterImpl(LogAndSource logger, String name){
-		//print.o("logger:"+logger.getSource());
 		this.logger=logger;
 		this._name=name;
 	}
@@ -53,7 +54,6 @@ public final class LoggerAdapterImpl extends MarkerIgnoringBase implements Locat
 	
 	private void log(int level, String msg) {
 		logger.log(level, _name, msg);
-		
 	}
 	private void log(int level, String msg, Throwable t) {
 		log(level, msg+"\n"+ExceptionUtil.getStacktrace(t,true));

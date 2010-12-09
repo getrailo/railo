@@ -8,6 +8,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.ext.tag.DynamicAttributes;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.type.KeyImpl;
 
 /**
 * Defines components as complex types that are used for web services authoring. The attributes of this tag are exposed as component metadata and are subject to inheritance rules.
@@ -32,7 +33,7 @@ public final class Property extends TagImpl  implements DynamicAttributes{
 	 * @see railo.runtime.ext.tag.DynamicAttributes#setDynamicAttribute(java.lang.String, java.lang.String, java.lang.Object)
 	 */
 	public void setDynamicAttribute(String uri, String name, Object value) {
-		property.getMeta().setEL(name,value);
+		property.getMeta().setEL(KeyImpl.init(name),value);
 	}
 	
 	/** set the value type

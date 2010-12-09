@@ -12,10 +12,10 @@ public final class ListContainsNoCase implements Function {
 	private static final long serialVersionUID = 4955787566835292639L;
 	
 	public static double call(PageContext pc , String list, String value) {
-		return List.listContainsIgnoreEmptyNoCase(list,value,",")+1;
+		return call(pc, list, value, ",", false);
 	}
 	public static double call(PageContext pc , String list, String value, String delimter) {
-		return List.listContainsIgnoreEmptyNoCase(list,value,delimter)+1;
+		return call(pc, list, value, delimter, false);
 	}
 	public static double call(PageContext pc , String list, String value, String delimter, boolean includeEmptyFields) {
 		if(includeEmptyFields)return List.listContainsNoCase(list,value,delimter)+1;

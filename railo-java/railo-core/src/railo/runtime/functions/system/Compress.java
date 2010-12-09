@@ -19,7 +19,7 @@ import railo.runtime.type.List;
 public final class Compress implements Function {
     
     public static boolean call(PageContext pc , String strFormat, String strSource, String srcTarget) throws PageException {
-        return call(pc,strFormat,strSource,srcTarget,true);
+        return call(pc,strFormat,strSource,srcTarget,true,"777");
     }
     public static boolean call(PageContext pc , String strFormat, String strSource, String srcTarget, boolean includeBaseFolder) throws PageException {
         return call(pc,strFormat,strSource,srcTarget,includeBaseFolder,"777");

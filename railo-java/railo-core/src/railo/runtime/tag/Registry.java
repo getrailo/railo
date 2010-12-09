@@ -8,6 +8,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.registry.RegistryEntry;
 import railo.runtime.registry.RegistryQuery;
 import railo.runtime.security.SecurityManager;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryImpl;
 
 /**
@@ -23,6 +24,9 @@ public final class Registry extends TagImpl {
     private static final short ACTION_GET=1;
     private static final short ACTION_SET=2;
     private static final short ACTION_DELETE=3;
+	private static final railo.runtime.type.Collection.Key TYPE = KeyImpl.init("type");
+	private static final railo.runtime.type.Collection.Key ENTRY = KeyImpl.init("entry");
+	private static final railo.runtime.type.Collection.Key VALUE = KeyImpl.init("value");
     
     
 
@@ -233,9 +237,9 @@ public final class Registry extends TagImpl {
                 for(int i=0;i<entries.length;i++) {
                     RegistryEntry e = entries[i];
                     int row=i+1;
-                    qry.setAt("entry",row,e.getKey());
-                    qry.setAt("type",row,RegistryEntry.toCFStringType(e.getType()));
-                    qry.setAt("value",row,e.getValue());
+                    qry.setAt(ENTRY,row,e.getKey());
+                    qry.setAt(TYPE,row,RegistryEntry.toCFStringType(e.getType()));
+                    qry.setAt(VALUE,row,e.getValue());
                 }
                 
 
@@ -244,13 +248,13 @@ public final class Registry extends TagImpl {
         			String[] arr=sort.toLowerCase().split(",");
         			for(int i=arr.length-1;i>=0;i--) {
         				String[] col=arr[i].trim().split("\\s+");
-        				if(col.length==1)qry.sort(col[0].trim());
+        				if(col.length==1)qry.sort(KeyImpl.init(col[0].trim()));
         				else if(col.length==2) {
         					String order=col[1].toLowerCase().trim();
         					if(order.equals("asc"))
-        					    qry.sort(col[0],railo.runtime.type.Query.ORDER_ASC);
+        					    qry.sort(KeyImpl.init(col[0]),railo.runtime.type.Query.ORDER_ASC);
         					else if(order.equals("desc"))
-        					    qry.sort(col[0],railo.runtime.type.Query.ORDER_DESC);
+        					    qry.sort(KeyImpl.init(col[0]),railo.runtime.type.Query.ORDER_DESC);
         					else 
         						throw new ApplicationException("invalid order type ["+col[1]+"]");
         				}

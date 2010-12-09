@@ -14,6 +14,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.aprint;
 import railo.commons.digest.MD5;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
@@ -360,6 +361,18 @@ public final class ASMUtil {
 			if(parent instanceof Page)	return (Page) parent;
 		}
 	}
+	
+	public static void listAncestor(Statement stat) throws BytecodeException {
+		Statement parent=stat;
+		aprint.o(stat);
+		while(true)	{
+			parent=parent.getParent();
+			if(parent instanceof Page)aprint.o("page-> "+ ((Page)parent).getSource());
+			else aprint.o("parent-> "+ parent);
+			if(parent==null) break;
+		}
+	}
+	
 	
 	public static Tag getAncestorComponent(Statement stat) throws BytecodeException {
 		//print.ln("getAncestorPage:"+stat);

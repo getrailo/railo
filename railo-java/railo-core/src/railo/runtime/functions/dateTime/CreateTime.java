@@ -23,7 +23,7 @@ public final class CreateTime implements Function {
 		return _call(pc, hour, minute, second, millis,pc.getTimeZone());
 	}
 	public static DateTime call(PageContext pc , double hour, double minute, double second,double millis,String strTimezone) throws ExpressionException {
-		return _call(pc, hour, minute, second, millis,TimeZoneUtil.toTimeZone(strTimezone));
+		return _call(pc, hour, minute, second, millis,strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	
 

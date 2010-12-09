@@ -18,7 +18,7 @@ public final class Month implements Function {
 	}
 	
 	public static double call(PageContext pc , DateTime date, String strTimezone) throws ExpressionException {
-		return _call(pc, date, TimeZoneUtil.toTimeZone(strTimezone));
+		return _call(pc, date, strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	
 	private static double _call(PageContext pc , DateTime date,TimeZone tz) {

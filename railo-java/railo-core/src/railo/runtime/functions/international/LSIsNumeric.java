@@ -8,14 +8,13 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 
 public final class LSIsNumeric implements Function {
+
+	private static final long serialVersionUID = 4753476752482915194L;
+	
 	public static boolean call(PageContext pc , String string) {
-		try {
-			LSParseNumber.call(pc,string);
-			return true;
-		} catch (PageException e) {
-			return false;
-		}
+		return call(pc, string, null);
 	}
+	
 	public static boolean call(PageContext pc , String string,String strLocale) {
 		try {
 			LSParseNumber.call(pc,string,strLocale);

@@ -41,7 +41,7 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
 	private String username;
 	private String password;
 	private String webservice;
-	private int timeout;
+	private int timeout=-1;
 	private String serviceport;
 	private ProxyData proxy=new ProxyDataImpl();
 

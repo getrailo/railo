@@ -14,7 +14,7 @@ public final class Assign extends RefSupport implements Ref {
 
     public Assign(Ref coll, Ref value) throws ExpressionException {
         if(!(coll instanceof Set))
-            throw new ExpressionException("can't assign value to object of type "+coll.getTypeName());
+        	throw new ExpressionException("invalid assignment left-hand side ("+coll.getTypeName()+")");
         this.coll=(Set) coll;
         this.value=value;
     }

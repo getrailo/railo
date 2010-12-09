@@ -14,6 +14,7 @@ public final class QueryNew implements Function {
 	    return new QueryImpl(List.listToArrayTrim(columnlist,","),0,"query");
 	}
 	public static railo.runtime.type.Query call(PageContext pc , String columnlist, String columntypelist) throws PageException {
-	    return new QueryImpl(List.listToArrayTrim(columnlist,","),List.listToArrayTrim(columntypelist,","),0,"query");
+	    if(columnlist==null) return call(pc, columnlist);
+		return new QueryImpl(List.listToArrayTrim(columnlist,","),List.listToArrayTrim(columntypelist,","),0,"query");
 	}
 }

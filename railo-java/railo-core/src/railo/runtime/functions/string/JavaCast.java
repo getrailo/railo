@@ -18,7 +18,7 @@ import railo.runtime.type.Array;
 
 public final class JavaCast implements Function {
 	public static Object calls(PageContext pc , String string, Object object) throws PageException {
-		throw new ExpressionException("method javacast not implemented yet");
+		throw new ExpressionException("method javacast not implemented yet"); // MUST ????
 	}
 	public static Object call(PageContext pc , String type, Object obj) throws PageException {
 		type=type.trim();

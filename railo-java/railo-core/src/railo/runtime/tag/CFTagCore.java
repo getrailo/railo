@@ -37,17 +37,18 @@ public class CFTagCore extends CFTag {
 		this.isweb=isweb;
 	}
 	public InitFile initFile(PageContext pageContext) throws PageException {
+    	return createInitFile(pageContext,isweb,filename);
+     
+    }
+	
+	public static InitFile createInitFile(PageContext pageContext,boolean isweb,String filename) throws PageException {
     	ConfigWebImpl config = (ConfigWebImpl) pageContext.getConfig();
-    	//print.out(this+"-"+filename);
-        // config mappings
     	Mapping mapping=isweb?config.getTagMapping():config.getServerTagMapping();
     	
     	return new InitFile(
     			mapping.getPageSource(filename),
     			filename,
     			filename.endsWith('.'+config.getCFCExtension()));
-        
-        //throw new ExpressionException("custom tag ["+name+"] is not defined in directory ["+mapping.getStrPhysical()+"]");
      
     }
 

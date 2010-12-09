@@ -11,7 +11,7 @@ import railo.runtime.ext.function.Function;
 
 public final class SystemOutput implements Function {
     public static boolean call(PageContext pc , String string) {
-        return call(pc, string, false);
+        return call(pc, string, false,false);
     }
     public static boolean call(PageContext pc , String string, boolean addNewLine) {
         return call(pc, string, addNewLine, false);

@@ -13,8 +13,8 @@ public final class QuerySetCell implements Function {
 		return call(pc,query,columnName,value,query.getRecordcount());
 	}
 	public static boolean call(PageContext pc , Query query, String columnName, Object value, double rowNumber) throws PageException {
-		
-        query.setAt(columnName,(int)rowNumber,value);
+		if(rowNumber==-9999) rowNumber=query.getRecordcount();// used for named arguments
+    	query.setAt(columnName,(int)rowNumber,value);
 		return true;		
 	}
 }

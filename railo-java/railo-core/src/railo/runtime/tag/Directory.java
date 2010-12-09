@@ -99,7 +99,6 @@ public final class Directory extends TagImpl  {
 	** 		listing. */
 	private String name=null;
 
-    private SecurityManager securityManager;
     
     private boolean recurse=false;
 
@@ -308,7 +307,7 @@ public final class Directory extends TagImpl  {
 	*/
 	public int doStartTag() throws PageException	{
 
-	    securityManager = pageContext.getConfig().getSecurityManager();
+	    //securityManager = pageContext.getConfig().getSecurityManager();
 		if(action.equals("list")) {
 			Object res=actionList(pageContext,directory,serverPassword,type,filter,nameFilter,listInfo,recurse,sort);
 			if(!StringUtil.isEmpty(name) && res!=null)pageContext.setVariable(name,res);

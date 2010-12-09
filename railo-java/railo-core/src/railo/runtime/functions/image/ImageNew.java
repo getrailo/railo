@@ -38,6 +38,8 @@ public class ImageNew {
 	}
 	
 	public static Object call(PageContext pc,Object source, String width, String height, String strImageType, String strCanvasColor) throws PageException {
+		if(source==null)
+			return call(pc);
 		if(StringUtil.isEmpty(width) && StringUtil.isEmpty(height))
 			return call(pc,source);
 		

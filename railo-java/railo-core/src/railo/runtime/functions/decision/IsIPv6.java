@@ -4,6 +4,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -21,6 +22,7 @@ public class IsIPv6 {
 	}
 	
 	public static boolean call(PageContext pc,String hostName) throws PageException {
+		if(StringUtil.isEmpty(hostName)) return call(pc);
 		try {
 			InetAddress[] ias = InetAddress.getAllByName(hostName);
 			return _call(ias);

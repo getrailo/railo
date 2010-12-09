@@ -14,6 +14,9 @@ import railo.runtime.type.FunctionValue;
  * implementation of the Function array
  */
 public class Array_ implements Function {
+	
+	private static final long serialVersionUID = 4974431571073577001L;
+
 	/**
 	 * @param pc
 	 * @param objArr

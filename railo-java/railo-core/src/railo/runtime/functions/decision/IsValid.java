@@ -19,7 +19,8 @@ import railo.runtime.op.Decision;
  */
 public final class IsValid implements Function {
 
-	// others
+	private static final long serialVersionUID = -1383105304624662986L;
+
 	/**
 	 * check for many diff types
 	 * @param pc
@@ -65,18 +66,6 @@ public final class IsValid implements Function {
 		}
 	}
 	
-	
-	
-	/**
-	 * range check
-	 * @param pc
-	 * @param type
-	 * @param value
-	 * @param pattern_or_min
-	 * @param max
-	 * @return
-	 * @throws ExpressionException
-	 */
 	public static boolean call(PageContext pc, String type, Object value, Object objMin, Object objMax) throws ExpressionException {
 		type=type.trim().toLowerCase();
 		if(!"range".equals(type))

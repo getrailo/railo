@@ -69,7 +69,7 @@ public final class Document extends BodyTagImpl {
 
 
 
-	private ArrayList documents=new ArrayList(); 
+	private ArrayList<PDFDocument> documents=new ArrayList<PDFDocument>(); 
 	
 	public Document() {
 		this._document=null;
@@ -515,10 +515,10 @@ public final class Document extends BodyTagImpl {
 			boolean hasHeader=header!=null;
 			boolean hasFooter=footer!=null;
 			if(hasFooter || hasHeader) {
-				Iterator it = documents.iterator();
+				Iterator<PDFDocument> it = documents.iterator();
 				PDFDocument doc;
 				while(it.hasNext()){
-					doc=(PDFDocument) it.next();
+					doc=it.next();
 					if(hasHeader && doc.getHeader()==null) doc.setHeader(header);
 					if(hasFooter && doc.getFooter()==null) doc.setFooter(footer);
 				}
@@ -574,11 +574,11 @@ public final class Document extends BodyTagImpl {
 		if(documents.size()>1) {
 			PDFDocument[] pdfDocs=new PDFDocument[documents.size()];
 			PdfReader[] pdfReaders = new PdfReader[pdfDocs.length];
-			Iterator it = documents.iterator();
+			Iterator<PDFDocument> it = documents.iterator();
 			int index=0;
 			// generate pdf with pd4ml
 			while(it.hasNext()) {
-				pdfDocs[index]=(PDFDocument)it.next();
+				pdfDocs[index]=it.next();
 				pdfReaders[index]=
 					new PdfReader(pdfDocs[index].render(getDimension(),unitFactor,pageContext,doHtmlBookmarks));
 				index++;

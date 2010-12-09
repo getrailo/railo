@@ -1,7 +1,5 @@
 package railo.transformer.bytecode.statement.java;
 
-import org.objectweb.asm.Label;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import railo.print;
@@ -10,15 +8,12 @@ import railo.commons.lang.ClassUtil;
 import railo.runtime.reflection.Reflector;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitFloat;
 import railo.transformer.bytecode.literal.LitInteger;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.ASMUtil;
-import railo.transformer.bytecode.util.Types;
 
 public class Assign extends ExpressionBase {
 
