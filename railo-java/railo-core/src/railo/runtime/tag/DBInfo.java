@@ -476,16 +476,6 @@ public final class DBInfo extends TagImpl {
 		if(StringUtil.isEmpty(pattern,true)) {
 			pattern=null;
 		}
-		else {
-			int index=pattern.indexOf('.');
-			if(index!=-1) {
-				String tmp=pattern.substring(0,index);
-				pattern=pattern.substring(index+1);
-				
-				if(dbname==null) dbname=tmp;
-				else schema=tmp;
-			}
-		}
 		
         ResultSet tables = metaData.getProcedures(dbname, schema, pattern);
         railo.runtime.type.Query qry = new QueryImpl(tables,"query");
