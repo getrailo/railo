@@ -1,6 +1,7 @@
 package railo.transformer.bytecode.expression.var;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.objectweb.asm.Opcodes;
@@ -8,23 +9,31 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
+import railo.commons.lang.StringUtil;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.type.Scope;
 import railo.runtime.type.scope.ScopeSupport;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.cast.Cast;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.expression.Invoker;
 import railo.transformer.bytecode.literal.LitBoolean;
+import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.TypeScope;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.cfml.expression.CFMLExprTransformer;
 import railo.transformer.library.function.FunctionLibFunction;
+import railo.transformer.library.function.FunctionLibFunctionArg;
 
 public class Variable extends ExpressionBase implements Invoker {
 	 
@@ -280,10 +289,10 @@ public class Variable extends ExpressionBase implements Invoker {
     	else if(member instanceof UDF)
     		return _writeOutFirstUDF(bc,(UDF)member,scope,doOnlyScope);
     	else
-    		return _writeOutFirstBIF(bc,(BIF)member,mode,last);
+    		return _writeOutFirstBIF(bc,(BIF)member,mode,last,getLine());
 	}
 	
-	static Type _writeOutFirstBIF(BytecodeContext bc, BIF bif, int mode,boolean last) throws BytecodeException {
+	static Type _writeOutFirstBIF(BytecodeContext bc, BIF bif, int mode,boolean last,int line) throws BytecodeException {
     	GeneratorAdapter adapter = bc.getAdapter();
 		adapter.loadArg(0);
 		// class
@@ -294,14 +303,56 @@ public class Variable extends ExpressionBase implements Invoker {
 		Type[] argTypes;
 		// Arg Type FIX
 		if(bif.getArgType()==FunctionLibFunction.ARG_FIX)	{
-			argTypes=new Type[args.length+1];
-			argTypes[0]=Types.PAGE_CONTEXT;
-			for(int y=0;y<args.length;y++) {
-				argTypes[y+1]=Types.toType(args[y].getStringType());
-				args[y].writeOutValue(bc, Types.isPrimitiveType(argTypes[y+1])?MODE_VALUE:MODE_REF);
-				//print.err(argTypes[y+1]);
-				//print.err("->"+args[y].getStringType());
+			
+			if(isNamed(bif.getName(),args)) {
+				NamedArgument[] nargs=toNamedArguments(args);
+				
+				String[] names=new String[nargs.length];
+				// get all names
+				for(int i=0;i<nargs.length;i++){
+					names[i] = getName(nargs[i].getName());
+				}
+				
+				
+				ArrayList<FunctionLibFunctionArg> list = bif.getFlf().getArg();
+				Iterator<FunctionLibFunctionArg> it = list.iterator();
+				
+				argTypes=new Type[list.size()+1];
+				argTypes[0]=Types.PAGE_CONTEXT;
+				
+				FunctionLibFunctionArg flfa;
+				int index=0;
+				VT vt;
+				while(it.hasNext()) {
+					flfa =it.next();
+					vt = getMatchingValueAndType(flfa,nargs,names,line);
+					if(vt.index!=-1) 
+						names[vt.index]=null;
+					argTypes[++index]=Types.toType(vt.type);
+					if(vt.value==null)ASMConstants.NULL(bc.getAdapter());
+					else vt.value.writeOut(bc, Types.isPrimitiveType(argTypes[index])?MODE_VALUE:MODE_REF);
+				}
+				
+				for(int y=0;y<names.length;y++){
+					if(names[y]!=null) {
+						BytecodeException bce = new BytecodeException("argument ["+names[y]+"] is not allowed for function ["+bif.getFlf().getName()+"]", args[y].getLine());
+						bce.setAdditional("pattern",CFMLExprTransformer.createFunctionPattern(bif.getFlf()));
+						throw bce;
+					}
+				}
+				
 			}
+			else{
+				argTypes=new Type[args.length+1];
+				argTypes[0]=Types.PAGE_CONTEXT;
+				
+				
+				for(int y=0;y<args.length;y++) {
+					argTypes[y+1]=Types.toType(args[y].getStringType());
+					args[y].writeOutValue(bc, Types.isPrimitiveType(argTypes[y+1])?MODE_VALUE:MODE_REF);
+				}
+			}
+			
 		}
 		// Arg Type DYN
 		else	{
@@ -327,6 +378,10 @@ public class Variable extends ExpressionBase implements Invoker {
 		return rtnType;
 	}
 		
+	
+
+	
+
 	
 
 	static Type _writeOutFirstUDF(BytecodeContext bc, UDF udf, int scope, boolean doOnlyScope) throws BytecodeException {
@@ -394,4 +449,112 @@ public class Variable extends ExpressionBase implements Invoker {
 		return ignoredFirstMember;
 	}
 	
+	
+	
+
+	private static VT getMatchingValueAndType(FunctionLibFunctionArg flfa, NamedArgument[] nargs,String[] names, int line) throws BytecodeException {
+		String flfan=flfa.getName();
+		
+		// first search if a argument match
+		for(int i=0;i<nargs.length;i++){
+			print.o(names[i]+":"+flfan+">"+flfa.getType());
+			if(names[i]!=null && names[i].equalsIgnoreCase(flfan)) {
+				nargs[i].setValue(nargs[i].getRawValue(),flfa.getType());
+				return new VT(nargs[i].getValue(),flfa.getType(),i);
+			}
+		}
+		
+		// then check if a alias match
+		String alias=flfa.getAlias();
+		if(!StringUtil.isEmpty(alias)) {
+			//String[] arrAlias = railo.runtime.type.List.toStringArray(railo.runtime.type.List.trimItems(railo.runtime.type.List.listToArrayRemoveEmpty(alias, ',')));
+			for(int i=0;i<nargs.length;i++){
+				if(names[i]!=null && railo.runtime.type.List.listFindNoCase(alias, names[i])!=-1){
+					nargs[i].setValue(nargs[i].getRawValue(),flfa.getType());
+					return new VT(nargs[i].getValue(),flfa.getType(),i);
+				}
+			}
+		}
+		
+		// if not required return the default value
+		if(!flfa.getRequired()) {
+			String defaultValue = flfa.getDefaultValue();
+			String type=flfa.getTypeAsString().toLowerCase();
+			
+			if(defaultValue==null) {
+				if(type.equals("boolean") || type.equals("bool")) 
+					return new VT(LitBoolean.FALSE,type,-1);
+				if(type.equals("number") || type.equals("numeric") || type.equals("double")) 
+					return new VT(LitDouble.ZERO,type,-1);
+				print.o(type+":null");
+				return new VT(null,type,-1);
+			}
+			else {
+				return new VT(Cast.toExpression(LitString.toExprString(defaultValue), type),type,-1);
+			}
+			
+		}
+		BytecodeException be = new BytecodeException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]",line);
+		be.setAdditional("pattern", CFMLExprTransformer.createFunctionPattern(flfa.getFunction()));
+		throw be;
+	}
+	
+	
+	
+
+	private static String getName(Expression expr) throws BytecodeException {
+		String name = ASMUtil.toString(expr);
+		if(name==null) throw new BytecodeException("cannot extract a string from a object of type ["+expr.getClass().getName()+"]",-1);
+		return name;
+	}
+
+	/**
+	 * translate a array of arguments to a araay of NamedArguments, attention no check if the elements are really  named arguments
+	 * @param args
+	 * @return
+	 */
+	private static NamedArgument[] toNamedArguments(Argument[] args) {
+		NamedArgument[] nargs=new NamedArgument[args.length];
+		for(int i=0;i<args.length;i++){
+			nargs[i]=(NamedArgument) args[i];
+		}
+		
+		return nargs;
+	}
+
+	
+
+	/**
+	 * check if the arguments are named arguments or regular arguments, throws a exception when mixed
+	 * @param funcName
+	 * @param args
+	 * @param line
+	 * @return
+	 * @throws BytecodeException
+	 */
+	private static  boolean isNamed(String funcName,Argument[] args) throws BytecodeException {
+		if(ArrayUtil.isEmpty(args)) return false;
+		boolean named=false;
+		for(int i=0;i<args.length;i++){
+			if(args[i] instanceof NamedArgument)named=true;
+			else if(named)
+				throw new BytecodeException("invalid argument for function "+funcName+", you can not mix named and unnamed arguments", args[i].getLine());
+		}
+		
+		
+		return named;
+	}
+	
+}
+
+class VT{
+	Expression value;
+	String type;
+	int index;
+
+	public VT(Expression value, String type, int index) {
+		this.value=value;
+		this.type=type;
+		this.index=index;
+	}
 }

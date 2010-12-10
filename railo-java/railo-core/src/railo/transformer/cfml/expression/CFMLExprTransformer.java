@@ -1512,37 +1512,16 @@ public class CFMLExprTransformer implements ExprTransformer {
 					if(max!=-1 && max <= count)
 						throw new TemplateException(
 							data.cfml,
-							"too many Attributes in function [" + name + "]");
+							"too many Attributes in function [" + flf.getName() + "]");
 				}
 			// Fix
 				else {
 					if(libLen <= count){
-						ArrayList<FunctionLibFunctionArg> args=flf.getArg();
-						Iterator<FunctionLibFunctionArg> it = args.iterator();
-						StringBuilder pattern=new StringBuilder(flf.getName());
-						StringBuilder end=new StringBuilder();
-						pattern.append("(");
-						FunctionLibFunctionArg arg;
-						int c=0;
-						while(it.hasNext()){
-							arg = it.next();
-							if(!arg.isRequired()) {
-								pattern.append(" [");
-								end.append("]");
-							}
-							if(c++>0)pattern.append(" ,");
-							pattern.append(arg.getType());
-							pattern.append(" ");
-							pattern.append(arg.getName());
-							
-						}
-						pattern.append(end);
-						pattern.append(")");
 						
 						TemplateException te = new TemplateException(
 							data.cfml,
-							"too many Attributes in function call [" + name + "]");
-						te.setAdditional("pattern", pattern.toString());
+							"too many Attributes in function call [" + flf.getName() + "]");
+						te.setAdditional("pattern", createFunctionPattern(flf));
 						throw te;
 					}
 				}
@@ -1571,14 +1550,17 @@ public class CFMLExprTransformer implements ExprTransformer {
 			throw new TemplateException(
 				data.cfml,
 				"Invalid Syntax Closing [)] for function ["
-					+ name
+					+ flf.getName()
 					+ "] not found");
 
 		// check min attributes
-		if (checkLibrary && flf.getArgMin() > count)
-			throw new TemplateException(
+		if (checkLibrary && flf.getArgMin() > count){
+			TemplateException te = new TemplateException(
 				data.cfml,
-				"too few attributes in function [" + name + "]");
+				"too few attributes in function [" + flf.getName() + "]");
+			if(flf.getArgType()==FunctionLibFunction.ARG_FIX) te.setAdditional("pattern", createFunctionPattern(flf));
+			throw te;
+		}
 
         comments(data.cfml);
         
@@ -1590,6 +1572,39 @@ public class CFMLExprTransformer implements ExprTransformer {
 		return fm;
 	}
 	
+	public static String createFunctionPattern(FunctionLibFunction flf) {
+		ArrayList<FunctionLibFunctionArg> args=flf.getArg();
+		Iterator<FunctionLibFunctionArg> it = args.iterator();
+		
+		// regular call
+		StringBuilder pattern=new StringBuilder(flf.getName());
+		StringBuilder end=new StringBuilder();
+		pattern.append("(");
+		FunctionLibFunctionArg arg;
+		int c=0;
+		while(it.hasNext()){
+			arg = it.next();
+			if(!arg.isRequired()) {
+				pattern.append(" [");
+				end.append("]");
+			}
+			if(c++>0)pattern.append(", ");
+			pattern.append(arg.getName());
+			pattern.append(":");
+			pattern.append(arg.getType());
+			
+		}
+		pattern.append(end);
+		pattern.append("):");
+		pattern.append(flf.getReturnTypeAsString());
+		
+		
+		
+		
+		
+		return pattern.toString();
+	}
+
 	/**
 	 * Sharps (#) die innerhalb von Expressions auftauchen haben in CFML keine weitere Beteutung 
 	 * und werden durch diese Methode einfach entfernt.

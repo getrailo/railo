@@ -150,12 +150,14 @@ All elements in the array must contain values that can be automatically converte
 		<description>Returns true if specified object is present is given array</description>
 		<argument>
 			<name>haystack</name>
+			<alias>array,arr</alias>
 			<type>array</type>
 			<required>Yes</required>
 			<description>The array that we are looking for the item</description>
 		</argument>
 		<argument>
 			<name>needle</name>
+			<alias>object,obj,o</alias>
 			<type>string</type>
 			<required>Yes</required>
 			<description>The item that we are looking for in the array</description>
@@ -171,12 +173,14 @@ All elements in the array must contain values that can be automatically converte
 		<description>Search an array to find a case insensitive item</description>
 		<argument>
 			<name>haystack</name>
+			<alias>array,arr</alias>
 			<type>array</type>
 			<required>Yes</required>
 			<description>The array that we are looking for the item</description>
 		</argument>
 		<argument>
 			<name>needle</name>
+			<alias>object,obj,o</alias>
 			<type>string</type>
 			<required>Yes</required>
 			<description>The item that we are looking for in the array</description>
@@ -709,6 +713,7 @@ sort direction:
     </argument>
 		<argument>
 			<name>delimiter</name>
+			<alias>delimiters</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -4905,6 +4910,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 		<description>A string or a variable that contains one. A delimited list of delimiters. Elements may consist of multiple characters.
@@ -7653,6 +7659,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -7675,6 +7682,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -7705,6 +7713,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -7734,6 +7743,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -7765,6 +7775,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -7800,6 +7811,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -7835,6 +7847,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -7870,6 +7883,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -7905,6 +7919,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -7933,6 +7948,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -7967,6 +7983,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -8007,6 +8024,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -8069,6 +8087,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -8097,6 +8116,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -8125,6 +8145,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -8159,6 +8180,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -8187,6 +8209,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>no</required>
 			<default>,</default>
@@ -8226,6 +8249,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -8266,6 +8290,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -8314,6 +8339,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -8342,6 +8368,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiter</name>
+			<alias>delimiters</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -8378,6 +8405,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -8407,6 +8435,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiter</name>
+			<alias>delimiters</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -8442,6 +8471,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiter</name>
+			<alias>delimiters</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -9859,6 +9889,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>delimiter</name>
+			<alias>delimiters</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -11122,6 +11153,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 	<argument>
 			<name>delimiter</name>
+			<alias>delimiters</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -11691,6 +11723,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>delimiter</name>
+			<alias>delimiters</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>

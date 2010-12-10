@@ -35,8 +35,7 @@ public class IsDefined implements FunctionEvaluator{
 				ArrayUtil.trim(arr);
 				
 				// update first arg
-				arg.setStringType("number");
-				arg.setValue(new LitDouble(scope,-1));
+				arg.setValue(new LitDouble(scope,-1),"number");
 				
 				// add second argument
 				

@@ -32,9 +32,9 @@ public final class IsValid implements Function {
 	public static boolean call(PageContext pc, String type, Object value) throws ExpressionException {
 		type=type.trim().toLowerCase();
 		if("range".equals(type))
-			throw new FunctionException(pc,"isValid",1,"type","for [range] you have to define a min and max value [isValid(\"range\",value,min,max)]");
+			throw new FunctionException(pc,"isValid",1,"type","for [range] you have to define a min and max value");
 		if("regex".equals(type) || "regular_expression".equals(type))
-			throw new FunctionException(pc,"isValid",1,"type","for [regex] you have to define a pattern [isValid(\"regex\",value,pattern)]");
+			throw new FunctionException(pc,"isValid",1,"type","for [regex] you have to define a pattern");
 
 		return Decision.isValid(type, value);
 	}
@@ -66,7 +66,14 @@ public final class IsValid implements Function {
 		}
 	}
 	
-	public static boolean call(PageContext pc, String type, Object value, Object objMin, Object objMax) throws ExpressionException {
+	public static boolean call(PageContext pc, String type, Object value, Object objMin, Object objMax) throws PageException {
+		
+		// for named argument calls
+		if(objMax==null) {
+			if(objMin==null) return call(pc, type, value);
+			return call(pc, type, value, objMin);
+		}
+		
 		type=type.trim().toLowerCase();
 		if(!"range".equals(type))
 			throw new FunctionException(pc,"isValid",1,"type","wrong attribute count for type ["+type+"]");
