@@ -588,7 +588,7 @@ public final class SQLCaster {
 		else if(strType.equals("CF_SQL_TINYINT"))	return Types.TINYINT;
 		else if(strType.equals("CF_SQL_VARBINARY"))	return Types.VARBINARY;
 		else if(strType.equals("CF_SQL_VARCHAR"))	return Types.VARCHAR;
-		else if(strType.equals("CF_SQL_VARCHAR2"))	return Types.VARCHAR;//return CFTypes.VARCHAR2;
+		else if(strType.equals("CF_SQL_VARCHAR2"))	return CFTypes.VARCHAR2;
 		
 		
 		else throw new DatabaseException("invalid CF SQL Type ["+strType+"]",null,null,null);
@@ -677,7 +677,7 @@ public final class SQLCaster {
             else if(first=='V') {
 				if(strType.equals("VARBINARY"))return Types.VARBINARY;
 				else if(strType.equals("VARCHAR"))	return Types.VARCHAR;
-				else if(strType.equals("VARCHAR2"))	return Types.VARCHAR;//return CFTypes.VARCHAR2;
+				else if(strType.equals("VARCHAR2"))	return CFTypes.VARCHAR2;
             }
         }
 	    
