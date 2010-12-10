@@ -1682,7 +1682,20 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 			<name>type</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Type of information to get</description>
+			<description>Type of information to get:
+- dbnames: database name and type
+- tables: information to all tables
+- columns: column infromation to a single table/view
+- version: version information of the database
+- procedures: information to all procedures
+- procedure_columns: column infromation to a single procedure
+- foreignkeys: information to all foreignkeys
+- index: information to all indexes
+
+,tables,columns,version,procedures,foreignkeys,index,users 
+
+
+</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
