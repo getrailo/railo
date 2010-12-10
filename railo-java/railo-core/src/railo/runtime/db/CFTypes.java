@@ -21,7 +21,7 @@ public interface CFTypes {
 	public static final int TIMESTAMPLTZ=-102;
 	public static final int TIMESTAMPNS=-100;
 	public static final int TIMESTAMPTZ=-101;
-	
+	public static final int VARCHAR2=-100;
 	
 	/**
 	 * <P>The constant in the Java programming language, sometimes referred
