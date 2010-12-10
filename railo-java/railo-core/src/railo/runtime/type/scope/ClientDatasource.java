@@ -23,6 +23,7 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -35,12 +36,12 @@ import railo.runtime.type.dt.DateTimeImpl;
  */
 public final class ClientDatasource extends ClientSupport {
 
-	//private static ScriptConverter serializer=new ScriptConverter();
+	private static final long serialVersionUID = 239179599401918216L;
+	private static final Collection.Key DATA = KeyImpl.getInstance("data");
+
 	private static boolean structOk;
 	
 	private String datasourceName;
-	//private String appName;
-	//private String cfid;
 	private PageContext pc;
 	
 	
@@ -130,10 +131,15 @@ public final class ClientDatasource extends ClientSupport {
 	    catch (DatabaseException de) {
 	    	if(dc==null) throw de;
 	    	try {
-				new QueryImpl(dc,createSQL(dc,mxStyle,false),-1,-1,-1,"query");
+				new QueryImpl(dc,createSQL(dc,mxStyle,"text"),-1,-1,-1,"query");
 	    	}
 		    catch (DatabaseException _de) {
-		    	new QueryImpl(dc,createSQL(dc,mxStyle,true),-1,-1,-1,"query");
+		    	try {
+					new QueryImpl(dc,createSQL(dc,mxStyle,"memo"),-1,-1,-1,"query");
+		    	}
+			    catch (DatabaseException __de) {
+			    	new QueryImpl(dc,createSQL(dc,mxStyle,"clob"),-1,-1,-1,"query");
+			    }
 		    }
 	    	query = new QueryImpl(dc,sqlSelect,-1,-1,-1,"query");
 		}
@@ -144,7 +150,7 @@ public final class ClientDatasource extends ClientSupport {
 	    boolean _isNew = query.getRecordcount()==0;
 	    
 	    if(_isNew) return null;
-	    String str=Caster.toString(query.get("data"));
+	    String str=Caster.toString(query.get(DATA));
 	    if(mxStyle) return null;
 	    return (Struct)pc.evaluate(str);
 	}
@@ -209,7 +215,7 @@ public final class ClientDatasource extends ClientSupport {
 	    return count;
 	}
 
-	private static SQL createSQL(DatasourceConnection dc, boolean mxStyle, boolean doMemo) {
+	private static SQL createSQL(DatasourceConnection dc, boolean mxStyle, String textType) {
 		String clazz = dc.getDatasource().getClazz().getName();
 		
 	    boolean isMSSQL=
@@ -217,12 +223,11 @@ public final class ClientDatasource extends ClientSupport {
 	    	clazz.equals("net.sourceforge.jtds.jdbc.Driver");
 	    boolean isHSQLDB=
 	    	clazz.equals("org.hsqldb.jdbcDriver");
+	    boolean isOracle=
+	    	clazz.indexOf("OracleDriver")!=-1;
 	    
 	    StringBuffer sb=new StringBuffer("CREATE TABLE ");
-	    
-	    if(mxStyle) {
-	    	
-	    }
+	    if(mxStyle) {}
 		else {
 			if(isMSSQL)sb.append("dbo.");
 			sb.append("railo_client_data (");
@@ -234,13 +239,11 @@ public final class ClientDatasource extends ClientSupport {
 			// data
 			sb.append("data ");
 			if(isHSQLDB)sb.append("varchar ");
-			else if(doMemo)sb.append("memo ");
-			else sb.append("text ");
-			// <cfelseif application.DBType EQ "Access">memo
+			else if(isOracle)sb.append("CLOB ");
+			else sb.append(textType+" ");
 			sb.append(" NOT NULL");
 		}
 	    sb.append(")");
-	    
 		return new SQLImpl(sb.toString());
 	}
 	
