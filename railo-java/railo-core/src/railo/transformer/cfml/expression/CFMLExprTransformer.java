@@ -1603,19 +1603,28 @@ public class CFMLExprTransformer implements ExprTransformer {
 		
 		// Documentation
 		StringBuilder doc=new StringBuilder(flf.getDescription());
+		StringBuilder req=new StringBuilder();
+		StringBuilder opt=new StringBuilder();
+		StringBuilder tmp;
 		doc.append("\n");
 		
 		it = args.iterator();
 		while(it.hasNext()){
 			arg = it.next();
-			doc.append("- ");
-			doc.append(arg.getName());
-			doc.append(" (");
-			doc.append(arg.getType());
-			doc.append("): ");
-			doc.append(arg.getDescription());
-			doc.append("\n");
+			tmp=arg.isRequired()?req:opt;
+			
+			tmp.append("- ");
+			tmp.append(arg.getName());
+			tmp.append(" (");
+			tmp.append(arg.getType());
+			tmp.append("): ");
+			tmp.append(arg.getDescription());
+			tmp.append("\n");
 		}
+
+		if(req.length()>0)doc.append("\nRequired:\n").append(req);
+		if(opt.length()>0)doc.append("\nOptional:\n").append(opt);
+		
 		
 		pe.setAdditional("Documentation", doc);
 		
