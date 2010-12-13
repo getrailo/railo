@@ -92,6 +92,7 @@ import railo.runtime.orm.ORMSession;
 import railo.runtime.query.QueryCache;
 import railo.runtime.security.Credential;
 import railo.runtime.security.CredentialImpl;
+import railo.runtime.tag.Login;
 import railo.runtime.tag.TagHandlerPool;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -2317,16 +2318,19 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public Credential getRemoteUser() throws PageException {
         if(remoteUser==null) {
-            if(applicationContext.getLoginStorage()==Scope.SCOPE_SESSION) {
-                Object auth = sessionScope().get("cfauthorization",null);
+        	String name=Login.getApplicationName(applicationContext);
+		    Resource roles = config.getConfigDir().getRealResource("roles");
+		    
+        	if(applicationContext.getLoginStorage()==Scope.SCOPE_SESSION) {
+                Object auth = sessionScope().get(name,null);
                 if(auth!=null) {
-                    remoteUser=CredentialImpl.decode(auth);
+                    remoteUser=CredentialImpl.decode(auth,roles);
                 }
             }
             else if(applicationContext.getLoginStorage()==Scope.SCOPE_COOKIE) {
-                Object auth = cookieScope().get("cfauthorization_"+applicationContext.getName(),null);
+                Object auth = cookieScope().get(name,null);
                 if(auth!=null) {
-                    remoteUser=CredentialImpl.decode(auth);
+                    remoteUser=CredentialImpl.decode(auth,roles);
                 }
             }
         }
@@ -2338,9 +2342,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public void clearRemoteUser() {
         if(remoteUser!=null)remoteUser=null;
-        cookieScope().removeEL(KeyImpl.init("cfauthorization_"+applicationContext.getName()));
+        String name=Login.getApplicationName(applicationContext);
+	    
+        cookieScope().removeEL(KeyImpl.init(name));
         try {
-			sessionScope().removeEL(KeyImpl.init("cfauthorization"));
+			sessionScope().removeEL(KeyImpl.init(name));
 		} catch (PageException e) {}
         
     }
