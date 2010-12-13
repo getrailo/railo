@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import railo.runtime.exp.CasterException;
+import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Scope;
@@ -1521,7 +1522,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 						TemplateException te = new TemplateException(
 							data.cfml,
 							"too many Attributes in function call [" + flf.getName() + "]");
-						te.setAdditional("pattern", createFunctionPattern(flf));
+						addFunctionDoc(te, flf);
 						throw te;
 					}
 				}
@@ -1558,7 +1559,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			TemplateException te = new TemplateException(
 				data.cfml,
 				"too few attributes in function [" + flf.getName() + "]");
-			if(flf.getArgType()==FunctionLibFunction.ARG_FIX) te.setAdditional("pattern", createFunctionPattern(flf));
+			if(flf.getArgType()==FunctionLibFunction.ARG_FIX) addFunctionDoc(te, flf);
 			throw te;
 		}
 
@@ -1572,11 +1573,11 @@ public class CFMLExprTransformer implements ExprTransformer {
 		return fm;
 	}
 	
-	public static String createFunctionPattern(FunctionLibFunction flf) {
+	public static void addFunctionDoc(PageExceptionImpl pe,FunctionLibFunction flf) {
 		ArrayList<FunctionLibFunctionArg> args=flf.getArg();
 		Iterator<FunctionLibFunctionArg> it = args.iterator();
 		
-		// regular call
+		// Pattern
 		StringBuilder pattern=new StringBuilder(flf.getName());
 		StringBuilder end=new StringBuilder();
 		pattern.append("(");
@@ -1598,11 +1599,26 @@ public class CFMLExprTransformer implements ExprTransformer {
 		pattern.append("):");
 		pattern.append(flf.getReturnTypeAsString());
 		
+		pe.setAdditional("Pattern", pattern);
 		
+		// Documentation
+		StringBuilder doc=new StringBuilder(flf.getDescription());
+		doc.append("\n");
 		
+		it = args.iterator();
+		while(it.hasNext()){
+			arg = it.next();
+			doc.append("- ");
+			doc.append(arg.getName());
+			doc.append(" (");
+			doc.append(arg.getType());
+			doc.append("): ");
+			doc.append(arg.getDescription());
+			doc.append("\n");
+		}
 		
+		pe.setAdditional("Documentation", doc);
 		
-		return pattern.toString();
 	}
 
 	/**

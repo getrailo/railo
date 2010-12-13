@@ -2,7 +2,6 @@ package railo.transformer.bytecode.statement.java;
 
 import org.objectweb.asm.Type;
 
-import railo.print;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.runtime.reflection.Reflector;
@@ -65,16 +64,10 @@ public class Assign extends ExpressionBase {
 			bc.getAdapter().loadLocal(var.intValue(),from);
 			
 		}
-		print.e("val:"+value+">"+(value instanceof Expression));
-		//Double d=new Double(0);
-		//int i=(double)d;
-	
-		print.e(from+"->"+to+"="+(to!=null && !from.equals(to)));
 		if(to!=null && !from.equals(to)){
 			boolean isRefFrom = ASMUtil.isRefType(from);
 			boolean isRefTo = ASMUtil.isRefType(to);
 			
-			print.o("castExplicit:"+castExplicit);
 			if(castExplicit) {
 				Class fc=null,tc=null;
 			
@@ -91,7 +84,6 @@ public class Assign extends ExpressionBase {
 						throw new BytecodeException(e, line);
 					}
 				}
-				print.o(fc.getName()+"><"+tc.getName());
 				if(((tc==boolean.class && fc!=boolean.class))||(fc==boolean.class && tc!=boolean.class))
 					throw new BytecodeException("cannot cast from ["+fc.getName()+"] to ["+tc.getName()+"]", line);
 				else

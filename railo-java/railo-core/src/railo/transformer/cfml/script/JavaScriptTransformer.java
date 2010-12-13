@@ -7,7 +7,6 @@ import java.io.ByteArrayInputStream;
 
 import org.objectweb.asm.Label;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.ScriptBody;
@@ -54,14 +53,9 @@ public final class JavaScriptTransformer extends CFMLExprTransformer implements 
 		String dummyStart="public class Susi {public static void code(){"+StringUtil.repeatString("\n", startline-1);
 		
 		String dummyEnd="}}";
-		
-		
-		//String src="String test=\"cccc\";";
-		//String src="Object test=\"cccc\";";
 		String src=dummyStart+sb+dummyEnd;
 		Label start=new Label();
 		Label end=new Label();
-		print.o(src);
 		
 		ByteArrayInputStream bais = new ByteArrayInputStream(src.getBytes());
 		

@@ -9,7 +9,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.type.Scope;
@@ -336,7 +335,7 @@ public class Variable extends ExpressionBase implements Invoker {
 				for(int y=0;y<names.length;y++){
 					if(names[y]!=null) {
 						BytecodeException bce = new BytecodeException("argument ["+names[y]+"] is not allowed for function ["+bif.getFlf().getName()+"]", args[y].getLine());
-						bce.setAdditional("pattern",CFMLExprTransformer.createFunctionPattern(bif.getFlf()));
+						CFMLExprTransformer.addFunctionDoc(bce, bif.getFlf());
 						throw bce;
 					}
 				}
@@ -457,7 +456,6 @@ public class Variable extends ExpressionBase implements Invoker {
 		
 		// first search if a argument match
 		for(int i=0;i<nargs.length;i++){
-			print.o(names[i]+":"+flfan+">"+flfa.getType());
 			if(names[i]!=null && names[i].equalsIgnoreCase(flfan)) {
 				nargs[i].setValue(nargs[i].getRawValue(),flfa.getType());
 				return new VT(nargs[i].getValue(),flfa.getType(),i);
@@ -486,7 +484,6 @@ public class Variable extends ExpressionBase implements Invoker {
 					return new VT(LitBoolean.FALSE,type,-1);
 				if(type.equals("number") || type.equals("numeric") || type.equals("double")) 
 					return new VT(LitDouble.ZERO,type,-1);
-				print.o(type+":null");
 				return new VT(null,type,-1);
 			}
 			else {
@@ -495,7 +492,7 @@ public class Variable extends ExpressionBase implements Invoker {
 			
 		}
 		BytecodeException be = new BytecodeException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]",line);
-		be.setAdditional("pattern", CFMLExprTransformer.createFunctionPattern(flfa.getFunction()));
+		CFMLExprTransformer.addFunctionDoc(be, flfa.getFunction());
 		throw be;
 	}
 	

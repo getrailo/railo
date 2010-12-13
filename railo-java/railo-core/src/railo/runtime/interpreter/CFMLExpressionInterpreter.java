@@ -1448,6 +1448,7 @@ public class CFMLExpressionInterpreter {
             libLen = arrFuncLibAtt.size();
         }
         int count = 0;
+        Ref ref;
         do {
             cfml.next();
             cfml.removeSpace();
@@ -1483,7 +1484,8 @@ public class CFMLExpressionInterpreter {
                     arr.add(functionArgDeclarationVarString());
                 }
                 else {
-                    arr.add(new Casting(pc,funcLibAtt.getTypeAsString(),type,functionArgDeclaration()));
+                	ref = functionArgDeclaration();
+                	arr.add(new Casting(pc,funcLibAtt.getTypeAsString(),type,ref));
                 }
             } 
             else {
