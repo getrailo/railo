@@ -327,7 +327,13 @@ public final class S3Resource extends ResourceSupport {
 		
 		if(info==null) {// || System.currentTimeMillis()>infoLastAccess
 			if(isRoot()) {
-				info=ROOT;
+				try {
+					s3.listBuckets();
+					info=ROOT;
+				}
+				catch (Exception e) {
+					info=UNDEFINED;
+				}
 				infoLastAccess=FUTURE;
 			}
 			else {
@@ -350,25 +356,37 @@ public final class S3Resource extends ResourceSupport {
 					}
 					else {
 						try {
-							String path = objectName;
-							Content[] contents = s3.listContents(bucketName, path);
-							
-							if(contents.length>0) {
-								boolean has=false;
-								for(int i=0;i<contents.length;i++) {
-									if(ResourceUtil.translatePath(contents[i].getKey(),false,false).equals(path)) {
-										has=true;
-										info=contents[i];
-										infoLastAccess=System.currentTimeMillis()+provider.getCache();
-										break;
-									}
+							// first check if the bucket exists
+							// TODO not happy about this step
+							Bucket[] buckets = s3.listBuckets();
+							boolean bucketExists=false;
+							for(int i=0;i<buckets.length;i++) {
+								if(buckets[i].getName().equals(bucketName)) {
+									bucketExists=true;
+									break;
 								}
-								if(!has){
+							}
+							
+							if(bucketExists){
+								String path = objectName;
+								Content[] contents = s3.listContents(bucketName, path);
+								if(contents.length>0) {
+									boolean has=false;
 									for(int i=0;i<contents.length;i++) {
-										if(ResourceUtil.translatePath(contents[i].getKey(),false,false).startsWith(path)) {
-											info=UNDEFINED_WITH_CHILDREN;
+										if(ResourceUtil.translatePath(contents[i].getKey(),false,false).equals(path)) {
+											has=true;
+											info=contents[i];
 											infoLastAccess=System.currentTimeMillis()+provider.getCache();
 											break;
+										}
+									}
+									if(!has){
+										for(int i=0;i<contents.length;i++) {
+											if(ResourceUtil.translatePath(contents[i].getKey(),false,false).startsWith(path)) {
+												info=UNDEFINED_WITH_CHILDREN;
+												infoLastAccess=System.currentTimeMillis()+provider.getCache();
+												break;
+											}
 										}
 									}
 								}
