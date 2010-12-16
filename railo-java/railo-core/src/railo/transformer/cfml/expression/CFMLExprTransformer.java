@@ -525,7 +525,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 					hasChanged=true;
 				} 
 				else if (data.cfml.forwardIfCurrent("greater", "than")) {
-					if(data.cfml.forwardIfCurrent(" or equal to")) expr = decisionOpCreate(data,OPDecision.GTE,expr);
+					if(data.cfml.forwardIfCurrent("or","equal", "to",true)) expr = decisionOpCreate(data,OPDecision.GTE,expr);
 					else expr = decisionOpCreate(data,OPDecision.GT,expr);
 					hasChanged=true;
 				}	
@@ -537,7 +537,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			
 			// is, is not
 			else if (data.cfml.forwardIfCurrent("is")) {
-				if(data.cfml.forwardIfCurrent(" not")) expr = decisionOpCreate(data,OPDecision.NEQ,expr);
+				if(data.cfml.forwardIfCurrent("not",true)) expr = decisionOpCreate(data,OPDecision.NEQ,expr);
 				else expr = decisionOpCreate(data,OPDecision.EQ,expr);
 				hasChanged=true;
 			}
@@ -549,8 +549,8 @@ public class CFMLExprTransformer implements ExprTransformer {
 					else expr = decisionOpCreate(data,OPDecision.LT,expr);
 					hasChanged=true;
 				} 
-				else if (data.cfml.forwardIfCurrent("less than")) {
-					if(data.cfml.forwardIfCurrent(" or equal to")) expr = decisionOpCreate(data,OPDecision.LTE,expr);
+				else if (data.cfml.forwardIfCurrent("less","than")) {
+					if(data.cfml.forwardIfCurrent("or", "equal", "to",true)) expr = decisionOpCreate(data,OPDecision.LTE,expr);
 					else expr = decisionOpCreate(data,OPDecision.LT,expr);
 					hasChanged=true;
 				}	
@@ -565,7 +565,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 				// Not Equal
 					if (data.cfml.forwardIfCurrent("neq")){ expr = decisionOpCreate(data,OPDecision.NEQ,expr); hasChanged=true;}
 				// Not Equal (Alias)
-					else if (data.cfml.forwardIfCurrent("not equal")){ expr = decisionOpCreate(data,OPDecision.NEQ,expr);hasChanged=true; }
+					else if (data.cfml.forwardIfCurrent("not","equal")){ expr = decisionOpCreate(data,OPDecision.NEQ,expr);hasChanged=true; }
 				// nct
 					else if (data.cfml.forwardIfCurrent("nct")){ expr = decisionOpCreate(data,OPDecision.NCT,expr); hasChanged=true;}	
 			}

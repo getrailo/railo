@@ -2,10 +2,11 @@ package railo.runtime.tag;
 
 import javax.servlet.jsp.tagext.Tag;
 
+import railo.commons.io.res.Resource;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.security.Credential;
 import railo.runtime.security.CredentialImpl;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Scope;
 import railo.runtime.util.ApplicationContext;
 
@@ -52,7 +53,8 @@ public final class Loginuser extends TagImpl {
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws PageException	{
-	    Credential login = new CredentialImpl(name,password,roles);
+		Resource rolesDir = pageContext.getConfig().getConfigDir().getRealResource("roles");
+	    CredentialImpl login = new CredentialImpl(name,password,roles,rolesDir);
 	    pageContext.setRemoteUser(login);
 	    
 	    Tag parent=getParent();
@@ -62,11 +64,13 @@ public final class Loginuser extends TagImpl {
 		ApplicationContext appContext = pageContext.getApplicationContext();
 		if(parent!=null) {
 		    int loginStorage = appContext.getLoginStorage();
+		    String name=Login.getApplicationName(appContext);
+		    
 		    if(loginStorage==Scope.SCOPE_SESSION && pageContext.getApplicationContext().isSetSessionManagement())
-		        pageContext.sessionScope().set("cfauthorization",login.encode());
+		        pageContext.sessionScope().set(KeyImpl.init(name),login.encode());
 		    else  {//if(loginStorage==Scope.SCOPE_COOKIE)
-		        pageContext.cookieScope().setCookie("cfauthorization_"+appContext.getName(),login.encode(),
-		                -1,false,"/",null);
+		        pageContext.cookieScope().setCookie(KeyImpl.init(name),login.encode(),
+		        		-1,false,"/",Login.getCookieDomain(appContext));
 		    }
 		}
 		

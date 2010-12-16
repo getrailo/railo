@@ -1,5 +1,6 @@
 package railo.runtime.engine;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
@@ -210,7 +211,7 @@ public final class Controler extends Thread {
 	}
 	
 	private void checkTempDirectorySize(ConfigWeb config) {
-		checkSize(config,config.getTempDirectory(),1024*1024*100,null);
+		checkSize(config,config.getTempDirectory(),1024*1024*1024,null);
 	}
 	
 	private void checkSize(ConfigWeb config,Resource dir,long maxSize, ResourceFilter filter) {
@@ -222,8 +223,11 @@ public final class Controler extends Thread {
 		SystemOut.printDate(out,"check size of directory ["+dir+"]");
 		SystemOut.printDate(out,"- current size	["+size+"]");
 		SystemOut.printDate(out,"- max size 	["+maxSize+"]");
+		int len=-1;
 		while(count>100000 || size>maxSize) {
 			Resource[] files = filter==null?dir.listResources():dir.listResources(filter);
+			if(len==files.length) break;// protect from inifinti loop
+			len=files.length;
 			for(int i=0;i<files.length;i++) {
 				if(res==null || res.lastModified()>files[i].lastModified()) {
 					res=files[i];
@@ -231,7 +235,13 @@ public final class Controler extends Thread {
 			}
 			if(res!=null) {
 				size-=res.length();
-				if(res.delete()) count--;
+				try {
+					res.remove(true);
+					count--;
+				} catch (IOException e) {
+					SystemOut.printDate(out,"cannot remove resource "+res.getAbsolutePath());
+					break;
+				}
 			}
 			res=null;
 		}

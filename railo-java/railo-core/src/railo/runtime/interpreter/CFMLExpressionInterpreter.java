@@ -460,7 +460,7 @@ public class CFMLExpressionInterpreter {
                         }
                 }
                 // does not contain
-                else if (cfml.forwardIfCurrent("does not contain")){ 
+                else if (cfml.forwardIfCurrent("does","not","contain")){ 
                     cfml.removeSpace();
                     ref=new NCT(ref,concatOp());
                     hasChanged=true;
@@ -542,8 +542,8 @@ public class CFMLExpressionInterpreter {
                         }
                         hasChanged=true;
                     } 
-                    else if (cfml.forwardIfCurrent("greater than")) {
-                        if(cfml.forwardIfCurrent(" or equal to")) {
+                    else if (cfml.forwardIfCurrent("greater","than")) {
+                        if(cfml.forwardIfCurrent("or" ,"equal", "to",true)) {
                             cfml.removeSpace();
                             ref=new GTE(ref,concatOp());
                         }
@@ -562,7 +562,7 @@ public class CFMLExpressionInterpreter {
                 
                 // is, is not
                 else if (cfml.forwardIfCurrent("is")) {
-                    if(cfml.forwardIfCurrent(" not")) {
+                    if(cfml.forwardIfCurrent("not",true)) {
                         cfml.removeSpace();
                         ref=new NEQ(ref,concatOp());
                     }
@@ -586,8 +586,8 @@ public class CFMLExpressionInterpreter {
                         }
                         hasChanged=true;
                     } 
-                    else if (cfml.forwardIfCurrent("less than")) {
-                        if(cfml.forwardIfCurrent(" or equal to")) {
+                    else if (cfml.forwardIfCurrent("less","than")) {
+                        if(cfml.forwardIfCurrent("or", "equal", "to",true)) {
                             cfml.removeSpace();
                             ref=new LTE(ref,concatOp());
                         }
@@ -613,7 +613,7 @@ public class CFMLExpressionInterpreter {
                             hasChanged=true;
                         }
                     // Not Equal (Alias)
-                        else if (cfml.forwardIfCurrent("not equal")){ 
+                        else if (cfml.forwardIfCurrent("not","equal")){ 
                             cfml.removeSpace();
                             ref=new NEQ(ref,concatOp());
                             hasChanged=true; 

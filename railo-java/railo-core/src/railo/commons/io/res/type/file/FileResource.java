@@ -699,7 +699,7 @@ public final class FileResource extends File implements Resource {
 			provider.lock(this);
 			return super.setLastModified(time);
 		}
-		catch (IOException e) {
+		catch (Throwable t) {// IllegalArgumentException or IOException
 			return false;
 		}
 		finally {

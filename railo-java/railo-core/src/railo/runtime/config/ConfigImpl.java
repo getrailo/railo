@@ -1447,6 +1447,7 @@ public abstract class ConfigImpl implements Config {
         		SystemOut.printDate(getErrWriter(), "temp directory ["+tempDirectory+"] is not writable");
         	}
         }
+        ResourceUtil.removeChildrenEL(tempDirectory);// start with a empty temp directory
         this.tempDirectory=tempDirectory;
     }
 
