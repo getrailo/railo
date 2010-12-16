@@ -323,6 +323,22 @@ public final class CFMLString {
 		if(is)pos+=str.length();
 		return is;
 	}
+	
+
+	public boolean forwardIfCurrent(String str, boolean startWithSpace) {
+		if(!startWithSpace) return forwardIfCurrent(str);
+		
+		int start=pos;
+		if(!removeSpace())return false;
+		
+		if(!forwardIfCurrent(str)){
+			pos=start;
+			return false;
+		}
+		return true;
+	}
+	
+	
 
 	/**
 	 * Gibt zurück ob das aktuelle und die folgenden Zeichen die selben sind gefolgt nicht von einem word character, 
@@ -508,6 +524,21 @@ public final class CFMLString {
 		if(!rtn)pos=start;
 		return rtn;	
 	}
+	
+	public boolean forwardIfCurrent(String first,String second,String third, boolean startWithSpace) {
+		if(!startWithSpace) return forwardIfCurrent(first, second, third);
+		int start=pos;
+		
+		if(!removeSpace())return false;
+		
+		if(!forwardIfCurrent(first,second,third)){
+			pos=start;
+			return false;
+		}
+		return true;	
+	}
+	
+	
 	
 	public boolean forwardIfCurrent(String first,String second,String third, String forth) {
 		int start=pos;

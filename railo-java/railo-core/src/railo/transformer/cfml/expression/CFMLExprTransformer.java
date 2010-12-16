@@ -524,7 +524,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 					hasChanged=true;
 				} 
 				else if (data.cfml.forwardIfCurrent("greater", "than")) {
-					if(data.cfml.forwardIfCurrent(" ","or","equal", "to")) expr = decisionOpCreate(data,OPDecision.GTE,expr);
+					if(data.cfml.forwardIfCurrent("or","equal", "to",true)) expr = decisionOpCreate(data,OPDecision.GTE,expr);
 					else expr = decisionOpCreate(data,OPDecision.GT,expr);
 					hasChanged=true;
 				}	
@@ -536,7 +536,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			
 			// is, is not
 			else if (data.cfml.forwardIfCurrent("is")) {
-				if(data.cfml.forwardIfCurrent(" ","not")) expr = decisionOpCreate(data,OPDecision.NEQ,expr);
+				if(data.cfml.forwardIfCurrent("not",true)) expr = decisionOpCreate(data,OPDecision.NEQ,expr);
 				else expr = decisionOpCreate(data,OPDecision.EQ,expr);
 				hasChanged=true;
 			}
@@ -549,7 +549,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 					hasChanged=true;
 				} 
 				else if (data.cfml.forwardIfCurrent("less","than")) {
-					if(data.cfml.forwardIfCurrent(" ","or", "equal", "to")) expr = decisionOpCreate(data,OPDecision.LTE,expr);
+					if(data.cfml.forwardIfCurrent("or", "equal", "to",true)) expr = decisionOpCreate(data,OPDecision.LTE,expr);
 					else expr = decisionOpCreate(data,OPDecision.LT,expr);
 					hasChanged=true;
 				}	

@@ -528,7 +528,7 @@ public class CFMLExpressionInterpreter {
                         hasChanged=true;
                     } 
                     else if (cfml.forwardIfCurrent("greater","than")) {
-                        if(cfml.forwardIfCurrent(" ","or" ,"equal", "to")) {
+                        if(cfml.forwardIfCurrent("or" ,"equal", "to",true)) {
                             cfml.removeSpace();
                             ref=new GTE(ref,concatOp());
                         }
@@ -547,7 +547,7 @@ public class CFMLExpressionInterpreter {
                 
                 // is, is not
                 else if (cfml.forwardIfCurrent("is")) {
-                    if(cfml.forwardIfCurrent(" ","not")) {
+                    if(cfml.forwardIfCurrent("not",true)) {
                         cfml.removeSpace();
                         ref=new NEQ(ref,concatOp());
                     }
@@ -572,7 +572,7 @@ public class CFMLExpressionInterpreter {
                         hasChanged=true;
                     } 
                     else if (cfml.forwardIfCurrent("less","than")) {
-                        if(cfml.forwardIfCurrent(" ","or", "equal", "to")) {
+                        if(cfml.forwardIfCurrent("or", "equal", "to",true)) {
                             cfml.removeSpace();
                             ref=new LTE(ref,concatOp());
                         }
