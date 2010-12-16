@@ -509,6 +509,42 @@ public final class CFMLString {
 		return rtn;	
 	}
 	
+	public boolean forwardIfCurrent(String first,String second,String third, String forth) {
+		int start=pos;
+		if(!forwardIfCurrent(first)) return false; 
+		
+		if(!removeSpace()){
+			pos=start;
+			return false;
+		}
+		
+		if(!forwardIfCurrent(second)){
+			pos=start;
+			return false;
+		}
+		
+		if(!removeSpace()){
+			pos=start;
+			return false;
+		}
+		
+		
+		if(!forwardIfCurrent(third)){
+			pos=start;
+			return false;
+		}
+		
+		if(!removeSpace()){
+			pos=start;
+			return false;
+		}
+		
+		boolean rtn=forwardIfCurrent(forth); 
+		if(!rtn)pos=start;
+		return rtn;	
+		
+	}
+	
 	
 	/**
 	 * Gibt zurück ob sich vor dem aktuellen Zeichen Leerzeichen befinden.

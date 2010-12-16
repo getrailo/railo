@@ -487,12 +487,80 @@ public final class ParserString {
 	 */
 	public boolean forwardIfCurrent(String first,String second) {
 		int start=pos;
+		
 		if(!forwardIfCurrent(first)) return false; 
-		removeSpace();
+		
+		if(!removeSpace()){
+			pos=start;
+			return false;
+		}
 		boolean rtn=forwardIfCurrent(second); 
 		if(!rtn)pos=start;
 		return rtn;	
 	}
+	
+	public boolean forwardIfCurrent(String first,String second,String third) {
+		int start=pos;
+		if(!forwardIfCurrent(first)) return false; 
+		
+		if(!removeSpace()){
+			pos=start;
+			return false;
+		}
+		
+		if(!forwardIfCurrent(second)){
+			pos=start;
+			return false;
+		}
+		
+		if(!removeSpace()){
+			pos=start;
+			return false;
+		}
+		
+		boolean rtn=forwardIfCurrent(third); 
+		if(!rtn)pos=start;
+		return rtn;	
+	}
+	
+	public boolean forwardIfCurrent(String first,String second,String third, String forth) {
+		int start=pos;
+		if(!forwardIfCurrent(first)) return false; 
+		
+		if(!removeSpace()){
+			pos=start;
+			return false;
+		}
+		
+		if(!forwardIfCurrent(second)){
+			pos=start;
+			return false;
+		}
+		
+		if(!removeSpace()){
+			pos=start;
+			return false;
+		}
+		
+		
+		if(!forwardIfCurrent(third)){
+			pos=start;
+			return false;
+		}
+		
+		if(!removeSpace()){
+			pos=start;
+			return false;
+		}
+		
+		boolean rtn=forwardIfCurrent(forth); 
+		if(!rtn)pos=start;
+		return rtn;	
+		
+	}
+	
+	
+	
 	/**
 	 * Gibt zurück ob sich vor dem aktuellen Zeichen Leerzeichen befinden.
 	 * @return Gibt zurück ob sich vor dem aktuellen Zeichen Leerzeichen befinden.
