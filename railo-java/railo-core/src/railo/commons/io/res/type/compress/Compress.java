@@ -152,7 +152,7 @@ public final class Compress {
 			
 			lastCheck=t;
 			t=ffile.lastModified();
-			if((lastMod-t)>10 || (t-lastMod)>10){
+			if((lastMod-t)>10 || (t-lastMod)>10 || root==null || !root.exists()){
 				lastMod=t;
 				load(caseSensitive);
 			}
