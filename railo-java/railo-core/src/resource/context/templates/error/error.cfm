@@ -59,7 +59,8 @@ function oc(id) {
 <cfloop collection="#catch.additional#" item="key">
 <tr>
 	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">#key#</td>
-	<td style="border : 1px solid ##350606;background-color :##FFCC00;">#HTMLEditFormat(catch.additional[key])#</td>
+	<td style="border : 1px solid ##350606;background-color :##FFCC00;">#replace(HTMLEditFormat(catch.additional[key]),'
+','<br />','all')#</td>
 </tr>
 </cfloop>
 </cfif>
