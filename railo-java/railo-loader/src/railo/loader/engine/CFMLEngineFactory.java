@@ -235,7 +235,7 @@ public class CFMLEngineFactory {
             }
             version=Util.toInVersion(engine.getVersion());
             
-            tlog("Loaded Railo Version "+version);
+            tlog("Loaded Railo Version "+engine.getVersion());
         }
         catch(InvocationTargetException e) {
             e.getTargetException().printStackTrace();
