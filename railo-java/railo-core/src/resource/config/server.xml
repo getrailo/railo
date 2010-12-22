@@ -29,7 +29,7 @@ Path placeholders:
 			- class:<class> (class that implements java.io.PrintWriter)
 			- file:<file> (file to write in)
 	-->
-	<system out="default" err="default"/>
+	<system out="null" err="default"/>
 
 
 <!--	definition of all database used inside your application. 										-->
@@ -297,7 +297,7 @@ Path placeholders:
 		log-memory-usage="no"
 		memory-log="{railo-config}/logs/memory.log"
 		template="/railo-context/templates/debugging/debugging.cfm"
-		debug="yes"/>
+		debug="no"/>
 	
 		<!--
 	application:
