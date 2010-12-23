@@ -1577,7 +1577,7 @@ public final class ConfigWebFactory {
         
 		if(hasChanged) {
         	try {
-				config.getDeployDirectory().remove(true);
+				if(config.getDeployDirectory().exists())config.getDeployDirectory().remove(true);
 			} 
         	catch (IOException e) {
 				e.printStackTrace(config.getErrWriter());
