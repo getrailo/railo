@@ -26,7 +26,7 @@ ACTIONS --->
 				returnVariable="existing">
 			<cfset form.password=existing.password>
 		</cfif>
-		<cfset verifiy=getForm('verify',false)>
+		<cfset verify=getForm('verify',false)>
         <cfparam name="form.metaCacheTimeout" default="60000">
         
         
@@ -63,12 +63,12 @@ ACTIONS --->
 			allowed_revoke="#getForm('allowed_revoke',false)#"
 			allowed_create="#getForm('allowed_create',false)#"
 			allowed_grant="#getForm('allowed_grant',false)#"
-			verify="#verifiy#"
+			verify="#verify#"
 			custom="#custom#"
 			remoteClients="#request.getRemoteClients()#">
             <cfset form.mark="update">
         <cfset v="">
-        <cfif verifiy>
+        <cfif verify>
         	<cfset v="&verified="&form.name>
         </cfif>
 		<cflocation url="#request.self#?action=#url.action##v#" addtoken="no">
@@ -133,8 +133,11 @@ Error Output--->
 	<cfset datasource.revoke=driver.getValue('allowed_revoke')>
 	<cfset datasource.alter=driver.getValue('allowed_alter')>
 	<cfset datasource.grant=driver.getValue('allowed_grant')>
-	
+    <cfset datasource.metaCacheTimeout=60000>
 </cfif>
+
+<cfif not structKeyExists(datasource,'metaCacheTimeout')><cfset datasource.metaCacheTimeout=60000></cfif>
+
 <!--- overwrite values, with values from form scope --->
 <cfloop collection="#form#" item="key">
 	<cfif structKeyExists(datasource,key)>

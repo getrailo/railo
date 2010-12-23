@@ -206,17 +206,17 @@ public class Util {
         //Major
         int endIndex=version.indexOf('.',beginIndex);
         int intVersion=0;
-        intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*1000000;
+        intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*1000000; // FUTURE 10000000
 
         // Minor
         beginIndex=endIndex+1;
         endIndex=version.indexOf('.',beginIndex);
-        intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*10000;
+        intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*10000; // FUTURE 100000
 
         // releases
         beginIndex=endIndex+1;
         endIndex=version.indexOf('.',beginIndex);
-        intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*100;
+        intVersion+=Integer.parseInt(version.substring(beginIndex,endIndex))*100; // FUTURE 1000
         
         // patches
         beginIndex=endIndex+1;
@@ -234,20 +234,20 @@ public class Util {
     	StringBuffer sb=new StringBuffer();
 
     	// Major
-    	int tmp=(version/1000000);
-    	version-=tmp*1000000;
+    	int tmp=(version/1000000); // FUTURE 10000000
+    	version-=tmp*1000000; // FUTURE 10000000
     	sb.append(String.valueOf(tmp));
     	sb.append(".");
 
     	// Minor
-    	tmp=(version/10000);
-    	version-=tmp*10000;
+    	tmp=(version/10000); // FUTURE 100000
+    	version-=tmp*10000; // FUTURE 100000
     	sb.append(len(String.valueOf(tmp),2));
     	sb.append(".");
 
     	// releases
-    	tmp=(version/100);
-    	version-=tmp*100;
+    	tmp=(version/100); // FUTURE 1000
+    	version-=tmp*100; // FUTURE 1000
     	sb.append(len(String.valueOf(tmp),2));
     	sb.append(".");
     	
@@ -492,10 +492,6 @@ public class Util {
 		while(st.hasMoreTokens())
 			rtn= st.nextToken();
 		return rtn;
-	}
-	public static void main(String[] args) {
-		System.out.println(toInVersion("3.1.0.024"));
-		System.out.println(toStringVersion(toInVersion("3.1.0.024")));
 	}
     
 }

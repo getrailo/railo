@@ -1362,7 +1362,7 @@ public final class ConfigWebFactory {
 
 	private static boolean doNew(Resource contextDir) throws IOException {
 		Resource version=contextDir.getRealResource("version");
-		String v=Info.getVersionAsString()+"-"+Info.getStateAsString();
+		String v=Info.getVersionAsString()+"-"+Info.getStateAsString()+"-"+Info.getRealeaseTime();
 		if(!version.exists()) {
             version.createNewFile();
             IOUtil.write(version,v,SystemUtil.getCharset(),false);
@@ -1581,7 +1581,7 @@ public final class ConfigWebFactory {
         
 		if(hasChanged) {
         	try {
-				config.getDeployDirectory().remove(true);
+				if(config.getDeployDirectory().exists())config.getDeployDirectory().remove(true);
 			} 
         	catch (IOException e) {
 				e.printStackTrace(config.getErrWriter());
