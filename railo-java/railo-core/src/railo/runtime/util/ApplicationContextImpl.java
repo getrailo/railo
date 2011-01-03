@@ -45,6 +45,9 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 	private String applicationtoken;
 	private String cookiedomain;
 	private int idletimeout=1800;
+
+
+	private int localMode;
     
     /**
      * constructor of the class
@@ -62,7 +65,7 @@ public class ApplicationContextImpl implements ApplicationContextPro {
         scriptProtect=config.getScriptProtect();
         this.isDefault=isDefault;
         this.defaultDataSource=((ConfigImpl)config).getDefaultDataSource();
-        
+        this.localMode=config.getLocalMode();
     }
     
 
@@ -99,11 +102,12 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 		dbl.applicationtoken=applicationtoken;
 		dbl.cookiedomain=cookiedomain;
 		dbl.idletimeout=idletimeout;
+		dbl.localMode=localMode;
 		
 		dbl.ormEnabled=ormEnabled;
 		dbl.config=config;
 		dbl.ormdatasource=ormdatasource;
-
+		
 		return dbl;
 	}
     
@@ -381,6 +385,22 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 	public int getSecurityIdleTimeout() {
 		if(idletimeout<1) return 1800;
 		return idletimeout;
+	}
+
+
+	/**
+	 * @return the localMode
+	 */
+	public int getLocalMode() {
+		return localMode;
+	}
+
+
+	/**
+	 * @param localMode the localMode to set
+	 */
+	public void setLocalMode(int localMode) {
+		this.localMode = localMode;
 	}
 	
 }

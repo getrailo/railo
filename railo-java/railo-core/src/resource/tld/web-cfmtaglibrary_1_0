@@ -342,6 +342,15 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>The security prefix to put in front of the value that a function returns in JSON-format in response to a remote call if the secureJSON setting is true.</description>
 		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>localmode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Defines how the local scope of a function is invoked when a variable with no scope definition is used (default value set in the railo administrator).
+- always: the local scope is always invoked
+- update (CFML standard): the local scope is only invoked when the key already exists in it</description>
+		</attribute>
 	</tag>
 	<!-- Argument -->
 	<tag>

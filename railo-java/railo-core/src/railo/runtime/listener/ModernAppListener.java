@@ -60,6 +60,7 @@ public class ModernAppListener extends AppListenerSupport {
 	private static final Collection.Key CUSTOM_TAG_PATHS = KeyImpl.getInstance("customtagpaths");
 	private static final Collection.Key SECURE_JSON_PREFIX = KeyImpl.getInstance("secureJsonPrefix");
 	private static final Collection.Key SECURE_JSON = KeyImpl.getInstance("secureJson");
+	private static final Collection.Key LOCAL_MODE = KeyImpl.getInstance("localMode");
 	
 
 	private static final Collection.Key ON_REQUEST_START = KeyImpl.getInstance("onRequestStart");
@@ -463,6 +464,18 @@ public class ModernAppListener extends AppListenerSupport {
 			// secureJson
 			o=get(app,SECURE_JSON,null);
 			if(o!=null) appContext.setSecureJson(Caster.toBooleanValue(o));
+			
+			// local mode (always/update)
+			o=get(app,LOCAL_MODE,null);
+			if(o!=null) {
+				int localMode = AppListenerUtil.toLocalMode(o,-1);
+				if(localMode!=-1)
+					appContext.setLocalMode(localMode);
+				
+			}
+			
+			
+			
 			
 			// S3
 			o=get(app,S3,null);

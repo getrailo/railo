@@ -8,11 +8,14 @@ import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 
@@ -186,6 +189,26 @@ public final class AppListenerUtil {
 					);*/
 		}
 		return mappings;
+	}
+
+	public static int toLocalMode(Object oMode, int defaultValue) {
+		if(oMode==null) return defaultValue;
+		
+		if(Decision.isBoolean(oMode)) {
+			if(Caster.toBooleanValue(oMode, false))
+				return Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS;
+			return Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS;
+		}
+		String strMode=Caster.toString(oMode,null);
+		if("always".equalsIgnoreCase(strMode)) return Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS;
+		if("update".equalsIgnoreCase(strMode)) return Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS;
+		return defaultValue;
+	}
+	
+	public static int toLocalMode(String strMode) throws ApplicationException {
+		int lm = toLocalMode(strMode, -1);
+		if(lm!=-1) return lm;
+		throw new ApplicationException("invalid localMode definition ["+strMode+"] for tag application/application.cfc, valid values are [always,update]");
 	}
 }
 

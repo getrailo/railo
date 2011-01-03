@@ -18,4 +18,6 @@ public interface ApplicationContextPro extends ApplicationContext {
 	public Component getComponent();
 	
 	public Properties getS3();
+	
+	public int getLocalMode();
 }

@@ -46,6 +46,7 @@ public final class Application extends TagImpl {
 	//ApplicationContextImpl appContext;
     private String name="";
 	private int action=ACTION_CREATE;
+	private int localMode=-1;
     
      
     /**
@@ -69,6 +70,7 @@ public final class Application extends TagImpl {
         datasource=null;
         this.name="";
         action=ACTION_CREATE;
+        localMode=-1;
         //appContext=null;
     }
     
@@ -112,6 +114,11 @@ public final class Application extends TagImpl {
 	}
 	public void setDefaultdatasource(String datasource) {
 		this.datasource = datasource;
+	}
+	
+	public void setLocalmode(String strLocalMode) throws ApplicationException {
+		this.localMode = AppListenerUtil.toLocalMode(strLocalMode);
+		
 	}
 
 	/** set the value clientstorage
@@ -246,6 +253,8 @@ public final class Application extends TagImpl {
 		if(setClientManagement!=null)			ac.setSetClientManagement(setClientManagement.booleanValue());
 		if(setDomainCookies!=null)				ac.setSetDomainCookies(setDomainCookies.booleanValue());
 		if(setSessionManagement!=null)			ac.setSetSessionManagement(setSessionManagement.booleanValue());
+		if(localMode!=-1) 						ac.setLocalMode(localMode);
+		
 		
 	}
 

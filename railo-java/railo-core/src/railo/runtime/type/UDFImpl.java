@@ -38,6 +38,7 @@ import railo.runtime.type.scope.ArgumentPro;
 import railo.runtime.type.scope.LocalImpl;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.util.ApplicationContextPro;
 import railo.runtime.writer.BodyContentUtil;
 
 /**
@@ -371,7 +372,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         Scope		oldLocal=pc.localScope();
         
 		pci.setFunctionScopes(newLocal,newArgs);
-		int oldCheckArgs=undefined.setMode(pc.getConfig().getLocalMode());
+		int oldCheckArgs=undefined.setMode(((ApplicationContextPro)pc.getApplicationContext()).getLocalMode());
 		
 		try {
 			pc.addPageSource(getPageSource(),doIncludePath);
