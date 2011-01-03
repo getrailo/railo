@@ -904,7 +904,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
 
     private Resource getPluginDirectory() {
-    	return config.getConfigDir().getRealResource(config instanceof ConfigServer?"admin/plugin":"context/admin/plugin");//MUST more dynamic
+    	return config.getConfigDir().getRealResource("context/admin/plugin");
     }
 
     private Resource getContextDirectory() throws PageException  {
