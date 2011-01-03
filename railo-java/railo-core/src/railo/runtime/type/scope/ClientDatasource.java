@@ -168,7 +168,6 @@ public final class ClientDatasource extends ClientSupport {
 		if(!super.hasContent()) return;
 		
 		DatasourceConnection dc = null;
-		
 		ConfigImpl config = (ConfigImpl)pc.getConfig();
 		DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
 		try {
