@@ -18,34 +18,36 @@
 		</cfcatch>		
 	</cftry>
 </cfif>
-<cfset drivers=struct()>
+<cfset variables.drivers=struct()>
 <cfoutput query="dbdriver">
 	<cfset n=listFirst(dbdriver.name,".")>
 	<cfif n NEQ "Driver" and n NEQ "IDriver">
-		<cfset drivers[n]=createObject("component","dbdriver."&n)>
+		<cfset variables.drivers[n]=createObject("component","dbdriver."&n)>
 	</cfif>
 </cfoutput>
+
+
 
 <cffunction name="getTypeName">
 	<cfargument name="className" required="true">
 	<cfargument name="dsn" required="true">
 	<cfset var key="">
     
-	<cfloop collection="#drivers#" item="key">
-		<cfif drivers[key].equals(arguments.className,arguments.dsn)>
-			<cfreturn drivers[key].getName()>
+	<cfloop collection="#variables.drivers#" item="key">
+		<cfif variables.drivers[key].equals(arguments.className,arguments.dsn)>
+			<cfreturn variables.drivers[key].getName()>
 		</cfif>
 	</cfloop>
     
-    <cfreturn drivers['other'].getName()>
+    <cfreturn variables.drivers['other'].getName()>
 </cffunction>
 
 <cffunction name="getType">
 	<cfargument name="className" required="true">
 	<cfargument name="dsn" required="true">
 	<cfset var key="">
-	<cfloop collection="#drivers#" item="key">
-		<cfif drivers[key].equals(arguments.className,arguments.dsn)>
+	<cfloop collection="#variables.drivers#" item="key">
+		<cfif variables.drivers[key].equals(arguments.className,arguments.dsn)>
 			<cfreturn key>
 		</cfif>
 	</cfloop>

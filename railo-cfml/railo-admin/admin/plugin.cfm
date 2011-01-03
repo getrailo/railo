@@ -13,29 +13,8 @@
 
 <!--- load language --->
 <cfif not structKeyExists(application.pluginLanguage[session.railo_admin_lang],url.plugin)>
-	<cfset fileLanguage="#pluginDir#/#url.plugin#/language.xml">
-    <cfset language=struct(
-			title:ucFirst(url.plugin),
-			text:''
-	)>
-	<cfif fileExists(fileLanguage)>
-		<cffile action="read" file="#fileLanguage#" variable="txtLanguage" charset="utf-8">
-		<cfxml casesensitive="no" variable="xml">
-		<cfoutput>#txtLanguage#</cfoutput>
-		</cfxml>
-        <cfset xml = XmlSearch(xml, "/languages/language[@key='#lCase(session.railo_admin_lang)#']")[1]>
-		<cfset language.title=xml.title.XmlText>
-		<cfset language.text=xml.description.XmlText>
-		<cfif isDefined('xml.custom')>
-			<cfset custom=xml.custom>
-			<cfloop index="idx" from="1" to="#arraylen(custom)#">
-				<cfset language[custom[idx].XmlAttributes.key]=custom[idx].XmlText>
-			</cfloop>
-		</cfif>
-	</cfif>
-	<cfset application.pluginLanguage[session.railo_admin_lang][url.plugin]=language>
+	<cfset application.pluginLanguage[session.railo_admin_lang][url.plugin]=loadPluginLanguage(pluginDir,url.plugin)>
 </cfif>
-
 
 
 <!--- load plugin --->
