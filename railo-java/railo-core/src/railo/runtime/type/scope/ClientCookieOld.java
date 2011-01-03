@@ -16,7 +16,8 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 
 public final class ClientCookieOld extends ClientSupport {
-
+	private static final long serialVersionUID = 5480191870824730047L;
+	
 	private static ScriptConverter serializer=new ScriptConverter();
 	private static CFMLExpressionInterpreter evaluator=new CFMLExpressionInterpreter();
 	private Cookie cookie;
@@ -108,6 +109,9 @@ public final class ClientCookieOld extends ClientSupport {
 		return new ClientCookieOld(pc,cookieName, new StructImpl());
 	}
 
+	public void release(PageContext pc) {
+		release();
+	}
 	public void release() {
 		boolean _isInit=isinit;
 		super.release();

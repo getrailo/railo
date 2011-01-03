@@ -19,6 +19,7 @@ import railo.runtime.db.SQLItemImpl;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -37,12 +38,11 @@ import railo.runtime.type.dt.DateTimeImpl;
 public final class ClientDatasource extends ClientSupport {
 
 	private static final long serialVersionUID = 239179599401918216L;
+	
 	private static final Collection.Key DATA = KeyImpl.getInstance("data");
-
 	private static boolean structOk;
 	
 	private String datasourceName;
-	private PageContext pc;
 	
 	
 	/**
@@ -60,9 +60,7 @@ public final class ClientDatasource extends ClientSupport {
 				-1, 
 				Caster.toIntValue(sct.get(HITCOUNT,"1"),1));
 
-		//this.isNew=isNew;
-		this.datasourceName=datasourceName;
-		//this.manager = (DatasourceManagerImpl) pc.getDataSourceManager(); 
+		this.datasourceName=datasourceName; 
 	}
 
 	/**
@@ -73,8 +71,6 @@ public final class ClientDatasource extends ClientSupport {
 		super(other,deepCopy);
 		
 		this.datasourceName=other.datasourceName;
-		this.pc=other.pc;
-		//this.manager=other.manager;
 	}
 	
 	private static DateTime doNowIfNull(PageContext pc,DateTime dt) {
@@ -160,34 +156,40 @@ public final class ClientDatasource extends ClientSupport {
 	 * @see railo.runtime.type.scope.ClientSupport#release()
 	 */
 	public void release() {
+		release(ThreadLocalPageContext.get());
+	}
+	
+	/**
+	 * @see railo.runtime.type.RequestScope#release(railo.runtime.PageContext)
+	 */
+	public void release(PageContext pc) {
 		structOk=false;
 		super.release();
 		if(!super.hasContent()) return;
 		
 		DatasourceConnection dc = null;
+		
 		ConfigImpl config = (ConfigImpl)pc.getConfig();
-		//int pid=1000;//pc.getId()+10000;
 		DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
 		try {
 			dc=pool.getDatasourceConnection(pc,config.getDataSource(datasourceName),null,null);
-			int recordsAffected = executeUpdate(dc.getConnection(),"update railo_client_data set data=? where cfid=? and name=?",false);
+			int recordsAffected = executeUpdate(pc,dc.getConnection(),"update railo_client_data set data=? where cfid=? and name=?",false);
 		    if(recordsAffected>1) {
-		    	executeUpdate(dc.getConnection(),"delete from railo_client_data where cfid=? and name=?",true);
+		    	executeUpdate(pc,dc.getConnection(),"delete from railo_client_data where cfid=? and name=?",true);
 		    	recordsAffected=0;
 		    }
 		    if(recordsAffected==0) {
-		    	executeUpdate(dc.getConnection(),"insert into railo_client_data (data,cfid,name) values(?,?,?)",false);
+		    	executeUpdate(pc,dc.getConnection(),"insert into railo_client_data (data,cfid,name) values(?,?,?)",false);
 		    }
 
 		} 
 		catch (Exception e) {}
 		finally {
 			if(dc!=null) pool.releaseDatasourceConnection(dc);
-			pc=null;
 		}
 	}
 
-	private int executeUpdate(Connection conn, String strSQL, boolean ignoreData) throws SQLException, PageException, ConverterException {
+	private int executeUpdate(PageContext pc,Connection conn, String strSQL, boolean ignoreData) throws SQLException, PageException, ConverterException {
 		String appName = pc.getApplicationContext().getName();
 		SQLImpl sql = new SQLImpl(strSQL,new SQLItem[]{
 			new SQLItemImpl(new ScriptConverter().serializeStruct(sct,ignoreSet),Types.VARCHAR),
@@ -199,7 +201,6 @@ public final class ClientDatasource extends ClientSupport {
 				new SQLItemImpl(appName,Types.VARCHAR)
 			});
 		
-		//print.out(sql);
 		PreparedStatement preStat = conn.prepareStatement(sql.getSQLString());
 		int count=0;
 		try {
@@ -270,8 +271,6 @@ public final class ClientDatasource extends ClientSupport {
 	 * @see railo.runtime.type.scope.ClientSupport#initialize(railo.runtime.PageContext)
 	 */
 	public void initialize(PageContext pc) {
-		this.pc=pc;
-		//print.out(isNew);
 		try {
 			if(!structOk)sct=_loadData(pc, datasourceName, false);
 			

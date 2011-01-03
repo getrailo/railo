@@ -22,10 +22,10 @@ import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
 
-public abstract class ClientSupport extends StructSupport implements Client,Sizeable {
+public abstract class ClientSupport extends StructSupport implements Client,Sizeable,ClientPlus {
 	
 
-	private static Set FIX_KEYS=new HashSet();
+	private static Set<String> FIX_KEYS=new HashSet<String>();
 	static {
 		FIX_KEYS.add("cfid");
 		FIX_KEYS.add("cftoken");
@@ -42,7 +42,7 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 	public static Collection.Key TIMECREATED=KeyImpl.getInstance("timecreated");
 	
 
-	protected static Set ignoreSet=new HashSet();
+	protected static Set<String> ignoreSet=new HashSet<String>();
 	static {
 		ignoreSet.add("cfid");
 		ignoreSet.add("cftoken");
@@ -124,6 +124,16 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 	 * @see railo.runtime.type.Scope#release()
 	 */
 	public void release() {
+		isinit=false;
+		sct.setEL(HITCOUNT, new Double(hitcount));
+		sct.setEL(TIMECREATED, timecreated);
+		sct.setEL(LASTVISIT, _lastvisit);
+	}
+	
+	/**
+	 * @see railo.runtime.type.RequestScope#release(railo.runtime.PageContext)
+	 */
+	public void release(PageContext pc) {
 		isinit=false;
 		sct.setEL(HITCOUNT, new Double(hitcount));
 		sct.setEL(TIMECREATED, timecreated);

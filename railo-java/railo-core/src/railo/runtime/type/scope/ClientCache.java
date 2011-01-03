@@ -8,6 +8,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.op.Caster;
@@ -22,13 +23,15 @@ import railo.runtime.type.dt.DateTimeImpl;
  */
 public final class ClientCache extends ClientSupport {
 
+	private static final long serialVersionUID = 6234854552927320080L;
+
 	//private static ScriptConverter serializer=new ScriptConverter();
 	private static boolean structOk;
 	
 	private String cacheName;
 	private String appName;
 	private String cfid;
-	private PageContext pc;
+	//private PageContext pc;
 	
 	
 	/**
@@ -50,7 +53,7 @@ public final class ClientCache extends ClientSupport {
 		this.appName=appName;
 		this.cacheName=cacheName;
 		this.cfid=pc.getCFID();
-		this.pc=pc;
+		//this.pc=pc;
 		//this.manager = (DatasourceManagerImpl) pc.getDataSourceManager(); 
 	}
 
@@ -64,7 +67,7 @@ public final class ClientCache extends ClientSupport {
 		this.appName=other.appName;
 		this.cacheName=other.cacheName;
 		this.cfid=other.cfid;
-		this.pc=other.pc;
+		//this.pc=other.pc;
 		//this.manager=other.manager;
 	}
 	
@@ -114,6 +117,13 @@ public final class ClientCache extends ClientSupport {
 	 * @see railo.runtime.type.scope.ClientSupport#release()
 	 */
 	public void release() {
+		release(ThreadLocalPageContext.get());
+	}
+	
+	/**
+	 * @see railo.runtime.type.RequestScope#release(railo.runtime.PageContext)
+	 */
+	public void release(PageContext pc) {
 		structOk=false;
 		super.release();
 		if(!super.hasContent()) return;
@@ -149,7 +159,7 @@ public final class ClientCache extends ClientSupport {
 	 * @see railo.runtime.type.scope.ClientSupport#initialize(railo.runtime.PageContext)
 	 */
 	public void initialize(PageContext pc) {
-		this.pc=pc;
+		//this.pc=pc;
 		//print.out(isNew);
 		try {
 			if(!structOk)sct=_loadData(pc, cacheName, appName, false);

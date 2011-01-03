@@ -115,6 +115,7 @@ import railo.runtime.type.scope.ArgumentImpl;
 import railo.runtime.type.scope.CGI;
 import railo.runtime.type.scope.CGIImpl;
 import railo.runtime.type.scope.Client;
+import railo.runtime.type.scope.ClientPlus;
 import railo.runtime.type.scope.ClientSupport;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.Cookie;
@@ -213,7 +214,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private Server server;
 	private Cluster cluster;
 	private CookieImpl cookie=new CookieImpl();
-	private Client client;
+	private ClientPlus client;
 	private Application application;
 
     private Debugger debugger=new DebuggerImpl();
@@ -445,7 +446,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		parent=null;
 		// Attention have to be before close
 		if(client!=null){
-        	client.release();
+        	client.release(this);
         	client=null;
         }
 		
@@ -477,7 +478,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		close();
         thread=null;
         
-        RequestImpl r = request;
+        //RequestImpl r = request;
         
         // Scopes
         if(hasFamily) {
@@ -1191,7 +1192,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				throw new ExpressionException("client scope is not enabled",
 						"you can enable client scope with tag cfapplication/Application.cfc");
 			
-			client=scopeContext.getClientScope(this);
+			client=(ClientPlus) scopeContext.getClientScope(this);
 		}
 		return client;
 	}
@@ -1200,7 +1201,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		if(client==null) {
 			if(!applicationContext.hasName()) 				return null;
 			if(!applicationContext.isSetClientManagement())	return null;
-			client=scopeContext.getClientScopeEL(this);
+			client=(ClientPlus) scopeContext.getClientScopeEL(this);
 		}
 		return client;
 	}

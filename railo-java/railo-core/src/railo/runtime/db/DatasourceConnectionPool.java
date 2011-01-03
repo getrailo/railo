@@ -18,24 +18,10 @@ import railo.runtime.type.util.ArrayUtil;
 
 public class DatasourceConnectionPool {
 
-	private Map dcs=new HashMap();
-	private Map counter=new HashMap();
+	private Map<String,DCStack> dcs=new HashMap<String,DCStack>();
+	private Map<String,RefInteger> counter=new HashMap<String,RefInteger>();
 	
-	/*public DatasourceConnection getDatasourceConnectionX(PageContext pc,DataSource datasource, String user, String pass) throws PageException {
-		if(pc!=null) {
-			String id=createId(datasource,user,pass);
-			DatasourceConnection dc=((PageContextImpl)pc).getConnection(id);
-			if(dc!=null && !isClosedEL(dc)){
-				return dc;
-			}
-			dc=getDatasourceConnection(datasource, user, pass);
-			((PageContextImpl)pc).setConnection(id,dc);
-			return dc;
-		}
-		
-		return getDatasourceConnection(datasource, user, pass);
-	}*/
-
+	
 	public DatasourceConnection getDatasourceConnection(PageContext pc,DataSource datasource, String user, String pass) throws PageException {
 		pc=ThreadLocalPageContext.get(pc);
 		if(StringUtil.isEmpty(user)) {
@@ -74,7 +60,6 @@ public class DatasourceConnectionPool {
 			_inc(datasource);
 			return loadDatasourceConnection(datasource, user, pass).using();
 		}
-		
 	}
 
 	private DatasourceConnectionImpl loadDatasourceConnection(DataSource ds, String user, String pass) throws DatabaseException  {

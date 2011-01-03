@@ -13,7 +13,8 @@ import railo.runtime.type.dt.DateTimeImpl;
  */
 public final class ClientMemory extends ClientSupport {
 
-	
+	private static final long serialVersionUID = -6917303245683342065L;
+
 	/**
 	 * Constructor of the class
 	 * @param pc

@@ -22,6 +22,8 @@ import railo.runtime.type.dt.DateTimeImpl;
  */
 public final class ClientFile extends ClientSupport {
 
+	private static final long serialVersionUID = -7519591903822909934L;
+	
 	private static ScriptConverter serializer=new ScriptConverter();
 	private static CFMLExpressionInterpreter evaluator=new CFMLExpressionInterpreter();
 	
