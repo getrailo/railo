@@ -11909,14 +11909,19 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>node</type>
 			<required>Yes</required>
 		<description>Name of the XML document object in which you are creating the element</description>
-    </argument>
+    	</argument>
+		<argument>
+			<name>namespace_or_childName</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>URI of the namespace to which this element belongs.</description>
+    	</argument>
 		<argument>
 			<name>childName</name>
 			<type>string</type>
-			<required>Yes</required>
-		<description>The name of the element to create. This element becomes a
-            child element of xmlObj in the tree.</description>
-    </argument>
+			<required>No</required>
+			<description>The name of the element to create. This element becomes a child element of xmlObj in the tree.</description>
+    	</argument>
 		<return>
 			<type>org.w3c.dom.Element</type>
 		</return>
