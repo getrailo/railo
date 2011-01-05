@@ -11,10 +11,10 @@
 	<cflocation url="#request.self#" addtoken="no">
 </cfif>
 
-<!--- load language --->
+<!--- load language
 <cfif not structKeyExists(application.pluginLanguage[session.railo_admin_lang],url.plugin)>
 	<cfset application.pluginLanguage[session.railo_admin_lang][url.plugin]=loadPluginLanguage(pluginDir,url.plugin)>
-</cfif>
+</cfif> --->
 
 
 <!--- load plugin --->
@@ -32,7 +32,6 @@
 <cfset plugin.language=application.pluginLanguage[session.railo_admin_lang][url.plugin]>
 
 
-<cfset request.subTitle=plugin.language.title>
 <cfoutput><cfif structKeyExists(plugin.language,'text')>#plugin.language.text#<br /><br /></cfif></cfoutput>
 	
 <!--- create scopes --->
