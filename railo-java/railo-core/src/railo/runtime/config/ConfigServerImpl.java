@@ -324,7 +324,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		try {
 			ConfigWebFactory.createContextFiles(getConfigDir(),sConfig);
 	        ConfigWebFactory.load(this, cwi, ConfigWebFactory.loadDocument(getConfigFile()));
-	        ConfigWebFactory.createContextFilesPost(getConfigDir(),cwi);
+	        ConfigWebFactory.createContextFilesPost(getConfigDir(),cwi,sConfig);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

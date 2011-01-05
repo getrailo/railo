@@ -139,6 +139,9 @@ public abstract class ConfigImpl implements Config {
 	public static final int CACHE_DEFAULT_TEMPLATE = 2;
 	public static final int CACHE_DEFAULT_QUERY = 4;
 	public static final int CACHE_DEFAULT_RESOURCE = 8;
+
+	public static final int AMF_CONFIG_TYPE_XML = 1;
+	public static final int AMF_CONFIG_TYPE_MANUAL = 2;
 	
 
 	private PhysicalClassLoader rpcClassLoader;
@@ -360,6 +363,7 @@ public abstract class ConfigImpl implements Config {
 	private LogAndSource ormLogger;
 	private boolean useComponentPathCache=true;
 	private boolean useCTPathCache=true;
+	private int amfConfigType=AMF_CONFIG_TYPE_XML;
 	
 	
 	
@@ -2823,6 +2827,19 @@ public abstract class ConfigImpl implements Config {
 	public void setAMFCaster(Class clazz, Map args) {
 		amfCasterArguments=args;
         amfCasterClass=clazz;
+	}
+	
+	public void setAMFConfigType(String strDeploy) {
+		if(!StringUtil.isEmpty(strDeploy)){
+			if("xml".equalsIgnoreCase(strDeploy))amfConfigType=AMF_CONFIG_TYPE_XML;
+			else if("manual".equalsIgnoreCase(strDeploy))amfConfigType=AMF_CONFIG_TYPE_MANUAL;
+		}
+	}
+	public void setAMFConfigType(int amfDeploy) {
+		this.amfConfigType=amfDeploy;
+	}
+	public int getAMFConfigType() {
+		return amfConfigType;
 	}
 
 	public AMFCaster getAMFCaster(ConfigMap properties) throws ClassException {

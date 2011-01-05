@@ -229,7 +229,7 @@ public final class ConfigWebFactory {
 		ConfigWebImpl configWeb=new ConfigWebImpl(factory,configServer, servletConfig,configDir,configFile);
 		
 		load(configServer,configWeb,doc);
-		createContextFilesPost(configDir,configWeb);
+		createContextFilesPost(configDir,configWeb,servletConfig);
 	    return configWeb;
     }
     
@@ -278,7 +278,7 @@ public final class ConfigWebFactory {
         config.reset();
         
 		load(config.getConfigServerImpl(),config,doc);
-		createContextFilesPost(configDir,config);
+		createContextFilesPost(configDir,config,null);
     }
     
     private static long second(long ms) {
@@ -1309,30 +1309,14 @@ public final class ConfigWebFactory {
         if(!f.exists())createFileFromResourceEL("/resource/lib/jfreechart-patch.jar",f);
         
         
-        // flex
-        if(servletConfig!=null){
-        	String strPath=servletConfig.getServletContext().getRealPath("/WEB-INF");
-        	Resource webInf = ResourcesImpl.getFileResourceProvider().getResource(strPath);
-        	
-        	Resource flex = webInf.getRealResource("flex");
-            if(!flex.exists())flex.mkdirs();
-
-            f=flex.getRealResource("messaging-config.xml");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/messaging-config.xml",f);
-            f=flex.getRealResource("proxy-config.xml");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/proxy-config.xml",f);
-            f=flex.getRealResource("remoting-config.xml");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/remoting-config.xml",f);
-            f=flex.getRealResource("services-config.xml");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/services-config.xml",f);
-
-        }
+        
 
 	}
 	
 
-	public static void createContextFilesPost(Resource configDir, ConfigImpl config) throws IOException {
-	            
+	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig) throws IOException {
+	    boolean doNew=doNew(configDir);
+      		        
 		Resource contextDir = configDir.getRealResource("context");
 	    if(!contextDir.exists())contextDir.mkdirs();
 
@@ -1347,7 +1331,6 @@ public final class ConfigWebFactory {
         
      // deploy org.railo.cfml components
       	if(config instanceof ConfigWeb){
-      		boolean doNew=doNew(configDir);
       		ImportDefintion _import = config.getComponentDefaultImport();
       		String path = _import.getPackageAsPath();
       		Resource components = config.getConfigDir().getRealResource("components");
@@ -1357,6 +1340,25 @@ public final class ConfigWebFactory {
       		ComponentFactory.deploy(dir, doNew);
       	}
         
+      	
+     // flex
+        if(servletConfig!=null && config.getAMFConfigType()==ConfigImpl.AMF_CONFIG_TYPE_XML){
+        	String strPath=servletConfig.getServletContext().getRealPath("/WEB-INF");
+        	Resource webInf = ResourcesImpl.getFileResourceProvider().getResource(strPath);
+        	
+        	Resource flex = webInf.getRealResource("flex");
+            if(!flex.exists())flex.mkdirs();
+
+            Resource f = flex.getRealResource("messaging-config.xml");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/messaging-config.xml",f);
+            f=flex.getRealResource("proxy-config.xml");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/proxy-config.xml",f);
+            f=flex.getRealResource("remoting-config.xml");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/remoting-config.xml",f);
+            f=flex.getRealResource("services-config.xml");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/services-config.xml",f);
+
+        }
 
 	}
 
@@ -1530,6 +1532,13 @@ public final class ConfigWebFactory {
         
         Element el= getChildByName(doc.getDocumentElement(),"flex");
         if(configServer!=null);
+        
+        // deploy
+        String strConfig = el.getAttribute("configuration");
+        if(!StringUtil.isEmpty(strConfig))
+        	config.setAMFConfigType(strConfig);
+        else if(configServer!=null)
+        	config.setAMFConfigType(configServer.getAMFConfigType());
         
         // caster
         String strCaster = el.getAttribute("caster");
