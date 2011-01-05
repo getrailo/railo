@@ -9552,6 +9552,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>column</name>
+			<alias>columnname</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description></description>
@@ -9560,7 +9561,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>datatype_or_array</name>
 			<alias>datatype</alias>
 			<type>any</type>
-			<required>Yes</required>
+			<required>no</required>
 		<description></description>
     </argument>
 		<argument>
@@ -11906,18 +11907,21 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Creates an XML document object element</description>
 		<argument>
 			<name>xmlObj</name>
+			<alias>node,element</alias>
 			<type>node</type>
 			<required>Yes</required>
 		<description>Name of the XML document object in which you are creating the element</description>
     	</argument>
 		<argument>
 			<name>namespace_or_childName</name>
+			<alias>namespace</alias>
 			<type>string</type>
-			<required>Yes</required>
-			<description>URI of the namespace to which this element belongs.</description>
+			<required>No</required>
+			<description>URI of the namespace to which this element belongs or the name of the element to create.</description>
     	</argument>
 		<argument>
 			<name>childName</name>
+			<alias>name</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>The name of the element to create. This element becomes a child element of xmlObj in the tree.</description>
