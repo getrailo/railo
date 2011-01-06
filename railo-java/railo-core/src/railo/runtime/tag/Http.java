@@ -146,7 +146,7 @@ public final class Http extends BodyTagImpl {
 	}
 	
 
-    private ArrayList params=new ArrayList();
+    private ArrayList<HttpParamBean> params=new ArrayList<HttpParamBean>();
 	
 	
 	/** When required by a server, a valid password. */
@@ -653,8 +653,8 @@ public final class Http extends BodyTagImpl {
 	        		setCookie.append(header.getValue());
 	        	else {
 	        	    //print.ln(header.getName()+"-"+header.getValue());
-	        		Object value=responseHeader.get(header.getName(),null);
-	        		if(value==null) responseHeader.set(header.getName(),header.getValue());
+	        		Object value=responseHeader.get(KeyImpl.init(header.getName()),null);
+	        		if(value==null) responseHeader.set(KeyImpl.init(header.getName()),header.getValue());
 	        		else {
 	        		    Array arr=null;
 	        		    if(value instanceof ArrayImpl) {
@@ -662,7 +662,7 @@ public final class Http extends BodyTagImpl {
 	        		    }
 	        		    else {
 	        		        arr=new ArrayImpl();
-	        		        responseHeader.set(header.getName(),arr);
+	        		        responseHeader.set(KeyImpl.init(header.getName()),arr);
 	        		        arr.appendEL(value);
 	        		    }
 	        		    arr.appendEL(header.getValue());
@@ -698,7 +698,7 @@ public final class Http extends BodyTagImpl {
 	       
 	        cfhttp.set(TEXT,Caster.toBoolean(isText));
 	    // mimetype charset
-	        boolean responseProvideCharset=false;
+	        //boolean responseProvideCharset=false;
 	        if(!StringUtil.isEmpty(mimetype)){
 		        if(isText) {
 		        	String[] types=mimetype.split(";");
@@ -710,7 +710,7 @@ public final class Http extends BodyTagImpl {
 	                    if(index!=-1) {
 	                    	responseCharset=StringUtil.removeQuotes(tmp.substring(index+8),true);
 	                        cfhttp.set(CHARSET,responseCharset);
-	                        responseProvideCharset=true;
+	                        //responseProvideCharset=true;
 	                    }
 	                }
 		        }
@@ -983,7 +983,7 @@ public final class Http extends BodyTagImpl {
 		boolean hasBody=false;
 		boolean hasContentType=false;
 	// Set http params
-		ArrayList listQS=new ArrayList();
+		ArrayList<NameValuePair> listQS=new ArrayList<NameValuePair>();
 		ArrayList<Part> parts=new ArrayList<Part>();
 		int len=http.params.size();
 		for(int i=0;i<len;i++) {
@@ -1034,7 +1034,7 @@ public final class Http extends BodyTagImpl {
 				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type file can't only be used, when method of the tag http equal post");
 				if(doMultiPart) {
 					try {
-						parts.add(new FilePart(param.getName(),new ResourcePartSource(param.getFile())));
+						parts.add(new FilePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param),null));
 					} 
 					catch (FileNotFoundException e) {
 						throw new ApplicationException("can't upload file, path is invalid",e.getMessage());
@@ -1104,9 +1104,9 @@ public final class Http extends BodyTagImpl {
 		
 	// set Query String
 		//NameValuePair[] qsPairs=new NameValuePair[arrQS.length+listQS.size()];
-		java.util.List listPairs=new ArrayList();
+		java.util.List<NameValuePair> listPairs=new ArrayList<NameValuePair>();
 		
-		int count=0;
+		//int count=0;
 		// QS from URL
 		for(int i=0;i<arrQS.length;i++) {
 			if(StringUtil.isEmpty(arrQS[i])) continue;
@@ -1304,6 +1304,14 @@ public final class Http extends BodyTagImpl {
         
         return path;
     }
+    
+	private static String getContentType(HttpParamBean param) {
+		String mimeType=param.getMimeType();
+		if(StringUtil.isEmpty(mimeType,true)) {
+			mimeType=ResourceUtil.getMymeType(param.getFile(), true, null);
+		}
+		return mimeType;
+	}
 }
 
 class MultipartRequestEntityFlex extends MultipartRequestEntity {
@@ -1337,7 +1345,6 @@ class MultipartRequestEntityFlex extends MultipartRequestEntity {
 	   
 	   //return super.getContentType();
 	}
-
 }
 
 class Executor extends Thread {
