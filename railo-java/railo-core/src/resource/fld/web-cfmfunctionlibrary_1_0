@@ -3697,6 +3697,112 @@ If you do not specify the mode, Railo opens the file in read mode.</description>
 		</return>
 	</function>
 	
+	
+	<!-- FileUpload -->
+	<function>
+		<name>FileUpload</name>
+		<class>railo.runtime.functions.file.FileUpload</class>
+		<description>Uploads file to a directory on the server.</description>
+		<argument>
+			<name>destination</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>Absolute pathname of directory or file on web server.</description>
+    	</argument>
+		<argument>
+			<name>fileField</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Name of form field used to select the file.</description>
+   		</argument>
+		<argument>
+			<name>accept</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Limits the MIME types to accept. Comma-delimited list. For example, to permit JPG and Microsoft Word file uploads:
+accept = "image/jpg, application/msword"
+The browser uses file extension to determine file type. </description>
+    	</argument>
+		<argument>
+			<name>nameConflict</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Action to take if filename is the same as that of a file in the directory.</description>
+    	</argument>
+		<argument>
+			<name>mode</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Applies only to Solaris and HP-UX. Permissions. Octal values of UNIX chmod command. Assigned to owner, group, and other, respectively.</description>
+    	</argument>
+		<argument>
+			<name>attributes</name>
+			<type>string</type>
+			<required>no</required>
+			<description>One attribute (Windows) or a comma-delimited list of attributes (other platforms) to set on the file. 
+If omitted, the file's attributes are maintained.</description>
+    	</argument>
+		<argument>
+			<name>acl</name>
+			<type>string</type>
+			<required>no</required>
+			<description>only used for S3 Resources</description>
+    	</argument>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
+	
+	
+	<!-- FileUploadAll -->
+	<function>
+		<name>FileUploadAll</name>
+		<class>railo.runtime.functions.file.FileUploadAll</class>
+		<description>Uploads file to a directory on the server.</description>
+		<argument>
+			<name>destination</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>Absolute pathname of directory or file on web server.</description>
+    	</argument>
+		<argument>
+			<name>accept</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Limits the MIME types to accept. Comma-delimited list. For example, to permit JPG and Microsoft Word file uploads:
+accept = "image/jpg, application/msword"
+The browser uses file extension to determine file type. </description>
+    	</argument>
+		<argument>
+			<name>nameConflict</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Action to take if filename is the same as that of a file in the directory.</description>
+    	</argument>
+		<argument>
+			<name>mode</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Applies only to Solaris and HP-UX. Permissions. Octal values of UNIX chmod command. Assigned to owner, group, and other, respectively.</description>
+    	</argument>
+		<argument>
+			<name>attributes</name>
+			<type>string</type>
+			<required>no</required>
+			<description>One attribute (Windows) or a comma-delimited list of attributes (other platforms) to set on the file. 
+If omitted, the file's attributes are maintained.</description>
+    	</argument>
+		<argument>
+			<name>acl</name>
+			<type>string</type>
+			<required>no</required>
+			<description>only used for S3 Resources</description>
+    	</argument>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
+	
 	<!-- fileClose -->
 	<function>
 		<name>fileClose</name>
