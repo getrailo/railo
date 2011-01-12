@@ -15,14 +15,20 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A class which warps an image using a field Warp algorithm.
  */
-public class FieldWarpFilter extends TransformFilter {
+public class FieldWarpFilter extends TransformFilter  implements DynFiltering {
 
 	public static class Line {
 		public int x1, y1, x2, y2;
@@ -185,4 +191,21 @@ public class FieldWarpFilter extends TransformFilter {
 		return "Distort/Field Warp...";
 	}
 
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
+		if((o=parameters.removeEL(KeyImpl.init("Power")))!=null)setPower(ImageFilterUtil.toFloatValue(o,"Power"));
+		if((o=parameters.removeEL(KeyImpl.init("Strength")))!=null)setStrength(ImageFilterUtil.toFloatValue(o,"Strength"));
+		if((o=parameters.removeEL(KeyImpl.init("InLines")))!=null)setInLines(ImageFilterUtil.toAFieldWarpFilter$Line(o,"InLines"));
+		if((o=parameters.removeEL(KeyImpl.init("OutLines")))!=null)setOutLines(ImageFilterUtil.toAFieldWarpFilter$Line(o,"OutLines"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toIntValue(o,"Interpolation"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, Power, Strength, InLines, OutLines, EdgeAction, Interpolation]");
+		}
+
+		return filter(src, dst);
+	}
 }

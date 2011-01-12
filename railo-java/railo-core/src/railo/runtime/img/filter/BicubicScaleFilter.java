@@ -15,16 +15,21 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
 /**
  * Scales an image using bi-cubic interpolation, which can't be done with AffineTransformOp.
  */
-public class BicubicScaleFilter extends AbstractBufferedImageOp {
+public class BicubicScaleFilter extends AbstractBufferedImageOp  implements DynFiltering {
 
 	private int width;
 	private int height;
@@ -69,4 +74,14 @@ public class BicubicScaleFilter extends AbstractBufferedImageOp {
 		return "Distort/Bicubic Scale";
 	}
 
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported []");
+		}
+
+		return filter(src, dst);
+	}
 }

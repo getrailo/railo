@@ -15,13 +15,20 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which performs a perspective distortion on an image.
  */
-public class PerspectiveFilter extends TransformFilter {
+public class PerspectiveFilter extends TransformFilter  implements DynFiltering {
 
 	private float x0, y0, x1, y1, x2, y2, x3, y3;
 	private float dx1, dy1, dx2, dy2, dx3, dy3;
@@ -181,6 +188,18 @@ public class PerspectiveFilter extends TransformFilter {
 
 	public String toString() {
 		return "Distort/Perspective...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toIntValue(o,"Interpolation"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Corners, EdgeAction, Interpolation]");
+		}
+
+		return filter(src, dst);
 	}
 }
 

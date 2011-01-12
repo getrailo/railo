@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -26,11 +25,18 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
 /**
  * A filter which uses another filter to perform a transition.
  * e.g. to create a blur transition, you could write: new TransitionFilter( new BoxBlurFilter(), "radius", 0, 100 );
  */
-public class TransitionFilter extends AbstractBufferedImageOp {
+public class TransitionFilter extends AbstractBufferedImageOp  implements DynFiltering {
 	
 	private float transition = 0;
 	private BufferedImage destination;
@@ -172,5 +178,16 @@ public class TransitionFilter extends AbstractBufferedImageOp {
 
 	public String toString() {
 		return "Transitions/Transition...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Transition")))!=null)setTransition(ImageFilterUtil.toFloatValue(o,"Transition"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Transition]");
+		}
+
+		return filter(src, dst);
 	}
 }

@@ -15,17 +15,23 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.img.math.Noise;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which distorts an image by rippling it in the X or Y directions.
  * The amplitude and wavelength of rippling can be specified as well as whether 
  * pixels going off the edges are wrapped or not.
  */
-public class RippleFilter extends TransformFilter {
+public class RippleFilter extends TransformFilter  implements DynFiltering {
 	
     /**
      * Sine wave ripples.
@@ -191,4 +197,21 @@ public class RippleFilter extends TransformFilter {
 		return "Distort/Ripple...";
 	}
 
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("XAmplitude")))!=null)setXAmplitude(ImageFilterUtil.toFloatValue(o,"XAmplitude"));
+		if((o=parameters.removeEL(KeyImpl.init("XWavelength")))!=null)setXWavelength(ImageFilterUtil.toFloatValue(o,"XWavelength"));
+		if((o=parameters.removeEL(KeyImpl.init("YAmplitude")))!=null)setYAmplitude(ImageFilterUtil.toFloatValue(o,"YAmplitude"));
+		if((o=parameters.removeEL(KeyImpl.init("YWavelength")))!=null)setYWavelength(ImageFilterUtil.toFloatValue(o,"YWavelength"));
+		if((o=parameters.removeEL(KeyImpl.init("WaveType")))!=null)setWaveType(ImageFilterUtil.toIntValue(o,"WaveType"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toIntValue(o,"Interpolation"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [XAmplitude, XWavelength, YAmplitude, YWavelength, WaveType, EdgeAction, Interpolation]");
+		}
+
+		return filter(src, dst);
+	}
 }

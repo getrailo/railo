@@ -15,9 +15,18 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
+import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 
-public class CurvesFilter extends TransferFilter {
+
+public class CurvesFilter extends TransferFilter  implements DynFiltering {
 
 	private Curve[] curves = new Curve[1];
 	
@@ -163,5 +172,21 @@ public class CurvesFilter extends TransferFilter {
 		return "Colors/Curves...";
 	}
 
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Curves")))!=null)setCurves(ImageFilterUtil.toACurvesFilter$Curve(o,"Curves"));
+		if((o=parameters.removeEL(KeyImpl.init("Curve")))!=null)setCurve(ImageFilterUtil.toCurvesFilter$Curve(o,"Curve"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Curves, Curve, Dimensions]");
+		}
+
+		return filter(src, dst);
+	}
 }
 

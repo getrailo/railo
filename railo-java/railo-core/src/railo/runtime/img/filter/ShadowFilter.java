@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -26,10 +25,17 @@ import java.awt.image.BandCombineOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
 /**
  * A filter which draws a drop shadow based on the alpha channel of the image.
  */
-public class ShadowFilter extends AbstractBufferedImageOp {
+public class ShadowFilter extends AbstractBufferedImageOp  implements DynFiltering {
 	
 	private float radius = 5;
 	private float angle = (float)Math.PI*6/4;
@@ -263,5 +269,22 @@ public class ShadowFilter extends AbstractBufferedImageOp {
 
 	public String toString() {
 		return "Stylize/Drop Shadow...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("Distance")))!=null)setDistance(ImageFilterUtil.toFloatValue(o,"Distance"));
+		if((o=parameters.removeEL(KeyImpl.init("Opacity")))!=null)setOpacity(ImageFilterUtil.toFloatValue(o,"Opacity"));
+		if((o=parameters.removeEL(KeyImpl.init("ShadowColor")))!=null)setShadowColor(ImageFilterUtil.toIntValue(o,"ShadowColor"));
+		if((o=parameters.removeEL(KeyImpl.init("AddMargins")))!=null)setAddMargins(ImageFilterUtil.toBooleanValue(o,"AddMargins"));
+		if((o=parameters.removeEL(KeyImpl.init("ShadowOnly")))!=null)setShadowOnly(ImageFilterUtil.toBooleanValue(o,"ShadowOnly"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Angle, Distance, Opacity, ShadowColor, AddMargins, ShadowOnly]");
+		}
+
+		return filter(src, dst);
 	}
 }

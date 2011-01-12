@@ -15,14 +15,20 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which performs reduces noise by looking at each pixel's 8 neighbours, and if it's a minimum or maximum,
  * replacing it by the next minimum or maximum of the neighbours.
  */
-public class ReduceNoiseFilter extends WholeImageFilter {
+public class ReduceNoiseFilter extends WholeImageFilter  implements DynFiltering {
 
 	public ReduceNoiseFilter() {
 	}
@@ -101,5 +107,15 @@ public class ReduceNoiseFilter extends WholeImageFilter {
 		return "Blur/Smooth";
 	}
 
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported []");
+		}
+
+		return filter(src, dst);
+	}
 }
 

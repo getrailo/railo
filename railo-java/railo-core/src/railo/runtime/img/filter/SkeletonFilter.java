@@ -15,15 +15,22 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which reduces a binary image to a skeleton.
  *
  * Based on an algorithm by Zhang and Suen (CACM, March 1984, 236-239).
  */
-public class SkeletonFilter extends BinaryFilter {
+public class SkeletonFilter extends BinaryFilter  implements DynFiltering {
 
 	private final static byte[] skeletonTable = {
 		0, 0, 0, 1, 0, 0, 1, 3, 0, 0, 3, 1, 1, 0, 1, 3, 
@@ -117,5 +124,19 @@ public class SkeletonFilter extends BinaryFilter {
 		return "Binary/Skeletonize...";
 	}
 
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Iterations")))!=null)setIterations(ImageFilterUtil.toIntValue(o,"Iterations"));
+		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));
+		if((o=parameters.removeEL(KeyImpl.init("NewColor")))!=null)setNewColor(ImageFilterUtil.toIntValue(o,"NewColor"));
+		//if((o=parameters.removeEL(KeyImpl.init("BlackFunction")))!=null)setBlackFunction(ImageFilterUtil.toBinaryFunction(o,"BlackFunction"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Iterations, Colormap, NewColor, BlackFunction]");
+		}
+
+		return filter(src, dst);
+	}
 }
 

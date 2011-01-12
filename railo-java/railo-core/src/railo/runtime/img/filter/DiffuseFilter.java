@@ -15,13 +15,19 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * This filter diffuses an image by moving its pixels in random directions.
  */
-public class DiffuseFilter extends TransformFilter {
+public class DiffuseFilter extends TransformFilter  implements DynFiltering {
 
 	private float[] sinTable, cosTable;
 	private float scale = 4;
@@ -70,5 +76,18 @@ public class DiffuseFilter extends TransformFilter {
 
 	public String toString() {
 		return "Distort/Diffuse...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Scale")))!=null)setScale(ImageFilterUtil.toFloatValue(o,"Scale"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toIntValue(o,"Interpolation"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Scale, EdgeAction, Interpolation]");
+		}
+
+		return filter(src, dst);
 	}
 }

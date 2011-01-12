@@ -15,14 +15,21 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
+import java.awt.image.BufferedImage;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.img.math.BinaryFunction;
 import railo.runtime.img.math.BlackFunction;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * The superclass for some of the filters which work on binary images.
  */
-public abstract class BinaryFilter extends WholeImageFilter {
+public abstract class BinaryFilter extends WholeImageFilter  implements DynFiltering {
 
 	protected int newColor = 0xff000000;
 	protected BinaryFunction blackFunction = new BlackFunction();
@@ -82,5 +89,18 @@ public abstract class BinaryFilter extends WholeImageFilter {
 		return blackFunction;
 	}
 
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Iterations")))!=null)setIterations(ImageFilterUtil.toIntValue(o,"Iterations"));
+		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));
+		if((o=parameters.removeEL(KeyImpl.init("NewColor")))!=null)setNewColor(ImageFilterUtil.toIntValue(o,"NewColor"));
+		
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Iterations, Colormap, NewColor, BlackFunction]");
+		}
+
+		return filter(src, dst);
+	}
 }
 

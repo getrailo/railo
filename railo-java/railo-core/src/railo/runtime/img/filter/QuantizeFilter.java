@@ -15,8 +15,15 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 
 /**
@@ -28,7 +35,7 @@ import java.awt.Rectangle;
  * uses the RGB color model (because the application it was written for required it).
  * I hope to extend it to produce an IndexColorModel by request.
  */
-public class QuantizeFilter extends WholeImageFilter {
+public class QuantizeFilter extends WholeImageFilter  implements DynFiltering {
 
 	/**
 	 * Floyd-Steinberg dithering matrix.
@@ -176,4 +183,17 @@ public class QuantizeFilter extends WholeImageFilter {
 		return "Colors/Quantize...";
 	}
 	
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Serpentine")))!=null)setSerpentine(ImageFilterUtil.toBooleanValue(o,"Serpentine"));
+		if((o=parameters.removeEL(KeyImpl.init("NumColors")))!=null)setNumColors(ImageFilterUtil.toIntValue(o,"NumColors"));
+		if((o=parameters.removeEL(KeyImpl.init("Dither")))!=null)setDither(ImageFilterUtil.toBooleanValue(o,"Dither"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Serpentine, NumColors, Dither]");
+		}
+
+		return filter(src, dst);
+	}
 }

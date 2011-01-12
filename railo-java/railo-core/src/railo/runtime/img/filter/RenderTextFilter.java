@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Composite;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -24,10 +23,17 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
 /**
  * A filter which renders text onto an image.
  */
-public class RenderTextFilter extends AbstractBufferedImageOp {
+public class RenderTextFilter extends AbstractBufferedImageOp  implements DynFiltering {
 
 	private String text;
 	private Font font;
@@ -165,5 +171,20 @@ public class RenderTextFilter extends AbstractBufferedImageOp {
             g.drawString( text, 10, 100 );
         g.dispose();
 		return dst;
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Font")))!=null)setFont(ImageFilterUtil.toFont(o,"Font"));
+		if((o=parameters.removeEL(KeyImpl.init("Transform")))!=null)setTransform(ImageFilterUtil.toAffineTransform(o,"Transform"));
+		if((o=parameters.removeEL(KeyImpl.init("Composite")))!=null)setComposite(ImageFilterUtil.toComposite(o,"Composite"));
+		if((o=parameters.removeEL(KeyImpl.init("Paint")))!=null)setPaint(ImageFilterUtil.toColor(o,"Paint"));
+		if((o=parameters.removeEL(KeyImpl.init("Text")))!=null)setText(ImageFilterUtil.toString(o,"Text"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Font, Transform, Composite, Paint, Text]");
+		}
+
+		return filter(src, dst);
 	}
 }

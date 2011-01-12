@@ -15,12 +15,19 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.Date;
 import java.util.Random;
 
-public class SmearFilter extends WholeImageFilter {
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
+public class SmearFilter extends WholeImageFilter  implements DynFiltering {
 	
 	public final static int CROSSES = 0;
 	public final static int LINES = 1;
@@ -272,4 +279,22 @@ public class SmearFilter extends WholeImageFilter {
 		return "Effects/Smear...";
 	}
 	
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("Density")))!=null)setDensity(ImageFilterUtil.toFloatValue(o,"Density"));
+		if((o=parameters.removeEL(KeyImpl.init("Distance")))!=null)setDistance(ImageFilterUtil.toIntValue(o,"Distance"));
+		if((o=parameters.removeEL(KeyImpl.init("Shape")))!=null)setShape(ImageFilterUtil.toIntValue(o,"Shape"));
+		if((o=parameters.removeEL(KeyImpl.init("Scatter")))!=null)setScatter(ImageFilterUtil.toFloatValue(o,"Scatter"));
+		if((o=parameters.removeEL(KeyImpl.init("Mix")))!=null)setMix(ImageFilterUtil.toFloatValue(o,"Mix"));
+		if((o=parameters.removeEL(KeyImpl.init("Fadeout")))!=null)setFadeout(ImageFilterUtil.toIntValue(o,"Fadeout"));
+		if((o=parameters.removeEL(KeyImpl.init("Background")))!=null)setBackground(ImageFilterUtil.toBooleanValue(o,"Background"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Angle, Density, Distance, Shape, Scatter, Mix, Fadeout, Background]");
+		}
+
+		return filter(src, dst);
+	}
 }

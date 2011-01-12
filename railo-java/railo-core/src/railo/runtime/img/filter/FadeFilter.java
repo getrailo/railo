@@ -15,9 +15,18 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
+import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 
-public class FadeFilter extends PointFilter {
+
+public class FadeFilter extends PointFilter  implements DynFiltering {
 
 	private int width, height;
 	private float angle = 0.0f;
@@ -137,5 +146,24 @@ public class FadeFilter extends PointFilter {
 		return "Fade...";
 	}
 
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("Sides")))!=null)setSides(ImageFilterUtil.toIntValue(o,"Sides"));
+		if((o=parameters.removeEL(KeyImpl.init("FadeStart")))!=null)setFadeStart(ImageFilterUtil.toFloatValue(o,"FadeStart"));
+		if((o=parameters.removeEL(KeyImpl.init("FadeWidth")))!=null)setFadeWidth(ImageFilterUtil.toFloatValue(o,"FadeWidth"));
+		if((o=parameters.removeEL(KeyImpl.init("Invert")))!=null)setInvert(ImageFilterUtil.toBooleanValue(o,"Invert"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Angle, Sides, FadeStart, FadeWidth, Invert, Dimensions]");
+		}
+
+		return filter(src, dst);
+	}
 }
 

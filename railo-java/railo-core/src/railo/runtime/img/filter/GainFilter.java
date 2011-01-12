@@ -15,12 +15,21 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
+import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
 
 
 /**
  * A filter which changes the gain and bias of an image - similar to ContrastFilter.
  */
-public class GainFilter extends TransferFilter {
+public class GainFilter extends TransferFilter  implements DynFiltering {
 
 	private float gain = 0.5f;
 	private float bias = 0.5f;
@@ -77,5 +86,21 @@ public class GainFilter extends TransferFilter {
 		return "Colors/Gain...";
 	}
 
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Gain")))!=null)setGain(ImageFilterUtil.toFloatValue(o,"Gain"));
+		if((o=parameters.removeEL(KeyImpl.init("Bias")))!=null)setBias(ImageFilterUtil.toFloatValue(o,"Bias"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Gain, Bias, Dimensions]");
+		}
+
+		return filter(src, dst);
+	}
 }
 

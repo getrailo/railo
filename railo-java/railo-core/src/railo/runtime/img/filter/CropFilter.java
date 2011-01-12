@@ -15,16 +15,22 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
 /**
  * A filter which crops an image to a given rectangle.
  */
-public class CropFilter extends AbstractBufferedImageOp {
+public class CropFilter extends AbstractBufferedImageOp  implements DynFiltering {
 
 	private int x;
 	private int y;
@@ -142,5 +148,19 @@ public class CropFilter extends AbstractBufferedImageOp {
 
 	public String toString() {
 		return "Distort/Crop";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("X")))!=null)setX(ImageFilterUtil.toIntValue(o,"X"));
+		if((o=parameters.removeEL(KeyImpl.init("Y")))!=null)setY(ImageFilterUtil.toIntValue(o,"Y"));
+		if((o=parameters.removeEL(KeyImpl.init("Width")))!=null)setWidth(ImageFilterUtil.toIntValue(o,"Width"));
+		if((o=parameters.removeEL(KeyImpl.init("Height")))!=null)setHeight(ImageFilterUtil.toIntValue(o,"Height"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [X, Y, Width, Height]");
+		}
+
+		return filter(src, dst);
 	}
 }

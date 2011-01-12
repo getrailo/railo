@@ -15,15 +15,20 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.img.composite.AddComposite;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
-public class ShineFilter extends AbstractBufferedImageOp {
+public class ShineFilter extends AbstractBufferedImageOp  implements DynFiltering {
 	
 	private float radius = 5;
 	private float angle = (float)Math.PI*7/4;
@@ -147,5 +152,23 @@ public class ShineFilter extends AbstractBufferedImageOp {
 
 	public String toString() {
 		return "Stylize/Shine...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));
+		if((o=parameters.removeEL(KeyImpl.init("Brightness")))!=null)setBrightness(ImageFilterUtil.toFloatValue(o,"Brightness"));
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("Softness")))!=null)setSoftness(ImageFilterUtil.toFloatValue(o,"Softness"));
+		if((o=parameters.removeEL(KeyImpl.init("Distance")))!=null)setDistance(ImageFilterUtil.toFloatValue(o,"Distance"));
+		if((o=parameters.removeEL(KeyImpl.init("ShadowOnly")))!=null)setShadowOnly(ImageFilterUtil.toBooleanValue(o,"ShadowOnly"));
+		if((o=parameters.removeEL(KeyImpl.init("Bevel")))!=null)setBevel(ImageFilterUtil.toFloatValue(o,"Bevel"));
+		if((o=parameters.removeEL(KeyImpl.init("ShineColor")))!=null)setShineColor(ImageFilterUtil.toIntValue(o,"ShineColor"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Brightness, Angle, Softness, Distance, ShadowOnly, Bevel, ShineColor]");
+		}
+
+		return filter(src, dst);
 	}
 }

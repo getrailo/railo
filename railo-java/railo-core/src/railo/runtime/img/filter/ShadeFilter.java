@@ -15,17 +15,22 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.Kernel;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.img.math.Function2D;
 import railo.runtime.img.math.ImageFunction2D;
 import railo.runtime.img.vecmath.Color4f;
 import railo.runtime.img.vecmath.Vector3f;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
-public class ShadeFilter extends WholeImageFilter {
+public class ShadeFilter extends WholeImageFilter  implements DynFiltering {
 	
 	public final static int COLORS_FROM_IMAGE = 0;
 	public final static int COLORS_CONSTANT = 1;
@@ -300,4 +305,19 @@ public class ShadeFilter extends WholeImageFilter {
 		return "Stylize/Shade...";
 	}
 
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("BumpFunction")))!=null)setBumpFunction(ImageFilterUtil.toFunction2D(o,"BumpFunction"));
+		if((o=parameters.removeEL(KeyImpl.init("BumpHeight")))!=null)setBumpHeight(ImageFilterUtil.toFloatValue(o,"BumpHeight"));
+		if((o=parameters.removeEL(KeyImpl.init("BumpSoftness")))!=null)setBumpSoftness(ImageFilterUtil.toFloatValue(o,"BumpSoftness"));
+		if((o=parameters.removeEL(KeyImpl.init("EnvironmentMap")))!=null)setEnvironmentMap(ImageFilterUtil.toBufferedImage(o,"EnvironmentMap"));
+		if((o=parameters.removeEL(KeyImpl.init("BumpSource")))!=null)setBumpSource(ImageFilterUtil.toIntValue(o,"BumpSource"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [BumpFunction, BumpHeight, BumpSoftness, EnvironmentMap, BumpSource]");
+		}
+
+		return filter(src, dst);
+	}
 }

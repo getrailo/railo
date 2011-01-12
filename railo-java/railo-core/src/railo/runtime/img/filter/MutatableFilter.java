@@ -16,8 +16,10 @@ limitations under the License.
 
 package railo.runtime.img.filter;
 
+
 import java.awt.image.BufferedImageOp;
 
-public interface MutatableFilter {
+public interface MutatableFilter extends DynFiltering {
 	public void mutate(float mutationLevel, BufferedImageOp dst, boolean keepShape, boolean keepColors);
+	
 }

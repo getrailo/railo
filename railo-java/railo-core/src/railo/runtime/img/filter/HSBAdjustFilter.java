@@ -15,10 +15,17 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 
-public class HSBAdjustFilter extends PointFilter {
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
+public class HSBAdjustFilter extends PointFilter  implements DynFiltering {
 	
 	public float hFactor, sFactor, bFactor;
 	private float[] hsb = new float[3];
@@ -83,6 +90,23 @@ public class HSBAdjustFilter extends PointFilter {
 
 	public String toString() {
 		return "Colors/Adjust HSB...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("HFactor")))!=null)setHFactor(ImageFilterUtil.toFloatValue(o,"HFactor"));
+		if((o=parameters.removeEL(KeyImpl.init("SFactor")))!=null)setSFactor(ImageFilterUtil.toFloatValue(o,"SFactor"));
+		if((o=parameters.removeEL(KeyImpl.init("BFactor")))!=null)setBFactor(ImageFilterUtil.toFloatValue(o,"BFactor"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [HFactor, SFactor, BFactor, Dimensions]");
+		}
+
+		return filter(src, dst);
 	}
 }
 

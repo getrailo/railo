@@ -15,13 +15,19 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which replcaes each pixel by the maximum of itself and its eight neightbours.
  */
-public class MaximumFilter extends WholeImageFilter {
+public class MaximumFilter extends WholeImageFilter  implements DynFiltering {
 
 	public MaximumFilter() {
 	}
@@ -56,5 +62,15 @@ public class MaximumFilter extends WholeImageFilter {
 		return "Blur/Maximum";
 	}
 
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported []");
+		}
+
+		return filter(src, dst);
+	}
 }
 

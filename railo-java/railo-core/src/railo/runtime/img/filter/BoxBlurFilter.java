@@ -15,14 +15,20 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which performs a box blur on an image. The horizontal and vertical blurs can be specified separately
  * and a number of iterations can be given which allows an approximation to Gaussian blur.
  */
-public class BoxBlurFilter extends AbstractBufferedImageOp {
+public class BoxBlurFilter extends AbstractBufferedImageOp  implements DynFiltering {
 
 	private float hRadius;
 	private float vRadius;
@@ -266,5 +272,20 @@ public class BoxBlurFilter extends AbstractBufferedImageOp {
 	
 	public String toString() {
 		return "Blur/Box Blur...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("PremultiplyAlpha")))!=null)setPremultiplyAlpha(ImageFilterUtil.toBooleanValue(o,"PremultiplyAlpha"));
+		if((o=parameters.removeEL(KeyImpl.init("Iterations")))!=null)setIterations(ImageFilterUtil.toIntValue(o,"Iterations"));
+		if((o=parameters.removeEL(KeyImpl.init("HRadius")))!=null)setHRadius(ImageFilterUtil.toFloatValue(o,"HRadius"));
+		if((o=parameters.removeEL(KeyImpl.init("VRadius")))!=null)setVRadius(ImageFilterUtil.toFloatValue(o,"VRadius"));
+		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [PremultiplyAlpha, Iterations, HRadius, VRadius, Radius]");
+		}
+
+		return filter(src, dst);
 	}
 }

@@ -15,16 +15,22 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
 /**
  * A filter to add a border around an image using the supplied Paint, which may be null for no painting.
  */
-public class BorderFilter extends AbstractBufferedImageOp {
+public class BorderFilter extends AbstractBufferedImageOp  implements DynFiltering {
 
 	private int leftBorder, rightBorder;
 	private int topBorder, bottomBorder;
@@ -171,5 +177,20 @@ public class BorderFilter extends AbstractBufferedImageOp {
 
 	public String toString() {
 		return "Distort/Border...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("LeftBorder")))!=null)setLeftBorder(ImageFilterUtil.toIntValue(o,"LeftBorder"));
+		if((o=parameters.removeEL(KeyImpl.init("RightBorder")))!=null)setRightBorder(ImageFilterUtil.toIntValue(o,"RightBorder"));
+		if((o=parameters.removeEL(KeyImpl.init("TopBorder")))!=null)setTopBorder(ImageFilterUtil.toIntValue(o,"TopBorder"));
+		if((o=parameters.removeEL(KeyImpl.init("BottomBorder")))!=null)setBottomBorder(ImageFilterUtil.toIntValue(o,"BottomBorder"));
+		if((o=parameters.removeEL(KeyImpl.init("BorderPaint")))!=null)setBorderPaint(ImageFilterUtil.toColor(o,"BorderPaint"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [LeftBorder, RightBorder, TopBorder, BottomBorder, BorderPaint]");
+		}
+
+		return filter(src, dst);
 	}
 }

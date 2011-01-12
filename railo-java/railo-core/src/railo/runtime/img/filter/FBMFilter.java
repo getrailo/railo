@@ -15,10 +15,12 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.img.math.CellularFunction2D;
 import railo.runtime.img.math.FBM;
 import railo.runtime.img.math.Function2D;
@@ -26,11 +28,14 @@ import railo.runtime.img.math.Noise;
 import railo.runtime.img.math.RidgedFBM;
 import railo.runtime.img.math.SCNoise;
 import railo.runtime.img.math.VLNoise;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which produces textures from fractal Brownian motion.
  */
-public class FBMFilter extends PointFilter implements Cloneable {
+public class FBMFilter extends PointFilter implements Cloneable, DynFiltering {
 
 	public final static int NOISE = 0;
 	public final static int RIDGED = 1;
@@ -294,4 +299,31 @@ public class FBMFilter extends PointFilter implements Cloneable {
 		return "Texture/Fractal Brownian Motion...";
 	}
 	
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));
+		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
+		if((o=parameters.removeEL(KeyImpl.init("Stretch")))!=null)setStretch(ImageFilterUtil.toFloatValue(o,"Stretch"));
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("BasisType")))!=null)setBasisType(ImageFilterUtil.toIntValue(o,"BasisType"));
+		if((o=parameters.removeEL(KeyImpl.init("Operation")))!=null)setOperation(ImageFilterUtil.toIntValue(o,"Operation"));
+		if((o=parameters.removeEL(KeyImpl.init("Octaves")))!=null)setOctaves(ImageFilterUtil.toFloatValue(o,"Octaves"));
+		if((o=parameters.removeEL(KeyImpl.init("H")))!=null)setH(ImageFilterUtil.toFloatValue(o,"H"));
+		if((o=parameters.removeEL(KeyImpl.init("Lacunarity")))!=null)setLacunarity(ImageFilterUtil.toFloatValue(o,"Lacunarity"));
+		if((o=parameters.removeEL(KeyImpl.init("Gain")))!=null)setGain(ImageFilterUtil.toFloatValue(o,"Gain"));
+		if((o=parameters.removeEL(KeyImpl.init("Bias")))!=null)setBias(ImageFilterUtil.toFloatValue(o,"Bias"));
+		if((o=parameters.removeEL(KeyImpl.init("Basis")))!=null)setBasis(ImageFilterUtil.toFunction2D(o,"Basis"));
+		if((o=parameters.removeEL(KeyImpl.init("Scale")))!=null)setScale(ImageFilterUtil.toFloatValue(o,"Scale"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Colormap, Amount, Stretch, Angle, BasisType, Operation, Octaves, H, Lacunarity, Gain, Bias, Basis, Scale, Dimensions]");
+		}
+
+		return filter(src, dst);
+	}
 }

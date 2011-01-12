@@ -15,9 +15,18 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
+import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 
-public class WeaveFilter extends PointFilter {
+
+public class WeaveFilter extends PointFilter  implements DynFiltering {
 
 	private float xWidth = 16;
 	private float yWidth = 16;
@@ -178,6 +187,28 @@ public class WeaveFilter extends PointFilter {
 		return "Texture/Weave...";
 	}
 
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("UseImageColors")))!=null)setUseImageColors(ImageFilterUtil.toBooleanValue(o,"UseImageColors"));
+		if((o=parameters.removeEL(KeyImpl.init("XGap")))!=null)setXGap(ImageFilterUtil.toFloatValue(o,"XGap"));
+		if((o=parameters.removeEL(KeyImpl.init("XWidth")))!=null)setXWidth(ImageFilterUtil.toFloatValue(o,"XWidth"));
+		if((o=parameters.removeEL(KeyImpl.init("YWidth")))!=null)setYWidth(ImageFilterUtil.toFloatValue(o,"YWidth"));
+		if((o=parameters.removeEL(KeyImpl.init("YGap")))!=null)setYGap(ImageFilterUtil.toFloatValue(o,"YGap"));
+		if((o=parameters.removeEL(KeyImpl.init("Crossings")))!=null)setCrossings(ImageFilterUtil.toAAInt(o,"Crossings"));
+		if((o=parameters.removeEL(KeyImpl.init("RoundThreads")))!=null)setRoundThreads(ImageFilterUtil.toBooleanValue(o,"RoundThreads"));
+		if((o=parameters.removeEL(KeyImpl.init("ShadeCrossings")))!=null)setShadeCrossings(ImageFilterUtil.toBooleanValue(o,"ShadeCrossings"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [UseImageColors, XGap, XWidth, YWidth, YGap, Crossings, RoundThreads, ShadeCrossings, Dimensions]");
+		}
+
+		return filter(src, dst);
+	}
 }
 
 

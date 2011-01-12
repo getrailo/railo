@@ -15,17 +15,22 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
 
 /**
  * Scales an image using the area-averaging algorithm, which can't be done with AffineTransformOp.
  */
-public class ScaleFilter extends AbstractBufferedImageOp {
+public class ScaleFilter extends AbstractBufferedImageOp  implements DynFiltering {
 
 	private int width;
 	private int height;
@@ -68,4 +73,14 @@ public class ScaleFilter extends AbstractBufferedImageOp {
 		return "Distort/Scale";
 	}
 
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported []");
+		}
+
+		return filter(src, dst);
+	}
 }

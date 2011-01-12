@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Image;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
@@ -69,5 +68,4 @@ public class ImageCombiningFilter {
 		}
 		return new MemoryImageSource(w, h, pixels3, 0, w);
 	}
-
 }

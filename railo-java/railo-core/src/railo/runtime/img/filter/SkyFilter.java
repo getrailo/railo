@@ -15,17 +15,22 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.img.math.FBM;
 import railo.runtime.img.math.Function2D;
 import railo.runtime.img.math.Noise;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
-public class SkyFilter extends PointFilter {
+public class SkyFilter extends PointFilter  implements DynFiltering {
 
 	private float scale = 0.1f;
 	private float stretch = 1.0f;
@@ -453,4 +458,42 @@ if (y == 100)System.out.println(fg+" "+gf+gradient);
 		return "Texture/Sky...";
 	}
 	
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
+		if((o=parameters.removeEL(KeyImpl.init("Stretch")))!=null)setStretch(ImageFilterUtil.toFloatValue(o,"Stretch"));
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("Operation")))!=null)setOperation(ImageFilterUtil.toIntValue(o,"Operation"));
+		if((o=parameters.removeEL(KeyImpl.init("Octaves")))!=null)setOctaves(ImageFilterUtil.toFloatValue(o,"Octaves"));
+		if((o=parameters.removeEL(KeyImpl.init("H")))!=null)setH(ImageFilterUtil.toFloatValue(o,"H"));
+		if((o=parameters.removeEL(KeyImpl.init("Lacunarity")))!=null)setLacunarity(ImageFilterUtil.toFloatValue(o,"Lacunarity"));
+		if((o=parameters.removeEL(KeyImpl.init("Gain")))!=null)setGain(ImageFilterUtil.toFloatValue(o,"Gain"));
+		if((o=parameters.removeEL(KeyImpl.init("Bias")))!=null)setBias(ImageFilterUtil.toFloatValue(o,"Bias"));
+		if((o=parameters.removeEL(KeyImpl.init("T")))!=null)setT(ImageFilterUtil.toFloatValue(o,"T"));
+		if((o=parameters.removeEL(KeyImpl.init("FOV")))!=null)setFOV(ImageFilterUtil.toFloatValue(o,"FOV"));
+		if((o=parameters.removeEL(KeyImpl.init("CloudCover")))!=null)setCloudCover(ImageFilterUtil.toFloatValue(o,"CloudCover"));
+		if((o=parameters.removeEL(KeyImpl.init("CloudSharpness")))!=null)setCloudSharpness(ImageFilterUtil.toFloatValue(o,"CloudSharpness"));
+		if((o=parameters.removeEL(KeyImpl.init("Glow")))!=null)setGlow(ImageFilterUtil.toFloatValue(o,"Glow"));
+		if((o=parameters.removeEL(KeyImpl.init("GlowFalloff")))!=null)setGlowFalloff(ImageFilterUtil.toFloatValue(o,"GlowFalloff"));
+		if((o=parameters.removeEL(KeyImpl.init("Haziness")))!=null)setHaziness(ImageFilterUtil.toFloatValue(o,"Haziness"));
+		if((o=parameters.removeEL(KeyImpl.init("SunElevation")))!=null)setSunElevation(ImageFilterUtil.toFloatValue(o,"SunElevation"));
+		if((o=parameters.removeEL(KeyImpl.init("SunAzimuth")))!=null)setSunAzimuth(ImageFilterUtil.toFloatValue(o,"SunAzimuth"));
+		if((o=parameters.removeEL(KeyImpl.init("SunColor")))!=null)setSunColor(ImageFilterUtil.toIntValue(o,"SunColor"));
+		if((o=parameters.removeEL(KeyImpl.init("CameraElevation")))!=null)setCameraElevation(ImageFilterUtil.toFloatValue(o,"CameraElevation"));
+		if((o=parameters.removeEL(KeyImpl.init("CameraAzimuth")))!=null)setCameraAzimuth(ImageFilterUtil.toFloatValue(o,"CameraAzimuth"));
+		if((o=parameters.removeEL(KeyImpl.init("WindSpeed")))!=null)setWindSpeed(ImageFilterUtil.toFloatValue(o,"WindSpeed"));
+		if((o=parameters.removeEL(KeyImpl.init("Time")))!=null)setTime(ImageFilterUtil.toFloatValue(o,"Time"));
+		if((o=parameters.removeEL(KeyImpl.init("Scale")))!=null)setScale(ImageFilterUtil.toFloatValue(o,"Scale"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, Stretch, Angle, Operation, Octaves, H, Lacunarity, Gain, Bias, T, FOV, CloudCover, CloudSharpness, Glow, GlowFalloff, Haziness, SunElevation, SunAzimuth, SunColor, CameraElevation, CameraAzimuth, WindSpeed, Time, Scale, Dimensions]");
+		}
+
+		return filter(src, dst);
+	}
 }

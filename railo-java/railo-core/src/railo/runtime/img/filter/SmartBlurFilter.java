@@ -15,14 +15,20 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.Kernel;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which performs a "smart blur". i.e. a blur which blurs smotth parts of the image while preserving edges.
  */
-public class SmartBlurFilter extends AbstractBufferedImageOp {
+public class SmartBlurFilter extends AbstractBufferedImageOp  implements DynFiltering {
 
 	private int hRadius = 5;
 	private int vRadius = 5;
@@ -196,5 +202,19 @@ public class SmartBlurFilter extends AbstractBufferedImageOp {
 	
 	public String toString() {
 		return "Blur/Smart Blur...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("HRadius")))!=null)setHRadius(ImageFilterUtil.toIntValue(o,"HRadius"));
+		if((o=parameters.removeEL(KeyImpl.init("VRadius")))!=null)setVRadius(ImageFilterUtil.toIntValue(o,"VRadius"));
+		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toIntValue(o,"Radius"));
+		if((o=parameters.removeEL(KeyImpl.init("Threshold")))!=null)setThreshold(ImageFilterUtil.toIntValue(o,"Threshold"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [HRadius, VRadius, Radius, Threshold]");
+		}
+
+		return filter(src, dst);
 	}
 }

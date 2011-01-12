@@ -15,17 +15,23 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
 /**
  * A filter which composites two images together with an optional transform.
  */
-public class CompositeFilter extends AbstractBufferedImageOp {
+public class CompositeFilter extends AbstractBufferedImageOp  implements DynFiltering {
 
 	private Composite composite;
     private AffineTransform transform;
@@ -105,5 +111,17 @@ public class CompositeFilter extends AbstractBufferedImageOp {
 
 	public String toString() {
 		return "Composite";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Transform")))!=null)setTransform(ImageFilterUtil.toAffineTransform(o,"Transform"));
+		if((o=parameters.removeEL(KeyImpl.init("Composite")))!=null)setComposite(ImageFilterUtil.toComposite(o,"Composite"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Transform, Composite]");
+		}
+
+		return filter(src, dst);
 	}
 }

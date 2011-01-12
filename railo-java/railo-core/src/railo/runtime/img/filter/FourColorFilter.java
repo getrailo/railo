@@ -15,12 +15,21 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
+import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
 
 
 /**
  * A filter which draws a gradient interpolated between four colors defined at the corners of the image.
  */
-public class FourColorFilter extends PointFilter {
+public class FourColorFilter extends PointFilter  implements DynFiltering {
 	
 	private int width;
 	private int height;
@@ -112,5 +121,23 @@ public class FourColorFilter extends PointFilter {
 	
 	public String toString() {
 		return "Texture/Four Color Fill...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("ColorNW")))!=null)setColorNW(ImageFilterUtil.toIntValue(o,"ColorNW"));
+		if((o=parameters.removeEL(KeyImpl.init("ColorNE")))!=null)setColorNE(ImageFilterUtil.toIntValue(o,"ColorNE"));
+		if((o=parameters.removeEL(KeyImpl.init("ColorSW")))!=null)setColorSW(ImageFilterUtil.toIntValue(o,"ColorSW"));
+		if((o=parameters.removeEL(KeyImpl.init("ColorSE")))!=null)setColorSE(ImageFilterUtil.toIntValue(o,"ColorSE"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [ColorNW, ColorNE, ColorSW, ColorSE, Dimensions]");
+		}
+
+		return filter(src, dst);
 	}
 }

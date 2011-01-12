@@ -15,13 +15,20 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * An edge-detection filter.
  */
-public class EdgeFilter extends WholeImageFilter {
+public class EdgeFilter extends WholeImageFilter  implements DynFiltering {
 	
 	public final static float R2 = (float)Math.sqrt(2);
 
@@ -141,5 +148,17 @@ public class EdgeFilter extends WholeImageFilter {
 
 	public String toString() {
 		return "Blur/Detect Edges";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("VEdgeMatrix")))!=null)setVEdgeMatrix(ImageFilterUtil.toAFloat(o,"VEdgeMatrix"));
+		if((o=parameters.removeEL(KeyImpl.init("HEdgeMatrix")))!=null)setHEdgeMatrix(ImageFilterUtil.toAFloat(o,"HEdgeMatrix"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [VEdgeMatrix, HEdgeMatrix]");
+		}
+
+		return filter(src, dst);
 	}
 }

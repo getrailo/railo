@@ -15,15 +15,20 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.image.BufferedImage;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.img.math.FFT;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which use FFTs to simulate lens blur on an image.
  */
-public class LensBlurFilter extends AbstractBufferedImageOp {
+public class LensBlurFilter extends AbstractBufferedImageOp  implements DynFiltering {
     
     private float radius = 10;
 	private float bloom = 2;
@@ -328,5 +333,19 @@ public class LensBlurFilter extends AbstractBufferedImageOp {
 
 	public String toString() {
 		return "Blur/Lens Blur...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));
+		if((o=parameters.removeEL(KeyImpl.init("Sides")))!=null)setSides(ImageFilterUtil.toIntValue(o,"Sides"));
+		if((o=parameters.removeEL(KeyImpl.init("Bloom")))!=null)setBloom(ImageFilterUtil.toFloatValue(o,"Bloom"));
+		if((o=parameters.removeEL(KeyImpl.init("BloomThreshold")))!=null)setBloomThreshold(ImageFilterUtil.toFloatValue(o,"BloomThreshold"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Sides, Bloom, BloomThreshold]");
+		}
+
+		return filter(src, dst);
 	}
 }

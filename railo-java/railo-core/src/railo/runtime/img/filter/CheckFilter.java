@@ -15,12 +15,21 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
+import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
 
 
 /**
  * A Filter to draw grids and check patterns.
  */
-public class CheckFilter extends PointFilter {
+public class CheckFilter extends PointFilter  implements DynFiltering {
 
 	private int xScale = 8;
 	private int yScale = 8;
@@ -166,6 +175,26 @@ public class CheckFilter extends PointFilter {
 
 	public String toString() {
 		return "Texture/Checkerboard...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("XScale")))!=null)setXScale(ImageFilterUtil.toIntValue(o,"XScale"));
+		if((o=parameters.removeEL(KeyImpl.init("YScale")))!=null)setYScale(ImageFilterUtil.toIntValue(o,"YScale"));
+		if((o=parameters.removeEL(KeyImpl.init("Fuzziness")))!=null)setFuzziness(ImageFilterUtil.toIntValue(o,"Fuzziness"));
+		if((o=parameters.removeEL(KeyImpl.init("Foreground")))!=null)setForeground(ImageFilterUtil.toIntValue(o,"Foreground"));
+		if((o=parameters.removeEL(KeyImpl.init("Background")))!=null)setBackground(ImageFilterUtil.toIntValue(o,"Background"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Angle, XScale, YScale, Fuzziness, Foreground, Background, Dimensions]");
+		}
+
+		return filter(src, dst);
 	}
 }
 

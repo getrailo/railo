@@ -15,12 +15,20 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
+import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 
 /**
  * A simple blur filter. You should probably use BoxBlurFilter instead.
  */
-public class BlurFilter extends ConvolveFilter {
+public class BlurFilter extends ConvolveFilter  implements DynFiltering {
  	
  	/**
      * A 3x3 convolution kernel for a simple blur.
@@ -37,5 +45,19 @@ public class BlurFilter extends ConvolveFilter {
 
 	public String toString() {
 		return "Blur/Simple Blur";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Kernel")))!=null)setKernel(ImageFilterUtil.toKernel(o,"Kernel"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("UseAlpha")))!=null)setUseAlpha(ImageFilterUtil.toBooleanValue(o,"UseAlpha"));
+		if((o=parameters.removeEL(KeyImpl.init("PremultiplyAlpha")))!=null)setPremultiplyAlpha(ImageFilterUtil.toBooleanValue(o,"PremultiplyAlpha"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Kernel, EdgeAction, UseAlpha, PremultiplyAlpha]");
+		}
+
+		return filter(src, dst);
 	}
 }

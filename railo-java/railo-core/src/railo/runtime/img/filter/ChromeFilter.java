@@ -15,13 +15,19 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which simulates chrome.
  */
-public class ChromeFilter extends LightFilter {
+public class ChromeFilter extends LightFilter  implements DynFiltering {
 	private float amount = 0.5f;
 	private float exposure = 1.0f;
 
@@ -79,6 +85,28 @@ public class ChromeFilter extends LightFilter {
 
 	public String toString() {
 		return "Effects/Chrome...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
+		if((o=parameters.removeEL(KeyImpl.init("Exposure")))!=null)setExposure(ImageFilterUtil.toFloatValue(o,"Exposure"));
+		if((o=parameters.removeEL(KeyImpl.init("ColorSource")))!=null)setColorSource(ImageFilterUtil.toIntValue(o,"ColorSource"));
+		if((o=parameters.removeEL(KeyImpl.init("Material")))!=null)setMaterial(ImageFilterUtil.toLightFilter$Material(o,"Material"));
+		if((o=parameters.removeEL(KeyImpl.init("BumpFunction")))!=null)setBumpFunction(ImageFilterUtil.toFunction2D(o,"BumpFunction"));
+		if((o=parameters.removeEL(KeyImpl.init("BumpHeight")))!=null)setBumpHeight(ImageFilterUtil.toFloatValue(o,"BumpHeight"));
+		if((o=parameters.removeEL(KeyImpl.init("BumpSoftness")))!=null)setBumpSoftness(ImageFilterUtil.toFloatValue(o,"BumpSoftness"));
+		if((o=parameters.removeEL(KeyImpl.init("BumpShape")))!=null)setBumpShape(ImageFilterUtil.toIntValue(o,"BumpShape"));
+		if((o=parameters.removeEL(KeyImpl.init("ViewDistance")))!=null)setViewDistance(ImageFilterUtil.toFloatValue(o,"ViewDistance"));
+		if((o=parameters.removeEL(KeyImpl.init("EnvironmentMap")))!=null)setEnvironmentMap(ImageFilterUtil.toBufferedImage(o,"EnvironmentMap"));
+		if((o=parameters.removeEL(KeyImpl.init("BumpSource")))!=null)setBumpSource(ImageFilterUtil.toIntValue(o,"BumpSource"));
+		if((o=parameters.removeEL(KeyImpl.init("DiffuseColor")))!=null)setDiffuseColor(ImageFilterUtil.toIntValue(o,"DiffuseColor"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, Exposure, ColorSource, Material, BumpFunction, BumpHeight, BumpSoftness, BumpShape, ViewDistance, EnvironmentMap, BumpSource, DiffuseColor]");
+		}
+
+		return filter(src, dst);
 	}
 }
 

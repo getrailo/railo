@@ -15,15 +15,21 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which interpolates betwen two images. You can set the interpolation factor outside the range 0 to 1
  * to extrapolate images.
  */
-public class InterpolateFilter extends AbstractBufferedImageOp {
+public class InterpolateFilter extends AbstractBufferedImageOp  implements DynFiltering {
 	
 	private BufferedImage destination;
 	private float interpolation;
@@ -111,5 +117,16 @@ public class InterpolateFilter extends AbstractBufferedImageOp {
 
 	public String toString() {
 		return "Effects/Interpolate...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toFloatValue(o,"Interpolation"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Interpolation]");
+		}
+
+		return filter(src, dst);
 	}
 }

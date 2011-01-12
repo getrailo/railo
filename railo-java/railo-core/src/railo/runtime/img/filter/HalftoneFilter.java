@@ -15,13 +15,19 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which can be used to produce wipes by transferring the luma of a mask image into the alpha channel of the source.
  */
-public class HalftoneFilter extends AbstractBufferedImageOp {
+public class HalftoneFilter extends AbstractBufferedImageOp  implements DynFiltering {
 	
 	private float density = 0;
 	private float softness = 0;
@@ -125,5 +131,19 @@ public class HalftoneFilter extends AbstractBufferedImageOp {
 
 	public String toString() {
 		return "Stylize/Halftone...";
+	}
+	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Density")))!=null)setDensity(ImageFilterUtil.toFloatValue(o,"Density"));
+		if((o=parameters.removeEL(KeyImpl.init("Softness")))!=null)setSoftness(ImageFilterUtil.toFloatValue(o,"Softness"));
+		if((o=parameters.removeEL(KeyImpl.init("Invert")))!=null)setInvert(ImageFilterUtil.toBooleanValue(o,"Invert"));
+		if((o=parameters.removeEL(KeyImpl.init("Mask")))!=null)setMask(ImageFilterUtil.toBufferedImage(o,"Mask"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Density, Softness, Invert, Mask]");
+		}
+
+		return filter(src, dst);
 	}
 }
