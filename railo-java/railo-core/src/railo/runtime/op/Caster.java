@@ -2319,6 +2319,9 @@ public final class Caster {
     	return toStruct(o,true);
     }
     
+    public static Struct toStruct(Object o,Struct defaultValue) {
+    	return toStruct(o, defaultValue, true);
+    }
     
     public static Struct toStruct(Object o,boolean caseSensitive) throws PageException {
         if(o instanceof Struct) return (Struct)o;
