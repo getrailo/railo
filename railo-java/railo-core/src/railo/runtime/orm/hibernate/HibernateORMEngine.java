@@ -142,6 +142,7 @@ public class HibernateORMEngine implements ORMEngine {
 	
 	public boolean reload(PageContext pc) throws PageException {
 		Object h = hash((ApplicationContextImpl)pc.getApplicationContext());
+		
 		if(this.hash.equals(h))return false;
 		getSessionFactory(pc,true);
 		return true;
@@ -185,13 +186,6 @@ public class HibernateORMEngine implements ORMEngine {
 				Iterator<ComponentPro> it = arr.iterator();
 				while(it.hasNext()){
 					createMapping(pc,it.next(),dc,ormConf);
-					/*try {
-						createMapping(pc,it.next(),dc,ormConf);
-					}
-					catch(Throwable t){
-						ORMUtil.printError(t, this);
-						
-					}*/
 				}
 			}
 			finally {

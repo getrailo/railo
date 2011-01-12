@@ -279,13 +279,37 @@ public class ORMConfiguration {
 
 	public String hash() {
 		
-		String data=autogenmap+catalog+isDefaultCfcLocation+cfcLocations+dbCreate+dialect+eventHandling+eventHandler+flushAtRequestEnd+logSQL+saveMapping+schema+secondaryCacheEnabled+sqlScript+useDBForMapping+cacheConfig+cacheProvider+ormConfig;
+		String data=autogenmap+":"+catalog+":"+isDefaultCfcLocation
+		+":"+dbCreate+":"+dialect+":"+eventHandling+":"+eventHandler+":"+flushAtRequestEnd+":"+logSQL+":"+saveMapping+":"+schema+":"+secondaryCacheEnabled+":"+
+		useDBForMapping+":"+cacheProvider
+		
+		+":"+toStr(cfcLocations)+":"+toStr(sqlScript)+":"+toStr(cacheConfig)+":"+toStr(ormConfig)
+		;
+		
 		try {
 			return MD5.getDigestAsString(data);
 		} catch (IOException e) {
 			return null;
 		}
 	}
+
+
+
+
+
+	private String toStr(Resource res) {
+		if(res==null) return "";
+		return res.getAbsolutePath();
+	}
+	private String toStr(Resource[] reses) {
+		if(reses==null) return "";
+		StringBuilder sb=new StringBuilder();
+		for(int i=0;i<reses.length;i++){
+			sb.append(toStr(reses[i]));
+		}
+		return sb.toString();
+	}
+
 
 
 
