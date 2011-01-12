@@ -4956,6 +4956,15 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>getTickCount</name>
 		<class>railo.runtime.functions.other.GetTickCount</class>
 		<description>Returns the number of milliseconds since the start of the application server</description>
+		<argument>
+			<name>unit</name>
+			<type>string</type>
+			<required>No</required>
+			<description>base unit for the function, valid values are:
+- nano: nano seconds
+- milli (default): milli seconds
+- second: seconds</description>
+    	</argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -5302,6 +5311,36 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
     </argument>
 		<return>
 			<type>void</type>
+		</return>
+	</function>
+	<!-- ImageColorMap -->
+	<function>
+		<name>ImageColorMap</name>
+		<class>railo.runtime.functions.image.ImageColorMap</class>
+		<description>These are passed to the function ImageFilters (see ImageFilter documentation) which convert gray values to colors.</description>
+		<argument>
+			<name>type</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>type of the color map, possible values are:
+		- spectrum: A colormap with the colors of the spectrum
+		- linear: A colormap which interpolates linearly between two colors
+		- grayscale: A grayscale colormap. Black is 0, white is 1</description>
+    </argument>
+		<argument>
+			<name>lineColor1</name>
+			<type>string</type>
+			<required>no</required>
+		<description>used only for type "linear", the color corresponding to value 0 in the colormap.</description>
+    </argument>
+		<argument>
+			<name>lineColor2</name>
+			<type>string</type>
+			<required>no</required>
+		<description>used only for type "linear", the color corresponding to value 1 in the colormap.</description>
+    </argument>
+		<return>
+			<type>any</type>
 		</return>
 	</function>
 	<!-- ImageCopy -->
@@ -5973,6 +6012,37 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<type>void</type>
 		</return>
 	</function>
+	
+	
+	<!-- ImageFilter -->
+	<function>
+		<name>ImageFilter</name>
+		<class>railo.runtime.functions.image.ImageFilter</class>
+		<description></description>
+		<argument>
+			<name>name</name>
+			<type>any</type>
+			<required>Yes</required>
+			<description>The image on which this operation is performed.</description>
+    	</argument>
+		<argument>
+			<name>filtername</name>
+			<type>string</type>
+			<required>yes</required>
+			<description></description>
+    	</argument>
+		<argument>
+			<name>parameters</name>
+			<type>struct</type>
+			<required>no</required>
+			<description></description>
+    	</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	
 	<!-- ImageFlip -->
 	<function>
 		<name>ImageFlip</name>
