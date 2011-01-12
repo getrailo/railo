@@ -1,10 +1,7 @@
 package railo.runtime.functions.file;
 
-import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.tag.FileTag;
 import railo.runtime.type.Struct;

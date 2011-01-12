@@ -11,7 +11,6 @@ import java.util.List;
 import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.type.http.HTTPResource;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SystemOut;
@@ -21,7 +20,6 @@ import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
-import railo.runtime.exp.PageException;
 
 public class JarLoader {
 
