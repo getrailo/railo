@@ -15,9 +15,9 @@ import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.scope.Undefined;
 
 public final class AppListenerUtil {
 	
