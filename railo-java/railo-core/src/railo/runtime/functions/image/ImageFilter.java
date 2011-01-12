@@ -52,7 +52,7 @@ public class ImageFilter {
 		filters.put("chrome",ChromeFilter.class);
 		filters.put("circle",CircleFilter.class);
 		filters.put("composite",CompositeFilter.class);
-		filters.put("compound",CompoundFilter.class);
+		//filters.put("compound",CompoundFilter.class);
 		filters.put("contour",ContourFilter.class);
 		filters.put("contrast",ContrastFilter.class);
 		filters.put("convolve",ConvolveFilter.class);
@@ -96,7 +96,7 @@ public class ImageFilter {
 		filters.put("interpolate",InterpolateFilter.class);
 		filters.put("invertalpha",InvertAlphaFilter.class);
 		filters.put("invert",InvertFilter.class);
-		filters.put("iterated",IteratedFilter.class);
+		//filters.put("iterated",IteratedFilter.class);
 		filters.put("javalnf",JavaLnFFilter.class);
 		filters.put("kaleidoscope",KaleidoscopeFilter.class);
 		filters.put("key",KeyFilter.class);
@@ -115,7 +115,7 @@ public class ImageFilter {
 		filters.put("minimum",MinimumFilter.class);
 		filters.put("mirror",MirrorFilter.class);
 		filters.put("motionblur",MotionBlurFilter.class);
-		filters.put("mutatable",MutatableFilter.class);
+		//filters.put("mutatable",MutatableFilter.class);
 		filters.put("noise",NoiseFilter.class);
 		filters.put("offset",OffsetFilter.class);
 		filters.put("oil",OilFilter.class);
@@ -124,7 +124,6 @@ public class ImageFilter {
 		filters.put("perspective",PerspectiveFilter.class);
 		filters.put("pinch",PinchFilter.class);
 		filters.put("plasma",PlasmaFilter.class);
-		filters.put("point",PointFilter.class);
 		filters.put("pointillize",PointillizeFilter.class);
 		filters.put("polar",PolarFilter.class);
 		filters.put("posterize",PosterizeFilter.class);
@@ -149,7 +148,7 @@ public class ImageFilter {
 		filters.put("shear",ShearFilter.class);
 		filters.put("shine",ShineFilter.class);
 		filters.put("skeleton",SkeletonFilter.class);
-		filters.put("sky",SkyFilter.class);
+		//filters.put("sky",SkyFilter.class);
 		filters.put("smartblur",SmartBlurFilter.class);
 		filters.put("smear",SmearFilter.class);
 		filters.put("solarize",SolarizeFilter.class);
@@ -160,9 +159,9 @@ public class ImageFilter {
 		filters.put("texture",TextureFilter.class);
 		filters.put("threshold",ThresholdFilter.class);
 		filters.put("tileimage",TileImageFilter.class);
-		filters.put("transfer",TransferFilter.class);
-		filters.put("transform",TransformFilter.class);
-		filters.put("transition",TransitionFilter.class);
+		//filters.put("transfer",TransferFilter.class);
+		//filters.put("transform",TransformFilter.class);
+		//filters.put("transition",TransitionFilter.class);
 		filters.put("twirl",TwirlFilter.class);
 		filters.put("unpremultiply",UnpremultiplyFilter.class);
 		filters.put("unsharp",UnsharpFilter.class);
