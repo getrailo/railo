@@ -162,7 +162,7 @@ public class ShineFilter extends AbstractBufferedImageOp  implements DynFilterin
 		if((o=parameters.removeEL(KeyImpl.init("Distance")))!=null)setDistance(ImageFilterUtil.toFloatValue(o,"Distance"));
 		if((o=parameters.removeEL(KeyImpl.init("ShadowOnly")))!=null)setShadowOnly(ImageFilterUtil.toBooleanValue(o,"ShadowOnly"));
 		if((o=parameters.removeEL(KeyImpl.init("Bevel")))!=null)setBevel(ImageFilterUtil.toFloatValue(o,"Bevel"));
-		if((o=parameters.removeEL(KeyImpl.init("ShineColor")))!=null)setShineColor(ImageFilterUtil.toIntValue(o,"ShineColor"));
+		if((o=parameters.removeEL(KeyImpl.init("ShineColor")))!=null)setShineColor(ImageFilterUtil.toColorRGB(o,"ShineColor"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

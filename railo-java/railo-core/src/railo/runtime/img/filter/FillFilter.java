@@ -72,7 +72,7 @@ public class FillFilter extends PointFilter  implements DynFiltering {
 	}
 	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
 		Object o;
-		if((o=parameters.removeEL(KeyImpl.init("FillColor")))!=null)setFillColor(ImageFilterUtil.toIntValue(o,"FillColor"));
+		if((o=parameters.removeEL(KeyImpl.init("FillColor")))!=null)setFillColor(ImageFilterUtil.toColorRGB(o,"FillColor"));
 		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
 			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
 			setDimensions(dim[0],dim[1]);

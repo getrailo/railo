@@ -373,7 +373,7 @@ public class CausticsFilter extends WholeImageFilter  implements DynFiltering {
 		if((o=parameters.removeEL(KeyImpl.init("Brightness")))!=null)setBrightness(ImageFilterUtil.toIntValue(o,"Brightness"));
 		if((o=parameters.removeEL(KeyImpl.init("Turbulence")))!=null)setTurbulence(ImageFilterUtil.toFloatValue(o,"Turbulence"));
 		if((o=parameters.removeEL(KeyImpl.init("Dispersion")))!=null)setDispersion(ImageFilterUtil.toFloatValue(o,"Dispersion"));
-		if((o=parameters.removeEL(KeyImpl.init("BgColor")))!=null)setBgColor(ImageFilterUtil.toIntValue(o,"BgColor"));
+		if((o=parameters.removeEL(KeyImpl.init("BgColor")))!=null)setBgColor(ImageFilterUtil.toColorRGB(o,"BgColor"));
 		if((o=parameters.removeEL(KeyImpl.init("Time")))!=null)setTime(ImageFilterUtil.toFloatValue(o,"Time"));
 		if((o=parameters.removeEL(KeyImpl.init("Scale")))!=null)setScale(ImageFilterUtil.toFloatValue(o,"Scale"));
 		if((o=parameters.removeEL(KeyImpl.init("Samples")))!=null)setSamples(ImageFilterUtil.toIntValue(o,"Samples"));

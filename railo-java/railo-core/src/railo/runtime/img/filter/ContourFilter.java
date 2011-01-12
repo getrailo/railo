@@ -153,7 +153,7 @@ public class ContourFilter extends WholeImageFilter  implements DynFiltering {
 	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Levels")))!=null)setLevels(ImageFilterUtil.toFloatValue(o,"Levels"));
-		if((o=parameters.removeEL(KeyImpl.init("ContourColor")))!=null)setContourColor(ImageFilterUtil.toIntValue(o,"ContourColor"));
+		if((o=parameters.removeEL(KeyImpl.init("ContourColor")))!=null)setContourColor(ImageFilterUtil.toColorRGB(o,"ContourColor"));
 		if((o=parameters.removeEL(KeyImpl.init("Offset")))!=null)setOffset(ImageFilterUtil.toFloatValue(o,"Offset"));
 		if((o=parameters.removeEL(KeyImpl.init("Scale")))!=null)setScale(ImageFilterUtil.toFloatValue(o,"Scale"));
 

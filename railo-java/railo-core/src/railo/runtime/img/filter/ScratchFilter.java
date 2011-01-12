@@ -171,7 +171,7 @@ if ( false ) {
 		if((o=parameters.removeEL(KeyImpl.init("AngleVariation")))!=null)setAngleVariation(ImageFilterUtil.toFloatValue(o,"AngleVariation"));
 		if((o=parameters.removeEL(KeyImpl.init("Length")))!=null)setLength(ImageFilterUtil.toFloatValue(o,"Length"));
 		if((o=parameters.removeEL(KeyImpl.init("Seed")))!=null)setSeed(ImageFilterUtil.toIntValue(o,"Seed"));
-		if((o=parameters.removeEL(KeyImpl.init("Color")))!=null)setColor(ImageFilterUtil.toIntValue(o,"Color"));
+		if((o=parameters.removeEL(KeyImpl.init("Color")))!=null)setColor(ImageFilterUtil.toColorRGB(o,"Color"));
 		if((o=parameters.removeEL(KeyImpl.init("Width")))!=null)setWidth(ImageFilterUtil.toFloatValue(o,"Width"));
 
 		// check for arguments not supported

@@ -276,7 +276,7 @@ public class ShadowFilter extends AbstractBufferedImageOp  implements DynFilteri
 		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
 		if((o=parameters.removeEL(KeyImpl.init("Distance")))!=null)setDistance(ImageFilterUtil.toFloatValue(o,"Distance"));
 		if((o=parameters.removeEL(KeyImpl.init("Opacity")))!=null)setOpacity(ImageFilterUtil.toFloatValue(o,"Opacity"));
-		if((o=parameters.removeEL(KeyImpl.init("ShadowColor")))!=null)setShadowColor(ImageFilterUtil.toIntValue(o,"ShadowColor"));
+		if((o=parameters.removeEL(KeyImpl.init("ShadowColor")))!=null)setShadowColor(ImageFilterUtil.toColorRGB(o,"ShadowColor"));
 		if((o=parameters.removeEL(KeyImpl.init("AddMargins")))!=null)setAddMargins(ImageFilterUtil.toBooleanValue(o,"AddMargins"));
 		if((o=parameters.removeEL(KeyImpl.init("ShadowOnly")))!=null)setShadowOnly(ImageFilterUtil.toBooleanValue(o,"ShadowOnly"));
 

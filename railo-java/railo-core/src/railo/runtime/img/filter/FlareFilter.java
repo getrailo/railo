@@ -175,7 +175,7 @@ public class FlareFilter extends PointFilter  implements DynFiltering {
 		if((o=parameters.removeEL(KeyImpl.init("BaseAmount")))!=null)setBaseAmount(ImageFilterUtil.toFloatValue(o,"BaseAmount"));
 		if((o=parameters.removeEL(KeyImpl.init("RingAmount")))!=null)setRingAmount(ImageFilterUtil.toFloatValue(o,"RingAmount"));
 		if((o=parameters.removeEL(KeyImpl.init("RayAmount")))!=null)setRayAmount(ImageFilterUtil.toFloatValue(o,"RayAmount"));
-		if((o=parameters.removeEL(KeyImpl.init("Color")))!=null)setColor(ImageFilterUtil.toIntValue(o,"Color"));
+		if((o=parameters.removeEL(KeyImpl.init("Color")))!=null)setColor(ImageFilterUtil.toColorRGB(o,"Color"));
 		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
 			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
 			setDimensions(dim[0],dim[1]);

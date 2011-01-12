@@ -766,7 +766,7 @@ if ( bumpShape != 0 ) {
 	}
 	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
 		Object o;
-		if((o=parameters.removeEL(KeyImpl.init("ColorSource")))!=null)setColorSource(ImageFilterUtil.toIntValue(o,"ColorSource"));
+		if((o=parameters.removeEL(KeyImpl.init("ColorSource")))!=null)setColorSource(ImageFilterUtil.toColorRGB(o,"ColorSource"));
 		if((o=parameters.removeEL(KeyImpl.init("Material")))!=null)setMaterial(ImageFilterUtil.toLightFilter$Material(o,"Material"));
 		if((o=parameters.removeEL(KeyImpl.init("BumpFunction")))!=null)setBumpFunction(ImageFilterUtil.toFunction2D(o,"BumpFunction"));
 		if((o=parameters.removeEL(KeyImpl.init("BumpHeight")))!=null)setBumpHeight(ImageFilterUtil.toFloatValue(o,"BumpHeight"));
@@ -775,7 +775,7 @@ if ( bumpShape != 0 ) {
 		if((o=parameters.removeEL(KeyImpl.init("ViewDistance")))!=null)setViewDistance(ImageFilterUtil.toFloatValue(o,"ViewDistance"));
 		if((o=parameters.removeEL(KeyImpl.init("EnvironmentMap")))!=null)setEnvironmentMap(ImageFilterUtil.toBufferedImage(o,"EnvironmentMap"));
 		if((o=parameters.removeEL(KeyImpl.init("BumpSource")))!=null)setBumpSource(ImageFilterUtil.toIntValue(o,"BumpSource"));
-		if((o=parameters.removeEL(KeyImpl.init("DiffuseColor")))!=null)setDiffuseColor(ImageFilterUtil.toIntValue(o,"DiffuseColor"));
+		if((o=parameters.removeEL(KeyImpl.init("DiffuseColor")))!=null)setDiffuseColor(ImageFilterUtil.toColorRGB(o,"DiffuseColor"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

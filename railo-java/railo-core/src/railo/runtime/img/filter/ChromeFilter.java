@@ -90,7 +90,7 @@ public class ChromeFilter extends LightFilter  implements DynFiltering {
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
 		if((o=parameters.removeEL(KeyImpl.init("Exposure")))!=null)setExposure(ImageFilterUtil.toFloatValue(o,"Exposure"));
-		if((o=parameters.removeEL(KeyImpl.init("ColorSource")))!=null)setColorSource(ImageFilterUtil.toIntValue(o,"ColorSource"));
+		if((o=parameters.removeEL(KeyImpl.init("ColorSource")))!=null)setColorSource(ImageFilterUtil.toColorRGB(o,"ColorSource"));
 		if((o=parameters.removeEL(KeyImpl.init("Material")))!=null)setMaterial(ImageFilterUtil.toLightFilter$Material(o,"Material"));
 		if((o=parameters.removeEL(KeyImpl.init("BumpFunction")))!=null)setBumpFunction(ImageFilterUtil.toFunction2D(o,"BumpFunction"));
 		if((o=parameters.removeEL(KeyImpl.init("BumpHeight")))!=null)setBumpHeight(ImageFilterUtil.toFloatValue(o,"BumpHeight"));
@@ -99,7 +99,7 @@ public class ChromeFilter extends LightFilter  implements DynFiltering {
 		if((o=parameters.removeEL(KeyImpl.init("ViewDistance")))!=null)setViewDistance(ImageFilterUtil.toFloatValue(o,"ViewDistance"));
 		if((o=parameters.removeEL(KeyImpl.init("EnvironmentMap")))!=null)setEnvironmentMap(ImageFilterUtil.toBufferedImage(o,"EnvironmentMap"));
 		if((o=parameters.removeEL(KeyImpl.init("BumpSource")))!=null)setBumpSource(ImageFilterUtil.toIntValue(o,"BumpSource"));
-		if((o=parameters.removeEL(KeyImpl.init("DiffuseColor")))!=null)setDiffuseColor(ImageFilterUtil.toIntValue(o,"DiffuseColor"));
+		if((o=parameters.removeEL(KeyImpl.init("DiffuseColor")))!=null)setDiffuseColor(ImageFilterUtil.toColorRGB(o,"DiffuseColor"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

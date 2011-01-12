@@ -478,7 +478,7 @@ if (y == 100)System.out.println(fg+" "+gf+gradient);
 		if((o=parameters.removeEL(KeyImpl.init("Haziness")))!=null)setHaziness(ImageFilterUtil.toFloatValue(o,"Haziness"));
 		if((o=parameters.removeEL(KeyImpl.init("SunElevation")))!=null)setSunElevation(ImageFilterUtil.toFloatValue(o,"SunElevation"));
 		if((o=parameters.removeEL(KeyImpl.init("SunAzimuth")))!=null)setSunAzimuth(ImageFilterUtil.toFloatValue(o,"SunAzimuth"));
-		if((o=parameters.removeEL(KeyImpl.init("SunColor")))!=null)setSunColor(ImageFilterUtil.toIntValue(o,"SunColor"));
+		if((o=parameters.removeEL(KeyImpl.init("SunColor")))!=null)setSunColor(ImageFilterUtil.toColorRGB(o,"SunColor"));
 		if((o=parameters.removeEL(KeyImpl.init("CameraElevation")))!=null)setCameraElevation(ImageFilterUtil.toFloatValue(o,"CameraElevation"));
 		if((o=parameters.removeEL(KeyImpl.init("CameraAzimuth")))!=null)setCameraAzimuth(ImageFilterUtil.toFloatValue(o,"CameraAzimuth"));
 		if((o=parameters.removeEL(KeyImpl.init("WindSpeed")))!=null)setWindSpeed(ImageFilterUtil.toFloatValue(o,"WindSpeed"));

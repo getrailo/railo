@@ -106,7 +106,7 @@ public class PointillizeFilter extends CellularFilter  implements DynFiltering {
 		if((o=parameters.removeEL(KeyImpl.init("Fuzziness")))!=null)setFuzziness(ImageFilterUtil.toFloatValue(o,"Fuzziness"));
 		if((o=parameters.removeEL(KeyImpl.init("EdgeThickness")))!=null)setEdgeThickness(ImageFilterUtil.toFloatValue(o,"EdgeThickness"));
 		if((o=parameters.removeEL(KeyImpl.init("FadeEdges")))!=null)setFadeEdges(ImageFilterUtil.toBooleanValue(o,"FadeEdges"));
-		if((o=parameters.removeEL(KeyImpl.init("EdgeColor")))!=null)setEdgeColor(ImageFilterUtil.toIntValue(o,"EdgeColor"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeColor")))!=null)setEdgeColor(ImageFilterUtil.toColorRGB(o,"EdgeColor"));
 		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));
 		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
 		if((o=parameters.removeEL(KeyImpl.init("Turbulence")))!=null)setTurbulence(ImageFilterUtil.toFloatValue(o,"Turbulence"));

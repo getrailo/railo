@@ -76,6 +76,11 @@ public class ImageFilterUtil {
 		return ColorCaster.toColor(Caster.toString(value));
 		
 	}
+	
+	public static int toColorRGB(Object value, String argName) throws PageException {
+		return toColor(value, argName).getRGB();
+		
+	}
 
 	public static int[] toDimensions(Object value, String argName) throws FunctionException {
 		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "type int[] not supported yet!");

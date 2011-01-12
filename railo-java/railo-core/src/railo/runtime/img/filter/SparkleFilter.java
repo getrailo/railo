@@ -147,7 +147,7 @@ public class SparkleFilter extends PointFilter  implements DynFiltering {
 		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toIntValue(o,"Amount"));
 		if((o=parameters.removeEL(KeyImpl.init("Randomness")))!=null)setRandomness(ImageFilterUtil.toIntValue(o,"Randomness"));
 		if((o=parameters.removeEL(KeyImpl.init("Rays")))!=null)setRays(ImageFilterUtil.toIntValue(o,"Rays"));
-		if((o=parameters.removeEL(KeyImpl.init("Color")))!=null)setColor(ImageFilterUtil.toIntValue(o,"Color"));
+		if((o=parameters.removeEL(KeyImpl.init("Color")))!=null)setColor(ImageFilterUtil.toColorRGB(o,"Color"));
 		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
 			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
 			setDimensions(dim[0],dim[1]);
