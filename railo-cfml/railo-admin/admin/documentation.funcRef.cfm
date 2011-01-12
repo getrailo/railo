@@ -47,7 +47,8 @@ function detail(field){
 #stText.doc.depFunction#</b><br />
 </cfif>
 <!--- Desc --->
-#data.description#
+#replace(replace(data.description,'	','&nbsp;&nbsp;&nbsp;','all'),'
+','<br />','all')#
 
 <style>
 .error{color:red;}
