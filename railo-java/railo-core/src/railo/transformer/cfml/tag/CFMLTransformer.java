@@ -14,6 +14,8 @@ import railo.runtime.Info;
 import railo.runtime.SourceFile;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
@@ -810,8 +812,8 @@ public final class CFMLTransformer {
             
 			// set default values
 			if(tag.hasDefaultValue()) {
-			    Map hash=tag.getAttributes();
-				Iterator it=hash.keySet().iterator();
+			    Map<String, TagLibTagAttr> hash = tag.getAttributes();
+				Iterator<String> it = hash.keySet().iterator();
 			
 				while(it.hasNext())	{
 					TagLibTagAttr att=(TagLibTagAttr) hash.get(it.next());
@@ -838,8 +840,8 @@ public final class CFMLTransformer {
 			
 			// not defined attributes
 			if(type==TagLibTag.ATTRIBUTE_TYPE_FIXED || type==TagLibTag.ATTRIBUTE_TYPE_MIXED)	{
-				Map hash=tag.getAttributes();
-				Iterator it=hash.keySet().iterator();
+				Map<String, TagLibTagAttr> hash = tag.getAttributes();
+				Iterator<String> it = hash.keySet().iterator();
 				
 				while(it.hasNext())	{
 					TagLibTagAttr att=(TagLibTagAttr) hash.get(it.next());
@@ -1075,9 +1077,19 @@ public final class CFMLTransformer {
 		setAddional(te,tag);
 		return te;
 	}
+	
+	public static TemplateException setAddional(TemplateException te, TagLibTag tlt) {
+		setAddional((PageExceptionImpl)te, tlt);
+		return te;
+	}
+	
+	public static ApplicationException setAddional(ApplicationException ae, TagLibTag tlt) {
+		setAddional((PageExceptionImpl)ae, tlt);
+		return ae;
+	}
 
 
-	private static void setAddional(TemplateException te, TagLibTag tlt) {
+	private static void setAddional(PageExceptionImpl pe, TagLibTag tlt) {
 		Map<String, TagLibTagAttr> attrs = tlt.getAttributes();
 		Iterator<Entry<String, TagLibTagAttr>> it = attrs.entrySet().iterator();
 		Entry<String, TagLibTagAttr> entry;
@@ -1127,7 +1139,7 @@ public final class CFMLTransformer {
 			}
 		}
 		
-		te.setAdditional("Pattern", pattern);
+		pe.setAdditional("Pattern", pattern);
 		
 		// Documentation
 		StringBuilder doc=new StringBuilder(tlt.getDescription());
@@ -1154,8 +1166,9 @@ public final class CFMLTransformer {
 		if(req.length()>0)doc.append("\nRequired:\n").append(req);
 		if(opt.length()>0)doc.append("\nOptional:\n").append(opt);
 		
-		te.setAdditional("Documentation", doc);
+		pe.setAdditional("Documentation", doc);
 	}
+	
 }
 
 
