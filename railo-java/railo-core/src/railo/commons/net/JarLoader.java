@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceClassLoader;
@@ -142,7 +141,6 @@ public class JarLoader {
 	private static boolean changed(ConfigWeb config,String jarName) {
     	Resource res = _toResource(config, jarName);
     	if(res==null) {
-    		print.o("missing:"+jarName);
     		return true;
     	}
     	
@@ -150,8 +148,7 @@ public class JarLoader {
 		try {
 			URL dataUrl = toURL(engine,jarName);
 			boolean changed=res.length()!=HTTPUtil.length(dataUrl);
-			if(changed)print.o("diff:"+jarName);
-    		
+			
 			return changed;
 		} catch (MalformedURLException e) {
 			return false;
