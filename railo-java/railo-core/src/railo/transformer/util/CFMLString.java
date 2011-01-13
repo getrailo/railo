@@ -240,14 +240,31 @@ public final class CFMLString {
 		return lcText[pos]>=left && lcText[pos]<=right;
 	}
 
+	
+	public boolean isCurrentVariableCharacter() {
+        if(!isValidIndex()) return false;
+        return isCurrentLetter() || isCurrentNumber() || isCurrent('$') || isCurrent('_');
+    }
+	
     /**
-     * Gibt zurück ob das aktuelle Zeichen ein Buchstabe ist.
-     * @return Gibt zurück ob das aktuelle Zeichen ein Buchstabe ist.
+     * returns if the current character is a letter (a-z,A-Z)
+     * @return is a letter
      */
     public boolean isCurrentLetter() {
         if(!isValidIndex()) return false;
         return lcText[pos]>='a' && lcText[pos]<='z';
     }
+
+    /**
+     * returns if the current character is a number (0-9)
+     * @return is a letter
+     */
+    public boolean isCurrentNumber() {
+        if(!isValidIndex()) return false;
+        return lcText[pos]>='0' && lcText[pos]<='9';
+    }
+    
+    
     /**
      * Gibt zurück ob das aktuelle Zeichen ein Special Buchstabe ist (_,€,$,£).
      * @return Gibt zurück ob das aktuelle Zeichen ein Buchstabe ist.
@@ -324,7 +341,11 @@ public final class CFMLString {
 		return is;
 	}
 	
-
+	/**
+	 * @param str string to check against current position
+	 * @param startWithSpace if true there must be whitespace at the current position
+	 * @return does the criteria match?
+	 */
 	public boolean forwardIfCurrent(String str, boolean startWithSpace) {
 		if(!startWithSpace) return forwardIfCurrent(str);
 		
@@ -337,6 +358,30 @@ public final class CFMLString {
 		}
 		return true;
 	}
+	
+	/**
+	 * @param str string to check against current position
+	 * @param startWithSpace if true there must be whitespace at the current position
+	 * @param followedByNoVariableCharacter the character following the string must be a none variable character (!a-z,A-Z,0-9,_$) (not eaten)
+	 * @return does the criteria match?
+	 */
+	public boolean forwardIfCurrent(String str, boolean startWithSpace, boolean followedByNoVariableCharacter) {
+		
+		int start=pos;
+		if(startWithSpace && !removeSpace())return false;
+		
+		if(!forwardIfCurrent(str)){
+			pos=start;
+			return false;
+		}
+		if(followedByNoVariableCharacter && isCurrentVariableCharacter()) {
+			pos=start;
+			return false;
+		}
+		return true;
+	}
+	
+	
 	
 	
 
@@ -524,7 +569,7 @@ public final class CFMLString {
 		if(!rtn)pos=start;
 		return rtn;	
 	}
-	
+
 	public boolean forwardIfCurrent(String first,String second,String third, boolean startWithSpace) {
 		if(!startWithSpace) return forwardIfCurrent(first, second, third);
 		int start=pos;
@@ -532,6 +577,39 @@ public final class CFMLString {
 		if(!removeSpace())return false;
 		
 		if(!forwardIfCurrent(first,second,third)){
+			pos=start;
+			return false;
+		}
+		return true;	
+	}
+	
+	public boolean forwardIfCurrent(String first,String second,String third, boolean startWithSpace, boolean followedByNoVariableCharacter) {
+		int start=pos;
+		
+		if(startWithSpace && !removeSpace())return false;
+		
+		if(!forwardIfCurrent(first,second,third)){
+			pos=start;
+			return false;
+		}
+		if(followedByNoVariableCharacter && isCurrentVariableCharacter()) {
+			pos=start;
+			return false;
+		}
+		return true;	
+	}
+	
+	
+	public boolean forwardIfCurrent(String first,String second, boolean startWithSpace, boolean followedByNoVariableCharacter) {
+		int start=pos;
+		
+		if(startWithSpace && !removeSpace())return false;
+		
+		if(!forwardIfCurrent(first,second)){
+			pos=start;
+			return false;
+		}
+		if(followedByNoVariableCharacter && isCurrentVariableCharacter()) {
 			pos=start;
 			return false;
 		}
