@@ -1513,7 +1513,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 					if(max!=-1 && max <= count)
 						throw new TemplateException(
 							data.cfml,
-							"too many Attributes in function [" + flf.getName() + "]");
+							"too many Attributes in function [" + name + "]");
 				}
 			// Fix
 				else {
@@ -1521,7 +1521,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 						
 						TemplateException te = new TemplateException(
 							data.cfml,
-							"too many Attributes in function call [" + flf.getName() + "]");
+							"too many Attributes in function call [" + name + "]");
 						addFunctionDoc(te, flf);
 						throw te;
 					}
@@ -1551,14 +1551,14 @@ public class CFMLExprTransformer implements ExprTransformer {
 			throw new TemplateException(
 				data.cfml,
 				"Invalid Syntax Closing [)] for function ["
-					+ flf.getName()
+					+ name
 					+ "] not found");
 
 		// check min attributes
 		if (checkLibrary && flf.getArgMin() > count){
 			TemplateException te = new TemplateException(
 				data.cfml,
-				"too few attributes in function [" + flf.getName() + "]");
+				"too few attributes in function [" + name + "]");
 			if(flf.getArgType()==FunctionLibFunction.ARG_FIX) addFunctionDoc(te, flf);
 			throw te;
 		}
