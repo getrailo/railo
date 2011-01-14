@@ -108,11 +108,6 @@ public class ShatterFilter extends AbstractBufferedImageOp  implements DynFilter
 	public float getCentreY() {
 		return centreY;
 	}
-	
-	public void setCentre( Point2D centre ) {
-		this.centreX = (float)centre.getX();
-		this.centreY = (float)centre.getY();
-	}
 
 	public Point2D getCentre() {
 		return new Point2D.Float( centreX, centreY );
@@ -245,7 +240,7 @@ y = tile.y + transition * tile.vy;
 		if((o=parameters.removeEL(KeyImpl.init("Iterations")))!=null)setIterations(ImageFilterUtil.toIntValue(o,"Iterations"));
 		if((o=parameters.removeEL(KeyImpl.init("CentreX")))!=null)setCentreX(ImageFilterUtil.toFloatValue(o,"CentreX"));
 		if((o=parameters.removeEL(KeyImpl.init("CentreY")))!=null)setCentreY(ImageFilterUtil.toFloatValue(o,"CentreY"));
-		if((o=parameters.removeEL(KeyImpl.init("Centre")))!=null)setCentre(ImageFilterUtil.toPoint2D(o,"Centre"));
+		//if((o=parameters.removeEL(KeyImpl.init("Centre")))!=null)setCentre(ImageFilterUtil.toPoint2D(o,"Centre"));
 		if((o=parameters.removeEL(KeyImpl.init("Transition")))!=null)setTransition(ImageFilterUtil.toFloatValue(o,"Transition"));
 		if((o=parameters.removeEL(KeyImpl.init("Distance")))!=null)setDistance(ImageFilterUtil.toFloatValue(o,"Distance"));
 		if((o=parameters.removeEL(KeyImpl.init("Rotation")))!=null)setRotation(ImageFilterUtil.toFloatValue(o,"Rotation"));

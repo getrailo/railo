@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.geom.AffineTransform;
@@ -135,12 +136,11 @@ public class BorderFilter extends AbstractBufferedImageOp  implements DynFilteri
 	}
 
 	/**
-	 * Set the border paint.
-	 * @param borderPaint the paint with which to fill the border
-     * @see #getBorderPaint
+	 * Set the border color.
+	 * @param borderColor the color with which to fill the border
 	 */
-	public void setBorderPaint( Paint borderPaint ) {
-		this.borderPaint = borderPaint;
+	public void setBorderColor( Color borderColor ) {
+		this.borderPaint = borderColor;
 	}
 
 	/**
@@ -184,7 +184,7 @@ public class BorderFilter extends AbstractBufferedImageOp  implements DynFilteri
 		if((o=parameters.removeEL(KeyImpl.init("RightBorder")))!=null)setRightBorder(ImageFilterUtil.toIntValue(o,"RightBorder"));
 		if((o=parameters.removeEL(KeyImpl.init("TopBorder")))!=null)setTopBorder(ImageFilterUtil.toIntValue(o,"TopBorder"));
 		if((o=parameters.removeEL(KeyImpl.init("BottomBorder")))!=null)setBottomBorder(ImageFilterUtil.toIntValue(o,"BottomBorder"));
-		if((o=parameters.removeEL(KeyImpl.init("BorderPaint")))!=null)setBorderPaint(ImageFilterUtil.toColor(o,"BorderPaint"));
+		if((o=parameters.removeEL(KeyImpl.init("BorderColor")))!=null)setBorderColor(ImageFilterUtil.toColor(o,"BorderColor"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

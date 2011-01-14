@@ -11,7 +11,7 @@ import railo.runtime.img.filter.GrayscaleColormap;
 import railo.runtime.img.filter.LinearColormap;
 import railo.runtime.img.filter.SpectrumColormap;
 
-public class ImageColorMap {
+public class ImageFilterColorMap {
 	public static Object call(PageContext pc, String type) throws PageException {
 		return call(pc, type, null, null);
 	}
@@ -35,10 +35,10 @@ public class ImageColorMap {
 				return new LinearColormap(color1.getRGB(),color2.getRGB());
 			}
 			else 
-				throw new FunctionException(pc, "ImageColorMap", 2, "lineColor1", "when you define linecolor1 you have to define linecolor2 as well");
+				throw new FunctionException(pc, "ImageFilterColorMap", 2, "lineColor1", "when you define linecolor1 you have to define linecolor2 as well");
 				
 		}
-		else throw new FunctionException(pc, "ImageColorMap", 1, "type", "invalid type defintion, valid types are [grayscale,spectrum,linear]");
+		else throw new FunctionException(pc, "ImageFilterColorMap", 1, "type", "invalid type defintion, valid types are [grayscale,spectrum,linear]");
 		
 		
 		

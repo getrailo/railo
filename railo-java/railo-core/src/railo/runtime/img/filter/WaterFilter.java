@@ -213,7 +213,7 @@ public class WaterFilter extends TransformFilter  implements DynFiltering {
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));
 		if((o=parameters.removeEL(KeyImpl.init("CentreX")))!=null)setCentreX(ImageFilterUtil.toFloatValue(o,"CentreX"));
 		if((o=parameters.removeEL(KeyImpl.init("CentreY")))!=null)setCentreY(ImageFilterUtil.toFloatValue(o,"CentreY"));
-		if((o=parameters.removeEL(KeyImpl.init("Centre")))!=null)setCentre(ImageFilterUtil.toPoint2D(o,"Centre"));
+		//if((o=parameters.removeEL(KeyImpl.init("Centre")))!=null)setCentre(ImageFilterUtil.toPoint2D(o,"Centre"));
 		if((o=parameters.removeEL(KeyImpl.init("Wavelength")))!=null)setWavelength(ImageFilterUtil.toFloatValue(o,"Wavelength"));
 		if((o=parameters.removeEL(KeyImpl.init("Amplitude")))!=null)setAmplitude(ImageFilterUtil.toFloatValue(o,"Amplitude"));
 		if((o=parameters.removeEL(KeyImpl.init("Phase")))!=null)setPhase(ImageFilterUtil.toFloatValue(o,"Phase"));

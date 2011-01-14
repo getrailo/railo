@@ -51,7 +51,7 @@ public class ImageFilter {
 		filters.put("chromakey",ChromaKeyFilter.class);
 		filters.put("chrome",ChromeFilter.class);
 		filters.put("circle",CircleFilter.class);
-		filters.put("composite",CompositeFilter.class);
+		////////filters.put("composite",CompositeFilter.class);
 		//filters.put("compound",CompoundFilter.class);
 		filters.put("contour",ContourFilter.class);
 		filters.put("contrast",ContrastFilter.class);

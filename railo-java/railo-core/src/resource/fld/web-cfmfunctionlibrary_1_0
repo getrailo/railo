@@ -5313,10 +5313,10 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<type>void</type>
 		</return>
 	</function>
-	<!-- ImageColorMap -->
+	<!-- ImageFilterColorMap -->
 	<function>
-		<name>ImageColorMap</name>
-		<class>railo.runtime.functions.image.ImageColorMap</class>
+		<name>ImageFilterColorMap</name>
+		<class>railo.runtime.functions.image.ImageFilterColorMap</class>
 		<description>These are passed to the function ImageFilters (see ImageFilter documentation) which convert gray values to colors.</description>
 		<argument>
 			<name>type</name>
@@ -5339,6 +5339,81 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<required>no</required>
 		<description>used only for type "linear", the color corresponding to value 1 in the colormap.</description>
     </argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	
+	<!-- ImageFilterKernel -->
+	<function>
+		<name>ImageFilterKernel</name>
+		<class>railo.runtime.functions.image.ImageFilterKernel</class>
+		<description>These are passed to the function ImageFilters (see ImageFilter documentation).
+		The ImageFilterKernel function defines a matrix that describes how a specified pixel and its surrounding pixels affect the value computed for the pixel's position in the output image of a filtering operation. 
+		The X origin and Y origin indicate the kernel matrix element that corresponds to the pixel position for which an output value is being computed.
+		
+		</description>
+		<argument>
+			<name>width</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>width of the kernel</description>
+    	</argument>
+		<argument>
+			<name>height</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>height of the kernel</description>
+    	</argument>
+		<argument>
+			<name>data</name>
+			<type>any</type>
+			<required>Yes</required>
+		<description>kernel data in row major order</description>
+    </argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	<!-- ImageFilterWarpGrid -->
+	<function>
+		<name>ImageFilterWarpGrid</name>
+		<class>railo.runtime.functions.image.ImageFilterWarpGrid</class>
+		<description>A warp grid. These are passed to the function ImageFilters (see ImageFilter documentation).</description>
+		<argument>
+			<name>rows</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>rows of the warp grid</description>
+    	</argument>
+		<argument>
+			<name>cols</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>cols of the warp grid</description>
+    	</argument>
+		<argument>
+			<name>width</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>width of the warp grid</description>
+    	</argument>
+		<argument>
+			<name>height</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>height of the warp grid</description>
+    	</argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	<!-- ImageFilterCurves -->
+	<function>
+		<name>ImageFilterCurves</name>
+		<class>railo.runtime.functions.image.ImageFilterCurves</class>
+		<description>the curves for the wrap grid</description>
 		<return>
 			<type>any</type>
 		</return>
@@ -6145,7 +6220,7 @@ cellular
 	- f3 (float)
 	- f4 (float)
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- randomness (float)
 	- gridType (int)
 	- distancePower (float)
@@ -6303,7 +6378,7 @@ crystallize
 	- f3 (float)
 	- f4 (float)
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- randomness (float)
 	- gridType (int)
 	- distancePower (float)
@@ -6367,7 +6442,7 @@ dilate
 		The number of iterations the effect is performed.
 		- min-value: 0
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- newColor (String)
 	- blackFunction (railo.runtime.img.math.BinaryFunction)
 displace
@@ -6437,7 +6512,7 @@ erode
 		The number of iterations the effect is performed.
 		- min-value: 0
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- newColor (String)
 	- blackFunction (railo.runtime.img.math.BinaryFunction)
 exposure
@@ -6566,7 +6641,7 @@ glint
 		- min-value: 0
 		- max-value: 1
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- blur (float)
 		The blur that is applied before thresholding.
 	- glintOnly (boolean)
@@ -6605,7 +6680,7 @@ gradient
 		Specifies the angle of the texture.
 		@angle
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- point1 (java.awt.Point)
 	- point2 (java.awt.Point)
 	- paintMode (int)
@@ -6700,7 +6775,7 @@ life
 		The number of iterations the effect is performed.
 		- min-value: 0
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- newColor (String)
 	- blackFunction (railo.runtime.img.math.BinaryFunction)
 light
@@ -6722,7 +6797,7 @@ lookup
 
 	Parameters:
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- dimensions (Array)
 map
 	An abstract superclass for filters which distort images in some way. The subclass only needs to override
@@ -6836,7 +6911,7 @@ outline
 		The number of iterations the effect is performed.
 		- min-value: 0
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- newColor (String)
 	- blackFunction (railo.runtime.img.math.BinaryFunction)
 perspective
@@ -6880,7 +6955,7 @@ plasma
 		- min-value: 0
 		- max-value: 10
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- scaling (float)
 	- useColormap (boolean)
 	- useImageColors (boolean)
@@ -6915,7 +6990,7 @@ pointillize
 	- f3 (float)
 	- f4 (float)
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- randomness (float)
 	- gridType (int)
 	- distancePower (float)
@@ -6971,7 +7046,7 @@ quilt
 		The number of iterations the effect is performed.
 		- min-value: 0
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- a (float)
 	- b (float)
 	- c (float)
@@ -6982,7 +7057,7 @@ rays
 
 	Parameters:
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- strength (float)
 		The strength of the rays.
 	- opacity (float)
@@ -7098,7 +7173,7 @@ shape
 	Parameters:
 	- useAlpha (boolean)
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- invert (boolean)
 	- factor (float)
 	- merge (boolean)
@@ -7164,7 +7239,7 @@ skeleton
 		The number of iterations the effect is performed.
 		- min-value: 0
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- newColor (String)
 	- blackFunction (railo.runtime.img.math.BinaryFunction)
 smear
@@ -7288,7 +7363,7 @@ texture
 	- angle (float)
 		Specifies the angle of the texture.
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- operation (int)
 	- function (railo.runtime.img.math.Function2D)
 	- scale (float)
@@ -7425,7 +7500,7 @@ wood
 	- angle (float)
 		Specifies the angle of the texture.
 	- colormap (Colormap)
-		The colormap to be used for the filter. Use function ImageColorMap to create.
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- gain (float)
 		Specifies the gain of the texture.
 		- min-value: 0

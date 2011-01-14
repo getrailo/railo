@@ -93,10 +93,18 @@ public class FlareFilter extends PointFilter  implements DynFiltering {
 		return rayAmount;
 	}
 
-	public void setCentre( Point2D centre ) {
+	public void setCentreY( float centreY ) {
+		this.centreY = centreY;
+	}
+
+	public void setCentreX( float centreX ) {
+		this.centreX = centreX;
+	}
+
+	/*public void setCentre( Point2D centre ) {
 		this.centreX = (float)centre.getX();
 		this.centreY = (float)centre.getY();
-	}
+	}*/
 
 	public Point2D getCentre() {
 		return new Point2D.Float( centreX, centreY );
@@ -170,7 +178,7 @@ public class FlareFilter extends PointFilter  implements DynFiltering {
 	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));
-		if((o=parameters.removeEL(KeyImpl.init("Centre")))!=null)setCentre(ImageFilterUtil.toPoint2D(o,"Centre"));
+		//if((o=parameters.removeEL(KeyImpl.init("Centre")))!=null)setCentre(ImageFilterUtil.toPoint2D(o,"Centre"));
 		if((o=parameters.removeEL(KeyImpl.init("RingWidth")))!=null)setRingWidth(ImageFilterUtil.toFloatValue(o,"RingWidth"));
 		if((o=parameters.removeEL(KeyImpl.init("BaseAmount")))!=null)setBaseAmount(ImageFilterUtil.toFloatValue(o,"BaseAmount"));
 		if((o=parameters.removeEL(KeyImpl.init("RingAmount")))!=null)setRingAmount(ImageFilterUtil.toFloatValue(o,"RingAmount"));

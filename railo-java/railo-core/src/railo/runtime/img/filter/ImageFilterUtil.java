@@ -15,8 +15,11 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.Image;
+import railo.runtime.img.filter.CurvesFilter.Curve;
+import railo.runtime.img.filter.LightFilter.Material;
 import railo.runtime.img.math.Function2D;
 import railo.runtime.op.Caster;
+import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.Type;
 
@@ -55,13 +58,14 @@ public class ImageFilterUtil {
 
 
 	public static BufferedImage toBufferedImage(Object o, String argName) throws PageException {
+		if(o instanceof BufferedImage) return (BufferedImage) o;
 		return Image.toImage(o).getBufferedImage();
 	}
 
 	public static Colormap toColormap(Object value, String argName) throws FunctionException {
 		if(value instanceof Colormap)
 			return (Colormap) value;
-		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", msg(value,"Colormap",argName)+" use function ImageColorMap to create a colormap");
+		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", msg(value,"Colormap",argName)+" use function ImageFilterColorMap to create a colormap");
 	}
 	
 	public static Kernel toKernel(Object value, String argName) throws FunctionException {
@@ -81,6 +85,25 @@ public class ImageFilterUtil {
 		return toColor(value, argName).getRGB();
 		
 	}
+	
+
+
+	public static Point toPoint(Object value, String argName) throws PageException {
+		if(value instanceof Point) return (Point) value;
+		String str = Caster.toString(value);
+		
+		Struct sct = Caster.toStruct(value,null);
+		if(sct!=null){
+			return new Point(Caster.toIntValue(sct.get("x")),Caster.toIntValue(sct.get("y")));
+		}
+		
+		String[] arr = List.listToStringArray(str, ',');
+		if(arr.length==2) {
+			return new Point(Caster.toIntValue(arr[0]),Caster.toIntValue(arr[1]));
+		}
+		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "use the following format [x,y]");
+		
+	}
 
 	public static int[] toDimensions(Object value, String argName) throws FunctionException {
 		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "type int[] not supported yet!");
@@ -91,30 +114,33 @@ public class ImageFilterUtil {
 			return (LightFilter.Material) value;
 		
 		Struct sct = Caster.toStruct(value,null);
-		if(sct==null)
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", msg(value,"Struct",argName));
+		if(sct!=null){
+			Material material = new LightFilter.Material();
+			material.setDiffuseColor(Caster.toIntValue(sct.get("color")));
+			material.setOpacity(Caster.toFloatValue(sct.get("opacity")));
+			return material;
+		}
+		String str = Caster.toString(value,null);
+		if(str!=null){
+			String[] arr = List.listToStringArray(str, ',');
+			if(arr.length==2) {
+				Material material = new LightFilter.Material();
+				material.setDiffuseColor(Caster.toIntValue(arr[0]));
+				material.setOpacity(Caster.toFloatValue(arr[1]));
+				return material;
+			}
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "use the following format [color,opacity]");
+			
+		}
 		
+		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "use the following format [\"color,opacity\"] or [{color='#cc0033',opacity=0.5}]");
 		
-		LightFilter.Material mat=new LightFilter.Material();
-		Object o = sct.get("DiffuseColor",null);
-		if(o==null)
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "missing key [DiffuseColor] in struct of parameter ["+argName+"]");
-		mat.setDiffuseColor(ColorCaster.toColor(Caster.toString(o)).getRGB());
-		o = sct.get("Opacity",null);
-		if(o==null)
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "missing key [Opacity] in struct of parameter ["+argName+"]");
-		mat.setOpacity((Caster.toFloatValue(o)));
-		
-		return mat;
 	}
 
 	public static Function2D toFunction2D(Object value, String argName) throws FunctionException {
 		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "type Function2D not supported yet!");
 	}
 
-	public static Point2D toPoint2D(Object value, String argName) throws FunctionException {
-		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "type AffineTransform not supported yet!");
-	}
 
 	public static AffineTransform toAffineTransform(Object value, String argName) throws FunctionException {
 		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "type BufferedImage not supported yet!");
@@ -124,12 +150,20 @@ public class ImageFilterUtil {
 		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "type Composite not supported yet!");
 	}
 
-	public static CurvesFilter.Curve[] toACurvesFilter$Curve(Object value, String argName) throws FunctionException {
-		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "type CurvesFilter.Curve[] not supported yet!");
+	public static CurvesFilter.Curve[] toACurvesFilter$Curve(Object value, String argName) throws PageException {
+		if(value instanceof CurvesFilter.Curve[]) return (CurvesFilter.Curve[]) value;
+		Object[] arr = Caster.toNativeArray(value);
+		CurvesFilter.Curve[] curves=new CurvesFilter.Curve[arr.length];
+		for(int i=0;i<arr.length;i++){
+			curves[i]=toCurvesFilter$Curve(arr[i],argName);
+		}
+		return curves;
 	}
 
 	public static CurvesFilter.Curve toCurvesFilter$Curve(Object value, String argName) throws FunctionException {
-		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "type CurvesFilter.Curve not supported yet!");
+		if(value instanceof CurvesFilter.Curve)
+			return (CurvesFilter.Curve) value;
+		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", msg(value,"Curve",argName)+" use function ImageFilterCurve to create a Curve");
 	}
 
 	public static int[] toAInt(Object value, String argName) throws FunctionException {
@@ -145,7 +179,9 @@ public class ImageFilterUtil {
 	}
 
 	public static WarpGrid toWarpGrid(Object value, String argName) throws FunctionException {
-		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "type WarpGrid not supported yet!");
+		if(value instanceof WarpGrid)
+			return (WarpGrid) value;
+		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", msg(value,"WarpGrid",argName)+" use function ImageFilterWarpGrid to create a WarpGrid");
 	}
 
 	public static FieldWarpFilter.Line[] toAFieldWarpFilter$Line(Object o, String string) throws FunctionException {
@@ -161,11 +197,6 @@ public class ImageFilterUtil {
 	}
 
 	public static Font toFont(Object o, String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static Point toPoint(Object o, String string) {
 		// TODO Auto-generated method stub
 		return null;
 	}

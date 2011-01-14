@@ -161,16 +161,6 @@ public class MotionBlurOp extends AbstractBufferedImageOp {
 	public float getCentreY() {
 		return centreY;
 	}
-	
-	/**
-	 * Set the centre of the effect as a proportion of the image size.
-	 * @param centre the center
-     * @see #getCentre
-	 */
-	public void setCentre( Point2D centre ) {
-		this.centreX = (float)centre.getX();
-		this.centreY = (float)centre.getY();
-	}
 
 	/**
 	 * Get the centre of the effect as a proportion of the image size.
