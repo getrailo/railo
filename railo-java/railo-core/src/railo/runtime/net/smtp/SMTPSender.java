@@ -1,32 +1,60 @@
 package railo.runtime.net.smtp;
 
-import javax.mail.MessagingException;
+import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
+
+import railo.commons.io.SystemUtil;
 
 
 public final class SMTPSender extends Thread {
 
-	private Transport transport;
 	private boolean hasSended=false;
-	private boolean hasError=false;
 	private MimeMessage message;
-	private MessagingException messageExpection;
+	private Throwable throwable;
 	private Object lock;
 	private String host;
 	private int port;
 	private String user;
 	private String pass;
+	private Session session;
 	
-	public SMTPSender(Object lock, Transport transport, MimeMessage message, String host, int port, String user, String pass) {
+	public SMTPSender(Object lock, MimeMessage message, Session session, String host, int port, String user, String pass) {
 		this.lock=lock;
-		this.transport=transport;
 		this.message=message;
+		this.session=session;
 
 		this.host=host;
 		this.port=port;
 		this.user=user;
 		this.pass=pass;
+	}
+	
+	/**
+	 * @see java.lang.Thread#run()
+	 */
+	public void run() {
+		Transport transport = null;
+        try {
+        	transport = SMTPConnectionPool.getTransport(session,host,port,user,pass);
+			message.saveChanges();  
+			transport.sendMessage(message, message.getAllRecipients());
+			hasSended=true;
+		} 
+		catch (Throwable t) {
+			this.throwable=t;
+		}
+		finally {
+			try {SMTPConnectionPool.releaseTransport(session,transport);}catch (Throwable t) {}
+			SystemUtil.notify(lock);
+		}
+	}
+
+	/**
+	 * @return the messageExpection
+	 */
+	public Throwable getThrowable() {
+		return throwable;
 	}
 
 	/**
@@ -34,41 +62,6 @@ public final class SMTPSender extends Thread {
 	 */
 	public boolean hasSended() {
 		return hasSended;
-	}
-	/**
-	 * @return is error occurred
-	 */
-	public boolean hasError() {
-		return hasError;
-	}
-	
-	public void run() {
-		try {
-			//transport.connect();
-			transport.connect(host,port,user,pass);
-			message.saveChanges();  
-			transport.sendMessage(message, message.getAllRecipients());
-			transport.close();
-	    	hasSended=true;
-		} 
-		catch (MessagingException me) {
-			//print.ln("error			"+System.currentTimeMillis());
-			hasError=true;
-			this.messageExpection=me;
-		}
-		finally {
-			//print.ln("done			"+System.currentTimeMillis());
-			synchronized(lock) {
-				lock.notify();
-			}
-		}
-	}
-
-	/**
-	 * @return the messageExpection
-	 */
-	public MessagingException getMessageExpection() {
-		return messageExpection;
 	}
 
 }
