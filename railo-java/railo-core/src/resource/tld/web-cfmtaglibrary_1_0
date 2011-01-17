@@ -1713,6 +1713,13 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		</attribute>
 		<attribute>
 			<type>string</type>
+			<name>dbnames</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Name of the database (alias for dbname)</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
 			<name>password</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
