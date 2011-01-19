@@ -261,7 +261,6 @@ public class HibernateSessionFactory {
 		List<ComponentPro> components=new ArrayList<ComponentPro>();
 		loadComponents(pc,engine,components,ormConf.getCfcLocations(),filter);
 		return components;
-		//print.out("CfcLocation:"+ormConf.getCfcLocation());
 	}
 	
 	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource[] reses,ExtensionResourceFilter filter) {

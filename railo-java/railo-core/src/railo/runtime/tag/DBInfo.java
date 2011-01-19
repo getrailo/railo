@@ -177,6 +177,9 @@ public final class DBInfo extends TagImpl {
 	public void setDbname(String dbname) {
 		this.dbname = dbname;
 	}
+	public void setDbnames(String dbname) {
+		this.dbname = dbname;
+	}
 
 	/**
 	 * @param password the password to set

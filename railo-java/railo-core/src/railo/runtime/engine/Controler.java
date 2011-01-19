@@ -19,6 +19,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.net.smtp.SMTPConnectionPool;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.scope.ClientFile;
 import railo.runtime.type.scope.ScopeContext;
@@ -139,6 +140,7 @@ public final class Controler extends Thread {
 					// contract Page Pool
 					try{doClearPagePools((ConfigWebImpl) config);}catch(Throwable t){}
 					try{doCheckMappings(config);}catch(Throwable t){}
+					try{doClearMailConnections();}catch(Throwable t){}
 				}
 				// every hour
 				if(doHour) {
@@ -162,6 +164,10 @@ public final class Controler extends Thread {
 			finally{
 				ThreadLocalConfig.release();
 			}
+	}
+
+	private void doClearMailConnections() {
+		SMTPConnectionPool.closeTransports();
 	}
 
 	private void checkClientFileSize(ConfigWeb config) {

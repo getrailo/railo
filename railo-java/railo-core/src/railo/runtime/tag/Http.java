@@ -31,7 +31,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.methods.TraceMethod;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
@@ -43,6 +42,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
+import railo.commons.net.ResourcePart;
 import railo.commons.net.ResourcePartSource;
 import railo.commons.net.URLEncoder;
 import railo.runtime.exp.ApplicationException;
@@ -1034,7 +1034,8 @@ public final class Http extends BodyTagImpl {
 				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type file can't only be used, when method of the tag http equal post");
 				if(doMultiPart) {
 					try {
-						parts.add(new FilePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param),null));
+						//FilePart part = new FilePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param),null);
+						parts.add(new ResourcePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param)));
 					} 
 					catch (FileNotFoundException e) {
 						throw new ApplicationException("can't upload file, path is invalid",e.getMessage());
