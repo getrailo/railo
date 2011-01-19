@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.Kernel;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class ImageFilter {
 	private static final Struct EMPTY_STRUCT = new StructImpl();
