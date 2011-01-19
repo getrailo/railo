@@ -46,8 +46,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
     int idCounter=1;
     private QueryCache queryCache;
     private ScopeContext scopeContext=new ScopeContext();
-    private String label;
-	private HttpServlet servlet;
+    private HttpServlet servlet;
 	private URL url=null;
 	private CFMLEngineImpl engine;
 
@@ -265,11 +264,13 @@ public final class CFMLFactoryImpl extends CFMLFactory {
      * @return label of the factory
      */
     public Object getLabel() {
-    	if(label==null){
-    		return getConfig().getId();
-    		//return "";
-    	}
-        return label;
+    	return ((ConfigWebImpl)getConfig()).getLabel();
+    }
+    /**
+     * @param label
+     */
+    public void setLabel(String label) {
+        // deprecated
     }
 
 	/**
@@ -278,12 +279,6 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	public URL getURL() {
 		return url;
 	}
-    /**
-     * @param label
-     */
-    public void setLabel(String label) {
-        this.label=label;
-    }
     
 
 	public void setURL(URL url) {

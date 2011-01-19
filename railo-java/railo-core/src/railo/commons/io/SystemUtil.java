@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 
@@ -356,6 +357,21 @@ public final class SystemUtil {
     	
         return addPlaceHolder(file, defaultValue);
     }
+	
+	public static String parsePlaceHolder(String path, ServletContext sc, Map<String,String> labels) {
+		if(path==null) return null;
+        if(path.indexOf('{')!=-1){
+        	if((path.indexOf("{web-context-label}"))!=-1){
+        		String id=hash(sc);
+        		
+        		String label=labels.get(id);
+        		if(StringUtil.isEmpty(label)) label=id;
+        		
+        		path=StringUtil.replace(path, "{web-context-label}", label, false);
+        	}
+        }
+        return parsePlaceHolder(path, sc);
+    }
     
 	public static String parsePlaceHolder(String path, ServletContext sc) {
     	ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
@@ -376,15 +392,20 @@ public final class SystemUtil {
 	        }
         	
         	if((path.indexOf("{web-context-hash}"))!=-1){
-        		String id=null;
-        		try {
-        			id=MD5.getDigestAsString(sc.getRealPath("/"));
-        		} 
-        		catch (IOException e) {}
+        		String id=hash(sc);
         		path=StringUtil.replace(path, "{web-context-hash}", id, false);
         	}
         }
         return path;
+    }
+	
+	public static String hash(ServletContext sc) {
+    	String id=null;
+		try {
+			id=MD5.getDigestAsString(sc.getRealPath("/"));
+		} 
+		catch (IOException e) {}
+		return id;
     }
 
     public static String getCharset() {

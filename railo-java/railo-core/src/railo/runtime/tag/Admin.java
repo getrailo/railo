@@ -630,6 +630,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateVideoExecuterClass",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateVideoExecuterClass();
         else if(check("terminateRunningThread",ACCESS_FREE) && check2(ACCESS_WRITE  )) doTerminateRunningThread();
         
+        else if(check("updateLabel",                ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateLabel();
         else if(check("restart",                ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doRestart();
         else if(check("runUpdate",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doRunUpdate();
         else if(check("removeUpdate",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doRemoveUpdate();
@@ -847,20 +848,22 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             
             railo.runtime.type.Query qry=
             	new QueryImpl(
-            			new String[]{"path","id","label","hasOwnSecContext","url","config_file"},
+            			new String[]{"path","id","hash","label","hasOwnSecContext","url","config_file"},
             			factories.length,getString("admin",action,"returnVariable"));
             pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
             
             for(int i=0;i<factories.length;i++) {
                 int row=i+1;
                 CFMLFactoryImpl factory = factories[i];
+                
                 qry.setAtEL("path",row,factory.getConfigWebImpl().getServletContext().getRealPath("/"));
                 
                 qry.setAtEL("config_file",row,factory.getConfigWebImpl().getConfigFile().getAbsolutePath());
                 if(factory.getURL()!=null)qry.setAtEL("url",row,factory.getURL().toExternalForm());
                 
-                
+
                 qry.setAtEL("id",row,factory.getConfig().getId());
+                qry.setAtEL("hash",row,SystemUtil.hash(factory.getConfigWebImpl().getServletContext()));
                 qry.setAtEL("label",row,factory.getLabel());
                 qry.setAtEL("hasOwnSecContext",row,Caster.toBoolean(cs.hasIndividualSecurityManager(factory.getConfig().getId())));
             }
@@ -940,6 +943,14 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         ResourceUtil.copyRecursive(srcDir, trgDir);    
         store();
     }
+    private void doUpdateLabel() throws PageException, IOException {
+    	if(config instanceof ConfigServer) {
+    		 if(admin.updateLabel(getString("admin",action,"hash"),getString("admin",action,"label"))) {
+	    	     store();
+	    	     adminSync.broadcast(attributes, config);
+    		 }
+    	}
+    }
     
     private void doUpdateContext() throws PageException, IOException {
     	String strSrc = getString("admin",action,"source");
@@ -963,6 +974,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         }
         store();
     }
+    
     
     private void doRemoveContext() throws PageException, IOException {
     	String strRealpath = getString("admin",action,"destination");

@@ -1,9 +1,11 @@
 package railo.runtime.config;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import railo.commons.io.SystemUtil;
@@ -101,9 +103,27 @@ public final class ConfigServerFactory {
      */
     static void load(ConfigServerImpl configServer, Document doc) throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
         ConfigWebFactory.load(null,configServer,doc);
+        loadLabel(configServer,doc);
     }
     
 
+	private static void loadLabel(ConfigServerImpl configServer, Document doc) {
+		Element el= ConfigWebFactory.getChildByName(doc.getDocumentElement(),"labels");
+        Element[] children=ConfigWebFactory.getChildren(el,"label");
+        
+        Map<String, String> labels=new HashMap<String, String>();
+        if(children!=null)for(int i=0;i<children.length;i++) {
+           el=children[i];
+           
+           String id=el.getAttribute("id");
+           String name=el.getAttribute("name");
+           if(id!=null && name!=null) { 
+               labels.put(id, name);
+           }
+        }
+        configServer.setLabels(labels);
+	}
+	
 	public static void createContextFiles(Resource configDir, ConfigServer config) throws IOException {
 		//Resource tagDir = configDir.getRealResource("library/tag/");
 		//if()

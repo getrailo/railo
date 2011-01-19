@@ -151,7 +151,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
     private  CFMLFactoryImpl loadJSPFactory(ConfigServerImpl configServer, ServletConfig sg, int countExistingContextes) throws ServletException {
     	try {
             // Load Config
-            Resource configDir=getConfigDirectory(sg,countExistingContextes);
+            Resource configDir=getConfigDirectory(sg,configServer,countExistingContextes);
             
             QueryCacheSupport queryCache=QueryCacheSupport.getInstance(configServer);
             CFMLFactoryImpl factory=new CFMLFactoryImpl(this,queryCache);
@@ -171,10 +171,11 @@ public final class CFMLEngineImpl implements CFMLEngine {
     /**
      * loads Configuration File from System, from init Parameter from web.xml
      * @param sg
+     * @param configServer 
      * @param countExistingContextes 
      * @return return path to directory
      */
-    private Resource getConfigDirectory(ServletConfig sg, int countExistingContextes) throws PageServletException {
+    private Resource getConfigDirectory(ServletConfig sg, ConfigServerImpl configServer, int countExistingContextes) throws PageServletException {
         ServletContext sc=sg.getServletContext();
         String strConfig=sg.getInitParameter("configuration");
         if(strConfig==null)strConfig=sg.getInitParameter("railo-web-directory");
@@ -186,7 +187,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
         	System.err.println(text);
         	throw new PageServletException(new ApplicationException(text));
         }
-        strConfig=SystemUtil.parsePlaceHolder(strConfig,sc);
+        strConfig=SystemUtil.parsePlaceHolder(strConfig,sc,configServer.getLabels());
         
         
         

@@ -3173,6 +3173,7 @@ public abstract class ConfigImpl implements Config {
 	private Map<String,InitFile> ctPatchCache=null;//new ArrayList<Page>();
 	
 	
+	
 	public Page getCachedPage(PageContext pc,String pathWithCFC) throws PageException {
 		if(componentPathCache==null) return null; 
 		
@@ -3277,5 +3278,5 @@ public abstract class ConfigImpl implements Config {
 	 */
 	protected void setComponentRootSearch(boolean componentRootSearch) {
 		this.componentRootSearch = componentRootSearch;
-	}
+	}	
 }

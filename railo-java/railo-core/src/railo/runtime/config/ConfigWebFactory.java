@@ -172,6 +172,7 @@ public final class ConfigWebFactory {
     			"-------------------------------------------------------------------\n"+
     			"- config:"+configDir+"\n"+
     			"- webroot:"+servletConfig.getServletContext().getRealPath("/")+"\n"+
+    			"- hash:"+SystemUtil.hash(servletConfig.getServletContext())+"\n"+
     			"===================================================================\n"
     			
     			);
@@ -333,7 +334,7 @@ public final class ConfigWebFactory {
         loadCache(configServer,config,doc);
         loadCustomTagsMappings(configServer,config,doc);
     	loadPassword(cs,config,doc);
-    	loadLabel(cs,config,doc);
+    	//loadLabel(cs,config,doc);
     	loadFilesystem(cs,config,doc); // load tlds
     	loadTag(cs,config,doc); // load tlds
         loadRegional(configServer,config,doc);
@@ -2276,13 +2277,24 @@ public final class ConfigWebFactory {
     }
     
     
-    private static void loadLabel(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
-		Element railoConfiguration = doc.getDocumentElement();
-		String str=railoConfiguration.getAttribute("label");
-		if(!StringUtil.isEmpty(str)) {
-		    config.getFactory().setLabel(str);
+    /*private static void loadLabel(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
+		// do only for web config
+    	if(configServer!=null && config instanceof ConfigWebImpl) {
+			ConfigWebImpl cs=(ConfigWebImpl) config;
+			String hash=SystemUtil.hash(cs.getServletContext());
+			config.setLabel(hash);
+			
+			Map<String, String> labels = configServer.getLabels();
+			if(labels!=null) {
+				String label = labels.get(hash);
+				if(!StringUtil.isEmpty(label)) {
+					print.o("label:"+label);
+					config.setLabel(label);
+					config.getFactory().setLabel(label);
+				}
+			}
 		}
-    }
+    }*/
 
 
     private static void loadTag(ConfigServerImpl configServer, ConfigImpl config, Document doc)  {

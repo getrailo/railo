@@ -2,6 +2,7 @@ package railo.runtime.config;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -36,6 +37,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     private String updateType="";
 	private ConfigListener configListener;
 	private ConfigWeb configWeb;
+	private Map<String, String> labels;
 	private static ConfigServerImpl instance;
 	
 	/**
@@ -332,6 +334,14 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		}
 		configWeb=cwi;
 		return cwi;
+	}
+
+	public void setLabels(Map<String, String> labels) {
+		this.labels=labels;
+	}
+	public Map<String, String> getLabels() {
+		if(labels==null) labels=new HashMap<String, String>();
+		return labels;
 	}
 	
 

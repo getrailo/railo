@@ -3331,8 +3331,36 @@ public final class ConfigWebAdmin {
 	    }
 
 
-	
-
-
-	
+	public boolean updateLabel(String hash, String label) {
+		// check
+        if(StringUtil.isEmpty(hash,true))  return false;
+        if(StringUtil.isEmpty(label,true)) return false;
+        
+		hash=hash.trim(); 
+		label=label.trim();
+        
+        Element labels=_getRootElement("labels");
+        
+        // Update
+        Element[] children = ConfigWebFactory.getChildren(labels,"label");
+      	for(int i=0;i<children.length;i++) {
+      	    String h=children[i].getAttribute("id");
+      	    if(h!=null) {
+      	        if(h.equals(hash)) {
+		      		Element el=children[i];
+		      		if(label.equals(el.getAttribute("name"))) return false;
+		      		el.setAttribute("name",label);
+		      		return true;
+	  			}
+      	    }
+      	}
+      	
+      	// Insert
+      	Element el=doc.createElement("label");
+      	labels.appendChild(el);
+      	el.setAttribute("id",hash);
+      	el.setAttribute("name",label);
+  		
+      	return true;
+	}
 }

@@ -5,7 +5,6 @@ import java.awt.Composite;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.Kernel;
 
@@ -15,7 +14,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.Image;
-import railo.runtime.img.filter.CurvesFilter.Curve;
 import railo.runtime.img.filter.LightFilter.Material;
 import railo.runtime.img.math.Function2D;
 import railo.runtime.op.Caster;

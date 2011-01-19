@@ -9,9 +9,11 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
+import railo.commons.lang.StringUtil;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
@@ -270,6 +272,23 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 
 		public CFMLEngineImpl getCFMLEngineImpl() {
 			return getConfigServerImpl().getCFMLEngineImpl();
+		}
+
+		public String getLabel() {
+			String hash=getHash();
+			String label=hash;
+			Map<String, String> labels = configServer.getLabels();
+			if(labels!=null) {
+				String l = labels.get(hash);
+				if(!StringUtil.isEmpty(l)) {
+					label=l;
+				}
+			}
+			return label;
+		}
+		
+		public String getHash() {
+			return SystemUtil.hash(getServletContext());
 		}
 
 }
