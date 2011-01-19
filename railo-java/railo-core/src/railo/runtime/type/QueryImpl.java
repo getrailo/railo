@@ -12,12 +12,15 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -3531,7 +3534,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		throw notSupported();
 	}
 	
-	/*
+
 	public void updateNClob(int columnIndex, NClob nClob) throws SQLException {
 		throw notSupported();
 	}
@@ -3579,7 +3582,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	public void updateRowId(String columnLabel, RowId x) throws SQLException {
 		throw notSupported();
 	}
-	 */
+	
 
 	private SQLException notSupported() {
 		return new SQLException("this feature is not supported");
