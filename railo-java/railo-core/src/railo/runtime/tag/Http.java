@@ -1116,7 +1116,7 @@ public final class Http extends BodyTagImpl {
 			if(ArrayUtil.isEmpty(pair)) continue;
 			
 			String name=pair[0];
-			String value=pair.length>1?pair[1]:"";//pair.length>1?pair[1]:"";
+			String value=pair.length>1?pair[1]:null;
 			listPairs.add(new NameValuePair(name,value));
 		}
 		
@@ -1130,6 +1130,7 @@ public final class Http extends BodyTagImpl {
 		String qs = toQueryString((NameValuePair[]) listPairs.toArray(new NameValuePair[listPairs.size()]));
 		if(!StringUtil.isEmpty(qs))
 			httpMethod.setQueryString(qs);
+
 		
 	// set Username and Password
 		if(http.username!=null) {
@@ -1166,8 +1167,10 @@ public final class Http extends BodyTagImpl {
         for(int i=0;i<qsPairs.length;i++) {
             if(sb.length()>0)sb.append('&');
             sb.append(qsPairs[i].getName());
-            sb.append('=');
-            sb.append(qsPairs[i].getValue());
+            if(qsPairs[i].getValue()!=null){
+            	sb.append('=');
+            	sb.append(qsPairs[i].getValue());
+            }
         }
         return sb.toString();
     }
