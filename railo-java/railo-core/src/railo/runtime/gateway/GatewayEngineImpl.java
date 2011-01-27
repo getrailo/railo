@@ -189,7 +189,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		return (GatewayEntry) entries.get(gatewayId);
 	}
 
-	public static void checkRestriction() {
+	/*public static void checkRestriction() {
 		PageContext pc = ThreadLocalPageContext.get();
 		boolean enable = false;
 		try {
@@ -199,7 +199,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		//enable=false;
 		if(!enable)
 			throw new PageRuntimeException(new FunctionNotSupported("SendGatewayMessage"));
-	}
+	}*/
 
 	public Resource getCFCDirectory() {
 		return cfcDirectory;

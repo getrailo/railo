@@ -16,7 +16,7 @@ import railo.runtime.type.Struct;
 public final class SendGatewayMessage implements Function {
 	
 	public static String call(PageContext pc, String gatewayID, Struct data) throws PageException {
-		GatewayEngineImpl.checkRestriction();
+		//GatewayEngineImpl.checkRestriction();
 		try {
 			return ((ConfigImpl)pc.getConfig()).getGatewayEngine().sendMessage(gatewayID,data);
 		} catch (GatewayException e) {
