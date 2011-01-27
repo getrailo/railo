@@ -114,7 +114,7 @@ public class ImageFilterUtil {
 		Struct sct = Caster.toStruct(value,null);
 		if(sct!=null){
 			Material material = new LightFilter.Material();
-			material.setDiffuseColor(Caster.toIntValue(sct.get("color")));
+			material.setDiffuseColor(toColorRGB(sct.get("color"), argName+".color"));
 			material.setOpacity(Caster.toFloatValue(sct.get("opacity")));
 			return material;
 		}
@@ -123,7 +123,7 @@ public class ImageFilterUtil {
 			String[] arr = List.listToStringArray(str, ',');
 			if(arr.length==2) {
 				Material material = new LightFilter.Material();
-				material.setDiffuseColor(Caster.toIntValue(arr[0]));
+				material.setDiffuseColor(toColorRGB(arr[0], argName+"[1]"));
 				material.setOpacity(Caster.toFloatValue(arr[1]));
 				return material;
 			}

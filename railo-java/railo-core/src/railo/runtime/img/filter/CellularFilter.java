@@ -15,11 +15,29 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.Struct;
+import java.awt.image.BufferedImage;
+import railo.runtime.type.List;
+import railo.runtime.exp.FunctionException;
+
+import railo.runtime.type.KeyImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.Struct;
+import java.awt.image.BufferedImage;
+import railo.runtime.type.List;
+import railo.runtime.exp.FunctionException;
+
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.security.InvalidParameterException;
 import java.util.Random;
 
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.math.Function2D;
@@ -233,8 +251,23 @@ public class CellularFilter extends WholeImageFilter implements Function2D, Clon
 		return randomness;
 	}
 
-	public void setGridType(int gridType) {
-		this.gridType = gridType;
+	/**
+	 * the grid type to set, one of the following:
+	 * -  RANDOM
+	 * -  SQUARE
+	 * -  HEXAGONAL
+	 * -  OCTAGONAL
+	 * -  TRIANGULAR
+	 */
+	public void setGridType(String gridType) throws ExpressionException {
+		gridType=gridType.trim().toLowerCase();
+		if("random".equals(gridType)) this.gridType = RANDOM;
+		else if("square".equals(gridType)) this.gridType = SQUARE;
+		else if("hexagonal".equals(gridType)) this.gridType = HEXAGONAL;
+		else if("octagonal".equals(gridType)) this.gridType = OCTAGONAL;
+		else if("triangular".equals(gridType)) this.gridType = TRIANGULAR;
+		else 
+			throw new ExpressionException("invalid value ["+gridType+"] for gridType, valid values are [random,square,hexagonal,octagonal,triangular]");
 	}
 
 	public int getGridType() {
@@ -545,7 +578,7 @@ public class CellularFilter extends WholeImageFilter implements Function2D, Clon
 		if((o=parameters.removeEL(KeyImpl.init("F3")))!=null)setF3(ImageFilterUtil.toFloatValue(o,"F3"));
 		if((o=parameters.removeEL(KeyImpl.init("F4")))!=null)setF4(ImageFilterUtil.toFloatValue(o,"F4"));
 		if((o=parameters.removeEL(KeyImpl.init("Randomness")))!=null)setRandomness(ImageFilterUtil.toFloatValue(o,"Randomness"));
-		if((o=parameters.removeEL(KeyImpl.init("GridType")))!=null)setGridType(ImageFilterUtil.toIntValue(o,"GridType"));
+		if((o=parameters.removeEL(KeyImpl.init("GridType")))!=null)setGridType(ImageFilterUtil.toString(o,"GridType"));
 		if((o=parameters.removeEL(KeyImpl.init("DistancePower")))!=null)setDistancePower(ImageFilterUtil.toFloatValue(o,"DistancePower"));
 		if((o=parameters.removeEL(KeyImpl.init("Scale")))!=null)setScale(ImageFilterUtil.toFloatValue(o,"Scale"));
 

@@ -15,6 +15,22 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.Struct;
+import java.awt.image.BufferedImage;
+import railo.runtime.type.List;
+import railo.runtime.exp.FunctionException;
+
+import railo.runtime.type.KeyImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.Struct;
+import java.awt.image.BufferedImage;
+import railo.runtime.type.List;
+import railo.runtime.exp.FunctionException;
+
 import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -182,8 +198,8 @@ public class CheckFilter extends PointFilter  implements DynFiltering {
 		if((o=parameters.removeEL(KeyImpl.init("XScale")))!=null)setXScale(ImageFilterUtil.toIntValue(o,"XScale"));
 		if((o=parameters.removeEL(KeyImpl.init("YScale")))!=null)setYScale(ImageFilterUtil.toIntValue(o,"YScale"));
 		if((o=parameters.removeEL(KeyImpl.init("Fuzziness")))!=null)setFuzziness(ImageFilterUtil.toIntValue(o,"Fuzziness"));
-		if((o=parameters.removeEL(KeyImpl.init("Foreground")))!=null)setForeground(ImageFilterUtil.toIntValue(o,"Foreground"));
-		if((o=parameters.removeEL(KeyImpl.init("Background")))!=null)setBackground(ImageFilterUtil.toIntValue(o,"Background"));
+		if((o=parameters.removeEL(KeyImpl.init("Foreground")))!=null)setForeground(ImageFilterUtil.toColorRGB(o,"Foreground"));
+		if((o=parameters.removeEL(KeyImpl.init("Background")))!=null)setBackground(ImageFilterUtil.toColorRGB(o,"Background"));
 		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
 			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
 			setDimensions(dim[0],dim[1]);

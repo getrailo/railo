@@ -15,6 +15,22 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.Struct;
+import java.awt.image.BufferedImage;
+import railo.runtime.type.List;
+import railo.runtime.exp.FunctionException;
+
+import railo.runtime.type.KeyImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.Struct;
+import java.awt.image.BufferedImage;
+import railo.runtime.type.List;
+import railo.runtime.exp.FunctionException;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
@@ -65,7 +81,7 @@ public class BorderFilter extends AbstractBufferedImageOp  implements DynFilteri
      * @min-value 0
      * @see #getLeftBorder
 	 */
-	public void setLeftBorder(int leftBorder) {
+	public void setLeft(int leftBorder) {
 		this.leftBorder = leftBorder;
 	}
 	
@@ -84,7 +100,7 @@ public class BorderFilter extends AbstractBufferedImageOp  implements DynFilteri
      * @min-value 0
      * @see #getRightBorder
 	 */
-	public void setRightBorder(int rightBorder) {
+	public void setRight(int rightBorder) {
 		this.rightBorder = rightBorder;
 	}
 	
@@ -103,7 +119,7 @@ public class BorderFilter extends AbstractBufferedImageOp  implements DynFilteri
      * @min-value 0
      * @see #getTopBorder
 	 */
-	public void setTopBorder(int topBorder) {
+	public void setTop(int topBorder) {
 		this.topBorder = topBorder;
 	}
 
@@ -122,7 +138,7 @@ public class BorderFilter extends AbstractBufferedImageOp  implements DynFilteri
      * @min-value 0
      * @see #getBottomBorder
 	 */
-	public void setBottomBorder(int bottomBorder) {
+	public void setBottom(int bottomBorder) {
 		this.bottomBorder = bottomBorder;
 	}
 
@@ -139,7 +155,7 @@ public class BorderFilter extends AbstractBufferedImageOp  implements DynFilteri
 	 * Set the border color.
 	 * @param borderColor the color with which to fill the border
 	 */
-	public void setBorderColor( Color borderColor ) {
+	public void setColor( Color borderColor ) {
 		this.borderPaint = borderColor;
 	}
 
@@ -180,11 +196,11 @@ public class BorderFilter extends AbstractBufferedImageOp  implements DynFilteri
 	}
 	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
 		Object o;
-		if((o=parameters.removeEL(KeyImpl.init("LeftBorder")))!=null)setLeftBorder(ImageFilterUtil.toIntValue(o,"LeftBorder"));
-		if((o=parameters.removeEL(KeyImpl.init("RightBorder")))!=null)setRightBorder(ImageFilterUtil.toIntValue(o,"RightBorder"));
-		if((o=parameters.removeEL(KeyImpl.init("TopBorder")))!=null)setTopBorder(ImageFilterUtil.toIntValue(o,"TopBorder"));
-		if((o=parameters.removeEL(KeyImpl.init("BottomBorder")))!=null)setBottomBorder(ImageFilterUtil.toIntValue(o,"BottomBorder"));
-		if((o=parameters.removeEL(KeyImpl.init("BorderColor")))!=null)setBorderColor(ImageFilterUtil.toColor(o,"BorderColor"));
+		if((o=parameters.removeEL(KeyImpl.init("Left")))!=null)setLeft(ImageFilterUtil.toIntValue(o,"Left"));
+		if((o=parameters.removeEL(KeyImpl.init("Right")))!=null)setRight(ImageFilterUtil.toIntValue(o,"Right"));
+		if((o=parameters.removeEL(KeyImpl.init("Top")))!=null)setTop(ImageFilterUtil.toIntValue(o,"Top"));
+		if((o=parameters.removeEL(KeyImpl.init("Bottom")))!=null)setBottom(ImageFilterUtil.toIntValue(o,"Bottom"));
+		if((o=parameters.removeEL(KeyImpl.init("Color")))!=null)setColor(ImageFilterUtil.toColor(o,"Color"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

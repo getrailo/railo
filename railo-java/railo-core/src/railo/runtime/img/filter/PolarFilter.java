@@ -15,9 +15,18 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.Struct;
+import java.awt.image.BufferedImage;
+import railo.runtime.type.List;
+import railo.runtime.exp.FunctionException;
+
 import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.KeyImpl;
@@ -75,12 +84,18 @@ public class PolarFilter extends TransformFilter  implements DynFiltering {
 	}
 	
 	/**
-     * Set the distortion type.
-     * @param type the distortion type
-     * @see #getType
+     * Set the distortion type, valid values are
+     * - RECT_TO_POLAR = Convert from rectangular to polar coordinates
+     * - POLAR_TO_RECT = Convert from polar to rectangular coordinates
+     * - INVERT_IN_CIRCLE = Invert the image in a circle
      */
-	public void setType(int type) {
-		this.type = type;
+	public void setType(String type) throws ExpressionException {
+		type=type.trim().toUpperCase();
+		if("RECT_TO_POLAR".equals(type)) this.type = RECT_TO_POLAR;
+		else if("POLAR_TO_RECT".equals(type)) this.type = POLAR_TO_RECT;
+		else if("INVERT_IN_CIRCLE".equals(type)) this.type = INVERT_IN_CIRCLE;
+		else
+			throw new ExpressionException("inavlid type defintion ["+type+"], valid types are [RECT_TO_POLAR,POLAR_TO_RECT,INVERT_IN_CIRCLE]");
 	}
 
 	/**
@@ -215,7 +230,7 @@ public class PolarFilter extends TransformFilter  implements DynFiltering {
 
 	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
 		Object o;
-		if((o=parameters.removeEL(KeyImpl.init("Type")))!=null)setType(ImageFilterUtil.toIntValue(o,"Type"));
+		if((o=parameters.removeEL(KeyImpl.init("Type")))!=null)setType(ImageFilterUtil.toString(o,"Type"));
 		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
 		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toIntValue(o,"Interpolation"));
 

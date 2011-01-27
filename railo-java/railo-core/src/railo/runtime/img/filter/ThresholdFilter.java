@@ -15,6 +15,22 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.Struct;
+import java.awt.image.BufferedImage;
+import railo.runtime.type.List;
+import railo.runtime.exp.FunctionException;
+
+import railo.runtime.type.KeyImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.Struct;
+import java.awt.image.BufferedImage;
+import railo.runtime.type.List;
+import railo.runtime.exp.FunctionException;
+
 import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -146,8 +162,8 @@ public class ThresholdFilter extends PointFilter  implements DynFiltering {
 	}
 	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
 		Object o;
-		if((o=parameters.removeEL(KeyImpl.init("White")))!=null)setWhite(ImageFilterUtil.toIntValue(o,"White"));
-		if((o=parameters.removeEL(KeyImpl.init("Black")))!=null)setBlack(ImageFilterUtil.toIntValue(o,"Black"));
+		if((o=parameters.removeEL(KeyImpl.init("White")))!=null)setWhite(ImageFilterUtil.toColorRGB(o,"White"));
+		if((o=parameters.removeEL(KeyImpl.init("Black")))!=null)setBlack(ImageFilterUtil.toColorRGB(o,"Black"));
 		if((o=parameters.removeEL(KeyImpl.init("LowerThreshold")))!=null)setLowerThreshold(ImageFilterUtil.toIntValue(o,"LowerThreshold"));
 		if((o=parameters.removeEL(KeyImpl.init("UpperThreshold")))!=null)setUpperThreshold(ImageFilterUtil.toIntValue(o,"UpperThreshold"));
 		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
