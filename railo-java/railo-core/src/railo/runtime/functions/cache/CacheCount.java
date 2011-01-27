@@ -22,7 +22,7 @@ public final class CacheCount implements Function {
 	
 	public static double call(PageContext pc, String cacheName) throws PageException {
 		try {
-			return Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT).keys().size();
+			return Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT).keys().size();
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}

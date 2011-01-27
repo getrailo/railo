@@ -32,7 +32,7 @@ public final class CachePut implements Function {
 		//if(timeSpan!=null && timeSpan.longValue()==0L) return "";
 		//if(idleTime!=null && idleTime.longValue()==0L) return "";
 		try {
-			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			Cache cache = Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
 			cache.put(Util.key(key), value, idleTime, timeSpan);
 		} catch (Exception e) {
 			throw Caster.toPageException(e);

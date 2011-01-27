@@ -20,6 +20,11 @@ public class Util {
 		return getDefault(pc.getConfig(), type);
 	}
 	
+	public static CacheConnection getDefaultCacheConnection(Config config, int type) throws IOException {
+		CacheConnection cc= ((ConfigImpl)config).getCacheDefaultConnection(type);
+		if(cc==null) throw new CacheException("there is no default "+toStringType(type,"")+" cache defined, you need to define this default cache in the Railo Administrator");
+		return cc;
+	}
 	public static Cache getDefault(Config config, int type) throws IOException {
 		CacheConnection cc= ((ConfigImpl)config).getCacheDefaultConnection(type);
 		if(cc==null) throw new CacheException("there is no default "+toStringType(type,"")+" cache defined, you need to define this default cache in the Railo Administrator");
@@ -32,13 +37,43 @@ public class Util {
 		if(cc==null) return defaultValue;
 		return cc.getInstance(config);
 	}
+	
 
+	public static CacheConnection getCacheConnection(Config config,String cacheName, int type) throws IOException {
+		if(StringUtil.isEmpty(cacheName)){
+			return getDefaultCacheConnection(config, type);
+		}
+		return getCacheConnection(config, cacheName);
+	}
+
+	public static Cache getCache(Config config,String cacheName, int type) throws IOException {
+		if(StringUtil.isEmpty(cacheName)){
+			return getDefault(config, type);
+		}
+		return getCache(config, cacheName);
+	}
+	
+	/**
+	 * @param pc
+	 * @param cacheName
+	 * @param type
+	 * @return
+	 * @throws IOException
+	 * @deprecated use <code>getCache(Config config,String cacheName, int type)</code> instead
+	 */
 	public static Cache getCache(PageContext pc,String cacheName, int type) throws IOException {
 		if(StringUtil.isEmpty(cacheName)){
 			return getDefault(pc.getConfig(), type);
 		}
-		return getCache(pc, cacheName);
+		return getCache(pc.getConfig(), cacheName);
 	}
+	/**
+	 * @param pc
+	 * @param cacheName
+	 * @return
+	 * @throws IOException
+	 * @deprecated use <code>getCache(Config config,String cacheName)</code> instead
+	 */
 	public static Cache getCache(PageContext pc,String cacheName) throws IOException {
 		return getCache(pc.getConfig(), cacheName);
 	}
@@ -46,6 +81,16 @@ public class Util {
 		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
 		if(cc==null) throw new CacheException("there is no cache defined with name ["+cacheName+"]");
 		return cc.getInstance(config);	
+	}
+	public static CacheConnection getCacheConnection(Config config,String cacheName) throws IOException {
+		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
+		if(cc==null) throw new CacheException("there is no cache defined with name ["+cacheName+"]");
+		return cc;	
+	}
+	public static CacheConnection getCacheConnection(Config config,String cacheName, CacheConnection defaultValue) {
+		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
+		if(cc==null) return defaultValue;
+		return cc;	
 	}
 
 	private static String toStringType(int type, String defaultValue) {
