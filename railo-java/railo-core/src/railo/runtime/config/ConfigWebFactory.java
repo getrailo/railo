@@ -165,14 +165,22 @@ public final class ConfigWebFactory {
     	}
     	
     	
+		String hash=SystemUtil.hash(servletConfig.getServletContext());
+		Map<String, String> labels = configServer.getLabels();
+		String label=null;
+		if(labels!=null) {
+			label = labels.get(hash);
+		}
+		if(label==null) label=hash;
 		
     	SystemOut.print(SystemUtil.PRINTWRITER_OUT,
     			"===================================================================\n"+
-    			"WEB CONTEXT\n" +
+    			"WEB CONTEXT ("+label+")\n"+
     			"-------------------------------------------------------------------\n"+
     			"- config:"+configDir+"\n"+
     			"- webroot:"+servletConfig.getServletContext().getRealPath("/")+"\n"+
-    			"- hash:"+SystemUtil.hash(servletConfig.getServletContext())+"\n"+
+    			"- hash:"+hash+"\n"+
+    			"- label:"+label+"\n"+
     			"===================================================================\n"
     			
     			);
@@ -1709,8 +1717,10 @@ public final class ConfigWebFactory {
             ,60000
             ,true
             ,true
-            ,DataSource.ALLOW_ALL,
-            new StructImpl()
+            ,DataSource.ALLOW_ALL
+            ,false
+            ,false
+            ,new StructImpl()
 		);
 	  	
 	  	
@@ -1778,6 +1788,8 @@ public final class ConfigWebFactory {
                         ,toBoolean(dataSource.getAttribute("blob"),true)
                         ,toBoolean(dataSource.getAttribute("clob"),true)
                         ,toInt(dataSource.getAttribute("allow"),DataSource.ALLOW_ALL)
+                        ,toBoolean(dataSource.getAttribute("validate"),false)
+                        ,toBoolean(dataSource.getAttribute("storage"),false)
                         ,toStruct(dataSource.getAttribute("custom"))
     				);
 			  	}
@@ -1888,7 +1900,9 @@ public final class ConfigWebFactory {
 	  				name,
     				ClassUtil.loadClass(config.getClassLoader(),eConnection.getAttribute("class")),
     				toStruct(eConnection.getAttribute("custom")),
-    				Caster.toBooleanValue(eConnection.getAttribute("read-only"),false));
+    				Caster.toBooleanValue(eConnection.getAttribute("read-only"),false),
+    				Caster.toBooleanValue(eConnection.getAttribute("storage"),false)
+    				);
 			  		if(!StringUtil.isEmpty(name)){
 			  			caches.put(name.toLowerCase(),cc);
 			  		}
@@ -2106,19 +2120,19 @@ public final class ConfigWebFactory {
 
     private static void setDatasource(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
             String databasename, int port, String dsn, String user, String pass, 
-            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom) throws ClassException {
+            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,boolean validate,boolean storage, Struct custom) throws ClassException {
 		
         
 		datasources.put(datasourceName.toLowerCase(),
-          new DataSourceImpl(datasourceName,className, server, dsn, databasename, port, user, pass,connectionLimit,connectionTimeout,metaCacheTimeout,blob,clob, allow,custom, false));
+          new DataSourceImpl(datasourceName,className, server, dsn, databasename, port, user, pass,connectionLimit,connectionTimeout,metaCacheTimeout,blob,clob, allow,custom, false,validate,storage));
 
     }
     private static void setDatasourceEL(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
             String databasename, int port, String dsn, String user, String pass, 
-            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom) {
+            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,boolean validate,boolean storage, Struct custom) {
     	try {
 			setDatasource(config,datasources,datasourceName,className, server, 
-			        databasename, port, dsn, user, pass, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, custom);
+			        databasename, port, dsn, user, pass, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, validate,storage,custom);
 		} catch (Throwable t) {}
     }
     
@@ -3091,11 +3105,11 @@ public final class ConfigWebFactory {
   	  String strClientDirectory=scope.getAttribute("client-directory");
 	    if(hasAccess && !StringUtil.isEmpty(strClientDirectory)) {
 	    	strClientDirectory=ConfigWebUtil.translateOldPath(strClientDirectory);
-	    	Resource res = ConfigWebUtil.getFile(configDir,strClientDirectory, "client",configDir,FileUtil.TYPE_DIR,config);
+	    	Resource res = ConfigWebUtil.getFile(configDir,strClientDirectory, "client-scope",configDir,FileUtil.TYPE_DIR,config);
 	    	config.setClientScopeDir(res);
 	    }
   	  	else {
-  	  		config.setClientScopeDir(configDir.getRealResource("client"));
+  	  		config.setClientScopeDir(configDir.getRealResource("client-scope"));
   	  	}
 	    
 	    String strMax=scope.getAttribute("client-directory-max-size");
@@ -3779,9 +3793,18 @@ public final class ConfigWebFactory {
         Element application=getChildByName(doc.getDocumentElement(),"application");
         Element scope=		getChildByName(doc.getDocumentElement(),"scope");
       	
+
+        // Scope Logger
+        String strLogger=scope.getAttribute("log");
+        if(StringUtil.isEmpty(strLogger))strLogger="{railo-web}/logs/scope.log";
+        int logLevel=LogUtil.toIntType(scope.getAttribute("log-level"),Log.LEVEL_ERROR);
+        config.setScopeLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
+
+        
+        
         // Apllication Logger
-        String strLogger=application.getAttribute("application-log");
-        int logLevel=LogUtil.toIntType(application.getAttribute("application-log-level"),Log.LEVEL_ERROR);
+        strLogger=application.getAttribute("application-log");
+        logLevel=LogUtil.toIntType(application.getAttribute("application-log-level"),Log.LEVEL_ERROR);
         config.setApplicationLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
 
         // Exception Logger

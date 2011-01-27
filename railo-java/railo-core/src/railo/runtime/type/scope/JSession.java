@@ -9,12 +9,13 @@ import javax.servlet.http.HttpSessionBindingListener;
 import railo.runtime.PageContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.scope.storage.StorageScope;
 import railo.runtime.util.ApplicationContext;
 
 /**
  * 
  */
-public final class JSession extends ScopeSupport implements Session,HttpSessionBindingListener {
+public final class JSession extends ScopeSupport implements SessionPlus,HttpSessionBindingListener {
     
 	//public static final Collection.Key URL_TOKEN = KeyImpl.getInstance("urltoken");
 	public static final Collection.Key SESSION_ID = KeyImpl.getInstance("sessionid");
@@ -58,8 +59,12 @@ public final class JSession extends ScopeSupport implements Session,HttpSessionB
 
 	    lastAccess=System.currentTimeMillis();
         setEL(SESSION_ID,id);
-        setEL(ClientSupport.URLTOKEN,"CFID="+pc.getCFID()+"&CFTOKEN="+pc.getCFToken()+"&jsessionid="+id);
+        setEL(StorageScope.URLTOKEN,"CFID="+pc.getCFID()+"&CFTOKEN="+pc.getCFToken()+"&jsessionid="+id);
 		super.initialize(pc); 
+	}
+	
+	public void release(PageContext pc) {
+		release(pc);
 	}
 	
     /**

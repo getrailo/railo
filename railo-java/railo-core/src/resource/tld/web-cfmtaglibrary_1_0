@@ -261,7 +261,23 @@
 			<name>clientStorage</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies how Railo stores client variables</description>
+			<description>Specifies how Railo stores client variables:
+ Ê - memory: the session is only kept in memory
+ Ê - cookie: the session is stored in the client cookie
+ Ê - file (default): the session is stored in a local file
+ Ê - "datasource-name"|"cache-name": when you select a name of an available datasource or cache, the client scope will be stored in there</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>sessionStorage</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Specifies how Railo stores session variables:
+ Ê - memory (default): the session is only kept in memory
+ Ê - cookie: the session is stored in the client cookie
+ Ê - file: the session is stored in a local file
+ Ê - "datasource-name"|"cache-name": when you select a name of an available datasource or cache, the session scope will be stored in there
+			</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -286,6 +302,15 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>Enter the CreateTimeSpan function and values in days, hours, minutes, and seconds, separated 
 		by commas, to specify the lifespan of session variables. The default value is specified in the
+		Variables page of the Railo Administrator.</description>
+		</attribute>
+		<attribute>
+			<type>timespan</type>
+			<name>clientTimeout</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Enter the CreateTimeSpan function and values in days, hours, minutes, and seconds, separated 
+		by commas, to specify the lifespan of client variables. The default value is specified in the
 		Variables page of the Railo Administrator.</description>
 		</attribute>
 		<attribute>

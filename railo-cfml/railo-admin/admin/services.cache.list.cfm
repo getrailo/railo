@@ -76,8 +76,8 @@ Redirtect to entry --->
 </cfif>
     
 <cfset querySort(connections,"name")>
-<cfset srcLocal=queryNew("name,class,custom,default,readonly")>
-<cfset srcGlobal=queryNew("name,class,custom,default,readonly")>
+<cfset srcLocal=queryNew("name,class,custom,default,readonly,storage")>
+<cfset srcGlobal=queryNew("name,class,custom,default,readonly,storage")>
 
 
 
@@ -94,6 +94,7 @@ Redirtect to entry --->
     <cfset QuerySetCell(tmp,"class",connections.class)>
     <cfset QuerySetCell(tmp,"custom",connections.custom)>
     <cfset QuerySetCell(tmp,"default",connections.default)>
+    <cfset QuerySetCell(tmp,"storage",connections.storage)>
     <cfset QuerySetCell(tmp,"readonly",connections.readonly)>
 </cfloop>
 <cfset querySort(connections,"default")>
@@ -128,8 +129,9 @@ function selectAll(field) {
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<cfif access EQ "yes"><td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td></cfif>
-		<td width="250" class="tblHead" nowrap>#stText.Settings.cache.name#</td>
-		<td width="250" class="tblHead" nowrap># stText.Settings.cache.type#</td>
+		<td width="225" class="tblHead" nowrap>#stText.Settings.cache.name#</td>
+		<td width="225" class="tblHead" nowrap># stText.Settings.cache.type#</td>
+		<td width="50" class="tblHead" nowrap># stText.Settings.cache.storage#</td>
 		<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 	</tr>
 	<cfloop query="srcGlobal">
@@ -147,6 +149,7 @@ function selectAll(field) {
 		</td></cfif>
 		<td class="tblContent" nowrap><input type="hidden" name="name_#srcGlobal.currentrow#" value="#srcGlobal.name#">#srcGlobal.name#</td>
 		<td class="tblContent" nowrap>#driver.getLabel()#</td>
+		<td class="tblContent" nowrap>#yesNoFormat(srcGlobal.storage)#</td>
 		<td class="tblContent" nowrap valign="middle" align="center">
 				<cfif StructKeyExists(stVeritfyMessages, srcGlobal.name)>
 					<cfif stVeritfyMessages[srcGlobal.name].label eq "OK">
@@ -201,9 +204,10 @@ function selectAll(field) {
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td width="60"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td>
-		<td width="305" class="tblHead" nowrap>#stText.Settings.cache.name#</td>
-		<td width="305" class="tblHead" nowrap># stText.Settings.cache.type#</td>
-		<td width="70" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
+		<td width="280" class="tblHead" nowrap>#stText.Settings.cache.name#</td>
+		<td width="280" class="tblHead" nowrap># stText.Settings.cache.type#</td>
+		<td width="50" class="tblHead" nowrap># stText.Settings.cache.storage#</td>
+		<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 	</tr>
 	<cfloop query="srcLocal">
     	<cftry>
@@ -226,6 +230,7 @@ function selectAll(field) {
 		</td>
 		<td class="tblContent" nowrap><input type="hidden" name="name_#srcLocal.currentrow#" value="#srcLocal.name#">#srcLocal.name#</td>
 		<td class="tblContent" nowrap>#driver.getLabel()#</td>
+		<td class="tblContent" nowrap>#yesNoFormat(srcLocal.storage)#</td>
 		<td class="tblContent" nowrap valign="middle" align="center">
 				<cfif StructKeyExists(stVeritfyMessages, srcLocal.name)>
 					<cfif stVeritfyMessages[srcLocal.name].label eq "OK">

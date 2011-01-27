@@ -47,12 +47,29 @@ Error Output --->
 #stText.Overview.introdesc[request.adminType]#
 </div>
 <br />
-  
 
 <table class="tbl" width="740">
 <tr>
 	<td colspan="2"><h2>#stText.Overview.Info#</h2></td>
 </tr>
+
+    <cfadmin 
+        action="getInfo"
+        type="#request.adminType#"
+        password="#session["password"&request.adminType]#"
+        returnVariable="info">
+<cfif request.adminType EQ "web">
+<tr>
+	<td class="tblHead" width="150">#stText.Overview.label#</td>
+	<td class="tblContent">#info.label#</td>
+</tr>
+<tr>
+	<td class="tblHead" width="150">#stText.Overview.hash#</td>
+	<td class="tblContent">#info.hash#</td>
+</tr>
+</cfif>
+
+
 <tr>
 	<td class="tblHead" width="150">#stText.Overview.Version#</td>
 	<td class="tblContent">Railo #server.railo.version# #server.railo.state#</td>
@@ -72,7 +89,23 @@ Error Output --->
 	<td class="tblContent">#replace(server.ColdFusion.ProductVersion,',','.','all')#</td>
 </tr>
 
+
+
+<tr>
+	<td width="150" colspan="2">&nbsp;</td>
+</tr>
+<tr>
+	<td class="tblHead" width="150">#stText.Overview.config#</td>
+	<td class="tblContent">#info.config#</td>
+</tr>
+
+
 <cfif request.adminType EQ "web">
+<tr>
+	<td class="tblHead" width="150">#stText.Overview.webroot#</td>
+	<td class="tblContent">#info.root#</td>
+</tr>
+
 <cfadmin 
 	action="getTLDs"
 	type="#request.adminType#"

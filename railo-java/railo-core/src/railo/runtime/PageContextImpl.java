@@ -116,7 +116,6 @@ import railo.runtime.type.scope.CGI;
 import railo.runtime.type.scope.CGIImpl;
 import railo.runtime.type.scope.Client;
 import railo.runtime.type.scope.ClientPlus;
-import railo.runtime.type.scope.ClientSupport;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.Cookie;
 import railo.runtime.type.scope.CookieImpl;
@@ -131,6 +130,7 @@ import railo.runtime.type.scope.ScopeFactory;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.scope.Server;
 import railo.runtime.type.scope.Session;
+import railo.runtime.type.scope.SessionPlus;
 import railo.runtime.type.scope.Threads;
 import railo.runtime.type.scope.URL;
 import railo.runtime.type.scope.URLForm;
@@ -140,6 +140,7 @@ import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
+import railo.runtime.type.scope.storage.StorageScope;
 import railo.runtime.util.ApplicationContext;
 import railo.runtime.util.ApplicationContextImpl;
 import railo.runtime.util.VariableUtil;
@@ -210,7 +211,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private Argument argument=new ArgumentImpl();
     private static LocalNotSupportedScope localUnsupportedScope=LocalNotSupportedScope.getInstance();
 	private LocalPro local=localUnsupportedScope;
-	private Session session;
+	private SessionPlus session;
 	private Server server;
 	private Cluster cluster;
 	private CookieImpl cookie=new CookieImpl();
@@ -449,6 +450,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	client.release(this);
         	client=null;
         }
+		if(session!=null){
+        	session.release(this);
+        	session=null;
+        }
 		
 		// ORM
         if(ormSession!=null){
@@ -534,7 +539,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		//if(cluster!=null)cluster.release();
         
         //client=null;
-        session=null;
+        //session=null;
+        
+		
+        
+        
 		application=null;
 		
 		// Properties
@@ -1138,6 +1147,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see PageContext#sessionScope()
      */
     public Session sessionScope() throws PageException {
+		return sessionScope(true);
+	}
+    public Session sessionScope(boolean checkExpires) throws PageException {
 		if(session==null)	{
 			if(!applicationContext.hasName())
 				throw new ExpressionException("there is no session context defined for this application","you can define a session context with the tag cfapplication/Application.cfc");
@@ -2109,13 +2121,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private void initIdAndToken() {
         boolean setCookie=true;
         // From URL
-        Object oCfid = urlScope().get(ClientSupport.CFID,null);
-        Object oCftoken = urlScope().get(ClientSupport.CFTOKEN,null);
+        Object oCfid = urlScope().get(StorageScope.CFID,null);
+        Object oCftoken = urlScope().get(StorageScope.CFTOKEN,null);
         // Cookie
         if((oCfid==null || !Decision.isGUIdSimple(oCfid)) || oCftoken==null) {
             setCookie=false;
-            oCfid = cookieScope().get(ClientSupport.CFID,null);
-            oCftoken = cookieScope().get(ClientSupport.CFTOKEN,null);
+            oCfid = cookieScope().get(StorageScope.CFID,null);
+            oCftoken = cookieScope().get(StorageScope.CFTOKEN,null);
         }
         if(oCfid!=null && !Decision.isGUIdSimple(oCfid) ) {
         	oCfid=null;
@@ -2533,10 +2545,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    
 	    // init session
 	    if(initSession) {
-	    	//session=scopeContext.getSessionScope(this,isNew);
-	    	//if(initSession) {// isNew i not used in this case, because it is possible that "onApplicationStart" has initilaized the session scope
-		    	listener.onSessionStart(this);
-		    //}
+	    	listener.onSessionStart(this);
 	    }
 	    return true;
     }

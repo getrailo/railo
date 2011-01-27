@@ -54,8 +54,18 @@ public class ServerCacheConnection implements CacheConnection {
 		return cc.getName();
 	}
 
+	/**
+	 * @see railo.runtime.cache.CacheConnection#isReadOnly()
+	 */
 	public boolean isReadOnly() {
 		return true;
+	}
+
+	/**
+	 * @see railo.runtime.cache.CacheConnection#isStorage()
+	 */
+	public boolean isStorage() {
+		return cc.isStorage();
 	}
 
 }

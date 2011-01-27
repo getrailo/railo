@@ -33,6 +33,7 @@ public class GetApplicationSettings {
 		sct.setEL("applicationtimeout", ac.getApplicationTimeout());
 		sct.setEL("clientmanagement", Caster.toBoolean(ac.isSetClientManagement()));
 		sct.setEL("clientstorage", ac.getClientstorage());
+		sct.setEL("sessionstorage", ac.getSessionstorage());
 		sct.setEL("customtagpaths", toArray(ac.getCustomTagMappings()));
 		sct.setEL("datasource", ac.getDefaultDataSource());
 		sct.setEL("loginstorage", ApplicationContextUtil.translateLoginStorage(ac.getLoginStorage()));

@@ -281,7 +281,9 @@ public abstract class ConfigImpl implements Config {
 
 
 	private Resource clientScopeDir;
+	private Resource sessionScopeDir;
 	private long clientScopeDirSize=1024*1024*10;
+	private long sessionScopeDirSize=1024*1024*10;
 
 	private Resource cacheDir;
 	private long cacheDirSize=1024*1024*10;
@@ -364,6 +366,7 @@ public abstract class ConfigImpl implements Config {
 	private boolean useComponentPathCache=true;
 	private boolean useCTPathCache=true;
 	private int amfConfigType=AMF_CONFIG_TYPE_XML;
+	private LogAndSource scopeLogger;
 	
 	
 	
@@ -958,6 +961,11 @@ public abstract class ConfigImpl implements Config {
     public LogAndSource getApplicationLogger() {
     	if(applicationLogger==null)applicationLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return applicationLogger;
+    }
+    
+    public LogAndSource getScopeLogger() {
+    	if(scopeLogger==null)scopeLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		return scopeLogger;
     }
 
     /**
@@ -1666,6 +1674,10 @@ public abstract class ConfigImpl implements Config {
         this.applicationLogger=applicationLogger;
     }
 
+    protected void setScopeLogger(LogAndSource scopeLogger) {
+        this.scopeLogger=scopeLogger;
+    }
+
 
     protected void setMappingLogger(LogAndSource mappingLogger) {
         this.mappingLogger=mappingLogger;
@@ -2251,8 +2263,13 @@ public abstract class ConfigImpl implements Config {
 	 * @see railo.runtime.config.Config#getClientScopeDir()
 	 */
 	public Resource getClientScopeDir() {
-		if(clientScopeDir==null) return getConfigDir().getRealResource("client");
+		if(clientScopeDir==null) clientScopeDir=getConfigDir().getRealResource("client-scope");
 		return clientScopeDir;
+	}
+
+	public Resource getSessionScopeDir() {
+		if(sessionScopeDir==null) sessionScopeDir=getConfigDir().getRealResource("session-scope");
+		return sessionScopeDir;
 	}
 	
 	
@@ -2274,12 +2291,19 @@ public abstract class ConfigImpl implements Config {
 	public long getClientScopeDirSize() {
 		return clientScopeDirSize;
 	}
+	public long getSessionScopeDirSize() {
+		return sessionScopeDirSize;
+	}
 
 	/**
 	 * @param clientScopeDir the clientScopeDir to set
 	 */
 	protected void setClientScopeDir(Resource clientScopeDir) {
 		this.clientScopeDir = clientScopeDir;
+	}
+	
+	protected void setSessionScopeDir(Resource sessionScopeDir) {
+		this.sessionScopeDir = sessionScopeDir;
 	}
 
 	/**

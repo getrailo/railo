@@ -45,7 +45,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
     private Struct runningPcs=new StructImpl();
     int idCounter=1;
     private QueryCache queryCache;
-    private ScopeContext scopeContext=new ScopeContext();
+    private ScopeContext scopeContext=new ScopeContext(this);
     private HttpServlet servlet;
 	private URL url=null;
 	private CFMLEngineImpl engine;

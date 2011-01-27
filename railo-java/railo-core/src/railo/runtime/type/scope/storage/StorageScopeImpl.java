@@ -1,4 +1,4 @@
-package railo.runtime.type.scope;
+package railo.runtime.type.scope.storage;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -7,13 +7,14 @@ import java.util.List;
 import java.util.Set;
 
 import railo.commons.lang.SizeOf;
+import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.Config;
+import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
-import railo.runtime.dump.DumpTable;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -21,10 +22,14 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
+import railo.runtime.util.ApplicationContextImpl;
 
-public abstract class ClientSupport extends StructSupport implements Client,Sizeable,ClientPlus {
+public abstract class StorageScopeImpl extends StructSupport implements StorageScope,Sizeable {
 	
+	private static int _id=0;
+	private int id=0;
 
+	private static final long serialVersionUID = 7874930250042576053L;
 	private static Set<String> FIX_KEYS=new HashSet<String>();
 	static {
 		FIX_KEYS.add("cfid");
@@ -34,12 +39,6 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 		FIX_KEYS.add("hitcount");
 		FIX_KEYS.add("timecreated");
 	}
-	public static Collection.Key CFID=KeyImpl.getInstance("cfid");
-	public static Collection.Key CFTOKEN=KeyImpl.getInstance("cftoken");
-	public static Collection.Key URLTOKEN=KeyImpl.getInstance("urltoken");
-	public static Collection.Key LASTVISIT=KeyImpl.getInstance("lastvisit");
-	public static Collection.Key HITCOUNT=KeyImpl.getInstance("hitcount");
-	public static Collection.Key TIMECREATED=KeyImpl.getInstance("timecreated");
 	
 
 	protected static Set<String> ignoreSet=new HashSet<String>();
@@ -57,6 +56,11 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 	protected int hitcount=0;
 	protected DateTime timecreated;
 	private boolean hasChanges=false;
+	private String strType;
+	private int type;
+	private long timeSpan=-1;
+	private String storage;
+	
 	
 	/**
 	 * Constructor of the class
@@ -66,7 +70,7 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 	 * @param lastvisit
 	 * @param hitcount
 	 */
-	public ClientSupport(Struct sct, DateTime timecreated, DateTime _lastvisit, long lastvisit, int hitcount) {
+	public StorageScopeImpl(Struct sct, DateTime timecreated, DateTime _lastvisit, long lastvisit, int hitcount,String strType,int type) {
 		this.sct=sct;
 		this.timecreated=timecreated;
 		if(_lastvisit==null)	this._lastvisit=timecreated;
@@ -74,8 +78,11 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 		
 		if(lastvisit==-1) 		this.lastvisit=this._lastvisit.getTime();
 		else 					this.lastvisit=lastvisit;
-		
+
 		this.hitcount=hitcount;
+		this.strType=strType;
+		this.type=type;
+        id=++_id;
 	}
 	
 	/**
@@ -83,14 +90,17 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 	 * @param other
 	 * @param deepCopy
 	 */
-	public ClientSupport(ClientSupport other, boolean deepCopy) {
+	public StorageScopeImpl(StorageScopeImpl other, boolean deepCopy) {
 		this.sct=(Struct)other.sct.duplicate(deepCopy);
 		this.timecreated=other.timecreated;
 		this._lastvisit=other._lastvisit;
 		this.hitcount=other.hitcount;
 		this.isinit=other.isinit;
 		this.lastvisit=other.lastvisit;
-		this.timecreated=other.timecreated;
+		this.strType=other.strType;
+		this.type=other.type;
+		this.timeSpan=other.timeSpan;
+        id=++_id;
 	}
 
 	/**
@@ -99,6 +109,13 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 	public void initialize(PageContext pc) {
 		isinit=true;
 		hasChanges=false;
+		ApplicationContextImpl ac=(ApplicationContextImpl) pc.getApplicationContext();
+		
+		this.timeSpan=getType()==SCOPE_SESSION?
+				ac.getSessionTimeout().getMillis():
+				ac.getClientTimeout().getMillis();
+		
+		
 		//lastvisit=System.currentTimeMillis();
 		if(sct==null) sct=new StructImpl();
 		sct.setEL(CFID, pc.getCFID());
@@ -108,8 +125,12 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 		_lastvisit=new DateTimeImpl(pc.getConfig());
 		lastvisit=System.currentTimeMillis();
 		
-		sct.setEL(HITCOUNT, new Double(hitcount++));
-		sct.setEL(TIMECREATED, timecreated);
+		if(type==SCOPE_CLIENT){
+			sct.setEL(HITCOUNT, new Double(hitcount++));
+			sct.setEL(TIMECREATED, timecreated);
+		}
+		
+		
 	}
 
 	/**
@@ -124,10 +145,7 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 	 * @see railo.runtime.type.Scope#release()
 	 */
 	public void release() {
-		isinit=false;
-		sct.setEL(HITCOUNT, new Double(hitcount));
-		sct.setEL(TIMECREATED, timecreated);
-		sct.setEL(LASTVISIT, _lastvisit);
+		release(ThreadLocalPageContext.get());
 	}
 	
 	/**
@@ -135,39 +153,24 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 	 */
 	public void release(PageContext pc) {
 		isinit=false;
-		sct.setEL(HITCOUNT, new Double(hitcount));
-		sct.setEL(TIMECREATED, timecreated);
+		
 		sct.setEL(LASTVISIT, _lastvisit);
+		
+		if(type==SCOPE_CLIENT){
+			sct.setEL(HITCOUNT, new Double(hitcount));
+			sct.setEL(TIMECREATED, timecreated);
+		}
 	}
 	
 	/**
 	 * @return returns if the scope is empty or not, this method ignore the "constant" entries of the scope (cfid,cftoken,urltoken)
 	 */
 	public boolean hasContent() {
-		if(sct.size()==6 && sct.containsKey(URLTOKEN) && sct.containsKey(CFTOKEN) && sct.containsKey(CFID)) {
+		if(sct.size()==(type==SCOPE_CLIENT?6:4) && sct.containsKey(URLTOKEN) && sct.containsKey(CFTOKEN) && sct.containsKey(CFID)) {
 			return false;
 		}
 		return true;
 	}
-	
-
-	/**
-	 *
-	 * @see railo.runtime.type.Scope#getType()
-	 */
-	public int getType() {
-		return SCOPE_CLIENT;
-	}
-
-	/**
-	 *
-	 * @see railo.runtime.type.Scope#getTypeAsString()
-	 */
-	public String getTypeAsString() {
-		return "client";
-	}
-
-	
 
 	/**
 	 * @see railo.runtime.type.Collection#clear()
@@ -354,9 +357,8 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 		return sct.compareTo(str);
 	}
 
-	
 	/**
-	 * @see railo.runtime.type.scope.Client#lastVisit()
+	 * @see railo.runtime.type.scope.storage.StorageScope#lastVisit()
 	 */
 	public long lastVisit() {
 		return lastvisit;
@@ -373,34 +375,18 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 		return (String[]) keys.toArray(new String[keys.size()]);
 	}
 	
+
 	/**
-	 * this is a supporting method for implemetation of method "getDumpData" of the child cﾚasses
-	 * @param pageContext
-	 * @param maxlevel
-	 * @return
+	 * @see railo.runtime.type.scope.storage.StorageScope#store(railo.runtime.config.Config)
 	 */
-	protected DumpTable toDumpTable(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		return StructUtil.toDumpTable(this, "Client Scope", pageContext, maxlevel, dp);
-		/*
-		maxlevel--;
-		Iterator it=keyIterator();
-		
-		DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");
-		
-		int maxkeys=dp.getMaxKeys();
-		int index=0;
-		while(it.hasNext()) {
-			String key=it.next().toString();
-			
-			if(DumpUtil.keyValid(dp,maxlevel, key)){
-				if(maxkeys<=index++)break;
-				table.appendRow(1,new SimpleDumpData(key),DumpUtil.toDumpData(get(key,null), pageContext,maxlevel,dp));
-			}
-		}
-		return table;*/
+	public void store(Config config){
+		//do nothing
 	}
-	
-	public void store(){
+
+	/**
+	 * @see railo.runtime.type.scope.storage.StorageScope#unstore(railo.runtime.config.Config)
+	 */
+	public void unstore(Config config){
 		//do nothing
 	}
 
@@ -432,4 +418,93 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 	public long sizeOf() {
 		return SizeOf.size(sct);
 	}
+	
+	public final int getType() {
+		return type;
+	}
+
+	public final String getTypeAsString() {
+		return strType;
+	}
+	
+	
+
+	/**
+	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
+	 */
+	public final DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
+		return StructUtil.toDumpTable(this, StringUtil.ucFirst(getTypeAsString())+" Scope ("+getStorageType()+")", pageContext, maxlevel, dp);
+	}
+	
+
+	public long getLastAccess() { return lastvisit;}
+	public long getTimeSpan() { return timeSpan;}
+	
+	
+	public void touch() {
+		lastvisit=System.currentTimeMillis();
+		_lastvisit=new DateTimeImpl(ThreadLocalPageContext.getConfig());
+	}
+	
+	public boolean isExpired() {
+	    return (getLastAccess()+getTimeSpan())<System.currentTimeMillis();
+    }
+
+
+	
+	/**
+	 * @see railo.runtime.type.scope.storage.StorageScope#setStorage(java.lang.String)
+	 */
+	public void setStorage(String storage) {
+		this.storage=storage;
+	}
+
+	/**
+	 * @see railo.runtime.type.scope.storage.StorageScope#getStorage()
+	 */
+	public String getStorage() {
+		return storage;
+	}
+	
+	public static String encode(String input) {
+		int len=input.length();
+		StringBuilder sb=new StringBuilder();
+		char c;
+		for(int i=0;i<len;i++){
+			c=input.charAt(i);
+			if((c>='0' && c<='9') || (c>='a' && c<='z') || (c>='A' && c<='Z') || c=='_' || c=='-')
+				sb.append(c);
+			else {
+				sb.append('$');
+				sb.append(Integer.toString(((int)c),Character.MAX_RADIX));
+				sb.append('$');
+			}
+		}
+		
+		return sb.toString();
+	}
+
+	public static String decode(String input) {
+		int len=input.length();
+		StringBuilder sb=new StringBuilder();
+		char c;
+		int ni;
+		for(int i=0;i<len;i++){
+			c=input.charAt(i);
+			if(c=='$') {
+				ni=input.indexOf('$',i+1);
+				sb.append((char)Integer.parseInt(input.substring(i+1,ni),Character.MAX_RADIX));
+				i=ni;
+			}
+				
+			else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
+	}
+	
+    public int _getId() {
+        return id;
+    }
 }

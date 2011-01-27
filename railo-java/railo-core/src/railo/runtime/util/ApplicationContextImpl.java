@@ -19,6 +19,8 @@ public class ApplicationContextImpl implements ApplicationContextPro {
    
 
 	private static final long serialVersionUID = 940663152793150953L;
+
+
 	
 
 	private String name;
@@ -27,9 +29,11 @@ public class ApplicationContextImpl implements ApplicationContextPro {
     private boolean setSessionManagement;
     private boolean setClientManagement;
     private TimeSpan sessionTimeout=null; 
+	private TimeSpan clientTimeout;
     private TimeSpan applicationTimeout=null;
     private int loginStorage=-1;
     private String clientstorage;
+    private String sessionstorage;
 	private int scriptProtect;
 	private Mapping[] mappings;
 	private Mapping[] ctmappings;
@@ -48,23 +52,27 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 
 
 	private int localMode;
+
+
     
     /**
      * constructor of the class
      * @param config
      */
     public ApplicationContextImpl(Config config, Component component,boolean isDefault) {
+    	ConfigImpl ci = ((ConfigImpl)config);
     	this.component=component;
     	setClientCookies=config.isClientCookies();
         setDomainCookies=config.isDomainCookies();
         setSessionManagement=config.isSessionManagement();
         setClientManagement=config.isClientManagement();
         sessionTimeout=config.getSessionTimeout();
+        clientTimeout=ci.getClientTimeout();
         applicationTimeout=config.getApplicationTimeout();
         loginStorage=Scope.SCOPE_COOKIE;
         scriptProtect=config.getScriptProtect();
         this.isDefault=isDefault;
-        this.defaultDataSource=((ConfigImpl)config).getDefaultDataSource();
+        this.defaultDataSource=ci.getDefaultDataSource();
         this.localMode=config.getLocalMode();
     }
     
@@ -89,9 +97,11 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 		dbl.setSessionManagement=setSessionManagement;
 		dbl.setClientManagement=setClientManagement;
 		dbl.sessionTimeout=sessionTimeout;
+		dbl.clientTimeout=clientTimeout;
 		dbl.applicationTimeout=applicationTimeout;
 		dbl.loginStorage=loginStorage;
 		dbl.clientstorage=clientstorage;
+		dbl.sessionstorage=sessionstorage;
 		dbl.scriptProtect=scriptProtect;
 		dbl.mappings=mappings;
 		dbl.ctmappings=ctmappings;
@@ -164,12 +174,26 @@ public class ApplicationContextImpl implements ApplicationContextPro {
     public TimeSpan getSessionTimeout() {
         return sessionTimeout;
     }
+    
     /**
      * @param sessionTimeout The sessionTimeout to set.
      */
     public void setSessionTimeout(TimeSpan sessionTimeout) {
         this.sessionTimeout = sessionTimeout;
     }
+
+
+    public TimeSpan getClientTimeout() {
+        return clientTimeout;
+    }
+    
+    /**
+     * @param sessionTimeout The sessionTimeout to set.
+     */
+    public void setClientTimeout(TimeSpan clientTimeout) {
+        this.clientTimeout = clientTimeout;
+    }
+    
     /**
      * @see railo.runtime.util.IApplicationContext#isSetClientCookies()
      */
@@ -224,11 +248,17 @@ public class ApplicationContextImpl implements ApplicationContextPro {
     public String getClientstorage() {
         return clientstorage;
     }
+    public String getSessionstorage() {
+        return sessionstorage;
+    }
     /**
      * @param clientstorage The clientstorage to set.
      */
     public void setClientstorage(String clientstorage) {
         this.clientstorage = clientstorage;
+    }
+    public void setSessionstorage(String sessionstorage) {
+        this.sessionstorage = sessionstorage;
     }
 
     /**
@@ -402,5 +432,7 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 	public void setLocalMode(int localMode) {
 		this.localMode = localMode;
 	}
+
+
 	
 }

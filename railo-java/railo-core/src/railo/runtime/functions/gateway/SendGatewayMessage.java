@@ -6,7 +6,6 @@ import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 

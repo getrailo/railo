@@ -32,8 +32,10 @@ public final class Application extends TagImpl {
 	private Boolean setDomainCookies;
 	private Boolean setSessionManagement;
 	private String clientstorage;
+	private String sessionstorage;
 	private Boolean setClientManagement;
 	private TimeSpan sessionTimeout;
+	private TimeSpan clientTimeout;
 	private TimeSpan applicationTimeout;
 	private Mapping[] mappings;
 	private Mapping[] customTagMappings;
@@ -58,8 +60,10 @@ public final class Application extends TagImpl {
         setDomainCookies=null;
         setSessionManagement=null;
         clientstorage=null;
+        sessionstorage=null;
         setClientManagement=null;
         sessionTimeout=null;
+        clientTimeout=null;
         applicationTimeout=null;
         mappings=null;
         customTagMappings=null;
@@ -127,7 +131,10 @@ public final class Application extends TagImpl {
 	**/
 	public void setClientstorage(String clientstorage)	{
 		this.clientstorage=clientstorage;
-	    
+	}
+
+	public void setSessionstorage(String sessionstorage)	{
+		this.sessionstorage=sessionstorage;
 	}
 
 	/** set the value clientmanagement
@@ -147,7 +154,10 @@ public final class Application extends TagImpl {
 	**/
 	public void setSessiontimeout(TimeSpan sessionTimeout)	{
 		this.sessionTimeout=sessionTimeout;
-	    //getAppContext().setSessionTimeout(sessionTimeout);
+	}
+	
+	public void setClienttimeout(TimeSpan clientTimeout)	{
+		this.clientTimeout=clientTimeout;
 	}
 
 	/** set the value applicationtimeout
@@ -239,8 +249,12 @@ public final class Application extends TagImpl {
 	private void set(ApplicationContextImpl ac) {
 		if(applicationTimeout!=null)			ac.setApplicationTimeout(applicationTimeout);
 		if(sessionTimeout!=null)				ac.setSessionTimeout(sessionTimeout);
+		if(clientTimeout!=null)				ac.setClientTimeout(clientTimeout);
 		if(clientstorage!=null)	{
 			ac.setClientstorage(clientstorage);
+		}
+		if(sessionstorage!=null)	{
+			ac.setSessionstorage(sessionstorage);
 		}
 		if(customTagMappings!=null)				ac.setCustomTagMappings(customTagMappings);
 		if(mappings!=null)						ac.setMappings(mappings);

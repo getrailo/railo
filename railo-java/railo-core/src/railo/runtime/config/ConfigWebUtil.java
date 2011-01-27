@@ -293,8 +293,8 @@ public final class ConfigWebUtil {
     public static LogAndSource getLogAndSource( ConfigServer configServer, Config config, String strLogger, boolean hasAccess, int logLevel) throws IOException {
         if(logLevel==-1)logLevel=Log.LEVEL_ERROR;
     	boolean isCS=config instanceof ConfigServer;
-        if(!StringUtil.isEmpty(strLogger) && hasAccess) {
-            return ConfigWebUtil.getLogAndSource(config,strLogger,logLevel);
+        if(!StringUtil.isEmpty(strLogger) && hasAccess && !"console".equalsIgnoreCase(strLogger)) {
+        	return ConfigWebUtil.getLogAndSource(config,strLogger,logLevel);
         }
         return new LogAndSourceImpl(LogConsole.getInstance(config,logLevel),strLogger);
     }

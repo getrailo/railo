@@ -50,9 +50,11 @@ public class ModernAppListener extends AppListenerSupport {
 	private static final Collection.Key APPLICATION_TIMEOUT = KeyImpl.getInstance("applicationTimeout");
 	private static final Collection.Key CLIENT_MANAGEMENT = KeyImpl.getInstance("clientManagement");
 	private static final Collection.Key CLIENT_STORAGE = KeyImpl.getInstance("clientStorage");
+	private static final Collection.Key SESSION_STORAGE = KeyImpl.getInstance("sessionStorage");
 	private static final Collection.Key LOGIN_STORAGE = KeyImpl.getInstance("loginStorage");
 	private static final Collection.Key SESSION_MANAGEMENT = KeyImpl.getInstance("sessionManagement");
 	private static final Collection.Key SESSION_TIMEOUT = KeyImpl.getInstance("sessionTimeout");
+	private static final Collection.Key CLIENT_TIMEOUT = KeyImpl.getInstance("clientTimeout");
 	private static final Collection.Key SET_CLIENT_COOKIES = KeyImpl.getInstance("setClientCookies");
 	private static final Collection.Key SET_DOMAIN_COOKIES = KeyImpl.getInstance("setDomainCookies");
 	private static final Collection.Key SCRIPT_PROTECT = KeyImpl.getInstance("scriptProtect");
@@ -284,10 +286,10 @@ public class ModernAppListener extends AppListenerSupport {
 		ComponentImpl app = (ComponentImpl) apps.get(applicationName);
 		if(app==null || !app.containsKey(ON_SESSION_END)) return;
 		
-		PageContext pc=null;
+		PageContextImpl pc=null;
 		try {
 			pc = createPageContext(factory,app,applicationName,cfid,ON_SESSION_END);
-			call(app,pc, ON_SESSION_END, new Object[]{pc.sessionScope(),pc.applicationScope()});
+			call(app,pc, ON_SESSION_END, new Object[]{pc.sessionScope(false),pc.applicationScope()});
 		}
 		finally {
 			if(pc!=null){
@@ -296,7 +298,7 @@ public class ModernAppListener extends AppListenerSupport {
 		}
 	}
 
-	private PageContext createPageContext(CFMLFactory factory, ComponentImpl app, String applicationName, String cfid,Collection.Key methodName) throws PageException {
+	private PageContextImpl createPageContext(CFMLFactory factory, ComponentImpl app, String applicationName, String cfid,Collection.Key methodName) throws PageException {
 		Resource root = factory.getConfig().getRootDirectory();
 		String path = app.getPageSource().getFullRealpath();
 		
@@ -407,10 +409,14 @@ public class ModernAppListener extends AppListenerSupport {
 			// clientManagement
 			o=get(app,CLIENT_MANAGEMENT,null);
 			if(o!=null) appContext.setSetClientManagement(Caster.toBooleanValue(o));
-			
+
 			// clientStorage
 			o=get(app,CLIENT_STORAGE,null);
 			if(o!=null) appContext.setClientstorage(Caster.toString(o));
+			
+			// sessionStorage
+			o=get(app,SESSION_STORAGE,null);
+			if(o!=null) appContext.setSessionstorage(Caster.toString(o));
 
 			// loginStorage
 			o=get(app,LOGIN_STORAGE,null);
@@ -436,6 +442,10 @@ public class ModernAppListener extends AppListenerSupport {
 			// sessionTimeout
 			o=get(app,SESSION_TIMEOUT,null);
 			if(o!=null) appContext.setSessionTimeout(Caster.toTimespan(o));
+			
+			// clientTimeout
+			o=get(app,CLIENT_TIMEOUT,null);
+			if(o!=null) appContext.setClientTimeout(Caster.toTimespan(o));
 			
 			// setClientCookies
 			o=get(app,SET_CLIENT_COOKIES,null);

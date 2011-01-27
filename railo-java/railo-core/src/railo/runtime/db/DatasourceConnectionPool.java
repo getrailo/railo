@@ -21,7 +21,6 @@ public class DatasourceConnectionPool {
 	private Map<String,DCStack> dcs=new HashMap<String,DCStack>();
 	private Map<String,RefInteger> counter=new HashMap<String,RefInteger>();
 	
-	
 	public DatasourceConnection getDatasourceConnection(PageContext pc,DataSource datasource, String user, String pass) throws PageException {
 		pc=ThreadLocalPageContext.get(pc);
 		if(StringUtil.isEmpty(user)) {
@@ -49,13 +48,15 @@ public class DatasourceConnectionPool {
 				}
 				
 			}
-			while(!stack.isEmpty()) {
-				DatasourceConnectionImpl dc=(DatasourceConnectionImpl) stack.get(pc);
-					if(dc!=null && isValid(dc,Boolean.TRUE)){
-						_inc(datasource);
-						return dc.using();
-					}
-				
+			if(pc!=null){
+				while(!stack.isEmpty()) {
+					DatasourceConnectionImpl dc=(DatasourceConnectionImpl) stack.get(pc);
+						if(dc!=null && isValid(dc,Boolean.TRUE)){
+							_inc(datasource);
+							return dc.using();
+						}
+					
+				}
 			}
 			_inc(datasource);
 			return loadDatasourceConnection(datasource, user, pass).using();
@@ -141,11 +142,21 @@ public class DatasourceConnectionPool {
 	public static boolean isValid(DatasourceConnection dc,Boolean autoCommit) {
 		try {
 			if(dc.getConnection().isClosed())return false;
+		} 
+		catch (Throwable t) {return false;}
+
+		try {
+			if(((DataSourceImpl)dc.getDatasource()).validate() && !dc.getConnection().isValid(1000))return false;
+		} 
+		catch (Throwable t) {} // not all driver support this, because of that we ignore a error here, also protect from java 5
+		
+		
+		try {
 			if(autoCommit!=null) dc.getConnection().setAutoCommit(autoCommit.booleanValue());
 		} 
-		catch (Throwable t) {
-				return false;
-		}
+		catch (Throwable t) {return false;}
+		
+		
 		return true;
 	}
 

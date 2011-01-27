@@ -887,7 +887,11 @@ public final class ResourceUtil {
         	Resource[] files=filter==null?src.listResources():src.listResources(filter);
             for(int i=0;i<files.length;i++) {
             	_deleteContent(files[i],filter,true);
-            	if(deleteDirectories)src.delete();
+            	if(deleteDirectories){
+            		try {
+						src.remove(false);
+					} catch (IOException e) {}
+            	}
             }
             
         }

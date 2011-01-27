@@ -17,10 +17,9 @@ import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.exp.CacheException;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ResourceNameFilter;
-import railo.loader.engine.CFMLEngine;
-import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.Util;
 import railo.runtime.config.Config;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Struct;
 
 public class EHCache extends EHCacheSupport {
@@ -483,8 +482,7 @@ public class EHCache extends EHCacheSupport {
 	 * @see railo.commons.io.cache.Cache#init(railo.runtime.type.Struct)
 	 */
 	public void init(String cacheName, Struct arguments) throws IOException {
-		CFMLEngine engine = CFMLEngineFactory.getInstance();
-		init(engine.getThreadPageContext().getConfig(),cacheName, arguments);
+		init(ThreadLocalPageContext.getConfig(),cacheName, arguments);
 		
 	}
 	public void init(Config config,String cacheName, Struct arguments) {
@@ -495,6 +493,8 @@ public class EHCache extends EHCacheSupport {
 		setClassLoader();
 		Resource hashDir = config.getConfigDir().getRealResource("ehcache").getRealResource(createHash(arguments));
 		manager =((CacheManagerAndHash) managers.get(hashDir.getAbsolutePath())).manager;
+		
+		
 	} 
 
 	private void setClassLoader() {
@@ -505,6 +505,13 @@ public class EHCache extends EHCacheSupport {
 	private net.sf.ehcache.Cache getCache() {
 		setClassLoader();
 		return manager.getCache(cacheName);
+		/*Cache cache = manager.getCache(cacheName);
+		
+		RegisteredEventListeners listeners=cache.getCacheEventNotificationService();
+		listeners.registerListener(new ExpiresCacheEventListener());
+		
+		
+		return cache;*/
 	}
 	
 

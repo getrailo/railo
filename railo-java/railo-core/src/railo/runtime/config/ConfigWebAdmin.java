@@ -1051,13 +1051,14 @@ public final class ConfigWebAdmin {
      * @param blob 
      * @param clob 
      * @param allow 
+     * @param storage 
      * @param custom 
      * @throws ExpressionException
      * @throws SecurityException
      */
     public void updateDataSource(String name, String newName, String clazzName, String dsn, String username,String password,
             String host,String database,int port,int connectionLimit, int connectionTimeout,long metaCacheTimeout,
-            boolean blob,boolean clob,int allow,Struct custom) throws ExpressionException, SecurityException {
+            boolean blob,boolean clob,int allow,boolean validate,boolean storage, Struct custom) throws ExpressionException, SecurityException {
 
     	checkWriteAccess();
     	SecurityManager sm = config.getSecurityManager();
@@ -1121,6 +1122,8 @@ public final class ConfigWebAdmin {
                 el.setAttribute("blob",Caster.toString(blob));
                 el.setAttribute("clob",Caster.toString(clob));
                 el.setAttribute("allow",Caster.toString(allow));
+                el.setAttribute("validate",Caster.toString(validate));
+                el.setAttribute("storage",Caster.toString(storage));
                 el.setAttribute("custom",toStringURLStyle(custom));
                 
 	      		return ;
@@ -1153,6 +1156,8 @@ public final class ConfigWebAdmin {
         
         el.setAttribute("blob",Caster.toString(blob));
         el.setAttribute("clob",Caster.toString(clob));
+        el.setAttribute("validate",Caster.toString(validate));
+        el.setAttribute("storage",Caster.toString(storage));
         if(allow>-1)el.setAttribute("allow",Caster.toString(allow));
         el.setAttribute("custom",toStringURLStyle(custom));
         /*
@@ -1220,7 +1225,7 @@ public final class ConfigWebAdmin {
         
     }
 
-	public void updateCacheConnection(String name, String classname,int _default, Struct custom,boolean readOnly) throws PageException {
+	public void updateCacheConnection(String name, String classname,int _default, Struct custom,boolean readOnly,boolean storage) throws PageException {
     	checkWriteAccess();
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_CACHE);
 		if(!hasAccess)
@@ -1279,6 +1284,7 @@ public final class ConfigWebAdmin {
 	      		//el.setAttribute("default",Caster.toString(_default));
 	      		el.setAttribute("custom",toStringURLStyle(custom));
 	      		el.setAttribute("read-only",Caster.toString(readOnly));
+	      		el.setAttribute("storage",Caster.toString(storage));
 	      		return;
   			}
       	  
@@ -1292,6 +1298,7 @@ public final class ConfigWebAdmin {
   		//el.setAttribute("default",Caster.toString(_default));
   		el.setAttribute("custom",toStringURLStyle(custom));
   		el.setAttribute("read-only",Caster.toString(readOnly));
+  		el.setAttribute("storage",Caster.toString(storage));
         
     }
 	

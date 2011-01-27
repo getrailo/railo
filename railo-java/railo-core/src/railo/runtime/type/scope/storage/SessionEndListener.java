@@ -1,0 +1,25 @@
+package railo.runtime.type.scope.storage;
+
+import railo.runtime.CFMLFactoryImpl;
+import railo.runtime.exp.ExceptionHandler;
+import railo.runtime.listener.ApplicationListener;
+import railo.runtime.op.Caster;
+
+public class SessionEndListener implements StorageScopeListener {
+
+	/* (non-Javadoc)
+	 * @see railo.runtime.type.scope.storage.StorageScopeListener#doEnd(railo.runtime.type.scope.storage.StorageScopeEngine, railo.runtime.type.scope.storage.StorageScopeCleaner, java.lang.String, java.lang.String)
+	 */
+	public void doEnd(StorageScopeEngine engine,StorageScopeCleaner cleaner,String appName, String cfid) {
+		CFMLFactoryImpl factory = engine.getFactory();
+		ApplicationListener listener = factory.getConfig().getApplicationListener();
+		try {
+			cleaner.info("call onSessionEnd for "+appName+"/"+cfid);
+			listener.onSessionEnd(factory, appName, cfid);
+		} 
+		catch (Throwable t) {
+			ExceptionHandler.log(factory.getConfig(),Caster.toPageException(t));
+		}
+	}
+
+}

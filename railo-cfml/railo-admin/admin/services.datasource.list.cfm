@@ -167,8 +167,8 @@ function selectAll(field) {
 	</cfif>
 </cfloop> --->
 <cfset querySort(datasources,"name")>
-<cfset srcLocal=queryNew("name,classname,dsn,username,password,readonly")>
-<cfset srcGlobal=queryNew("name,classname,dsn,username,password,readonly")>
+<cfset srcLocal=queryNew("name,classname,dsn,username,password,readonly,storage")>
+<cfset srcGlobal=queryNew("name,classname,dsn,username,password,readonly,storage")>
 
 		
 <cfloop query="datasources">
@@ -180,6 +180,7 @@ function selectAll(field) {
 		<cfset QuerySetCell(srcLocal,"username",datasources.username)>
 		<cfset QuerySetCell(srcLocal,"password",datasources.password)>
 		<cfset QuerySetCell(srcLocal,"readonly",datasources.readonly)>
+		<cfset QuerySetCell(srcLocal,"storage",datasources.storage)>
 	<cfelse>
 		<cfset QueryAddRow(srcGlobal)>
 		<cfset QuerySetCell(srcGlobal,"name",datasources.name)>
@@ -188,6 +189,7 @@ function selectAll(field) {
 		<cfset QuerySetCell(srcGlobal,"username",datasources.username)>
 		<cfset QuerySetCell(srcGlobal,"password",datasources.password)>
 		<cfset QuerySetCell(srcGlobal,"readonly",datasources.readonly)>
+		<cfset QuerySetCell(srcGlobal,"storage",datasources.storage)>
 	</cfif>
 </cfloop>
 
@@ -197,17 +199,18 @@ function selectAll(field) {
 	<table class="tbl" width="740">
  
 	<tr>
-		<td colspan="4"><h2>#stText.Settings.ReadOnlyDatasources#</h2>#stText.Settings.ReadOnlyDatasourcesDescription#</td>
+		<td colspan="5"><h2>#stText.Settings.ReadOnlyDatasources#</h2>#stText.Settings.ReadOnlyDatasourcesDescription#</td>
 	</tr>
 	<tr>
-		<td colspan="4"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+		<td colspan="5"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 	</tr>
 	<cfform action="#request.self#?action=#url.action#" method="post">
 		<tr>
 			<td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)">
 				</td>
 			<td width="205" class="tblHead" nowrap>#stText.Settings.Name#</td>
-			<td width="365" class="tblHead" nowrap>#stText.Settings.Type#</td>
+			<td width="355" class="tblHead" nowrap>#stText.Settings.Type#</td>
+			<td width="50" class="tblHead" nowrap>#stText.Settings.dbStorage#</td>
 			<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 		</tr>
 		<cfloop query="srcGlobal">
@@ -227,6 +230,7 @@ function selectAll(field) {
 			<td class="tblContent" nowrap><input type="hidden" 
 				name="name_#srcGlobal.currentrow#" value="#srcGlobal.name#">#srcGlobal.name#</td>
 			<td class="tblContent" nowrap>#getTypeName(srcGlobal.ClassName,srcGlobal.dsn)#</td>
+			<td class="tblContent" nowrap>#yesNoFormat(srcGlobal.storage)#</td>
 			<td class="tblContent" nowrap valign="middle" align="center">
 				<cfif StructKeyExists(stVeritfyMessages, srcGlobal.name)>
 					#stVeritfyMessages[srcGlobal.name].label#
@@ -244,7 +248,7 @@ function selectAll(field) {
 		</tr>
 		</cfloop>
 		<tr>
-			<td colspan="4">
+			<td colspan="5">
 			 <table border="0" cellpadding="0" cellspacing="0">
 			 <tr>
 				<td><cfmodule template="tp.cfm"  width="6" height="1"></td>		
@@ -274,13 +278,14 @@ function selectAll(field) {
 	
 	<table class="tbl" width="740">
 	<tr>
-		<td colspan="4"><h2>#stText.Settings.ListDatasources#</h2>#stText.Settings['ListDatasourcesDesc'& request.adminType ]#</td> 
+		<td colspan="5"><h2>#stText.Settings.ListDatasources#</h2>#stText.Settings['ListDatasourcesDesc'& request.adminType ]#</td> 
 	</tr>
 	<cfform action="#request.self#?action=#url.action#" method="post">
 		<tr>
 			<td width="60"><input type="checkbox" class="checkbox" name="rowread" onclick="selectAll(this)"></td>
 			<td width="205" class="tblHead" nowrap>#stText.Settings.Name#</td>
-			<td width="405" class="tblHead" nowrap>#stText.Settings.Type#</td>
+			<td width="355" class="tblHead" nowrap>#stText.Settings.Type#</td>
+			<td width="50" class="tblHead" nowrap>#stText.Settings.dbStorage#</td>
 			<td width="70" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 		</tr>
 		<cfloop query="srcLocal">
@@ -302,6 +307,7 @@ function selectAll(field) {
 			<td class="tblContent" nowrap><input type="hidden" 
 				name="name_#srcLocal.currentrow#" value="#srcLocal.name#">#srcLocal.name#</td>
 			<td class="tblContent" nowrap>#getTypeName(srcLocal.ClassName,srcLocal.dsn)#</td>
+			<td class="tblContent" nowrap>#yesNoFormat(srcLocal.storage)#</td>
 			<td class="tblContent" nowrap valign="middle" align="center">
 				<cfif StructKeyExists(stVeritfyMessages, srcLocal.name)>
 					<cfif stVeritfyMessages[srcLocal.name].label eq "OK">
@@ -323,7 +329,7 @@ function selectAll(field) {
 		
 		<cfmodule template="remoteclients.cfm" colspan="4" line="true">
 		<tr>
-			<td colspan="4">
+			<td colspan="5">
 			 <table border="0" cellpadding="0" cellspacing="0">
 			 <tr>
 				<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		

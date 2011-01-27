@@ -33,6 +33,7 @@
                 
                 
                 name="#trim(form.name)#" class="#trim(form.class)#" 
+                storage="#isDefined('form.storage') and form.storage#"
                 default="#StructKeyExists(form,'default')?form.default:""#" custom="#custom#"
                 
                 remoteClients="#request.getRemoteClients()#">
@@ -62,6 +63,7 @@ Redirtect to entry --->
 	<cfset isNew=true>
 	<cfset connection=struct()>
 	<cfset connection.class=form.class>
+	<cfset connection.storage=false>
 	<cfset connection.default=false>
 	<cfset connection.name=form._name>
 	<cfset connection.custom=struct()>
@@ -77,7 +79,6 @@ Error Output --->
 
 <h2>#driver.getLabel()# (#connection.class#)</h2>
 #driver.getDescription()#
-
 <table class="tbl" width="650">
 
 <cfform action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.name'),de('&name=##url.name##'),de(''))#" method="post">
@@ -88,7 +89,13 @@ Error Output --->
 		<td width="150" class="tblHead" nowrap>#stText.Settings.cache.Name#</td>
 		<td width="450" class="tblContent" nowrap>#connection.name#</td>
 	</tr>
-    
+    <tr>
+	<td class="tblHead" width="150">#stText.Settings.cache.storage#</td>
+	<td class="tblContent" width="450">
+		<cfinput type="checkbox" class="checkbox" name="storage" value="yes" checked="#connection.storage#">
+		<span class="comment">#stText.Settings.cache.storageDesc#</span>
+	</td>
+</tr>
 	<tr>
 		<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="4"></td>
 	</tr>
