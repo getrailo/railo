@@ -741,11 +741,47 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.flushCache">cache leeren</data>
 	
 	
+    <data key="Settings.cache.storage">Storage</data>
+	<data key="Settings.cache.storageDesc">Erlauben diesen Cache als Storage für den Client/Session Scope zu verwenden.</data>
+	
+	<data key="settings.cache.noDriver">Es ist kein Cache Treiber verfügbar</data>
+	<data key="settings.cache.title">Cache</data>
+	<data key="settings.cache.description">Verwalten des Cache</data>
+	<data key="settings.cache.name">Name</data>
+	<data key="settings.cache.class">Class</data>
+	<data key="settings.cache.titleCreate">Eine neue Cache Connection erstellen</data>
+	<data key="settings.cache.titleExisting">Liste der existierenden Cache Connections</data>
+	<data key="settings.cache.descExisting">Liste aller existierenden Cache Connections für diese Umgebung</data>
+	<data key="settings.cache.nameMissing">Abbrechen</data>
+	<data key="settings.cache.type">Typ</data>
+	<data key="settings.cache.defaulttypeObject">Objekt</data>
+	<data key="settings.cache.defaulttypeObjectDesc">Diese Cache Connection wird für alle Cache operationen verwendet (cacheGet,cachePut ...)</data>
+	<data key="settings.cache.defaulttypeTemplate">Template</data>
+	<data key="settings.cache.defaulttypeTemplateDesc">Diese Cache Connection wird für das Tag cfcache verwendet.</data>
+	<data key="settings.cache.defaulttypeQuery">Query</data>
+	<data key="settings.cache.defaulttypeQueryDesc">Diese Cache Connection wird für für das cache von cfquery Resultsets verwendet.</data>
+	<data key="settings.cache.defaulttypeResource">Resource</data>
+	<data key="settings.cache.defaulttypeResourceDesc">Diese Cache Connection wird für die Ram Resource (ram://...) verwendet.</data>
+	<data key="settings.cache.defaultDesc">Define the default cache connection for tempates (cfcache) and object (cacheGet, cachePut ...), this connection is used when no cache name is explicit defined</data>
+	<data key="settings.cache.Default">Default</data>
+	<data key="settings.cache.DefaultTitle">Default cache connection</data>
+	<data key="settings.cache.noDefault">no default cache</data>
+	<data key="settings.cache.noAccess">no access to create cache connections</data>
+	<data key="settings.cache.defaultDesc2">Define if this connection will be the default cache connection, the default cache connection is used when no cache name is explicit defined</data>
+	<data key="settings.cache.titleReadOnly">Readonly cache connections</data>
+	<data key="settings.cache.descReadOnly">Readonly cache connections are generated within the ""server administrator"" for all web instances and can not be modified by the ""web administrator"".</data>
+	<data key="settings.cache.Buttons.default">set as default</data>
+	
+	
+	<data key="settings.dbValidate">Validate</data>
+	<data key="settings.dbValidateDesc">Validiert Verbindung bevor sie verwendet wird (funktioniert nur mit JDBC 4.0 Treibern)</data>
 	<data key="settings.dbconntimeoutdesc">Definiert wie lange eine stehende Verbindung aufrechterhalten wird, bevor Sie beendet wird.</data>
 	<data key="settings.dbportdesc">Der Port der Datenbank die angesprochen werden soll.</data>
 	<data key="settings.dbconnlimitdesc">Beschränkt die Anzahl Verbindungen die zur Datenbank aufgebaut werden.</data>
 	<data key="settings.listdatasourcesdescserver">Datenquellen welche hier erstellt wurden, stehen allen Webkontexten zur Verfügung, jedoch kann die Konfiguration der Datenquelle nur hier geändert werden.</data>
 	<data key="settings.dballowed">Erlaubte Operationen</data>
+	<data key="Settings.dbStorage">Storage</data>
+	<data key="Settings.dbStorageDesc">Erlauben die Datenquelle als Storage für den Client/Session Scope zu verwenden.</data>
 	<data key="settings.dbport">Port</data>
 	<data key="settings.preservesinglequotesdescription">Erhält die einfachen Anführungszeichen (&apos;) in den SQL-Statements, die im Tag CFQuery definiert werden.</data>
 	<data key="settings.dbconntimeout">Verbindungs Timeout (in Minuten)</data>
@@ -844,7 +880,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="overview.contexts.url">URL</data>
 	<data key="overview.contexts.label">Label</data>
 	<data key="overview.contexts.title">Web Kontexte</data>
-	<data key="overview.contexts.config_file">Config file</data>
+	<data key="overview.contexts.config_file">Konfigurationsfile</data>
 	<data key="overview.licencedesc">Railo ist in vier verschiedenen Editionen verfügbar, zugeschnitten für die verschiedenen Einsatzgebiete und Bugets.</data>
 	<data key="overview.serialnumberdescription">Seriennummer für Railo</data>
 	<data key="overview.cfcompatibility">Kompatibel zu ColdFusion&amp;reg; Version</data>
@@ -868,6 +904,10 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="overview.introdesc.server">Der Server Administrator ermöglicht Ihnen Updates und Patches für Ihre Railo Edition vorzunehmen und die Engine per Mauklick neu zu starten. Zusätzlich können Sie in der Develop und Enterprise Edition die einzelnen Webkontexte vorkonfigurieren und diverse Beschränkungen und Konfigurationen individuell pro Webkontext einrichten.</data>
 	<data key="overview.servertime">Server Datum/Zeit: </data>
 	<data key="overview.version">Version</data>
+	<data key="overview.Label">Label</data>
+	<data key="overview.Hash">Hash</data>
+	<data key="overview.config">Konfigurationsfile</data>
+	<data key="overview.webroot">Webroot</data>
 	<data key="overview.info">Info</data>
 	<data key="overview.featurerequest">Feature Anfragen</data>
 	<data key="overview.contextcount">Anzahl Kontexte</data>

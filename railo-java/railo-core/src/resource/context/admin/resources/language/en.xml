@@ -731,12 +731,17 @@
 	<data key="settings.dbhostdesc">Host name where the database server is located</data>
 	<data key="settings.dbuser">Username</data>
 	<data key="settings.preservesinglequotes">Preserve single quotes</data>
+	
+	<data key="settings.dbValidate">Validate</data>
+	<data key="settings.dbValidateDesc">Validate the connection before use (only works with JDBC 4.0 Drivers)</data>
 	<data key="settings.dbconnlimit">Connection limit (max)</data>
 	<data key="settings.dbconntimeoutdesc">Define a time in minutes for how long a connection is kept alive before it will be closed</data>
 	<data key="settings.dbportdesc">The port to connect the database</data>
 	<data key="settings.dbconnlimitdesc">Restricts the maximal connections at time</data>
 	<data key="settings.listdatasourcesdescserver">Datasources created here are available for ALL web contexts to use. The settings for these datasources can only be modified in this Server Administrator area.</data>
 	<data key="settings.dballowed">Allowed operations</data>
+	<data key="Settings.dbStorage">Storage</data>
+	<data key="Settings.dbStorageDesc">Allow to use this datasource as client/session storage.</data>
 	<data key="settings.dbport">Port</data>
 	<data key="settings.preservesinglequotesdescription">Preserve single quotes (&quot;) in the SQL defined with the tag cfquery</data>
 	<data key="settings.dbconntimeout">Connection timeout (in minutes)</data>
@@ -810,7 +815,7 @@
 	<data key="overview.contexts.label">Label</data>
 	<data key="overview.contexts.url">URL</data>
 	<data key="overview.contexts.title">Web contexts</data>
-	<data key="overview.contexts.config_file">Config file</data>
+	<data key="overview.contexts.config_file">Configuration File</data>
 	<data key="overview.licencedesc">Railo is available in four different editions, adapted to the different areas of application and budgets.</data>
 	<data key="overview.serialnumberdescription">Serial number for Railo</data>
 	<data key="overview.cfcompatibility">ColdFusion&amp;reg; compatibilty version</data>
@@ -834,6 +839,10 @@
 	<data key="overview.infomail">info@railo.ch</data>
 	<data key="overview.servertime">Server date/time: </data>
 	<data key="overview.version">Version</data>
+	<data key="overview.Label">Label</data>
+	<data key="overview.Hash">Hash</data>
+	<data key="overview.config">Configuration File</data>
+	<data key="overview.webroot">Webroot</data>
 	<data key="overview.info">Info</data>
 	<data key="overview.featurerequest">Feature request</data>
 	<data key="overview.contextcount">Context count</data>
@@ -918,7 +927,9 @@
 	<data key="settings.gateway.Buttons.default">set as default</data>
 	<data key="settings.cache.noDriver">There is no Cache Driver Available</data>
 	<data key="settings.cache.title">Cache</data>
-	<data key="settings.cache.description">Verwalten der Cache</data>
+	<data key="settings.cache.description">Managing the Cache</data>
+	<data key="Settings.cache.storage">Storage</data>
+	<data key="Settings.cache.storageDesc">Allow to use this cache as client/session storage.</data>
 	<data key="settings.cache.name">Name</data>
 	<data key="settings.cache.class">Class</data>
 	<data key="settings.cache.titleCreate">Create a new cache connection</data>
