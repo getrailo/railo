@@ -15,25 +15,8 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-import railo.runtime.type.KeyImpl;
-import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.PageException;
-import railo.runtime.type.Struct;
-import java.awt.image.BufferedImage;
-import railo.runtime.type.List;
-import railo.runtime.exp.FunctionException;
-
-import railo.runtime.type.KeyImpl;
-import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.PageException;
-import railo.runtime.type.Struct;
-import java.awt.image.BufferedImage;
-import railo.runtime.type.List;
-import railo.runtime.exp.FunctionException;
-
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.security.InvalidParameterException;
 import java.util.Random;
 
 import railo.runtime.engine.ThreadLocalPageContext;
