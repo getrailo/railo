@@ -370,8 +370,10 @@ public final class ConfigWebFactory {
     	config.setLoadTime(System.currentTimeMillis());
     	
     	// this call is needed to make sure the railo StaticLoggerBinder is loaded
+    	try{
     	StaticLoggerBinder.getSingleton();
-    	
+    	}
+    	catch(Throwable t){}
     	ThreadLocalConfig.release();
     }
 
