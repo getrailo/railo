@@ -94,6 +94,8 @@ Error Output--->
 	<cfset datasource=struct()>
 	<cfset datasource.type=form.type>
 	<cfset datasource.name=form.name>
+	<cfset datasource.storage=false>
+	<cfset datasource.validate=false>
 	
 <cfelse>
 	<cfset actionType="update">
@@ -300,7 +302,7 @@ validate --->
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.dbValidate#</td>
 	<td class="tblContent" width="300">
-		<cfinput type="checkbox" class="checkbox" name="validate" value="yes" checked="#datasource.validate#">
+		<cfinput type="checkbox" class="checkbox" name="validate" value="yes" checked="#isDefined('datasource.validate') and datasource.validate#">
 		<span class="comment">#stText.Settings.dbValidateDesc#</span>
 	</td>
 </tr>
@@ -394,7 +396,7 @@ storage --->
 <tr>
 	<td class="tblHead" width="150"><b>#stText.Settings.dbStorage#</b></td>
 	<td class="tblContent" width="300">
-		<cfinput type="checkbox" class="checkbox" name="storage" value="yes" checked="#datasource.storage#">
+		<cfinput type="checkbox" class="checkbox" name="storage" value="yes" checked="#isDefined('datasource.storage') and datasource.storage#">
 		<span class="comment">#stText.Settings.dbStorageDesc#</span>
 	</td>
 </tr>
