@@ -52,6 +52,7 @@ public class ModernAppListener extends AppListenerSupport {
 	private static final Collection.Key CLIENT_STORAGE = KeyImpl.getInstance("clientStorage");
 	private static final Collection.Key SESSION_STORAGE = KeyImpl.getInstance("sessionStorage");
 	private static final Collection.Key LOGIN_STORAGE = KeyImpl.getInstance("loginStorage");
+	private static final Collection.Key SESSION_TYPE = KeyImpl.getInstance("sessionType");
 	private static final Collection.Key SESSION_MANAGEMENT = KeyImpl.getInstance("sessionManagement");
 	private static final Collection.Key SESSION_TIMEOUT = KeyImpl.getInstance("sessionTimeout");
 	private static final Collection.Key CLIENT_TIMEOUT = KeyImpl.getInstance("clientTimeout");
@@ -438,6 +439,10 @@ public class ModernAppListener extends AppListenerSupport {
 			// sessionManagement
 			o=get(app,SESSION_MANAGEMENT,null);
 			if(o!=null) appContext.setSetSessionManagement(Caster.toBooleanValue(o));
+
+			// sessionType
+			o=get(app,SESSION_TYPE,null);
+			if(o!=null) appContext.setSessionType(AppListenerUtil.toSessionType(Caster.toString(o),pc.getConfig()));
 			
 			// sessionTimeout
 			o=get(app,SESSION_TIMEOUT,null);

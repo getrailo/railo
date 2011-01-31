@@ -49,6 +49,7 @@ public final class Application extends TagImpl {
     private String name="";
 	private int action=ACTION_CREATE;
 	private int localMode=-1;
+	private short sessionType=-1;
     
      
     /**
@@ -75,6 +76,7 @@ public final class Application extends TagImpl {
         this.name="";
         action=ACTION_CREATE;
         localMode=-1;
+        sessionType=-1;
         //appContext=null;
     }
     
@@ -154,6 +156,9 @@ public final class Application extends TagImpl {
 	**/
 	public void setSessiontimeout(TimeSpan sessionTimeout)	{
 		this.sessionTimeout=sessionTimeout;
+	}
+	public void setSessiontype(String sessionType) throws ApplicationException	{
+		this.sessionType=AppListenerUtil.toSessionType(sessionType);
 	}
 	
 	public void setClienttimeout(TimeSpan clientTimeout)	{
@@ -268,6 +273,7 @@ public final class Application extends TagImpl {
 		if(setDomainCookies!=null)				ac.setSetDomainCookies(setDomainCookies.booleanValue());
 		if(setSessionManagement!=null)			ac.setSetSessionManagement(setSessionManagement.booleanValue());
 		if(localMode!=-1) 						ac.setLocalMode(localMode);
+		if(sessionType!=-1) 					ac.setSessionType(sessionType);
 		
 		
 	}

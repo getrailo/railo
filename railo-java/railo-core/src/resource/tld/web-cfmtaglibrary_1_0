@@ -267,6 +267,19 @@
  Ê - file (default): the session is stored in a local file
  Ê - "datasource-name"|"cache-name": when you select a name of an available datasource or cache, the client scope will be stored in there</description>
 		</attribute>
+		
+		<attribute>
+			<type>string</type>
+			<name>sessionType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+<description>
+Railo provide 2 kind of sessions:
+- cfml: session handled by Railo
+- j2ee: session handled by the Servlet Engine used				
+Default value is defined in the Railo Web Administrator. "j2ee" can not use a session storage.
+</description>
+		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>sessionStorage</name>

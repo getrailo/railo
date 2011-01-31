@@ -5,7 +5,9 @@ import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
+import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ApplicationException;
@@ -209,6 +211,32 @@ public final class AppListenerUtil {
 		int lm = toLocalMode(strMode, -1);
 		if(lm!=-1) return lm;
 		throw new ApplicationException("invalid localMode definition ["+strMode+"] for tag application/application.cfc, valid values are [always,update]");
+	}
+
+	public static short toSessionType(String str, Config config) {
+		if(!StringUtil.isEmpty(str,true)){
+			str=str.trim().toLowerCase();
+			if("cfml".equals(str)) return Config.SESSION_TYPE_CFML;
+			if("j2ee".equals(str)) return Config.SESSION_TYPE_J2EE;
+			if("cfm".equals(str)) return Config.SESSION_TYPE_CFML;
+			if("jee".equals(str)) return Config.SESSION_TYPE_J2EE;
+			if("j".equals(str)) return Config.SESSION_TYPE_J2EE;
+			if("c".equals(str)) return Config.SESSION_TYPE_J2EE;
+		}
+		return config.getSessionType();
+	}
+
+	public static short toSessionType(String str) throws ApplicationException {
+		if(!StringUtil.isEmpty(str,true)){
+			str=str.trim().toLowerCase();
+			if("cfml".equals(str)) return Config.SESSION_TYPE_CFML;
+			if("j2ee".equals(str)) return Config.SESSION_TYPE_J2EE;
+			if("cfm".equals(str)) return Config.SESSION_TYPE_CFML;
+			if("jee".equals(str)) return Config.SESSION_TYPE_J2EE;
+			if("j".equals(str)) return Config.SESSION_TYPE_J2EE;
+			if("c".equals(str)) return Config.SESSION_TYPE_J2EE;
+		}
+		throw new ApplicationException("invalid sessionType definition ["+str+"] for tag application/application.cfc, valid values are [cfml,j2ee]");
 	}
 }
 

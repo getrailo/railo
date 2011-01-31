@@ -54,6 +54,11 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 	private int localMode;
 
 
+
+
+	private short sessionType;
+
+
     
     /**
      * constructor of the class
@@ -74,10 +79,11 @@ public class ApplicationContextImpl implements ApplicationContextPro {
         this.isDefault=isDefault;
         this.defaultDataSource=ci.getDefaultDataSource();
         this.localMode=config.getLocalMode();
+        this.sessionType=config.getSessionType();
     }
-    
 
-    public ApplicationContextImpl(Config config, boolean isDefault) {
+
+	public ApplicationContextImpl(Config config, boolean isDefault) {
     	this(config,null,isDefault);
     }
     
@@ -113,6 +119,7 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 		dbl.cookiedomain=cookiedomain;
 		dbl.idletimeout=idletimeout;
 		dbl.localMode=localMode;
+		dbl.sessionType=sessionType;
 		
 		dbl.ormEnabled=ormEnabled;
 		dbl.config=config;
@@ -433,6 +440,21 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 		this.localMode = localMode;
 	}
 
+
+
+    /**
+	 * @return the sessionType
+	 */
+	public short getSessionType() {
+		return sessionType;
+	}
+
+    /**
+	 * @return the sessionType
+	 */
+	public void setSessionType(short sessionType) {
+		this.sessionType= sessionType;
+	}
 
 	
 }

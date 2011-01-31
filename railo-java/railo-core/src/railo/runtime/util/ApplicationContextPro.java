@@ -25,4 +25,6 @@ public interface ApplicationContextPro extends ApplicationContext {
 	public String getSessionstorage();
 
 	public TimeSpan getClientTimeout();
+	
+	public short getSessionType();
 }
