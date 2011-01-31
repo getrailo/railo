@@ -131,8 +131,6 @@ public final class Location extends TagImpl {
 	private boolean needId() {
 		ApplicationContext ac = pageContext.getApplicationContext();
 		return ac.isSetClientManagement() || ac.isSetSessionManagement();
-		
-		//return pageContext.getConfig().getSessionType()==Config.SESSION_TYPE_CFML;
 	}
 
 	/**
