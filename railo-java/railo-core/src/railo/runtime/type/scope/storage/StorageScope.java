@@ -3,9 +3,13 @@ package railo.runtime.type.scope.storage;
 import railo.runtime.config.Config;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.RequestScope;
+import railo.runtime.type.SharedScope;
 
-public interface StorageScope extends RequestScope {
+
+/**
+ * scope that can be stored, in a storage
+ */
+public interface StorageScope extends SharedScope {
 	
 	public static Collection.Key CFID=KeyImpl.getInstance("cfid");
 	public static Collection.Key CFTOKEN=KeyImpl.getInstance("cftoken");

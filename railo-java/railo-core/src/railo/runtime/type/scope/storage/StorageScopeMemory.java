@@ -9,9 +9,10 @@ import railo.runtime.type.scope.ScopeContext;
 /**
  * client scope that not store it's data
  */
-public abstract class StorageScopeMemory extends StorageScopeImpl {
+public abstract class StorageScopeMemory extends StorageScopeImpl implements MemoryScope {
 
 	private static final long serialVersionUID = -6917303245683342065L;
+
 
 	/**
 	 * Constructor of the class
@@ -47,5 +48,4 @@ public abstract class StorageScopeMemory extends StorageScopeImpl {
 	public String getStorageType() {
 		return "Memory";
 	}
-
 }

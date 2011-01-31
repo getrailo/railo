@@ -22,7 +22,6 @@ import railo.runtime.cache.CacheConnection;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
-import railo.runtime.config.ConfigWeb;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.exp.ApplicationException;
@@ -251,7 +250,7 @@ public final class ScopeContext {
 			else
 				getLog().info("scope-context", "use existing client scope for "+appContext.getName()+"/"+pc.getCFID()+" from storage "+storage);
 			
-			client.initialize(pc);
+			client.touchBeforeRequest(pc);
 			return client;
 	}
 	
@@ -310,7 +309,7 @@ public final class ScopeContext {
 	 * @return
 	 */
 	public int getSessionCount(PageContext pc) {
-		if(pc.getConfig().getSessionType()==Config.SESSION_TYPE_J2EE) return 0;
+		if(((ApplicationContextPro)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_J2EE) return 0;
 		
 		Iterator it = cfSessionContextes.entrySet().iterator();
 		Map.Entry entry;
@@ -327,8 +326,8 @@ public final class ScopeContext {
 	 * @return
 	 */
 	public int getAppContextSessionCount(PageContext pc) {
-		if(pc.getConfig().getSessionType()==Config.SESSION_TYPE_J2EE) return 0;
-		ApplicationContext appContext = pc.getApplicationContext(); 
+		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext(); 
+		if(appContext.getSessionType()==Config.SESSION_TYPE_J2EE) return 0;
 		Map context=getSubMap(cfSessionContextes,appContext.getName());
 		return getSessionCount(context);
 	}
@@ -355,7 +354,7 @@ public final class ScopeContext {
 	 * @return
 	 */
 	public Struct getAllSessionScopes(PageContext pc) {
-		return getAllSessionScopes(pc.getConfig(), pc.getApplicationContext().getName());
+		return getAllSessionScopes(pc, pc.getApplicationContext().getName());
 	}
 	
 	public Struct getAllApplicationScopes() {
@@ -391,8 +390,8 @@ public final class ScopeContext {
 	 * @param appName
 	 * @return
 	 */
-	public Struct getAllSessionScopes(ConfigWeb config, String appName) {
-        if(config.getSessionType()==Config.SESSION_TYPE_J2EE)return new StructImpl();
+	public Struct getAllSessionScopes(PageContext pc, String appName) {
+        if(((ApplicationContextPro)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_J2EE)return new StructImpl();
 		return getAllSessionScopes(getSubMap(cfSessionContextes,appName),appName);
 	}
 	
@@ -417,12 +416,12 @@ public final class ScopeContext {
 	 * @throws PageException
 	 */
 	public SessionPlus getSessionScope(PageContext pc,RefBoolean isNew) throws PageException {
-        if(pc.getConfig().getSessionType()==Config.SESSION_TYPE_CFML)return getCFSessionScope(pc,isNew);
+        if(((ApplicationContextPro)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_CFML)return getCFSessionScope(pc,isNew);
 		return getJSessionScope(pc,isNew);
 	}
 	
 	public boolean hasExistingSessionScope(PageContext pc) {
-        if(pc.getConfig().getSessionType()==Config.SESSION_TYPE_CFML)return hasExistingCFSessionScope(pc);
+        if(((ApplicationContextPro)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_CFML)return hasExistingCFSessionScope(pc);
 		return hasExistingJSessionScope(pc);
 	}
 	
@@ -543,8 +542,8 @@ public final class ScopeContext {
 			}
 			else 
 				getLog().info("scope-context", "use existing session scope for "+appContext.getName()+"/"+pc.getCFID()+" from storage "+storage);
-			session.initialize(pc);
 			
+			session.touchBeforeRequest(pc);
 			return session;
 	}
 	
@@ -588,21 +587,25 @@ public final class ScopeContext {
                 if(session.isExpired()) {
 					session.touch();
                 }
+                info(getLog(), "use existing JSession for "+appContext.getName()+"/"+pc.getCFID());
+                
             }
             catch(ClassCastException cce) {
+            	error(getLog(), cce);
                 session=new JSession();
                 httpSession.setAttribute(appContext.getName(),session);
 				isNew.setValue(true);
             }
 		}
 		else {
+			info(getLog(), "create new JSession for "+appContext.getName()+"/"+pc.getCFID());
             session=new JSession();
 		    httpSession.setAttribute(appContext.getName(),session);
 			isNew.setValue(true);
 			Map context=getSubMap(cfSessionContextes,appContext.getName());
 			context.put(pc.getCFID(),session);
 		}
-		session.initialize(pc);
+		session.touchBeforeRequest(pc);
 		return session;    
 	}
 
@@ -617,10 +620,10 @@ public final class ScopeContext {
 	public synchronized Application getApplicationScope(PageContext pc, RefBoolean isNew) {
 		ApplicationContext appContext = pc.getApplicationContext(); 
 		// getApplication Scope from Context
-			Application application;
+			ApplicationImpl application;
 			Object objApp=applicationContextes.get(appContext.getName());
 			if(objApp!=null) {
-			    application=(Application)objApp;
+			    application=(ApplicationImpl)objApp;
 			    if(application.isExpired()) {
 			    	application.release();	
 			    	isNew.setValue(true);
@@ -631,7 +634,7 @@ public final class ScopeContext {
 				applicationContextes.put(appContext.getName(),application);	
 		    	isNew.setValue(true);
 			}
-			application.initialize(pc);
+			application.touchBeforeRequest(pc);
 			//if(newApplication)listener.onApplicationStart(pc);
 			
 			return application;
@@ -668,8 +671,8 @@ public final class ScopeContext {
         storeUnusedStorageScope(factory, Scope.SCOPE_SESSION);
         
         // remove unused memory based client/session scope (invoke onSessonEnd)
-    	clearUnusedMemoryStorageScope(factory, Scope.SCOPE_CLIENT);
-    	clearUnusedMemoryStorageScope(factory, Scope.SCOPE_SESSION);
+    	clearUnusedMemoryScope(factory, Scope.SCOPE_CLIENT);
+    	clearUnusedMemoryScope(factory, Scope.SCOPE_SESSION);
     	
     	
     	// session must be executed first, because session creates a reference from client scope
@@ -704,7 +707,7 @@ public final class ScopeContext {
 		if(contextes.size()==0)return;
 		long now = System.currentTimeMillis();
 		Object[] arrContextes= contextes.keySet().toArray();
-		Object applicationName,cfid;
+		Object applicationName,cfid,o;
 		
 		for(int i=0;i<arrContextes.length;i++) {
 			
@@ -715,7 +718,9 @@ public final class ScopeContext {
                 int count=arrClients.length;
                 for(int y=0;y<arrClients.length;y++) {
                 	cfid=arrClients[y];
-    				StorageScope scope=(StorageScope) fhm.get(cfid);
+                	o=fhm.get(cfid);
+                	if(!(o instanceof StorageScope)) continue;
+    				StorageScope scope=(StorageScope)o;
     				if(scope.lastVisit()+timespan<now && !(scope instanceof MemoryScope)) {
     					getLog().info("scope-context", "remove from memory "+strType+" scope for "+applicationName+"/"+cfid+" from storage "+scope.getStorage());
     					
@@ -733,7 +738,7 @@ public final class ScopeContext {
 	 * @param cfmlFactory 
 	 * 
 	 */
-	private void clearUnusedMemoryStorageScope(CFMLFactoryImpl cfmlFactory, int type) {
+	private void clearUnusedMemoryScope(CFMLFactoryImpl cfmlFactory, int type) {
         Map contextes=type==Scope.SCOPE_CLIENT?cfClientContextes:cfSessionContextes;
 		if(contextes.size()==0)return;
 		
@@ -741,7 +746,7 @@ public final class ScopeContext {
 		
         Object[] arrContextes= contextes.keySet().toArray();
 		ApplicationListener listener = cfmlFactory.getConfig().getApplicationListener();
-		Object applicationName,cfid;
+		Object applicationName,cfid,o;
 		//long now = System.currentTimeMillis();
 		
 		for(int i=0;i<arrContextes.length;i++) {
@@ -753,9 +758,11 @@ public final class ScopeContext {
                 int count=cfids.length;
                 for(int y=0;y<cfids.length;y++) {
                 	cfid=cfids[y];
-    				StorageScope scope=(StorageScope) fhm.get(cfid);
+                	o=fhm.get(cfid);
+                	if(!(o instanceof MemoryScope)) continue;
+                	MemoryScope scope=(MemoryScope) o;
     				// close
-    				if(scope instanceof MemoryScope && scope.isExpired()) {
+    				if(scope.isExpired()) {
     					// TODO macht das sinn? ist das nicht kopierleiche?
     					ApplicationImpl application=(ApplicationImpl) applicationContextes.get(applicationName);
     					long appLastAccess=0;

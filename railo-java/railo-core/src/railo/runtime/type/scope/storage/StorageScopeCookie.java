@@ -6,7 +6,6 @@ import railo.commons.io.log.Log;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.converter.ScriptConverter;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
@@ -75,18 +74,9 @@ public abstract class StorageScopeCookie extends StorageScopeImpl {
 		return dt;
 	}
 	
-	
-	
-
-	/**
-	 * @see railo.runtime.type.scope.ClientSupportOld#release()
-	 */
-	public void release() {
-		release(ThreadLocalPageContext.get());
-	}
-	public void release(PageContext pc) {
+	public void touchAfterRequest(PageContext pc) {
 		boolean _isInit=isinit;
-		super.release(pc);
+		super.touchAfterRequest(pc);
 		if(!_isInit || !super.hasContent()) return;
 		
 		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();

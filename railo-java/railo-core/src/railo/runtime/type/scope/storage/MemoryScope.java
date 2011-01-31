@@ -1,5 +1,16 @@
 package railo.runtime.type.scope.storage;
 
-public interface MemoryScope {
+import railo.runtime.type.Scope;
 
+public interface MemoryScope extends Scope {
+	/**
+	 * is the scope expired?
+	 */
+	public boolean isExpired();
+	
+	/**
+	 * set lastvistit to now
+	 */
+	public abstract void touch();
+	
 }

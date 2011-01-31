@@ -19,7 +19,6 @@ import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
 import railo.runtime.db.SQLItemImpl;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
@@ -158,19 +157,11 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	}
 
 	/**
-	 *
-	 * @see railo.runtime.type.scope.ClientSupportOld#release()
+	 * @see railo.runtime.type.scope.storage.StorageScopeImpl#touchAfterRequest(railo.runtime.PageContext)
 	 */
-	public void release() {
-		release(ThreadLocalPageContext.get());
-	}
-	
-	/**
-	 * @see railo.runtime.type.RequestScope#release(railo.runtime.PageContext)
-	 */
-	public void release(PageContext pc) {
+	public void touchAfterRequest(PageContext pc) {
 		setTimeSpan(pc);
-		super.release(pc); // first release is importend
+		super.touchAfterRequest(pc); 
 		
 		store(pc.getConfig());
 	}
@@ -296,9 +287,9 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	 *
 	 * @see railo.runtime.type.scope.ClientSupportOld#initialize(railo.runtime.PageContext)
 	 */
-	public void initialize(PageContext pc) {
+	public void touchBeforeRequest(PageContext pc) {
 		setTimeSpan(pc);
-		super.initialize(pc);
+		super.touchBeforeRequest(pc);
 	}
 	
 	/**

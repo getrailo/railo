@@ -447,11 +447,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		parent=null;
 		// Attention have to be before close
 		if(client!=null){
-        	client.release(this);
+        	client.touchAfterRequest(this);
         	client=null;
         }
 		if(session!=null){
-        	session.release(this);
+        	session.touchAfterRequest(this);
         	session=null;
         }
 		
@@ -490,29 +490,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	if(!isChild){
         		req.disconnect();
         	}
-        	/*if(!isChild && threads!=null){
-               	synchronized (threads) {
-               		print.ds("isChild:"+isChild);
-       	        	java.util.Iterator it = threads.entrySet().iterator();
-       	        	Map.Entry entry;
-       	        	Threads t;
-       	        	ChildThreadImpl cti;
-       	        	PageContextImpl pci;
-       	        	while(it.hasNext()) {
-       	        		entry=(Entry) it.next();
-       	        		t = (Threads)entry.getValue();
-       	        		cti = (ChildThreadImpl) t.getChildThread();
-       	        		pci = (PageContextImpl) cti.getPageContext();
-       	        		if(pci !=null) {
-       	        			pci.unlink();
-       	        		}
-       	        	}
-       			}
-               }*/
-        	
-        	
-        	
-        	
         	
         	request=null;
         	_url=null;
@@ -544,7 +521,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		
         
         
-		application=null;
+		application=null;// not needed at the moment -> application.releaseAfterRequest();
 		
 		// Properties
         requestTimeout=-1;
@@ -1164,7 +1141,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see PageContext#serverScope()
      */
     public Server serverScope() { 
-		if(!server.isInitalized()) server.initialize(this);
+		//if(!server.isInitalized()) server.initialize(this);
 		return server;
 	}
     

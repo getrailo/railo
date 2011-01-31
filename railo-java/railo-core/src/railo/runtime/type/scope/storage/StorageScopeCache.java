@@ -7,7 +7,6 @@ import railo.commons.io.log.Log;
 import railo.runtime.PageContext;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.config.Config;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.cache.Util;
@@ -78,27 +77,12 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 		return dt;
 	}
 	
-	
-	
-	
-	
-
-
-
 	/**
-	 *
-	 * @see railo.runtime.type.scope.ClientSupportOld#release()
+	 * @see railo.runtime.type.SharedScope#release(railo.runtime.PageContext)
 	 */
-	public void release() {
-		release(ThreadLocalPageContext.get());
-	}
-	
-	/**
-	 * @see railo.runtime.type.RequestScope#release(railo.runtime.PageContext)
-	 */
-	public void release(PageContext pc) {
+	public void touchAfterRequest(PageContext pc) {
 		setTimeSpan(pc);
-		super.release(pc);// first release is importend
+		super.touchAfterRequest(pc);
 		
 		if(super.hasContent()) 
 			store(pc.getConfig());
@@ -115,9 +99,9 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 	 *
 	 * @see railo.runtime.type.scope.ClientSupportOld#initialize(railo.runtime.PageContext)
 	 */
-	public void initialize(PageContext pc) {
+	public void touchBeforeRequest(PageContext pc) {
 		setTimeSpan(pc);
-		super.initialize(pc);
+		super.touchBeforeRequest(pc);
 	}
 	
 	protected static Struct _loadData(PageContext pc, String cacheName, String appName, String strType, Log log) throws PageException	{
@@ -128,7 +112,7 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 		if(s!=null)
 			ScopeContext.info(log,"load existing data from  cache ["+cacheName+"] to create "+strType+" scope for "+pc.getApplicationContext().getName()+"/"+pc.getCFID());
 		else
-			ScopeContext.info(log,"create new "+strType+" scope for "+pc.getApplicationContext().getName()+"/"+pc.getCFID());
+			ScopeContext.info(log,"create new "+strType+" scope for "+pc.getApplicationContext().getName()+"/"+pc.getCFID()+" in cache ["+cacheName+"]");
 		
 		return s;
 	}

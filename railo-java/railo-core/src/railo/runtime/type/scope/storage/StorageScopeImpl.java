@@ -26,6 +26,7 @@ import railo.runtime.util.ApplicationContextImpl;
 
 public abstract class StorageScopeImpl extends StructSupport implements StorageScope,Sizeable {
 	
+
 	private static int _id=0;
 	private int id=0;
 
@@ -49,7 +50,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	}
 	
 	
-	protected boolean isinit;
+	protected boolean isinit=true;
 	protected Struct sct;
 	protected long lastvisit;
 	protected DateTime _lastvisit;
@@ -106,8 +107,8 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	/**
 	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
 	 */
-	public void initialize(PageContext pc) {
-		isinit=true;
+	public void touchBeforeRequest(PageContext pc) {
+		
 		hasChanges=false;
 		ApplicationContextImpl ac=(ApplicationContextImpl) pc.getApplicationContext();
 		
@@ -129,30 +130,27 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 			sct.setEL(HITCOUNT, new Double(hitcount++));
 			sct.setEL(TIMECREATED, timecreated);
 		}
-		
-		
 	}
+	
 
 	/**
 	 * @see railo.runtime.type.Scope#isInitalized()
 	 */
-	public boolean isInitalized() {
+	public final boolean isInitalized() {
 		return isinit;
 	}
 	
-
 	/**
-	 * @see railo.runtime.type.Scope#release()
+	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
 	 */
-	public void release() {
-		release(ThreadLocalPageContext.get());
+	public final void initialize(PageContext pc) {
+		// StorageScopes need only request initialisation no global init, they are not reused;
 	}
 	
 	/**
-	 * @see railo.runtime.type.RequestScope#release(railo.runtime.PageContext)
+	 * @see railo.runtime.type.SharedScope#release(railo.runtime.PageContext)
 	 */
-	public void release(PageContext pc) {
-		isinit=false;
+	public void touchAfterRequest(PageContext pc) {
 		
 		sct.setEL(LASTVISIT, _lastvisit);
 		
@@ -161,6 +159,15 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 			sct.setEL(TIMECREATED, timecreated);
 		}
 	}
+	
+	/**
+	 * @see railo.runtime.type.Scope#release()
+	 */
+	public final void release() {
+		clear();
+		isinit=false;
+	}
+	
 	
 	/**
 	 * @return returns if the scope is empty or not, this method ignore the "constant" entries of the scope (cfid,cftoken,urltoken)

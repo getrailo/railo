@@ -7,6 +7,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.functions.system.GetApplicationSettings;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.SharedScope;
 import railo.runtime.util.ApplicationContext;
 
 
@@ -14,7 +15,7 @@ import railo.runtime.util.ApplicationContext;
 /**
  * Session Scope
  */
-public final class ApplicationImpl extends ScopeSupport implements Application {
+public final class ApplicationImpl extends ScopeSupport implements Application,SharedScope {
 
 	private static final long serialVersionUID = 700830188207594563L;
 	
@@ -46,21 +47,16 @@ public final class ApplicationImpl extends ScopeSupport implements Application {
 	/**
 	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
 	 */
-	public void initialize(PageContext pc){
+	public void touchBeforeRequest(PageContext pc){
 	    ApplicationContext appContext = pc.getApplicationContext();
-	    timeSpan=appContext.getApplicationTimeout().getMillis();
 	    setEL(APPLICATION_NAME,appContext.getName());
+	    timeSpan=appContext.getApplicationTimeout().getMillis();
 		lastAccess=System.currentTimeMillis();
-		super.initialize(pc);
 	}
-	
-    /**
-     * @see railo.runtime.type.Scope#release()
-     */
-    public void release() {
-        super.release();
-        clear();
-    }
+
+	public void touchAfterRequest(PageContext pc) {
+		// do nothing
+	}
 
     /**
      * @see railo.runtime.type.scope.Application#isExpired()

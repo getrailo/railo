@@ -9,13 +9,14 @@ import javax.servlet.http.HttpSessionBindingListener;
 import railo.runtime.PageContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.scope.storage.MemoryScope;
 import railo.runtime.type.scope.storage.StorageScope;
 import railo.runtime.util.ApplicationContext;
 
 /**
  * 
  */
-public final class JSession extends ScopeSupport implements SessionPlus,HttpSessionBindingListener {
+public final class JSession extends ScopeSupport implements SessionPlus,HttpSessionBindingListener,MemoryScope {
     
 	//public static final Collection.Key URL_TOKEN = KeyImpl.getInstance("urltoken");
 	public static final Collection.Key SESSION_ID = KeyImpl.getInstance("sessionid");
@@ -36,7 +37,7 @@ public final class JSession extends ScopeSupport implements SessionPlus,HttpSess
     /**
      * @see railo.runtime.type.scope.ScopeSupport#initialize(railo.runtime.PageContext)
 	 */
-	public void initialize(PageContext pc) {
+	public void touchBeforeRequest(PageContext pc) {
 		
 	    ApplicationContext appContext = pc.getApplicationContext();
 	    timespan=appContext.getSessionTimeout().getMillis();
@@ -60,16 +61,12 @@ public final class JSession extends ScopeSupport implements SessionPlus,HttpSess
 	    lastAccess=System.currentTimeMillis();
         setEL(SESSION_ID,id);
         setEL(StorageScope.URLTOKEN,"CFID="+pc.getCFID()+"&CFTOKEN="+pc.getCFToken()+"&jsessionid="+id);
-		super.initialize(pc); 
+	}
+
+	public void touchAfterRequest(PageContext pc) {
+		
 	}
 	
-	public void release(PageContext pc) {
-		release(pc);
-	}
-	
-    /**
-     * @see railo.runtime.type.Scope#release()
-     */
     public void release() {
     	if(httpSession!=null){
 	    	try {

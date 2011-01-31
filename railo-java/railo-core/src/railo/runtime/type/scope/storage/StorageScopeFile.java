@@ -67,21 +67,21 @@ public abstract class StorageScopeFile extends StorageScopeImpl {
 		super(other,deepCopy);
 		this.res=other.res;
 	}
-	
+
 	/**
-	 * @see railo.runtime.type.scope.storage.StorageScopeImpl#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.storage.StorageScopeImpl#touchBeforeRequest(railo.runtime.PageContext)
 	 */
-	public void initialize(PageContext pc) {
+	public void touchBeforeRequest(PageContext pc) {
 		setTimeSpan(pc);
-		super.initialize(pc);
+		super.touchBeforeRequest(pc);
 	}
+
 	/**
-	 * @see railo.runtime.type.scope.storage.StorageScopeImpl#release(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.storage.StorageScopeImpl#touchAfterRequest(railo.runtime.PageContext)
 	 */
-	@Override
-	public void release(PageContext pc) {
+	public void touchAfterRequest(PageContext pc) {
 		setTimeSpan(pc);
-		super.release(pc);
+		super.touchAfterRequest(pc);
 		store(pc.getConfig());
 	}
 	
