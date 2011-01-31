@@ -400,6 +400,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
          forceWriter=writer;
          
 		 // Scopes
+         server=ScopeContext.getServerScope(this);
          if(hasFamily) {
         	 variablesRoot=new VariablesImpl();
         	 variables=variablesRoot;

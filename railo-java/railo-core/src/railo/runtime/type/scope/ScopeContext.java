@@ -691,10 +691,44 @@ public final class ScopeContext {
      * remove all scope objects
      */
     public void clear() {
-        cfSessionContextes.clear();
-        applicationContextes.clear();
-        server=null;
-        
+    	try{
+	    	Scope scope;
+	    	Map.Entry entry,e;
+	    	Map context;
+	    	
+	    	// release all session scopes
+	    	Iterator it = cfSessionContextes.entrySet().iterator(),itt;
+	    	while(it.hasNext()){
+	    		entry=(Entry) it.next();
+	    		context=(Map) entry.getValue();
+	    		itt=context.entrySet().iterator();
+	    		while(itt.hasNext()){
+	    			e=(Entry) itt.next();
+	    			scope=(Scope) e.getValue();
+	    			//print.o("release-session:"+entry.getKey()+"/"+e.getKey());
+	    			scope.release();
+	    		}
+	    	}
+	        cfSessionContextes.clear();
+	    	
+	    	// release all application scopes
+	    	it = applicationContextes.entrySet().iterator();
+	    	while(it.hasNext()){
+	    		entry=(Entry) it.next();
+	    		scope=(Scope) entry.getValue();
+	    		//print.o("release-application:"+entry.getKey());
+	    		scope.release();
+	    	}
+	        applicationContextes.clear();
+	    	
+	    	// release server scope
+	    	if(server!=null){
+	    		server.release();
+	    		server=null;
+	    	}
+    	
+    	}
+    	catch(Throwable t){t.printStackTrace();}
     }
 
     
