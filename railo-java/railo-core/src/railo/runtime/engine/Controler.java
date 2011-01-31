@@ -181,30 +181,6 @@ public final class Controler extends Thread {
 		SMTPConnectionPool.closeTransports();
 	}
 
-	/*private void checkStorageScopeFile(ConfigWeb config, int type) {
-		ConfigWebImpl cwi=(ConfigWebImpl) config;
-		Resource dir=type==Scope.SCOPE_CLIENT?cwi.getClientScopeDir():cwi.getSessionScopeDir();
-		ExtensionResourceFilter extfilter = new ExtensionResourceFilter(".script",true);
-		
-		// for old files only the defintion from admin can be used
-		long timeout=type==Scope.SCOPE_CLIENT?cwi.getClientTimeout().getMillis():cwi.getSessionTimeout().getMillis();
-		long time = new DateTimeImpl(config).getTime()-timeout;
-		
-		try {
-			// delete files that has expired
-			AndResourceFilter andFilter = new AndResourceFilter(new ResourceFilter[]{extfilter,new ExpiresFilter(time,true)});
-			ResourceUtil.deleteContent(dir, andFilter);
-			
-			ResourceUtil.deleteEmptyFolders(dir);
-		
-		} catch (Exception e) {print.e(e);}
-
-		
-		long maxSize = type==Scope.SCOPE_CLIENT?cwi.getClientScopeDirSize():cwi.getSessionScopeDirSize();
-		checkSize(config,dir,maxSize,extfilter);
-	}*/
-	
-
 	private void checkOldClientFile(ConfigWeb config) {
 		ExtensionResourceFilter filter = new ExtensionResourceFilter(".script",false);
 		
