@@ -114,7 +114,14 @@ function selectAll(field) {
 			<option value="physical" selected>#stText.Mappings.Physical#</option>
 			<option value="archive">#stText.Mappings.Archive#</option>
 		</select></td>
-		<td class="tblContent" nowrap><input onClick="checkTheBox(this)" type="checkbox" class="checkbox" name="trusted_#mappings.recordcount+1#" value="yes">
+		<td class="tblContent" nowrap>
+        
+         <select name="trusted_#mappings.recordcount+1#" onChange="checkTheBox(this)">
+                <option value="true">#stText.setting.inspecttemplateneverShort#</option>
+                <option value="false" selected>#stText.setting.inspecttemplatealwaysShort#</option>
+            </select>
+        
+        
 		<input type="hidden" name="toplevel_#mappings.recordcount+1#" value="yes">
 		</td>
 	</tr>
