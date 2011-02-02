@@ -567,46 +567,48 @@ public final class ScopeContext {
 	private synchronized SessionPlus getJSessionScope(PageContext pc, RefBoolean isNew) {
         HttpSession httpSession=pc.getSession();
         ApplicationContext appContext = pc.getApplicationContext(); 
-        SessionPlus session=null;
+        Object session=null;// this is from type object, because it is possible that httpSession return object from prior restart
 		
         int s=(int) appContext.getSessionTimeout().getSeconds();
         if(maxSessionTimeout<s)maxSessionTimeout=s;
         
         if(httpSession!=null) {
         	httpSession.setMaxInactiveInterval(maxSessionTimeout);
-        	session=(SessionPlus) httpSession.getAttribute(appContext.getName());
+        	session= httpSession.getAttribute(appContext.getName());
         }
      // call of listeners
         else {
         	Map context=getSubMap(cfSessionContextes,appContext.getName());
-        	session=(SessionPlus) context.get(pc.getCFID());
+        	session=context.get(pc.getCFID());
         }
         
+        JSession jSession=null;
 		if(session instanceof JSession) {
+			jSession=(JSession) session;
             try {
-                if(session.isExpired()) {
-					session.touch();
+                if(jSession.isExpired()) {
+                	jSession.touch();
                 }
                 info(getLog(), "use existing JSession for "+appContext.getName()+"/"+pc.getCFID());
                 
             }
             catch(ClassCastException cce) {
             	error(getLog(), cce);
-                session=new JSession();
-                httpSession.setAttribute(appContext.getName(),session);
+                jSession=new JSession();
+                httpSession.setAttribute(appContext.getName(),jSession);
 				isNew.setValue(true);
             }
 		}
 		else {
 			info(getLog(), "create new JSession for "+appContext.getName()+"/"+pc.getCFID());
-            session=new JSession();
-		    httpSession.setAttribute(appContext.getName(),session);
+			jSession=new JSession();
+		    httpSession.setAttribute(appContext.getName(),jSession);
 			isNew.setValue(true);
 			Map context=getSubMap(cfSessionContextes,appContext.getName());
-			context.put(pc.getCFID(),session);
+			context.put(pc.getCFID(),jSession);
 		}
-		session.touchBeforeRequest(pc);
-		return session;    
+		jSession.touchBeforeRequest(pc);
+		return jSession;    
 	}
 
 	/**
