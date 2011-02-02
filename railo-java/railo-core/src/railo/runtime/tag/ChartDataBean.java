@@ -2,6 +2,8 @@ package railo.runtime.tag;
 
 import java.io.Serializable;
 
+import railo.print;
+
 public class ChartDataBean implements Serializable,Comparable {
 
 	private String item;
@@ -15,7 +17,7 @@ public class ChartDataBean implements Serializable,Comparable {
 	/**
 	 * @param item the item to set
 	 */
-	public void setItem(String item) {
+	public void setItem(String item) {print.ds();
 		this.item = item;
 	}
 	/**

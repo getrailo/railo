@@ -1,6 +1,9 @@
 package railo.runtime.tag;
 
 import java.awt.Color;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.Tag;
@@ -11,7 +14,9 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
+import railo.runtime.functions.displayFormatting.DateFormat;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 
@@ -178,7 +183,7 @@ public final class Chartseries extends BodyTagImpl {
 			for(int i=1;i<=rowCount;i++) {
 				data=new ChartDataBean();
 				data.setValue(Caster.toDoubleValue(query.getAt(valueColumn, i, new Double(0))));
-				data.setItem(Caster.toString(query.getAt(itemColumn, i, "")));
+				data.setItem(itemToString(query.getAt(itemColumn, i, "")));
 				addChartData(data);
 			}
 		}
@@ -193,5 +198,12 @@ public final class Chartseries extends BodyTagImpl {
 		}
 		while(parent!=null);
 		return EVAL_PAGE;
+	}
+	private String itemToString(Object obj) throws PageException {
+		if(obj instanceof Date) {
+			TimeZone tz = pageContext.getTimeZone();
+			return new railo.runtime.format.DateFormat(pageContext.getLocale()).format(Caster.toDate(obj, tz),"short",tz);
+		}
+		return Caster.toString(obj);
 	}
 }
