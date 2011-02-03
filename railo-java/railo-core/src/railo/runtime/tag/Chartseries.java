@@ -2,7 +2,6 @@ package railo.runtime.tag;
 
 import java.awt.Color;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.servlet.jsp.JspException;
@@ -14,9 +13,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
-import railo.runtime.functions.displayFormatting.DateFormat;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Decision;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 
