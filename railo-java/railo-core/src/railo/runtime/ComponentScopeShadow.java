@@ -3,7 +3,6 @@ package railo.runtime;
 import java.util.Iterator;
 import java.util.Map;
 
-import railo.commons.collections.HashTableNotSync;
 import railo.runtime.component.Member;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -23,20 +22,22 @@ import railo.runtime.type.util.StructUtil;
 
 public class ComponentScopeShadow extends StructSupport implements ComponentScope {
 
+	private static final long serialVersionUID = 4930100230796574243L;
+	
 	private ComponentImpl component;
     private static final int access=Component.ACCESS_PRIVATE;
-    private Map shadow=newMap();
+    private final  Map<Key,Object> shadow;//=newMap();
 
-	public static Map newMap() {
+	/*public static Map newMap() {
 		return new HashTableNotSync();//asx
-	}
+	}*/
 
 	/**
 	 * Constructor of the class
 	 * @param component
 	 * @param shadow
 	 */
-	public ComponentScopeShadow(ComponentImpl component, Map shadow) {
+	public ComponentScopeShadow(ComponentImpl component, Map<Key,Object> shadow) {
         this.component=component;
         this.shadow=shadow;
         
@@ -148,10 +149,10 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 */
 	public String[] keysAsString() {
 		String[] keys=new String[shadow.size()+1];
-		Iterator it = shadow.keySet().iterator();
+		Iterator<Key> it = shadow.keySet().iterator();
 		int index=0;
 		while(it.hasNext()) {
-			keys[index++]=((Collection.Key)it.next()).getString();
+			keys[index++]=it.next().getString();
 		}
 		keys[index]=ComponentImpl.KEY_THIS.getString();
 		return keys;
@@ -162,10 +163,10 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 */
 	public Collection.Key[] keys() {
 		Collection.Key[] keys=new Collection.Key[shadow.size()+1];
-		Iterator it = shadow.keySet().iterator();
+		Iterator<Key> it = shadow.keySet().iterator();
 		int index=0;
 		while(it.hasNext()) {
-			keys[index++]=(Collection.Key)it.next();
+			keys[index++]=it.next();
 		}
 		keys[index]=ComponentImpl.KEY_THIS;
 		return keys;
@@ -425,7 +426,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		return get(key);
 	}
 
-	public Map getShadow() {
+	public Map<Key,Object> getShadow() {
 		return shadow;
 	}
 

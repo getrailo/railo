@@ -79,8 +79,8 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
 	private ComponentProperties properties;
 	
-    private Map _data;//new HashMap();
-    private Map _udfs;
+    private Map<Key,Member> _data;//new HashMap();
+    private Map<Key,UDF> _udfs;
 
     
 
@@ -103,7 +103,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
 	private boolean useShadow;
 	boolean afterConstructor;
-	private Map constructorUDFs;
+	private Map<Key,UDFImpl> constructorUDFs;
 
 
 	public static final Key KEY_SUPER=KeyImpl.getInstance("SUPER");
@@ -115,8 +115,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	private static final Key TO_STRING = KeyImpl.getInstance("_toString");
 
 	private static final Key ON_MISSING_METHOD = KeyImpl.getInstance("onmissingmethod");
-	private static final Key MISSING_METHOD_NAMEx = KeyImpl.getInstance("missingMethodName");
-	private static final Key MISSING_METHOD_ARGS = KeyImpl.getInstance("missingMethodArguments");
 
 	protected static final Key EXTENDS = KeyImpl.getInstance("extends");
 	protected static final Key IMPLEMENTS = KeyImpl.getInstance("implements");
@@ -232,9 +230,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			}
 			
 	    	// data members
-			trg._data=duplicateMap(trg,_data,new HashMap(),deepCopy);
-			trg._udfs=duplicateMap(trg,_udfs,new HashMap(),deepCopy);
-			if(constructorUDFs!=null)trg.constructorUDFs=duplicateMap(trg,constructorUDFs,new HashMap(),deepCopy);
+			trg._data=duplicateMap(trg,_data,new HashMap<Key,Member>(),deepCopy);
+			trg._udfs=duplicateMap(trg,_udfs,new HashMap<Key,UDF>(),deepCopy);
+			if(constructorUDFs!=null)trg.constructorUDFs=duplicateMap(trg,constructorUDFs,new HashMap<Key,UDF>(),deepCopy);
 			
 			
 			// scope 
@@ -243,7 +241,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			}
 			else if(scope instanceof ComponentScopeShadow) {
 				ComponentScopeShadow css = (ComponentScopeShadow)scope;
-				trg.scope=new ComponentScopeShadow(trg,duplicateMap(trg,css.getShadow(),ComponentScopeShadow.newMap(),deepCopy));
+				trg.scope=new ComponentScopeShadow(trg,duplicateMap(trg,css.getShadow(),new HashMap<Key,Object>(),deepCopy));
 			}
 			else trg.scope=(ComponentScope) scope.clone();
     	}
@@ -342,14 +340,14 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	    	this.dataMemberDefaultAccess=base.dataMemberDefaultAccess;
 	    	this.triggerDataMember=base.triggerDataMember;
 	    	_data=base._data;
-	    	_udfs=new HashMap(base._udfs);
+	    	_udfs=new HashMap<Key,UDF>(base._udfs);
 	    	setTop(this,base);
 	    }
 	    else {
 	    	this.dataMemberDefaultAccess=pageContext.getConfig().getComponentDataMemberDefaultAccess();
 	    	this.triggerDataMember=pageContext.getConfig().getTriggerComponentDataMember();
-		    _udfs=new HashMap();
-		    _data=new HashMap();
+		    _udfs=new HashMap<Key,UDF>();
+		    _data=new HashMap<Key,Member>();
 	    }
 	    
 	    // implements
@@ -359,7 +357,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	    
 	    // scope
 	    if(useShadow=pageContext.getConfig().useComponentShadow()) {
-	        if(base==null) scope=new ComponentScopeShadow(this,new HashMap());
+	        if(base==null) scope=new ComponentScopeShadow(this,new HashMap<Key,Object>());
 		    else scope=new ComponentScopeShadow(this,(ComponentScopeShadow)base.scope);
 	    }
 	    else {
@@ -576,7 +574,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @param pc
      * @return the old scope map
      */
-    public Variables beforeCall(PageContext pc) {
+	public Variables beforeCall(PageContext pc) {
     	Variables parent=pc.variablesScope();
         pc.setVariablesScope(scope);
         return parent;
@@ -601,14 +599,14 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	this.afterConstructor=true;
     	
     	if(constructorUDFs!=null){
-    		Iterator it = constructorUDFs.entrySet().iterator();
-    		Map.Entry entry;
+    		Iterator<Entry<Key, UDFImpl>> it = constructorUDFs.entrySet().iterator();
+    		Map.Entry<Key, UDFImpl> entry;
     		Key key;
     		UDFImpl udf;
     		while(it.hasNext()){
-    			entry=(Entry) it.next();
-    			key=(Key) entry.getKey();
-    			udf=(UDFImpl) entry.getValue();
+    			entry=it.next();
+    			key=entry.getKey();
+    			udf=entry.getValue();
     			registerUDF(key, udf,false,true);
     		}
     	}
@@ -647,24 +645,24 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @param doBase 
      * @return key set
      */
-    protected Set keySet(int access) {
-    	HashSet set=new HashSet();
-        Map.Entry entry;    
-        Iterator it = _data.entrySet().iterator();
+    protected Set<Key> keySet(int access) {
+    	HashSet<Key> set=new HashSet<Key>();
+        Map.Entry<Key, Member> entry;    
+        Iterator<Entry<Key, Member>> it = _data.entrySet().iterator();
         while(it.hasNext()) {
-            entry=(Entry) it.next();
-            if(((Member) entry.getValue()).getAccess()<=access)set.add(entry.getKey());
+            entry=it.next();
+            if(entry.getValue().getAccess()<=access)set.add(entry.getKey());
         }
         return set;
     }
     
-    protected Set udfKeySet(int access) {
-    	Set set=new HashSet();
+    protected Set<Key> udfKeySet(int access) {
+    	Set<Key> set=new HashSet<Key>();
         Member m;
-        Map.Entry entry;
-        Iterator it = _udfs.entrySet().iterator();
+        Map.Entry<Key, UDF> entry;
+        Iterator<Entry<Key, UDF>> it = _udfs.entrySet().iterator();
         while(it.hasNext()) {
-            entry=(Entry) it.next();
+            entry=it.next();
             m=(Member) entry.getValue();
             if(m.getAccess()<=access)set.add(entry.getKey());
         }
@@ -672,12 +670,12 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     }
     
     
-    protected java.util.List getMembers(int access) {
-        java.util.List members=new ArrayList();
+    protected java.util.List<Member> getMembers(int access) {
+        java.util.List<Member> members=new ArrayList<Member>();
         Member e;
-        Iterator it = _data.entrySet().iterator();
+        Iterator<Entry<Key, Member>> it = _data.entrySet().iterator();
         while(it.hasNext()) {
-        	e=(Member) ((Map.Entry)it.next()).getValue();
+        	e=it.next().getValue();
             if(e.getAccess()<=access)members.add(e);
         }
         return members;
@@ -699,8 +697,8 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @return keys inside Component
      */
     public Collection.Key[] keys(int access) {
-        Set set = keySet(access);
-        return (Collection.Key[]) set.toArray(new Collection.Key[set.size()]);
+        Set<Key> set = keySet(access);
+        return set.toArray(new Collection.Key[set.size()]);
     }
 
     /**
@@ -1412,9 +1410,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             	ArrayImpl parr = new ArrayImpl();
             	Property p;
             	
-            	Iterator pit = comp.properties.properties.entrySet().iterator();
+            	Iterator<Entry<String, Property>> pit = comp.properties.properties.entrySet().iterator();
             	while(pit.hasNext()){
-            		p=(Property) ((Map.Entry)pit.next()).getValue();
+            		p=pit.next().getValue();
             		parr.add(p.getMetaData());
             	}
             	parr.sort(new ArrayOfStructComparator(NAME));
@@ -1430,9 +1428,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     private static void metaUDFs(PageContext pc,ComponentImpl comp,Struct sct, int access) throws PageException {
     	ArrayImpl arr=new ArrayImpl();
     	Collection.Key name;
-        Iterator it = comp.udfKeySet(access).iterator();
+        Iterator<Key> it = comp.udfKeySet(access).iterator();
         while(it.hasNext()) {
-        	name=KeyImpl.toKey(it.next(),null);
+        	name=it.next();
         	Object o=comp.getMember(access,name,true,true);
             if(o instanceof UDF) {
             	UDF udf=(UDF)o;
@@ -1877,14 +1875,14 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	// FUTURE add to interface and then search for #321 and change this as well
 	public Property[] getProperties(boolean onlyPeristent) {
 		if(top.properties.properties==null) return new Property[0];
-		Iterator it = top.properties.properties.keySet().iterator();
+		Iterator<String> it = top.properties.properties.keySet().iterator();
 		
 		// filter none peristent properties
 		if(onlyPeristent){
 			Property p;
 			java.util.List<Property> props=new ArrayList<Property>();
 			while(it.hasNext())	{
-				p = (Property)top.properties.properties.get(it.next());
+				p = top.properties.properties.get(it.next());
 				//print.e(p.getName()+":"+p.isPeristent());
 				if(p.isPeristent()) props.add(p);
 			}
@@ -1938,8 +1936,8 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
 	public void addConstructorUDF(Key key, Object value) {
 		if(constructorUDFs==null)
-			constructorUDFs=new HashMap();
-		constructorUDFs.put(key, value);
+			constructorUDFs=new HashMap<Key,UDFImpl>();
+		constructorUDFs.put(key, (UDFImpl) value);
 	}
 
 // MUST more native impl
