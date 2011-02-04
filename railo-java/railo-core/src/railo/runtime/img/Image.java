@@ -39,6 +39,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.AttributedString;
 import java.util.Iterator;
@@ -307,12 +308,15 @@ public class Image extends StructSupport implements Cloneable,Struct {
 			ImageReader ir=(ImageReader) it.next();
 			ImageInputStream iis=null;
 			IIOMetadata metadata=null;
+			InputStream is=null;
 			try {
-				
 				if(source instanceof File) { // TODO create ResourceImageInputStream
 					iis=new FileImageInputStream((File) source);
 				}
-				else iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format)));
+				//else iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format,false)));
+				else if(source==null)iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format,true)));
+				//else iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format,false)));
+				else iis=new MemoryCacheImageInputStream(is=source.getInputStream());
 				ir.setInput(iis);
 				
 				metadata = ir.getImageMetadata(0);
@@ -321,6 +325,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 			catch (Throwable t) {}
 			finally {
 				ImageUtil.closeEL(iis);
+				IOUtil.closeEL(is);
 			}
 			if(metadata!=null) return metadata;
 		}
@@ -896,8 +901,11 @@ public class Image extends StructSupport implements Cloneable,Struct {
 			IOUtil.closeEL(ios);
 		}
 	}
-	
+
 	public void writeOut(ImageOutputStream ios, String format,float quality) throws IOException, ExpressionException {
+		writeOut(ios, format, quality, false);
+	}
+	public void writeOut(ImageOutputStream ios, String format,float quality,boolean noMeta) throws IOException, ExpressionException {
 		if(quality<0 || quality>1)
 			throw new IOException("quality has a invalid value ["+quality+"], value has to be between 0 and 1");
 		if(StringUtil.isEmpty(format))	format=this.format;
@@ -906,8 +914,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		
 		BufferedImage im = image();
 		
-		
-		IIOMetadata meta = metadata(format);
+		IIOMetadata meta = noMeta?null:metadata(format);
 		
 		ImageWriter writer = null;
     	ImageTypeSpecifier type =ImageTypeSpecifier.createFromRenderedImage(im);
@@ -1427,12 +1434,15 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		return format;
 	}
 
-	public byte[] getImageBytes(String format) throws ExpressionException {
+	public byte[] getImageBytes(String format) throws ExpressionException{
+		return getImageBytes(format,false);
+	}
+	public byte[] getImageBytes(String format,boolean noMeta) throws ExpressionException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ImageOutputStream ios = null;
 		try {
 			ios = ImageIO.createImageOutputStream(baos);
-			writeOut(ios, format, 1);
+			writeOut(ios, format, 1,noMeta);
 		} catch (IOException e) {
 			throw new ExpressionException(e.getMessage());
 		}
