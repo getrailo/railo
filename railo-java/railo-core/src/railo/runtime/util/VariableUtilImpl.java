@@ -759,7 +759,7 @@ public final class VariableUtilImpl implements VariableUtil {
         if(prop instanceof UDF) {
             return ((UDF)prop).callWithNamedValues(pc,Caster.toFunctionValues(args),false);
         }
-		throw new ExpressionException("No matching Method/Function for call with named arguments found");
+		throw new ExpressionException("No matching Method/Function ["+key+"] for call with named arguments found");
 		//throw new ExpressionException("can't use named argument for this operation");
 	}
 
@@ -773,7 +773,7 @@ public final class VariableUtilImpl implements VariableUtil {
         if(prop instanceof UDF) 		{
             return ((UDF)prop).callWithNamedValues(pc,Caster.toFunctionValues(args),false);
         }
-        throw new ExpressionException("No matching Method/Function for call with named arguments found");
+        throw new ExpressionException("No matching Method/Function ["+key+"] for call with named arguments found ");
 	}
 
 	public Object callFunctionWithNamedValues(PageContext pc, Object coll, Collection.Key key, Struct args) throws PageException {

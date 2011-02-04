@@ -16,7 +16,7 @@ public class ComponentProperties implements Serializable {
 	final String dspName;
 	final String extend;
 	final String hint;
-	Boolean output;
+	final Boolean output;
 	final String callPath;
 	final boolean realPath;
 	final boolean _synchronized;

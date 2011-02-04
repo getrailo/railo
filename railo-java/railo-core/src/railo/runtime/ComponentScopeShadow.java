@@ -23,14 +23,11 @@ import railo.runtime.type.util.StructUtil;
 public class ComponentScopeShadow extends StructSupport implements ComponentScope {
 
 	private static final long serialVersionUID = 4930100230796574243L;
-	
-	private ComponentImpl component;
-    private static final int access=Component.ACCESS_PRIVATE;
-    private final  Map<Key,Object> shadow;//=newMap();
 
-	/*public static Map newMap() {
-		return new HashTableNotSync();//asx
-	}*/
+	private final ComponentImpl component;
+	private static final int access=Component.ACCESS_PRIVATE;
+	private final Map<Key,Object> shadow;
+
 
 	/**
 	 * Constructor of the class
@@ -116,19 +113,13 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		if(o!=null) return o;
         throw new ExpressionException("Component ["+component.getCallName()+"] has no acessible Member with name ["+key+"]");
 	}
-
-	private ComponentImpl getUDFComponent(PageContext pc) {
-		return ComponentUtil.getActiveComponent(pc, component);
-	}
 	
 	/**
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(Key key, Object defaultValue) {
-		//print.out("key:"+key);
-    	
 		if(key.equalsIgnoreCase(ComponentImpl.KEY_SUPER)) {
-			return SuperComponent.superInstance(getUDFComponent(ThreadLocalPageContext.get()).base);
+			return SuperComponent.superInstance(ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),component).base);
 		}
 		if(key.equalsIgnoreCase(ComponentImpl.KEY_THIS)) return component;
 		
@@ -198,7 +189,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		if(key.equalsIgnoreCase(ComponentImpl.KEY_THIS) || key.equalsIgnoreCase(ComponentImpl.KEY_SUPER)) return value;
 		
 		if(!component.afterConstructor && value instanceof UDF) {
-			component.addConstructorUDF(key,value);
+			component.addConstructorUDF(key,(UDF)value);
 		}
 		return shadow.put(key, value);
 		
@@ -428,12 +419,5 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 
 	public Map<Key,Object> getShadow() {
 		return shadow;
-	}
-
-	/**
-	 * @see railo.runtime.ComponentScope#setComponent(railo.runtime.ComponentImpl)
-	 */
-	public void setComponent(ComponentImpl c) {
-		this.component=c;
 	}
 }
