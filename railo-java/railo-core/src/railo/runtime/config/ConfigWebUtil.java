@@ -366,12 +366,12 @@ public final class ConfigWebUtil {
         if(!config.getPassword().equalsIgnoreCase(password)){
         	if(StringUtil.isEmpty(password)){
         		if(type==null)
-        			throw new SecurityException("acccess is protected",
+        			throw new SecurityException("Access is protected",
                     		"to access the configuration without a password, you need to change the access to [open] in the Server Administrator");
-        		throw new SecurityException(type +" acccess is protected",
+        		throw new SecurityException(type +" access is protected",
                 		"to access the configuration without a password, you need to change the "+type+" access to [open] in the Server Administrator");
         	}
-            throw new SecurityException("no acccess, password is invalid");
+            throw new SecurityException("No access, password is invalid");
         }
     }
     

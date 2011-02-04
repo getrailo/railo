@@ -23,7 +23,7 @@ import railo.runtime.type.util.StructUtil;
  */
 public final class ComponentScopeThis extends StructSupport implements ComponentScope {
     
-    private ComponentImpl component;
+    private final ComponentImpl component;
     private static final int access=Component.ACCESS_PRIVATE;
 	private static final Collection.Key THIS = KeyImpl.init("this");
     
@@ -401,8 +401,8 @@ public final class ComponentScopeThis extends StructSupport implements Component
 
 	/**
 	 * @see railo.runtime.ComponentScope#setComponent(railo.runtime.ComponentImpl)
-	 */
-	public void setComponent(ComponentImpl c) {
+	 * /
+	public void setComponentd(ComponentImpl c) {
 		this.component=c;
-	}
+	}*/
 }

@@ -164,8 +164,7 @@ public class ScheduledTaskThread extends Thread {
 	}
 
 	private long calculateNextExecution(long now, boolean notNow) {
-		long _now=now;
-		long nowTime=util.getMilliSecondsInDay(null,now);
+		long nowTime=util.getMilliSecondsInDay(timeZone,now);
 		long nowDate=now-nowTime;
 		
 		
@@ -192,24 +191,6 @@ public class ScheduledTaskThread extends Thread {
 			calendar.add(cIntervall, amount);
 		}
 		return calendar.getTimeInMillis();
-
-/*		
-		// DAY
-		if(ScheduleTask.INTERVAL_DAY==intervall){
-			if(todayTime>startTime) {
-				calendar.setTimeInMillis(todayDate+startTime);
-				calendar.add(Calendar.DATE, amount);
-				return calendar.getTimeInMillis();
-			}
-			return todayDate+startTime;
-		}
-		
-		// MONTH
-		if(ScheduleTask.INTERVAL_MONTH==intervall){
-			
-		}
-		*/
-		
 	}
 
 	private static int toCalndarIntervall(int intervall) {

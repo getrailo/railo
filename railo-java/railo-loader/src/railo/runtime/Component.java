@@ -89,9 +89,9 @@ public interface Component extends Struct,Objects {
     public abstract boolean instanceOf(String type);
 
     /**
-     * check if value is a vlaid access modifier constant
+     * check if value is a valid access modifier constant
      * @param access
-     * @return is valid acccess
+     * @return is valid access
      */
     public abstract boolean isValidAccess(int access);
     

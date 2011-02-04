@@ -4086,8 +4086,14 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>algorithm</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>The encryption algorithm for which to generate the key.</description>
-    </argument>
+			<description>The encryption algorithm for which to generate the key.</description>
+    	</argument>
+		<argument>
+			<name>keySize</name>
+			<type>number</type>
+			<required>No</required>
+			<description>Number of bits requested in the key for the specified algorithm.</description>
+    	</argument>
 		<return>
 			<type>string</type>
 		</return>

@@ -38,7 +38,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import railo.aprint;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -71,6 +70,7 @@ public final class XMLUtil {
     public static final Collection.Key XMLNSURI = KeyImpl.getInstance("xmlnsuri");
     public static final Collection.Key XMLNSPREFIX = KeyImpl.getInstance("xmlnsprefix");
     public static final Collection.Key XMLROOT = KeyImpl.getInstance("xmlroot");
+    public static final Collection.Key XMLPARENT = KeyImpl.getInstance("xmlparent");
     public static final Collection.Key XMLNAME = KeyImpl.getInstance("xmlname");
     public static final Collection.Key XMLTYPE = KeyImpl.getInstance("xmltype");
     public static final Collection.Key XMLVALUE = KeyImpl.getInstance("xmlvalue");
@@ -141,16 +141,7 @@ public final class XMLUtil {
       	return sb.toString();
     }
     
-    public static void main(String[] args) { 
-    	aprint.out(unescapeXMLString2("<h1><a href=\"/start\" target=\"_self\" name=\"&amp;lid=/start\">11 Sicherheitsupdates fﾟr XP & Co.</a>"));
-    	aprint.out(unescapeXMLString2("abcd"));
-    	aprint.out(unescapeXMLString2("ab&cd&"));
-    	aprint.out(unescapeXMLString2("a&b&&&c&d&"));
-    	aprint.out(unescapeXMLString2("a&;b&;c&;d&;"));
-    	aprint.out(unescapeXMLString2("ab&amp;cd"));
-    	aprint.out(unescapeXMLString2("ab&amp;&susi;cd"));
-        
-    }
+    
     
     
     private static String unescapeXMLEntity(String str) {
@@ -317,7 +308,6 @@ public final class XMLUtil {
 	}
 	
 	public static Object setProperty(Node node, Collection.Key k, Object value,boolean caseSensitive) throws PageException {
-		
 		Document doc=(node instanceof Document)?(Document)node:node.getOwnerDocument();
 		
 		// Comment
@@ -339,6 +329,17 @@ public final class XMLUtil {
 		// Root
 			else if(k.equals(XMLROOT)) {
 				doc.appendChild(XMLCaster.toNode(doc,value));
+			}			
+		// Parent
+			else if(k.equals(XMLPARENT)) {
+				Node parent = getParentNode(node,caseSensitive);
+				Key name = KeyImpl.init(parent.getNodeName());
+				parent = getParentNode(parent,caseSensitive);
+				
+				if(parent==null)
+					throw new ExpressionException("there is no parent element, you are already on the root element");
+				
+				return setProperty(parent, name, value, caseSensitive);
 			}
 		// Name	
 			else if(k.equals(XMLNAME)) {
@@ -400,6 +401,7 @@ public final class XMLUtil {
 				}
 				node.appendChild(XMLCaster.toRawNode(child));
 			}
+			
 			return value;
 	}
 
@@ -469,6 +471,17 @@ public final class XMLUtil {
 				Element re = getRootElement(node,caseSensitive);
 				if(re==null) throw new SAXException("Attribute ["+k.getString()+"] not found in XML, XML is empty");
 				return param(re,"");
+			}
+		// Parent
+			else if(k.equals(XMLPARENT)) {
+				
+				Node parent = getParentNode(node,caseSensitive);
+				if(parent==null) {
+					if(node.getNodeType()==Node.DOCUMENT_NODE)
+						throw new SAXException("Attribute ["+k.getString()+"] not found in XML, there is no parent element, you are already at the root element");
+					throw new SAXException("Attribute ["+k.getString()+"] not found in XML, there is no parent element");
+				}
+				return parent;
 			}
 		// Name	
 			else if(k.equals(XMLNAME)) {
@@ -597,12 +610,6 @@ public final class XMLUtil {
     		throw undefined(key, node);
 	}
 
-	private static NamedNodeMap getAttributes(Node node) {
-		NamedNodeMap attr = node.getAttributes();
-		//if(attr==null)return new EmptyNamedNodeMap();
-		return attr;
-	}
-
 	/**
      * check if given name is equal to name of the element (with and without namespace)
      * @param node
@@ -712,6 +719,13 @@ public final class XMLUtil {
 		Element el = doc.getDocumentElement();
 		if(el==null) return null;
 		return (Element)XMLStructFactory.newInstance(el,caseSensitive);
+	}
+	
+
+	public static Node getParentNode(Node node, boolean caseSensitive) {
+		Node parent = node.getParentNode();
+	    if(parent==null) return null;
+		return XMLStructFactory.newInstance(parent,caseSensitive);
 	}
 
 	/**
