@@ -12,7 +12,7 @@ public interface ComponentScope extends Variables,Objects {
      */
     public ComponentPro getComponent();
 
-    public void setComponent(ComponentImpl c);
+    //public void setComponent(ComponentImpl c);
     //public void getInner(PageContext pc, Collection.Key key, Object defaultValue);
 
 }
