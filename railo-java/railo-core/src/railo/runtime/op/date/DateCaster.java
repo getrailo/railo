@@ -52,9 +52,12 @@ public final class DateCaster {
 			 ,new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
 			 ,new SimpleDateFormat("EEE d, MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
 			 ,new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH)
-				 ,new SimpleDateFormat("MMMM, dd yyyy hh:mm:ss",Locale.ENGLISH)
-				 ,new SimpleDateFormat("yyyy/MM/dd hh:mm:ss zz",Locale.ENGLISH)
+			 ,new SimpleDateFormat("MMMM, dd yyyy hh:mm:ss",Locale.ENGLISH)
+			 ,new SimpleDateFormat("yyyy/MM/dd hh:mm:ss zz",Locale.ENGLISH)
+			 ,new SimpleDateFormat("dd MMM yyyy hh:mm:ss zz",Locale.ENGLISH)
 			 //,new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",Locale.ENGLISH)
+			  
+			  
 		};
 	}
 
