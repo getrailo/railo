@@ -258,38 +258,41 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	public Struct info()  throws ExpressionException{
 		if(sctInfo!=null) return sctInfo;
 		
-		Struct sctInfo=new StructImpl();
-		Struct sctCM=new StructImpl();
+		Struct sctInfo=new StructImpl(),sct;
+		
+		
 		sctInfo.setEL("height",new Double(getHeight()));
 		sctInfo.setEL("width",new Double(getWidth()));
 		sctInfo.setEL("source",source==null?"":source.getAbsolutePath());
 		//sct.setEL("mime_type",getMimeType());
 		
-		sctInfo.setEL("colormodel",sctCM);
 		ColorModel cm = image().getColorModel();
-		sctCM.setEL("alpha_channel_support",Caster.toBoolean(cm.hasAlpha()));
-		sctCM.setEL("alpha_premultiplied",Caster.toBoolean(cm.isAlphaPremultiplied()));
-		sctCM.setEL("transparency",toStringTransparency(cm.getTransparency()));
-		sctCM.setEL("pixel_size",Caster.toDouble(cm.getPixelSize()));
-		sctCM.setEL("num_components",Caster.toDouble(cm.getNumComponents()));
-		sctCM.setEL("num_color_components",Caster.toDouble(cm.getNumColorComponents()));
-		sctCM.setEL("colorspace",toStringColorSpace(cm.getColorSpace()));
+		sct=new StructImpl();
+		sctInfo.setEL("colormodel",sct);
+		
+		sct.setEL("alpha_channel_support",Caster.toBoolean(cm.hasAlpha()));
+		sct.setEL("alpha_premultiplied",Caster.toBoolean(cm.isAlphaPremultiplied()));
+		sct.setEL("transparency",toStringTransparency(cm.getTransparency()));
+		sct.setEL("pixel_size",Caster.toDouble(cm.getPixelSize()));
+		sct.setEL("num_components",Caster.toDouble(cm.getNumComponents()));
+		sct.setEL("num_color_components",Caster.toDouble(cm.getNumColorComponents()));
+		sct.setEL("colorspace",toStringColorSpace(cm.getColorSpace()));
 		
 	    //bits_component
 		int[] bitspercomponent = cm.getComponentSize();
 		Array arr=new ArrayImpl();
 		Double value;
 	    for (int i = 0; i < bitspercomponent.length; i++) {
-	    	sctCM.setEL("bits_component_" + (i + 1),value=new Double(bitspercomponent[i]));
+	    	sct.setEL("bits_component_" + (i + 1),value=new Double(bitspercomponent[i]));
 	    	arr.appendEL(value);
 	    }
-		sctCM.setEL("bits_component",arr);
+		sct.setEL("bits_component",arr);
 		
 	    // colormodel_type
-		if (cm instanceof ComponentColorModel)		sctCM.setEL("colormodel_type", "ComponentColorModel");
-		else if (cm instanceof IndexColorModel)		sctCM.setEL("colormodel_type", "IndexColorModel");
-		else if (cm instanceof PackedColorModel)	sctCM.setEL("colormodel_type", "PackedColorModel");
-		else sctCM.setEL("colormodel_type", List.last(cm.getClass().getName(), '.'));
+		if (cm instanceof ComponentColorModel)		sct.setEL("colormodel_type", "ComponentColorModel");
+		else if (cm instanceof IndexColorModel)		sct.setEL("colormodel_type", "IndexColorModel");
+		else if (cm instanceof PackedColorModel)	sct.setEL("colormodel_type", "PackedColorModel");
+		else sct.setEL("colormodel_type", List.last(cm.getClass().getName(), '.'));
 
 		
 		metadata(sctInfo);
