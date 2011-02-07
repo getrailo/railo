@@ -940,16 +940,16 @@ public final class List {
 		return sb.toString();
 	}
 	
-	public static String listToList(java.util.List list, String delimeter) {
+	public static String listToList(java.util.List list, String delimeter) throws PageException {
 		if(list.size()==0) return "";
 		StringBuffer sb=new StringBuffer();
 		Iterator it = list.iterator();
 		
-		if(it.hasNext()) sb.append((String)it.next());
+		if(it.hasNext()) sb.append(Caster.toString(it.next()));
 			
 		while(it.hasNext()) {
 			sb.append(delimeter);
-			sb.append((String)it.next());
+			sb.append(Caster.toString(it.next()));
 		}
 		return sb.toString();
 	}
