@@ -1394,7 +1394,9 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	 */
 	public Collection duplicate(boolean deepCopy) {
 		try {
+			if(_image!=null) return new Image(getBufferedImage());
 			return new Image(getImageBytes(null));
+			
 		} catch (Exception e) {
 			throw new PageRuntimeException(e.getMessage());
 		}
