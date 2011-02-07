@@ -40,8 +40,7 @@ public final class DateCaster {
 	static  {
 	    simpleDateFormatters=new SimpleDateFormat[]{
 			  new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy",Locale.ENGLISH)
-				 ,new SimpleDateFormat("MMM dd, yyyy H:mm:ss a",Locale.ENGLISH)
-				 
+			,new SimpleDateFormat("MMM dd, yyyy H:mm:ss a",Locale.ENGLISH)
 			 ,new SimpleDateFormat("MMMM dd, yyyy HH:mm:ss a zzz",Locale.ENGLISH)
 			 ,new SimpleDateFormat("MMMM d yyyy HH:mm:ss",Locale.ENGLISH)
 			 ,new SimpleDateFormat("MMMM d yyyy HH:mm",Locale.ENGLISH)
