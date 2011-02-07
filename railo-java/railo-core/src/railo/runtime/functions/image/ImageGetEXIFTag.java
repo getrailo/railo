@@ -1,10 +1,16 @@
 package railo.runtime.functions.image;
 
+import java.util.Arrays;
+
+import railo.commons.lang.ExceptionUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.Image;
 import railo.runtime.op.Caster;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 public class ImageGetEXIFTag {
 
@@ -12,7 +18,12 @@ public class ImageGetEXIFTag {
 		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
 		Image img = Image.toImage(name);
 		
-		throw new ExpressionException("method ImageGetEXIFTag not implemented yet");
+		Struct data = ImageGetEXIFMetadata.getData(img);
+		Object value = data.get(tagName, null);
+		if(value==null){
+			throw new FunctionException(pc, "ImageGetEXIFTag", 2, "tagName", ExceptionUtil.similarKeyMessage(data.keysAsString(),tagName,"tag","tags"));
+		}
+		return value;
 	}
 	
 }

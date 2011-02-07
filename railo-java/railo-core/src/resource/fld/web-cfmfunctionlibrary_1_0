@@ -7606,6 +7606,21 @@ wood
 			<type>any</type>
 		</return>
 	</function>
+	<!-- ImageGetEXIFMetadata -->
+	<function>
+		<name>ImageGetEXIFMetadata</name>
+		<class>railo.runtime.functions.image.ImageGetEXIFMetadata</class>
+		<description>Retrieves the Exchangeable Image File Format (EXIF) headers in an image as a CFML structure.</description>
+		<argument>
+			<name>name</name>
+			<type>any</type>
+			<required>Yes</required>
+			<description>The image on which this operation is performed.</description>
+    	</argument>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
 	<!-- ImageGetEXIFTag -->
 	<function>
 		<name>ImageGetEXIFTag</name>
