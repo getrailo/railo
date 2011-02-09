@@ -684,16 +684,8 @@ public final class Http extends BodyTagImpl {
 	    // is text 
 	        boolean isText=
 	        	mimetype == null ||  
-	        	mimetype == NO_MIMETYPE || 
-	        	StringUtil.startsWithIgnoreCase(mimetype,"text")  || 
-	        	StringUtil.startsWithIgnoreCase(mimetype,"application/xml")  || 
-	        	StringUtil.startsWithIgnoreCase(mimetype,"application/xhtml")  || 
-	        	StringUtil.startsWithIgnoreCase(mimetype,"message") || 
-	        	StringUtil.startsWithIgnoreCase(mimetype,"application/octet-stream") || 
-	        	StringUtil.indexOfIgnoreCase(mimetype, "xml")!=-1 || 
-	        	StringUtil.indexOfIgnoreCase(mimetype, "json")!=-1 || 
-	        	StringUtil.indexOfIgnoreCase(mimetype, "rss")!=-1 || 
-	        	StringUtil.indexOfIgnoreCase(mimetype, "text")!=-1;
+	        	mimetype == NO_MIMETYPE || isText(mimetype);
+	        	
 	        
 	       
 	        cfhttp.set(TEXT,Caster.toBoolean(isText));
@@ -827,6 +819,24 @@ public final class Http extends BodyTagImpl {
 	    
 	}
 	
+	public static boolean isText(String mimetype) {
+		if(mimetype==null)mimetype="";
+		else mimetype=mimetype.trim().toLowerCase();
+		return StringUtil.startsWithIgnoreCase(mimetype,"text")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/xml")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/atom+xml")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/xhtml")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"message") || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/octet-stream") || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "xml")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "json")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "rss")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "atom")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "text")!=-1;
+		
+		// "application/x-www-form-urlencoded" ???
+	}
+
 	private PageException toPageException(Throwable t) {
 		PageException pe = Caster.toPageException(t);
 		if(pe instanceof NativeException) {
