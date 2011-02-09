@@ -1,6 +1,5 @@
 package railo.runtime.tag;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,14 +36,6 @@ import railo.runtime.op.Decision;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 
-/**
-* Speeds up page rendering when dynamic content does not have to be retrieved each time a user accesses
-*   the page. To accomplish this, cfcache creates temporary files that contain the static HTML returned from
-*   a ColdFusion page. You can use cfcache for simple URLs and URLs that contain URL parameters.
-*
-*
-*
-**/
 public final class Zip extends BodyTagImpl {
 
 	private String action="zip";

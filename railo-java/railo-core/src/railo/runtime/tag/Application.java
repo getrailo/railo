@@ -13,7 +13,7 @@ import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.util.ApplicationContextImpl;
 
 /**
-* Defines scoping for a ColdFusion application, enables or disables storing client variables, 
+* Defines scoping for a CFML application, enables or disables storing client variables, 
 * 			and specifies a client variable storage mechanism. 
 * 			By default, client variables are disabled. Also, enables session variables and sets timeouts 
 * 			for session and application variables. Session and application variables are stored in memory.
@@ -82,7 +82,7 @@ public final class Application extends TagImpl {
     
     /** set the value setclientcookies
 	*  Yes or No. Yes enables client cookies. Default is Yes. If you set this attribute to 
-	* 		"No", ColdFusion does not automatically send the CFID and CFTOKEN cookies to the client browser;
+	* 		"No", CFML does not automatically send the CFID and CFTOKEN cookies to the client browser;
 	* 		you must manually code CFID and CFTOKEN on the URL for every page that uses Session or Client variables.
 	* @param setClientCookies value to set
 	**/
@@ -128,7 +128,7 @@ public final class Application extends TagImpl {
 	}
 
 	/** set the value clientstorage
-	*  Specifies how ColdFusion stores client variables
+	*  Specifies how Railo stores client variables
 	* @param clientstorage value to set
 	**/
 	public void setClientstorage(String clientstorage)	{
@@ -150,8 +150,7 @@ public final class Application extends TagImpl {
 
 	/** set the value sessiontimeout
 	*  Enter the CreateTimeSpan function and values in days, hours, minutes, and seconds, separated 
-	* 		by commas, to specify the lifespan of session variables. The default value is specified in the
-	* 		Variables page of the ColdFusion Administrator.
+	* 		by commas, to specify the lifespan of session variables.
 	* @param sessionTimeout value to set
 	**/
 	public void setSessiontimeout(TimeSpan sessionTimeout)	{
@@ -167,8 +166,7 @@ public final class Application extends TagImpl {
 
 	/** set the value applicationtimeout
 	*  Enter the CreateTimeSpan function and values in days, hours, minutes, and seconds, separated 
-	* 		by commas, to specify the lifespan of application variables. The default value is specified in
-	* 		the Variables page of the ColdFusion Administrator.
+	* 		by commas, to specify the lifespan of application variables. 
 	* @param applicationTimeout value to set
 	**/
 	public void setApplicationtimeout(TimeSpan applicationTimeout)	{

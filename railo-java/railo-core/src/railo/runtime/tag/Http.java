@@ -160,14 +160,7 @@ public final class Http extends BodyTagImpl {
 	** 	links remain intact. */
 	private boolean resolveurl;
 
-	/** A value, in seconds. When a URL timeout is specified in the browser, the timeout attribute setting 
-	** 		takes precedence over the ColdFusion Administrator timeout. The ColdFusion server then uses the lesser 
-	** 		of the URL timeout and the timeout passed in the timeout attribute, so that the request always times 
-	** 		out before or at the same time as the page times out. If there is no URL timeout specified, ColdFusion 
-	** 		takes the lesser of the ColdFusion Administrator timeout and the timeout passed in the timeout attribute.
-	** 		If there is no timeout set on the URL in the browser, no timeout set in the ColdFusion Administrator, 
-	** 		and no timeout set with the timeout attribute, ColdFusion waits indefinitely for the cfhttp request to 
-	** 		process. */
+	/** A value, in seconds. When a URL timeout is specified in the browser */
 	private long timeout=-1;
 
 	/** Host name or IP address of a proxy server. */
@@ -194,13 +187,7 @@ public final class Http extends BodyTagImpl {
 	** 	resolved to preserve links in the retrieved document. */
 	private int proxyport=80;
 
-	/** Specifies the column names for a query when creating a query as a result of a cfhttp GET. 
-	** 	By default, the first row of a text file is interpreted as column headings. If there are column 
-	** 	headers in the text file from which the query is drawn, do not specify this attribute except to overwrite them. 
-	** 	When duplicate column heading names are encountered, ColdFusion appends an underscore character to 
-	** 	the duplicate column name to make it unique. If there are no column headers in the text file, or to 
-	** 	override those in the file, you must specify the columns attribute. However ColdFusion never treats 
-	** 	the first row of the file as data, even if you specify the columns attribute. */
+	/** Specifies the column names for a query when creating a query as a result of a cfhttp GET. */
 	private String[] columns;
 
 	/** The port number on the server from which the object is requested. Default is 80. When used with 
@@ -226,12 +213,7 @@ public final class Http extends BodyTagImpl {
 	** 	number. Port numbers specified in the url attribute override the port attribute. */
 	private String url;
 
-	/** Boolean indicating whether to redirect execution or stop execution. The default is Yes. If set 
-	** 	to No and throwOnError = "yes", execution stops if cfhttp fails, and the status code and associated 
-	** 	error message are returned in the variable cfhttp.statuscode. To see where execution would have been 
-	** 	redirected, use the variable cfhttp.responseHeader[LOCATION]. The key LOCATION identifies the path of 
-	** 	redirection. ColdFusion will follow up to five redirections on a request. if this limit is exceeded, 
-	** 	ColdFusion behaves as if redirect = "no". */
+	/** Boolean indicating whether to redirect execution or stop execution.*/
 	private boolean redirect=true;
 
 
@@ -336,14 +318,6 @@ public final class Http extends BodyTagImpl {
 	}
 
 	/** set the value timeout
-	*  A value, in seconds. When a URL timeout is specified in the browser, the timeout attribute setting 
-	* 		takes precedence over the ColdFusion Administrator timeout. The ColdFusion server then uses the lesser 
-	* 		of the URL timeout and the timeout passed in the timeout attribute, so that the request always times 
-	* 		out before or at the same time as the page times out. If there is no URL timeout specified, ColdFusion 
-	* 		takes the lesser of the ColdFusion Administrator timeout and the timeout passed in the timeout attribute.
-	* 		If there is no timeout set on the URL in the browser, no timeout set in the ColdFusion Administrator, 
-	* 		and no timeout set with the timeout attribute, ColdFusion waits indefinitely for the cfhttp request to 
-	* 		process.
 	* @param timeout value to set
 	 * @throws ExpressionException 
 	**/
@@ -402,13 +376,6 @@ public final class Http extends BodyTagImpl {
 	}
 
 	/** set the value columns
-	*  Specifies the column names for a query when creating a query as a result of a cfhttp GET. 
-	* 	By default, the first row of a text file is interpreted as column headings. If there are column 
-	* 	headers in the text file from which the query is drawn, do not specify this attribute except to overwrite them. 
-	* 	When duplicate column heading names are encountered, ColdFusion appends an underscore character to 
-	* 	the duplicate column name to make it unique. If there are no column headers in the text file, or to 
-	* 	override those in the file, you must specify the columns attribute. However ColdFusion never treats 
-	* 	the first row of the file as data, even if you specify the columns attribute.
 	* @param columns value to set
 	 * @throws PageException
 	**/
@@ -473,12 +440,6 @@ public final class Http extends BodyTagImpl {
 	}
 
 	/** set the value redirect
-	*  Boolean indicating whether to redirect execution or stop execution. The default is Yes. If set 
-	* 	to No and throwOnError = "yes", execution stops if cfhttp fails, and the status code and associated 
-	* 	error message are returned in the variable cfhttp.statuscode. To see where execution would have been 
-	* 	redirected, use the variable cfhttp.responseHeader[LOCATION]. The key LOCATION identifies the path of 
-	* 	redirection. ColdFusion will follow up to five redirections on a request. if this limit is exceeded, 
-	* 	ColdFusion behaves as if redirect = "no".
 	* @param redirect value to set
 	**/
 	public void setRedirect(boolean redirect)	{

@@ -12,7 +12,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.security.SecurityManager;
 
 /**
-* Enables ColdFusion developers to execute a process on a server computer.
+* Enables CFML developers to execute a process on a server computer.
 *
 *
 *
@@ -22,9 +22,9 @@ public final class Execute extends BodyTagImpl {
 	/** Command-line arguments passed to the application. */
 	private String arguments=null;
 
-	/** Indicates how long, in seconds, the ColdFusion executing thread waits for the spawned process. 
+	/** Indicates how long, in seconds, the CFML executing thread waits for the spawned process. 
 	** 		A timeout of 0 is equivalent to the non-blocking mode of executing. A very high timeout value is 
-	** 		equivalent to a blocking mode of execution. The default is 0; therefore, the ColdFusion thread spawns 
+	** 		equivalent to a blocking mode of execution. The default is 0; therefore, the CFML thread spawns 
 	** 		a process and returns without waiting for the process to terminate.If no output file is specified, 
 	** 		and the timeout value is 0, the program output is discarded. */
 	private long timeout;
@@ -81,9 +81,9 @@ public final class Execute extends BodyTagImpl {
 	}
 
 	/** set the value timeout
-	*  Indicates how long, in seconds, the ColdFusion executing thread waits for the spawned process. 
+	*  Indicates how long, in seconds, the CFML executing thread waits for the spawned process. 
 	* 		A timeout of 0 is equivalent to the non-blocking mode of executing. A very high timeout value is 
-	* 		equivalent to a blocking mode of execution. The default is 0; therefore, the ColdFusion thread spawns 
+	* 		equivalent to a blocking mode of execution. The default is 0; therefore, the CFML thread spawns 
 	* 		a process and returns without waiting for the process to terminate.If no output file is specified, 
 	* 		and the timeout value is 0, the program output is discarded.
 	* @param timeout value to set

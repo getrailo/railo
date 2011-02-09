@@ -14,14 +14,7 @@ import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.util.ApplicationContext;
 
-/**
-* Opens a ColdFusion page or HTML file. For example, you might use cflocation to specify a standard 
-*   message or response that you use in several ColdFusion applications. Use the addToken attribute to verify 
-*   client requests.
-*
-*
-*
-**/
+
 public final class Location extends TagImpl {
 
 	/** Yes or No. clientManagement must be enabled, see cfapplication. Yes appends client variable 

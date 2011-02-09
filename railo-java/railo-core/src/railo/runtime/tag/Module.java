@@ -13,10 +13,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 
 /**
-* Invokes a custom tag for use in ColdFusion application pages. The cfmodule tag can help deal with 
-*   custom tag name conflicts. Use the template attribute to name a ColdFusion page that contains the custom 
-*   tag definition, including its path. Use the name attribute to refer to the custom tag using a dot 
-*   notation scheme to indicate the location of the custom tag in the ColdFusion installation directory.
+* Invokes a custom tag for use in CFML application pages.
 **/
 public final class Module extends CFTag {
 

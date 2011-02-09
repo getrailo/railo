@@ -3,14 +3,6 @@ package railo.runtime.tag;
 import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.TagImpl;
 
-/**
-* Used in a cfform tag, cfapplet lets you reference custom Java applets that you have registered 
-* 			using the ColdFusion Administrator.
-* 			To register a Java applet, open the ColdFusion Administrator and click Applets.
-*
-*
-*
-**/
 public final class Applet extends TagImpl {
 
 	/** The text to display if a page containing a Java applet-based cfform control is opened by a browser that does not support Java or has Java support disabled. */
@@ -28,7 +20,7 @@ public final class Applet extends TagImpl {
 	/** Space on each side of the applet, in pixels. */
 	private double hspace;
 
-	/** The name of a registered parameter for the applet. Specify a parameter only to override parameter values already defined for the applet in the ColdFusion Administrator. */
+	/** The name of a registered parameter for the applet. */
 	private String paramn;
 
 	/** Space above and below applet, in pixels. */
@@ -90,7 +82,6 @@ public final class Applet extends TagImpl {
 	}
 
 	/** set the value paramn
-	*  The name of a registered parameter for the applet. Specify a parameter only to override parameter values already defined for the applet in the ColdFusion Administrator.
 	* @param paramn value to set
 	**/
 	public void setParamn(String paramn)	{

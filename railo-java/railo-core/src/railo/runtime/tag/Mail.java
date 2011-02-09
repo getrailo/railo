@@ -298,8 +298,6 @@ public final class Mail extends BodyTagImpl {
 	}
 	
 	/** set the value server
-	*  The address of the SMTP server to use for sending messages. If no server is specified, the 
-	* 		server name specified in the ColdFusion Administrator is used.
 	* @param strServer value to set
 	 * @throws PageException 
 	**/
@@ -308,8 +306,6 @@ public final class Mail extends BodyTagImpl {
 	}
  
 	/** set the value mailerid
-	*  Specifies a mailer ID to be passed in the X-Mailer SMTP header, which identifies the mailer 
-	* 		application. The default is ColdFusion Application Server.
 	* @param mailerid value to set
 	**/
 	public void setMailerid(String mailerid)	{

@@ -48,7 +48,7 @@ import railo.transformer.library.tag.TagLibTagAttr;
 
 
 /**
-* Creates a ColdFusion Custom Tag
+* Creates a CFML Custom Tag
 **/
 public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttributes,AppendixTag {
 

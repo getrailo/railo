@@ -34,7 +34,7 @@ import railo.runtime.type.scope.ArgumentIntKey;
 import railo.runtime.type.scope.ScopeContext;
 
 /**
- * implements a JSP Factory, this class procduce JSP Compatible PageContext Object
+ * implements a JSP Factory, this class produce JSP Compatible PageContext Object
  * this object holds also the must interfaces to coldfusion specified functionlity
  */
 public final class CFMLFactoryImpl extends CFMLFactory {
