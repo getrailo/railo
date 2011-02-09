@@ -169,22 +169,26 @@ public final class TimeFormat implements Format {
 						formated.append(isAm?"A":"P");
 					}					
 				break;
+				case 'z':
+				case 'Z':
+					// count next z and jump to last z (max 6)
+					int start=pos;
+					while((pos+1)<len && Character.toLowerCase(mask.charAt(pos+1))=='z'){
+						pos++;
+						if(pos-start>4)break;
+					}
+					if(pos-start>2)formated.append(tz.getDisplayName(locale));	
+					else formated.append(tz.getID());	
+					
+				break;
 				
 			// Otherwise
 				default:
 					formated.append(c);
 			}
 		}
-		
-		
-		
-		
-		
-		
-		
 		return formated.toString();
 	}
-	
 
 	private String getAsString(int style,TimeZone tz) {
 		//print.out(((SimpleDateFormat)DateFormat.getTimeInstance(style,getLocale())).set);
