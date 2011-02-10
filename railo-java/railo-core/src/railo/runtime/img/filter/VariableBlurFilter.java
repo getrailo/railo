@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -25,6 +24,7 @@ import java.awt.image.ColorModel;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -295,7 +295,7 @@ public class VariableBlurFilter extends AbstractBufferedImageOp  implements DynF
 	public String toString() {
 		return "Blur/Variable Blur...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("PremultiplyAlpha")))!=null)setPremultiplyAlpha(ImageFilterUtil.toBooleanValue(o,"PremultiplyAlpha"));
 		if((o=parameters.removeEL(KeyImpl.init("Iterations")))!=null)setIterations(ImageFilterUtil.toIntValue(o,"Iterations"));

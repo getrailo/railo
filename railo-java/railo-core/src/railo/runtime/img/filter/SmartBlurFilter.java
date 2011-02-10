@@ -14,13 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.image.BufferedImage;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 import java.awt.image.Kernel;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -203,7 +203,7 @@ public class SmartBlurFilter extends AbstractBufferedImageOp  implements DynFilt
 	public String toString() {
 		return "Blur/Smart Blur...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("HRadius")))!=null)setHRadius(ImageFilterUtil.toIntValue(o,"HRadius"));
 		if((o=parameters.removeEL(KeyImpl.init("VRadius")))!=null)setVRadius(ImageFilterUtil.toIntValue(o,"VRadius"));

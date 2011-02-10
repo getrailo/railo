@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Color;
+package railo.runtime.img.filter;import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.geom.AffineTransform;
@@ -24,6 +23,7 @@ import java.awt.image.BufferedImage;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -156,19 +156,19 @@ public class BorderFilter extends AbstractBufferedImageOp  implements DynFilteri
 		int width = src.getWidth();
 		int height = src.getHeight();
 
-		if ( dst == null )
-			dst = new BufferedImage( width+leftBorder+rightBorder, height+topBorder+bottomBorder, src.getType() );
+		int totalWidth=width+leftBorder+rightBorder;
+		int totalHeight=height+topBorder+bottomBorder;
+		
+		dst=ImageUtil.createBufferedImage(src,totalWidth,totalHeight);
+		
+		
 		Graphics2D g = dst.createGraphics();
 		if ( borderPaint != null ) {
 			g.setPaint( borderPaint );
-			if ( leftBorder > 0 )
-				g.fillRect( 0, 0, leftBorder, height );
-			if ( rightBorder > 0 )
-				g.fillRect( width-rightBorder, 0, rightBorder, height );
-			if ( topBorder > 0 )
-				g.fillRect( leftBorder, 0, width-leftBorder-rightBorder, topBorder );
-			if ( bottomBorder > 0 )
-				g.fillRect( leftBorder, height-bottomBorder, width-leftBorder-rightBorder, bottomBorder );
+			if ( leftBorder > 0 )  	g.fillRect( 0, 0, leftBorder, totalHeight );
+			if ( rightBorder > 0 ) 	g.fillRect( totalWidth-rightBorder, 0, rightBorder, totalHeight );
+			if ( topBorder > 0 )	g.fillRect( leftBorder, 0, totalWidth-leftBorder-rightBorder, topBorder );
+			if ( bottomBorder > 0 )	g.fillRect( leftBorder, totalHeight-bottomBorder, totalWidth-leftBorder-rightBorder, bottomBorder );
 		}
 		g.drawRenderedImage( src, AffineTransform.getTranslateInstance( leftBorder, rightBorder ) );
 		g.dispose();
@@ -178,7 +178,8 @@ public class BorderFilter extends AbstractBufferedImageOp  implements DynFilteri
 	public String toString() {
 		return "Distort/Border...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {
+		
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Left")))!=null)setLeft(ImageFilterUtil.toIntValue(o,"Left"));
 		if((o=parameters.removeEL(KeyImpl.init("Right")))!=null)setRight(ImageFilterUtil.toIntValue(o,"Right"));
@@ -190,7 +191,11 @@ public class BorderFilter extends AbstractBufferedImageOp  implements DynFilteri
 		if(parameters.size()>0) {
 			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [LeftBorder, RightBorder, TopBorder, BottomBorder, BorderPaint]");
 		}
-
-		return filter(src, dst);
+		
+		
+		//BufferedImage dst=ImageUtil.createBufferedImage(src);
+		
+		
+		return filter(src, (BufferedImage)null);
 	}
 }

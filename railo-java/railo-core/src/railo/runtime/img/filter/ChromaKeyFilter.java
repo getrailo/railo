@@ -14,18 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Color;
+package railo.runtime.img.filter;import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
-
 /**
  * A filter which can be used to produce wipes by transferring the luma of a Destination image into the alpha channel of the source.
  */
@@ -120,7 +119,7 @@ public class ChromaKeyFilter extends AbstractBufferedImageOp  implements DynFilt
 	public String toString() {
 		return "Keying/Chroma Key...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("HTolerance")))!=null)setHTolerance(ImageFilterUtil.toFloatValue(o,"HTolerance"));
 		if((o=parameters.removeEL(KeyImpl.init("STolerance")))!=null)setSTolerance(ImageFilterUtil.toFloatValue(o,"STolerance"));

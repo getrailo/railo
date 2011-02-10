@@ -1,12 +1,9 @@
-package railo.runtime.img.filter;
-
-import java.awt.Color;
+package railo.runtime.img.filter;import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.awt.image.Kernel;
 
 import railo.commons.color.ColorCaster;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -19,6 +16,7 @@ import railo.runtime.img.math.Function2D;
 import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.Type;
 
 public class ImageFilterUtil {
@@ -66,10 +64,6 @@ public class ImageFilterUtil {
 		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", msg(value,"Colormap",argName)+" use function ImageFilterColorMap to create a colormap");
 	}
 	
-	public static Kernel toKernel(Object value, String argName) throws FunctionException {
-		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "type Kernel not supported yet!");
-	}
-	
 	////
 
 	public static Color toColor(Object value, String argName) throws PageException {
@@ -103,8 +97,8 @@ public class ImageFilterUtil {
 		
 	}
 
-	public static int[] toDimensions(Object value, String argName) throws FunctionException {
-		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "type int[] not supported yet!");
+	public static int[] toDimensions(Object value, String argName) throws PageException {
+		return toAInt(value, argName);
 	}
 
 	public static LightFilter.Material toLightFilter$Material(Object value, String argName) throws PageException {
@@ -164,12 +158,12 @@ public class ImageFilterUtil {
 		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", msg(value,"Curve",argName)+" use function ImageFilterCurve to create a Curve");
 	}
 
-	public static int[] toAInt(Object value, String argName) throws FunctionException {
-		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "type int[] not supported yet!");
+	public static int[] toAInt(Object value, String argName) throws PageException {
+		return ArrayUtil.toIntArray(value);
 	}
 
-	public static float[] toAFloat(Object value, String argName) throws FunctionException {
-		throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "type float[] not supported yet!");
+	public static float[] toAFloat(Object value, String argName) throws PageException {
+		return ArrayUtil.toFloatArray(value);
 	}
 
 	public static int[][] toAAInt(Object value, String argName) throws FunctionException {

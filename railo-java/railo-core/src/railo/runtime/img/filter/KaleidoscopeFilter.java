@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.geom.Point2D;
+package railo.runtime.img.filter;import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -44,7 +43,7 @@ public class KaleidoscopeFilter extends TransformFilter  implements DynFiltering
 	 * Construct a KaleidoscopeFilter with no distortion.
 	 */
 	public KaleidoscopeFilter() {
-		setEdgeAction( CLAMP );
+		super(ConvolveFilter.CLAMP_EDGES );
 	}
 
 	/**
@@ -205,7 +204,7 @@ public class KaleidoscopeFilter extends TransformFilter  implements DynFiltering
 		return "Distort/Kaleidoscope...";
 	}
 
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=null;//ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));
 		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
@@ -214,8 +213,8 @@ public class KaleidoscopeFilter extends TransformFilter  implements DynFiltering
 		//if((o=parameters.removeEL(KeyImpl.init("Centre")))!=null)setCentre(ImageFilterUtil.toPoint2D(o,"Centre"));
 		if((o=parameters.removeEL(KeyImpl.init("Sides")))!=null)setSides(ImageFilterUtil.toIntValue(o,"Sides"));
 		if((o=parameters.removeEL(KeyImpl.init("Angle2")))!=null)setAngle2(ImageFilterUtil.toFloatValue(o,"Angle2"));
-		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
-		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toIntValue(o,"Interpolation"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

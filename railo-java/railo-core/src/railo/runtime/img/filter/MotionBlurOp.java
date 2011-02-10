@@ -14,9 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.AlphaComposite;
+package railo.runtime.img.filter;import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;

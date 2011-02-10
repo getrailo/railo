@@ -14,16 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.image.BufferedImage;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
-
 /**
  * A filter which performs a box blur on an image. The horizontal and vertical blurs can be specified separately
  * and a number of iterations can be given which allows an approximation to Gaussian blur.
@@ -273,7 +272,7 @@ public class BoxBlurFilter extends AbstractBufferedImageOp  implements DynFilter
 	public String toString() {
 		return "Blur/Box Blur...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("PremultiplyAlpha")))!=null)setPremultiplyAlpha(ImageFilterUtil.toBooleanValue(o,"PremultiplyAlpha"));
 		if((o=parameters.removeEL(KeyImpl.init("Iterations")))!=null)setIterations(ImageFilterUtil.toIntValue(o,"Iterations"));

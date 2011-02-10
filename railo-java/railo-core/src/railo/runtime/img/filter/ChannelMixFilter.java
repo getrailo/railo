@@ -14,17 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.image.BufferedImage;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
-
-
 
 /**
  * A filter which allows the red, green and blue channels of an image to be mixed into each other.
@@ -100,7 +98,7 @@ public class ChannelMixFilter extends PointFilter  implements DynFiltering {
 	public String toString() {
 		return "Colors/Mix Channels...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("BlueGreen")))!=null)setBlueGreen(ImageFilterUtil.toIntValue(o,"BlueGreen"));
 		if((o=parameters.removeEL(KeyImpl.init("RedBlue")))!=null)setRedBlue(ImageFilterUtil.toIntValue(o,"RedBlue"));

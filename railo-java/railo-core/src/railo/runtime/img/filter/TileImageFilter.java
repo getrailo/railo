@@ -14,14 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Graphics2D;
+package railo.runtime.img.filter;import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -112,7 +112,7 @@ public class TileImageFilter extends AbstractBufferedImageOp  implements DynFilt
 	public String toString() {
 		return "Tile";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Width")))!=null)setWidth(ImageFilterUtil.toIntValue(o,"Width"));
 		if((o=parameters.removeEL(KeyImpl.init("Height")))!=null)setHeight(ImageFilterUtil.toIntValue(o,"Height"));

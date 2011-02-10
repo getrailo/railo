@@ -14,16 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Graphics2D;
+package railo.runtime.img.filter;import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
-import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.List;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.op.Caster;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 
 
@@ -43,6 +42,20 @@ public class ScaleFilter extends AbstractBufferedImageOp  implements DynFilterin
 	}
 
     /**
+	 * @param width the width to set
+	 */
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	/**
+	 * @param height the height to set
+	 */
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	/**
      * Construct a ScaleFilter.
      * @param width the width to scale to
      * @param height the height to scale to
@@ -73,14 +86,15 @@ public class ScaleFilter extends AbstractBufferedImageOp  implements DynFilterin
 		return "Distort/Scale";
 	}
 
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
-		Object o;
-
-		// check for arguments not supported
-		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported []");
-		}
-
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		int width=Caster.toIntValue(parameters.get(KeyImpl.init("Width")));
+		int height=Caster.toIntValue(parameters.get(KeyImpl.init("Height")));
+		setHeight(height);
+		setWidth(width);
+		
+		dst=ImageUtil.createBufferedImage(dst,width,height);
+		
+		
 		return filter(src, dst);
 	}
 }

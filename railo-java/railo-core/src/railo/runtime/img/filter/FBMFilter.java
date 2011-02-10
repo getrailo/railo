@@ -14,13 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.image.BufferedImage;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.img.math.CellularFunction2D;
 import railo.runtime.img.math.FBM;
 import railo.runtime.img.math.Function2D;
@@ -299,7 +299,7 @@ public class FBMFilter extends PointFilter implements Cloneable, DynFiltering {
 		return "Texture/Fractal Brownian Motion...";
 	}
 	
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));
 		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));

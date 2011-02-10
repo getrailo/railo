@@ -14,11 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.math.Noise;
@@ -141,11 +141,25 @@ public class RippleFilter extends TransformFilter  implements DynFiltering {
 
 	/**
 	 * Set the wave type.
-	 * @param waveType the type.
+	 * valid values are:
+	 * - sine (default):  Sine wave ripples.
+	 * - sawtooth: Sawtooth wave ripples.
+	 * - triangle: Triangle wave ripples.
+	 * - noise: Noise ripples.
+     * @param waveType the type.
+	 * @throws ExpressionException 
      * @see #getWaveType
 	 */
-	public void setWaveType(int waveType) {
-		this.waveType = waveType;
+	public void setWaveType(String waveType) throws ExpressionException {
+
+		String str=waveType.trim().toUpperCase();
+		if("SINE".equals(str)) this.waveType = SINE;
+		else if("SAWTOOTH".equals(str)) this.waveType = SAWTOOTH;
+		else if("TRIANGLE".equals(str)) this.waveType = TRIANGLE;
+		else if("NOISE".equals(str)) this.waveType = NOISE;
+		else 
+			throw new ExpressionException("invalid value ["+waveType+"] for waveType, valid values are [sine,sawtooth,triangle,noise]");
+	
 	}
 
 	/**
@@ -158,7 +172,7 @@ public class RippleFilter extends TransformFilter  implements DynFiltering {
 	}
 
 	protected void transformSpace(Rectangle r) {
-		if (edgeAction == ZERO) {
+		if (edgeAction == ConvolveFilter.ZERO_EDGES) {
 			r.x -= (int)xAmplitude;
 			r.width += (int)(2*xAmplitude);
 			r.y -= (int)yAmplitude;
@@ -197,21 +211,22 @@ public class RippleFilter extends TransformFilter  implements DynFiltering {
 		return "Distort/Ripple...";
 	}
 
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {
+		//BufferedImage dst=ImageUtil.createBufferedImage(src,src.getWidth()+400,src.getHeight()+400);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("XAmplitude")))!=null)setXAmplitude(ImageFilterUtil.toFloatValue(o,"XAmplitude"));
 		if((o=parameters.removeEL(KeyImpl.init("XWavelength")))!=null)setXWavelength(ImageFilterUtil.toFloatValue(o,"XWavelength"));
 		if((o=parameters.removeEL(KeyImpl.init("YAmplitude")))!=null)setYAmplitude(ImageFilterUtil.toFloatValue(o,"YAmplitude"));
 		if((o=parameters.removeEL(KeyImpl.init("YWavelength")))!=null)setYWavelength(ImageFilterUtil.toFloatValue(o,"YWavelength"));
-		if((o=parameters.removeEL(KeyImpl.init("WaveType")))!=null)setWaveType(ImageFilterUtil.toIntValue(o,"WaveType"));
-		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
-		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toIntValue(o,"Interpolation"));
+		if((o=parameters.removeEL(KeyImpl.init("WaveType")))!=null)setWaveType(ImageFilterUtil.toString(o,"WaveType"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
 			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [XAmplitude, XWavelength, YAmplitude, YWavelength, WaveType, EdgeAction, Interpolation]");
 		}
 
-		return filter(src, dst);
+		return filter(src, (BufferedImage)null);
 	}
 }

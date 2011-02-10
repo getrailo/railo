@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.AlphaComposite;
+package railo.runtime.img.filter;import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
@@ -25,6 +24,7 @@ import java.awt.image.BufferedImage;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -140,7 +140,7 @@ public class MirrorFilter extends AbstractBufferedImageOp  implements DynFilteri
 	public String toString() {
 		return "Effects/Mirror...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
 		if((o=parameters.removeEL(KeyImpl.init("CentreY")))!=null)setCentreY(ImageFilterUtil.toFloatValue(o,"CentreY"));

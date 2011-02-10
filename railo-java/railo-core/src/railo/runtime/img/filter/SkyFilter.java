@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Graphics2D;
+package railo.runtime.img.filter;import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.util.Random;
@@ -23,6 +22,7 @@ import java.util.Random;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.img.math.FBM;
 import railo.runtime.img.math.Function2D;
 import railo.runtime.img.math.Noise;
@@ -458,7 +458,7 @@ if (y == 100)System.out.println(fg+" "+gf+gradient);
 		return "Texture/Sky...";
 	}
 	
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
 		if((o=parameters.removeEL(KeyImpl.init("Stretch")))!=null)setStretch(ImageFilterUtil.toFloatValue(o,"Stretch"));

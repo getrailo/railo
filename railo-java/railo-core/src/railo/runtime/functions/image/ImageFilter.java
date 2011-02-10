@@ -99,7 +99,7 @@ public class ImageFilter {
 		//filters.put("iterated",IteratedFilter.class);
 		filters.put("javalnf",JavaLnFFilter.class);
 		filters.put("kaleidoscope",KaleidoscopeFilter.class);
-		filters.put("key",KeyFilter.class);
+		//filters.put("key",KeyFilter.class);
 		filters.put("lensblur",LensBlurFilter.class);
 		filters.put("levels",LevelsFilter.class);
 		filters.put("life",LifeFilter.class);
@@ -127,7 +127,7 @@ public class ImageFilter {
 		filters.put("pointillize",PointillizeFilter.class);
 		filters.put("polar",PolarFilter.class);
 		filters.put("posterize",PosterizeFilter.class);
-		filters.put("premultiply",PremultiplyFilter.class);
+		//filters.put("premultiply",PremultiplyFilter.class);
 		filters.put("quantize",QuantizeFilter.class);
 		filters.put("quilt",QuiltFilter.class);
 		filters.put("rays",RaysFilter.class);
@@ -163,10 +163,10 @@ public class ImageFilter {
 		//filters.put("transform",TransformFilter.class);
 		//filters.put("transition",TransitionFilter.class);
 		filters.put("twirl",TwirlFilter.class);
-		filters.put("unpremultiply",UnpremultiplyFilter.class);
+		//filters.put("unpremultiply",UnpremultiplyFilter.class);
 		filters.put("unsharp",UnsharpFilter.class);
 		filters.put("variableblur",VariableBlurFilter.class);
-		filters.put("warp",WarpFilter.class);
+		//filters.put("warp",WarpFilter.class);
 		filters.put("water",WaterFilter.class);
 		filters.put("weave",WeaveFilter.class);
 		filters.put("wholeimage",WholeImageFilter.class);
@@ -181,7 +181,6 @@ public class ImageFilter {
 	public static String call(PageContext pc, Object name, String filterName, Struct parameters) throws PageException {
 		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
 		Image img = Image.toImage(name);
-		BufferedImage bi = img.getBufferedImage();
 		String lcFilterName = filterName.trim().toLowerCase();
 		
 		// get filter class
@@ -213,17 +212,10 @@ public class ImageFilter {
 		}
 		
 		// execute filter
-		filter.filter(bi, bi, parameters);
+		BufferedImage bi = img.getBufferedImage();
+		//BufferedImage empty = bi;//ImageUtil.createBufferedImage(bi);
+		img.image(filter.filter(bi, parameters));
 		
-		
-		/*InvertFilter _if=new InvertFilter();
-		_if.filter(bi, bi);
-		if(true) return null;
-		
-		GlowFilter gf=new GlowFilter();
-		gf.setAmount(0.5F);
-		gf.filter(bi, bi);
-		img.image(bi);*/
 		return null;
 	}
 	
@@ -259,7 +251,7 @@ public class ImageFilter {
 				//IOUtil.write(child, content, null, false);
 				
 			// imports
-				content=StringUtil.replace(content, "package railo.runtime.img.filter;", "package railo.runtime.img.filter;\nimport railo.runtime.type.KeyImpl;\nimport railo.runtime.engine.ThreadLocalPageContext;\nimport railo.runtime.exp.PageException;\nimport railo.runtime.type.Struct;\nimport java.awt.image.BufferedImage;\nimport railo.runtime.type.List;\nimport railo.runtime.exp.FunctionException;\n", true);
+				content=StringUtil.replace(content, "package railo.runtime.img.filter;import railo.runtime.img.ImageUtil;", "package railo.runtime.img.filter;import railo.runtime.img.ImageUtil;\nimport railo.runtime.type.KeyImpl;\nimport railo.runtime.engine.ThreadLocalPageContext;\nimport railo.runtime.exp.PageException;\nimport railo.runtime.type.Struct;\nimport java.awt.image.BufferedImage;\nimport railo.runtime.type.List;\nimport railo.runtime.exp.FunctionException;\n", true);
 				IOUtil.write(child, content, null, false);
 				
 				
@@ -272,7 +264,7 @@ public class ImageFilter {
 	private static void setters(String key, Class clazz, StringBuilder sb) {
 		
 		//sb.append("Object o;\n");
-		sb.append("	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {\n");
+		sb.append("	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);\n");
 		sb.append("		Object o;\n");
 		
 		Method[] methods = clazz.getMethods();

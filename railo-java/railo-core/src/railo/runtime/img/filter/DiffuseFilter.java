@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.image.BufferedImage;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
@@ -33,7 +32,7 @@ public class DiffuseFilter extends TransformFilter  implements DynFiltering {
 	private float scale = 4;
 	
 	public DiffuseFilter() {
-		setEdgeAction(CLAMP);
+		super(ConvolveFilter.CLAMP_EDGES);
 	}
 	
 	/**
@@ -77,11 +76,11 @@ public class DiffuseFilter extends TransformFilter  implements DynFiltering {
 	public String toString() {
 		return "Distort/Diffuse...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=null;//ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Scale")))!=null)setScale(ImageFilterUtil.toFloatValue(o,"Scale"));
-		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
-		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toIntValue(o,"Interpolation"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

@@ -14,14 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.AlphaComposite;
+package railo.runtime.img.filter;import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.img.composite.MiscComposite;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
@@ -36,7 +36,7 @@ public class RaysFilter extends MotionBlurOp  implements DynFiltering {
     private float threshold = 0.0f;
     private float strength = 0.5f;
 	private boolean raysOnly = false;
-	private Colormap colormap;
+	private Colormap colormap=new GrayscaleColormap();
 
     public RaysFilter() {
 	}
@@ -204,7 +204,7 @@ public class RaysFilter extends MotionBlurOp  implements DynFiltering {
 	public String toString() {
 		return "Stylize/Rays...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));
 		if((o=parameters.removeEL(KeyImpl.init("Strength")))!=null)setStrength(ImageFilterUtil.toFloatValue(o,"Strength"));

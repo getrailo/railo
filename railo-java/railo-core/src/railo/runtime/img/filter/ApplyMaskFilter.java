@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.image.BufferedImage;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
@@ -152,9 +151,11 @@ public class ApplyMaskFilter extends AbstractBufferedImageOp  implements DynFilt
 	public String toString() {
 		return "Keying/Key...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src ,Struct parameters) throws PageException {
+		BufferedImage dst=src;
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("MaskImage")))!=null)setMaskImage(ImageFilterUtil.toBufferedImage(o,"MaskImage"));
+		if((o=parameters.removeEL(KeyImpl.init("destination")))!=null)setDestination(ImageFilterUtil.toBufferedImage(o,"destination"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

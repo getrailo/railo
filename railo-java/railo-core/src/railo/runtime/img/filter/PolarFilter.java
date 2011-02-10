@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.image.BufferedImage;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -62,8 +61,8 @@ public class PolarFilter extends TransformFilter  implements DynFiltering {
      * @param type the distortion type
      */
 	public PolarFilter(int type) {
-		this.type = type;
-		setEdgeAction(CLAMP);
+		super(ConvolveFilter.CLAMP_EDGES);
+		this.type=type;
 	}
 
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
@@ -220,11 +219,11 @@ public class PolarFilter extends TransformFilter  implements DynFiltering {
 		return "Distort/Polar Coordinates...";
 	}
 
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=null;//ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Type")))!=null)setType(ImageFilterUtil.toString(o,"Type"));
-		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
-		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toIntValue(o,"Interpolation"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

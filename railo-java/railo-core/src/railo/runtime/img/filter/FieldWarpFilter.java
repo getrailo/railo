@@ -14,13 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Point;
+package railo.runtime.img.filter;import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -191,15 +191,15 @@ public class FieldWarpFilter extends TransformFilter  implements DynFiltering {
 		return "Distort/Field Warp...";
 	}
 
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
 		if((o=parameters.removeEL(KeyImpl.init("Power")))!=null)setPower(ImageFilterUtil.toFloatValue(o,"Power"));
 		if((o=parameters.removeEL(KeyImpl.init("Strength")))!=null)setStrength(ImageFilterUtil.toFloatValue(o,"Strength"));
 		if((o=parameters.removeEL(KeyImpl.init("InLines")))!=null)setInLines(ImageFilterUtil.toAFieldWarpFilter$Line(o,"InLines"));
 		if((o=parameters.removeEL(KeyImpl.init("OutLines")))!=null)setOutLines(ImageFilterUtil.toAFieldWarpFilter$Line(o,"OutLines"));
-		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
-		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toIntValue(o,"Interpolation"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

@@ -14,19 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.image.BufferedImage;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 
 /**
- * A filter which interpolates betwen two images. You can set the interpolation factor outside the range 0 to 1
+ * A filter which interpolates between two images. You can set the interpolation factor outside the range 0 to 1
  * to extrapolate images.
  */
 public class InterpolateFilter extends AbstractBufferedImageOp  implements DynFiltering {
@@ -118,9 +118,10 @@ public class InterpolateFilter extends AbstractBufferedImageOp  implements DynFi
 	public String toString() {
 		return "Effects/Interpolate...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toFloatValue(o,"Interpolation"));
+		if((o=parameters.removeEL(KeyImpl.init("destination")))!=null)setDestination(ImageFilterUtil.toBufferedImage(o,"destination"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

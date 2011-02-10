@@ -14,19 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.img.math.Noise;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
-
 /**
  * A filter which simulates underwater caustics. This can be animated to get a bottom-of-the-swimming-pool effect.
  */
@@ -367,7 +366,7 @@ public class CausticsFilter extends WholeImageFilter  implements DynFiltering {
 		return "Texture/Caustics...";
 	}
 	
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
 		if((o=parameters.removeEL(KeyImpl.init("Brightness")))!=null)setBrightness(ImageFilterUtil.toIntValue(o,"Brightness"));

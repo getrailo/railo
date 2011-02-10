@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -27,10 +26,10 @@ import java.util.Random;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
-
 /**
  * A filter which produces an image simulating brushed metal.
  */
@@ -303,7 +302,7 @@ public class BrushedMetalFilter implements BufferedImageOp, DynFiltering {
 	public String toString() {
 		return "Texture/Brushed Metal...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toIntValue(o,"Radius"));
 		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));

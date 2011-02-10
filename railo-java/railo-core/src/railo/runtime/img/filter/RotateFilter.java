@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Point;
+package railo.runtime.img.filter;import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
@@ -108,10 +107,12 @@ public class RotateFilter extends TransformFilter  implements DynFiltering {
 
 			rect.x = minx;
 			rect.y = miny;
-			rect.width = maxx - rect.x;
-			rect.height = maxy - rect.y;
+			rect.width = maxx - minx;
+			rect.height = maxy - miny;
 		}
 	}
+	
+	
 
 	private void transform(int x, int y, Point out) {
 		out.x = (int)((x * cos) + (y * sin));
@@ -127,17 +128,24 @@ public class RotateFilter extends TransformFilter  implements DynFiltering {
 		return "Rotate "+(int)(angle * 180 / Math.PI);
 	}
 
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {
+		//BufferedImage dst=ImageUtil.createBufferedImage(src,src.getWidth()+400,src.getHeight()+400);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
-		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
-		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toIntValue(o,"Interpolation"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
 			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Angle, EdgeAction, Interpolation]");
 		}
+		
+		
 
+		//Rectangle rect = new Rectangle(0, 0, src.getWidth(), src.getHeight());
+		//transformSpace(rect);
+		BufferedImage dst=null;//ImageUtil.createBufferedImage(src,rect.width,rect.height);
+		
 		return filter(src, dst);
 	}
 }

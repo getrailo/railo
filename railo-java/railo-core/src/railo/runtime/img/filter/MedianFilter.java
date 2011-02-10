@@ -14,13 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 
@@ -115,7 +115,7 @@ public class MedianFilter extends WholeImageFilter  implements DynFiltering {
 		return "Blur/Median";
 	}
 
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 
 		// check for arguments not supported

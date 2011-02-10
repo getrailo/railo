@@ -14,12 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.image.BufferedImage;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -67,7 +67,7 @@ public class ErodeAlphaFilter extends PointFilter  implements DynFiltering {
 	}
 
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
-        dst = new GaussianFilter( (int)radius ).filter( src, null );
+        dst = new GaussianFilter( (int)radius ).filter( src, (BufferedImage)null );
         lowerThreshold = 255*(threshold - softness*0.5f);
         upperThreshold = 255*(threshold + softness*0.5f);
 		return super.filter(dst, dst);
@@ -92,7 +92,7 @@ public class ErodeAlphaFilter extends PointFilter  implements DynFiltering {
 	public String toString() {
 		return "Alpha/Erode...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));
 		if((o=parameters.removeEL(KeyImpl.init("Softness")))!=null)setSoftness(ImageFilterUtil.toFloatValue(o,"Softness"));

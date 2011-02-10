@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.geom.Point2D;
+package railo.runtime.img.filter;import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -42,7 +41,7 @@ public class WaterFilter extends TransformFilter  implements DynFiltering {
 	private float icentreY;
 
 	public WaterFilter() {
-		setEdgeAction( CLAMP );
+		super(ConvolveFilter.CLAMP_EDGES );
 	}
 
 	/**
@@ -208,7 +207,7 @@ public class WaterFilter extends TransformFilter  implements DynFiltering {
 		return "Distort/Water Ripples...";
 	}
 	
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=null;//ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));
 		if((o=parameters.removeEL(KeyImpl.init("CentreX")))!=null)setCentreX(ImageFilterUtil.toFloatValue(o,"CentreX"));
@@ -217,8 +216,8 @@ public class WaterFilter extends TransformFilter  implements DynFiltering {
 		if((o=parameters.removeEL(KeyImpl.init("Wavelength")))!=null)setWavelength(ImageFilterUtil.toFloatValue(o,"Wavelength"));
 		if((o=parameters.removeEL(KeyImpl.init("Amplitude")))!=null)setAmplitude(ImageFilterUtil.toFloatValue(o,"Amplitude"));
 		if((o=parameters.removeEL(KeyImpl.init("Phase")))!=null)setPhase(ImageFilterUtil.toFloatValue(o,"Phase"));
-		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
-		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toIntValue(o,"Interpolation"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

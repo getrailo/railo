@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 /**
  * A class containing static math methods useful for image processing.
  */

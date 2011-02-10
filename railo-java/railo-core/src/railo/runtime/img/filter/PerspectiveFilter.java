@@ -14,13 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -30,7 +30,7 @@ import railo.runtime.type.Struct;
  */
 public class PerspectiveFilter extends TransformFilter  implements DynFiltering {
 
-	private float x0, y0, x1, y1, x2, y2, x3, y3;
+	private float xlt, ylt, xrt, yrt, xrb, yrb, xlb, ylb;
 	private float dx1, dy1, dx2, dy2, dx3, dy3;
 	private float A, B, C, D, E, F, G, H, I;
 	
@@ -38,7 +38,8 @@ public class PerspectiveFilter extends TransformFilter  implements DynFiltering 
      * Construct a PerspectiveFilter.
      */
     public PerspectiveFilter() {
-		this(0, 0, 100, 0, 100, 100, 0, 100);
+		this(0, 0, 0, 0, 0, 0, 0, 0);
+		//this(0, 0, 100, 0, 100, 100, 0, 100);
 	}
 	
 	/**
@@ -68,14 +69,14 @@ public class PerspectiveFilter extends TransformFilter  implements DynFiltering 
      * @param y3 the new position of the bottom left corner
      */
 	public void setCorners(float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3) {
-		this.x0 = x0;
-		this.y0 = y0;
-		this.x1 = x1;
-		this.y1 = y1;
-		this.x2 = x2;
-		this.y2 = y2;
-		this.x3 = x3;
-		this.y3 = y3;
+		this.xlt = x0;
+		this.ylt = y0;
+		this.xrt = x1;
+		this.yrt = y1;
+		this.xrb = x2;
+		this.yrb = y2;
+		this.xlb = x3;
+		this.ylb = y3;
 		
 		dx1 = x1-x2;
 		dy1 = y1-y2;
@@ -115,12 +116,77 @@ public class PerspectiveFilter extends TransformFilter  implements DynFiltering 
 	    H = a21*a13 - a11*a23;
 	    I = a11*a22 - a21*a12;
 	}
+	
+	/**
+	 * the new horizontal position of the top left corner, negative values are translated to image-width - x.
+	 * @param x0 the x0 to set
+	 */
+	public void setXLT(float xlt) {
+		this.xlt = xlt;
+	}
+
+	/**
+	 * the new vertical position of the top left corner, negative values are translated to image-height - y.
+	 * @param y0 the y0 to set
+	 */
+	public void setYLT(float ylt) {
+		this.ylt = ylt;
+	}
+
+	/**
+	 * the new horizontal position of the top right corner, negative values are translated to image-width - x.
+	 * @param x1 the x1 to set
+	 */
+	public void setXRT(float xrt) {
+		this.xrt = xrt;
+	}
+
+	/**
+	 * the new vertical position of the top right corner, negative values are translated to image-height - y.
+	 * @param y1 the y1 to set
+	 */
+	public void setYRT(float yrt) {
+		this.yrt = yrt;
+	}
+
+	/**
+	 * the new horizontal position of the bottom right corner, negative values are translated to image-width - x.
+	 * @param x2 the x2 to set
+	 */
+	public void setXRB(float xrb) {
+		this.xrb = xrb;
+	}
+	
+	/**
+	 * the new vertical position of the bottom right corner, negative values are translated to image-height - y.
+	 * @param y2 the y2 to set
+	 */
+	public void setYRB(float yrb) {
+		this.yrb = yrb;
+	}
+
+	/**
+	 * the new horizontal position of the bottom left corner, negative values are translated to image-width - x.
+	 * @param xlb the x3 to set
+	 */
+	public void setXLB(float xlb) {
+		this.xlb = xlb;
+	}
+
+	/**
+	 * the new vertical position of the bottom left corner, negative values are translated to image-height - y.
+	 * @param y3 the y3 to set
+	 */
+	public void setYLB(float ylb) {
+		this.ylb = ylb;
+	}
+
 
 	protected void transformSpace(Rectangle rect) {
-		rect.x = (int)Math.min( Math.min( x0, x1 ), Math.min( x2, x3 ) );
-		rect.y = (int)Math.min( Math.min( y0, y1 ), Math.min( y2, y3 ) );
-		rect.width = (int)Math.max( Math.max( x0, x1 ), Math.max( x2, x3 ) ) - rect.x;
-		rect.height = (int)Math.max( Math.max( y0, y1 ), Math.max( y2, y3 ) ) - rect.y;
+		rect.x = (int)Math.min( Math.min( xlt, xrt ), Math.min( xrb, xlb ) );
+		rect.y = (int)Math.min( Math.min( ylt, yrt ), Math.min( yrb, ylb ) );
+		rect.width = (int)Math.max( Math.max( xlt, xrt ), Math.max( xrb, xlb ) ) - rect.x;
+		rect.height = (int)Math.max( Math.max( ylt, yrt ), Math.max( yrb, ylb ) ) - rect.y;
 	}
 
     /**
@@ -128,7 +194,7 @@ public class PerspectiveFilter extends TransformFilter  implements DynFiltering 
      * @return the X origin.
      */
 	public float getOriginX() {
-		return x0 - (int)Math.min( Math.min( x0, x1 ), Math.min( x2, x3 ) );
+		return xlt - (int)Math.min( Math.min( xlt, xrt ), Math.min( xrb, xlb ) );
 	}
 
     /**
@@ -136,7 +202,7 @@ public class PerspectiveFilter extends TransformFilter  implements DynFiltering 
      * @return the Y origin.
      */
 	public float getOriginY() {
-		return y0 - (int)Math.min( Math.min( y0, y1 ), Math.min( y2, y3 ) );
+		return ylt - (int)Math.min( Math.min( ylt, yrt ), Math.min( yrb, ylb ) );
 	}
 
 /*
@@ -189,17 +255,71 @@ public class PerspectiveFilter extends TransformFilter  implements DynFiltering 
 	public String toString() {
 		return "Distort/Perspective...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {
 		Object o;
-		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
-		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toIntValue(o,"Interpolation"));
+		if((o=parameters.removeEL(KeyImpl.init("xlt")))!=null)setXLT(ImageFilterUtil.toFloatValue(o,"xlt"));
+		if((o=parameters.removeEL(KeyImpl.init("ylt")))!=null)setYLT(ImageFilterUtil.toFloatValue(o,"ylt"));
+		
+		if((o=parameters.removeEL(KeyImpl.init("xrt")))!=null)setXRT(ImageFilterUtil.toFloatValue(o,"xrt"));
+		if((o=parameters.removeEL(KeyImpl.init("yrt")))!=null)setYRT(ImageFilterUtil.toFloatValue(o,"yrt"));
+		
+		if((o=parameters.removeEL(KeyImpl.init("xrb")))!=null)setXRB(ImageFilterUtil.toFloatValue(o,"xrb"));
+		if((o=parameters.removeEL(KeyImpl.init("yrb")))!=null)setYRB(ImageFilterUtil.toFloatValue(o,"yrb"));
+		
+		if((o=parameters.removeEL(KeyImpl.init("xlb")))!=null)setXLB(ImageFilterUtil.toFloatValue(o,"xlb"));
+		if((o=parameters.removeEL(KeyImpl.init("ylb")))!=null)setYLB(ImageFilterUtil.toFloatValue(o,"ylb"));
+		
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
 			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Corners, EdgeAction, Interpolation]");
 		}
 
-		return filter(src, dst);
+		return filter(src, (BufferedImage)null);
+	}
+	
+	public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
+        
+		int width = src.getWidth();
+	    int height = src.getHeight();
+
+	    if(xrt==0)xrt=width;
+	    if(xrb==0)xrb=width;
+	    if(yrb==0)yrb=height;
+	    if(ylb==0)ylb=height;
+	    
+	    if(xlt<0) xlt=width+xlt;
+	    if(xrt<0) xrt=width+xrt;
+	    if(xrb<0) xrb=width+xrb;
+	    if(xlb<0) xlb=width+xlb;
+	    
+	    if(ylt<0) ylt=width+ylt;
+	    if(yrt<0) yrt=width+yrt;
+	    if(yrb<0) yrb=width+yrb;
+	    if(ylb<0) ylb=width+ylb;
+	    
+	    
+	    
+	    setCorners(xlt, ylt, xrt, yrt, xrb, yrb, xlb, ylb);
+	    
+
+	    float t=ylt<yrt?ylt:yrt;
+	    float l=xlt<xlb?xlt:xlb;
+	    
+	    float b=ylb>yrb?ylb:yrb;
+	    float r=xrt>xrb?xrt:xrb;
+	    
+	    float w=r-l;
+	    float h=b-t;
+	    
+	    dst=ImageUtil.createBufferedImage(src,Math.round(w),Math.round(h));
+	    
+	    
+	    
+	    return super.filter(src, dst);
+		        
 	}
 }
 

@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Color;
+package railo.runtime.img.filter;import java.awt.Color;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -25,6 +24,7 @@ import java.util.Vector;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.img.math.Function2D;
 import railo.runtime.img.math.ImageFunction2D;
 import railo.runtime.img.vecmath.Color4f;
@@ -764,7 +764,7 @@ if ( bumpShape != 0 ) {
 			return "Spotlight";
 		}
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
 		if((o=parameters.removeEL(KeyImpl.init("ColorSource")))!=null)setColorSource(ImageFilterUtil.toColorRGB(o,"ColorSource"));
 		if((o=parameters.removeEL(KeyImpl.init("Material")))!=null)setMaterial(ImageFilterUtil.toLightFilter$Material(o,"Material"));

@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -24,28 +23,30 @@ import java.awt.image.ColorModel;
 import java.awt.image.Kernel;
 
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 
-public class ConvolveFilter extends AbstractBufferedImageOp  implements DynFiltering {
+public abstract class ConvolveFilter extends AbstractBufferedImageOp  implements DynFiltering {
 	
     /**
      * Treat pixels off the edge as zero.
      */
-	public static int ZERO_EDGES = 0;
+	public final static int ZERO_EDGES = 0;
 
     /**
      * Clamp pixels off the edge to the nearest edge.
      */
-	public static int CLAMP_EDGES = 1;
+	public final static int CLAMP_EDGES = 1;
 
     /**
      * Wrap pixels off the edge to the opposite edge.
      */
-	public static int WRAP_EDGES = 2;
+	public final static int WRAP_EDGES = 2;
 
     /**
      * The convolution kernel.
@@ -120,11 +121,21 @@ public class ConvolveFilter extends AbstractBufferedImageOp  implements DynFilte
 
     /**
      * Set the action to perfomr for pixels off the image edges.
+     * valid values are:
+     * - clamp (default): Clamp pixels off the edge to the nearest edge.
+     * - wrap: Wrap pixels off the edge to the opposite edge.
+     * - zero: Treat pixels off the edge as zero
+     * 
      * @param edgeAction the action
-     * @see #getEdgeAction
+     * @throws ExpressionException 
      */
-	public void setEdgeAction(int edgeAction) {
-		this.edgeAction = edgeAction;
+	public void setEdgeAction(String edgeAction) throws ExpressionException {
+		String str=edgeAction.trim().toUpperCase();
+		if("ZERO".equals(str)) this.edgeAction = ZERO_EDGES;
+		else if("CLAMP".equals(str)) this.edgeAction = CLAMP_EDGES;
+		else if("WRAP".equals(str)) this.edgeAction = WRAP_EDGES;
+		else 
+			throw new ExpressionException("invalid value ["+edgeAction+"] for edgeAction, valid values are [clamp,wrap,zero]");
 	}
 
     /**
@@ -425,10 +436,9 @@ public class ConvolveFilter extends AbstractBufferedImageOp  implements DynFilte
 	public String toString() {
 		return "Blur/Convolve...";
 	}
-	public BufferedImage filter(BufferedImage src, BufferedImage dst ,Struct parameters) throws PageException {
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
 		Object o;
-		if((o=parameters.removeEL(KeyImpl.init("Kernel")))!=null)setKernel(ImageFilterUtil.toKernel(o,"Kernel"));
-		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toIntValue(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
 		if((o=parameters.removeEL(KeyImpl.init("UseAlpha")))!=null)setUseAlpha(ImageFilterUtil.toBooleanValue(o,"UseAlpha"));
 		if((o=parameters.removeEL(KeyImpl.init("PremultiplyAlpha")))!=null)setPremultiplyAlpha(ImageFilterUtil.toBooleanValue(o,"PremultiplyAlpha"));
 
