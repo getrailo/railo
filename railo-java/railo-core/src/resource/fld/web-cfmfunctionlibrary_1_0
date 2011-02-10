@@ -6103,15 +6103,16 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 the function ImageFilter allows to execute a filter against a image. Below you find a list of filter names supported by the function.
 every filter need other parameters for the configuration, listed as well below.
 
-
 average
 	A filter which averages the 3x3 neighbourhood of each pixel, providing a simple blur.
 
 	Parameters:
-	- kernel (java.awt.image.Kernel)
-		The convolution kernel.
-	- edgeAction (int)
+	- edgeAction (String)
 		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
 	- useAlpha (boolean)
 		Set whether to convolve the alpha channel.
 	- premultiplyAlpha (boolean)
@@ -6120,22 +6121,31 @@ block
 	A Filter to pixellate images.
 
 	Parameters:
-	- blockSize (int)
+	- blockSize (integer)
 		The pixel block size.
 		- min-value: 1
 		- max-value: 100+
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 blur
 	A simple blur filter. You should probably use BoxBlurFilter instead.
 
 	Parameters:
-	- kernel (java.awt.image.Kernel)
-		The convolution kernel.
-	- edgeAction (int)
+	- edgeAction (String)
 		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
 	- useAlpha (boolean)
 		Set whether to convolve the alpha channel.
 	- premultiplyAlpha (boolean)
@@ -6144,28 +6154,30 @@ border
 	A filter to add a border around an image using the supplied Paint, which may be null for no painting.
 
 	Parameters:
-	- leftBorder (int)
+	- left (integer)
 		The border size on the left edge.
 		- min-value: 0
-	- rightBorder (int)
+	- right (integer)
 		The border size on the right edge.
 		- min-value: 0
-	- topBorder (int)
+	- top (integer)
 		The border size on the top edge.
 		- min-value: 0
-	- bottomBorder (int)
+	- bottom (integer)
 		The border size on the bottom edge.
 		- min-value: 0
-	- borderPaint (java.awt.Paint)
-		The border paint.
+	- color (String)
+		The border color.
 bump
 	A simple embossing filter.
 
 	Parameters:
-	- kernel (java.awt.image.Kernel)
-		The convolution kernel.
-	- edgeAction (int)
+	- edgeAction (String)
 		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
 	- useAlpha (boolean)
 		Set whether to convolve the alpha channel.
 	- premultiplyAlpha (boolean)
@@ -6174,63 +6186,64 @@ caustics
 	A filter which simulates underwater caustics. This can be animated to get a bottom-of-the-swimming-pool effect.
 
 	Parameters:
-	- amount (float)
+	- amount (numeric)
 		The amount of effect.
 		- min-value: 0
 		- max-value: 1
-	- brightness (int)
+	- brightness (integer)
 		The brightness.
 		- min-value: 0
 		- max-value: 1
-	- turbulence (float)
+	- turbulence (numeric)
 		Specifies the turbulence of the texture.
 		- min-value: 0
 		- max-value: 1
-	- dispersion (float)
+	- dispersion (numeric)
 		The dispersion.
 		- min-value: 0
 		- max-value: 1
 	- bgColor (String)
 		The background color.
-	- time (float)
+	- time (numeric)
 		The time. Use this to animate the effect.
-	- scale (float)
+	- scale (numeric)
 		Specifies the scale of the texture.
 		- min-value: 1
 		- max-value: 300+
-	- samples (int)
+	- samples (integer)
 		The number of samples per pixel. More samples means better quality, but slower rendering.
 cellular
 	A filter which produces an image with a cellular texture.
 
 	Parameters:
-	- amount (float)
+	- amount (numeric)
 		The amount of effect.
 		- min-value: 0
 		- max-value: 1
-	- turbulence (float)
+	- turbulence (numeric)
 		Specifies the turbulence of the texture.
 		- min-value: 0
 		- max-value: 1
-	- stretch (float)
+	- stretch (numeric)
 		Specifies the stretch factor of the texture.
 		- min-value: 1
 		- max-value: 50+
-	- angle (float)
+	- angle (numeric)
 		Specifies the angle of the texture.
-		@angle
-	- angleCoefficient (float)
-	- gradientCoefficient (float)
-	- f1 (float)
-	- f2 (float)
-	- f3 (float)
-	- f4 (float)
+	- angleCoefficient (numeric)
+	- gradientCoefficient (numeric)
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
-	- randomness (float)
-	- gridType (int)
-	- distancePower (float)
-	- scale (float)
+	- randomness (numeric)
+	- gridType (String)
+		the grid type to set, one of the following:
+		-  RANDOM
+		-  SQUARE
+		-  HEXAGONAL
+		-  OCTAGONAL
+		-  TRIANGULAR
+	- distancePower (numeric)
+	- scale (numeric)
 		Specifies the scale of the texture.
 		- min-value: 1
 		- max-value: 300+
@@ -6238,83 +6251,76 @@ check
 	A Filter to draw grids and check patterns.
 
 	Parameters:
-	- angle (float)
+	- angle (numeric)
 		The angle of the texture.
-		@angle
-	- xScale (int)
+	- xScale (integer)
 		The X scale of the texture.
-	- yScale (int)
+	- yScale (integer)
 		The Y scale of the texture.
-	- fuzziness (int)
+	- fuzziness (integer)
 		The fuzziness of the texture.
-	- foreground (int)
+	- foreground (String)
 		The foreground color.
-	- background (int)
+	- background (String)
 		The background color.
 	- dimensions (Array)
 chrome
 	A filter which simulates chrome.
 
 	Parameters:
-	- amount (float)
+	- amount (numeric)
 		The amount of effect.
 		- min-value: 0
 		- max-value: 1
-	- exposure (float)
+	- exposure (numeric)
 		The exppsure of the effect.
 		- min-value: 0
 		- max-value: 1
 	- colorSource (String)
-	- material (railo.runtime.img.filter.LightFilter$Material)
-	- bumpFunction (railo.runtime.img.math.Function2D)
-	- bumpHeight (float)
-	- bumpSoftness (float)
-	- bumpShape (int)
-	- viewDistance (float)
-	- environmentMap (java.awt.image.BufferedImage)
-	- bumpSource (int)
+	- material (String)
+		 Use the following format [color,opacity]; Example: "red,0.5"
+	- bumpHeight (numeric)
+	- bumpSoftness (numeric)
+	- bumpShape (integer)
+	- viewDistance (numeric)
+	- bumpSource (integer)
 	- diffuseColor (String)
 circle
 	A filter which wraps an image around a circular arc.
 
 	Parameters:
-	- radius (float)
+	- radius (numeric)
 		The radius of the effect.
 		- min-value: 0
-	- angle (float)
+	- angle (numeric)
 		The angle of the arc.
-		@angle
-	- spreadAngle (float)
+	- spreadAngle (numeric)
 		The spread angle of the arc.
-		@angle
-	- centreX (float)
+	- centreX (numeric)
 		The centre of the effect in the Y direction as a proportion of the image size.
-	- centreY (float)
+	- centreY (numeric)
 		The centre of the effect in the Y direction as a proportion of the image size.
-	- centre (java.awt.geom.Point2D)
-		The centre of the effect as a proportion of the image size.
-	- height (float)
+	- height (numeric)
 		The height of the arc.
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
-composite
-	A filter which composites two images together with an optional transform.
-
-	Parameters:
-	- transform (java.awt.geom.AffineTransform)
-		The transform.
-	- composite (java.awt.Composite)
-		The composite.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 contour
 	A filter which draws contours on an image at given brightness levels.
 
 	Parameters:
-	- levels (float)
+	- levels (numeric)
 	- contourColor (String)
-	- offset (float)
-	- scale (float)
+	- offset (numeric)
+	- scale (numeric)
 		Specifies the scale of the contours.
 		- min-value: 0
 		- max-value: 1
@@ -6322,73 +6328,62 @@ contrast
 	A filter to change the brightness and contrast of an image.
 
 	Parameters:
-	- brightness (float)
+	- brightness (numeric)
 		The filter brightness.
 		- min-value: 0
 		- max-value: 0
-	- contrast (float)
+	- contrast (numeric)
 		The filter contrast.
 		- min-value: 0
 		- max-value: 0
 	- dimensions (Array)
-convolve
-	Treat pixels off the edge as zero.
-
-	Parameters:
-	- kernel (java.awt.image.Kernel)
-		The convolution kernel.
-	- edgeAction (int)
-		The action to perfomr for pixels off the image edges.
-	- useAlpha (boolean)
-		Set whether to convolve the alpha channel.
-	- premultiplyAlpha (boolean)
-		Set whether to premultiply the alpha channel.
 crop
 	A filter which crops an image to a given rectangle.
 
 	Parameters:
-	- x (int)
+	- x (integer)
 		The left edge of the crop rectangle.
-	- y (int)
+	- y (integer)
 		The top edge of the crop rectangle.
-	- width (int)
+	- width (integer)
 		The width of the crop rectangle.
-	- height (int)
+	- height (integer)
 		The height of the crop rectangle.
 crystallize
 	A filter which applies a crystallizing effect to an image, by producing Voronoi cells filled with colours from the image.
 
 	Parameters:
-	- edgeThickness (float)
+	- edgeThickness (numeric)
 	- fadeEdges (boolean)
 	- edgeColor (String)
-	- amount (float)
+	- amount (numeric)
 		The amount of effect.
 		- min-value: 0
 		- max-value: 1
-	- turbulence (float)
+	- turbulence (numeric)
 		Specifies the turbulence of the texture.
 		- min-value: 0
 		- max-value: 1
-	- stretch (float)
+	- stretch (numeric)
 		Specifies the stretch factor of the texture.
 		- min-value: 1
 		- max-value: 50+
-	- angle (float)
+	- angle (numeric)
 		Specifies the angle of the texture.
-		@angle
-	- angleCoefficient (float)
-	- gradientCoefficient (float)
-	- f1 (float)
-	- f2 (float)
-	- f3 (float)
-	- f4 (float)
+	- angleCoefficient (numeric)
+	- gradientCoefficient (numeric)
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
-	- randomness (float)
-	- gridType (int)
-	- distancePower (float)
-	- scale (float)
+	- randomness (numeric)
+	- gridType (String)
+		the grid type to set, one of the following:
+		-  RANDOM
+		-  SQUARE
+		-  HEXAGONAL
+		-  OCTAGONAL
+		-  TRIANGULAR
+	- distancePower (numeric)
+	- scale (numeric)
 		Specifies the scale of the texture.
 		- min-value: 1
 		- max-value: 300+
@@ -6396,20 +6391,20 @@ curl
 	A page curl effect.
 
 	Parameters:
-	- radius (float)
-	- angle (float)
-	- transition (float)
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- radius (numeric)
+	- angle (numeric)
+	- transition (numeric)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
-curves
-	An abstract superclass for point filters. The interface is the same as the old RGBImageFilter.
-
-	Parameters:
-	- curves ([Lrailo.runtime.img.filter.CurvesFilter$Curve;)
-	- curve (railo.runtime.img.filter.CurvesFilter$Curve)
-	- dimensions (Array)
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 despeckle
 	A filter which removes noise from an image using a "pepper and salt" algorithm.
 
@@ -6418,22 +6413,27 @@ diffuse
 	This filter diffuses an image by moving its pixels in random directions.
 
 	Parameters:
-	- scale (float)
+	- scale (numeric)
 		Specifies the scale of the texture.
 		- min-value: 1
 		- max-value: 100+
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 diffusion
 	A filter which uses Floyd-Steinberg error diffusion dithering to halftone an image.
 
 	Parameters:
-	- levels (int)
+	- levels (integer)
 		The number of dither levels.
-	- matrix ([I)
-		The dither matrix.
 	- serpentine (boolean)
 		Set whether to use a serpentine pattern for return or not. This can reduce 'avalanche' artifacts in the output.
 	- colorDither (boolean)
@@ -6442,39 +6442,45 @@ dilate
 	Given a binary image, this filter performs binary dilation, setting all added pixels to the given 'new' color.
 
 	Parameters:
-	- threshold (int)
+	- threshold (integer)
 		The threshold - the number of neighbouring pixels for dilation to occur.
-	- iterations (int)
+	- iterations (integer)
 		The number of iterations the effect is performed.
 		- min-value: 0
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- newColor (String)
-	- blackFunction (railo.runtime.img.math.BinaryFunction)
 displace
 	A filter which simulates the appearance of looking through glass. A separate grayscale displacement image is provided and
 	pixels in the source image are displaced according to the gradient of the displacement map.
 
 	Parameters:
-	- amount (float)
+	- amount (numeric)
 		The amount of distortion.
 		- min-value: 0
 		- max-value: 1
-	- displacementMap (java.awt.image.BufferedImage)
+	- displacementMap (Image)
 		The displacement map.
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 dissolve
 	A filter which "dissolves" an image by thresholding the alpha channel with random numbers.
 
 	Parameters:
-	- density (float)
+	- density (numeric)
 		The density of the image in the range 0..1.
 		- min-value: 0
 		- max-value: 1
-	- softness (float)
+	- softness (numeric)
 		The softness of the dissolve in the range 0..1.
 		- min-value: 0
 		- max-value: 1
@@ -6483,10 +6489,8 @@ dither
 	A filter which performs ordered dithering on an image.
 
 	Parameters:
-	- levels (int)
+	- levels (integer)
 		The number of dither levels.
-	- matrix ([I)
-		The dither matrix.
 	- colorDither (boolean)
 		Set whether to use a color dither.
 	- dimensions (Array)
@@ -6494,15 +6498,13 @@ edge
 	An edge-detection filter.
 
 	Parameters:
-	- vEdgeMatrix ([F)
-	- hEdgeMatrix ([F)
 emboss
 	A class to emboss an image.
 
 	Parameters:
-	- bumpHeight (float)
-	- azimuth (float)
-	- elevation (float)
+	- bumpHeight (numeric)
+	- azimuth (numeric)
+	- elevation (numeric)
 	- emboss (boolean)
 equalize
 	A filter to perform auto-equalization on an image.
@@ -6512,20 +6514,19 @@ erode
 	Given a binary image, this filter performs binary erosion, setting all removed pixels to the given 'new' color.
 
 	Parameters:
-	- threshold (int)
+	- threshold (integer)
 		The threshold - the number of neighbouring pixels for dilation to occur.
-	- iterations (int)
+	- iterations (integer)
 		The number of iterations the effect is performed.
 		- min-value: 0
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- newColor (String)
-	- blackFunction (railo.runtime.img.math.BinaryFunction)
 exposure
 	A filter which changes the exposure of an image.
 
 	Parameters:
-	- exposure (float)
+	- exposure (numeric)
 		The exposure level.
 		- min-value: 0
 		- max-value: 5+
@@ -6534,42 +6535,37 @@ fade
 	An abstract superclass for point filters. The interface is the same as the old RGBImageFilter.
 
 	Parameters:
-	- angle (float)
+	- angle (numeric)
 		Specifies the angle of the texture.
-		@angle
-	- sides (int)
-	- fadeStart (float)
-	- fadeWidth (float)
+	- sides (integer)
+	- fadeStart (numeric)
+	- fadeWidth (numeric)
 	- invert (boolean)
 	- dimensions (Array)
 feedback
 	A filter which priduces a video feedback effect by repeated transformations.
 
 	Parameters:
-	- iterations (int)
+	- iterations (integer)
 		The number of iterations.
 		- min-value: 0
-	- angle (float)
+	- angle (numeric)
 		Specifies the angle of each iteration.
-		@angle
-	- centreX (float)
+	- centreX (numeric)
 		The centre of the effect in the X direction as a proportion of the image size.
-	- centreY (float)
+	- centreY (numeric)
 		The centre of the effect in the Y direction as a proportion of the image size.
-	- centre (java.awt.geom.Point2D)
-		The centre of the effect as a proportion of the image size.
-	- distance (float)
+	- distance (numeric)
 		Specifies the distance to move on each iteration.
-	- rotation (float)
+	- rotation (numeric)
 		Specifies the amount of rotation on each iteration.
-		@angle
-	- zoom (float)
+	- zoom (numeric)
 		Specifies the amount to scale on each iteration.
-	- startAlpha (float)
+	- startAlpha (numeric)
 		The alpha value at the first iteration.
 		- min-value: 0
 		- max-value: 1
-	- endAlpha (float)
+	- endAlpha (numeric)
 		The alpha value at the last iteration.
 		- min-value: 0
 		- max-value: 1
@@ -6585,31 +6581,32 @@ flare
 	An experimental filter for rendering lens flares.
 
 	Parameters:
-	- radius (float)
+	- radius (numeric)
 		The radius of the effect.
 		- min-value: 0
-	- centre (java.awt.geom.Point2D)
-	- ringWidth (float)
-	- baseAmount (float)
-	- ringAmount (float)
-	- rayAmount (float)
+	- centreX (numeric)
+	- centreY (numeric)
+	- ringWidth (numeric)
+	- baseAmount (numeric)
+	- ringAmount (numeric)
+	- rayAmount (numeric)
 	- color (String)
 	- dimensions (Array)
 flip
 	A filter which flips images or rotates by multiples of 90 degrees.
 
 	Parameters:
-	- operation (int)
+	- operation (integer)
 		The filter operation.
 gain
 	A filter which changes the gain and bias of an image - similar to ContrastFilter.
 
 	Parameters:
-	- gain (float)
+	- gain (numeric)
 		The gain.
 		- min-value:: 0
 		- max-value:: 1
-	- bias (float)
+	- bias (numeric)
 		The bias.
 		- min-value:: 0
 		- max-value:: 1
@@ -6618,7 +6615,7 @@ gamma
 	A filter for changing the gamma of an image.
 
 	Parameters:
-	- gamma (float)
+	- gamma (numeric)
 		The gamma levels.
 	- dimensions (Array)
 gaussian
@@ -6626,14 +6623,16 @@ gaussian
 	which simply creates a kernel with a Gaussian distribution for blurring.
 
 	Parameters:
-	- radius (float)
+	- radius (numeric)
 		The radius of the kernel, and hence the amount of blur. The bigger the radius, the longer this filter will take.
 		- min-value: 0
 		- max-value: 100+
-	- kernel (java.awt.image.Kernel)
-		The convolution kernel.
-	- edgeAction (int)
+	- edgeAction (String)
 		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
 	- useAlpha (boolean)
 		Set whether to convolve the alpha channel.
 	- premultiplyAlpha (boolean)
@@ -6642,36 +6641,38 @@ glint
 	A filter which renders "glints" on bright parts of the image.
 
 	Parameters:
-	- amount (float)
+	- amount (numeric)
 		The amount of glint.
 		- min-value: 0
 		- max-value: 1
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
-	- blur (float)
+	- blur (numeric)
 		The blur that is applied before thresholding.
 	- glintOnly (boolean)
 		Set whether to render the stars and the image or only the stars.
-	- length (int)
+	- length (integer)
 		The length of the stars.
-	- threshold (float)
+	- threshold (numeric)
 		The threshold value.
 glow
 	A filter which adds Gaussian blur to an image, producing a glowing effect.
 
 	Parameters:
-	- amount (float)
+	- amount (numeric)
 		The amount of glow.
 		- min-value: 0
 		- max-value: 1
-	- radius (float)
+	- radius (numeric)
 		The radius of the kernel, and hence the amount of blur. The bigger the radius, the longer this filter will take.
 		- min-value: 0
 		- max-value: 100+
-	- kernel (java.awt.image.Kernel)
-		The convolution kernel.
-	- edgeAction (int)
+	- edgeAction (String)
 		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
 	- useAlpha (boolean)
 		Set whether to convolve the alpha channel.
 	- premultiplyAlpha (boolean)
@@ -6681,16 +6682,17 @@ gradient
 	more gradient options.
 
 	Parameters:
-	- interpolation (int)
-	- angle (float)
+	- interpolation (integer)
+	- angle (numeric)
 		Specifies the angle of the texture.
-		@angle
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
-	- point1 (java.awt.Point)
-	- point2 (java.awt.Point)
-	- paintMode (int)
-	- type (int)
+	- point1 (String)
+		 Use the following format [X-coordinate,Y-coordinate]; Example: "13,20"
+	- point2 (String)
+		 Use the following format [X-coordinate,Y-coordinate]; Example: "13,20"
+	- paintMode (integer)
+	- type (integer)
 gray
 	A filter which 'grays out' an image by averaging each pixel with white.
 
@@ -6705,21 +6707,23 @@ halftone
 	A filter which can be used to produce wipes by transferring the luma of a mask image into the alpha channel of the source.
 
 	Parameters:
-	- density (float)
+	- density (numeric)
 		The density of the image in the range 0..1.
 		*arg density The density
-	- softness (float)
+	- softness (numeric)
 		The softness of the effect in the range 0..1.
 		- min-value: 0
 		- max-value: 1
 	- invert (boolean)
-	- mask (java.awt.image.BufferedImage)
+	- mask (Image)
 interpolate
-	A filter which interpolates betwen two images. You can set the interpolation factor outside the range 0 to 1
+	A filter which interpolates between two images. You can set the interpolation factor outside the range 0 to 1
 	to extrapolate images.
 
 	Parameters:
-	- interpolation (float)
+	- destination (Image)
+		The destination image.
+	- interpolation (numeric)
 		The interpolation factor.
 invert
 	A filter which inverts the RGB channels of an image.
@@ -6730,73 +6734,61 @@ kaleidoscope
 	A Filter which produces the effect of looking into a kaleidoscope.
 
 	Parameters:
-	- radius (float)
+	- radius (numeric)
 		The radius of the effect.
 		- min-value: 0
-	- angle (float)
+	- angle (numeric)
 		The angle of the kaleidoscope.
-		@angle
-	- centreX (float)
+	- centreX (numeric)
 		The centre of the effect in the X direction as a proportion of the image size.
-	- centreY (float)
+	- centreY (numeric)
 		The centre of the effect in the Y direction as a proportion of the image size.
-	- centre (java.awt.geom.Point2D)
-		The centre of the effect as a proportion of the image size.
-	- sides (int)
+	- sides (integer)
 		The number of sides of the kaleidoscope.
 		- min-value: 2
-	- angle2 (float)
+	- angle2 (numeric)
 		The secondary angle of the kaleidoscope.
-		@angle
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
-key
-	An experimental filter which can be used for keying against a clean shot. Given a source image, a clean image and a destination image,
-	the filter replaces all pixels in the source which nearly equal the equivalent clean pixel by destination pixels.
-
-	Parameters:
-	- hTolerance (float)
-		The hue tolerance of the image in the range 0..1.
-	- sTolerance (float)
-		The saturation tolerance of the image in the range 0..1.
-	- bTolerance (float)
-		The brightness tolerance of the image in the range 0..1.
-	- cleanImage (java.awt.image.BufferedImage)
-		Get the clean image.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 levels
 	A filter which allows levels adjustment on an image.
 
 	Parameters:
-	- lowLevel (float)
-	- highLevel (float)
-	- lowOutputLevel (float)
-	- highOutputLevel (float)
+	- lowLevel (numeric)
+	- highLevel (numeric)
+	- lowOutputLevel (numeric)
+	- highOutputLevel (numeric)
 life
 	A filter which performs one round of the game of Life on an image.
 
 	Parameters:
-	- iterations (int)
+	- iterations (integer)
 		The number of iterations the effect is performed.
 		- min-value: 0
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- newColor (String)
-	- blackFunction (railo.runtime.img.math.BinaryFunction)
 light
 	A filter which produces lighting and embossing effects.
 
 	Parameters:
 	- colorSource (String)
-	- material (railo.runtime.img.filter.LightFilter$Material)
-	- bumpFunction (railo.runtime.img.math.Function2D)
-	- bumpHeight (float)
-	- bumpSoftness (float)
-	- bumpShape (int)
-	- viewDistance (float)
-	- environmentMap (java.awt.image.BufferedImage)
-	- bumpSource (int)
+	- material (String)
+		 Use the following format [color,opacity]; Example: "red,0.5"
+	- bumpHeight (numeric)
+	- bumpSoftness (numeric)
+	- bumpShape (integer)
+	- viewDistance (numeric)
+	- bumpSource (integer)
 	- diffuseColor (String)
 lookup
 	A filter which uses the brightness of each pixel to lookup a color from a colormap.
@@ -6810,37 +6802,49 @@ map
 	two methods to provide the mapping between source and destination pixels.
 
 	Parameters:
-	- xMapFunction (railo.runtime.img.math.Function2D)
-	- yMapFunction (railo.runtime.img.math.Function2D)
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 marble
 	This filter applies a marbling effect to an image, displacing pixels by random amounts.
 
 	Parameters:
-	- amount (float)
+	- amount (numeric)
 		The amount of effect.
 		- min-value: 0
 		- max-value: 1
-	- turbulence (float)
+	- turbulence (numeric)
 		Specifies the turbulence of the effect.
 		- min-value: 0
 		- max-value: 1
-	- xScale (float)
+	- xScale (numeric)
 		The X scale of the effect.
-	- yScale (float)
+	- yScale (numeric)
 		The Y scale of the effect.
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 mask
 	Applies a bit mask to each ARGB pixel of an image. You can use this for, say, masking out the red channel.
 
 	Parameters:
-	- mask (int)
+	- mask (integer)
 	- dimensions (Array)
 maximum
 	A filter which replcaes each pixel by the maximum of itself and its eight neightbours.
@@ -6858,28 +6862,27 @@ mirror
 
 
 	Parameters:
-	- angle (float)
+	- angle (numeric)
 		Specifies the angle of the mirror.
-		@angle
-	- centreY (float)
-	- distance (float)
-	- rotation (float)
-	- gap (float)
-	- opacity (float)
+	- centreY (numeric)
+	- distance (numeric)
+	- rotation (numeric)
+	- gap (numeric)
+	- opacity (numeric)
 		The opacity of the reflection.
 noise
 	A filter which adds random noise into an image.
 
 	Parameters:
-	- amount (int)
+	- amount (integer)
 		The amount of effect.
 		- min-value: 0
 		- max-value: 1
 	- monochrome (boolean)
 		Set whether to use monochrome noise.
-	- density (float)
+	- density (numeric)
 		The density of the noise.
-	- distribution (int)
+	- distribution (integer)
 		The distribution of the noise.
 	- dimensions (Array)
 offset
@@ -6887,120 +6890,155 @@ offset
 	two methods to provide the mapping between source and destination pixels.
 
 	Parameters:
-	- xOffset (int)
-	- yOffset (int)
+	- xOffset (integer)
+	- yOffset (integer)
 	- wrap (boolean)
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 oil
 	A filter which produces a "oil-painting" effect.
 
 	Parameters:
-	- levels (int)
+	- levels (integer)
 		The number of levels for the effect.
-	- range (int)
+	- range (integer)
 		The range of the effect in pixels.
 opacity
 	Sets the opacity (alpha) of every pixel in an image to a constant value.
 
 	Parameters:
-	- opacity (int)
+	- opacity (integer)
 		The opacity.
 	- dimensions (Array)
 outline
 	Given a binary image, this filter converts it to its outline, replacing all interior pixels with the 'new' color.
 
 	Parameters:
-	- iterations (int)
+	- iterations (integer)
 		The number of iterations the effect is performed.
 		- min-value: 0
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- newColor (String)
-	- blackFunction (railo.runtime.img.math.BinaryFunction)
 perspective
 	A filter which performs a perspective distortion on an image.
 
 	Parameters:
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- xLT (numeric)
+		the new horizontal position of the top left corner, negative values are translated to image-width - x.
+	- yLT (numeric)
+		the new vertical position of the top left corner, negative values are translated to image-height - y.
+	- xRT (numeric)
+		the new horizontal position of the top right corner, negative values are translated to image-width - x.
+	- yRT (numeric)
+		the new vertical position of the top right corner, negative values are translated to image-height - y.
+	- xRB (numeric)
+		the new horizontal position of the bottom right corner, negative values are translated to image-width - x.
+	- yRB (numeric)
+		the new vertical position of the bottom right corner, negative values are translated to image-height - y.
+	- xLB (numeric)
+		the new horizontal position of the bottom left corner, negative values are translated to image-width - x.
+	- yLB (numeric)
+		the new vertical position of the bottom left corner, negative values are translated to image-height - y.
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 pinch
 	A filter which performs the popular whirl-and-pinch distortion effect.
 
 	Parameters:
-	- radius (float)
+	- radius (numeric)
 		The radius of the effect.
 		- min-value: 0
-	- amount (float)
+	- amount (numeric)
 		The amount of pinch.
 		- min-value: -1
 		- max-value: 1
-	- angle (float)
+	- angle (numeric)
 		The angle of twirl in radians. 0 means no distortion.
-	- centreX (float)
+	- centreX (numeric)
 		The centre of the effect in the X direction as a proportion of the image size.
-	- centreY (float)
+	- centreY (numeric)
 		The centre of the effect in the Y direction as a proportion of the image size.
-	- centre (java.awt.geom.Point2D)
-		The centre of the effect as a proportion of the image size.
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 plasma
 	A filter which acts as a superclass for filters which need to have the whole image in memory
 	to do their stuff.
 
 	Parameters:
-	- turbulence (float)
+	- turbulence (numeric)
 		Specifies the turbulence of the texture.
 		- min-value: 0
 		- max-value: 10
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
-	- scaling (float)
+	- scaling (numeric)
 	- useColormap (boolean)
 	- useImageColors (boolean)
-	- seed (int)
+	- seed (integer)
 pointillize
 	A filter which produces an image with a cellular texture.
 
 	Parameters:
-	- fuzziness (float)
-	- edgeThickness (float)
+	- fuzziness (numeric)
+	- edgeThickness (numeric)
 	- fadeEdges (boolean)
 	- edgeColor (String)
-	- amount (float)
+	- amount (numeric)
 		The amount of effect.
 		- min-value: 0
 		- max-value: 1
-	- turbulence (float)
+	- turbulence (numeric)
 		Specifies the turbulence of the texture.
 		- min-value: 0
 		- max-value: 1
-	- stretch (float)
+	- stretch (numeric)
 		Specifies the stretch factor of the texture.
 		- min-value: 1
 		- max-value: 50+
-	- angle (float)
+	- angle (numeric)
 		Specifies the angle of the texture.
-		@angle
-	- angleCoefficient (float)
-	- gradientCoefficient (float)
-	- f1 (float)
-	- f2 (float)
-	- f3 (float)
-	- f4 (float)
+	- angleCoefficient (numeric)
+	- gradientCoefficient (numeric)
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
-	- randomness (float)
-	- gridType (int)
-	- distancePower (float)
-	- scale (float)
+	- randomness (numeric)
+	- gridType (String)
+		the grid type to set, one of the following:
+		-  RANDOM
+		-  SQUARE
+		-  HEXAGONAL
+		-  OCTAGONAL
+		-  TRIANGULAR
+	- distancePower (numeric)
+	- scale (numeric)
 		Specifies the scale of the texture.
 		- min-value: 1
 		- max-value: 300+
@@ -7008,24 +7046,28 @@ polar
 	A filter which distorts and image by performing coordinate conversions between rectangular and polar coordinates.
 
 	Parameters:
-	- type (int)
-		The distortion type.
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- type (String)
+		The distortion type, valid values are
+		- RECT_TO_POLAR = Convert from rectangular to polar coordinates
+		- POLAR_TO_RECT = Convert from polar to rectangular coordinates
+		- INVERT_IN_CIRCLE = Invert the image in a circle
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 posterize
 	A filter to posterize an image.
 
 	Parameters:
-	- numLevels (int)
+	- numLevels (integer)
 		The number of levels in the output image.
-	- dimensions (Array)
-premultiply
-	A filter which premultiplies an image's alpha.
-	Note: this does not change the image type of the BufferedImage
-
-	Parameters:
 	- dimensions (Array)
 quantize
 	A filter which quantizes an image to a set number of colors - useful for producing
@@ -7048,42 +7090,41 @@ quilt
 	to do their stuff.
 
 	Parameters:
-	- iterations (int)
+	- iterations (integer)
 		The number of iterations the effect is performed.
 		- min-value: 0
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
-	- a (float)
-	- b (float)
-	- c (float)
-	- d (float)
-	- k (int)
+	- a (numeric)
+	- b (numeric)
+	- c (numeric)
+	- d (numeric)
+	- k (integer)
 rays
 	A filter which produces the effect of light rays shining out of an image.
 
 	Parameters:
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
-	- strength (float)
+	- strength (numeric)
 		The strength of the rays.
-	- opacity (float)
+	- opacity (numeric)
 		The opacity of the rays.
 	- raysOnly (boolean)
 		Set whether to render only the rays.
-	- threshold (float)
+	- threshold (numeric)
 		The threshold value.
-	- angle (float)
-	- centreX (float)
-	- centreY (float)
-	- centre (java.awt.geom.Point2D)
-	- distance (float)
-	- rotation (float)
-	- zoom (float)
+	- angle (numeric)
+	- centreX (numeric)
+	- centreY (numeric)
+	- distance (numeric)
+	- rotation (numeric)
+	- zoom (numeric)
 rescale
 	A filter which simply multiplies pixel values by a given scale factor.
 
 	Parameters:
-	- scale (float)
+	- scale (numeric)
 		Specifies the scale factor.
 		- min-value: 1
 		- max-value: 5+
@@ -7094,37 +7135,55 @@ ripple
 	pixels going off the edges are wrapped or not.
 
 	Parameters:
-	- xAmplitude (float)
+	- xAmplitude (numeric)
 		The amplitude of ripple in the X direction.
-	- xWavelength (float)
+	- xWavelength (numeric)
 		The wavelength of ripple in the X direction.
-	- yAmplitude (float)
+	- yAmplitude (numeric)
 		The amplitude of ripple in the Y direction.
-	- yWavelength (float)
+	- yWavelength (numeric)
 		The wavelength of ripple in the Y direction.
-	- waveType (int)
+	- waveType (String)
 		The wave type.
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+		valid values are:
+		- sine (default):  Sine wave ripples.
+		- sawtooth: Sawtooth wave ripples.
+		- triangle: Triangle wave ripples.
+		- noise: Noise ripples.
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 rotate
 	A filter which rotates an image. These days this is easier done with Java2D, but this filter remains.
 
 	Parameters:
-	- angle (float)
+	- angle (numeric)
 		Specifies the angle of rotation.
-		@angle
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 saturation
 	A filter to change the saturation of an image. This works by calculating a grayscale version of the image
 	and then extrapolating away from it.
 
 	Parameters:
-	- amount (float)
+	- amount (numeric)
 		The amount of saturation change. 1 leaves the image unchanged, values between 0 and 1 desaturate, 0 completely
 		desaturates it and values above 1 increase the saturation.
 	- dimensions (Array)
@@ -7132,39 +7191,38 @@ scale
 	Scales an image using the area-averaging algorithm, which can't be done with AffineTransformOp.
 
 	Parameters:
+	- width (integer)
+	- height (integer)
 scratch
 
 
 	Parameters:
-	- angle (float)
-	- density (float)
-	- angleVariation (float)
-	- length (float)
-	- seed (int)
+	- angle (numeric)
+	- density (numeric)
+	- angleVariation (numeric)
+	- length (numeric)
+	- seed (integer)
 	- color (String)
-	- width (float)
+	- width (numeric)
 shade
 	A filter which acts as a superclass for filters which need to have the whole image in memory
 	to do their stuff.
 
 	Parameters:
-	- bumpFunction (railo.runtime.img.math.Function2D)
-	- bumpHeight (float)
-	- bumpSoftness (float)
-	- environmentMap (java.awt.image.BufferedImage)
-	- bumpSource (int)
+	- bumpHeight (numeric)
+	- bumpSoftness (numeric)
+	- bumpSource (integer)
 shadow
 	A filter which draws a drop shadow based on the alpha channel of the image.
 
 	Parameters:
-	- radius (float)
+	- radius (numeric)
 		The radius of the kernel, and hence the amount of blur. The bigger the radius, the longer this filter will take.
-	- angle (float)
+	- angle (numeric)
 		Specifies the angle of the shadow.
-		@angle
-	- distance (float)
+	- distance (numeric)
 		The distance of the shadow.
-	- opacity (float)
+	- opacity (numeric)
 		The opacity of the shadow.
 	- shadowColor (String)
 		The color of the shadow.
@@ -7181,17 +7239,19 @@ shape
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- invert (boolean)
-	- factor (float)
+	- factor (numeric)
 	- merge (boolean)
-	- type (int)
+	- type (integer)
 sharpen
 	A filter which performs a simple 3x3 sharpening operation.
 
 	Parameters:
-	- kernel (java.awt.image.Kernel)
-		The convolution kernel.
-	- edgeAction (int)
+	- edgeAction (String)
 		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
 	- useAlpha (boolean)
 		Set whether to convolve the alpha channel.
 	- premultiplyAlpha (boolean)
@@ -7200,68 +7260,72 @@ shatter
 
 
 	Parameters:
-	- iterations (int)
-	- centreX (float)
-	- centreY (float)
-	- centre (java.awt.geom.Point2D)
-	- transition (float)
-	- distance (float)
-	- rotation (float)
-	- zoom (float)
-	- startAlpha (float)
-	- endAlpha (float)
-	- tile (int)
+	- iterations (integer)
+	- centreX (numeric)
+	- centreY (numeric)
+	- transition (numeric)
+	- distance (numeric)
+	- rotation (numeric)
+	- zoom (numeric)
+	- startAlpha (numeric)
+	- endAlpha (numeric)
+	- tile (integer)
 shear
 	An abstract superclass for filters which distort images in some way. The subclass only needs to override
 	two methods to provide the mapping between source and destination pixels.
 
 	Parameters:
 	- resize (boolean)
-	- xAngle (float)
-	- yAngle (float)
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- xAngle (numeric)
+	- yAngle (numeric)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 shine
 	A filter which simply multiplies pixel values by a given scale factor.
 
 	Parameters:
-	- radius (float)
+	- radius (numeric)
 		The radius of the kernel, and hence the amount of blur. The bigger the radius, the longer this filter will take.
-	- brightness (float)
-	- angle (float)
-	- softness (float)
-	- distance (float)
+	- brightness (numeric)
+	- angle (numeric)
+	- softness (numeric)
+	- distance (numeric)
 	- shadowOnly (boolean)
-	- bevel (float)
+	- bevel (numeric)
 	- shineColor (String)
 skeleton
 	A filter which reduces a binary image to a skeleton.
 	Based on an algorithm by Zhang and Suen (CACM, March 1984, 236-239).
 
 	Parameters:
-	- iterations (int)
+	- iterations (integer)
 		The number of iterations the effect is performed.
 		- min-value: 0
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
 	- newColor (String)
-	- blackFunction (railo.runtime.img.math.BinaryFunction)
 smear
 	A filter which acts as a superclass for filters which need to have the whole image in memory
 	to do their stuff.
 
 	Parameters:
-	- angle (float)
+	- angle (numeric)
 		Specifies the angle of the texture.
-		@angle
-	- density (float)
-	- distance (int)
-	- shape (int)
-	- scatter (float)
-	- mix (float)
-	- fadeout (int)
+	- density (numeric)
+	- distance (integer)
+	- shape (integer)
+	- scatter (numeric)
+	- mix (numeric)
+	- fadeout (integer)
 	- background (boolean)
 solarize
 	A filter which solarizes an image.
@@ -7272,107 +7336,116 @@ sparkle
 	An abstract superclass for point filters. The interface is the same as the old RGBImageFilter.
 
 	Parameters:
-	- radius (int)
+	- radius (integer)
 		The radius of the effect.
 		- min-value: 0
-	- amount (int)
+	- amount (integer)
 		The amount of sparkle.
 		- min-value: 0
 		- max-value: 1
-	- randomness (int)
-	- rays (int)
+	- randomness (integer)
+	- rays (integer)
 	- color (String)
 	- dimensions (Array)
 sphere
 	A filter which simulates a lens placed over an image.
 
 	Parameters:
-	- radius (float)
+	- radius (numeric)
 		The radius of the effect.
 		- min-value: 0
-	- centreX (float)
+	- centreX (numeric)
 		The centre of the effect in the X direction as a proportion of the image size.
-	- centreY (float)
+	- centreY (numeric)
 		The centre of the effect in the Y direction as a proportion of the image size.
-	- centre (java.awt.geom.Point2D)
-		The centre of the effect as a proportion of the image size.
-	- refractionIndex (float)
+	- refractionIndex (numeric)
 		The index of refaction.
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 stamp
 	A filter which produces a rubber-stamp type of effect by performing a thresholded blur.
 
 	Parameters:
-	- radius (float)
+	- radius (numeric)
 		The radius of the effect.
 		- min-value: 0
-	- softness (float)
+	- softness (numeric)
 		The softness of the effect in the range 0..1.
 		- min-value: 0
 		- max-value: 1
-	- white (int)
+	- white (String)
 		The color to be used for pixels above the upper threshold.
-	- black (int)
+	- black (String)
 		The color to be used for pixels below the lower threshold.
-	- threshold (float)
+	- threshold (numeric)
 		The threshold value.
 	- dimensions (Array)
 swim
 	A filter which distorts an image as if it were underwater.
 
 	Parameters:
-	- amount (float)
+	- amount (numeric)
 		The amount of swim.
 		- min-value: 0
 		- max-value: 100+
-	- turbulence (float)
+	- turbulence (numeric)
 		Specifies the turbulence of the texture.
 		- min-value: 0
 		- max-value: 1
-	- stretch (float)
+	- stretch (numeric)
 		Specifies the stretch factor of the distortion.
 		- min-value: 1
 		- max-value: 50+
-	- angle (float)
+	- angle (numeric)
 		Specifies the angle of the effect.
-		@angle
-	- time (float)
+	- time (numeric)
 		Specifies the time. Use this to animate the effect.
-		@angle
-	- scale (float)
+	- scale (numeric)
 		Specifies the scale of the distortion.
 		- min-value: 1
 		- max-value: 300+
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 texture
 	An abstract superclass for point filters. The interface is the same as the old RGBImageFilter.
 
 	Parameters:
-	- amount (float)
+	- amount (numeric)
 		The amount of texture.
 		- min-value: 0
 		- max-value: 1
-	- turbulence (float)
+	- turbulence (numeric)
 		Specifies the turbulence of the texture.
 		- min-value: 0
 		- max-value: 1
-	- stretch (float)
+	- stretch (numeric)
 		Specifies the stretch factor of the texture.
 		- min-value: 1
 		- max-value: 50+
-	- angle (float)
+	- angle (numeric)
 		Specifies the angle of the texture.
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
-	- operation (int)
-	- function (railo.runtime.img.math.Function2D)
-	- scale (float)
+	- operation (integer)
+	- scale (numeric)
 		Specifies the scale of the texture.
 		- min-value: 1
 		- max-value: 300+
@@ -7381,13 +7454,13 @@ threshold
 	A filter which performs a threshold operation on an image.
 
 	Parameters:
-	- white (int)
+	- white (integer)
 		The color to be used for pixels above the upper threshold.
-	- black (int)
+	- black (integer)
 		The color to be used for pixels below the lower threshold.
-	- lowerThreshold (int)
+	- lowerThreshold (integer)
 		The lower threshold value.
-	- upperThreshold (int)
+	- upperThreshold (integer)
 		The upper threshold value.
 	- dimensions (Array)
 twirl
@@ -7396,97 +7469,87 @@ twirl
 	the width and height. Pixels outside this radius are unaffected.
 
 	Parameters:
-	- radius (float)
+	- radius (numeric)
 		The radius of the effect.
 		- min-value: 0
-	- angle (float)
+	- angle (numeric)
 		The angle of twirl in radians. 0 means no distortion.
-	- centreX (float)
+	- centreX (numeric)
 		The centre of the effect in the X direction as a proportion of the image size.
-	- centreY (float)
+	- centreY (numeric)
 		The centre of the effect in the Y direction as a proportion of the image size.
-	- centre (java.awt.geom.Point2D)
-		The centre of the effect as a proportion of the image size.
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
-unpremultiply
-	A filter which unpremultiplies an image's alpha.
-	Note: this does not change the image type of the BufferedImage
-
-	Parameters:
-	- dimensions (Array)
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 unsharp
 	A filter which subtracts Gaussian blur from an image, sharpening it.
 
 	Parameters:
-	- amount (float)
+	- amount (numeric)
 		The amount of sharpening.
 		- min-value: 0
 		- max-value: 1
-	- threshold (int)
+	- threshold (integer)
 		The threshold value.
-	- radius (float)
+	- radius (numeric)
 		The radius of the kernel, and hence the amount of blur. The bigger the radius, the longer this filter will take.
 		- min-value: 0
 		- max-value: 100+
-	- kernel (java.awt.image.Kernel)
-		The convolution kernel.
-	- edgeAction (int)
+	- edgeAction (String)
 		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
 	- useAlpha (boolean)
 		Set whether to convolve the alpha channel.
 	- premultiplyAlpha (boolean)
 		Set whether to premultiply the alpha channel.
-warp
-	A filter for warping images using the gridwarp algorithm.
-	You need to supply two warp grids, one for the source image and
-	one for the destination image. The image will be warped so that
-	a point in the source grid moves to its counterpart in the destination
-	grid.
-
-	Parameters:
-	- sourceGrid (railo.runtime.img.filter.WarpGrid)
-		The source warp grid.
-	- destGrid (railo.runtime.img.filter.WarpGrid)
-		The destination warp grid.
-	- frames (int)
-	- morphImage (java.awt.image.BufferedImage)
-		For morphing, sets the image we're morphing to. If not, set then we're just warping.
-	- time (float)
 water
 	A filter which produces a water ripple distortion.
 
 	Parameters:
-	- radius (float)
+	- radius (numeric)
 		The radius of the effect.
 		- min-value: 0
-	- centreX (float)
+	- centreX (numeric)
 		The centre of the effect in the X direction as a proportion of the image size.
-	- centreY (float)
+	- centreY (numeric)
 		The centre of the effect in the Y direction as a proportion of the image size.
-	- centre (java.awt.geom.Point2D)
-		The centre of the effect as a proportion of the image size.
-	- wavelength (float)
+	- wavelength (numeric)
 		The wavelength of the ripples.
-	- amplitude (float)
+	- amplitude (numeric)
 		The amplitude of the ripples.
-	- phase (float)
+	- phase (numeric)
 		The phase of the ripples.
-	- edgeAction (int)
-		The action to perform for pixels off the edge of the image.
-	- interpolation (int)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
 		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
 weave
 	An abstract superclass for point filters. The interface is the same as the old RGBImageFilter.
 
 	Parameters:
 	- useImageColors (boolean)
-	- xGap (float)
-	- xWidth (float)
-	- yWidth (float)
-	- yGap (float)
+	- xGap (numeric)
+	- xWidth (numeric)
+	- yWidth (numeric)
+	- yGap (numeric)
 	- crossings ([[I)
 	- roundThreads (boolean)
 	- shadeCrossings (boolean)
@@ -7495,31 +7558,31 @@ wood
 	A filter which produces a simulated wood texture. This is a bit of a hack, but might be usefult to some people.
 
 	Parameters:
-	- turbulence (float)
+	- turbulence (numeric)
 		Specifies the turbulence of the texture.
 		- min-value: 0
 		- max-value: 1
-	- stretch (float)
+	- stretch (numeric)
 		Specifies the stretch factor of the texture.
 		- min-value: 1
 		- max-value: 50+
-	- angle (float)
+	- angle (numeric)
 		Specifies the angle of the texture.
 	- colormap (Colormap)
 		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
-	- gain (float)
+	- gain (numeric)
 		Specifies the gain of the texture.
 		- min-value: 0
 		- max-value: 1
-	- rings (float)
+	- rings (numeric)
 		Specifies the rings value.
 		- min-value: 0
 		- max-value: 1
-	- fibres (float)
+	- fibres (numeric)
 		Specifies the amount of fibres in the texture.
 		- min-value: 0
 		- max-value: 1
-	- scale (float)
+	- scale (numeric)
 		Specifies the scale of the texture.
 		- min-value: 1
 		- max-value: 300+
