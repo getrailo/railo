@@ -95,6 +95,7 @@ import railo.runtime.spooler.SpoolerEngine;
 import railo.runtime.tag.Admin;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.scope.ClusterNotSupported;
@@ -3155,6 +3156,10 @@ public abstract class ConfigImpl implements Config {
 	private Map<String,PageSource> componentPathCache=null;//new ArrayList<Page>();
 	private Map<String,InitFile> ctPatchCache=null;//new ArrayList<Page>();
 	
+	private Map udfCache=new ReferenceMap();
+	
+	
+	
 	
 	public Page getCachedPage(PageContext pc,String pathWithCFC) throws PageException {
 		if(componentPathCache==null) return null; 
@@ -3203,6 +3208,17 @@ public abstract class ConfigImpl implements Config {
 	public void clearCTCache() {
 		if(ctPatchCache==null) return; 
 		ctPatchCache.clear();
+	}
+	
+
+	public void clearFunctionCache() {
+		udfCache.clear();
+	}
+	public UDF getFromFunctionCache(String key) {
+		return (UDF) udfCache.get(key);
+	}
+	public void putToFunctionCache(String key,UDF udf) {
+		udfCache.put(key, udf);
 	}
 	
 	
