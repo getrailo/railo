@@ -1373,21 +1373,6 @@ public final class ConfigWebFactory {
         }
 
 	}
-	
-	private static boolean doNewd(Resource contextDir,boolean readonly) throws IOException {
-		Resource version=contextDir.getRealResource("version");
-		String v=Info.getVersionAsString()+"-"+Info.getStateAsString()+"-"+Info.getRealeaseTime();
-		if(!version.exists()) {
-            version.createNewFile();
-            IOUtil.write(version,v,SystemUtil.getCharset(),false);
-            return true;
-        }
-        else if(!IOUtil.toString(version,SystemUtil.getCharset()).equals(v)) {
-            IOUtil.write(version,v,SystemUtil.getCharset(),false);
-            return true;
-        }
-        return false;
-    }
 
 	private static boolean doNew(Resource contextDir,boolean readonly) throws IOException {
 		Resource version=contextDir.getRealResource("version");
