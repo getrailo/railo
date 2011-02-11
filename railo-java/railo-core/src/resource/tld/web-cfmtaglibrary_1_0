@@ -12256,6 +12256,14 @@ dWord: creates a value of 0 (zero)</description>
             Useful for displaying a temporary value, or a value that
             does not display on any CFM page (alias for attribute "var").</description>
 		</attribute>
+		<attribute>
+			<type>struct</type>
+			<name>caller</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<status>hidden</status>
+			<description>scope used for var evaluation, if not defined the current scope is used.</description>
+		</attribute>
 	</tag>
 	<!-- Try -->
 	<tag>

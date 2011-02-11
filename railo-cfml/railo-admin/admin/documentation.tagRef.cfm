@@ -42,7 +42,6 @@ function detail(field){
 
 
 
-
 <cfif len(url.tag)>
 <div style="width:740px">
 	<cfset data=getTagData(listFirst(url.tag),listLast(url.tag))>
@@ -66,7 +65,7 @@ function detail(field){
 <cfset arrAttrNames=StructKeyArray(data.attributes)>
 <cfset ArraySort(arrAttrNames,'textnocase')>
 <pre><span class="syntaxTag">&lt;#tagName#</span><cfif data.attributeType EQ "noname"> <span class="syntaxAttr">##<cfloop array="#arrAttrNames#" index="key">#data.attributes[key].type# <cfbreak></cfloop>expression##</span> <cfelse><!--- 
----><cfloop array="#arrAttrNames#" index="key"><cfset attr=data.attributes[key]>
+---><cfloop array="#arrAttrNames#" index="key"><cfset attr=data.attributes[key]><cfif attr.status EQ "hidden"><cfcontinue></cfif>
 	<cfif not attr.required><span class="syntaxAttr">[</span></cfif><!---
 	---><span class="syntaxAttr">#key#</span>=<span class="syntaxText">"<cfif not attr.required><i></cfif>#attr.type#<cfif not attr.required></i></cfif>"</span><!---
 	---><cfif not attr.required><span class="syntaxAttr">]</span></cfif></cfloop></cfif><!---
@@ -130,6 +129,7 @@ function detail(field){
 
 <cfloop array="#arrAttrNames#" index="key">
 <cfset attr=data.attributes[key]>
+<cfif attr.status EQ "hidden"><cfcontinue></cfif>
 <tr>
 	<td class="tblContent">#key#</td>
 	<td class="tblContent"><cfif attr.type EQ "object">any<cfelse>#attr.type#</cfif></td>

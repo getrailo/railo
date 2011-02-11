@@ -77,7 +77,7 @@
 
 <cfset plugins=array()>
 <cfif StructKeyExists(session,"password"&request.adminType)>
-	
+	<cftry>
     <cfadmin 
 	    action="getPluginDirectory"
 	    type="#request.adminType#"
@@ -119,7 +119,8 @@
             </cfif>
         </cfloop>
     </cfif>
-    
+    	<cfcatch></cfcatch>
+    </cftry>
     
 </cfif>
 

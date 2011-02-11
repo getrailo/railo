@@ -14,8 +14,11 @@ import railo.runtime.exp.Abort;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
+import railo.runtime.functions.dynamicEvaluation.Evaluate;
 import railo.runtime.functions.other.Dump;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Scope;
+import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTimeImpl;
 
 public final class Trace extends BodyTagImpl {
@@ -26,6 +29,7 @@ public final class Trace extends BodyTagImpl {
 	private String text;
 	private int type=Log.LEVEL_INFO;
 	private String var;
+	private Struct caller;
 	
 	
 	/**
@@ -40,6 +44,7 @@ public final class Trace extends BodyTagImpl {
 		text=null;
 		type=Log.LEVEL_INFO;
 		var=null;
+		caller=null;
 	}
 
 	/**
@@ -102,6 +107,10 @@ public final class Trace extends BodyTagImpl {
 	public void setVar(String var) {
 		this.var = var;
 	}
+	
+	public void setCaller(Struct caller) {
+		this.caller = caller;
+	}
 
 	/**
 	 * @param var the var to set
@@ -142,7 +151,8 @@ public final class Trace extends BodyTagImpl {
 		Object value=null;
 		if(!StringUtil.isEmpty(var)) {
 			try {
-				value = pageContext.getVariable(var);
+				if(caller instanceof Scope) value=Evaluate.call(pageContext, new Object[]{var,caller});
+				else value = pageContext.getVariable(var);
 				varValue=new ScriptConverter().serialize(pageContext.getVariable(var));
 			} 
 			catch (PageException e) {
