@@ -1,28 +1,25 @@
 package railo.runtime.net.smtp;
 
-import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.MimeMessage;
 
 import railo.commons.io.SystemUtil;
+import railo.runtime.net.smtp.SMTPClient.MimeMessageAndSession;
 
 
 public final class SMTPSender extends Thread {
 
 	private boolean hasSended=false;
-	private MimeMessage message;
 	private Throwable throwable;
 	private Object lock;
 	private String host;
 	private int port;
 	private String user;
 	private String pass;
-	private Session session;
+	private MimeMessageAndSession mmas;
 	
-	public SMTPSender(Object lock, MimeMessage message, Session session, String host, int port, String user, String pass) {
+	public SMTPSender(Object lock, MimeMessageAndSession mmas, String host, int port, String user, String pass) {
 		this.lock=lock;
-		this.message=message;
-		this.session=session;
+		this.mmas=mmas;
 
 		this.host=host;
 		this.port=port;
@@ -36,16 +33,21 @@ public final class SMTPSender extends Thread {
 	public void run() {
 		Transport transport = null;
         try {
-        	transport = SMTPConnectionPool.getTransport(session,host,port,user,pass);
-			message.saveChanges();  
-			transport.sendMessage(message, message.getAllRecipients());
+        	transport = mmas.session.transport;//SMTPConnectionPool.getTransport(session,host,port,user,pass);
+        	// connect
+    		if(!transport.isConnected())
+    			transport.connect(host,port,user,pass);
+
+        	
+			mmas.message.saveChanges();  
+			transport.sendMessage(mmas.message, mmas.message.getAllRecipients());
 			hasSended=true;
 		} 
 		catch (Throwable t) {
 			this.throwable=t;
 		}
 		finally {
-			try {SMTPConnectionPool.releaseTransport(session,transport);}catch (Throwable t) {}
+			try {SMTPConnectionPool.releaseSessionAndTransport(mmas.session);}catch (Throwable t) {}
 			SystemUtil.notify(lock);
 		}
 	}

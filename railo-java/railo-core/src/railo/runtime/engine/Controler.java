@@ -167,7 +167,7 @@ public final class Controler extends Thread {
 	}
 
 	private void doClearMailConnections() {
-		SMTPConnectionPool.closeTransports();
+		SMTPConnectionPool.closeSessions();
 	}
 
 	private void checkClientFileSize(ConfigWeb config) {
