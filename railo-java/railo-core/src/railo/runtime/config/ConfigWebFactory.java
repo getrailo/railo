@@ -1328,7 +1328,10 @@ public final class ConfigWebFactory {
 	
 
 	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig) throws IOException {
-	    Resource contextDir = configDir.getRealResource("context");
+		boolean doNew=doNew(configDir,true);
+  		
+		
+		Resource contextDir = configDir.getRealResource("context");
 	    if(!contextDir.exists())contextDir.mkdirs();
 
 	    Resource adminDir = contextDir.getRealResource("admin");
@@ -1342,7 +1345,6 @@ public final class ConfigWebFactory {
         
      // deploy org.railo.cfml components
       	if(config instanceof ConfigWeb){
-      		boolean doNew=doNew(configDir,true);
       		ImportDefintion _import = config.getComponentDefaultImport();
       		String path = _import.getPackageAsPath();
       		Resource components = config.getConfigDir().getRealResource("components");
