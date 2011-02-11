@@ -1,15 +1,11 @@
 package railo.runtime.functions.image;
 
-import java.util.Arrays;
-
 import railo.commons.lang.ExceptionUtil;
 import railo.runtime.PageContext;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.Image;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 
 public class ImageGetEXIFTag {
