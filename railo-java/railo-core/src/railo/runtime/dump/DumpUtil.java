@@ -136,7 +136,7 @@ public class DumpUtil {
 			byte[] bytes=(byte[]) o;
 			
 			DumpTable table = new DumpTablePro("array","#ffb200","#ffcc00","#000000");
-			table.setTitle("Native Array");
+			table.setTitle("Native Array  ("+Caster.toClassName(o)+")");
 			
 			StringBuffer sb=new StringBuffer();
 			for(int i=0;i<bytes.length;i++) {
@@ -232,7 +232,7 @@ public class DumpUtil {
 				try {
 					arr = Caster.toArray(o);
 					DumpTable htmlBox = new DumpTablePro("array","#ffb200","#ffcc00","#000000");
-					htmlBox.setTitle("Native Array");
+					htmlBox.setTitle("Native Array ("+Caster.toClassName(o)+")");
 				
 					int length=arr.size();
 				
