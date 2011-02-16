@@ -220,4 +220,10 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
 	public String getState() {
 		return engine.getState();
 	}
+	
+	/*FUTURE  something is wrong with usage of this class, it is not reset when updating railo
+	
+	public CFMLEngine getEngine() {
+		return engine;
+	}*/
 }

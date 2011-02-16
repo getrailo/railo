@@ -329,7 +329,7 @@ public class CFMLEngineFactory {
      * @throws IOException 
      * @throws ServletException 
      */
-    private boolean _restart() throws ServletException {
+    private synchronized boolean _restart() throws ServletException {
         
         engine.reset();
         initEngine();
