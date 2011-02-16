@@ -503,6 +503,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 				SystemOut.printDate("CFMLEngine is still set to true but no longer valid, Railo disable this CFMLEngine.");
 				controlerState.setValue(false);
 				reset();
+				return false;
 			}
 		}
 		catch(Throwable t){}
