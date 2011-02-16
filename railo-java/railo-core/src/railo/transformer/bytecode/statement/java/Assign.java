@@ -9,6 +9,7 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
+import railo.transformer.bytecode.expression.var.NullExpression;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitFloat;
 import railo.transformer.bytecode.literal.LitInteger;
@@ -143,10 +144,11 @@ public class Assign extends ExpressionBase {
 				
 				// ref types
 				else {
+					
 					try {
 						Class fc = ClassUtil.loadClass(from.getClassName());
 						Class tc = ClassUtil.loadClass(to.getClassName());
-						if(Reflector.isInstaneOf(fc, tc))
+						if(value instanceof NullExpression || Reflector.isInstaneOf(fc, tc))
 							bc.getAdapter().cast(from, to);
 						else 
 							throw new BytecodeException("cannot convert from ["+fc.getName()+"] to ["+tc.getName()+"]", line);
