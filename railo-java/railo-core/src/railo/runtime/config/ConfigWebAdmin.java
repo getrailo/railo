@@ -2555,11 +2555,14 @@ public final class ConfigWebAdmin {
     public void runUpdate() throws PageException {
     	checkWriteAccess();
         ConfigServerImpl cs = config.getConfigServerImpl();
-        try {
-            cs.getCFMLEngine().getCFMLEngineFactory().update(cs.getPassword());
-        } 
-        catch (Exception e) {
-            throw Caster.toPageException(e);
+        CFMLEngineFactory factory = cs.getCFMLEngine().getCFMLEngineFactory();
+        synchronized(factory){
+	        try {
+	            factory.update(cs.getPassword());
+	        } 
+	        catch (Exception e) {
+	            throw Caster.toPageException(e);
+	        }
         }
         
     }
@@ -2658,13 +2661,15 @@ public final class ConfigWebAdmin {
     public void restart() throws PageException {
     	checkWriteAccess();
         ConfigServerImpl cs = config.getConfigServerImpl();
-        try {
-            cs.getCFMLEngine().getCFMLEngineFactory().restart(cs.getPassword());
-        } 
-        catch (Exception e) {
-            throw Caster.toPageException(e);
+        CFMLEngineFactory factory = cs.getCFMLEngine().getCFMLEngineFactory();
+        synchronized(factory){
+	        try {
+	            factory.restart(cs.getPassword());
+	        } 
+	        catch (Exception e) {
+	            throw Caster.toPageException(e);
+	        }
         }
-        
     }
 
 	public void updateWebCharset(String charset) throws PageException {
