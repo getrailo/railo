@@ -220,4 +220,17 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
 	public String getState() {
 		return engine.getState();
 	}
+	
+	/**
+	 * this interface is new to this class and not offically part of Railo 3.x, do not use outside the loader
+	 * @param other
+	 * @param checkReferenceEqualityOnly
+	 * @return
+	 */
+	public boolean equalTo(CFMLEngine other, boolean checkReferenceEqualityOnly) {
+		while(other instanceof CFMLEngineWrapper)
+			other=((CFMLEngineWrapper)other).engine;
+		if(checkReferenceEqualityOnly) return engine==other;
+		return engine.equals(other);
+	}
 }

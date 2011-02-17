@@ -36,7 +36,7 @@ public class CFMLEngineFactory {
 
     private static CFMLEngineFactory factory;
     private static File railoServerRoot;
-    private static CFMLEngine engineListener;
+    private static CFMLEngineWrapper engineListener;
     private CFMLEngine engine;
     private ClassLoader mainClassLoader=new TP().getClass().getClassLoader();
     private int version;
@@ -72,11 +72,10 @@ public class CFMLEngineFactory {
         
         CFMLEngine engine = factory.getEngine();
         engine.addServletConfig(config);
-        CFMLEngineWrapper wrapper;
-        engineListener = wrapper=new CFMLEngineWrapper(engine);
+        engineListener = new CFMLEngineWrapper(engine);
         
         // add listener for update
-        factory.addListener(wrapper);
+        factory.addListener(engineListener);
         return engineListener;
     }
 
@@ -97,7 +96,22 @@ public class CFMLEngineFactory {
      * @throws RuntimeException
      */
     public static void registerInstance(CFMLEngine engine) throws RuntimeException {
-        engineListener=engine;
+    	if(factory==null) factory=engine.getCFMLEngineFactory();
+    	
+    	// first update existing listener
+    	if(engineListener!=null) {
+    		if(engineListener.equalTo(engine, true)) return;
+    		engineListener.onUpdate(engine);// perhaps this is still refrenced in the code, because of that we update it
+    		factory.removeListener(engineListener);
+    	}
+    	
+    	// now register this
+    	if(engine instanceof CFMLEngineWrapper) 
+    		engineListener=(CFMLEngineWrapper) engine;
+    	else 
+    		engineListener = new CFMLEngineWrapper(engine);
+    	
+    	factory.addListener(engineListener);	
     }
     
     
@@ -163,6 +177,10 @@ public class CFMLEngineFactory {
            listeners.add(listener);
        }
     }
+    
+    private void removeListener(EngineChangeListener listener) {
+    	listeners.remove(listener);
+     }
 
     /**
      * @return CFML Engine
@@ -329,18 +347,17 @@ public class CFMLEngineFactory {
      * @throws IOException 
      * @throws ServletException 
      */
-    private boolean _restart() throws ServletException {
-        
+    private synchronized boolean _restart() throws ServletException {
         engine.reset();
         initEngine();
+        registerInstance(engine);
         callListeners(engine);
-        System.gc();
+        System.gc(); 
         System.gc();
         return true;
     }
-        
-      
-    /**
+
+	/**
      * updates the engine when a update is available
      * @return has updated
      * @throws IOException
