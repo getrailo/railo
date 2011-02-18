@@ -55,7 +55,7 @@ public class CFCGetter implements Getter {
 			HibernateORMEngine engine = getHibernateORMEngine();
 			PageContext pc = ThreadLocalPageContext.get();
 			Component cfc = Caster.toComponent(trg);
-			String name = HibernateCaster.getEntityName(pc, cfc);
+			String name = HibernateCaster.getEntityName(cfc);
 			ClassMetadata metaData = engine.getSessionFactory(pc).getClassMetadata(name);
 			Type type = HibernateUtil.getPropertyType(metaData, key.getString());
 			

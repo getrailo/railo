@@ -9,6 +9,7 @@ import org.hibernate.type.Type;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentPro;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
@@ -25,6 +26,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -34,6 +36,7 @@ import railo.runtime.type.util.QueryUtil;
 public class HibernateCaster {
 	
 	private static final int NULL = -178696;
+	private static final Key ENTITY_NAME = KeyImpl.init("entityname");
 	/*public static Component toCFML(PageContext pc,Map map, Component cfc) throws PageException {
 		if(map instanceof ComponentPro) return (Component) map;
 		ComponentPro ci = ComponentUtil.toComponentPro(cfc);
@@ -98,23 +101,30 @@ public class HibernateCaster {
 	
 
 	
-	public static String getEntityName(PageContext pc,Component cfc) {
-		try {
-			Struct md = cfc.getMetaData(ThreadLocalPageContext.get(pc));
-			String name = Caster.toString(md.get("entityname"),"");
-			if(!StringUtil.isEmpty(name)) {
-				//print.o("name1:"+cfc.getName());
-				return name;//.toLowerCase();
-			}
-		} 
-		catch (PageException e) {}
+	public static String getEntityName(Component cfc) {
 		
+		String name=null;
+		try {
+			ComponentImpl cfci = ComponentUtil.toComponentImpl(cfc);
+			name=Caster.toString(cfci.getMetaStructItem(ENTITY_NAME),null);
+		} 
+		catch (Throwable t) {
+			try {
+				Struct md = cfc.getMetaData(ThreadLocalPageContext.get());
+				name = Caster.toString(md.get(ENTITY_NAME),null);
+				
+			}catch (PageException e) {}
+		}
+		
+		if(!StringUtil.isEmpty(name)) {
+			return name;
+		}
 		
 		
 		// MUSTMUST cfc.getName() should return the real case, this should not be needed
 		ComponentPro cp = ComponentUtil.toComponentPro(cfc,null);
 		if(cp!=null){
-			String name = cp.getPageSource().getDisplayPath();
+			name = cp.getPageSource().getDisplayPath();
 	        name=railo.runtime.type.List.last(name, "\\/",true);
 	        int index=name.lastIndexOf('.');
 	        name= name.substring(0,index);
@@ -417,7 +427,7 @@ public class HibernateCaster {
 		
 		// init
 		if(qry==null){
-			ClassMetadata md = ((HibernateORMEngine)session.getEngine()).getSessionFactory(pc).getClassMetadata(getEntityName(pc, cfc));
+			ClassMetadata md = ((HibernateORMEngine)session.getEngine()).getSessionFactory(pc).getClassMetadata(getEntityName(cfc));
 			//Struct columnsInfo= engine.getTableInfo(session.getDatasourceConnection(),toEntityName(engine, cfc),session.getEngine());
 			Array names=new ArrayImpl();
 			Array types=new ArrayImpl();
@@ -441,12 +451,12 @@ public class HibernateCaster {
 					types.append("object");
 			}
 			
-			qry=new QueryImpl(names,types,0,getEntityName(pc,cfc));
+			qry=new QueryImpl(names,types,0,getEntityName(cfc));
 			
 		}
 		// check
 		else if(engine.getMode() == ORMEngine.MODE_STRICT){
-			if(!qry.getName().equals(getEntityName(pc,cfc)))
+			if(!qry.getName().equals(getEntityName(cfc)))
 				throw new ORMException(session.getEngine(),"can only merge entities of the same kind to a query");
 		}
 		
@@ -495,7 +505,7 @@ public class HibernateCaster {
 
 
 	private static Query inheritance(PageContext pc,HibernateORMSession session,Query qry,ComponentPro parent,ComponentPro child,String entityName) throws PageException {
-		if(getEntityName(pc, child).equalsIgnoreCase(entityName))
+		if(getEntityName(child).equalsIgnoreCase(entityName))
 			return populateQuery(pc,session,child,qry);
 		return inheritance(pc,session,child, qry, entityName);// MUST geh ACF auch so tief?
 	}

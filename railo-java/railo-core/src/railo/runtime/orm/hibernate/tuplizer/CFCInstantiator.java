@@ -74,6 +74,6 @@ public class CFCInstantiator implements Instantiator {
 	public final boolean isInstance(Object object) {
 		Component cfc = Caster.toComponent(object,null);
 		if(cfc==null) return false;
-		return isInstanceEntityNames.contains( HibernateCaster.getEntityName(null,cfc));
+		return isInstanceEntityNames.contains( HibernateCaster.getEntityName(cfc));
 	}
 }

@@ -139,7 +139,7 @@ public class HibernateORMSession implements ORMSession{
 		//Session session = getSession(pc,cfc);
 		
 		try{
-			session().delete(HibernateCaster.getEntityName(pc,cfc), cfc);
+			session().delete(HibernateCaster.getEntityName(cfc), cfc);
 		}
 		catch(Throwable t){
 			throw Caster.toPageException(t);
@@ -154,7 +154,7 @@ public class HibernateORMSession implements ORMSession{
 	public void save(PageContext pc, Object obj,boolean forceInsert) throws PageException {
 		Component cfc = HibernateCaster.toComponent(obj);
 		//Session session = getSession(pc, cfc);
-		String name = HibernateCaster.getEntityName(pc,cfc);
+		String name = HibernateCaster.getEntityName(cfc);
 		try {
 			if(forceInsert)
 				session().save(name, cfc);
@@ -428,7 +428,7 @@ public class HibernateORMSession implements ORMSession{
 		
 		engine.checkExistent(pc,cfc);
 		
-		String name=HibernateCaster.getEntityName(pc,cfc);
+		String name=HibernateCaster.getEntityName(cfc);
 		
 		//Session session = getSession(pc, cfc);
         try	{
@@ -494,7 +494,7 @@ public class HibernateORMSession implements ORMSession{
 		
 		Component cfc=engine.create(pc, this,cfcName,false);
 		
-		String name = HibernateCaster.getEntityName(pc,cfc);
+		String name = HibernateCaster.getEntityName(cfc);
 		Object obj=null;
 		try{
 			ClassMetadata metaData = getSessionFactory(pc).getClassMetadata(name);
@@ -531,7 +531,7 @@ public class HibernateORMSession implements ORMSession{
 	private Object loadByExample(PageContext pc, Object obj,  boolean unique) throws PageException {
 		 ComponentPro cfc=ComponentUtil.toComponentPro(HibernateCaster.toComponent(obj));
 		 ComponentScope scope = cfc.getComponentScope();
-		 String name=HibernateCaster.getEntityName(pc,cfc);
+		 String name=HibernateCaster.getEntityName(cfc);
 		 //Session session=getSession(pc, cfc);
 		 
 		 Object rtn=null;
@@ -575,7 +575,7 @@ public class HibernateORMSession implements ORMSession{
 	private Object load(PageContext pc, String cfcName, Struct filter, Struct options, String order, boolean unique) throws PageException {
 		Component cfc=engine.create(pc, this,cfcName,false);
 		
-		String name = HibernateCaster.getEntityName(pc,cfc);
+		String name = HibernateCaster.getEntityName(cfc);
 		ClassMetadata metaData = null;
 		
 		List list=null;

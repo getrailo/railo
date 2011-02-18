@@ -505,7 +505,7 @@ public class HBMCreator {
 		
     	// entity-name
     	String str=toString(engine,cfc,null,meta,"entityname");
-		if(StringUtil.isEmpty(str,true)) str=HibernateCaster.getEntityName(pc,cfc);
+		if(StringUtil.isEmpty(str,true)) str=HibernateCaster.getEntityName(cfc);
 		clazz.setAttribute("entity-name",str);
 		
 
@@ -584,7 +584,7 @@ public class HBMCreator {
 	private static String getTableName(HibernateORMEngine engine,PageContext pc, Struct meta, Component cfc) throws ORMException {
 		String tableName=toString(engine,cfc,null,meta,"table");
 		if(StringUtil.isEmpty(tableName,true)) 
-			tableName=HibernateCaster.getEntityName(pc, cfc);
+			tableName=HibernateCaster.getEntityName(cfc);
 		return tableName;
 	}
 
@@ -1121,7 +1121,7 @@ public class HBMCreator {
 			str = toString(engine,cfc,prop,meta,"cfc",cfcRequired);
 			if(!StringUtil.isEmpty(str,true)){
 				Component _cfc=engine.getEntityByCFCName(str, false);
-				str=HibernateCaster.getEntityName(pc,_cfc);
+				str=HibernateCaster.getEntityName(_cfc);
 				el.setAttribute("entity-name", str);
 			}
 		}

@@ -1364,6 +1364,18 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     public synchronized Struct getMetaData(PageContext pc) throws PageException {
     	return getMetaData(ACCESS_PRIVATE,pc,top);
     }
+    
+
+    public synchronized Object getMetaStructItem(Collection.Key name) {
+    	if(top.properties.meta!=null) {
+        	return top.properties.meta.get(name,null);
+        }
+    	return null;
+    }
+    
+    
+    
+    
 
     protected static Struct getMetaData(int access,PageContext pc, ComponentImpl comp) throws PageException {
         StructImpl sct=new StructImpl();

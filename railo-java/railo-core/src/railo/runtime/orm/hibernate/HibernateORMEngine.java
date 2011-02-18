@@ -89,7 +89,7 @@ public class HibernateORMEngine implements ORMEngine {
 	public HibernateORMEngine() {}
 
 	void checkExistent(PageContext pc,Component cfc) throws ORMException {
-		if(!cfcs.containsKey(id(HibernateCaster.getEntityName(pc, cfc))))
+		if(!cfcs.containsKey(id(HibernateCaster.getEntityName(cfc))))
             throw new ORMException(this,"there is no mapping definition for component ["+cfc.getAbsName()+"]");
 	}
 
@@ -332,7 +332,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 	public void createMapping(PageContext pc,Component cfc, DatasourceConnection dc, ORMConfiguration ormConf) throws PageException {
 		ComponentPro cfcp=ComponentUtil.toComponentPro(cfc);
-		String id=id(HibernateCaster.getEntityName(pc, cfcp));
+		String id=id(HibernateCaster.getEntityName(cfcp));
 		CFCInfo info=cfcs.get(id);
 		//Long modified=cfcs.get(id);
 		String xml;
@@ -653,7 +653,7 @@ public class HibernateORMEngine implements ORMEngine {
 				if(cfc.instanceOf(cfcname))
 					return unique?(Component)cfc.duplicate(false):cfc;
 				
-				if(cfcname.equalsIgnoreCase(HibernateCaster.getEntityName(null, cfc)))
+				if(cfcname.equalsIgnoreCase(HibernateCaster.getEntityName(cfc)))
 					return cfc;
 			}
 			names=cfcs.keySet().toArray(new String[cfcs.size()]);
@@ -677,7 +677,8 @@ public class HibernateORMEngine implements ORMEngine {
 		String[] names=new String[cfcs.size()];
 		int index=0;
 		while(it.hasNext()){
-			names[index++]=it.next().getValue().getCFC().getName();
+			names[index++]=HibernateCaster.getEntityName(it.next().getValue().getCFC());
+			//names[index++]=it.next().getValue().getCFC().getName();
 		}
 		return names;
 		
