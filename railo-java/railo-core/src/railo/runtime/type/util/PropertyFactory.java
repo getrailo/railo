@@ -4,6 +4,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.ComponentImpl;
 import railo.runtime.component.Member;
 import railo.runtime.component.Property;
+import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
@@ -28,7 +29,7 @@ public class PropertyFactory {
 		}
 	}
 
-	public static void addSet(ComponentImpl comp, Property prop) {
+	public static void addSet(ComponentImpl comp, Property prop) throws PageException {
 		Member m = comp.getMember(ComponentImpl.ACCESS_PRIVATE,KeyImpl.init("set"+prop.getName()),true,false);
 		if(!(m instanceof UDF)){
 			UDF udf = new UDFSetterProperty(comp,prop);

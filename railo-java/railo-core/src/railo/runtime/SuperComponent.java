@@ -641,7 +641,7 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	/**
 	 * @see railo.runtime.ComponentPro#setProperty(railo.runtime.component.Property)
 	 */
-	public void setProperty(Property property) {
+	public void setProperty(Property property) throws PageException {
 		comp.setProperty(property);
 	}
 

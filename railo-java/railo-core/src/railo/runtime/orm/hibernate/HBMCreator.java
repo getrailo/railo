@@ -1817,7 +1817,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 	}   
 	
 	
-	private static Struct convertToSimpleMap(String paramsStr) {
+	public static Struct convertToSimpleMap(String paramsStr) {
 		paramsStr=paramsStr.trim();
         if(!StringUtil.startsWith(paramsStr, '{') || !StringUtil.endsWith(paramsStr, '}'))
         	return null;

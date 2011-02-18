@@ -770,7 +770,7 @@ public class CFCProxy extends ComponentImpl implements HibernateProxy, Serializa
 	 * @see railo.runtime.ComponentImpl#setProperty(railo.runtime.component.Property)
 	 */
 	@Override
-	public void setProperty(Property property) {
+	public void setProperty(Property property) throws PageException {
 		li.getCFC().setProperty(property);
 	}
 

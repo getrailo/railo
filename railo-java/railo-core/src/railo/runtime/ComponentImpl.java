@@ -939,7 +939,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		DumpTable table=new DumpTable("#eeeeee","#cccccc","#000000");
 		
 		// properties
-		if(c.top.properties.persistent){
+		if(c.top.properties.persistent || c.top.properties.accessors){
 			Property[] properties=c.getProperties(false);
 			DumpTable prop = new DumpTable("#8BC893","#C5EBC2","#000000");
 			prop.setTitle("Properties");
@@ -1849,7 +1849,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	return top.properties.accessors;
     }
 
-	public void setProperty(Property property) {
+	public void setProperty(Property property) throws PageException {
 		if(top.properties.properties==null) top.properties.properties=new LinkedHashMap<String,Property>();
 		top.properties.properties.put(StringUtil.toLowerCase(property.getName()),property);
 		if(top.properties.persistent || top.properties.accessors){

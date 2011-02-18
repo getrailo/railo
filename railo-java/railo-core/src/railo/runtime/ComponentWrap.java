@@ -485,7 +485,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 	/**
 	 * @see railo.runtime.ComponentPro#setProperty(railo.runtime.component.Property)
 	 */
-	public void setProperty(Property property) {
+	public void setProperty(Property property) throws PageException {
 		component.setProperty(property);
 	}
 

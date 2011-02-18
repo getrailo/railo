@@ -1,6 +1,7 @@
 package railo.runtime;
 
 import railo.runtime.component.Property;
+import railo.runtime.exp.PageException;
 // FUTURE add to interface
 public interface ComponentPro extends Component {
 	/**
@@ -10,7 +11,7 @@ public interface ComponentPro extends Component {
 	
 	public Property[] getProperties(boolean onlyPeristent);
 	
-	public void setProperty(Property property);
+	public void setProperty(Property property) throws PageException;
 	
 	public ComponentScope getComponentScope();
 	
