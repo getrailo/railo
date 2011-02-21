@@ -2476,6 +2476,10 @@ public final class ConfigWebAdmin {
         }
         Element update=_getRootElement("update");
         update.setAttribute("type",type);
+        try {
+			location=HTTPUtil.toURL(location).toString();
+		} 
+        catch (Throwable e) {}
         update.setAttribute("location",location);
     }
     

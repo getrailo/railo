@@ -3069,7 +3069,8 @@ public abstract class ConfigImpl implements Config {
 			}
 		}
 		catch(Throwable t){
-			throw Caster.toPageException(t);
+			return new String[0];
+			//throw Caster.toPageException(t);
 		}
 	}
 	

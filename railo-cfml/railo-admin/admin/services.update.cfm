@@ -119,6 +119,16 @@ Error Output --->
 <cfset hasAccess=1>
 <cfset hasUpdate=curr LT avi>
 
+
+
+<script>
+function checkTheBox(field) {
+	
+	var box=field.form.location;
+	box[box.length-1].checked=true;
+}
+
+</script>
 #stText.services.update.desc#<br><br>
 
 <!--- 
@@ -151,7 +161,7 @@ Settings --->
     </tr>
     <tr>
     	<td valign="top"><input type="radio" name="location"<cfif isCustom> checked="checked"</cfif> value="" /></td>
-        <td>#stText.services.update.location_custom# <input type="text" class="text" name="locationCustom" size="40" value="<cfif isCustom>#update.location#</cfif>"><br />
+        <td>#stText.services.update.location_custom# <input onkeydown="checkTheBox(this)"  onclick="checkTheBox(this)" type="text" class="text" name="locationCustom" size="40" value="<cfif isCustom>#update.location#</cfif>"><br />
         <span class="comment">#stText.services.update.location_customDesc#</span></td>
     </tr>
     </table>
