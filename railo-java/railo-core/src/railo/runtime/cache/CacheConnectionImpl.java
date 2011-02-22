@@ -51,7 +51,7 @@ public class CacheConnectionImpl implements CacheConnection  {
 				}
 				catch(NoClassDefFoundError e){
 					if(!(config instanceof ConfigWeb)) throw e;
-					if(!JarLoader.exists((ConfigWeb)config, Admin.UPDATE_JARS))
+					if(JarLoader.changed((ConfigWeb)config, Admin.CACHE_JARS))
 						throw new IOException(
 							"cannot initilaize Cache ["+clazz.getName()+"], make sure you have added all the required jars files. "+
 							"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\".");

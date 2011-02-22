@@ -1,5 +1,10 @@
 package railo.runtime.security;
 
+import java.io.IOException;
+
+import railo.commons.digest.MD5;
+import railo.commons.io.IOUtil;
+import railo.commons.io.res.Resource;
 import railo.runtime.coder.Base64Coder;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -14,14 +19,15 @@ public final class CredentialImpl implements Credential {
     String username;
     String password;
     String[] roles;
+	private Resource rolesDir;
     private static final char ONE=(char)1;
 
     /**
      * credential constructor
      * @param username
      */
-    public CredentialImpl(String username) {
-        this(username,null,new String[0]);
+    public CredentialImpl(String username,Resource rolesDir) {
+        this(username,null,new String[0],rolesDir);
     }
     
     /**
@@ -29,19 +35,8 @@ public final class CredentialImpl implements Credential {
      * @param username
      * @param password
      */
-    public CredentialImpl(String username,String password) {
-        this(username,password,new String[0]);
-    }
-    
-    /**
-     * credential constructor
-     * @param username
-     * @param password
-     * @param roles
-     * @throws PageException
-     */
-    public CredentialImpl(String username,String password, String roles) throws PageException {
-        this(username,password,toRole(roles));
+    public CredentialImpl(String username,String password,Resource rolesDir) {
+        this(username,password,new String[0],rolesDir);
     }
     
     /**
@@ -51,8 +46,19 @@ public final class CredentialImpl implements Credential {
      * @param roles
      * @throws PageException
      */
-    public CredentialImpl(String username,String password, Array roles) throws PageException {
-        this(username,password,toRole(roles));
+    public CredentialImpl(String username,String password, String roles,Resource rolesDir) throws PageException {
+        this(username,password,toRole(roles),rolesDir);
+    }
+    
+    /**
+     * credential constructor
+     * @param username
+     * @param password
+     * @param roles
+     * @throws PageException
+     */
+    public CredentialImpl(String username,String password, Array roles,Resource rolesDir) throws PageException {
+        this(username,password,toRole(roles),rolesDir);
     }
     
     /**
@@ -61,10 +67,11 @@ public final class CredentialImpl implements Credential {
      * @param password
      * @param roles
      */
-    public CredentialImpl(String username,String password,String[] roles) {
+    public CredentialImpl(String username,String password,String[] roles,Resource rolesDir) {
         this.username=username;
         this.password=password;
         this.roles=roles;
+        this.rolesDir=rolesDir;
     }
 
     /**
@@ -119,8 +126,18 @@ public final class CredentialImpl implements Credential {
     /**
      * @see railo.runtime.security.Credential#encode()
      */
-    public String encode() throws PageException {
-        return Caster.toBase64(username+ONE+password+ONE+List.arrayToList(roles,","));
+    public String encode() throws PageException{
+    	String raw=List.arrayToList(roles,",");
+		if(raw.length()>100){
+	    	try {
+	    		if(!rolesDir.exists())rolesDir.mkdirs();
+	    		String md5 = MD5.getDigestAsString(raw);
+				IOUtil.write(rolesDir.getRealResource(md5), raw, "utf-8", false);
+				return Caster.toBase64(username+ONE+password+ONE+"md5:"+md5);
+			} 
+	    	catch (IOException e) {}
+		}
+    	return Caster.toBase64(username+ONE+password+ONE+raw);
     } 
     
     /**
@@ -129,26 +146,35 @@ public final class CredentialImpl implements Credential {
      * @return Credential from decoded string
      * @throws PageException
      */
-    public static Credential decode(Object encoded) throws PageException {
-        
-        /*StringBuffer sb=new StringBuffer();
-        byte[] bytes = Caster.toBinary(encoded);
-		for(int i=0;i<bytes.length;i++) {
-			sb.append((char)bytes[i]);
-		}*/
-        
-        Array arr=List.listToArray(Base64Coder.decodeBase64(encoded),""+ONE);
+    public static Credential decode(Object encoded,Resource rolesDir) throws PageException {
+    	Array arr=List.listToArray(Base64Coder.decodeBase64(encoded),""+ONE);
         int len=arr.size();
-        if(len==3) return new CredentialImpl(Caster.toString(arr.get(1,"")),Caster.toString(arr.get(2,"")),Caster.toString(arr.get(3,"")));
-        if(len==2) return new CredentialImpl(Caster.toString(arr.get(1,"")),Caster.toString(arr.get(2,"")));
-        if(len==1) return new CredentialImpl(Caster.toString(arr.get(1,"")));
+        if(len==3) {
+        	String str=Caster.toString(arr.get(3,""));
+        	if(str.startsWith("md5:")){
+	    		if(!rolesDir.exists())rolesDir.mkdirs();
+        		str=str.substring(4);
+        		Resource md5 = rolesDir.getRealResource(str);
+        		try {
+					str=IOUtil.toString(md5, "utf-8");
+				} catch (IOException e) {
+					str="";
+				}
+        	}
+        	
+        	return new CredentialImpl(Caster.toString(arr.get(1,"")),Caster.toString(arr.get(2,"")),str,rolesDir);
+        }
+        if(len==2) return new CredentialImpl(Caster.toString(arr.get(1,"")),Caster.toString(arr.get(2,"")),rolesDir);
+        if(len==1) return new CredentialImpl(Caster.toString(arr.get(1,"")),rolesDir);
         
         return null;
-    } 
+    }
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return "username:"+username+";password:"+password+";roles:"+roles;
+	} 
     
-    /*public static void main(String[] args) throws PageException {
-        Credential c=new Credential("mic","mouse","aaa,bbb,ccc,ddd");
-        print.ln(c.serialize());
-        
-    }*/
 }

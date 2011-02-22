@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.BodyTagImpl;
 
 public final class Tree extends BodyTagImpl {
@@ -43,7 +44,7 @@ public final class Tree extends BodyTagImpl {
 
 	
 	public Tree() throws ApplicationException{
-		throw new ApplicationException("tag tree is not supprted yet");
+		throw new TagNotSupported("tree");
 	}
 	
 	

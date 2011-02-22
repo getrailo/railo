@@ -19,6 +19,7 @@ import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.FunctionBody;
+import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.Cast;
@@ -115,17 +116,15 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 
 	public void transform(CFMLTransformer parentTransformer,EvaluatorPool ep,FunctionLib[] fld, Tag tag,TagLibTag libTag, CFMLString cfml) throws TemplateException	{
 		
-		
-		boolean isCFC=true;
-        try {
-			isCFC = ASMUtil.getAncestorPage(tag).isComponent();
-		} catch (BytecodeException e) {}
-		
+		Page page = ASMUtil.getAncestorPage(tag);
+		boolean isCFC= page.isComponent();
+		boolean isInterface= page.isInterface();
 		
 		Data data = init(ep,fld,cfml,true);
 		data.insideFunction=false; 
 		data.tagName=libTag.getFullName();
 		data.isCFC=isCFC;
+		data.isInterface=isInterface;
 
 		tag.setBody(statements(data));
 	}
@@ -611,7 +610,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		// Name
 			String id=identifier(data,false,false);
 			if(id==null) throw new TemplateException(data.cfml,"invalid name for a function");
-			if(!data.isCFC){
+			if(!data.isCFC && !data.isInterface){
 				FunctionLibFunction flf = getFLF(data,id);
 				if(flf!=null && flf.getCazz()!=CFFunction.class)throw new TemplateException(data.cfml,"The name ["+id+"] is already used by a Build in Function");
 			}
@@ -717,6 +716,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		else if((child=_multiAttrStatement(parent,data,"execute",CTX_OTHER,true,true))!=null)				return child;
 		else if((child=_singleAttrStatement(parent,data,"exit","method",ATTR_TYPE_OPTIONAL,true))!=null)	return child;
 		else if((child=_multiAttrStatement(parent,data,"feed",CTX_OTHER,false,true))!=null)					return child;
+		else if((child=_multiAttrStatement(parent,data,"file",CTX_OTHER,false,true))!=null)					return child;
 		else if((child=_singleAttrStatement(parent,data,"flush","interval",ATTR_TYPE_OPTIONAL,true))!=null)	return child;
 		else if((child=_multiAttrStatement(parent,data,"ftp",CTX_OTHER,false,true))!=null)					return child;
 		else if((child=_multiAttrStatement(parent,data,"http",CTX_OTHER,true,true))!=null)					return child;
@@ -804,6 +804,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		
 		TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,type);
 		if(context==CTX_CFC)data.isCFC=true;
+		else if(context==CTX_INTERFACE)data.isInterface=true;
 		//Tag tag=new TagComponent(line);
 		Tag tag=getTag(parent,tlt, line);
 		tag.setTagLibTag(tlt);

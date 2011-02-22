@@ -27,7 +27,7 @@ public final class ListQualify implements Function {
 	}
 	
 	public static String call(PageContext pc , String list, String qualifier, String delimeter, String elements, boolean includeEmptyFields) {
-		return call(pc, list, qualifier, delimeter, elements, false, false);
+		return call(pc, list, qualifier, delimeter, elements, includeEmptyFields, false);
 	}
 	
 	public static String call(PageContext pc , String list, String qualifier, String delimeter, String elements, boolean includeEmptyFields, 

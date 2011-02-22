@@ -12,13 +12,8 @@ import railo.runtime.op.Decision;
 public final class Val implements Function {
 	
 	public static double call(PageContext pc , Object value) throws PageException {
-	    //if(value instanceof Boolean || value instanceof Number) return Caster.toDoubleValue(value);
-	    
-        //double dbl=Caster.toDoubleValue(value,Double.NaN);
-        //if(Decision.isValid(dbl)) return dbl;
-        
-        String str=Caster.toString(value);
-        
+	    String str=Caster.toString(value);
+        str=str.trim();
 	    int pos=getPos(str);
 	    if(pos<=0) {
 		    if(Decision.isBoolean(str)) return Caster.toDoubleValue(str);
@@ -29,7 +24,7 @@ public final class Val implements Function {
 	
 	private static int getPos(String str) { 
         if(str==null) return 0; 
-        str=str.trim();
+        
         int pos=0; 
         int len=str.length(); 
         if(len==0) return 0; 

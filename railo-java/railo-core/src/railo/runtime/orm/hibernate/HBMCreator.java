@@ -1531,7 +1531,7 @@ public class HBMCreator {
 			for(int i=0;i<arr.length;i++){
 				column=doc.createElement("column");
 				el.appendChild(column);
-				column.setAttribute("name", formatColumn(arr[0]));
+				column.setAttribute("name", formatColumn(arr[i]));
 			}
 		}
 	}

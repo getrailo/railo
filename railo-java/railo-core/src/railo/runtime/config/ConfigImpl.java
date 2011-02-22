@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -110,7 +111,6 @@ import railo.transformer.library.tag.TagLibException;
 import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
-import edu.emory.mathcs.backport.java.util.Collections;
 import flex.messaging.config.ConfigMap;
 
 
@@ -1447,6 +1447,7 @@ public abstract class ConfigImpl implements Config {
         		SystemOut.printDate(getErrWriter(), "temp directory ["+tempDirectory+"] is not writable");
         	}
         }
+        ResourceUtil.removeChildrenEL(tempDirectory);// start with a empty temp directory
         this.tempDirectory=tempDirectory;
     }
 
@@ -3025,7 +3026,7 @@ public abstract class ConfigImpl implements Config {
 						t.printStackTrace();;
 					}
 				}*/
-				if(!JarLoader.exists(pc.getConfig(), Admin.UPDATE_JARS))
+				if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
 					throw new ORMException(
 						"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
 						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\"");

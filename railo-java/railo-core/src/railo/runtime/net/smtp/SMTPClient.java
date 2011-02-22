@@ -17,7 +17,6 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -27,6 +26,7 @@ import javax.mail.internet.MimePart;
 
 import railo.commons.activation.ResourceDataSource;
 import railo.commons.collections.HashTable;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
@@ -57,6 +57,11 @@ public final class SMTPClient implements Serializable  {
 
 	
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5227282806519740328L;
+	
 	private static final int SPOOL_UNDEFINED=0;
 	private static final int SPOOL_YES=1;
 	private static final int SPOOL_NO=2;
@@ -424,23 +429,10 @@ public final class SMTPClient implements Serializable  {
 	    	  props.remove("mail.smtp.password");
 	    	  props.remove("password");
 	      }
+	      Session session=SMTPConnectionPool.getSession(props,auth);
 	      
-	      
-	      Session session = null;
-	      /*try {
-	    	  if(auth!=null)session=Session.getDefaultInstance(props, auth);
-	    	  else session=Session.getDefaultInstance(props);
-	      }catch(Throwable t){}
-	      */
-	      //if(session==null)	{
-	          if(auth!=null)session=Session.getInstance(props,auth);
-	    	  else session=Session.getInstance(props);
-	      //}
-	    	 
-		  SMTPMessage msg = new SMTPMessage(session);
-		  
-		
 	// Contacts
+		SMTPMessage msg = new SMTPMessage(session);
 		if(from==null)throw new MessagingException("you have do define the from for the mail"); 
 		if(tos==null)throw new MessagingException("you have do define the to for the mail"); 
 		
@@ -532,9 +524,6 @@ public final class SMTPClient implements Serializable  {
 	    
 		return new MimeMessageAndSession(msg,session);
 	}
-	
-	
-
 	
 
 	private static void setHeaders(SMTPMessage msg, Map headers) throws MessagingException {
@@ -726,43 +715,50 @@ public final class SMTPClient implements Serializable  {
 			else _ssl=((ServerImpl)server).isSSL();
 			
 			
-			MimeMessageAndSession msgAsess;
+			MimeMessageAndSession msgSess;
 			
 			synchronized(LOCK) {
-			
 				try {
-					msgAsess = createMimeMessage(config,server.getHostName(),server.getPort(),_username,_password,_tls,_ssl);
+					msgSess = createMimeMessage(config,server.getHostName(),server.getPort(),_username,_password,_tls,_ssl);
 				} catch (MessagingException e) {
 					log.error("mail",LogUtil.toMessage(e));
 					throw new MailException(e.getMessage());
 				}
 				try {
-	            	Transport tr = msgAsess.session.getTransport("smtp");
-            		SMTPSender sender=new SMTPSender(LOCK,tr,msgAsess.message,server.getHostName(),server.getPort(),_username,_password);
+	            	SerializableObject lock = new SerializableObject();
+	            	SMTPSender sender=new SMTPSender(lock,msgSess.message,msgSess.session,server.getHostName(),server.getPort(),_username,_password);
             		sender.start();
+            		SystemUtil.wait(lock, timeout);
             		
-            		LOCK.wait(timeout);
-                	if(!sender.hasSended()) {
+            		if(!sender.hasSended()) {
+                		Throwable t = sender.getThrowable();
+                		if(t!=null) throw Caster.toPageException(t);
+                		
+                		// stop when still running
                 		try{
-                			sender.stop();
+                			if(sender.isAlive())sender.stop();
                 		}
-                		catch(Throwable t){}
-                		if(sender.hasError()) throw sender.getMessageExpection();
-                		throw new MessagingException("timeout occurred after "+(timeout/1000)+" seconds while sending mail message");
+                		catch(Throwable t2){}
+                		
+                		// after thread s stopped check send flag again
+                		if(!sender.hasSended()){
+                			throw new MessagingException("timeout occurred after "+(timeout/1000)+" seconds while sending mail message");
+                		}
                 	}
-                	clean(config);
+                	clean(config,attachmentz);
                 	
 	            	log.info("mail","send mail");
 					break;
 				} 
-	            catch (Exception me) {
+	            catch (Exception e) {
 					if(i+1==servers.length) {
-						String msg=me.getMessage();
-						if(StringUtil.isEmpty(msg))msg=Caster.toClassName(me);
+						String msg=e.getMessage();
+						if(StringUtil.isEmpty(msg))msg=Caster.toClassName(e);
 						
 						log.error("mail spooler",msg);
-						throw new MailException(
-	                    		server.getHostName()+" "+msg+":"+i);
+						MailException me = new MailException(server.getHostName()+" "+msg+":"+i);
+						me.setStackTrace(me.getStackTrace());
+						throw me;
 	                }
 				}
 			}
@@ -774,7 +770,7 @@ public final class SMTPClient implements Serializable  {
 	}
 
 	// remove all atttachements that are marked to remove
-	private void clean(Config config) {
+	private static void clean(Config config, Attachment[] attachmentz) {
 		if(attachmentz!=null)for(int i=0;i<attachmentz.length;i++){
 			if(attachmentz[i].isRemoveAfterSend()){
 				Resource res = config.getResource(attachmentz[i].getAbsolutePath());

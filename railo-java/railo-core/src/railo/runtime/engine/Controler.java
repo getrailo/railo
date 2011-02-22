@@ -1,5 +1,6 @@
 package railo.runtime.engine;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.net.smtp.SMTPConnectionPool;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.scope.ClientFile;
 import railo.runtime.type.scope.ScopeContext;
@@ -138,6 +140,7 @@ public final class Controler extends Thread {
 					// contract Page Pool
 					try{doClearPagePools((ConfigWebImpl) config);}catch(Throwable t){}
 					try{doCheckMappings(config);}catch(Throwable t){}
+					try{doClearMailConnections();}catch(Throwable t){}
 				}
 				// every hour
 				if(doHour) {
@@ -161,6 +164,10 @@ public final class Controler extends Thread {
 			finally{
 				ThreadLocalConfig.release();
 			}
+	}
+
+	private void doClearMailConnections() {
+		SMTPConnectionPool.closeTransports();
 	}
 
 	private void checkClientFileSize(ConfigWeb config) {
@@ -210,7 +217,7 @@ public final class Controler extends Thread {
 	}
 	
 	private void checkTempDirectorySize(ConfigWeb config) {
-		checkSize(config,config.getTempDirectory(),1024*1024*100,null);
+		checkSize(config,config.getTempDirectory(),1024*1024*1024,null);
 	}
 	
 	private void checkSize(ConfigWeb config,Resource dir,long maxSize, ResourceFilter filter) {
@@ -222,8 +229,11 @@ public final class Controler extends Thread {
 		SystemOut.printDate(out,"check size of directory ["+dir+"]");
 		SystemOut.printDate(out,"- current size	["+size+"]");
 		SystemOut.printDate(out,"- max size 	["+maxSize+"]");
+		int len=-1;
 		while(count>100000 || size>maxSize) {
 			Resource[] files = filter==null?dir.listResources():dir.listResources(filter);
+			if(len==files.length) break;// protect from inifinti loop
+			len=files.length;
 			for(int i=0;i<files.length;i++) {
 				if(res==null || res.lastModified()>files[i].lastModified()) {
 					res=files[i];
@@ -231,7 +241,13 @@ public final class Controler extends Thread {
 			}
 			if(res!=null) {
 				size-=res.length();
-				if(res.delete()) count--;
+				try {
+					res.remove(true);
+					count--;
+				} catch (IOException e) {
+					SystemOut.printDate(out,"cannot remove resource "+res.getAbsolutePath());
+					break;
+				}
 			}
 			res=null;
 		}

@@ -2,6 +2,7 @@ package railo.runtime.tag;
 
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.type.KeyImpl;
 
 /**
 * Defines cookie variables, including expiration and security options.
@@ -113,7 +114,7 @@ public final class Cookie extends TagImpl {
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws PageException	{
-		pageContext.cookieScope().setCookie(name,value,expires,secure,path,domain);
+		pageContext.cookieScope().setCookie(KeyImpl.init(name),value,expires,secure,path,domain);
 		return SKIP_BODY;
 	}
 

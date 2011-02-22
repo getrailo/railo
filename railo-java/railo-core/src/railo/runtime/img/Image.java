@@ -12,6 +12,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.Transparency;
@@ -24,9 +25,14 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBufferInt;
+import java.awt.image.DirectColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.PackedColorModel;
 import java.awt.image.PixelGrabber;
+import java.awt.image.Raster;
+import java.awt.image.SampleModel;
+import java.awt.image.SinglePixelPackedSampleModel;
 import java.awt.image.WritableRaster;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.ByteArrayInputStream;
@@ -36,13 +42,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.AttributedString;
 import java.util.Iterator;
+import java.util.Locale;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
@@ -194,7 +203,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	public Image(int width, int height, int imageType, Color canvasColor) throws ExpressionException {
 		checkRestriction();
 		_image = new BufferedImage(width, height, imageType);
-		if(canvasColor!=null){
+		if(!StringUtil.isEmpty(canvasColor)){
 			
 			setBackground(canvasColor);
 			clearRect(0, 0, width, height);
@@ -615,6 +624,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
     	graphics.drawImage(image(),new AffineTransformOp(AffineTransform.getTranslateInstance(0.0, 0.0),1),0, 0);
     	graphics.dispose();
     	image(img);
+    	
     }
     public void threeBBger() throws ExpressionException {
     	BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
@@ -634,8 +644,10 @@ public class Image extends StructSupport implements Cloneable,Struct {
     public void paste(Image topImage, int x, int y) throws ExpressionException {
     	RenderingHints interp = new RenderingHints(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BICUBIC);
     	BorderExtender extender = BorderExtender.createInstance(1);
-    	getGraphics().addRenderingHints(new RenderingHints(JAI.KEY_BORDER_EXTENDER,extender));
-    	getGraphics().drawImage(topImage.image(), (new AffineTransformOp(AffineTransform.getTranslateInstance(x,y),interp)), 0, 0);
+    	Graphics2D g = getGraphics();
+    	g.addRenderingHints(new RenderingHints(JAI.KEY_BORDER_EXTENDER,extender));
+    	g.drawImage(topImage.image(), (new AffineTransformOp(AffineTransform.getTranslateInstance(x,y),interp)), 0, 0);
+    	
     }
     
     public void setXorMode(Color color) throws ExpressionException {
@@ -863,12 +875,10 @@ public class Image extends StructSupport implements Cloneable,Struct {
 			throw new IOException("quality has a invalid value ["+quality+"], value has to be between 0 and 1");
 		if(StringUtil.isEmpty(format))	format=this.format;
 		if(StringUtil.isEmpty(format))	throw new IOException("missing format");
-		
-		
-		
+
 		BufferedImage im = image();
 		
-    	ImageWriter writer = null;
+		ImageWriter writer = null;
     	ImageTypeSpecifier type =ImageTypeSpecifier.createFromRenderedImage(im);
     	Iterator<ImageWriter> iter = ImageIO.getImageWriters(type, format);
     	
@@ -878,25 +888,71 @@ public class Image extends StructSupport implements Cloneable,Struct {
     	if (writer == null) throw new IOException("no writer for format ["+format+"] available, available writer formats are ["+List.arrayToList(ImageUtil.getWriterFormatNames(), ",")+"]");
 
     	
-		ImageWriteParam iwp = writer.getDefaultWriteParam();
-		try {
-			iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-			iwp.setCompressionQuality(quality);
-		}
-		catch(Throwable t) {}
+    	ImageWriteParam iwp=null;
+    	if("jpg".equalsIgnoreCase(format)) {
+    		ColorModel cm = im.getColorModel();
+    		if(cm.hasAlpha())im=jpgImage(im);
+    		JPEGImageWriteParam jiwp = new JPEGImageWriteParam(Locale.getDefault());
+    		jiwp.setOptimizeHuffmanTables(true);
+    		iwp=jiwp;
+    	}
+    	else iwp = writer.getDefaultWriteParam();
     	
-    	
+    	setCompressionModeEL(iwp,ImageWriteParam.MODE_EXPLICIT);
+    	setCompressionQualityEL(iwp,quality);
     	
     	writer.setOutput(ios);
     	try {
-    		writer.write(im);
+    		writer.write(null, new IIOImage(im, null, null), iwp);
+    		//writer.write(im);
     	} finally {
     		writer.dispose();
     		ios.flush();
     	}
 }
-	
-	
+	private BufferedImage jpgImage(BufferedImage src)
+    {
+        int w = src.getWidth();
+        int h = src.getHeight();
+        SampleModel srcSM = src.getSampleModel();
+        WritableRaster srcWR = src.getRaster();
+        java.awt.image.DataBuffer srcDB = srcWR.getDataBuffer();
+        
+        ColorModel rgb = new DirectColorModel(32, 0xff0000, 65280, 255);
+        int[] bitMasks = new int[]{0xff0000, 65280, 255};
+        
+        SampleModel csm = new SinglePixelPackedSampleModel(3, w, h, bitMasks);
+        int data[] = new int[w * h];
+        for(int i = 0; i < h; i++) {
+            for(int j = 0; j < w; j++) {
+                int pix[] = null;
+                int sample[] = srcSM.getPixel(j, i, pix, srcDB);
+                if(sample[3] == 0 && sample[2] == 0 && sample[1] == 0 && sample[0] == 0)
+                    data[i * w + j] = 0xffffff;
+                else
+                    data[i * w + j] = sample[0] << 16 | sample[1] << 8 | sample[2];
+            }
+
+        }
+
+        java.awt.image.DataBuffer db = new DataBufferInt(data, w * h * 3);
+        WritableRaster wr = Raster.createWritableRaster(csm, db, new Point(0, 0));
+        return new BufferedImage(rgb, wr, false, null);
+    }
+
+	private void setCompressionModeEL(ImageWriteParam iwp, int mode) {
+		try {
+			iwp.setCompressionMode(mode);
+		}
+		catch(Throwable t) {}
+	}
+
+	private void setCompressionQualityEL(ImageWriteParam iwp, float quality) {
+		try {
+			iwp.setCompressionQuality(quality);
+		}
+		catch(Throwable t) {}
+	}
 
 	public void convert(String format) {
 		this.format=format;

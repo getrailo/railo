@@ -164,7 +164,6 @@ public final class CompressUtil {
 	            else {
 	            	Resource parent=target.getParentResource();
 	                if(!parent.exists())parent.mkdirs();
-	                
 	                IOUtil.copy(tis,target,false);
 	            }
 	            target.setLastModified(entry.getModTime().getTime());
@@ -223,7 +222,7 @@ public final class CompressUtil {
     }
     
     private static void extractZip(Resource zipFile, Resource targetDir) throws IOException {
-        if(!targetDir.exists() || !targetDir.isDirectory())
+    	if(!targetDir.exists() || !targetDir.isDirectory())
             throw new IOException(targetDir+" is not a existing directory");
         
         if(!zipFile.exists())

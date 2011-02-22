@@ -36,7 +36,7 @@ public interface ResourceProvider extends Serializable {
 	 * returns the arguments defined for this resource
 	 * @return scheme
 	 */
-	public Map getArguments();
+	public Map getArguments();// FUTURE Map<String,String>
 
 	public void setResources(Resources resources);
 

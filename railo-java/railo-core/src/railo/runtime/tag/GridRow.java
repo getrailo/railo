@@ -2,6 +2,7 @@ package railo.runtime.tag;
 
 import javax.servlet.jsp.tagext.Tag;
 
+import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.type.List;
 
@@ -13,6 +14,11 @@ import railo.runtime.type.List;
 *
 **/
 public final class GridRow extends TagImpl {
+	
+
+	public GridRow() throws TagNotSupported {
+		throw new TagNotSupported("GridRow");
+	}
 
 	/** A comma-separated list of column values. If a column value contains a comma character, 
 	** 	it must be escaped with a second comma character. */

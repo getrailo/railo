@@ -43,41 +43,68 @@
 
 
 <!--- Load Plugins --->
+<cffunction name="loadPluginLanguage" output="no">
+	<cfargument name="pluginDir">
+	<cfargument name="pluginName">
+    
+    <cfset var fileLanguage="#pluginDir#/#pluginName#/language.xml">
+    <cfset var language=struct(title:ucFirst(pluginName),text:'')>
+    <cfset var txtLanguage="">
+    <cfset var xml="">
+    
+	<cfif fileExists(fileLanguage)>
+		<cffile action="read" file="#fileLanguage#" variable="txtLanguage" charset="utf-8">
+		<cfxml casesensitive="no" variable="xml"><cfoutput>#txtLanguage#</cfoutput></cfxml>
+        <cfset xml = XmlSearch(xml, "/languages/language[@key='#lCase(session.railo_admin_lang)#']")[1]>
+		<cfset language.title=xml.title.XmlText>
+		<cfset language.text=xml.description.XmlText>
+		<cfif isDefined('xml.custom')>
+			<cfset var custom=xml.custom>
+			<cfloop index="idx" from="1" to="#arraylen(custom)#">
+				<cfset language[custom[idx].XmlAttributes.key]=custom[idx].XmlText>
+			</cfloop>
+		</cfif>
+	</cfif>
+	<cfreturn language>
+</cffunction>
+
+
+<cfset navigation = stText.MenuStruct[request.adminType]>
 <cfset plugins=array()>
 <cfif StructKeyExists(session,"password"&request.adminType)>
-	<cftry><cfadmin 
+	
+    <cfadmin 
 	    action="getPluginDirectory"
 	    type="#request.adminType#"
 	    password="#session["password"&request.adminType]#"
 	    returnVariable="pluginDir">	
-	    
 	<cfset mappings['/railo_plugin_directory/']=pluginDir>
 	<cfapplication action="update" mappings="#mappings#">
 	
-	
-		<cfdirectory directory="#plugindir#" action="list" name="plugindirs" recurse="no">
-	    
-		<cfcatch >
-			<cfset plugindirs=queryNew('name')>
-		</cfcatch>
-	</cftry>
-	
-	<cfloop query="plugindirs">
-		<cfif plugindirs.type EQ "dir">
-			<cfset varTitle="application.pluginlanguage[session.railo_admin_lang][plugindirs.name].title">
-			<cfset item=struct(
-				label:iif(isDefined(varTitle),(varTitle),de(plugindirs.name)),
-				action:plugindirs.name,
-				_action:'plugin&plugin='&plugindirs.name
-			)>
-			<cfset plugins[arrayLen(plugins)+1]=item>
-		</cfif>
-	</cfloop>
-	<cfset plugin=struct(
-		label:"Plugin",
-		children:plugins,
-		action:"plugin"
-	)>
+    <cfif navigation[arrayLen(navigation)].action neq "plugin">
+        <cfdirectory directory="#plugindir#" action="list" name="plugindirs" recurse="no">
+        <cfloop query="plugindirs">
+            <cfif plugindirs.type EQ "dir">
+                <cfset _lang=loadPluginLanguage(pluginDir,plugindirs.name)>
+                <cfset application.pluginLanguage[session.railo_admin_lang][plugindirs.name]=_lang>
+                
+                <cfset item=struct(
+                    label:_lang.title,
+                    action:plugindirs.name,
+                    _action:'plugin&plugin='&plugindirs.name
+                )>
+                <cfset plugins[arrayLen(plugins)+1]=item>
+            </cfif>
+        </cfloop>
+        <cfset plugin=struct(
+            label:"Plugin",
+            children:plugins,
+            action:"plugin"
+        )>
+    	<cfset navigation[arrayLen(navigation)+1]=plugin>
+    </cfif>
+    
+    
 </cfif>
 
 <cfsavecontent variable="arrow"><cfmodule template="img.cfm" src="arrow.gif" width="4" height="7" /></cfsavecontent>
@@ -90,9 +117,7 @@ isRestricted=isRestrictedLevel and request.adminType EQ "server";
 
 // Navigation
 // As a Set of Array and Structures, so that it is sorted
-navigation = stText.MenuStruct[request.adminType];
 
-if(arrayLen(plugins) and navigation[arrayLen(navigation)].action neq "plugin")navigation[arrayLen(navigation)+1]=plugin;
 
 context=''; 
 // write Naviagtion

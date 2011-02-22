@@ -86,6 +86,7 @@ public final class SQLCaster {
 	    		return Caster.toInteger(value);
 	    	case Types.VARCHAR:
 	    	case Types.LONGVARCHAR:
+	    	case CFTypes.VARCHAR2:
 	    		return Caster.toString(value);
 	    	case Types.TIME:	
 	    		return new Time(Caster.toDate(value,null).getTime());
@@ -246,6 +247,7 @@ public final class SQLCaster {
     	return;
     	case Types.VARCHAR:
     	case Types.LONGVARCHAR:
+    	case CFTypes.VARCHAR2:
     		stat.setObject(parameterIndex, Caster.toString(value), type);
 			////stat.setString(parameterIndex,Caster.toString(value));
     	return;
@@ -380,7 +382,7 @@ public final class SQLCaster {
 		
     	int type=item.getType();
 		// char varchar
-			if(type==Types.VARCHAR || type==Types.LONGVARCHAR) {
+			if(type==Types.VARCHAR || type==Types.LONGVARCHAR || type==CFTypes.VARCHAR2) {
 				return Caster.toString(item.getValue());
 			}
 		// char types
@@ -459,7 +461,7 @@ public final class SQLCaster {
     
     public static Object toCFType(Object value, int type) throws PageException {
 		// char varchar
-			if(type==Types.VARCHAR || type==Types.LONGVARCHAR) {
+			if(type==Types.VARCHAR || type==Types.LONGVARCHAR || type==CFTypes.VARCHAR2) {
 				return Caster.toString(value);
 			}
 		// char types
@@ -528,6 +530,7 @@ public final class SQLCaster {
     	case Types.STRUCT:		return "CF_SQL_STRUCT";
     	case Types.INTEGER:    	return "CF_SQL_INTEGER";
     	case Types.VARCHAR:    	return "CF_SQL_VARCHAR";
+    	case CFTypes.VARCHAR2:   return "CF_SQL_VARCHAR2";
     	case Types.LONGVARBINARY:return "CF_SQL_LONGVARBINARY";
     	case Types.VARBINARY:   return "CF_SQL_VARBINARY";
     	case Types.LONGVARCHAR: return "CF_SQL_LONGVARCHAR";
@@ -555,9 +558,9 @@ public final class SQLCaster {
 		else if(strType.equals("CF_SQL_BIGINT"))	return Types.BIGINT;
 		else if(strType.equals("CF_SQL_BINARY"))	return Types.BINARY;
 		else if(strType.equals("CF_SQL_BIT"))		return Types.BIT;
-		else if(strType.equals("CF_SQL_CHAR"))		return Types.CHAR;
 		else if(strType.equals("CF_SQL_BLOB"))		return Types.BLOB;
 		else if(strType.equals("CF_SQL_BOOLEAN"))	return Types.BOOLEAN;
+		else if(strType.equals("CF_SQL_CHAR"))		return Types.CHAR;
 		else if(strType.equals("CF_SQL_CLOB"))		return Types.CLOB;
 		else if(strType.equals("CF_SQL_DATALINK"))	return Types.DATALINK;
 		else if(strType.equals("CF_SQL_DATE"))		return Types.DATE;
@@ -569,7 +572,6 @@ public final class SQLCaster {
 		else if(strType.equals("CF_SQL_INTEGER"))	return Types.INTEGER;
 		else if(strType.equals("CF_SQL_INT"))	return Types.INTEGER;
 		else if(strType.equals("CF_SQL_LONGVARBINARY"))return Types.LONGVARBINARY;
-		else if(strType.equals("CF_SQL_VARBINARY"))	return Types.VARBINARY;
 		else if(strType.equals("CF_SQL_LONGVARCHAR"))return Types.LONGVARCHAR;
 		else if(strType.equals("CF_SQL_MONEY"))		return Types.DOUBLE;
 		else if(strType.equals("CF_SQL_MONEY4"))	return Types.DOUBLE;
@@ -586,7 +588,7 @@ public final class SQLCaster {
 		else if(strType.equals("CF_SQL_TINYINT"))	return Types.TINYINT;
 		else if(strType.equals("CF_SQL_VARBINARY"))	return Types.VARBINARY;
 		else if(strType.equals("CF_SQL_VARCHAR"))	return Types.VARCHAR;
-		else if(strType.equals("CF_SQL_VARCHAR2"))	return Types.VARCHAR;
+		else if(strType.equals("CF_SQL_VARCHAR2"))	return Types.VARCHAR;//return CFTypes.VARCHAR2;
 		
 		
 		else throw new DatabaseException("invalid CF SQL Type ["+strType+"]",null,null,null);
@@ -675,6 +677,7 @@ public final class SQLCaster {
             else if(first=='V') {
 				if(strType.equals("VARBINARY"))return Types.VARBINARY;
 				else if(strType.equals("VARCHAR"))	return Types.VARCHAR;
+				else if(strType.equals("VARCHAR2"))	return Types.VARCHAR;//return CFTypes.VARCHAR2;
             }
         }
 	    

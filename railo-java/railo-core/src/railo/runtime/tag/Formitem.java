@@ -1,6 +1,5 @@
 package railo.runtime.tag;
 
-import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.BodyTagImpl;
 

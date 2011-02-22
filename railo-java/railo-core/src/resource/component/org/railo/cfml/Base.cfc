@@ -124,7 +124,7 @@
 		<cfset var result = new Result()>
 		<cfset var tagResult = "">
 
-		<!--- makes the attributes available in local scope. Es : query of queries --->		
+		<!--- Makes the attributes available in local scope. Es : query of queries --->
 		<cfset structAppend(local,tagAttributes,true)>
 		
 		<cfswitch expression="#tagname#">

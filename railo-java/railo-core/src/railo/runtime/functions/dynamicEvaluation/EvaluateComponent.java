@@ -32,9 +32,18 @@ public final class EvaluateComponent {
 			throw Caster.toPageException(e);
 		}
 		
+		
+		
+		setInternalState(comp,sctThis,sctVariables);
+		
+		
+	
+        return comp;
+	}
+	public static void setInternalState(Component comp, Struct sctThis, Struct sctVariables) throws PageException {
 		ComponentImpl ci = ComponentUtil.toComponentImpl(comp);
 		
-	// this	
+		// this	
 		// delete this scope data members
 		ComponentWrap cw = new ComponentWrap(Component.ACCESS_PRIVATE,ci);
 		Collection.Key[] keys = cw.keys();
@@ -71,6 +80,5 @@ public final class EvaluateComponent {
 				scope.set(keys[i],sctVariables.get(keys[i]));
 			}
         }
-        return comp;
 	}
 }

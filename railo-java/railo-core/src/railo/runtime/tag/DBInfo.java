@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
@@ -176,6 +177,9 @@ public final class DBInfo extends TagImpl {
 	public void setDbname(String dbname) {
 		this.dbname = dbname;
 	}
+	public void setDbnames(String dbname) {
+		this.dbname = dbname;
+	}
 
 	/**
 	 * @param password the password to set
@@ -215,7 +219,7 @@ public final class DBInfo extends TagImpl {
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
 		try {
 			
-			if(type==TYPE_TABLE_COLUMNS)			typeColumns(dc.getConnection().getMetaData());
+			if(type==TYPE_TABLE_COLUMNS)	typeColumns(dc.getConnection().getMetaData());
 			else if(type==TYPE_DBNAMES)		typeDBNames(dc.getConnection().getMetaData());
 			else if(type==TYPE_FOREIGNKEYS)	typeForeignKeys(dc.getConnection().getMetaData());
 			else if(type==TYPE_INDEX)		typeIndex(dc.getConnection().getMetaData());
@@ -247,11 +251,19 @@ public final class DBInfo extends TagImpl {
 		
 		Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
-        
+
+		table=setCase(metaData, table);
+		pattern=setCase(metaData, pattern);
+		if(StringUtil.isEmpty(pattern,true)) pattern=null;
+		String schema=null;
+		int index=table.indexOf('.');
+		if(index>0) {
+			schema=table.substring(0,index);
+			table=table.substring(index+1);
+		}
 		checkTable(metaData);
 		
-        ResultSet columns = metaData.getColumns(dbname, null, table, pattern);
-        //ResultSet primaries = metaData.getPrimaryKeys(dbname, null, null);
+        ResultSet columns = metaData.getColumns(dbname, schema, table, pattern);
         QueryPro qry = new QueryImpl(columns,"query");
         
 		
@@ -308,14 +320,14 @@ public final class DBInfo extends TagImpl {
 		pageContext.setVariable(name, qry);
 	}
 
-	private Map toMap(ResultSet result,String columnName,String[] additional) throws SQLException {
-		HashMap map=new HashMap();
-		HashMap inner;
+	private Map<String,Map<String, SVArray>> toMap(ResultSet result,String columnName,String[] additional) throws SQLException {
+		Map<String,Map<String, SVArray>> map=new HashMap<String,Map<String, SVArray>>();
+		Map<String, SVArray> inner;
 		String col;
 		SVArray item;
 		while(result.next()){
 			col=result.getString(columnName);
-			inner=(HashMap) map.get(col);
+			inner=map.get(col);
 			if(inner!=null) {
 				for(int i=0;i<additional.length;i++) {
 					item=(SVArray) inner.get(additional[i]);
@@ -324,7 +336,7 @@ public final class DBInfo extends TagImpl {
 				}
 			}
 			else {
-				inner=new HashMap();
+				inner=new HashMap<String, SVArray>();
 				map.put(col, inner);
 				for(int i=0;i<additional.length;i++) {
 					item=new SVArray();
@@ -336,8 +348,8 @@ public final class DBInfo extends TagImpl {
 		return map;
 	}
 	
-	private Set toSet(ResultSet result,String columnName) throws SQLException {
-		HashSet set = new HashSet();
+	private Set<String> toSet(ResultSet result,String columnName) throws SQLException {
+		Set<String> set = new HashSet<String>();
 		while(result.next()){
 			set.add(result.getString(columnName)); 
 		}
@@ -369,7 +381,7 @@ public final class DBInfo extends TagImpl {
 			if(!matchPattern(value,p)) continue;
 			qry.addRow();
 			qry.setAt("database_name", row, value);
-			qry.setAt("type", row, "CATALOG");
+			qry.setAt(KeyImpl.init("type"), row, "CATALOG");
 			row++;
 		}
 		// scheme
@@ -394,10 +406,17 @@ public final class DBInfo extends TagImpl {
 		
 		Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
-        
+        table=setCase(metaData, table);
+        int index=table.indexOf('.');
+		String schema=null;
+        if(index>0) {
+			schema=table.substring(0,index);
+			table=table.substring(index+1);
+		}
+		
 		checkTable(metaData);
 		
-		ResultSet columns = metaData.getCrossReference(dbname, null, table, null, null, null);// TODO ist das ok
+		ResultSet columns = metaData.getCrossReference(dbname, schema, table, null, null, null);// TODO ist das ok
 		railo.runtime.type.Query qry = new QueryImpl(columns,"query");
 		
 		
@@ -409,13 +428,22 @@ public final class DBInfo extends TagImpl {
 
 	private void checkTable(DatabaseMetaData metaData) throws SQLException, ApplicationException {
 		ResultSet tables =null;
+		
 		try {
-			tables = metaData.getTables(null, null, table, null);
+			tables = metaData.getTables(null, null, setCase(metaData,table), null);
 			if(!tables.next()) throw new ApplicationException("there is no table that match the following pattern ["+table+"]");
 		}
 		finally {
 			if(tables!=null) tables.close();
 		}
+	}
+
+	private String setCase(DatabaseMetaData metaData, String id) throws SQLException {
+		if(id==null) return null;
+		
+		if(metaData.storesLowerCaseIdentifiers()) return id.toLowerCase();
+		if(metaData.storesUpperCaseIdentifiers()) return id.toUpperCase();
+		return id;
 	}
 
 	private void typeIndex(DatabaseMetaData metaData) throws PageException, SQLException {
@@ -424,9 +452,17 @@ public final class DBInfo extends TagImpl {
 		Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
         
+		table=setCase(metaData, table);
+        int index=table.indexOf('.');
+		String schema=null;
+        if(index>0) {
+			schema=table.substring(0,index);
+			table=table.substring(index+1);
+		}
+		
 		checkTable(metaData);
 		
-        ResultSet tables = metaData.getIndexInfo(dbname, null, table, true, true);
+        ResultSet tables = metaData.getIndexInfo(dbname, schema, table, true, true);
         railo.runtime.type.Query qry = new QueryImpl(tables,"query");
         qry.setExecutionTime(stopwatch.time());
         
@@ -438,7 +474,13 @@ public final class DBInfo extends TagImpl {
 		Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
         
-        ResultSet tables = metaData.getProcedures(dbname, null, pattern);
+		String schema=null;
+		pattern=setCase(metaData, pattern);
+		if(StringUtil.isEmpty(pattern,true)) {
+			pattern=null;
+		}
+		
+        ResultSet tables = metaData.getProcedures(dbname, schema, pattern);
         railo.runtime.type.Query qry = new QueryImpl(tables,"query");
         qry.setExecutionTime(stopwatch.time());
         
@@ -452,7 +494,18 @@ public final class DBInfo extends TagImpl {
 		Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
 		
-		ResultSet tables = metaData.getProcedureColumns(dbname, null, procedure, pattern);
+		procedure=setCase(metaData, procedure);		
+		pattern=setCase(metaData, pattern);
+		if(StringUtil.isEmpty(pattern,true)) pattern=null;
+		String schema=null;
+		int index=procedure.indexOf('.');
+		if(index>0) {
+			schema=procedure.substring(0,index);
+			procedure=procedure.substring(index+1);
+		}
+		
+		
+		ResultSet tables = metaData.getProcedureColumns(dbname, schema, procedure, pattern);
 		
 		railo.runtime.type.Query qry = new QueryImpl(tables,"query");
         qry.setExecutionTime(stopwatch.time());
@@ -477,6 +530,8 @@ public final class DBInfo extends TagImpl {
 		Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
         
+		pattern=setCase(metaData, pattern);
+		
         ResultSet tables = metaData.getTables(dbname, null, pattern, null);
         railo.runtime.type.Query qry = new QueryImpl(tables,"query");
         
@@ -551,5 +606,4 @@ public final class DBInfo extends TagImpl {
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}
-
 }

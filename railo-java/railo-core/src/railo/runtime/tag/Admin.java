@@ -142,7 +142,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Collection.Key KEY = KeyImpl.getInstance("key");
 	private static final Collection.Key VALUE = KeyImpl.getInstance("value");
 	private static final Collection.Key TIME = KeyImpl.getInstance("time");
-	public static final String[] UPDATE_JARS = new String[]{"ehcache.jar","antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","metadata-extractor.jar","icepdf-core.jar","com.naryx.tagfusion.cfx.jar"};
+	public static final String[] ORM_JARS = new String[]{"antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","railo-sl4j.jar"};
+	public static final String[] CACHE_JARS = new String[]{"ehcache.jar"};
+	public static final String[] CFX_JARS = new String[]{"com.naryx.tagfusion.cfx.jar"};
+	public static final String[] UPDATE_JARS = new String[]{"ehcache.jar","antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","railo-sl4j.jar","metadata-extractor.jar","icepdf-core.jar","com.naryx.tagfusion.cfx.jar"};
     
 	/*
 	others:
@@ -904,7 +907,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
 
     private Resource getPluginDirectory() {
-    	return config.getConfigDir().getRealResource(config instanceof ConfigServer?"admin/plugin":"context/admin/plugin");//MUST more dynamic
+    	return config.getConfigDir().getRealResource("context/admin/plugin");
     }
 
     private Resource getContextDirectory() throws PageException  {
@@ -1878,13 +1881,12 @@ private void doGetMappings() throws PageException {
 			throw Caster.toPageException(e);
 		}
     }
-    
+
     private void needNewJars() throws PageException  {
-    	
-    	boolean exists = JarLoader.exists(pageContext.getConfig(), UPDATE_JARS);
-    	
+    	boolean needNewJars = JarLoader.changed(pageContext.getConfig(), UPDATE_JARS);
+        	
     	try {
-			pageContext.setVariable(getString("admin",action,"returnVariable"),!Caster.toBoolean(exists));
+			pageContext.setVariable(getString("admin",action,"returnVariable"),needNewJars);
 		}
     	catch (Exception e) {
 			throw Caster.toPageException(e);
@@ -2997,6 +2999,7 @@ private void doGetMappings() throws PageException {
     
     private void doGetSpoolerTasks() throws PageException {
     	int startrow = getInt("startrow",1);
+    	if(startrow <1) startrow=1;
     	int maxrow = getInt("maxrow",-1);
     	String result=getString("result", null);
     	SpoolerEngineImpl engine = (SpoolerEngineImpl) config.getSpoolerEngine();

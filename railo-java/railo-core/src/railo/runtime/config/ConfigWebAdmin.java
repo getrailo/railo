@@ -938,7 +938,7 @@ public final class ConfigWebAdmin {
     public static boolean fixPSQ(Document doc) throws SecurityException {
     	
     	Element datasources=ConfigWebFactory.getChildByName(doc.getDocumentElement(),"data-sources",false,true);
-        if(datasources.hasAttribute("preserve-single-quote")){
+        if(datasources!=null && datasources.hasAttribute("preserve-single-quote")){
         	Boolean b=Caster.toBoolean(datasources.getAttribute("preserve-single-quote"),null);
         	if(b!=null)datasources.setAttribute("psq",Caster.toString(!b.booleanValue()));
         	datasources.removeAttribute("preserve-single-quote");

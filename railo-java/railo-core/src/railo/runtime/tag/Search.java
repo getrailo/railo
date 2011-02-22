@@ -76,8 +76,8 @@ public final class Search extends TagImpl {
 	private String contextHighlightEnd="</b>";
 	private String previousCriteria;
 
-	private int spellCheckMaxLevel=10;
-	private String result=null;
+	//private int spellCheckMaxLevel=10;
+	//private String result=null;
 	
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
@@ -101,8 +101,8 @@ public final class Search extends TagImpl {
 		previousCriteria=null;
 		
 
-		spellCheckMaxLevel=10;
-		result=null;
+		//spellCheckMaxLevel=10;
+		//result=null;
 		
 	}
 
@@ -230,7 +230,6 @@ public final class Search extends TagImpl {
 	 */
 	public void setContexthighlightbegin(String contextHighlightBegin) {
 		this.contextHighlightBegin = contextHighlightBegin;
-		// TODO impl tag attribute
 	}
 
 	/**
@@ -239,7 +238,6 @@ public final class Search extends TagImpl {
 	 */
 	public void setContexthighlightend(String contextHighlightEnd) {
 		this.contextHighlightEnd = contextHighlightEnd;
-		// TODO impl tag attribute
 	}
 
 	/**
@@ -410,20 +408,6 @@ public final class Search extends TagImpl {
 	*/
 	public int doEndTag()	{
 		return EVAL_PAGE;
-	}
-
-	/**
-	 * @param spellCheckMaxLevel the spellCheckMaxLevel to set
-	 */
-	public void setSpellcheckmaxlevel(double spellCheckMaxLevel) {
-		this.spellCheckMaxLevel = (int) spellCheckMaxLevel;
-	}
-
-	/**
-	 * @param result the result to set
-	 */
-	public void setResult(String result) {
-		this.result = result;
 	}
 
 	

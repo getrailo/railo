@@ -3,6 +3,7 @@ package railo.runtime.tag;
 import javax.servlet.jsp.tagext.Tag;
 
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 
@@ -22,6 +23,11 @@ public class TreeItem extends TagImpl{
 	private int intQueryAsRoot=TreeItemBean.QUERY_AS_ROOT_YES;
 	private boolean expand=true;
  
+	
+	public TreeItem() throws TagNotSupported{
+		throw new TagNotSupported("TreeItem");
+	}
+	
 	/**
 	 *
 	 * @see railo.runtime.ext.tag.TagImpl#release()

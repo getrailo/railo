@@ -309,7 +309,7 @@ public final class ConfigWebFactory {
     	
     	
     	loadConstants(configServer,config,doc);
-    	
+    	loadTempDirectory(configServer, config, doc);
     	loadId(config);
     	loadVersion(config,doc);
     	loadSecurity(configServer,config,doc);
@@ -1358,7 +1358,7 @@ public final class ConfigWebFactory {
 
 	private static boolean doNew(Resource contextDir) throws IOException {
 		Resource version=contextDir.getRealResource("version");
-		String v=Info.getVersionAsString()+"-"+Info.getStateAsString();
+		String v=Info.getVersionAsString()+"-"+Info.getStateAsString()+"-"+Info.getRealeaseTime();
 		if(!version.exists()) {
             version.createNewFile();
             IOUtil.write(version,v,SystemUtil.getCharset(),false);
@@ -1577,7 +1577,7 @@ public final class ConfigWebFactory {
         
 		if(hasChanged) {
         	try {
-				config.getDeployDirectory().remove(true);
+				if(config.getDeployDirectory().exists())config.getDeployDirectory().remove(true);
 			} 
         	catch (IOException e) {
 				e.printStackTrace(config.getErrWriter());
@@ -2291,6 +2291,34 @@ public final class ConfigWebFactory {
 	  	
     }
         
+    
+    
+    private static void loadTempDirectory(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws ExpressionException, TagLibException, FunctionLibException {
+        Resource configDir=config.getConfigDir();
+        boolean hasCS=configServer!=null;
+        
+        
+        Element fileSystem=				getChildByName(doc.getDocumentElement(),"file-system");
+	  	if(fileSystem==null)fileSystem=	getChildByName(doc.getDocumentElement(),"filesystem");
+	  	
+	  	String strTempDirectory=null;
+	  	if(fileSystem!=null) strTempDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("temp-directory"));
+	  	
+        // Temp Dir
+	  	if(!StringUtil.isEmpty(strTempDirectory)) {
+		  	config.setTempDirectory(ConfigWebUtil.getFile(configDir,strTempDirectory, 
+		  			null, // create no default
+		  			configDir,FileUtil.TYPE_DIR,config));
+	  	}
+	  	else if(hasCS) {
+	  		config.setTempDirectory(configServer.getTempDirectory());
+	  	}
+	  	if(config.getTempDirectory()==null) {
+	  		config.setTempDirectory(ConfigWebUtil.getFile(configDir,"temp", 
+		  			null, // create no default
+		  			configDir,FileUtil.TYPE_DIR,config));
+	  	}
+    }
 
     /**
      * @param configServer 
@@ -2320,7 +2348,7 @@ public final class ConfigWebFactory {
 	  	
 	  	String strAllowRealPath=null;
 	  	String strDeployDirectory=null;
-	  	String strTempDirectory=null;
+	  	//String strTempDirectory=null;
 	  	String strTLDDirectory=null;
 	  	String strFLDDirectory=null;
 	  	String strTagDirectory=null;
@@ -2329,7 +2357,7 @@ public final class ConfigWebFactory {
 	  	if(fileSystem!=null) {
 	  		strAllowRealPath=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("allow-realpath"));
 	  		strDeployDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("deploy-directory"));
-		  	strTempDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("temp-directory"));
+		  	//strTempDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("temp-directory"));
 		  	strTLDDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("tld-directory"));
 		  	strFLDDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("fld-directory"));
 		  	strTagDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("tag-directory"));
@@ -2348,7 +2376,7 @@ public final class ConfigWebFactory {
 	  	//}
 	  	
         // Temp Dir
-	  	if(!StringUtil.isEmpty(strTempDirectory)) {
+	  	/*if(!StringUtil.isEmpty(strTempDirectory)) {
 		  	config.setTempDirectory(ConfigWebUtil.getFile(configDir,strTempDirectory, 
 		  			null, // create no default
 		  			configDir,FileUtil.TYPE_DIR,config));
@@ -2360,7 +2388,7 @@ public final class ConfigWebFactory {
 	  		config.setTempDirectory(ConfigWebUtil.getFile(configDir,"temp", 
 		  			null, // create no default
 		  			configDir,FileUtil.TYPE_DIR,config));
-	  	}
+	  	}*/
 
         // TLD Dir
 	  	//if(hasCS) {

@@ -4,6 +4,7 @@ import java.util.Set;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -95,6 +96,11 @@ public class CatchBlock extends StructImpl implements Castable{
 	public Set entrySet() {
 		initAll();
 		return super.entrySet();
+	}
+	
+	public void print(PageContext pc){
+		((PageContextImpl)pc).handlePageException(pe);
+		
 	}
 
 	/**

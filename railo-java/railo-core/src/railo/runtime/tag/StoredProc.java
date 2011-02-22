@@ -48,10 +48,10 @@ import railo.runtime.type.dt.TimeSpan;
 
 
 public class StoredProc extends BodyTagTryCatchFinallySupport {
-	private static final int PROCEDURE_CAT=1;        
-	private static final int PROCEDURE_SCHEM=2;
-	private static final int PROCEDURE_NAME=3;
-	private static final int COLUMN_NAME=4;
+	//private static final int PROCEDURE_CAT=1;        
+	//private static final int PROCEDURE_SCHEM=2;
+	//private static final int PROCEDURE_NAME=3;
+	//private static final int COLUMN_NAME=4;
 	private static final int COLUMN_TYPE=5;
 	private static final int DATA_TYPE=6;
 	private static final int TYPE_NAME=7;
@@ -61,8 +61,9 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	private static final railo.runtime.type.Collection.Key KEY_SC = KeyImpl.getInstance("StatusCode");
 	
 	private static final railo.runtime.type.Collection.Key COUNT = KeyImpl.getInstance("count_afsdsfgdfgdsfsdfsgsdgsgsdgsasegfwef");
-	// TODO attr debug
+	
 	private static final ProcParamBean STATUS_CODE;
+	private static final railo.runtime.type.Collection.Key STATUSCODE = KeyImpl.getInstance("StatusCode");
 	
 	static{
 		STATUS_CODE = new ProcParamBean();
@@ -72,7 +73,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	}
 	
 	
-	private List params=new ArrayList();
+	private List<ProcParamBean> params=new ArrayList<ProcParamBean>();
 	private Array results=new ArrayImpl();
 
 	private String procedure;
@@ -87,7 +88,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	
 	private boolean clearCache;
 	private DateTimeImpl cachedbefore;
-	private String cachename="";
+	//private String cachename="";
 	private DateTime cachedafter;
 	private ProcParamBean returnValue=null;
 	//private Map<String,ProcMetaCollection> procedureColumnCache;
@@ -110,7 +111,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		clearCache=false;
 		cachedbefore=null;
 		cachedafter=null;
-		cachename="";
+		//cachename="";
 		
 		super.release();
 	}
@@ -132,7 +133,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	* @param cachename value to set
 	**/
 	public void setCachename(String cachename)	{
-		this.cachename=cachename;
+		DeprecatedUtil.tagAttribute("StoredProc", "cachename");
 	}
 
 	/** set the value cachedwithin
@@ -244,10 +245,18 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			String name=this.procedure.toUpperCase();
 			int index=name.lastIndexOf('.');
 			
-			String pack=null;
+			String pack=null,scheme=null;
 			if(index!=-1){
 				pack=name.substring(0,index);
 				name=name.substring(index+1);
+				
+				index=pack.lastIndexOf('.');
+				if(index!=-1){
+					scheme=pack.substring(index+1);
+					pack=pack.substring(0,index);
+				}
+				
+				
 			}
 			
 			try {
@@ -260,15 +269,13 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				Map<String, ProcMetaCollection> procedureColumnCache = d.getProcedureColumnCache();
 				ProcMetaCollection coll=procedureColumnCache.get(procedure);
 				
-				
-				
 				if(coll==null || (cacheTimeout>=0 && (coll.created+cacheTimeout)<System.currentTimeMillis())) {
-					ResultSet res = md.getProcedureColumns(pack, null, name, null);
+					ResultSet res = md.getProcedureColumns(pack, scheme, name, null);
 					coll=createProcMetaCollection(res);
 					procedureColumnCache.put(procedure,coll);
 				}
+				
 				index=-1;
-				//int inOutCount=0;
 				for(int i=0;i<coll.metas.length;i++) { 
 					index++;
 					
@@ -285,7 +292,6 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 						
 					}	
 					else if(coll.metas[i].columnType==DatabaseMetaData.procedureColumnOut || coll.metas[i].columnType==DatabaseMetaData.procedureColumnInOut) {
-						//inOutCount++;
 						if(coll.metas[i].dataType==CFTypes.CURSOR){
 							ProcResultBean result= getFirstResult();
 							
@@ -303,9 +309,8 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 						}
 					}	
 					else if(coll.metas[i].columnType==DatabaseMetaData.procedureColumnIn) {	
-						//inOutCount++;
-						ProcParamBean param=(ProcParamBean) params.get(index);
-						if(coll.metas[i].dataType!=Types.OTHER && coll.metas[i].dataType!=param.getType()){
+						ProcParamBean param=get(params,index);
+						if(param!=null && coll.metas[i].dataType!=Types.OTHER && coll.metas[i].dataType!=param.getType()){
 							param.setType(coll.metas[i].dataType);
 						}
 					}	
@@ -327,7 +332,20 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		}
 	}
 
-	private void contractTo(List params, int paramCount) {
+	private static ProcParamBean get(List<ProcParamBean> params, int index) {
+		try{
+			return params.get(index);
+		}
+		catch(Throwable t){
+			return null;
+		}
+		
+	}
+
+
+
+
+	private void contractTo(List<ProcParamBean> params, int paramCount) {
 		if(params.size()>paramCount){
 			for(int i=params.size()-1;i>=paramCount;i--){
 				params.remove(i);
@@ -339,7 +357,11 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 
 
 	private ProcMetaCollection createProcMetaCollection(ResultSet res) throws SQLException {
-		//print.out(new QueryImpl(res,"qry"));
+		/*
+		try {
+			print.out(new QueryImpl(res,"qry"));
+		} catch (PageException e) {}
+		*/
 		ArrayList<ProcMeta> list=new ArrayList<ProcMeta>();
 		while(res.next()) {
 			list.add(new ProcMeta(res.getInt(COLUMN_TYPE),getDataType(res)));
@@ -382,7 +404,6 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		DatasourceConnection dc = manager.getConnection(pageContext,datasource,username,password);
 		
 		// create returnValue 
-		long s=System.currentTimeMillis();
 		returnValue(dc);
 		
 		// create SQL 
@@ -405,11 +426,11 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    if(timeout>0)callStat.setQueryTimeout(timeout);
 		    
 	// set IN register OUT
-		    Iterator it = params.iterator();
+		    Iterator<ProcParamBean> it = params.iterator();
 			ProcParamBean param;
 			int index=1;
 		    while(it.hasNext()) {
-		    	param=(ProcParamBean) it.next();
+		    	param= it.next();
 		    	param.setIndex(index);
 		    	_sql.addItems(new SQLItemImpl(param.getValue()));
 	    		if(param.getDirection()!=ProcParamBean.DIRECTION_OUT) {
@@ -453,7 +474,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 									railo.runtime.type.Query q = new QueryImpl(rs,result.getMaxrows(),result.getName());	
 									count+=q.getRecordcount();
 									setVariable(result.getName(), q);
-									if(hasCached)cache.set(result.getName(), q);
+									if(hasCached)cache.set(KeyImpl.init(result.getName()), q);
 								}
 							}
 							finally{
@@ -475,10 +496,10 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			    			value=emptyIfNull(SQLCaster.toCFType(callStat.getObject(param.getIndex())));
 			    			if(param==STATUS_CODE){
 			    				
-			    				res.set("StatusCode", value);
+			    				res.set(STATUSCODE, value);
 			    			}
 			    			else setVariable(param.getVariable(), value);
-			    			if(hasCached)cache.set(param.getVariable(), value);
+			    			if(hasCached)cache.set(KeyImpl.init(param.getVariable()), value);
 			    		}
 			    	}
 				}

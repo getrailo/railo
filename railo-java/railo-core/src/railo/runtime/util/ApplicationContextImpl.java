@@ -41,9 +41,10 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 	private String ormdatasource;
 	private ORMConfiguration config;
 	private Component component;
-
-
 	private Properties s3;
+	private String applicationtoken;
+	private String cookiedomain;
+	private int idletimeout=1800;
     
     /**
      * constructor of the class
@@ -95,6 +96,9 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 		dbl.secureJsonPrefix=secureJsonPrefix;
 		dbl.isDefault=isDefault;
 		dbl.defaultDataSource=defaultDataSource;
+		dbl.applicationtoken=applicationtoken;
+		dbl.cookiedomain=cookiedomain;
+		dbl.idletimeout=idletimeout;
 		
 		dbl.ormEnabled=ormEnabled;
 		dbl.config=config;
@@ -357,6 +361,26 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 	public Properties getS3() {
 		if(s3==null) s3=new Properties();
 		return s3;
+	}
+
+
+	public void setSecuritySettings(String applicationtoken, String cookiedomain, int idletimeout) {
+		this.applicationtoken=applicationtoken;
+		this.cookiedomain=cookiedomain;
+		this.idletimeout=idletimeout;
+		
+	}
+	public String getSecurityApplicationToken() {
+		if(StringUtil.isEmpty(applicationtoken,true)) return getName();
+		return applicationtoken;
+	}
+	public String getSecurityCookieDomain() {
+		if(StringUtil.isEmpty(applicationtoken,true)) return null;
+		return cookiedomain;
+	}
+	public int getSecurityIdleTimeout() {
+		if(idletimeout<1) return 1800;
+		return idletimeout;
 	}
 	
 }

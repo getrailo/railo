@@ -307,7 +307,7 @@
 	<data key="application.listenertype_modern">Modern</data>
 	<data key="application.listenertype">Type</data>
 	<data key="application.listenertypedescription">Please select the type of the listener</data>
-	<data key="application.allowurlrequesttimeoutdesc">When the URL parameter [RequestTimeout] is passed in the URL obey it (behaviour like CFML 5, 7 &amp; 8)</data>
+	<data key="application.allowurlrequesttimeoutdesc">When the URL parameter [RequestTimeout] is passed in the URL obey it</data>
 	<data key="application.listenermodedescription_curr2root">Looks for the file &quot;Application.cfc/Application.cfm&quot; from the current up to the webroot directory.</data>
 	<data key="application.requesttimeout">Request timeout</data>
 	<data key="application.listenertypedescription_none">When a request is called no other initialization template will be invoked by Railo</data>

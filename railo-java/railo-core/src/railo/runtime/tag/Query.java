@@ -18,6 +18,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
+import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
@@ -43,6 +44,9 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private static final Collection.Key EXECUTION_TIME = KeyImpl.getInstance("executiontime");
 	private static final Collection.Key CFQUERY = KeyImpl.getInstance("cfquery");
 	private static final Collection.Key GENERATEDKEY = KeyImpl.getInstance("generatedKey");
+	private static final Collection.Key MAX_RESULTS = KeyImpl.getInstance("maxResults");
+	private static final Collection.Key TIMEOUT = KeyImpl.getInstance("timeout");
+	
 	private static final int RETURN_TYPE_QUERY = 1;
 	private static final int RETURN_TYPE_ARRAY_OF_ENTITY = 2;
 
@@ -74,8 +78,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	** 		data source and the number of records returned from the query to be returned. */
 	private boolean debug;
 
-	/** This is specific to JTags, and allows you to give the cache a specific name */
-	private String cachename;
+	/* This is specific to JTags, and allows you to give the cache a specific name */
+	//private String cachename;
 
 	/** Specifies the maximum number of rows to return in the record set. */
 	private int maxrows=-1;
@@ -98,7 +102,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private boolean orgPSQ;
 	private boolean hasChangedPSQ;
 	
-	ArrayList items=new ArrayList();
+	ArrayList<SQLItem> items=new ArrayList<SQLItem>();
 	
 	private boolean clearCache;
 	private boolean unique;
@@ -119,7 +123,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		clearCache=false;
 		cachedWithin=null;
 		cachedafter=null;
-		cachename="";
+		//cachename="";
 		blockfactor=-1;
 		dbtype=null;
 		debug=true;
@@ -173,7 +177,6 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	 * @param psq set preserver single quote
 	 */
 	public void setPsq(boolean psq)	{
-		psq=psq;
 		orgPSQ=pageContext.getPsq();
         if(orgPSQ!=psq){
         	pageContext.setPsq(psq);
@@ -222,8 +225,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @param cachename value to set
 	**/
 	public void setCachename(String cachename)	{
-		//railo.print.ln("cachename: "+cachename);
-		this.cachename=cachename;
+		DeprecatedUtil.tagAttribute("query", "cachename");
+		//this.cachename=cachename;
 	}
 
 	/** set the value cachedwithin
@@ -535,8 +538,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		}
 		
 		// query options
-		if(maxrows!=-1 && !ormoptions.containsKey("maxResults")) ormoptions.setEL("maxResults", new Double(maxrows));
-		if(timeout!=-1 && !ormoptions.containsKey("timeout")) ormoptions.setEL("timeout", new Double(timeout));
+		if(maxrows!=-1 && !ormoptions.containsKey(MAX_RESULTS)) ormoptions.setEL(MAX_RESULTS, new Double(maxrows));
+		if(timeout!=-1 && !ormoptions.containsKey(TIMEOUT)) ormoptions.setEL(TIMEOUT, new Double(timeout));
 		/* MUST
 offset: Specifies the start index of the resultset from where it has to start the retrieval.
 cacheable: Whether the result of this query is to be cached in the secondary cache. Default is false.

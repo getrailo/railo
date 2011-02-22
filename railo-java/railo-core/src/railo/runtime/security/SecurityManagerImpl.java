@@ -1,11 +1,12 @@
 package railo.runtime.security;
 
-
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.type.file.FileResourceProvider;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.type.util.ArrayUtil;
@@ -302,7 +303,6 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
         if(getAccess(TYPE_FILE)==VALUE_ALL) return;
         // Local
         if(getAccess(TYPE_FILE)==VALUE_LOCAL) {
-            if(res==null) return;
             // local 
             if(rootDirectory!=null)
             	if(ResourceUtil.isChildOf(res,rootDirectory)) return;
@@ -312,7 +312,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
             		if(ResourceUtil.isChildOf(res,customFileAccess[i])) return;
             	}
             }
-            if(isValid(config,serverPassword)) return;
+            if(isValid(config,serverPassword) ||  isAdminContext()) return;
             throw new SecurityException(createExceptionMessage(res,true),"access is prohibited by security manager");
         }
         // None
@@ -325,10 +325,24 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
         	}
         }
         
+        
+        
+        if(isAdminContext()) return;
         throw new SecurityException(createExceptionMessage(res,false),"access is prohibited by security manager");
 	}
     
-    private String createExceptionMessage(Resource res, boolean localAllowed) {
+    private boolean isAdminContext() {
+    	PageContext pc = ThreadLocalPageContext.get();
+        try {
+			if(pc!=null && "/railo-context".equals(pc.getBasePageSource().getMapping().getVirtualLowerCase())){
+				return true;
+			}
+		} 
+        catch (Throwable t) {}
+		return false;
+	}
+
+	private String createExceptionMessage(Resource res, boolean localAllowed) {
 	
     	
     	StringBuffer sb=new StringBuffer(localAllowed && rootDirectory!=null?rootDirectory.getAbsolutePath():"");

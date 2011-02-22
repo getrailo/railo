@@ -113,7 +113,7 @@ public class PDF extends BodyTagImpl  {
 	private boolean stopOnError=false;
 	private boolean transparent=false;
 	private char version=0;
-	private java.util.List params;
+	private java.util.List<PDFParamBean> params;
 	private ResourceFilter filter=null;
 	private String imagePrefix=null;
 	
@@ -1191,7 +1191,7 @@ public class PDF extends BodyTagImpl  {
 	
 	protected void setParam(PDFParamBean param) {
 		if(params==null)
-			params=new ArrayList();
+			params=new ArrayList<PDFParamBean>();
 		params.add(param);
 	}
 	

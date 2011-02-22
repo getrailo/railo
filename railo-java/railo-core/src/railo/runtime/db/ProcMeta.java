@@ -9,6 +9,4 @@ public class ProcMeta {
 		this.columnType=columnType;
 		this.dataType=dataType;
 	}
-	
-	
 }

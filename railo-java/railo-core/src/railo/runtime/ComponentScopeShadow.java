@@ -3,7 +3,6 @@ package railo.runtime;
 import java.util.Iterator;
 import java.util.Map;
 
-import railo.commons.collections.HashTableNotSync;
 import railo.runtime.component.Member;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -23,20 +22,17 @@ import railo.runtime.type.util.StructUtil;
 
 public class ComponentScopeShadow extends StructSupport implements ComponentScope {
 
-	private ComponentImpl component;
+	private final ComponentImpl component;
     private static final int access=Component.ACCESS_PRIVATE;
-    private Map shadow=newMap();
+    private final Map<Key,Object> shadow;
 
-	public static Map newMap() {
-		return new HashTableNotSync();//asx
-	}
 
 	/**
 	 * Constructor of the class
 	 * @param component
 	 * @param shadow
 	 */
-	public ComponentScopeShadow(ComponentImpl component, Map shadow) {
+	public ComponentScopeShadow(ComponentImpl component, Map<Key,Object> shadow) {
         this.component=component;
         this.shadow=shadow;
         
@@ -115,19 +111,13 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		if(o!=null) return o;
         throw new ExpressionException("Component ["+component.getCallName()+"] has no acessible Member with name ["+key+"]");
 	}
-
-	private ComponentImpl getUDFComponent(PageContext pc) {
-		return ComponentUtil.getActiveComponent(pc, component);
-	}
 	
 	/**
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(Key key, Object defaultValue) {
-		//print.out("key:"+key);
-    	
 		if(key.equalsIgnoreCase(ComponentImpl.KEY_SUPER)) {
-			return SuperComponent.superInstance(getUDFComponent(ThreadLocalPageContext.get()).base);
+			return SuperComponent.superInstance(ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),component).base);
 		}
 		if(key.equalsIgnoreCase(ComponentImpl.KEY_THIS)) return component;
 		
@@ -148,10 +138,10 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 */
 	public String[] keysAsString() {
 		String[] keys=new String[shadow.size()+1];
-		Iterator it = shadow.keySet().iterator();
+		Iterator<Key> it = shadow.keySet().iterator();
 		int index=0;
 		while(it.hasNext()) {
-			keys[index++]=((Collection.Key)it.next()).getString();
+			keys[index++]=it.next().getString();
 		}
 		keys[index]=ComponentImpl.KEY_THIS.getString();
 		return keys;
@@ -162,10 +152,10 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 */
 	public Collection.Key[] keys() {
 		Collection.Key[] keys=new Collection.Key[shadow.size()+1];
-		Iterator it = shadow.keySet().iterator();
+		Iterator<Key> it = shadow.keySet().iterator();
 		int index=0;
 		while(it.hasNext()) {
-			keys[index++]=(Collection.Key)it.next();
+			keys[index++]=it.next();
 		}
 		keys[index]=ComponentImpl.KEY_THIS;
 		return keys;
@@ -197,7 +187,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		if(key.equalsIgnoreCase(ComponentImpl.KEY_THIS) || key.equalsIgnoreCase(ComponentImpl.KEY_SUPER)) return value;
 		
 		if(!component.afterConstructor && value instanceof UDF) {
-			component.addConstructorUDF(key,value);
+			component.addConstructorUDF(key,(UDF)value);
 		}
 		return shadow.put(key, value);
 		
@@ -425,14 +415,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		return get(key);
 	}
 
-	public Map getShadow() {
+	public Map<Key,Object> getShadow() {
 		return shadow;
-	}
-
-	/**
-	 * @see railo.runtime.ComponentScope#setComponent(railo.runtime.ComponentImpl)
-	 */
-	public void setComponent(ComponentImpl c) {
-		this.component=c;
 	}
 }

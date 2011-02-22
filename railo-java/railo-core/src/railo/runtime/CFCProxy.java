@@ -61,7 +61,7 @@ public class CFCProxy extends ComponentImpl implements HibernateProxy, Serializa
 	 * @see railo.runtime.ComponentImpl#addConstructorUDF(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	@Override
-	public void addConstructorUDF(Key key, Object value) {
+	public void addConstructorUDF(Key key, UDF value) {
 		 li.getCFC().addConstructorUDF(key, value);
 	}
 
@@ -532,14 +532,6 @@ public class CFCProxy extends ComponentImpl implements HibernateProxy, Serializa
 	@Override
 	public Property[] getProperties(boolean onlyPeristent) {
 		return li.getCFC().getProperties(onlyPeristent);
-	}
-
-	/**
-	 * @see railo.runtime.ComponentImpl#getUDFComponent(railo.runtime.PageContextImpl)
-	 */
-	@Override
-	public ComponentImpl getUDFComponent(PageContextImpl pc) {
-		return li.getCFC().getUDFComponent(pc);
 	}
 
 	/**

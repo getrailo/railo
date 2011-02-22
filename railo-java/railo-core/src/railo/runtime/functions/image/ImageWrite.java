@@ -14,14 +14,18 @@ import railo.runtime.op.Caster;
 public class ImageWrite implements Function {
 
 	public static String call(PageContext pc, Object name, String destination) throws PageException {
-		return call(pc, name, destination, 0.75);
+		return call(pc, name, destination, 0.75,true);
 	}
 	
 	public static String call(PageContext pc, Object name) throws PageException {
-		return call(pc, name, null, 0.75);
+		return call(pc, name, null, 0.75,true);
+	}
+
+	public static String call(PageContext pc, Object name, String destination, double quality) throws PageException {
+		return call(pc, name,destination,quality,true);
 	}
 	
-	public static String call(PageContext pc, Object name, String destination, double quality) throws PageException {
+	public static String call(PageContext pc, Object name, String destination, double quality, boolean overwrite) throws PageException {
 		if(name instanceof String)
 			name=pc.getVariable(Caster.toString(name));
 		Image image=Image.toImage(name);
@@ -32,7 +36,7 @@ public class ImageWrite implements Function {
 		// MUST beide boolschen argumente checken
 		if(destination==null) return null;
 		try {
-			image.writeOut(ResourceUtil.toResourceNotExisting(pc, destination), true , (float)quality);
+			image.writeOut(ResourceUtil.toResourceNotExisting(pc, destination), overwrite , (float)quality);
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}

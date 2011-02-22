@@ -31,7 +31,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.methods.TraceMethod;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
@@ -43,6 +42,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
+import railo.commons.net.ResourcePart;
 import railo.commons.net.ResourcePartSource;
 import railo.commons.net.URLEncoder;
 import railo.runtime.exp.ApplicationException;
@@ -146,7 +146,7 @@ public final class Http extends BodyTagImpl {
 	}
 	
 
-    private ArrayList params=new ArrayList();
+    private ArrayList<HttpParamBean> params=new ArrayList<HttpParamBean>();
 	
 	
 	/** When required by a server, a valid password. */
@@ -611,7 +611,7 @@ public final class Http extends BodyTagImpl {
 				throw toPageException(e.t);	
 			}
 			
-			
+			httpMethod=e.httpMethod;
 			
 			
 			if(!e.done){
@@ -653,8 +653,8 @@ public final class Http extends BodyTagImpl {
 	        		setCookie.append(header.getValue());
 	        	else {
 	        	    //print.ln(header.getName()+"-"+header.getValue());
-	        		Object value=responseHeader.get(header.getName(),null);
-	        		if(value==null) responseHeader.set(header.getName(),header.getValue());
+	        		Object value=responseHeader.get(KeyImpl.init(header.getName()),null);
+	        		if(value==null) responseHeader.set(KeyImpl.init(header.getName()),header.getValue());
 	        		else {
 	        		    Array arr=null;
 	        		    if(value instanceof ArrayImpl) {
@@ -662,7 +662,7 @@ public final class Http extends BodyTagImpl {
 	        		    }
 	        		    else {
 	        		        arr=new ArrayImpl();
-	        		        responseHeader.set(header.getName(),arr);
+	        		        responseHeader.set(KeyImpl.init(header.getName()),arr);
 	        		        arr.appendEL(value);
 	        		    }
 	        		    arr.appendEL(header.getValue());
@@ -698,7 +698,7 @@ public final class Http extends BodyTagImpl {
 	       
 	        cfhttp.set(TEXT,Caster.toBoolean(isText));
 	    // mimetype charset
-	        boolean responseProvideCharset=false;
+	        //boolean responseProvideCharset=false;
 	        if(!StringUtil.isEmpty(mimetype)){
 		        if(isText) {
 		        	String[] types=mimetype.split(";");
@@ -710,7 +710,7 @@ public final class Http extends BodyTagImpl {
 	                    if(index!=-1) {
 	                    	responseCharset=StringUtil.removeQuotes(tmp.substring(index+8),true);
 	                        cfhttp.set(CHARSET,responseCharset);
-	                        responseProvideCharset=true;
+	                        //responseProvideCharset=true;
 	                    }
 	                }
 		        }
@@ -815,7 +815,6 @@ public final class Http extends BodyTagImpl {
 	        cfhttp.set(HEADER,raw.toString());
 	        
 	    
-	        //httpMethod.releaseConnection();
 
         if(status!=STATUS_OK){
             cfhttp.setEL(ERROR_DETAIL,httpMethod.getStatusCode()+" "+httpMethod.getStatusText());
@@ -823,7 +822,7 @@ public final class Http extends BodyTagImpl {
         }
 		}
 		finally {
-			releaseConnection(httpMethod,manager);
+			releaseConnection(httpMethod);
 		}
 	    
 	}
@@ -881,7 +880,7 @@ public final class Http extends BodyTagImpl {
 		return httpMethod;
 	}*/
 
-	private void releaseConnection(HttpMethod httpMethod, HttpConnectionManager manager) {
+	public static void releaseConnection(HttpMethod httpMethod) {
 		httpMethod.releaseConnection();
 		//manager.closeIdleConnections(0);
 	}
@@ -984,7 +983,7 @@ public final class Http extends BodyTagImpl {
 		boolean hasBody=false;
 		boolean hasContentType=false;
 	// Set http params
-		ArrayList listQS=new ArrayList();
+		ArrayList<NameValuePair> listQS=new ArrayList<NameValuePair>();
 		ArrayList<Part> parts=new ArrayList<Part>();
 		int len=http.params.size();
 		for(int i=0;i<len;i++) {
@@ -1035,7 +1034,8 @@ public final class Http extends BodyTagImpl {
 				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type file can't only be used, when method of the tag http equal post");
 				if(doMultiPart) {
 					try {
-						parts.add(new FilePart(param.getName(),new ResourcePartSource(param.getFile())));
+						//FilePart part = new FilePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param),null);
+						parts.add(new ResourcePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param)));
 					} 
 					catch (FileNotFoundException e) {
 						throw new ApplicationException("can't upload file, path is invalid",e.getMessage());
@@ -1105,9 +1105,9 @@ public final class Http extends BodyTagImpl {
 		
 	// set Query String
 		//NameValuePair[] qsPairs=new NameValuePair[arrQS.length+listQS.size()];
-		java.util.List listPairs=new ArrayList();
+		java.util.List<NameValuePair> listPairs=new ArrayList<NameValuePair>();
 		
-		int count=0;
+		//int count=0;
 		// QS from URL
 		for(int i=0;i<arrQS.length;i++) {
 			if(StringUtil.isEmpty(arrQS[i])) continue;
@@ -1116,7 +1116,7 @@ public final class Http extends BodyTagImpl {
 			if(ArrayUtil.isEmpty(pair)) continue;
 			
 			String name=pair[0];
-			String value=pair.length>1?pair[1]:"";//pair.length>1?pair[1]:"";
+			String value=pair.length>1?pair[1]:null;
 			listPairs.add(new NameValuePair(name,value));
 		}
 		
@@ -1130,6 +1130,7 @@ public final class Http extends BodyTagImpl {
 		String qs = toQueryString((NameValuePair[]) listPairs.toArray(new NameValuePair[listPairs.size()]));
 		if(!StringUtil.isEmpty(qs))
 			httpMethod.setQueryString(qs);
+
 		
 	// set Username and Password
 		if(http.username!=null) {
@@ -1166,8 +1167,10 @@ public final class Http extends BodyTagImpl {
         for(int i=0;i<qsPairs.length;i++) {
             if(sb.length()>0)sb.append('&');
             sb.append(qsPairs[i].getName());
-            sb.append('=');
-            sb.append(qsPairs[i].getValue());
+            if(qsPairs[i].getValue()!=null){
+            	sb.append('=');
+            	sb.append(qsPairs[i].getValue());
+            }
         }
         return sb.toString();
     }
@@ -1305,6 +1308,14 @@ public final class Http extends BodyTagImpl {
         
         return path;
     }
+    
+	private static String getContentType(HttpParamBean param) {
+		String mimeType=param.getMimeType();
+		if(StringUtil.isEmpty(mimeType,true)) {
+			mimeType=ResourceUtil.getMymeType(param.getFile(), true, null);
+		}
+		return mimeType;
+	}
 }
 
 class MultipartRequestEntityFlex extends MultipartRequestEntity {
@@ -1338,15 +1349,14 @@ class MultipartRequestEntityFlex extends MultipartRequestEntity {
 	   
 	   //return super.getContentType();
 	}
-
 }
 
 class Executor extends Thread {
 	
-	 Http http;
-	 HttpClient client;
-	HttpMethod httpMethod;
-	 boolean redirect;
+	 final Http http;
+	 final HttpClient client;
+	 HttpMethod httpMethod;
+	 final boolean redirect;
 	 Throwable t;
 	 boolean done;
 
@@ -1377,7 +1387,9 @@ class Executor extends Thread {
         URL lu;
         while(Http.isRedirect(client.executeMethod(httpMethod)) && redirect && count++ < Http.MAX_REDIRECT) { 
         	lu=Http.locationURL(httpMethod);
+        	HttpMethod oldHttpMethod = httpMethod;
         	httpMethod=Http.createMethod(http,client,lu.toExternalForm(),-1);
+        	Http.releaseConnection(oldHttpMethod);
         }
         
 	}
