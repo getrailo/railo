@@ -9,10 +9,13 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.NClob;
 import java.sql.Ref;
 import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -1079,6 +1082,176 @@ public class QueryWrap implements Query {
 	}
 	public railo.runtime.type.Query getQuery() {
 		return rst;
+	}
+	public int getHoldability() throws SQLException {
+		return rst.getHoldability();
+	}
+	public Reader getNCharacterStream(int arg0) throws SQLException {
+		return rst.getNCharacterStream(arg0);
+	}
+	public Reader getNCharacterStream(String arg0) throws SQLException {
+		return rst.getNCharacterStream(arg0);
+	}
+	public NClob getNClob(int arg0) throws SQLException {
+		return rst.getNClob(arg0);
+	}
+	public NClob getNClob(String arg0) throws SQLException {
+		return rst.getNClob(arg0);
+	}
+	public String getNString(int arg0) throws SQLException {
+		return rst.getNString(arg0);
+	}
+	public String getNString(String arg0) throws SQLException {
+		return rst.getNString(arg0);
+	}
+	public RowId getRowId(int arg0) throws SQLException {
+		return rst.getRowId(arg0);
+	}
+	public RowId getRowId(String arg0) throws SQLException {
+		return rst.getRowId(arg0);
+	}
+	public SQLXML getSQLXML(int arg0) throws SQLException {
+		return rst.getSQLXML(arg0);
+	}
+	public SQLXML getSQLXML(String arg0) throws SQLException {
+		return rst.getSQLXML(arg0);
+	}
+	public boolean isClosed() throws SQLException {
+		return rst.isClosed();
+	}
+	public void updateAsciiStream(int arg0, InputStream arg1)throws SQLException {
+		rst.updateAsciiStream(arg0, arg1);
+	}
+	public void updateAsciiStream(String arg0, InputStream arg1)throws SQLException {
+		rst.updateAsciiStream(arg0, arg1);
+	}
+	public void updateAsciiStream(int arg0, InputStream arg1, long arg2)
+			throws SQLException {
+		rst.updateAsciiStream(arg0, arg1);
+	}
+	public void updateAsciiStream(String arg0, InputStream arg1, long arg2)
+			throws SQLException {
+		rst.updateAsciiStream(arg0, arg1, arg2);
+	}
+	public void updateBinaryStream(int arg0, InputStream arg1)
+			throws SQLException {
+		rst.updateBinaryStream(arg0, arg1);
+	}
+	public void updateBinaryStream(String arg0, InputStream arg1)
+			throws SQLException {
+		rst.updateBinaryStream(arg0, arg1);
+	}
+	public void updateBinaryStream(int arg0, InputStream arg1, long arg2)
+			throws SQLException {
+		rst.updateBinaryStream(arg0, arg1, arg2);
+	}
+	public void updateBinaryStream(String arg0, InputStream arg1, long arg2)
+			throws SQLException {
+		rst.updateBinaryStream(arg0, arg1, arg2);
+	}
+	public void updateBlob(int arg0, InputStream arg1) throws SQLException {
+		rst.updateBlob(arg0, arg1);
+	}
+	public void updateBlob(String arg0, InputStream arg1) throws SQLException {
+		rst.updateBlob(arg0, arg1);
+	}
+	public void updateBlob(int arg0, InputStream arg1, long arg2)
+			throws SQLException {
+		rst.updateBlob(arg0, arg1, arg2);
+	}
+	public void updateBlob(String arg0, InputStream arg1, long arg2)
+			throws SQLException {
+		rst.updateBlob(arg0, arg1, arg2);
+	}
+	public void updateCharacterStream(int arg0, Reader arg1)
+			throws SQLException {
+		rst.updateCharacterStream(arg0, arg1);
+	}
+	public void updateCharacterStream(String arg0, Reader arg1)
+			throws SQLException {
+		rst.updateCharacterStream(arg0, arg1);
+	}
+	public void updateCharacterStream(int arg0, Reader arg1, long arg2)
+			throws SQLException {
+		rst.updateCharacterStream(arg0, arg1, arg2);
+	}
+	public void updateCharacterStream(String arg0, Reader arg1, long arg2)
+			throws SQLException {
+		rst.updateCharacterStream(arg0, arg1, arg2);
+	}
+	public void updateClob(int arg0, Reader arg1) throws SQLException {
+		rst.updateClob(arg0, arg1);
+	}
+	public void updateClob(String arg0, Reader arg1) throws SQLException {
+		rst.updateClob(arg0, arg1);
+	}
+	public void updateClob(int arg0, Reader arg1, long arg2)
+			throws SQLException {
+		rst.updateClob(arg0, arg1, arg2);
+	}
+	public void updateClob(String arg0, Reader arg1, long arg2)
+			throws SQLException {
+		rst.updateClob(arg0, arg1, arg2);
+	}
+	public void updateNCharacterStream(int arg0, Reader arg1)
+			throws SQLException {
+		rst.updateNCharacterStream(arg0, arg1);
+	}
+	public void updateNCharacterStream(String arg0, Reader arg1)
+			throws SQLException {
+		rst.updateNCharacterStream(arg0, arg1);
+	}
+	public void updateNCharacterStream(int arg0, Reader arg1, long arg2)
+			throws SQLException {
+		rst.updateNCharacterStream(arg0, arg1, arg2);
+	}
+	public void updateNCharacterStream(String arg0, Reader arg1, long arg2)
+			throws SQLException {
+		rst.updateNCharacterStream(arg0, arg1, arg2);
+	}
+	public void updateNClob(int arg0, NClob arg1) throws SQLException {
+		rst.updateNClob(arg0, arg1);
+	}
+	public void updateNClob(String arg0, NClob arg1) throws SQLException {
+		rst.updateNClob(arg0, arg1);
+	}
+	public void updateNClob(int arg0, Reader arg1) throws SQLException {
+		rst.updateNClob(arg0, arg1);
+	}
+	public void updateNClob(String arg0, Reader arg1) throws SQLException {
+		rst.updateNClob(arg0, arg1);
+	}
+	public void updateNClob(int arg0, Reader arg1, long arg2)
+			throws SQLException {
+		rst.updateNClob(arg0, arg1, arg2);
+	}
+	public void updateNClob(String arg0, Reader arg1, long arg2)
+			throws SQLException {
+		rst.updateNClob(arg0, arg1, arg2);
+	}
+	public void updateNString(int arg0, String arg1) throws SQLException {
+		rst.updateNString(arg0, arg1);
+	}
+	public void updateNString(String arg0, String arg1) throws SQLException {
+		rst.updateNString(arg0, arg1);
+	}
+	public void updateRowId(int arg0, RowId arg1) throws SQLException {
+		rst.updateRowId(arg0, arg1);
+	}
+	public void updateRowId(String arg0, RowId arg1) throws SQLException {
+		rst.updateRowId(arg0, arg1);
+	}
+	public void updateSQLXML(int arg0, SQLXML arg1) throws SQLException {
+		rst.updateSQLXML(arg0, arg1);
+	}
+	public void updateSQLXML(String arg0, SQLXML arg1) throws SQLException {
+		rst.updateSQLXML(arg0, arg1);
+	}
+	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
+		return rst.isWrapperFor(arg0);
+	}
+	public <T> T unwrap(Class<T> arg0) throws SQLException {
+		return rst.unwrap(arg0);
 	}
 
 }
