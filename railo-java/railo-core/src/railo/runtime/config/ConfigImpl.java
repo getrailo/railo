@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
@@ -32,6 +33,7 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
+import railo.commons.io.res.type.compress.Compress;
 import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
@@ -395,6 +397,10 @@ public abstract class ConfigImpl implements Config {
         factory.resetPageContext();
         //resources.reset();
         ormengines.clear();
+        compressResources.clear();
+        clearFunctionCache();
+        clearCTCache();
+        clearComponentCache();
     }
     
     /**
@@ -3277,5 +3283,15 @@ public abstract class ConfigImpl implements Config {
 	 */
 	protected void setComponentRootSearch(boolean componentRootSearch) {
 		this.componentRootSearch = componentRootSearch;
+	}
+
+	private final Map compressResources=new WeakHashMap();
+	public Compress getCompressInstance(Resource zipFile, int format, boolean caseSensitive) {
+		Compress compress=(Compress) compressResources.get(zipFile.getPath());
+		if(compress==null) {
+			compress=new Compress(zipFile,format,caseSensitive);
+			compressResources.put(zipFile.getPath(), compress);
+		}
+		return compress;
 	}
 }
