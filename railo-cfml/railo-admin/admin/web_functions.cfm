@@ -8,7 +8,7 @@ function printError(error,boolean longversion=false) {
 	if(IsSimpleValue(error))error=struct(message:error);
 	if(not StructKeyExists(error,'detail'))error.detail="";
 	else if(error.message EQ error.detail)error.detail="";
-
+	// if(!IsSimpleValue(error) && error.getClass().getName() EQ "railo.runtime.exp.CatchBlock")createObject("java","railo.print").e(error.getPageException())
 	if(StructKeyExists(arguments.error,'message') and arguments.error.message NEQ "") {
 		writeOutput('<span class="CheckError">');
 		writeOutput(br(arguments.error.message));
