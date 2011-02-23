@@ -81,20 +81,38 @@ public final class IsValid implements Function {
 		}
 		
 		type=type.trim().toLowerCase();
-		if(!"range".equals(type))
-			throw new FunctionException(pc,"isValid",1,"type","wrong attribute count for type ["+type+"]");
-
-		double number=Caster.toDoubleValue(value,Double.NaN);
-		if(!Decision.isValid(number)) return false;
 		
-		double min=Caster.toDoubleValue(objMin,Double.NaN);
-		if(!Decision.isValid(min))
-			throw new FunctionException(pc,"isValid",3,"min","value must be numeric");
+		// numeric
+		if("range".equals(type) || "integer".equals(type) || "float".equals(type) || "numeric".equals(type)  || "number".equals(type) ) {
+		
+			double number=Caster.toDoubleValue(value,Double.NaN);
+			if(!Decision.isValid(number)) return false;
+			
+			double min=toRangeNumber(pc,objMin,3,"min");
+			double max=toRangeNumber(pc,objMax,4,"max");
+			
+			
+			return number>=min && number<=max;
+		}
+		else if("string".equals(type)){
+			String str=Caster.toString(value,null);
+			if(str==null) return false;
+			
+			double min=toRangeNumber(pc,objMin,3,"min");
+			double max=toRangeNumber(pc,objMax,4,"max");
+			
+			return str.length()>=min && str.length()<=max;
+		}
+		
+		else
+			throw new FunctionException(pc,"isValid",1,"type","wrong attribute count for type ["+type+"]");
+			
+	}
 
-		double max=Caster.toDoubleValue(objMax,Double.NaN);
-		if(!Decision.isValid(max))
-			throw new FunctionException(pc,"isValid",4,"max","value must be numeric");
-
-		return number>=min && number<=max;
+	private static double toRangeNumber(PageContext pc,Object objMin, int index,String name) throws FunctionException {
+		double d=Caster.toDoubleValue(objMin,Double.NaN);
+		if(!Decision.isValid(d))
+			throw new FunctionException(pc,"isValid",index,name,"value must be numeric");
+		return d;
 	}
 }

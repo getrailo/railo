@@ -1995,22 +1995,6 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
         
     }
 
-    /* *
-     * Returns the value of queryCacheEntry.
-     * @return value queryCacheEntry
-     * /
-    public QueryCacheEntry getQueryCacheEntry() {
-        return queryCacheEntry;
-    }*/
-
-    /* *
-     * sets the queryCacheEntry value.
-     * @param queryCacheEntry The queryCacheEntry to set.
-     * /
-    public void setQueryCacheEntry(QueryCacheEntry queryCacheEntry) {
-        this.queryCacheEntry = queryCacheEntry;
-    }*/
-
 	/**
 	 * @return the sql
 	 */

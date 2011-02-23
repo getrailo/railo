@@ -191,9 +191,8 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		if(!component.afterConstructor && value instanceof UDF) {
 			component.addConstructorUDF(key,(UDF)value);
 		}
-		return shadow.put(key, value);
-		
-		//return setEL(key, value);
+		shadow.put(key, value);
+		return value;
 	}
 
 	/**
