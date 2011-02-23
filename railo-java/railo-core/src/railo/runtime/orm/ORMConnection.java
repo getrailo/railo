@@ -6,16 +6,22 @@ import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+
+/*
+JDK6: uncomment this for compiling with JDK6 
+ 
+import java.sql.NClob;
+import java.sql.SQLXML;
+*/
+
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
@@ -343,6 +349,9 @@ public class ORMConnection implements Connection {
 		return new RuntimeException(new SQLException("this feature is not supported"));
 	}
 
+	/*
+	JDK6: uncomment this for compiling with JDK6 
+	 
 	public NClob createNClob() throws SQLException {
 		throw notSupported();
 	}
@@ -350,4 +359,6 @@ public class ORMConnection implements Connection {
 	public SQLXML createSQLXML() throws SQLException {
 		throw notSupported();
 	}
+	*/
+	
 }

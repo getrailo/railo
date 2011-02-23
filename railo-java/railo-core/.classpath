@@ -99,6 +99,6 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/ehcache.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/javaparser.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/railo-sl4j.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JVM 1.6.0 (MacOS X Default)"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
