@@ -12771,7 +12771,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>Top</name>
 			<type>struct</type>
 			<required>Yes</required>
-		<description>object (structure or array) from which to start search. This parameter requires an object, not a name of an object.</description>
+		<description>object from which to start search. This parameter requires an object, not a name of an object.</description>
     </argument>
 		<argument>
 			<name>Key</name>
