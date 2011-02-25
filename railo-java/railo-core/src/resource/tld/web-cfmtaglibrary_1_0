@@ -294,6 +294,22 @@ Default value is defined in the Railo Web Administrator. "j2ee" can not use a se
 		</attribute>
 		<attribute>
 			<type>boolean</type>
+			<name>clientCluster</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true, railo uses the storage backend for the client scope as master and Railo checks for changes in the storage backend with every request,
+			if set to false (default), the storage is only used as slave, railo only initially gets the data from the storage. Ignored for storage type "memory".</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>sessionCluster</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true, railo uses the storage backend for the session scope as master and Railo checks for changes in the storage backend with every request,
+			if set to false (default), the storage is only used as slave, railo only initially gets the data from the storage. Ignored for storage type "memory".</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
 			<name>setClientCookies</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

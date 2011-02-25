@@ -3336,4 +3336,12 @@ public abstract class ConfigImpl implements Config {
 		}
 		return compress;
 	}
+
+	public boolean getSessionCluster() {
+		return false;
+	}
+
+	public boolean getClientCluster() {
+		return false;
+	}
 }

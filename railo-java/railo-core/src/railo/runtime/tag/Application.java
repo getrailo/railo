@@ -50,6 +50,8 @@ public final class Application extends TagImpl {
 	private int action=ACTION_CREATE;
 	private int localMode=-1;
 	private short sessionType=-1;
+	private boolean sessionCluster;
+	private boolean clientCluster;
     
      
     /**
@@ -77,6 +79,8 @@ public final class Application extends TagImpl {
         action=ACTION_CREATE;
         localMode=-1;
         sessionType=-1;
+        sessionCluster=false;
+        clientCluster=false;
         //appContext=null;
     }
     
@@ -158,6 +162,12 @@ public final class Application extends TagImpl {
 	}
 	public void setSessiontype(String sessionType) throws ApplicationException	{
 		this.sessionType=AppListenerUtil.toSessionType(sessionType);
+	}
+	public void setClientcluster(boolean clientCluster) {
+		this.clientCluster=clientCluster;
+	}
+	public void setSessioncluster(boolean sessionCluster) {
+		this.sessionCluster=sessionCluster;
 	}
 	
 	public void setClienttimeout(TimeSpan clientTimeout)	{
@@ -272,7 +282,8 @@ public final class Application extends TagImpl {
 		if(setSessionManagement!=null)			ac.setSetSessionManagement(setSessionManagement.booleanValue());
 		if(localMode!=-1) 						ac.setLocalMode(localMode);
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
-		
+		ac.setClientCluster(clientCluster);
+		ac.setSessionCluster(sessionCluster);
 		
 	}
 

@@ -64,6 +64,8 @@ public class ModernAppListener extends AppListenerSupport {
 	private static final Collection.Key SECURE_JSON_PREFIX = KeyImpl.getInstance("secureJsonPrefix");
 	private static final Collection.Key SECURE_JSON = KeyImpl.getInstance("secureJson");
 	private static final Collection.Key LOCAL_MODE = KeyImpl.getInstance("localMode");
+	private static final Collection.Key SESSION_CLUSTER = KeyImpl.getInstance("sessionCluster");
+	private static final Collection.Key CLIENT_CLUSTER = KeyImpl.getInstance("clientCluster");
 	
 
 	private static final Collection.Key ON_REQUEST_START = KeyImpl.getInstance("onRequestStart");
@@ -451,6 +453,16 @@ public class ModernAppListener extends AppListenerSupport {
 			// clientTimeout
 			o=get(app,CLIENT_TIMEOUT,null);
 			if(o!=null) appContext.setClientTimeout(Caster.toTimespan(o));
+			
+			// [sessioncluster|,] =true
+			// sessioncluster
+			o=get(app,SESSION_CLUSTER,null);
+			if(o!=null) appContext.setSessionCluster(Caster.toBooleanValue(o));
+			
+			// clientcluster
+			o=get(app,CLIENT_CLUSTER,null);
+			if(o!=null) appContext.setClientCluster(Caster.toBooleanValue(o));
+			
 			
 			// setClientCookies
 			o=get(app,SET_CLIENT_COOKIES,null);

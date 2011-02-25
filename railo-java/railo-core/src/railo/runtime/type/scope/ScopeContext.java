@@ -203,20 +203,30 @@ public final class ScopeContext {
 	
 	public ClientPlus getClientScope(PageContext pc) throws PageException {
 		ClientPlus client=null;
-		ApplicationContext appContext = pc.getApplicationContext(); 
+		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext(); 
 		// get Context
 			Map context=getSubMap(cfClientContextes,appContext.getName());
 			
 		// get Client
+			boolean isMemory=false;
 			String storage = appContext.getClientstorage();
-			if(StringUtil.isEmpty(storage,true))storage="file";
-			else if("ram".equalsIgnoreCase(storage)) storage="memory";
-			else if("registry".equalsIgnoreCase(storage)) storage="file";
-			else storage=storage.toLowerCase();
+			if(StringUtil.isEmpty(storage,true)){
+				storage="file";
+			}
+			else if("ram".equalsIgnoreCase(storage)) {
+				storage="memory";
+				isMemory=true;
+			}
+			else if("registry".equalsIgnoreCase(storage)) {
+				storage="file";
+			}
+			else {
+				storage=storage.toLowerCase();
+				if("memory".equals(storage))isMemory=true;
+			}
 			
-			
-			client=(ClientPlus) context.get(pc.getCFID());
-			
+			final boolean doMemory=isMemory || !appContext.getClientCluster();
+			client=doMemory?(ClientPlus) context.get(pc.getCFID()):null;
 			if(client==null || client.isExpired() || !client.getStorage().equalsIgnoreCase(storage)) {
 				if("file".equals(storage)){
 					client=ClientFile.getInstance(appContext.getName(),pc,getLog());
@@ -245,7 +255,7 @@ public final class ScopeContext {
 					
 				}
 				client.setStorage(storage);
-				context.put(pc.getCFID(),client);
+				if(doMemory)context.put(pc.getCFID(),client);
 			}
 			else
 				getLog().info("scope-context", "use existing client scope for "+appContext.getName()+"/"+pc.getCFID()+" from storage "+storage);
@@ -499,19 +509,30 @@ public final class ScopeContext {
 			Map context=getSubMap(cfSessionContextes,appContext.getName());
 			
 		// get Session
+			boolean isMemory=false;
 			String storage = appContext.getSessionstorage();
-			if(StringUtil.isEmpty(storage,true))storage="memory";
-			else if("ram".equalsIgnoreCase(storage)) storage="memory";
-			else if("registry".equalsIgnoreCase(storage)) storage="file";
-			else storage=storage.toLowerCase();
+			if(StringUtil.isEmpty(storage,true)){
+				storage="memory";
+				isMemory=true;
+			}
+			else if("ram".equalsIgnoreCase(storage)) {
+				storage="memory";
+				isMemory=true;
+			}
+			else if("registry".equalsIgnoreCase(storage)) {
+				storage="file";
+			}
+			else {
+				storage=storage.toLowerCase();
+				if("memory".equals(storage))isMemory=true;
+			}
 			
-			
-			
-			SessionPlus session=(SessionPlus) context.get(pc.getCFID());
+			final boolean doMemory=isMemory || !appContext.getSessionCluster();
+			SessionPlus session=doMemory?appContext.getSessionCluster()?null:(SessionPlus) context.get(pc.getCFID()):null;
 			
 			if(!(session instanceof StorageScope) || session.isExpired() || !((StorageScope)session).getStorage().equalsIgnoreCase(storage)) {
 				
-				if("memory".equals(storage)){
+				if(isMemory){
 					session=SessionMemory.getInstance(pc,isNew,getLog());
 				}
 				else if("file".equals(storage)){
@@ -537,7 +558,7 @@ public final class ScopeContext {
 					}
 				}
 				((StorageScope)session).setStorage(storage);
-				context.put(pc.getCFID(),session);
+				if(doMemory)context.put(pc.getCFID(),session);
 				isNew.setValue(true);
 			}
 			else 

@@ -27,4 +27,8 @@ public interface ApplicationContextPro extends ApplicationContext {
 	public TimeSpan getClientTimeout();
 	
 	public short getSessionType();
+	
+	public boolean getSessionCluster();
+
+	public boolean getClientCluster();
 }

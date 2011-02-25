@@ -52,12 +52,9 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 
 
 	private int localMode;
-
-
-
-
 	private short sessionType;
-
+    private boolean sessionCluster;
+    private boolean clientCluster;
 
     
     /**
@@ -80,6 +77,8 @@ public class ApplicationContextImpl implements ApplicationContextPro {
         this.defaultDataSource=ci.getDefaultDataSource();
         this.localMode=config.getLocalMode();
         this.sessionType=config.getSessionType();
+        this.sessionCluster=ci.getSessionCluster();
+        this.clientCluster=ci.getClientCluster();
     }
 
 
@@ -124,6 +123,8 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 		dbl.ormEnabled=ormEnabled;
 		dbl.config=config;
 		dbl.ormdatasource=ormdatasource;
+		dbl.sessionCluster=sessionCluster;
+		dbl.clientCluster=clientCluster;
 		
 		return dbl;
 	}
@@ -454,6 +455,38 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 	 */
 	public void setSessionType(short sessionType) {
 		this.sessionType= sessionType;
+	}
+
+
+	/**
+	 * @return the sessionCluster
+	 */
+	public boolean getSessionCluster() {
+		return sessionCluster;
+	}
+
+
+	/**
+	 * @param sessionCluster the sessionCluster to set
+	 */
+	public void setSessionCluster(boolean sessionCluster) {
+		this.sessionCluster = sessionCluster;
+	}
+
+
+	/**
+	 * @return the clientCluster
+	 */
+	public boolean getClientCluster() {
+		return clientCluster;
+	}
+
+
+	/**
+	 * @param clientCluster the clientCluster to set
+	 */
+	public void setClientCluster(boolean clientCluster) {
+		this.clientCluster = clientCluster;
 	}
 
 	
