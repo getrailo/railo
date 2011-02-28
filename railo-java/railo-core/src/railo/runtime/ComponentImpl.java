@@ -121,6 +121,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	protected static final Key TYPE = KeyImpl.getInstance("type");
 	protected static final Key SKELETON = KeyImpl.getInstance("skeleton");
 	protected static final Key PROPERTIES = KeyImpl.getInstance("properties");
+	private static final Key MAPPED_SUPER_CLASS = KeyImpl.getInstance("mappedSuperClass");
 	
 	public long sizeOf() {
 		return 
@@ -400,6 +401,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	    else {
 	    	scope=new ComponentScopeThis(this);
 	    }
+	    initProperties();
 	}
     
     public void checkInterface(PageContext pc, ComponentPage componentPage) throws PageException {
@@ -1862,67 +1864,63 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     }
 
 	public void setProperty(Property property) throws PageException {
-		if(top.properties.properties==null) top.properties.properties=new LinkedHashMap<String,Property>();
 		top.properties.properties.put(StringUtil.toLowerCase(property.getName()),property);
 		if(top.properties.persistent || top.properties.accessors){
 			if(property.getDefault()!=null)scope.setEL(KeyImpl.init(property.getName()), property.getDefault());
-			// getter
-			if(property.getGetter()){
-				PropertyFactory.addGet(this,property);
-			}
-			// setter
-			if(property.getSetter()){
-				PropertyFactory.addSet(this,property);
-			}
-
-			String fieldType = Caster.toString(property.getMeta().get(PropertyFactory.FIELD_TYPE,null),null);
-			
-			// add
-			if(fieldType!=null) {
-				if("one-to-many".equalsIgnoreCase(fieldType) || "many-to-many".equalsIgnoreCase(fieldType)) {
-					PropertyFactory.addHas(this,property);
-					PropertyFactory.addAdd(this,property);
-					PropertyFactory.addRemove(this,property);
-				}
-				else if("one-to-one".equalsIgnoreCase(fieldType) || "many-to-one".equalsIgnoreCase(fieldType)) {
-					PropertyFactory.addHas(this,property);
-				}
-			}
-			
-			
-			
-			
+			PropertyFactory.createPropertyUDFs(this,property);
 		}
+	}
+
+	
+
+	private void initProperties() throws PageException {
+		top.properties.properties=new LinkedHashMap<String,Property>();
 		
+		// MappedSuperClass  
+		if(isPersistent() && !isBasePeristent() && top.base!=null && top.base.properties.properties!=null) {
+			boolean msc = Caster.toBooleanValue(top.base.properties.meta.get(MAPPED_SUPER_CLASS,Boolean.FALSE),false);
+			if(msc){
+				Property p;
+				Iterator<Entry<String, Property>> it = top.base.properties.properties.entrySet().iterator();
+				while(it.hasNext())	{
+					p = it.next().getValue();
+					if(p.isPeristent()) {
+						
+						setProperty(p);
+					}
+				}
+			}
+		}
 	}
 
 	// FUTURE add to interface and then search for #321 and change this as well
 	public Property[] getProperties(boolean onlyPeristent) {
 		if(top.properties.properties==null) return new Property[0];
-		Iterator<String> it = top.properties.properties.keySet().iterator();
 		
-		// filter none peristent properties
-		if(onlyPeristent){
-			Property p;
-			java.util.List<Property> props=new ArrayList<Property>();
-			while(it.hasNext())	{
-				p = top.properties.properties.get(it.next());
-				//print.e(p.getName()+":"+p.isPeristent());
-				if(p.isPeristent()) props.add(p);
-			}
-			return props.toArray(new Property[props.size()]);
-		}
-		// all properties
-		else {
+		
+		// for faster execution we have this
+		if(!onlyPeristent) {
 			int index=0;
+			Iterator<Entry<String, Property>> it = top.properties.properties.entrySet().iterator();
 			Property[] props=new Property[top.properties.properties.size()];
 			while(it.hasNext())	{
-				props[index++]=(Property) top.properties.properties.get(it.next());
+				props[index++]=it.next().getValue();
 			}
-			
-			return props;
 		}
 		
+		
+		// collect with filter
+		Property p;
+		java.util.List<Property> props=new ArrayList<Property>();
+		Iterator<Entry<String, Property>> it = top.properties.properties.entrySet().iterator();
+		while(it.hasNext())	{
+			p = it.next().getValue();
+			if(p.isPeristent()) {
+				props.add(p);
+			}
+		}
+		
+		return props.toArray(new Property[props.size()]);
 	}
 
 	public ComponentScope getComponentScope() {

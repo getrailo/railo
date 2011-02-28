@@ -55,6 +55,9 @@ public class HBMCreator {
 		
 		Property[] _props = cfci.getProperties(true);
 		
+		
+		
+		
 		if(_props.length==0 && ormConf.useDBForMapping()){
         	_props=HibernateUtil.createPropertiesFromTable(dc,getTableName(engine,pc, meta, cfci));
         }

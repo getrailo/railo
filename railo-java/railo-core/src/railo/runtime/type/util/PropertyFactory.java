@@ -21,6 +21,33 @@ public class PropertyFactory {
 	public static final Collection.Key SINGULAR_NAME = KeyImpl.getInstance("singularName");
 	public static final Key FIELD_TYPE = KeyImpl.getInstance("fieldtype");
 
+	
+	public static void createPropertyUDFs(ComponentImpl comp, Property property) throws PageException {
+		// getter
+		if(property.getGetter()){
+			PropertyFactory.addGet(comp,property);
+		}
+		// setter
+		if(property.getSetter()){
+			PropertyFactory.addSet(comp,property);
+		}
+
+		String fieldType = Caster.toString(property.getMeta().get(PropertyFactory.FIELD_TYPE,null),null);
+		
+		// add
+		if(fieldType!=null) {
+			if("one-to-many".equalsIgnoreCase(fieldType) || "many-to-many".equalsIgnoreCase(fieldType)) {
+				PropertyFactory.addHas(comp,property);
+				PropertyFactory.addAdd(comp,property);
+				PropertyFactory.addRemove(comp,property);
+			}
+			else if("one-to-one".equalsIgnoreCase(fieldType) || "many-to-one".equalsIgnoreCase(fieldType)) {
+				PropertyFactory.addHas(comp,property);
+			}
+		}
+	}
+	
+	
 	public static void addGet(ComponentImpl comp, Property prop) {
 		Member m = comp.getMember(ComponentImpl.ACCESS_PRIVATE,KeyImpl.init("get"+prop.getName()),true,false);
 		if(!(m instanceof UDF)){

@@ -15,14 +15,6 @@ import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
 
-/*
-JDK6: uncomment this for compiling with JDK6 
- 
-import java.sql.NClob;
-import java.sql.SQLXML;
-*/
-
-
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 
