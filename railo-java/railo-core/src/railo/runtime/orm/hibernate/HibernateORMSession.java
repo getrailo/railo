@@ -639,7 +639,7 @@ public class HibernateORMSession implements ORMSession{
 			
 			// order 
 			if(!StringUtil.isEmpty(order)){
-				if(metaData!=null)metaData = getSessionFactory(pc).getClassMetadata(name);
+				if(metaData==null)metaData = getSessionFactory(pc).getClassMetadata(name);
 				
 				String[] arr = railo.runtime.type.List.listToStringArray(order, ',');
 				railo.runtime.type.List.trimItems(arr);
