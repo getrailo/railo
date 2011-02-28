@@ -1,15 +1,24 @@
 package railo.runtime.util;
 
+import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.Mapping;
+import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContextUtil;
 import railo.runtime.net.s3.Properties;
+import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Scope;
+import railo.runtime.type.Struct;
 import railo.runtime.type.dt.TimeSpan;
 
 /**
@@ -20,7 +29,13 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 
 	private static final long serialVersionUID = 940663152793150953L;
 
-
+	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.getInstance("accessKeyId");
+	private static final Collection.Key AWS_SECRET_KEY = KeyImpl.getInstance("awsSecretKey");
+	private static final Collection.Key DEFAULT_LOCATION = KeyImpl.getInstance("defaultLocation");
+	private static final Collection.Key HOST = KeyImpl.getInstance("host");
+	private static final Collection.Key SERVER = KeyImpl.getInstance("server");
+	private static final Collection.Key DATA_SOURCE = KeyImpl.getInstance("datasource");
+	
 	
 
 	private String name;
@@ -372,8 +387,18 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 		return config;
 	}
 	public void setORMConfiguration(ORMConfiguration config) {
-		//if(config==null)print.dumpStack();
 		this.config= config;
+	}
+	
+	public void setORMConfiguration(PageContext pc,Struct sct) throws PageException {
+		Resource res=ResourceUtil.getResource(pc, pc.getCurrentTemplatePageSource()).getParentResource();
+		ConfigImpl config=(ConfigImpl) pc.getConfig();
+		ORMConfiguration ormConfig=ORMConfiguration.load(config,sct,res,config.getORMConfig());
+		setORMConfiguration(ormConfig);
+		
+		// datasource
+		Object o = sct.get(DATA_SOURCE,null);
+		if(o!=null) setORMDataSource(Caster.toString(o));
 	}
 
 	public void setORMEnabled(boolean ormEnabled) {
@@ -387,6 +412,17 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 		return component;
 	}
 
+	public void setS3(Struct sct) throws PageException {
+		String host=Caster.toString(sct.get(HOST,null));
+		if(StringUtil.isEmpty(host))host=Caster.toString(sct.get(SERVER,null));
+		
+		setS3(
+				Caster.toString(sct.get(ACCESS_KEY_ID,null)),
+				Caster.toString(sct.get(AWS_SECRET_KEY,null)),
+				Caster.toString(sct.get(DEFAULT_LOCATION,null)),
+				host
+			);
+	}
 
 	public void setS3(String accessKeyId, String awsSecretKey, String defaultLocation, String host) {
 		this.s3=new Properties();

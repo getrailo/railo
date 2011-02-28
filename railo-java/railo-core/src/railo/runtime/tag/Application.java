@@ -7,8 +7,13 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
+import railo.runtime.orm.ORMUtil;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.util.ApplicationContextImpl;
 
@@ -52,7 +57,11 @@ public final class Application extends TagImpl {
 	private short sessionType=-1;
 	private boolean sessionCluster;
 	private boolean clientCluster;
-    
+
+	private boolean ormenabled;
+	private Struct ormsettings;
+	private Struct s3;
+	
      
     /**
      * @see javax.servlet.jsp.tagext.Tag#release()
@@ -81,6 +90,10 @@ public final class Application extends TagImpl {
         sessionType=-1;
         sessionCluster=false;
         clientCluster=false;
+        
+        ormenabled=false;
+        ormsettings=null;
+        s3=null;
         //appContext=null;
     }
     
@@ -173,6 +186,29 @@ public final class Application extends TagImpl {
 	public void setClienttimeout(TimeSpan clientTimeout)	{
 		this.clientTimeout=clientTimeout;
 	}
+	
+
+
+	/**
+	 * @param ormenabled the ormenabled to set
+	 */
+	public void setOrmenabled(boolean ormenabled) {
+		this.ormenabled = ormenabled;
+	}
+
+	/**
+	 * @param ormsettings the ormsettings to set
+	 */
+	public void setOrmsettings(Struct ormsettings) {
+		this.ormsettings = ormsettings;
+	}
+
+	/**
+	 * @param s3 the s3 to set
+	 */
+	public void setS3(Struct s3) {
+		this.s3 = s3;
+	}
 
 	/** set the value applicationtimeout
 	*  Enter the CreateTimeSpan function and values in days, hours, minutes, and seconds, separated 
@@ -241,25 +277,30 @@ public final class Application extends TagImpl {
 
 
 	/**
+	 * @throws PageException 
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
-	public int doStartTag()	{
+	public int doStartTag() throws PageException	{
         
         ApplicationContextImpl ac;
-		if(action==ACTION_CREATE){
+        boolean initORM;
+        if(action==ACTION_CREATE){
         	ac=createAppContext();
         	ac.setName(name);
-        	set(ac);
+        	initORM=set(ac);
         	pageContext.setApplicationContext(ac);
         }
         else {
         	ac=(ApplicationContextImpl) pageContext.getApplicationContext();
-        	set(ac);
+        	initORM=set(ac);
         }
+        
+        if(initORM) ORMUtil.resetEngine(pageContext);
+        
         return SKIP_BODY; 
 	}
 
-	private void set(ApplicationContextImpl ac) {
+	private boolean set(ApplicationContextImpl ac) throws PageException {
 		if(applicationTimeout!=null)			ac.setApplicationTimeout(applicationTimeout);
 		if(sessionTimeout!=null)				ac.setSessionTimeout(sessionTimeout);
 		if(clientTimeout!=null)				ac.setClientTimeout(clientTimeout);
@@ -284,7 +325,19 @@ public final class Application extends TagImpl {
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
 		ac.setClientCluster(clientCluster);
 		ac.setSessionCluster(sessionCluster);
+		if(s3!=null) 							ac.setS3(s3);
 		
+		// ORM
+		boolean initORM=false;
+		ac.setORMEnabled(ormenabled);
+		if(ormenabled) {
+			initORM=true;
+			if(ormsettings==null)ormsettings=new StructImpl();
+			ac.setORMConfiguration(pageContext,ormsettings);
+		}
+		
+		
+		return initORM;
 	}
 
 	/**

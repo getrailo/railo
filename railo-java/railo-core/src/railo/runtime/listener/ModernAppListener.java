@@ -84,12 +84,7 @@ public class ModernAppListener extends AppListenerSupport {
 	private static final Collection.Key ORM_ENABLED = KeyImpl.getInstance("ormenabled");
 	private static final Collection.Key ORM_SETTINGS = KeyImpl.getInstance("ormsettings");
 
-	private static final Collection.Key S3 = KeyImpl.getInstance("s3");
-	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.getInstance("accessKeyId");
-	private static final Collection.Key AWS_SECRET_KEY = KeyImpl.getInstance("awsSecretKey");
-	private static final Collection.Key DEFAULT_LOCATION = KeyImpl.getInstance("defaultLocation");
-	private static final Collection.Key HOST = KeyImpl.getInstance("host");
-	private static final Collection.Key SERVER = KeyImpl.getInstance("server");
+	public static final Collection.Key S3 = KeyImpl.getInstance("s3");
 	
 	
 	//private ComponentImpl app;
@@ -507,17 +502,7 @@ public class ModernAppListener extends AppListenerSupport {
 			// S3
 			o=get(app,S3,null);
 			if(o!=null && Decision.isStruct(o)){
-				Struct sct=Caster.toStruct(o);
-				
-				String host=Caster.toString(sct.get(HOST,null));
-				if(StringUtil.isEmpty(host))host=Caster.toString(sct.get(SERVER,null));
-				
-				appContext.setS3(
-						Caster.toString(sct.get(ACCESS_KEY_ID,null)),
-						Caster.toString(sct.get(AWS_SECRET_KEY,null)),
-						Caster.toString(sct.get(DEFAULT_LOCATION,null)),
-						host
-					);
+				appContext.setS3(Caster.toStruct(o));
 			}
 			
 			
@@ -532,28 +517,12 @@ public class ModernAppListener extends AppListenerSupport {
 				// settings
 				o=get(app,ORM_SETTINGS,null);
 				Struct settings;
-				if(!(o instanceof Struct))
-					settings=new StructImpl();
-				else
-					settings=(Struct) o;
-				//if(o instanceof Struct){
-					//Struct settings=(Struct) o;
-					
-					// default cfc location (parent of the application.cfc)
-					Resource res=null;
-					
-						res=ResourceUtil.getResource(pc, pc.getCurrentTemplatePageSource()).getParentResource();
-					/*try {} catch (ExpressionException e) {
-						e.printStackTrace();
-					}*/
-					ConfigImpl config=(ConfigImpl) pc.getConfig();
-					ORMConfiguration ormConfig=ORMConfiguration.load(config,settings,res,config.getORMConfig());
-					appContext.setORMConfiguration(ormConfig);
-					
-					// datasource
-					o=settings.get(DATA_SOURCE,null);
-					if(o!=null) appContext.setORMDataSource(Caster.toString(o));
-				//}
+				if(o instanceof Struct)	settings=(Struct) o;
+				else	settings=new StructImpl();
+				
+				appContext.setORMConfiguration(pc,settings);
+				
+
 			}
 			
 			
