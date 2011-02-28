@@ -649,10 +649,8 @@ public final class FileTag extends TagImpl {
 		sct.setEL("attributes",getFileAttribute(file));
 		if(SystemUtil.isUnix())sct.setEL("mode",new ModeObjectWrap(file));
         
-		//InputStream is=null;
 		try { 		
-			//is=file.getInputStream();
-            BufferedImage bi = ImageUtil.toBufferedImage(file, null);
+			BufferedImage bi = ImageUtil.toBufferedImage(file, null);
             if(bi!=null) {
 	            Struct img =new StructImpl();
 	            img.setEL("width",new Double(bi.getWidth()));
@@ -660,12 +658,7 @@ public final class FileTag extends TagImpl {
 	            sct.setEL("img",img);
             }
         } 
-		catch (IOException e) {
-            //throw Caster.toPageException(e);
-        }
-		//finally {
-			//IOUtil.closeEL(is);
-		//}
+		catch (IOException e) {}
 	}
 
 	private static String getFileAttribute(Resource file){
