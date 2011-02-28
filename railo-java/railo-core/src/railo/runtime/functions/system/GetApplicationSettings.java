@@ -56,6 +56,11 @@ public class GetApplicationSettings {
 		sct.setEL("localmode", ac.getLocalMode()==Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS?"always":"update");
 		sct.setEL("sessiontype", ac.getSessionType()==ConfigImpl.SESSION_TYPE_CFML?"cfml":"j2ee");
 		sct.setEL("serverSideFormValidation", Boolean.FALSE); // TODO impl
+
+		sct.setEL("clientCluster", Caster.toBoolean(ac.getClientCluster()));
+		sct.setEL("sessionCluster", Caster.toBoolean(ac.getSessionCluster()));
+		
+		
 		
 		// orm
 		if(ac.isORMEnabled()){

@@ -1877,7 +1877,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		top.properties.properties=new LinkedHashMap<String,Property>();
 		
 		// MappedSuperClass  
-		if(isPersistent() && !isBasePeristent() && top.base!=null && top.base.properties.properties!=null) {
+		if(isPersistent() && !isBasePeristent() && top.base!=null && top.base.properties.properties!=null && top.base.properties.meta!=null) {
 			boolean msc = Caster.toBooleanValue(top.base.properties.meta.get(MAPPED_SUPER_CLASS,Boolean.FALSE),false);
 			if(msc){
 				Property p;
