@@ -152,7 +152,7 @@ public class HBMCreator {
         if(isClass) addId(cfc,doc,clazz,pc,meta,propColl,columnsInfo,tableName,engine);
 	      
         // discriminator
-        addDiscriminator(engine,cfc,doc,clazz,pc,meta);
+        if(isClass) addDiscriminator(engine,cfc,doc,clazz,pc,meta);
         
 		// version
         if(isClass)addVersion(cfc,clazz,pc, propColl,columnsInfo,tableName,engine);
@@ -193,7 +193,7 @@ public class HBMCreator {
         else if(_ids.length>1) 
         	createXMLMappingCompositeId(cfc,clazz,pc, _ids,columnsInfo,tableName,engine);
         else 
-        	throw new HibernateException(engine,cfc,"missing id property for entity ["+tableName+"]");
+        	throw new HibernateException(engine,cfc,"missing id property for entity ["+HibernateCaster.getEntityName(cfc)+"]");
 	}
 	
 
