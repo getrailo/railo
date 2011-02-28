@@ -62,6 +62,7 @@ import railo.runtime.MappingImpl;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.cache.CacheConnectionImpl;
 import railo.runtime.cache.ServerCacheConnection;
+import railo.runtime.cache.eh.EHCacheLite;
 import railo.runtime.cfx.customtag.CFXTagClass;
 import railo.runtime.cfx.customtag.CPPCFXTagClass;
 import railo.runtime.cfx.customtag.JavaCFXTagClass;
@@ -1865,17 +1866,26 @@ public final class ConfigWebFactory {
     	Element[] eConnections=getChildren(eCache,"connection");
     		
 		//if(hasAccess) {
-		String name;
+		String name,clazzName;
 		CacheConnection cc;
-		
+		Class cacheClazz;
 		// caches
 		if(hasAccess)for(int i=0;i<eConnections.length;i++) {
                 Element eConnection=eConnections[i];
                 name=eConnection.getAttribute("name");
+                clazzName=eConnection.getAttribute("class");
+                if(clazzName!=null) clazzName=clazzName.trim();
+                
+                //
 			  	try{
+			  		
+	                // Workaround for old EHCacheLite class defintion
+	                if("railo.extension.io.cache.eh.EHCacheLite".equals(clazzName)) cacheClazz=EHCacheLite.class;
+	                else cacheClazz=ClassUtil.loadClass(config.getClassLoader(),clazzName);
+                
 			  		cc=new CacheConnectionImpl(config,
 	  				name,
-    				ClassUtil.loadClass(config.getClassLoader(),eConnection.getAttribute("class")),
+	  				cacheClazz,
     				toStruct(eConnection.getAttribute("custom")),
     				Caster.toBooleanValue(eConnection.getAttribute("read-only"),false));
 			  		if(!StringUtil.isEmpty(name)){
