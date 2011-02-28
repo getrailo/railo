@@ -14,6 +14,18 @@ function detail(field){
 }
 </script>
 
+<cfscript>
+NL="
+";
+
+function formatDesc(string desc){
+	desc=replace(trim(desc),NL&"-","<br><li>","all");
+	desc=replace(desc,NL,"<br>","all");
+
+	return desc;
+}
+</cfscript>
+
 <form action="#request.self#">
 <input type="hidden" name="action" value="#url.action#" />
 <table class="tbl">
@@ -134,7 +146,7 @@ function detail(field){
 	<td class="tblContent">#key#</td>
 	<td class="tblContent"><cfif attr.type EQ "object">any<cfelse>#attr.type#</cfif></td>
 	<td class="tblContent">#YesNoFormat(attr.required)#</td>
-	<td class="tblContent"><cfif attr.status EQ "deprecated"><b class="error">#stText.doc.depAttr#</b><cfelse>#attr.description#</cfif>&nbsp;</td>
+	<td class="tblContent"><cfif attr.status EQ "deprecated"><b class="error">#stText.doc.depAttr#</b><cfelse>#formatDesc(attr.description)#</cfif>&nbsp;</td>
 </tr>
 </cfloop>
 
