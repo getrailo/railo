@@ -1,16 +1,24 @@
 package railo.runtime.util;
 
+import java.util.Iterator;
+
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContextUtil;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Scope;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.util.ComponentUtil;
 
 /**
  * 
@@ -381,6 +389,22 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 	public int getSecurityIdleTimeout() {
 		if(idletimeout<1) return 1800;
 		return idletimeout;
+	}
+
+
+	/**
+	 * @see railo.runtime.util.ApplicationContextPro#getCustom(railo.runtime.type.Collection.Key)
+	 */
+	public Object getCustom(Collection.Key key) {
+		Component cfc = getComponent();
+		if(cfc!=null){
+			try {
+				ComponentWrap cw=new ComponentWrap(Component.ACCESS_PRIVATE, ComponentUtil.toComponentImpl(cfc));
+				return cw.get(key,null);
+			} 
+			catch (PageException e) {}
+		}
+		return null;
 	}
 	
 }
