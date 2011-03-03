@@ -27,6 +27,7 @@ import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -95,6 +96,33 @@ public final class HTTPUtil {
 
         HttpClient client = new HttpClient();
         HttpMethod httpMethod=new GetMethod(url.toExternalForm());
+        HostConfiguration config = client.getHostConfiguration();
+        
+        HttpState state = client.getState();
+        
+        setHeader(httpMethod,headers);
+        setContentType(httpMethod,charset);
+        setUserAgent(httpMethod,useragent);
+        setTimeout(client,timeout);
+        setCredentials(client,httpMethod,username,password);  
+        setProxy(config,state,proxyserver,proxyport,proxyuser,proxypassword);
+        
+        /*if(followRedirects!=null){
+        	client.executeMethod(httpMethod);
+        }
+        else */
+        	httpMethod = HttpClientUtil.execute(client,httpMethod,true);
+        
+        return httpMethod;
+    }
+    
+    public static HttpMethod post(URL url, String username, String password, long timeout, 
+            String charset, String useragent,
+            String proxyserver, int proxyport, String proxyuser, 
+            String proxypassword, Header[] headers) throws IOException {
+
+        HttpClient client = new HttpClient();
+        HttpMethod httpMethod=new PostMethod(url.toExternalForm());
         HostConfiguration config = client.getHostConfiguration();
         
         HttpState state = client.getState();
@@ -505,7 +533,7 @@ public final class HTTPUtil {
     
 
     
-    private static String escapeQSValue(String str) {
+    public static String escapeQSValue(String str) {
     	if(!URLEncoder.needEncoding(str)) return str;
     	
     	Config config = ThreadLocalPageContext.getConfig();
