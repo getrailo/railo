@@ -2,8 +2,11 @@ package railo.runtime.util;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import java.util.Iterator;
+
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
@@ -18,7 +21,9 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.util.ComponentUtil;
 
 /**
  * 
@@ -523,6 +528,20 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 	public void setClientCluster(boolean clientCluster) {
 		this.clientCluster = clientCluster;
 	}
-
+	
+	/*
+	 * @see railo.runtime.util.ApplicationContextPro#getCustom(railo.runtime.type.Collection.Key)
+	 */
+	public Object getCustom(Collection.Key key) {
+		Component cfc = getComponent();
+		if(cfc!=null){
+			try {
+				ComponentWrap cw=new ComponentWrap(Component.ACCESS_PRIVATE, ComponentUtil.toComponentImpl(cfc));
+				return cw.get(key,null);
+			} 
+			catch (PageException e) {}
+		}
+		return null;
+	}
 	
 }

@@ -4,6 +4,7 @@ import railo.runtime.Component;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.Collection;
 
 // FUTURE move all this to ApplicationContext and delete this interface
 public interface ApplicationContextPro extends ApplicationContext {
@@ -31,4 +32,10 @@ public interface ApplicationContextPro extends ApplicationContext {
 	public boolean getSessionCluster();
 
 	public boolean getClientCluster();
+
+	/**
+	 * returns a custom setting (only supported for application.cfc)
+	 * @param string
+	 */
+	public Object getCustom(Collection.Key key);
 }
