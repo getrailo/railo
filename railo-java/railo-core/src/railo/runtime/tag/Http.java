@@ -618,7 +618,7 @@ public final class Http extends BodyTagImpl {
 	        		if(value==null) responseHeader.set(KeyImpl.init(header.getName()),header.getValue());
 	        		else {
 	        		    Array arr=null;
-	        		    if(value instanceof ArrayImpl) {
+	        		    if(value instanceof Array) {
 	        		        arr=(Array) value;
 	        		    }
 	        		    else {

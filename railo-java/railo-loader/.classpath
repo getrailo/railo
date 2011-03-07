@@ -93,6 +93,6 @@
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/antlr.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/slf4j-api.jar"/>
 	<classpathentry kind="lib" path="/Users/mic/Projects/Railo/Source2/railo/railo-java/libs/apache-jakarta-commons-codec.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JVM 1.6.0 (MacOS X Default)"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -20,13 +20,12 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Map;
 
-/*
-JDK6: uncomment this for compiling with JDK6 
- 
+
+//JDK6: uncomment this for compiling with JDK6 
 import java.sql.NClob;
 import java.sql.RowId;
 import java.sql.SQLXML;
-*/
+
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -1223,9 +1222,7 @@ public class QueryWrap implements Query {
 		throw notSupported();
 	}
 
-	/*
-	JDK6: uncomment this for compiling with JDK6 
-	 
+	//JDK6: uncomment this for compiling with JDK6 
 	public NClob getNClob(int arg0) throws SQLException {
 		return rst.getNClob(arg0);
 	}
@@ -1262,7 +1259,6 @@ public class QueryWrap implements Query {
 	public void updateSQLXML(String arg0, SQLXML arg1) throws SQLException {
 		rst.updateSQLXML(arg0, arg1);
 	}
-	*/
 	
 	
 	

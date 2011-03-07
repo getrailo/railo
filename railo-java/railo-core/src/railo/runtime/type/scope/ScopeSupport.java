@@ -222,15 +222,15 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
         	}
             else parent.setEL(key,value); 
         }
-        else if(curr instanceof ArrayImpl){
-            ((ArrayImpl) curr).appendEL(value);
+        else if(curr instanceof Array){
+            ((Array) curr).appendEL(value);
         }
         else if(curr instanceof CastableStruct){
         	if(isLast) ((CastableStruct)curr).setValue(value);
             else return (Struct) curr;
         	
         }
-        else if(curr instanceof StructImpl){
+        else if(curr instanceof Struct){
             if(isLast) parent.setEL(key,value);
             else return (Struct) curr;
         }
@@ -241,7 +241,7 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
             	arr.appendEL(value);
                 parent.setEL(key,arr);
             }
-            else if(value instanceof StructImpl) {
+            else if(value instanceof Struct) {
                 parent.setEL(key,value);
             }
             else {

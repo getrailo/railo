@@ -16,15 +16,14 @@ public class DataSourceUtil {
 
 	public static boolean isValid(DatasourceConnection dc, int timeout) throws Throwable {
 		// JDK5 only
-		Connection c = dc.getConnection();
+		/*Connection c = dc.getConnection();
 		if(IS_VALID==null)IS_VALID=c.getClass().getMethod("isValid", new Class[]{int.class});
 		return Caster.toBooleanValue(IS_VALID.invoke(c, new Object[]{Integer.valueOf(timeout)}));
-		////////////////////////////////
+		*/
 		
-		/*
-		 JDK6: replace code in this method with
-		 return dc.getConnection().isValid(1000);
-		 */	
+		 // JDK6: replace code in this method with
+		 return dc.getConnection().isValid(timeout);
+		 
 	}
 
 }

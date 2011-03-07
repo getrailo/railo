@@ -29,13 +29,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-/*
-JDK6: uncomment this for compiling with JDK6 
- 
+
+//JDK6: uncomment this for compiling with JDK6
 import java.sql.NClob;
 import java.sql.RowId;
 import java.sql.SQLXML;
-*/
+
 import railo.commons.db.DBUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.SizeOf;
@@ -3522,8 +3521,8 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	}
 	
 
-	/*
-	JDK6: uncomment this for compiling with JDK6 
+	
+	//JDK6: uncomment this for compiling with JDK6 
 	 
 	public void updateNClob(int columnIndex, NClob nClob) throws SQLException {
 		throw notSupported();
@@ -3572,7 +3571,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	public void updateRowId(String columnLabel, RowId x) throws SQLException {
 		throw notSupported();
 	}
-	*/
+	
 
 	private SQLException notSupported() {
 		return new SQLException("this feature is not supported");
