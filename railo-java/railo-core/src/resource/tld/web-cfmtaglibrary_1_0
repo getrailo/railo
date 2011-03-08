@@ -12346,6 +12346,13 @@ dWord: creates a value of 0 (zero)</description>
             does not display on any CFM page (alias for attribute "var").</description>
 		</attribute>
 		<attribute>
+			<type>boolean</type>
+			<name>follow</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>If true, Railo follows the variable defined in the [var] attribute and will log any changes to it. Ignored when attribute [var] is not defined.</description>
+		</attribute>
+		<attribute>
 			<type>struct</type>
 			<name>caller</name>
 			<required>false</required>

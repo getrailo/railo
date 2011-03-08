@@ -3,8 +3,8 @@ package railo.runtime.util;
 import railo.runtime.Component;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.orm.ORMConfiguration;
-import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.Collection;
+import railo.runtime.type.dt.TimeSpan;
 
 // FUTURE move all this to ApplicationContext and delete this interface
 public interface ApplicationContextPro extends ApplicationContext {

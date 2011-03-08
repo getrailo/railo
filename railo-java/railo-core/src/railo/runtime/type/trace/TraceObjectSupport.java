@@ -1,26 +1,46 @@
 package railo.runtime.type.trace;
 
-import railo.commons.io.log.LogResource;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.debug.Debugger;
+import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryPro;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
 
 public class TraceObjectSupport implements TraceObject {
+
+	private static final Collection.Key LABEL = KeyImpl.getInstance("label");
+	private static final Collection.Key ACTION = KeyImpl.getInstance("action");
+	private static final Collection.Key PARAMS = KeyImpl.getInstance("params");
+	private static final Collection.Key TEMPLATE = KeyImpl.getInstance("template");
+	private static final Collection.Key LINE = KeyImpl.getInstance("line");
+	private static final Collection.Key TIME = KeyImpl.getInstance("time");
+
 	
 	protected Object o;
-	protected LogResource log;
-	protected String label;
+	protected  Debugger debugger;
+	
+	protected int type;
+	protected String category;
+	protected String text;
 
-	public TraceObjectSupport(Object o,LogResource log, String label) {
+	
+	public TraceObjectSupport(Debugger debugger,Object o,int type,String category,String text) {
 		this.o=o;
-		this.log=log;
-		this.label=label;
+		//this.log=log;
+		this.type=type;
+		this.category=category;
+		this.text=text;
+		this.debugger=debugger;
+		//((DebuggerImpl)debugger).addObjectTrace(this);
+		
+		
 	}
 	
 	
@@ -41,11 +61,19 @@ public class TraceObjectSupport implements TraceObject {
 	}
 	
 
-	protected void log(String addional) {
-		log(log,label,addional);
+	protected void log() {
+		try{log(debugger,type,category,text,null,null);}catch(Throwable t){}
+	}
+	
+	protected void log(Object varName) {
+		try{log(debugger,type,category,text,varName.toString(),null);}catch(Throwable t){}
+	}
+	
+	protected void log(Object varName,Object varValue) {
+		try{log(debugger,type,category,text,varName.toString(),varValue.toString());}catch(Throwable t){}
 	}
 
-	public static void log(LogResource log, String label,String addional) {
+	public synchronized static void log(Debugger debugger,int type,String category,String text,String varName,String varValue) {
 		
 		Throwable t=new Exception("Stack trace");
 		Throwable cause = t.getCause(); 
@@ -62,7 +90,7 @@ public class TraceObjectSupport implements TraceObject {
 			trace=traces[i];
 			template=trace.getFileName();
 			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java") ||
-					template.endsWith("Dump.cfc"))// MUST bad impl 
+					template.endsWith("Dump.cfc") || template.endsWith("dump.cfm"))// MUST bad impl 
 				continue;
 			line=trace.getLineNumber();
 			break;
@@ -70,16 +98,27 @@ public class TraceObjectSupport implements TraceObject {
 		//print.e(t);
 		if(line==0) return;
 		
-		String type=traces[1].getMethodName();
+		/*String type=traces[2].getMethodName();
 		
-		log.info(label, type(type)+(StringUtil.isEmpty(addional)?"":" ["+addional+"]")+" at "+template+":"+line);
+		int row=qry.addRow();
+		qry.setAtEL(LABEL, row, label);
+		qry.setAtEL(ACTION, row, type(type));
+		qry.setAtEL(PARAMS, row, addional);
+		*/
+		String action=type(traces[2].getMethodName());
+		((DebuggerImpl)debugger).addTrace(type, category, text, template,line,action, varName, varValue);
+			
 	}	
 	
 
 	protected static String type(String type) {
+		if(type.equals("appendEL")) return "append";
 		if(type.equals("setEL")) return "set";
 		if(type.equals("removeEL")) return "remove";
 		if(type.equals("keys")) return "list";
+		if(type.equals("toDumpData")) return "dump";
+		
+		
 		return type;
 	}
 	
@@ -89,22 +128,22 @@ public class TraceObjectSupport implements TraceObject {
 		return ThreadLocalPageContext.get();
 	}
 	
-	public static TraceObject toTraceObject(Object obj, String label, LogResource log) {
+	public static TraceObject toTraceObject(Debugger debugger,Object obj, int type, String category, String text) {
 		if(obj instanceof TraceObject)
 			return (TraceObject) obj;
 		else if(obj instanceof UDF)
-			return new TOUDF((UDF) obj, label, log);
+			return new TOUDF(debugger,(UDF) obj,type,category,text);
 		else if(obj instanceof QueryPro)
-			return new TOQuery((QueryPro) obj, label, log);
+			return new TOQuery(debugger,(QueryPro) obj,type,category,text);
 		else if(obj instanceof Array)
-			return new TOArray((Array) obj, label, log);
+			return new TOArray(debugger,(Array) obj,type,category,text);
 		else if(obj instanceof Struct)
-			return new TOStruct((Struct) obj, label, log);
+			return new TOStruct(debugger,(Struct) obj,type,category,text);
 		else if(obj instanceof DateTime)
-			return new TODateTime((DateTime) obj, label, log);
+			return new TODateTime(debugger,(DateTime) obj,type,category,text);
 		
 		
-		return new TOObjects(obj, label, log);
+		return new TOObjects(debugger,obj,type,category,text);
 	}
 	
 }

@@ -1,97 +1,112 @@
 package railo.runtime.type.trace;
 
-import railo.commons.io.log.LogResource;
 import railo.runtime.PageContext;
+import railo.runtime.debug.Debugger;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Query;
+import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.dt.DateTimeImpl;
 
 public class TODateTime extends DateTime implements TraceObject {
 
 	private DateTime dt;
-	private String label;
-	private LogResource log;
+	//private Debugger debugger;
+	private Query qry=new QueryImpl(
+            new String[]{"label","action","params","template","line","time"},
+            0,"traceObjects");
+	private int type;
+	private String category;
+	private String text;
+	private Debugger debugger;
 
-	public TODateTime(DateTime dt, String label,LogResource log){
+	
+
+	public TODateTime(Debugger debugger,DateTime dt, int type, String category, String text){
 		this.dt=dt;
-		this.log=log;
-		this.label=label;
+		this.debugger=debugger;
+		this.type=type;
+		this.category=category;
+		this.text=text;
 	}
 	
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties properties) {
-		log(null);
+		log();
 		return dt.toDumpData(pageContext, maxlevel, properties);
 	}
 
 	public String castToString() throws PageException {
-		log(null);
+		log();
 		return dt.castToString();
 	}
 
 	public String castToString(String defaultValue) {
-		log(null);
+		log();
 		return dt.castToString(defaultValue);
 	}
 
 	public boolean castToBooleanValue() throws PageException {
-		log(null);
+		log();
 		return dt.castToBooleanValue();
 	}
 
 	public Boolean castToBoolean(Boolean defaultValue) {
-		log(null);
+		log();
 		return dt.castToBoolean(defaultValue);
 	}
 
 	public double castToDoubleValue() throws PageException {
-		log(null);
+		log();
 		return dt.castToDoubleValue();
 	}
 
 	public double castToDoubleValue(double defaultValue) {
-		log(null);
+		log();
 		return dt.castToDoubleValue(defaultValue);
 	}
 
 	public DateTime castToDateTime() throws PageException {
-		log(null);
+		log();
 		return this;
 	}
 
 	public DateTime castToDateTime(DateTime defaultValue) {
-		log(null);
+		log();
 		return this;
 	}
 
 	public int compareTo(String str) throws PageException {
-		log(null);
+		log();
 		return dt.compareTo(str);
 	}
 
 	public int compareTo(boolean b) throws PageException {
-		log(null);
+		log();
 		return dt.compareTo(b);
 	}
 
 	public int compareTo(double d) throws PageException {
-		log(null);
+		log();
 		return dt.compareTo(d);
 	}
 
 	public int compareTo(DateTime dt) throws PageException {
-		log(null);
+		log();
 		return dt.compareTo(dt);
 	}
 
 	public double toDoubleValue() {
-		log(null);
+		log();
 		return this.dt.toDoubleValue();
 	}
 	
 
-	protected void log(String addional) {
-		TraceObjectSupport.log(log,label,addional);
+	protected void log() {
+		TraceObjectSupport.log(debugger,type,category,text,null,null);
+	}
+
+	public Query getDebugData() {
+		return qry;
 	}
 }

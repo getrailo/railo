@@ -1,9 +1,6 @@
 package railo.runtime.db;
 
 import java.lang.reflect.Method;
-import java.sql.Connection;
-
-import railo.runtime.op.Caster;
 
 public class DataSourceUtil {
 	private static Method IS_VALID;

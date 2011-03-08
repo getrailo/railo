@@ -12,7 +12,11 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Scope;
 import railo.runtime.type.ref.VariableReference;
+import railo.runtime.type.scope.Argument;
+import railo.runtime.type.scope.CallerImpl;
 import railo.runtime.type.scope.ScopeSupport;
+import railo.runtime.type.scope.UndefinedImpl;
+import railo.runtime.type.scope.Variables;
 
 /**
  * Class to check and interpret Variable Strings
@@ -95,6 +99,67 @@ public final class VariableInterpreter {
 		}
 		return coll;
     }
+	
+
+	public static Object getVariable(PageContext pc,String str,Scope scope) throws PageException {
+		return _variable(pc, str,NULL, scope);
+	}
+	public static Object setVariable(PageContext pc,String str,Object value,Scope scope) throws PageException {
+		return _variable(pc, str,value, scope);
+	}
+	
+	public static Object _variable(PageContext pc,String str,Object value,Scope scope) throws PageException {
+		// define a ohter enviroment for the function
+		if(scope!=null){
+			
+			// Variables Scope
+			Variables var=null;
+			if(scope instanceof Variables){
+				var=(Variables) scope;
+			}
+			else if(scope instanceof CallerImpl){
+				var=((CallerImpl) scope).getVariablesScope();
+			}
+			if(var!=null){
+				Variables current=pc.variablesScope();
+				pc.setVariablesScope(var);
+		        try{
+		        	if(value!=NULL) return setVariable(pc, str,value);
+		        	return getVariable(pc, str);
+		        }
+		        finally{
+		        	pc.setVariablesScope(current);
+		        }
+			}
+			
+			// Undefined Scope
+			else if(scope instanceof UndefinedImpl) {
+				PageContextImpl pci=(PageContextImpl) pc;
+				UndefinedImpl undefined=(UndefinedImpl) scope;
+				
+				boolean check=undefined.getCheckArguments();
+				Variables orgVar=pc.variablesScope();
+				Argument orgArgs=pc.argumentsScope();
+		        Scope orgLocal=pc.localScope();
+				
+				pci.setVariablesScope(undefined.variablesScope());
+				if(check)pci.setFunctionScopes(undefined.localScope(), undefined.argumentsScope());
+		        try{
+		        	if(value!=NULL) return setVariable(pc, str,value);
+		        	return getVariable(pc, str);
+		        }
+		        finally{
+		        	pc.setVariablesScope(orgVar);
+		        	if(check)pci.setFunctionScopes(orgLocal,orgArgs);
+		        }
+			}
+		}
+		if(value!=NULL) return setVariable(pc, str,value);
+		return getVariable(pc, str);
+	}
+	
+	
+	
 	
     /**
 	 * get a variable from page context

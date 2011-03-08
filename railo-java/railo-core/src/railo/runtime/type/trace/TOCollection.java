@@ -2,8 +2,8 @@ package railo.runtime.type.trace;
 
 import java.util.Iterator;
 
-import railo.commons.io.log.LogResource;
 import railo.runtime.PageContext;
+import railo.runtime.debug.Debugger;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
@@ -16,8 +16,8 @@ abstract class TOCollection extends TOObjects implements Collection {
 
 	private Collection coll;
 
-	protected TOCollection(Collection coll, String label, LogResource log) {
-		super(coll,label,log);
+	protected TOCollection(Debugger debugger,Collection coll, int type,String category,String text) {
+		super(debugger,coll, type, category, text);
 		this.coll=coll;
 	}
 	
@@ -34,7 +34,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
 	public Iterator keyIterator() {
-		log(null);
+		log();
 		return coll.keyIterator();
 	}
 
@@ -42,7 +42,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
 	public Iterator valueIterator() {
-		log(null);
+		log();
 		return coll.valueIterator();
 	}
 
@@ -50,12 +50,12 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.type.Iteratorable#iterator()
 	 */
 	public Iterator iterator() {
-		log(null);
+		log();
 		return coll.iterator();
 	}
 
 	public String castToString() throws PageException {
-		log(null);
+		log();
 		return coll.castToString();
 	}
 
@@ -63,7 +63,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
 	 */
 	public String castToString(String defaultValue) {
-		log(null);
+		log();
 		return coll.castToString(defaultValue);
 	}
 
@@ -71,7 +71,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.op.Castable#castToBooleanValue()
 	 */
 	public boolean castToBooleanValue() throws PageException {
-		log(null);
+		log();
 		return coll.castToBooleanValue();
 	}
 
@@ -79,7 +79,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
 	 */
 	public Boolean castToBoolean(Boolean defaultValue) {
-		log(null);
+		log();
 		return coll.castToBoolean(defaultValue);
 	}
 
@@ -87,7 +87,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.op.Castable#castToDoubleValue()
 	 */
 	public double castToDoubleValue() throws PageException {
-		log(null);
+		log();
 		return coll.castToDoubleValue();
 	}
 
@@ -95,7 +95,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.op.Castable#castToDoubleValue(double)
 	 */
 	public double castToDoubleValue(double defaultValue) {
-		log(null);
+		log();
 		return coll.castToDoubleValue(defaultValue);
 	}
 
@@ -103,23 +103,23 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.op.Castable#castToDateTime()
 	 */
 	public DateTime castToDateTime() throws PageException {
-		log(null);
-		return new TODateTime(coll.castToDateTime(),label, log);
+		log();
+		return new TODateTime(debugger,coll.castToDateTime(),type,category,text);
 	}
 
 	/**
 	 * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
 	 */
 	public DateTime castToDateTime(DateTime defaultValue) {
-		log(null);
-		return  new TODateTime(coll.castToDateTime(defaultValue),label, log);
+		log();
+		return  new TODateTime(debugger,coll.castToDateTime(defaultValue),type,category,text);
 	}
 
 	/**
 	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
 	 */
 	public int compareTo(String str) throws PageException {
-		log(null);
+		log();
 		return coll.compareTo(str);
 	}
 
@@ -127,7 +127,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.op.Castable#compareTo(boolean)
 	 */
 	public int compareTo(boolean b) throws PageException {
-		log(null);
+		log();
 		return coll.compareTo(b);
 	}
 
@@ -135,7 +135,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.op.Castable#compareTo(double)
 	 */
 	public int compareTo(double d) throws PageException {
-		log(null);
+		log();
 		return coll.compareTo(d);
 	}
 
@@ -143,7 +143,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
 	 */
 	public int compareTo(DateTime dt) throws PageException {
-		log(null);
+		log();
 		return coll.compareTo(dt);
 	}
 
@@ -151,7 +151,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.type.Collection#size()
 	 */
 	public int size() {
-		log(null);
+		log();
 		return coll.size();
 	}
 
@@ -159,7 +159,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.type.Collection#keys()
 	 */
 	public Key[] keys() {
-		log(null);
+		log();
 		return coll.keys();
 	}
 
@@ -167,7 +167,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see railo.runtime.type.Collection#keysAsString()
 	 */
 	public String[] keysAsString() {
-		log(null);
+		log();
 		return coll.keysAsString();
 	}
 
@@ -176,7 +176,8 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 */
 	public Object remove(Key key) throws PageException {
 		log(key.getString());
-		return TraceObjectSupport.toTraceObject(coll.remove(key), label, log);
+		return coll.remove(key);
+		//return TraceObjectSupport.toTraceObject(debugger,coll.remove(key),type,category,text);
 	}
 
 	/**
@@ -184,14 +185,15 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 */
 	public Object removeEL(Key key) {
 		log(key.getString());
-		return TraceObjectSupport.toTraceObject(coll.removeEL(key), label, log);
+		return coll.removeEL(key);
+		//return TraceObjectSupport.toTraceObject(debugger,coll.removeEL(key),type,category,text);
 	}
 
 	/**
 	 * @see railo.runtime.type.Collection#clear()
 	 */
 	public void clear() {
-		log(null);
+		log();
 		coll.clear();
 	}
 
@@ -200,7 +202,8 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 */
 	public Object get(String key) throws PageException {
 		log(key);
-		return TraceObjectSupport.toTraceObject(coll.get(key), label, log);
+		return coll.get(key);
+		//return TraceObjectSupport.toTraceObject(debugger,coll.get(key),type,category,text);
 	}
 
 	/**
@@ -208,7 +211,8 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 */
 	public Object get(Key key) throws PageException {
 		log(key.getString());
-		return TraceObjectSupport.toTraceObject(coll.get(key), label, log);
+		return coll.get(key);
+		//return TraceObjectSupport.toTraceObject(debugger,coll.get(key),type,category,text);
 	}
 
 	/**
@@ -216,7 +220,8 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 */
 	public Object get(String key, Object defaultValue) {
 		log(key);
-		return TraceObjectSupport.toTraceObject(coll.get(key, defaultValue), label, log);
+		return coll.get(key, defaultValue);
+		//return TraceObjectSupport.toTraceObject(debugger,coll.get(key, defaultValue),type,category,text);
 	}
 
 	/**
@@ -224,39 +229,44 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 */
 	public Object get(Key key, Object defaultValue) {
 		log(key.getString());
-		return TraceObjectSupport.toTraceObject(coll.get(key,defaultValue), label, log);
+		return coll.get(key,defaultValue);
+		//return TraceObjectSupport.toTraceObject(debugger,coll.get(key,defaultValue),type,category,text);
 	}
 
 	/**
 	 * @see railo.runtime.type.Collection#set(java.lang.String, java.lang.Object)
 	 */
 	public Object set(String key, Object value) throws PageException {
-		log(key);
-		return TraceObjectSupport.toTraceObject(coll.set(key, value), label, log);
+		log(key,value);
+		return coll.set(key, value);
+		//return TraceObjectSupport.toTraceObject(debugger,coll.set(key, value),type,category,text);
 	}
 
 	/**
 	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object set(Key key, Object value) throws PageException {
-		log(key.getString());
-		return TraceObjectSupport.toTraceObject(coll.set(key, value), label, log);
+		log(key.getString(),value);
+		return coll.set(key, value);
+		//return TraceObjectSupport.toTraceObject(debugger,coll.set(key, value),type,category,text);
 	}
 
 	/**
 	 * @see railo.runtime.type.Collection#setEL(java.lang.String, java.lang.Object)
 	 */
 	public Object setEL(String key, Object value) {
-		log(key);
-		return TraceObjectSupport.toTraceObject(coll.setEL(key, value), label, log);
+		log(key,value);
+		return coll.setEL(key, value);
+		//return TraceObjectSupport.toTraceObject(debugger,coll.setEL(key, value),type,category,text);
 	}
 
 	/**
 	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object setEL(Key key, Object value) {
-		log(key.getString());
-		return TraceObjectSupport.toTraceObject(coll.setEL(key, value), label, log);
+		log(key.getString(),value);
+		return coll.setEL(key, value);
+		//return TraceObjectSupport.toTraceObject(debugger,coll.setEL(key, value),type,category,text);
 	}
 
 	/**
@@ -277,7 +287,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 
 
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties properties) {
-		log(null);
+		log();
 		return coll.toDumpData(pageContext, maxlevel, properties);
 	}
 }

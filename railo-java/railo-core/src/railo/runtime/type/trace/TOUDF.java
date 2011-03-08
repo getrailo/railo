@@ -1,12 +1,10 @@
 package railo.runtime.type.trace;
 
-import railo.commons.io.log.LogResource;
 import railo.runtime.Component;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.debug.Debugger;
 import railo.runtime.exp.PageException;
-import railo.runtime.exp.PageRuntimeException;
-import railo.runtime.op.Caster;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
@@ -15,8 +13,8 @@ public class TOUDF extends TOObjects implements UDF {
 
 	private UDF udf;
 	
-	protected TOUDF(UDF udf, String label, LogResource log) {
-		super(udf,label,log);
+	protected TOUDF(Debugger debugger,UDF udf, int type, String category, String text) {
+		super(debugger,udf,type,category,text);
 	}
 	
 	

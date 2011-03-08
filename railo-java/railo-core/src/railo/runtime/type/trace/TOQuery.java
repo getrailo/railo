@@ -1,9 +1,6 @@
 package railo.runtime.type.trace;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -21,32 +18,24 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.Map;
 
-import railo.commons.io.log.LogResource;
-import railo.runtime.PageContext;
-import railo.runtime.dump.DumpData;
-import railo.runtime.dump.DumpProperties;
-import railo.runtime.exp.DatabaseException;
+import railo.runtime.debug.Debugger;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
-import railo.runtime.type.QueryImpl;
 import railo.runtime.type.QueryPro;
-import railo.runtime.type.Struct;
-import railo.runtime.type.dt.DateTime;
 
 public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Query {
 
 
 	private QueryPro qry;
 
-	protected TOQuery(QueryPro qry, String label, LogResource log) {
-		super(qry, label, log);
+	protected TOQuery(Debugger debugger,QueryPro qry, int type, String category, String text) {
+		super(debugger,qry,type,category,text);
 		this.qry=qry;
 	}
 
@@ -208,7 +197,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean next() {
-		log(null);
+		log();
 		return qry.next();
 	}
 
@@ -217,7 +206,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean next(int pid) {
-		log(null);
+		log();
 		return qry.next(pid);
 	}
 
@@ -226,7 +215,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void reset() throws PageException {
-		log(null);
+		log();
 		qry.reset();
 	}
 
@@ -235,7 +224,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void reset(int pid) {
-		log(null);
+		log();
 		qry.reset(pid);
 	}
 
@@ -244,7 +233,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public int getRecordcount() {
-		log(null);
+		log();
 		return qry.getRecordcount();
 	}
 
@@ -253,7 +242,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public int getCurrentrow() {
-		log(null);
+		log();
 		return qry.getCurrentrow();
 	}
 
@@ -262,7 +251,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public int getCurrentrow(int pid) {
-		log(null);
+		log();
 		return qry.getCurrentrow(pid);
 	}
 
@@ -271,7 +260,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean go(int index, int pid) {
-		log(null);
+		log();
 		return qry.go(index, pid);
 	}
 
@@ -280,7 +269,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean isEmpty() {
-		log(null);
+		log();
 		return qry.isEmpty();
 	}
 
@@ -367,7 +356,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	
 	public boolean addColumn(Key columnName, Array content, int type)
 			throws PageException {
-		log(null);
+		log();
 		return qry.addColumn(columnName, content, type);
 	}
 
@@ -376,7 +365,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public synchronized int[] getTypes() {
-		log(null);
+		log();
 		return qry.getTypes();
 	}
 
@@ -385,7 +374,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public synchronized Map getTypesAsMap() {
-		log(null);
+		log();
 		return qry.getTypesAsMap();
 	}
 
@@ -440,7 +429,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void setExecutionTime(long exeTime) {
-		log(null);
+		log();
 		qry.setExecutionTime(exeTime);
 	}
 
@@ -458,7 +447,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean isCached() {
-		log(null);
+		log();
 		return qry.isCached();
 	}
 
@@ -467,7 +456,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public int addRow() {
-		log(null);
+		log();
 		return qry.addRow();
 	}
 
@@ -485,7 +474,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public String[] getColumns() {
-		log(null);
+		log();
 		return qry.getColumns();
 	}
 
@@ -494,7 +483,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public Key[] getColumnNames() {
-		log(null);
+		log();
 		return qry.getColumnNames();
 	}
 
@@ -503,7 +492,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public String[] getColumnNamesAsString() {
-		log(null);
+		log();
 		return qry.getColumnNamesAsString();
 	}
 
@@ -521,7 +510,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public String getName() {
-		log(null);
+		log();
 		return qry.getName();
 	}
 
@@ -530,7 +519,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public int getRowCount() {
-		log(null);
+		log();
 		return qry.getRowCount();
 	}
 
@@ -549,7 +538,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public synchronized Array getMetaDataSimple() {
-		log(null);
+		log();
 		return qry.getMetaDataSimple();
 	}
 
@@ -612,7 +601,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean wasNull()  throws SQLException{
-		log(null);
+		log();
 		return qry.wasNull();
 	}
 
@@ -621,7 +610,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean absolute(int row) throws SQLException {
-		log(null);
+		log();
 		return qry.absolute(row);
 	}
 
@@ -630,7 +619,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void afterLast() throws SQLException {
-		log(null);
+		log();
 		qry.afterLast();
 	}
 
@@ -639,7 +628,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void beforeFirst() throws SQLException {
-		log(null);
+		log();
 		qry.beforeFirst();
 	}
 
@@ -648,7 +637,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void cancelRowUpdates() throws SQLException {
-		log(null);
+		log();
 		qry.cancelRowUpdates();
 	}
 
@@ -657,7 +646,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void clearWarnings() throws SQLException {
-		log(null);
+		log();
 		qry.clearWarnings();
 	}
 
@@ -666,7 +655,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void close() throws SQLException {
-		log(null);
+		log();
 		qry.close();
 	}
 
@@ -675,7 +664,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void deleteRow() throws SQLException {
-		log(null);
+		log();
 		qry.deleteRow();
 	}
 
@@ -684,7 +673,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public int findColumn(String columnName) throws SQLException {
-		log(null);
+		log();
 		return qry.findColumn(columnName);
 	}
 
@@ -693,7 +682,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean first() throws SQLException {
-		log(null);
+		log();
 		return qry.first();
 	}
 
@@ -884,7 +873,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public int getConcurrency() throws SQLException {
-		log(null);
+		log();
 		return qry.getConcurrency();
 	}
 
@@ -893,7 +882,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public String getCursorName() throws SQLException {
-		log(null);
+		log();
 		return qry.getCursorName();
 	}
 
@@ -956,7 +945,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public int getFetchDirection() throws SQLException {
-		log(null);
+		log();
 		return qry.getFetchDirection();
 	}
 
@@ -965,7 +954,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public int getFetchSize() throws SQLException {
-		log(null);
+		log();
 		return qry.getFetchSize();
 	}
 
@@ -1046,7 +1035,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public int getRow() throws SQLException {
-		log(null);
+		log();
 		return qry.getRow();
 	}
 
@@ -1073,7 +1062,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public Statement getStatement() throws SQLException {
-		log(null);
+		log();
 		return qry.getStatement();
 	}
 
@@ -1156,7 +1145,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public int getType() throws SQLException {
-		log(null);
+		log();
 		return qry.getType();
 	}
 
@@ -1165,7 +1154,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public URL getURL(int columnIndex) throws SQLException {
-		log(null);
+		log();
 		return qry.getURL(columnIndex);
 	}
 
@@ -1174,7 +1163,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public URL getURL(String columnName) throws SQLException {
-		log(null);
+		log();
 		return qry.getURL(columnName);
 	}
 
@@ -1183,7 +1172,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public InputStream getUnicodeStream(int columnIndex) throws SQLException {
-		log(null);
+		log();
 		return qry.getUnicodeStream(columnIndex);
 	}
 
@@ -1192,7 +1181,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public InputStream getUnicodeStream(String columnName) throws SQLException {
-		log(null);
+		log();
 		return qry.getUnicodeStream(columnName);
 	}
 
@@ -1201,7 +1190,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public SQLWarning getWarnings() throws SQLException {
-		log(null);
+		log();
 		return qry.getWarnings();
 	}
 
@@ -1210,7 +1199,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void insertRow() throws SQLException {
-		log(null);
+		log();
 		qry.insertRow();
 	}
 
@@ -1219,7 +1208,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean isAfterLast() throws SQLException {
-		log(null);
+		log();
 		return qry.isAfterLast();
 	}
 
@@ -1228,7 +1217,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean isBeforeFirst() throws SQLException {
-		log(null);
+		log();
 		return qry.isBeforeFirst();
 	}
 
@@ -1237,7 +1226,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean isFirst() throws SQLException {
-		log(null);
+		log();
 		return qry.isFirst();
 	}
 
@@ -1246,7 +1235,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean isLast() throws SQLException {
-		log(null);
+		log();
 		return qry.isLast();
 	}
 
@@ -1255,7 +1244,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean last() throws SQLException {
-		log(null);
+		log();
 		return qry.last();
 	}
 
@@ -1264,7 +1253,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void moveToCurrentRow() throws SQLException {
-		log(null);
+		log();
 		qry.moveToCurrentRow();
 	}
 
@@ -1273,7 +1262,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void moveToInsertRow() throws SQLException {
-		log(null);
+		log();
 		qry.moveToInsertRow();
 	}
 
@@ -1282,7 +1271,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean previous() throws SQLException {
-		log(null);
+		log();
 		return qry.previous();
 	}
 
@@ -1291,7 +1280,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean previous(int pid) {
-		log(null);
+		log();
 		return qry.previous(pid);
 	}
 
@@ -1300,7 +1289,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void refreshRow() throws SQLException {
-		log(null);
+		log();
 		qry.refreshRow();
 	}
 
@@ -1309,7 +1298,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean relative(int rows) throws SQLException {
-		log(null);
+		log();
 		return qry.relative(rows);
 	}
 
@@ -1318,7 +1307,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean rowDeleted() throws SQLException {
-		log(null);
+		log();
 		return qry.rowDeleted();
 	}
 
@@ -1327,7 +1316,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean rowInserted() throws SQLException {
-		log(null);
+		log();
 		return qry.rowInserted();
 	}
 
@@ -1336,7 +1325,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean rowUpdated() throws SQLException {
-		log(null);
+		log();
 		return qry.rowUpdated();
 	}
 
@@ -1345,7 +1334,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void setFetchDirection(int direction) throws SQLException {
-		log(null);
+		log();
 		qry.setFetchDirection(direction);
 	}
 
@@ -1717,7 +1706,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public void updateRow() throws SQLException {
-		log(null);
+		log();
 		qry.updateRow();
 	}
 
@@ -1800,7 +1789,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public ResultSetMetaData getMetaData() throws SQLException {
-		log(null);
+		log();
 		return qry.getMetaData();
 	}
 
@@ -1809,7 +1798,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public int getHoldability() throws SQLException {
-		log(null);
+		log();
 		return qry.getHoldability();
 	}
 
@@ -1818,7 +1807,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean isClosed() throws SQLException {
-		log(null);
+		log();
 		return qry.isClosed();
 	}
 
@@ -2161,7 +2150,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public <T> T unwrap(Class<T> iface) throws SQLException {
-		log(null);
+		log();
 		return qry.unwrap(iface);
 	}
 
@@ -2170,14 +2159,14 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		log(null);
+		log();
 		return qry.isWrapperFor(iface);
 	}
 
 	@Override
 	public Collection duplicate(boolean deepCopy) {
-		log(null);
-		return new TOQuery((QueryPro)qry.duplicate(deepCopy), label, log);
+		log();
+		return new TOQuery(debugger,(QueryPro)qry.duplicate(deepCopy), type,category,text);
 	}
 
 	@Override

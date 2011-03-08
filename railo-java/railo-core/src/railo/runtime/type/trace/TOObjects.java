@@ -1,23 +1,17 @@
 package railo.runtime.type.trace;
 
-import railo.commons.io.log.LogResource;
-import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.debug.Debugger;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpUtil;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Duplicator;
 import railo.runtime.op.Operator;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
-import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.util.VariableUtilImpl;
 
@@ -25,15 +19,15 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	
 	private static final long serialVersionUID = -2011026266467450312L;
 
-	protected TOObjects(Object obj, String label, LogResource log) {
-		super(obj,log,label);
+	protected TOObjects(Debugger debugger,Object obj,int type,String category,String text) {
+		super(debugger,obj,type,category,text);
 	}
 
 	/**
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int, railo.runtime.dump.DumpProperties)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties properties) {
-		log(null);
+		log();
 		return DumpUtil.toDumpData(o, pageContext, maxlevel, properties);
 	}
 
@@ -41,7 +35,7 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.op.Castable#castToString()
 	 */
 	public String castToString() throws PageException {
-		log(null);
+		log();
 		return Caster.toString(o);
 	}
 	
@@ -49,7 +43,7 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
 	 */
 	public String castToString(String defaultValue) {
-		log(null);
+		log();
 		return Caster.toString(o,defaultValue);
 	}
 	
@@ -57,7 +51,7 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.op.Castable#castToBooleanValue()
 	 */
 	public boolean castToBooleanValue() throws PageException {
-		log(null);
+		log();
 		return Caster.toBooleanValue(o);
 	}
 	
@@ -65,7 +59,7 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
 	 */
 	public Boolean castToBoolean(Boolean defaultValue) {
-		log(null);
+		log();
 		return Caster.toBoolean(o,defaultValue);
 	}
 	
@@ -73,7 +67,7 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.op.Castable#castToDoubleValue()
 	 */
 	public double castToDoubleValue() throws PageException {
-		log(null);
+		log();
 		return Caster.toDoubleValue(o);
 	}
 	
@@ -81,7 +75,7 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.op.Castable#castToDoubleValue(double)
 	 */
 	public double castToDoubleValue(double defaultValue) {
-		log(null);
+		log();
 		return Caster.toDoubleValue(o,defaultValue);
 	}
 	
@@ -89,23 +83,23 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.op.Castable#castToDateTime()
 	 */
 	public DateTime castToDateTime() throws PageException {
-		log(null);
-		return new TODateTime(Caster.toDate(o, false,null),label,log);
+		log();
+		return new TODateTime(debugger,Caster.toDate(o, false,null),type,category,text);
 	}
 	
 	/**
 	 * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
 	 */
 	public DateTime castToDateTime(DateTime defaultValue) {
-		log(null);
-		return new TODateTime(Caster.toDate(o, false,null,defaultValue),label,log);
+		log();
+		return new TODateTime(debugger,Caster.toDate(o, false,null,defaultValue),type,category,text);
 	}
 	
 	/**
 	 * @see railo.runtime.op.Castable#compareTo(boolean)
 	 */
 	public int compareTo(boolean b) throws PageException {
-		log(null);
+		log();
 		return Operator.compare(o, b);
 	}
 	
@@ -113,7 +107,7 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
 	 */
 	public int compareTo(DateTime dt) throws PageException {
-		log(null);
+		log();
 		return Operator.compare(o, (Object)dt);
 	}
 
@@ -121,7 +115,7 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.op.Castable#compareTo(double)
 	 */
 	public int compareTo(double d) throws PageException {
-		log(null);
+		log();
 		return Operator.compare(o, d);
 	}
 	
@@ -129,7 +123,7 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
 	 */
 	public int compareTo(String str) throws PageException {
-		log(null);
+		log();
 		return Operator.compare(o, str);
 	}
 
@@ -139,7 +133,8 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	public Object get(PageContext pc, Key key) throws PageException {
 		log(key.getString());
 		VariableUtilImpl var = (VariableUtilImpl) pc.getVariableUtil();
-		return TraceObjectSupport.toTraceObject(var.get(pc, o, key), label, log);
+		return var.get(pc, o, key);
+		//return TraceObjectSupport.toTraceObject(debugger,var.get(pc, o, key),type,category,text);
 	}
 	
 	/**
@@ -148,41 +143,46 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	public Object get(PageContext pc, Key key, Object defaultValue) {
 		log(key.getString());
 		VariableUtilImpl var = (VariableUtilImpl) pc.getVariableUtil();
-		return TraceObjectSupport.toTraceObject(var.get(pc, o, key, defaultValue), label, log);
+		return var.get(pc, o, key, defaultValue);
+		//return TraceObjectSupport.toTraceObject(debugger,var.get(pc, o, key, defaultValue),type,category,text);
 	}
 	
 	/**
 	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object set(PageContext pc, Key key, Object value) throws PageException {
-		log(key.getString());
+		log(key,value);
 		VariableUtilImpl var = (VariableUtilImpl) pc.getVariableUtil();
-		return TraceObjectSupport.toTraceObject(var.set(pc, o, key, value), label, log);
+		return var.set(pc, o, key, value);
+		//return TraceObjectSupport.toTraceObject(debugger,var.set(pc, o, key, value),type,category,text);
 	}
 	
 	/**
 	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object setEL(PageContext pc, Key key, Object value) {
-		log(key.getString());
+		log(key,value);
 		VariableUtilImpl var = (VariableUtilImpl) pc.getVariableUtil();
-		return TraceObjectSupport.toTraceObject(var.setEL(pc, o, key, value), label, log);
+		return var.setEL(pc, o, key, value);
+		//return TraceObjectSupport.toTraceObject(debugger,var.setEL(pc, o, key, value),type,category,text);
 	}
 	
 	/**
 	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
 	 */
 	public Object setEL(PageContext pc, String propertyName, Object value) {
-		log(propertyName);
-		return TraceObjectSupport.toTraceObject(setEL(pc, KeyImpl.init(propertyName), value), label, log);
+		log(propertyName,value);
+		return setEL(pc, KeyImpl.init(propertyName), value);
+		//return TraceObjectSupport.toTraceObject(debugger,setEL(pc, KeyImpl.init(propertyName), value),type,category,text);
 	}
 	
 	/**
 	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
 	 */
 	public Object set(PageContext pc, String propertyName, Object value) throws PageException {
-		log(propertyName) ;
-		return TraceObjectSupport.toTraceObject(set(pc, KeyImpl.init(propertyName), value), label, log);
+		log(propertyName,value) ;
+		return set(pc, KeyImpl.init(propertyName), value);
+		//return TraceObjectSupport.toTraceObject(debugger,set(pc, KeyImpl.init(propertyName), value),type,category,text);
 	}
 
 	/**
@@ -223,7 +223,7 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.type.Objects#isInitalized()
 	 */
 	public boolean isInitalized() {
-		log(null);
+		log();
 		return true;
 	}
 
@@ -232,7 +232,8 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 */
 	public Object get(PageContext pc, String propertyName, Object defaultValue) {
 		log(propertyName);
-		return TraceObjectSupport.toTraceObject(get(pc, KeyImpl.init(propertyName),defaultValue), label, log);
+		return get(pc, KeyImpl.init(propertyName),defaultValue);
+		//return TraceObjectSupport.toTraceObject(debugger,get(pc, KeyImpl.init(propertyName),defaultValue),type,category,text);
 	}
 	
 	/**
@@ -240,7 +241,8 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 */
 	public Object get(PageContext pc, String propertyName) throws PageException {
 		log(propertyName);
-		return TraceObjectSupport.toTraceObject(get(pc, KeyImpl.init(propertyName)), label, log);
+		return get(pc, KeyImpl.init(propertyName));
+		//return TraceObjectSupport.toTraceObject(debugger,get(pc, KeyImpl.init(propertyName)),type,category,text);
 	}
 
 }

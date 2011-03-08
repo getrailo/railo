@@ -2,8 +2,6 @@ package railo.runtime.util;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
-import java.util.Iterator;
-
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
@@ -21,7 +19,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
-import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.util.ComponentUtil;
 

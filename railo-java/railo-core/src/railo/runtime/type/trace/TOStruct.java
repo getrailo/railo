@@ -1,26 +1,19 @@
 package railo.runtime.type.trace;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import railo.commons.io.log.LogResource;
-import railo.runtime.PageContext;
-import railo.runtime.dump.DumpData;
-import railo.runtime.dump.DumpProperties;
-import railo.runtime.exp.PageException;
-import railo.runtime.type.Array;
+import railo.runtime.debug.Debugger;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
-import railo.runtime.type.dt.DateTime;
 
 public class TOStruct extends TOCollection implements Struct {
 
 	private static final long serialVersionUID = 4868199372417392722L;
 	private Struct sct;
 
-	protected TOStruct(Struct sct, String label, LogResource log) {
-		super(sct, label, log);
+	protected TOStruct(Debugger debugger,Struct sct,int type,String category,String text) {
+		super(debugger,sct, type, category, text);
 		this.sct=sct;
 	}
 	
@@ -76,7 +69,7 @@ public class TOStruct extends TOCollection implements Struct {
 
 	public Collection duplicate(boolean deepCopy) {
 		log(null);
-		return new TOStruct((Struct)sct.duplicate(deepCopy), label, log);
+		return new TOStruct(debugger,(Struct)sct.duplicate(deepCopy), type, category, text);
 	}
 
 }

@@ -2,7 +2,7 @@ package railo.runtime.type.trace;
 
 import java.util.List;
 
-import railo.commons.io.log.LogResource;
+import railo.runtime.debug.Debugger;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -13,8 +13,8 @@ public class TOArray extends TOCollection implements Array {
 	
 	private final Array arr;
 
-	protected TOArray(Array arr, String label, LogResource log) {
-		super(arr, label, log);
+	protected TOArray(Debugger debugger,Array arr,int type,String category,String text) {
+		super(debugger,arr, type, category, text);
 		this.arr=arr;
 	}
 
@@ -22,7 +22,7 @@ public class TOArray extends TOCollection implements Array {
 	 * @see railo.runtime.type.Array#getDimension()
 	 */
 	public int getDimension() {
-		log(null);
+		log();
 		return arr.getDimension();
 	}
 
@@ -31,7 +31,8 @@ public class TOArray extends TOCollection implements Array {
 	 */
 	public Object get(int key, Object defaultValue) {
 		log(""+key);
-		return TraceObjectSupport.toTraceObject(arr.get(key, defaultValue), label, log);
+		return arr.get(key, defaultValue);
+		//return TraceObjectSupport.toTraceObject(debugger,arr.get(key, defaultValue),type,category,text);
 	}
 
 	/* (non-Javadoc)
@@ -39,30 +40,33 @@ public class TOArray extends TOCollection implements Array {
 	 */
 	public Object getE(int key) throws PageException {
 		log(""+key);
-		return TraceObjectSupport.toTraceObject(arr.getE(key), label, log);
+		return arr.getE(key);
+		//return TraceObjectSupport.toTraceObject(debugger,arr.getE(key),type,category,text);
 	}
 
 	/* (non-Javadoc)
 	 * @see railo.runtime.type.Array#setEL(int, java.lang.Object)
 	 */
 	public Object setEL(int key, Object value) {
-		log(""+key);
-		return TraceObjectSupport.toTraceObject(arr.setEL(key, value), label, log);
+		log(""+key,value);
+		return arr.setEL(key, value);
+		//return TraceObjectSupport.toTraceObject(debugger,arr.setEL(key, value),type,category,text);
 	}
 
 	/* (non-Javadoc)
 	 * @see railo.runtime.type.Array#setE(int, java.lang.Object)
 	 */
 	public Object setE(int key, Object value) throws PageException {
-		log(""+key);
-		return TraceObjectSupport.toTraceObject(arr.setEL(key, value), label, log);
+		log(""+key,value);
+		return arr.setEL(key, value);
+		//return TraceObjectSupport.toTraceObject(debugger,arr.setEL(key, value),type,category,text);
 	}
 
 	/* (non-Javadoc)
 	 * @see railo.runtime.type.Array#intKeys()
 	 */
 	public int[] intKeys() {
-		log(null);
+		log();
 		return arr.intKeys();
 	}
 
@@ -78,31 +82,34 @@ public class TOArray extends TOCollection implements Array {
 	 * @see railo.runtime.type.Array#append(java.lang.Object)
 	 */
 	public Object append(Object o) throws PageException {
-		log(null);
-		return TraceObjectSupport.toTraceObject(arr.append(o), label, log);
+		log(o.toString());
+		return arr.append(o);
+		//return TraceObjectSupport.toTraceObject(debugger,arr.append(o),type,category,text);
 	}
 
 	/* (non-Javadoc)
 	 * @see railo.runtime.type.Array#appendEL(java.lang.Object)
 	 */
 	public Object appendEL(Object o) {
-		log(null);
-		return TraceObjectSupport.toTraceObject(arr.appendEL(o), label, log);
+		log(o.toString());
+		return arr.appendEL(o);
+		//return TraceObjectSupport.toTraceObject(debugger,arr.appendEL(o),type,category,text);
 	}
 
 	/* (non-Javadoc)
 	 * @see railo.runtime.type.Array#prepend(java.lang.Object)
 	 */
 	public Object prepend(Object o) throws PageException {
-		log(null);
-		return TraceObjectSupport.toTraceObject(arr.prepend(o), label, log);
+		log();
+		return arr.prepend(o);
+		//return TraceObjectSupport.toTraceObject(debugger,arr.prepend(o),type,category,text);
 	}
 
 	/* (non-Javadoc)
 	 * @see railo.runtime.type.Array#resize(int)
 	 */
 	public void resize(int to) throws PageException {
-		log(null);
+		log();
 		arr.resize(to);
 	}
 
@@ -110,7 +117,7 @@ public class TOArray extends TOCollection implements Array {
 	 * @see railo.runtime.type.Array#sort(java.lang.String, java.lang.String)
 	 */
 	public void sort(String sortType, String sortOrder) throws PageException {
-		log(null);
+		log();
 		arr.sort(sortType, sortOrder);
 	}
 
@@ -118,7 +125,7 @@ public class TOArray extends TOCollection implements Array {
 	 * @see railo.runtime.type.Array#toArray()
 	 */
 	public Object[] toArray() {
-		log(null);
+		log();
 		return arr.toArray();
 	}
 
@@ -126,7 +133,7 @@ public class TOArray extends TOCollection implements Array {
 	 * @see railo.runtime.type.Array#toList()
 	 */
 	public List toList() {
-		log(null);
+		log();
 		return arr.toList();
 	}
 
@@ -135,7 +142,8 @@ public class TOArray extends TOCollection implements Array {
 	 */
 	public Object removeE(int key) throws PageException {
 		log(""+key);
-		return TraceObjectSupport.toTraceObject(arr.removeE(key), label, log);
+		return arr.removeE(key);
+		//return TraceObjectSupport.toTraceObject(debugger,arr.removeE(key),type,category,text);
 	}
 
 	/* (non-Javadoc)
@@ -143,7 +151,8 @@ public class TOArray extends TOCollection implements Array {
 	 */
 	public Object removeEL(int key) {
 		log(""+key);
-		return TraceObjectSupport.toTraceObject(arr.removeEL(key), label, log);
+		return arr.removeEL(key);
+		//return TraceObjectSupport.toTraceObject(debugger,arr.removeEL(key),type,category,text);
 	}
 
 	/* (non-Javadoc)
@@ -155,8 +164,8 @@ public class TOArray extends TOCollection implements Array {
 	}
 
 	public Collection duplicate(boolean deepCopy) {
-		log(null);
-		return new TOArray((Array)arr.duplicate(deepCopy), label, log);
+		log();
+		return new TOArray(debugger,(Array)arr.duplicate(deepCopy),type,category,text);
 	}
 
 }
