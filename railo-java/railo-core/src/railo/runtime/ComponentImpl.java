@@ -231,7 +231,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 				trg._data=trg.base._data;
 				trg._udfs=duplicateUTFMap(this,trg, _udfs,new HashMap<Key,UDF>(trg.base._udfs));
 
-	    		if(useShadow) trg.scope=new ComponentScopeShadow(trg,(ComponentScopeShadow)trg.base.scope);
+	    		if(useShadow) trg.scope=new ComponentScopeShadow(trg,(ComponentScopeShadow)trg.base.scope,false);
 			}
 	    	else {
 	    		// clone data member, ignore udfs for the moment
@@ -395,7 +395,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	    // scope
 	    if(useShadow=pageContext.getConfig().useComponentShadow()) {
 	        if(base==null) scope=new ComponentScopeShadow(this,new HashMap());
-		    else scope=new ComponentScopeShadow(this,(ComponentScopeShadow)base.scope);
+		    else scope=new ComponentScopeShadow(this,(ComponentScopeShadow)base.scope,false);
 	    }
 	    else {
 	    	scope=new ComponentScopeThis(this);

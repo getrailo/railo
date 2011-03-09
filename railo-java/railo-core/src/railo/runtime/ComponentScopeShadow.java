@@ -1,5 +1,6 @@
 package railo.runtime;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -43,9 +45,9 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 * @param component
 	 * @param shadow
 	 */
-	public ComponentScopeShadow(ComponentImpl component, ComponentScopeShadow scope) {
+	public ComponentScopeShadow(ComponentImpl component, ComponentScopeShadow scope,boolean cloneShadow) {
         this.component=component;
-        this.shadow=scope.shadow;
+        this.shadow=cloneShadow?Duplicator.duplicateMap(scope.shadow,new HashMap<Key,Object>(), false):scope.shadow;
 	}
 
 
