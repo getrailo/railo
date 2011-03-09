@@ -83,4 +83,10 @@ public final class ResourcePartSource implements PartSource {
     	return res.getInputStream();
     }
 
+    /**
+	 * @return the res
+	 */
+	public Resource getResource() {
+		return res;
+	}
 }

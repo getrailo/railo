@@ -33,7 +33,6 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.methods.TraceMethod;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.EncodingUtil;
 
@@ -42,8 +41,10 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
+import railo.commons.net.RailoStringPart;
 import railo.commons.net.ResourcePart;
 import railo.commons.net.ResourcePartSource;
+import railo.commons.net.ResourceRequestEntity;
 import railo.commons.net.URLEncoder;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -971,6 +972,7 @@ public final class Http extends BodyTagImpl {
 		else if(http.method==METHOD_PUT) {
 			isBinary=true;
 		    httpMethod=eem=new PutMethod(url);
+		    
 		}
 		else if(http.method==METHOD_TRACE) {
 			isBinary=true;
@@ -1009,7 +1011,7 @@ public final class Http extends BodyTagImpl {
 				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type formfield can't only be used, when method of the tag http equal post");
 				if(post!=null){
 					if(doMultiPart){
-						parts.add(new StringPart(param.getName(),param.getValueAsString()));
+						parts.add(new RailoStringPart(param.getName(),param.getValueAsString()));
 					}
 					else post.addParameter(new NameValuePair(param.getName(),param.getValueAsString()));
 				}
@@ -1084,9 +1086,28 @@ public final class Http extends BodyTagImpl {
 		}
 		
 		// multipart
-		if(doMultiPart && post!=null) {
+		if(doMultiPart && eem!=null) {
 			hasContentType=true;
-			post.setRequestEntity(new MultipartRequestEntityFlex(parts.toArray(new Part[parts.size()]), post.getParams(),http.multiPartType));
+			boolean doIt=true;
+			if(!http.multiPart && parts.size()==1){
+				Part part = parts.get(0);
+				if(part instanceof ResourcePart){
+					ResourcePart rp = (ResourcePart) part;
+					eem.setRequestEntity(new ResourceRequestEntity(rp.getResource(),rp.getContentType()));
+					doIt=false;
+				}
+				else if(part instanceof RailoStringPart){
+					RailoStringPart sp = (RailoStringPart) part;
+					try {
+						eem.setRequestEntity(new StringRequestEntity(sp.getValue(),sp.getContentType(),sp.getCharSet()));
+					} catch (IOException e) {
+						throw Caster.toPageException(e);
+					}
+					doIt=false;
+				}
+			}
+			if(doIt)
+				eem.setRequestEntity(new MultipartRequestEntityFlex(parts.toArray(new Part[parts.size()]), eem.getParams(),http.multiPartType));
 		}
 		
 		
