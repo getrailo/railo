@@ -122,7 +122,13 @@ public final class Zip extends BodyTagImpl {
 	 * @param entryPath the entryPath to set
 	 */
 	public void setEntrypath(String entryPath) {
+		if(StringUtil.isEmpty(entryPath,true)) return;
+
+		entryPath=entryPath.trim();
+		entryPath=entryPath.replace('\\','/');
+		
 		if(StringUtil.startsWith(entryPath,'/'))entryPath=entryPath.substring(1);
+		if(StringUtil.endsWith(entryPath,'/'))entryPath=entryPath.substring(0,entryPath.length()-1);
 		this.entryPath = entryPath;
 	}
 
@@ -264,7 +270,7 @@ public final class Zip extends BodyTagImpl {
             	name=path.substring(index+1);
             	
             	if(filter!=null && !filter.accept(name)) accept=true;
-            	if(entryPath!=null && !path.equals(entryPath)) accept=true;
+            	if(!entryPathMatch(path)) accept=true;
 	        	
             	if(!accept) continue;
 	        	
@@ -285,6 +291,9 @@ public final class Zip extends BodyTagImpl {
 	private void actionList() throws PageException, IOException {
 		required("file",file,true);
 		required("name",name);
+		
+		
+		
 		
 		railo.runtime.type.Query query=new QueryImpl(
                 new String[]{"name","size","type","dateLastModified","directory","crc","compressedSize","comment"},
@@ -312,6 +321,9 @@ public final class Zip extends BodyTagImpl {
             	if(filter!=null && !filter.accept(null, name)) continue;
             	
             	
+            	if(!entryPathMatch(dir)) continue;
+            	//if(entryPath!=null && !(dir.equalsIgnoreCase(entryPath) || StringUtil.startsWithIgnoreCase(dir,entryPath+"/"))) ;///continue;
+            	
             	row++;
             	query.addRow();
             	query.setAt("name", row, path);
@@ -330,6 +342,14 @@ public final class Zip extends BodyTagImpl {
         	IOUtil.closeEL(zip);
         }   
 	}
+
+	private boolean entryPathMatch(String dir) {
+		if(entryPath==null) return true;
+		
+		return dir.equalsIgnoreCase(entryPath) || StringUtil.startsWithIgnoreCase(dir,entryPath+"/");
+	}
+
+
 
 	private void actionRead(boolean binary) throws ZipException, IOException, PageException {
 		required("file",file,true);
@@ -391,7 +411,7 @@ public final class Zip extends BodyTagImpl {
             		continue;
             	}
             	// entrypath
-            	if(!StringUtil.isEmpty(entryPath) && !entryPath.equalsIgnoreCase(path)) {
+            	if(!entryPathMatch(path)) {
             		zis.closeEntry();
             		continue;
             	}

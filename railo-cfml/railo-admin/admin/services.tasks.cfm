@@ -382,12 +382,12 @@ function selectAll(field) {
         	<table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
             	<td width="100">
-                <cfif url.startrow GT 1><a href="#request.self#?action=#url.action#&startrow=#startrow-url.maxrow#" class="comment"><cfmodule template="img.cfm" src="arrow-left.gif" border="0" hspace="4">#stText.remote.previous#</a><cfelse>&nbsp;</cfif>
+                <cfif url.startrow GT 1><a href="#request.self#?action=#url.action#&startrow=#url.startrow-url.maxrow#" class="comment"><cfmodule template="img.cfm" src="arrow-left.gif" border="0" hspace="4">#stText.remote.previous#</a><cfelse>&nbsp;</cfif>
                 
                 </td>
             	<td align="center"><span class="comment">#url.startrow# #stText.remote.to# #to# #stText.remote.from# #result.open+result.closed#</span></td>
             	<td width="100" align="right">
-                <cfif to LT result.open+result.closed><a href="#request.self#?action=#url.action#&startrow=#startrow+url.maxrow#" class="comment">#stText.remote.next#<cfmodule template="img.cfm" src="arrow-right.gif" border="0" hspace="4"></a><cfelse>&nbsp;</cfif>
+                <cfif to LT result.open+result.closed><a href="#request.self#?action=#url.action#&startrow=#url.startrow+url.maxrow#" class="comment">#stText.remote.next#<cfmodule template="img.cfm" src="arrow-right.gif" border="0" hspace="4"></a><cfelse>&nbsp;</cfif>
                 </td>
             </tr>
             </table>

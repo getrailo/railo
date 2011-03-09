@@ -466,7 +466,7 @@ public final class ResourceUtil {
 	
 	/**
      * sets attributes of a file on Windows system
-     * @param file
+     * @param res
      * @param attributes
      * @throws PageException
      * @throws IOException
@@ -626,7 +626,7 @@ public final class ResourceUtil {
 
 	/**
      * Returns the canonical form of this abstract pathname.
-     * @param file file to get canoncial form from it
+     * @param res file to get canoncial form from it
      *
      * @return  The canonical pathname string denoting the same file or
      *          directory as this abstract pathname
@@ -645,7 +645,7 @@ public final class ResourceUtil {
     
     /**
      * Returns the canonical form of this abstract pathname.
-     * @param file file to get canoncial form from it
+     * @param res file to get canoncial form from it
      *
      * @return  The canonical pathname string denoting the same file or
      *          directory as this abstract pathname
@@ -664,7 +664,7 @@ public final class ResourceUtil {
     
     /**
      * creates a new File
-     * @param file
+     * @param res
      * @return was successfull
      */
     public static boolean createNewResourceEL(Resource res) {
@@ -683,7 +683,7 @@ public final class ResourceUtil {
 
     /**
      * check if file is read and writable
-     * @param file
+     * @param res
      * @return is or not
      */
     public static boolean canRW(Resource res) {
@@ -903,7 +903,7 @@ public final class ResourceUtil {
 
     /**
      * copy a file or directory recursive (with his content)
-     * @param file file or directory to delete
+     * @param res file or directory to delete
      * @throws IOException 
      * @throws FileNotFoundException 
      */
