@@ -670,6 +670,32 @@ public class HibernateORMEngine implements ORMEngine {
 		
 	}
 	
+
+	public Component getEntityByEntityName(String entityName,boolean unique) throws PageException {
+		ComponentPro cfc;
+		
+		
+		CFCInfo info = cfcs.get(entityName.toLowerCase());
+		if(info!=null) {
+			cfc=info.getCFC();
+			return unique?(Component)cfc.duplicate(false):cfc;
+		}
+		
+		if(arr!=null){
+			Iterator<ComponentPro> it2 = arr.iterator();
+			while(it2.hasNext()){
+				cfc=it2.next();
+				if(HibernateCaster.getEntityName(cfc).equalsIgnoreCase(entityName))
+					return unique?(Component)cfc.duplicate(false):cfc;
+			}
+		}
+		
+		
+		
+		throw new ORMException(this,"entity ["+entityName+"] does not exist");
+		
+	}
+	
 	
 
 	public String[] getEntityNames() {
