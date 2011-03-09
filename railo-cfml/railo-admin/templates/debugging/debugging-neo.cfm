@@ -15,6 +15,7 @@ function uCaseFirst(String str) {
 }
 
 function isColumnEmpty(string columnName){
+	if(!isDefined(columnName)) return true;
 	return !len(replace(valueList(""&columnName),',','','all'));
 }
 
@@ -260,5 +261,3 @@ a.cfdebuglink {color:blue; background-color:white }
 </tr>
 </table>
 </cfoutput>
-
-<cfadmin action="printDebug">
