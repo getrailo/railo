@@ -30,7 +30,8 @@ import railo.runtime.type.Sizeable;
  */
 public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 
-    //public static final byte LOAD_NONE=1;
+	private static final long serialVersionUID = -7661676586215092539L;
+	//public static final byte LOAD_NONE=1;
     public static final byte LOAD_ARCHIVE=2;
     public static final byte LOAD_PHYSICAL=3;
     
@@ -576,8 +577,20 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	
 
 	private synchronized void createComponentName() {
-		
-	    String str=realPath;
+		Resource res = this.getPhyscalFile();
+	    String str=null;
+		if(res!=null) {
+			
+			str=res.getAbsolutePath();
+			str=str.substring(str.length()-realPath.length());
+			if(!str.equalsIgnoreCase(realPath)) {
+				str=realPath;
+			}
+		}
+		else str=realPath;
+	    
+	    
+	    
 		StringBuffer compName=new StringBuffer();
 		String[] arr;
 		
