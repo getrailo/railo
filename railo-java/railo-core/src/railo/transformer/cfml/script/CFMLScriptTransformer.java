@@ -390,7 +390,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @throws TemplateException
 	 */
 	public boolean caseStatement(Data data,Switch swit) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent("case "))
+		if(!data.cfml.forwardIfCurrentAndNoWordAfter("case"))
 			return false;
 		
 		//int line=data.cfml.getLine();		
