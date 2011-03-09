@@ -128,6 +128,8 @@ public final class GetFunctionData implements Function {
         int min=0,max=0;
 		for(int i=0;i<fas.length;i++) {
         	FunctionArgument fa=fas[i];
+        	Struct meta = fa.getMetaData();
+        	
 			Struct _arg=new StructImpl();
 			if(fa.isRequired()) min++;
 			max++;
@@ -135,7 +137,12 @@ public final class GetFunctionData implements Function {
 			_arg.set(TYPE,StringUtil.emptyIfNull(fa.getTypeAsString()));
 			_arg.set(NAME,StringUtil.emptyIfNull(fa.getName()));
 			_arg.set(DESCRIPTION,StringUtil.emptyIfNull(fa.getHint()));
-			_arg.set(STATUS,"implemeted");
+			
+			String status;
+			if(meta==null)status="implemeted";
+			else status=TagLibFactory.toStatus(TagLibFactory.toStatus(Caster.toString(meta.get(STATUS,"implemeted"))));
+			
+			_arg.set(STATUS,status);
 			
 			_args.append(_arg);
 		}

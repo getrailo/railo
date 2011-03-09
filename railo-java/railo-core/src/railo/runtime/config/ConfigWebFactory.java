@@ -62,6 +62,7 @@ import railo.runtime.MappingImpl;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.cache.CacheConnectionImpl;
 import railo.runtime.cache.ServerCacheConnection;
+import railo.runtime.cache.eh.EHCacheLite;
 import railo.runtime.cfx.customtag.CFXTagClass;
 import railo.runtime.cfx.customtag.CPPCFXTagClass;
 import railo.runtime.cfx.customtag.JavaCFXTagClass;
@@ -307,7 +308,6 @@ public final class ConfigWebFactory {
 			} catch (SAXException e) {}
     	}
     	
-    	
     	loadConstants(configServer,config,doc);
     	loadTempDirectory(configServer, config, doc);
     	loadId(config);
@@ -358,6 +358,8 @@ public final class ConfigWebFactory {
     	loadGateway(configServer,config,doc);
     	loadExeLog(configServer,config,doc);
     	config.setLoadTime(System.currentTimeMillis());
+    	
+    	doNew(config.getConfigDir(), false);
     	
     	ThreadLocalConfig.release();
     }
@@ -940,7 +942,7 @@ public final class ConfigWebFactory {
 	        }
 	    }
         
-        boolean doNew=doNew(configDir);
+        boolean doNew=doNew(configDir,true);
         
         
         
@@ -1343,7 +1345,7 @@ public final class ConfigWebFactory {
         
      // deploy org.railo.cfml components
       	if(config instanceof ConfigWeb){
-      		boolean doNew=doNew(configDir);
+      		boolean doNew=doNew(configDir,true);
       		ImportDefintion _import = config.getComponentDefaultImport();
       		String path = _import.getPackageAsPath();
       		Resource components = config.getConfigDir().getRealResource("components");
@@ -1356,16 +1358,18 @@ public final class ConfigWebFactory {
 
 	}
 
-	private static boolean doNew(Resource contextDir) throws IOException {
+	private static boolean doNew(Resource contextDir,boolean readonly) throws IOException {
 		Resource version=contextDir.getRealResource("version");
 		String v=Info.getVersionAsString()+"-"+Info.getStateAsString()+"-"+Info.getRealeaseTime();
 		if(!version.exists()) {
-            version.createNewFile();
-            IOUtil.write(version,v,SystemUtil.getCharset(),false);
+            if(!readonly){
+            	version.createNewFile();
+            	IOUtil.write(version,v,SystemUtil.getCharset(),false);
+            }
             return true;
         }
         else if(!IOUtil.toString(version,SystemUtil.getCharset()).equals(v)) {
-            IOUtil.write(version,v,SystemUtil.getCharset(),false);
+        	if(!readonly)IOUtil.write(version,v,SystemUtil.getCharset(),false);
             return true;
         }
         return false;
@@ -1862,17 +1866,26 @@ public final class ConfigWebFactory {
     	Element[] eConnections=getChildren(eCache,"connection");
     		
 		//if(hasAccess) {
-		String name;
+		String name,clazzName;
 		CacheConnection cc;
-		
+		Class cacheClazz;
 		// caches
 		if(hasAccess)for(int i=0;i<eConnections.length;i++) {
                 Element eConnection=eConnections[i];
                 name=eConnection.getAttribute("name");
+                clazzName=eConnection.getAttribute("class");
+                if(clazzName!=null) clazzName=clazzName.trim();
+                
+                //
 			  	try{
+			  		
+	                // Workaround for old EHCacheLite class defintion
+	                if("railo.extension.io.cache.eh.EHCacheLite".equals(clazzName)) cacheClazz=EHCacheLite.class;
+	                else cacheClazz=ClassUtil.loadClass(config.getClassLoader(),clazzName);
+                
 			  		cc=new CacheConnectionImpl(config,
 	  				name,
-    				ClassUtil.loadClass(config.getClassLoader(),eConnection.getAttribute("class")),
+	  				cacheClazz,
     				toStruct(eConnection.getAttribute("custom")),
     				Caster.toBooleanValue(eConnection.getAttribute("read-only"),false));
 			  		if(!StringUtil.isEmpty(name)){
@@ -2450,7 +2463,7 @@ public final class ConfigWebFactory {
     private static void createTagFiles(Config config,Resource configDir,Resource dir) {
     	boolean doNew=true;
     	try {
-			doNew=doNew(configDir);
+			doNew=doNew(configDir,true);
 		} catch (IOException e) {}
         
     	if(config instanceof ConfigServer){
@@ -2466,7 +2479,7 @@ public final class ConfigWebFactory {
     private static void createFunctionFiles(Config config,Resource configDir,Resource dir) {
     	boolean doNew=true;
     	try {
-			doNew=doNew(configDir);
+			doNew=doNew(configDir,true);
 		} catch (IOException e) {}
         
     	if(config instanceof ConfigServer){

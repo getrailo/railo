@@ -41,8 +41,6 @@ function detail(field){
 <div style="width:740px">
 	<cfset data=getFunctionData(url.func)>
 
-
-
 <cfif data.status EQ "deprecated"><b class="error">
 #stText.doc.depFunction#</b><br />
 </cfif>
@@ -64,7 +62,7 @@ function detail(field){
 
 <cfset first=true>
 <cfset optCount=0>
-<pre><span class="syntaxFunc">#data.name#(</span><cfloop array="#data.arguments#" index="item"><cfif not first><span class="syntaxFunc">,</span></cfif><cfif not item.required><cfset optCount=optCount+1><span class="syntaxFunc">[</span></cfif><span class="syntaxType">#item.type#</span> <span class="syntaxText">#item.name#</span><cfset first=false></cfloop><span class="syntaxFunc">#RepeatString(']',optCount)#):</span><span class="syntaxType">#data.returntype#</span>
+<pre><span class="syntaxFunc">#data.name#(</span><cfloop array="#data.arguments#" index="item"><cfif item.status EQ "hidden"><cfcontinue></cfif><cfif not first><span class="syntaxFunc">,</span></cfif><cfif not item.required><cfset optCount=optCount+1><span class="syntaxFunc">[</span></cfif><span class="syntaxType">#item.type#</span> <span class="syntaxText">#item.name#</span><cfset first=false></cfloop><span class="syntaxFunc">#RepeatString(']',optCount)#):</span><span class="syntaxType">#data.returntype#</span>
 </pre>
 
 
@@ -101,7 +99,7 @@ function detail(field){
 	<td class="tblHead">#stText.doc.arg.description#</td>
 </tr>
 
-<cfloop array="#data.arguments#" index="attr">
+<cfloop array="#data.arguments#" index="attr"><cfif attr.status EQ "hidden"><cfcontinue></cfif>
 <tr>
 	<td class="tblContent">#attr.name	#</td>
 	<td class="tblContent">#attr.type#&nbsp;</td>

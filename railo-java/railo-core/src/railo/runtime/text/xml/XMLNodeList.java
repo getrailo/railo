@@ -33,8 +33,6 @@ import railo.runtime.util.ArrayIterator;
 public final class XMLNodeList extends ArraySupport implements NodeList, XMLObject{
 
 	private boolean caseSensitive;
-	//private NodeList nodes;
-	//private EditableNodeList eNodes;
 	private Document doc;
 	private Node parent;
 	private String filter;
@@ -64,14 +62,14 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	 * @see org.w3c.dom.NodeList#getLength()
 	 */
 	public int getLength() {
-		return getChildNodes().getLength();
+		return XMLUtil.childNodesLength(parent,Node.ELEMENT_NODE,caseSensitive,filter);
 	}
 
 	/**
 	 * @see org.w3c.dom.NodeList#item(int)
 	 */
 	public Node item(int index) {
-		return XMLCaster.toXMLStruct(getChildNodes().item(index),caseSensitive);
+		return XMLCaster.toXMLStruct(getChildNode(index),caseSensitive);
 	}
 
 	/**
@@ -458,6 +456,10 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 
     private NodeList getChildNodes() {
 		return XMLUtil.getChildNodes(parent,Node.ELEMENT_NODE,caseSensitive,filter);
+	}
+    
+    private Node getChildNode(int index) {
+		return XMLUtil.getChildNode(parent,Node.ELEMENT_NODE,caseSensitive,filter,index);
 	}
 	
 	private Node[] getChildNodesAsArray() {

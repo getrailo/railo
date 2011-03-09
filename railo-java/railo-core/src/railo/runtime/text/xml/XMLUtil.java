@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -439,9 +441,7 @@ public final class XMLUtil {
 	 * @throws SAXException
 	 */
 	public static Object getProperty(Node node, Collection.Key k,boolean caseSensitive) throws SAXException {
-	    
-		
-		//String lcKey=StringUtil.toLowerCase(key);
+	    //String lcKey=StringUtil.toLowerCase(key);
 		if(k.getLowerString().startsWith("xml")) {
 		// Comment
 			if(k.equals(XMLCOMMENT)) {
@@ -562,37 +562,37 @@ public final class XMLUtil {
 			else detail="there are only "+count+" Elements with this name";
 			throw new SAXException("invalid index ["+k.getString()+"] for Element with name ["+node.getNodeName()+"], "+detail);
 		}
-		else {	
-			
-			
-			
-			XMLNodeList xmlNodeList=new XMLNodeList(node,caseSensitive);
-			Array array=new ArrayImpl();
-			
-			int[] ints=xmlNodeList.intKeys();
-			for(int i=0;i<ints.length;i++) {
-				Object o=xmlNodeList.get(ints[i],null);
-				if(o instanceof Element) {
-					Element el=(Element) o;
+		else {
+			List<Node> children = XMLUtil.getChildNodesAsList(node,Node.ELEMENT_NODE,caseSensitive,null);
+			int len=children.size();
+			Array array=null;//new ArrayImpl();
+			Element el;
+			XMLStruct sct=null,first=null;
+			for(int i=0;i<len;i++) {
+				el=(Element) children.get(i);// XMLCaster.toXMLStruct(getChildNode(index),caseSensitive);
+				if(XMLUtil.nameEqual(el,k.getString(),caseSensitive)) {
+					sct = XMLCaster.toXMLStruct(el,caseSensitive);
 					
-					//if((!caseSensitive && el.getNodeName().equalsIgnoreCase(k.getString())) || (caseSensitive && el.getNodeName().equals(k.getString()))) {
-					if(XMLUtil.nameEqual(el,k.getString(),caseSensitive)) {
-						try {
-							array.append(XMLCaster.toXMLStruct(el,caseSensitive));
-						} catch (PageException e) {}
+					if(array!=null) {
+						array.appendEL(sct);
+					}
+					else if(first!=null) {
+						array=new ArrayImpl();
+						array.appendEL(first);
+						array.appendEL(sct);
+					}
+					else {
+						first=sct;
 					}
 				}
 			}
 			
-			if(array.size()>0) {
+			if(array!=null) {
 				try {
 					return new XMLMultiElementStruct(array,false);
 				} catch (PageException e) {}
 			}
-			try {
-				return XMLCaster.toXMLStruct((Node)xmlNodeList.get(k),caseSensitive);
-			} 
-            catch (ExpressionException e) {}
+			if(first!=null) return first;
 		}
 		throw new SAXException("Attribute ["+k.getString()+"] not found");
 	}
@@ -793,10 +793,30 @@ public final class XMLUtil {
 	 * @param caseSensitive 
 	 * @return all matching child node
 	 */
-	public synchronized static NodeList getChildNodes(Node node, short type) {
+	public synchronized static ArrayNodeList getChildNodes(Node node, short type) {
 		return getChildNodes(node, type, false, null);
 	}
-	public synchronized static NodeList getChildNodes(Node node, short type, boolean caseSensitive, String filter) {
+	
+
+	public synchronized static int childNodesLength(Node node, short type, boolean caseSensitive, String filter) {
+		NodeList nodes=node.getChildNodes();
+		int len=nodes.getLength();
+		Node n;
+		int count=0;
+		for(int i=0;i<len;i++) {
+			try {
+				n=nodes.item(i);
+				if(n!=null && n.getNodeType()==type){
+					if(filter==null || (caseSensitive?filter.equals(n.getLocalName()):filter.equalsIgnoreCase(n.getLocalName())))
+					count++;
+				}
+			}
+			catch(Throwable t){}
+		}
+		return count;
+	}
+	
+	public synchronized static ArrayNodeList getChildNodes(Node node, short type, boolean caseSensitive, String filter) {
 		ArrayNodeList rtn=new ArrayNodeList();
 		NodeList nodes=node.getChildNodes();
 		int len=nodes.getLength();
@@ -813,6 +833,47 @@ public final class XMLUtil {
 		}
 		return rtn;
 	}
+	
+	public synchronized static List<Node> getChildNodesAsList(Node node, short type, boolean caseSensitive, String filter) {
+		List<Node> rtn=new ArrayList<Node>();
+		NodeList nodes=node.getChildNodes();
+		int len=nodes.getLength();
+		Node n;
+		for(int i=0;i<len;i++) {
+			try {
+				n=nodes.item(i);
+				if(n!=null && n.getNodeType()==type){
+					if(filter==null || (caseSensitive?filter.equals(n.getLocalName()):filter.equalsIgnoreCase(n.getLocalName())))
+					rtn.add(n);
+				}
+			}
+			catch(Throwable t){}
+		}
+		return rtn;
+	}
+	
+
+	public synchronized static Node getChildNode(Node node, short type, boolean caseSensitive, String filter, int index) {
+		NodeList nodes=node.getChildNodes();
+		int len=nodes.getLength();
+		Node n;
+		int count=0;
+		for(int i=0;i<len;i++) {
+			try {
+				n=nodes.item(i);
+				if(n!=null && n.getNodeType()==type){
+					if(filter==null || (caseSensitive?filter.equals(n.getLocalName()):filter.equalsIgnoreCase(n.getLocalName()))) {
+						if(count==index) return n;
+						count++;
+					}
+				}
+			}
+			catch(Throwable t){}
+		}
+		return null;
+	}
+	
+	
 	
     /**
      * return all Children of a node by a defined type as Node Array

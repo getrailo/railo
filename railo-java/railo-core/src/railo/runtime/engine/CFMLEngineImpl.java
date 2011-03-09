@@ -29,6 +29,7 @@ import railo.commons.lang.types.RefBooleanImpl;
 import railo.intergral.fusiondebug.server.FDControllerImpl;
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
+import railo.loader.engine.CFMLEngineWrapper;
 import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Info;
@@ -359,27 +360,34 @@ public final class CFMLEngineImpl implements CFMLEngine {
      */
     public void reset(String configId) {
         
-        
         CFMLFactoryImpl cfmlFactory;
         //ScopeContext scopeContext;
-        
-        Iterator it = contextes.keySet().iterator();
-        while(it.hasNext()) {
-            cfmlFactory=(CFMLFactoryImpl)contextes.get(it.next());
-            if(configId!=null && !configId.equals(cfmlFactory.getConfigWebImpl().getId())) continue;
-            	
-            // scopes
-            cfmlFactory.getScopeContext().clear();
-            
-            // PageContext
-            cfmlFactory.resetPageContext();
-            
-            // Query Cache
-            cfmlFactory.getQueryCache().clear();
-            
+        try {
+	        Iterator it = contextes.keySet().iterator();
+	        while(it.hasNext()) {
+	        	try {
+		            cfmlFactory=(CFMLFactoryImpl)contextes.get(it.next());
+		            if(configId!=null && !configId.equals(cfmlFactory.getConfigWebImpl().getId())) continue;
+		            	
+		            // scopes
+		            try{cfmlFactory.getScopeContext().clear();}catch(Throwable t){t.printStackTrace();}
+		            
+		            // PageContext
+		            try{cfmlFactory.resetPageContext();}catch(Throwable t){t.printStackTrace();}
+		            
+		            // Query Cache
+		            try{ cfmlFactory.getQueryCache().clear();}catch(Throwable t){t.printStackTrace();}
+	            
+	        	}
+	        	catch(Throwable t){
+	        		t.printStackTrace();
+	        	}
+	        }
+        }
+    	finally {
             // Controller
             controlerState.setValue(false);
-        }
+    	}
     }
     
     /**
@@ -488,6 +496,17 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	}
 	
 	public boolean isRunning() {
+		try{
+			CFMLEngine other = CFMLEngineFactory.getInstance();
+			// FUTURE patch, do better impl when changing loader
+			if(other!=this && controlerState.toBooleanValue() &&  !(other instanceof CFMLEngineWrapper)) {
+				SystemOut.printDate("CFMLEngine is still set to true but no longer valid, Railo disable this CFMLEngine.");
+				controlerState.setValue(false);
+				reset();
+				return false;
+			}
+		}
+		catch(Throwable t){}
 		return controlerState.toBooleanValue();
 	}
 

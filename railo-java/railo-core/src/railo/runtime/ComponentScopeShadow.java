@@ -1,5 +1,6 @@
 package railo.runtime;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -43,9 +45,9 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 * @param component
 	 * @param shadow
 	 */
-	public ComponentScopeShadow(ComponentImpl component, ComponentScopeShadow scope) {
+	public ComponentScopeShadow(ComponentImpl component, ComponentScopeShadow scope,boolean cloneShadow) {
         this.component=component;
-        this.shadow=scope.shadow;
+        this.shadow=cloneShadow?Duplicator.duplicateMap(scope.shadow,new HashMap<Key,Object>(), false):scope.shadow;
 	}
 
 
@@ -189,9 +191,8 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		if(!component.afterConstructor && value instanceof UDF) {
 			component.addConstructorUDF(key,(UDF)value);
 		}
-		return shadow.put(key, value);
-		
-		//return setEL(key, value);
+		shadow.put(key, value);
+		return value;
 	}
 
 	/**
@@ -319,14 +320,18 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	}
 
 	public Object call(PageContext pc, Collection.Key key, Object[] arguments) throws PageException {
+		// first check variables
+		Object o=shadow.get(key);
+		if(o instanceof UDF) {
+			return ((UDF)o).call(pc, arguments, false);
+		}
 		
 		// then check in component
 		Member m = component.getMember(access, key, false,false);
 		if(m!=null) {
 			if(m instanceof UDF) return ((UDF)m).call(pc, arguments, false);
-	        throw ComponentUtil.notFunction(component, key, m.getValue(),access);
 		}
-		throw ComponentUtil.notFunction(component, key, null,access);
+		throw ComponentUtil.notFunction(component, key, m!=null?m.getValue():null,access);
 	}
 
 	/**
@@ -337,6 +342,12 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	}
 
 	public Object callWithNamedValues(PageContext pc, Key key, Struct args) throws PageException {
+		// first check variables
+		Object o=shadow.get(key);
+		if(o instanceof UDF) {
+			return ((UDF)o).callWithNamedValues(pc, args, false);
+		}
+		
 		Member m = component.getMember(access, key, false,false);
 		if(m!=null) {
 			if(m instanceof UDF) return ((UDF)m).callWithNamedValues(pc, args, false);

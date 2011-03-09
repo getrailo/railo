@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -19,6 +18,7 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.type.ram.RamResourceProviderOld;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.functions.other.CreateUUID;
 import railo.runtime.op.Caster;
@@ -31,7 +31,7 @@ public final class Compress {
 	public static final int FORMAT_TBZ2 = CompressUtil.FORMAT_TBZ2;
 	
 	
-	private final static Map files=new WeakHashMap();
+	//private final static Map files=new WeakHashMap();
 	
 	private final Resource ffile;
 	//private ResourceProvider ramProvider;
@@ -52,7 +52,7 @@ public final class Compress {
 	 * @param format 
 	 * @param caseSensitive 
 	 */
-	private Compress(Resource file, int format, boolean caseSensitive) {
+	public Compress(Resource file, int format, boolean caseSensitive) {
 		this.ffile=file;
 		this.format=format;
 		this.mode=ffile.getMode();
@@ -67,15 +67,20 @@ public final class Compress {
 	 * @param caseSensitive 
 	 * @return
 	 */
-	public static Compress getInstance(Resource zipFile, int format, boolean caseSensitive) {
+	/*public static Compress getInstance(Resource zipFile, int format, boolean caseSensitive) {
 		Compress compress=(Compress) files.get(zipFile.getPath());
 		if(compress==null) {
 			compress=new Compress(zipFile,format,caseSensitive);
 			files.put(zipFile.getPath(), compress);
 		}
-		return compress;
+		return compress;ConfigImpl
+	}*/
+	public static Compress getInstance(Resource zipFile, int format, boolean caseSensitive) {
+		ConfigImpl config=(ConfigImpl) ThreadLocalPageContext.getConfig();
+		return config.getCompressInstance(zipFile, format, caseSensitive);
 	}
-
+	
+	
 	private void load(boolean caseSensitive) {
 		long actLastMod = ffile.lastModified();
 		lastMod=actLastMod;
@@ -104,14 +109,7 @@ public final class Compress {
 		}
 		
 		if(temp!=null) {
-			ResourceUtil.removeChildrenEL(temp);
-			/*String name;
-			try {
-				name=MD5Checksum.getMD5Checksum(ffile);
-			} 
-			catch (Exception e) {
-				name=CreateUUID.invoke();
-			}*/
+			if(root!=null)ResourceUtil.removeChildrenEL(root);
 			String name=CreateUUID.invoke();
 			root=temp.getRealResource(name);
 			root.mkdirs();
@@ -120,12 +118,6 @@ public final class Compress {
 			ResourceProvider ramProvider = new RamResourceProviderOld().init("ram",args);
 			root=ramProvider.getResource("/");
 		}
-		
-		
-		/*try {
-			root.setMode(mode);
-		} 
-		catch (IOException e) {}*/
 		_load();
 	}
 	

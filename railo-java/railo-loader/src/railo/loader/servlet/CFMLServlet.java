@@ -14,11 +14,11 @@ import railo.loader.engine.EngineChangeListener;
 
 /**
  */
-public class CFMLServlet extends HttpServlet implements EngineChangeListener {
+public class CFMLServlet extends RailoServlet {
 
-    private CFMLEngine engine;
-    
-    /**
+	private static final long serialVersionUID = -1878214660283329587L;
+	
+	/**
      * @see javax.servlet.Servlet#init(javax.servlet.ServletConfig)
      */
     public void init(ServletConfig sg) throws ServletException {
@@ -30,16 +30,5 @@ public class CFMLServlet extends HttpServlet implements EngineChangeListener {
      */
     protected void service(HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
         engine.serviceCFML(this,req,rsp);
-    }
-    
-    /**
-     * @see railo.loader.engine.EngineChangeListener#onUpdate(railo.loader.engine.CFMLEngine)
-     */
-    public void onUpdate(CFMLEngine newEngine) {
-        try {
-            engine=CFMLEngineFactory.getInstance(getServletConfig(),this);
-        } catch (ServletException e) {
-            engine=newEngine;
-        }
     }
 }

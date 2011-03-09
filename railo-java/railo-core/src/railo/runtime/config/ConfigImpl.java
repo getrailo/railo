@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
+import java.util.WeakHashMap;
 
 import javax.servlet.ServletException;
 
@@ -32,6 +33,7 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
+import railo.commons.io.res.type.compress.Compress;
 import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
@@ -95,6 +97,7 @@ import railo.runtime.spooler.SpoolerEngine;
 import railo.runtime.tag.Admin;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.scope.ClusterNotSupported;
@@ -394,6 +397,10 @@ public abstract class ConfigImpl implements Config {
         factory.resetPageContext();
         //resources.reset();
         ormengines.clear();
+        compressResources.clear();
+        clearFunctionCache();
+        clearCTCache();
+        clearComponentCache();
     }
     
     /**
@@ -3068,7 +3075,8 @@ public abstract class ConfigImpl implements Config {
 			}
 		}
 		catch(Throwable t){
-			throw Caster.toPageException(t);
+			return new String[0];
+			//throw Caster.toPageException(t);
 		}
 	}
 	
@@ -3155,6 +3163,10 @@ public abstract class ConfigImpl implements Config {
 	private Map<String,PageSource> componentPathCache=null;//new ArrayList<Page>();
 	private Map<String,InitFile> ctPatchCache=null;//new ArrayList<Page>();
 	
+	private Map udfCache=new ReferenceMap();
+	
+	
+	
 	
 	public Page getCachedPage(PageContext pc,String pathWithCFC) throws PageException {
 		if(componentPathCache==null) return null; 
@@ -3203,6 +3215,17 @@ public abstract class ConfigImpl implements Config {
 	public void clearCTCache() {
 		if(ctPatchCache==null) return; 
 		ctPatchCache.clear();
+	}
+	
+
+	public void clearFunctionCache() {
+		udfCache.clear();
+	}
+	public UDF getFromFunctionCache(String key) {
+		return (UDF) udfCache.get(key);
+	}
+	public void putToFunctionCache(String key,UDF udf) {
+		udfCache.put(key, udf);
 	}
 	
 	
@@ -3260,5 +3283,15 @@ public abstract class ConfigImpl implements Config {
 	 */
 	protected void setComponentRootSearch(boolean componentRootSearch) {
 		this.componentRootSearch = componentRootSearch;
+	}
+
+	private final Map compressResources=new WeakHashMap();
+	public Compress getCompressInstance(Resource zipFile, int format, boolean caseSensitive) {
+		Compress compress=(Compress) compressResources.get(zipFile.getPath());
+		if(compress==null) {
+			compress=new Compress(zipFile,format,caseSensitive);
+			compressResources.put(zipFile.getPath(), compress);
+		}
+		return compress;
 	}
 }

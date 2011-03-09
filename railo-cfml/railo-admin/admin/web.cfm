@@ -72,7 +72,7 @@
 <cfset navigation = stText.MenuStruct[request.adminType]>
 <cfset plugins=array()>
 <cfif StructKeyExists(session,"password"&request.adminType)>
-	
+	<cftry>
     <cfadmin 
 	    action="getPluginDirectory"
 	    type="#request.adminType#"
@@ -103,7 +103,8 @@
         )>
     	<cfset navigation[arrayLen(navigation)+1]=plugin>
     </cfif>
-    
+    	<cfcatch></cfcatch>
+    </cftry>
     
 </cfif>
 

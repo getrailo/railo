@@ -12,6 +12,7 @@ import railo.commons.io.IOUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.tag.Http;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
@@ -41,8 +42,8 @@ public final class GetHTTPRequestData implements Function {
         Object obj = "";
         
         boolean isBinary =!(
-        		contentType == null || 
-        		contentType.toLowerCase().startsWith("text/") || 
+        		contentType == null || Http.isText(contentType) ||
+        		 
         		contentType.toLowerCase().startsWith("application/x-www-form-urlencoded"));
         //print.err("err:"+contentType+":"+charEncoding);
         

@@ -276,7 +276,8 @@ public final class PDFDocument {
 		pd4ml.generateOutlines(generateOutlines);
 		pd4ml.enableTableBreaks(true);
 		pd4ml.interpolateImages(true);
-		// DO NOT ENABLE pd4ml.adjustHtmlWidth();
+		// MUSTMUST DO NOT ENABLE, why this was disabled
+		pd4ml.adjustHtmlWidth();
 		
 		//check size
 		int mTop = 	toPoint(margintop,unitFactor);

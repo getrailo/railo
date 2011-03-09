@@ -899,7 +899,7 @@ public final class Decision {
     	char first = type.charAt(0);
     	switch(first) {
     	case 'a':
-    		if("any".equals(type))			return true;
+    		if("any".equals(type))			return true;//isSimpleValue(value);
     		if("array".equals(type))		return isArray(value);
     	break;
     	case 'b':
