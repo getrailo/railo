@@ -1,9 +1,6 @@
 package railo.commons.net;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.httpclient.methods.RequestEntity;

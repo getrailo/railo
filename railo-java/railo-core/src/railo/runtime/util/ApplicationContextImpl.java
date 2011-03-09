@@ -1,7 +1,5 @@
 package railo.runtime.util;
 
-import java.util.Iterator;
-
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
@@ -14,9 +12,7 @@ import railo.runtime.listener.ApplicationContextUtil;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Scope;
-import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.util.ComponentUtil;
 
