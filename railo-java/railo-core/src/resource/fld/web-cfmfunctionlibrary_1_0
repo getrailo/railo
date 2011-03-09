@@ -5171,7 +5171,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
             HTML version to use. currently ignored.
             -1: The latest implementation of HTML
             2.0: HTML 2.0 (Default)
-            3.2: HTML 3.2</description>
+            3.2: HTML 3.2
+            4.0: HTML 4.0</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
