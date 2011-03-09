@@ -3311,8 +3311,14 @@ If you set unique=true and multiple records are returned, then an exception occu
 			<name>entityName</name>
 			<type>string</type>
 			<required>yes</required>
-		<description>Name of the instance being created.</description>
-    </argument>
+			<description>Name of the instance being created.</description>
+    	</argument>
+		<argument>
+			<name>properties</name>
+			<type>struct</type>
+			<required>no</required>
+			<description>a struct containing data to populate the entity properties.</description>
+    	</argument>
 		<return>
 			<type>any</type>
 		</return>
