@@ -45,7 +45,7 @@ public class ORMEngineDummy implements ORMEngine {
 		return null;
 	}
 
-	public boolean reload(PageContext pc) throws PageException {
+	public boolean reload(PageContext pc, boolean force) throws PageException {
 		// TODO Auto-generated method stub
 		return false;
 	}

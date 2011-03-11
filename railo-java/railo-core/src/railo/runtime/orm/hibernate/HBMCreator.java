@@ -121,8 +121,6 @@ public class HBMCreator {
 
 		}
 		
-		//lazy
-		//clazz.setAttribute("lazy", "true");
 		//createXMLMappingTuplizer(clazz,pc);
 
 		addGeneralClassAttributes(pc,ormConf,engine,cfc,meta,clazz);
@@ -667,8 +665,7 @@ public class HBMCreator {
 			setColumn(doc, key, str);
 			
 			// lazy
-			str=toString(engine,cfc,prop,meta,"lazy");
-			key.setAttribute("lazy",str);
+			setLazy(engine,cfc,prop,meta,key);
 		}
 	}
 	
@@ -1728,7 +1725,16 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 		}
 		
 		// lazy
-		str=toString(engine,cfc,prop,meta, "lazy");
+		setLazy(engine,cfc,prop,meta,x2x);
+		
+	}
+
+
+
+	
+
+	private static void setLazy(HibernateORMEngine engine, Component cfc,Property prop, Struct meta, Element x2x) throws ORMException {
+		String str = toString(engine,cfc,prop,meta, "lazy");
 		if(!StringUtil.isEmpty(str)){
 			Boolean b = Caster.toBoolean(str,null);
 			if(b!=null)
@@ -1737,13 +1743,8 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 				x2x.setAttribute("lazy", "extra");
 			else 
 				throw invalidValue(engine,cfc,prop,"lazy",str,"true,false,extra");
-				//throw new ORMException(engine,"invalid value ["+str+"] for attribute [lazy], valid values are [true,false,extra]");
 		}
 	}
-
-
-
-	
 
 	private static void createXMLMappingTimestamp(HibernateORMEngine engine,Element clazz, PageContext pc,Component cfc,Property prop) throws PageException {
 		Struct meta = prop.getMeta();

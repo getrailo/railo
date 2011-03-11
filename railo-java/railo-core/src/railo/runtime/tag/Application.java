@@ -292,7 +292,7 @@ public final class Application extends TagImpl {
         	initORM=set(ac);
         }
         
-        if(initORM) ORMUtil.resetEngine(pageContext);
+        if(initORM) ORMUtil.resetEngine(pageContext,false);
         
         return SKIP_BODY; 
 	}

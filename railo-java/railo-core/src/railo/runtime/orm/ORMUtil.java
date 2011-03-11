@@ -20,9 +20,13 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.util.ComponentUtil;
 
 public class ORMUtil {
-	
+
 	public static ORMSession getSession(PageContext pc) throws PageException {
-		return ((PageContextImpl) pc).getORMSession();
+		return getSession(pc,true);
+	}
+	
+	public static ORMSession getSession(PageContext pc, boolean create) throws PageException {
+		return ((PageContextImpl) pc).getORMSession(create);
 	}
 
 	public static ORMEngine getEngine(PageContext pc) throws PageException {
@@ -30,9 +34,15 @@ public class ORMUtil {
 		return config.getORMEngine(pc);
 	}
 
-	public static void resetEngine(PageContext pc) throws PageException {
+	/**
+	 * 
+	 * @param pc
+	 * @param force if set to false the engine is on loaded when the configuration has changed
+	 * @throws PageException
+	 */
+	public static void resetEngine(PageContext pc, boolean force) throws PageException {
 		ConfigImpl config=(ConfigImpl) pc.getConfig();
-		config.resetORMEngine(pc);
+		config.resetORMEngine(pc,force);
 	}
 	
 	public static void printError(Throwable t, ORMEngine engine) {

@@ -534,7 +534,7 @@ public class ModernAppListener extends AppListenerSupport {
 		if(initORM) {
 			if(hasError)pc.addPageSource(app.getPageSource(), true);
 			try{
-				ORMUtil.resetEngine(pc);
+				ORMUtil.resetEngine(pc,false);
 			}
 			finally {
 				if(hasError)pc.removeLastPageSource(true);

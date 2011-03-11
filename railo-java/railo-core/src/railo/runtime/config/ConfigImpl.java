@@ -3033,11 +3033,11 @@ public abstract class ConfigImpl implements Config {
 		this.executionLogFactory= executionLogFactory;
 	}
 	
-	public ORMEngine resetORMEngine(PageContext pc) throws PageException {
+	public ORMEngine resetORMEngine(PageContext pc, boolean force) throws PageException {
 		//String name = pc.getApplicationContext().getName();
 		//ormengines.remove(name);
 		ORMEngine e = getORMEngine(pc);
-		e.reload(pc);
+		e.reload(pc,force);
 		return e;
 	}
 	

@@ -140,17 +140,25 @@ public class HibernateORMEngine implements ORMEngine {
 		return getSessionFactory(pc,false);
 	}
 	
-	public boolean reload(PageContext pc) throws PageException {
-		Object h = hash((ApplicationContextImpl)pc.getApplicationContext());
+	public boolean reload(PageContext pc, boolean force) throws PageException {
+		if(force) {
+			if(_factory!=null){
+				_factory.close();
+				_factory=null;
+				configuration=null;
+			}
+		}
+		else {
+			Object h = hash((ApplicationContextImpl)pc.getApplicationContext());
+			if(this.hash.equals(h))return false;
+		}
 		
-		if(this.hash.equals(h))return false;
 		getSessionFactory(pc,true);
 		return true;
 	}
 
 
 	private synchronized SessionFactory getSessionFactory(PageContext pc,boolean init) throws PageException {
-		
 		ApplicationContextImpl appContext = ((ApplicationContextImpl)pc.getApplicationContext());
 		if(!appContext.isORMEnabled())
 			throw new ORMException(this,"ORM is not enabled in application.cfc/cfapplication");
@@ -165,6 +173,8 @@ public class HibernateORMEngine implements ORMEngine {
 			throw new ORMException(this,"missing datasource defintion in application.cfc/cfapplication");
 		if(!dsn.equalsIgnoreCase(datasource)){
 			configuration=null;
+			if(_factory!=null) _factory.close();
+			_factory=null;
 			datasource=dsn.toLowerCase();
 		}
 		

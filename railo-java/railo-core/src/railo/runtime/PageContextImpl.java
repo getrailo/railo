@@ -2792,10 +2792,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 
 	
-	public ORMSession getORMSession() throws PageException {
-		//ORMUtil.checkRestriction(this);
+	/**
+	 * @param create if set to true, railo creates a session when not exist
+	 * @return
+	 * @throws PageException
+	 */
+	public ORMSession getORMSession(boolean create) throws PageException {
+		
 		
 		if(ormSession==null || !ormSession.isValid())	{
+			if(!create) return null;
+			
 			ormSession=config.getORMEngine(this).createSession(this);
 		}
 		
