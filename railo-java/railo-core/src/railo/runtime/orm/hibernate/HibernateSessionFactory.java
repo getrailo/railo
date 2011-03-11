@@ -256,20 +256,20 @@ public class HibernateSessionFactory {
 		done.add(key);
 	}
 
-	public static List<ComponentPro> loadComponents(PageContext pc,HibernateORMEngine engine, ORMConfiguration ormConf) {
+	public static List<ComponentPro> loadComponents(PageContext pc,HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {
 		ExtensionResourceFilter filter = new ExtensionResourceFilter(pc.getConfig().getCFCExtension(),true);
 		List<ComponentPro> components=new ArrayList<ComponentPro>();
-		loadComponents(pc,engine,components,ormConf.getCfcLocations(),filter);
+		loadComponents(pc,engine,components,ormConf.getCfcLocations(),filter,ormConf);
 		return components;
 	}
 	
-	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource[] reses,ExtensionResourceFilter filter) {
+	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource[] reses,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
 		for(int i=0;i<reses.length;i++){
-			if(reses[i]!=null && reses[i].isDirectory())loadComponents(pc,engine,components,reses[i], filter);
+			if(reses[i]!=null && reses[i].isDirectory())loadComponents(pc,engine,components,reses[i], filter,ormConf);
 		}
 	}
 	
-	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource res,ExtensionResourceFilter filter) {
+	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource res,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
 		if(res==null) return;
 
 		if(res.isDirectory()){
@@ -277,19 +277,18 @@ public class HibernateSessionFactory {
 			
 			// first load all files
 			for(int i=0;i<children.length;i++){
-				if(children[i].isFile())loadComponents(pc,engine,components,children[i], filter);
+				if(children[i].isFile())loadComponents(pc,engine,components,children[i], filter,ormConf);
 			}
 			
 			// and then invoke subfiles
 			for(int i=0;i<children.length;i++){
-				if(children[i].isDirectory())loadComponents(pc,engine,components,children[i], filter);
+				if(children[i].isDirectory())loadComponents(pc,engine,components,children[i], filter,ormConf);
 			}
 		}
 		else if(res.isFile()){
 			if(!res.getName().equalsIgnoreCase("Application.cfc"))	{
 				try {
 					PageSource ps = pc.toPageSource(res,null);
-
 					Page p = ps.loadPage(pc.getConfig());
 					String name=res.getName();
 					name=name.substring(0,name.length()-4);
@@ -299,7 +298,8 @@ public class HibernateSessionFactory {
 					}
 				} 
 				catch (PageException e) {
-					e.printStackTrace();
+					if(!ormConf.skipCFCWithError())throw e;
+					//e.printStackTrace();
 				}
 			}
 		}
