@@ -150,9 +150,7 @@ public class HibernateSessionFactory {
 	}
 
 	private static void schemaExport(HibernateORMEngine engine,Configuration configuration, ORMConfiguration ormConf,DatasourceConnection dc) throws PageException,ORMException, SQLException, IOException {
-		
 		if(ORMConfiguration.DBCREATE_NONE==ormConf.getDbCreate()) {
-			//print.out("dbcreate:none");
 			return;
 		}
 		else if(ORMConfiguration.DBCREATE_DROP_CREATE==ormConf.getDbCreate()) {
@@ -164,7 +162,6 @@ public class HibernateSessionFactory {
             executeSQLScript(ormConf,dc);
 		}
 		else if(ORMConfiguration.DBCREATE_UPDATE==ormConf.getDbCreate()) {
-			//print.out("dbcreate:update");
 			SchemaUpdate update = new SchemaUpdate(configuration);
             update.setHaltOnError(true);
             update.execute(false, true);
