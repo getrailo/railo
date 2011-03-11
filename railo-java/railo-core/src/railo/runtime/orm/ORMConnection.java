@@ -36,7 +36,7 @@ public class ORMConnection implements Connection {
 	public ORMConnection(PageContext pc,ORMSession session) {
 		this.pc=pc;
 		this.session=session;
-		trans = session.getTransaction();
+		trans = session.getTransaction(session.getEngine().getConfiguration(pc).autoManageSession());
 		trans.begin();
 	}
 	

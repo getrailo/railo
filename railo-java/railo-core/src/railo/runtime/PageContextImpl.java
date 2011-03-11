@@ -462,15 +462,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	try {
 				ORMEngine engine=ormSession.getEngine();
         		ORMConfiguration config=engine.getConfiguration(this);
-				if(config==null || config.flushAtRequestEnd()){
+        		if(config==null || (config.flushAtRequestEnd() && config.autoManageSession())){
 					ormSession.flush(this);
 					//ormSession.close(this);
 					//print.err("2orm flush:"+Thread.currentThread().getId());
 				}
+				ormSession.close(this);
 			} 
         	catch (Throwable t) {
         		//print.printST(t);
-        	}	
+        	}
+        	
 			
         	// release connection
 			DatasourceConnectionPool pool = this.config.getDatasourceConnectionPool();

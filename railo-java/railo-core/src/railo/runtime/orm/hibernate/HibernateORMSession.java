@@ -188,7 +188,6 @@ public class HibernateORMSession implements ORMSession{
 	 * @see railo.runtime.orm.ORMSession#clear(railo.runtime.PageContext)
 	 */
 	public void clear(PageContext pc) throws PageException {
-		//Session session = getSession(pc,null);
 		session().clear();
 	}
 	
@@ -705,10 +704,10 @@ public class HibernateORMSession implements ORMSession{
 	}
 
 	/**
-	 * @see railo.runtime.orm.ORMSession#getTransaction()
+	 * @see railo.runtime.orm.ORMSession#getTransaction(boolean)
 	 */
-	public ORMTransaction getTransaction() {
-		return new HibernateORMTransaction(session());
+	public ORMTransaction getTransaction(boolean autoManage) {
+		return new HibernateORMTransaction(session(),autoManage);
 	}
 
 
