@@ -52,6 +52,8 @@ public final class FeedHandler extends DefaultHandler {
 	private boolean isAtom;
 
 	private boolean inAuthor;
+
+	private boolean inEntry;
 	
 	
 	/**
@@ -119,7 +121,8 @@ public final class FeedHandler extends DefaultHandler {
 		deep++;
 		
 		
-		if("author".equals(name))inAuthor=true;
+		if("entry".equals(name))inEntry=true;
+		else if("author".equals(name))inAuthor=true;
 		
 		if(qName.startsWith("dc:")){
 			name="dc_"+name;
@@ -198,9 +201,10 @@ public final class FeedHandler extends DefaultHandler {
 	
 
 	public void endElement(String uri, String name, String qName) {
-		if("author".equals(name))inAuthor=false;
+		if("entry".equals(name))inEntry=false;
+		else if("author".equals(name))inAuthor=false;
 		deep--;
-		if(isAtom && deep>=(inAuthor?4:3)) {
+		if(isAtom && deep>=(inEntry && inAuthor?4:3)) {
 			String content = data.getString();
 			Key[] keys = data.keys();
 			StringBuilder sb=new StringBuilder();
