@@ -682,9 +682,9 @@ public final class ScopeContext {
 			new CacheStorageScopeCleaner(Scope.SCOPE_SESSION, new SessionEndListener())
     	});
     	if(client==null)client=new StorageScopeEngine(factory,log,new StorageScopeCleaner[]{
-    			new FileStorageScopeCleaner(Scope.SCOPE_CLIENT, null),
-    			new DatasourceStorageScopeCleaner(Scope.SCOPE_CLIENT, null),
-    			new CacheStorageScopeCleaner(Scope.SCOPE_CLIENT, null)
+    			new FileStorageScopeCleaner(Scope.SCOPE_CLIENT, null)
+    			,new DatasourceStorageScopeCleaner(Scope.SCOPE_CLIENT, null)
+    			//,new CacheStorageScopeCleaner(Scope.SCOPE_CLIENT, null) Cache storage need no control, if there is no listener
     	});
 
     	

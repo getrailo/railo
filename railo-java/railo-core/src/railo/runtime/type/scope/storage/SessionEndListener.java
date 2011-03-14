@@ -1,13 +1,17 @@
 package railo.runtime.type.scope.storage;
 
+import java.io.Serializable;
+
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.op.Caster;
 
-public class SessionEndListener implements StorageScopeListener {
+public class SessionEndListener implements StorageScopeListener,Serializable {
 
-	/* (non-Javadoc)
+	private static final long serialVersionUID = -3868545140988347285L;
+
+	/**
 	 * @see railo.runtime.type.scope.storage.StorageScopeListener#doEnd(railo.runtime.type.scope.storage.StorageScopeEngine, railo.runtime.type.scope.storage.StorageScopeCleaner, java.lang.String, java.lang.String)
 	 */
 	public void doEnd(StorageScopeEngine engine,StorageScopeCleaner cleaner,String appName, String cfid) {

@@ -24,16 +24,18 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 
 	private static final long serialVersionUID = 6234854552927320080L;
 
-	public static final long SAVE_OFFSET = 60*60*1000;
+	public static final long SAVE_EXPIRES_OFFSET = 60*60*1000;
 
 	//private static ScriptConverter serializer=new ScriptConverter();
 	//boolean structOk;
 	
-	private String cacheName;
-	private String appName;
-	private String cfid;
+	private final String cacheName;
+	private final String appName;
+	private final String cfid;
 
 	private long timespan;
+
+	private final boolean expiresControlFromOutside;
 
 	
 	
@@ -44,7 +46,7 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 	 * @param sct
 	 * @param b 
 	 */
-	protected StorageScopeCache(PageContext pc,String cacheName, String appName,String strType,int type,Struct sct) { 
+	protected StorageScopeCache(PageContext pc,String cacheName, String appName,String strType,int type,Struct sct,boolean expiresControlFromOutside) { 
 		// !!! do not store the pagecontext or config object, this object is Serializable !!!
 		super(
 				sct,
@@ -58,6 +60,13 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 		this.appName=appName;
 		this.cacheName=cacheName;
 		this.cfid=pc.getCFID();
+		
+		this.expiresControlFromOutside=expiresControlFromOutside;
+		
+		
+		/*try {
+			supportCacheEvents = getCache(pc.getConfig(), cacheName) instanceof CacheEvent;
+		} catch (PageException e) {}*/
 	}
 
 	/**
@@ -70,6 +79,7 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 		this.appName=other.appName;
 		this.cacheName=other.cacheName;
 		this.cfid=other.cfid;
+		this.expiresControlFromOutside=other.expiresControlFromOutside;
 	}
 	
 	private static DateTime doNowIfNull(Config config,DateTime dt) {
@@ -120,6 +130,10 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 	public void store(Config config) {
 		try {
 			Cache cache = getCache(config, cacheName);
+			/*if(cache instanceof CacheEvent) {
+				CacheEvent ce=(CacheEvent) cache;
+				ce.register(new SessionEndCacheEvent());
+			}*/
 			String key=getKey(cfid, appName, getTypeAsString());
 			cache.put(key, sct,new Long(timespan), null);
 		} 
@@ -148,14 +162,13 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 	}
 	
 
-	public static String getKey
-	(String cfid, String appName, String type) {
+	public static String getKey(String cfid, String appName, String type) {
 		return new StringBuilder("railo-storage:").append(type).append(":").append(cfid).append(":").append(appName).toString();
 	}
 	
 	private void setTimeSpan(PageContext pc) {
 		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
-		timespan = (getType()==SCOPE_CLIENT?ac.getClientTimeout().getMillis():ac.getSessionTimeout().getMillis())+SAVE_OFFSET;
+		timespan = (getType()==SCOPE_CLIENT?ac.getClientTimeout().getMillis():ac.getSessionTimeout().getMillis())+(expiresControlFromOutside?SAVE_EXPIRES_OFFSET:0L);
 		
 	}
 }

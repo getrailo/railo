@@ -124,13 +124,14 @@ public final class Controler extends Thread {
 					try{config.reloadTimeServerOffset();}catch(Throwable t){}
 					try{checkTempDirectorySize(config);}catch(Throwable t){}
 					try{checkCacheFileSize(config);}catch(Throwable t){}
+					try{cfmlFactory.getScopeContext().clearUnused();}catch(Throwable t){}
 				}
 				
 				if(config==null) {
 					config = cfmlFactory.getConfig();
 					ThreadLocalConfig.register(config);
 				}
-				try{cfmlFactory.getScopeContext().clearUnused();}catch(Throwable t){}
+				//try{cfmlFactory.getScopeContext().clearUnused();}catch(Throwable t){}
 				
 				
 				//every Minute

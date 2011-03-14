@@ -8,6 +8,7 @@ import javax.xml.rpc.ServiceException;
 
 import railo.commons.io.cache.CacheEntry;
 import railo.loader.engine.CFMLEngineFactory;
+import railo.runtime.cache.CacheSupport;
 import railo.runtime.cache.eh.EHCacheSupport;
 import railo.runtime.cache.eh.remote.rest.RESTClient;
 import railo.runtime.cache.eh.remote.rest.sax.CacheConfiguration;
@@ -18,7 +19,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Struct;
 import railo.runtime.util.Cast;
 
-public class EHCacheRemote extends EHCacheSupport {
+public class EHCacheRemote extends CacheSupport {
 
 	private URL url;
 	private String name;
@@ -87,6 +88,16 @@ public class EHCacheRemote extends EHCacheSupport {
 			throw new IOException(e.getMessage());
 		}
 	}
+	
+
+	public CacheEntry getQuiet(String key,CacheEntry defaultValue) {
+		try {
+			return soap.getQuiet(name, key);
+		} 
+		catch (Throwable t) {
+			return defaultValue;
+		}
+	}
 
 	public CacheEntry getCacheEntry(String key) throws IOException {
 		try {
@@ -94,6 +105,15 @@ public class EHCacheRemote extends EHCacheSupport {
 		} 
 		catch (ServiceException e) {
 			throw new IOException(e.getMessage());
+		}
+	}
+
+	public CacheEntry getCacheEntry(String key,CacheEntry defaultValue) {
+		try {
+			return soap.get(name, key);
+		} 
+		catch (Throwable t) {
+			return defaultValue;
 		}
 	}
 

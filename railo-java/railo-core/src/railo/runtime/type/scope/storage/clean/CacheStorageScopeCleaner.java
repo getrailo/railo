@@ -65,7 +65,7 @@ public class CacheStorageScopeCleaner extends StorageScopeCleanerSupport {
 			Iterator<CacheEntry> it = entries.iterator();
 			while(it.hasNext()){
 				ce=it.next();
-				expires=ce.lastModified().getTime()+ce.idleTimeSpan()-StorageScopeCache.SAVE_OFFSET;
+				expires=ce.lastModified().getTime()+ce.idleTimeSpan()-StorageScopeCache.SAVE_EXPIRES_OFFSET;
 				if(expires<=System.currentTimeMillis()) {
 					key=ce.getKey().substring(len);
 					index=key.indexOf(':');
