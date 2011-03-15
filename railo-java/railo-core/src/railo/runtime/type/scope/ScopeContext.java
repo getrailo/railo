@@ -529,7 +529,6 @@ public final class ScopeContext {
 			
 			final boolean doMemory=isMemory || !appContext.getSessionCluster();
 			SessionPlus session=doMemory?appContext.getSessionCluster()?null:(SessionPlus) context.get(pc.getCFID()):null;
-			
 			if(!(session instanceof StorageScope) || session.isExpired() || !((StorageScope)session).getStorage().equalsIgnoreCase(storage)) {
 				
 				if(isMemory){
@@ -684,7 +683,7 @@ public final class ScopeContext {
     	if(client==null)client=new StorageScopeEngine(factory,log,new StorageScopeCleaner[]{
     			new FileStorageScopeCleaner(Scope.SCOPE_CLIENT, null)
     			,new DatasourceStorageScopeCleaner(Scope.SCOPE_CLIENT, null)
-    			//,new CacheStorageScopeCleaner(Scope.SCOPE_CLIENT, null) Cache storage need no control, if there is no listener
+    			//,new CacheStorageScopeCleaner(Scope.SCOPE_CLIENT, null) //Cache storage need no control, if there is no listener
     	});
 
     	

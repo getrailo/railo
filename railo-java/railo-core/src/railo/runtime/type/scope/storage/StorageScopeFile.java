@@ -95,7 +95,7 @@ public abstract class StorageScopeFile extends StorageScopeImpl {
 	 * @see railo.runtime.type.scope.storage.StorageScopeImpl#store(railo.runtime.config.Config)
 	 */
 	public void store(Config config) {
-		if(!super.hasContent()) return;
+		//if(!super.hasContent()) return;
 		try {
 			if(!res.exists())ResourceUtil.createFileEL(res, true);
 			IOUtil.write(res, (timespan.getMillis()+System.currentTimeMillis())+":"+serializer.serializeStruct(sct, ignoreSet), "UTF-8", false);

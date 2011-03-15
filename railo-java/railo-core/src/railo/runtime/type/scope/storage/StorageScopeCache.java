@@ -93,8 +93,7 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 	public void touchAfterRequest(PageContext pc) {
 		setTimeSpan(pc);
 		super.touchAfterRequest(pc);
-		
-		if(super.hasContent()) 
+		//if(super.hasContent()) 
 			store(pc.getConfig());
 	}
 
@@ -119,6 +118,7 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 		String key=getKey(pc.getCFID(),appName,strType);
 		
 		Struct s = (Struct) cache.getValue(key,null);
+		
 		if(s!=null)
 			ScopeContext.info(log,"load existing data from  cache ["+cacheName+"] to create "+strType+" scope for "+pc.getApplicationContext().getName()+"/"+pc.getCFID());
 		else

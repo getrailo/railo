@@ -77,7 +77,7 @@ public abstract class StorageScopeCookie extends StorageScopeImpl {
 	public void touchAfterRequest(PageContext pc) {
 		boolean _isInit=isinit;
 		super.touchAfterRequest(pc);
-		if(!_isInit || !super.hasContent()) return;
+		if(!_isInit) return;
 		
 		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
 		TimeSpan timespan=(getType()==SCOPE_CLIENT)?ac.getClientTimeout():ac.getSessionTimeout();

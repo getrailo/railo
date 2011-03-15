@@ -1,14 +1,18 @@
 package railo.runtime.cache.eh;
 
+import java.io.Serializable;
+
 import railo.aprint;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.event.CacheEventListener;
 
-public class DummyCacheEventListener implements CacheEventListener {
+public class DummyCacheEventListener implements CacheEventListener, Serializable {
 
-	
+	private static final long serialVersionUID = 5194911259476386528L;
+
+
 
 	public void notifyElementExpired(Ehcache cache, Element el) {
 		aprint.o("expired:"+el.getKey());
