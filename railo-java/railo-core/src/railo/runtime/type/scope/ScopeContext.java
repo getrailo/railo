@@ -676,9 +676,9 @@ public final class ScopeContext {
     	try{
     	// create cleaner engine for session/client scope
     	if(session==null)session=new StorageScopeEngine(factory,log,new StorageScopeCleaner[]{
-			new FileStorageScopeCleaner(Scope.SCOPE_SESSION, new SessionEndListener()),
-			new DatasourceStorageScopeCleaner(Scope.SCOPE_SESSION, new SessionEndListener()),
-			new CacheStorageScopeCleaner(Scope.SCOPE_SESSION, new SessionEndListener())
+			new FileStorageScopeCleaner(Scope.SCOPE_SESSION, null)//new SessionEndListener())
+			,new DatasourceStorageScopeCleaner(Scope.SCOPE_SESSION, null)//new SessionEndListener())
+			//,new CacheStorageScopeCleaner(Scope.SCOPE_SESSION, new SessionEndListener())
     	});
     	if(client==null)client=new StorageScopeEngine(factory,log,new StorageScopeCleaner[]{
     			new FileStorageScopeCleaner(Scope.SCOPE_CLIENT, null)
