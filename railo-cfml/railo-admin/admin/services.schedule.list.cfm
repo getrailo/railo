@@ -2,14 +2,43 @@
 <cfset error.detail="">
 
 <!--- 
-Defaults --->
+Defaults ---> 
+<cfparam name="session.st.nameFilter" default="">
+<cfparam name="session.st.IntervalFilter" default="">
+<cfparam name="session.st.urlFilter" default="">
+<cfparam name="session.st.sortOrder" default="">
+<cfparam name="session.st.sortName" default="">
+
 <cfparam name="form.mainAction" default="none">
 <cfparam name="form.subAction" default="none">
 <cfparam name="error" default="#struct(message:"",detail:"")#">
 <cfset error.message="">
 
+<cffunction name="doFilter" returntype="string" output="false">
+	<cfargument name="filter" required="yes" type="string">
+	<cfargument name="value" required="yes" type="string">
+	<cfargument name="exact" required="no" type="boolean" default="false">
+	
+	<cfset arguments.filter=replace(arguments.filter,'*','',"all")>
+    <cfset filter=trim(filter)>
+	<cfif not len(filter)>
+		<cfreturn true>
+	</cfif>
+	<cfif exact>
+		<cfreturn filter EQ value>
+	<cfelse>
+		<cfreturn FindNoCase(filter,value)>
+	</cfif>
+</cffunction>
+
 <cftry>
 	<cfswitch expression="#form.mainAction#">
+	<!--- FILTER --->
+		<cfcase value="filter">
+			<cfset session.st.nameFilter=form.nameFilter>
+			<cfset session.st.IntervalFilter=form.IntervalFilter>
+			<cfset session.st.urlFilter=form.urlFilter>
+		</cfcase>
 	<!--- EXECUTE --->
 		<cfcase value="#stText.Buttons.Execute#">
 			<cfset data.names=toArrayFromForm("name")>
@@ -90,6 +119,23 @@ Defaults --->
 </cftry>
 
 
+<!--- set order --->
+<cfif isDefined("url.order") and ListFindNoCase("task,interval,url",url.order)>
+	<cfif session.st.sortName NEQ url.order>
+    	<cfset session.st.sortOrder="">
+    </cfif>
+	<cfset session.st.sortName=url.order>
+   
+    <cfif session.st.sortOrder EQ "">
+    	<cfset session.st.sortOrder="asc">
+    <cfelseif  session.st.sortOrder EQ "asc">
+    	<cfset session.st.sortOrder="desc">
+    <cfelseif  session.st.sortOrder EQ "desc">
+    	<cfset session.st.sortOrder="asc">
+    </cfif>
+</cfif>
+
+
 <!--- 
 Redirtect to entry --->
 <cfif cgi.request_method EQ "POST" and error.message EQ "">
@@ -129,6 +175,10 @@ function checkTheBox(field) {
 </script>
 
 <cfschedule action="list" returnvariable="tasks">
+<cfif len(session.st.sortName) and len(session.st.sortOrder)>
+	<cfset querysort(tasks, session.st.sortName,session.st.sortOrder)>
+</cfif>
+
 
 <!--- 
 List --->
@@ -147,14 +197,44 @@ List --->
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<cfoutput>
 	<tr>
+		<td width="20"></td>
+		<td width="225" class="tblHead" nowrap><input type="text" name="nameFilter" style="width:225px" value="#session.st.nameFilter#" /></td>
+		<td width="130" class="tblHead" nowrap><input type="text" name="IntervalFilter" style="width:130px" value="#session.st.IntervalFilter#" /></td>
+		<td width="225" class="tblHead" nowrap><input type="text" name="urlFilter" style="width:225px" value="#session.st.urlFilter#" /></td>
+		<td class="tblHead" nowrap><input type="submit" class="submit" name="mainAction" value="filter"></td>
+	</tr>
+	<tr>
+		<td width="380" colspan="5" align="right"></td>
+	</tr>
+    
+    
+    <tr>
 		<td width="20"><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></td>
-		<td width="140" class="tblHead" nowrap>#stText.Schedule.Name#</td>
-		<td width="160" class="tblHead" nowrap>#stText.Schedule.Interval#</td>
-		<td width="170" class="tblHead" nowrap>#stText.Schedule.URL#</td>
+		<td width="140" class="tblHead" nowrap><a href="#request.self#?action=#url.action#&order=task">#stText.Schedule.Name#
+		<cfif session.st.sortName EQ "task" and len(session.st.sortOrder)><cfmodule template="img.cfm" src="arrow-#session.st.sortOrder EQ "asc"?"up":"down"#.gif" hspace="4" vspace="2" border="0"></cfif></a></td>
+		<td width="160" class="tblHead" nowrap><a href="#request.self#?action=#url.action#&order=interval">#stText.Schedule.Interval#
+		<cfif session.st.sortName EQ "interval" and len(session.st.sortOrder)><cfmodule template="img.cfm" src="arrow-#session.st.sortOrder EQ "asc"?"up":"down"#.gif" hspace="4" vspace="2" border="0"></cfif></a></td>
+		<td width="170" class="tblHead" nowrap><a href="#request.self#?action=#url.action#&order=url">#stText.Schedule.URL#
+		<cfif session.st.sortName EQ "url" and len(session.st.sortOrder)><cfmodule template="img.cfm" src="arrow-#session.st.sortOrder EQ "asc"?"up":"down"#.gif" hspace="4" vspace="2" border="0"></cfif></a></td>
 		<td width="60" class="tblHead" nowrap>#stText.Schedule.paused#</td>
 	</tr>
 	
 	<cfloop query="tasks">
+		
+		<cfif isNumeric(tasks.interval)>
+				<cfset _int=toStructInterval(tasks.interval)>
+				<cfset _intervall="#stText.Schedule.Every# (hh:mm:ss) #two(_int.hour)#:#two(_int.minute)#:#two(_int.second)#">
+			<cfelse>
+				<cfset _intervall=tasks.interval>
+			</cfif>
+	
+	<cfif
+			doFilter(session.st.nameFilter,tasks.task,false)
+			and
+			doFilter(session.st.IntervalFilter,_intervall,false)
+			and
+			doFilter(session.st.urlFilter,tasks.url,false)
+			>
 		<cfset css=iif(tasks.valid and not tasks.paused,de('Green'),de('Red'))>
 		<!--- and now display --->
 	<tr>
@@ -169,15 +249,11 @@ List --->
 		</td>
 		<td class="tblContent#css#" nowrap><input type="hidden" 
 			name="name_#tasks.currentrow#" value="#HTMLEditFormat( tasks.task)#">#tasks.task#</td>
-		<td class="tblContent#css#" nowrap>
-			<cfif isNumeric(tasks.interval)>
-				<cfset _int=toStructInterval(tasks.interval)>
-				#stText.Schedule.Every# (hh:mm:ss) #two(_int.hour)#:#two(_int.minute)#:#two(_int.second)#
-			<cfelse>#tasks.interval#</cfif></td>
+		<td class="tblContent#css#" nowrap>#_intervall#</td>
 		<td class="tblContent#css#" title="#tasks.url#" nowrap>#cut(tasks.url,50)#</td>
 		<td class="tblContent#css#"  nowrap>#YesNoFormat(tasks.paused)#</td>
 	</tr>
-</cfloop>
+</cfif></cfloop>
 
 <cfmodule template="remoteclients.cfm" colspan="8" line=true>
 	<tr>
