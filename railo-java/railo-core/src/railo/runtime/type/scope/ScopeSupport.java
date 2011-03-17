@@ -44,6 +44,7 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
 	public static final Key SERVER = KeyImpl.getInstance("server");
 	public static final Key URL = KeyImpl.getInstance("url");
 	public static final Key VARIABLES = KeyImpl.getInstance("variables");
+	public static final Key LOCAL = KeyImpl.getInstance("local");
 	
 	private String name;
     private String dspName;

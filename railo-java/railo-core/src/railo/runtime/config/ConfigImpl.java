@@ -1477,6 +1477,12 @@ public abstract class ConfigImpl implements Config {
      * @throws PageException
      */
     protected void setScheduler(CFMLEngine engine,Resource scheduleDirectory, LogAndSource logger) throws PageException {
+        if(scheduleDirectory==null) {
+        	if(this.scheduler==null) this.scheduler=new SchedulerImpl(engine,"<?xml version=\"1.0\"?>\n<schedule></schedule>",this,logger);
+        	return;
+        }
+    	
+    	
         if(!isDirectory(scheduleDirectory)) throw new ExpressionException("schedule task directory "+scheduleDirectory+" doesn't exist or is not a directory");
         try {
         	if(this.scheduler==null)

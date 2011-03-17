@@ -2329,10 +2329,11 @@ public final class Caster {
         else if(o instanceof Node)return XMLCaster.toXMLStruct((Node)o,false);
         else if(o instanceof ObjectWrap) {
         	if(o instanceof JavaObject ) {
+        		Struct sct = toStruct(((ObjectWrap)o).getEmbededObject(null),null,caseSensitive);
+            	if(sct!=null) return sct;
+        		
         		JavaObject jo = (JavaObject)o;
-        		//Class clazz = jo.getClazz();
-        		//if(!Reflector.isInstaneOf(clazz,Map.class))
-        			return new ObjectStruct(jo);
+        		return new ObjectStruct(jo);
         	}
             return toStruct(((ObjectWrap)o).getEmbededObject(),caseSensitive);
         }
@@ -4210,6 +4211,22 @@ public final class Caster {
         else if(o == null) return BigDecimal.ZERO;
         else if(o instanceof ObjectWrap) return toBigDecimal(((ObjectWrap)o).getEmbededObject());
         throw new CasterException(o,"number");
+	}
+
+	public static Object unwrap(Object value) throws PageException {
+		if(value==null) return null;
+		if(value instanceof ObjectWrap) {
+			return ((ObjectWrap)value).getEmbededObject();
+		}
+		return value;
+	}
+	
+	public static Object unwrap(Object value,Object defaultValue) {
+		if(value==null) return null;
+		if(value instanceof ObjectWrap) {
+			return ((ObjectWrap)value).getEmbededObject(defaultValue);
+		}
+		return value;
 	}
 
 

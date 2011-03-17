@@ -36,10 +36,10 @@ public final class Controler extends Thread {
 	private long lastHourInterval=System.currentTimeMillis();
 	
 	int maxPoolSize=500;
-    private Map contextes;
-    private RefBoolean run;
+    private final Map contextes;
+    private final RefBoolean run;
 	//private ScheduleThread scheduleThread;
-	private ConfigServer configServer;
+	private final ConfigServer configServer;
 
 	/**
 	 * @param contextes

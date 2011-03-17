@@ -447,6 +447,20 @@ public final class SystemUtil {
 			synchronized (lock) {lock.wait(timeout);}
 		} catch (InterruptedException e) {}
 	}
+
+	/**
+	 * locks the object (synchronized) before calling wait (no timeout)
+	 * @param lock
+	 * @throws InterruptedException
+	 */
+	public static void wait(Object lock) {
+		try {
+			synchronized (lock) {lock.wait();}
+		} catch (InterruptedException e) {}
+	}
+	
+	
+	
 	/**
 	 * locks the object (synchronized) before calling notify
 	 * @param lock
@@ -455,6 +469,16 @@ public final class SystemUtil {
 	 */
 	public static void notify(Object lock) {
 		synchronized (lock) {lock.notify();}
+	}
+	
+	/**
+	 * locks the object (synchronized) before calling notifyAll
+	 * @param lock
+	 * @param timeout
+	 * @throws InterruptedException
+	 */
+	public static void notifyAll(Object lock) {
+		synchronized (lock) {lock.notifyAll();}
 	}
 
 

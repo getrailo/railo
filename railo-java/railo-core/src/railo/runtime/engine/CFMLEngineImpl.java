@@ -78,7 +78,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
     //private ServletConfig config;
     private CFMLEngineFactory factory;
     private AMFEngine amfEngine=new AMFEngine();
-    private RefBoolean controlerState=new RefBooleanImpl(true);
+    private final RefBoolean controlerState=new RefBooleanImpl(true);
 	private boolean allowRequestTimeout=true;
     
     //private static CFMLEngineImpl engine=new CFMLEngineImpl();
