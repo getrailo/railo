@@ -15,30 +15,23 @@ public class SessionEndCacheEvent implements CacheEventListener {
 
 	public void onExpires(CacheEntry entry) {
 		//return new StringBuilder(cache instanceof CacheEvent?"":"railo-storage:").append(type).append(":").append(cfid).append(":").append(appName).toString();
-		print.o("exp:"+entry);
 		
 		String key=entry.getKey();
 		
 		// type
 		int index=key.indexOf(':'),last;
 		String type=key.substring(0,index);
-		print.o("type:"+type);
-
+		
 		// cfid
 		last=index+1;
 		index=key.indexOf(':',last);
 		String cfid=key.substring(last,index);
-		print.o("cfid:"+cfid);
-
+		
 		// appName
 		last=index+1;
 		index=key.indexOf(':',last);
 		String appName=key.substring(last);
-		print.o("appName:"+appName);
-
-		print.ds();
-		print.ds(ThreadLocalPageContext.getConfig());
-		
+				
 		Config config = ThreadLocalPageContext.getConfig();
 		
 		_doEnd((CFMLFactoryImpl) config.getFactory(), appName, cfid);

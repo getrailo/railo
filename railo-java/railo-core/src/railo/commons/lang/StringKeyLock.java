@@ -14,7 +14,7 @@ public class StringKeyLock {
 		this.timeout=timeout;
 	}
 	
-	public void lock(String key) {print.o("+"+key);
+	public void lock(String key) {//print.o("+"+key);
 		SerializableObject obj,last=null;
 		do {
 			
@@ -38,7 +38,7 @@ public class StringKeyLock {
 		else SystemUtil.wait(obj);
 	}
 
-	public void unlock(String key) {print.o("-"+key);
+	public void unlock(String key) {//print.o("-"+key);
 		SerializableObject obj =locks.remove(key);
 		if(obj!=null) {
         	SystemUtil.notify(obj);
