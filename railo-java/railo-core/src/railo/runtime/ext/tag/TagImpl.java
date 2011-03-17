@@ -15,8 +15,7 @@ public abstract class TagImpl implements Tag {
 
 	protected PageContext pageContext; 
 	private Tag parent;
-	//protected Struct attributeCollection;
-       
+	   
 	/**
 	 * sets a Railo PageContext
 	 * @param pageContext
@@ -51,10 +50,6 @@ public abstract class TagImpl implements Tag {
 	public int doStartTag() throws JspException {
 		return SKIP_BODY;
 	}
-	             
-	/*public void setAttributecollection(Struct attributeCollection) {
-		this.attributeCollection=attributeCollection;
-	}*/
 
 	/**
 	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
@@ -69,7 +64,6 @@ public abstract class TagImpl implements Tag {
 	public void release() {
 		pageContext=null;
 		parent=null;
-		//attributeCollection=null;
 	}    
 	
 	/**
