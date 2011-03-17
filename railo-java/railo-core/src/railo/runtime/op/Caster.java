@@ -2320,11 +2320,13 @@ public final class Caster {
         else if(o instanceof Map)return MapAsStruct.toStruct((Map)o,caseSensitive);//_toStruct((Map)o,caseSensitive);
         else if(o instanceof Node)return XMLCaster.toXMLStruct((Node)o,false);
         else if(o instanceof ObjectWrap) {
+        	
         	if(o instanceof JavaObject ) {
+        		Struct sct = toStruct(((ObjectWrap)o).getEmbededObject(null),null,caseSensitive);
+            	if(sct!=null) return sct;
+        		
         		JavaObject jo = (JavaObject)o;
-        		//Class clazz = jo.getClazz();
-        		//if(!Reflector.isInstaneOf(clazz,Map.class))
-        			return new ObjectStruct(jo);
+        		return new ObjectStruct(jo);
         	}
             return toStruct(((ObjectWrap)o).getEmbededObject(),caseSensitive);
         }
@@ -4192,6 +4194,21 @@ public final class Caster {
 		if(o instanceof UDF) return (UDF) o;
 		 throw new CasterException(o,"UDF");
     }
+
+	public static Object unwrap(Object value) throws PageException {
+		if(value==null) return null;
+		if(value instanceof ObjectWrap) {
+			return ((ObjectWrap)value).getEmbededObject();
+		}
+		return value;
+	}
+	public static Object unwrap(Object value,Object defaultValue) {
+		if(value==null) return null;
+		if(value instanceof ObjectWrap) {
+			return ((ObjectWrap)value).getEmbededObject(defaultValue);
+		}
+		return value;
+	}
 
 
 	

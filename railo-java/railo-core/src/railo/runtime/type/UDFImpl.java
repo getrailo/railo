@@ -4,6 +4,9 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.jsp.tagext.BodyContent;
 
@@ -28,6 +31,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.UDFCasterException;
+import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Duplicator;
@@ -313,8 +317,9 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 
 	public static void argumentCollection(Struct values, FunctionArgument[] funcArgs) {
 		Object value=values.removeEL(ARGUMENT_COLLECTION);
-		
 		if(value !=null) {
+			value=Caster.unwrap(value,value);
+			
 			if(value instanceof Argument) {
 				Argument argColl=(Argument) value;
 			    Collection.Key[] keys = argColl.keys();
@@ -339,10 +344,31 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	            	}
 	            }
 		    }
+			else if(value instanceof Map) {
+				Map map=(Map) value;
+			    Iterator it = map.entrySet().iterator();
+			    Map.Entry entry;
+			    Key key;
+			    while(it.hasNext()) {
+			    	entry=(Entry) it.next();
+			    	key = toKey(entry.getKey());
+			    	if(!values.containsKey(key)){
+	            		values.setEL(key,entry.getValue());
+	            	}
+	            }
+		    }
 		    else {
 		        values.setEL(ARGUMENT_COLLECTION,value);
 		    }
 		} 
+	}
+	
+	public static Collection.Key toKey(Object obj) {
+		if(obj==null) return null;
+		if(obj instanceof Collection.Key) return (Collection.Key) obj;
+		String str = Caster.toString(obj,null);
+		if(str==null) return KeyImpl.init(obj.toString());
+		return KeyImpl.init(str);
 	}
 
 	/**
