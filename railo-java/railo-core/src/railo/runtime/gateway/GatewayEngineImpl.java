@@ -43,7 +43,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 
 	private Map entries=new HashMap();
 	private Resource cfcDirectory;
-	private ConfigWeb config;
+	private final ConfigWeb config;
 
 	private Map cfcs=new HashMap();
 
@@ -56,7 +56,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		else {
 			Resource root = config.getConfigDir().getRealResource("gatewayRoot");
 			root.mkdirs();
-			this.config=((ConfigServerImpl)config).getConfigWeb();
+			this.config=((ConfigServerImpl)config).getConfigWeb(true);
 		}
 		this.log=((ConfigImpl)config).getGatewayLogger();
 		

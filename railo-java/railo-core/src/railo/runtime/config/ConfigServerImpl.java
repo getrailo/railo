@@ -25,7 +25,7 @@ import railo.runtime.type.StructImpl;
 public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     
 
-	private CFMLEngineImpl engine;
+	private final CFMLEngineImpl engine;
     private Map initContextes;
     private Map contextes;
     private SecurityManager defaultSecurityManager;
@@ -299,7 +299,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	 * @return
 	 * @throws PageException
 	 */
-	public ConfigWeb getConfigWeb() {
+	public ConfigWeb getConfigWeb(boolean isEventGatewayContext) {
 		if(configWeb!=null)
 			return configWeb;
 		QueryCacheSupport cqc = QueryCacheSupport.getInstance(this);
@@ -323,7 +323,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		cqc.setConfigWeb(cwi);
 		try {
 			ConfigWebFactory.createContextFiles(getConfigDir(),sConfig);
-	        ConfigWebFactory.load(this, cwi, ConfigWebFactory.loadDocument(getConfigFile()));
+	        ConfigWebFactory.load(this, cwi, ConfigWebFactory.loadDocument(getConfigFile()),isEventGatewayContext);
 	        ConfigWebFactory.createContextFilesPost(getConfigDir(),cwi);
 		}
 		catch (Exception e) {
