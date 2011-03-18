@@ -475,7 +475,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		// arguments
 		FunctionArgument[] args = udf.getFunctionArguments();
         
-        DumpTable atts = new DumpTablePro("udf","#8399AF","#CDCEE6","#000000");
+        DumpTable atts = new DumpTablePro("udf","#9999cc","#ccccff","#000000");
         
 		atts.appendRow(new DumpRow(63,new DumpData[]{new SimpleDumpData("label"),new SimpleDumpData("name"),new SimpleDumpData("required"),new SimpleDumpData("type"),new SimpleDumpData("default"),new SimpleDumpData("hint")}));
 		for(int i=0;i<args.length;i++) {
@@ -503,7 +503,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			
 		}
 		
-		DumpTable func = new DumpTable("#8399AF","#CDCEE6","#000000");
+		DumpTable func = new DumpTable("#9999cc","#ccccff","#000000");
 		String f="Function ";
 		try {
 			f=StringUtil.ucFirst(ComponentUtil.toStringAccess(udf.getAccess()).toLowerCase())+" "+f;
@@ -524,7 +524,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		boolean hasHint=!StringUtil.isEmpty(udf.getHint());//hint!=null && !hint.equals("");
 		
 		if(hasLabel || hasHint) {
-			DumpTable box = new DumpTable("#eeeeee","#cccccc","#000000");
+			DumpTable box = new DumpTable("#ffffff","#cccccc","#000000");
 			box.setTitle(hasLabel?udf.getDisplayName():udf.getFunctionName());
 			if(hasHint)box.appendRow(0,new SimpleDumpData(udf.getHint()));
 			box.appendRow(0,func);

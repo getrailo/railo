@@ -162,7 +162,7 @@ public final class COMObject implements Objects, Iteratorable {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable table = new DumpTablePro("com","#ff4400","#ff954f","#4f1500");
+		DumpTable table = new DumpTablePro("com","#ff3300","#ff9966","#660000");
 		table.appendRow(1,new SimpleDumpData("COM Object"),new SimpleDumpData(name));
 		return table;
     }

@@ -64,7 +64,7 @@ public final class DumpStruct implements Function {
 		DumpData dd = DumpUtil.toDumpData(object, pc,(int)maxLevel,properties);
 		
 		if(!StringUtil.isEmpty(label)) {
-			DumpTable table=new DumpTable("#eeeeee","#cccccc","#000000");
+			DumpTable table=new DumpTable("#ffffff","#cccccc","#000000");
 			table.appendRow(1,new SimpleDumpData(label));
 			table.appendRow(0,dd);
 			dd=table;
@@ -80,7 +80,7 @@ public final class DumpStruct implements Function {
 		if(dd instanceof DumpTable) table=(DumpTable) dd;
 		else {
 			if(dd==null) dd= new SimpleDumpData("null");
-			table=new DumpTable("#eeeeee","#cccccc","#000000");
+			table=new DumpTable("#ffffff","#cccccc","#000000");
 			table.appendRow(1,dd);
 		}
 		return toCFML(table,object,hasReference);

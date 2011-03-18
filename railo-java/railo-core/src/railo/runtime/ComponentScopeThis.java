@@ -179,17 +179,6 @@ public final class ComponentScopeThis extends StructSupport implements Component
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return StructUtil.toDumpTable(this, "Variable Scope (of Component)", pageContext, maxlevel, dp);
-		/*DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");
-		table.setTitle("Variable Scope (of Component)");
-        
-        
-        Iterator it=keyIterator();
-        
-        while(it.hasNext()) {
-            String key=Caster.toString(it.next(),"");
-            table.appendRow(1,new SimpleDumpData(key.toString()),DumpUtil.toDumpData(get(key,null), pageContext,maxlevel,dp));
-        }
-        return table;*/
     }
 
     /**

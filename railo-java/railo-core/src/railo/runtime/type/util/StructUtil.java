@@ -101,7 +101,7 @@ public final class StructUtil {
 	
 	public static DumpTable toDumpTable(Struct sct,String title,PageContext pageContext, int maxlevel, DumpProperties dp) {
 		Key[] keys = order(sct.keys());
-		DumpTable table = new DumpTablePro("struct","#5965e4","#9999ff","#000000");//new DumpTable("#669900","#99cc00","#263300");
+		DumpTable table = new DumpTablePro("struct","#6666cc","#9999ff","#000000");
 		if(sct.size()>10 && dp.getMetainfo())table.setComment("Entries:"+sct.size());
 	    if(!StringUtil.isEmpty(title))table.setTitle(title);
 		maxlevel--;

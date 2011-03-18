@@ -302,7 +302,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		maxlevel--;
-		DumpTable table = new DumpTablePro("xml","#D3B06C","#D3B06C","#000000");
+		DumpTable table = new DumpTablePro("xml","#cc9999","#ffffff","#000000");
 		table.setTitle("Array (XML Node List)");
 		int len=size();
 		
