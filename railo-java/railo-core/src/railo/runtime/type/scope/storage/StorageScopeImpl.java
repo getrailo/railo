@@ -12,6 +12,7 @@ import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.dump.DumpTable;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -380,16 +381,6 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 			if(!FIX_KEYS.contains(key))keys.add(key);
 		}
 		return (String[]) keys.toArray(new String[keys.size()]);
-	}
-	
-	/**
-	 * this is a supporting method for implemetation of method "getDumpData" of the child cﾚasses
-	 * @param pageContext
-	 * @param maxlevel
-	 * @return
-	 */
-	protected DumpTable toDumpTable(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		return StructUtil.toDumpTable(this, "Client Scope", pageContext, maxlevel, dp);
 	}
 	
 	/**
