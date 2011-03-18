@@ -137,7 +137,7 @@ public class ModernAppListener extends AppListenerSupport {
 			// onRequest
 			boolean isCFC=ResourceUtil.getExtension(targetPage,"").equalsIgnoreCase(pc.getConfig().getCFCExtension());
 			Object method;
-			if(isCFC && app.contains(pc,ON_CFCREQUEST) && (method=pc.urlFormScope().get(ComponentPage.METHOD,null))!=null) {
+			if(isCFC && app.contains(pc,ON_CFCREQUEST) && (method=pc.urlFormScope().get(ComponentPage.METHOD,null))!=null) { 
 				
 				Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
 		        
@@ -204,6 +204,7 @@ public class ModernAppListener extends AppListenerSupport {
 				try{
 					pci.doInclude(requestedPage);
 				}
+				catch (Abort abort) {}
 				catch(PageException pe){
 					if(pe instanceof MissingIncludeException){
 						if(((MissingIncludeException) pe).getPageSource().equals(requestedPage)){
