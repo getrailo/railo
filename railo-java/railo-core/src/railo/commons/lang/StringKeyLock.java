@@ -3,7 +3,6 @@ package railo.commons.lang;
 import java.util.HashMap;
 import java.util.Map;
 
-import railo.print;
 import railo.commons.io.SystemUtil;
 
 public class StringKeyLock {

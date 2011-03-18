@@ -6,7 +6,6 @@ import railo.runtime.Component;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Struct;
 
 public class ComponentCacheEventListener implements CacheEventListener {
 

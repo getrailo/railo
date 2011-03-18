@@ -1,22 +1,15 @@
 package railo.runtime.cache.eh;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.event.RegisteredEventListeners;
-
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
-import railo.commons.io.cache.CacheEntryFilter;
 import railo.commons.io.cache.CacheEvent;
 import railo.commons.io.cache.CacheEventListener;
-import railo.commons.io.cache.CacheKeyFilter;
 import railo.runtime.cache.CacheSupport;
-import railo.runtime.cache.CacheUtil;
 import railo.runtime.type.Struct;
 
 public abstract class EHCacheSupport extends CacheSupport implements Cache,CacheEvent {

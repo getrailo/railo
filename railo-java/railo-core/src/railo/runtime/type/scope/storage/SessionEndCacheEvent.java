@@ -1,9 +1,7 @@
 package railo.runtime.type.scope.storage;
 
-import railo.print;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.CacheEventListener;
-import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
