@@ -70,10 +70,23 @@ public final class DumpStruct implements Function {
 			dd=table;
 		}
 		RefBoolean hasReference=new RefBooleanImpl(false);
-		Struct sct = (Struct)toCFML(dd,object,hasReference);
+		Struct sct = toStruct(dd,object,hasReference);
 		sct.setEL("hasReference", hasReference.toBoolean());
 		return sct;
 	}
+
+	private static Struct toStruct(DumpData dd, Object object, RefBoolean hasReference) {
+		DumpTable table;
+		if(dd instanceof DumpTable) table=(DumpTable) dd;
+		else {
+			if(dd==null) dd= new SimpleDumpData("null");
+			table=new DumpTable("#eeeeee","#cccccc","#000000");
+			table.appendRow(1,dd);
+		}
+		return toCFML(table,object,hasReference);
+	}
+	
+	
 	private static Object toCFML(DumpData dd, Object object, RefBoolean hasReference) {
 		if(dd instanceof DumpTable)return toCFML((DumpTable) dd,object,hasReference);
 		if(dd==null) return new SimpleDumpData("null");

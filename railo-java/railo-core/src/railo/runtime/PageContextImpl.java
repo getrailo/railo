@@ -1088,11 +1088,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     /**
      * @see PageContext#localScope()
      */// FUTURE remove class from type Local
-    public Scope localScope() { return local; }
+    public Scope localScope() { 
+    	//if(local==localUnsupportedScope) 
+    	//	throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope"));
+    	return local;
+    }
     
 // FUTURE remove class from type Local
     public Scope localScope(boolean bind) { 
     	if(bind)local.setBind(true); 
+    	//if(local==localUnsupportedScope) 
+    	//	throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope"));
     	return local; 
     }
 

@@ -5,9 +5,9 @@ import java.util.Iterator;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
-import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Scope;
 import railo.runtime.type.dt.DateTime;
@@ -17,6 +17,8 @@ import railo.runtime.type.util.StructSupport;
  * 
  */
 public final class LocalNotSupportedScope extends StructSupport implements Scope,LocalPro {
+	
+	private static final long serialVersionUID = 6670210379924188569L;
 	
 	private static LocalNotSupportedScope instance=new LocalNotSupportedScope();
 	private boolean bind;
@@ -133,7 +135,7 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		return new SimpleDumpData("Unsupported Context for Local Scope");
+		throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope"));
 	}
 	
 	/**

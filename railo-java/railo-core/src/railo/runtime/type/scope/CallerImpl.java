@@ -50,7 +50,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
 			if(ScopeSupport.REQUEST.equalsIgnoreCase(key))				return pc.requestScope();
 		}
 		else if('l'==c) {
-			if(ScopeSupport.LOCAL.equalsIgnoreCase(key))				return pc.localScope();
+			if(ScopeSupport.LOCAL.equalsIgnoreCase(key) && checkArgs)	return pc.localScope();
 		}
 		else if('s'==c) {
 			if(ScopeSupport.SESSION.equalsIgnoreCase(key))				return pc.sessionScope();
@@ -131,7 +131,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
 			if(ScopeSupport.REQUEST.equalsIgnoreCase(key))				return pc.requestScope();
 		}
 		else if('l'==c) {
-			if(ScopeSupport.LOCAL.equalsIgnoreCase(key))				return pc.localScope();
+			if(ScopeSupport.LOCAL.equalsIgnoreCase(key) && checkArgs)	return pc.localScope();
 		}
 		else if('s'==c) {
 			if(ScopeSupport.SESSION.equalsIgnoreCase(key)){
