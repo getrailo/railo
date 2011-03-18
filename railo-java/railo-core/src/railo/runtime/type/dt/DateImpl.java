@@ -86,7 +86,7 @@ public final class DateImpl extends  Date implements SimpleValue,Localized {
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		String str=castToString("");
-        DumpTable table=new DumpTablePro("date","#ffb200","#ffcc00","#263300");
+        DumpTable table=new DumpTablePro("date","#ff9900","#ffcc00","#000000");
         table.appendRow(1, new SimpleDumpData("Date"), new SimpleDumpData(str));
         return table;
     }

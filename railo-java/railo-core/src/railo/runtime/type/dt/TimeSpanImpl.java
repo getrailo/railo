@@ -196,7 +196,7 @@ public final class TimeSpanImpl implements TimeSpan {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable table=new DumpTablePro("timespan","#ffb200","#ffcc00","#263300");
+		DumpTable table=new DumpTablePro("timespan","#ff9900","#ffcc00","#000000");
 		if(milli>0)table.appendRow(1, new SimpleDumpData("Timespan"), new SimpleDumpData("createTimeSpan("+day+","+hour+","+minute+","+second+","+milli+")"));
 		else table.appendRow(1, new SimpleDumpData("Timespan"), new SimpleDumpData("createTimeSpan("+day+","+hour+","+minute+","+second+")"));
 		

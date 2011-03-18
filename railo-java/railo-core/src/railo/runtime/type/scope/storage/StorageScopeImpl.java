@@ -382,7 +382,16 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		return (String[]) keys.toArray(new String[keys.size()]);
 	}
 	
-
+	/**
+	 * this is a supporting method for implemetation of method "getDumpData" of the child cﾚasses
+	 * @param pageContext
+	 * @param maxlevel
+	 * @return
+	 */
+	protected DumpTable toDumpTable(PageContext pageContext, int maxlevel, DumpProperties dp) {
+		return StructUtil.toDumpTable(this, "Client Scope", pageContext, maxlevel, dp);
+	}
+	
 	/**
 	 * @see railo.runtime.type.scope.storage.StorageScope#store(railo.runtime.config.Config)
 	 */

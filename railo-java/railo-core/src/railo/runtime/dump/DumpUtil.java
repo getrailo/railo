@@ -48,7 +48,7 @@ public class DumpUtil {
 		}
 		// null
 		if(o == null) {
-			DumpTable table=new DumpTablePro("null","#ff4400","#ff954f","#000000");
+			DumpTable table=new DumpTablePro("null","#ff3300","#ff9966","#000000");
 			table.appendRow(new DumpRow(0,new SimpleDumpData("Empty:null")));
 			return table;
 		}
@@ -66,7 +66,7 @@ public class DumpUtil {
 			SimpleDateFormat df = new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH);
 			df.setTimeZone(c.getTimeZone());
 			
-			DumpTable table=new DumpTablePro("date","#ffb200","#ffcc00","#263300");
+			DumpTable table=new DumpTablePro("date","#ff9900","#ffcc00","#000000");
 			table.setTitle("java.util.Calendar");
 			table.appendRow(1, new SimpleDumpData("Timezone"), new SimpleDumpData(TimeZoneUtil.toString(c.getTimeZone())));
 			table.appendRow(1, new SimpleDumpData("Time"), new SimpleDumpData(df.format(c.getTime())));
@@ -83,14 +83,14 @@ public class DumpUtil {
 		// String
 		if(o instanceof String) {
 			String str=(String) o;
-			if(str.startsWith("<wddxPacket ")) {
+			if(str.trim().startsWith("<wddxPacket ")) {
 				try {
 					WDDXConverter converter =new WDDXConverter(pageContext.getTimeZone(),false);
 					converter.setTimeZone(pageContext.getTimeZone());
 					Object rst = converter.deserialize(str,false);
 					DumpData data = toDumpData(rst, pageContext, maxlevel, props);
 					
-					DumpTable table = new DumpTablePro("string","#C2AF94","#F3EFEA","#000000");
+					DumpTable table = new DumpTablePro("string","#cc9999","#ffffff","#000000");
 					table.setTitle("WDDX");
 					table.appendRow(1,new SimpleDumpData("encoded"),data);
 					table.appendRow(1,new SimpleDumpData("raw"),new SimpleDumpData(str));
@@ -98,31 +98,31 @@ public class DumpUtil {
 				}
 				catch(Throwable t) {}
 			}
-			DumpTable table = new DumpTablePro("string","#ff4400","#ff954f","#000000");
+			DumpTable table = new DumpTablePro("string","#ff3300","#ff9966","#000000");
 			table.appendRow(1,new SimpleDumpData("string"),new SimpleDumpData(str));
 			return table;
 		}
 		// Character
 		if(o instanceof Character) {
-			DumpTable table = new DumpTablePro("character","#ff4400","#ff954f","#000000");
+			DumpTable table = new DumpTablePro("character","#ff3300","#ff9966","#000000");
 			table.appendRow(1,new SimpleDumpData("character"),new SimpleDumpData(o.toString()));
 			return table;
 		}
 		// Number
 		if(o instanceof Number) {
-			DumpTable table = new DumpTablePro("numeric","#ff4400","#ff954f","#000000");
+			DumpTable table = new DumpTablePro("numeric","#ff3300","#ff9966","#000000");
 			table.appendRow(1,new SimpleDumpData("number"),new SimpleDumpData(Caster.toString(((Number)o).doubleValue())));
 			return table;
 		}
 		// Boolean
 		if(o instanceof Boolean) {
-			DumpTable table = new DumpTablePro("boolean","#ff4400","#ff954f","#000000");
+			DumpTable table = new DumpTablePro("boolean","#ff3300","#ff9966","#000000");
 			table.appendRow(1,new SimpleDumpData("boolean"),new SimpleDumpData(((Boolean)o).booleanValue()));
 			return table;
 		}
 		// File
 		if(o instanceof File) {
-			DumpTable table = new DumpTablePro("file","#979EAA","#DEE9FB","#000000");
+			DumpTable table = new DumpTablePro("file","#ffcc00","#ffff66","#000000");
 			table.appendRow(1,new SimpleDumpData("File"),new SimpleDumpData(o.toString()));
 			return table;
 		}
@@ -143,7 +143,7 @@ public class DumpUtil {
 		}
 		// Resource
 		if(o instanceof Resource) {
-			DumpTable table = new DumpTablePro("resource","#979EAA","#DEE9FB","#000000");
+			DumpTable table = new DumpTablePro("resource","#ffcc00","#ffff66","#000000");
 			table.appendRow(1,new SimpleDumpData("Resource"),new SimpleDumpData(o.toString()));
 			return table;
 		}
@@ -151,7 +151,7 @@ public class DumpUtil {
 		if(o instanceof byte[]) {
 			byte[] bytes=(byte[]) o;
 			
-			DumpTable table = new DumpTablePro("array","#ffb200","#ffcc00","#000000");
+			DumpTable table = new DumpTablePro("array","#ff9900","#ffcc00","#000000");
 			table.setTitle("Native Array  ("+Caster.toClassName(o)+")");
 			
 			StringBuffer sb=new StringBuffer();
@@ -169,7 +169,7 @@ public class DumpUtil {
 		// Collection.Key
 		if(o instanceof Collection.Key) {
 			Collection.Key key=(Collection.Key) o;
-			DumpTable table = new DumpTablePro("string","#ff4400","#ff954f","#000000");
+			DumpTable table = new DumpTablePro("string","#ff3300","#ff9966","#000000");
 			table.appendRow(1,new SimpleDumpData("Collection.Key"),new SimpleDumpData(key.getString()));
 			return table;
 		}
@@ -178,7 +178,7 @@ public class DumpUtil {
 		String id=""+IDGenerator.intId();
 		String refid=ThreadLocalDump.get(o);
 		if(refid!=null) {
-			DumpTablePro table = new DumpTablePro("ref","#eeeeee","#cccccc","#000000");
+			DumpTablePro table = new DumpTablePro("ref","#ffffff","#cccccc","#000000");
 			table.appendRow(1,new SimpleDumpData("Reference"),new SimpleDumpData(refid));
 			table.setRef(refid);
 			return setId(id,table);
@@ -195,7 +195,7 @@ public class DumpUtil {
 				Map map=(Map) o;
 				Iterator it=map.keySet().iterator();
 	
-				DumpTable table = new DumpTablePro("struct","#ffb200","#ffcc00","#000000");
+				DumpTable table = new DumpTablePro("struct","#ff9900","#ffcc00","#000000");
 				table.setTitle("Map ("+Caster.toClassName(o)+")");
 				
 				while(it.hasNext()) {
@@ -210,7 +210,7 @@ public class DumpUtil {
 				List list=(List) o;
 				ListIterator it=list.listIterator();
 				
-				DumpTable table = new DumpTablePro("array","#ffb200","#ffcc00","#000000");
+				DumpTable table = new DumpTablePro("array","#ff9900","#ffcc00","#000000");
 				table.setTitle("Array (List)");
 				
 				while(it.hasNext()) {
@@ -234,7 +234,7 @@ public class DumpUtil {
 			if(o instanceof Enumeration) {
 				Enumeration e=(Enumeration)o;
 				
-				DumpTable table = new DumpTablePro("enumeration","#ffb200","#ffcc00","#000000");
+				DumpTable table = new DumpTablePro("enumeration","#ff9900","#ffcc00","#000000");
 				table.setTitle("Enumeration");
 				
 				while(e.hasMoreElements()) {
@@ -247,7 +247,7 @@ public class DumpUtil {
 				Array arr;
 				try {
 					arr = Caster.toArray(o);
-					DumpTable htmlBox = new DumpTablePro("array","#ffb200","#ffcc00","#000000");
+					DumpTable htmlBox = new DumpTablePro("array","#ff9900","#ffcc00","#000000");
 					htmlBox.setTitle("Native Array ("+Caster.toClassName(o)+")");
 				
 					int length=arr.size();
@@ -278,7 +278,7 @@ public class DumpUtil {
 			if(o instanceof NodeList) {
 				NodeList list=(NodeList)o;
 				int len=list.getLength();
-				DumpTable table = new DumpTablePro("xml","#C2AF94","#F3EFEA","#000000");
+				DumpTable table = new DumpTablePro("xml","#cc9999","#ffffff","#000000");
 				for(int i=0;i<len;i++) {
 					table.appendRow(1,new SimpleDumpData(i),toDumpData(list.item(i),pageContext,maxlevel,props));
 				}
@@ -294,7 +294,7 @@ public class DumpUtil {
 			    HttpSession hs = (HttpSession)o;
 			    Enumeration e = hs.getAttributeNames();
 			    
-			    DumpTable htmlBox = new DumpTablePro("httpsession","#5965e4","#9999ff","#000000");
+			    DumpTable htmlBox = new DumpTablePro("httpsession","#6666cc","#9999ff","#000000");
 				htmlBox.setTitle("HttpSession");
 			    while(e.hasMoreElements()) {
 			        String key=e.nextElement().toString();
@@ -306,7 +306,7 @@ public class DumpUtil {
 		
 		// reflect
 		//else {
-			DumpTable table = new DumpTablePro(o.getClass().getName(),"#90776E","#B2A49B","#000000");
+			DumpTable table = new DumpTablePro(o.getClass().getName(),"#cc9999","#ffcccc","#000000");
 			
 			Class clazz=o.getClass();
 			if(o instanceof Class) clazz=(Class) o;
@@ -319,7 +319,7 @@ public class DumpUtil {
 			
 			// Fields
 			Field[] fields=clazz.getFields();
-			DumpTable fieldDump = new DumpTable("#90776E","#B2A49B","#000000");
+			DumpTable fieldDump = new DumpTable("#cc9999","#ffcccc","#000000");
 			fieldDump.appendRow(7,new SimpleDumpData("name"),new SimpleDumpData("pattern"),new SimpleDumpData("value"));
 			for(int i=0;i<fields.length;i++) {
 				Field field = fields[i];
@@ -337,7 +337,7 @@ public class DumpUtil {
 			// Methods
 			StringBuffer objMethods=new StringBuffer();
 			Method[] methods=clazz.getMethods();
-			DumpTable methDump = new DumpTable("#90776E","#B2A49B","#000000");
+			DumpTable methDump = new DumpTable("#cc9999","#ffcccc","#000000");
 			methDump.appendRow(7,new SimpleDumpData("return"),new SimpleDumpData("interface"),new SimpleDumpData("exceptions"));
 			for(int i=0;i<methods.length;i++) {
 				Method method = methods[i];
@@ -375,7 +375,7 @@ public class DumpUtil {
 			}
 			if(methods.length>0)table.appendRow(1,new SimpleDumpData("methods"),methDump);
 			
-			DumpTable inherited = new DumpTable("#90776E","#B2A49B","#000000");
+			DumpTable inherited = new DumpTable("#cc9999","#ffcccc","#000000");
 			inherited.appendRow(7,new SimpleDumpData("Methods inherited from java.lang.Object"));
 			inherited.appendRow(0,new SimpleDumpData(objMethods.toString()));
 			table.appendRow(1,new SimpleDumpData(""),inherited);

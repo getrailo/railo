@@ -124,7 +124,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         QueryEntry[] arrQueries=(QueryEntry[]) queries.toArray(new QueryEntry[queries.size()]);
 
 		
-		DumpTable boxPage = new DumpTable("#eeeeee","white","#666666");
+		DumpTable boxPage = new DumpTable("#cccccc","#ffffff","#000000");
 		boxPage.setWidth("100%");
 		
         int len=arrPages.size();
@@ -164,7 +164,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         DumpTable tableExceptions=null;
 		int tl=exceptions==null?0:exceptions.size();
 		if(tl>0) {
-			tableExceptions = new DumpTable("#eeeeee","white","#666666");
+			tableExceptions = new DumpTable("#cccccc","#ffffff","#000000");
 			
 			tableExceptions.appendRow(15, new SimpleDumpData("type"),new SimpleDumpData("message"),new SimpleDumpData("detail"), new SimpleDumpData("template"));
 			
@@ -192,7 +192,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         DumpTable tableTimer=null;
 		tl=timers==null?0:timers.size();
 		if(tl>0) {
-			tableTimer = new DumpTable("#eeeeee","white","#666666");
+			tableTimer = new DumpTable("#cccccc","#ffffff","#000000");
 			//boxTimer.setWidth("100%");
 			tableTimer.appendRow(7, new SimpleDumpData("label"), new SimpleDumpData("time (ms)"),new SimpleDumpData("template"));
 			
@@ -209,7 +209,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		DumpTable tableTraces=null;
 		tl=traces==null?0:traces.size();
 		if(tl>0) {
-			tableTraces = new DumpTable("#eeeeee","white","#666666");
+			tableTraces = new DumpTable("#cccccc","#ffffff","#000000");
 			tableTraces.setWidth("100%");
 			tableTraces.appendRow(
 					new DumpRow(2047, 
@@ -231,7 +231,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	        	while(it.hasNext()) {
 	        		trace=(DebugTraceImpl) it.next();
 	        		total+=trace.getTime();
-	        		DumpTable tableVar=new DumpTable("#eeeeee","white","#666666");
+	        		DumpTable tableVar=new DumpTable("#cccccc","#ffffff","#000000");
 	        		SimpleDumpData varValue = new SimpleDumpData(toString(trace.getVarValue()));
 	        		DumpData var;
 	        		try {
@@ -263,11 +263,11 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		DumpTable tableQueryItem = null;
 		if(arrQueries.length>0) {
 			
-			tableQuery = new DumpTable("#eeeeee","white","#666666");
+			tableQuery = new DumpTable("#cccccc","#ffffff","#000000");
 			tableQuery.setWidth("100%");
 			
 			for(int i=0;i<arrQueries.length;i++) {
-				tableQueryItem = new DumpTable("#eeeeee","white","#666666");
+				tableQueryItem = new DumpTable("#cccccc","#ffffff","#000000");
 				tableQueryItem.appendRow(1, new SimpleDumpData("Source"), new SimpleDumpData(arrQueries[i].getSrc()));
 				tableQueryItem.appendRow(1, new SimpleDumpData("Execution Time"), new SimpleDumpData(arrQueries[i].getExe()));
 				tableQueryItem.appendRow(1, new SimpleDumpData("Recordcount"), new SimpleDumpData(arrQueries[i].getRecordcount()));
@@ -277,7 +277,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 			}
 		}
 		
-		DumpTable table = new DumpTable("#cccccc","eeeeee","#666666");
+		DumpTable table = new DumpTable("#cccccc","#ffffff","#000000");
 		table.setTitle("Debugging Output");
 		table.setWidth("100%");
 		table.appendRow(1,new SimpleDumpData("Pages"),boxPage);

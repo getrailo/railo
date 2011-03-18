@@ -69,7 +69,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		String[] keys=keysAsString();
 		maxlevel--;
-		DumpTable table = new DumpTablePro("xml","#A9A96C","#CDD8AB","#000000");
+		DumpTable table = new DumpTablePro("xml","#999966","#cccc99","#000000");
 		table.setTitle("Struct (XML Attributes)");
 
 		int maxkeys=dp.getMaxKeys();
