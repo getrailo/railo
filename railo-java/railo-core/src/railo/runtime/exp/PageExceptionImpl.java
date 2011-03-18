@@ -423,7 +423,7 @@ public abstract class PageExceptionImpl extends PageException {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		
 		//FFFFCF
-    	DumpTable htmlBox = new DumpTablePro("exception","#FFB200","#FFCC00","#350606");
+    	DumpTable htmlBox = new DumpTablePro("exception","#ff9900","#FFCC00","#000000");
 		htmlBox.setTitle("Railo ["+Info.getVersionAsString()+"] - Error ("+StringUtil.ucFirst(getTypeAsString())+")");
 		
 		
@@ -446,7 +446,7 @@ public abstract class PageExceptionImpl extends PageException {
 		// Context MUSTMUST
 		if(tagContext.size()>0) {
 			Collection.Key[] keys=tagContext.keys();
-			DumpTable context=new DumpTable("#FFB200","#FFCC00","#350606");
+			DumpTable context=new DumpTable("#ff9900","#FFCC00","#000000");
 			//context.setTitle("The Error Occurred in");
 			//context.appendRow(0,new SimpleDumpData("The Error Occurred in"));
 			context.appendRow(7,
@@ -470,7 +470,7 @@ public abstract class PageExceptionImpl extends PageException {
 				String strCode=((Struct)tagContext.get(1,null)).get("codePrintPlain","").toString();
 				String[] arrCode = List.listToStringArray(strCode, '\n');
 				arrCode=List.trim(arrCode);
-				DumpTable code=new DumpTable("#FFB200","#FFCC00","#350606");
+				DumpTable code=new DumpTable("#ff9900","#FFCC00","#000000");
 				
 				for(int i=0;i<arrCode.length;i++) {
 					code.appendRow(i==2?1:0,new SimpleDumpData(arrCode[i]));
@@ -486,7 +486,7 @@ public abstract class PageExceptionImpl extends PageException {
 		String strST=getStackTraceAsString();
 		String[] arrST = List.listToStringArray(strST, '\n');
 		arrST=List.trim(arrST);
-		DumpTable st=new DumpTable("#FFB200","#FFCC00","#350606");
+		DumpTable st=new DumpTable("#ff9900","#FFCC00","#000000");
 		
 		for(int i=0;i<arrST.length;i++) {
 			st.appendRow(i==0?1:0,new SimpleDumpData(arrST[i]));

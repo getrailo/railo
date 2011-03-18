@@ -228,7 +228,7 @@ public final class ConfigWebFactory {
         createContextFiles(configDir,servletConfig);
 		ConfigWebImpl configWeb=new ConfigWebImpl(factory,configServer, servletConfig,configDir,configFile);
 		
-		load(configServer,configWeb,doc);
+		load(configServer,configWeb,doc,false);
 		createContextFilesPost(configDir,configWeb);
 	    return configWeb;
     }
@@ -277,7 +277,7 @@ public final class ConfigWebFactory {
         createContextFiles(configDir,null);
         config.reset();
         
-		load(config.getConfigServerImpl(),config,doc);
+		load(config.getConfigServerImpl(),config,doc,false);
 		createContextFilesPost(configDir,config);
     }
     
@@ -296,7 +296,7 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws PageException
      */
-    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc) 
+    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc,boolean isEventGatewayContext) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	ThreadLocalConfig.register(config);
     	
@@ -339,7 +339,7 @@ public final class ConfigWebFactory {
     	loadScope(configServer,config,doc);
     	loadMail(configServer,config,doc);
         loadSearch(configServer,config,doc);
-    	loadScheduler(configServer,config,doc);
+    	loadScheduler(configServer,config,doc,isEventGatewayContext);
     	loadDebug(configServer,config,doc);
     	loadError(configServer,config,doc);
         loadCFX(configServer,config,doc);
@@ -3317,10 +3317,11 @@ public final class ConfigWebFactory {
      * @param configServer 
      * @param config
      * @param doc
+     * @param isEventGatewayContext 
      * @throws IOException
      * @throws PageException
      */
-    private static void loadScheduler(ConfigServer configServer, ConfigImpl config, Document doc) throws PageException, IOException {
+    private static void loadScheduler(ConfigServer configServer, ConfigImpl config, Document doc, boolean isEventGatewayContext) throws PageException, IOException {
         if(config instanceof ConfigServer) return;
         
         Resource configDir=config.getConfigDir();
@@ -3335,7 +3336,7 @@ public final class ConfigWebFactory {
         Resource file = ConfigWebUtil.getFile(config.getRootDirectory(),(scheduler==null)?
                 null:
                 scheduler.getAttribute("directory"), "scheduler",configDir,FileUtil.TYPE_DIR,config);
-        config.setScheduler(configServer.getCFMLEngine(),file,log);
+        config.setScheduler(configServer.getCFMLEngine(),isEventGatewayContext?null:file,log);
     }
 
     /**

@@ -892,7 +892,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @return html output
      */
     public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, int access) {
-	    DumpTable table = new DumpTablePro("component","#97C0AB","#EAF2EE","#000000");
+	    DumpTable table = new DumpTablePro("component","#99cc99","#ffffff","#000000");
         table.setTitle("Component "+getCallPath()+""+(" "+StringUtil.escapeHTML(top.properties.dspName)));
         table.setComment("Only the functions and data members that are accessible from your location are displayed");
         if(top.properties.extend.length()>0)table.appendRow(1,new SimpleDumpData("Extends"),new SimpleDumpData(top.properties.extend));
@@ -903,55 +903,56 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         return table;
     }
     
-	static DumpTable _toDumpData(ComponentImpl c,PageContext pc, int maxlevel, DumpProperties dp,int access) {
+	static DumpTable _toDumpData(ComponentImpl ci,PageContext pc, int maxlevel, DumpProperties dp,int access) {
 		maxlevel--;
-		Collection.Key[] keys= c.keys(access);
+		ComponentWrap cw=new ComponentWrap(Component.ACCESS_PRIVATE, ci);
+		Collection.Key[] keys= cw.keys();
 		
 		
 		
 		DumpTable[] accesses=new DumpTable[4];
-		accesses[Component.ACCESS_PRIVATE] = new DumpTable("#AE8E7F","#E8B0AE","#000000");
+		accesses[Component.ACCESS_PRIVATE] = new DumpTable("#cc3300","#ff6633","#000000");
 		accesses[Component.ACCESS_PRIVATE].setTitle("private");
 		accesses[Component.ACCESS_PRIVATE].setWidth("100%");
 		//accesses[Component.ACCESS_PRIVATE].setRow(1,"100%");
-		accesses[Component.ACCESS_PACKAGE] = new DumpTable("#B6B886","#F0DAB5","#000000");
+		accesses[Component.ACCESS_PACKAGE] = new DumpTable("#cc6633","#ff9966","#000000");
 		accesses[Component.ACCESS_PACKAGE].setTitle("package");
 		accesses[Component.ACCESS_PACKAGE].setWidth("100%");
-		accesses[Component.ACCESS_PUBLIC] = new DumpTable("#B6C889","#F0EAB8","#000000");
+		accesses[Component.ACCESS_PUBLIC] = new DumpTable("#cc9966","#ffcc99","#000000");
 		accesses[Component.ACCESS_PUBLIC].setTitle("public");
 		accesses[Component.ACCESS_PUBLIC].setWidth("100%");
-		accesses[Component.ACCESS_REMOTE] = new DumpTable("#8BC893","#C5EBC2","#000000");
+		accesses[Component.ACCESS_REMOTE] = new DumpTable("#99cc99","#ccffcc","#000000");
 		accesses[Component.ACCESS_REMOTE].setTitle("remote");
 		accesses[Component.ACCESS_REMOTE].setWidth("100%");
 		
 		Collection.Key key;
 		for(int i=0;i<keys.length;i++) {
 			key=keys[i];
-			int a=c.getAccess(key);
+			int a=ci.getAccess(key);
 			DumpTable box=accesses[a];
-			Object o=c.get(access,key,null);
-			if(o==c)o="[this]";
+			Object o=cw.get(key,null);
+			if(o==ci)o="[this]";
 			if(DumpUtil.keyValid(dp,maxlevel, key))
 				box.appendRow(1,new SimpleDumpData(key.getString()),DumpUtil.toDumpData(o,pc,maxlevel,dp));
 		}
 		
 		
-		DumpTable table=new DumpTable("#eeeeee","#cccccc","#000000");
+		DumpTable table=new DumpTable("#ffffff","#cccccc","#000000");
 		
 		// properties
-		if(c.top.properties.persistent){
-			Property[] properties=c.getProperties(false);
-			DumpTable prop = new DumpTable("#8BC893","#C5EBC2","#000000");
+		if(ci.top.properties.persistent || ci.top.properties.accessors){
+			Property[] properties=ci.getProperties(false);
+			DumpTable prop = new DumpTable("#99cc99","#ccffcc","#000000");
 			prop.setTitle("Properties");
 			prop.setWidth("100%");
 			Property p;
 			Object child;
 			for(int i=0;i<properties.length;i++) {
 				p=properties[i];
-				child = c.scope.get(KeyImpl.init(p.getName()),null);
+				child = ci.scope.get(KeyImpl.init(p.getName()),null);
 				DumpData dd;
 				if(child instanceof Component) {
-					DumpTable t = new DumpTablePro("component","#97C0AB","#EAF2EE","#000000");
+					DumpTable t = new DumpTablePro("component","#99cc99","#ffffff","#000000");
 					t.appendRow(1,new SimpleDumpData("Component"),new SimpleDumpData(((Component)child).getCallName()));
 					dd=t;
 					
@@ -972,16 +973,16 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
 		
 
-		if(access>=ACCESS_REMOTE && !accesses[ACCESS_REMOTE].isEmpty()) {
+		if(!accesses[ACCESS_REMOTE].isEmpty()) {
 			table.appendRow(0,accesses[Component.ACCESS_REMOTE]);
 		}
-		if(access>=ACCESS_PUBLIC && !accesses[ACCESS_PUBLIC].isEmpty()) {
+		if(!accesses[ACCESS_PUBLIC].isEmpty()) {
 			table.appendRow(0,accesses[Component.ACCESS_PUBLIC]);
 		}
-		if(access>=ACCESS_PACKAGE && !accesses[ACCESS_PACKAGE].isEmpty()) {
+		if(!accesses[ACCESS_PACKAGE].isEmpty()) {
 			table.appendRow(0,accesses[Component.ACCESS_PACKAGE]);
 		}
-		if(access>=ACCESS_PRIVATE && !accesses[ACCESS_PRIVATE].isEmpty()) {
+		if(!accesses[ACCESS_PRIVATE].isEmpty()) {
 			table.appendRow(0,accesses[Component.ACCESS_PRIVATE]);
 		}
 		return table;

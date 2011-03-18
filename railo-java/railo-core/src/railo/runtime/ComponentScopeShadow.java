@@ -214,17 +214,6 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return StructUtil.toDumpTable(this, "Variable Scope (of Component)", pageContext, maxlevel, dp);
-		/*DumpTable table = new DumpTable("#5965e4","#9999ff","#000000");
-		table.setTitle("Variable Scope (of Component)");
-		String[] keys = keysAsString();
-		String key;
-		maxlevel--;
-		for(int i=0;i<keys.length;i++) {
-			key=keys[i];
-			if(DumpUtil.keyValid(dp,maxlevel, key))
-				table.appendRow(1,new SimpleDumpData(key),DumpUtil.toDumpData(get(key,null), pageContext,maxlevel,dp));
-		}
-		return table;*/
 	}
 
 	/**

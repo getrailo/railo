@@ -573,7 +573,7 @@ public final class XMLCaster {
 		maxlevel--;
 		// Document
 		if(node instanceof Document) {
-			DumpTable table = new DumpTablePro("xml","#C2AF94","#F3EFEA","#000000");
+			DumpTable table = new DumpTablePro("xml","#cc9999","#ffffff","#000000");
 			table.setTitle("XML Document");
 			table.appendRow(1,new SimpleDumpData("XmlComment"),new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLCOMMENT).toString()));
 			table.appendRow(1,new SimpleDumpData("XmlRoot"),	DumpUtil.toDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLROOT), pageContext,maxlevel,props));
@@ -582,7 +582,7 @@ public final class XMLCaster {
 		}
 		// Element
 		if(node instanceof Element) {
-			DumpTable table = new DumpTablePro("xml","#C2AF94","#F3EFEA","#000000");
+			DumpTable table = new DumpTablePro("xml","#cc9999","#ffffff","#000000");
 			table.setTitle("XML Element");
 			table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNAME).toString()));
 			table.appendRow(1,new SimpleDumpData("XmlNsPrefix"),	new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNSPREFIX).toString()));
@@ -596,7 +596,7 @@ public final class XMLCaster {
 		}
 		// Attr
 		if(node instanceof Attr) {
-			DumpTable table = new DumpTablePro("xml","#C2AF94","#F3EFEA","#000000");
+			DumpTable table = new DumpTablePro("xml","#cc9999","#ffffff","#000000");
 			table.setTitle("XML Attr");
 			table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNAME).toString()));
 			table.appendRow(1,new SimpleDumpData("XmlValue"),	DumpUtil.toDumpData(((Attr)node).getValue(), pageContext,maxlevel,props));
@@ -606,7 +606,7 @@ public final class XMLCaster {
 			
 		}
 		// Node
-		DumpTable table = new DumpTablePro("xml","#C2AF94","#F3EFEA","#000000");
+		DumpTable table = new DumpTablePro("xml","#cc9999","#ffffff","#000000");
 		table.setTitle("XML Node ("+ListLast.call(null,node.getClass().getName(),".")+")");
 		table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNAME).toString()));
 		table.appendRow(1,new SimpleDumpData("XmlNsPrefix"),	new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNSPREFIX).toString()));

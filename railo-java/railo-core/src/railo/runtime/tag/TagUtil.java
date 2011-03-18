@@ -1,5 +1,9 @@
 package railo.runtime.tag;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.servlet.jsp.tagext.Tag;
 
 import railo.commons.lang.StringUtil;
@@ -14,6 +18,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDFImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.library.tag.TagLibTag;
 
@@ -80,17 +85,36 @@ public class TagUtil {
 	 */
 	public static void setDynamicAttribute(StructImpl attributes,String name, Object value) {
         name=StringUtil.toLowerCase(name);
-        if(name.equals("attributecollection") && value instanceof railo.runtime.type.Collection) {
-            railo.runtime.type.Collection coll=(railo.runtime.type.Collection)value;
-            railo.runtime.type.Collection.Key[] keys=coll.keys();
-            railo.runtime.type.Collection.Key key;
-            for(int i=0;i<keys.length;i++) {
-                key=keys[i]; 
-                if(attributes.get(key,null)==null)
-                    attributes.setEL(key,coll.get(key,null));
+        if(name.equals("attributecollection")) {
+            if(value instanceof railo.runtime.type.Collection) {
+            	railo.runtime.type.Collection coll=(railo.runtime.type.Collection)value;
+                railo.runtime.type.Collection.Key[] keys=coll.keys();
+                railo.runtime.type.Collection.Key key;
+                for(int i=0;i<keys.length;i++) {
+                    key=keys[i]; 
+                    if(attributes.get(key,null)==null)
+                        attributes.setEL(key,coll.get(key,null));
+                }
+                return;
+            }
+            else if(value instanceof Map) {
+            	
+            	Map map=(Map) value;
+			    Iterator it = map.entrySet().iterator();
+			    Map.Entry entry;
+			    Key key;
+			    while(it.hasNext()) {
+			    	entry=(Entry) it.next();
+			    	key = UDFImpl.toKey(entry.getKey());
+			    	if(!attributes.containsKey(key)){
+			    		attributes.setEL(key,entry.getValue());
+	            	}
+	            }
+                return;
             }
         }
-        else attributes.setEL(KeyImpl.init(name), value);
+        
+        attributes.setEL(KeyImpl.init(name), value);
 	}
 
 	

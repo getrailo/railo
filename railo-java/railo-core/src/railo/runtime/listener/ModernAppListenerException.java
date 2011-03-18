@@ -32,6 +32,7 @@ public final class ModernAppListenerException extends PageException {
 	 */
 	public ModernAppListenerException(PageException pe, String eventName) {
         super(pe.getMessage());
+        setStackTrace(pe.getStackTrace());
 		this.rootCause=pe;
 		this.eventName=eventName;
 	}

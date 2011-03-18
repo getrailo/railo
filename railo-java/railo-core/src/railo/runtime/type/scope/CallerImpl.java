@@ -16,8 +16,9 @@ import railo.runtime.type.util.StructSupport;
  * caller scope
  */
 public final class CallerImpl extends StructSupport implements Caller  {
-    
 
+	private static final long serialVersionUID = -6228400815042475435L;
+	
 	private PageContext pc;
     private Variables variablesScope;
     private Scope localScope;
@@ -47,6 +48,9 @@ public final class CallerImpl extends StructSupport implements Caller  {
 		}
 		else if('r'==c) {
 			if(ScopeSupport.REQUEST.equalsIgnoreCase(key))				return pc.requestScope();
+		}
+		else if('l'==c) {
+			if(ScopeSupport.LOCAL.equalsIgnoreCase(key) && checkArgs)	return pc.localScope();
 		}
 		else if('s'==c) {
 			if(ScopeSupport.SESSION.equalsIgnoreCase(key))				return pc.sessionScope();
@@ -125,6 +129,9 @@ public final class CallerImpl extends StructSupport implements Caller  {
 		}
 		else if('r'==c) {
 			if(ScopeSupport.REQUEST.equalsIgnoreCase(key))				return pc.requestScope();
+		}
+		else if('l'==c) {
+			if(ScopeSupport.LOCAL.equalsIgnoreCase(key) && checkArgs)	return pc.localScope();
 		}
 		else if('s'==c) {
 			if(ScopeSupport.SESSION.equalsIgnoreCase(key)){

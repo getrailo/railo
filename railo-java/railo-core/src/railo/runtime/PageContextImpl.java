@@ -43,6 +43,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
+import railo.commons.lang.StringKeyLock;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
@@ -1087,11 +1088,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     /**
      * @see PageContext#localScope()
      */// FUTURE remove class from type Local
-    public Scope localScope() { return local; }
+    public Scope localScope() { 
+    	//if(local==localUnsupportedScope) 
+    	//	throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope"));
+    	return local;
+    }
     
 // FUTURE remove class from type Local
     public Scope localScope(boolean bind) { 
     	if(bind)local.setBind(true); 
+    	//if(local==localUnsupportedScope) 
+    	//	throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope"));
     	return local; 
     }
 
@@ -2500,6 +2507,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         cgi.setScriptProtecting((scriptProtect&ApplicationContext.SCRIPT_PROTECT_CGI)>0);
         undefined.reinitialize(this);
     }
+       
+    //StringKeyLock inner = new StringKeyLock(-1);
     
     /**
      * @return return return value of method "onApplicationStart" or true
@@ -2507,38 +2516,90 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @throws PageException
      */
     public boolean initApplicationContext() throws PageException {
+    	boolean initSession=false;
 	    AppListenerSupport listener = (AppListenerSupport) config.getApplicationListener();
+    	StringKeyLock lock = config.getContextLock();
 	    
-    	boolean initSession = applicationContext.isSetSessionManagement() && listener.hasOnSessionStart(this) && !scopeContext.hasExistingSessionScope(this);
+    	String token=applicationContext.getName()+":"+getCFID();
     	
-    	// init application
-	    RefBoolean isNew=new RefBooleanImpl(false);
-	    application=scopeContext.getApplicationScope(this,isNew);
-	    
-	    // FUTURE ApplicationListener listener = config.getApplicationListener();
-	    
-	    
-	    if(isNew.toBooleanValue()) {
-		    try {
-				if(!listener.onApplicationStart(this)) {
-					scopeContext.removeApplicationScope(this);
-					return false;
-				}
-			} catch (PageException pe) {
-				scopeContext.removeApplicationScope(this);
-				throw pe;
-			}
-	    }
-	    
-	    // init session
-	    if(initSession) {
-	    	//session=scopeContext.getSessionScope(this,isNew);
-	    	//if(initSession) {// isNew i not used in this case, because it is possible that "onApplicationStart" has initilaized the session scope
+    	lock.lock(token);
+    	//print.o("outer-lock  :"+token);
+    	try {
+    		// check session before executing any code
+	    	initSession=applicationContext.isSetSessionManagement() && listener.hasOnSessionStart(this) && !scopeContext.hasExistingSessionScope(this);
+	    	
+	    	// init application
+	    	lock.lock(applicationContext.getName());
+	    	//print.o("inner-lock  :"+token);
+	    	try {
+	    		RefBoolean isNew=new RefBooleanImpl(false);
+			    application=scopeContext.getApplicationScope(this,isNew);// this is needed that the application scope is initilized
+		    	if(isNew.toBooleanValue()) {
+				    try {
+						if(!listener.onApplicationStart(this)) {
+							scopeContext.removeApplicationScope(this);
+						    return false;
+						}
+					} catch (PageException pe) {
+						scopeContext.removeApplicationScope(this);
+						throw pe;
+					}
+			    }
+	    	}
+	    	finally{
+		    	//print.o("inner-unlock:"+token);
+	    		lock.unlock(applicationContext.getName());
+	    	}
+    	
+	    	// init session
+		    if(initSession) {
+		    	scopeContext.getSessionScope(this, DUMMY_BOOL);// this is needed that the session scope is initilized
 		    	listener.onSessionStart(this);
-		    //}
-	    }
+			}
+    	}
+    	finally{
+	    	//print.o("outer-unlock:"+token);
+    		lock.unlock(token);
+    	}
 	    return true;
     }
+    
+    /*    public boolean initApplicationContext() throws PageException {
+    	boolean initSession=false;
+	    AppListenerSupport listener = (AppListenerSupport) config.getApplicationListener();
+    	StringKeyLock lock = config.getContextLock();
+	    
+    	lock.lock(applicationContext.getName());
+    	try {
+    		// check session before executing any code
+	    	initSession=applicationContext.isSetSessionManagement() && listener.hasOnSessionStart(this) && !scopeContext.hasExistingSessionScope(this);
+	    	
+	    	// init application
+		    RefBoolean isNew=new RefBooleanImpl(false);
+		    application=scopeContext.getApplicationScope(this,isNew);// this is needed that the application scope is initilized
+	    	if(isNew.toBooleanValue()) {
+			    try {
+					if(!listener.onApplicationStart(this)) {
+						scopeContext.removeApplicationScope(this);
+					    return false;
+					}
+				} catch (PageException pe) {
+					scopeContext.removeApplicationScope(this);
+					throw pe;
+				}
+		    }
+    	
+	    	// init session
+		    if(initSession) {
+		    	scopeContext.getSessionScope(this, isNew);// this is needed that the session scope is initilized
+		    	listener.onSessionStart(this);
+			}
+    	}
+    	finally{
+    		lock.unlock(applicationContext.getName());
+    	}
+	    return true;
+    }*/
 
     /**
      * @return the scope factory

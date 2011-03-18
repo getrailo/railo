@@ -110,7 +110,7 @@ public final class Dump implements Function {
 			DumpData dd = DumpUtil.toDumpData(object, pc,(int)maxLevel,properties);
 			
 			if(!StringUtil.isEmpty(label)) {
-				DumpTable table=new DumpTable("#eeeeee","#cccccc","#000000");
+				DumpTable table=new DumpTable("#ffffff","#cccccc","#000000");
 				table.appendRow(1,new SimpleDumpData(label));
 				//table.appendRow(1,new SimpleDumpData(getContext()));
 				table.appendRow(0,dd);

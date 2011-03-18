@@ -55,6 +55,29 @@ public final class SchedulerImpl implements Scheduler {
         init();
     }
     
+
+    /**
+     * creates a empty Scheduler, used for event gateway context
+     * @param engine
+     * @param config
+     * @param log
+     * @throws SAXException
+     * @throws IOException
+     * @throws PageException
+     */
+    public SchedulerImpl(CFMLEngine engine,String xml,Config config, LogAndSource log) {
+    	this.engine=(CFMLEngineImpl) engine;
+    	this.config=config;
+    	try {
+			doc=su.loadDocument(xml);
+		} catch (Exception e) {}
+    	tasks=new ScheduleTaskImpl[0];
+        init();
+    }
+    
+    
+    
+    
 	private void initFile(Resource schedulerDir, LogAndSource log) throws IOException {
 		this.schedulerFile=schedulerDir.getRealResource("scheduler.xml");
 		if(!schedulerFile.exists()) su.loadFile(schedulerFile,"/resource/schedule/default.xml");
