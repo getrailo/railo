@@ -356,6 +356,20 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	            	}
 	            }
 		    }
+			else if(value instanceof java.util.List) {
+				java.util.List list=(java.util.List) value;
+			    Iterator it = list.iterator();
+			    Object v;
+			    int index=0;
+			    Key k;
+			    while(it.hasNext()) {
+			    	v= it.next();
+			    	k=ArgumentIntKey.init(++index);
+			    	if(!values.containsKey(k)){
+	            		values.setEL(k,v);
+	            	}
+	            }
+		    }
 		    else {
 		        values.setEL(ARGUMENT_COLLECTION,value);
 		    }
