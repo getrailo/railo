@@ -2612,7 +2612,7 @@ public final class Caster {
         //synchronized(c){
         	
 	        // datetime
-	        df=FormatUtil.getDateTimeFormats(locale,false);//dfc[FORMATS_DATE_TIME];
+	        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
 	    	for(int i=0;i<df.length;i++) {
 	            try {
 	            	df[i].setTimeZone(tz);
@@ -2625,7 +2625,7 @@ public final class Caster {
 	            catch (ParseException e) {}
 	        }
 	        // date
-	        df=FormatUtil.getDateFormats(locale,false);//dfc[FORMATS_DATE];
+	        df=FormatUtil.getDateFormats(locale,tz,false);//dfc[FORMATS_DATE];
 	    	for(int i=0;i<df.length;i++) {
 	            try {
 	            	df[i].setTimeZone(tz);
@@ -2638,7 +2638,7 @@ public final class Caster {
 	        }
 	    	
 	        // time
-	        df=FormatUtil.getTimeFormats(locale,false);//dfc[FORMATS_TIME];
+	        df=FormatUtil.getTimeFormats(locale,tz,false);//dfc[FORMATS_TIME];
 	        for(int i=0;i<df.length;i++) {
 	            try {
 	            	df[i].setTimeZone(tz);
@@ -2668,51 +2668,6 @@ public final class Caster {
         if(year<40) c.set(Calendar.YEAR,2000+year);
         else if(year<100) c.set(Calendar.YEAR,1900+year);
     }
-    
-	/*private static DateFormat[][] getDateFormates(Locale locale) {
-        return new DateFormat[][]{
-        	new DateFormat[]{
-                DateFormat.getDateTimeInstance(DateFormat.FULL,DateFormat.FULL,locale),
-                DateFormat.getDateTimeInstance(DateFormat.FULL,DateFormat.LONG,locale),
-                DateFormat.getDateTimeInstance(DateFormat.FULL,DateFormat.MEDIUM,locale),
-                DateFormat.getDateTimeInstance(DateFormat.FULL,DateFormat.SHORT,locale),
-
-                DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.FULL,locale),
-                DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG,locale),
-                DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.MEDIUM,locale),
-                DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.SHORT,locale),
-
-                DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.FULL,locale),
-                DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.LONG,locale),
-                DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM,locale),
-                DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.SHORT,locale),
-
-                DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.FULL,locale),
-                DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.LONG,locale),
-                DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.MEDIUM,locale),
-                DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,locale),
-            },
-            new DateFormat[]{
-                DateFormat.getDateInstance(DateFormat.FULL,locale),
-                DateFormat.getDateInstance(DateFormat.LONG,locale),
-                DateFormat.getDateInstance(DateFormat.MEDIUM,locale),
-                DateFormat.getDateInstance(DateFormat.SHORT,locale)
-
-        	},
-        	new DateFormat[]{
-                
-                DateFormat.getDateInstance(DateFormat.FULL,locale),
-                DateFormat.getDateInstance(DateFormat.LONG,locale),
-                DateFormat.getDateInstance(DateFormat.MEDIUM,locale),
-                DateFormat.getDateInstance(DateFormat.SHORT,locale),
-
-                DateFormat.getTimeInstance(DateFormat.FULL,locale),
-                DateFormat.getTimeInstance(DateFormat.LONG,locale),
-                DateFormat.getTimeInstance(DateFormat.MEDIUM,locale),
-                DateFormat.getTimeInstance(DateFormat.SHORT,locale)
-        	}
-        };
-    }*/
 
     /**
      * cast a Object to a Query Object

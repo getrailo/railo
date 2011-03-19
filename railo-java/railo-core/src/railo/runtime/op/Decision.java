@@ -1212,7 +1212,7 @@ public final class Decision {
         Calendar c=JREDateTimeUtil.getCalendar(locale);
         //synchronized(c){
 	        // datetime
-	        df=FormatUtil.getDateTimeFormats(locale,false);//dfc[FORMATS_DATE_TIME];
+	        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
 	    	for(int i=0;i<df.length;i++) {
 	            try {
 	            	synchronized(c) {
@@ -1223,7 +1223,7 @@ public final class Decision {
 	            catch (ParseException e) {}
 	        }
 	        // date
-	        df=FormatUtil.getDateFormats(locale,false);//dfc[FORMATS_DATE];
+	        df=FormatUtil.getDateFormats(locale,tz,false);//dfc[FORMATS_DATE];
 	    	for(int i=0;i<df.length;i++) {
 	            try {
 	            	df[i].setTimeZone(tz);
@@ -1236,7 +1236,7 @@ public final class Decision {
 	        }
 	    	
 	        // time
-	        df=FormatUtil.getTimeFormats(locale,false);//dfc[FORMATS_TIME];
+	        df=FormatUtil.getTimeFormats(locale,tz,false);//dfc[FORMATS_TIME];
 	        for(int i=0;i<df.length;i++) {
 	            try {
 	            	df[i].setTimeZone(tz);
