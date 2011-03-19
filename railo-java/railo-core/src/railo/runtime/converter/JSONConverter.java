@@ -133,7 +133,7 @@ public final class JSONConverter {
 		sb.append('"');
 		
 		//sb.append(escape(dateTime.toString()));
-		sb.append(escape(JSONDateFormat.format(dateTime)));
+		sb.append(escape(JSONDateFormat.format(dateTime,null)));
 		sb.append('"');
 		
 		/*try {

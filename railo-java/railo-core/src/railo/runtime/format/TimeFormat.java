@@ -191,7 +191,6 @@ public final class TimeFormat implements Format {
 	}
 
 	private String getAsString(int style,TimeZone tz) {
-		//print.out(((SimpleDateFormat)DateFormat.getTimeInstance(style,getLocale())).set);
 		DateFormat df = DateFormat.getTimeInstance(style,getLocale());
 		df.setTimeZone(tz);
 		return df.format(calendar.getTime());	

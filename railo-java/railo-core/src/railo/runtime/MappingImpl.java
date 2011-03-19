@@ -251,7 +251,7 @@ public final class MappingImpl implements Mapping {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		maxlevel--;
         
-		DumpTable htmlBox = new DumpTablePro("mapping","#ff3300","#ff9966","#000000");
+		DumpTable htmlBox = new DumpTablePro("mapping","#ff6600","#ffcc99","#000000");
 		htmlBox.setTitle("Mapping");
 		htmlBox.appendRow(1,new SimpleDumpData("virtual"),new SimpleDumpData(virtual));
 		htmlBox.appendRow(1,new SimpleDumpData("physical"),DumpUtil.toDumpData(strPhysical,pageContext,maxlevel,dp));
