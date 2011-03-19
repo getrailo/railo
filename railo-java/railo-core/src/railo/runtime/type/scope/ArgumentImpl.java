@@ -155,7 +155,7 @@ public class ArgumentImpl extends ScopeSupport implements ArgumentPro {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable htmlBox = new DumpTablePro("struct","#6666cc","#9999ff","#000000");
+		DumpTable htmlBox = new DumpTablePro("struct","#9999ff","#ccccff","#000000");
 		htmlBox.setTitle("Scope Arguments");
 		if(size()>10 && dp.getMetainfo())htmlBox.setComment("Entries:"+size());
 	    

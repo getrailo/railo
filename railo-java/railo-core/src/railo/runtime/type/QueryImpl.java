@@ -1238,7 +1238,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		
 		
 		
-		DumpTable recs=new DumpTablePro("query","#996699","#ffccff","#000000");
+		DumpTable recs=new DumpTablePro("query","#cc99cc","#ffccff","#000000");
 		recs.setTitle("Query");
 		if(dp.getMetainfo())recs.setComment(comment.toString());
 		recs.appendRow(new DumpRow(-1,heads));

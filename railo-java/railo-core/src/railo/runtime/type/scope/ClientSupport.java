@@ -375,7 +375,7 @@ public abstract class ClientSupport extends StructSupport implements Client,Size
 		maxlevel--;
 		Iterator it=keyIterator();
 		
-		DumpTable table = new DumpTable("#6666cc","#9999ff","#000000");
+		DumpTable table = new DumpTable("#9999ff","#ccccff","#000000");
 		
 		int maxkeys=dp.getMaxKeys();
 		int index=0;

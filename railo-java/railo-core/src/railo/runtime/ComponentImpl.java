@@ -892,7 +892,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @return html output
      */
     public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, int access) {
-	    DumpTable table = new DumpTablePro("component","#99cc99","#ffffff","#000000");
+	    DumpTable table = new DumpTablePro("component","#99cc99","#ccffcc","#000000");
         table.setTitle("Component "+getCallPath()+""+(" "+StringUtil.escapeHTML(top.properties.dspName)));
         table.setComment("Only the functions and data members that are accessible from your location are displayed");
         if(top.properties.extend.length()>0)table.appendRow(1,new SimpleDumpData("Extends"),new SimpleDumpData(top.properties.extend));
@@ -911,17 +911,17 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		
 		
 		DumpTable[] accesses=new DumpTable[4];
-		accesses[Component.ACCESS_PRIVATE] = new DumpTable("#cc3300","#ff6633","#000000");
+		accesses[Component.ACCESS_PRIVATE] = new DumpTable("#ff6633","#ff9966","#000000");
 		accesses[Component.ACCESS_PRIVATE].setTitle("private");
 		accesses[Component.ACCESS_PRIVATE].setWidth("100%");
 		//accesses[Component.ACCESS_PRIVATE].setRow(1,"100%");
-		accesses[Component.ACCESS_PACKAGE] = new DumpTable("#cc6633","#ff9966","#000000");
+		accesses[Component.ACCESS_PACKAGE] = new DumpTable("#ff9966","#ffcc99","#000000");
 		accesses[Component.ACCESS_PACKAGE].setTitle("package");
 		accesses[Component.ACCESS_PACKAGE].setWidth("100%");
-		accesses[Component.ACCESS_PUBLIC] = new DumpTable("#cc9966","#ffcc99","#000000");
+		accesses[Component.ACCESS_PUBLIC] = new DumpTable("#ffcc99","#ffffcc","#000000");
 		accesses[Component.ACCESS_PUBLIC].setTitle("public");
 		accesses[Component.ACCESS_PUBLIC].setWidth("100%");
-		accesses[Component.ACCESS_REMOTE] = new DumpTable("#99cc99","#ccffcc","#000000");
+		accesses[Component.ACCESS_REMOTE] = new DumpTable("#ccffcc","#ffffff","#000000");
 		accesses[Component.ACCESS_REMOTE].setTitle("remote");
 		accesses[Component.ACCESS_REMOTE].setWidth("100%");
 		

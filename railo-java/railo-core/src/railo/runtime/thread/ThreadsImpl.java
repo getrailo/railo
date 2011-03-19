@@ -269,7 +269,7 @@ The current status of the thread; one of the following values:
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		Key[] keys = keys();
-		DumpTable table = new DumpTablePro("struct","#6666cc","#9999ff","#000000");
+		DumpTable table = new DumpTablePro("struct","#9999ff","#ccccff","#000000");
 		table.setTitle("Struct");
 		maxlevel--;
 		int maxkeys=dp.getMaxKeys();
