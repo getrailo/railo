@@ -1,6 +1,5 @@
 package railo.transformer.util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public final class CFMLString {
 	/**
 	 * Field <code>lines</code>
 	 */
-	protected Integer[] lines;
+	protected Integer[] lines;// TODO to int[]
 	/**
 	 * Field <code>file</code>
 	 */
@@ -57,44 +56,26 @@ public final class CFMLString {
 	
 	private static final String NL=System.getProperty("line.separator");
 
-	/**
-	 * Diesem Konstruktor kann als Eingabe ein FileObjekt übergeben werden, welches eine CFML Seite Repräsentiert.
-	 * @param sf CFML Source File
-	 * @throws IOException 
-	 */
+	
+	
 	public CFMLString(SourceFile sf,String charset,boolean writeLog) throws IOException {
 		this.writeLog=writeLog;
 		this.charset=charset;
 		this.sf=sf;
-		String line;
 		this.source=sf.getPhyscalFile().getAbsolutePath();
-		//print.ln("-----------------------------------");
-		StringBuffer content=new StringBuffer();
+		String content;
 		InputStream is=null;
-		BufferedReader br=null;
 		try {
 			is = IOUtil.toBufferedInputStream(sf.getPhyscalFile().getInputStream());
 			if(ClassUtil.isBytecodeStream(is))throw new AlreadyClassException(sf.getPhyscalFile());
-			br = IOUtil.toBufferedReader(IOUtil.getReader(is,charset));
-		
-			int count=0;
-			line=br.readLine();
-	        while(line!=null)	{
-	            if(++count>1)content.append(NL);
-				content.append(line);
-				line=br.readLine();
-			}
+			content=IOUtil.toString(is,charset);
+			
 		}
 		finally {
-			if(br!=null)IOUtil.closeEL(br);
-			else IOUtil.closeEL(is);
+			IOUtil.closeEL(is);
 		}
-		
 		init(content.toString().toCharArray());
-        
 	}
-	
-
 
 	/**
 	 * Constructor of the class
@@ -131,14 +112,21 @@ public final class CFMLString {
 		this.text=text;
 		lcText=new char[text.length];
 		
-		ArrayList arr=new ArrayList();
+		ArrayList<Integer> arr=new ArrayList<Integer>();
 		
 		for(int i=0;i<text.length;i++) {
 			if(text[i]=='\n') {
 				arr.add(new Integer(i));
 				lcText[i]=' ';
 			}
-			else if(text[i]=='\r' || text[i]=='\t') lcText[i]=' ';
+			else if(text[i]=='\r') {
+				if(isNextRaw('\n')){
+					lcText[i++]=' ';
+				}
+				arr.add(new Integer(i));
+				lcText[i]=' ';
+			}
+			else if(text[i]=='\t') lcText[i]=' ';
 			else lcText[i]=Character.toLowerCase(text[i]);
 		}
 		arr.add(new Integer(text.length));
@@ -228,6 +216,11 @@ public final class CFMLString {
 		if(!hasNext()) return false;
 		return lcText[pos+1]==c;
 	}
+	private boolean isNextRaw(char c) {
+		if(!hasNext()) return false;
+		return text[pos+1]==c;
+	}
+	
 	
 	/**
 	 * Gibt zurück ob das aktuelle Zeichen zwischen den Angegebenen liegt.
@@ -667,6 +660,7 @@ public final class CFMLString {
 		int index=0;
 		while(pos-(++index) >= 0){
 			if(text[pos - index] == '\n')return true;
+			if(text[pos - index] == '\r')return true;
 			if(lcText[pos - index] != ' ') return false;
 		}
 		return false;
@@ -698,11 +692,20 @@ public final class CFMLString {
 	 * @return Existiert eine weitere Zeile.
 	 */
 	public boolean nextLine() {
-		while(isValidIndex() && text[pos]!='\n') {
+		while(isValidIndex() && text[pos]!='\n' && text[pos]!='\r') {
 			next();
 		}
-		if(isValidIndex() && text[pos]=='\n') {
+		if(!isValidIndex()) return false;
+		
+		if(text[pos]=='\n') {
 			next();
+			return isValidIndex();
+		}
+		if(text[pos]=='\r') {
+			next();
+			if(isValidIndex() && text[pos]=='\n') {
+				next();
+			}
 			return isValidIndex();
 		}
 		return false;

@@ -416,7 +416,7 @@ public final class SystemUtil {
 		SystemUtil.charset = charset;
 	}
 
-	public static String getLineSeparator() {
+	public static String getOSSpecificLineSeparator() {
 		return lineSeparator;
 	}
 

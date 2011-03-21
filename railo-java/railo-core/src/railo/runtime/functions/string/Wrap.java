@@ -36,7 +36,7 @@ public final class Wrap implements Function {
 		if(wrapTextLength<=0)return str;
 		
 		StringBuffer rtn=new StringBuffer();
-		String ls=SystemUtil.getLineSeparator();
+		String ls=SystemUtil.getOSSpecificLineSeparator();
 		Array arr = List.listToArray(str,ls);
 		int len=arr.size();
 		
@@ -61,7 +61,7 @@ public final class Wrap implements Function {
 		String sub=str.substring(0,wtl);
 		String rest=str.substring(wtl);
 		char firstR=rest.charAt(0);
-		String ls=SystemUtil.getLineSeparator();
+		String ls=SystemUtil.getOSSpecificLineSeparator();
 		
 		if(firstR==' ' || firstR=='\t') return sub+ls+wrapLine(rest.length()>1?rest.substring(1):"",wrapTextLength);
 		
