@@ -371,8 +371,6 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	 * @throws PageException 
 	 */
 	private static void checkSQLRestriction(DatasourceConnection dc, SQL sql) throws PageException {
-        //Array sqlparts = List.listToArrayRemoveEmpty(sql.getSQLString()," \t"+System.getProperty("line.separator"));
-        
         Array sqlparts = List.listToArrayRemoveEmpty(
         		SQLUtil.removeLiterals(sql.getSQLString())
         		," \t"+System.getProperty("line.separator"));
