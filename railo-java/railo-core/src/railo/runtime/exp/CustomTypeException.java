@@ -17,11 +17,11 @@ public final class CustomTypeException extends PageExceptionImpl {
 	 * @param errorCode Error Code
 	 * @param customType Type of the Exception
 	 */
-	public CustomTypeException(String message, String detail, String errorCode, String customType) {
+	public CustomTypeException(String message, String detail, String errorCode, String customType,String extendedinfo) {
 		super(message,"custom_type",customType);
 		setDetail(detail);
 		setErrorCode(errorCode);
-		
+		if(extendedinfo!=null)setExtendedInfo(extendedinfo);
 	}
 
 	/**
