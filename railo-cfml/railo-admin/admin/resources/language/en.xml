@@ -499,7 +499,7 @@
 	<data key="scopes.sessiontype_cfml">CFML</data>
 	<data key="scopes.clientcookies">Client cookies</data>
 	<data key="scopes.timeoutendvalue">timeout must have a Integer Value</data>
-	<data key="scopes.mergeurlformdescription">This setting defines if the scopes URL and form will be merged together or not. CFML Default is false.</data>
+	<data key="scopes.mergeurlformdescription">This setting defines if the scopes URL and Form will be merged together (CFML Default is false). If a key already exists in Form and URL Scopes, the value from the Form Scope is used.</data>
 	<data key="scopes.timeoutminutesvalue">Value minutes for </data>
 	<data key="scopes.applicationtimeoutdescription">Sets the amount of time Railo will keep the application scope alive. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.clienttimeout">Client timeout</data>

@@ -115,7 +115,7 @@ public final class Throw extends TagImpl {
 		if(object instanceof PageException) return (PageException)object;
 		if(object instanceof Throwable) {
 			Throwable t=(Throwable)object;
-			return new CustomTypeException(t.getMessage(),"","",t.getClass().getName());
+			return new CustomTypeException(t.getMessage(),"","",t.getClass().getName(),"");
 		}
 		return defaultValue;
 		
@@ -131,11 +131,7 @@ public final class Throw extends TagImpl {
 		_doStartTag(message);
 		_doStartTag(object);
 		
-		throw new CustomTypeException( "",detail,errorcode,type);
-		
-		
-		
-		
+		throw new CustomTypeException( "",detail,errorcode,type,extendedinfo);
 	}
 
 	private void _doStartTag(Object obj) throws PageException {
@@ -143,8 +139,7 @@ public final class Throw extends TagImpl {
 			PageException pe = toPageException(obj,null);
 			if(pe!=null) throw pe;
 			
-			CustomTypeException exception = new CustomTypeException(Caster.toString(obj),detail,errorcode,type);
-			if(extendedinfo!=null)exception.setExtendedInfo(extendedinfo);
+			CustomTypeException exception = new CustomTypeException(Caster.toString(obj),detail,errorcode,type,extendedinfo);
 			throw exception;
 		}
 	}
