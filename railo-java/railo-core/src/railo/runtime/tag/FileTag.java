@@ -528,7 +528,7 @@ public final class FileTag extends TagImpl {
         	else {
         		String content=Caster.toString(output);
         		if(fixnewline)content=doFixNewLine(content);
-        		if(addnewline) content+=SystemUtil.getLineSeparator();
+        		if(addnewline) content+=SystemUtil.getOSSpecificLineSeparator();
         		
                 if(content.length()==0)ResourceUtil.touch(file);
                 else IOUtil.write(file,content,charset,false);
