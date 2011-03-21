@@ -393,17 +393,21 @@ public class HibernateCaster {
 		else {
 			Array arr=Caster.toArray(obj);
 			int len=arr.size();
-			Iterator it = arr.valueIterator();
-			int row=1;
-			while(it.hasNext()){
-				qry=toQuery(pc,session,ComponentUtil.toComponentPro(HibernateCaster.toComponent(it.next())),name,qry,len,row++);
+			if(len>0) {
+				Iterator it = arr.valueIterator();
+				int row=1;
+				while(it.hasNext()){
+					qry=toQuery(pc,session,ComponentUtil.toComponentPro(HibernateCaster.toComponent(it.next())),name,qry,len,row++);
+				}
 			}
+			else 
+				qry=new QueryImpl(new Collection.Key[0],1,"orm");
 		}
 		
 		if(qry==null) {
 			if(!StringUtil.isEmpty(name))
 				throw new ORMException(session.getEngine(),"there is no entity inheritance that match the name ["+name+"]");
-			throw new ORMException(session.getEngine(),"can not create query");
+			throw new ORMException(session.getEngine(),"cannot create query");
 		}
 		return qry;
 	}
