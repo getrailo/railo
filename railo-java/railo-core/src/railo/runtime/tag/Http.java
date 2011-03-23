@@ -990,7 +990,7 @@ public final class Http extends BodyTagImpl {
         // Header
             else if(type.startsWith("head")) {
             	if(param.getName().equalsIgnoreCase("content-type")) hasContentType=true;
-                httpMethod.addRequestHeader(param.getName(),param.getValueAsString());
+            	httpMethod.addRequestHeader(param.getName(),headerValue(param.getValueAsString()));
             }
 		// Cookie
 			else if(type.equals("cookie")) {
@@ -1152,6 +1152,18 @@ public final class Http extends BodyTagImpl {
 
 		httpMethod.setFollowRedirects(false);
 	    return httpMethod;
+	}
+
+	private static String headerValue(String value) {
+		if(value==null) return null;
+		value=value.trim();
+		int len=value.length();
+		char c;
+		for(int i=0;i<len;i++){
+			c=value.charAt(i);
+			if(c=='\n' || c=='\r') return value.substring(0,i);
+		}
+		return value;
 	}
 
 	private static String toQueryString(NameValuePair[] qsPairs) {
