@@ -300,12 +300,12 @@ public final class Reflector {
 	 */
 
 	public static ConstructorInstance getConstructorInstance(Class clazz, Object[] args) throws NoSuchMethodException {
-		ConstructorInstance ci=getConstructorInstanceEL(clazz, args);
+		ConstructorInstance ci=getConstructorInstance(clazz, args,null);
 	    if(ci!=null) return ci;
 	    throw new NoSuchMethodException("No matching Constructor for "+clazz.getName()+"("+getDspMethods(getClasses(args))+") found");
 	}
 	
-	public static ConstructorInstance getConstructorInstanceEL(Class clazz, Object[] args) {
+	public static ConstructorInstance getConstructorInstance(Class clazz, Object[] args, ConstructorInstance defaultValue) {
 		args=cleanArgs(args);
 		Constructor[] constructors=cStorage.getConstructors(clazz,args.length);//getConstructors(clazz);
 		if(constructors!=null) {
@@ -350,7 +350,7 @@ public final class Reflector {
 				}
 			}
 		}
-		return null;
+		return defaultValue;
 		//throw new NoSuchMethodException("No matching Constructor for "+clazz.getName()+"("+getDspMethods(getClasses(args))+") found");
 	}
 
@@ -552,6 +552,18 @@ public final class Reflector {
 		} 
 		catch (Exception e) {
 		    throw Caster.toPageException(e);
+		}
+	}
+	
+	public static Object callConstructor(Class clazz, Object[] args, Object defaultValue) {
+	    args=cleanArgs(args);
+	    try {
+            ConstructorInstance ci = getConstructorInstance(clazz,args,null);
+            if(ci==null) return defaultValue;
+            return ci.invoke();
+        }
+		catch (Throwable t) {
+		    return defaultValue;
 		}
 	}
 
