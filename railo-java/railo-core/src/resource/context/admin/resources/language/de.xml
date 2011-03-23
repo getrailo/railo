@@ -542,7 +542,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="scopes.sessiontype_cfml">CFML</data>
 	<data key="scopes.clientcookies">Client Cookies</data>
 	<data key="scopes.timeoutendvalue">den Timeout muss ein ganzzahlige Wert sein.</data>
-	<data key="scopes.mergeurlformdescription">Mit dieser Einstellung kann festgelegt werden, ob Railo den Url und Form Scope zu einem einzigen Scope zusammenfasst oder nicht. Beim CFML Standard findet diese Zusammenfassung nicht statt.</data>
+	<data key="scopes.mergeurlformdescription">Mit dieser Einstellung kann festgelegt werden, ob Railo den Url und Form Scope zu einem einzigen Scope zusammenfasst oder nicht. Wenn eine Name (Key) sowohl im Form wie URL Scope vorhanden ist, wird der Wert aus dem Form Scope verwendet.</data>
 	<data key="scopes.timeoutminutesvalue">Der Wert Minuten für </data>
 	<data key="scopes.applicationtimeoutdescription">Legt fest wielange Client Scope Daten behalten werden bevor sie gelöscht werden.</data>
 	<data key="scopes.clienttimeout">Client Timeout</data>

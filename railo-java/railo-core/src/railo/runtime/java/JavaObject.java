@@ -294,6 +294,10 @@ public class JavaObject implements Objects,ObjectWrap {
 		return init(new Object[0]);
 	}
 	
+	private Object init(Object defaultValue) {
+		return init(new Object[0],defaultValue);
+	}
+	
 	/**
 	 * initialize method
 	 * @param arguments
@@ -303,6 +307,11 @@ public class JavaObject implements Objects,ObjectWrap {
 	private Object init(Object[] arguments) throws PageException {
 		object=Reflector.callConstructor(clazz,arguments);
 		isInit=true;
+		return object;
+	}
+	private Object init(Object[] arguments, Object defaultValue) {
+		object=Reflector.callConstructor(clazz,arguments,defaultValue);
+		isInit=object!=defaultValue;
 		return object;
 	}
 
@@ -414,14 +423,11 @@ public class JavaObject implements Objects,ObjectWrap {
     }
 
     /**
-     * @see railo.runtime.type.ObjectWrap#getEmbededObjectEL()
+     * @see railo.runtime.type.ObjectWrap#getEmbededObject(Object)
      */
     public Object getEmbededObject(Object def) {
-        try {
-            return getEmbededObject();
-        } catch (PageException e) {
-            return def;
-        }
+    	if(object==null)init(def);
+		return object;
     }
 
 	/**

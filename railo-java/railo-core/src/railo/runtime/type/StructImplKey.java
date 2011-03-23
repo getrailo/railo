@@ -161,7 +161,7 @@ public class StructImplKey extends StructSupport implements Struct {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 	    Iterator it=_map.keySet().iterator();
 		
-		DumpTable table = new DumpTablePro("struct","#6666cc","#9999ff","#000000");
+		DumpTable table = new DumpTablePro("struct","#9999ff","#ccccff","#000000");
 		table.setTitle("Struct");
 		maxlevel--;
 		int maxkeys=dp.getMaxKeys();

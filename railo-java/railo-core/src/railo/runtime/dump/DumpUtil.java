@@ -47,7 +47,7 @@ public class DumpUtil {
 		}
 		// null
 		if(o == null) {
-			DumpTable table=new DumpTablePro("null","#ff3300","#ff9966","#000000");
+			DumpTable table=new DumpTablePro("null","#ff6600","#ffcc99","#000000");
 			table.appendRow(new DumpRow(0,new SimpleDumpData("Empty:null")));
 			return table;
 		}
@@ -97,25 +97,25 @@ public class DumpUtil {
 				}
 				catch(Throwable t) {}
 			}
-			DumpTable table = new DumpTablePro("string","#ff3300","#ff9966","#000000");
+			DumpTable table = new DumpTablePro("string","#ff6600","#ffcc99","#000000");
 			table.appendRow(1,new SimpleDumpData("string"),new SimpleDumpData(str));
 			return table;
 		}
 		// Character
 		if(o instanceof Character) {
-			DumpTable table = new DumpTablePro("character","#ff3300","#ff9966","#000000");
+			DumpTable table = new DumpTablePro("character","#ff6600","#ffcc99","#000000");
 			table.appendRow(1,new SimpleDumpData("character"),new SimpleDumpData(o.toString()));
 			return table;
 		}
 		// Number
 		if(o instanceof Number) {
-			DumpTable table = new DumpTablePro("numeric","#ff3300","#ff9966","#000000");
+			DumpTable table = new DumpTablePro("numeric","#ff6600","#ffcc99","#000000");
 			table.appendRow(1,new SimpleDumpData("number"),new SimpleDumpData(Caster.toString(((Number)o).doubleValue())));
 			return table;
 		}
 		// Boolean
 		if(o instanceof Boolean) {
-			DumpTable table = new DumpTablePro("boolean","#ff3300","#ff9966","#000000");
+			DumpTable table = new DumpTablePro("boolean","#ff6600","#ffcc99","#000000");
 			table.appendRow(1,new SimpleDumpData("boolean"),new SimpleDumpData(((Boolean)o).booleanValue()));
 			return table;
 		}
@@ -153,7 +153,7 @@ public class DumpUtil {
 		// Collection.Key
 		if(o instanceof Collection.Key) {
 			Collection.Key key=(Collection.Key) o;
-			DumpTable table = new DumpTablePro("string","#ff3300","#ff9966","#000000");
+			DumpTable table = new DumpTablePro("string","#ff6600","#ffcc99","#000000");
 			table.appendRow(1,new SimpleDumpData("Collection.Key"),new SimpleDumpData(key.getString()));
 			return table;
 		}
@@ -278,7 +278,7 @@ public class DumpUtil {
 			    HttpSession hs = (HttpSession)o;
 			    Enumeration e = hs.getAttributeNames();
 			    
-			    DumpTable htmlBox = new DumpTablePro("httpsession","#6666cc","#9999ff","#000000");
+			    DumpTable htmlBox = new DumpTablePro("httpsession","#9999ff","#ccccff","#000000");
 				htmlBox.setTitle("HttpSession");
 			    while(e.hasMoreElements()) {
 			        String key=e.nextElement().toString();

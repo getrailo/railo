@@ -110,7 +110,9 @@ public interface Excepton {
      * @param customType 
      * @return CustomTypeException
      */
-    public PageException createCustomTypeException(String message, String detail, String errorcode, String customType);
+    public PageException createCustomTypeException(String message, String detail, String errorcode, String customType); // FUTURE set to deprecated
+    
+ // FUTURE  public PageException createCustomTypeException(String message, String detail, String errorcode, String customType, String extendedInfo);
     
     /**
      * create exception "DatabaseException"
