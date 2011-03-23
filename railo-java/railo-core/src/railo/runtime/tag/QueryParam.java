@@ -113,7 +113,7 @@ public final class QueryParam extends TagImpl {
 	 * @throws DatabaseException
 	**/
 	public void setCfsqltype(String type) throws DatabaseException	{
-		item.setType(SQLCaster.cfSQLTypeToIntType(type));
+		item.setType(SQLCaster.toIntType(type));
 		
 	}
 
