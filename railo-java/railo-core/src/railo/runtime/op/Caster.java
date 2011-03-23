@@ -2322,7 +2322,7 @@ public final class Caster {
         else if(o instanceof ObjectWrap) {
         	
         	if(o instanceof JavaObject ) {
-        		Struct sct = toStruct(((ObjectWrap)o).getEmbededObject(null),null,caseSensitive);
+        		Struct sct = toStruct(((JavaObject)o).getEmbededObject(null),null,caseSensitive);
             	if(sct!=null) return sct;
         		
         		JavaObject jo = (JavaObject)o;
