@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -62,7 +63,8 @@ import railo.runtime.type.dt.DateTime;
  */
 public final class LuceneSearchCollection extends SearchCollectionSupport {
     
-
+	private static final long serialVersionUID = 3430238280421965781L;
+	
 	private Resource collectionDir;
 	private boolean spellcheck;
 	private LogAndSource log;
@@ -342,7 +344,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
     	IndexWriter writer=null;
     	synchronized(token){
 	    	try {
-	        	// read existing reader
+		        // read existing reader
 	        	IndexReader reader=null;
 	        	try {
 	        		reader=_getReader(id,false);
@@ -351,24 +353,22 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 	        		for(int i=0;i<len;i++) {
 	        			doc=reader.document(i);
 	        			docs.put(doc.getField("key").stringValue(),doc);
-	        			
 	        		}
 		        }
 		        catch(Exception e) {}
 		        finally {
 		        	close(reader);
-		        	//if(reader!=null)reader.close();
 		        }  
 	
-		        countExisting=docs.size();
-		        
-	        	writer = _getWriter(id,true);
+        		countExisting=docs.size();
+		        writer = _getWriter(id,true);
 		        int len = keyColumn.size();
-		        for(int i=1;i<=len;i++) {
-		            Object key=keyColumn.get(i,null);
+		        String key;
+	        	for(int i=1;i<=len;i++) {
+		            key=Caster.toString(keyColumn.get(i,null),null);
 		            if(key==null) continue;
 		            
-		            StringBuffer body=new StringBuffer();
+		            StringBuilder body=new StringBuilder();
 		            for(int y=0;y<bodyColumns.length;y++) {
 		                Object tmp=bodyColumns[y].get(i,null);
 		                if(tmp!=null){
@@ -386,15 +386,15 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 	                c3=getRow(custom3,i);
 	                c4=getRow(custom4,i);
 	                
-	                docs.put(key.toString(),CustomDocument.getDocument(t,Caster.toString(key,null),body.toString(),url,c1,c2,c3,c4));
+	                docs.put(key,CustomDocument.getDocument(t,key,body.toString(),url,c1,c2,c3,c4));
 	                }
 		        countNew=docs.size();
-		        Iterator it = docs.entrySet().iterator();
-		        Map.Entry entry;
+		        Iterator<Entry<String, Document>> it = docs.entrySet().iterator();
+		        Entry<String, Document> entry;
 		        Document doc;
 		        while(it.hasNext()) {
-		        	entry = (Map.Entry) it.next();
-		        	doc = (Document) entry.getValue();
+		        	entry = it.next();
+		        	doc = entry.getValue();
 		        	writer.addDocument(doc);
 		        }
 		        optimizeEL(writer);
@@ -737,6 +737,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
     }  
 
     private IndexReader _getReader(File file) throws IOException {
+    	if(!IndexReader.indexExists(file))throw new IOException("there is no index in ["+file+"]");
     	return IndexReader.open(file);
     }  
     
