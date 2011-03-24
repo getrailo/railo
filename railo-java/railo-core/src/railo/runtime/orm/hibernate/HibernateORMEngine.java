@@ -37,9 +37,10 @@ import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.DataSource;
-import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
+import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -110,14 +111,15 @@ public class HibernateORMEngine implements ORMEngine {
 		ApplicationContextImpl appContext = ((ApplicationContextImpl)pc.getApplicationContext());
 		String dsn=appContext.getORMDatasource();
 		
-		DataSourceManager manager = pc.getDataSourceManager();
-		DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
+		//DatasourceManager manager = pc.getDataSourceManager();
+		//DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
+		DatasourceConnection dc = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().getDatasourceConnection(pc,pc.getConfig().getDataSource(dsn),null,null);
 		try{
 			
 			return new HibernateORMSession(this,getSessionFactory(pc),dc);
 		}
 		catch(PageException pe){
-			manager.releaseConnection(pc, dc);
+			//manager.releaseConnection(pc, dc);// connection is closed when session ends
 			throw pe;
 		}
 	}
@@ -163,7 +165,7 @@ public class HibernateORMEngine implements ORMEngine {
 		if(!appContext.isORMEnabled())
 			throw new ORMException(this,"ORM is not enabled in application.cfc/cfapplication");
 		
-		ConfigWeb config = pc.getConfig();
+		//ConfigWeb config = pc.getConfig();
 		
 		this.hash=hash(appContext);
 		
@@ -189,8 +191,10 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		// load entities
 		if(!ArrayUtil.isEmpty(arr)) {
-			DataSourceManager manager = pc.getDataSourceManager();
-			DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
+			DatasourceConnectionPool pool = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool();
+			DatasourceConnection dc = pool.getDatasourceConnection(pc,pc.getConfig().getDataSource(dsn),null,null);
+			//DataSourceManager manager = pc.getDataSourceManager();
+			//DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
 			this.ds=dc.getDatasource();
 			try {
 				Iterator<ComponentPro> it = arr.iterator();
@@ -199,7 +203,8 @@ public class HibernateORMEngine implements ORMEngine {
 				}
 			}
 			finally {
-				manager.releaseConnection(pc,dc);
+				pool.releaseDatasourceConnection(dc);
+				//manager.releaseConnection(pc,dc);
 			}
 		}
 		arr=null;
@@ -208,7 +213,7 @@ public class HibernateORMEngine implements ORMEngine {
 		if(configuration!=null) return _factory;
 		
 
-		DataSource ds = config.getDataSource(dsn);
+		//DataSource ds = config.getDataSource(dsn);
 		
 		
 		//MUST
@@ -228,10 +233,11 @@ public class HibernateORMEngine implements ORMEngine {
 			e1.printStackTrace();
 		}
 		print.o(cfcs.keySet());*/
-		//print.o(mappings);
 		
-		DataSourceManager manager = pc.getDataSourceManager();
-		DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
+		DatasourceConnectionPool pool = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool();
+		DatasourceConnection dc = pool.getDatasourceConnection(pc,pc.getConfig().getDataSource(dsn),null,null);
+		//DataSourceManager manager = pc.getDataSourceManager();
+		//DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
 		try{
 			configuration = HibernateSessionFactory.createConfiguration(this,mappings,dc,ormConf);
 		} 
@@ -239,7 +245,8 @@ public class HibernateORMEngine implements ORMEngine {
 			throw Caster.toPageException(e);
 		}
 		finally {
-			manager.releaseConnection(pc,dc);
+			pool.releaseDatasourceConnection(dc);
+			//manager.releaseConnection(pc,dc);
 		}
 		
 		addEventListeners(pc, configuration,ormConf,cfcs);
@@ -353,7 +360,7 @@ public class HibernateORMEngine implements ORMEngine {
 			long xmlLastMod = loadMapping(sb,ormConf, cfcp);
 			Element root;
 			// create maaping
-			if(true || xmlLastMod< cfcCompTime) {
+			if(true || xmlLastMod< cfcCompTime) {//MUSTMUST
 				configuration=null;
 				Document doc=null;
 				try {
@@ -438,12 +445,12 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 
 	public Struct getTableInfo(DatasourceConnection dc, String tableName,ORMEngine engine) throws PageException {
-		//print.out("getTableInfo:"+tableName);
-		Struct columnsInfo = (Struct) tableInfo.get(tableName,null);
+		Collection.Key keyTableName=KeyImpl.init(tableName);
+		Struct columnsInfo = (Struct) tableInfo.get(keyTableName,null);
 		if(columnsInfo!=null) return columnsInfo;
 		
 		columnsInfo = checkTable(dc,tableName,engine);
-    	tableInfo.setEL(tableName,columnsInfo);
+    	tableInfo.setEL(keyTableName,columnsInfo);
     	return columnsInfo;
 	}
 	
