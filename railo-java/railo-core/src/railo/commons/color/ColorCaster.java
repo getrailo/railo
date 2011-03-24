@@ -5,7 +5,6 @@ import java.awt.Color;
 import railo.commons.lang.NumberUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.functions.other.DumpStruct;
 import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 

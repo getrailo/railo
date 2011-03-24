@@ -36,7 +36,6 @@ import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
