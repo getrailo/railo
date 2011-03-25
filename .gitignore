@@ -1,10 +1,12 @@
 railo-java/railo/build
-railo-java/railo-core/bin/
+railo-java/railo-core/bin
 railo-java/railo-core/bin/*
 railo-java/railo-core/dist
 railo-java/railo-core/build
-railo-java/railo-loader/bin/
+railo-java/railo-loader/bin
 railo-java/railo-loader/bin/*
+railo-java/railo-debug/bin
+railo-java/railo-debug/bin/*
 railo-java/libs/bin
 railo-java/railo-loader/build
 railo-cfml/WEB-INF/
