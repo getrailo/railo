@@ -1,6 +1,4 @@
-
-
-package servlet;
+package railo.loader.servlet;
 
 import java.io.IOException;
 
@@ -14,9 +12,9 @@ import railo.loader.engine.CFMLEngine;
 
 /**
  */
-public final class AMFServlet extends HttpServlet {
+public final class CFMLServlet extends HttpServlet  {
 
-    private CFMLEngine engine;
+private CFMLEngine engine;
     
     /**
      * @see javax.servlet.Servlet#init(javax.servlet.ServletConfig)
@@ -24,11 +22,13 @@ public final class AMFServlet extends HttpServlet {
     public void init(ServletConfig sg) throws ServletException {
         super.init(sg);
         engine=CFMLEngineFactoryDummy.getInstance(sg);
+        //engine=CFMLEngineFactory.getInstance(sg);
+        
     }
     /**
      * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void service(HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
-        engine.serviceAMF(this,req,rsp);
+    	engine.serviceCFML(this,req,rsp);
     }
 }
