@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/Railo-Loader"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/1.5.0"/>
 	<classpathentry kind="lib" path="/Railo-libs/antlr.jar"/>
 	<classpathentry kind="lib" path="/Railo-libs/apache-jakarta-commons-codec.jar"/>
 	<classpathentry kind="lib" path="/Railo-libs/apache-jakarta-commons-collections.jar"/>
@@ -116,5 +115,6 @@
 	<classpathentry kind="lib" path="/Railo-libs/xdb.jar"/>
 	<classpathentry kind="lib" path="/Railo-libs/xml-apis.jar"/>
 	<classpathentry kind="lib" path="/Railo-libs/xmlparserv2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
