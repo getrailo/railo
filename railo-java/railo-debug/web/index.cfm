@@ -1,0 +1,1 @@
+<cflocation url="/railo-context/admin/index.cfm" />
