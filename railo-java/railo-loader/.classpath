@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/1.5.0"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/Railo-Libs/antlr.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/apache-jakarta-commons-codec.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/apache-jakarta-commons-collections.jar"/>
