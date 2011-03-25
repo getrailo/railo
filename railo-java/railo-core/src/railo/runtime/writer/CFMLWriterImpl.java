@@ -18,13 +18,13 @@ import railo.runtime.net.http.ReqRspUtil;
  */
 public class CFMLWriterImpl extends CFMLWriter { 
      
-	private static final int BUFFER_SIZE = 1024;
+	private static final int BUFFER_SIZE = 100000;
 	private static final String VERSION = Info.getVersionAsString();  
     private ServletOutputStream out;
 	private HttpServletResponse response;
     private boolean flushed;
     private String headData;
-    private StringBuffer buffer=new StringBuffer(BUFFER_SIZE);
+    private StringBuilder buffer=new StringBuilder(BUFFER_SIZE);
     private boolean closed=false;
     private boolean closeConn;
     private boolean showVersion;
@@ -148,7 +148,7 @@ public class CFMLWriterImpl extends CFMLWriter {
      * @see javax.servlet.jsp.JspWriter#clearBuffer() 
      */ 
     public void clearBuffer() { 
-    	buffer=new StringBuffer(BUFFER_SIZE);
+    	buffer=new StringBuilder(BUFFER_SIZE);
     } 
 
     /** 
@@ -191,7 +191,7 @@ public class CFMLWriterImpl extends CFMLWriter {
         flushed = true;
         out.write(barr);
         
-        buffer=new StringBuffer(BUFFER_SIZE); // to not change to clearBuffer, produce problem with CFMLWriterWhiteSpace.clearBuffer 
+        buffer=new StringBuilder(BUFFER_SIZE); // to not change to clearBuffer, produce problem with CFMLWriterWhiteSpace.clearBuffer 
     } 
     
     
