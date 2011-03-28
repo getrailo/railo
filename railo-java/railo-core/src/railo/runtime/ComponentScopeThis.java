@@ -275,8 +275,6 @@ public final class ComponentScopeThis extends StructSupport implements Component
 		StructImpl sct = new StructImpl();
 		StructImpl.copy(this, sct, deepCopy);
 		return sct;
-    	//return new ComponentScopeThis((ComponentImpl) component.duplicate(deepCopy));
-    	//return new ComponentScopeThis(component.cloneComponentImpl(deepCopy));
     }
 
     /**

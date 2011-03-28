@@ -23,7 +23,6 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
-import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentPro;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
@@ -37,6 +36,7 @@ import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.text.xml.XMLUtil;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
 
 public class HibernateSessionFactory {
@@ -289,7 +289,7 @@ public class HibernateSessionFactory {
 					Page p = ps.loadPage(pc.getConfig());
 					String name=res.getName();
 					name=name.substring(0,name.length()-4);
-					ComponentImpl cfc = ComponentLoader.loadComponentImpl(pc, p, ps, name, true,true);
+					ComponentAccess cfc = ComponentLoader.loadComponent(pc, p, ps, name, true,true);
 					if(cfc.isPersistent()){
 						components.add(cfc);
 					}

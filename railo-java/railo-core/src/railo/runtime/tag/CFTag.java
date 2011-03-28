@@ -436,7 +436,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     private int cfcStartTag() throws PageException {
     	
     	callerScope.initialize(pageContext);
-        cfc = ComponentLoader.loadComponentImpl(pageContext,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
+        cfc = ComponentLoader.loadComponent(pageContext,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
         validateAttributes(cfc,attributesScope,StringUtil.ucFirst(List.last(source.getPageSource().getComponentName(),'.')));
         
         boolean exeBody = false;
@@ -539,7 +539,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		Struct meta=null;
     	//try {
     		//meta = Caster.toStruct(cfc.get(Component.ACCESS_PRIVATE, METADATA),null,false);
-    		Member mem = ComponentUtil.toComponentImpl(cfc).getMember(Component.ACCESS_PRIVATE, METADATA,true,false);
+    		Member mem = ComponentUtil.toComponentAccess(cfc).getMember(Component.ACCESS_PRIVATE, METADATA,true,false);
     		if(mem!=null)meta = Caster.toStruct(mem.getValue(),null,false);
 		//}catch (PageException e) {e.printStackTrace();}
     	if(meta==null) return null;

@@ -29,7 +29,7 @@ import railo.runtime.writer.BodyContentUtil;
 public class ComponentLoader {
 	
 
-    public static ComponentImpl loadComponentImpl(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
+    public static ComponentImpl loadComponent(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
     	return (ComponentImpl)load(pc, rawPath, searchLocal, searchRoot,null);
     }
     
@@ -244,27 +244,27 @@ public class ComponentLoader {
 
 	//
 
-	public static ComponentImpl loadComponentImpl(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath, boolean silent) throws PageException  {
+	public static ComponentImpl loadComponent(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath, boolean silent) throws PageException  {
 		if(silent) {
 			// TODO is there a more direct way
 			BodyContent bc =  pc.pushBody();
 			try {
-				return loadComponentImpl(pc,page,ps,callPath,isRealPath);
+				return loadComponent(pc,page,ps,callPath,isRealPath);
 			}
 			finally {
 				BodyContentUtil.clearAndPop(pc, bc);
 			}
 		}
-		return loadComponentImpl(pc,page,ps,callPath,isRealPath);
+		return loadComponent(pc,page,ps,callPath,isRealPath);
 	}
 	
 
 	private static Object load(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath, Map interfaceUDFs) throws PageException  {
-		if(interfaceUDFs==null) return loadComponentImpl(pc,page, ps,callPath, isRealPath);
+		if(interfaceUDFs==null) return loadComponent(pc,page, ps,callPath, isRealPath);
 		else return loadInterface(pc,page, ps, callPath, isRealPath, interfaceUDFs);
 	}
 
-	public static ComponentImpl loadComponentImpl(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath) throws PageException  {
+	public static ComponentImpl loadComponent(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath) throws PageException  {
         ComponentImpl rtn=null;
         if(pc.getConfig().debug()) {
             DebugEntry debugEntry=pc.getDebugger().getEntry(pc,ps);

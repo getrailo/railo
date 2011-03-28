@@ -9,7 +9,6 @@ import org.hibernate.type.Type;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentPro;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
@@ -30,6 +29,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.QueryUtil;
 
@@ -105,7 +105,7 @@ public class HibernateCaster {
 		
 		String name=null;
 		try {
-			ComponentImpl cfci = ComponentUtil.toComponentImpl(cfc);
+			ComponentAccess cfci = ComponentUtil.toComponentAccess(cfc);
 			name=Caster.toString(cfci.getMetaStructItem(ENTITY_NAME),null);
 		} 
 		catch (Throwable t) {

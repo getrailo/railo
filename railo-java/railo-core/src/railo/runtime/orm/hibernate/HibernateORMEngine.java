@@ -33,7 +33,6 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWebImpl;
@@ -550,7 +549,7 @@ public class HibernateORMEngine implements ORMEngine {
 	public Component create(PageContext pc, HibernateORMSession session,String entityName, boolean unique) throws PageException {
 		
 		// get existing entity
-		ComponentImpl cfc = _create(pc,entityName,unique);
+		ComponentPro cfc = _create(pc,entityName,unique);
 		if(cfc!=null)return cfc;
 		
 		// reinit ORMEngine
@@ -568,51 +567,11 @@ public class HibernateORMEngine implements ORMEngine {
 		ORMConfiguration ormConf = appContext.getORMConfiguration();
 		Resource[] locations = ormConf.getCfcLocations();
 		
-		
-		/* / get key list
-		Iterator<Entry<String, CFCInfo>> it = cfcs.entrySet().iterator();
-		Entry<String, CFCInfo> entry;
-		String name;
-		StringBuilder keys=new StringBuilder();
-		while(it.hasNext()){
-			entry=it.next();
-			name=entry.getValue().getCFC().getName();
-			if(keys.length()>0) keys.append(", ");
-			keys.append(name);
-		}*/
-		
-		
 		throw new ORMException(
 				"No entity (persitent component) with name ["+entityName+"] found, available entities are ["+railo.runtime.type.List.arrayToList(getEntityNames(), ", ")+"] ",
 				"component are searched in the following directories ["+toString(locations)+"]");
 		
-		/*
-		// try to load "new" entity
-		ComponentImpl cfc;
-		try{
-			cfc = (ComponentImpl) HibernateCaster.toComponent(pc, entityName);
-		}
-		catch(PageException pe){
-			throw new ORMException("No entity (persitent component) with name ["+entityName+"] found, available entities are ["+railo.runtime.type.List.arrayToList(cfcs.keySet().toArray(new String[cfcs.size()]),", ")+"] ");
-		}
-		if(cfc.isPersistent()) {
-			if(unique){
-				cfc=(ComponentImpl)cfc.duplicate(false);
-				if(cfc.contains(pc,INIT))cfc.call(pc, "init",new Object[]{});
-			}
-			
-			SessionFactory of=session.getSessionFactory();
-			SessionFactory nf = getSessionFactory(pc, cfc,false);
-			
-			// reset Session
-			if(of!=nf){
-				session.resetSession(nf);
-			}
-			return unique?(Component)cfc.duplicate(false):cfc;
-		}
-
-		throw new ORMException("No entity (persitent component) with name ["+entityName+"] found, available entities are ["+railo.runtime.type.List.arrayToList(cfcs.keySet().toArray(new String[cfcs.size()]),", ")+"] ");
-		*/
+	
 	}
 	
 	
@@ -626,12 +585,12 @@ public class HibernateORMEngine implements ORMEngine {
 		return sb.toString();
 	}
 
-	private ComponentImpl _create(PageContext pc, String entityName, boolean unique) throws PageException {
+	private ComponentPro _create(PageContext pc, String entityName, boolean unique) throws PageException {
 		CFCInfo info = cfcs.get(id(entityName));
 		if(info!=null) {
-			ComponentImpl cfc = (ComponentImpl) info.getCFC();
+			ComponentPro cfc = info.getCFC();
 			if(unique){
-				cfc=(ComponentImpl)cfc.duplicate(false);
+				cfc=(ComponentPro)cfc.duplicate(false);
 				if(cfc.contains(pc,INIT))cfc.call(pc, "init",new Object[]{});
 			}
 			return cfc;

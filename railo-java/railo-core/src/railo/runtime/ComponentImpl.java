@@ -57,6 +57,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.comparator.ArrayOfStructComparator;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.scope.Argument;
@@ -73,7 +74,7 @@ import railo.runtime.util.ArrayIterator;
  * %**%
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
-public class ComponentImpl extends StructSupport implements Externalizable,ComponentPro,coldfusion.runtime.TemplateProxy,Sizeable {
+public class ComponentImpl extends StructSupport implements Externalizable,ComponentAccess,coldfusion.runtime.TemplateProxy,Sizeable {
 
 
 	private ComponentProperties properties;
@@ -143,7 +144,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * Constructor of the Component, USED ONLY FOR DESERIALIZE
      */
 	 public ComponentImpl() {
-		
 	 }
 	
     /**
@@ -365,12 +365,12 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
         // extends
 	    if(!StringUtil.isEmpty(properties.extend)) {
-			base= ComponentLoader.loadComponentImpl(pageContext,properties.extend,Boolean.TRUE,null);
+			base= ComponentLoader.loadComponent(pageContext,properties.extend,Boolean.TRUE,null);
 		}
 	    else { 
 	    	Page p=((ConfigWebImpl)pageContext.getConfig()).getBaseComponentPage(pageContext);
 	    	if(!componentPage.getPageSource().equals(p.getPageSource())) {
-            	base=ComponentLoader.loadComponentImpl(pageContext,p,p.getPageSource(),"Component",false);
+            	base=ComponentLoader.loadComponent(pageContext,p,p.getPageSource(),"Component",false);
 	        } 
 	    }
     	
@@ -666,7 +666,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	 * @param access
 	 * @return size
 	 */
-	protected int size(int access) {
+    public int size(int access) {
 	    return keys(access).length;
 	}
 
@@ -677,7 +677,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @param doBase 
      * @return key set
      */
-    protected Set<Key> keySet(int access) {
+	public Set<Key> keySet(int access) {
     	HashSet<Key> set=new HashSet<Key>();
         Map.Entry<Key, Member> entry;    
         Iterator<Entry<Key, Member>> it = _data.entrySet().iterator();
@@ -720,7 +720,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @param access
      * @return iterator of the keys
      */
-    protected Iterator iterator(int access) {
+    public Iterator iterator(int access) {
         return new ArrayIterator(keysAsString(access));
     }
     
@@ -759,7 +759,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     public Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess) {
     	// check super
         if(dataMember && access==ACCESS_PRIVATE && key.equalsIgnoreCase(KEY_SUPER)) {
-        	return SuperComponent.superMember(ComponentUtil.getActiveComponent((PageContextImpl)ThreadLocalPageContext.get(),this).base);
+        	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent((PageContextImpl)ThreadLocalPageContext.get(),this)._base());
             //return SuperComponent . superMember(base);
         }
     	if(superAccess) {
@@ -786,7 +786,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     protected Member getMember(PageContext pc, Collection.Key key, boolean dataMember,boolean superAccess) {
         // check super
         if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KEY_SUPER)) {
-        	return SuperComponent.superMember(ComponentUtil.getActiveComponent((PageContextImpl)pc,this).base);
+        	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent((PageContextImpl)pc,this)._base());
         }
         if(superAccess) 
         	return (Member) _udfs.get(key);
@@ -1720,7 +1720,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @param defaultValue
      * @return
      */
-    protected Object get(int access, Collection.Key key, Object defaultValue) {
+    public Object get(int access, Collection.Key key, Object defaultValue) { 
         Member member=getMember(access,key,true,false);
         if(member!=null) return member.getValue();
         
@@ -1761,7 +1761,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         return _call(pc,access,KeyImpl.init(name),null,args,false);
     }
     
-    protected Object call(PageContext pc, int access, Collection.Key name, Object[] args) throws PageException {
+    public Object call(PageContext pc, int access, Collection.Key name, Object[] args) throws PageException {
         return _call(pc,access,name,null,args,false);
     }
 
@@ -1780,7 +1780,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         return _call(pc,access,KeyImpl.init(name),args,null,false);
     }
     
-    protected Object callWithNamedValues(PageContext pc, int access, Collection.Key name, Struct args) throws PageException {
+    public Object callWithNamedValues(PageContext pc, int access, Collection.Key name, Struct args) throws PageException {
         return _call(pc,access,name,args,null,false);
     }
 
@@ -2003,6 +2003,13 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			//print.printST(t);
 		}
 		
+	}
+
+	/**
+	 * @see railo.runtime.type.cfc.ComponentAccess#_base()
+	 */
+	public ComponentAccess _base() {
+		return base;
 	}
 	
 }

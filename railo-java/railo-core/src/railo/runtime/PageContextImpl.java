@@ -2642,7 +2642,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#loadComponent(java.lang.String)
      */
     public railo.runtime.Component loadComponent(String compPath) throws PageException {
-    	return ComponentLoader.loadComponentImpl(this,compPath,null,null);
+    	return ComponentLoader.loadComponent(this,compPath,null,null);
     }
 
 	/**
