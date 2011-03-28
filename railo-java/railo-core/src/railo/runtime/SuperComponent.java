@@ -657,5 +657,12 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	public boolean equalTo(String type) {
 		return comp.top.equalTo(type);
 	}
+
+	/**
+	 * @see railo.runtime.ComponentPro#getWSDLFile()
+	 */
+	public String getWSDLFile() {
+		return comp.getWSDLFile();
+	}
 	
 }

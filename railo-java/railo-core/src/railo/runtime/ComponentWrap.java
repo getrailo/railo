@@ -8,27 +8,38 @@ import railo.runtime.component.Member;
 import railo.runtime.component.Property;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructSupport;
 
 public final class ComponentWrap extends StructSupport implements ComponentPro, Objects {
    
     private int access;
-    private ComponentImpl component;
+    private ComponentAccess component;
+    private ComponentImpl ci;
 
     /**
      * constructor of the class
      * @param access
      * @param component
+     * @throws ExpressionException 
      */
-    public ComponentWrap(int access, ComponentImpl component) {
+    public ComponentWrap(int access, ComponentAccess component) {
     	this.access=access;
         this.component=component;
     }
+    
+    public static ComponentWrap  toComponentWrap(int access, Component component) throws ExpressionException {
+    	return ComponentWrap.toComponentWrap(access, ComponentUtil.toComponentAccess(component));
+    }
+    
 
     public Page getPage(){
     	return component.getPage();
@@ -147,7 +158,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
      * @see railo.runtime.Component#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
      */
     public Object call(PageContext pc, String key, Object[] args) throws PageException {
-        return component.call(pc,access,key,args);
+        return call(pc, KeyImpl.init(key), args);
     }
 
 	/**
@@ -161,7 +172,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
      * @see railo.runtime.Component#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
      */
     public Object callWithNamedValues(PageContext pc, String key, Struct args)throws PageException {
-        return component.callWithNamedValues(pc,access,key,args);
+        return callWithNamedValues(pc,KeyImpl.init(key),args);
     }
 
 	/**
@@ -360,7 +371,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
      * @see railo.runtime.type.ContextCollection#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
      */
     public Object get(PageContext pc, String key, Object defaultValue) {
-        return component.get(access,key,defaultValue);
+        return get(pc,KeyImpl.init(key),defaultValue);
     }
 
 	/**
@@ -375,7 +386,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
      * @see railo.runtime.type.ContextCollection#get(railo.runtime.PageContext, java.lang.String)
      */
     public Object get(PageContext pc, String key) throws PageException {
-        return component.get(access,key);
+        return get(pc,KeyImpl.init(key));
     }
 
 	/**
@@ -389,8 +400,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
      * @see railo.runtime.type.Collection#duplicate(boolean)
      */
     public Collection duplicate(boolean deepCopy) {
-    	return new ComponentWrap(access,(ComponentImpl) component.duplicate(deepCopy));
-    	//return new ComponentWrap(access,component.cloneComponentImpl(deepCopy));
+    	return new ComponentWrap(access,(ComponentAccess) component.duplicate(deepCopy));
     }
 
     /**
@@ -464,7 +474,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 		return component.getComponentScope();
 	}
 
-	public ComponentImpl getComponentImpl() {
+	public ComponentAccess getComponentAccess() {
 		return component;
 	}
 

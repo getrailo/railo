@@ -14,7 +14,6 @@ import org.w3c.dom.Node;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
 import railo.runtime.exp.ExpressionException;
@@ -28,6 +27,7 @@ import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
@@ -219,13 +219,13 @@ public final class ScriptConverter {
      */
     private void _serializeComponent(Component c, StringBuffer sb, Set<Object> done) throws ConverterException {
     	
-    	ComponentImpl ci;
+    	ComponentAccess ci;
 		try {
-			ci = ComponentUtil.toComponentImpl(c);
+			ci = ComponentUtil.toComponentAccess(c);
 		} catch (ExpressionException ee) {
 			throw new ConverterException(ee.getMessage());
 		}
-		ComponentWrap cw = new ComponentWrap(ComponentImpl.ACCESS_PRIVATE,ci);  
+		ComponentWrap cw = new ComponentWrap(Component.ACCESS_PRIVATE,ci);  
         
     	
     	sb.append(goIn());

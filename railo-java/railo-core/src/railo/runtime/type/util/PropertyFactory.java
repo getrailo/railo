@@ -1,6 +1,7 @@
 package railo.runtime.type.util;
 
 import railo.commons.lang.StringUtil;
+import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.component.Member;
 import railo.runtime.component.Property;
@@ -49,7 +50,7 @@ public class PropertyFactory {
 	
 	
 	public static void addGet(ComponentImpl comp, Property prop) {
-		Member m = comp.getMember(ComponentImpl.ACCESS_PRIVATE,KeyImpl.init("get"+prop.getName()),true,false);
+		Member m = comp.getMember(Component.ACCESS_PRIVATE,KeyImpl.init("get"+prop.getName()),true,false);
 		if(!(m instanceof UDF)){
 			UDF udf = new UDFGetterProperty(comp,prop);
 			comp.registerUDF(udf.getFunctionName(), udf);
@@ -57,7 +58,7 @@ public class PropertyFactory {
 	}
 
 	public static void addSet(ComponentImpl comp, Property prop) throws PageException {
-		Member m = comp.getMember(ComponentImpl.ACCESS_PRIVATE,KeyImpl.init("set"+prop.getName()),true,false);
+		Member m = comp.getMember(Component.ACCESS_PRIVATE,KeyImpl.init("set"+prop.getName()),true,false);
 		if(!(m instanceof UDF)){
 			UDF udf = new UDFSetterProperty(comp,prop);
 			comp.registerUDF(udf.getFunctionName(), udf);
@@ -65,7 +66,7 @@ public class PropertyFactory {
 	}
 	
 	public static void addHas(ComponentImpl comp, Property prop) {
-		Member m = comp.getMember(ComponentImpl.ACCESS_PRIVATE,KeyImpl.init("has"+getSingularName(prop)),true,false);
+		Member m = comp.getMember(Component.ACCESS_PRIVATE,KeyImpl.init("has"+getSingularName(prop)),true,false);
 		if(!(m instanceof UDF)){
 			UDF udf = new UDFHasProperty(comp,prop);
 			comp.registerUDF(udf.getFunctionName(), udf);
@@ -81,7 +82,7 @@ public class PropertyFactory {
 	}
 
 	public static void addRemove(ComponentImpl comp, Property prop) {
-		Member m = comp.getMember(ComponentImpl.ACCESS_PRIVATE,KeyImpl.init("remove"+getSingularName(prop)),true,false);
+		Member m = comp.getMember(Component.ACCESS_PRIVATE,KeyImpl.init("remove"+getSingularName(prop)),true,false);
 		if(!(m instanceof UDF)){
 			UDF udf = new UDFRemoveProperty(comp,prop);
 			comp.registerUDF(udf.getFunctionName(), udf);

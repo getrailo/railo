@@ -16,7 +16,6 @@ import org.w3c.dom.Node;
 
 import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
@@ -290,8 +289,7 @@ public final class JSONConverter {
      */
     private void _serializeComponent(PageContext pc,Set test,Component component, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
     	try {
-			ComponentImpl ci = ComponentUtil.toComponentImpl(component);
-			ComponentWrap cw = new ComponentWrap(Component.ACCESS_PRIVATE,ci);
+			ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,component);
 	    	_serializeStruct(pc,test,cw, sb, serializeQueryByColumns,false,done);
 		} 
     	catch (ExpressionException e) {

@@ -21,7 +21,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Undefined;
-import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.util.ApplicationContextPro;
 
 public class GetApplicationSettings {
@@ -78,7 +77,7 @@ public class GetApplicationSettings {
 			sct.setEL("component", cfc.getPageSource().getDisplayPath());
 			
 			try {
-				ComponentWrap cw=new ComponentWrap(Component.ACCESS_PRIVATE, ComponentUtil.toComponentImpl(cfc));
+				ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE, cfc);
 				Iterator it=cw.keyIterator();
 				Collection.Key key;
 				Object value;

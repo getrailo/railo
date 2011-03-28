@@ -20,7 +20,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.TimeSpan;
-import railo.runtime.type.util.ComponentUtil;
 
 /**
  * 
@@ -533,7 +532,7 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 		Component cfc = getComponent();
 		if(cfc!=null){
 			try {
-				ComponentWrap cw=new ComponentWrap(Component.ACCESS_PRIVATE, ComponentUtil.toComponentImpl(cfc));
+				ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE, cfc);
 				return cw.get(key,null);
 			} 
 			catch (PageException e) {}

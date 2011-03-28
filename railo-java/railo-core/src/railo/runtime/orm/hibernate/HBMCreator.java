@@ -13,7 +13,6 @@ import org.w3c.dom.NodeList;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
@@ -1320,7 +1319,7 @@ public class HBMCreator {
 		
 		// build fkcolumn name
 		if(StringUtil.isEmpty(str,true)) {
-			ComponentImpl other = (ComponentImpl) loadForeignCFC(pc, engine, cfc, prop, meta);
+			ComponentPro other = (ComponentPro) loadForeignCFC(pc, engine, cfc, prop, meta);
 			if(other!=null){
 				Property[] _props=getProperties(pc,engine,other,dc,ormConf,meta);
 				PropertyCollection _propColl = splitJoins(engine,cfc,new HashMap<String, PropertyCollection>(), _props);

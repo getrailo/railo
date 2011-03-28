@@ -30,4 +30,6 @@ public interface ComponentPro extends Component {
 	public boolean isBasePeristent();
 	
 	public boolean equalTo(String type);
+	
+	public String getWSDLFile();
 }
