@@ -2942,12 +2942,14 @@ public final class Caster {
         else if(t instanceof PageExceptionBox)
             return ((PageExceptionBox)t).getPageException();
         else if(t instanceof InvocationTargetException){
-            return new NativeException(((InvocationTargetException)t).getTargetException());
+            return toPageException(((InvocationTargetException)t).getTargetException());
         }
         else if(t instanceof ExceptionInInitializerError){
-            return new NativeException(((ExceptionInInitializerError)t).getCause());
+            return toPageException(((ExceptionInInitializerError)t).getCause());
         }
         else {
+        	Throwable cause = t.getCause();
+        	if(cause!=null && cause!=t) return toPageException(cause);
         	return new NativeException(t);
         }
     }
