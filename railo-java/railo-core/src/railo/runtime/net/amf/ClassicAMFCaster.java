@@ -13,7 +13,6 @@ import org.w3c.dom.Node;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
