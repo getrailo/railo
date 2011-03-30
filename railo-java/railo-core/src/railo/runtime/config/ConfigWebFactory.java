@@ -1398,7 +1398,7 @@ public final class ConfigWebFactory {
 		// create current hash from libs
 		TagLib[] tlds = config.getTLDs();
 		FunctionLib[] flds = config.getFLDs();
-		StringBuffer sb=new StringBuffer();
+		StringBuffer sb=new StringBuffer(config.getTemplateCharset());
 
 		for(int i=0;i<tlds.length;i++){
 			sb.append(tlds[i].getHash());
