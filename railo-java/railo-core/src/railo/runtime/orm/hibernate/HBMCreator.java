@@ -47,11 +47,13 @@ public class HBMCreator {
 	public static void createXMLMapping(PageContext pc,DatasourceConnection dc, Component cfc,ORMConfiguration ormConf,Element hibernateMapping,HibernateORMEngine engine) throws PageException {
 		
 		// MUST Support for embeded objects 
-		
 		ComponentPro cfci = ComponentUtil.toComponentPro(cfc);
 		Struct meta = cfci.getMetaData(pc);
 		
-		Property[] _props=getProperties(pc,engine,cfci,dc,ormConf,meta);
+		String extend = cfc.getExtends();
+		boolean isClass=StringUtil.isEmpty(extend);
+		
+		Property[] _props=getProperties(pc,engine,cfci,dc,ormConf,meta,isClass);
 		
 		
 		
@@ -68,10 +70,6 @@ public class HBMCreator {
 		comment.append("\ncompilation-time:").append(new DateTimeImpl(ComponentUtil.getCompileTime(pc,cfci.getPageSource()),false)).append("\n");
 		
 		hibernateMapping.appendChild(doc.createComment(comment.toString()));
-		String extend = cfc.getExtends();
-		
-		Element clazz;
-		boolean isClass=StringUtil.isEmpty(extend);
 		
 		//print.e(cfc.getAbsName()+";"+isClass+" -> "+cfci.getBaseAbsName()+":"+cfci.isBasePeristent());
 		if(!isClass && !cfci.isBasePeristent()) {
@@ -82,6 +80,7 @@ public class HBMCreator {
 		Element join=null;
 		boolean doTable=true;
 		
+		Element clazz;
 		if(isClass)  {
 			clazz = doc.createElement("class");
 			hibernateMapping.appendChild(clazz);
@@ -162,9 +161,9 @@ public class HBMCreator {
 		
 	}
 	
-	private static Property[] getProperties(PageContext pc, HibernateORMEngine engine, ComponentPro cfci, DatasourceConnection dc, ORMConfiguration ormConf, Struct meta) throws ORMException, PageException {
+	private static Property[] getProperties(PageContext pc, HibernateORMEngine engine, ComponentPro cfci, DatasourceConnection dc, ORMConfiguration ormConf, Struct meta, boolean isClass) throws ORMException, PageException {
 		Property[] _props = cfci.getProperties(true);
-		if(_props.length==0 && ormConf.useDBForMapping()){
+		if(isClass && _props.length==0 && ormConf.useDBForMapping()){
 			if(meta==null)meta = cfci.getMetaData(pc);
         	_props=HibernateUtil.createPropertiesFromTable(dc,getTableName(engine,pc, meta, cfci));
         }
@@ -1321,7 +1320,8 @@ public class HBMCreator {
 		if(StringUtil.isEmpty(str,true)) {
 			ComponentPro other = (ComponentPro) loadForeignCFC(pc, engine, cfc, prop, meta);
 			if(other!=null){
-				Property[] _props=getProperties(pc,engine,other,dc,ormConf,meta);
+				boolean isClass=StringUtil.isEmpty(other.getExtends());
+				Property[] _props=getProperties(pc,engine,other,dc,ormConf,meta,isClass);
 				PropertyCollection _propColl = splitJoins(engine,cfc,new HashMap<String, PropertyCollection>(), _props);
 				_props=_propColl.getProperties();
 				
