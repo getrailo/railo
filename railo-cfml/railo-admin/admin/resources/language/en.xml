@@ -194,7 +194,7 @@
 	<data key="err.errortemplate.500">General Error Template (500)</data>
 	<data key="err.errorstatuscode">Status code</data>
 	<data key="err.descr">Please enter an individual error template.</data>
-	<data key="err.errorstatuscodedescription">In case of an exception should an other status code be used or would it still be 200</data>
+	<data key="err.errorstatuscodedescription">In case of an exception, should individual status codes be returned? Untick to always return 200 status code.</data>
 	<data key="err.errortemplatedescription.500">Template that will be invoked in case of an error. This setting can be overridden by the tag CFError.</data>
 	<data key="err.errortemplatedescription.404">Template that will be invoked in case of a missing error. This setting can be overridden by the tag CFError.</data>
 	<data key="ext.updateavailabledesc">There is an update {update} available for your installed version {installed}.</data>
