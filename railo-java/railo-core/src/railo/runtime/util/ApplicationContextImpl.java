@@ -52,6 +52,7 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 	private int scriptProtect;
 	private Mapping[] mappings;
 	private Mapping[] ctmappings;
+	private Mapping[] cmappings;
 	private boolean secureJson;
 	private String secureJsonPrefix="//";
 	private boolean isDefault;
@@ -125,6 +126,7 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 		dbl.scriptProtect=scriptProtect;
 		dbl.mappings=mappings;
 		dbl.ctmappings=ctmappings;
+		dbl.cmappings=cmappings;
 		dbl.secureJson=secureJson;
 		dbl.secureJsonPrefix=secureJsonPrefix;
 		dbl.isDefault=isDefault;
@@ -335,6 +337,14 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 		return ctmappings;
 	}
 
+	public void setComponentMappings(Mapping[] cmappings) {
+		this.cmappings=cmappings;
+	}
+
+	public Mapping[] getComponentMappings() {
+		return cmappings;
+	}
+
 	public void setSecureJson(boolean secureJson) {
 		this.secureJson=secureJson;
 	}
@@ -539,5 +549,4 @@ public class ApplicationContextImpl implements ApplicationContextPro {
 		}
 		return null;
 	}
-	
 }

@@ -24,6 +24,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.util.ApplicationContextPro;
 import railo.runtime.writer.BodyContentUtil;
 
 public class ComponentLoader {
@@ -119,6 +120,9 @@ public class ComponentLoader {
     	
     	// search with imports
     	Mapping[] cMappings = config.getComponentMappings();
+    	ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
+    	Mapping[] lcMappings = ac.getComponentMappings();
+    	
     	if(isRealPath){
 
     		ImportDefintion impDef = config.getComponentDefaultImport();
@@ -139,6 +143,21 @@ public class ComponentLoader {
 			    			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 			        	}
 	    			}
+	    			
+	    			// search local component mappings
+	    			if(lcMappings!=null) {
+			    		Mapping m;
+			        	for(int y=0;y<lcMappings.length;y++){
+			        		m=lcMappings[y];
+			        		String key=appName+":"+impDef.getPackageAsPath()+pathWithCFC;
+		    	    		ps=m.getPageSource(impDef.getPackageAsPath()+pathWithCFC);
+			        		page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+				    		if(page!=null)	{    
+				    			if(doCache)config.putCachedPageSource("import:"+key, page.getPageSource());
+				    			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+				        	}
+			        	}
+		        	}
 	    			
 	    			// search mappings and webroot
 	    	    	ps=((PageContextImpl)pc).getPageSource("/"+impDef.getPackageAsPath()+pathWithCFC);
@@ -173,6 +192,23 @@ public class ComponentLoader {
     	if(isRealPath)	p='/'+pathWithCFC;
     	else p=pathWithCFC;
     	
+
+		
+    	// search local component mappings
+    	if(lcMappings!=null) {
+	    	Mapping m;
+	    	for(int i=0;i<lcMappings.length;i++){
+	    		m=lcMappings[i];
+	    		ps=m.getPageSource(p);
+	    		page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+	    		String key=":"+appName+":"+pathWithCFC;
+	    		if(page!=null){
+	    			if(doCache)config.putCachedPageSource(key, page.getPageSource());
+	    			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+	        	}
+	    	}
+    	}
+    	
     	// search mappings and webroot
     	ps=((PageContextImpl)pc).getPageSource(p);
     	page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
@@ -181,7 +217,6 @@ public class ComponentLoader {
     		if(doCache)config.putCachedPageSource(key, page.getPageSource());
 			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
     	}
-        
 		
     	// search component mappings
     	Mapping m;

@@ -1,6 +1,7 @@
 package railo.runtime.util;
 
 import railo.runtime.Component;
+import railo.runtime.Mapping;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.type.Collection;
@@ -38,4 +39,6 @@ public interface ApplicationContextPro extends ApplicationContext {
 	 * @param string
 	 */
 	public Object getCustom(Collection.Key key);
+
+	public Mapping[] getComponentMappings();
 }

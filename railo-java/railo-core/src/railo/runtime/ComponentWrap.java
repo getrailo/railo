@@ -37,7 +37,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
     }
     
     public static ComponentWrap  toComponentWrap(int access, Component component) throws ExpressionException {
-    	return ComponentWrap.toComponentWrap(access, ComponentUtil.toComponentAccess(component));
+    	return new ComponentWrap(access, ComponentUtil.toComponentAccess(component));
     }
     
 

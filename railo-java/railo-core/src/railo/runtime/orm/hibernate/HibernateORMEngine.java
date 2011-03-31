@@ -85,6 +85,8 @@ public class HibernateORMEngine implements ORMEngine {
 
 	private Object hash;
 
+	private ORMConfiguration ormConf;
+
 	public HibernateORMEngine() {}
 
 	void checkExistent(PageContext pc,Component cfc) throws ORMException {
@@ -179,7 +181,7 @@ public class HibernateORMEngine implements ORMEngine {
 		}
 		
 		// config
-		ORMConfiguration ormConf = appContext.getORMConfiguration();
+		ormConf = appContext.getORMConfiguration();
 		
 		//List<Component> arr = null;
 		arr=null;
@@ -204,8 +206,23 @@ public class HibernateORMEngine implements ORMEngine {
 				pool.releaseDatasourceConnection(dc);
 				//manager.releaseConnection(pc,dc);
 			}
+			if(arr.size()!=cfcs.size()){
+				ComponentPro cfc;
+				String name,lcName;
+				Map<String,String> names=new HashMap<String,String>();
+				Iterator<ComponentPro> it = arr.iterator();
+				while(it.hasNext()){
+					cfc=it.next();
+					name=HibernateCaster.getEntityName(cfc);
+					lcName=name.toLowerCase();
+					if(names.containsKey(lcName))
+						throw new ORMException(this,"Entity Name ["+name+"] is ambigous, ["+names.get(lcName)+"] and ["+cfc.getPageSource().getDisplayPath()+"] use the same entity name."); 
+					names.put(lcName,cfc.getPageSource().getDisplayPath());
+				}	
+			}
 		}
 		arr=null;
+		
 		
 		
 		if(configuration!=null) return _factory;
@@ -602,7 +619,17 @@ public class HibernateORMEngine implements ORMEngine {
 		return id.toLowerCase().trim();
 	}
 
-	public Component getEntityByCFCName(String cfcname,boolean unique) throws PageException {
+	public Component getEntityByCFCName(String cfcName,boolean unique) throws PageException {
+		String name=cfcName;
+		int pointIndex=cfcName.lastIndexOf('.');
+		if(pointIndex!=-1) {
+			name=cfcName.substring(pointIndex+1);
+		}
+		else 
+			cfcName=null;
+		
+		
+		
 		ComponentPro cfc;
 		String[] names=null;
 		// search array (array exist when cfcs is in generation)
@@ -614,7 +641,7 @@ public class HibernateORMEngine implements ORMEngine {
 			while(it2.hasNext()){
 				cfc=it2.next();
 				names[index++]=cfc.getName();
-				if(cfc.equalTo(cfcname))
+				if(isEntity(cfc,cfcName,name)) //if(cfc.equalTo(name))
 					return unique?(Component)cfc.duplicate(false):cfc;
 			}
 		}
@@ -625,26 +652,45 @@ public class HibernateORMEngine implements ORMEngine {
 			while(it.hasNext()){
 				entry=it.next();
 				cfc=entry.getValue().getCFC();
-				if(cfc.instanceOf(cfcname))
+				if(isEntity(cfc,cfcName,name)) //if(cfc.instanceOf(name))
 					return unique?(Component)cfc.duplicate(false):cfc;
 				
-				if(cfcname.equalsIgnoreCase(HibernateCaster.getEntityName(cfc)))
-					return cfc;
+				//if(name.equalsIgnoreCase(HibernateCaster.getEntityName(cfc)))
+				//	return cfc;
 			}
 			names=cfcs.keySet().toArray(new String[cfcs.size()]);
 		}
 		
 		// search by entityname //TODO is this ok?
-		CFCInfo info = cfcs.get(cfcname.toLowerCase());
+		CFCInfo info = cfcs.get(name.toLowerCase());
 		if(info!=null) {
 			cfc=info.getCFC();
 			return unique?(Component)cfc.duplicate(false):cfc;
 		}
 		
-		throw new ORMException(this,"entity ["+cfcname+"] does not exist, existing  entities are ["+railo.runtime.type.List.arrayToList(names, ", ")+"]");
+		throw new ORMException(this,"entity ["+name+"] does not exist, existing  entities are ["+railo.runtime.type.List.arrayToList(names, ", ")+"]");
 		
 	}
 	
+
+	private boolean isEntity(ComponentPro cfc, String cfcName, String name) {
+		if(!StringUtil.isEmpty(cfcName)) {
+			if(cfc.equalTo(cfcName)) return true;
+
+			if(cfcName.indexOf('.')!=-1) {
+				String path=cfcName.replace('.', '/')+".cfc";
+				Resource[] locations = ormConf.getCfcLocations();
+				for(int i=0;i<locations.length;i++){
+					if(locations[i].getRealResource(path).equals(cfc.getPageSource().getFile()))
+						return true;
+				}
+				return false;
+			}
+		}
+		
+		if(cfc.equalTo(name)) return true;
+		return name.equalsIgnoreCase(HibernateCaster.getEntityName(cfc));
+	}
 
 	public Component getEntityByEntityName(String entityName,boolean unique) throws PageException {
 		ComponentPro cfc;

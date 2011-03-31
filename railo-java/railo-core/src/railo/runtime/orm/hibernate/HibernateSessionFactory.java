@@ -24,10 +24,13 @@ import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.ComponentPro;
+import railo.runtime.Mapping;
+import railo.runtime.MappingImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
@@ -38,6 +41,7 @@ import railo.runtime.orm.ORMUtil;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.util.ApplicationContextImpl;
 
 public class HibernateSessionFactory {
 
@@ -261,8 +265,26 @@ public class HibernateSessionFactory {
 	}
 	
 	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource[] reses,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
-		for(int i=0;i<reses.length;i++){
-			if(reses[i]!=null && reses[i].isDirectory())loadComponents(pc,engine,components,reses[i], filter,ormConf);
+		Mapping[] mappings = createMappings(pc, reses);
+		ApplicationContextImpl ac=(ApplicationContextImpl) pc.getApplicationContext();
+		Mapping[] existing = ac.getComponentMappings();
+		if(existing==null) existing=new Mapping[0];
+		try{
+			Mapping[] tmp = new Mapping[existing.length+1];
+			for(int i=1;i<tmp.length;i++){
+				tmp[i]=existing[i-1];
+			}
+			ac.setComponentMappings(tmp);
+			for(int i=0;i<reses.length;i++){
+				if(reses[i]!=null && reses[i].isDirectory()){
+					tmp[0] = mappings[i];
+					//ac.setMappings(_mappings);
+					loadComponents(pc,engine,components,reses[i], filter,ormConf);
+				}
+			}
+		}
+		finally {
+			ac.setComponentMappings(existing);
 		}
 	}
 	
@@ -302,4 +324,18 @@ public class HibernateSessionFactory {
 		}
 	}
 
+	
+	public static Mapping[] createMappings(PageContext pc,Resource[] resources) throws PageException {
+			
+			MappingImpl[] mappings=new MappingImpl[resources.length];
+			ConfigImpl config=(ConfigImpl) pc.getConfig();
+			for(int i=0;i<mappings.length;i++) {
+				mappings[i]=new MappingImpl(config,
+						"/",
+						resources[i].getAbsolutePath(),
+						null,false,true,false,false,false,true
+						);
+			}
+			return mappings;
+		}
 }
