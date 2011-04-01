@@ -9,7 +9,9 @@ import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
-import railo.runtime.listener.ApplicationContextUtil;
+import railo.runtime.listener.AppListenerUtil;
+import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ModernApplicationContext;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
@@ -21,7 +23,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Undefined;
-import railo.runtime.util.ApplicationContextPro;
 
 public class GetApplicationSettings {
 	public static Struct call(PageContext pc) {
@@ -30,7 +31,8 @@ public class GetApplicationSettings {
 	
 	public static Struct call(PageContext pc, boolean suppressFunctions) {
 		ApplicationContextPro ac = (ApplicationContextPro)pc.getApplicationContext();
-		ComponentPro cfc = (ComponentPro) ac.getComponent();
+		ComponentPro cfc = null;
+		if(ac instanceof ModernApplicationContext)cfc= ((ModernApplicationContext)ac).getComponent();
 		
 
 		Struct sct=new StructImpl();
@@ -40,10 +42,10 @@ public class GetApplicationSettings {
 		sct.setEL("sessionstorage", ac.getSessionstorage());
 		sct.setEL("customtagpaths", toArray(ac.getCustomTagMappings()));
 		sct.setEL("datasource", ac.getDefaultDataSource());
-		sct.setEL("loginstorage", ApplicationContextUtil.translateLoginStorage(ac.getLoginStorage()));
+		sct.setEL("loginstorage", AppListenerUtil.translateLoginStorage(ac.getLoginStorage()));
 		sct.setEL("mappings", toStruct(ac.getMappings()));
 		sct.setEL("name", ac.getName());
-		sct.setEL("scriptprotect", ApplicationContextUtil.translateScriptProtect(ac.getScriptProtect()));
+		sct.setEL("scriptprotect", AppListenerUtil.translateScriptProtect(ac.getScriptProtect()));
 		sct.setEL("securejson", Caster.toBoolean(ac.getSecureJson()));
 		sct.setEL("securejsonprefix", ac.getSecureJsonPrefix());
 		sct.setEL("sessionmanagement", Caster.toBoolean(ac.isSetSessionManagement()));

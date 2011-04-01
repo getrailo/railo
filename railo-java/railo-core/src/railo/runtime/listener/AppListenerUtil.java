@@ -1,5 +1,7 @@
 package railo.runtime.listener;
 
+import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Mapping;
@@ -8,19 +10,34 @@ import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
+import railo.runtime.net.s3.Properties;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
+import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Undefined;
+import railo.runtime.util.ApplicationContext;
 
 public final class AppListenerUtil {
+	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.getInstance("accessKeyId");
+	private static final Collection.Key AWS_SECRET_KEY = KeyImpl.getInstance("awsSecretKey");
+	private static final Collection.Key DEFAULT_LOCATION = KeyImpl.getInstance("defaultLocation");
+	private static final Collection.Key HOST = KeyImpl.getInstance("host");
+	private static final Collection.Key SERVER = KeyImpl.getInstance("server");
+	private static final Collection.Key DATA_SOURCE = KeyImpl.getInstance("datasource");
+	
 	
 	public static PageSource getApplicationPageSource(PageContext pc,PageSource requestedPage, String filename, int mode) {
 		if(mode==ApplicationListener.MODE_CURRENT)return getApplicationPageSourceCurrent(requestedPage, filename);
@@ -139,12 +156,21 @@ public final class AppListenerUtil {
 		else if(listener instanceof ModernAppListener)	return "modern";
 		return "";
 	}
+	
 
-	public static Mapping[] toMappings(PageContext pc,Object o) throws PageException {
+	public static Mapping[] toMappings(ConfigWeb cw,Object o,Mapping[] defaultValue) {
+		try {
+			return toMappings(cw, o);
+		} catch (Throwable t) {
+			return defaultValue;
+		}
+	}
+
+	public static Mapping[] toMappings(ConfigWeb cw,Object o) throws PageException {
 		Struct sct = Caster.toStruct(o);
 		Key[] keys = sct.keys();
 		Mapping[] mappings=new Mapping[keys.length];
-		ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
+		ConfigWebImpl config=(ConfigWebImpl) cw;
 		String virtual,physical;
 		for(int i=0;i<keys.length;i++) {
 			virtual=translateMappingVirtual(keys[i].getString());
@@ -161,8 +187,17 @@ public final class AppListenerUtil {
 		if(!StringUtil.startsWith(virtual,'/'))virtual="/".concat(virtual);
 		return virtual;
 	}
+	
 
-	public static MappingImpl[] toCustomTagMappings(PageContext pc, Object o) throws PageException {
+	public static Mapping[] toCustomTagMappings(ConfigWeb cw, Object o,Mapping[] defaultValue) {
+		try {
+			return toCustomTagMappings(cw, o);
+		} catch (Throwable t) {
+			return defaultValue;
+		}
+	}
+
+	public static Mapping[] toCustomTagMappings(ConfigWeb cw, Object o) throws PageException {
 		Array array;
 		if(o instanceof String){
 			array=List.listToArrayRemoveEmpty(Caster.toString(o),',');
@@ -179,7 +214,7 @@ public final class AppListenerUtil {
 			array=Caster.toArray(o);
 		}
 		MappingImpl[] mappings=new MappingImpl[array.size()];
-		ConfigImpl config=(ConfigImpl) pc.getConfig();
+		ConfigWebImpl config=(ConfigWebImpl) cw;
 		for(int i=0;i<mappings.length;i++) {
 			
 			mappings[i]=(MappingImpl) config.createCustomTagAppMappings("/"+i,Caster.toString(array.getE(i+1)).trim());
@@ -212,7 +247,7 @@ public final class AppListenerUtil {
 		throw new ApplicationException("invalid localMode definition ["+strMode+"] for tag application/application.cfc, valid values are [always,update]");
 	}
 
-	public static short toSessionType(String str, Config config) {
+	public static short toSessionType(String str, short defaultValue) {
 		if(!StringUtil.isEmpty(str,true)){
 			str=str.trim().toLowerCase();
 			if("cfml".equals(str)) return Config.SESSION_TYPE_CFML;
@@ -222,7 +257,7 @@ public final class AppListenerUtil {
 			if("j".equals(str)) return Config.SESSION_TYPE_J2EE;
 			if("c".equals(str)) return Config.SESSION_TYPE_J2EE;
 		}
-		return config.getSessionType();
+		return defaultValue;
 	}
 
 	public static short toSessionType(String str) throws ApplicationException {
@@ -236,6 +271,120 @@ public final class AppListenerUtil {
 			if("c".equals(str)) return Config.SESSION_TYPE_J2EE;
 		}
 		throw new ApplicationException("invalid sessionType definition ["+str+"] for tag application/application.cfc, valid values are [cfml,j2ee]");
+	}
+	
+	public static Properties toS3(Struct sct) {
+		String host=Caster.toString(sct.get(HOST,null),null);
+		if(StringUtil.isEmpty(host))host=Caster.toString(sct.get(SERVER,null),null);
+		
+		return toS3(
+				Caster.toString(sct.get(ACCESS_KEY_ID,null),null),
+				Caster.toString(sct.get(AWS_SECRET_KEY,null),null),
+				Caster.toString(sct.get(DEFAULT_LOCATION,null),null),
+				host
+			);
+	}
+
+	public static Properties toS3(String accessKeyId, String awsSecretKey, String defaultLocation, String host) {
+		Properties s3 = new Properties();
+		if(!StringUtil.isEmpty(accessKeyId))s3.setAccessKeyId(accessKeyId);
+		if(!StringUtil.isEmpty(awsSecretKey))s3.setSecretAccessKey(awsSecretKey);
+		if(!StringUtil.isEmpty(defaultLocation))s3.setDefaultLocation(defaultLocation);
+		if(!StringUtil.isEmpty(host))s3.setHost(host);
+		return s3;
+	}
+
+	public static void setORMConfiguration(PageContext pc, ApplicationContextPro ac,Struct sct) throws PageException {
+		if(sct==null)sct=new StructImpl();
+		Resource res=ResourceUtil.getResource(pc, pc.getCurrentTemplatePageSource()).getParentResource();
+		ConfigImpl config=(ConfigImpl) pc.getConfig();
+		ac.setORMConfiguration(ORMConfiguration.load(config,sct,res,config.getORMConfig()));
+		
+		// datasource
+		Object o = sct.get(DATA_SOURCE,null);
+		if(o!=null) ac.setORMDatasource(Caster.toString(o));
+	}
+	
+	
+	/**
+	 * translate int definition of script protect to string definition
+	 * @param scriptProtect
+	 * @return
+	 */
+	public static String translateScriptProtect(int scriptProtect) {
+		if(scriptProtect==ApplicationContext.SCRIPT_PROTECT_NONE) return "none";
+		if(scriptProtect==ApplicationContext.SCRIPT_PROTECT_ALL) return "all";
+		
+		Array arr=new ArrayImpl();
+		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_CGI)>0) arr.appendEL("cgi");
+		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_COOKIE)>0) arr.appendEL("cookie");
+		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_FORM)>0) arr.appendEL("form");
+		if((scriptProtect&ApplicationContext.SCRIPT_PROTECT_URL)>0) arr.appendEL("url");
+		
+		
+		
+		try {
+			return List.arrayToList(arr, ",");
+		} catch (PageException e) {
+			return "none";
+		} 
+	}
+	
+
+	/**
+	 * translate string definition of script protect to int definition
+	 * @param scriptProtect
+	 * @return
+	 */
+	public static int translateScriptProtect(String strScriptProtect) {
+		strScriptProtect=strScriptProtect.toLowerCase().trim();
+		
+		if("none".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_NONE;
+		if("no".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_NONE;
+		if("false".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_NONE;
+		
+		if("all".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_ALL;
+		if("true".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_ALL;
+		if("yes".equals(strScriptProtect)) return ApplicationContext.SCRIPT_PROTECT_ALL;
+		
+		String[] arr = List.listToStringArray(strScriptProtect, ',');
+		String item;
+		int scriptProtect=0;
+		for(int i=0;i<arr.length;i++) {
+			item=arr[i].trim();
+			if("cgi".equals(item) && (scriptProtect&ApplicationContext.SCRIPT_PROTECT_CGI)==0)
+				scriptProtect+=ApplicationContext.SCRIPT_PROTECT_CGI;
+			else if("cookie".equals(item) && (scriptProtect&ApplicationContext.SCRIPT_PROTECT_COOKIE)==0)
+				scriptProtect+=ApplicationContext.SCRIPT_PROTECT_COOKIE;
+			else if("form".equals(item) && (scriptProtect&ApplicationContext.SCRIPT_PROTECT_FORM)==0)
+				scriptProtect+=ApplicationContext.SCRIPT_PROTECT_FORM;
+			else if("url".equals(item) && (scriptProtect&ApplicationContext.SCRIPT_PROTECT_URL)==0)
+				scriptProtect+=ApplicationContext.SCRIPT_PROTECT_URL;
+			
+		}
+		
+		return scriptProtect;
+	}
+	
+
+	public static String translateLoginStorage(int loginStorage) {
+		if(loginStorage==Scope.SCOPE_SESSION) return "session";
+		return "cookie";
+	}
+	
+
+	public static int translateLoginStorage(String strLoginStorage, int defaultValue) {
+		strLoginStorage=strLoginStorage.toLowerCase().trim();
+	    if(strLoginStorage.equals("session"))return Scope.SCOPE_SESSION;
+	    if(strLoginStorage.equals("cookie"))return Scope.SCOPE_COOKIE;
+	    return defaultValue;
+	}
+	
+
+	public static int translateLoginStorage(String strLoginStorage) throws ApplicationException {
+		int ls=translateLoginStorage(strLoginStorage, -1);
+		if(ls!=-1) return ls;
+	    throw new ApplicationException("invalid loginStorage definition ["+strLoginStorage+"], valid values are [session,cookie]");
 	}
 }
 

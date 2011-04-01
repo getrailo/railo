@@ -31,6 +31,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.interpreter.VariableInterpreter;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
@@ -56,7 +57,6 @@ import railo.runtime.type.scope.storage.clean.FileStorageScopeCleaner;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.wrap.MapAsStruct;
 import railo.runtime.util.ApplicationContext;
-import railo.runtime.util.ApplicationContextPro;
 
 /**
  * Scope Context handle Apllication and Session Scopes

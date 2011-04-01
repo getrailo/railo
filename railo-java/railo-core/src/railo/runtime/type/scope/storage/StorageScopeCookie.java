@@ -7,6 +7,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -15,7 +16,6 @@ import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Cookie;
 import railo.runtime.type.scope.ScopeContext;
-import railo.runtime.util.ApplicationContextPro;
 
 /**
  * client scope that store it's data in the cookie of the client

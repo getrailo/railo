@@ -81,7 +81,6 @@ import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
-import railo.runtime.listener.ApplicationContextUtil;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.net.mail.SMTPException;
 import railo.runtime.net.mail.SMTPVerifier;
@@ -3391,7 +3390,7 @@ private void doGetMappings() throws PageException {
         
         Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
-        sct.set("scriptProtect",ApplicationContextUtil.translateScriptProtect(config.getScriptProtect()));
+        sct.set("scriptProtect",AppListenerUtil.translateScriptProtect(config.getScriptProtect()));
         
         // request timeout
         sct.set("requestTimeout",config.getRequestTimeout());

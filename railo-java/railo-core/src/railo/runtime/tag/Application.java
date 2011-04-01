@@ -6,13 +6,13 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.listener.AppListenerUtil;
+import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.TimeSpan;
-import railo.runtime.util.ApplicationContextImpl;
 
 /**
 * Defines scoping for a CFML application, enables or disables storing client variables, 
@@ -41,10 +41,12 @@ public final class Application extends TagImpl {
 	private TimeSpan applicationTimeout;
 	private Mapping[] mappings;
 	private Mapping[] customTagMappings;
+	private Mapping[] componentMappings;
 	private String secureJsonPrefix;
 	private Boolean secureJson;
 	private String scriptrotect;
 	private String datasource;
+	private String defaultdatasource;
 	private int loginstorage=Scope.SCOPE_UNDEFINED;
 	
 	//ApplicationContextImpl appContext;
@@ -76,11 +78,13 @@ public final class Application extends TagImpl {
         applicationTimeout=null;
         mappings=null;
         customTagMappings=null;
+        componentMappings=null;
         secureJson=null;
         secureJsonPrefix=null;
         loginstorage=Scope.SCOPE_UNDEFINED;
         scriptrotect=null;
         datasource=null;
+        defaultdatasource=null;
         this.name="";
         action=ACTION_CREATE;
         localMode=-1;
@@ -130,10 +134,10 @@ public final class Application extends TagImpl {
 	 * @throws PageException 
 	 */
 	public void setDatasource(Object datasource) throws PageException {
-		setDefaultdatasource(Caster.toString(datasource));
+		this.datasource = Caster.toString(datasource);
 	}
-	public void setDefaultdatasource(String datasource) {
-		this.datasource = datasource;
+	public void setDefaultdatasource(String defaultdatasource) {
+		this.defaultdatasource = defaultdatasource;
 	}
 	
 	public void setLocalmode(String strLocalMode) throws ApplicationException {
@@ -235,12 +239,16 @@ public final class Application extends TagImpl {
 	}
 	
 	public void setMappings(Struct mappings) throws PageException	{
-	    this.mappings=AppListenerUtil.toMappings(pageContext, mappings);
+	    this.mappings=AppListenerUtil.toMappings(pageContext.getConfig(), mappings);
 		//getAppContext().setMappings(AppListenerUtil.toMappings(pageContext, mappings));
 	}
 	
 	public void setCustomtagpaths(Object mappings) throws PageException	{
-	    this.customTagMappings=AppListenerUtil.toCustomTagMappings(pageContext, mappings);
+	    this.customTagMappings=AppListenerUtil.toCustomTagMappings(pageContext.getConfig(), mappings);
+	}
+	
+	public void setComponentpaths(Object mappings) throws PageException	{
+	    this.componentMappings=AppListenerUtil.toCustomTagMappings(pageContext.getConfig(), mappings);
 		//getAppContext().setCustomTagMappings(AppListenerUtil.toCustomTagMappings(pageContext, mappings));
 	}
 	
@@ -279,16 +287,15 @@ public final class Application extends TagImpl {
 	*/
 	public int doStartTag() throws PageException	{
         
-        ApplicationContextImpl ac;
+        ApplicationContextPro ac;
         boolean initORM;
         if(action==ACTION_CREATE){
-        	ac=createAppContext();
-        	ac.setName(name);
+        	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false);
         	initORM=set(ac);
         	pageContext.setApplicationContext(ac);
         }
         else {
-        	ac=(ApplicationContextImpl) pageContext.getApplicationContext();
+        	ac=(ApplicationContextPro) pageContext.getApplicationContext();
         	initORM=set(ac);
         }
         
@@ -297,7 +304,7 @@ public final class Application extends TagImpl {
         return SKIP_BODY; 
 	}
 
-	private boolean set(ApplicationContextImpl ac) throws PageException {
+	private boolean set(ApplicationContextPro ac) throws PageException {
 		if(applicationTimeout!=null)			ac.setApplicationTimeout(applicationTimeout);
 		if(sessionTimeout!=null)				ac.setSessionTimeout(sessionTimeout);
 		if(clientTimeout!=null)				ac.setClientTimeout(clientTimeout);
@@ -308,10 +315,15 @@ public final class Application extends TagImpl {
 			ac.setSessionstorage(sessionstorage);
 		}
 		if(customTagMappings!=null)				ac.setCustomTagMappings(customTagMappings);
+		if(componentMappings!=null)				ac.setComponentMappings(componentMappings);
 		if(mappings!=null)						ac.setMappings(mappings);
 		if(loginstorage!=Scope.SCOPE_UNDEFINED)	ac.setLoginStorage(loginstorage);
-		if(!StringUtil.isEmpty(datasource))		ac.setDefaultDataSource(datasource);
-		if(scriptrotect!=null)					ac.setScriptProtect(scriptrotect);
+		if(!StringUtil.isEmpty(datasource))		{
+			ac.setDefaultDataSource(datasource);
+			ac.setORMDatasource(datasource);
+		}
+		if(!StringUtil.isEmpty(defaultdatasource))ac.setDefaultDataSource(defaultdatasource);
+		if(scriptrotect!=null)					ac.setScriptProtect(AppListenerUtil.translateScriptProtect(scriptrotect));
 		if(secureJson!=null)					ac.setSecureJson(secureJson.booleanValue());
 		if(secureJsonPrefix!=null)				ac.setSecureJsonPrefix(secureJsonPrefix);
 		if(setClientCookies!=null)				ac.setSetClientCookies(setClientCookies.booleanValue());
@@ -322,15 +334,14 @@ public final class Application extends TagImpl {
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
 		ac.setClientCluster(clientCluster);
 		ac.setSessionCluster(sessionCluster);
-		if(s3!=null) 							ac.setS3(s3);
+		if(s3!=null) 							ac.setS3(AppListenerUtil.toS3(s3));
 		
 		// ORM
 		boolean initORM=false;
 		ac.setORMEnabled(ormenabled);
 		if(ormenabled) {
 			initORM=true;
-			if(ormsettings==null)ormsettings=new StructImpl();
-			ac.setORMConfiguration(pageContext,ormsettings);
+			AppListenerUtil.setORMConfiguration(pageContext, ac, ormsettings);
 		}
 		
 		
@@ -343,11 +354,5 @@ public final class Application extends TagImpl {
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}
-
-    private ApplicationContextImpl createAppContext() {
-    	return new ApplicationContextImpl(pageContext.getConfig(),false);
-        //if(appContext==null)appContext=new ApplicationContextImpl(pageContext.getConfig());
-        //return appContext;
-    }
 
 }

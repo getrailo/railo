@@ -14,6 +14,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
@@ -22,7 +23,6 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
-import railo.runtime.util.ApplicationContextImpl;
 
 public abstract class StorageScopeImpl extends StructSupport implements StorageScope,Sizeable {
 	
@@ -110,7 +110,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	public void touchBeforeRequest(PageContext pc) {
 		
 		hasChanges=false;
-		ApplicationContextImpl ac=(ApplicationContextImpl) pc.getApplicationContext();
+		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
 		
 		this.timeSpan=getType()==SCOPE_SESSION?
 				ac.getSessionTimeout().getMillis():

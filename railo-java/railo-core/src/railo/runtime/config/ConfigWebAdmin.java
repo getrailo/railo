@@ -56,7 +56,7 @@ import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.other.CreateObject;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
-import railo.runtime.listener.ApplicationContextUtil;
+import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
@@ -1981,7 +1981,7 @@ public final class ConfigWebAdmin {
     
     
     public void updateScriptProtect(int scriptProtect) throws SecurityException { 
-    	updateScriptProtect(ApplicationContextUtil.translateScriptProtect(scriptProtect));
+    	updateScriptProtect(AppListenerUtil.translateScriptProtect(scriptProtect));
     }
     
     /**

@@ -94,7 +94,7 @@ import railo.runtime.extension.ExtensionProviderImpl;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
-import railo.runtime.listener.ApplicationContextUtil;
+import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicAppListener;
 import railo.runtime.listener.MixedAppListener;
@@ -3922,7 +3922,7 @@ public final class ConfigWebFactory {
         
         if(hasAccess && !StringUtil.isEmpty(strScriptProtect)) {
         	//print.err("sp:"+strScriptProtect);
-	        config.setScriptProtect(ApplicationContextUtil.translateScriptProtect(strScriptProtect));
+	        config.setScriptProtect(AppListenerUtil.translateScriptProtect(strScriptProtect));
 	    }
 	    else if(hasCS) config.setScriptProtect(configServer.getScriptProtect());
         

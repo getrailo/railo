@@ -34,6 +34,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMException;
@@ -41,7 +42,6 @@ import railo.runtime.orm.ORMUtil;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
-import railo.runtime.util.ApplicationContextImpl;
 
 public class HibernateSessionFactory {
 
@@ -266,7 +266,7 @@ public class HibernateSessionFactory {
 	
 	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource[] reses,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
 		Mapping[] mappings = createMappings(pc, reses);
-		ApplicationContextImpl ac=(ApplicationContextImpl) pc.getApplicationContext();
+		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
 		Mapping[] existing = ac.getComponentMappings();
 		if(existing==null) existing=new Mapping[0];
 		try{

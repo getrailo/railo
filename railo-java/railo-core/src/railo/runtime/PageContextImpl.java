@@ -81,6 +81,7 @@ import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.listener.AppListenerSupport;
 import railo.runtime.listener.ApplicationListener;
+import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.listener.ModernAppListenerException;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.net.ftp.FTPPoolImpl;
@@ -143,7 +144,6 @@ import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
 import railo.runtime.type.scope.storage.StorageScope;
 import railo.runtime.util.ApplicationContext;
-import railo.runtime.util.ApplicationContextImpl;
 import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.runtime.writer.CFMLWriter;
@@ -356,7 +356,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		this.queryCache=queryCache;
 		server=ScopeContext.getServerScope(this);
 		
-		defaultApplicationContext=new ApplicationContextImpl(config,true);
+		defaultApplicationContext=new ClassicApplicationContext(config,"",true);
 		
 	}
 	

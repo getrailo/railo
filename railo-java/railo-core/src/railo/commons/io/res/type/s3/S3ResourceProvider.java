@@ -12,8 +12,8 @@ import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.net.s3.Properties;
-import railo.runtime.util.ApplicationContextPro;
 
 public final class S3ResourceProvider implements ResourceProvider {
 	

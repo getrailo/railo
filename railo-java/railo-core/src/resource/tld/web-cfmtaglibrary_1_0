@@ -384,6 +384,13 @@ Specifies how Railo stores session variables:
 			<description>Contains custom tag paths.</description>
 		</attribute>
 		<attribute>
+			<type>any</type>
+			<name>componentpaths</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Contains component paths.</description>
+		</attribute>
+		<attribute>
 			<type>boolean</type>
 			<name>secureJson</name>
 			<required>false</required>

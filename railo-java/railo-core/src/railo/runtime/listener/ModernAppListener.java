@@ -11,6 +11,8 @@ import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.types.RefBoolean;
+import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
 import railo.runtime.ComponentPage;
@@ -35,36 +37,14 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.StructUtil;
-import railo.runtime.util.ApplicationContextImpl;
 
 public class ModernAppListener extends AppListenerSupport {
 
 
 
-	private static final Collection.Key NAME = KeyImpl.getInstance("name");
-	private static final Collection.Key APPLICATION_TIMEOUT = KeyImpl.getInstance("applicationTimeout");
-	private static final Collection.Key CLIENT_MANAGEMENT = KeyImpl.getInstance("clientManagement");
-	private static final Collection.Key CLIENT_STORAGE = KeyImpl.getInstance("clientStorage");
-	private static final Collection.Key SESSION_STORAGE = KeyImpl.getInstance("sessionStorage");
-	private static final Collection.Key LOGIN_STORAGE = KeyImpl.getInstance("loginStorage");
-	private static final Collection.Key SESSION_TYPE = KeyImpl.getInstance("sessionType");
-	private static final Collection.Key SESSION_MANAGEMENT = KeyImpl.getInstance("sessionManagement");
-	private static final Collection.Key SESSION_TIMEOUT = KeyImpl.getInstance("sessionTimeout");
-	private static final Collection.Key CLIENT_TIMEOUT = KeyImpl.getInstance("clientTimeout");
-	private static final Collection.Key SET_CLIENT_COOKIES = KeyImpl.getInstance("setClientCookies");
-	private static final Collection.Key SET_DOMAIN_COOKIES = KeyImpl.getInstance("setDomainCookies");
-	private static final Collection.Key SCRIPT_PROTECT = KeyImpl.getInstance("scriptProtect");
-	private static final Collection.Key MAPPINGS = KeyImpl.getInstance("mappings");
-	private static final Collection.Key CUSTOM_TAG_PATHS = KeyImpl.getInstance("customtagpaths");
-	private static final Collection.Key SECURE_JSON_PREFIX = KeyImpl.getInstance("secureJsonPrefix");
-	private static final Collection.Key SECURE_JSON = KeyImpl.getInstance("secureJson");
-	private static final Collection.Key LOCAL_MODE = KeyImpl.getInstance("localMode");
-	private static final Collection.Key SESSION_CLUSTER = KeyImpl.getInstance("sessionCluster");
-	private static final Collection.Key CLIENT_CLUSTER = KeyImpl.getInstance("clientCluster");
 	
 
 	private static final Collection.Key ON_REQUEST_START = KeyImpl.getInstance("onRequestStart");
@@ -78,11 +58,7 @@ public class ModernAppListener extends AppListenerSupport {
 	private static final Collection.Key ON_DEBUG = KeyImpl.getInstance("onDebug");
 	private static final Collection.Key ON_ERROR = KeyImpl.getInstance("onError");
 	private static final Collection.Key ON_MISSING_TEMPLATE = KeyImpl.getInstance("onMissingTemplate");
-	private static final Collection.Key DEFAULT_DATA_SOURCE = KeyImpl.getInstance("defaultdatasource");
-	private static final Collection.Key DATA_SOURCE = KeyImpl.getInstance("datasource");
-	private static final Collection.Key ORM_ENABLED = KeyImpl.getInstance("ormenabled");
-	private static final Collection.Key ORM_SETTINGS = KeyImpl.getInstance("ormsettings");
-
+	
 	public static final Collection.Key S3 = KeyImpl.getInstance("s3");
 	
 	
@@ -316,7 +292,7 @@ public class ModernAppListener extends AppListenerSupport {
 		// PageContext
 		PageContextImpl pc = (PageContextImpl) factory.getRailoPageContext(factory.getServlet(), req, rsp, null, false, -1, false);
 		// ApplicationContext
-		ApplicationContextImpl ap = new ApplicationContextImpl(factory.getConfig(),false);
+		ClassicApplicationContext ap = new ClassicApplicationContext(factory.getConfig(),applicationName,false);
 		initApplicationContext(pc, app);
 		ap.setName(applicationName);
 		ap.setSetSessionManagement(true);
@@ -383,153 +359,13 @@ public class ModernAppListener extends AppListenerSupport {
 	private void initApplicationContext(PageContextImpl pc, ComponentAccess app) throws PageException {
 		
 		// use existing app context
-		ApplicationContextImpl appContext = new ApplicationContextImpl(pc.getConfig(),app,false);
+		RefBoolean throwsErrorWhileInit=new RefBooleanImpl(false);
+		ModernApplicationContext appContext = new ModernApplicationContext(pc,app,throwsErrorWhileInit);
 
-		
-		Object o;
-		boolean initORM=false;
-		pc.addPageSource(app.getPageSource(), true);
-		boolean hasError=false;
-		try {
-			
-			// name
-			o=get(app,NAME,"");
-			if(o!=null) appContext.setName(Caster.toString(o));
-			
-			// applicationTimeout
-			o=get(app,APPLICATION_TIMEOUT,null);
-			if(o!=null) appContext.setApplicationTimeout(Caster.toTimespan(o));
-				
-			// clientManagement
-			o=get(app,CLIENT_MANAGEMENT,null);
-			if(o!=null) appContext.setSetClientManagement(Caster.toBooleanValue(o));
-
-			// clientStorage
-			o=get(app,CLIENT_STORAGE,null);
-			if(o!=null) appContext.setClientstorage(Caster.toString(o));
-			
-			// sessionStorage
-			o=get(app,SESSION_STORAGE,null);
-			if(o!=null) appContext.setSessionstorage(Caster.toString(o));
-
-			// loginStorage
-			o=get(app,LOGIN_STORAGE,null);
-			if(o!=null) appContext.setLoginStorage(Caster.toString(o));
-
-			// datasource
-			o = get(app,DATA_SOURCE,null);
-			if(o!=null) {
-				String ds = Caster.toString(o);
-				appContext.setORMDataSource(ds);
-				appContext.setDefaultDataSource(ds);
-			}
-
-			// default datasource
-			o=get(app,DEFAULT_DATA_SOURCE,null);
-			if(o!=null) appContext.setDefaultDataSource(Caster.toString(o));
-			
-
-			// sessionManagement
-			o=get(app,SESSION_MANAGEMENT,null);
-			if(o!=null) appContext.setSetSessionManagement(Caster.toBooleanValue(o));
-
-			// sessionType
-			o=get(app,SESSION_TYPE,null);
-			if(o!=null) appContext.setSessionType(AppListenerUtil.toSessionType(Caster.toString(o),pc.getConfig()));
-			
-			// sessionTimeout
-			o=get(app,SESSION_TIMEOUT,null);
-			if(o!=null) appContext.setSessionTimeout(Caster.toTimespan(o));
-			
-			// clientTimeout
-			o=get(app,CLIENT_TIMEOUT,null);
-			if(o!=null) appContext.setClientTimeout(Caster.toTimespan(o));
-			
-			// [sessioncluster|,] =true
-			// sessioncluster
-			o=get(app,SESSION_CLUSTER,null);
-			if(o!=null) appContext.setSessionCluster(Caster.toBooleanValue(o));
-			
-			// clientcluster
-			o=get(app,CLIENT_CLUSTER,null);
-			if(o!=null) appContext.setClientCluster(Caster.toBooleanValue(o));
-			
-			
-			// setClientCookies
-			o=get(app,SET_CLIENT_COOKIES,null);
-			if(o!=null) appContext.setSetClientCookies(Caster.toBooleanValue(o));
-			
-			// setDomainCookies
-			o=get(app,SET_DOMAIN_COOKIES,null);
-			if(o!=null) appContext.setSetDomainCookies(Caster.toBooleanValue(o));
-			
-			// scriptProtect
-			o=get(app,SCRIPT_PROTECT,null);
-			if(o!=null) appContext.setScriptProtect(Caster.toString(o));
-			
-			// mappings
-			o=get(app,MAPPINGS,null);
-			if(o!=null) appContext.setMappings(AppListenerUtil.toMappings(pc,o));
-			
-			// customtagpaths
-			o=get(app,CUSTOM_TAG_PATHS,null);
-			if(o!=null) appContext.setCustomTagMappings(AppListenerUtil.toCustomTagMappings(pc,o));
-			
-			// secureJsonPrefix
-			o=get(app,SECURE_JSON_PREFIX,null);
-			if(o!=null) appContext.setSecureJsonPrefix(Caster.toString(o));
-			
-			// secureJson
-			o=get(app,SECURE_JSON,null);
-			if(o!=null) appContext.setSecureJson(Caster.toBooleanValue(o));
-			
-			// local mode (always/update)
-			o=get(app,LOCAL_MODE,null);
-			if(o!=null) {
-				int localMode = AppListenerUtil.toLocalMode(o,-1);
-				if(localMode!=-1)
-					appContext.setLocalMode(localMode);
-				
-			}
-			
-			
-			
-			
-			// S3
-			o=get(app,S3,null);
-			if(o!=null && Decision.isStruct(o)){
-				appContext.setS3(Caster.toStruct(o));
-			}
-			
-			
-			
-	///////////////////////////////// ORM /////////////////////////////////
-			// ormenabled
-			o=get(app,ORM_ENABLED,null);
-			if(o!=null && Caster.toBooleanValue(o,false)){
-				initORM=true;
-				appContext.setORMEnabled(Caster.toBooleanValue(o));
-				
-				// settings
-				o=get(app,ORM_SETTINGS,null);
-				Struct settings;
-				if(o instanceof Struct)	settings=(Struct) o;
-				else	settings=new StructImpl();
-				
-				appContext.setORMConfiguration(pc,settings);
-				
-
-			}
-			
-			
-		}
-		catch(Throwable t) {
-			hasError=true;
-			pc.removeLastPageSource(true);
-		}
 		
 		pc.setApplicationContext(appContext);
-		if(initORM) {
+		if(appContext.isORMEnabled()) {
+			boolean hasError=throwsErrorWhileInit.toBooleanValue();
 			if(hasError)pc.addPageSource(app.getPageSource(), true);
 			try{
 				ORMUtil.resetEngine(pc,false);

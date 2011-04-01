@@ -22,6 +22,7 @@ import railo.runtime.db.SQLItemImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -32,7 +33,6 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.ScopeContext;
-import railo.runtime.util.ApplicationContextPro;
 
 /**
  * client scope that store it's data in a datasource
