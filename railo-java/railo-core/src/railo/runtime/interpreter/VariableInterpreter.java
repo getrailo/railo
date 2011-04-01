@@ -30,7 +30,7 @@ public final class VariableInterpreter {
 	 * @throws PageException
 	 */
 	public static Object getVariable(PageContext pc, Collection collection,String var) throws PageException {			
-	    StringList list = parse(pc,new ParserString(var));
+	    StringList list = parse(pc,new ParserString(var),false);
         if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
         
         while(list.hasNextNext()) {
@@ -59,7 +59,7 @@ public final class VariableInterpreter {
 	
 
 	public static Object getVariableEL(PageContext pc, Collection collection,String var) {			
-	    StringList list = parse(pc,new ParserString(var));
+	    StringList list = parse(pc,new ParserString(var),false);
         if(list==null) return null;
        
         while(list.hasNextNext()) {
@@ -77,7 +77,7 @@ public final class VariableInterpreter {
      * @throws PageException
 	 */
 	public static Object getVariable(PageContext pc,String var) throws PageException {
-        StringList list = parse(pc,new ParserString(var));
+        StringList list = parse(pc,new ParserString(var),false);
         if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
         
 		int scope=scopeString2Int(list.next());
@@ -103,7 +103,7 @@ public final class VariableInterpreter {
 	 * @return the value
 	 */
 	public static Object getVariableEL(PageContext pc,String var) {
-        StringList list = parse(pc,new ParserString(var));
+        StringList list = parse(pc,new ParserString(var),false);
         if(list==null) return null;
         
 		int scope=scopeString2Int(list.next());
@@ -138,7 +138,7 @@ public final class VariableInterpreter {
 	 * @throws PageException
 	 */
 	public static VariableReference getVariableReference(PageContext pc,String var) throws PageException { 
-	    StringList list = parse(pc,new ParserString(var));
+	    StringList list = parse(pc,new ParserString(var),false);
         if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
         
 		if(list.size()==1) {
@@ -174,7 +174,7 @@ public final class VariableInterpreter {
 	 * @throws PageException
 	 */
 	public static Object setVariable(PageContext pc,String var, Object value) throws PageException {			
-	    StringList list = parse(pc,new ParserString(var));
+	    StringList list = parse(pc,new ParserString(var),false);
         if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
 
 		if(list.size()==1) {
@@ -208,7 +208,7 @@ public final class VariableInterpreter {
 	 */
 	public static Object removeVariable(PageContext pc,String var) throws PageException {	
 	    //print.ln("var:"+var);
-	    StringList list = parse(pc,new ParserString(var));
+	    StringList list = parse(pc,new ParserString(var),false);
         if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
         
 		if(list.size()==1) {
@@ -241,7 +241,7 @@ public final class VariableInterpreter {
 	 * @return exists or not
 	 */
 	public static boolean isDefined(PageContext pc,String var) {
-		StringList list = parse(pc,new ParserString(var));
+		StringList list = parse(pc,new ParserString(var),false);
 		if(list==null) return false;
         try {
 			int scope=scopeString2Int(list.next());
@@ -304,15 +304,15 @@ public final class VariableInterpreter {
      * @param ps ParserString to read
      * @return Variable Definition in a String List
      */
-    private static StringList parse(PageContext pc,ParserString ps) {
-        String id=readIdentifier(ps);
+    private static StringList parse(PageContext pc,ParserString ps, boolean doLowerCase) {
+        String id=readIdentifier(ps,doLowerCase);
         if(id==null)return null;
         StringList list=new StringList(id);
         CFMLExpressionInterpreter interpreter=null;
         
         while(true) {
             if(ps.forwardIfCurrent('.')) {
-	            id=readIdentifier(ps);
+	            id=readIdentifier(ps,doLowerCase);
 	            if(id==null)return null;
 	            list.add(id);
             }
@@ -333,15 +333,15 @@ public final class VariableInterpreter {
         return list;
     }
     
-    public static StringList parse(String var) {
+    public static StringList parse(String var, boolean doLowerCase) {
     	ParserString ps = new ParserString(var);
-        String id=readIdentifier(ps);
+        String id=readIdentifier(ps,doLowerCase);
         if(id==null)return null;
         StringList list=new StringList(id);
         
         while(true) {
             if(ps.forwardIfCurrent('.')) {
-	            id=readIdentifier(ps);
+	            id=readIdentifier(ps,doLowerCase);
 	            if(id==null)return null;
 	            list.add(id);
             }
@@ -423,7 +423,7 @@ public final class VariableInterpreter {
 		return Scope.SCOPE_UNDEFINED;
 	}
     
-    private static String readIdentifier(ParserString ps) {
+    private static String readIdentifier(ParserString ps, boolean doLowerCase) {
         
         ps.removeSpace();
         if(ps.isAfterLast())return null;
@@ -436,7 +436,7 @@ public final class VariableInterpreter {
             else break;
         }
         ps.removeSpace();
-        return ps.substringLower(start,ps.getPos()-start);
+        return doLowerCase?ps.substringLower(start,ps.getPos()-start):ps.substring(start,ps.getPos()-start);
     }
 
 
