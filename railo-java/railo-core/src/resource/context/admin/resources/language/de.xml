@@ -202,7 +202,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="err.errortemplate.500">General Error Template (500)</data>
 	<data key="err.errortemplate.404">Missing Template Error (404)</data>
 	<data key="err.descr">Geben Sie ein individuelles Error-Template an.</data>
-	<data key="err.errorstatuscodedescription">Soll im Fehlerfall ein abweichender Statuscode zurückgegeben werden oder soll 200 beibehalten werden</data>
+	<data key="err.errorstatuscodedescription">Soll im Fehlerfall ein abweichender Statuscode zurückgegeben werden oder soll 200 beibehalten werden.</data>
 	<data key="err.errortemplatedescription.404">Template das beim fehlen eines template verwendet wird. Diese Einstellung kann über den Tag CFError übersteuert werden.</data>
 	<data key="err.errortemplatedescription.500">Template das in einem Fehlerfall verwendet werden soll. Diese Einstellung kann über den Tag CFError übersteuert werden.</data>
 	<data key="ext.updateavailabledesc">Für die installierte Version {installed} ist ein Update ({update}) verfügbar.</data>
