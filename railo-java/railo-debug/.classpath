@@ -52,7 +52,7 @@
 	<classpathentry kind="lib" path="/Railo-Libs/jacob.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/javaparser.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/javassist.jar"/>
-	<classpathentry kind="lib" path="/Railo-Libs/javax.servlet.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Railo-Libs/javax.servlet.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/jcommon.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/jencrypt.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/jffmpeg.jar"/>
