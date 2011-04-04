@@ -51,7 +51,7 @@ public class CFCGetter implements Getter {
 	 */
 	public Object get(Object trg) throws HibernateException {
 		try {
-			// MUST cache this, pherhaps when building xml
+			// MUST cache this, perhaps when building xml
 			HibernateORMEngine engine = getHibernateORMEngine();
 			PageContext pc = ThreadLocalPageContext.get();
 			Component cfc = Caster.toComponent(trg);
