@@ -44,6 +44,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.UDF;
 import railo.runtime.type.cfc.ComponentAccess;
@@ -59,6 +60,7 @@ public final class ComponentUtil {
 	private final static Method CONSTRUCTOR_OBJECT = Method.getMethod("void <init> ()");
 	private static final Type COMPONENT_CONTROLLER = Type.getType(ComponentController.class); 
 	private static final Method INVOKE = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
+	private static final Collection.Key FIELD_TYPE = KeyImpl.init("fieldtype");
 	
 	//private static final Method INVOKE_PROPERTY = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
 	
@@ -579,6 +581,16 @@ public final class ComponentUtil {
 			return ((ComponentPro)c).getProperties(onlyPeristent);
 		
 		throw new RuntimeException("class ["+Caster.toClassName(c)+"] does not support method [getProperties(boolean)]");
+	}
+	
+	public static Property[] getIDProperties(Component c,boolean onlyPeristent) {
+		Property[] props = getProperties(c, onlyPeristent);
+		java.util.List<Property> tmp=new ArrayList<Property>();
+		for(int i=0;i<props.length;i++){
+			if("id".equalsIgnoreCase(Caster.toString(props[i].getMeta().get(FIELD_TYPE,null),"")))
+				tmp.add(props[i]);
+		}
+		return tmp.toArray(new Property[tmp.size()]);
 	}
 	
 	public static ComponentPro toComponentPro(Component comp) throws ExpressionException {
