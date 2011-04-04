@@ -51,6 +51,7 @@ public class ORMConfiguration {
 	public static final Collection.Key EVENT_HANDLER = KeyImpl.getInstance("eventHandler");
 	public static final Collection.Key AUTO_MANAGE_SESSION = KeyImpl.getInstance("autoManageSession");
 	public static final Collection.Key SKIP_WITH_ERROR = KeyImpl.getInstance("skipCFCWithError");
+	public static final Collection.Key NAMING_STRATEGY = KeyImpl.getInstance("namingstrategy");
 	
 	
 	private boolean autogenmap=true;
@@ -70,6 +71,7 @@ public class ORMConfiguration {
 	private String cacheProvider;
 	private Resource ormConfig;
 	private String eventHandler;
+	private String namingStrategy;
 	private boolean isDefaultCfcLocation=true;
 	private boolean skipCFCWithError=true;
 	private boolean autoManageSession=true;
@@ -160,12 +162,13 @@ public class ORMConfiguration {
 		// dialect
 		c.dialect = StringUtil.trim(Caster.toString(settings.get(DIALECT,dc.getDialect()),dc.getDialect()),dc.getDialect());
 		
+		// namingstrategy
+		c.namingStrategy=Caster.toString(settings.get(NAMING_STRATEGY,dc.namingStrategy()),dc.namingStrategy());
 		
 		// eventHandler
 		c.eventHandler=Caster.toString(settings.get(EVENT_HANDLER,dc.eventHandler()),dc.eventHandler());
 		
 		// eventHandling
-		
 		Boolean b=Caster.toBoolean(settings.get(EVENT_HANDLING,null),null);
 		if(b==null) {
 			if(dc.eventHandling!=null && dc.eventHandling) 
@@ -273,6 +276,7 @@ public class ORMConfiguration {
 		other.dbCreate=dbCreate;
 		other.dialect=dialect;
 		other.eventHandler=eventHandler;
+		other.namingStrategy=namingStrategy;
 		other.eventHandling=eventHandling;
 		other.flushAtRequestEnd=flushAtRequestEnd;
 		other.logSQL=logSQL;
@@ -292,7 +296,7 @@ public class ORMConfiguration {
 	public String hash() {
 		
 		String data=autogenmap+":"+catalog+":"+isDefaultCfcLocation
-		+":"+dbCreate+":"+dialect+":"+eventHandling+":"+eventHandler+":"+flushAtRequestEnd+":"+logSQL+":"+autoManageSession+":"+skipCFCWithError+":"+saveMapping+":"+schema+":"+secondaryCacheEnabled+":"+
+		+":"+dbCreate+":"+dialect+":"+eventHandling+":"+namingStrategy+":"+eventHandler+":"+flushAtRequestEnd+":"+logSQL+":"+autoManageSession+":"+skipCFCWithError+":"+saveMapping+":"+schema+":"+secondaryCacheEnabled+":"+
 		useDBForMapping+":"+cacheProvider
 		
 		+":"+toStr(cfcLocations)+":"+toStr(sqlScript)+":"+toStr(cacheConfig)+":"+toStr(ormConfig)
@@ -375,6 +379,12 @@ public class ORMConfiguration {
 	public String eventHandler() {
 		return eventHandler;
 	}
+
+	public String namingStrategy() {
+		return namingStrategy;
+	}
+	
+	
 
 	/**
 	 * @return the flushAtRequestEnd
@@ -472,6 +482,7 @@ public class ORMConfiguration {
 		sct.setEL(DIALECT,StringUtil.emptyIfNull(getDialect()));
 		sct.setEL(EVENT_HANDLING,eventHandling());
 		sct.setEL(EVENT_HANDLER,eventHandler());
+		sct.setEL(NAMING_STRATEGY,namingStrategy());
 		sct.setEL(FLUSH_AT_REQUEST_END,flushAtRequestEnd());
 		sct.setEL(LOG_SQL,logSQL());
 		sct.setEL(SAVE_MAPPING,saveMapping());

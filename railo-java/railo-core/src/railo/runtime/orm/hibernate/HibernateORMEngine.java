@@ -49,6 +49,10 @@ import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.hibernate.event.EventListenerImpl;
 import railo.runtime.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
+import railo.runtime.orm.naming.CFCNamingStrategy;
+import railo.runtime.orm.naming.DefaultNamingStrategy;
+import railo.runtime.orm.naming.NamingStrategy;
+import railo.runtime.orm.naming.SmartNamingStrategy;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.CastableStruct;
@@ -86,6 +90,8 @@ public class HibernateORMEngine implements ORMEngine {
 	private Object hash;
 
 	private ORMConfiguration ormConf;
+
+	private NamingStrategy namingStrategy=DefaultNamingStrategy.INSTANCE;
 
 	public HibernateORMEngine() {}
 
@@ -191,6 +197,9 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		// load entities
 		if(!ArrayUtil.isEmpty(arr)) {
+			loadNamingStrategy(ormConf);
+			
+			
 			DatasourceConnectionPool pool = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool();
 			DatasourceConnection dc = pool.getDatasourceConnection(pc,pc.getConfig().getDataSource(dsn),null,null);
 			//DataSourceManager manager = pc.getDataSourceManager();
@@ -228,6 +237,9 @@ public class HibernateORMEngine implements ORMEngine {
 		if(configuration!=null) return _factory;
 		
 
+		
+		
+		
 		//DataSource ds = config.getDataSource(dsn);
 		
 		
@@ -281,6 +293,22 @@ public class HibernateORMEngine implements ORMEngine {
 		return _factory = configuration.buildSessionFactory();
 	}
 	
+	private void loadNamingStrategy(ORMConfiguration ormConf) throws PageException {
+		String strNamingStrategy=ormConf.namingStrategy();
+		if(StringUtil.isEmpty(strNamingStrategy,true)) {
+			namingStrategy=DefaultNamingStrategy.INSTANCE;
+		}
+		else {
+			strNamingStrategy=strNamingStrategy.trim();
+			if("default".equalsIgnoreCase(strNamingStrategy)) 
+				namingStrategy=DefaultNamingStrategy.INSTANCE;
+			else if("smart".equalsIgnoreCase(strNamingStrategy)) 
+				namingStrategy=SmartNamingStrategy.INSTANCE;
+			else 
+				namingStrategy=new CFCNamingStrategy(strNamingStrategy);
+		}
+	}
+
 	private static void addEventListeners(PageContext pc, Configuration config,ORMConfiguration ormConfig, Map<String, CFCInfo> cfcs) {
 		if(!ormConfig.eventHandling()) return;
 		String eventHandler = ormConfig.eventHandler();
@@ -730,6 +758,18 @@ public class HibernateORMEngine implements ORMEngine {
 		return names;
 		
 		//return cfcs.keySet().toArray(new String[cfcs.size()]);
+	}
+
+	public String convertTableName(String tableName) {
+		if(tableName==null) return null;
+		//print.o("table:"+namingStrategy.getType()+":"+tableName+":"+namingStrategy.convertTableName(tableName));
+		return namingStrategy.convertTableName(tableName);
+	}
+
+	public String convertColumnName(String columnName) {
+		if(columnName==null) return null;
+		//print.o("column:"+namingStrategy.getType()+":"+columnName+":"+namingStrategy.convertTableName(columnName));
+		return namingStrategy.convertColumnName(columnName);
 	}
 	
 	

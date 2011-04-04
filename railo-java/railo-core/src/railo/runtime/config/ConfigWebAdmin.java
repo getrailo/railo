@@ -3005,6 +3005,7 @@ public final class ConfigWebAdmin {
 		orm.setAttribute("autogenmap",Caster.toString(oc.autogenmap(),"true"));
 		orm.setAttribute("event-handler",Caster.toString(oc.eventHandler(),""));
 		orm.setAttribute("event-handling",Caster.toString(oc.eventHandling(),"false"));
+		orm.setAttribute("naming-strategy",Caster.toString(oc.namingStrategy(),""));
 		orm.setAttribute("flush-at-request-end",Caster.toString(oc.flushAtRequestEnd(),"true"));
 		orm.setAttribute("cache-provider",Caster.toString(oc.getCacheProvider(),""));
 		orm.setAttribute("cache-config",Caster.toString(oc.getCacheConfig(),"true"));
