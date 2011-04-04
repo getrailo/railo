@@ -5,6 +5,7 @@ import java.util.Map;
 
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
+import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
@@ -21,7 +22,7 @@ public class UDFHasProperty extends UDFGSProperty {
 	
 	private Key propName;
 	
-	private static final String NULL="sdsdsdfsfsfjkln fsdfsa";
+	//private static final String NULL="sdsdsdfsfsfjkln fsdfsa";
 
 	public UDFHasProperty(ComponentImpl component,Property prop)  {
 		super(component,"has"+StringUtil.ucFirst(PropertyFactory.getSingularName(prop)),getFunctionArgument(prop),CFTypes.TYPE_BOOLEAN,"wddx");
@@ -103,7 +104,7 @@ public class UDFHasProperty extends UDFGSProperty {
 				
 				return ((java.util.List)propValue).size()>0;
 			}
-			return false;
+			return propValue instanceof Component;
 		}
 	}
 	
