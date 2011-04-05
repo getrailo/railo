@@ -307,6 +307,7 @@ public final class LDAPClient {
                     
                     int len=qry.addRow();
                     NamingEnumeration rowEnum = resultRow.getAttributes().getAll();
+                    String dn = resultRow.getName()+","+start;
                     while(rowEnum.hasMore()) {
                         Attribute attr = (Attribute)rowEnum.next();
                         String key = attr.getID();
@@ -316,6 +317,7 @@ public final class LDAPClient {
                             //print.ln(id+":"+values.nextElement());
                         }            
                     }
+                    qry.setAtEL("dn",len,dn);
                     if(maxrows>0 && len>=maxrows)break;
                 }
             }
@@ -327,7 +329,7 @@ public final class LDAPClient {
                     
                     Attributes attributesRow = resultRow.getAttributes();
                     NamingEnumeration rowEnum = attributesRow.getIDs();
-                    
+                    String dn = resultRow.getName()+","+start;
                     while(rowEnum.hasMoreElements()) {
                         int len=qry.addRow();
                         String name = Caster.toString(rowEnum.next());
@@ -337,8 +339,8 @@ public final class LDAPClient {
                             value=attributesRow.get(name).get();
                         }catch(Exception e) {}
                         
-                        qry.setAtEL("name",len,name);
-                        qry.setAtEL("value",len,value);
+                        qry.setAtEL("name",qry.size(),"dn");
+                        qry.setAtEL("value",qry.size(),dn);
                         if(maxrows>0 && len>=maxrows)break outer;
                     }
                 }
