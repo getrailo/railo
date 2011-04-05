@@ -307,6 +307,8 @@ public final class LDAPClient {
                     
                     int len=qry.addRow();
                     NamingEnumeration rowEnum = resultRow.getAttributes().getAll();
+                    String dn = resultRow.getNameInNamespace(); 
+                    qry.setAtEL("dn",len,dn);
                     while(rowEnum.hasMore()) {
                         Attribute attr = (Attribute)rowEnum.next();
                         String key = attr.getID();
@@ -327,7 +329,6 @@ public final class LDAPClient {
                     
                     Attributes attributesRow = resultRow.getAttributes();
                     NamingEnumeration rowEnum = attributesRow.getIDs();
-                    
                     while(rowEnum.hasMoreElements()) {
                         int len=qry.addRow();
                         String name = Caster.toString(rowEnum.next());
@@ -341,6 +342,7 @@ public final class LDAPClient {
                         qry.setAtEL("value",len,value);
                         if(maxrows>0 && len>=maxrows)break outer;
                     }
+                    qry.setAtEL("name",qry.size(),"dn");
                 }
             }
         }
