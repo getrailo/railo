@@ -43,6 +43,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
+import railo.commons.lang.StringKeyLock;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
@@ -80,6 +81,7 @@ import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.listener.AppListenerSupport;
 import railo.runtime.listener.ApplicationListener;
+import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.listener.ModernAppListenerException;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.net.ftp.FTPPoolImpl;
@@ -92,6 +94,7 @@ import railo.runtime.orm.ORMSession;
 import railo.runtime.query.QueryCache;
 import railo.runtime.security.Credential;
 import railo.runtime.security.CredentialImpl;
+import railo.runtime.tag.Login;
 import railo.runtime.tag.TagHandlerPool;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -114,7 +117,7 @@ import railo.runtime.type.scope.ArgumentImpl;
 import railo.runtime.type.scope.CGI;
 import railo.runtime.type.scope.CGIImpl;
 import railo.runtime.type.scope.Client;
-import railo.runtime.type.scope.ClientSupport;
+import railo.runtime.type.scope.ClientPlus;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.Cookie;
 import railo.runtime.type.scope.CookieImpl;
@@ -129,6 +132,7 @@ import railo.runtime.type.scope.ScopeFactory;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.scope.Server;
 import railo.runtime.type.scope.Session;
+import railo.runtime.type.scope.SessionPlus;
 import railo.runtime.type.scope.Threads;
 import railo.runtime.type.scope.URL;
 import railo.runtime.type.scope.URLForm;
@@ -138,8 +142,8 @@ import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
+import railo.runtime.type.scope.storage.StorageScope;
 import railo.runtime.util.ApplicationContext;
-import railo.runtime.util.ApplicationContextImpl;
 import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.runtime.writer.CFMLWriter;
@@ -208,11 +212,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private Argument argument=new ArgumentImpl();
     private static LocalNotSupportedScope localUnsupportedScope=LocalNotSupportedScope.getInstance();
 	private LocalPro local=localUnsupportedScope;
-	private Session session;
+	private SessionPlus session;
 	private Server server;
 	private Cluster cluster;
 	private CookieImpl cookie=new CookieImpl();
-	private Client client;
+	private ClientPlus client;
 	private Application application;
 
     private Debugger debugger=new DebuggerImpl();
@@ -352,7 +356,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		this.queryCache=queryCache;
 		server=ScopeContext.getServerScope(this);
 		
-		defaultApplicationContext=new ApplicationContextImpl(config,true);
+		defaultApplicationContext=new ClassicApplicationContext(config,"",true);
 		
 	}
 	
@@ -397,6 +401,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
          forceWriter=writer;
          
 		 // Scopes
+         server=ScopeContext.getServerScope(this);
          if(hasFamily) {
         	 variablesRoot=new VariablesImpl();
         	 variables=variablesRoot;
@@ -444,8 +449,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		parent=null;
 		// Attention have to be before close
 		if(client!=null){
-        	client.release();
+        	client.touchAfterRequest(this);
         	client=null;
+        }
+		if(session!=null){
+        	session.touchAfterRequest(this);
+        	session=null;
         }
 		
 		// ORM
@@ -454,15 +463,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	try {
 				ORMEngine engine=ormSession.getEngine();
         		ORMConfiguration config=engine.getConfiguration(this);
-				if(config==null || config.flushAtRequestEnd()){
+        		if(config==null || (config.flushAtRequestEnd() && config.autoManageSession())){
 					ormSession.flush(this);
 					//ormSession.close(this);
 					//print.err("2orm flush:"+Thread.currentThread().getId());
 				}
+				ormSession.close(this);
 			} 
         	catch (Throwable t) {
         		//print.printST(t);
-        	}	
+        	}
+        	
 			
         	// release connection
 			DatasourceConnectionPool pool = this.config.getDatasourceConnectionPool();
@@ -476,36 +487,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		close();
         thread=null;
         
-        RequestImpl r = request;
+        //RequestImpl r = request;
         
         // Scopes
         if(hasFamily) {
         	if(!isChild){
         		req.disconnect();
         	}
-        	/*if(!isChild && threads!=null){
-               	synchronized (threads) {
-               		print.ds("isChild:"+isChild);
-       	        	java.util.Iterator it = threads.entrySet().iterator();
-       	        	Map.Entry entry;
-       	        	Threads t;
-       	        	ChildThreadImpl cti;
-       	        	PageContextImpl pci;
-       	        	while(it.hasNext()) {
-       	        		entry=(Entry) it.next();
-       	        		t = (Threads)entry.getValue();
-       	        		cti = (ChildThreadImpl) t.getChildThread();
-       	        		pci = (PageContextImpl) cti.getPageContext();
-       	        		if(pci !=null) {
-       	        			pci.unlink();
-       	        		}
-       	        	}
-       			}
-               }*/
-        	
-        	
-        	
-        	
         	
         	request=null;
         	_url=null;
@@ -532,8 +520,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		//if(cluster!=null)cluster.release();
         
         //client=null;
-        session=null;
-		application=null;
+        //session=null;
+        
+		
+        
+        
+		application=null;// not needed at the moment -> application.releaseAfterRequest();
 		
 		// Properties
         requestTimeout=-1;
@@ -1086,11 +1078,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     /**
      * @see PageContext#localScope()
      */// FUTURE remove class from type Local
-    public Scope localScope() { return local; }
+    public Scope localScope() { 
+    	//if(local==localUnsupportedScope) 
+    	//	throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope"));
+    	return local;
+    }
     
 // FUTURE remove class from type Local
     public Scope localScope(boolean bind) { 
     	if(bind)local.setBind(true); 
+    	//if(local==localUnsupportedScope) 
+    	//	throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope"));
     	return local; 
     }
 
@@ -1136,6 +1134,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see PageContext#sessionScope()
      */
     public Session sessionScope() throws PageException {
+		return sessionScope(true);
+	}
+    public Session sessionScope(boolean checkExpires) throws PageException {
 		if(session==null)	{
 			if(!applicationContext.hasName())
 				throw new ExpressionException("there is no session context defined for this application","you can define a session context with the tag cfapplication/Application.cfc");
@@ -1150,7 +1151,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see PageContext#serverScope()
      */
     public Server serverScope() { 
-		if(!server.isInitalized()) server.initialize(this);
+		//if(!server.isInitalized()) server.initialize(this);
 		return server;
 	}
     
@@ -1190,7 +1191,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				throw new ExpressionException("client scope is not enabled",
 						"you can enable client scope with tag cfapplication/Application.cfc");
 			
-			client=scopeContext.getClientScope(this);
+			client=(ClientPlus) scopeContext.getClientScope(this);
 		}
 		return client;
 	}
@@ -1199,7 +1200,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		if(client==null) {
 			if(!applicationContext.hasName()) 				return null;
 			if(!applicationContext.isSetClientManagement())	return null;
-			client=scopeContext.getClientScopeEL(this);
+			client=(ClientPlus) scopeContext.getClientScopeEL(this);
 		}
 		return client;
 	}
@@ -2107,13 +2108,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private void initIdAndToken() {
         boolean setCookie=true;
         // From URL
-        Object oCfid = urlScope().get(ClientSupport.CFID,null);
-        Object oCftoken = urlScope().get(ClientSupport.CFTOKEN,null);
+        Object oCfid = urlScope().get(StorageScope.CFID,null);
+        Object oCftoken = urlScope().get(StorageScope.CFTOKEN,null);
         // Cookie
         if((oCfid==null || !Decision.isGUIdSimple(oCfid)) || oCftoken==null) {
             setCookie=false;
-            oCfid = cookieScope().get(ClientSupport.CFID,null);
-            oCftoken = cookieScope().get(ClientSupport.CFTOKEN,null);
+            oCfid = cookieScope().get(StorageScope.CFID,null);
+            oCftoken = cookieScope().get(StorageScope.CFTOKEN,null);
         }
         if(oCfid!=null && !Decision.isGUIdSimple(oCfid) ) {
         	oCfid=null;
@@ -2317,16 +2318,19 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public Credential getRemoteUser() throws PageException {
         if(remoteUser==null) {
-            if(applicationContext.getLoginStorage()==Scope.SCOPE_SESSION) {
-                Object auth = sessionScope().get("cfauthorization",null);
+        	String name=Login.getApplicationName(applicationContext);
+		    Resource roles = config.getConfigDir().getRealResource("roles");
+		    
+        	if(applicationContext.getLoginStorage()==Scope.SCOPE_SESSION) {
+                Object auth = sessionScope().get(name,null);
                 if(auth!=null) {
-                    remoteUser=CredentialImpl.decode(auth);
+                    remoteUser=CredentialImpl.decode(auth,roles);
                 }
             }
             else if(applicationContext.getLoginStorage()==Scope.SCOPE_COOKIE) {
-                Object auth = cookieScope().get("cfauthorization_"+applicationContext.getName(),null);
+                Object auth = cookieScope().get(name,null);
                 if(auth!=null) {
-                    remoteUser=CredentialImpl.decode(auth);
+                    remoteUser=CredentialImpl.decode(auth,roles);
                 }
             }
         }
@@ -2338,9 +2342,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public void clearRemoteUser() {
         if(remoteUser!=null)remoteUser=null;
-        cookieScope().removeEL(KeyImpl.init("cfauthorization_"+applicationContext.getName()));
+        String name=Login.getApplicationName(applicationContext);
+	    
+        cookieScope().removeEL(KeyImpl.init(name));
         try {
-			sessionScope().removeEL(KeyImpl.init("cfauthorization"));
+			sessionScope().removeEL(KeyImpl.init(name));
 		} catch (PageException e) {}
         
     }
@@ -2501,38 +2507,54 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @throws PageException
      */
     public boolean initApplicationContext() throws PageException {
+    	boolean initSession=false;
 	    AppListenerSupport listener = (AppListenerSupport) config.getApplicationListener();
+    	StringKeyLock lock = config.getContextLock();
 	    
-    	boolean initSession = applicationContext.isSetSessionManagement() && listener.hasOnSessionStart(this) && !scopeContext.hasExistingSessionScope(this);
+    	String token=applicationContext.getName()+":"+getCFID();
     	
-    	// init application
-	    RefBoolean isNew=new RefBooleanImpl(false);
-	    application=scopeContext.getApplicationScope(this,isNew);
-	    
-	    // FUTURE ApplicationListener listener = config.getApplicationListener();
-	    
-	    
-	    if(isNew.toBooleanValue()) {
-		    try {
-				if(!listener.onApplicationStart(this)) {
-					scopeContext.removeApplicationScope(this);
-					return false;
-				}
-			} catch (PageException pe) {
-				scopeContext.removeApplicationScope(this);
-				throw pe;
-			}
-	    }
-	    
-	    // init session
-	    if(initSession) {
-	    	//session=scopeContext.getSessionScope(this,isNew);
-	    	//if(initSession) {// isNew i not used in this case, because it is possible that "onApplicationStart" has initilaized the session scope
+    	lock.lock(token);
+    	//print.o("outer-lock  :"+token);
+    	try {
+    		// check session before executing any code
+	    	initSession=applicationContext.isSetSessionManagement() && listener.hasOnSessionStart(this) && !scopeContext.hasExistingSessionScope(this);
+	    	
+	    	// init application
+	    	lock.lock(applicationContext.getName());
+	    	//print.o("inner-lock  :"+token);
+	    	try {
+	    		RefBoolean isNew=new RefBooleanImpl(false);
+			    application=scopeContext.getApplicationScope(this,isNew);// this is needed that the application scope is initilized
+		    	if(isNew.toBooleanValue()) {
+				    try {
+						if(!listener.onApplicationStart(this)) {
+							scopeContext.removeApplicationScope(this);
+						    return false;
+						}
+					} catch (PageException pe) {
+						scopeContext.removeApplicationScope(this);
+						throw pe;
+					}
+			    }
+	    	}
+	    	finally{
+		    	//print.o("inner-unlock:"+token);
+	    		lock.unlock(applicationContext.getName());
+	    	}
+    	
+	    	// init session
+		    if(initSession) {
+		    	scopeContext.getSessionScope(this, DUMMY_BOOL);// this is needed that the session scope is initilized
 		    	listener.onSessionStart(this);
-		    //}
-	    }
+			}
+    	}
+    	finally{
+	    	//print.o("outer-unlock:"+token);
+    		lock.unlock(token);
+    	}
 	    return true;
     }
+    
 
     /**
      * @return the scope factory
@@ -2620,7 +2642,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#loadComponent(java.lang.String)
      */
     public railo.runtime.Component loadComponent(String compPath) throws PageException {
-    	return ComponentLoader.loadComponentImpl(this,compPath,null,null);
+    	return ComponentLoader.loadComponent(this,compPath,null,null);
     }
 
 	/**
@@ -2796,13 +2818,16 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 
 	
-	public ORMSession getORMSession() throws PageException {
-		//ORMUtil.checkRestriction(this);
-		
+	/**
+	 * @param create if set to true, railo creates a session when not exist
+	 * @return
+	 * @throws PageException
+	 */
+	public ORMSession getORMSession(boolean create) throws PageException {
 		if(ormSession==null || !ormSession.isValid())	{
+			if(!create) return null;
 			ormSession=config.getORMEngine(this).createSession(this);
 		}
-		
 		DatasourceManagerImpl manager = (DatasourceManagerImpl) getDataSourceManager();
 		manager.add(this,ormSession);
 		
@@ -2810,8 +2835,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		
 		
 	}
-
-
 
 	public void resetSession() {
 		this.session=null;

@@ -317,7 +317,7 @@
     <td colspan="2">
     <input type="hidden" name="step" value="#url.step#">
     <input type="hidden" name="repPath" value="#zip#">
-    <input type="hidden" name="fields" value="#listTrim(fields)#">
+    <input type="hidden" name="fields" value="#ListCompact(fields)#">
     
     <cfloop collection="#form#" item="key">
     	<cfif len(key) gt 3 and left(key,3) EQ "dyn">

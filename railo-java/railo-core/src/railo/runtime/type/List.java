@@ -87,7 +87,7 @@ public final class List {
 			    c=list.charAt(i);
 			    for(int y=0;y<del.length;y++) {
 					if(c==del[y]) {
-						array._append(list.substring(last,i));
+						array.appendEL(list.substring(last,i));
 						last=i+1;
 					}
 			    }
@@ -940,16 +940,16 @@ public final class List {
 		return sb.toString();
 	}
 	
-	public static String listToList(java.util.List list, String delimeter) {
+	public static String listToList(java.util.List list, String delimeter) throws PageException {
 		if(list.size()==0) return "";
 		StringBuffer sb=new StringBuffer();
 		Iterator it = list.iterator();
 		
-		if(it.hasNext()) sb.append((String)it.next());
+		if(it.hasNext()) sb.append(Caster.toString(it.next()));
 			
 		while(it.hasNext()) {
 			sb.append(delimeter);
-			sb.append((String)it.next());
+			sb.append(Caster.toString(it.next()));
 		}
 		return sb.toString();
 	}

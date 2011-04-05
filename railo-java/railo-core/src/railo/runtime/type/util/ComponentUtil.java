@@ -46,6 +46,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.List;
 import railo.runtime.type.UDF;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.util.ASMProperty;
 import railo.transformer.bytecode.util.ASMUtil;
@@ -71,11 +72,11 @@ public final class ComponentUtil {
      * @return
      * @throws PageException
      */
-	public static Class getComponentJavaAccess(ComponentImpl component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
+	public static Class getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
 		return _getComponentJavaAccess(component, isNew,create,writeLog);
 	}
 	    
-    private static Class _getComponentJavaAccess(ComponentImpl component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
+    private static Class _getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
     	isNew.setValue(false);
     	String classNameOriginal=component.getPageSource().getFullClassName();
     	String className=getClassname(component).concat("_wrap");
@@ -465,8 +466,7 @@ public final class ComponentUtil {
 
 	public static String md5(Component c) throws IOException, ExpressionException {
 		//Iterator it=component.keyIterator();
-		ComponentImpl ci = toComponentImpl(c);
-		ComponentWrap cw = new ComponentWrap(Component.ACCESS_PRIVATE,ci);
+		ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,c);
 		Key[] keys = cw.keys();
 		Arrays.sort(keys);
 		
@@ -558,8 +558,8 @@ public final class ComponentUtil {
 			String strAccess = toStringAccess(access,"");
 			
 			String[] other;
-			if(c instanceof ComponentImpl)
-				other=((ComponentImpl)c).keysAsString(access);
+			if(c instanceof ComponentAccess)
+				other=((ComponentAccess)c).keysAsString(access);
 			else 
 				other=c.keysAsString();
 			
@@ -580,18 +580,20 @@ public final class ComponentUtil {
 		
 		throw new RuntimeException("class ["+Caster.toClassName(c)+"] does not support method [getProperties(boolean)]");
 	}
-
-	public static ComponentImpl toComponentImpl(Component comp) throws ExpressionException {
-		if(comp instanceof ComponentImpl) return (ComponentImpl) comp;
-		if(comp instanceof ComponentWrap) return ((ComponentWrap) comp).getComponentImpl();
-		throw new ExpressionException("can't cast class ["+Caster.toClassName(comp)+"] to a class of type ComponentImpl");
-		
-	}
 	
 	public static ComponentPro toComponentPro(Component comp) throws ExpressionException {
 		if(comp instanceof ComponentPro) return (ComponentPro) comp;
 		throw new ExpressionException("can't cast class ["+Caster.toClassName(comp)+"] to a class of type ComponentPro");
 	}
+
+	public static ComponentAccess toComponentAccess(Component comp) throws ExpressionException {
+		if(comp instanceof ComponentAccess) return (ComponentAccess) comp;
+		if(comp instanceof ComponentWrap) return ((ComponentWrap) comp).getComponentAccess();
+		throw new ExpressionException("can't cast class ["+Caster.toClassName(comp)+"] to a class of type ComponentAccess");
+	}
+	
+	
+	
 	public static ComponentPro toComponentPro(Object obj) throws ExpressionException {
 		if(obj instanceof ComponentPro) return (ComponentPro) obj;
 		throw new ExpressionException("can't cast class ["+Caster.toClassName(obj)+"] to a class of type ComponentPro");
@@ -614,7 +616,7 @@ public final class ComponentUtil {
 		return defaultValue;
 	}
 
-	public static ComponentImpl getActiveComponent(PageContext pc, ComponentImpl current) {
+	public static ComponentAccess getActiveComponent(PageContext pc, ComponentAccess current) {
 		if(pc.getActiveComponent()==null) return current; 
 		if(pc.getActiveUDF()!=null && ((ComponentPro)pc.getActiveComponent()).getPageSource()==((ComponentPro)pc.getActiveUDF().getOwnerComponent()).getPageSource()){
 			

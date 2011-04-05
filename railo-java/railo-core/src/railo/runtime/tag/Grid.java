@@ -3,13 +3,6 @@ package railo.runtime.tag;
 import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.BodyTagImpl;
 
-/**
-* Used inside cfform, cfgrid lets you place a grid control in a ColdFusion form. A grid control is 
-*   	a table of data divided into rows and columns. The cfgrid tag column data is specified with cfgridcolumn tags.
-*
-*
-*
-**/
 public final class Grid extends BodyTagImpl {
 
 	/** Width value of the grid control, in pixels. */
@@ -42,7 +35,7 @@ public final class Grid extends BodyTagImpl {
 	** 	If Yes, automatically sets the width of each column so that all the columns are visible within the 
 	** 	grid's specified width. All columns are initially set to equal widths. Users can resize any column. 
 	** 	No horizontal scroll bars are available since all columns are visible. 
-	** 	note that if you explicitly specify the width of a column and set autoWidth to Yes, ColdFusion will 
+	** 	note that if you explicitly specify the width of a column and set autoWidth to Yes, CFML will 
 	** 	set the column to the explicit width, if possible. */
 	private boolean autowidth;
 
@@ -344,7 +337,7 @@ public final class Grid extends BodyTagImpl {
 	* 	If Yes, automatically sets the width of each column so that all the columns are visible within the 
 	* 	grid's specified width. All columns are initially set to equal widths. Users can resize any column. 
 	* 	No horizontal scroll bars are available since all columns are visible. 
-	* 	note that if you explicitly specify the width of a column and set autoWidth to Yes, ColdFusion will 
+	* 	note that if you explicitly specify the width of a column and set autoWidth to Yes, CFML will 
 	* 	set the column to the explicit width, if possible.
 	* @param autowidth value to set
 	**/

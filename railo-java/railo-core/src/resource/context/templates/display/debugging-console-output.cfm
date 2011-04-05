@@ -13,8 +13,14 @@
 </cfif>
 
 
-<cfsavecontent variable="plus"><cfinclude template="../../admin/resources/img/debug_plus.gif.cfm"></cfsavecontent>
-<cfsavecontent variable="minus"><cfinclude template="../../admin/resources/img/debug_minus.gif.cfm"></cfsavecontent>
+<!--- Plus/minus Image --->
+<cfif structKeyExists(cgi,'http_user_agent') and findNocase('MSIE',cgi.http_user_agent)>
+	<cfset plus="#cgi.context_path#/railo-context/admin/resources/img/debug_plus.gif.cfm">
+	<cfset minus="#cgi.context_path#/railo-context/admin/resources/img/debug_minus.gif.cfm">
+<cfelse>
+    <cfsavecontent variable="plus"><cfinclude template="../../admin/resources/img/debug_plus.gif.cfm"></cfsavecontent>
+    <cfsavecontent variable="minus"><cfinclude template="../../admin/resources/img/debug_minus.gif.cfm"></cfsavecontent>
+</cfif>
 
 <cfparam name="url._debug_action" default="display_debug">
 <cfoutput><cfsavecontent variable="sImgPlus"><img src="#plus#" style="margin:2px 2px 0px 0px;"></cfsavecontent>
@@ -353,6 +359,7 @@ function uCaseFirst(String str) {
 					<td class="cfdebug"><b>Text</b></td>
 					<td class="cfdebug"><b>Template</b></td>
 					<td class="cfdebug"><b>Line</b></td>
+					<td class="cfdebug"><b>Action</b></td>
 					<td class="cfdebug"><b>Var</b></td>
 					<td class="cfdebug"><b>Total Time</b></td>
 					<td class="cfdebug"><b>Trace Slot Time</b></td>
@@ -366,6 +373,7 @@ function uCaseFirst(String str) {
 					<td align="let" class="cfdebug" nowrap valign="top">#traces.text#&nbsp;</td>
 					<td align="left" class="cfdebug" nowrap valign="top">#traces.template#</td>
 					<td align="right" class="cfdebug" nowrap valign="top">#traces.line#</td>
+					<cfif isDefined('traces.action')><td align="right" class="cfdebug" nowrap valign="top">#traces.action#</td></cfif>
 					<td align="left" class="cfdebug" nowrap valign="top"><cfif len(traces.varName)>#traces.varName# = #traces.varValue#<cftry><cfdump var="#evaluate(traces.varValue)#" label="#traces.varName#"><cfcatch></cfcatch></cftry><cfelse>&nbsp;<br />
 					</cfif></td>
 					<td align="right" class="cfdebug" nowrap valign="top">#total# ms</td>

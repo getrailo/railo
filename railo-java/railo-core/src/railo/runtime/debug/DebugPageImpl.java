@@ -91,7 +91,7 @@ public final class DebugPageImpl implements Dumpable, DebugPage {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable table=new DumpTable("#C9C95D","#E4E4AD","#000000");
+		DumpTable table=new DumpTable("#cccc66","#cccc99","#000000");
 		table.setTitle(file.getAbsolutePath());
 		table.appendRow(1, new SimpleDumpData("min (ms)"), new SimpleDumpData(min));
 		table.appendRow(1, new SimpleDumpData("avg (ms)"), new SimpleDumpData(getAverageExecutionTime()));

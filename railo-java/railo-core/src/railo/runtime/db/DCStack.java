@@ -13,7 +13,7 @@ class DCStack {
 	DCStack() {
 	}
 
-	public synchronized void add(DatasourceConnection dc){
+	public synchronized void add(DatasourceConnectionPro dc){
 		item=new Item(item,dc);
 	}
 
@@ -61,11 +61,11 @@ class DCStack {
 	}
 	
 	class Item {
-		private DatasourceConnection dc;
+		private DatasourceConnectionPro dc;
 		private Item prev;
 		private int count=1;
 		
-		public Item(Item item,DatasourceConnection dc) {
+		public Item(Item item,DatasourceConnectionPro dc) {
 			this.prev=item;
 			this.dc=dc;
 			if(prev!=null)count=prev.count+1;
@@ -88,8 +88,7 @@ class DCStack {
 		if((current.dc.isTimeout() || current.dc.getConnection().isClosed())) { 
 			if(!current.dc.getConnection().isClosed()){
 				try {
-					//print.out("close:"+current.dc.getDatasource());
-		            current.dc.getConnection().close();
+					current.dc.close();
 		        } 
 		        catch (SQLException e) {}
 			}

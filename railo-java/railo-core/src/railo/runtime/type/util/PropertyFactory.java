@@ -1,9 +1,11 @@
 package railo.runtime.type.util;
 
 import railo.commons.lang.StringUtil;
+import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.component.Member;
 import railo.runtime.component.Property;
+import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
@@ -20,16 +22,43 @@ public class PropertyFactory {
 	public static final Collection.Key SINGULAR_NAME = KeyImpl.getInstance("singularName");
 	public static final Key FIELD_TYPE = KeyImpl.getInstance("fieldtype");
 
+	
+	public static void createPropertyUDFs(ComponentImpl comp, Property property) throws PageException {
+		// getter
+		if(property.getGetter()){
+			PropertyFactory.addGet(comp,property);
+		}
+		// setter
+		if(property.getSetter()){
+			PropertyFactory.addSet(comp,property);
+		}
+
+		String fieldType = Caster.toString(property.getMeta().get(PropertyFactory.FIELD_TYPE,null),null);
+		
+		// add
+		if(fieldType!=null) {
+			if("one-to-many".equalsIgnoreCase(fieldType) || "many-to-many".equalsIgnoreCase(fieldType)) {
+				PropertyFactory.addHas(comp,property);
+				PropertyFactory.addAdd(comp,property);
+				PropertyFactory.addRemove(comp,property);
+			}
+			else if("one-to-one".equalsIgnoreCase(fieldType) || "many-to-one".equalsIgnoreCase(fieldType)) {
+				PropertyFactory.addHas(comp,property);
+			}
+		}
+	}
+	
+	
 	public static void addGet(ComponentImpl comp, Property prop) {
-		Member m = comp.getMember(ComponentImpl.ACCESS_PRIVATE,KeyImpl.init("get"+prop.getName()),true,false);
+		Member m = comp.getMember(Component.ACCESS_PRIVATE,KeyImpl.init("get"+prop.getName()),true,false);
 		if(!(m instanceof UDF)){
 			UDF udf = new UDFGetterProperty(comp,prop);
 			comp.registerUDF(udf.getFunctionName(), udf);
 		}
 	}
 
-	public static void addSet(ComponentImpl comp, Property prop) {
-		Member m = comp.getMember(ComponentImpl.ACCESS_PRIVATE,KeyImpl.init("set"+prop.getName()),true,false);
+	public static void addSet(ComponentImpl comp, Property prop) throws PageException {
+		Member m = comp.getMember(Component.ACCESS_PRIVATE,KeyImpl.init("set"+prop.getName()),true,false);
 		if(!(m instanceof UDF)){
 			UDF udf = new UDFSetterProperty(comp,prop);
 			comp.registerUDF(udf.getFunctionName(), udf);
@@ -37,7 +66,7 @@ public class PropertyFactory {
 	}
 	
 	public static void addHas(ComponentImpl comp, Property prop) {
-		Member m = comp.getMember(ComponentImpl.ACCESS_PRIVATE,KeyImpl.init("has"+getSingularName(prop)),true,false);
+		Member m = comp.getMember(Component.ACCESS_PRIVATE,KeyImpl.init("has"+getSingularName(prop)),true,false);
 		if(!(m instanceof UDF)){
 			UDF udf = new UDFHasProperty(comp,prop);
 			comp.registerUDF(udf.getFunctionName(), udf);
@@ -53,7 +82,7 @@ public class PropertyFactory {
 	}
 
 	public static void addRemove(ComponentImpl comp, Property prop) {
-		Member m = comp.getMember(ComponentImpl.ACCESS_PRIVATE,KeyImpl.init("remove"+getSingularName(prop)),true,false);
+		Member m = comp.getMember(Component.ACCESS_PRIVATE,KeyImpl.init("remove"+getSingularName(prop)),true,false);
 		if(!(m instanceof UDF)){
 			UDF udf = new UDFRemoveProperty(comp,prop);
 			comp.registerUDF(udf.getFunctionName(), udf);

@@ -35,32 +35,9 @@ public final class Property extends MemberSupport implements ASMProperty {
 	private String _default;
 	private String displayname="";
 	private String hint="";
-	private Struct meta=new StructImpl();
+	private final Struct meta=new StructImpl();
 
-	private String ownerName; 
-
-	
-	
-	// ORM Attributes
-	/*private int batchsize;
-	private int cascade=HibernateConstants.CASCADE_NONE;
-	private String catalog=null;
-	private Component cfc=null;
-	private int collectionType=HibernateConstants.COLLECTION_TYPE_ARRAY;
-	private String column=null;
-	private boolean constrained=false;
-	private String dataType=null;
-	private boolean dynamicInsert;
-	private boolean dynamicUpdate;
-	private String elementColumn;
-	private String elementType;
-	private String entityName;
-	private int fetchBatchSize;
-	private String fieldType;
-	private String fkColumn;
-	private String formula;
-	private String generator;
-	private boolean getter;*/
+	private String ownerName;
 	
 	public Property() {
 		super(Component.ACCESS_REMOTE);
@@ -149,135 +126,6 @@ public final class Property extends MemberSupport implements ASMProperty {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
-	
-	
-	/*public int getBatchsize() {
-		return batchsize;
-	}
-	public void setBatchsize(int batchsize) {
-		this.batchsize = batchsize;
-	}
-	public int getCascade() {
-		return cascade;
-	}
-	public void setCascade(int cascade) {
-		this.cascade = cascade;
-	}
-	public String getCatalog() {
-		return catalog;
-	}
-	public void setCatalog(String catalog) {
-		this.catalog = catalog;
-	}
-	public Component getCfc() {
-		return cfc;
-	}
-	public void setCfc(Component cfc) {
-		this.cfc = cfc;
-	}
-	public int getCollectionType() {
-		return collectionType;
-	}
-	public void setCollectionType(int collectionType) {
-		this.collectionType = collectionType;
-	}
-	public String getColumn() {
-		if(StringUtil.isEmpty(column)) return getName();
-		return column;
-	}
-	public void setColumn(String column) {
-		this.column = column;
-	}
-	public boolean getConstrained() {
-		return constrained;
-	}
-	public void setConstrained(boolean constrained) {
-		this.constrained = constrained;
-	}
-	public String getDataType() {
-		return dataType;
-	}
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
-	}
-	public boolean getDynamicInsert() {
-		return dynamicInsert;
-	}
-	public void setDynamicInsert(boolean dynamicInsert) {
-		this.dynamicInsert = dynamicInsert;
-	}
-	public boolean getDynamicUpdate() {
-		return dynamicUpdate;
-	}
-	public void setDynamicUpdate(boolean dynamicUpdate) {
-		this.dynamicUpdate = dynamicUpdate;
-	}
-	public String getElementColumn() {
-		return elementColumn;
-	}
-	public void setElementColumn(String elementColumn) {
-		this.elementColumn = elementColumn;
-	}
-	public String getElementType() {
-		return elementType;
-	}
-	public void setElementType(String elementType) {
-		this.elementType = elementType;
-	}
-	public void setEntityName(String entityName) {
-		this.entityName = entityName;
-	}
-	public String getEntityName() {
-		return entityName;
-	}
-	public void setFetchBatchSize(int fetchBatchSize) {
-		this.fetchBatchSize = fetchBatchSize;
-	}
-	public int getFetchBatchSize() {
-		return fetchBatchSize;
-	}
-	public void setFieldType(String fieldType) {
-		this.fieldType = fieldType;
-	}
-	public String getFieldType() {
-		return fieldType;
-	}
-	public void setFormula(String formula) {
-		this.formula = formula;
-	}
-	public String getFormula() {
-		return formula;
-	}
-	public void setGenerator(String generator) {
-		this.generator = generator;
-	}
-	public String getGenerator() {
-		return generator;
-	}
-	public void setGetter(boolean getter) {
-		this.getter = getter;
-	}
-	public boolean getGetter() {
-		return getter;
-	}
-	public void setFkColumn(String fkColumn) {
-		this.fkColumn = fkColumn;
-	}
-	public String getFkColumn() {
-		if(StringUtil.isEmpty(fkColumn))
-			return getColumn();
-		return fkColumn;
-	}*/
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 	/**
 	 *
@@ -387,9 +235,4 @@ public final class Property extends MemberSupport implements ASMProperty {
 		
 		return toString().equals(other.toString());
 	}
-	
-
-
-
-	
 }

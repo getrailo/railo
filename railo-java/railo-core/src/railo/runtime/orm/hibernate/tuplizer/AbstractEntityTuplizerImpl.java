@@ -2,7 +2,6 @@ package railo.runtime.orm.hibernate.tuplizer;
 
 import org.hibernate.EntityMode;
 import org.hibernate.EntityNameResolver;
-import org.hibernate.HibernateException;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.Property;
@@ -14,11 +13,9 @@ import org.hibernate.tuple.Instantiator;
 import org.hibernate.tuple.entity.AbstractEntityTuplizer;
 import org.hibernate.tuple.entity.EntityMetamodel;
 
-import railo.runtime.ComponentImpl;
-import railo.runtime.op.Caster;
-import railo.runtime.orm.hibernate.HibernateRuntimeException;
 import railo.runtime.orm.hibernate.tuplizer.accessors.CFCAccessor;
 import railo.runtime.orm.hibernate.tuplizer.proxy.CFCProxyFactory;
+import railo.runtime.type.cfc.ComponentAccess;
 
 public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 
@@ -71,22 +68,8 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 	 */
 	protected ProxyFactory buildProxyFactory(PersistentClass pc, Getter arg1,Setter arg2) {
 		CFCProxyFactory pf = new CFCProxyFactory();
-		//print.out("persis:"+pc.getNodeName());
-		try {
-			
-			//TODO: design new lifecycle for ProxyFactory
-			pf.postInstantiate(
-					pc.getNodeName(),//getEntityName(),
-					null,
-					null,
-					null,
-					null,
-					null
-			);
-		}
-		catch ( HibernateException he ) {
-			throw new HibernateRuntimeException(Caster.toPageException(he));
-		}
+		pf.postInstantiate(pc);
+		
 		return pf;
 	}
 
@@ -108,14 +91,14 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 	 * @see org.hibernate.tuple.entity.EntityTuplizer#getConcreteProxyClass()
 	 */
 	public Class getConcreteProxyClass() {
-		return ComponentImpl.class;
+		return ComponentAccess.class;// ????
 	}
 
 	/**
 	 * @see org.hibernate.tuple.Tuplizer#getMappedClass()
 	 */
 	public Class getMappedClass() {
-		return ComponentImpl.class;
+		return ComponentAccess.class; // ????
 	}
 
 	public EntityMode getEntityMode() {

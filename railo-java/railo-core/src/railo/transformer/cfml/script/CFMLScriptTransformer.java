@@ -390,7 +390,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @throws TemplateException
 	 */
 	public boolean caseStatement(Data data,Switch swit) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent("case "))
+		if(!data.cfml.forwardIfCurrentAndNoWordAfter("case"))
 			return false;
 		
 		//int line=data.cfml.getLine();		
@@ -716,6 +716,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		else if((child=_multiAttrStatement(parent,data,"execute",CTX_OTHER,true,true))!=null)				return child;
 		else if((child=_singleAttrStatement(parent,data,"exit","method",ATTR_TYPE_OPTIONAL,true))!=null)	return child;
 		else if((child=_multiAttrStatement(parent,data,"feed",CTX_OTHER,false,true))!=null)					return child;
+		else if((child=_multiAttrStatement(parent,data,"file",CTX_OTHER,false,true))!=null)					return child;
 		else if((child=_singleAttrStatement(parent,data,"flush","interval",ATTR_TYPE_OPTIONAL,true))!=null)	return child;
 		else if((child=_multiAttrStatement(parent,data,"ftp",CTX_OTHER,false,true))!=null)					return child;
 		else if((child=_multiAttrStatement(parent,data,"http",CTX_OTHER,true,true))!=null)					return child;

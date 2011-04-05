@@ -32,9 +32,9 @@ public final class IsValid implements Function {
 	public static boolean call(PageContext pc, String type, Object value) throws ExpressionException {
 		type=type.trim().toLowerCase();
 		if("range".equals(type))
-			throw new FunctionException(pc,"isValid",1,"type","for [range] you have to define a min and max value [isValid(\"range\",value,min,max)]");
+			throw new FunctionException(pc,"isValid",1,"type","for [range] you have to define a min and max value");
 		if("regex".equals(type) || "regular_expression".equals(type))
-			throw new FunctionException(pc,"isValid",1,"type","for [regex] you have to define a pattern [isValid(\"regex\",value,pattern)]");
+			throw new FunctionException(pc,"isValid",1,"type","for [regex] you have to define a pattern");
 
 		return Decision.isValid(type, value);
 	}
@@ -53,35 +53,66 @@ public final class IsValid implements Function {
 		if(!"regex".equals(type) && !"regular_expression".equals(type))
 			throw new FunctionException(pc,"isValid",1,"type","wrong attribute count for type ["+type+"]");
 		
-		String str=Caster.toString(value,null);
-		if(str==null)
+		return regex(Caster.toString(value,null),Caster.toString(objPattern));
+	}
+	
+	
+	
+	
+	public static boolean regex(String value,String strPattern) {
+		if(value==null)
 			return false;
 		
 		try {
-			Pattern pattern = new Perl5Compiler().compile(Caster.toString(objPattern), Perl5Compiler.MULTILINE_MASK);
-	        PatternMatcherInput input = new PatternMatcherInput(str);
+			Pattern pattern = new Perl5Compiler().compile(strPattern, Perl5Compiler.MULTILINE_MASK);
+	        PatternMatcherInput input = new PatternMatcherInput(value);
 	        return new Perl5Matcher().matches(input, pattern);
 		} catch (MalformedPatternException e) {
 			return false;
 		}
 	}
-	
-	public static boolean call(PageContext pc, String type, Object value, Object objMin, Object objMax) throws ExpressionException {
-		type=type.trim().toLowerCase();
-		if(!"range".equals(type))
-			throw new FunctionException(pc,"isValid",1,"type","wrong attribute count for type ["+type+"]");
 
-		double number=Caster.toDoubleValue(value,Double.NaN);
-		if(!Decision.isValid(number)) return false;
+	public static boolean call(PageContext pc, String type, Object value, Object objMin, Object objMax) throws PageException {
 		
-		double min=Caster.toDoubleValue(objMin,Double.NaN);
-		if(!Decision.isValid(min))
-			throw new FunctionException(pc,"isValid",3,"min","value must be numeric");
+		// for named argument calls
+		if(objMax==null) {
+			if(objMin==null) return call(pc, type, value);
+			return call(pc, type, value, objMin);
+		}
+		
+		type=type.trim().toLowerCase();
+		
+		// numeric
+		if("range".equals(type) || "integer".equals(type) || "float".equals(type) || "numeric".equals(type)  || "number".equals(type) ) {
+		
+			double number=Caster.toDoubleValue(value,Double.NaN);
+			if(!Decision.isValid(number)) return false;
+			
+			double min=toRangeNumber(pc,objMin,3,"min");
+			double max=toRangeNumber(pc,objMax,4,"max");
+			
+			
+			return number>=min && number<=max;
+		}
+		else if("string".equals(type)){
+			String str=Caster.toString(value,null);
+			if(str==null) return false;
+			
+			double min=toRangeNumber(pc,objMin,3,"min");
+			double max=toRangeNumber(pc,objMax,4,"max");
+			
+			return str.length()>=min && str.length()<=max;
+		}
+		
+		else
+			throw new FunctionException(pc,"isValid",1,"type","wrong attribute count for type ["+type+"]");
+			
+	}
 
-		double max=Caster.toDoubleValue(objMax,Double.NaN);
-		if(!Decision.isValid(max))
-			throw new FunctionException(pc,"isValid",4,"max","value must be numeric");
-
-		return number>=min && number<=max;
+	private static double toRangeNumber(PageContext pc,Object objMin, int index,String name) throws FunctionException {
+		double d=Caster.toDoubleValue(objMin,Double.NaN);
+		if(!Decision.isValid(d))
+			throw new FunctionException(pc,"isValid",index,name,"value must be numeric");
+		return d;
 	}
 }

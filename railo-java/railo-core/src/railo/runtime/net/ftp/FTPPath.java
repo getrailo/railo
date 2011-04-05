@@ -97,7 +97,7 @@ public final class FTPPath implements Dumpable{
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable table = new DumpTablePro("string","#ff4400","#ff954f","#000000");
+		DumpTable table = new DumpTablePro("string","#ff6600","#ffcc99","#000000");
 		table.appendRow(1,new SimpleDumpData("FTPPath"),new SimpleDumpData(toString()));
 		return table;
     }

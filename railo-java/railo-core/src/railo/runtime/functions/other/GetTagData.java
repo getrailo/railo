@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
+import railo.runtime.ComponentPro;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
 import railo.runtime.component.ComponentLoader;
@@ -76,8 +76,8 @@ public final class GetTagData implements Function {
 		boolean isWeb = Caster.toBooleanValue(attrIsWeb.getDefaultValue());
 		InitFile source = CFTagCore.createInitFile(pc, isWeb, filename);
 		
-		ComponentImpl cfc = ComponentLoader.loadComponentImpl(pc,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pc.getConfig().getCFCExtension().length()+1)), false,true);
-        ComponentWrap cw=new ComponentWrap(Component.ACCESS_PRIVATE, cfc);
+		ComponentPro cfc = ComponentLoader.loadComponent(pc,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pc.getConfig().getCFCExtension().length()+1)), false,true);
+        ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE, cfc);
 		Struct metadata=Caster.toStruct(cw.get("metadata",null),null,false);
 		
 		

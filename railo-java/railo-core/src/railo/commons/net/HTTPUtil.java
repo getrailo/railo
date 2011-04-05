@@ -27,6 +27,7 @@ import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -45,6 +46,8 @@ import railo.runtime.exp.PageServletException;
 import railo.runtime.net.http.HTTPServletRequestWrap;
 import railo.runtime.net.http.HttpClientUtil;
 import railo.runtime.net.http.HttpServletResponseWrap;
+import railo.runtime.net.proxy.ProxyData;
+import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.List;
@@ -93,6 +96,33 @@ public final class HTTPUtil {
 
         HttpClient client = new HttpClient();
         HttpMethod httpMethod=new GetMethod(url.toExternalForm());
+        HostConfiguration config = client.getHostConfiguration();
+        
+        HttpState state = client.getState();
+        
+        setHeader(httpMethod,headers);
+        setContentType(httpMethod,charset);
+        setUserAgent(httpMethod,useragent);
+        setTimeout(client,timeout);
+        setCredentials(client,httpMethod,username,password);  
+        setProxy(config,state,proxyserver,proxyport,proxyuser,proxypassword);
+        
+        /*if(followRedirects!=null){
+        	client.executeMethod(httpMethod);
+        }
+        else */
+        	httpMethod = HttpClientUtil.execute(client,httpMethod,true);
+        
+        return httpMethod;
+    }
+    
+    public static HttpMethod post(URL url, String username, String password, long timeout, 
+            String charset, String useragent,
+            String proxyserver, int proxyport, String proxyuser, 
+            String proxypassword, Header[] headers) throws IOException {
+
+        HttpClient client = new HttpClient();
+        HttpMethod httpMethod=new PostMethod(url.toExternalForm());
         HostConfiguration config = client.getHostConfiguration();
         
         HttpState state = client.getState();
@@ -503,7 +533,7 @@ public final class HTTPUtil {
     
 
     
-    private static String escapeQSValue(String str) {
+    public static String escapeQSValue(String str) {
     	if(!URLEncoder.needEncoding(str)) return str;
     	
     	Config config = ThreadLocalPageContext.getConfig();
@@ -842,6 +872,42 @@ public final class HTTPUtil {
 		if("https".equalsIgnoreCase(url.getProtocol()))
 			return 443;
 		return 80;
+	}
+
+	
+	/**
+	 * return the length of a file defined by a url.
+	 * @param dataUrl
+	 * @return
+	 */
+	public static long length(URL url) {
+		long length=0;
+		
+		// check response header "content-length"
+		ProxyData pd=ProxyDataImpl.NO_PROXY;
+		try {
+			HttpMethod http = HTTPUtil.head(url, null, null, -1,null, "Railo", pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),null);
+			Header cl = http.getResponseHeader("content-length");
+			if(cl!=null)	{
+				length=Caster.toIntValue(cl.getValue(),-1);
+				if(length!=-1) return length;
+			}
+		} 
+		catch (IOException e) {}
+		
+		// get it for size
+		try {
+			HttpMethod http = HTTPUtil.invoke(url, null, null, -1,null, "Railo", pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),null);
+			InputStream is = http.getResponseBodyAsStream();
+			byte[] buffer = new byte[1024];
+	        int len;
+	        length=0;
+	        while((len = is.read(buffer)) !=-1){
+	          length+=len;
+	        }
+		} 
+		catch (IOException e) {}
+		return length;
 	}
 	
 	

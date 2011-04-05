@@ -10,15 +10,15 @@ import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ReadOnlyStruct;
+import railo.runtime.type.SharedScope;
 import railo.runtime.type.dt.DateTimeImpl;
 
 
 /**
  * Server Scope
  */
-public final class ServerImpl extends ScopeSupport implements Server {
+public final class ServerImpl extends ScopeSupport implements Server,SharedScope {
 
-    private PageContext pc;
 
 
 	private static final DateTimeImpl expired=new DateTimeImpl(2145913200000L,false);
@@ -197,21 +197,12 @@ public final class ServerImpl extends ScopeSupport implements Server {
 				key.equals(COLDFUSION) || 
 				key.equals(RAILO));
 	}
-	
 
-	/**
-	 * @see railo.runtime.type.scope.ScopeSupport#initialize(railo.runtime.PageContext)
-	 */
-	public void initialize(PageContext pc) {
-		this.pc=pc;
-		super.initialize(pc);
+	public void touchBeforeRequest(PageContext pc) {
+		// do nothing
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.ScopeSupport#release()
-	 */
-	public void release() {
-		pc=null;
-		super.release();
+	public void touchAfterRequest(PageContext pc) {
+		// do nothing
 	}
 }

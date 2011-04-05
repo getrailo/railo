@@ -50,6 +50,10 @@ public final class FeedHandler extends DefaultHandler {
 	private Map<String,String> root=new HashMap<String,String>();
 	private boolean hasDC;
 	private boolean isAtom;
+
+	private boolean inAuthor;
+
+	private boolean inEntry;
 	
 	
 	/**
@@ -117,7 +121,8 @@ public final class FeedHandler extends DefaultHandler {
 		deep++;
 		
 		
-		
+		if("entry".equals(name))inEntry=true;
+		else if("author".equals(name))inAuthor=true;
 		
 		if(qName.startsWith("dc:")){
 			name="dc_"+name;
@@ -196,8 +201,10 @@ public final class FeedHandler extends DefaultHandler {
 	
 
 	public void endElement(String uri, String name, String qName) {
+		if("entry".equals(name))inEntry=false;
+		else if("author".equals(name))inAuthor=false;
 		deep--;
-		if(isAtom && deep>=3) {
+		if(isAtom && deep>=(inEntry && inAuthor?4:3)) {
 			String content = data.getString();
 			Key[] keys = data.keys();
 			StringBuilder sb=new StringBuilder();

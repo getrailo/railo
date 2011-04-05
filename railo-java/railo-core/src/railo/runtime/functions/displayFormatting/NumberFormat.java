@@ -5,7 +5,6 @@ package railo.runtime.functions.displayFormatting;
 
 import java.util.Locale;
 
-import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;

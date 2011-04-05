@@ -39,27 +39,21 @@ public class HBMCreator {
 	
 	private static final Collection.Key PROPERTY = KeyImpl.getInstance("property");
 	private static final Collection.Key FIELD_TYPE = KeyImpl.getInstance("fieldType");
+	private static final Collection.Key LINK_TABLE = KeyImpl.getInstance("linktable");
+	private static final Collection.Key CFC = KeyImpl.getInstance("cfc");
 	private static final Collection.Key TYPE = KeyImpl.getInstance("type");
 	
 
 	public static void createXMLMapping(PageContext pc,DatasourceConnection dc, Component cfc,ORMConfiguration ormConf,Element hibernateMapping,HibernateORMEngine engine) throws PageException {
-		String str;
-		Boolean b;
-		Integer i;
-		
 		
 		// MUST Support for embeded objects 
-		
 		ComponentPro cfci = ComponentUtil.toComponentPro(cfc);
 		Struct meta = cfci.getMetaData(pc);
 		
-		Property[] _props = cfci.getProperties(true);
+		String extend = cfc.getExtends();
+		boolean isClass=StringUtil.isEmpty(extend);
 		
-		if(_props.length==0 && ormConf.useDBForMapping()){
-        	_props=HibernateUtil.createPropertiesFromTable(dc,getTableName(engine,pc, meta, cfci));
-        }
-		
-		
+		Property[] _props=getProperties(pc,engine,cfci,dc,ormConf,meta,isClass);
 		
 		
 		
@@ -76,10 +70,6 @@ public class HBMCreator {
 		comment.append("\ncompilation-time:").append(new DateTimeImpl(ComponentUtil.getCompileTime(pc,cfci.getPageSource()),false)).append("\n");
 		
 		hibernateMapping.appendChild(doc.createComment(comment.toString()));
-		String extend = cfc.getExtends();
-		
-		Element clazz;
-		boolean isClass=StringUtil.isEmpty(extend);
 		
 		//print.e(cfc.getAbsName()+";"+isClass+" -> "+cfci.getBaseAbsName()+":"+cfci.isBasePeristent());
 		if(!isClass && !cfci.isBasePeristent()) {
@@ -90,6 +80,7 @@ public class HBMCreator {
 		Element join=null;
 		boolean doTable=true;
 		
+		Element clazz;
 		if(isClass)  {
 			clazz = doc.createElement("class");
 			hibernateMapping.appendChild(clazz);
@@ -128,8 +119,6 @@ public class HBMCreator {
 
 		}
 		
-		//lazy
-		//clazz.setAttribute("lazy", "true");
 		//createXMLMappingTuplizer(clazz,pc);
 
 		addGeneralClassAttributes(pc,ormConf,engine,cfc,meta,clazz);
@@ -152,7 +141,7 @@ public class HBMCreator {
         if(isClass) addId(cfc,doc,clazz,pc,meta,propColl,columnsInfo,tableName,engine);
 	      
         // discriminator
-        addDiscriminator(engine,cfc,doc,clazz,pc,meta);
+        if(isClass) addDiscriminator(engine,cfc,doc,clazz,pc,meta);
         
 		// version
         if(isClass)addVersion(cfc,clazz,pc, propColl,columnsInfo,tableName,engine);
@@ -161,23 +150,32 @@ public class HBMCreator {
 		addProperty(cfc,clazz,pc, propColl,columnsInfo,tableName,engine);
 		
 		// relations
-		addRelation(cfc,clazz,pc, propColl,columnsInfo,tableName,engine,ormConf);
+		addRelation(cfc,clazz,pc, propColl,columnsInfo,tableName,engine,ormConf,dc);
 
 		// collection
 		addCollection(cfc,clazz,pc, propColl,columnsInfo,tableName,engine,ormConf);
 		
 		// join
-		addJoin(cfc,clazz,pc, joins,columnsInfo,tableName,engine,ormConf);
+		addJoin(cfc,clazz,pc, joins,columnsInfo,tableName,engine,ormConf,dc);
 
 		
 	}
 	
-	
-	
+	private static Property[] getProperties(PageContext pc, HibernateORMEngine engine, ComponentPro cfci, DatasourceConnection dc, ORMConfiguration ormConf, Struct meta, boolean isClass) throws ORMException, PageException {
+		Property[] _props = cfci.getProperties(true);
+		if(isClass && _props.length==0 && ormConf.useDBForMapping()){
+			if(meta==null)meta = cfci.getMetaData(pc);
+        	_props=HibernateUtil.createPropertiesFromTable(dc,getTableName(engine,pc, meta, cfci));
+        }
+		return _props;
+	}
 
 
 
-	
+
+
+
+
 
 
 
@@ -193,7 +191,7 @@ public class HBMCreator {
         else if(_ids.length>1) 
         	createXMLMappingCompositeId(cfc,clazz,pc, _ids,columnsInfo,tableName,engine);
         else 
-        	throw new HibernateException(engine,cfc,"missing id property for entity ["+tableName+"]");
+        	throw new HibernateException(engine,cfc,"missing id property for entity ["+HibernateCaster.getEntityName(cfc)+"]");
 	}
 	
 
@@ -263,9 +261,6 @@ public class HBMCreator {
 		return new PropertyCollection(null,others);
 	}
 	
-	private static boolean isJoin(HibernateORMEngine engine,Component cfc,Property prop) {
-		return !StringUtil.isEmpty(getTable(engine,cfc,prop),true);
-	}
 	private static String getTable(HibernateORMEngine engine,Component cfc,Property prop) {
 		try {
 			return toString(engine,cfc,prop, prop.getMeta(), "table");
@@ -344,7 +339,7 @@ public class HBMCreator {
 	private static void addVersion(Component cfc,Element clazz, PageContext pc,PropertyCollection propColl, Struct columnsInfo, String tableName,HibernateORMEngine engine) throws PageException {
     	Property[] props = propColl.getProperties();
 		for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getMeta().get("fieldType",null),null);
+			String fieldType = Caster.toString(props[y].getMeta().get(FIELD_TYPE,null),null);
 			if("version".equalsIgnoreCase(fieldType))
 				createXMLMappingVersion(engine,clazz,pc, cfc,props[y]);
 			else if("timestamp".equalsIgnoreCase(fieldType))
@@ -357,28 +352,28 @@ public class HBMCreator {
 	private static void addCollection(Component cfc,Element clazz, PageContext pc,PropertyCollection propColl, Struct columnsInfo, String tableName,HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {
 		Property[] props = propColl.getProperties();
 		for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getMeta().get("fieldType","column"),"column");
+			String fieldType = Caster.toString(props[y].getMeta().get(FIELD_TYPE,"column"),"column");
 			if("collection".equalsIgnoreCase(fieldType))
 				createXMLMappingCollection(clazz,pc, cfc,props[y],ormConf,engine);
 		}
 	}
 	
 	
-	private static void addJoin(Component cfc,Element clazz, PageContext pc,Map<String, PropertyCollection> joins, Struct columnsInfo, String tableName,HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {
+	private static void addJoin(Component cfc,Element clazz, PageContext pc,Map<String, PropertyCollection> joins, Struct columnsInfo, String tableName,HibernateORMEngine engine, ORMConfiguration ormConf, DatasourceConnection dc) throws PageException {
         
 		Iterator<Entry<String, PropertyCollection>> it = joins.entrySet().iterator();
 		Entry<String, PropertyCollection> entry;
 		while(it.hasNext()){
 			entry = it.next();
 			PropertyCollection coll = entry.getValue();
-			addJoin(cfc,engine,pc,columnsInfo,ormConf,clazz,entry.getValue());
+			addJoin(cfc,engine,pc,columnsInfo,ormConf,clazz,entry.getValue(),dc);
 		}
 		
 		
 		
     }
 	
-	private static void addJoin(Component cfc,HibernateORMEngine engine,PageContext pc,Struct columnsInfo,  ORMConfiguration ormConf, Element clazz, PropertyCollection coll) throws PageException {
+	private static void addJoin(Component cfc,HibernateORMEngine engine,PageContext pc,Struct columnsInfo,  ORMConfiguration ormConf, Element clazz, PropertyCollection coll, DatasourceConnection dc) throws PageException {
 		String table = coll.getTableName();
 		Property[] properties = coll.getProperties();
 		if(properties.length==0) return;
@@ -415,7 +410,7 @@ public class HBMCreator {
         setColumn(doc, key, columns);
         
         addProperty(cfc,join,pc, coll,columnsInfo,table,engine);
-		int count=addRelation(cfc,join,pc, coll,columnsInfo,table,engine, ormConf);
+		int count=addRelation(cfc,join,pc, coll,columnsInfo,table,engine, ormConf,dc);
         
 		if(count>0) join.setAttribute("inverse", "true");
 			
@@ -432,11 +427,11 @@ public class HBMCreator {
 
 
 
-	private static int addRelation(Component cfc,Element clazz, PageContext pc,PropertyCollection propColl, Struct columnsInfo, String tableName,HibernateORMEngine engine,  ORMConfiguration ormConf) throws PageException {
+	private static int addRelation(Component cfc,Element clazz, PageContext pc,PropertyCollection propColl, Struct columnsInfo, String tableName,HibernateORMEngine engine,  ORMConfiguration ormConf, DatasourceConnection dc) throws PageException {
     	Property[] props = propColl.getProperties();
 		int count=0;
     	for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getMeta().get("fieldType","column"),"column");
+			String fieldType = Caster.toString(props[y].getMeta().get(FIELD_TYPE,"column"),"column");
 			if("one-to-one".equalsIgnoreCase(fieldType)){
 				createXMLMappingOneToOne(clazz,pc, cfc,props[y],engine);
 				count++;
@@ -450,7 +445,7 @@ public class HBMCreator {
 				count++;
 			}
 			else if("many-to-many".equalsIgnoreCase(fieldType)){
-				createXMLMappingManyToMany(cfc,engine,propColl,clazz,pc, props[y],ormConf);
+				createXMLMappingManyToMany(cfc,engine,propColl,clazz,pc, props[y],ormConf,dc);
 				count++;
 			}
 		}
@@ -458,7 +453,7 @@ public class HBMCreator {
 	}
 	
 	private static boolean isRelation(Property prop) {
-		String fieldType = Caster.toString(prop.getMeta().get("fieldType","column"),"column");
+		String fieldType = Caster.toString(prop.getMeta().get(FIELD_TYPE,"column"),"column");
 		if(StringUtil.isEmpty(fieldType,true)) return false;
 		fieldType=fieldType.toLowerCase().trim();
 		
@@ -474,7 +469,7 @@ public class HBMCreator {
 	private static void addProperty(Component cfc,Element clazz, PageContext pc, PropertyCollection propColl, Struct columnsInfo, String tableName, HibernateORMEngine engine) throws ORMException {
 		Property[] props = propColl.getProperties();
 		for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getMeta().get("fieldType","column"),"column");
+			String fieldType = Caster.toString(props[y].getMeta().get(FIELD_TYPE,"column"),"column");
 			if("column".equalsIgnoreCase(fieldType))
 				createXMLMappingProperty(clazz,pc,cfc, props[y],columnsInfo,tableName,engine);
 		}
@@ -505,7 +500,7 @@ public class HBMCreator {
 		
     	// entity-name
     	String str=toString(engine,cfc,null,meta,"entityname");
-		if(StringUtil.isEmpty(str,true)) str=HibernateCaster.getEntityName(pc,cfc);
+		if(StringUtil.isEmpty(str,true)) str=HibernateCaster.getEntityName(cfc);
 		clazz.setAttribute("entity-name",str);
 		
 
@@ -584,7 +579,7 @@ public class HBMCreator {
 	private static String getTableName(HibernateORMEngine engine,PageContext pc, Struct meta, Component cfc) throws ORMException {
 		String tableName=toString(engine,cfc,null,meta,"table");
 		if(StringUtil.isEmpty(tableName,true)) 
-			tableName=HibernateCaster.getEntityName(pc, cfc);
+			tableName=HibernateCaster.getEntityName(cfc);
 		return tableName;
 	}
 
@@ -668,8 +663,7 @@ public class HBMCreator {
 			setColumn(doc, key, str);
 			
 			// lazy
-			str=toString(engine,cfc,prop,meta,"lazy");
-			key.setAttribute("lazy",str);
+			setLazy(engine,cfc,prop,meta,key);
 		}
 	}
 	
@@ -1118,13 +1112,31 @@ public class HBMCreator {
 		}
 		else {
 			// cfc
+			//createFKColumnName(engine, cfc, prop, propColl);
+			
 			str = toString(engine,cfc,prop,meta,"cfc",cfcRequired);
 			if(!StringUtil.isEmpty(str,true)){
 				Component _cfc=engine.getEntityByCFCName(str, false);
-				str=HibernateCaster.getEntityName(pc,_cfc);
+				str=HibernateCaster.getEntityName(_cfc);
 				el.setAttribute("entity-name", str);
 			}
 		}
+	}
+	private static Component loadForeignCFC(PageContext pc,HibernateORMEngine engine,Component cfc,Property prop, Struct meta) throws PageException {
+		// entity
+		String str=toString(engine,cfc,prop,meta,"entityName");
+		Component fcfc=null;
+		
+		if(!StringUtil.isEmpty(str,true)) {
+			fcfc = engine.getEntityByEntityName(str, false);
+			if(fcfc!=null) return fcfc;
+		}
+			
+		str = toString(engine,cfc,prop,meta,"cfc",false);
+		if(!StringUtil.isEmpty(str,true)){
+			return engine.getEntityByCFCName(str, false);
+		}
+		return null;
 	}
 
 
@@ -1139,16 +1151,7 @@ public class HBMCreator {
 		Struct meta = prop.getMeta();
 		Document doc = XMLUtil.getDocument(clazz);
 		Element el=null;
-		
-		
-		 
-	        
-	        
-
-	      
-		
-		
-        
+		        
 		// collection type
 		String str=prop.getType();
 		if(StringUtil.isEmpty(str,true) || "any".equalsIgnoreCase(str) || "object".equalsIgnoreCase(str))str="array";
@@ -1294,7 +1297,7 @@ public class HBMCreator {
 
 
 
-	private static void createXMLMappingManyToMany(Component cfc,HibernateORMEngine engine,PropertyCollection propColl,Element clazz, PageContext pc,Property prop,ORMConfiguration ormConf) throws PageException {
+	private static void createXMLMappingManyToMany(Component cfc,HibernateORMEngine engine,PropertyCollection propColl,Element clazz, PageContext pc,Property prop,ORMConfiguration ormConf, DatasourceConnection dc) throws PageException {
 		Element el = createXMLMappingXToMany(engine,propColl,clazz, pc, cfc,prop);
 		Struct meta = prop.getMeta();
 		Document doc = XMLUtil.getDocument(clazz);
@@ -1312,6 +1315,39 @@ public class HBMCreator {
 		
 		// column
 		str=toString(engine,cfc,prop,meta,"inversejoincolumn");
+		
+		// build fkcolumn name
+		if(StringUtil.isEmpty(str,true)) {
+			ComponentPro other = (ComponentPro) loadForeignCFC(pc, engine, cfc, prop, meta);
+			if(other!=null){
+				boolean isClass=StringUtil.isEmpty(other.getExtends());
+				Property[] _props=getProperties(pc,engine,other,dc,ormConf,meta,isClass);
+				PropertyCollection _propColl = splitJoins(engine,cfc,new HashMap<String, PropertyCollection>(), _props);
+				_props=_propColl.getProperties();
+				
+				Struct m;
+				Property _prop=null;
+				for(int i=0;i<_props.length;i++){
+					m = _props[i].getMeta();
+					// fieldtype
+					String fieldtype = Caster.toString(m.get(FIELD_TYPE,null),null);
+					if("many-to-many".equalsIgnoreCase(fieldtype)) {
+						// linktable
+						String currLinkTable=Caster.toString(meta.get(LINK_TABLE,null),null);
+						String othLinkTable=Caster.toString(m.get(LINK_TABLE,null),null);
+						if(currLinkTable.equals(othLinkTable)) {
+							// cfc name
+							ComponentPro cfcp=ComponentUtil.toComponentPro(cfc);
+							String cfcName=Caster.toString(m.get(CFC,null),null);
+							if(cfcp.equalTo(cfcName)){
+								_prop=_props[i];
+							}
+						}
+					}
+				}
+				str=createM2MFKColumnName(engine, other, _prop, _propColl);
+			}
+		}
 		setColumn(doc, m2m, str);
 		
 		// not-found
@@ -1396,7 +1432,7 @@ public class HBMCreator {
 	
 	
 	private static Element createXMLMappingXToMany(HibernateORMEngine engine,PropertyCollection propColl,Element clazz, PageContext pc,Component cfc,Property prop) throws PageException {
-		Struct meta = prop.getMeta();
+		final Struct meta = prop.getMeta();
 		Document doc = XMLUtil.getDocument(clazz);
 		Element el=null;
 		
@@ -1447,12 +1483,8 @@ public class HBMCreator {
         setCacheStrategy(engine,cfc,prop,doc, meta, el);
         
         // column
-		str=toString(engine,cfc,prop,meta,"fkcolumn");
-		if(StringUtil.isEmpty(str)){
-			Property[] ids = getIds(engine,cfc,propColl);
-			if(ids.length==1) str=ids[0].getName();
-			else str=toString(engine,cfc,prop,meta,"fkcolumn",true);
-		}
+        str=createM2MFKColumnName(engine,cfc,prop,propColl);
+		
 		if(!StringUtil.isEmpty(str,true)){
 			Element key = doc.createElement("key");
 			el.appendChild(key);
@@ -1492,6 +1524,34 @@ public class HBMCreator {
 		return el;
 	}
 	
+	private static String createM2MFKColumnName(HibernateORMEngine engine, Component cfc, Property prop, PropertyCollection propColl) throws ORMException {
+		
+		String str=prop==null?null:toString(engine,cfc,prop,prop.getMeta(),"fkcolumn");
+		if(StringUtil.isEmpty(str)){
+			Property[] ids = getIds(engine,cfc,propColl);
+			if(ids.length==1) {
+				str=toString(engine,cfc,ids[0],ids[0].getMeta(),"column");
+		    	if(StringUtil.isEmpty(str,true)) str=ids[0].getName();
+			}
+			else if(prop!=null)str=toString(engine,cfc,prop,prop.getMeta(),"fkcolumn",true);
+			else
+				throw new ORMException(engine, "cannot terminate forgein key column name");
+			
+			str=HibernateCaster.getEntityName(cfc)+"_"+str;
+		}
+    	return str;
+	}
+
+
+
+
+
+
+
+
+
+
+
 	private static void setCacheStrategy(HibernateORMEngine engine,Component cfc,Property prop,Document doc,Struct meta, Element el) throws ORMException {
 		String strategy = toString(engine,cfc,prop,meta,"cacheuse");
 		
@@ -1531,7 +1591,7 @@ public class HBMCreator {
 			for(int i=0;i<arr.length;i++){
 				column=doc.createElement("column");
 				el.appendChild(column);
-				column.setAttribute("name", formatColumn(arr[0]));
+				column.setAttribute("name", formatColumn(arr[i]));
 			}
 		}
 	}
@@ -1664,7 +1724,16 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 		}
 		
 		// lazy
-		str=toString(engine,cfc,prop,meta, "lazy");
+		setLazy(engine,cfc,prop,meta,x2x);
+		
+	}
+
+
+
+	
+
+	private static void setLazy(HibernateORMEngine engine, Component cfc,Property prop, Struct meta, Element x2x) throws ORMException {
+		String str = toString(engine,cfc,prop,meta, "lazy");
 		if(!StringUtil.isEmpty(str)){
 			Boolean b = Caster.toBoolean(str,null);
 			if(b!=null)
@@ -1673,13 +1742,8 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 				x2x.setAttribute("lazy", "extra");
 			else 
 				throw invalidValue(engine,cfc,prop,"lazy",str,"true,false,extra");
-				//throw new ORMException(engine,"invalid value ["+str+"] for attribute [lazy], valid values are [true,false,extra]");
 		}
 	}
-
-
-
-	
 
 	private static void createXMLMappingTimestamp(HibernateORMEngine engine,Element clazz, PageContext pc,Component cfc,Property prop) throws PageException {
 		Struct meta = prop.getMeta();
@@ -1817,7 +1881,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 	}   
 	
 	
-	private static Struct convertToSimpleMap(String paramsStr) {
+	public static Struct convertToSimpleMap(String paramsStr) {
 		paramsStr=paramsStr.trim();
         if(!StringUtil.startsWith(paramsStr, '{') || !StringUtil.endsWith(paramsStr, '}'))
         	return null;
@@ -1834,7 +1898,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
             if(index == -1) return null;
             
             params.setEL(
-            		deleteQuotes(pair.substring(0, index).trim()).trim(), 
+            		KeyImpl.init(deleteQuotes(pair.substring(0, index).trim()).trim()), 
             		deleteQuotes(pair.substring(index + 1).trim()));
         }
 

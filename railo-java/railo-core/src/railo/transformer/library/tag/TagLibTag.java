@@ -165,7 +165,7 @@ public final class TagLibTag {
 	 * Gibt alle Attribute (TagLibTagAttr) eines Tag als HashMap zurück.
 	 * @return HashMap Attribute als HashMap.
 	 */
-	public Map getAttributes() {
+	public Map<String,TagLibTagAttr> getAttributes() {
 		return attributes;
 	}
 	

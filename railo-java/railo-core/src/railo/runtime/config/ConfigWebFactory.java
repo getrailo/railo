@@ -63,6 +63,7 @@ import railo.runtime.MappingImpl;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.cache.CacheConnectionImpl;
 import railo.runtime.cache.ServerCacheConnection;
+import railo.runtime.cache.eh.EHCacheLite;
 import railo.runtime.cfx.customtag.CFXTagClass;
 import railo.runtime.cfx.customtag.CPPCFXTagClass;
 import railo.runtime.cfx.customtag.JavaCFXTagClass;
@@ -93,7 +94,7 @@ import railo.runtime.extension.ExtensionProviderImpl;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
-import railo.runtime.listener.ApplicationContextUtil;
+import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicAppListener;
 import railo.runtime.listener.MixedAppListener;
@@ -165,13 +166,22 @@ public final class ConfigWebFactory {
     	}
     	
     	
+		String hash=SystemUtil.hash(servletConfig.getServletContext());
+		Map<String, String> labels = configServer.getLabels();
+		String label=null;
+		if(labels!=null) {
+			label = labels.get(hash);
+		}
+		if(label==null) label=hash;
 		
     	SystemOut.print(SystemUtil.PRINTWRITER_OUT,
     			"===================================================================\n"+
-    			"WEB CONTEXT\n" +
+    			"WEB CONTEXT ("+label+")\n"+
     			"-------------------------------------------------------------------\n"+
     			"- config:"+configDir+"\n"+
     			"- webroot:"+servletConfig.getServletContext().getRealPath("/")+"\n"+
+    			"- hash:"+hash+"\n"+
+    			"- label:"+label+"\n"+
     			"===================================================================\n"
     			
     			);
@@ -228,8 +238,8 @@ public final class ConfigWebFactory {
         createContextFiles(configDir,servletConfig);
 		ConfigWebImpl configWeb=new ConfigWebImpl(factory,configServer, servletConfig,configDir,configFile);
 		
-		load(configServer,configWeb,doc);
-		createContextFilesPost(configDir,configWeb);
+		load(configServer,configWeb,doc,false);
+		createContextFilesPost(configDir,configWeb,servletConfig);
 	    return configWeb;
     }
     
@@ -277,8 +287,8 @@ public final class ConfigWebFactory {
         createContextFiles(configDir,null);
         config.reset();
         
-		load(config.getConfigServerImpl(),config,doc);
-		createContextFilesPost(configDir,config);
+		load(config.getConfigServerImpl(),config,doc,false);
+		createContextFilesPost(configDir,config,null);
     }
     
     private static long second(long ms) {
@@ -296,7 +306,7 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws PageException
      */
-    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc) 
+    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc,boolean isEventGatewayContext) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	ThreadLocalConfig.register(config);
     	
@@ -308,9 +318,8 @@ public final class ConfigWebFactory {
 			} catch (SAXException e) {}
     	}
     	
-    	
     	loadConstants(configServer,config,doc);
-    	
+    	loadTempDirectory(configServer, config, doc);
     	loadId(config);
     	loadVersion(config,doc);
     	loadSecurity(configServer,config,doc);
@@ -333,14 +342,14 @@ public final class ConfigWebFactory {
         loadCache(configServer,config,doc);
         loadCustomTagsMappings(configServer,config,doc);
     	loadPassword(cs,config,doc);
-    	loadLabel(cs,config,doc);
+    	//loadLabel(cs,config,doc);
     	loadFilesystem(cs,config,doc); // load tlds
     	loadTag(cs,config,doc); // load tlds
         loadRegional(configServer,config,doc);
     	loadScope(configServer,config,doc);
     	loadMail(configServer,config,doc);
         loadSearch(configServer,config,doc);
-    	loadScheduler(configServer,config,doc);
+    	loadScheduler(configServer,config,doc,isEventGatewayContext);
     	loadDebug(configServer,config,doc);
     	loadError(configServer,config,doc);
         loadCFX(configServer,config,doc);
@@ -361,7 +370,12 @@ public final class ConfigWebFactory {
     	config.setLoadTime(System.currentTimeMillis());
     	
     	// this call is needed to make sure the railo StaticLoggerBinder is loaded
+    	try{
     	StaticLoggerBinder.getSingleton();
+    	}
+    	catch(Throwable t){}
+
+    	doNew(config.getConfigDir(), false);
     	
     	ThreadLocalConfig.release();
     }
@@ -944,7 +958,7 @@ public final class ConfigWebFactory {
 	        }
 	    }
         
-        boolean doNew=doNew(configDir);
+        boolean doNew=doNew(configDir,true);
         
         
         
@@ -1309,30 +1323,15 @@ public final class ConfigWebFactory {
         if(!f.exists())createFileFromResourceEL("/resource/lib/jfreechart-patch.jar",f);
         
         
-        // flex
-        if(servletConfig!=null){
-        	String strPath=servletConfig.getServletContext().getRealPath("/WEB-INF");
-        	Resource webInf = ResourcesImpl.getFileResourceProvider().getResource(strPath);
-        	
-        	Resource flex = webInf.getRealResource("flex");
-            if(!flex.exists())flex.mkdirs();
-
-            f=flex.getRealResource("messaging-config.xml");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/messaging-config.xml",f);
-            f=flex.getRealResource("proxy-config.xml");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/proxy-config.xml",f);
-            f=flex.getRealResource("remoting-config.xml");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/remoting-config.xml",f);
-            f=flex.getRealResource("services-config.xml");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/services-config.xml",f);
-
-        }
+        
 
 	}
 	
 
-	public static void createContextFilesPost(Resource configDir, ConfigImpl config) throws IOException {
-	            
+	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig) throws IOException {
+		boolean doNew=doNew(configDir,true);
+  		
+		
 		Resource contextDir = configDir.getRealResource("context");
 	    if(!contextDir.exists())contextDir.mkdirs();
 
@@ -1347,7 +1346,6 @@ public final class ConfigWebFactory {
         
      // deploy org.railo.cfml components
       	if(config instanceof ConfigWeb){
-      		boolean doNew=doNew(configDir);
       		ImportDefintion _import = config.getComponentDefaultImport();
       		String path = _import.getPackageAsPath();
       		Resource components = config.getConfigDir().getRealResource("components");
@@ -1357,19 +1355,40 @@ public final class ConfigWebFactory {
       		ComponentFactory.deploy(dir, doNew);
       	}
         
+      	
+     // flex
+        if(servletConfig!=null && config.getAMFConfigType()==ConfigImpl.AMF_CONFIG_TYPE_XML){
+        	String strPath=servletConfig.getServletContext().getRealPath("/WEB-INF");
+        	Resource webInf = ResourcesImpl.getFileResourceProvider().getResource(strPath);
+        	
+        	Resource flex = webInf.getRealResource("flex");
+            if(!flex.exists())flex.mkdirs();
+
+            Resource f = flex.getRealResource("messaging-config.xml");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/messaging-config.xml",f);
+            f=flex.getRealResource("proxy-config.xml");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/proxy-config.xml",f);
+            f=flex.getRealResource("remoting-config.xml");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/remoting-config.xml",f);
+            f=flex.getRealResource("services-config.xml");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/flex/services-config.xml",f);
+
+        }
 
 	}
 
-	private static boolean doNew(Resource contextDir) throws IOException {
+	private static boolean doNew(Resource contextDir,boolean readonly) throws IOException {
 		Resource version=contextDir.getRealResource("version");
-		String v=Info.getVersionAsString()+"-"+Info.getStateAsString();
+		String v=Info.getVersionAsString()+"-"+Info.getStateAsString()+"-"+Info.getRealeaseTime();
 		if(!version.exists()) {
-            version.createNewFile();
-            IOUtil.write(version,v,SystemUtil.getCharset(),false);
+            if(!readonly){
+            	version.createNewFile();
+            	IOUtil.write(version,v,SystemUtil.getCharset(),false);
+            }
             return true;
         }
         else if(!IOUtil.toString(version,SystemUtil.getCharset()).equals(v)) {
-            IOUtil.write(version,v,SystemUtil.getCharset(),false);
+        	if(!readonly)IOUtil.write(version,v,SystemUtil.getCharset(),false);
             return true;
         }
         return false;
@@ -1379,7 +1398,7 @@ public final class ConfigWebFactory {
 		// create current hash from libs
 		TagLib[] tlds = config.getTLDs();
 		FunctionLib[] flds = config.getFLDs();
-		StringBuffer sb=new StringBuffer();
+		StringBuffer sb=new StringBuffer(config.getTemplateCharset());
 
 		for(int i=0;i<tlds.length;i++){
 			sb.append(tlds[i].getHash());
@@ -1531,6 +1550,13 @@ public final class ConfigWebFactory {
         Element el= getChildByName(doc.getDocumentElement(),"flex");
         if(configServer!=null);
         
+        // deploy
+        String strConfig = el.getAttribute("configuration");
+        if(!StringUtil.isEmpty(strConfig))
+        	config.setAMFConfigType(strConfig);
+        else if(configServer!=null)
+        	config.setAMFConfigType(configServer.getAMFConfigType());
+        
         // caster
         String strCaster = el.getAttribute("caster");
         if(StringUtil.isEmpty(strCaster))strCaster = el.getAttribute("caster-class");
@@ -1581,7 +1607,7 @@ public final class ConfigWebFactory {
         
 		if(hasChanged) {
         	try {
-				config.getDeployDirectory().remove(true);
+				if(config.getDeployDirectory().exists())config.getDeployDirectory().remove(true);
 			} 
         	catch (IOException e) {
 				e.printStackTrace(config.getErrWriter());
@@ -1699,8 +1725,10 @@ public final class ConfigWebFactory {
             ,60000
             ,true
             ,true
-            ,DataSource.ALLOW_ALL,
-            new StructImpl()
+            ,DataSource.ALLOW_ALL
+            ,false
+            ,false
+            ,new StructImpl()
 		);
 	  	
 	  	
@@ -1768,6 +1796,8 @@ public final class ConfigWebFactory {
                         ,toBoolean(dataSource.getAttribute("blob"),true)
                         ,toBoolean(dataSource.getAttribute("clob"),true)
                         ,toInt(dataSource.getAttribute("allow"),DataSource.ALLOW_ALL)
+                        ,toBoolean(dataSource.getAttribute("validate"),false)
+                        ,toBoolean(dataSource.getAttribute("storage"),false)
                         ,toStruct(dataSource.getAttribute("custom"))
     				);
 			  	}
@@ -1866,19 +1896,30 @@ public final class ConfigWebFactory {
     	Element[] eConnections=getChildren(eCache,"connection");
     		
 		//if(hasAccess) {
-		String name;
+		String name,clazzName;
 		CacheConnection cc;
-		
+		Class cacheClazz;
 		// caches
 		if(hasAccess)for(int i=0;i<eConnections.length;i++) {
                 Element eConnection=eConnections[i];
                 name=eConnection.getAttribute("name");
+                clazzName=eConnection.getAttribute("class");
+                if(clazzName!=null) clazzName=clazzName.trim();
+                
+                //
 			  	try{
+			  		
+	                // Workaround for old EHCacheLite class defintion
+	                if("railo.extension.io.cache.eh.EHCacheLite".equals(clazzName)) cacheClazz=EHCacheLite.class;
+	                else cacheClazz=ClassUtil.loadClass(config.getClassLoader(),clazzName);
+                
 			  		cc=new CacheConnectionImpl(config,
 	  				name,
-    				ClassUtil.loadClass(config.getClassLoader(),eConnection.getAttribute("class")),
+	  				cacheClazz,
     				toStruct(eConnection.getAttribute("custom")),
-    				Caster.toBooleanValue(eConnection.getAttribute("read-only"),false));
+    				Caster.toBooleanValue(eConnection.getAttribute("read-only"),false),
+    				Caster.toBooleanValue(eConnection.getAttribute("storage"),false)
+    				);
 			  		if(!StringUtil.isEmpty(name)){
 			  			caches.put(name.toLowerCase(),cc);
 			  		}
@@ -2096,19 +2137,19 @@ public final class ConfigWebFactory {
 
     private static void setDatasource(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
             String databasename, int port, String dsn, String user, String pass, 
-            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom) throws ClassException {
+            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,boolean validate,boolean storage, Struct custom) throws ClassException {
 		
         
 		datasources.put(datasourceName.toLowerCase(),
-          new DataSourceImpl(datasourceName,className, server, dsn, databasename, port, user, pass,connectionLimit,connectionTimeout,metaCacheTimeout,blob,clob, allow,custom, false));
+          new DataSourceImpl(datasourceName,className, server, dsn, databasename, port, user, pass,connectionLimit,connectionTimeout,metaCacheTimeout,blob,clob, allow,custom, false,validate,storage));
 
     }
     private static void setDatasourceEL(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
             String databasename, int port, String dsn, String user, String pass, 
-            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom) {
+            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,boolean validate,boolean storage, Struct custom) {
     	try {
 			setDatasource(config,datasources,datasourceName,className, server, 
-			        databasename, port, dsn, user, pass, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, custom);
+			        databasename, port, dsn, user, pass, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, validate,storage,custom);
 		} catch (Throwable t) {}
     }
     
@@ -2267,13 +2308,24 @@ public final class ConfigWebFactory {
     }
     
     
-    private static void loadLabel(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
-		Element railoConfiguration = doc.getDocumentElement();
-		String str=railoConfiguration.getAttribute("label");
-		if(!StringUtil.isEmpty(str)) {
-		    config.getFactory().setLabel(str);
+    /*private static void loadLabel(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
+		// do only for web config
+    	if(configServer!=null && config instanceof ConfigWebImpl) {
+			ConfigWebImpl cs=(ConfigWebImpl) config;
+			String hash=SystemUtil.hash(cs.getServletContext());
+			config.setLabel(hash);
+			
+			Map<String, String> labels = configServer.getLabels();
+			if(labels!=null) {
+				String label = labels.get(hash);
+				if(!StringUtil.isEmpty(label)) {
+					print.o("label:"+label);
+					config.setLabel(label);
+					config.getFactory().setLabel(label);
+				}
+			}
 		}
-    }
+    }*/
 
 
     private static void loadTag(ConfigServerImpl configServer, ConfigImpl config, Document doc)  {
@@ -2295,6 +2347,34 @@ public final class ConfigWebFactory {
 	  	
     }
         
+    
+    
+    private static void loadTempDirectory(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws ExpressionException, TagLibException, FunctionLibException {
+        Resource configDir=config.getConfigDir();
+        boolean hasCS=configServer!=null;
+        
+        
+        Element fileSystem=				getChildByName(doc.getDocumentElement(),"file-system");
+	  	if(fileSystem==null)fileSystem=	getChildByName(doc.getDocumentElement(),"filesystem");
+	  	
+	  	String strTempDirectory=null;
+	  	if(fileSystem!=null) strTempDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("temp-directory"));
+	  	
+        // Temp Dir
+	  	if(!StringUtil.isEmpty(strTempDirectory)) {
+		  	config.setTempDirectory(ConfigWebUtil.getFile(configDir,strTempDirectory, 
+		  			null, // create no default
+		  			configDir,FileUtil.TYPE_DIR,config));
+	  	}
+	  	else if(hasCS) {
+	  		config.setTempDirectory(configServer.getTempDirectory());
+	  	}
+	  	if(config.getTempDirectory()==null) {
+	  		config.setTempDirectory(ConfigWebUtil.getFile(configDir,"temp", 
+		  			null, // create no default
+		  			configDir,FileUtil.TYPE_DIR,config));
+	  	}
+    }
 
     /**
      * @param configServer 
@@ -2324,7 +2404,7 @@ public final class ConfigWebFactory {
 	  	
 	  	String strAllowRealPath=null;
 	  	String strDeployDirectory=null;
-	  	String strTempDirectory=null;
+	  	//String strTempDirectory=null;
 	  	String strTLDDirectory=null;
 	  	String strFLDDirectory=null;
 	  	String strTagDirectory=null;
@@ -2333,7 +2413,7 @@ public final class ConfigWebFactory {
 	  	if(fileSystem!=null) {
 	  		strAllowRealPath=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("allow-realpath"));
 	  		strDeployDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("deploy-directory"));
-		  	strTempDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("temp-directory"));
+		  	//strTempDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("temp-directory"));
 		  	strTLDDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("tld-directory"));
 		  	strFLDDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("fld-directory"));
 		  	strTagDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("tag-directory"));
@@ -2352,7 +2432,7 @@ public final class ConfigWebFactory {
 	  	//}
 	  	
         // Temp Dir
-	  	if(!StringUtil.isEmpty(strTempDirectory)) {
+	  	/*if(!StringUtil.isEmpty(strTempDirectory)) {
 		  	config.setTempDirectory(ConfigWebUtil.getFile(configDir,strTempDirectory, 
 		  			null, // create no default
 		  			configDir,FileUtil.TYPE_DIR,config));
@@ -2364,7 +2444,7 @@ public final class ConfigWebFactory {
 	  		config.setTempDirectory(ConfigWebUtil.getFile(configDir,"temp", 
 		  			null, // create no default
 		  			configDir,FileUtil.TYPE_DIR,config));
-	  	}
+	  	}*/
 
         // TLD Dir
 	  	//if(hasCS) {
@@ -2426,7 +2506,7 @@ public final class ConfigWebFactory {
     private static void createTagFiles(Config config,Resource configDir,Resource dir) {
     	boolean doNew=true;
     	try {
-			doNew=doNew(configDir);
+			doNew=doNew(configDir,true);
 		} catch (IOException e) {}
         
     	if(config instanceof ConfigServer){
@@ -2442,7 +2522,7 @@ public final class ConfigWebFactory {
     private static void createFunctionFiles(Config config,Resource configDir,Resource dir) {
     	boolean doNew=true;
     	try {
-			doNew=doNew(configDir);
+			doNew=doNew(configDir,true);
 		} catch (IOException e) {}
         
     	if(config instanceof ConfigServer){
@@ -3042,11 +3122,11 @@ public final class ConfigWebFactory {
   	  String strClientDirectory=scope.getAttribute("client-directory");
 	    if(hasAccess && !StringUtil.isEmpty(strClientDirectory)) {
 	    	strClientDirectory=ConfigWebUtil.translateOldPath(strClientDirectory);
-	    	Resource res = ConfigWebUtil.getFile(configDir,strClientDirectory, "client",configDir,FileUtil.TYPE_DIR,config);
+	    	Resource res = ConfigWebUtil.getFile(configDir,strClientDirectory, "client-scope",configDir,FileUtil.TYPE_DIR,config);
 	    	config.setClientScopeDir(res);
 	    }
   	  	else {
-  	  		config.setClientScopeDir(configDir.getRealResource("client"));
+  	  		config.setClientScopeDir(configDir.getRealResource("client-scope"));
   	  	}
 	    
 	    String strMax=scope.getAttribute("client-directory-max-size");
@@ -3280,10 +3360,11 @@ public final class ConfigWebFactory {
      * @param configServer 
      * @param config
      * @param doc
+     * @param isEventGatewayContext 
      * @throws IOException
      * @throws PageException
      */
-    private static void loadScheduler(ConfigServer configServer, ConfigImpl config, Document doc) throws PageException, IOException {
+    private static void loadScheduler(ConfigServer configServer, ConfigImpl config, Document doc, boolean isEventGatewayContext) throws PageException, IOException {
         if(config instanceof ConfigServer) return;
         
         Resource configDir=config.getConfigDir();
@@ -3298,7 +3379,7 @@ public final class ConfigWebFactory {
         Resource file = ConfigWebUtil.getFile(config.getRootDirectory(),(scheduler==null)?
                 null:
                 scheduler.getAttribute("directory"), "scheduler",configDir,FileUtil.TYPE_DIR,config);
-        config.setScheduler(configServer.getCFMLEngine(),file,log);
+        config.setScheduler(configServer.getCFMLEngine(),isEventGatewayContext?null:file,log);
     }
 
     /**
@@ -3730,9 +3811,18 @@ public final class ConfigWebFactory {
         Element application=getChildByName(doc.getDocumentElement(),"application");
         Element scope=		getChildByName(doc.getDocumentElement(),"scope");
       	
+
+        // Scope Logger
+        String strLogger=scope.getAttribute("log");
+        if(StringUtil.isEmpty(strLogger))strLogger="{railo-web}/logs/scope.log";
+        int logLevel=LogUtil.toIntType(scope.getAttribute("log-level"),Log.LEVEL_ERROR);
+        config.setScopeLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
+
+        
+        
         // Apllication Logger
-        String strLogger=application.getAttribute("application-log");
-        int logLevel=LogUtil.toIntType(application.getAttribute("application-log-level"),Log.LEVEL_ERROR);
+        strLogger=application.getAttribute("application-log");
+        logLevel=LogUtil.toIntType(application.getAttribute("application-log-level"),Log.LEVEL_ERROR);
         config.setApplicationLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
 
         // Exception Logger
@@ -3832,7 +3922,7 @@ public final class ConfigWebFactory {
         
         if(hasAccess && !StringUtil.isEmpty(strScriptProtect)) {
         	//print.err("sp:"+strScriptProtect);
-	        config.setScriptProtect(ApplicationContextUtil.translateScriptProtect(strScriptProtect));
+	        config.setScriptProtect(AppListenerUtil.translateScriptProtect(strScriptProtect));
 	    }
 	    else if(hasCS) config.setScriptProtect(configServer.getScriptProtect());
         

@@ -16,7 +16,6 @@ limitations under the License.
 
 package railo.runtime.img.filter;
 
-
 /**
  * A Colormap implemented using Catmull-Rom colour splines. The map has a variable number
  * of knots with a minimum of four. The first and last knots give the tangent at the end

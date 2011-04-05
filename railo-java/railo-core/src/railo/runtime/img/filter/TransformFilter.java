@@ -14,36 +14,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * An abstract superclass for filters which distort images in some way. The subclass only needs to override
  * two methods to provide the mapping between source and destination pixels.
  */
-public abstract class TransformFilter extends AbstractBufferedImageOp {
+public abstract class TransformFilter extends AbstractBufferedImageOp  implements DynFiltering {
+	
+    
 
     /**
-     * Treat pixels off the edge as zero.
-     */
-	public final static int ZERO = 0;
-
-    /**
-     * Clamp pixels to the image edges.
-     */
-	public final static int CLAMP = 1;
-
-    /**
-     * Wrap pixels off the edge onto the oppsoite edge.
-     */
-	public final static int WRAP = 2;
-
-    /**
-     * Use nearest-neighbout interpolation.
+     * Use nearest-neighbour interpolation.
      */
 	public final static int NEAREST_NEIGHBOUR = 0;
 
@@ -55,7 +48,7 @@ public abstract class TransformFilter extends AbstractBufferedImageOp {
     /**
      * The action to take for pixels off the image edge.
      */
-	protected int edgeAction = ZERO;
+	protected int edgeAction = ConvolveFilter.ZERO_EDGES;
 
     /**
      * The type of interpolation to use.
@@ -72,14 +65,32 @@ public abstract class TransformFilter extends AbstractBufferedImageOp {
      */
 	protected Rectangle originalSpace;
 
-    /**
-     * Set the action to perform for pixels off the edge of the image.
-     * @param edgeAction one of ZERO, CLAMP or WRAP
-     * @see #getEdgeAction
-     */
-	public void setEdgeAction(int edgeAction) {
-		this.edgeAction = edgeAction;
+
+	public TransformFilter(){
 	}
+	public TransformFilter(int edgeAction){
+		this.edgeAction=edgeAction;
+	}
+	
+    /**
+     * Set the action to perfomr for pixels off the image edges.
+     * valid values are:
+     * - clamp (default): Clamp pixels off the edge to the nearest edge.
+     * - wrap: Wrap pixels off the edge to the opposite edge.
+     * - zero: Treat pixels off the edge as zero
+     * 
+     * @param edgeAction the action
+     * @throws ExpressionException 
+     */
+	public void setEdgeAction(String edgeAction) throws ExpressionException {
+		String str=edgeAction.trim().toUpperCase();
+		if("ZERO".equals(str)) this.edgeAction = ConvolveFilter.ZERO_EDGES;
+		else if("CLAMP".equals(str)) this.edgeAction = ConvolveFilter.CLAMP_EDGES;
+		else if("WRAP".equals(str)) this.edgeAction = ConvolveFilter.WRAP_EDGES;
+		else 
+			throw new ExpressionException("invalid value ["+edgeAction+"] for edgeAction, valid values are [clamp,wrap,zero]");
+	}
+
 
     /**
      * Get the action to perform for pixels off the edge of the image.
@@ -92,11 +103,19 @@ public abstract class TransformFilter extends AbstractBufferedImageOp {
 	
     /**
      * Set the type of interpolation to perform.
+     * valid values are:
+     * - bilinear (default): Use bilinear interpolation.
+     * - nearest_neighbour: Use nearest-neighbour interpolation.
+     * 
      * @param interpolation one of NEAREST_NEIGHBOUR or BILINEAR
      * @see #getInterpolation
      */
-	public void setInterpolation(int interpolation) {
-		this.interpolation = interpolation;
+	public void setInterpolation(String interpolation) throws ExpressionException {
+		String str=interpolation.trim().toUpperCase();
+		if("NEAREST_NEIGHBOUR".equals(str)) this.interpolation = NEAREST_NEIGHBOUR;
+		else if("BILINEAR".equals(str)) this.interpolation = BILINEAR;
+		else 
+			throw new ExpressionException("invalid value ["+interpolation+"] for interpolation, valid values are [bilinear,nearest_neighbour]");
 	}
 
     /**
@@ -124,20 +143,30 @@ public abstract class TransformFilter extends AbstractBufferedImageOp {
 	}
 
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
-        int width = src.getWidth();
+      	
+    	
+    	
+    	int width = src.getWidth();
         int height = src.getHeight();
+        
+        
+        
+        
+        
 		int type = src.getType();
 		WritableRaster srcRaster = src.getRaster();
 
 		originalSpace = new Rectangle(0, 0, width, height);
 		transformedSpace = new Rectangle(0, 0, width, height);
 		transformSpace(transformedSpace);
+		
+		
 
-        if ( dst == null ) {
-            ColorModel dstCM = src.getColorModel();
-			dst = new BufferedImage(dstCM, dstCM.createCompatibleWritableRaster(transformedSpace.width, transformedSpace.height), dstCM.isAlphaPremultiplied(), null);
-		}
-		WritableRaster dstRaster = dst.getRaster();
+        if (dst == null ) {
+        	dst=ImageUtil.createBufferedImage(src,transformedSpace.width,transformedSpace.height);
+        }
+        
+        WritableRaster dstRaster = dst.getRaster();
 
 		int[] inPixels = getRGB( src, 0, 0, width, height, null );
 
@@ -191,12 +220,12 @@ public abstract class TransformFilter extends AbstractBufferedImageOp {
 	final private int getPixel( int[] pixels, int x, int y, int width, int height ) {
 		if (x < 0 || x >= width || y < 0 || y >= height) {
 			switch (edgeAction) {
-			case ZERO:
+			case ConvolveFilter.ZERO_EDGES:
 			default:
 				return 0;
-			case WRAP:
+			case ConvolveFilter.WRAP_EDGES:
 				return pixels[(ImageMath.mod(y, height) * width) + ImageMath.mod(x, width)];
-			case CLAMP:
+			case ConvolveFilter.CLAMP_EDGES:
 				return pixels[(ImageMath.clamp(y, 0, height-1) * width) + ImageMath.clamp(x, 0, width-1)];
 			}
 		}
@@ -225,14 +254,14 @@ public abstract class TransformFilter extends AbstractBufferedImageOp {
 				if (out[0] < 0 || srcX >= srcWidth || out[1] < 0 || srcY >= srcHeight) {
 					int p;
 					switch (edgeAction) {
-					case ZERO:
+					case ConvolveFilter.ZERO_EDGES:
 					default:
 						p = 0;
 						break;
-					case WRAP:
+					case ConvolveFilter.WRAP_EDGES:
 						p = inPixels[(ImageMath.mod(srcY, srcHeight) * srcWidth) + ImageMath.mod(srcX, srcWidth)];
 						break;
-					case CLAMP:
+					case ConvolveFilter.CLAMP_EDGES:
 						p = inPixels[(ImageMath.clamp(srcY, 0, srcHeight-1) * srcWidth) + ImageMath.clamp(srcX, 0, srcWidth-1)];
 						break;
 					}
@@ -247,6 +276,18 @@ public abstract class TransformFilter extends AbstractBufferedImageOp {
 		}
 		return dst;
 	}
+	
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
 
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [EdgeAction, Interpolation]");
+		}
+
+		return filter(src, dst);
+	}
 }
 

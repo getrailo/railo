@@ -4,19 +4,11 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.op.Caster;
 
-/**
-* Controls various aspects of page processing, such as the output of HTML code in pages. One 
-*   benefit of this option is managing whitespace that can occur in output pages served by ColdFusion.
-*
-*
-*
-**/
 public final class Setting extends BodyTagImpl {
 
 	private boolean hasBody;
 
     /** set the value requesttimeout
-	*  Integer; number of seconds. Time limit, after which ColdFusion processes the page as an unresponsive thread. Overrides the timeout set in the ColdFusion Administrator.
 	* @param requesttimeout value to set
 	**/
 	public void setRequesttimeout(double requesttimeout)	{

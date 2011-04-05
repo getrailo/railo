@@ -26,11 +26,17 @@ ACTIONS --->
 				returnVariable="existing">
 			<cfset form.password=existing.password>
 		</cfif>
+<<<<<<< HEAD
 		
 		<cfset verify=getForm('verify',false)>
 		
 		<cfparam name="form.metaCacheTimeout" default="60000">
 		
+=======
+		<cfset verify=getForm('verify',false)>
+        <cfparam name="form.metaCacheTimeout" default="60000">
+        
+>>>>>>> a1d29e68a57cf427495f790387e60b7062cae731
 		<cfadmin 
 			action="updateDatasource"
 			type="#request.adminType#"
@@ -53,6 +59,8 @@ ACTIONS --->
 			metaCacheTimeout="#form.metaCacheTimeout#"
 			blob="#getForm('blob',false)#"
 			clob="#getForm('clob',false)#"
+			validate="#getForm('validate',false)#"
+			storage="#getForm('storage',false)#"
 			
 			allowed_select="#getForm('allowed_select',false)#"
 			allowed_insert="#getForm('allowed_insert',false)#"
@@ -66,11 +74,19 @@ ACTIONS --->
 			verify="#verify#"
 			custom="#custom#"
 			remoteClients="#request.getRemoteClients()#">
+<<<<<<< HEAD
 		
 		<cfset form.mark="update">
 		
 		<cfset v = verifiy ? "&verified=" & form.name : '' />
 		
+=======
+            <cfset form.mark="update">
+        <cfset v="">
+        <cfif verify>
+        	<cfset v="&verified="&form.name>
+        </cfif>
+>>>>>>> a1d29e68a57cf427495f790387e60b7062cae731
 		<cflocation url="#request.self#?action=#url.action##v#" addtoken="no">
 	</cfif>
 	<cfcatch><cfrethrow>
@@ -93,6 +109,8 @@ Error Output--->
 	<cfset datasource=struct()>
 	<cfset datasource.type=form.type>
 	<cfset datasource.name=form.name>
+	<cfset datasource.storage=false>
+	<cfset datasource.validate=false>
 	
 <cfelse>
 	<cfset actionType="update">
@@ -133,8 +151,11 @@ Error Output--->
 	<cfset datasource.revoke=driver.getValue('allowed_revoke')>
 	<cfset datasource.alter=driver.getValue('allowed_alter')>
 	<cfset datasource.grant=driver.getValue('allowed_grant')>
-	
+    <cfset datasource.metaCacheTimeout=60000>
 </cfif>
+
+<cfif not structKeyExists(datasource,'metaCacheTimeout')><cfset datasource.metaCacheTimeout=60000></cfif>
+
 <!--- overwrite values, with values from form scope --->
 <cfloop collection="#form#" item="key">
 	<cfif structKeyExists(datasource,key)>
@@ -288,6 +309,21 @@ Connection Timeout --->
 		<span class="comment">#stText.Settings.dbConnTimeoutDesc#</span>
 	</td>
 </tr>
+
+
+<!--- 
+
+validate --->
+<tr>
+	<td class="tblHead" width="150">#stText.Settings.dbValidate#</td>
+	<td class="tblContent" width="300">
+		<cfinput type="checkbox" class="checkbox" name="validate" value="yes" checked="#isDefined('datasource.validate') and datasource.validate#">
+		<span class="comment">#stText.Settings.dbValidateDesc#</span>
+	</td>
+</tr>
+
+
+
 <!--- 
 
 Meta Cache--->
@@ -369,6 +405,18 @@ Allow --->
 		
 	</td>
 </tr>
+<!--- 
+
+storage --->
+<tr>
+	<td class="tblHead" width="150"><b>#stText.Settings.dbStorage#</b></td>
+	<td class="tblContent" width="300">
+		<cfinput type="checkbox" class="checkbox" name="storage" value="yes" checked="#isDefined('datasource.storage') and datasource.storage#">
+		<span class="comment">#stText.Settings.dbStorageDesc#</span>
+	</td>
+</tr>
+
+
 <cfif arrayLen(fields)>
 <tr>
 	<td width="150" colspan="2">&nbsp;</td>

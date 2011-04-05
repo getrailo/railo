@@ -14,6 +14,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMSession;
@@ -26,12 +27,12 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.QueryPro;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
-import railo.runtime.util.ApplicationContextPro;
 
 
 
@@ -249,11 +250,6 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	}
 
 	/** set the value connectstring
-	*  The contents of a connection string to send to the ODBC server. When connecting to a data source 
-	* 		defined in the ColdFusion Administrator, you can use this attribute to specify additional connection 
-	* 		details or to override connection information specified in the Administrator. If you are dynamically 
-	* 		connecting to a datasource by specifying dbType = "dynamic", the connection string must specify all 
-	* 		required ODBC connection attributes.
 	* @param connectstring value to set
 	 * @throws ApplicationException
 	**/
@@ -439,7 +435,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 				DateTimeImpl cachedBefore = null;
 				//if(cachedWithin!=null)
 					cachedBefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedWithin.getMillis(),false);
-                pageContext.getQueryCache().set(sql,datasource,username,password,query,cachedBefore);
+	                pageContext.getQueryCache().set(sql,datasource,username,password,query,cachedBefore);
                 
                 
 			}
@@ -470,9 +466,9 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			
 			// GENERATED KEYS
 			// FUTURE when getGeneratedKeys() exist in interface the toQueryImpl can be removed
-			QueryImpl qi = Caster.toQueryImpl(query,null);
+			QueryPro qi = Caster.toQueryPro(query,null);
 			if(qi !=null){
-				QueryImpl qryKeys = Caster.toQueryImpl(qi.getGeneratedKeys(),null);
+				QueryPro qryKeys = Caster.toQueryPro(qi.getGeneratedKeys(),null);
 				if(qryKeys!=null){
 					StringBuffer generatedKey=new StringBuffer(),sb;
 					Collection.Key[] columnNames = qryKeys.getColumnNames();

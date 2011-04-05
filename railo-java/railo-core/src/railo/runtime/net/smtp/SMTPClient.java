@@ -16,8 +16,6 @@ import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -27,6 +25,7 @@ import javax.mail.internet.MimePart;
 
 import railo.commons.activation.ResourceDataSource;
 import railo.commons.collections.HashTable;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
@@ -46,6 +45,7 @@ import railo.runtime.net.mail.ServerImpl;
 import railo.runtime.net.proxy.Proxy;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
+import railo.runtime.net.smtp.SMTPConnectionPool.SessionAndTransport;
 import railo.runtime.op.Caster;
 import railo.runtime.spooler.mail.MailSpoolerTask;
 import railo.runtime.type.List;
@@ -57,6 +57,11 @@ public final class SMTPClient implements Serializable  {
 
 	
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5227282806519740328L;
+	
 	private static final int SPOOL_UNDEFINED=0;
 	private static final int SPOOL_YES=1;
 	private static final int SPOOL_NO=2;
@@ -375,11 +380,11 @@ public final class SMTPClient implements Serializable  {
 		//}
 	}
 
-	private class MimeMessageAndSession {
-		private MimeMessage message;
-		private Session session;
+	public static class MimeMessageAndSession {
+		public final MimeMessage message;
+		public final SessionAndTransport session;
 
-		public MimeMessageAndSession(MimeMessage message,Session session){
+		public MimeMessageAndSession(MimeMessage message,SessionAndTransport session){
 			this.message=message;
 			this.session=session;
 		}
@@ -424,32 +429,24 @@ public final class SMTPClient implements Serializable  {
 	    	  props.remove("mail.smtp.password");
 	    	  props.remove("password");
 	      }
+	      SessionAndTransport sat = SMTPConnectionPool.getSessionAndTransport(props,auth);
 	      
-	      
-	      Session session = null;
-	      /*try {
-	    	  if(auth!=null)session=Session.getDefaultInstance(props, auth);
-	    	  else session=Session.getDefaultInstance(props);
-	      }catch(Throwable t){}
-	      */
-	      //if(session==null)	{
-	          if(auth!=null)session=Session.getInstance(props,auth);
-	    	  else session=Session.getInstance(props);
-	      //}
-	    	 
-		  SMTPMessage msg = new SMTPMessage(session);
-		  
-		
 	// Contacts
+		SMTPMessage msg = new SMTPMessage(sat.session);
 		if(from==null)throw new MessagingException("you have do define the from for the mail"); 
-		if(tos==null)throw new MessagingException("you have do define the to for the mail"); 
+		//if(tos==null)throw new MessagingException("you have do define the to for the mail"); 
 		
 		checkAddress(from,charset);
-		checkAddress(tos,charset);
+		//checkAddress(tos,charset);
 		
 		msg.setFrom(from);
-		msg.setRecipients(Message.RecipientType.TO, tos);
-	    if(ccs!=null){
+		//msg.setRecipients(Message.RecipientType.TO, tos);
+	    
+		if(tos!=null){
+			checkAddress(tos,charset);
+			msg.setRecipients(Message.RecipientType.TO, tos);
+	    }
+		if(ccs!=null){
 			checkAddress(ccs,charset);
 	    	msg.setRecipients(Message.RecipientType.CC, ccs);
 	    }
@@ -482,7 +479,7 @@ public final class SMTPClient implements Serializable  {
 			if(ArrayUtil.isEmpty(attachmentz) && ArrayUtil.isEmpty(parts)){
 				fillHTMLText(msg);
 				setHeaders(msg,headers);
-				return new MimeMessageAndSession(msg,session);
+				return new MimeMessageAndSession(msg,sat);
 			}
 			mp = new MimeMultipart();
 			mp.addBodyPart(getHTMLText());
@@ -492,7 +489,7 @@ public final class SMTPClient implements Serializable  {
 			if(ArrayUtil.isEmpty(attachmentz) && ArrayUtil.isEmpty(parts)){
 				fillPlainText(msg);
 				setHeaders(msg,headers);
-				return new MimeMessageAndSession(msg,session);
+				return new MimeMessageAndSession(msg,sat);
 			}
 			mp = new MimeMultipart();
 			mp.addBodyPart(getPlainText());
@@ -530,11 +527,8 @@ public final class SMTPClient implements Serializable  {
 		msg.setContent(mp);
 		setHeaders(msg,headers);
 	    
-		return new MimeMessageAndSession(msg,session);
+		return new MimeMessageAndSession(msg,sat);
 	}
-	
-	
-
 	
 
 	private static void setHeaders(SMTPMessage msg, Map headers) throws MessagingException {
@@ -726,43 +720,53 @@ public final class SMTPClient implements Serializable  {
 			else _ssl=((ServerImpl)server).isSSL();
 			
 			
-			MimeMessageAndSession msgAsess;
+			MimeMessageAndSession msgSess;
 			
 			synchronized(LOCK) {
-			
 				try {
-					msgAsess = createMimeMessage(config,server.getHostName(),server.getPort(),_username,_password,_tls,_ssl);
+					msgSess = createMimeMessage(config,server.getHostName(),server.getPort(),_username,_password,_tls,_ssl);
 				} catch (MessagingException e) {
 					log.error("mail",LogUtil.toMessage(e));
-					throw new MailException(e.getMessage());
+					MailException me = new MailException(e.getMessage());
+					me.setStackTrace(e.getStackTrace());
+					throw me;
 				}
 				try {
-	            	Transport tr = msgAsess.session.getTransport("smtp");
-            		SMTPSender sender=new SMTPSender(LOCK,tr,msgAsess.message,server.getHostName(),server.getPort(),_username,_password);
+	            	SerializableObject lock = new SerializableObject();
+	            	SMTPSender sender=new SMTPSender(lock,msgSess,server.getHostName(),server.getPort(),_username,_password);
             		sender.start();
+            		SystemUtil.wait(lock, timeout);
             		
-            		LOCK.wait(timeout);
-                	if(!sender.hasSended()) {
+            		if(!sender.hasSended()) {
+                		Throwable t = sender.getThrowable();
+                		if(t!=null) throw Caster.toPageException(t);
+                		
+                		// stop when still running
                 		try{
-                			sender.stop();
+                			if(sender.isAlive())sender.stop();
                 		}
-                		catch(Throwable t){}
-                		if(sender.hasError()) throw sender.getMessageExpection();
-                		throw new MessagingException("timeout occurred after "+(timeout/1000)+" seconds while sending mail message");
+                		catch(Throwable t2){}
+                		
+                		// after thread s stopped check send flag again
+                		if(!sender.hasSended()){
+                			throw new MessagingException("timeout occurred after "+(timeout/1000)+" seconds while sending mail message");
+                		}
                 	}
-                	clean(config);
+                	clean(config,attachmentz);
                 	
 	            	log.info("mail","send mail");
 					break;
 				} 
-	            catch (Exception me) {
+	            catch (Exception e) {e.printStackTrace();
 					if(i+1==servers.length) {
-						String msg=me.getMessage();
-						if(StringUtil.isEmpty(msg))msg=Caster.toClassName(me);
+						String msg=e.getMessage();
+						if(StringUtil.isEmpty(msg))msg=Caster.toClassName(e);
 						
 						log.error("mail spooler",msg);
-						throw new MailException(
-	                    		server.getHostName()+" "+msg+":"+i);
+						MailException me = new MailException(server.getHostName()+" "+msg+":"+i);
+						me.setStackTrace(e.getStackTrace());
+						
+						throw me;
 	                }
 				}
 			}
@@ -774,7 +778,7 @@ public final class SMTPClient implements Serializable  {
 	}
 
 	// remove all atttachements that are marked to remove
-	private void clean(Config config) {
+	private static void clean(Config config, Attachment[] attachmentz) {
 		if(attachmentz!=null)for(int i=0;i<attachmentz.length;i++){
 			if(attachmentz[i].isRemoveAfterSend()){
 				Resource res = config.getResource(attachmentz[i].getAbsolutePath());

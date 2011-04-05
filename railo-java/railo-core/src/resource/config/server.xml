@@ -29,7 +29,7 @@ Path placeholders:
 			- class:<class> (class that implements java.io.PrintWriter)
 			- file:<file> (file to write in)
 	-->
-	<system out="default" err="default"/>
+	<system out="null" err="default"/>
 
 
 <!--	definition of all database used inside your application. 										-->
@@ -297,7 +297,7 @@ Path placeholders:
 		log-memory-usage="no"
 		memory-log="{railo-config}/logs/memory.log"
 		template="/railo-context/templates/debugging/debugging.cfm"
-		debug="yes"/>
+		debug="no"/>
 	
 		<!--
 	application:
@@ -317,9 +317,24 @@ Path placeholders:
 	<application
 		listener-type="mixed"
 		listener-mode="curr2root"/>
-
+	
 	<update 
 		location="http://www.getrailo.org" 
 		type="manual"/>
+	<!--
+	flex:
+		
+		configuration: xml|manual (default: xml)
+			xml:		deploy default configuration for the MessageBrokerServlet as xml to th WEB-INF directory
+			manual:		the configuration is up to the user, railo does nothing
+			
+		caster-class: shortcut (modern,classic) or AMFCaster class.
+		- classic (default): Build in AMFCaster follows the implementation of other engines.
+		- modern: Build in AMFCaster based on classic AMFCaster improved in functionality.  
+		- <class-name>: full class path of class implemeting interface AMFCaster (http://www.getrailo.org/javadoc/railo/runtime/net/amf/AMFCaster.html)
+		caster-class-arguments: init arguments provided to the AMFCaster init method, use "CSS" syntax.
+	-->
+	<flex 
+		configuration="xml"/>
 
 </railo-configuration>

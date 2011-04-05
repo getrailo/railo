@@ -160,7 +160,7 @@ public class StructImplString extends StructImpl implements Struct {
 	    return StructUtil.toDumpTable(this, "struct", pageContext, maxlevel, dp);
 		/*Iterator it=map.keySet().iterator();
 		
-		DumpTable table = new DumpTablePro("struct","#5965e4","#9999ff","#000000");
+		DumpTable table = new DumpTablePro("struct","#9999ff","#ccccff","#000000");
 		table.setTitle("Struct");
 		maxlevel--;
 		while(it.hasNext()) {

@@ -72,8 +72,6 @@ public final class QueryParam extends TagImpl {
 	}
 
 	/** set the value value
-	*  Specifies the actual value that ColdFusion passes to the right of the comparison operator in a 
-	* 	where clause.
 	* @param value value to set
 	**/
 	public void setValue(Object value)	{
@@ -113,7 +111,7 @@ public final class QueryParam extends TagImpl {
 	 * @throws DatabaseException
 	**/
 	public void setCfsqltype(String type) throws DatabaseException	{
-		item.setType(SQLCaster.cfSQLTypeToIntType(type));
+		item.setType(SQLCaster.toIntType(type));
 		
 	}
 

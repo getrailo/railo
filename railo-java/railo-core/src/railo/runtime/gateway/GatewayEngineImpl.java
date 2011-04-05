@@ -30,9 +30,7 @@ import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.exp.FunctionNotSupported;
 import railo.runtime.exp.PageException;
-import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.thread.ThreadUtil;
 import railo.runtime.type.Struct;
@@ -43,7 +41,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 
 	private Map entries=new HashMap();
 	private Resource cfcDirectory;
-	private ConfigWeb config;
+	private final ConfigWeb config;
 
 	private Map cfcs=new HashMap();
 
@@ -56,7 +54,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		else {
 			Resource root = config.getConfigDir().getRealResource("gatewayRoot");
 			root.mkdirs();
-			this.config=((ConfigServerImpl)config).getConfigWeb();
+			this.config=((ConfigServerImpl)config).getConfigWeb(true);
 		}
 		this.log=((ConfigImpl)config).getGatewayLogger();
 		
@@ -189,7 +187,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		return (GatewayEntry) entries.get(gatewayId);
 	}
 
-	public static void checkRestriction() {
+	/*public static void checkRestriction() {
 		PageContext pc = ThreadLocalPageContext.get();
 		boolean enable = false;
 		try {
@@ -199,7 +197,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		//enable=false;
 		if(!enable)
 			throw new PageRuntimeException(new FunctionNotSupported("SendGatewayMessage"));
-	}
+	}*/
 
 	public Resource getCFCDirectory() {
 		return cfcDirectory;
@@ -325,7 +323,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		
 		PageSource ps = m.getPageSource(requestURI);
 		Page p = ((PageSourceImpl)ps).loadPage(pc,(ConfigWeb)config);
-		cfc= ComponentLoader.loadComponentImpl(pc, p, ps, cfcPath, false,true);
+		cfc= ComponentLoader.loadComponent(pc, p, ps, cfcPath, false,true);
 		if(peristent) cfcs.put(requestURI+id, cfc);
 		return cfc;
 	}

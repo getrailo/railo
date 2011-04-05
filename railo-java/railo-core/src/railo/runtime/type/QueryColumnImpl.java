@@ -758,7 +758,7 @@ public final class QueryColumnImpl implements QueryColumn,Sizeable,Objects {
 	 */
 	public Object callWithNamedValues(PageContext pc, Key methodName,Struct args) throws PageException {
 		
-        throw new ExpressionException("No matching Method/Function for call with named arguments found");
+        throw new ExpressionException("No matching Method/Function ["+methodName+"] for call with named arguments found");
 		//return pc.getFunctionWithNamedValues(get(query.getCurrentrow()), methodName, Caster.toFunctionValues(args));
 	}
 

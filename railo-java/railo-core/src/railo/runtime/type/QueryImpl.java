@@ -12,12 +12,15 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -43,6 +46,7 @@ import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceUtil;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionImpl;
+import railo.runtime.db.DatasourceConnectionPro;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
@@ -209,6 +213,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
 		boolean hasResult=false;
+		boolean closeStatement=true;
 		try {	
 			SQLItem[] items=sql.getItems();
 			if(items.length==0) {
@@ -219,20 +224,13 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	        }
 	        else {
 	        	// some driver do not support second argument
-	        	PreparedStatement preStat = DBUtil.getPreparedStatement(dc,sql,createGeneratedKeys);
-	        	//if(p==null)p = DBUtil.getPreparedStatement(dc,sql,createGeneratedKeys);
-	        	//PreparedStatement preStat = p;
-	        	
-	        	//PreparedStatement preStat = createGeneratedKeys?
-	        	//		dc.getConnection().prepareStatement(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):
-	        	//			dc.getConnection().prepareStatement(sql.getSQLString());
-		    	stat=preStat;
+	        	PreparedStatement preStat = ((DatasourceConnectionPro)dc).getPreparedStatement(sql, createGeneratedKeys);
+	        	closeStatement=false;
+	        	stat=preStat;
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
 	            setItems(preStat,items);
 		        hasResult=preStat.execute();    
 	        }
-			
-			
 			
 			if(hasResult){
 				fillResult(stat.getResultSet(), maxrow, true);
@@ -245,31 +243,6 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 			if(!hasResult && (hasResult=stat.getMoreResults() || setUpdateCount(stat))){
 				if(hasResult)fillResult(stat.getResultSet(), maxrow, true);
 			}
-			
-			/*
-				for (setUpdateCount(stat); hasResult || updateCount != -1;setUpdateCount(stat)) {
-				    if (hasResult) {
-				    	print.err("haResult:"+hasResult);
-						fillResult(stat.getResultSet(), maxrow, true);
-						break;
-				    }
-					if (updateCount > -1) {
-						print.err("updatecount:"+updateCount);
-						if (createGeneratedKeys) {
-							//hasResult=stat.getMoreResults();
-							//if(hasResult)continue;
-							print.err("setGeneratedKeys:");
-							setGeneratedKeys(dc, stat);
-							break;
-						}
-					    
-					}
-					//if (!supportsMultipleResults)
-					//break;
-				    hasResult = stat.getMoreResults();
-				}*/
-			
-			
 		} 
 		catch (SQLException e) {
 			throw new DatabaseException(e,sql,dc);
@@ -278,7 +251,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 			throw Caster.toPageException(e);
 		}
         finally {
-        	DBUtil.closeEL(stat);
+        	if(closeStatement)DBUtil.closeEL(stat);
         }  
 		exeTime=stopwatch.time();
 	}
@@ -371,8 +344,6 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	 * @throws PageException 
 	 */
 	private static void checkSQLRestriction(DatasourceConnection dc, SQL sql) throws PageException {
-        //Array sqlparts = List.listToArrayRemoveEmpty(sql.getSQLString()," \t"+System.getProperty("line.separator"));
-        
         Array sqlparts = List.listToArrayRemoveEmpty(
         		SQLUtil.removeLiterals(sql.getSQLString())
         		," \t"+System.getProperty("line.separator"));
@@ -1219,8 +1190,6 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 			heads[i+1]=new SimpleDumpData(keys[i]);
 		}
 		
-		///DumpTable table=new DumpTable("#aa66aa","#ffddff","#000000");
-		//table.setTitle("Query");
 		StringBuilder comment=new StringBuilder(); 
 		
 		//table.appendRow(1, new SimpleDumpData("SQL"), new SimpleDumpData(sql.toString()));
@@ -1240,8 +1209,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		
 		
 		
-		//DumpTable recs=new DumpTable("#83CB5C","#CAFF92","#000000");
-		DumpTable recs=new DumpTablePro("query","#aa66aa","#ffddff","#000000");
+		DumpTable recs=new DumpTablePro("query","#cc99cc","#ffccff","#000000");
 		recs.setTitle("Query");
 		if(dp.getMetainfo())recs.setComment(comment.toString());
 		recs.appendRow(new DumpRow(-1,heads));
@@ -1991,22 +1959,6 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
         return sct;
         
     }
-
-    /* *
-     * Returns the value of queryCacheEntry.
-     * @return value queryCacheEntry
-     * /
-    public QueryCacheEntry getQueryCacheEntry() {
-        return queryCacheEntry;
-    }*/
-
-    /* *
-     * sets the queryCacheEntry value.
-     * @param queryCacheEntry The queryCacheEntry to set.
-     * /
-    public void setQueryCacheEntry(QueryCacheEntry queryCacheEntry) {
-        this.queryCacheEntry = queryCacheEntry;
-    }*/
 
 	/**
 	 * @return the sql
@@ -3531,7 +3483,10 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		throw notSupported();
 	}
 	
-	/*
+
+	
+	//JDK6: uncomment this for compiling with JDK6 
+	 
 	public void updateNClob(int columnIndex, NClob nClob) throws SQLException {
 		throw notSupported();
 	}
@@ -3579,7 +3534,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	public void updateRowId(String columnLabel, RowId x) throws SQLException {
 		throw notSupported();
 	}
-	 */
+	
 
 	private SQLException notSupported() {
 		return new SQLException("this feature is not supported");

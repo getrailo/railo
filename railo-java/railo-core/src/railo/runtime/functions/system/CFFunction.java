@@ -1,9 +1,6 @@
 package railo.runtime.functions.system;
 
 import java.io.File;
-import java.util.Map;
-
-import org.apache.commons.collections.ReferenceMap;
 
 import railo.runtime.Mapping;
 import railo.runtime.Page;
@@ -27,9 +24,8 @@ public class CFFunction {
 	
 	
 	private static final Variables VAR = new VariablesImpl();
-	private static Map udfs=new ReferenceMap();
-	
-	
+	private static final Collection.Key CALLER = KeyImpl.init("caller");
+	//private static Map udfs=new ReferenceMap();
 	
 	public static Object call(PageContext pc , Object[] objArr) throws PageException {
 		if(objArr.length<3)
@@ -40,39 +36,50 @@ public class CFFunction {
 		Collection.Key name=KeyImpl.toKey((((FunctionValue) objArr[1]).getValue()));
 		boolean isweb=Caster.toBooleanValue((((FunctionValue) objArr[2]).getValue()));
 		
+		
+		UDF udf=loadUDF(pc, filename, name, isweb);
+		Struct meta = udf.getMetaData(pc);
+		boolean caller=meta==null?false:Caster.toBooleanValue(meta.get(CALLER,Boolean.FALSE),false);
+		
 		Struct namedArguments=null;
 		Object[] arguments=null;
 		if(objArr.length<=3)arguments=ArrayUtil.OBJECT_EMPTY;
 		else if(objArr[3] instanceof FunctionValue){
 			FunctionValue fv;
 			namedArguments=new StructImpl();
+			if(caller)namedArguments.setEL(CALLER, pc.undefinedScope().duplicate(false));
 			for(int i=3;i<objArr.length;i++){
 				fv=toFunctionValue(name,objArr[i]);
 				namedArguments.set(fv.getName(), fv.getValue());
 			}
 		}
 		else {
-			arguments=new Object[objArr.length-3];
+			int offset=(caller?2:3);
+			arguments=new Object[objArr.length-offset];
+			if(caller)arguments[0]=pc.undefinedScope().duplicate(false);
 			for(int i=3;i<objArr.length;i++){
-				arguments[i-3]=toObject(name,objArr[i]);
+				arguments[i-offset]=toObject(name,objArr[i]);
 			}
 		}
 		
 		
 		// load UDF
-		UDF udf=loadUDF(pc, filename, name, isweb);
+		
 		
 		// execute UDF
-		if(namedArguments==null)return udf.call(pc, arguments, false);
+		if(namedArguments==null){
+			return udf.call(pc, arguments, false);
+		}
+		
+		
 		return udf.callWithNamedValues(pc, namedArguments, false);
 	}
 
 	public static synchronized UDF loadUDF(PageContext pc, String filename,Collection.Key name,boolean isweb) throws PageException {
 		ConfigWebImpl config = (ConfigWebImpl) pc.getConfig();
 		String key=isweb?name.getString()+config.getId():name.getString();
-    	UDF udf=(UDF) udfs.get(key);
+    	UDF udf=config.getFromFunctionCache(key);
 		if(udf!=null) return udf;
-		
 		
 		Mapping mapping=isweb?config.getFunctionMapping():config.getServerFunctionMapping();
     	PageSourceImpl ps = (PageSourceImpl) mapping.getPageSource(filename);
@@ -88,7 +95,7 @@ public class CFFunction {
 			Object o= pc.variablesScope().get(name,null);
 			if(o instanceof UDF) {
 				udf= (UDF) o;
-				udfs.put(key, udf);
+				config.putToFunctionCache(key, udf);
 				return udf;
 			}
 			throw new ExpressionException("there is no Function defined with name ["+name+"] in template ["+mapping.getStrPhysical()+File.separator+filename+"]");

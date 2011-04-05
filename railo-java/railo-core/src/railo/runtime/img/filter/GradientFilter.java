@@ -14,16 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.Point;
+package railo.runtime.img.filter;import java.awt.Point;
 import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which draws a coloured gradient. This is largely superceded by GradientPaint in Java1.2, but does provide a few
  * more gradient options.
  */
-public class GradientFilter extends AbstractBufferedImageOp {
+public class GradientFilter extends AbstractBufferedImageOp  implements DynFiltering {
 
 	public final static int LINEAR = 0;
 	public final static int BILINEAR = 1;
@@ -52,6 +58,7 @@ public class GradientFilter extends AbstractBufferedImageOp {
 	private int paintMode = PixelUtils.NORMAL;
 
 	public GradientFilter() {
+		colormap = new LinearColormap(color1, color2);
 	}
 
 	public GradientFilter(Point p1, Point p2, int color1, int color2, boolean repeat, int type, int interpolation) {
@@ -344,5 +351,22 @@ public class GradientFilter extends AbstractBufferedImageOp {
 	
 	public String toString() {
 		return "Other/Gradient Fill...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toIntValue(o,"Interpolation"));
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("Point1")))!=null)setPoint1(ImageFilterUtil.toPoint(o,"Point1"));
+		if((o=parameters.removeEL(KeyImpl.init("Point2")))!=null)setPoint2(ImageFilterUtil.toPoint(o,"Point2"));
+		if((o=parameters.removeEL(KeyImpl.init("PaintMode")))!=null)setPaintMode(ImageFilterUtil.toIntValue(o,"PaintMode"));
+		if((o=parameters.removeEL(KeyImpl.init("Type")))!=null)setType(ImageFilterUtil.toIntValue(o,"Type"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Colormap, Interpolation, Angle, Point1, Point2, PaintMode, Type]");
+		}
+
+		return filter(src, dst);
 	}
 }

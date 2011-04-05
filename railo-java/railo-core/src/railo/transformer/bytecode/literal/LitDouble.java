@@ -16,6 +16,8 @@ import railo.transformer.bytecode.util.Types;
  */
 public final class LitDouble extends ExpressionBase implements Literal,ExprDouble {
     
+	public static final LitDouble ZERO=new LitDouble(0,-1);
+	
     private double d;
 
 	public static ExprDouble toExprDouble(double d, int line) {

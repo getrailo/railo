@@ -1,6 +1,8 @@
 package railo.runtime.img;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -177,4 +179,25 @@ public class ImageUtil {
 		Arrays.sort(names);
 		return names;
 	}
+	
+
+	
+		public static BufferedImage createBufferedImage(BufferedImage image, int columns, int rows) {
+	        ColorModel colormodel = image.getColorModel();
+	        BufferedImage newImage;
+	        if(colormodel instanceof IndexColorModel) {
+	            if(colormodel.getTransparency() != 1)
+	                newImage = new BufferedImage(columns, rows, 2);
+	            else
+	                newImage = new BufferedImage(columns, rows, 1);
+	        } 
+	        else {
+	            newImage = new BufferedImage(colormodel, image.getRaster().createCompatibleWritableRaster(columns, rows), colormodel.isAlphaPremultiplied(), null);
+	        }
+	        return newImage;
+	    }
+	    
+	    public static BufferedImage createBufferedImage(BufferedImage image) {
+	        return createBufferedImage(image, image.getWidth(), image.getHeight());
+	    }
 }

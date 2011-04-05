@@ -14,20 +14,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
 /**
  * A filter which performs a box blur with a different blur radius at each pixel. The radius can either be specified by
  * providing a blur mask image or by overriding the blurRadiusAt method.
  */
-public class VariableBlurFilter extends AbstractBufferedImageOp {
+public class VariableBlurFilter extends AbstractBufferedImageOp  implements DynFiltering {
 
 	private int hRadius = 1;
 	private int vRadius = 1;
@@ -288,5 +294,21 @@ public class VariableBlurFilter extends AbstractBufferedImageOp {
 	
 	public String toString() {
 		return "Blur/Variable Blur...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("PremultiplyAlpha")))!=null)setPremultiplyAlpha(ImageFilterUtil.toBooleanValue(o,"PremultiplyAlpha"));
+		if((o=parameters.removeEL(KeyImpl.init("Iterations")))!=null)setIterations(ImageFilterUtil.toIntValue(o,"Iterations"));
+		if((o=parameters.removeEL(KeyImpl.init("HRadius")))!=null)setHRadius(ImageFilterUtil.toIntValue(o,"HRadius"));
+		if((o=parameters.removeEL(KeyImpl.init("VRadius")))!=null)setVRadius(ImageFilterUtil.toIntValue(o,"VRadius"));
+		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toIntValue(o,"Radius"));
+		if((o=parameters.removeEL(KeyImpl.init("BlurMask")))!=null)setBlurMask(ImageFilterUtil.toBufferedImage(o,"BlurMask"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [PremultiplyAlpha, Iterations, HRadius, VRadius, Radius, BlurMask]");
+		}
+
+		return filter(src, dst);
 	}
 }

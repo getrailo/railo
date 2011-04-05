@@ -38,13 +38,13 @@ component output="false" extends="Base" accessors="true"{
 	 */
 	private Array function parseSql(){
 		var result = [];
-		var sql = this.getSql();
+		var sql = trim(this.getSql());
 		var namedParams = getNamedParams();
 		var positionalParams = getPositionalParams(); 
 		var positionalCursor = 1;
 		var str = "";
 		var cursor = 1;
-		
+		var lastMatch = 0;
 		
 		var match = refindNoCase(':[a-z]*|\?',sql,cursor,true);
 		
@@ -55,6 +55,8 @@ component output="false" extends="Base" accessors="true"{
 		}
 		
 		while(cursor neq 0){
+			// trace the lastmatch position to add any string after the last match if found
+			lastMatch =  cursor;
 			
 			match = refindNoCase(':[a-z]*|\?',sql,cursor,true);
 			
@@ -71,15 +73,21 @@ component output="false" extends="Base" accessors="true"{
 					result.add(positionalParams[positionalCursor]);
 					positionalCursor ++;				
 				}
-			}						
+			}
+			
 			// point the cursor after the match
 			cursor = match.pos[1] + match.len[1];	
-		}		
+		}
+		
+		// no more match check if we have string to close the statement
+		if(len(sql) gt lastMatch){
+			str = mid(sql,lastMatch,len(sql));
+			result.add({type='String',value=str})
+		}
 		
 		return result;	
 	}
 	
-
 	/*
 	 * @hint Return just the named params
 	 */	

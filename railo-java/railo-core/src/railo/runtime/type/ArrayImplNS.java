@@ -584,7 +584,7 @@ public class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable table = new DumpTablePro("array","#ffb200","#ffcc00","#263300");
+		DumpTable table = new DumpTablePro("array","#ff9900","#ffcc00","#000000");
 		table.setTitle("Array");
 		
 		int length=size();

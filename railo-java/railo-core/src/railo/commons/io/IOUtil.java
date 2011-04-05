@@ -93,18 +93,9 @@ public final class IOUtil {
 	 * @throws IOException
 	 */
 	public static void copy(Resource in, Resource out) throws IOException {
-		InputStream is=null;
-		OutputStream os=null;
-		try {
-			is=toBufferedInputStream(in.getInputStream());
-			os=toBufferedOutputStream(out.getOutputStream());
-		}
-		catch(IOException ioe) {
-			IOUtil.closeEL(is,os);
-			throw ioe;
-		}
-		copy(is,os,true,true);
+		in.copyTo(out, false);
 	}
+	
 	public static void merge(Resource in1, Resource in2, Resource out) throws IOException {
 		InputStream is1=null;
 		InputStream is2=null;

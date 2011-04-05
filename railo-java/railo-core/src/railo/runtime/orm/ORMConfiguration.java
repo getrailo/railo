@@ -49,6 +49,8 @@ public class ORMConfiguration {
 	public static final Collection.Key ORM_CONFIG = KeyImpl.getInstance("ormConfig");
 	public static final Collection.Key EVENT_HANDLING = KeyImpl.getInstance("eventHandling");
 	public static final Collection.Key EVENT_HANDLER = KeyImpl.getInstance("eventHandler");
+	public static final Collection.Key AUTO_MANAGE_SESSION = KeyImpl.getInstance("autoManageSession");
+	public static final Collection.Key SKIP_WITH_ERROR = KeyImpl.getInstance("skipCFCWithError");
 	
 	
 	private boolean autogenmap=true;
@@ -69,6 +71,8 @@ public class ORMConfiguration {
 	private Resource ormConfig;
 	private String eventHandler;
 	private boolean isDefaultCfcLocation=true;
+	private boolean skipCFCWithError=true;
+	private boolean autoManageSession=true;
 
 	private ORMConfiguration(){
 		autogenmap=true;
@@ -177,6 +181,13 @@ public class ORMConfiguration {
 		// logSQL
 		c.logSQL=Caster.toBooleanValue(settings.get(LOG_SQL,dc.logSQL()),dc.logSQL());
 		
+
+		// autoManageSession
+		c.autoManageSession=Caster.toBooleanValue(settings.get(AUTO_MANAGE_SESSION,dc.autoManageSession()),dc.autoManageSession());
+		
+		// skipCFCWithError
+		c.skipCFCWithError=Caster.toBooleanValue(settings.get(SKIP_WITH_ERROR,dc.skipCFCWithError()),dc.skipCFCWithError());
+		
 		// savemapping
 		c.saveMapping=Caster.toBooleanValue(settings.get(SAVE_MAPPING,dc.saveMapping()),dc.saveMapping());
 		
@@ -273,19 +284,44 @@ public class ORMConfiguration {
 		other.cacheConfig=cacheConfig;
 		other.cacheProvider=cacheProvider;
 		other.ormConfig=ormConfig;
-		
+		other.autoManageSession=autoManageSession;
+		other.skipCFCWithError=skipCFCWithError;
 		return other;
 	}
 
 	public String hash() {
 		
-		String data=autogenmap+catalog+isDefaultCfcLocation+cfcLocations+dbCreate+dialect+eventHandling+eventHandler+flushAtRequestEnd+logSQL+saveMapping+schema+secondaryCacheEnabled+sqlScript+useDBForMapping+cacheConfig+cacheProvider+ormConfig;
+		String data=autogenmap+":"+catalog+":"+isDefaultCfcLocation
+		+":"+dbCreate+":"+dialect+":"+eventHandling+":"+eventHandler+":"+flushAtRequestEnd+":"+logSQL+":"+autoManageSession+":"+skipCFCWithError+":"+saveMapping+":"+schema+":"+secondaryCacheEnabled+":"+
+		useDBForMapping+":"+cacheProvider
+		
+		+":"+toStr(cfcLocations)+":"+toStr(sqlScript)+":"+toStr(cacheConfig)+":"+toStr(ormConfig)
+		;
+		
 		try {
 			return MD5.getDigestAsString(data);
 		} catch (IOException e) {
 			return null;
 		}
 	}
+
+
+
+
+
+	private String toStr(Resource res) {
+		if(res==null) return "";
+		return res.getAbsolutePath();
+	}
+	private String toStr(Resource[] reses) {
+		if(reses==null) return "";
+		StringBuilder sb=new StringBuilder();
+		for(int i=0;i<reses.length;i++){
+			sb.append(toStr(reses[i]));
+		}
+		return sb.toString();
+	}
+
 
 
 
@@ -410,7 +446,12 @@ public class ORMConfiguration {
 		return ormConfig;
 	}
 
-
+	public boolean skipCFCWithError() {
+		return skipCFCWithError;
+	}
+	public boolean autoManageSession() {
+		return autoManageSession;
+	}
 
 
 
@@ -482,6 +523,13 @@ public class ORMConfiguration {
 	}
 
 
+
+
+
+
+	
+
+	
 
 
 

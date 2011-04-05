@@ -31,10 +31,8 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.methods.TraceMethod;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.EncodingUtil;
 
@@ -43,7 +41,10 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
+import railo.commons.net.RailoStringPart;
+import railo.commons.net.ResourcePart;
 import railo.commons.net.ResourcePartSource;
+import railo.commons.net.ResourceRequestEntity;
 import railo.commons.net.URLEncoder;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -146,7 +147,7 @@ public final class Http extends BodyTagImpl {
 	}
 	
 
-    private ArrayList params=new ArrayList();
+    private ArrayList<HttpParamBean> params=new ArrayList<HttpParamBean>();
 	
 	
 	/** When required by a server, a valid password. */
@@ -160,14 +161,7 @@ public final class Http extends BodyTagImpl {
 	** 	links remain intact. */
 	private boolean resolveurl;
 
-	/** A value, in seconds. When a URL timeout is specified in the browser, the timeout attribute setting 
-	** 		takes precedence over the ColdFusion Administrator timeout. The ColdFusion server then uses the lesser 
-	** 		of the URL timeout and the timeout passed in the timeout attribute, so that the request always times 
-	** 		out before or at the same time as the page times out. If there is no URL timeout specified, ColdFusion 
-	** 		takes the lesser of the ColdFusion Administrator timeout and the timeout passed in the timeout attribute.
-	** 		If there is no timeout set on the URL in the browser, no timeout set in the ColdFusion Administrator, 
-	** 		and no timeout set with the timeout attribute, ColdFusion waits indefinitely for the cfhttp request to 
-	** 		process. */
+	/** A value, in seconds. When a URL timeout is specified in the browser */
 	private long timeout=-1;
 
 	/** Host name or IP address of a proxy server. */
@@ -194,13 +188,7 @@ public final class Http extends BodyTagImpl {
 	** 	resolved to preserve links in the retrieved document. */
 	private int proxyport=80;
 
-	/** Specifies the column names for a query when creating a query as a result of a cfhttp GET. 
-	** 	By default, the first row of a text file is interpreted as column headings. If there are column 
-	** 	headers in the text file from which the query is drawn, do not specify this attribute except to overwrite them. 
-	** 	When duplicate column heading names are encountered, ColdFusion appends an underscore character to 
-	** 	the duplicate column name to make it unique. If there are no column headers in the text file, or to 
-	** 	override those in the file, you must specify the columns attribute. However ColdFusion never treats 
-	** 	the first row of the file as data, even if you specify the columns attribute. */
+	/** Specifies the column names for a query when creating a query as a result of a cfhttp GET. */
 	private String[] columns;
 
 	/** The port number on the server from which the object is requested. Default is 80. When used with 
@@ -226,12 +214,7 @@ public final class Http extends BodyTagImpl {
 	** 	number. Port numbers specified in the url attribute override the port attribute. */
 	private String url;
 
-	/** Boolean indicating whether to redirect execution or stop execution. The default is Yes. If set 
-	** 	to No and throwOnError = "yes", execution stops if cfhttp fails, and the status code and associated 
-	** 	error message are returned in the variable cfhttp.statuscode. To see where execution would have been 
-	** 	redirected, use the variable cfhttp.responseHeader[LOCATION]. The key LOCATION identifies the path of 
-	** 	redirection. ColdFusion will follow up to five redirections on a request. if this limit is exceeded, 
-	** 	ColdFusion behaves as if redirect = "no". */
+	/** Boolean indicating whether to redirect execution or stop execution.*/
 	private boolean redirect=true;
 
 
@@ -336,14 +319,6 @@ public final class Http extends BodyTagImpl {
 	}
 
 	/** set the value timeout
-	*  A value, in seconds. When a URL timeout is specified in the browser, the timeout attribute setting 
-	* 		takes precedence over the ColdFusion Administrator timeout. The ColdFusion server then uses the lesser 
-	* 		of the URL timeout and the timeout passed in the timeout attribute, so that the request always times 
-	* 		out before or at the same time as the page times out. If there is no URL timeout specified, ColdFusion 
-	* 		takes the lesser of the ColdFusion Administrator timeout and the timeout passed in the timeout attribute.
-	* 		If there is no timeout set on the URL in the browser, no timeout set in the ColdFusion Administrator, 
-	* 		and no timeout set with the timeout attribute, ColdFusion waits indefinitely for the cfhttp request to 
-	* 		process.
 	* @param timeout value to set
 	 * @throws ExpressionException 
 	**/
@@ -402,13 +377,6 @@ public final class Http extends BodyTagImpl {
 	}
 
 	/** set the value columns
-	*  Specifies the column names for a query when creating a query as a result of a cfhttp GET. 
-	* 	By default, the first row of a text file is interpreted as column headings. If there are column 
-	* 	headers in the text file from which the query is drawn, do not specify this attribute except to overwrite them. 
-	* 	When duplicate column heading names are encountered, ColdFusion appends an underscore character to 
-	* 	the duplicate column name to make it unique. If there are no column headers in the text file, or to 
-	* 	override those in the file, you must specify the columns attribute. However ColdFusion never treats 
-	* 	the first row of the file as data, even if you specify the columns attribute.
 	* @param columns value to set
 	 * @throws PageException
 	**/
@@ -473,12 +441,6 @@ public final class Http extends BodyTagImpl {
 	}
 
 	/** set the value redirect
-	*  Boolean indicating whether to redirect execution or stop execution. The default is Yes. If set 
-	* 	to No and throwOnError = "yes", execution stops if cfhttp fails, and the status code and associated 
-	* 	error message are returned in the variable cfhttp.statuscode. To see where execution would have been 
-	* 	redirected, use the variable cfhttp.responseHeader[LOCATION]. The key LOCATION identifies the path of 
-	* 	redirection. ColdFusion will follow up to five redirections on a request. if this limit is exceeded, 
-	* 	ColdFusion behaves as if redirect = "no".
 	* @param redirect value to set
 	**/
 	public void setRedirect(boolean redirect)	{
@@ -653,16 +615,16 @@ public final class Http extends BodyTagImpl {
 	        		setCookie.append(header.getValue());
 	        	else {
 	        	    //print.ln(header.getName()+"-"+header.getValue());
-	        		Object value=responseHeader.get(header.getName(),null);
-	        		if(value==null) responseHeader.set(header.getName(),header.getValue());
+	        		Object value=responseHeader.get(KeyImpl.init(header.getName()),null);
+	        		if(value==null) responseHeader.set(KeyImpl.init(header.getName()),header.getValue());
 	        		else {
 	        		    Array arr=null;
-	        		    if(value instanceof ArrayImpl) {
+	        		    if(value instanceof Array) {
 	        		        arr=(Array) value;
 	        		    }
 	        		    else {
 	        		        arr=new ArrayImpl();
-	        		        responseHeader.set(header.getName(),arr);
+	        		        responseHeader.set(KeyImpl.init(header.getName()),arr);
 	        		        arr.appendEL(value);
 	        		    }
 	        		    arr.appendEL(header.getValue());
@@ -684,21 +646,13 @@ public final class Http extends BodyTagImpl {
 	    // is text 
 	        boolean isText=
 	        	mimetype == null ||  
-	        	mimetype == NO_MIMETYPE || 
-	        	StringUtil.startsWithIgnoreCase(mimetype,"text")  || 
-	        	StringUtil.startsWithIgnoreCase(mimetype,"application/xml")  || 
-	        	StringUtil.startsWithIgnoreCase(mimetype,"application/xhtml")  || 
-	        	StringUtil.startsWithIgnoreCase(mimetype,"message") || 
-	        	StringUtil.startsWithIgnoreCase(mimetype,"application/octet-stream") || 
-	        	StringUtil.indexOfIgnoreCase(mimetype, "xml")!=-1 || 
-	        	StringUtil.indexOfIgnoreCase(mimetype, "json")!=-1 || 
-	        	StringUtil.indexOfIgnoreCase(mimetype, "rss")!=-1 || 
-	        	StringUtil.indexOfIgnoreCase(mimetype, "text")!=-1;
+	        	mimetype == NO_MIMETYPE || isText(mimetype);
+	        	
 	        
 	       
 	        cfhttp.set(TEXT,Caster.toBoolean(isText));
 	    // mimetype charset
-	        boolean responseProvideCharset=false;
+	        //boolean responseProvideCharset=false;
 	        if(!StringUtil.isEmpty(mimetype)){
 		        if(isText) {
 		        	String[] types=mimetype.split(";");
@@ -710,7 +664,7 @@ public final class Http extends BodyTagImpl {
 	                    if(index!=-1) {
 	                    	responseCharset=StringUtil.removeQuotes(tmp.substring(index+8),true);
 	                        cfhttp.set(CHARSET,responseCharset);
-	                        responseProvideCharset=true;
+	                        //responseProvideCharset=true;
 	                    }
 	                }
 		        }
@@ -827,6 +781,24 @@ public final class Http extends BodyTagImpl {
 	    
 	}
 	
+	public static boolean isText(String mimetype) {
+		if(mimetype==null)mimetype="";
+		else mimetype=mimetype.trim().toLowerCase();
+		return StringUtil.startsWithIgnoreCase(mimetype,"text")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/xml")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/atom+xml")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/xhtml")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"message") || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/octet-stream") || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "xml")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "json")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "rss")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "atom")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "text")!=-1;
+		
+		// "application/x-www-form-urlencoded" ???
+	}
+
 	private PageException toPageException(Throwable t) {
 		PageException pe = Caster.toPageException(t);
 		if(pe instanceof NativeException) {
@@ -961,6 +933,7 @@ public final class Http extends BodyTagImpl {
 		else if(http.method==METHOD_PUT) {
 			isBinary=true;
 		    httpMethod=eem=new PutMethod(url);
+		    
 		}
 		else if(http.method==METHOD_TRACE) {
 			isBinary=true;
@@ -983,7 +956,7 @@ public final class Http extends BodyTagImpl {
 		boolean hasBody=false;
 		boolean hasContentType=false;
 	// Set http params
-		ArrayList listQS=new ArrayList();
+		ArrayList<NameValuePair> listQS=new ArrayList<NameValuePair>();
 		ArrayList<Part> parts=new ArrayList<Part>();
 		int len=http.params.size();
 		for(int i=0;i<len;i++) {
@@ -999,7 +972,7 @@ public final class Http extends BodyTagImpl {
 				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type formfield can't only be used, when method of the tag http equal post");
 				if(post!=null){
 					if(doMultiPart){
-						parts.add(new StringPart(param.getName(),param.getValueAsString()));
+						parts.add(new RailoStringPart(param.getName(),param.getValueAsString()));
 					}
 					else post.addParameter(new NameValuePair(param.getName(),param.getValueAsString()));
 				}
@@ -1017,7 +990,7 @@ public final class Http extends BodyTagImpl {
         // Header
             else if(type.startsWith("head")) {
             	if(param.getName().equalsIgnoreCase("content-type")) hasContentType=true;
-                httpMethod.addRequestHeader(param.getName(),param.getValueAsString());
+            	httpMethod.addRequestHeader(param.getName(),headerValue(param.getValueAsString()));
             }
 		// Cookie
 			else if(type.equals("cookie")) {
@@ -1034,7 +1007,8 @@ public final class Http extends BodyTagImpl {
 				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type file can't only be used, when method of the tag http equal post");
 				if(doMultiPart) {
 					try {
-						parts.add(new FilePart(param.getName(),new ResourcePartSource(param.getFile())));
+						//FilePart part = new FilePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param),null);
+						parts.add(new ResourcePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param)));
 					} 
 					catch (FileNotFoundException e) {
 						throw new ApplicationException("can't upload file, path is invalid",e.getMessage());
@@ -1073,9 +1047,28 @@ public final class Http extends BodyTagImpl {
 		}
 		
 		// multipart
-		if(doMultiPart && post!=null) {
+		if(doMultiPart && eem!=null) {
 			hasContentType=true;
-			post.setRequestEntity(new MultipartRequestEntityFlex(parts.toArray(new Part[parts.size()]), post.getParams(),http.multiPartType));
+			boolean doIt=true;
+			if(!http.multiPart && parts.size()==1){
+				Part part = parts.get(0);
+				if(part instanceof ResourcePart){
+					ResourcePart rp = (ResourcePart) part;
+					eem.setRequestEntity(new ResourceRequestEntity(rp.getResource(),rp.getContentType()));
+					doIt=false;
+				}
+				else if(part instanceof RailoStringPart){
+					RailoStringPart sp = (RailoStringPart) part;
+					try {
+						eem.setRequestEntity(new StringRequestEntity(sp.getValue(),sp.getContentType(),sp.getCharSet()));
+					} catch (IOException e) {
+						throw Caster.toPageException(e);
+					}
+					doIt=false;
+				}
+			}
+			if(doIt)
+				eem.setRequestEntity(new MultipartRequestEntityFlex(parts.toArray(new Part[parts.size()]), eem.getParams(),http.multiPartType));
 		}
 		
 		
@@ -1104,9 +1097,9 @@ public final class Http extends BodyTagImpl {
 		
 	// set Query String
 		//NameValuePair[] qsPairs=new NameValuePair[arrQS.length+listQS.size()];
-		java.util.List listPairs=new ArrayList();
+		java.util.List<NameValuePair> listPairs=new ArrayList<NameValuePair>();
 		
-		int count=0;
+		//int count=0;
 		// QS from URL
 		for(int i=0;i<arrQS.length;i++) {
 			if(StringUtil.isEmpty(arrQS[i])) continue;
@@ -1115,7 +1108,7 @@ public final class Http extends BodyTagImpl {
 			if(ArrayUtil.isEmpty(pair)) continue;
 			
 			String name=pair[0];
-			String value=pair.length>1?pair[1]:"";//pair.length>1?pair[1]:"";
+			String value=pair.length>1?pair[1]:null;
 			listPairs.add(new NameValuePair(name,value));
 		}
 		
@@ -1129,6 +1122,7 @@ public final class Http extends BodyTagImpl {
 		String qs = toQueryString((NameValuePair[]) listPairs.toArray(new NameValuePair[listPairs.size()]));
 		if(!StringUtil.isEmpty(qs))
 			httpMethod.setQueryString(qs);
+
 		
 	// set Username and Password
 		if(http.username!=null) {
@@ -1160,13 +1154,27 @@ public final class Http extends BodyTagImpl {
 	    return httpMethod;
 	}
 
+	private static String headerValue(String value) {
+		if(value==null) return null;
+		value=value.trim();
+		int len=value.length();
+		char c;
+		for(int i=0;i<len;i++){
+			c=value.charAt(i);
+			if(c=='\n' || c=='\r') return value.substring(0,i);
+		}
+		return value;
+	}
+
 	private static String toQueryString(NameValuePair[] qsPairs) {
 		StringBuffer sb=new StringBuffer();
         for(int i=0;i<qsPairs.length;i++) {
             if(sb.length()>0)sb.append('&');
             sb.append(qsPairs[i].getName());
-            sb.append('=');
-            sb.append(qsPairs[i].getValue());
+            if(qsPairs[i].getValue()!=null){
+            	sb.append('=');
+            	sb.append(qsPairs[i].getValue());
+            }
         }
         return sb.toString();
     }
@@ -1304,6 +1312,14 @@ public final class Http extends BodyTagImpl {
         
         return path;
     }
+    
+	private static String getContentType(HttpParamBean param) {
+		String mimeType=param.getMimeType();
+		if(StringUtil.isEmpty(mimeType,true)) {
+			mimeType=ResourceUtil.getMymeType(param.getFile(), true, null);
+		}
+		return mimeType;
+	}
 }
 
 class MultipartRequestEntityFlex extends MultipartRequestEntity {
@@ -1337,7 +1353,6 @@ class MultipartRequestEntityFlex extends MultipartRequestEntity {
 	   
 	   //return super.getContentType();
 	}
-
 }
 
 class Executor extends Thread {

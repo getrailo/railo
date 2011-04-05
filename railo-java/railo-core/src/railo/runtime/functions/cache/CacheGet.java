@@ -26,7 +26,7 @@ public final class CacheGet implements Function {
 	
 	public static Object call(PageContext pc, String key, boolean throwWhenNotExist,String cacheName) throws PageException {
 		try {
-			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			Cache cache = Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
 			return throwWhenNotExist?cache.getValue(Util.key(key)):cache.getValue(Util.key(key),null);
 		} catch (IOException e) {
 			throw Caster.toPageException(e);

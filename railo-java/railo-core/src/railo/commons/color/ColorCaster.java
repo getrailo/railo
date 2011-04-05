@@ -10,6 +10,18 @@ import railo.runtime.type.List;
 
 public final class ColorCaster {
 
+	/**
+	 * calculate the contrast between 2 colors
+	 * @param left
+	 * @param right
+	 * @return a int between 0 (badest) and 510 (best)
+	 */
+	public static int contrast(Color left, Color right) {
+		return
+		(Math.max(left.getRed(), right.getRed()) 		- Math.min(left.getRed(), right.getRed())) + 
+		(Math.max(left.getGreen(), right.getGreen()) 	- Math.min(left.getGreen(), right.getGreen())) + 
+		(Math.max(left.getBlue(), right.getBlue()) 		- Math.max(left.getBlue(), right.getBlue()));
+	}
 
 	public static Color toColor(String strColor) throws ExpressionException {
 		if(StringUtil.isEmpty(strColor,true))

@@ -33,9 +33,7 @@
 <cfif not structKeyExists(session,'oldStyle')>
 	<cfset session.oldStyle=false>
 	<cfif structKeyExists(cgi,'http_user_agent') and findNocase('MSIE',cgi.http_user_agent)>
-    	<cfif findNocase('MSIE 4',cgi.http_user_agent) or findNocase('MSIE 5',cgi.http_user_agent) or findNocase('MSIE 6',cgi.http_user_agent)>
-        	<cfset session.oldStyle=true>
-    	</cfif>
+    	<cfset session.oldStyle=true>
     </cfif>
 </cfif> 
 <cfif session.oldStyle><cfset str=path></cfif>

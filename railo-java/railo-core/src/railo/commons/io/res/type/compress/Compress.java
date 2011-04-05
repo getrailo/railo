@@ -4,18 +4,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.compress.archivers.tar.TarOutputStream;
 
+import railo.commons.digest.MD5;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.type.ram.RamResourceProviderOld;
+import railo.commons.io.res.util.ResourceUtil;
+import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.functions.other.CreateUUID;
 import railo.runtime.op.Caster;
 
 public final class Compress {
@@ -26,10 +31,10 @@ public final class Compress {
 	public static final int FORMAT_TBZ2 = CompressUtil.FORMAT_TBZ2;
 	
 	
-	private final static Map files=new WeakHashMap();
+	//private final static Map files=new WeakHashMap();
 	
 	private final Resource ffile;
-	private ResourceProvider ramProvider;
+	//private ResourceProvider ramProvider;
 	private long syn=-1;
 	private Resource root;
 	private Synchronizer synchronizer;
@@ -39,6 +44,7 @@ public final class Compress {
 	private int format;
 	private int mode;
 	private boolean caseSensitive;
+	private Resource temp;
 	
 	/**
 	 * private Constructor of the class, will be invoked be getInstance
@@ -46,7 +52,7 @@ public final class Compress {
 	 * @param format 
 	 * @param caseSensitive 
 	 */
-	private Compress(Resource file, int format, boolean caseSensitive) {
+	public Compress(Resource file, int format, boolean caseSensitive) {
 		this.ffile=file;
 		this.format=format;
 		this.mode=ffile.getMode();
@@ -61,27 +67,57 @@ public final class Compress {
 	 * @param caseSensitive 
 	 * @return
 	 */
-	public static Compress getInstance(Resource zipFile, int format, boolean caseSensitive) {
+	/*public static Compress getInstance(Resource zipFile, int format, boolean caseSensitive) {
 		Compress compress=(Compress) files.get(zipFile.getPath());
 		if(compress==null) {
 			compress=new Compress(zipFile,format,caseSensitive);
 			files.put(zipFile.getPath(), compress);
 		}
-		return compress;
+		return compress;ConfigImpl
+	}*/
+	public static Compress getInstance(Resource zipFile, int format, boolean caseSensitive) {
+		ConfigImpl config=(ConfigImpl) ThreadLocalPageContext.getConfig();
+		return config.getCompressInstance(zipFile, format, caseSensitive);
 	}
-
+	
+	
 	private void load(boolean caseSensitive) {
 		long actLastMod = ffile.lastModified();
 		lastMod=actLastMod;
 		lastCheck=System.currentTimeMillis();
 		Map args = new HashMap();
 		args.put("case-sensitive", Caster.toBoolean(caseSensitive));
-		ramProvider = new RamResourceProviderOld().init("ram",args);
-		root=ramProvider.getResource("/");
-		try {
-			root.setMode(mode);
-		} 
-		catch (IOException e) {}
+		//ramProvider = new RamResourceProviderOld().init("ram",args);
+		//root=ramProvider.getResource("/");
+		
+		if(temp==null){
+			String cid="";
+			try {
+				Config config = ThreadLocalPageContext.getConfig();
+				if(config!=null){
+					cid=config.getId();
+					temp = config.getTempDirectory();
+				}
+				if(temp==null)temp=SystemUtil.getTempDirectory();
+
+				temp=temp.getRealResource("compress");
+				temp=temp.getRealResource(MD5.getDigestAsString(cid+"-"+ffile.getAbsolutePath()));
+				if(!temp.exists())temp.createDirectory(true);
+				
+			}
+			catch(Throwable t){}
+		}
+		
+		if(temp!=null) {
+			if(root!=null)ResourceUtil.removeChildrenEL(root);
+			String name=CreateUUID.invoke();
+			root=temp.getRealResource(name);
+			root.mkdirs();
+		}
+		else {
+			ResourceProvider ramProvider = new RamResourceProviderOld().init("ram",args);
+			root=ramProvider.getResource("/");
+		}
 		_load();
 	}
 	
@@ -102,18 +138,18 @@ public final class Compress {
 		}
 	}
 
-	public ResourceProvider getRamProvider() {
+	public Resource getRamProviderResource(String path) {
 		long t=System.currentTimeMillis();
 		if(t>lastCheck+2000){
 			
 			lastCheck=t;
 			t=ffile.lastModified();
-			if((lastMod-t)>10 || (t-lastMod)>10){
+			if((lastMod-t)>10 || (t-lastMod)>10 || root==null || !root.exists()){
 				lastMod=t;
 				load(caseSensitive);
 			}
 		}
-		return ramProvider;
+		return root.getRealResource(path);//ramProvider.getResource(path);
 	}
 
 	/**

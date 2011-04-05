@@ -14,16 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.geom.AffineTransform;
+package railo.runtime.img.filter;import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which produces motion blur the slow, but higher-quality way.
  */
-public class MotionBlurFilter extends AbstractBufferedImageOp {
+public class MotionBlurFilter extends AbstractBufferedImageOp  implements DynFiltering {
 
 	private float angle = 0.0f;
 	private float falloff = 1.0f;
@@ -248,6 +254,22 @@ public class MotionBlurFilter extends AbstractBufferedImageOp {
 
 	public String toString() {
 		return "Blur/Motion Blur...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("PremultiplyAlpha")))!=null)setPremultiplyAlpha(ImageFilterUtil.toBooleanValue(o,"PremultiplyAlpha"));
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("Distance")))!=null)setDistance(ImageFilterUtil.toFloatValue(o,"Distance"));
+		if((o=parameters.removeEL(KeyImpl.init("Rotation")))!=null)setRotation(ImageFilterUtil.toFloatValue(o,"Rotation"));
+		if((o=parameters.removeEL(KeyImpl.init("Zoom")))!=null)setZoom(ImageFilterUtil.toFloatValue(o,"Zoom"));
+		if((o=parameters.removeEL(KeyImpl.init("WrapEdges")))!=null)setWrapEdges(ImageFilterUtil.toBooleanValue(o,"WrapEdges"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [PremultiplyAlpha, Angle, Distance, Rotation, Zoom, WrapEdges]");
+		}
+
+		return filter(src, dst);
 	}
 }
 

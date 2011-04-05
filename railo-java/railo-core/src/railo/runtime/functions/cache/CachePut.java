@@ -19,25 +19,30 @@ public final class CachePut implements Function {
 		return _call(pc,key, value, null, null,null);
 	}
 	public static String call(PageContext pc, String key,Object value,TimeSpan timeSpan) throws PageException {
-		return _call(pc,key, value, Long.valueOf(timeSpan.getMillis()), null,null);
+		return _call(pc,key, value, valueOf(timeSpan), null,null);
 	}
 	public static String call(PageContext pc, String key,Object value,TimeSpan timeSpan, TimeSpan idleTime) throws PageException {
-		return _call(pc,key, value, Long.valueOf(timeSpan.getMillis()), Long.valueOf(idleTime.getMillis()),null);
+		return _call(pc,key, value, valueOf(timeSpan), valueOf(idleTime),null);
 	}
 	public static String call(PageContext pc, String key,Object value,TimeSpan timeSpan, TimeSpan idleTime,String cacheName) throws PageException {
-		return _call(pc,key, value, Long.valueOf(timeSpan.getMillis()), Long.valueOf(idleTime.getMillis()),cacheName);
+		return _call(pc,key, value, valueOf(timeSpan), valueOf(idleTime),cacheName);
 	}
 	
 	private static String _call(PageContext pc, String key,Object value,Long timeSpan, Long idleTime,String cacheName) throws PageException {
 		//if(timeSpan!=null && timeSpan.longValue()==0L) return "";
 		//if(idleTime!=null && idleTime.longValue()==0L) return "";
 		try {
-			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			Cache cache = Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
 			cache.put(Util.key(key), value, idleTime, timeSpan);
 		} catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
 		
 		return "";
+	}
+	
+	private static Long valueOf(TimeSpan timeSpan) {
+		if(timeSpan==null) return null;
+		return Long.valueOf(timeSpan.getMillis());
 	}
 }

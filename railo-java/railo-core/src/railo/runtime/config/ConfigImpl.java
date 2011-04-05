@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,6 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
+import java.util.WeakHashMap;
 
 import javax.servlet.ServletException;
 
@@ -31,6 +33,7 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.Resources;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
+import railo.commons.io.res.type.compress.Compress;
 import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
@@ -94,6 +97,7 @@ import railo.runtime.spooler.SpoolerEngine;
 import railo.runtime.tag.Admin;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.scope.ClusterNotSupported;
@@ -110,7 +114,6 @@ import railo.transformer.library.tag.TagLibException;
 import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
-import edu.emory.mathcs.backport.java.util.Collections;
 import flex.messaging.config.ConfigMap;
 
 
@@ -139,6 +142,9 @@ public abstract class ConfigImpl implements Config {
 	public static final int CACHE_DEFAULT_TEMPLATE = 2;
 	public static final int CACHE_DEFAULT_QUERY = 4;
 	public static final int CACHE_DEFAULT_RESOURCE = 8;
+
+	public static final int AMF_CONFIG_TYPE_XML = 1;
+	public static final int AMF_CONFIG_TYPE_MANUAL = 2;
 	
 
 	private PhysicalClassLoader rpcClassLoader;
@@ -278,7 +284,9 @@ public abstract class ConfigImpl implements Config {
 
 
 	private Resource clientScopeDir;
+	private Resource sessionScopeDir;
 	private long clientScopeDirSize=1024*1024*10;
+	private long sessionScopeDirSize=1024*1024*10;
 
 	private Resource cacheDir;
 	private long cacheDirSize=1024*1024*10;
@@ -360,6 +368,8 @@ public abstract class ConfigImpl implements Config {
 	private LogAndSource ormLogger;
 	private boolean useComponentPathCache=true;
 	private boolean useCTPathCache=true;
+	private int amfConfigType=AMF_CONFIG_TYPE_XML;
+	private LogAndSource scopeLogger;
 	
 	
 	
@@ -394,6 +404,10 @@ public abstract class ConfigImpl implements Config {
         factory.resetPageContext();
         //resources.reset();
         ormengines.clear();
+        compressResources.clear();
+        clearFunctionCache();
+        clearCTCache();
+        clearComponentCache();
     }
     
     /**
@@ -955,6 +969,11 @@ public abstract class ConfigImpl implements Config {
     	if(applicationLogger==null)applicationLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return applicationLogger;
     }
+    
+    public LogAndSource getScopeLogger() {
+    	if(scopeLogger==null)scopeLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		return scopeLogger;
+    }
 
     /**
      * sets the password
@@ -1447,6 +1466,7 @@ public abstract class ConfigImpl implements Config {
         		SystemOut.printDate(getErrWriter(), "temp directory ["+tempDirectory+"] is not writable");
         	}
         }
+        ResourceUtil.removeChildrenEL(tempDirectory);// start with a empty temp directory
         this.tempDirectory=tempDirectory;
     }
 
@@ -1457,6 +1477,12 @@ public abstract class ConfigImpl implements Config {
      * @throws PageException
      */
     protected void setScheduler(CFMLEngine engine,Resource scheduleDirectory, LogAndSource logger) throws PageException {
+        if(scheduleDirectory==null) {
+        	if(this.scheduler==null) this.scheduler=new SchedulerImpl(engine,"<?xml version=\"1.0\"?>\n<schedule></schedule>",this,logger);
+        	return;
+        }
+    	
+    	
         if(!isDirectory(scheduleDirectory)) throw new ExpressionException("schedule task directory "+scheduleDirectory+" doesn't exist or is not a directory");
         try {
         	if(this.scheduler==null)
@@ -1659,6 +1685,10 @@ public abstract class ConfigImpl implements Config {
      */
     protected void setApplicationLogger(LogAndSource applicationLogger) {
         this.applicationLogger=applicationLogger;
+    }
+
+    protected void setScopeLogger(LogAndSource scopeLogger) {
+        this.scopeLogger=scopeLogger;
     }
 
 
@@ -2246,8 +2276,13 @@ public abstract class ConfigImpl implements Config {
 	 * @see railo.runtime.config.Config#getClientScopeDir()
 	 */
 	public Resource getClientScopeDir() {
-		if(clientScopeDir==null) return getConfigDir().getRealResource("client");
+		if(clientScopeDir==null) clientScopeDir=getConfigDir().getRealResource("client-scope");
 		return clientScopeDir;
+	}
+
+	public Resource getSessionScopeDir() {
+		if(sessionScopeDir==null) sessionScopeDir=getConfigDir().getRealResource("session-scope");
+		return sessionScopeDir;
 	}
 	
 	
@@ -2269,12 +2304,19 @@ public abstract class ConfigImpl implements Config {
 	public long getClientScopeDirSize() {
 		return clientScopeDirSize;
 	}
+	public long getSessionScopeDirSize() {
+		return sessionScopeDirSize;
+	}
 
 	/**
 	 * @param clientScopeDir the clientScopeDir to set
 	 */
 	protected void setClientScopeDir(Resource clientScopeDir) {
 		this.clientScopeDir = clientScopeDir;
+	}
+	
+	protected void setSessionScopeDir(Resource sessionScopeDir) {
+		this.sessionScopeDir = sessionScopeDir;
 	}
 
 	/**
@@ -2823,6 +2865,19 @@ public abstract class ConfigImpl implements Config {
 		amfCasterArguments=args;
         amfCasterClass=clazz;
 	}
+	
+	public void setAMFConfigType(String strDeploy) {
+		if(!StringUtil.isEmpty(strDeploy)){
+			if("xml".equalsIgnoreCase(strDeploy))amfConfigType=AMF_CONFIG_TYPE_XML;
+			else if("manual".equalsIgnoreCase(strDeploy))amfConfigType=AMF_CONFIG_TYPE_MANUAL;
+		}
+	}
+	public void setAMFConfigType(int amfDeploy) {
+		this.amfConfigType=amfDeploy;
+	}
+	public int getAMFConfigType() {
+		return amfConfigType;
+	}
 
 	public AMFCaster getAMFCaster(ConfigMap properties) throws ClassException {
 		if(amfCaster==null){
@@ -2984,11 +3039,11 @@ public abstract class ConfigImpl implements Config {
 		this.executionLogFactory= executionLogFactory;
 	}
 	
-	public ORMEngine resetORMEngine(PageContext pc) throws PageException {
+	public ORMEngine resetORMEngine(PageContext pc, boolean force) throws PageException {
 		//String name = pc.getApplicationContext().getName();
 		//ormengines.remove(name);
 		ORMEngine e = getORMEngine(pc);
-		e.reload(pc);
+		e.reload(pc,force);
 		return e;
 	}
 	
@@ -3025,7 +3080,7 @@ public abstract class ConfigImpl implements Config {
 						t.printStackTrace();;
 					}
 				}*/
-				if(!JarLoader.exists(pc.getConfig(), Admin.UPDATE_JARS))
+				if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
 					throw new ORMException(
 						"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
 						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\"");
@@ -3067,7 +3122,8 @@ public abstract class ConfigImpl implements Config {
 			}
 		}
 		catch(Throwable t){
-			throw Caster.toPageException(t);
+			return new String[0];
+			//throw Caster.toPageException(t);
 		}
 	}
 	
@@ -3154,6 +3210,11 @@ public abstract class ConfigImpl implements Config {
 	private Map<String,PageSource> componentPathCache=null;//new ArrayList<Page>();
 	private Map<String,InitFile> ctPatchCache=null;//new ArrayList<Page>();
 	
+	private Map udfCache=new ReferenceMap();
+	
+	
+	
+	
 	
 	public Page getCachedPage(PageContext pc,String pathWithCFC) throws PageException {
 		if(componentPathCache==null) return null; 
@@ -3202,6 +3263,17 @@ public abstract class ConfigImpl implements Config {
 	public void clearCTCache() {
 		if(ctPatchCache==null) return; 
 		ctPatchCache.clear();
+	}
+	
+
+	public void clearFunctionCache() {
+		udfCache.clear();
+	}
+	public UDF getFromFunctionCache(String key) {
+		return (UDF) udfCache.get(key);
+	}
+	public void putToFunctionCache(String key,UDF udf) {
+		udfCache.put(key, udf);
 	}
 	
 	
@@ -3259,5 +3331,23 @@ public abstract class ConfigImpl implements Config {
 	 */
 	protected void setComponentRootSearch(boolean componentRootSearch) {
 		this.componentRootSearch = componentRootSearch;
+	}
+
+	private final Map compressResources=new WeakHashMap();
+	public Compress getCompressInstance(Resource zipFile, int format, boolean caseSensitive) {
+		Compress compress=(Compress) compressResources.get(zipFile.getPath());
+		if(compress==null) {
+			compress=new Compress(zipFile,format,caseSensitive);
+			compressResources.put(zipFile.getPath(), compress);
+		}
+		return compress;
+	}
+
+	public boolean getSessionCluster() {
+		return false;
+	}
+
+	public boolean getClientCluster() {
+		return false;
 	}
 }

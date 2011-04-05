@@ -139,7 +139,7 @@ public final class DeserializeJSON implements Function {
 		
 		Array arr = Caster.toArray(obj,null);
 		if(arr!=null) {
-			ArrayImpl[] datas=new ArrayImpl[columns.length];
+			Array[] datas=new Array[columns.length];
 			for(int i=0;i<datas.length;i++) {
 				datas[i]=new ArrayImpl();
 			}

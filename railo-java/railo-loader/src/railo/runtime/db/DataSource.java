@@ -171,6 +171,10 @@ public interface DataSource extends Cloneable {
      */
     public abstract void setClazz(Class clazz);
 
+    // FUTURE public abstract boolean isStorage();
+
+	// FUTURE public abstract boolean validate();
+
 	//public abstract int getMaxConnection();
 
 }

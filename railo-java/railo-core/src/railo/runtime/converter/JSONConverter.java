@@ -16,9 +16,11 @@ import org.w3c.dom.Node;
 
 import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
+import railo.runtime.ComponentPro;
+import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
+import railo.runtime.component.Property;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.java.JavaObject;
@@ -133,7 +135,7 @@ public final class JSONConverter {
 		sb.append('"');
 		
 		//sb.append(escape(dateTime.toString()));
-		sb.append(escape(JSONDateFormat.format(dateTime)));
+		sb.append(escape(JSONDateFormat.format(dateTime,null)));
 		sb.append('"');
 		
 		/*try {
@@ -207,7 +209,7 @@ public final class JSONConverter {
     public void _serializeStruct(PageContext pc,Set test,Struct struct, StringBuffer sb, boolean serializeQueryByColumns, boolean addUDFs, Set<Object> done) throws ConverterException {
         // Component
     	if(struct instanceof Component){
-        	String res = castToJson(pc, (Component)struct, NULL_STRING);
+    		String res = castToJson(pc, (Component)struct, NULL_STRING);
         	if(res!=NULL_STRING) {
         		sb.append(res);
         		return;
@@ -218,21 +220,42 @@ public final class JSONConverter {
     	sb.append(goIn());
         sb.append("{");
         Key[] keys = struct.keys();
+       
         Key key;
         Object value;
         boolean doIt=false;
         for(int i=0;i<keys.length;i++) {
         	key=keys[i];
         	value=struct.get(key,null);
-        	if(!addUDFs && value instanceof UDF)continue;
+        	if(!addUDFs && (value instanceof UDF || value==null))continue;
         	if(doIt)sb.append(',');
             doIt=true;
             sb.append('"');
             sb.append(escape(key.getString()));
             sb.append('"');
             sb.append(':');
-            _serialize(pc,test,struct.get(key,null),sb,serializeQueryByColumns,done);
+            _serialize(pc,test,value,sb,serializeQueryByColumns,done);
         }
+        
+        if(struct instanceof ComponentPro){
+        	ComponentPro cp = (ComponentPro)struct;
+        	Property[] props = cp.getProperties(false);
+        	ComponentScope scope = cp.getComponentScope();
+        	for(int i=0;i<props.length;i++) {
+        		key=KeyImpl.init(props[i].getName());
+            	value=scope.get(key,null);
+            	if(!addUDFs && (value instanceof UDF || value==null))continue;
+            	if(doIt)sb.append(',');
+                doIt=true;
+                sb.append('"');
+                sb.append(escape(key.getString()));
+                sb.append('"');
+                sb.append(':');
+                _serialize(pc,test,value,sb,serializeQueryByColumns,done);
+        	}
+        }
+        
+        
         sb.append('}');
     }
     
@@ -290,8 +313,7 @@ public final class JSONConverter {
      */
     private void _serializeComponent(PageContext pc,Set test,Component component, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
     	try {
-			ComponentImpl ci = ComponentUtil.toComponentImpl(component);
-			ComponentWrap cw = new ComponentWrap(Component.ACCESS_PRIVATE,ci);
+			ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,component);
 	    	_serializeStruct(pc,test,cw, sb, serializeQueryByColumns,false,done);
 		} 
     	catch (ExpressionException e) {

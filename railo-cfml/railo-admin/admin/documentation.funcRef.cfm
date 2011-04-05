@@ -13,6 +13,19 @@ function detail(field){
 
 }
 </script>
+
+
+<cfscript>
+NL="
+";
+
+function formatDesc(string desc){
+	desc=replace(trim(desc),NL&"-","<br><li>","all");
+	desc=replace(desc,NL,"<br>","all");
+
+	return desc;
+}
+</cfscript>
 <form action="#request.self#">
 <input type="hidden" name="action" value="#url.action#" />
 <table class="tbl">
@@ -41,13 +54,12 @@ function detail(field){
 <div style="width:740px">
 	<cfset data=getFunctionData(url.func)>
 
-
-
 <cfif data.status EQ "deprecated"><b class="error">
 #stText.doc.depFunction#</b><br />
 </cfif>
 <!--- Desc --->
-#data.description#
+#replace(replace(data.description,'	','&nbsp;&nbsp;&nbsp;','all'),'
+','<br />','all')#
 
 <style>
 .error{color:red;}
@@ -64,7 +76,7 @@ function detail(field){
 
 <cfset first=true>
 <cfset optCount=0>
-<pre><span class="syntaxFunc">#data.name#(</span><cfloop array="#data.arguments#" index="item"><cfif not first><span class="syntaxFunc">,</span></cfif><cfif not item.required><cfset optCount=optCount+1><span class="syntaxFunc">[</span></cfif><span class="syntaxType">#item.type#</span> <span class="syntaxText">#item.name#</span><cfset first=false></cfloop><span class="syntaxFunc">#RepeatString(']',optCount)#):</span><span class="syntaxType">#data.returntype#</span>
+<pre><span class="syntaxFunc">#data.name#(</span><cfloop array="#data.arguments#" index="item"><cfif item.status EQ "hidden"><cfcontinue></cfif><cfif not first><span class="syntaxFunc">,</span></cfif><cfif not item.required><cfset optCount=optCount+1><span class="syntaxFunc">[</span></cfif><span class="syntaxType">#item.type#</span> <span class="syntaxText">#item.name#</span><cfset first=false></cfloop><span class="syntaxFunc">#RepeatString(']',optCount)#):</span><span class="syntaxType">#data.returntype#</span>
 </pre>
 
 
@@ -101,13 +113,12 @@ function detail(field){
 	<td class="tblHead">#stText.doc.arg.description#</td>
 </tr>
 
-<cfloop array="#data.arguments#" index="attr">
+<cfloop array="#data.arguments#" index="attr"><cfif attr.status EQ "hidden"><cfcontinue></cfif>
 <tr>
 	<td class="tblContent">#attr.name	#</td>
 	<td class="tblContent">#attr.type#&nbsp;</td>
 	<td class="tblContent">#YesNoFormat(attr.required)#</td>
-	<td class="tblContent"><cfif attr.status EQ "deprecated"><b class="error">#stText.doc.depArg#</b><cfelse>#replace(trim(attr.description),'
-','<br />','all')#</cfif>&nbsp;</td>
+	<td class="tblContent"><cfif attr.status EQ "deprecated"><b class="error">#stText.doc.depArg#</b><cfelse>#formatDesc(attr.description)#</cfif>&nbsp;</td>
 </tr>
 </cfloop>
 

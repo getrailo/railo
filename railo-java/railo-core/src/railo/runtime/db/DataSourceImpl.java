@@ -37,6 +37,8 @@ public final class DataSourceImpl implements Cloneable, DataSource {
     private String name;
 	private long metaCacheTimeout;
 	private Map<String,ProcMetaCollection> procedureColumnCache;
+	private boolean validate;
+	private boolean storage;
     
 	/**
 	 * constructor of the class
@@ -58,8 +60,9 @@ public final class DataSourceImpl implements Cloneable, DataSource {
 	 * @throws ClassException 
 	 */
     public DataSourceImpl(String name,String className, String host, String dsn, String database, int port, String username, String password, 
-            int connectionLimit, int connectionTimeout,long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom, boolean readOnly) throws ClassException {
-        this(name, toClass(className), host, dsn, database, port, username, password, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, custom, readOnly);
+            int connectionLimit, int connectionTimeout,long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom, boolean readOnly, 
+            boolean validate,boolean storage) throws ClassException {
+        this(name, toClass(className), host, dsn, database, port, username, password, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, custom, readOnly,validate,storage);
     	
 	}
     
@@ -75,7 +78,7 @@ public final class DataSourceImpl implements Cloneable, DataSource {
 	}
 
 	private DataSourceImpl(String name,Class clazz, String host, String dsn, String database, int port, String username, String password, 
-            int connectionLimit, int connectionTimeout,long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom, boolean readOnly) {
+            int connectionLimit, int connectionTimeout,long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom, boolean readOnly, boolean validate,boolean storage) {
         if(allow<0) allow=ALLOW_ALL;
         this.name=name;
         this.clazz=clazz;
@@ -93,6 +96,8 @@ public final class DataSourceImpl implements Cloneable, DataSource {
         this.allow=allow;
         this.readOnly=readOnly;
         this.custom=custom;
+        this.validate=validate;
+        this.storage=storage;
         
         this.dsnTranslated=dsn; 
         this.metaCacheTimeout= metaCacheTimeout;
@@ -197,14 +202,14 @@ public final class DataSourceImpl implements Cloneable, DataSource {
      * @see railo.runtime.db.DataSource#clone()
      */
     public Object clone() {
-        return new DataSourceImpl(name,clazz, host, dsn, database, port, username, password, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, custom, readOnly);
+        return new DataSourceImpl(name,clazz, host, dsn, database, port, username, password, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, custom, readOnly,validate,storage);
     }
 
     /**
      * @see railo.runtime.db.DataSource#cloneReadOnly()
      */
     public DataSource cloneReadOnly() {
-        return new DataSourceImpl(name,clazz, host, dsn, database, port, username, password, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow,custom, true);
+        return new DataSourceImpl(name,clazz, host, dsn, database, port, username, password, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow,custom, true,validate,storage);
     }
 
     /**
@@ -314,6 +319,14 @@ public final class DataSourceImpl implements Cloneable, DataSource {
 	public int getMaxConnection() {
 		return maxConnection;
 	}*/
+
+	public boolean validate() {
+		return validate;
+	}
+
+	public boolean isStorage() {
+		return storage;
+	}
 
 	/* *
 	 * @param maxConnection the maxConnection to set

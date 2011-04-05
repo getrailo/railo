@@ -3,6 +3,7 @@ package railo.runtime.tag;
 import railo.runtime.coder.Base64Coder;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.security.Credential;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
@@ -10,6 +11,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.util.ApplicationContext;
 
 /**
  * 
@@ -58,6 +60,12 @@ public final class Login extends BodyTagImpl {
      * @see javax.servlet.jsp.tagext.Tag#doStartTag()
      */
     public int doStartTag() throws PageException  {
+    	
+    	if(pageContext.getApplicationContext() instanceof ApplicationContextPro){
+    		ApplicationContextPro ac=(ApplicationContextPro) pageContext.getApplicationContext();
+    		ac.setSecuritySettings(applicationtoken,cookiedomain,idletimeout);
+    	}
+    	
         Credential remoteUser = pageContext.getRemoteUser();
         if(remoteUser==null) {
             
@@ -113,4 +121,25 @@ public final class Login extends BodyTagImpl {
         pageContext.undefinedScope().removeEL(CFLOGIN);
         return EVAL_PAGE;
     }
+
+	public static String getApplicationName(ApplicationContext appContext) {
+		if(appContext instanceof ApplicationContextPro) {
+	    	return "cfauthorization_"+((ApplicationContextPro) appContext).getSecurityApplicationToken();
+	    }
+	    return "cfauthorization_"+appContext.getName();
+	}
+
+	public static String getCookieDomain(ApplicationContext appContext) {
+		if(appContext instanceof ApplicationContextPro) {
+			((ApplicationContextPro) appContext).getSecurityCookieDomain();
+	    }
+	    return null;
+	}
+
+	public static int getIdleTimeout(ApplicationContext appContext) {
+		if(appContext instanceof ApplicationContextPro) {
+	    	return ((ApplicationContextPro) appContext).getSecurityIdleTimeout();
+	    }
+	    return 1800;
+	}
 }

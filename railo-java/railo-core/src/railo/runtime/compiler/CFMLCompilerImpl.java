@@ -19,7 +19,7 @@ import railo.transformer.util.AlreadyClassException;
 
 
 /**
- * CFML Compiler compiles coldFusion source pages
+ * CFML Compiler compiles CFML source templates
  */
 public final class CFMLCompilerImpl implements CFMLCompiler {
 	

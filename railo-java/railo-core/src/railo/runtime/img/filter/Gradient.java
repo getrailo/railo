@@ -14,9 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.Color;
+package railo.runtime.img.filter;import java.awt.Color;
 
 /**
  * A Colormap implemented using Catmull-Rom colour splines. The map has a variable number

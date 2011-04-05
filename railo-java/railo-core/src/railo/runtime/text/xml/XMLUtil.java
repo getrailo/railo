@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,7 +40,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import railo.aprint;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -71,6 +72,7 @@ public final class XMLUtil {
     public static final Collection.Key XMLNSURI = KeyImpl.getInstance("xmlnsuri");
     public static final Collection.Key XMLNSPREFIX = KeyImpl.getInstance("xmlnsprefix");
     public static final Collection.Key XMLROOT = KeyImpl.getInstance("xmlroot");
+    public static final Collection.Key XMLPARENT = KeyImpl.getInstance("xmlparent");
     public static final Collection.Key XMLNAME = KeyImpl.getInstance("xmlname");
     public static final Collection.Key XMLTYPE = KeyImpl.getInstance("xmltype");
     public static final Collection.Key XMLVALUE = KeyImpl.getInstance("xmlvalue");
@@ -141,16 +143,7 @@ public final class XMLUtil {
       	return sb.toString();
     }
     
-    public static void main(String[] args) { 
-    	aprint.out(unescapeXMLString2("<h1><a href=\"/start\" target=\"_self\" name=\"&amp;lid=/start\">11 Sicherheitsupdates fﾟr XP & Co.</a>"));
-    	aprint.out(unescapeXMLString2("abcd"));
-    	aprint.out(unescapeXMLString2("ab&cd&"));
-    	aprint.out(unescapeXMLString2("a&b&&&c&d&"));
-    	aprint.out(unescapeXMLString2("a&;b&;c&;d&;"));
-    	aprint.out(unescapeXMLString2("ab&amp;cd"));
-    	aprint.out(unescapeXMLString2("ab&amp;&susi;cd"));
-        
-    }
+    
     
     
     private static String unescapeXMLEntity(String str) {
@@ -317,7 +310,6 @@ public final class XMLUtil {
 	}
 	
 	public static Object setProperty(Node node, Collection.Key k, Object value,boolean caseSensitive) throws PageException {
-		
 		Document doc=(node instanceof Document)?(Document)node:node.getOwnerDocument();
 		
 		// Comment
@@ -339,6 +331,17 @@ public final class XMLUtil {
 		// Root
 			else if(k.equals(XMLROOT)) {
 				doc.appendChild(XMLCaster.toNode(doc,value));
+			}			
+		// Parent
+			else if(k.equals(XMLPARENT)) {
+				Node parent = getParentNode(node,caseSensitive);
+				Key name = KeyImpl.init(parent.getNodeName());
+				parent = getParentNode(parent,caseSensitive);
+				
+				if(parent==null)
+					throw new ExpressionException("there is no parent element, you are already on the root element");
+				
+				return setProperty(parent, name, value, caseSensitive);
 			}
 		// Name	
 			else if(k.equals(XMLNAME)) {
@@ -400,6 +403,7 @@ public final class XMLUtil {
 				}
 				node.appendChild(XMLCaster.toRawNode(child));
 			}
+			
 			return value;
 	}
 
@@ -437,9 +441,7 @@ public final class XMLUtil {
 	 * @throws SAXException
 	 */
 	public static Object getProperty(Node node, Collection.Key k,boolean caseSensitive) throws SAXException {
-	    
-		
-		//String lcKey=StringUtil.toLowerCase(key);
+	    //String lcKey=StringUtil.toLowerCase(key);
 		if(k.getLowerString().startsWith("xml")) {
 		// Comment
 			if(k.equals(XMLCOMMENT)) {
@@ -469,6 +471,17 @@ public final class XMLUtil {
 				Element re = getRootElement(node,caseSensitive);
 				if(re==null) throw new SAXException("Attribute ["+k.getString()+"] not found in XML, XML is empty");
 				return param(re,"");
+			}
+		// Parent
+			else if(k.equals(XMLPARENT)) {
+				
+				Node parent = getParentNode(node,caseSensitive);
+				if(parent==null) {
+					if(node.getNodeType()==Node.DOCUMENT_NODE)
+						throw new SAXException("Attribute ["+k.getString()+"] not found in XML, there is no parent element, you are already at the root element");
+					throw new SAXException("Attribute ["+k.getString()+"] not found in XML, there is no parent element");
+				}
+				return parent;
 			}
 		// Name	
 			else if(k.equals(XMLNAME)) {
@@ -549,37 +562,37 @@ public final class XMLUtil {
 			else detail="there are only "+count+" Elements with this name";
 			throw new SAXException("invalid index ["+k.getString()+"] for Element with name ["+node.getNodeName()+"], "+detail);
 		}
-		else {	
-			
-			
-			
-			XMLNodeList xmlNodeList=new XMLNodeList(node,caseSensitive);
-			Array array=new ArrayImpl();
-			
-			int[] ints=xmlNodeList.intKeys();
-			for(int i=0;i<ints.length;i++) {
-				Object o=xmlNodeList.get(ints[i],null);
-				if(o instanceof Element) {
-					Element el=(Element) o;
+		else {
+			List<Node> children = XMLUtil.getChildNodesAsList(node,Node.ELEMENT_NODE,caseSensitive,null);
+			int len=children.size();
+			Array array=null;//new ArrayImpl();
+			Element el;
+			XMLStruct sct=null,first=null;
+			for(int i=0;i<len;i++) {
+				el=(Element) children.get(i);// XMLCaster.toXMLStruct(getChildNode(index),caseSensitive);
+				if(XMLUtil.nameEqual(el,k.getString(),caseSensitive)) {
+					sct = XMLCaster.toXMLStruct(el,caseSensitive);
 					
-					//if((!caseSensitive && el.getNodeName().equalsIgnoreCase(k.getString())) || (caseSensitive && el.getNodeName().equals(k.getString()))) {
-					if(XMLUtil.nameEqual(el,k.getString(),caseSensitive)) {
-						try {
-							array.append(XMLCaster.toXMLStruct(el,caseSensitive));
-						} catch (PageException e) {}
+					if(array!=null) {
+						array.appendEL(sct);
+					}
+					else if(first!=null) {
+						array=new ArrayImpl();
+						array.appendEL(first);
+						array.appendEL(sct);
+					}
+					else {
+						first=sct;
 					}
 				}
 			}
 			
-			if(array.size()>0) {
+			if(array!=null) {
 				try {
 					return new XMLMultiElementStruct(array,false);
 				} catch (PageException e) {}
 			}
-			try {
-				return XMLCaster.toXMLStruct((Node)xmlNodeList.get(k),caseSensitive);
-			} 
-            catch (ExpressionException e) {}
+			if(first!=null) return first;
 		}
 		throw new SAXException("Attribute ["+k.getString()+"] not found");
 	}
@@ -595,12 +608,6 @@ public final class XMLUtil {
     private static void undefinedInRoot(Key key, Node node) throws SAXException {
     	if(node.getNodeType()==Node.DOCUMENT_NODE)
     		throw undefined(key, node);
-	}
-
-	private static NamedNodeMap getAttributes(Node node) {
-		NamedNodeMap attr = node.getAttributes();
-		//if(attr==null)return new EmptyNamedNodeMap();
-		return attr;
 	}
 
 	/**
@@ -713,6 +720,13 @@ public final class XMLUtil {
 		if(el==null) return null;
 		return (Element)XMLStructFactory.newInstance(el,caseSensitive);
 	}
+	
+
+	public static Node getParentNode(Node node, boolean caseSensitive) {
+		Node parent = node.getParentNode();
+	    if(parent==null) return null;
+		return XMLStructFactory.newInstance(parent,caseSensitive);
+	}
 
 	/**
 	 * returns a new Empty XMl Document
@@ -779,10 +793,30 @@ public final class XMLUtil {
 	 * @param caseSensitive 
 	 * @return all matching child node
 	 */
-	public synchronized static NodeList getChildNodes(Node node, short type) {
+	public synchronized static ArrayNodeList getChildNodes(Node node, short type) {
 		return getChildNodes(node, type, false, null);
 	}
-	public synchronized static NodeList getChildNodes(Node node, short type, boolean caseSensitive, String filter) {
+	
+
+	public synchronized static int childNodesLength(Node node, short type, boolean caseSensitive, String filter) {
+		NodeList nodes=node.getChildNodes();
+		int len=nodes.getLength();
+		Node n;
+		int count=0;
+		for(int i=0;i<len;i++) {
+			try {
+				n=nodes.item(i);
+				if(n!=null && n.getNodeType()==type){
+					if(filter==null || (caseSensitive?filter.equals(n.getLocalName()):filter.equalsIgnoreCase(n.getLocalName())))
+					count++;
+				}
+			}
+			catch(Throwable t){}
+		}
+		return count;
+	}
+	
+	public synchronized static ArrayNodeList getChildNodes(Node node, short type, boolean caseSensitive, String filter) {
 		ArrayNodeList rtn=new ArrayNodeList();
 		NodeList nodes=node.getChildNodes();
 		int len=nodes.getLength();
@@ -799,6 +833,47 @@ public final class XMLUtil {
 		}
 		return rtn;
 	}
+	
+	public synchronized static List<Node> getChildNodesAsList(Node node, short type, boolean caseSensitive, String filter) {
+		List<Node> rtn=new ArrayList<Node>();
+		NodeList nodes=node.getChildNodes();
+		int len=nodes.getLength();
+		Node n;
+		for(int i=0;i<len;i++) {
+			try {
+				n=nodes.item(i);
+				if(n!=null && n.getNodeType()==type){
+					if(filter==null || (caseSensitive?filter.equals(n.getLocalName()):filter.equalsIgnoreCase(n.getLocalName())))
+					rtn.add(n);
+				}
+			}
+			catch(Throwable t){}
+		}
+		return rtn;
+	}
+	
+
+	public synchronized static Node getChildNode(Node node, short type, boolean caseSensitive, String filter, int index) {
+		NodeList nodes=node.getChildNodes();
+		int len=nodes.getLength();
+		Node n;
+		int count=0;
+		for(int i=0;i<len;i++) {
+			try {
+				n=nodes.item(i);
+				if(n!=null && n.getNodeType()==type){
+					if(filter==null || (caseSensitive?filter.equals(n.getLocalName()):filter.equalsIgnoreCase(n.getLocalName()))) {
+						if(count==index) return n;
+						count++;
+					}
+				}
+			}
+			catch(Throwable t){}
+		}
+		return null;
+	}
+	
+	
 	
     /**
      * return all Children of a node by a defined type as Node Array

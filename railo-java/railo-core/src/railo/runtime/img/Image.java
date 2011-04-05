@@ -12,6 +12,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.Transparency;
@@ -24,15 +25,21 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBufferInt;
+import java.awt.image.DirectColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.PackedColorModel;
 import java.awt.image.PixelGrabber;
+import java.awt.image.Raster;
+import java.awt.image.SampleModel;
+import java.awt.image.SinglePixelPackedSampleModel;
 import java.awt.image.WritableRaster;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.AttributedString;
 import java.util.Iterator;
@@ -197,7 +204,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	public Image(int width, int height, int imageType, Color canvasColor) throws ExpressionException {
 		checkRestriction();
 		_image = new BufferedImage(width, height, imageType);
-		if(canvasColor!=null){
+		if(!StringUtil.isEmpty(canvasColor)){
 			
 			setBackground(canvasColor);
 			clearRect(0, 0, width, height);
@@ -252,38 +259,41 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	public Struct info()  throws ExpressionException{
 		if(sctInfo!=null) return sctInfo;
 		
-		Struct sctInfo=new StructImpl();
-		Struct sctCM=new StructImpl();
+		Struct sctInfo=new StructImpl(),sct;
+		
+		
 		sctInfo.setEL("height",new Double(getHeight()));
 		sctInfo.setEL("width",new Double(getWidth()));
 		sctInfo.setEL("source",source==null?"":source.getAbsolutePath());
 		//sct.setEL("mime_type",getMimeType());
 		
-		sctInfo.setEL("colormodel",sctCM);
 		ColorModel cm = image().getColorModel();
-		sctCM.setEL("alpha_channel_support",Caster.toBoolean(cm.hasAlpha()));
-		sctCM.setEL("alpha_premultiplied",Caster.toBoolean(cm.isAlphaPremultiplied()));
-		sctCM.setEL("transparency",toStringTransparency(cm.getTransparency()));
-		sctCM.setEL("pixel_size",Caster.toDouble(cm.getPixelSize()));
-		sctCM.setEL("num_components",Caster.toDouble(cm.getNumComponents()));
-		sctCM.setEL("num_color_components",Caster.toDouble(cm.getNumColorComponents()));
-		sctCM.setEL("colorspace",toStringColorSpace(cm.getColorSpace()));
+		sct=new StructImpl();
+		sctInfo.setEL("colormodel",sct);
+		
+		sct.setEL("alpha_channel_support",Caster.toBoolean(cm.hasAlpha()));
+		sct.setEL("alpha_premultiplied",Caster.toBoolean(cm.isAlphaPremultiplied()));
+		sct.setEL("transparency",toStringTransparency(cm.getTransparency()));
+		sct.setEL("pixel_size",Caster.toDouble(cm.getPixelSize()));
+		sct.setEL("num_components",Caster.toDouble(cm.getNumComponents()));
+		sct.setEL("num_color_components",Caster.toDouble(cm.getNumColorComponents()));
+		sct.setEL("colorspace",toStringColorSpace(cm.getColorSpace()));
 		
 	    //bits_component
 		int[] bitspercomponent = cm.getComponentSize();
 		Array arr=new ArrayImpl();
 		Double value;
 	    for (int i = 0; i < bitspercomponent.length; i++) {
-	    	sctCM.setEL("bits_component_" + (i + 1),value=new Double(bitspercomponent[i]));
+	    	sct.setEL("bits_component_" + (i + 1),value=new Double(bitspercomponent[i]));
 	    	arr.appendEL(value);
 	    }
-		sctCM.setEL("bits_component",arr);
+		sct.setEL("bits_component",arr);
 		
 	    // colormodel_type
-		if (cm instanceof ComponentColorModel)		sctCM.setEL("colormodel_type", "ComponentColorModel");
-		else if (cm instanceof IndexColorModel)		sctCM.setEL("colormodel_type", "IndexColorModel");
-		else if (cm instanceof PackedColorModel)	sctCM.setEL("colormodel_type", "PackedColorModel");
-		else sctCM.setEL("colormodel_type", List.last(cm.getClass().getName(), '.'));
+		if (cm instanceof ComponentColorModel)		sct.setEL("colormodel_type", "ComponentColorModel");
+		else if (cm instanceof IndexColorModel)		sct.setEL("colormodel_type", "IndexColorModel");
+		else if (cm instanceof PackedColorModel)	sct.setEL("colormodel_type", "PackedColorModel");
+		else sct.setEL("colormodel_type", List.last(cm.getClass().getName(), '.'));
 
 		
 		metadata(sctInfo);
@@ -301,12 +311,15 @@ public class Image extends StructSupport implements Cloneable,Struct {
 			ImageReader ir=(ImageReader) it.next();
 			ImageInputStream iis=null;
 			IIOMetadata metadata=null;
+			InputStream is=null;
 			try {
-				
 				if(source instanceof File) { // TODO create ResourceImageInputStream
 					iis=new FileImageInputStream((File) source);
 				}
-				else iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format)));
+				//else iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format,false)));
+				else if(source==null)iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format,true)));
+				//else iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format,false)));
+				else iis=new MemoryCacheImageInputStream(is=source.getInputStream());
 				ir.setInput(iis);
 				
 				metadata = ir.getImageMetadata(0);
@@ -315,6 +328,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 			catch (Throwable t) {}
 			finally {
 				ImageUtil.closeEL(iis);
+				IOUtil.closeEL(is);
 			}
 			if(metadata!=null) return metadata;
 		}
@@ -645,6 +659,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
     	graphics.drawImage(image(),new AffineTransformOp(AffineTransform.getTranslateInstance(0.0, 0.0),1),0, 0);
     	graphics.dispose();
     	image(img);
+    	
     }
     public void threeBBger() throws ExpressionException {
     	BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
@@ -664,8 +679,10 @@ public class Image extends StructSupport implements Cloneable,Struct {
     public void paste(Image topImage, int x, int y) throws ExpressionException {
     	RenderingHints interp = new RenderingHints(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BICUBIC);
     	BorderExtender extender = BorderExtender.createInstance(1);
-    	getGraphics().addRenderingHints(new RenderingHints(JAI.KEY_BORDER_EXTENDER,extender));
-    	getGraphics().drawImage(topImage.image(), (new AffineTransformOp(AffineTransform.getTranslateInstance(x,y),interp)), 0, 0);
+    	Graphics2D g = getGraphics();
+    	g.addRenderingHints(new RenderingHints(JAI.KEY_BORDER_EXTENDER,extender));
+    	g.drawImage(topImage.image(), (new AffineTransformOp(AffineTransform.getTranslateInstance(x,y),interp)), 0, 0);
+    	
     }
     
     public void setXorMode(Color color) throws ExpressionException {
@@ -887,8 +904,11 @@ public class Image extends StructSupport implements Cloneable,Struct {
 			IOUtil.closeEL(ios);
 		}
 	}
-	
+
 	public void writeOut(ImageOutputStream ios, String format,float quality) throws IOException, ExpressionException {
+		writeOut(ios, format, quality, false);
+	}
+	public void writeOut(ImageOutputStream ios, String format,float quality,boolean noMeta) throws IOException, ExpressionException {
 		if(quality<0 || quality>1)
 			throw new IOException("quality has a invalid value ["+quality+"], value has to be between 0 and 1");
 		if(StringUtil.isEmpty(format))	format=this.format;
@@ -897,8 +917,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		
 		BufferedImage im = image();
 		
-		
-		IIOMetadata meta = metadata(format);
+		IIOMetadata meta = noMeta?null:metadata(format);
 		
 		ImageWriter writer = null;
     	ImageTypeSpecifier type =ImageTypeSpecifier.createFromRenderedImage(im);
@@ -911,6 +930,8 @@ public class Image extends StructSupport implements Cloneable,Struct {
 
 		ImageWriteParam iwp=null;
     	if("jpg".equalsIgnoreCase(format)) {
+    		ColorModel cm = im.getColorModel();
+    		if(cm.hasAlpha())im=jpgImage(im);
     		JPEGImageWriteParam jiwp = new JPEGImageWriteParam(Locale.getDefault());
     		jiwp.setOptimizeHuffmanTables(true);
     		iwp=jiwp;
@@ -929,8 +950,35 @@ public class Image extends StructSupport implements Cloneable,Struct {
     		ios.flush();
     	}
 }
-	
-	
+	private BufferedImage jpgImage(BufferedImage src)
+    {
+        int w = src.getWidth();
+        int h = src.getHeight();
+        SampleModel srcSM = src.getSampleModel();
+        WritableRaster srcWR = src.getRaster();
+        java.awt.image.DataBuffer srcDB = srcWR.getDataBuffer();
+        
+        ColorModel rgb = new DirectColorModel(32, 0xff0000, 65280, 255);
+        int[] bitMasks = new int[]{0xff0000, 65280, 255};
+        
+        SampleModel csm = new SinglePixelPackedSampleModel(3, w, h, bitMasks);
+        int data[] = new int[w * h];
+        for(int i = 0; i < h; i++) {
+            for(int j = 0; j < w; j++) {
+                int pix[] = null;
+                int sample[] = srcSM.getPixel(j, i, pix, srcDB);
+                if(sample[3] == 0 && sample[2] == 0 && sample[1] == 0 && sample[0] == 0)
+                    data[i * w + j] = 0xffffff;
+                else
+                    data[i * w + j] = sample[0] << 16 | sample[1] << 8 | sample[2];
+            }
+
+        }
+
+        java.awt.image.DataBuffer db = new DataBufferInt(data, w * h * 3);
+        WritableRaster wr = Raster.createWritableRaster(csm, db, new Point(0, 0));
+        return new BufferedImage(rgb, wr, false, null);
+    }
 
 	private void setCompressionModeEL(ImageWriteParam iwp, int mode) {
 		try {
@@ -1346,7 +1394,9 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	 */
 	public Collection duplicate(boolean deepCopy) {
 		try {
+			//if(_image!=null) return new Image(getBufferedImage());
 			return new Image(getImageBytes(null));
+			
 		} catch (Exception e) {
 			throw new PageRuntimeException(e.getMessage());
 		}
@@ -1389,12 +1439,15 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		return format;
 	}
 
-	public byte[] getImageBytes(String format) throws ExpressionException {
+	public byte[] getImageBytes(String format) throws ExpressionException{
+		return getImageBytes(format,false);
+	}
+	public byte[] getImageBytes(String format,boolean noMeta) throws ExpressionException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ImageOutputStream ios = null;
 		try {
 			ios = ImageIO.createImageOutputStream(baos);
-			writeOut(ios, format, 1);
+			writeOut(ios, format, 1,noMeta);
 		} catch (IOException e) {
 			throw new ExpressionException(e.getMessage());
 		}

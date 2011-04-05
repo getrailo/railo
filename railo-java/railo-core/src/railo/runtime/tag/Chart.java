@@ -138,8 +138,8 @@ public final class Chart extends BodyTagImpl implements Serializable {
 	
 	private int pieslicestyle=PIE_SLICE_STYLE_SLICED;
 
-	private int scalefrom=Integer.MIN_VALUE;
-	private int scaleto=Integer.MAX_VALUE;
+	private double scalefrom=Double.NaN;
+	private double scaleto=Double.NaN;
 	private boolean legendMultiLine=false;
 	
 	private int seriesplacement=SERIES_PLACEMENT_DEFAULT;
@@ -202,8 +202,8 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		
 		pieslicestyle=PIE_SLICE_STYLE_SLICED;
 		
-		scalefrom=Integer.MIN_VALUE;
-		scaleto=Integer.MAX_VALUE;
+		scalefrom=Double.NaN;
+		scaleto=Double.NaN;
 		seriesplacement=SERIES_PLACEMENT_DEFAULT;
 		
 		show3d=false;
@@ -316,12 +316,12 @@ public final class Chart extends BodyTagImpl implements Serializable {
 
 	public void setScaleto(double scaleto) {
 		//if(scaleto<0) throw new ExpressionException("invalid value ["+scaleto+"] for attribute scaleto, value must be a positive integer greater or equal than 0");
-		this.scaleto = (int) scaleto;
+		this.scaleto =  scaleto;
 	}
 
 	public void setScalefrom(double scaletrom)  {
 		//if(scaletrom<0) throw new ExpressionException("invalid value ["+scaletrom+"] for attribute scaletrom, value must be a positive integer greater or equal than 0");
-		this.scalefrom = (int) scaletrom;
+		this.scalefrom =  scaletrom;
 	}
 
 	public void setSeriesplacement(String strSeriesplacement) throws ExpressionException {
@@ -886,8 +886,8 @@ public final class Chart extends BodyTagImpl implements Serializable {
 				}
 				catch (PageException e) {}
 			}
-			if(scalefrom!=Integer.MIN_VALUE)lower=scalefrom;
-			if(scaleto!=Integer.MAX_VALUE)upper=scaleto;
+			if(!Double.isNaN(scalefrom))lower=scalefrom;
+			if(!Double.isNaN(scaleto))upper=scaleto;
 			rangeAxis.setRange(new Range(lower,upper),true,true);
 		}
 	}
@@ -897,6 +897,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		if(plot instanceof CategoryPlot) {
 			CategoryPlot cp=(CategoryPlot) plot;
 			ValueAxis rangeAxis = cp.getRangeAxis();
+			rangeAxis.setAutoTickUnitSelection(true);
 			rangeAxis.setStandardTickUnits(new TickUnitsImpl(rangeAxis.getStandardTickUnits(),labelFormat));	
 		}
 	}

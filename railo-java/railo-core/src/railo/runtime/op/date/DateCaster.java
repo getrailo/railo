@@ -1,14 +1,15 @@
 // TODO Time constructor muss auch noch entfernt werden und durch DateUtil methode ersetzen
 package railo.runtime.op.date;
 
+import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.commons.date.DateTimeUtil;
+import railo.commons.i18n.FormatUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -34,30 +35,7 @@ public final class DateCaster {
 	private static long DEFAULT_VALUE=Long.MIN_VALUE;
 	
 	private static DateTimeUtil util=DateTimeUtil.getInstance();
-	
-    private static SimpleDateFormat[] simpleDateFormatters;
 	public static boolean classicStyle=false;
-	static  {
-	    simpleDateFormatters=new SimpleDateFormat[]{
-			  new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy",Locale.ENGLISH)
-				 ,new SimpleDateFormat("MMM dd, yyyy H:mm:ss a",Locale.ENGLISH)
-				 
-			 ,new SimpleDateFormat("MMMM dd, yyyy HH:mm:ss a zzz",Locale.ENGLISH)
-			 ,new SimpleDateFormat("MMMM d yyyy HH:mm:ss",Locale.ENGLISH)
-			 ,new SimpleDateFormat("MMMM d yyyy HH:mm",Locale.ENGLISH)
-			 ,new SimpleDateFormat("EEE, MMM dd, yyyy HH:mm:ss",Locale.ENGLISH)
-			 ,new SimpleDateFormat("EEEE, MMMM dd, yyyy h:mm:ss a zzz",Locale.ENGLISH)
-			 ,new SimpleDateFormat("dd-MMM-yy HH:mm a",Locale.ENGLISH)
-			 ,new SimpleDateFormat("dd-MMMM-yy HH:mm a",Locale.ENGLISH)
-			 ,new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
-			 ,new SimpleDateFormat("EEE d, MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
-			 ,new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH)
-				 ,new SimpleDateFormat("MMMM, dd yyyy hh:mm:ss",Locale.ENGLISH)
-				 ,new SimpleDateFormat("yyyy/MM/dd hh:mm:ss zz",Locale.ENGLISH)
-			 //,new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",Locale.ENGLISH)
-		};
-	}
-
 	
 	/**	
 	 * converts a Object to a DateTime Object (Advanced but slower)
@@ -131,19 +109,19 @@ public final class DateCaster {
 	 * @return Date Time Object
 	 */
 	public static DateTime toDateAdvanced(String str,TimeZone timeZone, DateTime defaultValue) {
-		//print.out(timeZone);
-	    DateTime dt=toDateSimple(str,true,timeZone,defaultValue);
-	    
+		timeZone=ThreadLocalPageContext.getTimeZone(timeZone);
+		DateTime dt=toDateSimple(str,true,timeZone,defaultValue);
 	    if(dt==null) {	
-	    	synchronized(simpleDateFormatters){
-	    	for(int i=0;i<simpleDateFormatters.length;i++) {
-				try {
-					
-					dt= new DateTimeImpl(simpleDateFormatters[i].parse(str).getTime(),false);
-					return dt;
-				} 
-                catch (ParseException e) {}
-			}
+	    	DateFormat[] formats = FormatUtil.getCFMLFormats(timeZone, true);
+		    synchronized(formats){
+		    	for(int i=0;i<formats.length;i++) {
+					try {
+						
+						dt= new DateTimeImpl(formats[i].parse(str).getTime(),false);
+						return dt;
+					} 
+	                catch (ParseException e) {}
+				}
 	    	}
 	    }
 	    return dt;
@@ -439,12 +417,14 @@ public final class DateCaster {
 	}
 	
 	public static DateTime toDateAdvanced(String str,boolean alsoNumbers, TimeZone timeZone, DateTime defaultValue) {
+		timeZone=ThreadLocalPageContext.getTimeZone(timeZone);
 		DateTime dt=toDateSimple(str,alsoNumbers, timeZone, defaultValue);
 	    if(dt==null) {
-	    	synchronized(simpleDateFormatters){
-				for(int i=0;i<simpleDateFormatters.length;i++) {
+	    	DateFormat[] formats = FormatUtil.getCFMLFormats(timeZone, true);
+		    synchronized(formats){
+				for(int i=0;i<formats.length;i++) {
 					try {
-						return new DateTimeImpl(simpleDateFormatters[i].parse(str).getTime(),false);
+						return new DateTimeImpl(formats[i].parse(str).getTime(),false);
 					} 
 	                catch (ParseException e) {}
 				}

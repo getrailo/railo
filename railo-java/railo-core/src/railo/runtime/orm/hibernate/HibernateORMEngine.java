@@ -33,15 +33,15 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.DataSource;
-import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
+import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
@@ -60,7 +60,6 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.util.ApplicationContext;
-import railo.runtime.util.ApplicationContextImpl;
 
 public class HibernateORMEngine implements ORMEngine {
 
@@ -86,10 +85,12 @@ public class HibernateORMEngine implements ORMEngine {
 
 	private Object hash;
 
+	private ORMConfiguration ormConf;
+
 	public HibernateORMEngine() {}
 
 	void checkExistent(PageContext pc,Component cfc) throws ORMException {
-		if(!cfcs.containsKey(id(HibernateCaster.getEntityName(pc, cfc))))
+		if(!cfcs.containsKey(id(HibernateCaster.getEntityName(cfc))))
             throw new ORMException(this,"there is no mapping definition for component ["+cfc.getAbsName()+"]");
 	}
 
@@ -107,17 +108,18 @@ public class HibernateORMEngine implements ORMEngine {
 	 * @see railo.runtime.orm.ORMEngine#getSession(railo.runtime.PageContext)
 	 */
 	public ORMSession createSession(PageContext pc) throws PageException {
-		ApplicationContextImpl appContext = ((ApplicationContextImpl)pc.getApplicationContext());
+		ApplicationContextPro appContext = ((ApplicationContextPro)pc.getApplicationContext());
 		String dsn=appContext.getORMDatasource();
 		
-		DataSourceManager manager = pc.getDataSourceManager();
-		DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
+		//DatasourceManager manager = pc.getDataSourceManager();
+		//DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
+		DatasourceConnection dc = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().getDatasourceConnection(pc,pc.getConfig().getDataSource(dsn),null,null);
 		try{
 			
 			return new HibernateORMSession(this,getSessionFactory(pc),dc);
 		}
 		catch(PageException pe){
-			manager.releaseConnection(pc, dc);
+			//manager.releaseConnection(pc, dc);// connection is closed when session ends
 			throw pe;
 		}
 	}
@@ -140,21 +142,30 @@ public class HibernateORMEngine implements ORMEngine {
 		return getSessionFactory(pc,false);
 	}
 	
-	public boolean reload(PageContext pc) throws PageException {
-		Object h = hash((ApplicationContextImpl)pc.getApplicationContext());
-		if(this.hash.equals(h))return false;
+	public boolean reload(PageContext pc, boolean force) throws PageException {
+		if(force) {
+			if(_factory!=null){
+				_factory.close();
+				_factory=null;
+				configuration=null;
+			}
+		}
+		else {
+			Object h = hash((ApplicationContextPro)pc.getApplicationContext());
+			if(this.hash.equals(h))return false;
+		}
+		
 		getSessionFactory(pc,true);
 		return true;
 	}
 
 
 	private synchronized SessionFactory getSessionFactory(PageContext pc,boolean init) throws PageException {
-		
-		ApplicationContextImpl appContext = ((ApplicationContextImpl)pc.getApplicationContext());
+		ApplicationContextPro appContext = ((ApplicationContextPro)pc.getApplicationContext());
 		if(!appContext.isORMEnabled())
 			throw new ORMException(this,"ORM is not enabled in application.cfc/cfapplication");
 		
-		ConfigWeb config = pc.getConfig();
+		//ConfigWeb config = pc.getConfig();
 		
 		this.hash=hash(appContext);
 		
@@ -164,11 +175,13 @@ public class HibernateORMEngine implements ORMEngine {
 			throw new ORMException(this,"missing datasource defintion in application.cfc/cfapplication");
 		if(!dsn.equalsIgnoreCase(datasource)){
 			configuration=null;
+			if(_factory!=null) _factory.close();
+			_factory=null;
 			datasource=dsn.toLowerCase();
 		}
 		
 		// config
-		ORMConfiguration ormConf = appContext.getORMConfiguration();
+		ormConf = appContext.getORMConfiguration();
 		
 		//List<Component> arr = null;
 		arr=null;
@@ -178,33 +191,44 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		// load entities
 		if(!ArrayUtil.isEmpty(arr)) {
-			DataSourceManager manager = pc.getDataSourceManager();
-			DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
+			DatasourceConnectionPool pool = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool();
+			DatasourceConnection dc = pool.getDatasourceConnection(pc,pc.getConfig().getDataSource(dsn),null,null);
+			//DataSourceManager manager = pc.getDataSourceManager();
+			//DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
 			this.ds=dc.getDatasource();
 			try {
 				Iterator<ComponentPro> it = arr.iterator();
 				while(it.hasNext()){
 					createMapping(pc,it.next(),dc,ormConf);
-					/*try {
-						createMapping(pc,it.next(),dc,ormConf);
-					}
-					catch(Throwable t){
-						ORMUtil.printError(t, this);
-						
-					}*/
 				}
 			}
 			finally {
-				manager.releaseConnection(pc,dc);
+				pool.releaseDatasourceConnection(dc);
+				//manager.releaseConnection(pc,dc);
+			}
+			if(arr.size()!=cfcs.size()){
+				ComponentPro cfc;
+				String name,lcName;
+				Map<String,String> names=new HashMap<String,String>();
+				Iterator<ComponentPro> it = arr.iterator();
+				while(it.hasNext()){
+					cfc=it.next();
+					name=HibernateCaster.getEntityName(cfc);
+					lcName=name.toLowerCase();
+					if(names.containsKey(lcName))
+						throw new ORMException(this,"Entity Name ["+name+"] is ambigous, ["+names.get(lcName)+"] and ["+cfc.getPageSource().getDisplayPath()+"] use the same entity name."); 
+					names.put(lcName,cfc.getPageSource().getDisplayPath());
+				}	
 			}
 		}
 		arr=null;
 		
 		
+		
 		if(configuration!=null) return _factory;
 		
 
-		DataSource ds = config.getDataSource(dsn);
+		//DataSource ds = config.getDataSource(dsn);
 		
 		
 		//MUST
@@ -224,10 +248,11 @@ public class HibernateORMEngine implements ORMEngine {
 			e1.printStackTrace();
 		}
 		print.o(cfcs.keySet());*/
-		//print.o(mappings);
 		
-		DataSourceManager manager = pc.getDataSourceManager();
-		DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
+		DatasourceConnectionPool pool = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool();
+		DatasourceConnection dc = pool.getDatasourceConnection(pc,pc.getConfig().getDataSource(dsn),null,null);
+		//DataSourceManager manager = pc.getDataSourceManager();
+		//DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
 		try{
 			configuration = HibernateSessionFactory.createConfiguration(this,mappings,dc,ormConf);
 		} 
@@ -235,7 +260,8 @@ public class HibernateORMEngine implements ORMEngine {
 			throw Caster.toPageException(e);
 		}
 		finally {
-			manager.releaseConnection(pc,dc);
+			pool.releaseDatasourceConnection(dc);
+			//manager.releaseConnection(pc,dc);
 		}
 		
 		addEventListeners(pc, configuration,ormConf,cfcs);
@@ -330,7 +356,7 @@ public class HibernateORMEngine implements ORMEngine {
 		return cfc.get(eventType,null) instanceof UDF;
 	}
 
-	private Object hash(ApplicationContextImpl appContext) {
+	private Object hash(ApplicationContextPro appContext) {
 		String hash=appContext.getORMDatasource()+":"+appContext.getORMConfiguration().hash();
 		//print.ds(hash);
 		return hash;
@@ -338,7 +364,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 	public void createMapping(PageContext pc,Component cfc, DatasourceConnection dc, ORMConfiguration ormConf) throws PageException {
 		ComponentPro cfcp=ComponentUtil.toComponentPro(cfc);
-		String id=id(HibernateCaster.getEntityName(pc, cfcp));
+		String id=id(HibernateCaster.getEntityName(cfcp));
 		CFCInfo info=cfcs.get(id);
 		//Long modified=cfcs.get(id);
 		String xml;
@@ -349,7 +375,7 @@ public class HibernateORMEngine implements ORMEngine {
 			long xmlLastMod = loadMapping(sb,ormConf, cfcp);
 			Element root;
 			// create maaping
-			if(true || xmlLastMod< cfcCompTime) {
+			if(true || xmlLastMod< cfcCompTime) {//MUSTMUST
 				configuration=null;
 				Document doc=null;
 				try {
@@ -434,12 +460,12 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 
 	public Struct getTableInfo(DatasourceConnection dc, String tableName,ORMEngine engine) throws PageException {
-		//print.out("getTableInfo:"+tableName);
-		Struct columnsInfo = (Struct) tableInfo.get(tableName,null);
+		Collection.Key keyTableName=KeyImpl.init(tableName);
+		Struct columnsInfo = (Struct) tableInfo.get(keyTableName,null);
 		if(columnsInfo!=null) return columnsInfo;
 		
 		columnsInfo = checkTable(dc,tableName,engine);
-    	tableInfo.setEL(tableName,columnsInfo);
+    	tableInfo.setEL(keyTableName,columnsInfo);
     	return columnsInfo;
 	}
 	
@@ -520,12 +546,12 @@ public class HibernateORMEngine implements ORMEngine {
 	 */
 	public ORMConfiguration getConfiguration(PageContext pc) {
 		ApplicationContext ac = pc.getApplicationContext();
-		if(!(ac instanceof ApplicationContextImpl))
+		if(!(ac instanceof ApplicationContextPro))
 			return null;
-		ApplicationContextImpl aci=(ApplicationContextImpl) ac;
-		if(!aci.isORMEnabled())
+		ApplicationContextPro acp=(ApplicationContextPro) ac;
+		if(!acp.isORMEnabled())
 			return null;
-		return  aci.getORMConfiguration();
+		return  acp.getORMConfiguration();
 	}
 
 	/**
@@ -540,7 +566,7 @@ public class HibernateORMEngine implements ORMEngine {
 	public Component create(PageContext pc, HibernateORMSession session,String entityName, boolean unique) throws PageException {
 		
 		// get existing entity
-		ComponentImpl cfc = _create(pc,entityName,unique);
+		ComponentPro cfc = _create(pc,entityName,unique);
 		if(cfc!=null)return cfc;
 		
 		// reinit ORMEngine
@@ -554,55 +580,15 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		
 		
-		ApplicationContextImpl appContext = ((ApplicationContextImpl)pc.getApplicationContext());
+		ApplicationContextPro appContext = ((ApplicationContextPro)pc.getApplicationContext());
 		ORMConfiguration ormConf = appContext.getORMConfiguration();
 		Resource[] locations = ormConf.getCfcLocations();
-		
-		
-		/* / get key list
-		Iterator<Entry<String, CFCInfo>> it = cfcs.entrySet().iterator();
-		Entry<String, CFCInfo> entry;
-		String name;
-		StringBuilder keys=new StringBuilder();
-		while(it.hasNext()){
-			entry=it.next();
-			name=entry.getValue().getCFC().getName();
-			if(keys.length()>0) keys.append(", ");
-			keys.append(name);
-		}*/
-		
 		
 		throw new ORMException(
 				"No entity (persitent component) with name ["+entityName+"] found, available entities are ["+railo.runtime.type.List.arrayToList(getEntityNames(), ", ")+"] ",
 				"component are searched in the following directories ["+toString(locations)+"]");
 		
-		/*
-		// try to load "new" entity
-		ComponentImpl cfc;
-		try{
-			cfc = (ComponentImpl) HibernateCaster.toComponent(pc, entityName);
-		}
-		catch(PageException pe){
-			throw new ORMException("No entity (persitent component) with name ["+entityName+"] found, available entities are ["+railo.runtime.type.List.arrayToList(cfcs.keySet().toArray(new String[cfcs.size()]),", ")+"] ");
-		}
-		if(cfc.isPersistent()) {
-			if(unique){
-				cfc=(ComponentImpl)cfc.duplicate(false);
-				if(cfc.contains(pc,INIT))cfc.call(pc, "init",new Object[]{});
-			}
-			
-			SessionFactory of=session.getSessionFactory();
-			SessionFactory nf = getSessionFactory(pc, cfc,false);
-			
-			// reset Session
-			if(of!=nf){
-				session.resetSession(nf);
-			}
-			return unique?(Component)cfc.duplicate(false):cfc;
-		}
-
-		throw new ORMException("No entity (persitent component) with name ["+entityName+"] found, available entities are ["+railo.runtime.type.List.arrayToList(cfcs.keySet().toArray(new String[cfcs.size()]),", ")+"] ");
-		*/
+	
 	}
 	
 	
@@ -616,12 +602,12 @@ public class HibernateORMEngine implements ORMEngine {
 		return sb.toString();
 	}
 
-	private ComponentImpl _create(PageContext pc, String entityName, boolean unique) throws PageException {
+	private ComponentPro _create(PageContext pc, String entityName, boolean unique) throws PageException {
 		CFCInfo info = cfcs.get(id(entityName));
 		if(info!=null) {
-			ComponentImpl cfc = (ComponentImpl) info.getCFC();
+			ComponentPro cfc = info.getCFC();
 			if(unique){
-				cfc=(ComponentImpl)cfc.duplicate(false);
+				cfc=(ComponentPro)cfc.duplicate(false);
 				if(cfc.contains(pc,INIT))cfc.call(pc, "init",new Object[]{});
 			}
 			return cfc;
@@ -633,7 +619,17 @@ public class HibernateORMEngine implements ORMEngine {
 		return id.toLowerCase().trim();
 	}
 
-	public Component getEntityByCFCName(String cfcname,boolean unique) throws PageException {
+	public Component getEntityByCFCName(String cfcName,boolean unique) throws PageException {
+		String name=cfcName;
+		int pointIndex=cfcName.lastIndexOf('.');
+		if(pointIndex!=-1) {
+			name=cfcName.substring(pointIndex+1);
+		}
+		else 
+			cfcName=null;
+		
+		
+		
 		ComponentPro cfc;
 		String[] names=null;
 		// search array (array exist when cfcs is in generation)
@@ -645,7 +641,7 @@ public class HibernateORMEngine implements ORMEngine {
 			while(it2.hasNext()){
 				cfc=it2.next();
 				names[index++]=cfc.getName();
-				if(cfc.equalTo(cfcname))
+				if(isEntity(cfc,cfcName,name)) //if(cfc.equalTo(name))
 					return unique?(Component)cfc.duplicate(false):cfc;
 			}
 		}
@@ -656,23 +652,68 @@ public class HibernateORMEngine implements ORMEngine {
 			while(it.hasNext()){
 				entry=it.next();
 				cfc=entry.getValue().getCFC();
-				if(cfc.instanceOf(cfcname))
+				if(isEntity(cfc,cfcName,name)) //if(cfc.instanceOf(name))
 					return unique?(Component)cfc.duplicate(false):cfc;
 				
-				if(cfcname.equalsIgnoreCase(HibernateCaster.getEntityName(null, cfc)))
-					return cfc;
+				//if(name.equalsIgnoreCase(HibernateCaster.getEntityName(cfc)))
+				//	return cfc;
 			}
 			names=cfcs.keySet().toArray(new String[cfcs.size()]);
 		}
 		
 		// search by entityname //TODO is this ok?
-		CFCInfo info = cfcs.get(cfcname.toLowerCase());
+		CFCInfo info = cfcs.get(name.toLowerCase());
 		if(info!=null) {
 			cfc=info.getCFC();
 			return unique?(Component)cfc.duplicate(false):cfc;
 		}
 		
-		throw new ORMException(this,"entity ["+cfcname+"] does not exist, existing  entities are ["+railo.runtime.type.List.arrayToList(names, ", ")+"]");
+		throw new ORMException(this,"entity ["+name+"] does not exist, existing  entities are ["+railo.runtime.type.List.arrayToList(names, ", ")+"]");
+		
+	}
+	
+
+	private boolean isEntity(ComponentPro cfc, String cfcName, String name) {
+		if(!StringUtil.isEmpty(cfcName)) {
+			if(cfc.equalTo(cfcName)) return true;
+
+			if(cfcName.indexOf('.')!=-1) {
+				String path=cfcName.replace('.', '/')+".cfc";
+				Resource[] locations = ormConf.getCfcLocations();
+				for(int i=0;i<locations.length;i++){
+					if(locations[i].getRealResource(path).equals(cfc.getPageSource().getFile()))
+						return true;
+				}
+				return false;
+			}
+		}
+		
+		if(cfc.equalTo(name)) return true;
+		return name.equalsIgnoreCase(HibernateCaster.getEntityName(cfc));
+	}
+
+	public Component getEntityByEntityName(String entityName,boolean unique) throws PageException {
+		ComponentPro cfc;
+		
+		
+		CFCInfo info = cfcs.get(entityName.toLowerCase());
+		if(info!=null) {
+			cfc=info.getCFC();
+			return unique?(Component)cfc.duplicate(false):cfc;
+		}
+		
+		if(arr!=null){
+			Iterator<ComponentPro> it2 = arr.iterator();
+			while(it2.hasNext()){
+				cfc=it2.next();
+				if(HibernateCaster.getEntityName(cfc).equalsIgnoreCase(entityName))
+					return unique?(Component)cfc.duplicate(false):cfc;
+			}
+		}
+		
+		
+		
+		throw new ORMException(this,"entity ["+entityName+"] does not exist");
 		
 	}
 	
@@ -683,7 +724,8 @@ public class HibernateORMEngine implements ORMEngine {
 		String[] names=new String[cfcs.size()];
 		int index=0;
 		while(it.hasNext()){
-			names[index++]=it.next().getValue().getCFC().getName();
+			names[index++]=HibernateCaster.getEntityName(it.next().getValue().getCFC());
+			//names[index++]=it.next().getValue().getCFC().getName();
 		}
 		return names;
 		

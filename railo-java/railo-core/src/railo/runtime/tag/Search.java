@@ -22,15 +22,6 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
-/**
-* Executes searches against data indexed in Verity collections. Collections can be created by 
-*   calling the cfcollection tag, by using the ColdFusion Administrator, or through native Verity indexing 
-*   tools. Collections are populated with data either with the cfindex tag, or externally, using native 
-*   Verity indexing tools. Collections must be created and populated before any searches can be executed.
-*
-*
-*
-**/
 public final class Search extends TagImpl {
 
 	private static final String[] EMPTY = new String[0];
@@ -59,9 +50,6 @@ public final class Search extends TagImpl {
 	/** The logical collection name that is the target of the search operation or an external collection 
 	** 		with fully qualified path. */
 	private SearchCollection[] collections;
-
-	/** To use the language attribute you must have the ColdFusion International Search Pack installed. */
-	//private String language=null;
 
 	/** A name for the search query. */
 	private String name;
@@ -166,7 +154,6 @@ public final class Search extends TagImpl {
 	}
 
 	/** set the value language
-	*  To use the language attribute you must have the ColdFusion International Search Pack installed.
 	* @param language value to set
 	**/
 	public void setLanguage(String language)	{
@@ -175,8 +162,6 @@ public final class Search extends TagImpl {
 	}
 
 	/** set the value external
-	*  Yes or No. Yes indicates that the collection you are searching was created outside of ColdFusion 
-	* 		using native Verity indexing tools. The default is No.
 	* @param external value to set
 	 * @throws ApplicationException
 	**/

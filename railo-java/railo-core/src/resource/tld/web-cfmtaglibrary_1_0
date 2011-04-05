@@ -261,7 +261,54 @@
 			<name>clientStorage</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies how Railo stores client variables</description>
+			<description>
+Specifies how Railo stores client variables:
+- memory: the session is only kept in memory
+- cookie: the session is stored in the client cookie
+- file (default): the session is stored in a local file
+- "datasource-name"|"cache-name": when you select a name of an available datasource or cache, the client scope will be stored in there</description>
+		</attribute>
+		
+		<attribute>
+			<type>string</type>
+			<name>sessionType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+<description>
+Railo provide 2 kind of sessions:
+- cfml: session handled by Railo
+- j2ee: session handled by the Servlet Engine used				
+Default value is defined in the Railo Web Administrator. "j2ee" can not use a session storage.
+</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>sessionStorage</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+<description>
+Specifies how Railo stores session variables:
+- memory (default): the session is only kept in memory
+- cookie: the session is stored in the client cookie
+- file: the session is stored in a local file
+- "datasource-name"|"cache-name": when you select a name of an available datasource or cache, the session scope will be stored in there
+</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>clientCluster</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true, railo uses the storage backend for the client scope as master and Railo checks for changes in the storage backend with every request,
+			if set to false (default), the storage is only used as slave, railo only initially gets the data from the storage. Ignored for storage type "memory".</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>sessionCluster</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true, railo uses the storage backend for the session scope as master and Railo checks for changes in the storage backend with every request,
+			if set to false (default), the storage is only used as slave, railo only initially gets the data from the storage. Ignored for storage type "memory".</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -286,6 +333,15 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>Enter the CreateTimeSpan function and values in days, hours, minutes, and seconds, separated 
 		by commas, to specify the lifespan of session variables. The default value is specified in the
+		Variables page of the Railo Administrator.</description>
+		</attribute>
+		<attribute>
+			<type>timespan</type>
+			<name>clientTimeout</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Enter the CreateTimeSpan function and values in days, hours, minutes, and seconds, separated 
+		by commas, to specify the lifespan of client variables. The default value is specified in the
 		Variables page of the Railo Administrator.</description>
 		</attribute>
 		<attribute>
@@ -328,6 +384,13 @@
 			<description>Contains custom tag paths.</description>
 		</attribute>
 		<attribute>
+			<type>any</type>
+			<name>componentpaths</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Contains component paths.</description>
+		</attribute>
+		<attribute>
 			<type>boolean</type>
 			<name>secureJson</name>
 			<required>false</required>
@@ -341,6 +404,86 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The security prefix to put in front of the value that a function returns in JSON-format in response to a remote call if the secureJSON setting is true.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>localmode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Defines how the local scope of a function is invoked when a variable with no scope definition is used (default value set in the railo administrator).
+- always: the local scope is always invoked
+- update (CFML standard): the local scope is only invoked when the key already exists in it</description>
+		</attribute>
+		
+		<attribute>
+			<type>boolean</type>
+			<name>ormenabled</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Specifies whether ORM should be enabled for the current application context.The default is false.</description>
+		</attribute>
+		<attribute>
+			<type>struct</type>
+			<name>ormsettings</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+A struct that defines all the ORM settings, the following keys are supported:
+
+autogenmap(default:true): Specifies whether Railo should automatically generate mapping for the persistent CFCs. If autogenmap=false, mapping should be provided in the form of "{cfc-name}.cfc.hbm.xml" files.
+
+automanageSession(default:true; not supported yet): Lets you specify if Railo must manage Hibernate session automatically. If enabled: Railo manages the session completely. That is, it decides when to flush the session, when to clear the session, and when to close the session. If disabled: The application is responsible for managing flushing, clearing, or closing of the session. The only exception is (in the case of transaction), when the transaction commits, the application flushes the session. Railo closes the ORM session at the end of request irrespective of this flag being enabled or disabled. 
+
+cacheconfig: Specifies the location of the configuration file that should be used by the secondary cache provider.This setting is used only when secondarycacheenabled=true.
+
+cacheprovider: Specifies the cache provider that should be used by ORM as secondary cache.
+
+catalog: Specifies the default Catalog that should be used by ORM.
+
+cfclocation: Specifies the directory (or array of directories) that should be used by Railo to search for persistent CFCs to generate the mapping. If cfclocation is set, Railo looks at only the paths specified in it. If it is not set, Railo looks at the application directory, its sub-directories, and its mapped directories to search for persistent CFCs.
+
+datasource: Specifies the data source that should be used by ORM. If it is not specified here, then the data source specified for the application is picked up.
+
+dbcreate(default:none): Hibernate can automatically create the tables for your application in the database. dbCreate takes the following values:
+- update: Setting this value creates the table if it does not exist or update the table if it exists.
+- dropcreate: Setting this value drops the table if it exists and then creates it.
+- none: Setting this value does not change anything in the database schema.
+
+dialect: Specifies the dialect.Railo supports the following dialects: [Cache 2007.1, Cache71, Caché 2007.1, DB2, DB2/390, DB2/400, DB2390, DB2400, DB2AS400, DB2OS390, DataDirectOracle9, Derby, Firebird, FrontBase, H2, H2DB, HSQL, HSQLDB, Informix, Ingres, Interbase, JDataStore, MSSQL, Mckoi, MckoiSQL, MicrosoftSQLServer, Mimer, MimerSQL, MySQL, MySQL/InnoDB, MySQL/MyISAM, MySQL5, MySQL5/InnoDB, MySQL5InnoDB, MySQLInnoDB, MySQLMyISAM, MySQLwithInnoDB, MySQLwithMyISAM, Oracle, Oracle10g, Oracle8i, Oracle9, Oracle9i, Pointbase, PostgreSQL, PostgresPlus, Progress, SAPDB, SQLServer, Sybase, Sybase11, SybaseASE15, SybaseAnywhere, com.ddtek.jdbc.db2.DB2Driver, com.microsoft.jdbc.sqlserver.SQLServerDriver, oracle.jdbc.driver.OracleDriver, org.firebirdsql.jdbc.FBDriver, org.gjt.mm.mysql.Driver, org.h2.Driver, org.hsqldb.jdbcDriver, org.postgresql.Driver]
+
+eventHandling(default:false): Specifies whether ORM Event callbacks should be given.
+
+flushatrequestend(default:true): Specifies whether ormflush should be called automatically at request end. If flushatrequestend is false, ormflush is not called automatically at request end.
+
+logSQL(default:false): Specifies whether the SQL queries that are executed by ORM will be logged. If LogSQL=true, the SQL queries are logged to the console.
+
+ormconfig: The Hibernate configuration file. This file contains various configuration parameters like, dialect, cache settings, and mapping files that are required for the application. For more details, see www.hibernate.org/hib_docs/reference/en/html/session-configuration.html. The settings defined in the ormsettings override the settings defined in the Hibernate Configuration XML file.The connection information in the Hibernate Configuration XML file is however ignored because Railo uses its own connection pool. You will need to use this only when you need to use a hibernate setting that is not available using ormsetting.
+
+savemapping(default:false): Specifies whether the generated Hibernate mapping file has to be saved to disc. If you set the value to true, the Hibernate mapping XML file is saved with the filename "CFC name".hbm.xml in the same directory as the CFC. If any value of savemapping is specified in CFC, it will override the value specified in the ormsetting.
+
+schema: Specifies the default Schema that should be used by ORM.
+
+secondarycacheenabled(default:false): Specifies whether secondary caching should be enabled
+
+skipCFCWithError(default:false;not implemented yet): Lets you specify if Railo must skip the CFCs that have errors. If set to true, Railo ignores the CFCs that have errors.
+
+sqlscript: Path to the SQL script file that gets executed after ORM is initialized. This applies if dbcreate is set to dropcreate. This must be the absolute file path or the path relative to the application.The SQL script file lets you populate the tables before the application is accessed.
+
+useDBForMapping(default:true): Specifies whether the database has to be inspected to identify the missing information required to generate the Hibernate mapping. The database is inspected to get the column data type, primary key and foreign key information.
+</description>
+		</attribute>
+		<attribute>
+			<type>struct</type>
+			<name>s3</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+A struct that defines default S3 settings, this settings can be overwritten as part of the S3 file path, the following keys are supported:
+- accessKeyId: S3 access key id
+- awsSecretKey: AWS (Amazon Web Service) Secret Key
+- defaultLocation(default:us): region for the bucket, possible values are [eu,us,us-west]
+- host(default:"s3.amazonaws.com"): hostname of the service
+</description>
 		</attribute>
 	</tag>
 	<!-- Argument -->
@@ -1682,7 +1825,20 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 			<name>type</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Type of information to get</description>
+			<description>Type of information to get:
+- dbnames: database name and type
+- tables: information to all tables
+- columns: column infromation to a single table/view
+- version: version information of the database
+- procedures: information to all procedures
+- procedure_columns: column infromation to a single procedure
+- foreignkeys: information to all foreignkeys
+- index: information to all indexes
+
+,tables,columns,version,procedures,foreignkeys,index,users 
+
+
+</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -1697,6 +1853,13 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Name of the database</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>dbnames</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Name of the database (alias for dbname)</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -7448,7 +7611,7 @@ Railo uses the number of characters in the file.</description>
 		<attribute>
 			<type>object</type>
 			<name>to</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The name of the e-mail message recipient.</description>
 		</attribute>
@@ -12188,6 +12351,21 @@ dWord: creates a value of 0 (zero)</description>
 
             Useful for displaying a temporary value, or a value that
             does not display on any CFM page (alias for attribute "var").</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>follow</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>If true, Railo follows the variable defined in the [var] attribute and will log any changes to it. Ignored when attribute [var] is not defined.</description>
+		</attribute>
+		<attribute>
+			<type>struct</type>
+			<name>caller</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<status>hidden</status>
+			<description>scope used for var evaluation, if not defined the current scope is used.</description>
 		</attribute>
 	</tag>
 	<!-- Try -->

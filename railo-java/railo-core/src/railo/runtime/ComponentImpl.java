@@ -51,13 +51,13 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.comparator.ArrayOfStructComparator;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.scope.Argument;
@@ -74,15 +74,12 @@ import railo.runtime.util.ArrayIterator;
  * %**%
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
-public class ComponentImpl extends StructSupport implements Externalizable,ComponentPro,coldfusion.runtime.TemplateProxy,Sizeable {
+public class ComponentImpl extends StructSupport implements Externalizable,ComponentAccess,coldfusion.runtime.TemplateProxy,Sizeable {
 
 
 	private ComponentProperties properties;
-	
-    private Map _data;//new HashMap();
-    private Map _udfs;
-
-    
+	private Map<Key,Member> _data;
+    private Map<Key,UDF> _udfs;
 
 	ComponentImpl top=this;
     ComponentImpl base;
@@ -103,7 +100,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
 	private boolean useShadow;
 	boolean afterConstructor;
-	private Map constructorUDFs;
+	private Map<Key,UDF> constructorUDFs;
 
 
 	public static final Key KEY_SUPER=KeyImpl.getInstance("SUPER");
@@ -115,8 +112,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	private static final Key TO_STRING = KeyImpl.getInstance("_toString");
 
 	private static final Key ON_MISSING_METHOD = KeyImpl.getInstance("onmissingmethod");
-	private static final Key MISSING_METHOD_NAMEx = KeyImpl.getInstance("missingMethodName");
-	private static final Key MISSING_METHOD_ARGS = KeyImpl.getInstance("missingMethodArguments");
 
 	protected static final Key EXTENDS = KeyImpl.getInstance("extends");
 	protected static final Key IMPLEMENTS = KeyImpl.getInstance("implements");
@@ -127,6 +122,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	protected static final Key TYPE = KeyImpl.getInstance("type");
 	protected static final Key SKELETON = KeyImpl.getInstance("skeleton");
 	protected static final Key PROPERTIES = KeyImpl.getInstance("properties");
+	private static final Key MAPPED_SUPER_CLASS = KeyImpl.getInstance("mappedSuperClass");
 	
 	public long sizeOf() {
 		return 
@@ -148,7 +144,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * Constructor of the Component, USED ONLY FOR DESERIALIZE
      */
 	 public ComponentImpl() {
-		
 	 }
 	
     /**
@@ -202,7 +197,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     }*/
 
     public Collection duplicate(boolean deepCopy) {
-    	ComponentImpl top= _duplicate(deepCopy);
+    	ComponentImpl top= _duplicate(deepCopy,true);
     	setTop(top,top);
     	
 		
@@ -211,7 +206,8 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	
     
     
-    private ComponentImpl _duplicate( boolean deepCopy) {
+    
+    private ComponentImpl _duplicate( boolean deepCopy, boolean isTop) {
     	ComponentImpl trg=new ComponentImpl();
     	ThreadLocalDuplication.set(this, trg);
     	try{
@@ -227,25 +223,47 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			trg.isInit=isInit;
 			trg.interfaceCollection=interfaceCollection;
 	    	
+			boolean useShadow=scope instanceof ComponentScopeShadow;
+			if(!useShadow)trg.scope=new ComponentScopeThis(trg);
+			
 	    	if(base!=null){
-				trg.base=base._duplicate(deepCopy);
+				trg.base=base._duplicate(deepCopy,false);
+				
+				trg._data=trg.base._data;
+				trg._udfs=duplicateUTFMap(this,trg, _udfs,new HashMap<Key,UDF>(trg.base._udfs));
+
+	    		if(useShadow) trg.scope=new ComponentScopeShadow(trg,(ComponentScopeShadow)trg.base.scope,false);
 			}
+	    	else {
+	    		// clone data member, ignore udfs for the moment
+	    		trg._data=duplicateDataMember(trg, _data, new HashMap(), deepCopy);
+	    		trg._udfs=duplicateUTFMap(this,trg, _udfs,new HashMap<Key, UDF>());
+	    		
+	    		if(useShadow) {
+	    			ComponentScopeShadow css = (ComponentScopeShadow)scope;
+	    			trg.scope=new ComponentScopeShadow(trg,duplicateDataMember(trg,css.getShadow(),new HashMap(),deepCopy));
+	    		}
+	    	}
+	    	
+	    	// at the moment this makes no sense, becuae this map is no more used after constructor has runned and for a clone the constructo is not executed, but perhaps this is used in future
+	    	if(constructorUDFs!=null){
+	    		trg.constructorUDFs=new HashMap<Collection.Key, UDF>();
+	    		addUDFS(trg, constructorUDFs, trg.constructorUDFs);
+	    	}
 			
-	    	// data members
-			trg._data=duplicateMap(trg,_data,new HashMap(),deepCopy);
-			trg._udfs=duplicateMap(trg,_udfs,new HashMap(),deepCopy);
-			if(constructorUDFs!=null)trg.constructorUDFs=duplicateMap(trg,constructorUDFs,new HashMap(),deepCopy);
 			
-			
-			// scope 
-			if(scope instanceof ComponentScopeThis) {
-				trg.scope=new ComponentScopeThis(trg);
-			}
-			else if(scope instanceof ComponentScopeShadow) {
-				ComponentScopeShadow css = (ComponentScopeShadow)scope;
-				trg.scope=new ComponentScopeShadow(trg,duplicateMap(trg,css.getShadow(),ComponentScopeShadow.newMap(),deepCopy));
-			}
-			else trg.scope=(ComponentScope) scope.clone();
+	    	if(isTop) {
+	    		setTop(trg,trg);
+	    		
+	    		addUDFS(trg,_data,trg._data);
+	    		if(useShadow){
+	    			addUDFS(trg,((ComponentScopeShadow)scope).getShadow(),((ComponentScopeShadow)trg.scope).getShadow());
+	    		}
+	    	}
+	    	
+	    	
+	    	
+	    	
     	}
     	finally {
     		ThreadLocalDuplication.remove(this);
@@ -253,69 +271,87 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	
 		return trg;
 	}
-
-	
-    /**
-     * Constructor of the class
-     * @param c
-     * /
-    protected ComponentImpl(Component c, boolean deepCopy) {
-    	if(c instanceof ComponentImpl) {
-    		ComponentImpl ci=(ComponentImpl)c;
-    		if(ci.base!=null){
-    			this.base=new ClonedComponent(ci.base,true);
-    			setTop(this,this.base);
-    		}
-    		
-    		this._data=duplicateMap(this,ci._data,new HashMap(),deepCopy);
-    		
-    		this._udfs=duplicateMap(this,ci._udfs,new HashMap(),deepCopy);
-    		this.pageSource=ci.pageSource;
-    		
-    		print.o("1:"+this.pageSource);
-    		print.o("2:"+ci.pageSource);
-    		print.o("3:"+this.getPageSource());
-    		print.o("4:"+ci.getPageSource());
-    		
-    		
-    		
-    		this.dataMemberDefaultAccess=ci.dataMemberDefaultAccess;
-    		this.properties=ci.properties.duplicate();
-    		this.isInit=ci.isInit;
-    		if(ci.scope instanceof ComponentScopeThis) {
-    			this.scope=new ComponentScopeThis(this);
-    		}
-    		else if(ci.scope instanceof ComponentScopeShadow) {
-    			ComponentScopeShadow css = (ComponentScopeShadow)ci.scope;
-    			this.scope=new ComponentScopeShadow(this,duplicateMap(this,css.getShadow(),ComponentScopeShadow.newMap(),deepCopy));
-    		}
-    		else this.scope=(ComponentScope) scope.clone();
-        	this.threadsWaiting=ci.threadsWaiting;
-            this.threadUsingLock=ci.threadUsingLock;
-            this.triggerDataMember=ci.triggerDataMember;
-            this.useShadow=ci.useShadow;
-            this.afterConstructor=ci.afterConstructor;
-    	}
-    	else throw new PageRuntimeException(new ApplicationException("can't clone this component "+c.getDisplayName()));
-	}*/
     
+    
+    private static void addUDFS(ComponentImpl trgComp, Map src, Map trg) {
+		Iterator it = src.entrySet().iterator();
+		Map.Entry entry;
+		Object key,value;
+		UDF udf;
+		ComponentImpl comp,owner;
+		boolean done;
+    	while(it.hasNext()){
+    		entry=(Entry) it.next();
+    		key=entry.getKey();
+    		value=entry.getValue();
+    		if(value instanceof UDF) {
+    			udf=(UDF) value;
+    			done=false;
+    			// get udf from _udf
+    			owner = (ComponentImpl)udf.getOwnerComponent();
+    			if(owner!=null) {
+	    			comp=trgComp;
+	    			do{
+	    				if(owner.pageSource==comp.pageSource)
+	    					break;
+	    			}
+	    			while((comp=comp.base)!=null);
+	    			if(comp!=null) {
+	    				value=comp._udfs.get(key);
+	    				trg.put(key, value);
+	    				done=true;
+	    			}
+    			}
+    			// udf with no owner
+    			if(!done) 
+    				trg.put(key, udf.duplicate());
+    			
+    			//print.o(owner.pageSource.getComponentName()+":"+udf.getFunctionName());
+    		}
+    	}
+	}
 
-    public static Map duplicateMap(ComponentImpl c,Map map,Map newMap,boolean deepCopy){
-        Iterator it=map.keySet().iterator();
-        Object key,value;
+    /**
+     * duplicate the datamember in the map, ignores the udfs
+     * @param c
+     * @param map
+     * @param newMap
+     * @param deepCopy
+     * @return
+     */
+    public static Map duplicateDataMember(ComponentImpl c,Map map,Map newMap,boolean deepCopy){
+        Iterator it=map.entrySet().iterator();
+        Map.Entry entry;
+        Object value;
         while(it.hasNext()) {
-            key=it.next();
-            value=map.get(key);
+            entry=(Entry) it.next();
+        	value=entry.getValue();
             
-            if(value instanceof UDFImpl)
-            	value=((UDFImpl)value).duplicate(c);
-            else if(deepCopy)
-            	value=Duplicator.duplicate(value,deepCopy);
-            
-            newMap.put(key,value);
+            if(!(value instanceof UDF)) {
+            	if(deepCopy) value=Duplicator.duplicate(value,deepCopy);
+            	newMap.put(entry.getKey(),value);
+            }
         }
         return newMap;
     }
+    
+    public static Map<Key, UDF> duplicateUTFMap(ComponentImpl src,ComponentImpl trg,Map<Key,UDF> srcMap, Map<Key, UDF> trgMap){
+    	Iterator<Entry<Key, UDF>> it = srcMap.entrySet().iterator();
+        Map.Entry<Key, UDF> entry;
+        UDF udf;
+        while(it.hasNext()) {
+            entry=it.next();
+            udf=entry.getValue();
+        	
+            if(udf.getOwnerComponent()==src) {
+        		udf=((UDFImpl)entry.getValue()).duplicate(trg);
+        		trgMap.put(entry.getKey(),udf);	
+            }
+        	
+        }
+        return trgMap;
+    }
+    
 
 	/**
      * initalize the Component
@@ -329,12 +365,12 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
         // extends
 	    if(!StringUtil.isEmpty(properties.extend)) {
-			base= ComponentLoader.loadComponentImpl(pageContext,properties.extend,Boolean.TRUE,null);
+			base= ComponentLoader.loadComponent(pageContext,properties.extend,Boolean.TRUE,null);
 		}
 	    else { 
 	    	Page p=((ConfigWebImpl)pageContext.getConfig()).getBaseComponentPage(pageContext);
 	    	if(!componentPage.getPageSource().equals(p.getPageSource())) {
-            	base=ComponentLoader.loadComponentImpl(pageContext,p,p.getPageSource(),"Component",false);
+            	base=ComponentLoader.loadComponent(pageContext,p,p.getPageSource(),"Component",false);
 	        } 
 	    }
     	
@@ -342,14 +378,14 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	    	this.dataMemberDefaultAccess=base.dataMemberDefaultAccess;
 	    	this.triggerDataMember=base.triggerDataMember;
 	    	_data=base._data;
-	    	_udfs=new HashMap(base._udfs);
+	    	_udfs=new HashMap<Key,UDF>(base._udfs);
 	    	setTop(this,base);
 	    }
 	    else {
 	    	this.dataMemberDefaultAccess=pageContext.getConfig().getComponentDataMemberDefaultAccess();
 	    	this.triggerDataMember=pageContext.getConfig().getTriggerComponentDataMember();
-		    _udfs=new HashMap();
-		    _data=new HashMap();
+		    _udfs=new HashMap<Key,UDF>();
+		    _data=new HashMap<Key,Member>();
 	    }
 	    
 	    // implements
@@ -359,12 +395,13 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	    
 	    // scope
 	    if(useShadow=pageContext.getConfig().useComponentShadow()) {
-	        if(base==null) scope=new ComponentScopeShadow(this,new HashMap());
-		    else scope=new ComponentScopeShadow(this,(ComponentScopeShadow)base.scope);
+	        if(base==null) scope=new ComponentScopeShadow(this,new HashMap<Key,Object>());
+		    else scope=new ComponentScopeShadow(this,(ComponentScopeShadow)base.scope,false);
 	    }
 	    else {
 	    	scope=new ComponentScopeThis(this);
 	    }
+	    initProperties();
 	}
     
     public void checkInterface(PageContext pc, ComponentPage componentPage) throws PageException {
@@ -576,19 +613,10 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @param pc
      * @return the old scope map
      */
-    public Variables beforeCall(PageContext pc) {
+	public Variables beforeCall(PageContext pc) {
     	Variables parent=pc.variablesScope();
         pc.setVariablesScope(scope);
         return parent;
-    }
-    
-    class ScopeUDFPair {
-    	Scope scope;
-    	UDFImpl udf;
-		public ScopeUDFPair(Scope scope, UDFImpl udf) {
-			this.scope = scope;
-			this.udf = udf;
-		}
     }
 	
 	/**
@@ -601,20 +629,22 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	this.afterConstructor=true;
     	
     	if(constructorUDFs!=null){
-    		Iterator it = constructorUDFs.entrySet().iterator();
-    		Map.Entry entry;
+    		Iterator<Entry<Key, UDF>> it = constructorUDFs.entrySet().iterator();
+    		Map.Entry<Key, UDF> entry;
     		Key key;
     		UDFImpl udf;
     		while(it.hasNext()){
-    			entry=(Entry) it.next();
-    			key=(Key) entry.getKey();
+    			entry=it.next();
+    			key=entry.getKey();
     			udf=(UDFImpl) entry.getValue();
     			registerUDF(key, udf,false,true);
     		}
     	}
+    	
 	}
     
     /**
+     * this function may be called by generated code inside a ra file
      * @deprecated replaced with <code>afterConstructor(PageContext pc, Variables parent)</code>
      * @param pc
      * @param parent
@@ -636,7 +666,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	 * @param access
 	 * @return size
 	 */
-	protected int size(int access) {
+    public int size(int access) {
 	    return keys(access).length;
 	}
 
@@ -647,37 +677,37 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @param doBase 
      * @return key set
      */
-    protected Set keySet(int access) {
-    	HashSet set=new HashSet();
-        Map.Entry entry;    
-        Iterator it = _data.entrySet().iterator();
+	public Set<Key> keySet(int access) {
+    	HashSet<Key> set=new HashSet<Key>();
+        Map.Entry<Key, Member> entry;    
+        Iterator<Entry<Key, Member>> it = _data.entrySet().iterator();
         while(it.hasNext()) {
-            entry=(Entry) it.next();
-            if(((Member) entry.getValue()).getAccess()<=access)set.add(entry.getKey());
+            entry=it.next();
+            if(entry.getValue().getAccess()<=access)set.add(entry.getKey());
         }
         return set;
     }
     
-    protected Set udfKeySet(int access) {
-    	Set set=new HashSet();
+    protected Set<Key> udfKeySet(int access) {
+    	Set<Key> set=new HashSet<Key>();
         Member m;
-        Map.Entry entry;
-        Iterator it = _udfs.entrySet().iterator();
+        Map.Entry<Key, UDF> entry;
+        Iterator<Entry<Key, UDF>> it = _udfs.entrySet().iterator();
         while(it.hasNext()) {
-            entry=(Entry) it.next();
-            m=(Member) entry.getValue();
+            entry= it.next();
+            m=entry.getValue();
             if(m.getAccess()<=access)set.add(entry.getKey());
         }
         return set;
     }
     
     
-    protected java.util.List getMembers(int access) {
-        java.util.List members=new ArrayList();
+    protected java.util.List<Member> getMembers(int access) {
+        java.util.List<Member> members=new ArrayList<Member>();
         Member e;
-        Iterator it = _data.entrySet().iterator();
+        Iterator<Entry<Key, Member>> it = _data.entrySet().iterator();
         while(it.hasNext()) {
-        	e=(Member) ((Map.Entry)it.next()).getValue();
+        	e=it.next().getValue();
             if(e.getAccess()<=access)members.add(e);
         }
         return members;
@@ -690,7 +720,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @param access
      * @return iterator of the keys
      */
-    protected Iterator iterator(int access) {
+    public Iterator iterator(int access) {
         return new ArrayIterator(keysAsString(access));
     }
     
@@ -699,8 +729,8 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @return keys inside Component
      */
     public Collection.Key[] keys(int access) {
-        Set set = keySet(access);
-        return (Collection.Key[]) set.toArray(new Collection.Key[set.size()]);
+        Set<Key> set = keySet(access);
+        return set.toArray(new Collection.Key[set.size()]);
     }
 
     /**
@@ -729,7 +759,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     public Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess) {
     	// check super
         if(dataMember && access==ACCESS_PRIVATE && key.equalsIgnoreCase(KEY_SUPER)) {
-        	return SuperComponent.superMember(getUDFComponent((PageContextImpl)ThreadLocalPageContext.get()).base);
+        	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent((PageContextImpl)ThreadLocalPageContext.get(),this)._base());
             //return SuperComponent . superMember(base);
         }
     	if(superAccess) {
@@ -743,23 +773,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         }
         return null;
     }
-    
-    /*protected Object getStaticUDF(int access,Collection.Key key,Object defaultValue) {
-    	Object obj=_data.get(key);
-        if(obj instanceof UDFImpl) {
-        	UDFImpl udf=(UDFImpl) obj;
-            if(!udf.isInjected() &&  udf.getAccess()<=access)return udf;
-            return defaultValue;
-        }
-        return defaultValue;
-    }*/
 
-	public ComponentImpl getUDFComponent(PageContextImpl pc) {
-		return ComponentUtil.getActiveComponent(pc, this);
-		
-		//if(pc.getActiveUDF()==null) return this; 
-		//return (ComponentImpl) pc.getActiveUDF().getOwnerComponent();//+++
-	}
 
 	/**
      * get entry matching key
@@ -772,7 +786,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     protected Member getMember(PageContext pc, Collection.Key key, boolean dataMember,boolean superAccess) {
         // check super
         if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KEY_SUPER)) {
-        	return SuperComponent.superMember(getUDFComponent((PageContextImpl)pc).base);
+        	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent((PageContextImpl)pc,this)._base());
         }
         if(superAccess) 
         	return (Member) _udfs.get(key);
@@ -880,7 +894,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @return html output
      */
     public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, int access) {
-	    DumpTable table = new DumpTablePro("component","#97C0AB","#EAF2EE","#000000");
+	    DumpTable table = new DumpTablePro("component","#99cc99","#ccffcc","#000000");
         table.setTitle("Component "+getCallPath()+""+(" "+StringUtil.escapeHTML(top.properties.dspName)));
         table.setComment("Only the functions and data members that are accessible from your location are displayed");
         if(top.properties.extend.length()>0)table.appendRow(1,new SimpleDumpData("Extends"),new SimpleDumpData(top.properties.extend));
@@ -891,55 +905,57 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         return table;
     }
     
-	static DumpTable _toDumpData(ComponentImpl c,PageContext pc, int maxlevel, DumpProperties dp,int access) {
+	static DumpTable _toDumpData(ComponentImpl ci,PageContext pc, int maxlevel, DumpProperties dp,int access) {
 		maxlevel--;
-		Collection.Key[] keys= c.keys(access);
+		ComponentWrap cw=new ComponentWrap(Component.ACCESS_PRIVATE, ci);
+		Collection.Key[] keys= cw.keys();
 		
 		
 		
 		DumpTable[] accesses=new DumpTable[4];
-		accesses[Component.ACCESS_PRIVATE] = new DumpTable("#AE8E7F","#E8B0AE","#000000");
+		accesses[Component.ACCESS_PRIVATE] = new DumpTable("#ff6633","#ff9966","#000000");
 		accesses[Component.ACCESS_PRIVATE].setTitle("private");
 		accesses[Component.ACCESS_PRIVATE].setWidth("100%");
 		//accesses[Component.ACCESS_PRIVATE].setRow(1,"100%");
-		accesses[Component.ACCESS_PACKAGE] = new DumpTable("#B6B886","#F0DAB5","#000000");
+		accesses[Component.ACCESS_PACKAGE] = new DumpTable("#ff9966","#ffcc99","#000000");
 		accesses[Component.ACCESS_PACKAGE].setTitle("package");
 		accesses[Component.ACCESS_PACKAGE].setWidth("100%");
-		accesses[Component.ACCESS_PUBLIC] = new DumpTable("#B6C889","#F0EAB8","#000000");
+		accesses[Component.ACCESS_PUBLIC] = new DumpTable("#ffcc99","#ffffcc","#000000");
 		accesses[Component.ACCESS_PUBLIC].setTitle("public");
 		accesses[Component.ACCESS_PUBLIC].setWidth("100%");
-		accesses[Component.ACCESS_REMOTE] = new DumpTable("#8BC893","#C5EBC2","#000000");
+		accesses[Component.ACCESS_REMOTE] = new DumpTable("#ccffcc","#ffffff","#000000");
 		accesses[Component.ACCESS_REMOTE].setTitle("remote");
 		accesses[Component.ACCESS_REMOTE].setWidth("100%");
 		
 		Collection.Key key;
 		for(int i=0;i<keys.length;i++) {
 			key=keys[i];
-			int a=c.getAccess(key);
+			int a=ci.getAccess(key);
 			DumpTable box=accesses[a];
-			Object o=c.get(access,key,null);
-			if(o==c)o="[this]";
+			Object o=cw.get(key,null);
+			if(o==ci)o="[this]";
 			if(DumpUtil.keyValid(dp,maxlevel, key))
 				box.appendRow(1,new SimpleDumpData(key.getString()),DumpUtil.toDumpData(o,pc,maxlevel,dp));
 		}
 		
 		
-		DumpTable table=new DumpTable("#eeeeee","#cccccc","#000000");
+		DumpTable table=new DumpTable("#ffffff","#cccccc","#000000");
 		
 		// properties
-		if(c.top.properties.persistent){
-			Property[] properties=c.getProperties(false);
-			DumpTable prop = new DumpTable("#8BC893","#C5EBC2","#000000");
+		if(ci.top.properties.persistent || ci.top.properties.accessors){
+			Property[] properties=ci.getProperties(false);
+			DumpTable prop = new DumpTable("#99cc99","#ccffcc","#000000");
+
 			prop.setTitle("Properties");
 			prop.setWidth("100%");
 			Property p;
 			Object child;
 			for(int i=0;i<properties.length;i++) {
 				p=properties[i];
-				child = c.scope.get(p.getName(),null);
+				child = ci.scope.get(KeyImpl.init(p.getName()),null);
 				DumpData dd;
 				if(child instanceof Component) {
-					DumpTable t = new DumpTablePro("component","#97C0AB","#EAF2EE","#000000");
+					DumpTable t = new DumpTablePro("component","#99cc99","#ffffff","#000000");
 					t.appendRow(1,new SimpleDumpData("Component"),new SimpleDumpData(((Component)child).getCallName()));
 					dd=t;
 					
@@ -960,16 +976,16 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
 		
 
-		if(access>=ACCESS_REMOTE && !accesses[ACCESS_REMOTE].isEmpty()) {
+		if(!accesses[ACCESS_REMOTE].isEmpty()) {
 			table.appendRow(0,accesses[Component.ACCESS_REMOTE]);
 		}
-		if(access>=ACCESS_PUBLIC && !accesses[ACCESS_PUBLIC].isEmpty()) {
+		if(!accesses[ACCESS_PUBLIC].isEmpty()) {
 			table.appendRow(0,accesses[Component.ACCESS_PUBLIC]);
 		}
-		if(access>=ACCESS_PACKAGE && !accesses[ACCESS_PACKAGE].isEmpty()) {
+		if(!accesses[ACCESS_PACKAGE].isEmpty()) {
 			table.appendRow(0,accesses[Component.ACCESS_PACKAGE]);
 		}
-		if(access>=ACCESS_PRIVATE && !accesses[ACCESS_PRIVATE].isEmpty()) {
+		if(!accesses[ACCESS_PRIVATE].isEmpty()) {
 			table.appendRow(0,accesses[Component.ACCESS_PRIVATE]);
 		}
 		return table;
@@ -1352,6 +1368,18 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     public synchronized Struct getMetaData(PageContext pc) throws PageException {
     	return getMetaData(ACCESS_PRIVATE,pc,top);
     }
+    
+
+    public synchronized Object getMetaStructItem(Collection.Key name) {
+    	if(top.properties.meta!=null) {
+        	return top.properties.meta.get(name,null);
+        }
+    	return null;
+    }
+    
+    
+    
+    
 
     protected static Struct getMetaData(int access,PageContext pc, ComponentImpl comp) throws PageException {
         StructImpl sct=new StructImpl();
@@ -1392,7 +1420,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	            if(!ArrayUtil.isEmpty(interfaces)){
 		            Struct imp=new StructImpl();
 	            	for(int i=0;i<interfaces.length;i++){
-	            		imp.setEL(interfaces[i].getCallPath(), interfaces[i].getMetaData(pc));
+	            		imp.setEL(KeyImpl.init(interfaces[i].getCallPath()), interfaces[i].getMetaData(pc));
 		            }
 		            sct.set(IMPLEMENTS,imp);
 	            }
@@ -1412,9 +1440,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             	ArrayImpl parr = new ArrayImpl();
             	Property p;
             	
-            	Iterator pit = comp.properties.properties.entrySet().iterator();
+            	Iterator<Entry<String, Property>> pit = comp.properties.properties.entrySet().iterator();
             	while(pit.hasNext()){
-            		p=(Property) ((Map.Entry)pit.next()).getValue();
+            		p=pit.next().getValue();
             		parr.add(p.getMetaData());
             	}
             	parr.sort(new ArrayOfStructComparator(NAME));
@@ -1430,9 +1458,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     private static void metaUDFs(PageContext pc,ComponentImpl comp,Struct sct, int access) throws PageException {
     	ArrayImpl arr=new ArrayImpl();
     	Collection.Key name;
-        Iterator it = comp.udfKeySet(access).iterator();
+        Iterator<Key> it = comp.udfKeySet(access).iterator();
         while(it.hasNext()) {
-        	name=KeyImpl.toKey(it.next(),null);
+        	name=it.next();
         	Object o=comp.getMember(access,name,true,true);
             if(o instanceof UDF) {
             	UDF udf=(UDF)o;
@@ -1692,7 +1720,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @param defaultValue
      * @return
      */
-    protected Object get(int access, Collection.Key key, Object defaultValue) {
+    public Object get(int access, Collection.Key key, Object defaultValue) { 
         Member member=getMember(access,key,true,false);
         if(member!=null) return member.getValue();
         
@@ -1733,7 +1761,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         return _call(pc,access,KeyImpl.init(name),null,args,false);
     }
     
-    protected Object call(PageContext pc, int access, Collection.Key name, Object[] args) throws PageException {
+    public Object call(PageContext pc, int access, Collection.Key name, Object[] args) throws PageException {
         return _call(pc,access,name,null,args,false);
     }
 
@@ -1752,7 +1780,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         return _call(pc,access,KeyImpl.init(name),args,null,false);
     }
     
-    protected Object callWithNamedValues(PageContext pc, int access, Collection.Key name, Struct args) throws PageException {
+    public Object callWithNamedValues(PageContext pc, int access, Collection.Key name, Struct args) throws PageException {
         return _call(pc,access,name,args,null,false);
     }
 
@@ -1837,70 +1865,64 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	return top.properties.accessors;
     }
 
-	public void setProperty(Property property) {
-		if(top.properties.properties==null) top.properties.properties=new LinkedHashMap<String,Property>();
+	public void setProperty(Property property) throws PageException {
 		top.properties.properties.put(StringUtil.toLowerCase(property.getName()),property);
 		if(top.properties.persistent || top.properties.accessors){
-			if(property.getDefault()!=null)scope.setEL(property.getName(), property.getDefault());
-			// getter
-			if(property.getGetter()){
-				PropertyFactory.addGet(this,property);
-			}
-			// setter
-			if(property.getSetter()){
-				PropertyFactory.addSet(this,property);
-			}
-
-			String fieldType = Caster.toString(property.getMeta().get(PropertyFactory.FIELD_TYPE,null),null);
-			String type = property.getType();
-			
-			
-			// add
-			if(fieldType!=null) {
-				if("one-to-many".equalsIgnoreCase(fieldType) || "many-to-many".equalsIgnoreCase(fieldType)) {
-					PropertyFactory.addHas(this,property);
-					PropertyFactory.addAdd(this,property);
-					PropertyFactory.addRemove(this,property);
-				}
-				else if("one-to-one".equalsIgnoreCase(fieldType) || "many-to-one".equalsIgnoreCase(fieldType)) {
-					PropertyFactory.addHas(this,property);
-				}
-			}
-			
-			
-			
-			
+			if(property.getDefault()!=null)scope.setEL(KeyImpl.init(property.getName()), property.getDefault());
+			PropertyFactory.createPropertyUDFs(this,property);
 		}
+	}
+
+	
+
+	private void initProperties() throws PageException {
+		top.properties.properties=new LinkedHashMap<String,Property>();
 		
+		// MappedSuperClass  
+		if(isPersistent() && !isBasePeristent() && top.base!=null && top.base.properties.properties!=null && top.base.properties.meta!=null) {
+			boolean msc = Caster.toBooleanValue(top.base.properties.meta.get(MAPPED_SUPER_CLASS,Boolean.FALSE),false);
+			if(msc){
+				Property p;
+				Iterator<Entry<String, Property>> it = top.base.properties.properties.entrySet().iterator();
+				while(it.hasNext())	{
+					p = it.next().getValue();
+					if(p.isPeristent()) {
+						
+						setProperty(p);
+					}
+				}
+			}
+		}
 	}
 
 	// FUTURE add to interface and then search for #321 and change this as well
 	public Property[] getProperties(boolean onlyPeristent) {
 		if(top.properties.properties==null) return new Property[0];
-		Iterator it = top.properties.properties.keySet().iterator();
 		
-		// filter none peristent properties
-		if(onlyPeristent){
-			Property p;
-			java.util.List<Property> props=new ArrayList<Property>();
-			while(it.hasNext())	{
-				p = (Property)top.properties.properties.get(it.next());
-				//print.e(p.getName()+":"+p.isPeristent());
-				if(p.isPeristent()) props.add(p);
-			}
-			return props.toArray(new Property[props.size()]);
-		}
-		// all properties
-		else {
+		
+		// for faster execution we have this
+		if(!onlyPeristent) {
 			int index=0;
+			Iterator<Entry<String, Property>> it = top.properties.properties.entrySet().iterator();
 			Property[] props=new Property[top.properties.properties.size()];
 			while(it.hasNext())	{
-				props[index++]=(Property) top.properties.properties.get(it.next());
+				props[index++]=it.next().getValue();
 			}
-			
-			return props;
 		}
 		
+		
+		// collect with filter
+		Property p;
+		java.util.List<Property> props=new ArrayList<Property>();
+		Iterator<Entry<String, Property>> it = top.properties.properties.entrySet().iterator();
+		while(it.hasNext())	{
+			p = it.next().getValue();
+			if(p.isPeristent()) {
+				props.add(p);
+			}
+		}
+		
+		return props.toArray(new Property[props.size()]);
 	}
 
 	public ComponentScope getComponentScope() {
@@ -1936,10 +1958,10 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		return Operator.compare(castToString(), str);
 	}
 
-	public void addConstructorUDF(Key key, Object value) {
+	public void addConstructorUDF(Key key, UDF value) {
 		if(constructorUDFs==null)
-			constructorUDFs=new HashMap();
-		constructorUDFs.put(key, value);
+			constructorUDFs=new HashMap<Key,UDF>();
+		constructorUDFs.put(key, (UDF) value);
 	}
 
 // MUST more native impl
@@ -1981,6 +2003,13 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			//print.printST(t);
 		}
 		
+	}
+
+	/**
+	 * @see railo.runtime.type.cfc.ComponentAccess#_base()
+	 */
+	public ComponentAccess _base() {
+		return base;
 	}
 	
 }

@@ -34,7 +34,7 @@ import railo.runtime.type.scope.ArgumentIntKey;
 import railo.runtime.type.scope.ScopeContext;
 
 /**
- * implements a JSP Factory, this class procduce JSP Compatible PageContext Object
+ * implements a JSP Factory, this class produce JSP Compatible PageContext Object
  * this object holds also the must interfaces to coldfusion specified functionlity
  */
 public final class CFMLFactoryImpl extends CFMLFactory {
@@ -45,9 +45,8 @@ public final class CFMLFactoryImpl extends CFMLFactory {
     private Struct runningPcs=new StructImpl();
     int idCounter=1;
     private QueryCache queryCache;
-    private ScopeContext scopeContext=new ScopeContext();
-    private String label;
-	private HttpServlet servlet;
+    private ScopeContext scopeContext=new ScopeContext(this);
+    private HttpServlet servlet;
 	private URL url=null;
 	private CFMLEngineImpl engine;
 
@@ -265,11 +264,13 @@ public final class CFMLFactoryImpl extends CFMLFactory {
      * @return label of the factory
      */
     public Object getLabel() {
-    	if(label==null){
-    		return getConfig().getId();
-    		//return "";
-    	}
-        return label;
+    	return ((ConfigWebImpl)getConfig()).getLabel();
+    }
+    /**
+     * @param label
+     */
+    public void setLabel(String label) {
+        // deprecated
     }
 
 	/**
@@ -278,12 +279,6 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	public URL getURL() {
 		return url;
 	}
-    /**
-     * @param label
-     */
-    public void setLabel(String label) {
-        this.label=label;
-    }
     
 
 	public void setURL(URL url) {

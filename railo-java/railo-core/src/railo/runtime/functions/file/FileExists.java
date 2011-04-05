@@ -3,7 +3,6 @@ package railo.runtime.functions.file;
 import railo.commons.io.res.Resource;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.system.DirectoryExists;
 import railo.runtime.op.Caster;
 
 public class FileExists {

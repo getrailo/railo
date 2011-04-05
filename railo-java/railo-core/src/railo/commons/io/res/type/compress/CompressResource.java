@@ -41,7 +41,7 @@ public final class CompressResource extends ResourceSupport {
 	 * @return return ram resource that contain the data
 	 */
 	private Resource getRamResource() {
-		return zip.getRamProvider().getResource(path);
+		return zip.getRamProviderResource(path);
 	}
 
 	/**

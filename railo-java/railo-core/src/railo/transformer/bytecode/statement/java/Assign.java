@@ -2,7 +2,6 @@ package railo.transformer.bytecode.statement.java;
 
 import org.objectweb.asm.Type;
 
-import railo.print;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.runtime.reflection.Reflector;
@@ -10,6 +9,7 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
+import railo.transformer.bytecode.expression.var.NullExpression;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitFloat;
 import railo.transformer.bytecode.literal.LitInteger;
@@ -65,16 +65,10 @@ public class Assign extends ExpressionBase {
 			bc.getAdapter().loadLocal(var.intValue(),from);
 			
 		}
-		print.e("val:"+value+">"+(value instanceof Expression));
-		//Double d=new Double(0);
-		//int i=(double)d;
-	
-		print.e(from+"->"+to+"="+(to!=null && !from.equals(to)));
 		if(to!=null && !from.equals(to)){
 			boolean isRefFrom = ASMUtil.isRefType(from);
 			boolean isRefTo = ASMUtil.isRefType(to);
 			
-			print.o("castExplicit:"+castExplicit);
 			if(castExplicit) {
 				Class fc=null,tc=null;
 			
@@ -91,7 +85,6 @@ public class Assign extends ExpressionBase {
 						throw new BytecodeException(e, line);
 					}
 				}
-				print.o(fc.getName()+"><"+tc.getName());
 				if(((tc==boolean.class && fc!=boolean.class))||(fc==boolean.class && tc!=boolean.class))
 					throw new BytecodeException("cannot cast from ["+fc.getName()+"] to ["+tc.getName()+"]", line);
 				else
@@ -151,10 +144,11 @@ public class Assign extends ExpressionBase {
 				
 				// ref types
 				else {
+					
 					try {
 						Class fc = ClassUtil.loadClass(from.getClassName());
 						Class tc = ClassUtil.loadClass(to.getClassName());
-						if(Reflector.isInstaneOf(fc, tc))
+						if(value instanceof NullExpression || Reflector.isInstaneOf(fc, tc))
 							bc.getAdapter().cast(from, to);
 						else 
 							throw new BytecodeException("cannot convert from ["+fc.getName()+"] to ["+tc.getName()+"]", line);

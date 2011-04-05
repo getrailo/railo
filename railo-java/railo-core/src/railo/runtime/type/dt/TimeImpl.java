@@ -51,29 +51,6 @@ public final class TimeImpl extends Time implements SimpleValue,Localized {
 		this(date.getTime(),false);
 	}
 	
-	
-    
-    /* *
-     * constructor of the class
-     * @param hour
-     * @param minute
-     * @param second
-     * /
-    public TimeImpl(TimeZone tz, int hour, int minute, int second) {
-		this(tz,hour,minute,second,0);
-	}*/
-    
-    /* *
-     * constructor of the class
-     * @param hour
-     * @param minute
-     * @param second
-     * @param millis 
-     * /
-    public TimeImpl(int hour, int minute, int second, int millis) {
-    	this(null,DateUtil.toLong(tz,1899,12,30,hour,minute,second,0)+millis,tz);
-	}*/
-	
 
     /**
 	 * @see railo.runtime.op.Castable#castToString()
@@ -101,7 +78,7 @@ public final class TimeImpl extends Time implements SimpleValue,Localized {
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		String str=castToString("");
-        DumpTable table=new DumpTablePro("date","#ffb200","#ffcc00","#263300");
+        DumpTable table=new DumpTablePro("date","#ff9900","#ffcc00","#000000");
         table.appendRow(1, new SimpleDumpData("Time"), new SimpleDumpData(str));
         return table;
     }

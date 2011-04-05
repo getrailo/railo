@@ -4,6 +4,9 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.jsp.tagext.BodyContent;
 
@@ -28,6 +31,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.UDFCasterException;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Duplicator;
@@ -313,8 +317,9 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 
 	public static void argumentCollection(Struct values, FunctionArgument[] funcArgs) {
 		Object value=values.removeEL(ARGUMENT_COLLECTION);
-		
 		if(value !=null) {
+			value=Caster.unwrap(value,value);
+			
 			if(value instanceof Argument) {
 				Argument argColl=(Argument) value;
 			    Collection.Key[] keys = argColl.keys();
@@ -339,10 +344,45 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	            	}
 	            }
 		    }
+			else if(value instanceof Map) {
+				Map map=(Map) value;
+			    Iterator it = map.entrySet().iterator();
+			    Map.Entry entry;
+			    Key key;
+			    while(it.hasNext()) {
+			    	entry=(Entry) it.next();
+			    	key = toKey(entry.getKey());
+			    	if(!values.containsKey(key)){
+	            		values.setEL(key,entry.getValue());
+	            	}
+	            }
+		    }
+			else if(value instanceof java.util.List) {
+				java.util.List list=(java.util.List) value;
+			    Iterator it = list.iterator();
+			    Object v;
+			    int index=0;
+			    Key k;
+			    while(it.hasNext()) {
+			    	v= it.next();
+			    	k=ArgumentIntKey.init(++index);
+			    	if(!values.containsKey(k)){
+	            		values.setEL(k,v);
+	            	}
+	            }
+		    }
 		    else {
 		        values.setEL(ARGUMENT_COLLECTION,value);
 		    }
 		} 
+	}
+	
+	public static Collection.Key toKey(Object obj) {
+		if(obj==null) return null;
+		if(obj instanceof Collection.Key) return (Collection.Key) obj;
+		String str = Caster.toString(obj,null);
+		if(str==null) return KeyImpl.init(obj.toString());
+		return KeyImpl.init(str);
 	}
 
 	/**
@@ -371,7 +411,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         Scope		oldLocal=pc.localScope();
         
 		pci.setFunctionScopes(newLocal,newArgs);
-		int oldCheckArgs=undefined.setMode(pc.getConfig().getLocalMode());
+		int oldCheckArgs=undefined.setMode(((ApplicationContextPro)pc.getApplicationContext()).getLocalMode());
 		
 		try {
 			pc.addPageSource(getPageSource(),doIncludePath);
@@ -436,7 +476,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		// arguments
 		FunctionArgument[] args = udf.getFunctionArguments();
         
-        DumpTable atts = new DumpTablePro("udf","#8399AF","#CDCEE6","#000000");
+        DumpTable atts = new DumpTablePro("udf","#9999cc","#ccccff","#000000");
         
 		atts.appendRow(new DumpRow(63,new DumpData[]{new SimpleDumpData("label"),new SimpleDumpData("name"),new SimpleDumpData("required"),new SimpleDumpData("type"),new SimpleDumpData("default"),new SimpleDumpData("hint")}));
 		for(int i=0;i<args.length;i++) {
@@ -464,7 +504,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			
 		}
 		
-		DumpTable func = new DumpTable("#8399AF","#CDCEE6","#000000");
+		DumpTable func = new DumpTable("#9999cc","#ccccff","#000000");
 		String f="Function ";
 		try {
 			f=StringUtil.ucFirst(ComponentUtil.toStringAccess(udf.getAccess()).toLowerCase())+" "+f;
@@ -485,7 +525,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		boolean hasHint=!StringUtil.isEmpty(udf.getHint());//hint!=null && !hint.equals("");
 		
 		if(hasLabel || hasHint) {
-			DumpTable box = new DumpTable("#eeeeee","#cccccc","#000000");
+			DumpTable box = new DumpTable("#ffffff","#cccccc","#000000");
 			box.setTitle(hasLabel?udf.getDisplayName():udf.getFunctionName());
 			if(hasHint)box.appendRow(0,new SimpleDumpData(udf.getHint()));
 			box.appendRow(0,func);

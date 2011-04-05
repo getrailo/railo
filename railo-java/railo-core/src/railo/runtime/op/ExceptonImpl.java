@@ -94,7 +94,11 @@ public final class ExceptonImpl implements Excepton {
      * @see railo.runtime.util.Excepton#createCustomTypeException(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
     public PageException createCustomTypeException(String message, String detail, String errorcode, String customType) {
-        return new CustomTypeException(message,detail,errorcode,customType);
+        return createCustomTypeException(message, detail, errorcode, customType, null);
+    }
+    
+    public PageException createCustomTypeException(String message, String detail, String errorcode, String customType,String extendedInfo) {
+        return new CustomTypeException(message,detail,errorcode,customType,extendedInfo);
     }
     
     /**

@@ -14,13 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which allows the red, green and blue channels of an image to be mixed into each other.
  */
-public class ChannelMixFilter extends PointFilter {
+public class ChannelMixFilter extends PointFilter  implements DynFiltering {
 	
 	private int blueGreen, redBlue, greenRed;
 	private int intoR, intoG, intoB;
@@ -90,6 +97,26 @@ public class ChannelMixFilter extends PointFilter {
 
 	public String toString() {
 		return "Colors/Mix Channels...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("BlueGreen")))!=null)setBlueGreen(ImageFilterUtil.toIntValue(o,"BlueGreen"));
+		if((o=parameters.removeEL(KeyImpl.init("RedBlue")))!=null)setRedBlue(ImageFilterUtil.toIntValue(o,"RedBlue"));
+		if((o=parameters.removeEL(KeyImpl.init("GreenRed")))!=null)setGreenRed(ImageFilterUtil.toIntValue(o,"GreenRed"));
+		if((o=parameters.removeEL(KeyImpl.init("IntoR")))!=null)setIntoR(ImageFilterUtil.toIntValue(o,"IntoR"));
+		if((o=parameters.removeEL(KeyImpl.init("IntoG")))!=null)setIntoG(ImageFilterUtil.toIntValue(o,"IntoG"));
+		if((o=parameters.removeEL(KeyImpl.init("IntoB")))!=null)setIntoB(ImageFilterUtil.toIntValue(o,"IntoB"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [BlueGreen, RedBlue, GreenRed, IntoR, IntoG, IntoB, Dimensions]");
+		}
+
+		return filter(src, dst);
 	}
 }
 

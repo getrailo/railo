@@ -14,9 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -25,10 +23,17 @@ import java.awt.image.BufferedImageOp;
 import java.awt.image.ColorModel;
 import java.util.Random;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 /**
  * A filter which produces an image simulating brushed metal.
  */
-public class BrushedMetalFilter implements BufferedImageOp {
+public class BrushedMetalFilter implements BufferedImageOp, DynFiltering {
 
 	private int radius = 10;
 	private float amount = 0.1f;
@@ -296,5 +301,20 @@ public class BrushedMetalFilter implements BufferedImageOp {
 
 	public String toString() {
 		return "Texture/Brushed Metal...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toIntValue(o,"Radius"));
+		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
+		if((o=parameters.removeEL(KeyImpl.init("Shine")))!=null)setShine(ImageFilterUtil.toFloatValue(o,"Shine"));
+		if((o=parameters.removeEL(KeyImpl.init("Monochrome")))!=null)setMonochrome(ImageFilterUtil.toBooleanValue(o,"Monochrome"));
+		if((o=parameters.removeEL(KeyImpl.init("Color")))!=null)setColor(ImageFilterUtil.toIntValue(o,"Color"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Amount, Shine, Monochrome, Color]");
+		}
+
+		return filter(src, dst);
 	}
 }

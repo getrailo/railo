@@ -41,7 +41,7 @@ public interface ORMEngine {
 
 	public String[] getEntityNames();
 	
-	public boolean reload(PageContext pc) throws PageException;
+	public boolean reload(PageContext pc, boolean force) throws PageException;
 
 
 }

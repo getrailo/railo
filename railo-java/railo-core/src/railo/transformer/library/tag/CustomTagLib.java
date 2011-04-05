@@ -42,7 +42,7 @@ public final class CustomTagLib extends TagLib {
         tlt.setHandleExceptions(true);
         tlt.setBodyContent("free");
         tlt.setParseBody(false);
-        tlt.setDescription("Creates a ColdFusion Custom Tag");
+        tlt.setDescription("Creates a CFML Custom Tag");
         tlt.setAttributeType(TagLibTag.ATTRIBUTE_TYPE_DYNAMIC);
 
         TagLibTagAttr tlta=new TagLibTagAttr(tlt);

@@ -18,12 +18,6 @@ import railo.runtime.type.Struct;
 
 public class CacheConnectionImpl implements CacheConnection  {
 
-		/**
-		 * @see railo.runtime.cache.X#isReadOnly()
-		 */
-	public boolean isReadOnly() {
-		return readOnly;
-	}
 
 
 		private String name;
@@ -31,14 +25,16 @@ public class CacheConnectionImpl implements CacheConnection  {
 		private Struct custom;
 		private Cache cache;
 		private boolean readOnly;
+		private boolean storage;
 
-		public CacheConnectionImpl(Config config,String name, Class clazz, Struct custom, boolean readOnly) throws CacheException {
+		public CacheConnectionImpl(Config config,String name, Class clazz, Struct custom, boolean readOnly, boolean storage) throws CacheException {
 			this.name=name;
 			this.clazz=clazz;
 			if(!Reflector.isInstaneOf(clazz, Cache.class))
 				throw new CacheException("class ["+clazz.getName()+"] does not implement interface ["+Cache.class.getName()+"]");
 			this.custom=custom;
 			this.readOnly=readOnly;
+			this.storage=storage;
 		}
 
 		/**
@@ -51,7 +47,7 @@ public class CacheConnectionImpl implements CacheConnection  {
 				}
 				catch(NoClassDefFoundError e){
 					if(!(config instanceof ConfigWeb)) throw e;
-					if(!JarLoader.exists((ConfigWeb)config, Admin.UPDATE_JARS))
+					if(JarLoader.changed((ConfigWeb)config, Admin.CACHE_JARS))
 						throw new IOException(
 							"cannot initilaize Cache ["+clazz.getName()+"], make sure you have added all the required jars files. "+
 							"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\".");
@@ -118,8 +114,17 @@ public class CacheConnectionImpl implements CacheConnection  {
 		 * @see railo.runtime.cache.X#duplicate(railo.runtime.config.Config, boolean)
 		 */
 		public CacheConnection duplicate(Config config) throws IOException {
-			return new CacheConnectionImpl(config,name,clazz,custom,readOnly);
+			return new CacheConnectionImpl(config,name,clazz,custom,readOnly,storage);
 		}
 
 
+			/**
+			 * @see railo.runtime.cache.X#isReadOnly()
+			 */
+			public boolean isReadOnly() {
+				return readOnly;
+			}
+			public boolean isStorage() {
+				return storage;
+			}
 	}

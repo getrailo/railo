@@ -707,17 +707,17 @@ public final class RPCClient implements Objects, Iteratorable{
     	try {
             return _toDumpData(pageContext,maxlevel,dp);
         } catch (Exception e) {
-            DumpTable table = new DumpTablePro("webservice","#BEDAFD","#C6D800","#000000");
+            DumpTable table = new DumpTablePro("webservice","#ccccff","#cccc00","#000000");
             table.appendRow(1,new SimpleDumpData("webservice"),new SimpleDumpData(wsdlUrl));
             return table;
         }
     }
     private DumpData _toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) throws RPCException {
                 
-    	DumpTable box = new DumpTablePro("webservice","#BEDAFD","#C6D800","#000000");
+    	DumpTable box = new DumpTablePro("webservice","#ccccff","#cccc00","#000000");
         box.setTitle("Web Service");
         if(dp.getMetainfo())box.appendRow(1,new SimpleDumpData("url"),new SimpleDumpData(wsdlUrl));
-        DumpTable functions = new DumpTable("#BEDAFD","#C6D800","#000000");
+        DumpTable functions = new DumpTable("#ccccff","#cccc00","#000000");
         
         
         javax.wsdl.Service service = getWSDLService();
@@ -756,8 +756,8 @@ public final class RPCClient implements Objects, Iteratorable{
     }
 
     private DumpData _toHTMLOperation(String doc, Parameters parameters) {
-    	DumpTable table = new DumpTable("#BEDAFD","#E1E97C","#000000");
-    	DumpTable attributes = new DumpTable("#BEDAFD","#E1E97C","#000000");
+    	DumpTable table = new DumpTable("#ccccff","#ccff66","#000000");
+    	DumpTable attributes = new DumpTable("#ccccff","#ccff66","#000000");
         String returns = "void";
         attributes.appendRow(3,new SimpleDumpData("name"),new SimpleDumpData("type"));
         

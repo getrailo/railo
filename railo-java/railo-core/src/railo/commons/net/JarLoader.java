@@ -3,6 +3,7 @@ package railo.commons.net;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +45,9 @@ public class JarLoader {
 	public static Resource[] download(PageContext pc, String[] jars) throws IOException {
 		List<Resource> list=new ArrayList<Resource>();
 		Resource jar;
+		lastCheck=-1;
 		for(int i=0;i<jars.length;i++){
-			jar=download(pc, jars[i], WHEN_EXISTS_RETURN_NULL);
+			jar=download(pc, jars[i], WHEN_EXISTS_UPDATE);
 			if(jar!=null) list.add(jar);
 		}
 		return list.toArray(new Resource[list.size()]);
@@ -57,61 +59,110 @@ public class JarLoader {
 		ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
     	CFMLEngine engine=config.getCFMLEngineImpl();
 		PrintWriter out = pc.getConfig().getOutWriter();
+		
+		URL dataUrl=toURL(engine,jarName);
         
 		// destination file
 		ClassLoader mainClassLoader = new TP().getClass().getClassLoader();
 		Resource lib = ResourceUtil.toResourceNotExisting(pc,CFMLEngineFactory.getClassLoaderRoot(mainClassLoader).getCanonicalPath(),false);
 		
 		Resource jar=lib.getRealResource(jarName);
-		if(jar.exists()){
+		SystemOut.printDate(out,"Check for jar at "+dataUrl);
+        if(jar.exists()){
 			if(whenExists==WHEN_EXISTS_RETURN_JAR) return jar;
 			else if(whenExists==WHEN_EXISTS_RETURN_NULL) return null;
 			else if(whenExists==WHEN_EXISTS_UPDATE) {
-				if(!jar.delete()) throw new IOException("cannot update jar ["+jar+"], jar is locked or write protected"); 
+				// compare local and remote
+				long localLen=jar.length();
+				long remoteLengh=HTTPUtil.length(dataUrl);
+				// only update when size change more than 10
+				if(localLen==remoteLengh){
+					SystemOut.printDate(out,"jar "+jar+" is up to date");
+					return jar;
+				}
+				if(!jar.delete()) throw new IOException("cannot update jar ["+jar+"], jar is locked or write protected, stop the servlet engine and delete this jar manually."); 
 			}
 			else throw new IOException("jar ["+jar+"] already exists"); 
 		}
 		
-		URL hostUrl=engine.getUpdateLocation();
-        if(hostUrl==null)hostUrl=new URL("http://www.getrailo.org");
-        URL dataUrl=new URL(hostUrl,"/railo/remote/jars/"+jarName);
-        
-        SystemOut.printDate(out,"Check for jar at "+hostUrl);
-        
-        
+		
+        //long len=HTTPUtil.length();
         InputStream is = (InputStream)dataUrl.getContent();
         // copy input stream to lib directory
         IOUtil.copy(is, jar,true);
         
-        SystemOut.printDate(out,"created jar  "+jar);
+        SystemOut.printDate(out,"created/updated jar  "+jar);
         
         return jar;
     }
-	
+
+	private static URL toURL(CFMLEngine engine, String jarName) throws MalformedURLException {
+		URL hostUrl=engine.getUpdateLocation();
+        if(hostUrl==null)hostUrl=new URL("http://www.getrailo.org");
+        return new URL(hostUrl,"/railo/remote/jars/"+jarName);
+	}
+
+
 	public static boolean exists(ConfigWeb config,String[] jarNames) {
 		for(int i=0;i<jarNames.length;i++){
 			if(!exists(config, jarNames[i])) return false;
 		}
 		return true;
-		
+	}
+	
+	/**
+	 * check if one of given jar has changed or not exist
+	 * @param config
+	 * @param jarNames
+	 * @return
+	 */
+	private static boolean changed=false;
+    private static long lastCheck=-1;
+    public static boolean changed(ConfigWeb config,String[] jarNames) {
+		if((lastCheck+300000)<System.currentTimeMillis()) {
+			changed=false;
+        	for(int i=0;i<jarNames.length;i++){
+				if(changed(config, jarNames[i])) {
+					changed=true;
+					break;
+				}
+			}
+			lastCheck=System.currentTimeMillis();
+    	}
+        return changed;
 	}
 	
 	private static boolean exists(ConfigWeb config,String jarName) {
-    	// some variables nned later
-		ConfigWebImpl configImpl=(ConfigWebImpl) config;
-    	CFMLEngine engine=configImpl.getCFMLEngineImpl();
-		PrintWriter out = config.getOutWriter();
-        
-		// destination file
+		Resource res = _toResource(config, jarName);
+    	if(res==null) return false;
+    	return res.exists();
+    }
+	
+	private static boolean changed(ConfigWeb config,String jarName) {
+    	Resource res = _toResource(config, jarName);
+    	if(res==null) {
+    		return true;
+    	}
+    	
+    	CFMLEngine engine=((ConfigWebImpl)config).getCFMLEngineImpl();
+		try {
+			URL dataUrl = toURL(engine,jarName);
+			boolean changed=res.length()!=HTTPUtil.length(dataUrl);
+			
+			return changed;
+		} catch (MalformedURLException e) {
+			return false;
+		}
+    }
+	
+	private static Resource _toResource(ConfigWeb config,String jarName) {
+    	// destination file
 		ClassLoader mainClassLoader = new TP().getClass().getClassLoader();
 		try {
 			Resource lib = ResourceUtil.toResourceNotExisting(config,CFMLEngineFactory.getClassLoaderRoot(mainClassLoader).getCanonicalPath());
-			Resource jar=lib.getRealResource(jarName);
-			return jar.exists();
+			return lib.getRealResource(jarName);
 		} catch (IOException e) {
-			return false;
+			return null;
 		}
-		
-		
     }
 }

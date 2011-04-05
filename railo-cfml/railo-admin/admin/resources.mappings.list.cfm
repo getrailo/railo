@@ -62,14 +62,14 @@ function selectAll(field) {
 		<cfset css=iif(len(mappings.physical) EQ 0 and len(mappings.strPhysical) NEQ 0,de('Red'),de(''))>
 		<td class="tblContent#css#" nowrap <cfif len(mappings.strPhysical)>title="#mappings.Physical#"</cfif>><cfif mappings.readOnly>#cut(mappings.strPhysical,36)#<cfelse><cfinput  onKeyDown="checkTheBox(this)" type="text" 
 			name="physical_#mappings.currentrow#" value="#mappings.strPhysical#" required="no"  
-			style="width:210px" message="#stText.Mappings.PhysicalMissing##mappings.currentrow#)"></cfif></td>
+			style="width:200px" message="#stText.Mappings.PhysicalMissing##mappings.currentrow#)"></cfif></td>
 		
 		
 		<!--- archive --->
 		<cfset css=iif(len(mappings.archive) EQ 0 and len(mappings.strArchive) NEQ 0,de('Red'),de(''))>
 		<td class="tblContent#css#" nowrap <cfif len(mappings.strArchive)>title="#mappings.Archive#"</cfif>><cfif mappings.readOnly>#cut(mappings.strArchive,36)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="archive_#mappings.currentrow#" value="#mappings.strArchive#" required="no"  
-			style="width:210px" message="#stText.Mappings.ArchiveMissing##mappings.currentrow#)"></cfif></td>
+			style="width:200px" message="#stText.Mappings.ArchiveMissing##mappings.currentrow#)"></cfif></td>
 		
 		<!--- primary --->
 		<td class="tblContent" nowrap><cfif mappings.readOnly><cfif mappings.PhysicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onChange="checkTheBox(this)">
@@ -78,9 +78,18 @@ function selectAll(field) {
 		</select></cfif></td>
 		
 		<!--- trusted --->
-		<td class="tblContent" nowrap><cfif mappings.readOnly>#iif(mappings.Trusted,de("Yes"),de("No"))#<cfelse><input 
+		<td class="tblContent" nowrap>
+			<cfif mappings.readOnly>
+            	#mappings.Trusted?stText.setting.inspecttemplateneverShort:stText.setting.inspecttemplatealwaysShort#
+			<cfelse>
+            <select name="trusted_#mappings.currentrow#" onChange="checkTheBox(this)">
+                <option value="true" <cfif mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplateneverShort#</option>
+                <option value="false" <cfif not mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplatealwaysShort#</option>
+            </select>
+            
+            <!---<input 
 		type="checkbox" class="checkbox" name="trusted_#mappings.currentrow#" onClick="checkTheBox(this)" 
-		value="yes" <cfif mappings.Trusted>checked</cfif>></cfif>
+		value="yes" <cfif mappings.Trusted>checked</cfif>>---></cfif>
 		<input type="hidden" name="toplevel_#mappings.currentrow#" value="#mappings.toplevel#">
 		</td>
 	</tr>
@@ -98,14 +107,21 @@ function selectAll(field) {
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="virtual_#mappings.recordcount+1#" value="" required="no" style="width:100px"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:210px"></td>
+			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:200px"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:210px" ></td>
+			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:200px" ></td>
 		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onChange="checkTheBox(this)">
 			<option value="physical" selected>#stText.Mappings.Physical#</option>
 			<option value="archive">#stText.Mappings.Archive#</option>
 		</select></td>
-		<td class="tblContent" nowrap><input onClick="checkTheBox(this)" type="checkbox" class="checkbox" name="trusted_#mappings.recordcount+1#" value="yes">
+		<td class="tblContent" nowrap>
+        
+         <select name="trusted_#mappings.recordcount+1#" onChange="checkTheBox(this)">
+                <option value="true">#stText.setting.inspecttemplateneverShort#</option>
+                <option value="false" selected>#stText.setting.inspecttemplatealwaysShort#</option>
+            </select>
+        
+        
 		<input type="hidden" name="toplevel_#mappings.recordcount+1#" value="yes">
 		</td>
 	</tr>

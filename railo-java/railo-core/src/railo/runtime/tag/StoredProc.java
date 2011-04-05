@@ -245,10 +245,18 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			String name=this.procedure.toUpperCase();
 			int index=name.lastIndexOf('.');
 			
-			String pack=null;
+			String pack=null,scheme=null;
 			if(index!=-1){
 				pack=name.substring(0,index);
 				name=name.substring(index+1);
+				
+				index=pack.lastIndexOf('.');
+				if(index!=-1){
+					scheme=pack.substring(index+1);
+					pack=pack.substring(0,index);
+				}
+				
+				
 			}
 			
 			try {
@@ -261,15 +269,13 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				Map<String, ProcMetaCollection> procedureColumnCache = d.getProcedureColumnCache();
 				ProcMetaCollection coll=procedureColumnCache.get(procedure);
 				
-				
-				
 				if(coll==null || (cacheTimeout>=0 && (coll.created+cacheTimeout)<System.currentTimeMillis())) {
-					ResultSet res = md.getProcedureColumns(pack, null, name, null);
+					ResultSet res = md.getProcedureColumns(pack, scheme, name, null);
 					coll=createProcMetaCollection(res);
 					procedureColumnCache.put(procedure,coll);
 				}
+				
 				index=-1;
-				//int inOutCount=0;
 				for(int i=0;i<coll.metas.length;i++) { 
 					index++;
 					
@@ -286,7 +292,6 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 						
 					}	
 					else if(coll.metas[i].columnType==DatabaseMetaData.procedureColumnOut || coll.metas[i].columnType==DatabaseMetaData.procedureColumnInOut) {
-						//inOutCount++;
 						if(coll.metas[i].dataType==CFTypes.CURSOR){
 							ProcResultBean result= getFirstResult();
 							
@@ -304,9 +309,8 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 						}
 					}	
 					else if(coll.metas[i].columnType==DatabaseMetaData.procedureColumnIn) {	
-						//inOutCount++;
-						ProcParamBean param=(ProcParamBean) params.get(index);
-						if(coll.metas[i].dataType!=Types.OTHER && coll.metas[i].dataType!=param.getType()){
+						ProcParamBean param=get(params,index);
+						if(param!=null && coll.metas[i].dataType!=Types.OTHER && coll.metas[i].dataType!=param.getType()){
 							param.setType(coll.metas[i].dataType);
 						}
 					}	
@@ -328,6 +332,19 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		}
 	}
 
+	private static ProcParamBean get(List<ProcParamBean> params, int index) {
+		try{
+			return params.get(index);
+		}
+		catch(Throwable t){
+			return null;
+		}
+		
+	}
+
+
+
+
 	private void contractTo(List<ProcParamBean> params, int paramCount) {
 		if(params.size()>paramCount){
 			for(int i=params.size()-1;i>=paramCount;i--){
@@ -340,7 +357,11 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 
 
 	private ProcMetaCollection createProcMetaCollection(ResultSet res) throws SQLException {
-		//print.out(new QueryImpl(res,"qry"));
+		/*
+		try {
+			print.out(new QueryImpl(res,"qry"));
+		} catch (PageException e) {}
+		*/
 		ArrayList<ProcMeta> list=new ArrayList<ProcMeta>();
 		while(res.next()) {
 			list.add(new ProcMeta(res.getInt(COLUMN_TYPE),getDataType(res)));

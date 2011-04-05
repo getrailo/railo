@@ -28,7 +28,6 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 import org.objectweb.asm.Label;
 
-import railo.print;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
@@ -198,8 +197,6 @@ public class JavaParserVisitor extends VoidVisitorAdapter {
 			Object value=db.rtn.pop();
 			String name = (String) db.rtn.pop();
 			Class type = (Class) db.rtn.pop();
-			print.e("type:"+n.getType());
-			print.e("value:"+value);
 			append(db, new VariableDecl(n.getBeginLine(), type, name, value,db));
 		}
 		else {

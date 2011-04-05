@@ -21,7 +21,7 @@ import railo.runtime.type.UDF;
 
 
 /**
-* Invokes component methods from within a ColdFusion page or component. 
+* Invokes component methods from within a page or component. 
 * 			You use this tag to reference a WSDL file and consume a web service from within a block of CFML code.
 *
 *
@@ -188,11 +188,7 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
 		}
 		// call active cfc or component
 		else {
-            //Component comp = pageContext.getActiveComponent();
-            //if(comp!=null)doComponent(new ComponentWrap(Component.ACCESS_PRIVATE,comp));
-            //else {
-            	doFunction(pageContext);
-            //}
+            doFunction(pageContext);
         }
 		return EVAL_PAGE;
 	}
@@ -220,6 +216,9 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
 	private void doFunction(PageContext pc) throws PageException {
 			
 		// execute
+		if(StringUtil.isEmpty(method,true))
+			throw new ApplicationException("Attribute [method] for tag [invoke] is required in this context.");
+		
 		Object oUDF=pc.getVariable(method);
 		if(!(oUDF instanceof UDF))throw new ApplicationException("there is no function with name "+method); 
 		Object rtn = ((UDF)oUDF).callWithNamedValues(pageContext, data, false);

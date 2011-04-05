@@ -16,7 +16,8 @@ import railo.transformer.bytecode.visitor.ArrayVisitor;
 public final class NamedArgument extends Argument {
 	
 
-    private static final Type TYPE_FUNCTION_VALUE=Type.getType(FunctionValueImpl.class);
+
+	private static final Type TYPE_FUNCTION_VALUE=Type.getType(FunctionValueImpl.class);
     // railo.runtime.type.FunctionValue newInstance (String,Object)
    /* 
     private final static Method  NEW_INSTANCE = new Method("newInstance",
@@ -43,37 +44,13 @@ public final class NamedArgument extends Argument {
     	}
     };
     	
-    	
     
-    
-    
-    
-    
-    //private ExprString name;
     private Expression name;
-	//private boolean variableString;
 
 	public NamedArgument(Expression name, Expression value, String type) {
 		super(value,type);
-		
-		/*if(name instanceof Variable) {
-			this.name=VariableString.toExprString(name);
-		}
-		else if(name instanceof LitString) {
-			this.name=CastString.toExprString(name);
-		}
-		else this.name=CastString.toExprString(name);
-		*/
 		this.name=name;
-		//this.variableString=variableString;
 	}
-
-	/**
-	 * @return the name
-	
-	public ExprString getName() {
-		return name;
-	} */
 
 	/**
 	 *
@@ -124,5 +101,12 @@ public final class NamedArgument extends Argument {
 		// TODO Auto-generated method stub
 		return super.writeOutValue(bc, mode);
 	}
-	
+
+
+    /**
+	 * @return the name
+	 */
+	public Expression getName() {
+		return name;
+	}
 }

@@ -41,11 +41,24 @@ restart --->
 <tr>
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
+
+
+<script type="text/javascript" language="JavaScript"><!--
+var submitted = false;
+function submitTheForm(field) {
+	if(submitted == true) { return; }
+	field.form.submit();
+	//field.value = "in progress";
+	field.disabled = true;
+	submitted = true;
+}
+//--></script>
+
 <cfform action="#go(url.action,"restart")#" method="post">
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" value="#stText.services.update.restart#">
+		<input type="button" class="submit" name="mainAction" value="#stText.services.update.restart#" onclick="submitTheForm(this)">
 	</td>
 </tr>
 </cfform>

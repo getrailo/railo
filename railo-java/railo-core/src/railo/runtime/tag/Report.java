@@ -24,23 +24,10 @@ public final class Report extends BodyTagImpl {
 	private String datasource;
 	private String type;
 	private double timeout;
-
-	/** The password that corresponds to a username required for database access. Overrides the default 
-	** 		settings for the data source in the ColdFusion Administrator. */
 	private String password;
-
-	/** Orders results according to your specifications. */
 	private String orderby;
-
-	/** Specifies the report path. Store Crystal Reports files in the same directories as ColdFusion 
-	** 		page files. */
 	private String report;
-
-	/** The username required for entry into the database from which the report is created. Overrides 
-	** 		the default settings for the data source in the ColdFusion Administrator. */
 	private String username;
-
-	/** Specifies one or more named formulas. Terminate each formula specification with a semicolon. */
 	private String formula;
 
 
@@ -54,8 +41,6 @@ public final class Report extends BodyTagImpl {
 	}
 
 	/** set the value password
-	*  The password that corresponds to a username required for database access. Overrides the default 
-	* 		settings for the data source in the ColdFusion Administrator.
 	* @param password value to set
 	**/
 	public void setPassword(String password)	{
@@ -71,8 +56,6 @@ public final class Report extends BodyTagImpl {
 	}
 
 	/** set the value report
-	*  Specifies the report path. Store Crystal Reports files in the same directories as ColdFusion 
-	* 		page files.
 	* @param report value to set
 	**/
 	public void setReport(String report)	{
@@ -80,8 +63,6 @@ public final class Report extends BodyTagImpl {
 	}
 
 	/** set the value username
-	*  The username required for entry into the database from which the report is created. Overrides 
-	* 		the default settings for the data source in the ColdFusion Administrator.
 	* @param username value to set
 	**/
 	public void setUsername(String username)	{

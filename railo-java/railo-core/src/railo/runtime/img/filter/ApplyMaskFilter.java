@@ -14,16 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.image.BufferedImage;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which uses the alpha channel of a "mask" image to interpolate between a source and destination image.
  */
-public class ApplyMaskFilter extends AbstractBufferedImageOp {
+public class ApplyMaskFilter extends AbstractBufferedImageOp  implements DynFiltering {
 	
 	private BufferedImage destination;
 	private BufferedImage maskImage;
@@ -145,5 +150,18 @@ public class ApplyMaskFilter extends AbstractBufferedImageOp {
 
 	public String toString() {
 		return "Keying/Key...";
+	}
+	public BufferedImage filter(BufferedImage src ,Struct parameters) throws PageException {
+		BufferedImage dst=src;
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("MaskImage")))!=null)setMaskImage(ImageFilterUtil.toBufferedImage(o,"MaskImage"));
+		if((o=parameters.removeEL(KeyImpl.init("destination")))!=null)setDestination(ImageFilterUtil.toBufferedImage(o,"destination"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [MaskImage]");
+		}
+
+		return filter(src, dst);
 	}
 }

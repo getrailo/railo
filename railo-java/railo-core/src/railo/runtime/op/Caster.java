@@ -2319,6 +2319,9 @@ public final class Caster {
     	return toStruct(o,true);
     }
     
+    public static Struct toStruct(Object o,Struct defaultValue) {
+    	return toStruct(o, defaultValue, true);
+    }
     
     public static Struct toStruct(Object o,boolean caseSensitive) throws PageException {
         if(o instanceof Struct) return (Struct)o;
@@ -2326,10 +2329,11 @@ public final class Caster {
         else if(o instanceof Node)return XMLCaster.toXMLStruct((Node)o,false);
         else if(o instanceof ObjectWrap) {
         	if(o instanceof JavaObject ) {
+        		Struct sct = toStruct(((JavaObject)o).getEmbededObject(null),null,caseSensitive);
+            	if(sct!=null) return sct;
+        		
         		JavaObject jo = (JavaObject)o;
-        		//Class clazz = jo.getClazz();
-        		//if(!Reflector.isInstaneOf(clazz,Map.class))
-        			return new ObjectStruct(jo);
+        		return new ObjectStruct(jo);
         	}
             return toStruct(((ObjectWrap)o).getEmbededObject(),caseSensitive);
         }
@@ -2615,7 +2619,7 @@ public final class Caster {
         //synchronized(c){
         	
 	        // datetime
-	        df=FormatUtil.getDateTimeFormats(locale,false);//dfc[FORMATS_DATE_TIME];
+	        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
 	    	for(int i=0;i<df.length;i++) {
 	            try {
 	            	df[i].setTimeZone(tz);
@@ -2628,7 +2632,7 @@ public final class Caster {
 	            catch (ParseException e) {}
 	        }
 	        // date
-	        df=FormatUtil.getDateFormats(locale,false);//dfc[FORMATS_DATE];
+	        df=FormatUtil.getDateFormats(locale,tz,false);//dfc[FORMATS_DATE];
 	    	for(int i=0;i<df.length;i++) {
 	            try {
 	            	df[i].setTimeZone(tz);
@@ -2641,7 +2645,7 @@ public final class Caster {
 	        }
 	    	
 	        // time
-	        df=FormatUtil.getTimeFormats(locale,false);//dfc[FORMATS_TIME];
+	        df=FormatUtil.getTimeFormats(locale,tz,false);//dfc[FORMATS_TIME];
 	        for(int i=0;i<df.length;i++) {
 	            try {
 	            	df[i].setTimeZone(tz);
@@ -2671,51 +2675,6 @@ public final class Caster {
         if(year<40) c.set(Calendar.YEAR,2000+year);
         else if(year<100) c.set(Calendar.YEAR,1900+year);
     }
-    
-	/*private static DateFormat[][] getDateFormates(Locale locale) {
-        return new DateFormat[][]{
-        	new DateFormat[]{
-                DateFormat.getDateTimeInstance(DateFormat.FULL,DateFormat.FULL,locale),
-                DateFormat.getDateTimeInstance(DateFormat.FULL,DateFormat.LONG,locale),
-                DateFormat.getDateTimeInstance(DateFormat.FULL,DateFormat.MEDIUM,locale),
-                DateFormat.getDateTimeInstance(DateFormat.FULL,DateFormat.SHORT,locale),
-
-                DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.FULL,locale),
-                DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG,locale),
-                DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.MEDIUM,locale),
-                DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.SHORT,locale),
-
-                DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.FULL,locale),
-                DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.LONG,locale),
-                DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM,locale),
-                DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.SHORT,locale),
-
-                DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.FULL,locale),
-                DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.LONG,locale),
-                DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.MEDIUM,locale),
-                DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,locale),
-            },
-            new DateFormat[]{
-                DateFormat.getDateInstance(DateFormat.FULL,locale),
-                DateFormat.getDateInstance(DateFormat.LONG,locale),
-                DateFormat.getDateInstance(DateFormat.MEDIUM,locale),
-                DateFormat.getDateInstance(DateFormat.SHORT,locale)
-
-        	},
-        	new DateFormat[]{
-                
-                DateFormat.getDateInstance(DateFormat.FULL,locale),
-                DateFormat.getDateInstance(DateFormat.LONG,locale),
-                DateFormat.getDateInstance(DateFormat.MEDIUM,locale),
-                DateFormat.getDateInstance(DateFormat.SHORT,locale),
-
-                DateFormat.getTimeInstance(DateFormat.FULL,locale),
-                DateFormat.getTimeInstance(DateFormat.LONG,locale),
-                DateFormat.getTimeInstance(DateFormat.MEDIUM,locale),
-                DateFormat.getTimeInstance(DateFormat.SHORT,locale)
-        	}
-        };
-    }*/
 
     /**
      * cast a Object to a Query Object
@@ -2749,12 +2708,12 @@ public final class Caster {
 	}
     
 
-    /**
+    /* *
      * cast a query to a QueryImpl Object
      * @param q query to cast
      * @return casted Query Object
      * @throws CasterException 
-     */
+     * /
     public static QueryImpl toQueryImpl(Query q,QueryImpl defaultValue) {
 		while(q instanceof QueryWrap){
 			q=((QueryWrap)q).getQuery();
@@ -2762,7 +2721,7 @@ public final class Caster {
 		
 		if(q instanceof QueryImpl)return (QueryImpl) q;
 		return defaultValue;
-	}
+	}*/
 
     /**
      * cast a Object to a Query Object
@@ -2983,12 +2942,14 @@ public final class Caster {
         else if(t instanceof PageExceptionBox)
             return ((PageExceptionBox)t).getPageException();
         else if(t instanceof InvocationTargetException){
-            return new NativeException(((InvocationTargetException)t).getTargetException());
+            return toPageException(((InvocationTargetException)t).getTargetException());
         }
         else if(t instanceof ExceptionInInitializerError){
-            return new NativeException(((ExceptionInInitializerError)t).getCause());
+            return toPageException(((ExceptionInInitializerError)t).getCause());
         }
         else {
+        	Throwable cause = t.getCause();
+        	if(cause!=null && cause!=t) return toPageException(cause);
         	return new NativeException(t);
         }
     }
@@ -4207,6 +4168,22 @@ public final class Caster {
         else if(o == null) return BigDecimal.ZERO;
         else if(o instanceof ObjectWrap) return toBigDecimal(((ObjectWrap)o).getEmbededObject());
         throw new CasterException(o,"number");
+	}
+
+	public static Object unwrap(Object value) throws PageException {
+		if(value==null) return null;
+		if(value instanceof ObjectWrap) {
+			return ((ObjectWrap)value).getEmbededObject();
+		}
+		return value;
+	}
+	
+	public static Object unwrap(Object value,Object defaultValue) {
+		if(value==null) return null;
+		if(value instanceof ObjectWrap) {
+			return ((ObjectWrap)value).getEmbededObject(defaultValue);
+		}
+		return value;
 	}
 
 

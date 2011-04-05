@@ -1,6 +1,7 @@
 
 package railo.runtime.i18n;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -22,8 +23,8 @@ public final class LocaleFactory {
 	private static Pattern localePattern2 = Pattern.compile("^([a-z]{2})_([a-z]{2,3})$");
 	private static Pattern localePattern3 = Pattern.compile("^([a-z]{2})_([a-z]{2,3})_([a-z]{2,})$");
 	
-	private static Map locales=new LinkedHashMap();
-	private static Map localeAlias=new LinkedHashMap();
+	private static Map<String,Locale> locales=new LinkedHashMap<String,Locale>();
+	private static Map<String,Locale> localeAlias=new LinkedHashMap<String,Locale>();
 	
 	private static String list;
 	static {
@@ -46,51 +47,55 @@ public final class LocaleFactory {
 		list=sb.toString();
 		
 		
-		
-		localeAlias.put("chinese (china)", Locale.CHINA);
-		localeAlias.put("chinese (hong kong)",new Locale("zh","HK"));
-        localeAlias.put("chinese (taiwan)",new Locale("zho","TWN"));
-        localeAlias.put("dutch (belgian)",new Locale("nl","BE"));
-        localeAlias.put("dutch (belgium)",new Locale("nl","BE"));
-        localeAlias.put("dutch (standard)",new Locale("nl","NL"));
-        localeAlias.put("english (australian)",new Locale("en","AU"));
-        localeAlias.put("english (australia)",new Locale("en","AU"));
-        localeAlias.put("english (canadian)",new Locale("en","CA"));
-        localeAlias.put("english (canadia)",new Locale("en","CA"));
-        localeAlias.put("english (new zealand)",new Locale("en","NZ"));
-        localeAlias.put("english (uk)",new Locale("en","GB"));
-        localeAlias.put("english (united kingdom)",new Locale("en","GB"));
-        localeAlias.put("english (us)",new Locale("en","US"));
-        localeAlias.put("french (belgium)",new Locale("fr","BE"));
-        localeAlias.put("french (belgian)",new Locale("fr","BE"));
-		localeAlias.put("french (canadian)",new Locale("fr","CA"));
-		localeAlias.put("french (canadia)",new Locale("fr","CA"));
-        localeAlias.put("french (standard)",new Locale("fr","FRA"));
-        localeAlias.put("french (swiss)",new Locale("fr","CH"));
-        localeAlias.put("german (austrian)",new Locale("de","AT"));
-        localeAlias.put("german (austria)",new Locale("de","AT"));
-        localeAlias.put("german (standard)",new Locale("de","DE"));
-        localeAlias.put("german (swiss)",new Locale("de","CH"));
-        localeAlias.put("italian (standard)",new Locale("it","IT"));
-        localeAlias.put("italian (swiss)",new Locale("it","CH"));
-        localeAlias.put("japanese",new Locale("ja","JP"));  
-        localeAlias.put("korean",Locale.KOREAN);
-        localeAlias.put("norwegian (bokmal)",new Locale("no","NO"));
-        localeAlias.put("norwegian (nynorsk)",new Locale("no","NO"));
-        localeAlias.put("portuguese (brazilian)",new Locale("pt","BR"));
-        localeAlias.put("portuguese (brazil)",new Locale("pt","BR"));
-		localeAlias.put("portuguese (standard)",new Locale("pt","PT"));
-        localeAlias.put("rhaeto-romance (swiss)",new Locale("rm","CH"));
+		setLocalAlias("chinese (china)", Locale.CHINA);
+		setLocalAlias("chinese (china)", Locale.CHINA);
+		setLocalAlias("chinese (hong kong)",new Locale("zh","HK"));
+        setLocalAlias("chinese (taiwan)",new Locale("zho","TWN"));
+        setLocalAlias("dutch (belgian)",new Locale("nl","BE"));
+        setLocalAlias("dutch (belgium)",new Locale("nl","BE"));
+        setLocalAlias("dutch (standard)",new Locale("nl","NL"));
+        setLocalAlias("english (australian)",new Locale("en","AU"));
+        setLocalAlias("english (australia)",new Locale("en","AU"));
+        setLocalAlias("english (canadian)",new Locale("en","CA"));
+        setLocalAlias("english (canadia)",new Locale("en","CA"));
+        setLocalAlias("english (new zealand)",new Locale("en","NZ"));
+        setLocalAlias("english (uk)",new Locale("en","GB"));
+        setLocalAlias("english (united kingdom)",new Locale("en","GB"));
+        setLocalAlias("english (us)",new Locale("en","US"));
+        setLocalAlias("french (belgium)",new Locale("fr","BE"));
+        setLocalAlias("french (belgian)",new Locale("fr","BE"));
+		setLocalAlias("french (canadian)",new Locale("fr","CA"));
+		setLocalAlias("french (canadia)",new Locale("fr","CA"));
+        setLocalAlias("french (standard)",new Locale("fr","FRA"));
+        setLocalAlias("french (swiss)",new Locale("fr","CH"));
+        setLocalAlias("german (austrian)",new Locale("de","AT"));
+        setLocalAlias("german (austria)",new Locale("de","AT"));
+        setLocalAlias("german (standard)",new Locale("de","DE"));
+        setLocalAlias("german (swiss)",new Locale("de","CH"));
+        setLocalAlias("italian (standard)",new Locale("it","IT"));
+        setLocalAlias("italian (swiss)",new Locale("it","CH"));
+        setLocalAlias("japanese",new Locale("ja","JP"));  
+        setLocalAlias("korean",Locale.KOREAN);
+        setLocalAlias("norwegian (bokmal)",new Locale("no","NO"));
+        setLocalAlias("norwegian (nynorsk)",new Locale("no","NO"));
+        setLocalAlias("portuguese (brazilian)",new Locale("pt","BR"));
+        setLocalAlias("portuguese (brazil)",new Locale("pt","BR"));
+		setLocalAlias("portuguese (standard)",new Locale("pt"));
+        setLocalAlias("rhaeto-romance (swiss)",new Locale("rm","CH"));
         locales.put("rhaeto-romance (swiss)",new Locale("rm","CH"));
-        localeAlias.put("spanish (modern)",new Locale("es","ES"));
-        localeAlias.put("spanish (standard)",new Locale("es","ES"));
-        localeAlias.put("swedish",new Locale("sv","SE"));
+        setLocalAlias("spanish (modern)",new Locale("es","ES"));
+        setLocalAlias("spanish (standard)",new Locale("es","ES"));
+        setLocalAlias("swedish",new Locale("sv","SE"));
         
 	}
 	
 	private LocaleFactory(){}
 	
-    /**
+    private static void setLocalAlias(String name, Locale locale) {
+    	if(!localeAlias.containsKey(name))localeAlias.put(name, locale);
+	}
+
+	/**
      * @param strLocale
      * @param defaultValue 
      * @return return locale match to String
@@ -127,7 +132,7 @@ public final class LocaleFactory {
 				
 				try {
 					locale.getISO3Language();
-					localeAlias.put(strLocaleLC, locale);
+					setLocalAlias(strLocaleLC, locale);
 					return locale;
 				}
 				catch(Exception e) {}
@@ -145,7 +150,7 @@ public final class LocaleFactory {
 				
 				try {
 					locale.getISO3Language();
-					localeAlias.put(strLocaleLC, locale);
+					setLocalAlias(strLocaleLC, locale);
 					return locale;
 				}
 				catch(Exception e) {}
@@ -179,7 +184,7 @@ public final class LocaleFactory {
 					if(strLocale.indexOf('-')!=-1) return getLocale(strLocale.replace('-', '_'));
 					throw new ExpressionException("unsupported Locale ["+strLocale+"]","supported Locales are:"+getSupportedLocalesAsString());
 				}
-				localeAlias.put(strLocaleLC, locale);
+				setLocalAlias(strLocaleLC, locale);
 				return locale;
 
 			}
@@ -193,7 +198,9 @@ public final class LocaleFactory {
 	private static String getSupportedLocalesAsString() {
 		//StringBuffer sb=new StringBuffer();
 	    // TODO chnge from ArryObject to string
-		return List.arrayToList((String[])locales.keySet().toArray(new String[locales.size()]),",");
+		String[] arr = (String[])locales.keySet().toArray(new String[locales.size()]);
+		Arrays.sort(arr);
+		return List.arrayToList(arr,",");
 		
 	}
 
@@ -206,10 +213,10 @@ public final class LocaleFactory {
 		String country=locale.getCountry();
 		
 		synchronized(localeAlias){
-			Iterator it = localeAlias.entrySet().iterator();
-			Map.Entry entry;
+			Iterator<Entry<String, Locale>> it = localeAlias.entrySet().iterator();
+			Map.Entry<String, Locale> entry;
 			while(it.hasNext()) {
-				entry=(Entry) it.next();
+				entry= it.next();
 				//Object qkey=it.next();
 				Locale curr=(Locale) entry.getValue();
 				if(lang.equals(curr.getLanguage()) && country.equals(curr.getCountry())) {

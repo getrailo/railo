@@ -10,11 +10,14 @@ import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Sizeable;
 
 public abstract class CompressResourceProvider implements ResourceProvider,Sizeable {
-
+	
+	private static final long serialVersionUID = 5930090603192203086L;
 	
 	private Resources resources;
 	protected String scheme=null;
@@ -27,7 +30,7 @@ public abstract class CompressResourceProvider implements ResourceProvider,Sizea
 	/**
 	 * @see railo.commons.io.res.ResourceProvider#init(java.lang.String, java.util.Map)
 	 */
-	public ResourceProvider init(String scheme, Map arguments) {
+	public ResourceProvider init(String scheme, Map arguments) {// FUTURE Map<String,String> arguments
 		if(!StringUtil.isEmpty(scheme))this.scheme=scheme;
 		if(arguments!=null) {
 			this.arguments=arguments;
@@ -70,13 +73,22 @@ public abstract class CompressResourceProvider implements ResourceProvider,Sizea
 		path=ResourceUtil.removeScheme(scheme,path);
 		int index=path.lastIndexOf('!');
 		if(index!=-1) {
-			Resource file = resources.getResource(path.substring(0,index));
+			
+			Resource file = toResource(path.substring(0,index));//resources.getResource(path.substring(0,index));
 			return new CompressResource(this,getCompress(file),path.substring(index+1),caseSensitive);
 		}
-		Resource file = resources.getResource(path);
+		Resource file = toResource(path);//resources.getResource(path);
 		return new CompressResource(this,getCompress(file),"/",caseSensitive);
 	}
 	
+	private Resource toResource(String path) {
+		PageContext pc = ThreadLocalPageContext.get();
+		if(pc!=null) {
+			return ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), path,true);
+		}
+		return resources.getResource(path);
+	}
+
 	public abstract Compress getCompress(Resource file);
 
 	/** 

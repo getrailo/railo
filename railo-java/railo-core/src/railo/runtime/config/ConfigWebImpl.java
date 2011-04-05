@@ -9,9 +9,12 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
+import railo.commons.lang.StringKeyLock;
+import railo.commons.lang.StringUtil;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
@@ -43,6 +46,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     private Page baseComponentPage;
 	private MappingImpl serverTagMapping;
 	private MappingImpl serverFunctionMapping;
+	private StringKeyLock contextLock=new StringKeyLock(-1);
 
     //private File deployDirectory;
 
@@ -137,9 +141,9 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
      */
     public ConfigServer getConfigServer(String password) throws ExpressionException {
         if(!configServer.hasPassword())
-            throw new ExpressionException("can't access, no password is defined");
+            throw new ExpressionException("Cannot access, no password is defined");
         if(!configServer.getPassword().equalsIgnoreCase(password))
-            throw new ExpressionException("no acccess, password is invalid");
+            throw new ExpressionException("No access, password is invalid");
         return configServer;
     }
     
@@ -270,6 +274,27 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 
 		public CFMLEngineImpl getCFMLEngineImpl() {
 			return getConfigServerImpl().getCFMLEngineImpl();
+		}
+
+		public String getLabel() {
+			String hash=getHash();
+			String label=hash;
+			Map<String, String> labels = configServer.getLabels();
+			if(labels!=null) {
+				String l = labels.get(hash);
+				if(!StringUtil.isEmpty(l)) {
+					label=l;
+				}
+			}
+			return label;
+		}
+		
+		public String getHash() {
+			return SystemUtil.hash(getServletContext());
+		}
+
+		public StringKeyLock getContextLock() {
+			return contextLock;
 		}
 
 }

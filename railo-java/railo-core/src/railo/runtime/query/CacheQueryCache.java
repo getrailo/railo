@@ -56,13 +56,13 @@ import railo.runtime.type.Query;
 		if(entries.size()<100) return;
 		
 		Iterator it = entries.iterator();
-		CacheEntry entry;
-		QueryCacheEntry qce;
 		while(it.hasNext()){
-			entry=(CacheEntry) it.next();
-			qce=(QueryCacheEntry) entry.getValue();
-			if(qce.isInCacheRange(null))
+			it.next(); // touch them to makes sure the cache remove them, not really good, cache must do this by itself
+			/*qce=(QueryCacheEntry) entry.getValue();
+			if(qce.isInCacheRange(null)) {
+				print.o(entry.getKey());
 				c.remove(entry.getKey());
+			}*/
 		}
 	}
 
@@ -72,10 +72,10 @@ import railo.runtime.type.Query;
 		Object obj= getCache().getValue(key,null);
 		if(obj instanceof QueryCacheEntry) {
 			QueryCacheEntry entry=(QueryCacheEntry) obj;
-			if(entry.isInCacheRange(cacheAfter)) {
+			if(entry.isCachedAfter(cacheAfter)) {
 		    	return entry.getValue();
 		    }
-		    getCache().remove(key);
+		    //getCache().remove(key);
 		}
 		return null;
 	}
@@ -92,7 +92,7 @@ import railo.runtime.type.Query;
 
 	public void set(SQL sql, String datasource, String username,String password, Object value, Date cacheBefore) {
 		long timeSpan = ((cacheBefore.getTime()-System.currentTimeMillis())+1);
-		getCache().put(key(sql, datasource, username, password), new QueryCacheEntry(cacheBefore,value), null, Long.valueOf(timeSpan));
+		getCache().put(key(sql, datasource, username, password), new QueryCacheEntry(cacheBefore,value), Long.valueOf(timeSpan), Long.valueOf(timeSpan));
 	}
 
 	private Cache getCache() {

@@ -66,7 +66,7 @@ public abstract class ComponentPage extends PagePlus  {
             pc.setSilent();
             ComponentWrap component;
             try {
-                component=new ComponentWrap(Component.ACCESS_REMOTE,newInstance(pc,getPageSource().getComponentName(),false));
+                component=ComponentWrap.toComponentWrap(Component.ACCESS_REMOTE,newInstance(pc,getPageSource().getComponentName(),false));
             }
             finally {
                 pc.unsetSilent();
@@ -122,7 +122,7 @@ public abstract class ComponentPage extends PagePlus  {
             //if(path.size()>1 ) {
             if(path.size()>1 && !(path.size()==3 && List.last(path.getE(2).toString(),"/\\",true).equalsIgnoreCase("application.cfc")) ) {// MUSTMUST bad impl -> check with and without application.cfc
             	
-            	ComponentWrap c = new ComponentWrap(Component.ACCESS_PRIVATE,component.getComponentImpl());
+            	ComponentWrap c = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,component.getComponentAccess());
             	Key[] keys = c.keys();
             	Object el;
             	Scope var = pc.variablesScope();

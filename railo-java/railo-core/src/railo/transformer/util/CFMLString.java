@@ -1,6 +1,5 @@
 package railo.transformer.util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public final class CFMLString {
 	/**
 	 * Field <code>lines</code>
 	 */
-	protected Integer[] lines;
+	protected Integer[] lines;// TODO to int[]
 	/**
 	 * Field <code>file</code>
 	 */
@@ -57,44 +56,26 @@ public final class CFMLString {
 	
 	private static final String NL=System.getProperty("line.separator");
 
-	/**
-	 * Diesem Konstruktor kann als Eingabe ein FileObjekt übergeben werden, welches eine CFML Seite Repräsentiert.
-	 * @param sf CFML Source File
-	 * @throws IOException 
-	 */
+	
+	
 	public CFMLString(SourceFile sf,String charset,boolean writeLog) throws IOException {
 		this.writeLog=writeLog;
 		this.charset=charset;
 		this.sf=sf;
-		String line;
 		this.source=sf.getPhyscalFile().getAbsolutePath();
-		//print.ln("-----------------------------------");
-		StringBuffer content=new StringBuffer();
+		String content;
 		InputStream is=null;
-		BufferedReader br=null;
 		try {
 			is = IOUtil.toBufferedInputStream(sf.getPhyscalFile().getInputStream());
 			if(ClassUtil.isBytecodeStream(is))throw new AlreadyClassException(sf.getPhyscalFile());
-			br = IOUtil.toBufferedReader(IOUtil.getReader(is,charset));
-		
-			int count=0;
-			line=br.readLine();
-	        while(line!=null)	{
-	            if(++count>1)content.append(NL);
-				content.append(line);
-				line=br.readLine();
-			}
+			content=IOUtil.toString(is,charset);
+			
 		}
 		finally {
-			if(br!=null)IOUtil.closeEL(br);
-			else IOUtil.closeEL(is);
+			IOUtil.closeEL(is);
 		}
-		
 		init(content.toString().toCharArray());
-        
 	}
-	
-
 
 	/**
 	 * Constructor of the class
@@ -131,14 +112,21 @@ public final class CFMLString {
 		this.text=text;
 		lcText=new char[text.length];
 		
-		ArrayList arr=new ArrayList();
+		ArrayList<Integer> arr=new ArrayList<Integer>();
 		
 		for(int i=0;i<text.length;i++) {
 			if(text[i]=='\n') {
 				arr.add(new Integer(i));
 				lcText[i]=' ';
 			}
-			else if(text[i]=='\r' || text[i]=='\t') lcText[i]=' ';
+			else if(text[i]=='\r') {
+				if(isNextRaw('\n')){
+					lcText[i++]=' ';
+				}
+				arr.add(new Integer(i));
+				lcText[i]=' ';
+			}
+			else if(text[i]=='\t') lcText[i]=' ';
 			else lcText[i]=Character.toLowerCase(text[i]);
 		}
 		arr.add(new Integer(text.length));
@@ -228,6 +216,11 @@ public final class CFMLString {
 		if(!hasNext()) return false;
 		return lcText[pos+1]==c;
 	}
+	private boolean isNextRaw(char c) {
+		if(!hasNext()) return false;
+		return text[pos+1]==c;
+	}
+	
 	
 	/**
 	 * Gibt zurück ob das aktuelle Zeichen zwischen den Angegebenen liegt.
@@ -240,14 +233,31 @@ public final class CFMLString {
 		return lcText[pos]>=left && lcText[pos]<=right;
 	}
 
+	
+	public boolean isCurrentVariableCharacter() {
+        if(!isValidIndex()) return false;
+        return isCurrentLetter() || isCurrentNumber() || isCurrent('$') || isCurrent('_');
+    }
+	
     /**
-     * Gibt zurück ob das aktuelle Zeichen ein Buchstabe ist.
-     * @return Gibt zurück ob das aktuelle Zeichen ein Buchstabe ist.
+     * returns if the current character is a letter (a-z,A-Z)
+     * @return is a letter
      */
     public boolean isCurrentLetter() {
         if(!isValidIndex()) return false;
         return lcText[pos]>='a' && lcText[pos]<='z';
     }
+
+    /**
+     * returns if the current character is a number (0-9)
+     * @return is a letter
+     */
+    public boolean isCurrentNumber() {
+        if(!isValidIndex()) return false;
+        return lcText[pos]>='0' && lcText[pos]<='9';
+    }
+    
+    
     /**
      * Gibt zurück ob das aktuelle Zeichen ein Special Buchstabe ist (_,€,$,£).
      * @return Gibt zurück ob das aktuelle Zeichen ein Buchstabe ist.
@@ -323,6 +333,50 @@ public final class CFMLString {
 		if(is)pos+=str.length();
 		return is;
 	}
+	
+	/**
+	 * @param str string to check against current position
+	 * @param startWithSpace if true there must be whitespace at the current position
+	 * @return does the criteria match?
+	 */
+	public boolean forwardIfCurrent(String str, boolean startWithSpace) {
+		if(!startWithSpace) return forwardIfCurrent(str);
+		
+		int start=pos;
+		if(!removeSpace())return false;
+		
+		if(!forwardIfCurrent(str)){
+			pos=start;
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * @param str string to check against current position
+	 * @param startWithSpace if true there must be whitespace at the current position
+	 * @param followedByNoVariableCharacter the character following the string must be a none variable character (!a-z,A-Z,0-9,_$) (not eaten)
+	 * @return does the criteria match?
+	 */
+	public boolean forwardIfCurrent(String str, boolean startWithSpace, boolean followedByNoVariableCharacter) {
+		
+		int start=pos;
+		if(startWithSpace && !removeSpace())return false;
+		
+		if(!forwardIfCurrent(str)){
+			pos=start;
+			return false;
+		}
+		if(followedByNoVariableCharacter && isCurrentVariableCharacter()) {
+			pos=start;
+			return false;
+		}
+		return true;
+	}
+	
+	
+	
+	
 
 	/**
 	 * Gibt zurück ob das aktuelle und die folgenden Zeichen die selben sind gefolgt nicht von einem word character, 
@@ -508,6 +562,90 @@ public final class CFMLString {
 		if(!rtn)pos=start;
 		return rtn;	
 	}
+
+	public boolean forwardIfCurrent(String first,String second,String third, boolean startWithSpace) {
+		if(!startWithSpace) return forwardIfCurrent(first, second, third);
+		int start=pos;
+		
+		if(!removeSpace())return false;
+		
+		if(!forwardIfCurrent(first,second,third)){
+			pos=start;
+			return false;
+		}
+		return true;	
+	}
+	
+	public boolean forwardIfCurrent(String first,String second,String third, boolean startWithSpace, boolean followedByNoVariableCharacter) {
+		int start=pos;
+		
+		if(startWithSpace && !removeSpace())return false;
+		
+		if(!forwardIfCurrent(first,second,third)){
+			pos=start;
+			return false;
+		}
+		if(followedByNoVariableCharacter && isCurrentVariableCharacter()) {
+			pos=start;
+			return false;
+		}
+		return true;	
+	}
+	
+	
+	public boolean forwardIfCurrent(String first,String second, boolean startWithSpace, boolean followedByNoVariableCharacter) {
+		int start=pos;
+		
+		if(startWithSpace && !removeSpace())return false;
+		
+		if(!forwardIfCurrent(first,second)){
+			pos=start;
+			return false;
+		}
+		if(followedByNoVariableCharacter && isCurrentVariableCharacter()) {
+			pos=start;
+			return false;
+		}
+		return true;	
+	}
+	
+	
+	
+	public boolean forwardIfCurrent(String first,String second,String third, String forth) {
+		int start=pos;
+		if(!forwardIfCurrent(first)) return false; 
+		
+		if(!removeSpace()){
+			pos=start;
+			return false;
+		}
+		
+		if(!forwardIfCurrent(second)){
+			pos=start;
+			return false;
+		}
+		
+		if(!removeSpace()){
+			pos=start;
+			return false;
+		}
+		
+		
+		if(!forwardIfCurrent(third)){
+			pos=start;
+			return false;
+		}
+		
+		if(!removeSpace()){
+			pos=start;
+			return false;
+		}
+		
+		boolean rtn=forwardIfCurrent(forth); 
+		if(!rtn)pos=start;
+		return rtn;	
+		
+	}
 	
 	
 	/**
@@ -522,6 +660,7 @@ public final class CFMLString {
 		int index=0;
 		while(pos-(++index) >= 0){
 			if(text[pos - index] == '\n')return true;
+			if(text[pos - index] == '\r')return true;
 			if(lcText[pos - index] != ' ') return false;
 		}
 		return false;
@@ -553,11 +692,20 @@ public final class CFMLString {
 	 * @return Existiert eine weitere Zeile.
 	 */
 	public boolean nextLine() {
-		while(isValidIndex() && text[pos]!='\n') {
+		while(isValidIndex() && text[pos]!='\n' && text[pos]!='\r') {
 			next();
 		}
-		if(isValidIndex() && text[pos]=='\n') {
+		if(!isValidIndex()) return false;
+		
+		if(text[pos]=='\n') {
 			next();
+			return isValidIndex();
+		}
+		if(text[pos]=='\r') {
+			next();
+			if(isValidIndex() && text[pos]=='\n') {
+				next();
+			}
 			return isValidIndex();
 		}
 		return false;

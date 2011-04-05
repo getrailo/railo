@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import railo.runtime.exp.CasterException;
+import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Scope;
@@ -465,18 +466,26 @@ public class CFMLExprTransformer implements ExprTransformer {
 		do {
 			hasChanged=false;
 			if(data.cfml.isCurrent('c')) {
-					if (data.cfml.forwardIfCurrent("ct")) {expr = decisionOpCreate(data,OPDecision.CT,expr);hasChanged=true;} 
-					else if (data.cfml.forwardIfCurrent("contains")){ expr = decisionOpCreate(data,OPDecision.CT,expr);hasChanged=true;}
+					if (data.cfml.forwardIfCurrent("ct",false,true)) {expr = decisionOpCreate(data,OPDecision.CT,expr);hasChanged=true;} 
+					else if (data.cfml.forwardIfCurrent("contains",false,true)){ expr = decisionOpCreate(data,OPDecision.CT,expr);hasChanged=true;}
 			}
 			// does not contain
-			else if (data.cfml.forwardIfCurrent("does","not","contain")){ expr = decisionOpCreate(data,OPDecision.NCT,expr); hasChanged=true;}
+			else if (data.cfml.forwardIfCurrent("does","not","contain",false,true)){ expr = decisionOpCreate(data,OPDecision.NCT,expr); hasChanged=true;}
 
 			// equal, eq
 			else if (data.cfml.isCurrent("eq") && !data.cfml.isCurrent("eqv")) {
+				int plus=2;
 				data.cfml.setPos(data.cfml.getPos()+2);
-				data.cfml.forwardIfCurrent("ual");
-				expr = decisionOpCreate(data,OPDecision.EQ,expr);
-				hasChanged=true;
+				if(data.cfml.forwardIfCurrent("ual"))plus=5;
+				
+				if(data.cfml.isCurrentVariableCharacter()) {
+					data.cfml.setPos(data.cfml.getPos()-plus);
+				}
+				else {
+					expr = decisionOpCreate(data,OPDecision.EQ,expr);
+					hasChanged=true;
+				}
+				
 			}
 			// ==
 			else if (data.cfml.forwardIfCurrent("==")) {
@@ -519,24 +528,39 @@ public class CFMLExprTransformer implements ExprTransformer {
 			// gt, gte, greater than or equal to, greater than
 			else if (data.cfml.isCurrent('g')) {
 				if (data.cfml.forwardIfCurrent("gt")) {
-					if(data.cfml.forwardIfCurrent("e")) expr = decisionOpCreate(data,OPDecision.GTE,expr);
-					else expr = decisionOpCreate(data,OPDecision.GT,expr);
-					hasChanged=true;
+					if(data.cfml.forwardIfCurrent("e")) {
+						if(data.cfml.isCurrentVariableCharacter()) {
+							data.cfml.setPos(data.cfml.getPos()-3);
+						}
+						else {
+							expr = decisionOpCreate(data,OPDecision.GTE,expr);
+							hasChanged=true;
+						}
+					}
+					else {
+						if(data.cfml.isCurrentVariableCharacter()) {
+							data.cfml.setPos(data.cfml.getPos()-2);
+						}
+						else {
+							expr = decisionOpCreate(data,OPDecision.GT,expr);
+							hasChanged=true;
+						}
+					}
 				} 
-				else if (data.cfml.forwardIfCurrent("greater", "than")) {
-					if(data.cfml.forwardIfCurrent(" or equal to")) expr = decisionOpCreate(data,OPDecision.GTE,expr);
+				else if (data.cfml.forwardIfCurrent("greater", "than",false,true)) {
+					if(data.cfml.forwardIfCurrent("or","equal", "to",true,true)) expr = decisionOpCreate(data,OPDecision.GTE,expr);
 					else expr = decisionOpCreate(data,OPDecision.GT,expr);
 					hasChanged=true;
 				}	
-				else if (data.cfml.forwardIfCurrent("ge")) {
+				else if (data.cfml.forwardIfCurrent("ge",false,true)) {
 					expr = decisionOpCreate(data,OPDecision.GTE,expr);
 					hasChanged=true;
 				}				
 			}
 			
 			// is, is not
-			else if (data.cfml.forwardIfCurrent("is")) {
-				if(data.cfml.forwardIfCurrent(" not")) expr = decisionOpCreate(data,OPDecision.NEQ,expr);
+			else if (data.cfml.forwardIfCurrent("is",false,true)) {
+				if(data.cfml.forwardIfCurrent("not",true,true)) expr = decisionOpCreate(data,OPDecision.NEQ,expr);
 				else expr = decisionOpCreate(data,OPDecision.EQ,expr);
 				hasChanged=true;
 			}
@@ -544,16 +568,31 @@ public class CFMLExprTransformer implements ExprTransformer {
 			// lt, lte, less than, less than or equal to
 			else if (data.cfml.isCurrent('l')) {
 				if (data.cfml.forwardIfCurrent("lt")) {
-					if(data.cfml.forwardIfCurrent("e")) expr = decisionOpCreate(data,OPDecision.LTE,expr);
-					else expr = decisionOpCreate(data,OPDecision.LT,expr);
-					hasChanged=true;
+					if(data.cfml.forwardIfCurrent("e")) {
+						if(data.cfml.isCurrentVariableCharacter()) {
+							data.cfml.setPos(data.cfml.getPos()-3);
+						}
+						else {
+							expr = decisionOpCreate(data,OPDecision.LTE,expr);
+							hasChanged=true;
+						}
+					}
+					else {
+						if(data.cfml.isCurrentVariableCharacter()) {
+							data.cfml.setPos(data.cfml.getPos()-2);
+						}
+						else {
+							expr = decisionOpCreate(data,OPDecision.LT,expr);
+							hasChanged=true;
+						}
+					}
 				} 
-				else if (data.cfml.forwardIfCurrent("less than")) {
-					if(data.cfml.forwardIfCurrent(" or equal to")) expr = decisionOpCreate(data,OPDecision.LTE,expr);
+				else if (data.cfml.forwardIfCurrent("less","than",false,true)) {
+					if(data.cfml.forwardIfCurrent("or", "equal", "to",true,true)) expr = decisionOpCreate(data,OPDecision.LTE,expr);
 					else expr = decisionOpCreate(data,OPDecision.LT,expr);
 					hasChanged=true;
 				}	
-				else if (data.cfml.forwardIfCurrent("le")) {
+				else if (data.cfml.forwardIfCurrent("le",false,true)) {
 					expr = decisionOpCreate(data,OPDecision.LTE,expr);
 					hasChanged=true;
 				}				
@@ -562,11 +601,11 @@ public class CFMLExprTransformer implements ExprTransformer {
 			// neq, not equal, nct
 			else if (data.cfml.isCurrent('n')) {
 				// Not Equal
-					if (data.cfml.forwardIfCurrent("neq")){ expr = decisionOpCreate(data,OPDecision.NEQ,expr); hasChanged=true;}
+					if (data.cfml.forwardIfCurrent("neq",false,true)){ expr = decisionOpCreate(data,OPDecision.NEQ,expr); hasChanged=true;}
 				// Not Equal (Alias)
-					else if (data.cfml.forwardIfCurrent("not equal")){ expr = decisionOpCreate(data,OPDecision.NEQ,expr);hasChanged=true; }
+					else if (data.cfml.forwardIfCurrent("not","equal",false,true)){ expr = decisionOpCreate(data,OPDecision.NEQ,expr);hasChanged=true; }
 				// nct
-					else if (data.cfml.forwardIfCurrent("nct")){ expr = decisionOpCreate(data,OPDecision.NCT,expr); hasChanged=true;}	
+					else if (data.cfml.forwardIfCurrent("nct",false,true)){ expr = decisionOpCreate(data,OPDecision.NCT,expr); hasChanged=true;}	
 			}
 			
 		}
@@ -1517,32 +1556,11 @@ public class CFMLExprTransformer implements ExprTransformer {
 			// Fix
 				else {
 					if(libLen <= count){
-						ArrayList<FunctionLibFunctionArg> args=flf.getArg();
-						Iterator<FunctionLibFunctionArg> it = args.iterator();
-						StringBuilder pattern=new StringBuilder(flf.getName());
-						StringBuilder end=new StringBuilder();
-						pattern.append("(");
-						FunctionLibFunctionArg arg;
-						int c=0;
-						while(it.hasNext()){
-							arg = it.next();
-							if(!arg.isRequired()) {
-								pattern.append(" [");
-								end.append("]");
-							}
-							if(c++>0)pattern.append(" ,");
-							pattern.append(arg.getType());
-							pattern.append(" ");
-							pattern.append(arg.getName());
-							
-						}
-						pattern.append(end);
-						pattern.append(")");
 						
 						TemplateException te = new TemplateException(
 							data.cfml,
 							"too many Attributes in function call [" + name + "]");
-						te.setAdditional("pattern", pattern.toString());
+						addFunctionDoc(te, flf);
 						throw te;
 					}
 				}
@@ -1575,10 +1593,13 @@ public class CFMLExprTransformer implements ExprTransformer {
 					+ "] not found");
 
 		// check min attributes
-		if (checkLibrary && flf.getArgMin() > count)
-			throw new TemplateException(
+		if (checkLibrary && flf.getArgMin() > count){
+			TemplateException te = new TemplateException(
 				data.cfml,
 				"too few attributes in function [" + name + "]");
+			if(flf.getArgType()==FunctionLibFunction.ARG_FIX) addFunctionDoc(te, flf);
+			throw te;
+		}
 
         comments(data.cfml);
         
@@ -1590,6 +1611,63 @@ public class CFMLExprTransformer implements ExprTransformer {
 		return fm;
 	}
 	
+	public static void addFunctionDoc(PageExceptionImpl pe,FunctionLibFunction flf) {
+		ArrayList<FunctionLibFunctionArg> args=flf.getArg();
+		Iterator<FunctionLibFunctionArg> it = args.iterator();
+		
+		// Pattern
+		StringBuilder pattern=new StringBuilder(flf.getName());
+		StringBuilder end=new StringBuilder();
+		pattern.append("(");
+		FunctionLibFunctionArg arg;
+		int c=0;
+		while(it.hasNext()){
+			arg = it.next();
+			if(!arg.isRequired()) {
+				pattern.append(" [");
+				end.append("]");
+			}
+			if(c++>0)pattern.append(", ");
+			pattern.append(arg.getName());
+			pattern.append(":");
+			pattern.append(arg.getType());
+			
+		}
+		pattern.append(end);
+		pattern.append("):");
+		pattern.append(flf.getReturnTypeAsString());
+		
+		pe.setAdditional("Pattern", pattern);
+		
+		// Documentation
+		StringBuilder doc=new StringBuilder(flf.getDescription());
+		StringBuilder req=new StringBuilder();
+		StringBuilder opt=new StringBuilder();
+		StringBuilder tmp;
+		doc.append("\n");
+		
+		it = args.iterator();
+		while(it.hasNext()){
+			arg = it.next();
+			tmp=arg.isRequired()?req:opt;
+			
+			tmp.append("- ");
+			tmp.append(arg.getName());
+			tmp.append(" (");
+			tmp.append(arg.getType());
+			tmp.append("): ");
+			tmp.append(arg.getDescription());
+			tmp.append("\n");
+		}
+
+		if(req.length()>0)doc.append("\nRequired:\n").append(req);
+		if(opt.length()>0)doc.append("\nOptional:\n").append(opt);
+		
+		
+		pe.setAdditional("Documentation", doc);
+		
+	}
+
 	/**
 	 * Sharps (#) die innerhalb von Expressions auftauchen haben in CFML keine weitere Beteutung 
 	 * und werden durch diese Methode einfach entfernt.

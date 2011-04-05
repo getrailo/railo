@@ -5,19 +5,14 @@ import java.util.TimeZone;
 
 import railo.commons.date.DateTimeUtil;
 import railo.commons.date.JREDateTimeUtil;
-import railo.commons.date.TimeZoneConstants;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.lang.SystemOut;
-import railo.commons.lang.types.RefBoolean;
-import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
-import railo.runtime.type.dt.TimeImpl;
 
 public class ScheduledTaskThread extends Thread {
 
@@ -39,7 +34,7 @@ public class ScheduledTaskThread extends Thread {
 	private LogAndSource log;
 	private ScheduleTask task;
 	private String charset;
-	private CFMLEngineImpl engine;
+	private final CFMLEngineImpl engine;
 	private TimeZone timeZone;
 
 
@@ -110,7 +105,7 @@ public class ScheduledTaskThread extends Thread {
 		while(true){
 			sleepEL(execution,today);
 			
-			if(engine!=null && !engine.isRunning()) break;
+			if(!engine.isRunning()) break;
 			
 			today=System.currentTimeMillis();
 			long todayTime=util.getMilliSecondsInDay(null,today);
@@ -164,8 +159,7 @@ public class ScheduledTaskThread extends Thread {
 	}
 
 	private long calculateNextExecution(long now, boolean notNow) {
-		long _now=now;
-		long nowTime=util.getMilliSecondsInDay(null,now);
+		long nowTime=util.getMilliSecondsInDay(timeZone,now);
 		long nowDate=now-nowTime;
 		
 		
@@ -192,24 +186,6 @@ public class ScheduledTaskThread extends Thread {
 			calendar.add(cIntervall, amount);
 		}
 		return calendar.getTimeInMillis();
-
-/*		
-		// DAY
-		if(ScheduleTask.INTERVAL_DAY==intervall){
-			if(todayTime>startTime) {
-				calendar.setTimeInMillis(todayDate+startTime);
-				calendar.add(Calendar.DATE, amount);
-				return calendar.getTimeInMillis();
-			}
-			return todayDate+startTime;
-		}
-		
-		// MONTH
-		if(ScheduleTask.INTERVAL_MONTH==intervall){
-			
-		}
-		*/
-		
 	}
 
 	private static int toCalndarIntervall(int intervall) {
@@ -230,32 +206,4 @@ public class ScheduledTaskThread extends Thread {
                     (c.get(Calendar.MILLISECOND));
         
     }
-
-	public static void main(String[] args) throws Exception {
-		DateTimeUtil util = DateTimeUtil.getInstance();
-		TimeZone tz=TimeZoneConstants.CET;
-		
-		DateTime start = util.toDateTime(tz,2009,10,20,11,41,0,0);
-		DateTime end = util.toDateTime(tz,2009,10,20,10,43,0,0);
-		
-		long startTime=util.getMilliSecondsInDay(tz, start.getTime());
-		long startDate=start.getTime()-startTime;
-		long endTime=util.getMilliSecondsInDay(tz, end.getTime());
-		long endDate=end.getTime()-endTime;
-		
-		
-		
-		ScheduleTask task=new ScheduleTaskImpl("test",null,
-			new railo.runtime.type.dt.DateImpl(startDate),
-			new TimeImpl(start),
-			new railo.runtime.type.dt.DateImpl(endDate),
-			new TimeImpl(end),
-			null,80,"day",10000,null,null,80,null,false,false,false,false,false);
-		
-		
-		RefBoolean run=new RefBooleanImpl(true);
-		ScheduledTaskThread stt = new ScheduledTaskThread(null,null,null,task,"utf-8");
-		stt.start();
-		
-	}
 }

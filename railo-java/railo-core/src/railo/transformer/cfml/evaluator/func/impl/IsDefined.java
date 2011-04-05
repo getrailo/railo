@@ -23,7 +23,7 @@ public class IsDefined implements FunctionEvaluator{
 		Expression value = arg.getValue();
 		if(value instanceof LitString) {
 			String str=((LitString)value).getString();
-			StringList sl = VariableInterpreter.parse(str);
+			StringList sl = VariableInterpreter.parse(str,false);
 			if(sl!=null){
 				// scope
 				str=sl.next();
@@ -35,8 +35,7 @@ public class IsDefined implements FunctionEvaluator{
 				ArrayUtil.trim(arr);
 				
 				// update first arg
-				arg.setStringType("number");
-				arg.setValue(new LitDouble(scope,-1));
+				arg.setValue(new LitDouble(scope,-1),"number");
 				
 				// add second argument
 				

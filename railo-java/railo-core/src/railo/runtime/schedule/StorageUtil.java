@@ -58,23 +58,6 @@ public final class StorageUtil {
         IOUtil.copy(is,res,true);
 	}
 
-    /* *
-     * load a XML Document as DOM representation
-     * @param file XML File to load
-     * @return DOM Object
-     * @throws SAXException
-     * @throws IOException
-     * /
-    public Document loadDocument(File file) throws SAXException, IOException {
-        DOMParser parser = new DOMParser();
-	     
-		InputS tream in = new FileInpu tStream(file);
-		InputSource source = new InputSource(in);
-    	parser.parse(source);
-    	in.close();
-    	return parser.getDocument();
-    }*/
-
     /**
      * load a XML Document as DOM representation
      * @param file XML File to load
@@ -95,6 +78,15 @@ public final class StorageUtil {
 			IOUtil.closeEL(in);
 		}
     	
+    	return parser.getDocument();
+    }
+    
+    public Document loadDocument(String content) throws SAXException, IOException {
+        DOMParser parser = new DOMParser();
+	    
+		InputSource source = new InputSource(content);
+		parser.parse(source);
+		
     	return parser.getDocument();
     }
 

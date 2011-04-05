@@ -2,6 +2,7 @@ package railo.runtime.config;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ import railo.runtime.type.StructImpl;
 public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     
 
-	private CFMLEngineImpl engine;
+	private final CFMLEngineImpl engine;
     private Map initContextes;
     private Map contextes;
     private SecurityManager defaultSecurityManager;
@@ -36,6 +37,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     private String updateType="";
 	private ConfigListener configListener;
 	private ConfigWeb configWeb;
+	private Map<String, String> labels;
 	private static ConfigServerImpl instance;
 	
 	/**
@@ -299,7 +301,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	 * @return
 	 * @throws PageException
 	 */
-	public ConfigWeb getConfigWeb() {
+	public ConfigWeb getConfigWeb(boolean isEventGatewayContext) {
 		if(configWeb!=null)
 			return configWeb;
 		QueryCacheSupport cqc = QueryCacheSupport.getInstance(this);
@@ -323,8 +325,8 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		cqc.setConfigWeb(cwi);
 		try {
 			ConfigWebFactory.createContextFiles(getConfigDir(),sConfig);
-	        ConfigWebFactory.load(this, cwi, ConfigWebFactory.loadDocument(getConfigFile()));
-	        ConfigWebFactory.createContextFilesPost(getConfigDir(),cwi);
+	        ConfigWebFactory.load(this, cwi, ConfigWebFactory.loadDocument(getConfigFile()),isEventGatewayContext);
+	        ConfigWebFactory.createContextFilesPost(getConfigDir(),cwi,sConfig);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -332,6 +334,14 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		}
 		configWeb=cwi;
 		return cwi;
+	}
+
+	public void setLabels(Map<String, String> labels) {
+		this.labels=labels;
+	}
+	public Map<String, String> getLabels() {
+		if(labels==null) labels=new HashMap<String, String>();
+		return labels;
 	}
 	
 

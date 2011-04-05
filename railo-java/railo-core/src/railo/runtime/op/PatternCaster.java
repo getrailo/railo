@@ -4,7 +4,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.validators.ValidateCreditCard;
 
 /**
- * this Caster cast to types that are not coldfusion types, most are string that must match a specific pattern
+* this Caster cast to types that are not CFML types, most are string that must match a specific pattern
  */
 public final class PatternCaster {
 

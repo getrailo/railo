@@ -29,7 +29,7 @@ public final class TimeFormat implements Function {
 	/**
 	 * @param pc
 	 * @param object
-	 * @param mask Characters that show how ColdFusion displays a date:
+	 * @param mask Characters that show how CFML displays a date:
 	 * @return Formated Time Object as String
 	 * @throws ExpressionException
 	 */

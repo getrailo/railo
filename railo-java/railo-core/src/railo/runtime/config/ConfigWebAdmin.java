@@ -56,7 +56,7 @@ import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.other.CreateObject;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
-import railo.runtime.listener.ApplicationContextUtil;
+import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
@@ -938,7 +938,7 @@ public final class ConfigWebAdmin {
     public static boolean fixPSQ(Document doc) throws SecurityException {
     	
     	Element datasources=ConfigWebFactory.getChildByName(doc.getDocumentElement(),"data-sources",false,true);
-        if(datasources.hasAttribute("preserve-single-quote")){
+        if(datasources!=null && datasources.hasAttribute("preserve-single-quote")){
         	Boolean b=Caster.toBoolean(datasources.getAttribute("preserve-single-quote"),null);
         	if(b!=null)datasources.setAttribute("psq",Caster.toString(!b.booleanValue()));
         	datasources.removeAttribute("preserve-single-quote");
@@ -1051,13 +1051,14 @@ public final class ConfigWebAdmin {
      * @param blob 
      * @param clob 
      * @param allow 
+     * @param storage 
      * @param custom 
      * @throws ExpressionException
      * @throws SecurityException
      */
     public void updateDataSource(String name, String newName, String clazzName, String dsn, String username,String password,
             String host,String database,int port,int connectionLimit, int connectionTimeout,long metaCacheTimeout,
-            boolean blob,boolean clob,int allow,Struct custom) throws ExpressionException, SecurityException {
+            boolean blob,boolean clob,int allow,boolean validate,boolean storage, Struct custom) throws ExpressionException, SecurityException {
 
     	checkWriteAccess();
     	SecurityManager sm = config.getSecurityManager();
@@ -1121,6 +1122,8 @@ public final class ConfigWebAdmin {
                 el.setAttribute("blob",Caster.toString(blob));
                 el.setAttribute("clob",Caster.toString(clob));
                 el.setAttribute("allow",Caster.toString(allow));
+                el.setAttribute("validate",Caster.toString(validate));
+                el.setAttribute("storage",Caster.toString(storage));
                 el.setAttribute("custom",toStringURLStyle(custom));
                 
 	      		return ;
@@ -1153,6 +1156,8 @@ public final class ConfigWebAdmin {
         
         el.setAttribute("blob",Caster.toString(blob));
         el.setAttribute("clob",Caster.toString(clob));
+        el.setAttribute("validate",Caster.toString(validate));
+        el.setAttribute("storage",Caster.toString(storage));
         if(allow>-1)el.setAttribute("allow",Caster.toString(allow));
         el.setAttribute("custom",toStringURLStyle(custom));
         /*
@@ -1220,7 +1225,7 @@ public final class ConfigWebAdmin {
         
     }
 
-	public void updateCacheConnection(String name, String classname,int _default, Struct custom,boolean readOnly) throws PageException {
+	public void updateCacheConnection(String name, String classname,int _default, Struct custom,boolean readOnly,boolean storage) throws PageException {
     	checkWriteAccess();
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_CACHE);
 		if(!hasAccess)
@@ -1279,6 +1284,7 @@ public final class ConfigWebAdmin {
 	      		//el.setAttribute("default",Caster.toString(_default));
 	      		el.setAttribute("custom",toStringURLStyle(custom));
 	      		el.setAttribute("read-only",Caster.toString(readOnly));
+	      		el.setAttribute("storage",Caster.toString(storage));
 	      		return;
   			}
       	  
@@ -1292,6 +1298,7 @@ public final class ConfigWebAdmin {
   		//el.setAttribute("default",Caster.toString(_default));
   		el.setAttribute("custom",toStringURLStyle(custom));
   		el.setAttribute("read-only",Caster.toString(readOnly));
+  		el.setAttribute("storage",Caster.toString(storage));
         
     }
 	
@@ -1974,7 +1981,7 @@ public final class ConfigWebAdmin {
     
     
     public void updateScriptProtect(int scriptProtect) throws SecurityException { 
-    	updateScriptProtect(ApplicationContextUtil.translateScriptProtect(scriptProtect));
+    	updateScriptProtect(AppListenerUtil.translateScriptProtect(scriptProtect));
     }
     
     /**
@@ -2476,6 +2483,10 @@ public final class ConfigWebAdmin {
         }
         Element update=_getRootElement("update");
         update.setAttribute("type",type);
+        try {
+			location=HTTPUtil.toURL(location).toString();
+		} 
+        catch (Throwable e) {}
         update.setAttribute("location",location);
     }
     
@@ -2555,11 +2566,14 @@ public final class ConfigWebAdmin {
     public void runUpdate() throws PageException {
     	checkWriteAccess();
         ConfigServerImpl cs = config.getConfigServerImpl();
-        try {
-            cs.getCFMLEngine().getCFMLEngineFactory().update(cs.getPassword());
-        } 
-        catch (Exception e) {
-            throw Caster.toPageException(e);
+        CFMLEngineFactory factory = cs.getCFMLEngine().getCFMLEngineFactory();
+        synchronized(factory){
+	        try {
+	            factory.update(cs.getPassword());
+	        } 
+	        catch (Exception e) {
+	            throw Caster.toPageException(e);
+	        }
         }
         
     }
@@ -2658,13 +2672,15 @@ public final class ConfigWebAdmin {
     public void restart() throws PageException {
     	checkWriteAccess();
         ConfigServerImpl cs = config.getConfigServerImpl();
-        try {
-            cs.getCFMLEngine().getCFMLEngineFactory().restart(cs.getPassword());
-        } 
-        catch (Exception e) {
-            throw Caster.toPageException(e);
+        CFMLEngineFactory factory = cs.getCFMLEngine().getCFMLEngineFactory();
+        synchronized(factory){
+	        try {
+	            factory.restart(cs.getPassword());
+	        } 
+	        catch (Exception e) {
+	            throw Caster.toPageException(e);
+	        }
         }
-        
     }
 
 	public void updateWebCharset(String charset) throws PageException {
@@ -3331,8 +3347,36 @@ public final class ConfigWebAdmin {
 	    }
 
 
-	
-
-
-	
+	public boolean updateLabel(String hash, String label) {
+		// check
+        if(StringUtil.isEmpty(hash,true))  return false;
+        if(StringUtil.isEmpty(label,true)) return false;
+        
+		hash=hash.trim(); 
+		label=label.trim();
+        
+        Element labels=_getRootElement("labels");
+        
+        // Update
+        Element[] children = ConfigWebFactory.getChildren(labels,"label");
+      	for(int i=0;i<children.length;i++) {
+      	    String h=children[i].getAttribute("id");
+      	    if(h!=null) {
+      	        if(h.equals(hash)) {
+		      		Element el=children[i];
+		      		if(label.equals(el.getAttribute("name"))) return false;
+		      		el.setAttribute("name",label);
+		      		return true;
+	  			}
+      	    }
+      	}
+      	
+      	// Insert
+      	Element el=doc.createElement("label");
+      	labels.appendChild(el);
+      	el.setAttribute("id",hash);
+      	el.setAttribute("name",label);
+  		
+      	return true;
+	}
 }

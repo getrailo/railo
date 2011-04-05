@@ -13,15 +13,15 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.ApplicationImpl;
 import railo.runtime.type.scope.RequestImpl;
-import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.scope.ServerImpl;
+import railo.runtime.type.scope.SessionPlus;
 
 /**
 * Provides two types of locks to ensure the integrity of shared data: Exclusive lock and Read-only 
 *   lock. An exclusive lock single-threads access to the CFML constructs in its body. Single-threaded access 
 *   implies that the body of the tag can be executed by at most one request at a time. A request executing 
 *   inside a cflock tag has an "exclusive lock" on the tag. No other requests can start executing inside the 
-*   tag while a request has an exclusive lock. ColdFusion issues exclusive locks on a first-come, first-served 
+*   tag while a request has an exclusive lock. CFML issues exclusive locks on a first-come, first-served 
 *   basis. A read-only lock allows multiple requests to access the CFML constructs inside its body concurrently. 
 *   Therefore, read-only locks should be used only when the shared data is read only and not modified. If another 
 *   request already has an exclusive lock on the shared data, the request waits for the exclusive lock to be 
@@ -61,12 +61,7 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 	**    cfclock tag. Default is Yes. */
 	private boolean throwontimeout = true;
 	
-	/** Specifies the name of the lock. Only one request can execute inside a cflock tag with a given 
-	** 	name. Therefore, providing the name attribute allows for synchronizing access to resources from 
-	** 	different parts of an application. Lock names are global to a ColdFusion server. They are shared 
-	** 	between applications and user sessions, but not across clustered servers. This attribute is mutually 
-	** 	exclusive with the scope attribute. Therefore, do not specify the scope attribute and the name attribute 
-	** 	in a tag. The value of name cannot be an empty string. */
+	/** Specifies the name of the lock.  */
 	private String name;
 	
 	private LockManager manager;
@@ -162,12 +157,6 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 	}
 
 	/** set the value name
-	*  Specifies the name of the lock. Only one request can execute inside a cflock tag with a given 
-	* 	name. Therefore, providing the name attribute allows for synchronizing access to resources from 
-	* 	different parts of an application. Lock names are global to a ColdFusion server. They are shared 
-	* 	between applications and user sessions, but not across clustered servers. This attribute is mutually 
-	* 	exclusive with the scope attribute. Therefore, do not specify the scope attribute and the name attribute 
-	* 	in a tag. The value of name cannot be an empty string.
 	* @param name value to set
 	 * @throws ApplicationException
 	**/
@@ -206,7 +195,7 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 	        // Session
 	        else if(scope==SCOPE_SESSION){
 	            lockType="session"; 
-	            name="__session_"+ ((ScopeSupport)pageContext.sessionScope())._getId();
+	            name="__session_"+ ((SessionPlus)pageContext.sessionScope())._getId();
 	        }
 	        // Application 
 	        else if(scope==SCOPE_APPLICATION){

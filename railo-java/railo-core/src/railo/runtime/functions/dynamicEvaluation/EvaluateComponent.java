@@ -2,7 +2,7 @@ package railo.runtime.functions.dynamicEvaluation;
 
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
+import railo.runtime.ComponentPro;
 import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
@@ -32,11 +32,20 @@ public final class EvaluateComponent {
 			throw Caster.toPageException(e);
 		}
 		
-		ComponentImpl ci = ComponentUtil.toComponentImpl(comp);
 		
-	// this	
+		
+		setInternalState(comp,sctThis,sctVariables);
+		
+		
+	
+        return comp;
+	}
+	public static void setInternalState(Component comp, Struct sctThis, Struct sctVariables) throws PageException {
+		ComponentPro ci = ComponentUtil.toComponentPro(comp);
+		
+		// this	
 		// delete this scope data members
-		ComponentWrap cw = new ComponentWrap(Component.ACCESS_PRIVATE,ci);
+		ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,ci);
 		Collection.Key[] keys = cw.keys();
 		Object member;
 		for(int i=0;i<keys.length;i++) {
@@ -53,7 +62,7 @@ public final class EvaluateComponent {
 		
 	// Variables
 		boolean isWrap=comp instanceof ComponentWrap;
-        if(isWrap || comp instanceof ComponentImpl){
+        if(isWrap || comp instanceof ComponentPro){
         	ComponentScope scope = ci.getComponentScope();
         	
         	// delete variables scope data members
@@ -71,6 +80,5 @@ public final class EvaluateComponent {
 				scope.set(keys[i],sctVariables.get(keys[i]));
 			}
         }
-        return comp;
 	}
 }

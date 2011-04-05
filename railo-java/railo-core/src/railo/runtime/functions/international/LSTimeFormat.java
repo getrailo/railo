@@ -54,7 +54,7 @@ public final class LSTimeFormat implements Function {
 		if(object instanceof String) {
 			String str=(String) object;
 			
-			DateFormat[] formats=FormatUtil.getTimeFormats(locale,true);
+			DateFormat[] formats=FormatUtil.getTimeFormats(locale,timeZone,true);
 			for(int i=0;i<formats.length;i++) {
 				try {
 					return new DateTimeImpl(formats[i].parse(str).getTime(),false);

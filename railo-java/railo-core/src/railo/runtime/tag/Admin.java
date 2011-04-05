@@ -81,7 +81,6 @@ import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
-import railo.runtime.listener.ApplicationContextUtil;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.net.mail.SMTPException;
 import railo.runtime.net.mail.SMTPVerifier;
@@ -142,6 +141,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Collection.Key KEY = KeyImpl.getInstance("key");
 	private static final Collection.Key VALUE = KeyImpl.getInstance("value");
 	private static final Collection.Key TIME = KeyImpl.getInstance("time");
+	public static final String[] ORM_JARS = new String[]{"antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","railo-sl4j.jar"};
+	public static final String[] CACHE_JARS = new String[]{"ehcache.jar"};
+	public static final String[] CFX_JARS = new String[]{"com.naryx.tagfusion.cfx.jar"};
 	public static final String[] UPDATE_JARS = new String[]{"ehcache.jar","antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","railo-sl4j.jar","metadata-extractor.jar","icepdf-core.jar","com.naryx.tagfusion.cfx.jar"};
     
 	/*
@@ -219,6 +221,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         }
         if(action.equals("getdebugdata")) {
             doGetDebugData();
+            return SKIP_BODY;
+        }
+        if(action.equals("getinfo")) {
+            doGetInfo();
             return SKIP_BODY;
         }
         
@@ -627,6 +633,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateVideoExecuterClass",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateVideoExecuterClass();
         else if(check("terminateRunningThread",ACCESS_FREE) && check2(ACCESS_WRITE  )) doTerminateRunningThread();
         
+        else if(check("updateLabel",                ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateLabel();
         else if(check("restart",                ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doRestart();
         else if(check("runUpdate",              ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doRunUpdate();
         else if(check("removeUpdate",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doRemoveUpdate();
@@ -844,20 +851,22 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             
             railo.runtime.type.Query qry=
             	new QueryImpl(
-            			new String[]{"path","id","label","hasOwnSecContext","url","config_file"},
+            			new String[]{"path","id","hash","label","hasOwnSecContext","url","config_file"},
             			factories.length,getString("admin",action,"returnVariable"));
             pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
             
             for(int i=0;i<factories.length;i++) {
                 int row=i+1;
                 CFMLFactoryImpl factory = factories[i];
+                
                 qry.setAtEL("path",row,factory.getConfigWebImpl().getServletContext().getRealPath("/"));
                 
                 qry.setAtEL("config_file",row,factory.getConfigWebImpl().getConfigFile().getAbsolutePath());
                 if(factory.getURL()!=null)qry.setAtEL("url",row,factory.getURL().toExternalForm());
                 
-                
+
                 qry.setAtEL("id",row,factory.getConfig().getId());
+                qry.setAtEL("hash",row,SystemUtil.hash(factory.getConfigWebImpl().getServletContext()));
                 qry.setAtEL("label",row,factory.getLabel());
                 qry.setAtEL("hasOwnSecContext",row,Caster.toBoolean(cs.hasIndividualSecurityManager(factory.getConfig().getId())));
             }
@@ -904,7 +913,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
 
     private Resource getPluginDirectory() {
-    	return config.getConfigDir().getRealResource(config instanceof ConfigServer?"admin/plugin":"context/admin/plugin");//MUST more dynamic
+    	return config.getConfigDir().getRealResource("context/admin/plugin");
     }
 
     private Resource getContextDirectory() throws PageException  {
@@ -937,6 +946,14 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         ResourceUtil.copyRecursive(srcDir, trgDir);    
         store();
     }
+    private void doUpdateLabel() throws PageException, IOException {
+    	if(config instanceof ConfigServer) {
+    		 if(admin.updateLabel(getString("admin",action,"hash"),getString("admin",action,"label"))) {
+	    	     store();
+	    	     adminSync.broadcast(attributes, config);
+    		 }
+    	}
+    }
     
     private void doUpdateContext() throws PageException, IOException {
     	String strSrc = getString("admin",action,"source");
@@ -960,6 +977,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         }
         store();
     }
+    
     
     private void doRemoveContext() throws PageException, IOException {
     	String strRealpath = getString("admin",action,"destination");
@@ -1145,6 +1163,23 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         pageContext.setVariable(
                 getString("admin",action,"returnVariable"),
                 pageContext.getDebugger().getDebuggingData());
+    }
+    private void doGetInfo() throws PageException {
+    	Struct sct=new StructImpl();
+        pageContext.setVariable(
+                getString("admin",action,"returnVariable"),
+                sct);
+        
+        
+        if(config instanceof ConfigWebImpl){
+        	ConfigWebImpl cw=(ConfigWebImpl) config;
+        	sct.setEL("label", cw.getLabel());
+        	sct.setEL("hash", cw.getHash());
+        	sct.setEL("root", cw.getRootDirectory().getAbsolutePath());
+        }
+        
+        sct.setEL("config", config.getConfigFile().getAbsolutePath());
+        
     }
 
     /**
@@ -1878,13 +1913,12 @@ private void doGetMappings() throws PageException {
 			throw Caster.toPageException(e);
 		}
     }
-    
+
     private void needNewJars() throws PageException  {
-    	
-    	boolean exists = JarLoader.exists(pageContext.getConfig(), UPDATE_JARS);
-    	
+    	boolean needNewJars = JarLoader.changed(pageContext.getConfig(), UPDATE_JARS);
+        	
     	try {
-			pageContext.setVariable(getString("admin",action,"returnVariable"),!Caster.toBoolean(exists));
+			pageContext.setVariable(getString("admin",action,"returnVariable"),needNewJars);
 		}
     	catch (Exception e) {
 			throw Caster.toPageException(e);
@@ -2139,6 +2173,8 @@ private void doGetMappings() throws PageException {
         long metaCacheTimeout=getLong("metaCacheTimeout",60000);
         boolean blob=getBool("blob",false);
         boolean clob=getBool("clob",false);
+        boolean validate=getBool("validate",false);
+        boolean storage=getBool("storage",false);
         boolean verify=getBool("verify",true);
         Struct custom=getStruct("custom",new StructImpl());
         
@@ -2146,7 +2182,7 @@ private void doGetMappings() throws PageException {
         //config.getConnectionPool().remove(name);
         DataSource ds=null;
 		try {
-			ds = new DataSourceImpl(name,classname,host,dsn,database,port,username,password,connLimit,connTimeout,metaCacheTimeout,blob,clob,allow,custom,false);
+			ds = new DataSourceImpl(name,classname,host,dsn,database,port,username,password,connLimit,connTimeout,metaCacheTimeout,blob,clob,allow,custom,false,validate,storage);
 		} catch (ClassException e) {
 			throw new DatabaseException("can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder",e.getMessage(),null,null,null);
 		}
@@ -2169,6 +2205,8 @@ private void doGetMappings() throws PageException {
                 blob,
                 clob,
                 allow,
+                validate,
+                storage,
                 custom
                 
         );
@@ -2182,7 +2220,8 @@ private void doGetMappings() throws PageException {
                 getString("admin",action,"class"),
                 toCacheConstant("default"),
                 getStruct("admin", action, "custom"),
-                getBool("readOnly", false)
+                getBool("readOnly", false),
+                getBool("storage", false)
                 
         );
         store();
@@ -2629,6 +2668,7 @@ private void doGetMappings() throws PageException {
         int row=0;
         
         doGetLogSettings(qry,"application",config.getApplicationLogger(),++row);
+        doGetLogSettings(qry,"scope",config.getScopeLogger(),++row);
         doGetLogSettings(qry,"exception",config.getExceptionLogger(),++row);
         doGetLogSettings(qry,"gateway",config.getGatewayLogger(),++row);
         doGetLogSettings(qry,"mail",config.getMailLogger(),++row);
@@ -2796,7 +2836,7 @@ private void doGetMappings() throws PageException {
 	private void doGetCacheConnections() throws PageException  {
 		Map conns = config.getCacheConnections();
 		Iterator it = conns.entrySet().iterator();
-		railo.runtime.type.Query qry=new QueryImpl(new String[]{"class","name","custom","default","readOnly"}, 0, "connections");
+		railo.runtime.type.Query qry=new QueryImpl(new String[]{"class","name","custom","default","readOnly","storage"}, 0, "connections");
         Map.Entry entry;
         CacheConnection cc;
         CacheConnection defObj=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_OBJECT);
@@ -2820,6 +2860,7 @@ private void doGetMappings() throws PageException {
         	qry.setAtEL("custom", row, cc.getCustom());
         	qry.setAtEL("default", row, def);
         	qry.setAtEL("readOnly", row, Caster.toBoolean(cc.isReadOnly()));
+        	qry.setAtEL("storage", row, Caster.toBoolean(cc.isStorage()));
         	
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
@@ -2884,6 +2925,7 @@ private void doGetMappings() throws PageException {
                 sct.setEL("custom",cc.getCustom());
                 sct.setEL("default",d);
                 sct.setEL("readOnly",Caster.toBoolean(cc.isReadOnly()));
+                sct.setEL("storage",Caster.toBoolean(cc.isStorage()));
                 
                 pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
                 return;
@@ -2906,7 +2948,7 @@ private void doGetMappings() throws PageException {
 	
 	private void doVerifyCacheConnection() throws PageException {
         try {
-			Cache cache = Util.getCache(pageContext, getString("admin",action,"name"));
+			Cache cache = Util.getCache(pageContext.getConfig(), getString("admin",action,"name"));
 			// FUTURE cache.verify();
 			cache.getCustomInfo();
 		} catch (IOException e) {
@@ -2957,6 +2999,8 @@ private void doGetMappings() throws PageException {
                 sct.setEL("custom",d.getCustoms());
                 sct.setEL("blob",Boolean.valueOf(d.isBlob()));
                 sct.setEL("clob",Boolean.valueOf(d.isClob()));
+                sct.setEL("validate",Boolean.valueOf(d.validate()));
+                sct.setEL("storage",Boolean.valueOf(d.isStorage()));
                 pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
                 return;
             }
@@ -3160,13 +3204,13 @@ private void doGetMappings() throws PageException {
         railo.runtime.type.Query qry=new QueryImpl(new String[]{"name","host","classname","dsn","DsnTranslated","database","port",
                 "username","password","readonly"
                 ,"grant","drop","create","revoke","alter","select","delete","update","insert"
-                ,"connectionLimit","connectionTimeout","clob","blob","customSettings"},ds.size(),"query");
+                ,"connectionLimit","connectionTimeout","clob","blob","validate","storage","customSettings"},ds.size(),"query");
         
         int row=0;
 
         while(it.hasNext()) {
             Object key=it.next();
-            DataSource d=(DataSource) ds.get(key);
+            DataSourceImpl d=(DataSourceImpl) ds.get(key);
             row++;
             qry.setAt("name",row,key);
             qry.setAt("host",row,d.getHost());
@@ -3195,6 +3239,9 @@ private void doGetMappings() throws PageException {
             qry.setAt("customSettings",row,d.getCustoms());
             qry.setAt("blob",row,Boolean.valueOf(d.isBlob()));
             qry.setAt("clob",row,Boolean.valueOf(d.isClob()));
+            qry.setAt("validate",row,Boolean.valueOf(d.validate()));
+            qry.setAt("storage",row,Boolean.valueOf(d.isStorage()));
+            
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     }
@@ -3343,7 +3390,7 @@ private void doGetMappings() throws PageException {
         
         Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
-        sct.set("scriptProtect",ApplicationContextUtil.translateScriptProtect(config.getScriptProtect()));
+        sct.set("scriptProtect",AppListenerUtil.translateScriptProtect(config.getScriptProtect()));
         
         // request timeout
         sct.set("requestTimeout",config.getRequestTimeout());

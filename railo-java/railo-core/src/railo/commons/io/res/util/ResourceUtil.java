@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import net.sf.jmimemagic.Magic;
 import net.sf.jmimemagic.MagicMatch;
@@ -64,6 +65,80 @@ public final class ResourceUtil {
     
     
     private static boolean isUnix=SystemUtil.isUnix();
+    
+    private static final HashMap<String, String> EXT_MT=new HashMap<String, String>();
+    static {
+    	EXT_MT.put("ai","application/postscript");
+    	EXT_MT.put("aif","audio/x-aiff");
+    	EXT_MT.put("aifc","audio/x-aiff");
+    	EXT_MT.put("aiff","audio/x-aiff");
+    	EXT_MT.put("au","audio/basic");
+    	EXT_MT.put("avi","video/x-msvideo");
+    	EXT_MT.put("bin","application/octet-stream");
+    	EXT_MT.put("bmp","image/x-ms-bmp");
+    	EXT_MT.put("cgm","image/cgm");
+    	EXT_MT.put("cmx","image/x-cmx");
+    	EXT_MT.put("csh","application/x-csh");
+    	EXT_MT.put("css ","text/css");
+    	EXT_MT.put("doc","application/msword");
+    	EXT_MT.put("docx","application/msword");
+    	EXT_MT.put("eps","application/postscript");
+    	EXT_MT.put("exe","application/octet-stream");
+    	EXT_MT.put("gif","image/gif");
+    	EXT_MT.put("gtar","application/x-gtar");
+    	EXT_MT.put("hqx","application/mac-binhex40");
+    	EXT_MT.put("htm","text/html");
+    	EXT_MT.put("html","text/html");
+    	EXT_MT.put("jpe","image/jpeg");
+    	EXT_MT.put("jpeg","image/jpeg");
+    	EXT_MT.put("jpg","image/jpeg");
+    	EXT_MT.put("js","text/javascript");
+    	EXT_MT.put("mmid","x-music/x-midi");
+    	EXT_MT.put("mov","video/quicktime");
+    	EXT_MT.put("mp2a","audio/x-mpeg-2");
+    	EXT_MT.put("mp2v","video/mpeg-2");
+    	EXT_MT.put("mp3","audio/mpeg");
+    	EXT_MT.put("mp4","video/mp4");
+    	EXT_MT.put("mpa","audio/x-mpeg");
+    	EXT_MT.put("mpa2","audio/x-mpeg-2");
+    	EXT_MT.put("mpeg","video/mpeg");
+    	EXT_MT.put("mpega","audio/x-mpeg");
+    	EXT_MT.put("mpg","video/mpeg");
+    	EXT_MT.put("mpv2","video/mpeg-2");
+    	EXT_MT.put("pbm","image/x-portable-bitmap");
+    	EXT_MT.put("pcd","image/x-photo-cd");
+    	EXT_MT.put("pdf","application/pdf");
+    	EXT_MT.put("pgm","image/x-portable-graymap");
+    	EXT_MT.put("pict","image/x-pict");
+    	EXT_MT.put("pl","application/x-perl");
+    	EXT_MT.put("png","image/x-png");
+    	EXT_MT.put("pnm","image/x-portable-anymap");
+    	EXT_MT.put("ppm","image/x-portable-pixmap");
+    	EXT_MT.put("ppt","application/vnd.ms-powerpoint");
+    	EXT_MT.put("pptx","application/vnd.ms-powerpoint");
+    	EXT_MT.put("ps","application/postscript");
+    	EXT_MT.put("qt","video/quicktime");
+    	EXT_MT.put("rgb","image/rgb");
+    	EXT_MT.put("rtf","application/rtf");
+    	EXT_MT.put("sh","application/x-sh");
+    	EXT_MT.put("sit","application/x-stuffit");
+    	EXT_MT.put("swf","application/x-shockwave-flash");
+    	EXT_MT.put("tar","application/x-tar");
+    	EXT_MT.put("tcl","application/x-tcl");
+    	EXT_MT.put("tif","image/tiff");
+    	EXT_MT.put("tiff","image/tiff");
+    	EXT_MT.put("txt","text/plain");
+    	EXT_MT.put("wav","audio/x-wav");
+    	EXT_MT.put("wma","audio/x-ms-wma");
+    	EXT_MT.put("wmv","video/x-ms-wmv");
+    	EXT_MT.put("xbm","image/x-xbitmap");
+    	EXT_MT.put("xhtml","application/xhtml+xml");
+    	EXT_MT.put("xls","application/vnd.ms-excel");
+    	EXT_MT.put("xlsx","application/vnd.ms-excel");
+    	EXT_MT.put("xpm","image/x-xpixmap");
+    	EXT_MT.put("zip","application/zip");
+    	
+    }
 	
 
     //private static Magic mimeTypeParser; 
@@ -391,7 +466,7 @@ public final class ResourceUtil {
 	
 	/**
      * sets attributes of a file on Windows system
-     * @param file
+     * @param res
      * @param attributes
      * @throws PageException
      * @throws IOException
@@ -551,7 +626,7 @@ public final class ResourceUtil {
 
 	/**
      * Returns the canonical form of this abstract pathname.
-     * @param file file to get canoncial form from it
+     * @param res file to get canoncial form from it
      *
      * @return  The canonical pathname string denoting the same file or
      *          directory as this abstract pathname
@@ -570,7 +645,7 @@ public final class ResourceUtil {
     
     /**
      * Returns the canonical form of this abstract pathname.
-     * @param file file to get canoncial form from it
+     * @param res file to get canoncial form from it
      *
      * @return  The canonical pathname string denoting the same file or
      *          directory as this abstract pathname
@@ -589,7 +664,7 @@ public final class ResourceUtil {
     
     /**
      * creates a new File
-     * @param file
+     * @param res
      * @return was successfull
      */
     public static boolean createNewResourceEL(Resource res) {
@@ -608,7 +683,7 @@ public final class ResourceUtil {
 
     /**
      * check if file is read and writable
-     * @param file
+     * @param res
      * @return is or not
      */
     public static boolean canRW(Resource res) {
@@ -646,7 +721,17 @@ public final class ResourceUtil {
      * @return mime type of the file
      */
     public static String getMymeType(Resource res, String defaultValue) {
-        
+        return getMymeType(res, false,defaultValue);
+    }
+    
+    public static String getMymeType(Resource res, boolean alsoCheckExtension, String defaultValue) {
+        if(alsoCheckExtension) {
+        	String ext = getExtension(res, null);
+			if(!StringUtil.isEmpty(ext)){
+        		String mt=EXT_MT.get(ext.trim().toLowerCase());
+        		if(mt!=null) return mt;
+			}
+        }
     	PrintStream out = System.out;
         try {
         	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
@@ -802,7 +887,11 @@ public final class ResourceUtil {
         	Resource[] files=filter==null?src.listResources():src.listResources(filter);
             for(int i=0;i<files.length;i++) {
             	_deleteContent(files[i],filter,true);
-            	if(deleteDirectories)src.delete();
+            	if(deleteDirectories){
+            		try {
+						src.remove(false);
+					} catch (IOException e) {}
+            	}
             }
             
         }
@@ -814,7 +903,7 @@ public final class ResourceUtil {
 
     /**
      * copy a file or directory recursive (with his content)
-     * @param file file or directory to delete
+     * @param res file or directory to delete
      * @throws IOException 
      * @throws FileNotFoundException 
      */
