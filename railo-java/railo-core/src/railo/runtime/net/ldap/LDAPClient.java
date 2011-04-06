@@ -353,17 +353,8 @@ public final class LDAPClient {
         return qry;
     }
 
-    public static String[] trim(final String[] values) { 
-        for (int i = 0, length = values.length; i < length; i++) { 
-                if (values[i] != null) { 
-                        values[i] = values[i].trim();                                 
-                } 
-        } 
-        return values; 
-    }
-
     private static String[] toStringAttributes(String strAttributes,String delimeter) throws PageException {
-		return trim(List.toStringArray(List.listToArrayRemoveEmpty(strAttributes,delimeter)));		
+		return List.toStringArrayTrim(List.listToArrayRemoveEmpty(strAttributes,delimeter));		
 	}
 	
 	private static Attributes toAttributes(String strAttributes,String delimeter, String separator) throws PageException {
