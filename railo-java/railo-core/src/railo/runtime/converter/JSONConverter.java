@@ -263,7 +263,7 @@ public final class JSONConverter {
 		Object o=cfc.get(TO_JSON,null);
 		if(!(o instanceof UDF)) return defaultValue;
 		UDF udf=(UDF) o;
-		if(udf.getReturnType()==CFTypes.TYPE_STRING && udf.getFunctionArguments().length==0) {
+		if(udf.getReturnType()!=CFTypes.TYPE_VOID && udf.getFunctionArguments().length==0) {
 			try {
 				return Caster.toString(cfc.call(pc, TO_JSON, new Object[0]));
 			} catch (PageException e) {
