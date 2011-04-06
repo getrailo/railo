@@ -307,6 +307,8 @@ public final class LDAPClient {
                     
                     int len=qry.addRow();
                     NamingEnumeration rowEnum = resultRow.getAttributes().getAll();
+                    String dn = resultRow.getNameInNamespace(); 
+                    qry.setAtEL("dn",len,dn);
                     while(rowEnum.hasMore()) {
                         Attribute attr = (Attribute)rowEnum.next();
                         String key = attr.getID();
@@ -327,7 +329,6 @@ public final class LDAPClient {
                     
                     Attributes attributesRow = resultRow.getAttributes();
                     NamingEnumeration rowEnum = attributesRow.getIDs();
-                    
                     while(rowEnum.hasMoreElements()) {
                         int len=qry.addRow();
                         String name = Caster.toString(rowEnum.next());
@@ -341,6 +342,7 @@ public final class LDAPClient {
                         qry.setAtEL("value",len,value);
                         if(maxrows>0 && len>=maxrows)break outer;
                     }
+                    qry.setAtEL("name",qry.size(),"dn");
                 }
             }
         }
@@ -351,9 +353,17 @@ public final class LDAPClient {
         return qry;
     }
 
+    public static String[] trim(final String[] values) { 
+        for (int i = 0, length = values.length; i < length; i++) { 
+                if (values[i] != null) { 
+                        values[i] = values[i].trim();                                 
+                } 
+        } 
+        return values; 
+    }
 
-	private static String[] toStringAttributes(String strAttributes,String delimeter) throws PageException {
-		return List.toStringArray(List.listToArrayRemoveEmpty(strAttributes,delimeter));		
+    private static String[] toStringAttributes(String strAttributes,String delimeter) throws PageException {
+		return trim(List.toStringArray(List.listToArrayRemoveEmpty(strAttributes,delimeter)));		
 	}
 	
 	private static Attributes toAttributes(String strAttributes,String delimeter, String separator) throws PageException {
