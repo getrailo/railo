@@ -286,7 +286,9 @@ public abstract class ArraySupport implements Array,List,Sizeable {
 	 * @see java.util.List#set(int, java.lang.Object)
 	 */
 	public final Object set(int index, Object element) {
-		return setEL(index+1, element); 
+		Object o=get(index);
+		setEL(index+1, element); 
+		return o;
 	}
 	
 
