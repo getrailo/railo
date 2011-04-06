@@ -10736,9 +10736,9 @@ dWord: creates a value of 0 (zero)</description>
 		<attribute>
 			<type>string</type>
 			<name>dataSource</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The name of an ODBC or native data source that points to the database that contains the stored 
+			<description>The name data source that points to the database that contains the stored 
 		procedure.</description>
 		</attribute>
 		<attribute>
