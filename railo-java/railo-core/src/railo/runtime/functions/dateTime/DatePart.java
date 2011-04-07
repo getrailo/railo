@@ -3,10 +3,6 @@
  */
 package railo.runtime.functions.dateTime;
 
-import java.util.TimeZone;
-
-import railo.print;
-import railo.commons.date.TimeZoneUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
@@ -14,6 +10,8 @@ import railo.runtime.type.dt.DateTime;
 
 public final class DatePart implements Function {
 	
+	private static final long serialVersionUID = -4203375459570986511L;
+
 	public static double call(PageContext pc , String datepart, DateTime date) throws ExpressionException {
 		return call(pc, datepart, date, null);
 	}
