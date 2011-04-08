@@ -32,6 +32,22 @@ function oc(id) {
 	}
 }
 </script>
+<cfscript>
+function convertST(st){
+	st=replace(HTMLEditFormat(st),"
+","x<br>","all");
+
+	st=replace(st,"  ","&nbsp; ","all");
+	st=replace(st,"  ","&nbsp; ","all");
+	st=replace(st,"  ","&nbsp; ","all");
+	st=replace(st,"  ","&nbsp; ","all");
+	st=replace(st,"  ","&nbsp; ","all");
+	st=replace(st,"	","&nbsp;&nbsp;&nbsp;","all");
+	
+return st;
+
+}
+</cfscript>
 <table border="0" cellpadding="4" cellspacing="2" style="font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;font-size : 11px;background-color:red;border : 1px solid black;;">
 <tr>
 	<td colspan="2" style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Railo #server.railo.version# Error (#(catch.type)#)</td>
@@ -104,7 +120,7 @@ function oc(id) {
 </cfif>
 <tr>
 	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;" nowrap="nowrap">Java Stacktrace</td>
-	<td style="border : 1px solid ##350606;background-color :##FFCC00;"><pre>#HTMLEditFormat(catch.stacktrace)#</pre></td>
+	<td style="border : 1px solid ##350606;background-color :##FFCC00;" class="">#convertST(catch.stacktrace)#</td>
 </tr>
 </table><br />
 </cfoutput>
