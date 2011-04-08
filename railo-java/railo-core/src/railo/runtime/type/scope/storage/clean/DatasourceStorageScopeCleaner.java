@@ -29,7 +29,7 @@ public class DatasourceStorageScopeCleaner extends StorageScopeCleanerSupport {
 	//private String strType;
 	
 	public DatasourceStorageScopeCleaner(int type,StorageScopeListener listener) {
-		super(type,listener);
+		super(type,listener,INTERVALL_HOUR);
 		//this.strType=VariableInterpreter.scopeInt2String(type);
 	}
 	
@@ -37,7 +37,7 @@ public class DatasourceStorageScopeCleaner extends StorageScopeCleanerSupport {
 		super.init(engine);
 	}
 
-	public void clean() {
+	protected void _clean() {
 		ConfigWeb config = engine.getFactory().getConfig();
 		DataSource[] datasources = config.getDataSources();
 		for(int i=0;i<datasources.length;i++){

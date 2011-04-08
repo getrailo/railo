@@ -20,7 +20,7 @@ public class CacheStorageScopeCleaner extends StorageScopeCleanerSupport {
 	private Filter filter;
 
 	public CacheStorageScopeCleaner(int type,StorageScopeListener listener) {
-		super(type,listener);
+		super(type,listener,INTERVALL_MINUTE);
 		//this.strType=VariableInterpreter.scopeInt2String(type);
 		filter=new Filter(strType);
 	}
@@ -30,7 +30,7 @@ public class CacheStorageScopeCleaner extends StorageScopeCleanerSupport {
 		
 	}
 
-	public void clean() {
+	protected void _clean() {
 		ConfigWebImpl config = (ConfigWebImpl) engine.getFactory().getConfig();
 		Map connections = config.getCacheConnections();
 		CacheConnection cc;

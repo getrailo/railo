@@ -27,7 +27,7 @@ public class FileStorageScopeCleaner extends StorageScopeCleanerSupport {
 
 
 	public FileStorageScopeCleaner(int type,StorageScopeListener listener) {
-		super(type,listener);
+		super(type,listener,INTERVALL_DAY);
 	}
 	
 	/**
@@ -40,7 +40,7 @@ public class FileStorageScopeCleaner extends StorageScopeCleanerSupport {
 	/**
 	 * @see railo.runtime.type.scope.storage.StorageScopeCleaner#clean(b)
 	 */
-	public void clean() {
+	protected void _clean() {
 		ConfigWebImpl cwi=(ConfigWebImpl) engine.getFactory().getConfig();
 		Resource dir=type==Scope.SCOPE_CLIENT?cwi.getClientScopeDir():cwi.getSessionScopeDir();
 		
