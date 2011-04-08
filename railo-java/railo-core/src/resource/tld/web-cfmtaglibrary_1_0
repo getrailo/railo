@@ -6780,6 +6780,107 @@ Valid only for cfinput type="text".</description>
 			<description>Flash only: Text to display when the mouse pointer hovers
             over the control.</description>
 		</attribute>
+		
+		
+		<attribute>
+			<type>string</type>
+			<name>autocomplete</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Specifies the types of files that can be submitted through a file upload (only for type="file")</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>autofocus</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Specifies that the input field should have focus on page load (not for type="hidden")</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>form</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Specifies one ore more forms the input field belongs to</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>formaction</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Overrides the form's action attribute. Must be a valid URL that defines where to send the data when the form is submitted (for type="submit" and type="image")</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>formenctype</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Overrides the form's enctype attribute. Specifies how form-data should be encoded before sending it to the server (for type="submit" and type="image")</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>formmethod</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Overrides the form's method attribute. Defines the HTTP method for sending data to the action URL (fo type="submit" and type="image")</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>formnovalidate</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Overrides the form's novalidate attribute. If present the input field should not be validated when submitted</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>formtarget</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Overrides the form's target attribute. Specifies the target window used when the form is submitted (for type="submit" and type="image")</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>list</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Refers to a datalist containing predefined options for the input field</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>max</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Specifies the input field's maximum value. Use together with the "min" attribute to create a range of legal values</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>min</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Specifies the input field's minimum value. Use together with the "max" attribute to create a range of legal values</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>multiple</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: If present the user is allowed more than one value</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>placeholder</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Specifies a hint to help users fill out the input field</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>step</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Specifies the legal number intervals for the input field</description>
+		</attribute>
+		
 	</tag>
 
 	<!-- Insert -->
