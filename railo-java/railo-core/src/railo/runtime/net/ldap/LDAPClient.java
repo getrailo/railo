@@ -314,7 +314,11 @@ public final class LDAPClient {
                         String key = attr.getID();
                         Enumeration values = attr.getAll();
                         while(values.hasMoreElements()) {
-                            qry.setAtEL(key,len,values.nextElement());
+                        	Object value = values.nextElement();
+                            if(qry.getAt(key, len) != ""  && value instanceof java.lang.String) {
+                            	value = qry.getAt(key, len) + ", " + (String) value;
+                            }
+                            qry.setAtEL(key,len,value);
                             //print.ln(id+":"+values.nextElement());
                         }            
                     }
