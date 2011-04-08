@@ -20,7 +20,6 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.java.JavaObject;
