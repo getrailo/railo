@@ -29,7 +29,8 @@ public class Surveillance {
 	private static final Collection.Key CLASS_LOADER = KeyImpl.getInstance("classLoader");
 	private static final Collection.Key QUERY_CACHE = KeyImpl.getInstance("queryCache");
 	private static final Collection.Key PAGE_CONTEXT_STACK = KeyImpl.getInstance("pageContextStack");
-
+	
+	
 	public static Struct getInfo(ConfigImpl config) throws PageException {
 		
 		Struct sct=new StructImpl();

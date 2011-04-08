@@ -63,7 +63,6 @@ import railo.runtime.db.DataSourceManager;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.DumpWriter;
-import railo.runtime.engine.Surveillance;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
@@ -644,7 +643,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateupdate",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateUpdate();
         else if(check("getSerial",              ACCESS_FREE) && check2(ACCESS_READ     )) doGetSerial();
         else if(check("updateSerial",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateSerial();
-       
+        
         else if(check("securitymanager",        ACCESS_FREE) && check2(ACCESS_READ             )) doSecurityManager();
         
         
@@ -3809,7 +3808,11 @@ private void doGetMappings() throws PageException {
     
 
 	private void doSurveillance() throws PageException {
-		pageContext.setVariable(getString("admin",action,"returnVariable"),Surveillance.getInfo(config));//31
+		
+		CFMLFactoryImpl factory = (CFMLFactoryImpl) config.getFactory();
+		pageContext.setVariable(getString("admin",action,"returnVariable"),
+				factory.getInfo());
+		//pageContext.setVariable(getString("admin",action,"returnVariable"),Surveillance.getInfo(config));
 	}
     
     private void doGetProxy() throws PageException  {
