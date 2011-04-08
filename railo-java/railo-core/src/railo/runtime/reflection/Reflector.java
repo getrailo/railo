@@ -20,8 +20,10 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
+import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.reflection.pairs.ConstructorInstance;
@@ -406,7 +408,7 @@ public final class Reflector {
 						try {
 							//newArgs[y]=convert(args[y],clazzArgs[y],toReferenceClass(parameterTypes[y]));
 							newArgs[y]=convert(args[y],toReferenceClass(parameterTypes[y]));
-						} catch (PageException e) {
+						} catch (PageException e) {e.printStackTrace();
 							continue outer;
 						}
 						//if(newArgs[y]==null) continue outer;
@@ -450,10 +452,44 @@ public final class Reflector {
         throws NoSuchMethodException {
         MethodInstance mi=getMethodInstanceEL(clazz, KeyImpl.init(methodName), args);
         if(mi!=null) return mi;
-        throw new NoSuchMethodException("No matching Method for "+methodName+"("+getDspMethods(getClasses(args))+") found for "+
+        
+        Class[] classes = getClasses(args);
+        StringBuilder sb=null;
+        JavaObject jo;
+        Class c;
+        ConstructorInstance ci;
+        for(int i=0;i<classes.length;i++){
+        	if(args[i] instanceof JavaObject) {
+        		jo=(JavaObject) args[i];
+        		c=jo.getClazz();
+        		ci = Reflector.getConstructorInstance(c, new Object[0], null);
+        		if(ci==null) {
+        			
+        		throw new NoSuchMethodException("The "+pos(i+1)+" parameter of "+methodName+"("+getDspMethods(classes)+") ia a object created " +
+        				"by the createObject function (JavaObject/JavaProxy). This object has not been instantiated because it does not have a constructor " +
+        				"that takes zero arguments. Railo cannot instantiate it for you, please use the .init(...) method to instantiate it with the correct parameters first");
+        			
+        			
+        		}
+        	}
+        }
+        /*
+        the argument list contains objects created by createObject, 
+        that are no instantiated (first,third,10th) and because this object have no constructor taking no arguments, Railo cannot instantiate them.
+        you need first to instantiate this objects. 
+        */
+        throw new NoSuchMethodException("No matching Method for "+methodName+"("+getDspMethods(classes)+") found for "+
         		Caster.toTypeName(clazz));
     }
 	
+	private static String pos(int index) {
+		if(index==1) return "first";
+		if(index==2) return "second";
+		if(index==3) return "third";
+		
+		return index+"th";
+	}
+
 	/**
 	 * same like method getField from Class but ignore case from field name
 	 * @param clazz class to search the field
