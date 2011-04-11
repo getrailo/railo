@@ -10,6 +10,7 @@ import railo.runtime.Component;
 import railo.runtime.ComponentPro;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.customtag.InitFile;
@@ -54,7 +55,15 @@ public final class GetTagData implements Function {
 		catch(Throwable t){}
 		
 		if(clazz==CFTagCore.class){
-			return cfmlBasedTag(pc,tld,tag);
+			PageContextImpl pci=(PageContextImpl) pc;
+			boolean prior = pci.useSpecialMappings(true);
+			try{
+				return cfmlBasedTag(pc,tld,tag);
+			}
+			finally {
+				pci.useSpecialMappings(prior);
+			}
+			
 		}
 		return javaBasedTag(tld,tag);
 		
