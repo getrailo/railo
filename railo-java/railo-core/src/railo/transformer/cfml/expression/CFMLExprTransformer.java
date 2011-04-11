@@ -45,6 +45,7 @@ import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
+import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagScript;
 import railo.transformer.util.CFMLString;
 
@@ -163,7 +164,8 @@ public class CFMLExprTransformer implements ExprTransformer {
 		public boolean isCFC;
 		public boolean isInterface;
 		public EvaluatorPool ep;
-		public short context=CTX_NONE;
+		public short context=CTX_NONE; 
+		public TagLibTag[] scriptTags;
 		
 		public Data(EvaluatorPool ep, CFMLString cfml, FunctionLib[] fld,boolean allowLowerThan) {
 			this.ep=ep;

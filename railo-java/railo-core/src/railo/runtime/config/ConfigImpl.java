@@ -1072,16 +1072,19 @@ public abstract class ConfigImpl implements Config {
         }
     }
     
+    public TagLib getCoreTagLib(){
+    	for(int i=0;i<tlds.length;i++) {
+        	if(tlds[i].getNameSpaceAndSeparator().equals("cf"))return tlds[i];	
+        }
+    	throw new RuntimeException("no core taglib found"); // this should never happen
+    }
+    
     protected void setTagDirectory(Resource tagDirectory) {
     	this.tagDirectory=tagDirectory;
     	
     	this.tagMapping= new MappingImpl(this,"/mapping-tag/",tagDirectory.getAbsolutePath(),null,true,true,true,true,true);
     	
-    	TagLib tl=null;
-        for(int i=0;i<tlds.length;i++) {
-        	// TODO get core taglib
-        	if(tlds[i].getNameSpaceAndSeparator().equals("cf"))tl=tlds[i];	
-        }
+    	TagLib tl=getCoreTagLib();
     	
         // now overwrite with new data
         if(tagDirectory.isDirectory()) {
@@ -1094,7 +1097,7 @@ public abstract class ConfigImpl implements Config {
         
     }
     
-    public void createTag(TagLib tl,String filename) {
+    public void createTag(TagLib tl,String filename) {// Jira 1298
     	String name=toName(filename);//filename.substring(0,filename.length()-(getCFCExtension().length()+1));xxx
         
     	TagLibTag tlt = new TagLibTag(tl);

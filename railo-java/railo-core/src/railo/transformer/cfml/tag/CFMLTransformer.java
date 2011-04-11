@@ -578,7 +578,7 @@ public final class CFMLTransformer {
 					throw new TemplateException(data.cfml,e);
 				}
 				if(tdbt==null) throw createTemplateException(data.cfml,"Tag dependent body Transformer is invalid for Tag ["+tagLibTag.getFullName()+"]",tagLibTag);
-				tdbt.transform(this,data.ep,data.flibs,tag,tagLibTag,data.cfml);
+				tdbt.transform(data.config,this,data.ep,data.flibs,tag,tagLibTag,data.cfml);
 				
 				
 				//	get TagLib of end Tag

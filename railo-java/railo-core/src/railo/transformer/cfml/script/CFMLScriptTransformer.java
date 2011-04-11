@@ -10,6 +10,8 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Component;
+import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.system.CFFunction;
@@ -50,9 +52,6 @@ import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.cfml.tag.TagDependentBodyTransformer;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
-import railo.transformer.library.tag.TagLib;
-import railo.transformer.library.tag.TagLibException;
-import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
 import railo.transformer.library.tag.TagLibTagScript;
@@ -75,12 +74,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	private short ATTR_TYPE_NONE=TagLibTagAttr.SCRIPT_SUPPORT_NONE;
 	private short ATTR_TYPE_OPTIONAL=TagLibTagAttr.SCRIPT_SUPPORT_OPTIONAL;
 	private short ATTR_TYPE_REQUIRED=TagLibTagAttr.SCRIPT_SUPPORT_REQUIRED;
-	private TagLib systemTagLib;
 	
-	//private boolean insideFunction=false;
-	//private String tagName="";
-	//private boolean isCFC;
-
 	public class ComponentBodyException extends TemplateException {
 		private static final long serialVersionUID = -8103635220891288231L;
 		
@@ -122,26 +116,18 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @throws TemplateException
 	 */
 
-	public void transform(CFMLTransformer parentTransformer,EvaluatorPool ep,FunctionLib[] fld, Tag tag,TagLibTag libTag, CFMLString cfml) throws TemplateException	{
-		
+	public void transform(Config config,CFMLTransformer parentTransformer,EvaluatorPool ep,FunctionLib[] fld, Tag tag,TagLibTag libTag, CFMLString cfml) throws TemplateException	{
 		Page page = ASMUtil.getAncestorPage(tag);
 		boolean isCFC= page.isComponent();
 		boolean isInterface= page.isInterface();
-		if(systemTagLib==null) {
-			try {
-				systemTagLib=TagLibFactory.loadFromSystem();
-			} catch (TagLibException e) {
-				throw new TemplateException(cfml, e);
-			}
-		}
-		
 		
 		Data data = init(ep,fld,cfml,true);
 		data.insideFunction=false; 
 		data.tagName=libTag.getFullName();
 		data.isCFC=isCFC;
 		data.isInterface=isInterface;
-
+		data.scriptTags=((ConfigImpl) config).getCoreTagLib().getScriptTags();
+		
 		tag.setBody(statements(data));
 	}
 
@@ -721,22 +707,17 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	private Statement tagStatement(Data data, Body parent) throws TemplateException {
 		Statement child;
 		
-		TagLibTag[] tags =systemTagLib.getScriptTags();
 		//TagLibTag[] tags = getScriptTags(data);
-		for(int i=0;i<tags.length;i++){
+		for(int i=0;i<data.scriptTags.length;i++){
 			// single
-			if(tags[i].getScript().getType()==TagLibTagScript.TYPE_SINGLE) { 
-				if((child=_singleAttrStatement(parent,data,tags[i]))!=null)return child;
+			if(data.scriptTags[i].getScript().getType()==TagLibTagScript.TYPE_SINGLE) { 
+				if((child=_singleAttrStatement(parent,data,data.scriptTags[i]))!=null)return child;
 			}
 			// multiple
 			else {//if(tags[i].getScript().getType()==TagLibTagScript.TYPE_MULTIPLE) { 
-				if((child=_multiAttrStatement(parent,data,tags[i]))!=null)return child;
+				if((child=_multiAttrStatement(parent,data,data.scriptTags[i]))!=null)return child;
 			}
 		}
-	
-		
-		
-		
 		
 		//if((child=_singleAttrStatement(parent,data,"abort","showerror",ATTR_TYPE_OPTIONAL,true))!=null)		return child;
 		//if((child=_multiAttrStatement(parent,data,"admin",CTX_OTHER,false,true))!=null)				return child;
