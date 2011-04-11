@@ -35,7 +35,7 @@ function oc(id) {
 <cfscript>
 function convertST(st){
 	st=replace(HTMLEditFormat(st),"
-","x<br>","all");
+","<br>","all");
 
 	st=replace(st,"  ","&nbsp; ","all");
 	st=replace(st,"  ","&nbsp; ","all");
