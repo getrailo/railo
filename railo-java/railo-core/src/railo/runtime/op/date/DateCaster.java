@@ -842,8 +842,8 @@ public final class DateCaster {
 	if(ds.isAfterLast()) {
 		long time= util.toTime(TimeZoneConstants.UTC, years, months, days, hours, minutes, seconds, milliSeconds, 0);
     	
-		if(isPlus)time+=offset;
-        	else time-=offset;
+		if(isPlus)time-=offset;
+        	else time+=offset;
 		return new DateTimeImpl(time,false);
 	}
 	return defaultValue;
