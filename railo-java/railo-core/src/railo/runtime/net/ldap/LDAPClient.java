@@ -23,6 +23,8 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
@@ -311,11 +313,18 @@ public final class LDAPClient {
                     qry.setAtEL("dn",len,dn);
                     while(rowEnum.hasMore()) {
                         Attribute attr = (Attribute)rowEnum.next();
-                        String key = attr.getID();
+                        Collection.Key key = KeyImpl.init(attr.getID());
                         Enumeration values = attr.getAll();
+                        Object value;
+                        String existing,strValue;
                         while(values.hasMoreElements()) {
-                            qry.setAtEL(key,len,values.nextElement());
-                            //print.ln(id+":"+values.nextElement());
+                            value = values.nextElement();
+                            strValue=Caster.toString(value,null);
+                            existing=Caster.toString(qry.getAt(key, len,null),null);
+                            if(existing!=null && strValue!=null) {
+                            	value = existing + ", " + strValue;
+                         	}
+                         	qry.setAtEL(key,len,value);
                         }            
                     }
                     if(maxrows>0 && len>=maxrows)break;
