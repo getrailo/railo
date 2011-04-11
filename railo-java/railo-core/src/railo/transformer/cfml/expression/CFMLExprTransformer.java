@@ -45,6 +45,7 @@ import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
+import railo.transformer.library.tag.TagLibTagScript;
 import railo.transformer.util.CFMLString;
 
 /**
@@ -119,29 +120,29 @@ public class CFMLExprTransformer implements ExprTransformer {
 	private static FunctionLibFunction JSON_ARRAY = null;
 	private static FunctionLibFunction JSON_STRUCT = null;
 
-	public static final short CTX_OTHER = -1;
-	public static final short CTX_NONE = 0;
-	public static final short CTX_IF = 1;
-	public static final short CTX_ELSE_IF = 2;
-	public static final short CTX_ELSE = 3;
-	public static final short CTX_FOR = 4;
-	public static final short CTX_WHILE = 5;
-	public static final short CTX_DO_WHILE = 6;
-	public static final short CTX_CFC = 7;
-	public static final short CTX_INTERFACE = 8;
-	public static final short CTX_FUNCTION = 9;
-	public static final short CTX_BLOCK = 10;
-	public static final short CTX_FINALLY = 11;
-	public static final short CTX_SWITCH = 12;
-	public static final short CTX_TRY = 13;
-	public static final short CTX_CATCH = 14;
-	public static final short CTX_TRANSACTION = 15;
-	public static final short CTX_THREAD = 16;
-	public static final short CTX_SAVECONTENT = 17;
-	public static final short CTX_LOCK = 18;
-	public static final short CTX_LOOP = 19;
-	public static final short CTX_QUERY = 20;
-	public static final short CTX_ZIP = 21;
+	public static final short CTX_OTHER = TagLibTagScript.CTX_OTHER;
+	public static final short CTX_NONE = TagLibTagScript.CTX_NONE;
+	public static final short CTX_IF = TagLibTagScript.CTX_IF;
+	public static final short CTX_ELSE_IF = TagLibTagScript.CTX_ELSE_IF;
+	public static final short CTX_ELSE = TagLibTagScript.CTX_ELSE;
+	public static final short CTX_FOR = TagLibTagScript.CTX_FOR;
+	public static final short CTX_WHILE = TagLibTagScript.CTX_WHILE;
+	public static final short CTX_DO_WHILE = TagLibTagScript.CTX_DO_WHILE;
+	public static final short CTX_CFC = TagLibTagScript.CTX_CFC;
+	public static final short CTX_INTERFACE = TagLibTagScript.CTX_INTERFACE;
+	public static final short CTX_FUNCTION =TagLibTagScript.CTX_FUNCTION;
+	public static final short CTX_BLOCK = TagLibTagScript.CTX_BLOCK;
+	public static final short CTX_FINALLY = TagLibTagScript.CTX_FINALLY;
+	public static final short CTX_SWITCH = TagLibTagScript.CTX_SWITCH;
+	public static final short CTX_TRY = TagLibTagScript.CTX_TRY;
+	public static final short CTX_CATCH = TagLibTagScript.CTX_CATCH;
+	public static final short CTX_TRANSACTION = TagLibTagScript.CTX_TRANSACTION;
+	public static final short CTX_THREAD = TagLibTagScript.CTX_THREAD;
+	public static final short CTX_SAVECONTENT = TagLibTagScript.CTX_SAVECONTENT;
+	public static final short CTX_LOCK = TagLibTagScript.CTX_LOCK;
+	public static final short CTX_LOOP = TagLibTagScript.CTX_LOOP;
+	public static final short CTX_QUERY = TagLibTagScript.CTX_QUERY;
+	public static final short CTX_ZIP = TagLibTagScript.CTX_ZIP;
 	
 	
 	/*private short mode=0;

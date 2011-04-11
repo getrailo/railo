@@ -25,6 +25,7 @@ import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
+import railo.transformer.library.tag.TagLibTagScript;
 
 public final class GetTagData implements Function {
 	
@@ -93,6 +94,15 @@ public final class GetTagData implements Function {
 		sct.set("attrMin",Caster.toDouble(0));
 		sct.set("attrMax",Caster.toDouble(0));
 		
+		// TODO add support for script for cfml tags
+		Struct scp=new StructImpl();
+		sct.set("script",scp);
+		scp.set("rtexpr", Boolean.FALSE);
+		scp.set("type", "none");
+		
+		
+		
+		
 		if(metadata!=null) {
 			sct.set("description",metadata.get("hint",""));
 			sct.set("attributeType",metadata.get("attributeType",""));
@@ -112,6 +122,8 @@ public final class GetTagData implements Function {
 					_attr.set("description",src.get("hint",""));
 					_attr.set("type",src.get("type","any"));
 					_attr.set("required",Caster.toBoolean(src.get("required",""),null));
+					_attr.set("scriptSupport","none");
+					
 					_attrs.setEL(keys[i].getLowerString(),_attr);
 					
 				}
@@ -159,6 +171,22 @@ public final class GetTagData implements Function {
 		sct.set("attrMin",Caster.toDouble(tag.getMin()));
 		sct.set("attrMax",Caster.toDouble(tag.getMax()));
 		sct.set("hasNameAppendix",Caster.toBoolean(tag.hasAppendix()));
+		
+		// script
+		TagLibTagScript script = tag.getScript();
+		if(script!=null) {
+			Struct scp=new StructImpl();
+			sct.set("script",scp);
+			scp.set("rtexpr", Caster.toBoolean(script.getRtexpr()));
+			scp.set("type", script.getTypeAsString());
+			if(script.getType()==TagLibTagScript.TYPE_SINGLE) {
+				TagLibTagAttr attr = script.getSingleAttr();
+				if(attr!=null)scp.set("singletype", attr.getScriptSupportAsString());
+				else scp.set("singletype", "none");
+			}
+		}
+		
+		
 		sct.set("type","java");
 		
 		Struct _args=new StructImpl();
@@ -177,6 +205,7 @@ public final class GetTagData implements Function {
 			_arg.set("description",attr.getDescription());
 			_arg.set("type",attr.getType());
 			_arg.set("required",attr.isRequired()?Boolean.TRUE:Boolean.FALSE);
+			_arg.set("scriptSupport",attr.getScriptSupportAsString());
 			_args.setEL(attr.getName(),_arg);
 		}
 		return sct;

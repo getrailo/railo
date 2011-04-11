@@ -878,6 +878,7 @@
 	<data key="doc.attrtitle">Attributes</data>
 	<data key="doc.argtitle">Arguments</data>
 	<data key="doc.bodytitle">Body</data>
+	<data key="doc.alsoScript">This tag is also supported within cfscript.</data>
 	<data key="doc.depFunction">This Function is deprecated</data>
 	<data key="doc.depTag">This Tag is deprecated</data>
 	<data key="doc.depAttr">This Attribute is deprecated</data>
