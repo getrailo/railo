@@ -61,7 +61,7 @@ public final class SystemCacheClear implements Function {
 
 	private static void tagCache(PageContext pc) {
 		ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
-		config.clearFunctionCache();
+		config.clearTagCache();
 		PagePoolClear.clear(config.getServerTagMapping());
 		PagePoolClear.clear(config.getTagMapping());
 	}
