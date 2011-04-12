@@ -95,12 +95,12 @@ public final class DumpStruct implements Function {
 	
 	private static Struct toCFML(DumpTable dt, Object object, RefBoolean hasReference) {
 		Struct sct=new StructImpl(); 
-		sct.setEL("borderColor", dt.getBorderColor());
+		sct.setEL("borderColor", toShortColor(dt.getBorderColor()));
 		sct.setEL("comment", dt.getComment());
-		sct.setEL("fontColor", dt.getFontColor());
+		sct.setEL("fontColor", toShortColor(dt.getFontColor()));
 		sct.setEL("height", dt.getHeight());
-		sct.setEL("highLightColor", dt.getHighLightColor());
-		sct.setEL("normalColor", dt.getNormalColor());
+		sct.setEL("highLightColor", toShortColor(dt.getHighLightColor()));
+		sct.setEL("normalColor", toShortColor(dt.getNormalColor()));
 		sct.setEL("title", dt.getTitle());
 		
 		sct.setEL("width", dt.getWidth());
@@ -133,7 +133,7 @@ public final class DumpStruct implements Function {
 		sct.setEL("data", qry);
 		return sct;
 	}
-		
+
 	private static String[] toColumns(DumpData[] items) {
 		String[] columns=new String[items.length+1];
 		columns[0]="highlight";
@@ -157,5 +157,17 @@ public final class DumpStruct implements Function {
 			return template+":"+line;
 		}
 		return null;
+	}
+		
+	private static Object toShortColor(String color) {
+		if(color!=null && color.length()==7 && color.startsWith("#")) {
+			if(color.charAt(1)==color.charAt(2) && color.charAt(3)==color.charAt(4) && color.charAt(5)==color.charAt(6))
+				return "#"+color.charAt(1)+color.charAt(3)+color.charAt(5);
+			
+			
+		} 
+		
+		
+		return color;
 	}
 }

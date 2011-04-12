@@ -50,7 +50,7 @@ component {
 	================================================================================================== */
 	boolean function onStartTag(required struct attributes, required struct caller) {
 		// inital settings
-		var dumpID = "dump-" & hash(CreateUUID());
+		
 		var attrib = arguments.attributes;
 
 		//eval
@@ -85,7 +85,8 @@ component {
 		catch(e) {
 			var meta = dumpStruct(structKeyExists(attrib,'var') ? attrib.var : nullValue(), attrib.top, attrib.show, attrib.hide, attrib.keys, attrib.metaInfo, attrib.showUDFs);
 		}
-
+		var dumpID = createId();//"dump_" & meta.id;
+		
 		// create output
 		var hasReference = structKeyExists(meta,'hasReference') && meta.hasReference;
 		var result = this[attrib.format](meta, context, attrib.expand, attrib.output, hasReference, 0, dumpID);
@@ -113,14 +114,15 @@ component {
 	   html                                                                                             =
 	================================================================================================== */
 	string function html( required struct meta,
-						  string context = "",
-						  string expand = "",
-						  string output = "",
-						  string hasReference = false,
-						  string level = 0,
-						  string dumpID = "" ) {
+						  required string context,
+						  required string expand,
+						  required string output,
+						  required string hasReference ,
+						  required string level ,
+						  required string dumpID,
+						  struct cssColors={}) {
 
-		var id = "_dump" & hash(CreateUUID());
+		var id = createId();
 		var rtn = "";
 		var columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0;
 		var title = !arguments.level ? 'title="#arguments.context#" ' : '';
@@ -128,79 +130,90 @@ component {
 		var height = structKeyExists(arguments.meta,'height') ? ' height="' & arguments.meta.height & '"' : '';
 		var indent = repeatString(TAB, arguments.level);
 
-		savecontent variable="rtn" {
-			if(arguments.level EQ 0){
-				// javascript
-				echo("<script>" & NEWLINE);
-				echo("function dumpOC(name){" & NEWLINE);
-				echo(TAB & "var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName('_'+name);" & NEWLINE);
-				echo(TAB & "var s=null;" & NEWLINE);
-				echo(TAB & "name='_'+name;" & NEWLINE);
-				echo(TAB & "for(var i=0;i<tds.length;i++) {" & NEWLINE);
-				echo(TAB & TAB & "if(document.all && tds[i].name!=name)continue;" & NEWLINE);
-				echo(TAB & TAB & "s=tds[i].style;" & NEWLINE);
-				echo(TAB & TAB & "if(s.display=='none') s.display='';" & NEWLINE);
-				echo(TAB & TAB & "else s.display='none';" & NEWLINE);
-				echo(TAB & "}" & NEWLINE);
-				echo("}" & NEWLINE);
-				echo("</script>" & NEWLINE);
+			
 
-				// styles
-				echo('<style type="text/css">' & NEWLINE);
-				echo(TAB & 'div###arguments.dumpID# table {font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; font-size:11px; empty-cells:show; color:#arguments.meta.fontColor#;}' & NEWLINE);
-				echo(TAB & 'div###arguments.dumpID# td {border:1px solid #arguments.meta.borderColor#; vertical-align:top; padding:2px; empty-cells:show;}' & NEWLINE);
-				echo(TAB & 'div###arguments.dumpID# td span {font-weight:bold;}' & NEWLINE);
-				echo('</style>' & NEWLINE);
-			}
-
-			echo(indent & '<table cellspacing="1"#width##height#>' & NEWLINE);
+			rtn&=('<table cellspacing="1"#width##height#>' );
 
 			// title
 			if(structKeyExists(arguments.meta, 'title')){
 				var metaID = arguments.hasReference && structKeyExists(arguments.meta,'id') ? ' [#arguments.meta.id#]' : '';
 				var comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
 
-				echo(indent & '<tr>' & NEWLINE);
-				echo(indent & TAB & '<td title="#arguments.context#" onclick="dumpOC(''#id#'');" colspan="#columnCount#" style="background:#arguments.meta.highLightColor#;">');
-				echo('<span>#arguments.meta.title##metaID#</span>');
-				echo(comment & '</td>' & NEWLINE);
-				echo(indent & '</tr>' & NEWLINE);
+				rtn&=('<tr>');
+				rtn&=('<td id="#doCSSColors(cssColors,arguments.meta.highLightColor)#" title="#arguments.context#" onclick="dumpOC(''#id#'');" colspan="#columnCount#">');
+				rtn&=('<span>#arguments.meta.title##metaID#</span>');
+				rtn&=(comment & '</td>');
+				rtn&=('</tr>');
 			}
 			else {
 				id = "";
 			}
 
 			// data
+			
 			if(columnCount) {
 				loop query="arguments.meta.data" {
 					var c = 1;
 					var nodeID = len(id) ? ' name="_#id#"' : '';
 					var hidden = !arguments.expand && len(id) ? ' style="display:none"' : '';
 
-					echo(indent & '<tr#nodeID##hidden#>' & NEWLINE);
+					rtn&=('<tr#nodeID##hidden#>');
 
 					for(var col=1; col LTE columnCount-1; col++) {
 						var node = arguments.meta.data["data" & col];
 
 						if(isStruct(node)) {
-							var value = this.html(node, "", arguments.expand, arguments.output, arguments.hasReference, arguments.level+1);
+							var value = this.html(node, "", arguments.expand, arguments.output, arguments.hasReference, arguments.level+1,arguments.dumpID,cssColors);
 
-							echo(indent & TAB & '<td #title#style="background:#bgColor(arguments.meta,c)#;">' & NEWLINE);
-							echo(value);
-							echo(indent & TAB & '</td>' & NEWLINE);
+							rtn&=('<td id="#doCSSColors(cssColors,bgColor(arguments.meta,c))#" #title#>');
+							rtn&=(value);
+							rtn&=('</td>');
 						}
 						else {
-							echo(indent & TAB & '<td #title#style="background:#bgColor(arguments.meta,c)#;">' & HTMLEditFormat(node) & '</td>' & NEWLINE);
+							rtn&=('<td id="#doCSSColors(cssColors,bgColor(arguments.meta,c))#" #title#>' & HTMLEditFormat(node) & '</td>' );
 						}
 						c *= 2;
 					}
-					echo(indent & '</tr>' & NEWLINE);
+					rtn&=('</tr>');
 				}
 			}
-			echo(indent & '</table>' & NEWLINE);
-		}
+			rtn&=('</table>');
+			
+			// Header
+			if(arguments.level EQ 0){
+				// javascript
+				head=("<script>" & NEWLINE);
+				head&=("function dumpOC(name){");
+				head&=( "var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName('_'+name);" );
+				head&=("var s=null;" );
+				head&=( "name='_'+name;" );
+				head&=( "for(var i=0;i<tds.length;i++) {" );
+				head&=("if(document.all && tds[i].name!=name)continue;" );
+				head&=( "s=tds[i].style;" );
+				head&=( "if(s.display=='none') s.display='';" );
+				head&=( "else s.display='none';" );
+				head&=( "}" );
+				head&=("}"& NEWLINE );
+				head&=("</script>" & NEWLINE);
+
+				// styles
+				head&=('<style type="text/css">' & NEWLINE);
+				head&=( 'div###arguments.dumpID# table {font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; font-size:11px; empty-cells:show; color:#arguments.meta.fontColor#;}' & NEWLINE);
+				head&=('div###arguments.dumpID# td {border:1px solid #arguments.meta.borderColor#; vertical-align:top; padding:2px; empty-cells:show;}' & NEWLINE);
+				head&=('div###arguments.dumpID# td span {font-weight:bold;}' & NEWLINE);
+				loop collection="#cssColors#" item="key" {
+					head&="td###key# {background-color:#cssColors[key]#;}"& NEWLINE;
+				}
+				head&=('</style>' & NEWLINE);
+				
+				rtn=head&rtn;
+			}
+			
+			
+		
 		return rtn;
 	}
+
 
 	/* ==================================================================================================
 	   classic                                                                                          =
@@ -213,7 +226,7 @@ component {
 							 string level = 0,
 							 string dumpID = "" ) {
 
-		var id = "_dump" & hash(CreateUUID());
+		var id =  createId();
 		var rtn = "";
 		var columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0;
 		var title = !arguments.level ? 'title="#arguments.context#" ' : '';
@@ -233,43 +246,43 @@ component {
 		}
 		catch(e) {}
 
-		savecontent variable="rtn" {
+		
 			if(arguments.level EQ 0){
 				// javascript
-				echo("<script>" & NEWLINE);
-				echo("function dumpOC(name){" & NEWLINE);
-				echo(TAB & "var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName('_'+name);" & NEWLINE);
-				echo(TAB & "var s=null;" & NEWLINE);
-				echo(TAB & "name='_'+name;" & NEWLINE);
-				echo(TAB & "for(var i=0;i<tds.length;i++) {" & NEWLINE);
-				echo(TAB & TAB & "if(document.all && tds[i].name!=name)continue;" & NEWLINE);
-				echo(TAB & TAB & "s=tds[i].style;" & NEWLINE);
-				echo(TAB & TAB & "if(s.display=='none') s.display='';" & NEWLINE);
-				echo(TAB & TAB & "else s.display='none';" & NEWLINE);
-				echo(TAB & "}" & NEWLINE);
-				echo("}" & NEWLINE);
-				echo("</script>" & NEWLINE);
+				rtn&=("<script>" & NEWLINE);
+				rtn&=("function dumpOC(name){");
+				rtn&=("var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName('_'+name);" );
+				rtn&=("var s=null;");
+				rtn&=("name='_'+name;");
+				rtn&=("for(var i=0;i<tds.length;i++) {" );
+				rtn&=("if(document.all && tds[i].name!=name)continue;");
+				rtn&=("s=tds[i].style;" & NEWLINE);
+				rtn&=("if(s.display=='none') s.display='';");
+				rtn&=("else s.display='none';");
+				rtn&=("}" );
+				rtn&=("}" & NEWLINE);
+				rtn&=("</script>" & NEWLINE);
 
 				// styles
-				echo('<style type="text/css">' & NEWLINE);
-				echo(TAB & 'div###arguments.dumpID# table {font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; font-size:11px; empty-cells:show; color:#arguments.meta.fontColor#; border: 1px solid black; border-collapse:collapse;}' & NEWLINE);
-				echo(TAB & 'div###arguments.dumpID# td {border:1px solid #arguments.meta.borderColor#; vertical-align:top; padding:2px; empty-cells:show;}' & NEWLINE);
-				echo(TAB & 'div###arguments.dumpID# td span {font-weight:bold;}' & NEWLINE);
-				echo('</style>' & NEWLINE);
+				rtn&=('<style type="text/css">' & NEWLINE);
+				rtn&=( 'div###arguments.dumpID# table {font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; font-size:11px; empty-cells:show; color:#arguments.meta.fontColor#; border: 1px solid black; border-collapse:collapse;}' & NEWLINE);
+				rtn&=( 'div###arguments.dumpID# td {border:1px solid #arguments.meta.borderColor#; vertical-align:top; padding:2px; empty-cells:show;}' & NEWLINE);
+				rtn&=('div###arguments.dumpID# td span {font-weight:bold;}' & NEWLINE);
+				rtn&=('</style>' & NEWLINE);
 			}
 
-			echo(indent & '<table cellspacing="0"#width##height# style="color:#arguments.meta.fontColor#; border-color:#borderColor#;">' & NEWLINE);
+			rtn&=('<table cellspacing="0"#width##height# style="color:#arguments.meta.fontColor#; border-color:#borderColor#;">');
 
 			// title
 			if(structKeyExists(arguments.meta, 'title')){
 				var metaID = arguments.hasReference && structKeyExists(arguments.meta,'id') ? ' [#arguments.meta.id#]' : '';
 				var comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
 
-				echo(indent & '<tr>' & NEWLINE);
-				echo(indent & TAB & '<td title="#arguments.context#" onclick="dumpOC(''#id#'');" colspan="#columnCount#" style="background:#h1Color#; border-color:#borderColor#; color:white;">');
-				echo('<span>#arguments.meta.title##metaID#</span>');
-				echo(comment & '</td>' & NEWLINE);
-				echo(indent & '</tr>' & NEWLINE);
+				rtn&=('<tr>');
+				rtn&=('<td title="#arguments.context#" onclick="dumpOC(''#id#'');" colspan="#columnCount#" style="background:#h1Color#; border-color:#borderColor#; color:white;">');
+				rtn&=('<span>#arguments.meta.title##metaID#</span>');
+				rtn&=(comment & '</td>');
+				rtn&=('</tr>');
 			}
 			else {
 				id = "";
@@ -282,7 +295,7 @@ component {
 					var nodeID = len(id) ? ' name="_#id#"' : '';
 					var hidden = !arguments.expand && len(id) ? ' style="display:none"' : '';
 
-					echo(indent & '<tr#nodeID##hidden#>' & NEWLINE);
+					rtn&=('<tr#nodeID##hidden#>');
 
 					for(var col=1; col LTE columnCount-1; col++) {
 						var node = arguments.meta.data["data" & col];
@@ -290,20 +303,20 @@ component {
 						if(isStruct(node)) {
 							var value = this.classic(node, "", arguments.expand, arguments.output, arguments.hasReference, arguments.level+1);
 
-							echo(indent & TAB & '<td #title#style="background:#bgColor(arguments.meta,c,h2Color)#; border-color:#borderColor#;">' & NEWLINE);
-							echo(value);
-							echo(indent & TAB & '</td>' & NEWLINE);
+							rtn&=('<td #title#style="background:#bgColor(arguments.meta,c,h2Color)#; border-color:#borderColor#;">');
+							rtn&=(value);
+							rtn&=( '</td>');
 						}
 						else {
-							echo(indent & TAB & '<td #title#style="background:#bgColor(arguments.meta,c,h2Color)#; border-color:#borderColor#;">' & HTMLEditFormat(node) & '</td>' & NEWLINE);
+							rtn&=('<td #title#style="background:#bgColor(arguments.meta,c,h2Color)#; border-color:#borderColor#;">' & HTMLEditFormat(node) & '</td>');
 						}
 						c *= 2;
 					}
-					echo(indent & '</tr>' & NEWLINE);
+					rtn&=('</tr>');
 				}
 			}
-			echo(indent & '</table>' & NEWLINE);
-		}
+			rtn&=('</table>');
+		
 		return rtn;
 	}
 
@@ -324,19 +337,19 @@ component {
 		var height = structKeyExists(arguments.meta,'height') ? ' height="' & arguments.meta.height & '"' : '';
 		var indent = repeatString(TAB, arguments.level);
 
-		savecontent variable="rtn" {
-			echo(indent & '<table cellpadding="1" cellspacing="0" border="1"#width##height#>' & NEWLINE);
+		
+			rtn&=( '<table cellpadding="1" cellspacing="0" border="1"#width##height#>');
 
 			// title
 			if(structKeyExists(arguments.meta, 'title')){
 				var metaID = arguments.hasReference && structKeyExists(arguments.meta,'id') ? ' [#arguments.meta.id#]' : '';
 				var comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
 
-				echo(indent & '<tr>' & NEWLINE);
-				echo(indent & TAB & '<td title="#arguments.context#" colspan="#columnCount#" bgcolor="#arguments.meta.highLightColor#">');
-				echo('<b>#arguments.meta.title##metaID#</b>');
-				echo(comment & '</td>' & NEWLINE);
-				echo(indent & '</tr>' & NEWLINE);
+				rtn&=('<tr>');
+				rtn&=('<td title="#arguments.context#" colspan="#columnCount#" bgcolor="#arguments.meta.highLightColor#">');
+				rtn&=('<b>#arguments.meta.title##metaID#</b>');
+				rtn&=(comment & '</td>');
+				rtn&=('</tr>');
 			}
 
 			// data
@@ -345,7 +358,7 @@ component {
 				loop query="arguments.meta.data" {
 					c = 1;
 
-					echo(indent & '<tr>' & NEWLINE);
+					rtn&=('<tr>');
 
 					for(col=1; col LTE columnCount-1; col++) {
 						var node = arguments.meta.data["data" & col];
@@ -353,20 +366,20 @@ component {
 						if(isStruct(node)) {
 							var value = this.simple(node, "", arguments.expand, arguments.output, arguments.hasReference, arguments.level+1);
 
-							echo(indent & TAB & '<td title="#arguments.context#" bgcolor="#bgColor(arguments.meta,c)#">' & NEWLINE);
-							echo(value);
-							echo(indent & TAB & '</td>' & NEWLINE);
+							rtn&=('<td title="#arguments.context#" bgcolor="#bgColor(arguments.meta,c)#">' );
+							rtn&=(value);
+							rtn&=('</td>');
 						}
 						else {
-							echo(indent & TAB & '<td title="#arguments.context#" bgcolor="#bgColor(arguments.meta,c)#">' & HTMLEditFormat(node) & '</td>' & NEWLINE);
+							rtn&=('<td title="#arguments.context#" bgcolor="#bgColor(arguments.meta,c)#">' & HTMLEditFormat(node) & '</td>');
 						}
 						c *= 2;
 					}
-					echo(indent & '</tr>' & NEWLINE);
+					rtn&=('</tr>');
 				}
 			}
-			echo(indent & '</table>' & NEWLINE);
-		}
+			rtn&=('</table>');
+		
 		return rtn;
 	}
 
@@ -440,7 +453,7 @@ component {
 	}
 
 	/* ==================================================================================================
-	   bgColor                                                                                          =
+	   helper functions                                                                                          =
 	================================================================================================== */
 	string function bgColor( required struct meta,
 							 required numeric c,
@@ -456,5 +469,22 @@ component {
 			return bitand(arguments.meta.data.highlight, c) ? highLightColor : arguments.meta.normalColor;
 		}
 	}
+	
+	string function createId(){
+		return  "_"&(server.railo.version GTE "3.3.0.010"?createUniqueId():hash(createUUID()));
+	}
+	
+
+	function doCSSColors(struct data,string color){
+		var key=replace(color,"##","_");
+		if(isNumeric(left(key,1)))key="_"&key;
+		
+		
+		if(!structKeyExists(data,key))
+			data[key]=color;
+		return key;
+	}
+
+	
 }
 </cfscript>

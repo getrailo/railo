@@ -1965,6 +1965,16 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	<!-- CreateUniqueId -->
+	<function>
+		<name>CreateUniqueId</name>
+		<class>railo.runtime.functions.other.CreateUniqueId</class>
+		<description>Creates a Unique Identifier. Only unique for this instance, but shorter than a UUId.</description>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
 	<!-- createGUID -->
 	<function>
 		<name>createGUID</name>
