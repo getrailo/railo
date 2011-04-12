@@ -19,6 +19,7 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.net.http.HttpUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
@@ -70,6 +71,10 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 	private long requestTimeout;
 
 	private boolean serializable;
+
+	String contentType;
+
+	String contentEncoding;
 	
 	
 	public ChildThreadImpl(PageContextImpl parent,Page page, String tagName,int threadIndex, Struct attrs, boolean serializable) {
@@ -143,7 +148,9 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		pc.setThreadScope("thread", new ThreadsImpl(this));
 		pc.setThread(Thread.currentThread());
 		
-        Undefined undefined=pc.us();
+		//String encodings = pc.getHttpServletRequest().getHeader("Accept-Encoding");
+		
+		Undefined undefined=pc.us();
 		
 		ArgumentPro newArgs=new ArgumentThreadImpl((Struct) attrs.duplicate(false));//(ArgumentPro) pc.getScopeFactory().getArgumentInstance();// FUTURE
         LocalImpl newLocal=pc.getScopeFactory().getLocalInstance();
@@ -184,6 +191,17 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		    undefined.setMode(oldMode);
 		    //pc.getScopeFactory().recycle(newArgs);
             pc.getScopeFactory().recycle(newLocal);
+            
+            if(pc.getHttpServletResponse() instanceof HttpServletResponseDummy) {
+	            HttpServletResponseDummy rsp=(HttpServletResponseDummy) pc.getHttpServletResponse();
+	            pc.flush();
+	            contentType=rsp.getContentType();
+	            Pair[] _headers = rsp.getHeaders();
+	            if(_headers!=null)for(int i=0;i<_headers.length;i++){
+	            	if(_headers[i].getName().equalsIgnoreCase("Content-Encoding"))
+	            		contentEncoding=Caster.toString(_headers[i].getValue(),null);
+	            }
+            }
             
 			((ConfigImpl)pc.getConfig()).getFactory().releasePageContext(pc);
 			pc=null;
