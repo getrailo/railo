@@ -517,12 +517,14 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="setting.inspecttemplatealwaysShort">Immer</data>
 	<data key="setting.inspecttemplatealways">Immer ( Schlecht )</data>
 	<data key="setting.cachedesc">Verschiedene Cache and Performance Einstellungen um die Ausführung zu verbessern.</data>
+	<data key="setting.showversion">Railo Version ausgeben</data>
 	<data key="setting.showversiondescription">Railo Version im Response Header zurückgeben</data>
+	<data key="setting.allowCompression">Kompression</data>
+	<data key="setting.allowCompressionDescription">Kompression (GZip) für den Response Stream einschalten, sofern dies vom Client (Browser) unterstützt ist</data>
 	<data key="setting.componentcache">Komponentenpfad Cache</data>
 	<data key="setting.ctcache">Custom Tag Pfad Cache</data>
 	<data key="setting.inspecttemplateneverShort">Nie</data>
 	<data key="setting.inspecttemplatenever">Nie ( Beste Performance )</data>
-	<data key="setting.showversion">Railo Version ausgeben</data>
 	<data key="setting.server">Kontrolle der Ausgabe von Railo</data>
 	<data key="setting.inspecttemplatealwaysdesc">
 When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.

@@ -546,13 +546,15 @@
 	<data key="setting.inspecttemplatealwaysShort">Always</data>
 	<data key="setting.inspecttemplatealways">Always ( Bad )</data>
 	<data key="setting.cachedesc">Different Cache and Performance settings to improve overall performance</data>
-	<data key="setting.showversiondescription">Return the Railo version in the response header</data>
 	<data key="setting.componentcache">Component path Cache</data>
 	<data key="setting.ctcache">Custom tag path Cache</data>
 	
 	<data key="setting.inspecttemplateneverShort">Never</data>
 	<data key="setting.inspecttemplatenever">Never ( Best Performance )</data>
 	<data key="setting.showversion">Output Railo version</data>
+	<data key="setting.showversiondescription">Return the Railo version in the response header</data>
+	<data key="setting.allowCompression">Compression</data>
+	<data key="setting.allowCompressionDescription">Enable compression (Gzip) for the Railo Response stream, if supported by the client (Browser)</data>
 	<data key="setting.server">Railo output control</data>
 	<data key="setting.inspecttemplatealwaysdesc">When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.</data>
 	<data key="setting.querycacheclearcount">Clear query cache ( {count} element(s) )</data>
