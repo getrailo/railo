@@ -2948,11 +2948,13 @@ public final class Caster {
             return toPageException(((ExceptionInInitializerError)t).getCause());
         }
         else {
-        	Throwable cause = t.getCause();
-        	if(cause!=null && cause!=t) return toPageException(cause);
+        	//Throwable cause = t.getCause();
+        	//if(cause!=null && cause!=t) return toPageException(cause);
         	return new NativeException(t);
         }
     }
+    
+    
     
     /**
      * return the type name of a object (string, boolean, int aso.), type is not same like class name

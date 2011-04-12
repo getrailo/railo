@@ -5,7 +5,6 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -545,18 +544,37 @@ public abstract class PageExceptionImpl extends PageException {
         }
     }
     
-    private static StackTraceElement[] getStackTraceElements(Throwable t) {
-    	Throwable cause=t.getCause();
-    	if(cause==null) return t.getStackTrace();
 
-    	ArrayList causes=new ArrayList();
-    	fillStackTraceElements(causes,t);
+    private static StackTraceElement[] getStackTraceElements(Throwable t) {
+    	StackTraceElement[] st=getStackTraceElements(t,true);
+    	if(st==null) st= getStackTraceElements(t,false);
+    	return st;
+    }
+    
+    private static StackTraceElement[] getStackTraceElements(Throwable t, boolean onlyWithCML) {
+    	StackTraceElement[] st;
+    	Throwable cause=t.getCause();
+    	if(cause!=null){
+    		st = getStackTraceElements(cause,onlyWithCML);
+        	if(st!=null) return st;
+    	}
     	
-		return (StackTraceElement[]) causes.toArray(new StackTraceElement[causes.size()]);
+    	st=t.getStackTrace();
+    	if(!onlyWithCML || hasCFMLinStacktrace(st)){
+    		return st;
+    	}
+    	return null;
 	}
     
 
-    private static void fillStackTraceElements(ArrayList causes, Throwable t) {
+    private static boolean hasCFMLinStacktrace(StackTraceElement[] traces) {
+		for(int i=0;i<traces.length;i++) {
+			if(!traces[i].getFileName().endsWith(".java")) return true;
+		}
+		return false;
+	}
+    /*ths code has produced duplettes
+     * private static void fillStackTraceElements(ArrayList<StackTraceElement> causes, Throwable t) {
 		if(t==null) return;
 		fillStackTraceElements(causes, t.getCause());
 		StackTraceElement[] traces = t.getStackTrace();
@@ -564,26 +582,7 @@ public abstract class PageExceptionImpl extends PageException {
 			//if(causes.contains(traces[i]))
 			causes.add(traces[i]);
 		}
-	}
-    
-    
-    
-	/*public static void printStackTraceX(PrintWriter s,Throwable t) {
-        
-        StackTraceElement[] traces = getStackTraceElements(t);
-        StackTraceElement trace;
-        
-        for(int i=0;i<traces.length;i++){
-            trace=traces[i];
-            s.println("\tat "+trace+":"+trace.getLineNumber());
-        }
-        t=t.getCause();
-        if(t!=null) {
-            s.println();
-            printStackTraceX(s,t);
-        }
-    }*/
-    
+	}*/
     
 	/**
 	 * set a additional key value

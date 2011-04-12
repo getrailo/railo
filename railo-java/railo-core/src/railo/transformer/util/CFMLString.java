@@ -115,6 +115,7 @@ public final class CFMLString {
 		ArrayList<Integer> arr=new ArrayList<Integer>();
 		
 		for(int i=0;i<text.length;i++) {
+			pos=i;
 			if(text[i]=='\n') {
 				arr.add(new Integer(i));
 				lcText[i]=' ';
@@ -129,6 +130,7 @@ public final class CFMLString {
 			else if(text[i]=='\t') lcText[i]=' ';
 			else lcText[i]=Character.toLowerCase(text[i]);
 		}
+		pos=0;
 		arr.add(new Integer(text.length));
 		lines=(Integer[])arr.toArray(new Integer[arr.size()]);
 	}
@@ -155,7 +157,7 @@ public final class CFMLString {
 	 * @return boolean Existiert ein weieters Zeichen nach dem Zeiger.
 	 */
 	public boolean hasNext()  {
-		return pos+1<text.length;
+		return pos+1<lcText.length;
 	}
 
 	/**
@@ -307,7 +309,7 @@ public final class CFMLString {
 	 * @return boolean
 	 */
 	public boolean isCurrent(String str) {
-		if(pos+str.length()>text.length) return false;
+		if(pos+str.length()>lcText.length) return false;
 		for(int i=str.length()-1;i>=0;i--)	{
 			if(str.charAt(i)!=lcText[pos+i]) return false;
 		}
@@ -673,14 +675,14 @@ public final class CFMLString {
 	 */
 	public boolean removeSpace() {
 		int start=pos;
-		while(pos<text.length && lcText[pos]==' ') {
+		while(pos<lcText.length && lcText[pos]==' ') {
 			pos++;
 		}
 		return (start<pos);
 	}
 	public String removeAndGetSpace() {
 		int start=pos;
-		while(pos<text.length && lcText[pos]==' ') {
+		while(pos<lcText.length && lcText[pos]==' ') {
 			pos++;
 		}
 		return substring(start,pos-start);
@@ -718,7 +720,7 @@ public final class CFMLString {
 	 * @return Untermenge als Zeichenkette
 	 */
 	public String substring(int start) {
-		return substring(start,text.length-start);
+		return substring(start,lcText.length-start);
 	}
 
 	/**
@@ -739,7 +741,7 @@ public final class CFMLString {
 	 * @return  Untermenge als Zeichenkette in Kleinbuchstaben.
 	 */
 	public String substringLower(int start) {
-		return substringLower(start,text.length-start);
+		return substringLower(start,lcText.length-start);
 	}
 
 	/**
@@ -858,7 +860,7 @@ public final class CFMLString {
 		if(index!=0)
 			min=lines[index-1].intValue()+1;
 		
-		if(min<max && max-1<text.length)
+		if(min<max && max-1<lcText.length)
 			return this.substring(min, max-min);
 		return "";
 	}
@@ -868,7 +870,7 @@ public final class CFMLString {
 	 * @return Gibt zurück ob der Zeiger auf dem letzten Zeichen steht.
 	 */
 	public boolean isLast() {
-		return pos==text.length-1;
+		return pos==lcText.length-1;
 	}
 	
 	/**
@@ -876,14 +878,14 @@ public final class CFMLString {
 	 * @return Gibt zurück ob der Zeiger nach dem letzten Zeichen steht.
 	 */
 	public boolean isAfterLast() {
-		return pos>=text.length;
+		return pos>=lcText.length;
 	}
 	/**
 	 * Gibt zurück ob der Zeiger einen korrekten Index hat.
 	 * @return Gibt zurück ob der Zeiger einen korrekten Index hat.
 	 */
 	public boolean isValidIndex() {
-		return pos<text.length && pos>-1;
+		return pos<lcText.length && pos>-1;
 	}
 	
 	/**
@@ -924,7 +926,7 @@ public final class CFMLString {
 	 * @return Länge des CFMLString.
 	 */
 	public int length() {
-		return text.length;
+		return lcText.length;
 	}
 
 	/**

@@ -23,7 +23,7 @@ public final class NativeException extends PageExceptionImpl {
 	public NativeException(Throwable t) {
         super(t,t.getClass().getName());
         this.t=t;
-        //setStackTrace(t.getStackTrace());
+        setStackTrace(t.getStackTrace());
         setAdditional("Cause", t.getClass().getName());
 	}
 
