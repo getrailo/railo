@@ -2,6 +2,7 @@ package railo.runtime;
 
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -396,7 +397,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         this.servlet=servlet;
 
          // Writers
-         bodyContentStack.init(rsp,config.isSuppressWhitespace(),config.closeConnection(),config.isShowVersion(),config.contentLength());
+         bodyContentStack.init(req,rsp,config.isSuppressWhitespace(),config.closeConnection(),config.isShowVersion(),config.contentLength(),config.allowCompression());
 		 writer=bodyContentStack.getWriter();
          forceWriter=writer;
          
@@ -852,7 +853,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	other.undefined=new UndefinedImpl(other,(short)other.undefined.getType());
     	
     	// writers
-    	other.bodyContentStack.init(other.rsp,other.config.isSuppressWhitespace(),other.config.closeConnection(),other.config.isShowVersion(),config.contentLength());
+    	other.bodyContentStack.init(other.req,other.rsp,other.config.isSuppressWhitespace(),other.config.closeConnection(),
+    			other.config.isShowVersion(),config.contentLength(),config.allowCompression());
     	other.writer=other.bodyContentStack.getWriter();
     	other.forceWriter=other.writer;
         
@@ -1662,8 +1664,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return rsp;
 	}
     
-    public ServletOutputStream getServletOutputStream() throws IOException {
-    	return getRootOut().getServletOutputStream();
+    public ServletOutputStream getServletOutputStream() throws IOException {// FUTURE remove from interface
+    	throw new RuntimeException("not supported");
+	}
+    
+    public OutputStream getResponseStream() throws IOException {// FUTURE add to  interface
+    	return getRootOut().getResponseStream();
 	}
 
 	/**

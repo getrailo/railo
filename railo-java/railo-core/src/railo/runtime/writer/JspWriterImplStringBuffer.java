@@ -1,6 +1,7 @@
 package railo.runtime.writer;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
 
 import javax.servlet.ServletOutputStream;
@@ -439,7 +440,10 @@ public class JspWriterImplStringBuffer extends CFMLWriter {
     }
 
     
-    public ServletOutputStream getServletOutputStream() throws IOException {
+    /**
+	 * @see railo.runtime.writer.CFMLWriter#getResponseStream()
+	 */
+	public OutputStream getResponseStream() throws IOException {
 		return response.getOutputStream();
 	}
 } 

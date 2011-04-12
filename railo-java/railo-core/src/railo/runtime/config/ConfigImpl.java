@@ -174,7 +174,7 @@ public abstract class ConfigImpl implements Config {
 
     private boolean suppresswhitespace = false;
     private boolean suppressContent = false;
-    private boolean showVersion = true;
+    private boolean showVersion = false;
     
 	private Resource tempDirectory;
     private TimeSpan clientTimeout=new TimeSpanImpl(90,0,0,0);
@@ -306,6 +306,8 @@ public abstract class ConfigImpl implements Config {
 
 	private boolean closeConnection=false;
 	private boolean contentLength=true;
+	private boolean allowCompression=false;
+	
 
 	private boolean doLocalCustomTag=true; 
 
@@ -2567,6 +2569,15 @@ public abstract class ConfigImpl implements Config {
 	public boolean contentLength() {
 		return contentLength;
 	}
+	
+
+	public boolean allowCompression() {
+		return allowCompression;
+	}
+	protected void setAllowCompression(boolean allowCompression) {
+		this.allowCompression= allowCompression;
+	}
+
 
 	protected void setContentLength(boolean contentLength) {
 		this.contentLength=contentLength;

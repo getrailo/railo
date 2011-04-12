@@ -392,7 +392,7 @@ public abstract class ComponentPage extends PagePlus  {
     		OutputStream os=null;// FUTURE add to interface
     		Resource input = ResourceUtil.toResourceExisting(pc, wsdl);
     		try {
-    			os=pc.getServletOutputStream();
+    			os=((PageContextImpl)pc).getResponseStream();
 				pc.getResponse().setContentType("text/xml; charset=utf-8");
     			IOUtil.copy(input, os, false);
     			

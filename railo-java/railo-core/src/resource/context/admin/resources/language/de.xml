@@ -855,6 +855,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="doc.attrtitle">Attribute</data>
 	<data key="doc.argtitle">Argumente</data>
 	<data key="doc.bodytitle">Body</data>
+	<data key="doc.alsoScript">Diese tag kann auch innerhalb von cfscript verwendet werden.</data>
 	<data key="doc.depFunction">This Function is deprecated</data>
 	<data key="doc.depTag">This Tag is deprecated</data>
 	<data key="doc.depAttr">This Attribute is deprecated</data>

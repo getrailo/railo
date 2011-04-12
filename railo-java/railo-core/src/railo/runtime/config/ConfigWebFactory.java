@@ -2676,31 +2676,43 @@ public final class ConfigWebFactory {
 	            config.setShowVersion(toBoolean(str,true));
 	        }
 	        else if(hasCS)config.setShowVersion(configServer.isShowVersion());
-      	//}
         
         // close connection
-         str=null;
-         if(setting!=null){
-         	str=setting.getAttribute("close-connection");
-         	if(StringUtil.isEmpty(str))str=setting.getAttribute("closeconnection");
-         }
-       if(!StringUtil.isEmpty(str) && hasAccess) {
-         config.setCloseConnection(toBoolean(str,false));
-       }
-       else if(hasCS)config.setCloseConnection(configServer.closeConnection());
+	       str=null;
+	       if(setting!=null){
+	    	   str=setting.getAttribute("close-connection");
+	    	   if(StringUtil.isEmpty(str))str=setting.getAttribute("closeconnection");
+	       }
+	       if(!StringUtil.isEmpty(str) && hasAccess) {
+	         config.setCloseConnection(toBoolean(str,false));
+	       }
+	       else if(hasCS)config.setCloseConnection(configServer.closeConnection());
 
-        
-   // content-length 
-        str=null;
-        if(setting!=null){
-        	str=setting.getAttribute("content-length");
-        	if(StringUtil.isEmpty(str))str=setting.getAttribute("contentlength");
-        }  
-        if(!StringUtil.isEmpty(str) && hasAccess) {
-        	config.setContentLength(toBoolean(str,true));
+       // content-length 
+            str=null;
+            if(setting!=null){
+            	str=setting.getAttribute("content-length");
+            	if(StringUtil.isEmpty(str))str=setting.getAttribute("contentlength");
+            }  
+            if(!StringUtil.isEmpty(str) && hasAccess) {
+            	config.setContentLength(toBoolean(str,true));
+            }
+          else if(hasCS)config.setContentLength(configServer.contentLength());   
+            
+
+        // allow-compression
+             str=null;
+             if(setting!=null){
+             	str=setting.getAttribute("allow-compression");
+             	if(StringUtil.isEmpty(str))str=setting.getAttribute("allowcompression");
+             }  
+             if(!StringUtil.isEmpty(str) && hasAccess) {
+             	config.setAllowCompression(toBoolean(str,true));
+             }
+           else if(hasCS)config.setAllowCompression(configServer.allowCompression());   
+            
+            
         }
-      else if(hasCS)config.setContentLength(configServer.contentLength());        
-    }
     
     private static void loadRemoteClient(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException {
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_REMOTE);

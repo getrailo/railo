@@ -2,8 +2,10 @@ package railo.runtime.writer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.zip.GZIPOutputStream;
 
-import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.io.IOUtil;
@@ -20,7 +22,7 @@ public class CFMLWriterImpl extends CFMLWriter {
      
 	private static final int BUFFER_SIZE = 100000;
 	private static final String VERSION = Info.getVersionAsString();  
-    private ServletOutputStream out;
+    private OutputStream out;
 	private HttpServletResponse response;
     private boolean flushed;
     private String headData;
@@ -29,7 +31,9 @@ public class CFMLWriterImpl extends CFMLWriter {
     private boolean closeConn;
     private boolean showVersion;
     private boolean contentLength;
-    private CacheItem cacheItem; 
+    private CacheItem cacheItem;
+	private HttpServletRequest request;
+	private boolean allowCompression; 
     
     /**
      * constructor of the class
@@ -37,14 +41,16 @@ public class CFMLWriterImpl extends CFMLWriter {
      * @param bufferSize buffer Size
      * @param autoFlush do auto flush Content
      */
-    public CFMLWriterImpl(HttpServletResponse response, int bufferSize, boolean autoFlush, boolean closeConn, boolean showVersion, boolean contentLength) {
+    public CFMLWriterImpl(HttpServletRequest request, HttpServletResponse response, int bufferSize, boolean autoFlush, boolean closeConn, boolean showVersion, boolean contentLength,boolean allowCompression) {
         super(bufferSize, autoFlush);
+        this.request=request;
         this.response=response;
         this.autoFlush=autoFlush;
         this.bufferSize=bufferSize;
         this.closeConn=closeConn;
         this.showVersion=showVersion;
         this.contentLength=contentLength;
+        this.allowCompression=allowCompression;
     }
 
     /* *
@@ -66,12 +72,13 @@ public class CFMLWriterImpl extends CFMLWriter {
      */
     protected void initOut() throws IOException {
         if (out == null) {
-        	out=response.getOutputStream();
+        	out=getOutputStream();
             //out=response.getWriter();
         }
     }
 
-    /**
+
+	/**
      * @see javax.servlet.jsp.JspWriter#print(char[]) 
      */ 
     public void print(char[] arg) throws IOException { 
@@ -257,12 +264,17 @@ public class CFMLWriterImpl extends CFMLWriter {
         	
         	if(closeConn)response.setHeader("connection", "close");
         	if(showVersion)response.setHeader("Railo-Version", VERSION);
-            if(contentLength)ReqRspUtil.setContentLength(response,barr.length);
             
-            out = response.getOutputStream();
-            out.write(barr);
-            out.flush();
-            out.close();
+            out = getOutputStream();
+	        
+        	
+        	if(contentLength && !(out instanceof GZIPOutputStream))ReqRspUtil.setContentLength(response,barr.length);
+            
+                out.write(barr);
+	            out.flush();
+	            out.close();
+            
+            
             out = null;
         }
         else {
@@ -272,6 +284,21 @@ public class CFMLWriterImpl extends CFMLWriter {
         }
         closed = true;
     } 
+    
+
+    private OutputStream getOutputStream() throws IOException {
+    	
+    	if(allowCompression){
+    		String encodings = request.getHeader("Accept-Encoding");
+    	    if(!StringUtil.isEmpty(encodings) && encodings.indexOf("gzip")!=-1) {
+    	    	response.setHeader("Content-Encoding", "gzip");
+        		return new GZIPOutputStream(response.getOutputStream());
+    	    }
+        }
+        return response.getOutputStream();
+	}
+    
+    
 
     private void writeCache(byte[] barr,boolean append) throws IOException {
     	IOUtil.copy(new ByteArrayInputStream(barr), cacheItem.getResource().getOutputStream(append),true,true);
@@ -474,9 +501,9 @@ public class CFMLWriterImpl extends CFMLWriter {
     }
 
 	/**
-	 * @see railo.runtime.writer.CFMLWriter#getServletOutputStream()
+	 * @see railo.runtime.writer.CFMLWriter#getResponseStream()
 	 */
-	public ServletOutputStream getServletOutputStream() throws IOException {
+	public OutputStream getResponseStream() throws IOException {
 		initOut();
 		return out;
 	}

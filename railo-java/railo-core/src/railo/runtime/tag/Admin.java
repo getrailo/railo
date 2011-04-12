@@ -3280,7 +3280,9 @@ private void doGetMappings() throws PageException {
     private void doUpdateOutputSettings() throws PageException {
     	admin.updateSuppressWhitespace(getBoolObject("admin",action, "suppressWhitespace"));
     	admin.updateSuppressContent(getBoolObject("admin",action, "suppressContent"));
-        admin.updateShowVersion(getBoolObject("admin",action, "showVersion"));
+    	//admin.updateShowVersion(getBoolObject("admin",action, "showVersion"));
+    	admin.updateAllowCompression(getBoolObject("admin",action, "allowCompression"));
+    	admin.updateContentLength(getBoolObject("admin",action, "contentLength"));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -3408,7 +3410,9 @@ private void doGetMappings() throws PageException {
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
         sct.set("suppressWhitespace",Caster.toBoolean(config.isSuppressWhitespace()));
         sct.set("suppressContent",Caster.toBoolean(config.isSuppressContent()));
-        sct.set("showVersion",Caster.toBoolean(config.isShowVersion()));
+        sct.set("contentLength",Caster.toBoolean(config.contentLength()));
+        //sct.set("showVersion",Caster.toBoolean(config.isShowVersion()));
+        sct.set("allowCompression",Caster.toBoolean(config.allowCompression()));
         
         
     }

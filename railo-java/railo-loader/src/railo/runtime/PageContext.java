@@ -537,8 +537,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      */
     public abstract HttpServletResponse getHttpServletResponse();
     
-    public abstract ServletOutputStream getServletOutputStream() throws IOException;
-        
+    public abstract ServletOutputStream getServletOutputStream() throws IOException; /// FUTURE remove
+    // public OutputStream getResponseStream() throws IOException; FUTURE add
     
     /**
      * returns the tag that is in use

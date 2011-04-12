@@ -878,6 +878,7 @@
 	<data key="doc.attrtitle">Attributes</data>
 	<data key="doc.argtitle">Arguments</data>
 	<data key="doc.bodytitle">Body</data>
+	<data key="doc.alsoScript">This tag is also supported within cfscript.</data>
 	<data key="doc.depFunction">This Function is deprecated</data>
 	<data key="doc.depTag">This Tag is deprecated</data>
 	<data key="doc.depAttr">This Attribute is deprecated</data>
@@ -936,7 +937,7 @@
 	<data key="settings.cache.name">Name</data>
 	<data key="settings.cache.class">Class</data>
 	<data key="settings.cache.titleCreate">Create a new cache connection</data>
-	<data key="settings.cache.titleExisting">List of existing cache connection</data>
+	<data key="settings.cache.titleExisting">List of existing cache connections</data>
 	<data key="settings.cache.descExisting">List of all existing connection for ths enviroment</data>
 	<data key="settings.cache.nameMissing">Cancel</data>
 	<data key="settings.cache.type">Type</data>

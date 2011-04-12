@@ -1830,6 +1830,26 @@ public final class ConfigWebAdmin {
         scope.setAttribute("show-version",Caster.toString(value,""));
     }
     
+    public void updateAllowCompression(Boolean value) throws SecurityException {
+    	checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        
+        Element scope=_getRootElement("setting");
+        scope.setAttribute("allow-compression",Caster.toString(value,""));
+    }
+    
+    public void updateContentLength(Boolean value) throws SecurityException {
+    	checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        
+        Element scope=_getRootElement("setting");
+        scope.setAttribute("content-length",Caster.toString(value,""));
+    }
+    
     /**
      * updates request timeout value
      * @param span
