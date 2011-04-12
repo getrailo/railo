@@ -34,7 +34,8 @@ Defaults --->
 				
 				suppressWhiteSpace="#isDefined('form.suppressWhitespace') and form.suppressWhitespace#"
 				suppressContent="#isDefined('form.suppressContent') and form.suppressContent#"
-				showVersion="#isDefined('form.showVersion') and form.showVersion#"
+				allowCompression="#isDefined('form.allowCompression') and form.allowCompression#"
+				contentLength=""
 				remoteClients="#request.getRemoteClients()#">
 	
 		</cfcase>
@@ -49,7 +50,9 @@ Defaults --->
 				suppressWhiteSpace=""
 				suppressContent=""
 				showVersion=""
-                
+                allowCompression=""
+				contentLength=""
+				
 				remoteClients="#request.getRemoteClients()#">
 	
 		</cfcase>
@@ -102,17 +105,17 @@ Create Datasource --->
 	</td>
 </tr>
 
-<!--- Show Version --->
+<!--- Allow Compression --->
 <tr>
-	<td class="tblHead" width="150">#stText.setting.showVersion#</td>
+	<td class="tblHead" width="150">#stText.setting.AllowCompression#</td>
 	<td class="tblContent">
 		
 		<cfif hasAccess>
-			<input type="checkbox" name="showVersion" value="true" <cfif setting.showVersion>checked="checked"</cfif>>
+			<input type="checkbox" name="AllowCompression" value="true" <cfif setting.AllowCompression>checked="checked"</cfif>>
 		<cfelse>
-			<b>#iif(setting.showVersion,de('Yes'),de('No'))#</b>
-			<input type="hidden" name="showVersion" value="#setting.showVersion#">
-		</cfif><span class="comment">#stText.setting.showVersionDescription#</span>
+			<b>#iif(setting.AllowCompression,de('Yes'),de('No'))#</b>
+			<input type="hidden" name="AllowCompression" value="#setting.AllowCompression#">
+		</cfif><span class="comment">#stText.setting.AllowCompressionDescription#</span>
 	</td>
 </tr>
 
@@ -127,7 +130,7 @@ Create Datasource --->
 			<input type="checkbox" name="suppressContent" value="true" <cfif setting.suppressContent>checked="checked"</cfif>>
 		<cfelse>
 			<b>#iif(setting.suppressContent,de('Yes'),de('No'))#</b>
-			<input type="hidden" name="showVersion" value="#setting.suppressContent#">
+			<input type="hidden" name="suppressContent" value="#setting.suppressContent#">
 		</cfif><span class="comment">#stText.setting.suppressContentDescription#</span>
 	</td>
 </tr>
