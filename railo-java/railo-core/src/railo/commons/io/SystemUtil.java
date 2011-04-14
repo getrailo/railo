@@ -28,6 +28,11 @@ import railo.runtime.type.List;
  */
 public final class SystemUtil {
     
+
+	public static final char CHAR_DOLLAR=(char)36;
+	public static final char CHAR_POUND=(char)163;
+	public static final char CHAR_EURO=(char)8364;
+	
 	public static final PrintWriter PRINTWRITER_OUT = new PrintWriter(System.out);
 	public static final PrintWriter PRINTWRITER_ERR = new PrintWriter(System.err);
     
