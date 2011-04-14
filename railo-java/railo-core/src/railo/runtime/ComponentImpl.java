@@ -1962,6 +1962,8 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			
 			this._data=other._data;
 			this._udfs=other._udfs;
+			setOwner(_udfs);
+			setOwner(_data);
 			this.afterConstructor=other.afterConstructor;
 			this.base=other.base;
 			//this.componentPage=other.componentPage;
@@ -1981,6 +1983,17 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			
 		} catch (PageException e) {
 			throw new IOException(e.getMessage());
+		}
+	}
+
+	private void  setOwner(Map<Key,? extends Member> data) {
+		Member m;
+		Iterator<? extends Member> it = data.values().iterator();
+		while(it.hasNext()){
+			m=it.next();
+			if(m instanceof UDFImpl) {
+				((UDFImpl)m).setOwnerComponent(this);
+			}
 		}
 	}
 
