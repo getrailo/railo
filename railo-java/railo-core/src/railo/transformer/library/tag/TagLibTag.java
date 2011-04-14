@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -66,7 +67,7 @@ public final class TagLibTag {
 	private Evaluator eval;
 	private TagDependentBodyTransformer tdbt;
 
-	private Map<String,TagLibTagAttr> attributes=new HashMap<String,TagLibTagAttr>();
+	private Map<String,TagLibTagAttr> attributes=new LinkedHashMap<String,TagLibTagAttr>();
 	private Map<String,String> setters=new HashMap<String,String>();
 	private TagLibTagAttr attrFirst;
 	private TagLibTagAttr attrLast;

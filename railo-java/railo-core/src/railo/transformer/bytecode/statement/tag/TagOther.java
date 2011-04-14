@@ -213,11 +213,26 @@ public final class TagOther {
 		
 		
 		
-		Map attributes = tag.getAttributes();
-		Iterator it = attributes.keySet().iterator();
 		String methodName;
+		Map attributes = tag.getAttributes();
+
+		// static attributes
+		Iterator it = attributes.values().iterator();
 		while(it.hasNext()) {
-			attr=(Attribute) attributes.get(it.next());
+			attr=(Attribute) it.next();
+			if(!attr.isDynamicType()){
+				Type type = Cast.getType(attr.getType());
+				methodName=tag.getTagLibTag().getSetter(attr,type);
+				adapter.loadLocal(currLocal);
+				attr.getValue().writeOut(bc, Types.isPrimitiveType(type)?Expression.MODE_VALUE:Expression.MODE_REF);
+				adapter.invokeVirtual(currType, new Method(methodName,Type.VOID_TYPE,new Type[]{type}));
+			}
+		}
+		
+		// dynamic attributes
+		it = attributes.values().iterator();
+		while(it.hasNext()) {
+			attr=(Attribute) it.next();
 			if(attr.isDynamicType()){
 				adapter.loadLocal(currLocal);
 				adapter.visitInsn(Opcodes.ACONST_NULL);
@@ -225,27 +240,7 @@ public final class TagOther {
 				attr.getValue().writeOut(bc, Expression.MODE_REF);
 				adapter.invokeVirtual(currType, SET_DYNAMIC_ATTRIBUTE);
 			}
-			else {
-				Type type = Cast.getType(attr.getType());
-				methodName=tag.getTagLibTag().getSetter(attr,type);
-				//methodName="set"+StringUtil.ucFirst(attr.getName());
-				
-				adapter.loadLocal(currLocal);
-				attr.getValue().writeOut(bc, Types.isPrimitiveType(type)?Expression.MODE_VALUE:Expression.MODE_REF);
-				adapter.invokeVirtual(currType, new Method(methodName,Type.VOID_TYPE,new Type[]{type}));
-			}
 		}
-		/*if(tlt.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_DYNAMIC)	{
-			while(it.hasNext()) {
-				attr=(Attribute) attributes.get(it.next());
-			}
-		}
-		else {
-			//Type valueType;
-			while(it.hasNext()) {
-				attr=(Attribute) attributes.get(it.next());
-			}
-		}*/
 		
 		
 	// Body
