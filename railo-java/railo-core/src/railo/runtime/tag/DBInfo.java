@@ -11,12 +11,14 @@ import java.util.regex.Pattern;
 
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
+import railo.runtime.PageContext;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Constants;
 import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.Array;
@@ -217,7 +219,7 @@ public final class DBInfo extends TagImpl {
 	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws PageException	{
-		
+		datasource=getDatasource(pageContext, datasource);
 		DataSourceManager manager = pageContext.getDataSourceManager();
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
 		try {
@@ -627,5 +629,18 @@ public final class DBInfo extends TagImpl {
 	*/
 	public int doEndTag()	{
 		return EVAL_PAGE;
+	}
+	
+
+	public static String getDatasource(PageContext pageContext, String datasource) throws ApplicationException {
+		if(StringUtil.isEmpty(datasource)){
+			datasource=((ApplicationContextPro)pageContext.getApplicationContext()).getDefaultDataSource();
+
+			if(StringUtil.isEmpty(datasource))
+				throw new ApplicationException(
+						"attribute [datasource] is required, when no default datasource is defined",
+						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+		}
+		return datasource;
 	}
 }
