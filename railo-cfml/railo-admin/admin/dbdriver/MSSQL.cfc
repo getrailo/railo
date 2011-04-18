@@ -18,6 +18,12 @@
     <li>
 
       Cursor—When the driver uses the Cursor method, a server-side cursor is requested. The rows are retrieved from the server in blocks when returning forward-only result sets.</ul>","select")
+	
+	,field("Send String Parameters as Unicode","sendStringParametersAsUnicode","true,false",true,"Set to ""false"" to specify that prepared parameters for character data are sent as ASCII instead of Unicode. 
+	This parameter can improve performance for character data index lookup on non-Unicode, SQL Server 2000, or SQL Server 2005 tables. For example, ASCII row keys can be compared directly without the overhead of conversion from Unicode.","radio")
+	
+	
+	
 	)>
 	
 	

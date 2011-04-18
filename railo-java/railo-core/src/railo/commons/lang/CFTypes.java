@@ -228,6 +228,7 @@ public final class CFTypes {
 	        	    else if(type.equals("number")) return TYPE_NUMERIC;
 	        	    else if(type.equals("node")) return TYPE_XML;
 	        	    else if(type.equals("nvarchar")) return TYPE_STRING;
+	        	    else if(type.equals("nchar")) return TYPE_STRING;
 	        	    break;
 	        	case 'o':
 	        	    if(type.equals("object")) return TYPE_ANY;

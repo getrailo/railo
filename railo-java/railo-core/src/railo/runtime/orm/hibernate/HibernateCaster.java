@@ -266,6 +266,7 @@ public class HibernateCaster {
 		case Types.TIMESTAMP: return "timestamp";
 		case Types.TINYINT: return "byte";
 		case Types.VARBINARY: return "binary";
+		case Types.NVARCHAR: return "string";
 		case Types.VARCHAR: return "string";
 		}
 		return defaultValue;

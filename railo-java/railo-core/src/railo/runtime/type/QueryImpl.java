@@ -1598,7 +1598,9 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 			case Types.BLOB: return "OBJECT";
 			case Types.BOOLEAN: return "BOOLEAN";
 			case Types.CHAR: return "CHAR";
+			case Types.NCHAR: return "NCHAR";
 			case Types.CLOB: return "OBJECT";
+			case Types.NCLOB: return "OBJECT";
 			case Types.DATALINK: return "OBJECT";
 			case Types.DATE: return "DATE";
 			case Types.DECIMAL: return "DECIMAL";
@@ -1620,6 +1622,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 			case Types.TIMESTAMP: return "TIMESTAMP";
 			case Types.TINYINT: return "TINYINT";
 			case Types.VARBINARY: return "VARBINARY";
+			case Types.NVARCHAR: return "NVARCHAR";
 			case Types.VARCHAR: return "VARCHAR";
 			default : return "VARCHAR";
 		}
