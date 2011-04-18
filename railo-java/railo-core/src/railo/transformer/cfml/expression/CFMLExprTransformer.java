@@ -348,7 +348,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	*/
 	protected Expression impOp(Data data) throws TemplateException {
 		Expression expr = eqvOp(data);
-		while(data.cfml.forwardIfCurrentAndNoWordAfter("imp")) {
+		while(data.cfml.forwardIfCurrentAndNoWordAfter("imp")) { 
 			comments(data.cfml);
             expr=OpBool.toExprBoolean(expr, eqvOp(data), OpBool.IMP);
 		}
