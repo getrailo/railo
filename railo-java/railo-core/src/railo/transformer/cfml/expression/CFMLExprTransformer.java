@@ -361,7 +361,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	*/
 	protected Expression eqvOp(Data data) throws TemplateException {
 		Expression expr = xorOp(data);
-		while(data.cfml.forwardIfCurrent("eqv")) {
+		while(data.cfml.forwardIfCurrentAndNoWordAfter("eqv")) {
 			comments(data.cfml);
             expr=OpBool.toExprBoolean(expr, xorOp(data), OpBool.EQV);
 		}
@@ -378,7 +378,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	*/
 	protected Expression xorOp(Data data) throws TemplateException {
 		Expression expr = orOp(data);
-		while(data.cfml.forwardIfCurrent("xor")) {
+		while(data.cfml.forwardIfCurrentAndNoWordAfter("xor")) {
 			comments(data.cfml);
             expr=OpBool.toExprBoolean(expr, orOp(data), OpBool.XOR);
 		}
@@ -397,7 +397,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	protected Expression orOp(Data data) throws TemplateException {
 		Expression expr = andOp(data);
 		
-		while(data.cfml.forwardIfCurrent("||") || data.cfml.forwardIfCurrent("or")) {
+		while(data.cfml.forwardIfCurrent("||") || data.cfml.forwardIfCurrentAndNoWordAfter("or")) {
 			comments(data.cfml);
             expr=OpBool.toExprBoolean(expr, andOp(data), OpBool.OR);
 		}
@@ -416,7 +416,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	protected Expression andOp(Data data) throws TemplateException {
 		Expression expr = notOp(data);
 		
-		while(data.cfml.forwardIfCurrent("&&") || data.cfml.forwardIfCurrent("and")) {
+		while(data.cfml.forwardIfCurrent("&&") || data.cfml.forwardIfCurrentAndNoWordAfter("and")) {
 			comments(data.cfml);
 	        expr=OpBool.toExprBoolean(expr, notOp(data), OpBool.AND);
 		}
@@ -465,8 +465,8 @@ public class CFMLExprTransformer implements ExprTransformer {
 		do {
 			hasChanged=false;
 			if(data.cfml.isCurrent('c')) {
-					if (data.cfml.forwardIfCurrent("ct")) {expr = decisionOpCreate(data,OPDecision.CT,expr);hasChanged=true;} 
-					else if (data.cfml.forwardIfCurrent("contains")){ expr = decisionOpCreate(data,OPDecision.CT,expr);hasChanged=true;}
+					if (data.cfml.forwardIfCurrentAndNoWordAfter("ct")) {expr = decisionOpCreate(data,OPDecision.CT,expr);hasChanged=true;} 
+					else if (data.cfml.forwardIfCurrentAndNoWordAfter("contains")){ expr = decisionOpCreate(data,OPDecision.CT,expr);hasChanged=true;}
 			}
 			// does not contain
 			else if (data.cfml.forwardIfCurrent("does","not","contain")){ expr = decisionOpCreate(data,OPDecision.NCT,expr); hasChanged=true;}
@@ -519,7 +519,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			// gt, gte, greater than or equal to, greater than
 			else if (data.cfml.isCurrent('g')) {
 				if (data.cfml.forwardIfCurrent("gt")) {
-					if(data.cfml.forwardIfCurrent("e")) expr = decisionOpCreate(data,OPDecision.GTE,expr);
+					if(data.cfml.forwardIfCurrentAndNoWordAfter("e")) expr = decisionOpCreate(data,OPDecision.GTE,expr);
 					else expr = decisionOpCreate(data,OPDecision.GT,expr);
 					hasChanged=true;
 				} 
@@ -528,7 +528,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 					else expr = decisionOpCreate(data,OPDecision.GT,expr);
 					hasChanged=true;
 				}	
-				else if (data.cfml.forwardIfCurrent("ge")) {
+				else if (data.cfml.forwardIfCurrentAndNoWordAfter("ge")) {
 					expr = decisionOpCreate(data,OPDecision.GTE,expr);
 					hasChanged=true;
 				}				
@@ -544,7 +544,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			// lt, lte, less than, less than or equal to
 			else if (data.cfml.isCurrent('l')) {
 				if (data.cfml.forwardIfCurrent("lt")) {
-					if(data.cfml.forwardIfCurrent("e")) expr = decisionOpCreate(data,OPDecision.LTE,expr);
+					if(data.cfml.forwardIfCurrentAndNoWordAfter("e")) expr = decisionOpCreate(data,OPDecision.LTE,expr);
 					else expr = decisionOpCreate(data,OPDecision.LT,expr);
 					hasChanged=true;
 				} 
@@ -553,7 +553,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 					else expr = decisionOpCreate(data,OPDecision.LT,expr);
 					hasChanged=true;
 				}	
-				else if (data.cfml.forwardIfCurrent("le")) {
+				else if (data.cfml.forwardIfCurrentAndNoWordAfter("le")) {
 					expr = decisionOpCreate(data,OPDecision.LTE,expr);
 					hasChanged=true;
 				}				
@@ -562,11 +562,11 @@ public class CFMLExprTransformer implements ExprTransformer {
 			// neq, not equal, nct
 			else if (data.cfml.isCurrent('n')) {
 				// Not Equal
-					if (data.cfml.forwardIfCurrent("neq")){ expr = decisionOpCreate(data,OPDecision.NEQ,expr); hasChanged=true;}
+					if (data.cfml.forwardIfCurrentAndNoWordAfter("neq")){ expr = decisionOpCreate(data,OPDecision.NEQ,expr); hasChanged=true;}
 				// Not Equal (Alias)
 					else if (data.cfml.forwardIfCurrent("not","equal")){ expr = decisionOpCreate(data,OPDecision.NEQ,expr);hasChanged=true; }
 				// nct
-					else if (data.cfml.forwardIfCurrent("nct")){ expr = decisionOpCreate(data,OPDecision.NCT,expr); hasChanged=true;}	
+					else if (data.cfml.forwardIfCurrentAndNoWordAfter("nct")){ expr = decisionOpCreate(data,OPDecision.NCT,expr); hasChanged=true;}	
 			}
 			
 		}
@@ -673,7 +673,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		Expression expr = divMultiOp(data);
 		
 		// Modulus Operation
-		while(data.cfml.forwardIfCurrent('%') || data.cfml.forwardIfCurrent("mod")) {
+		while(data.cfml.forwardIfCurrent('%') || data.cfml.forwardIfCurrentAndNoWordAfter("mod")) {
 			expr=_modOp(data,expr);
 			//comments(data.cfml);
             //expr=OpDouble.toExprDouble(expr, divMultiOp(), OpDouble.MODULUS);
@@ -759,7 +759,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		Expression expr = unaryOp(data);
 
 		// Modulus Operation
-		while(data.cfml.forwardIfCurrent('^') || data.cfml.forwardIfCurrent("exp")) {
+		while(data.cfml.forwardIfCurrent('^') || data.cfml.forwardIfCurrentAndNoWordAfter("exp")) {
 			comments(data.cfml);
             expr=OpDouble.toExprDouble(expr, unaryOp(data), OpDouble.EXP);
 		}
