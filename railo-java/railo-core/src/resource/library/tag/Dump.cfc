@@ -85,7 +85,7 @@ component {
 		catch(e) {
 			var meta = dumpStruct(structKeyExists(attrib,'var') ? attrib.var : nullValue(), attrib.top, attrib.show, attrib.hide, attrib.keys, attrib.metaInfo, attrib.showUDFs);
 		}
-		var dumpID = createId();//"dump_" & meta.id;
+		var dumpID = createId();
 		
 		// create output
 		var hasReference = structKeyExists(meta,'hasReference') && meta.hasReference;
@@ -140,7 +140,7 @@ component {
 				var comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
 
 				rtn&=('<tr>');
-				rtn&=('<td id="#doCSSColors(cssColors,arguments.meta.highLightColor)#" title="#arguments.context#" onclick="dumpOC(''#id#'');" colspan="#columnCount#">');
+				rtn&=('<td class="#doCSSColors(cssColors,arguments.meta.highLightColor)#" title="#arguments.context#" onclick="dumpOC(''#id#'');" colspan="#columnCount#">');
 				rtn&=('<span>#arguments.meta.title##metaID#</span>');
 				rtn&=(comment & '</td>');
 				rtn&=('</tr>');
@@ -154,7 +154,7 @@ component {
 			if(columnCount) {
 				loop query="arguments.meta.data" {
 					var c = 1;
-					var nodeID = len(id) ? ' name="_#id#"' : '';
+					var nodeID = len(id) ? ' name="#id#"' : '';
 					var hidden = !arguments.expand && len(id) ? ' style="display:none"' : '';
 
 					rtn&=('<tr#nodeID##hidden#>');
@@ -165,12 +165,12 @@ component {
 						if(isStruct(node)) {
 							var value = this.html(node, "", arguments.expand, arguments.output, arguments.hasReference, arguments.level+1,arguments.dumpID,cssColors);
 
-							rtn&=('<td id="#doCSSColors(cssColors,bgColor(arguments.meta,c))#" #title#>');
+							rtn&=('<td class="#doCSSColors(cssColors,bgColor(arguments.meta,c))#" #title#>');
 							rtn&=(value);
 							rtn&=('</td>');
 						}
 						else {
-							rtn&=('<td id="#doCSSColors(cssColors,bgColor(arguments.meta,c))#" #title#>' & HTMLEditFormat(node) & '</td>' );
+							rtn&=('<td class="#doCSSColors(cssColors,bgColor(arguments.meta,c))#" #title#>' & HTMLEditFormat(node) & '</td>' );
 						}
 						c *= 2;
 					}
@@ -182,11 +182,11 @@ component {
 			// Header
 			if(arguments.level EQ 0){
 				// javascript
-				head=("<script>" & NEWLINE);
+				head=('<script language="JavaScript" type="text/javascript">' & NEWLINE);
 				head&=("function dumpOC(name){");
-				head&=( "var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName('_'+name);" );
+				head&=( "var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName(name);" );
 				head&=("var s=null;" );
-				head&=( "name='_'+name;" );
+				head&=( "name=name;" );
 				head&=( "for(var i=0;i<tds.length;i++) {" );
 				head&=("if(document.all && tds[i].name!=name)continue;" );
 				head&=( "s=tds[i].style;" );
@@ -202,7 +202,7 @@ component {
 				head&=('div###arguments.dumpID# td {border:1px solid #arguments.meta.borderColor#; vertical-align:top; padding:2px; empty-cells:show;}' & NEWLINE);
 				head&=('div###arguments.dumpID# td span {font-weight:bold;}' & NEWLINE);
 				loop collection="#cssColors#" item="key" {
-					head&="td###key# {background-color:#cssColors[key]#;}"& NEWLINE;
+					head&="td.#key# {background-color:#cssColors[key]#;}"& NEWLINE;
 				}
 				head&=('</style>' & NEWLINE);
 				
@@ -249,11 +249,11 @@ component {
 		
 			if(arguments.level EQ 0){
 				// javascript
-				rtn&=("<script>" & NEWLINE);
+				rtn&=('<script language="JavaScript" type="text/javascript">' & NEWLINE);
 				rtn&=("function dumpOC(name){");
-				rtn&=("var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName('_'+name);" );
+				rtn&=("var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName(name);" );
 				rtn&=("var s=null;");
-				rtn&=("name='_'+name;");
+				rtn&=("name=name;");
 				rtn&=("for(var i=0;i<tds.length;i++) {" );
 				rtn&=("if(document.all && tds[i].name!=name)continue;");
 				rtn&=("s=tds[i].style;" & NEWLINE);
@@ -292,7 +292,7 @@ component {
 			if(columnCount) {
 				loop query="arguments.meta.data" {
 					var c = 1;
-					var nodeID = len(id) ? ' name="_#id#"' : '';
+					var nodeID = len(id) ? ' name="#id#"' : '';
 					var hidden = !arguments.expand && len(id) ? ' style="display:none"' : '';
 
 					rtn&=('<tr#nodeID##hidden#>');
@@ -471,13 +471,13 @@ component {
 	}
 	
 	string function createId(){
-		return  "_"&(server.railo.version GTE "3.3.0.010"?createUniqueId():hash(createUUID()));
+		return  "x"&(server.railo.version GTE "3.3.0.010"?createUniqueId():hash(createUUID()));
 	}
 	
 
 	function doCSSColors(struct data,string color){
-		var key=replace(color,"##","_");
-		if(isNumeric(left(key,1)))key="_"&key;
+		var key=replace(color,"##","r");
+		if(isNumeric(left(key,1)))key="r"&key;
 		
 		
 		if(!structKeyExists(data,key))
