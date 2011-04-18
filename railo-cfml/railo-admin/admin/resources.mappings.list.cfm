@@ -19,6 +19,9 @@ function selectAll(field) {
 }
 </script>
 <cfoutput>
+
+<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
+
 #stText.Mappings.IntroText#
 <table class="tbl">
 <tr>
@@ -26,7 +29,7 @@ function selectAll(field) {
 </tr>
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<tr>
-		<td><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"><cfmodule template="tp.cfm"  width="10" height="1"></td>
+		<td><cfif hasAccess><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></cfif><cfmodule template="tp.cfm"  width="10" height="1"></td>
 		<td><cfmodule template="tp.cfm"  width="17" height="1"></td>
 		<td class="tblHead" nowrap>#stText.Mappings.VirtualHead#</td>
 		<td class="tblHead" nowrap>#stText.Mappings.PhysicalHead#</td>

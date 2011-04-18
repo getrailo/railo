@@ -1730,7 +1730,16 @@ public final class ConfigWebFactory {
             ,false
             ,new StructImpl()
 		);
-	  	
+
+	  	SecurityManager sm = config.getSecurityManager();
+    	short access = sm.getAccess(SecurityManager.TYPE_DATASOURCE);
+    	int accessCount=-1;
+    	if(access==SecurityManager.VALUE_YES) accessCount=-1;
+    	else if(access==SecurityManager.VALUE_NO) accessCount=0;
+    	else if(access>=SecurityManager.VALUE_1 && access<=SecurityManager.VALUE_10){
+    		accessCount=access-SecurityManager.NUMBER_OFFSET;
+    	}
+    	
 	  	
 	  	
 	// Databases
@@ -1742,7 +1751,6 @@ public final class ConfigWebFactory {
 	  	// PSQ 
 	  	String strPSQ=databases.getAttribute("psq");
 	  	if(StringUtil.isEmpty(strPSQ)){
-	  		
 	  		// prior version was buggy, was the opposite
 	  		strPSQ=databases.getAttribute("preserve-single-quote");
 	  		if(!StringUtil.isEmpty(strPSQ)){
@@ -1750,25 +1758,11 @@ public final class ConfigWebFactory {
 	  			if(b!=null)strPSQ=b.booleanValue()?"false":"true";
 	  		}
 	  	}
-	  	
-	  	
-	  	
-	  	if(!StringUtil.isEmpty(strPSQ)) {
+	  	if(access!=SecurityManager.VALUE_NO && !StringUtil.isEmpty(strPSQ)) {
 	  	  config.setPSQL(toBoolean(strPSQ,true));
 	  	}
 	  	else if(hasCS)config.setPSQL(configServer.getPSQL());
 	  	
-	  	// boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DATASOURCE);
-        
-	  	SecurityManager sm = config.getSecurityManager();
-    	short access = sm.getAccess(SecurityManager.TYPE_DATASOURCE);
-    	int accessCount=-1;
-    	if(access==SecurityManager.VALUE_YES) accessCount=-1;
-    	else if(access==SecurityManager.VALUE_NO) accessCount=0;
-    	else if(access>=SecurityManager.VALUE_1 && access<=SecurityManager.VALUE_10){
-    		accessCount=access-SecurityManager.NUMBER_OFFSET;
-    	}
-    	
     	
 	  	// Data Sources	
 		Element[] dataSources=getChildren(databases,"data-source");
@@ -2034,19 +2028,7 @@ public final class ConfigWebFactory {
     	
     	
     	GatewayEntry ge; 
-    	
-		/*/ Copy Parent gateways as readOnly
-        if(hasCS) {
-            Map ds = configServer.getGatewayEntries();
-            Iterator it = ds.entrySet().iterator();
-            Map.Entry entry;
-            while(it.hasNext()) {
-	                entry=(Entry) it.next();
-	                ge=((GatewayEntryImpl)entry.getValue());
-	                mapGateways.put(entry.getKey(),new GatewayEntryImpl(config,));
-	        }
-	    }*/
-	
+    
     	
 	  	// cache connections
     	Element[] gateways=getChildren(eGateWay,"gateway");
@@ -2056,9 +2038,10 @@ public final class ConfigWebFactory {
 		GatewayEngineImpl engine = config.getGatewayEngine();
 		
 		// caches
-		if(hasAccess)for(int i=0;i<gateways.length;i++) {
-		    Element eConnection=gateways[i];
-            id=eConnection.getAttribute("id").trim().toLowerCase();
+		if(hasAccess){
+			for(int i=0;i<gateways.length;i++) {
+				Element eConnection=gateways[i];
+				id=eConnection.getAttribute("id").trim().toLowerCase();
             
 		  		ge=new GatewayEntryImpl(engine,
 		  				id,
@@ -2074,8 +2057,15 @@ public final class ConfigWebFactory {
 		  		}
 		  		else
 		  			SystemOut.print(config.getErrWriter(), "missing id");
-			  }
-			config.setGatewayEntries(mapGateways,cfcDirectory);
+			  	}
+
+				config.setGatewayEntries(mapGateways,cfcDirectory);
+			}
+			else {
+				try {
+					config.getGatewayEngine().clear();
+				} catch (PageException e) {e.printStackTrace();}
+			}
 		}
     
     private static Struct[] _toArguments(ArrayList list) {
@@ -2171,7 +2161,7 @@ public final class ConfigWebFactory {
 
         // do patch cache
         String strDoPathcache=customTag.getAttribute("use-cache-path");
-        if(!StringUtil.isEmpty(strDoPathcache,true)) {
+        if(hasAccess && !StringUtil.isEmpty(strDoPathcache,true)) {
         	config.setUseCTPathCache(Caster.toBooleanValue(strDoPathcache.trim(),true));
         }
         else if(hasCS) {
@@ -2180,7 +2170,7 @@ public final class ConfigWebFactory {
 
         // do custom tag local search
         String strDoCTLocalSearch=customTag.getAttribute("custom-tag-local-search");
-        if(!StringUtil.isEmpty(strDoCTLocalSearch)) {
+        if(hasAccess && !StringUtil.isEmpty(strDoCTLocalSearch)) {
         	config.setDoLocalCustomTag(Caster.toBooleanValue(strDoCTLocalSearch.trim(),true));
         }
         else if(hasCS) {
@@ -2189,7 +2179,7 @@ public final class ConfigWebFactory {
 
         // do custom tag deep search
         String strDoCTDeepSearch=customTag.getAttribute("custom-tag-deep-search");
-        if(!StringUtil.isEmpty(strDoCTDeepSearch)) {
+        if(hasAccess && !StringUtil.isEmpty(strDoCTDeepSearch)) {
         	config.setDoCustomTagDeepSearch(Caster.toBooleanValue(strDoCTDeepSearch.trim(),false));
         }
         else if(hasCS) {
@@ -2198,7 +2188,7 @@ public final class ConfigWebFactory {
 
         // extensions
         String strExtensions=customTag.getAttribute("extensions");
-        if(!StringUtil.isEmpty(strExtensions)) {
+        if(hasAccess && !StringUtil.isEmpty(strExtensions)) {
         	try {
 				String[] arr = List.toStringArray(List.listToArrayRemoveEmpty(strExtensions, ","));
 				config.setCustomTagExtensions(List.trimItems(arr));

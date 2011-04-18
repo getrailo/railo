@@ -569,7 +569,7 @@ public abstract class PageExceptionImpl extends PageException {
 
     private static boolean hasCFMLinStacktrace(StackTraceElement[] traces) {
 		for(int i=0;i<traces.length;i++) {
-			if(!traces[i].getFileName().endsWith(".java")) return true;
+			if(traces[i].getFileName()!=null && !traces[i].getFileName().endsWith(".java")) return true;
 		}
 		return false;
 	}

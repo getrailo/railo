@@ -136,9 +136,12 @@ Error Output--->
 
 
 
+
 <cfif not has.cfx_usage>
-<cfoutput>#stText.CFX.NoAccess#</cfoutput>
+	<cfset noAccess(stText.CFX.NoAccessUsage)>
 <cfelse>
+
+<cfif not has.cfx_setting><cfset noAccess(stText.CFX.NoAccessSetting)></cfif>
 
 <cfadmin 
 	action="getJavaCFXTags"
@@ -178,7 +181,7 @@ function selectAll(field) {
 <cfform name="java" action="#request.self#?action=#url.action#" method="post">
 <cfoutput>
 	<tr>
-		<td><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></td>
+		<td><cfif has.cfx_setting ><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></cfif></td>
 		<td class="tblHead" nowrap>#stText.CFX.Name#</td>
 		<td class="tblHead" nowrap>#stText.CFX.Class#</td>
 		<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
@@ -404,4 +407,5 @@ function selectAll(field) {
 
 </cfif>
 
-    
+
+

@@ -88,6 +88,13 @@ Redirtect to entry --->
 Error Output --->
 <cfset printError(error)>
 <cfoutput>
+
+
+
+
+<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
+
+
 <table class="tbl" width="740">
 <colgroup>
     <col width="150">
@@ -227,7 +234,7 @@ Merge URL and Form --->
 				<option value="update" <cfif scope.LocalMode EQ "update">selected</cfif>>#stText.Scopes.LocalModeUpdate#</option>
 			</select>
 		<cfelse>
-			<b>#scope.localMode#</b><input type="hidden"  name="LocalMode" value="#scope.localMode#">
+			<br /><b>#scope.localMode#</b><input type="hidden"  name="LocalMode" value="#scope.localMode#">
 		</cfif>
 	</td>
 </tr>

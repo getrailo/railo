@@ -2146,10 +2146,9 @@ public final class ConfigWebAdmin {
 	}
 	public void updateCTPathCache(Boolean ctPathCache) throws SecurityException {
 		checkWriteAccess();
-		boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
-		if(!hasAccess)
-            throw new SecurityException("no access to update Custom Tag Cache Path");
-        
+		if(!ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CUSTOM_TAG)) 
+			throw new SecurityException("no access to update custom tag setting");
+		
 		 if(!Caster.toBooleanValue(ctPathCache,false))
 	        	config.clearCTCache();
 	        Element scope=_getRootElement("custom-tag");
@@ -2802,7 +2801,9 @@ public final class ConfigWebAdmin {
 
 	public void updateCustomTagDeepSearch(boolean customTagDeepSearch) throws SecurityException {
 		checkWriteAccess();
-		// update charset
+		if(!ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CUSTOM_TAG)) 
+			throw new SecurityException("no access to update custom tag setting");
+		
 		Element element = _getRootElement("custom-tag");
 		element.setAttribute("custom-tag-deep-search",Caster.toString(customTagDeepSearch));
 	}
@@ -2820,7 +2821,9 @@ public final class ConfigWebAdmin {
 	
 	public void updateCustomTagLocalSearch(boolean customTagLocalSearch) throws SecurityException {
 		checkWriteAccess();
-		// update charset
+		if(!ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CUSTOM_TAG)) 
+			throw new SecurityException("no access to update custom tag setting");
+		
 		Element element = _getRootElement("custom-tag");
 		element.setAttribute("custom-tag-local-search",Caster.toString(customTagLocalSearch));
 	}
@@ -2829,6 +2832,8 @@ public final class ConfigWebAdmin {
 
 	public void updateCustomTagExtensions(String extensions) throws PageException {
 		checkWriteAccess();
+		if(!ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CUSTOM_TAG)) 
+			throw new SecurityException("no access to update custom tag setting");
 		
 		// check
 		Array arr = List.listToArrayRemoveEmpty(extensions, ',');

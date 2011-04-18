@@ -76,6 +76,8 @@ Redirtect to entry --->
 </cfif>
 
 
+<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
+
 
 <!--- 
 Create Datasource --->
@@ -96,12 +98,12 @@ Create Datasource --->
 <tr>
 	<td class="tblHead" width="150">#stText.setting.whitespace#</td>
 	<td class="tblContent">
-		<span class="comment">
+		
 		<cfif hasAccess>
 			<input type="checkbox" name="suppressWhitespace" value="true" <cfif setting.suppressWhitespace>checked="checked"</cfif>>
 		<cfelse>
-			<input type="hidden" name="suppressWhitespace" value="#setting.suppressWhitespace#">
-		</cfif>#stText.setting.whitespaceDescription#</span>
+			<b>#yesNoFormat(setting.suppressWhitespace)#</b><input type="hidden" name="suppressWhitespace" value="#setting.suppressWhitespace#">
+		</cfif><span class="comment">#stText.setting.whitespaceDescription#</span>
 	</td>
 </tr>
 

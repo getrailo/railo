@@ -192,6 +192,9 @@ Mail Settings
 		
 		@todo help text --->
 <cfoutput>
+
+
+<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
 <table class="tbl" width="740">
 
 <tr>

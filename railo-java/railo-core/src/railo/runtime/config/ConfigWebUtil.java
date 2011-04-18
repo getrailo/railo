@@ -274,9 +274,9 @@ public final class ConfigWebUtil {
     public static boolean hasAccess(Config config, int type) {
         
     	boolean has=true;
-        if(config instanceof ConfigWeb)
-            has=((ConfigWeb)config).getSecurityManager().getAccess(type)==SecurityManager.VALUE_YES;
-        
+        if(config instanceof ConfigWeb) {
+            has=((ConfigWeb)config).getSecurityManager().getAccess(type)!=SecurityManager.VALUE_NO;
+        }
         return has;
     }
 

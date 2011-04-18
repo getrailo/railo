@@ -804,6 +804,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.dbhost">Host/Server</data>
 	<data key="settings.dbconnlimitinf">- inf -</data>
 	<data key="settings.type">Typ</data>
+	<data key="setting.noAccess">Keinen Zugriff um Einstellungen zu ändern.</data>
 	<data key="regional.timeserverdescription">Time server der die aktuelle Zeit zürück gibt. Falls gesetzt, wird in Railo diese Zeit anstelle der lokalen Server-Zeit verwendet (Beispiel: swisstime.ethz.ch, time.nist.gov).</data>
 	<data key="regional.server">Hier können Sie regionale Einstellungen vornehmen, die Vorgabe für alle Web-Instanzen sind. Auf die aktuelle Instanz haben diese Werte keinen Einfluss.</data>
 	<data key="regional.defaultencodingdescription"></data>
@@ -823,7 +824,8 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="cfx.cfxtags">Java CFX Tags</data>
 	<data key="cfx.name">Name</data>
 	<data key="cfx.class">Klasse</data>
-	<data key="cfx.noaccess">Kein Zugriff auf die CFX Funktionalität</data>
+	<data key="cfx.noaccessUsage">Den Zugriff auf die CFX Funktionalität ist für diesen Kontext komplett gesperrt.</data>
+	<data key="cfx.noaccessSetting">Es ist nicht erlaubt in diesem Kontext CFX Tags anzulegen, Tags welche im Server Admin definiert wurden, können jedoch verwendet werden.</data>
 	<data key="cfx.cpp.CFXTags">C++ CFX tags</data>
 	<data key="cfx.procedure">Prozedur</data>
 	<data key="cfx.serverlibrary">Server Library</data>
