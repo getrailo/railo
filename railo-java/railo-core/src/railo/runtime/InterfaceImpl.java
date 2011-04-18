@@ -31,7 +31,7 @@ import railo.runtime.type.util.ArrayUtil;
  * 
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
-public class InterfaceImpl implements Dumpable {
+public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for this and a base interface for this and Coponent
 
 	private static final InterfaceImpl[] EMPTY = new InterfaceImpl[]{};
 	

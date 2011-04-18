@@ -467,7 +467,6 @@ public final class ComponentUtil {
 
 
 	public static String md5(Component c) throws IOException, ExpressionException {
-		//Iterator it=component.keyIterator();
 		ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,c);
 		Key[] keys = cw.keys();
 		Arrays.sort(keys);
@@ -496,14 +495,6 @@ public final class ComponentUtil {
         		}
         	}
         }
-        /* / MUST remove this
-        Config config = ThreadLocalPageContext.getConfig();
-        if(config!=null)
-            SystemOut.print(config.getOutWriter(),_interface.toString().toLowerCase());
-        else
-        	SystemOut.print("\n"+_interface.toString().toLowerCase()+"\n");
-        /////////////////*/
-        
 		return  MD5.getDigestAsString(_interface.toString().toLowerCase());
 	}
 	
