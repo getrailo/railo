@@ -65,7 +65,7 @@ public final class ASMUtil {
 	private static int version=0;
 	
 	private final static Method CONSTRUCTOR_OBJECT = Method.getMethod("void <init> ()");
-	private static final String VERSION_MESSAGE = "you use a old version of the ASM Jar, please update your jar files";
+	private static final String VERSION_MESSAGE = "you use a invalid version of the ASM Jar, please update your jar files";
 	private static long id=0;
 		
 	/**
