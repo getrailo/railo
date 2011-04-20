@@ -229,12 +229,12 @@ public class HibernateCaster {
 	public static String toHibernateType(ColumnInfo info, String defaultValue)	{
 		if(info==null)return defaultValue;
 		
-		String rtn = toHibernateType(info.getType(), null);
+		String rtn = toHibernateType(info.getType(),info.getSize(), null);
 		if(rtn!=null) return rtn;
 		return toHibernateType(info.getTypeName(),defaultValue);
 	}
 	
-	public static String toHibernateType(int type, String defaultValue) {
+	public static String toHibernateType(int type, int size, String defaultValue) {
 		// MUST do better
 		switch(type){
 		case Types.ARRAY: return "";
@@ -243,7 +243,10 @@ public class HibernateCaster {
 		case Types.BIT: return "boolean";
 		case Types.BLOB: return "blob";
 		case Types.BOOLEAN: return "boolean";
-		case Types.CHAR: return "character";
+		case Types.CHAR:
+			return "string";
+			//if(size>1) return "string";
+			//return "character";
 		case Types.CLOB: return "clob";
 		//case Types.DATALINK: return "";
 		case Types.DATE: return "date";
