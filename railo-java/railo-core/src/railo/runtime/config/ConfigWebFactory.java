@@ -769,6 +769,7 @@ public final class ConfigWebFactory {
                 _attr(el,"tag_registry",SecurityManager.VALUE_YES),
                 _attr(el,"cache",SecurityManager.VALUE_YES),
                 _attr(el,"gateway",SecurityManager.VALUE_YES),
+                _attr(el,"orm",SecurityManager.VALUE_YES),
                 _attr2(el,"access_read",SecurityManager.ACCESS_PROTECTED),
                 _attr2(el,"access_write",SecurityManager.ACCESS_PROTECTED)
         );
@@ -2955,8 +2956,8 @@ public final class ConfigWebFactory {
     
     
     private static void loadORM(ConfigServer configServer, ConfigImpl config, Document doc) throws IOException {
-    	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
-        
+    	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_ORM);
+	  	
         Element orm=hasAccess?getChildByName(doc.getDocumentElement(),"orm"):null;
       	boolean hasCS=configServer!=null;
       	

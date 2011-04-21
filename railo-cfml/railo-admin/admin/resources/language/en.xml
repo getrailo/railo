@@ -75,6 +75,8 @@
 	<data key="security.tagobject">Tag CFObject / &lt;br/&gt;function CreateObject</data>
 	<data key="security.debugging">Debugging</data>
 	<data key="security.gatewaydescription">The gateway settings can be changed in the &quot;web administrator&quot;</data>
+	<data key="security.orm">ORM</data>
+	<data key="security.ormDescription">The ORM settings can be changed in the &quot;web administrator&quot;</data>
 	<data key="security.mail">Mail</data>
 	<data key="security.filecustom">Custom directories</data>
 	<data key="security.accessreaddesc">define the access for reading data</data>

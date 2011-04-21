@@ -1238,6 +1238,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 fb("tag_registry"),
                 fb("cache"),
                 fb("gateway"),
+                fb("orm"),
                 fb2("access_read"),
                 fb2("access_write")
         );
@@ -1290,6 +1291,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 fb("tag_registry"),
                 fb("cache"),
                 fb("gateway"),
+                fb("orm"),
                 fb2("access_read"),
                 fb2("access_write")
         );
@@ -1330,6 +1332,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         sct.set("scheduled_task",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_SCHEDULED_TASK)==SecurityManager.VALUE_YES));
         sct.set("cache",Caster.toBoolean(sm.getAccess(SecurityManagerImpl.TYPE_CACHE)==SecurityManager.VALUE_YES));
         sct.set("gateway",Caster.toBoolean(sm.getAccess(SecurityManagerImpl.TYPE_GATEWAY)==SecurityManager.VALUE_YES));
+        sct.set("orm",Caster.toBoolean(sm.getAccess(SecurityManagerImpl.TYPE_ORM)==SecurityManager.VALUE_YES));
         
         sct.set("tag_execute",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_TAG_EXECUTE)==SecurityManager.VALUE_YES));
         sct.set("tag_import",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_TAG_IMPORT)==SecurityManager.VALUE_YES));

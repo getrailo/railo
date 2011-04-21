@@ -2296,7 +2296,7 @@ public final class ConfigWebAdmin {
  	      short cfxSetting, short cfxUsage, short debugging,
          short search, short scheduledTasks,
          short tagExecute,short tagImport, short tagObject, short tagRegistry,
-         short cache, short gateway,
+         short cache, short gateway,short orm,
          short accessRead, short accessWrite) throws SecurityException {
     	checkWriteAccess();
         if(!(config instanceof ConfigServer))
@@ -2324,6 +2324,7 @@ public final class ConfigWebAdmin {
         security.setAttribute("tag_registry",         SecurityManagerImpl.toStringAccessValue(tagRegistry));
         security.setAttribute("cache",       SecurityManagerImpl.toStringAccessValue(cache));
         security.setAttribute("gateway",       SecurityManagerImpl.toStringAccessValue(gateway));
+        security.setAttribute("orm",       SecurityManagerImpl.toStringAccessValue(orm));
 
         security.setAttribute("access_read",       SecurityManagerImpl.toStringAccessRWValue(accessRead));
         security.setAttribute("access_write",      SecurityManagerImpl.toStringAccessRWValue(accessWrite));
@@ -2387,7 +2388,7 @@ public final class ConfigWebAdmin {
           short cfxSetting, short cfxUsage, short debugging,
           short search, short scheduledTasks,
           short tagExecute,short tagImport, short tagObject, short tagRegistry, 
-          short cache,short gateway,
+          short cache,short gateway,short orm,
           short accessRead, short accessWrite) throws SecurityException, ApplicationException {
     	checkWriteAccess();
         if(!(config instanceof ConfigServer))
@@ -2419,6 +2420,7 @@ public final class ConfigWebAdmin {
         accessor.setAttribute("scheduled_task",     SecurityManagerImpl.toStringAccessValue(scheduledTasks));
         accessor.setAttribute("cache",     SecurityManagerImpl.toStringAccessValue(cache));
         accessor.setAttribute("gateway",     SecurityManagerImpl.toStringAccessValue(gateway));
+        accessor.setAttribute("orm",     SecurityManagerImpl.toStringAccessValue(orm));
         
         accessor.setAttribute("tag_execute",        SecurityManagerImpl.toStringAccessValue(tagExecute));
         accessor.setAttribute("tag_import",         SecurityManagerImpl.toStringAccessValue(tagImport));
@@ -2548,6 +2550,9 @@ public final class ConfigWebAdmin {
         accessor.setAttribute("cfx_setting",        SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_CFX_SETTING)));
         accessor.setAttribute("cfx_usage",          SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_CFX_USAGE)));
         accessor.setAttribute("debugging",          SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_DEBUGGING)));
+        accessor.setAttribute("cache",          	SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManagerImpl.TYPE_CACHE)));
+        accessor.setAttribute("gateway",          	SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManagerImpl.TYPE_GATEWAY)));
+        accessor.setAttribute("orm",          		SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManagerImpl.TYPE_ORM)));
 
         accessor.setAttribute("tag_execute",        SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_TAG_EXECUTE)));
         accessor.setAttribute("tag_import",         SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_TAG_IMPORT)));
@@ -3019,13 +3024,27 @@ public final class ConfigWebAdmin {
 	}
 	
 
-	public void resetORMSetting() {
+	public void resetORMSetting() throws SecurityException {
+		boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_ORM);
+        
+    	if(!hasAccess)
+            throw new SecurityException("no access to update ORM Settings");
+        
+		
+		
 		Element orm=_getRootElement("orm");
 		orm.getParentNode().removeChild(orm);
 	}
 	
 
-	public void updateORMSetting(ORMConfiguration oc) {
+	public void updateORMSetting(ORMConfiguration oc) throws SecurityException {
+		boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_ORM);
+        
+		if(!hasAccess)
+            throw new SecurityException("no access to update ORM Settings");
+        
+		
+		
 		Element orm=_getRootElement("orm");
 		orm.setAttribute("autogenmap",Caster.toString(oc.autogenmap(),"true"));
 		orm.setAttribute("event-handler",Caster.toString(oc.eventHandler(),""));

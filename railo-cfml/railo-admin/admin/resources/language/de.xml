@@ -121,7 +121,6 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="security.customtagdescription">Custom tags können im &apos;Web Administrator&apos; hinzugefügt, gelöscht und geändert werden.</data>
 	<data key="security.tagobject">Tag CFObject / &lt;br&gt;Funktion createObject</data>
 	<data key="security.debugging">Debugging</data>
-	<data key="security.gatewaydescription">Gateway Settings können im &apos;Web Administrator&apos; hinzugefügt, gelöscht und geändert werden.</data>
 	<data key="security.mail">Mail</data>
 	<data key="security.filecustom">Zusätzliche Verzeichnisse</data>
 	<data key="security.accessreaddesc">definiert den Lesezugriff</data>
@@ -139,6 +138,9 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="security.tagexecutedescription">Dieser Tag kann verwendet werden um Prozesse auf dem lokalen Hostsystem auszuführen.</data>
 	<data key="security.generaldesc">Definiert den allgemeinen Zugriff auf den Administrator und das Tad cfadmin</data>
 	<data key="security.gateway">Gateway</data>
+	<data key="security.gatewaydescription">Gateway Settings können im &apos;Web Administrator&apos; hinzugefügt, gelöscht und geändert werden.</data>
+	<data key="security.orm">ORM</data>
+	<data key="security.ormDescription">ORM Settings können im &apos;Web Administrator&apos; hinzugefügt, gelöscht und geändert werden.</data>
 	<data key="security.speclistnewtitle">Neuen Web Kontext erstellen</data>
 	<data key="security.accesswritedesc">definiert den Schreibzugriff</data>
 	<data key="security.tagimport">Tag CFImport</data>
