@@ -95,7 +95,7 @@ public final class S3ResourceProvider implements ResourceProvider {
 		if(pc!=null){
 			prop=((ApplicationContextPro)pc.getApplicationContext()).getS3();
 		}
-		else prop=new Properties();
+		if(prop==null) prop=new Properties();
 		
 		int defaultLocation = prop.getDefaultLocation();
 		storage.setValue(defaultLocation);
