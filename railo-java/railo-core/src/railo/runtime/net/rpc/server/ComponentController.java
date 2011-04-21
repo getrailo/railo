@@ -10,6 +10,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.UDFImpl;
 
 /**
@@ -37,6 +38,7 @@ public final class ComponentController {
 		}
 	}
 	public static Object _invoke(String name, Object[] args) throws PageException {
+		Key key = Caster.toKey(name);
 		Component c=component.get();
 		PageContext p=pagecontext.get();
 		if(c==null) throw new ApplicationException("missing component");
@@ -45,12 +47,13 @@ public final class ComponentController {
 		for(int i=0;i<args.length;i++) {
 			args[i]=AxisCaster.toRailoType(p,args[i]);
 		}
-		Object udf = c.get(p,name,null);
+		
+		Object udf = c.get(p,key,null);
 		String rt="any";
 		if(udf instanceof UDFImpl) {
 			rt=((UDFImpl)udf).getReturnTypeAsString();
 		}
-		Object rv = c.call(p, name, args);
+		Object rv = c.call(p, key, args);
 		
 		try {
 			RPCServer server = RPCServer.getInstance(p.getId(),p.getServletContext());

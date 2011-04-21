@@ -83,6 +83,7 @@ import railo.runtime.type.CollectionStruct;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.Iteratorable;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
@@ -1831,6 +1832,13 @@ public final class Caster {
     	if(obj instanceof StringBuffer) return (StringBuffer) obj;
         return new StringBuffer(toString(obj));
     }
+
+    public static Collection.Key toKey(Object o) throws CasterException { 
+    	return KeyImpl.toKey(o);
+    }
+    public static Collection.Key toKey(Object o,Collection.Key defaultValue) {
+    	return KeyImpl.toKey(o, defaultValue);
+    }
     
 
     /**
@@ -3045,6 +3053,9 @@ public final class Caster {
                 case 'c':
                     if(lcType.equals("creditcard")) {
                         return String.class;
+                    }
+                    else if(lcType.equals("component")) {
+                        return Component.class;
                     }
                     break;
                 case 'd':
