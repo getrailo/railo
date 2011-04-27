@@ -26,6 +26,7 @@ import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItemImpl;
 import railo.runtime.debug.Debugger;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallySupport;
@@ -41,6 +42,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.util.ApplicationContextPro;
 
 
 
@@ -77,7 +79,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	private Array results=new ArrayImpl();
 
 	private String procedure;
-	private String datasource;
+	private String datasource=null;
 	private String username;
 	private String password;
 	private int blockfactor=-1;
@@ -398,7 +400,17 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	 */
 	public int doEndTag() throws JspException {
 		long start=System.currentTimeMillis();
-
+		
+		if(StringUtil.isEmpty(datasource)){
+			datasource=((ApplicationContextPro)pageContext.getApplicationContext()).getDefaultDataSource();
+			if(StringUtil.isEmpty(datasource))
+				throw new ApplicationException(
+						"attribute [datasource] is required, when no default datasource is defined",
+						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+		}
+		
+		
+		
 	    Struct res=new StructImpl();
 		DataSourceManager manager = pageContext.getDataSourceManager();
 		DatasourceConnection dc = manager.getConnection(pageContext,datasource,username,password);

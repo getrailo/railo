@@ -11,6 +11,9 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 
 public final class ArraySlice implements Function {
+	
+	private static final long serialVersionUID = 7309769117464009924L;
+
 	public static Array call(PageContext pc , Array arr,double offset) throws PageException {
 		return call(pc , arr, offset,0);
 	}
@@ -18,13 +21,13 @@ public final class ArraySlice implements Function {
 				
 		int len=arr.size();
 		if(offset>0) {
-			if(len<offset)throw new FunctionException(pc,"arraySlice",2,"offset","offset can be greater than size of the array");
+			if(len<offset)throw new FunctionException(pc,"arraySlice",2,"offset","offset cannot be greater than size of the array");
 			
 			int to=0;
 			if(length>0)to=(int)(offset+length-1);
 			else if(length<0)to=(int)(len+length);
 			if(len<to)
-				throw new FunctionException(pc,"arraySlice",3,"length","offset+length can be greater than size of the array");
+				throw new FunctionException(pc,"arraySlice",3,"length","offset+length cannot be greater than size of the array");
 			
 			return get(arr,(int)offset,to);
 		}

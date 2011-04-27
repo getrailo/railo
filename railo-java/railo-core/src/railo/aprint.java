@@ -370,7 +370,7 @@ public class aprint {
     private static void _(PrintStream ps,ResultSet res) {
     	try {
 			_(ps, new QueryImpl(res,"query").toString());
-		} catch (PageException e) {e.printStackTrace();
+		} catch (PageException e) {
 			_(ps, res.toString());
 		}
     }

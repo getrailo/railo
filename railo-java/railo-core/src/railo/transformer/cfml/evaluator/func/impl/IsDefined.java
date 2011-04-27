@@ -23,7 +23,7 @@ public class IsDefined implements FunctionEvaluator{
 		Expression value = arg.getValue();
 		if(value instanceof LitString) {
 			String str=((LitString)value).getString();
-			StringList sl = VariableInterpreter.parse(str);
+			StringList sl = VariableInterpreter.parse(str,false);
 			if(sl!=null){
 				// scope
 				str=sl.next();
