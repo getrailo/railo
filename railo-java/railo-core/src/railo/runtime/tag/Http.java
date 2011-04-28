@@ -660,6 +660,7 @@ public final class Http extends BodyTagImpl {
 	        
 	       
 	        cfhttp.set(TEXT,Caster.toBoolean(isText));
+	        
 	    // mimetype charset
 	        //boolean responseProvideCharset=false;
 	        if(!StringUtil.isEmpty(mimetype)){
@@ -794,7 +795,7 @@ public final class Http extends BodyTagImpl {
 	            String tmp=types[types.length-1];
 	            int index=tmp.indexOf("charset=");
 	            if(index!=-1) {
-	            	rtn[0]= StringUtil.removeQuotes(tmp.substring(index+8),true);
+	            	rtn[1]= StringUtil.removeQuotes(tmp.substring(index+8),true);
 	            }
 	        }
     	}
