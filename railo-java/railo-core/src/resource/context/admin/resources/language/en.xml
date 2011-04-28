@@ -75,6 +75,8 @@
 	<data key="security.tagobject">Tag CFObject / &lt;br/&gt;function CreateObject</data>
 	<data key="security.debugging">Debugging</data>
 	<data key="security.gatewaydescription">The gateway settings can be changed in the &quot;web administrator&quot;</data>
+	<data key="security.orm">ORM</data>
+	<data key="security.ormDescription">The ORM settings can be changed in the &quot;web administrator&quot;</data>
 	<data key="security.mail">Mail</data>
 	<data key="security.filecustom">Custom directories</data>
 	<data key="security.accessreaddesc">define the access for reading data</data>
@@ -791,7 +793,8 @@
 	<data key="cfx.cfxtags">Java CFX tags</data>
 	<data key="cfx.name">Name</data>
 	<data key="cfx.class">Class</data>
-	<data key="cfx.noaccess">No access to CFX functionality</data>
+	<data key="cfx.noaccessUsage">The usage of CFX Tags is completely forbitten for this context.</data>
+	<data key="cfx.noaccessSetting">It is not allowed to create CFX Tags in this context, but it is allowed to use tags defined in the server admin.</data>
 	<data key="cfx.cpp.CFXTags">C++ CFX tags</data>
 	<data key="cfx.procedure">Procedure</data>
 	<data key="cfx.serverlibrary">Server Library</data>
@@ -1025,6 +1028,7 @@
 	<data key="setting.general.scope">Scope</data>
 	<data key="setting.general.datasource">Datasource</data>
 	<data key="setting.general.customtag">Custom Tag</data>
+	<data key="setting.noAccess">no access to change settings</data>
 	
 	<data key="mail.tls">TLS</data>
 	<data key="mail.ssl">SSL</data>
