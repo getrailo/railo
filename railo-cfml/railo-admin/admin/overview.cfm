@@ -127,7 +127,7 @@ Error Output --->
 
 <tr>
 	<td class="tblHead" width="150">#stText.Overview.OS#</td>
-	<td class="tblContent">#server.OS.Name# (#server.OS.Version#)</td>
+	<td class="tblContent">#server.OS.Name# (#server.OS.Version#)<cfif structKeyExists(server.os,"archModel")> #server.os.archModel#bit</cfif></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Overview.remote_addr#</td>
@@ -181,7 +181,7 @@ Error Output --->
 	<td class="tblHead" width="150">Java</td>
 	<td class="tblContent">
 		<!--- <cfset serverNow=createObject('java','java.util.Date')> --->
-		#server.java.version# (#server.java.vendor#)
+		#server.java.version# (#server.java.vendor#)<cfif structKeyExists(server.java,"archModel")> #server.java.archModel#bit</cfif>
 	</td> 
 </tr>
 <tr>

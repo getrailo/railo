@@ -1,5 +1,6 @@
 package railo.runtime.type.scope;
 
+import railo.commons.io.SystemUtil;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalConfig;
@@ -38,6 +39,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
     private static final Key  NAME= KeyImpl.getInstance("name");
     private static final Key  SERVLET= KeyImpl.getInstance("servlet");
     private static final Key  ARCH= KeyImpl.getInstance("arch");
+    private static final Key  ARCH_MODEL= KeyImpl.getInstance("archModel");
     private static final Key  VERSION= KeyImpl.getInstance("version");
     private static final Key  ADDITIONAL_INFORMATION= KeyImpl.getInstance("additionalinformation");
     private static final Key BUILD_NUMBER = KeyImpl.getInstance("buildnumber");
@@ -116,6 +118,8 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 		ReadOnlyStruct os=new ReadOnlyStruct();
 			os.setEL(NAME,System.getProperty("os.name") );
 			os.setEL(ARCH,System.getProperty("os.arch") );
+			int arch=SystemUtil.getOSArch();
+			if(arch!=SystemUtil.ARCH_UNKNOW)os.setEL(ARCH_MODEL,new Double(arch) );
 			os.setEL(VERSION,System.getProperty("os.version") );
 			os.setEL(ADDITIONAL_INFORMATION,"");
 			os.setEL(BUILD_NUMBER,"");
@@ -142,6 +146,8 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 		ReadOnlyStruct java=new ReadOnlyStruct();
 			java.setEL(VERSION,System.getProperty("java.version"));
 			java.setEL(VENDOR,System.getProperty("java.vendor"));
+			arch=SystemUtil.getJREArch();
+			if(arch!=SystemUtil.ARCH_UNKNOW)java.setEL(ARCH_MODEL,new Double(arch) );
 			Runtime rt = Runtime.getRuntime();
 			java.setEL(FREE_MEMORY,new Double(rt.freeMemory()));
 			java.setEL(TOTAL_MEMORY,new Double(rt.totalMemory()));
