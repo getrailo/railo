@@ -280,7 +280,16 @@ function selectAll(field) {
 <br />
 <table class="tbl" width="740">
 <tr>
-	<td colspan="4"><cfoutput><h2>#stText.CFX.cpp.CFXTags#</h2></cfoutput></td>
+	<td colspan="4"><cfoutput><h2>#stText.CFX.cpp.CFXTags#</h2>
+	
+	
+<span class="CheckError">
+The C++ CFX tags Implementation is currently in Beta State. Its functionality can change before it's final release.
+If you have any problems while using the C++ CFX tags Implementation, please post the bugs and errors in our <a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank" class="CheckError">bugtracking system</a>. 
+</span><br /><br />
+	
+	</cfoutput>
+    </td>
 </tr>
 
 <cfform name="cpp" action="#request.self#?action=#url.action#" method="post">
@@ -367,10 +376,32 @@ function selectAll(field) {
 		<td class="tblContent" nowrap ><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="serverlibrary_#idx#" value="" required="no" style="width:250px"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="procedure_#idx#" value="" required="no" style="width:120px"></td>
+			name="procedure_#idx#" value="ProcessTagRequest" required="no" style="width:120px"></td>
 		<td class="tblContent" nowrap colspan="2">
         	<input type="checkbox" class="checkbox" onclick="checkTheBox(this)" name="keepalive_#idx#" value="true"></td>
 	</tr>
+	<tr>
+		<td></td>
+		<td align="center" colspan="5">
+        
+        
+	<cfif server.os.archModel NEQ server.java.archModel>
+    	<cfset archText=stText.CFX.cpp.archDiff>	
+    <cfelse>
+    	<cfset archText=stText.CFX.cpp.arch>	
+    </cfif>
+    <cfset archText=replace(archText,"{os-arch}",server.os.archModel,"all")>
+    <cfset archText=replace(archText,"{jre-arch}",server.java.archModel,"all")>	
+	<cfoutput><span class="comment"  style="color:red">#archText#</span></cfoutput>
+        </td>
+	</tr>
+    
+    
+    
+
+    
+    
+    
 </cfif>
 </cfoutput>
 <cfif has.cfx_setting>
@@ -408,4 +439,6 @@ function selectAll(field) {
 </cfif>
 
 
+	
+	
 
