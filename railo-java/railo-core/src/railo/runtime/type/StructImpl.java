@@ -1,6 +1,7 @@
 package railo.runtime.type;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import railo.commons.collections.HashTable;
 import railo.commons.collections.HashTableNotSync;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.struct.StructKeyExists;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
@@ -46,8 +48,8 @@ public class StructImpl extends StructSupport {
     	if(type==TYPE_LINKED)		map=new LinkedHashMap<Collection.Key,Object>();
     	else if(type==TYPE_WEAKED)	map=new java.util.WeakHashMap<Collection.Key,Object>(); 
     	else if(type==TYPE_SOFT)	map=new ReferenceMap();
-        else if(type==TYPE_SYNC)	map=new HashTable();
-        else 						map=new HashTableNotSync();
+        else if(type==TYPE_SYNC)	map=Collections.synchronizedMap(new HashMap<Collection.Key,Object>());
+        else 						map=new HashMap<Collection.Key,Object>();
     }
     
     private int getType(){
@@ -263,7 +265,7 @@ public class StructImpl extends StructSupport {
 	/**
 	 * @return the map
 	 */
-	protected Map getMap() {
+	protected Map<Collection.Key,Object> getMap() {
 		return map;
 	}
 }
