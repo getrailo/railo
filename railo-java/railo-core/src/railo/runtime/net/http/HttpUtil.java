@@ -8,6 +8,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import railo.commons.lang.Pair;
+import railo.runtime.config.Config;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
@@ -69,8 +70,8 @@ public class HttpUtil {
 		return (Pair[]) parameters.toArray(new Pair[parameters.size()]);
 	}
 	
-	public static Cookie[] cloneCookies(HttpServletRequest req) {
-		Cookie[] src=req.getCookies();
+	public static Cookie[] cloneCookies(Config config,HttpServletRequest req) {
+		Cookie[] src=ReqRspUtil.getCookies(config, req);
 		if(src==null)return new Cookie[0];
 		
 		Cookie[] dest=new Cookie[src.length];
