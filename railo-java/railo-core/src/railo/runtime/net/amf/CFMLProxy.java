@@ -28,6 +28,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.net.http.HttpServletRequestDummy;
 import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.net.http.HttpUtil;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -142,7 +143,7 @@ public class CFMLProxy {
 		// Request
 		HttpServletRequestDummy req = new HttpServletRequestDummy(
 				root,"localhost",scriptName,queryString,
-				formerReq.getCookies(),
+				ReqRspUtil.getCookies(factory.getConfig(),formerReq),
 				HttpUtil.cloneHeaders(formerReq),
 				HttpUtil.cloneParameters(formerReq),
 				HttpUtil.getAttributesAsStruct(formerReq),null);

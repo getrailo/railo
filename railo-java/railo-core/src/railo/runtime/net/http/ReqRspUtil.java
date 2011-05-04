@@ -1,11 +1,20 @@
 package railo.runtime.net.http;
 
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
+import railo.runtime.config.Config;
 import railo.runtime.op.Caster;
+import railo.runtime.type.List;
+import railo.runtime.type.scope.CookieImpl;
 
 public final class ReqRspUtil {
 
@@ -57,5 +66,62 @@ public final class ReqRspUtil {
 		else{
 			rsp.addHeader("Content-Length", Caster.toString(length));
 		}
+	}
+
+	public static Cookie[] getCookies(Config config,HttpServletRequest req) {
+		Cookie[] cookies =req.getCookies();
+		if(cookies==null) {
+			String str = req.getHeader("Cookie");
+			if(str!=null) {
+				String charset = config.getWebCharset();
+				try{
+					String[] arr = List.listToStringArray(str, ';'),tmp;
+					java.util.List<Cookie> list=new ArrayList<Cookie>();
+					for(int i=0;i<arr.length;i++){
+						tmp=List.listToStringArray(arr[i], '=');
+						if(tmp.length>0) {
+							list.add(new Cookie(dec(tmp[0],charset), tmp.length>1?dec(tmp[1],charset):""));
+						}
+					}
+					cookies=list.toArray(new Cookie[list.size()]);
+					
+				}
+				catch(Throwable t){}
+			}
+		}
+		return cookies;
+	}
+
+	private static String dec(String str, String charset) throws UnsupportedEncodingException {
+		str=str.trim();
+		if(StringUtil.startsWith(str, '"') && StringUtil.endsWith(str, '"'))
+			str=str.substring(1,str.length()-1);
+			
+		return CookieImpl.dec(str,charset);//java.net.URLDecoder.decode(str.trim(), charset);
+	}
+
+	public static void setCharacterEncoding(HttpServletResponse rsp,String charset) {
+		try {
+			Method setCharacterEncoding = rsp.getClass().getMethod("setCharacterEncoding", new Class[0]);
+			setCharacterEncoding.invoke(rsp, new Object[0]);
+			
+			
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 }

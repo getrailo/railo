@@ -64,7 +64,7 @@ public class ThreadUtil {
 	public static HttpServletRequest cloneHttpServletRequest(PageContext pc) {
 		Config config = pc.getConfig();
 		HttpServletRequest req = pc.getHttpServletRequest();
-		HttpServletRequestDummy dest = HttpServletRequestDummy.clone(config.getRootDirectory(),req);
+		HttpServletRequestDummy dest = HttpServletRequestDummy.clone(config,config.getRootDirectory(),req);
 		return dest;
 	}
 	

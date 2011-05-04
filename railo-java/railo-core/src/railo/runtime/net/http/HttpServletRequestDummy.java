@@ -24,6 +24,7 @@ import railo.commons.collections.HashTable;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.Pair;
+import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
@@ -766,14 +767,14 @@ public final class HttpServletRequestDummy implements HttpServletRequest,Seriali
 	public void setSession(HttpSession session) {
 		this.session=session;
 	}
-	public static HttpServletRequestDummy clone(Resource rootDirectory,HttpServletRequest req) {
+	public static HttpServletRequestDummy clone(Config config,Resource rootDirectory,HttpServletRequest req) {
 
 		HttpServletRequestDummy dest = new HttpServletRequestDummy(
 				rootDirectory,
 				req.getServerName(),
 				req.getRequestURI(),
 				req.getQueryString(),
-				HttpUtil.cloneCookies(req),
+				HttpUtil.cloneCookies(config,req),
 				HttpUtil.cloneHeaders(req),
 				HttpUtil.cloneParameters(req),
 				HttpUtil.getAttributesAsStruct(req),

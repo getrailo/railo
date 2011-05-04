@@ -21,6 +21,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.net.http.HttpUtil;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
@@ -105,7 +106,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			HttpServletRequest req = parent.getHttpServletRequest();
 			serverName=req.getServerName();
 			queryString=req.getQueryString();
-			cookies=SerializableCookie.toSerializableCookie(req.getCookies());
+			cookies=SerializableCookie.toSerializableCookie(ReqRspUtil.getCookies(ThreadLocalPageContext.getConfig(parent),req));
 			parameters=HttpUtil.cloneParameters(req);
 			requestURI=req.getRequestURI();
 			headers=HttpUtil.cloneHeaders(req);
