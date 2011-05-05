@@ -806,9 +806,10 @@ public final class Decision {
 		String str = Caster.toString(value,null);
 		if(str==null)return false;
 		
-		if(emailPattern==null)
-			emailPattern=Pattern.compile("^[\\%\\+a-zA-Z_0-9-]+(\\.[\\%\\+a-zA-Z_0-9-]+)*@([a-zA-Z_0-9-]+\\.)+[a-zA-Z]{2,7}$");
-			
+		if(emailPattern==null) {
+			String prefix="\\%\\+a-zA-Z_0-9-'~";
+			emailPattern=Pattern.compile("^["+prefix+"]+(\\.["+prefix+"]+)*@([a-zA-Z_0-9-]+\\.)+[a-zA-Z]{2,7}$");
+		}	
 		return emailPattern.matcher(str).matches();
 	}	
 	
