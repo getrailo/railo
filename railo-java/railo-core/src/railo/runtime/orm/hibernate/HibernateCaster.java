@@ -290,7 +290,6 @@ public class HibernateCaster {
 		type=StringUtil.replace(type, "java.util.", "", true);
 		type=StringUtil.replace(type, "java.sql.", "", true);
 		
-		
 		// return same value
 		if("long".equals(type)) return type;
 		if("binary".equals(type)) return type;
@@ -306,7 +305,7 @@ public class HibernateCaster {
 		if("integer".equals(type)) return type;
 		if("binary".equals(type)) return type;
 		if("string".equals(type)) return type;
-		if("big_decimal".equals(type)) return type;
+		if("big_integer".equals(type)) return type;
 		if("short".equals(type)) return type;
 		if("time".equals(type)) return type;
 		if("timestamp".equals(type)) return type;
@@ -314,14 +313,23 @@ public class HibernateCaster {
 		if("binary".equals(type)) return type;
 		if("string".equals(type)) return type;
 		if("text".equals(type)) return type;
+		if("calendar".equals(type)) return type;
+		if("calendar_date".equals(type)) return type;
+		if("locale".equals(type)) return type;
+		if("timezone".equals(type)) return type;
+		if("currency".equals(type)) return type;
 		
+		if("imm_date".equals(type)) return type;
+		if("imm_time".equals(type)) return type;
+		if("imm_timestamp".equals(type)) return type;
+		if("imm_calendar".equals(type)) return type;
+		if("imm_calendar_date".equals(type)) return type;
+		if("imm_serializable".equals(type)) return type;
+		if("imm_binary".equals(type)) return type;
 		
 		// return different value
 		if("bigint".equals(type)) 						return "long";
 		if("bit".equals(type)) 						return "boolean";
-		
-		
-		
 		
 		if("int".equals(type)) 						return "integer";
 		if("char".equals(type)) 					return "character";
@@ -339,11 +347,45 @@ public class HibernateCaster {
 		if("java.math.bigdecimal".equals(type)) 	return "big_decimal";
 		if("big-integer".equals(type)) 				return "big_integer";
 		if("biginteger".equals(type)) 				return "big_integer";
+		if("bigint".equals(type)) 				return "big_integer";
 		if("java.math.biginteger".equals(type)) 	return "big_integer";
 		if("byte[]".equals(type)) 					return "binary";
 		if("serializable".equals(type)) 			return "serializable";
 		
+		if("datetime".equals(type)) 				return "timestamp";
+		if("numeric".equals(type)) 					return "double";
+		if("number".equals(type)) 					return "double";
+		if("char".equals(type)) 					return "character";
+		if("nchar".equals(type)) 					return "character";
+		if("decimal".equals(type)) 					return "double";
+		if("eurodate".equals(type)) 				return "timestamp";
+		if("usdate".equals(type)) 				return "timestamp";
+		if("int".equals(type)) 						return "integer";
+		if("varchar".equals(type)) 						return "string";
+		if("nvarchar".equals(type)) 						return "string";
+		
 		return defaultValue;
+		
+		// FUTURE
+		/*
+		
+		add support for 
+		- any, object,other
+		
+		add support for custom types https://issues.jboss.org/browse/RAILO-1341
+		- array
+	    - base64
+	    - guid
+        - memory
+	    - node, xml
+	    - query
+	    - struct
+        - uuid
+        - variablename, variable_name
+	    - variablestring, variable_string
+	    
+		*/
+		
     }
 
 	/**

@@ -155,6 +155,7 @@ public final class CFTypes {
 	        	case 't':
 	        	    if(type.equals("timespan")) return TYPE_TIMESPAN;
 	        	    if(type.equals("time")) return TYPE_DATETIME;
+	        	    if(type.equals("timestamp")) return TYPE_DATETIME;
 	        	    break;
 	        	case 'u':
 	        	    if(type.equals("uuid")) return TYPE_UUID;
@@ -245,6 +246,7 @@ public final class CFTypes {
 	        	case 't':
 	        	    if(type.equals("timespan")) return TYPE_TIMESPAN;
 	        	    if(type.equals("time")) return TYPE_DATETIME;
+	        	    if(type.equals("timestamp")) return TYPE_DATETIME;
 	        	    if(type.equals("text")) return TYPE_STRING;
 	        	    break;
 	        	case 'u':

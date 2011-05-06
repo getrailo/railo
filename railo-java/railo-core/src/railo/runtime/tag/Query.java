@@ -2,6 +2,7 @@ package railo.runtime.tag;
 
 import java.util.ArrayList;
 
+import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.db.DataSourceManager;
@@ -572,6 +573,7 @@ cachename: Name of the cache in secondary cache.
 		DataSourceManager manager = pageContext.getDataSourceManager();
 		
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
+		print.o("cfquery("+pageContext.getId()+"):"+dc.getConnection().hashCode());
 		try {
 			return new QueryImpl(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),createUpdateData);
 		}
