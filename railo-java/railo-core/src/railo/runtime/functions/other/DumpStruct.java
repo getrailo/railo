@@ -23,6 +23,7 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.StructUtil;
 
 public final class DumpStruct implements Function {
 	
@@ -94,16 +95,16 @@ public final class DumpStruct implements Function {
 	}
 	
 	private static Struct toCFML(DumpTable dt, Object object, RefBoolean hasReference) {
-		Struct sct=new StructImpl(); 
-		sct.setEL("borderColor", dt.getBorderColor());
-		sct.setEL("comment", dt.getComment());
-		sct.setEL("fontColor", dt.getFontColor());
-		sct.setEL("height", dt.getHeight());
-		sct.setEL("highLightColor", dt.getHighLightColor());
-		sct.setEL("normalColor", dt.getNormalColor());
-		sct.setEL("title", dt.getTitle());
+		StructImpl sct=new StructImpl();
+		StructUtil.setELIgnoreWhenNull(sct,"borderColor",dt.getBorderColor());
+		StructUtil.setELIgnoreWhenNull(sct,"comment",dt.getComment());
+		StructUtil.setELIgnoreWhenNull(sct,"fontColor",dt.getFontColor());
+		StructUtil.setELIgnoreWhenNull(sct,"height",dt.getHeight());
+		StructUtil.setELIgnoreWhenNull(sct,"highLightColor",dt.getHighLightColor());
+		StructUtil.setELIgnoreWhenNull(sct,"normalColor",dt.getNormalColor());
+		StructUtil.setELIgnoreWhenNull(sct,"title",dt.getTitle());
+		StructUtil.setELIgnoreWhenNull(sct,"width",dt.getWidth());
 		
-		sct.setEL("width", dt.getWidth());
 		if(dt instanceof DumpTablePro){
 			DumpTablePro dtp = (DumpTablePro)dt;
 			sct.setEL("type", dtp.getType());

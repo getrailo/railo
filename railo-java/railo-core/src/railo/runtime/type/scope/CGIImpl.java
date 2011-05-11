@@ -12,7 +12,6 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.op.Caster;
 import railo.runtime.security.ScriptProtect;
 import railo.runtime.type.Collection;
@@ -180,7 +179,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
             	if(key.equals(CF_TEMPLATE_PATH)) {
 					try {
 						return toString(ResourceUtil.getResource(pc, pc.getBasePageSource()));
-					} catch (ExpressionException e) {
+					} catch (Throwable t) {
 						return "";
 					}
             	}
@@ -241,7 +240,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
             	if(key.equals(PATH_TRANSLATED))	{
             		try {
 						return toString(ResourceUtil.getResource(pc, pc.getBasePageSource()));
-					} catch (ExpressionException e) {
+					} catch (Throwable t) {
 						return "";
 					}//toString(req.getServletPath());
             	}

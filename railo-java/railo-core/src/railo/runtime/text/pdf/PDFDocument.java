@@ -239,20 +239,14 @@ public class PDFDocument extends StructSupport implements Struct {
 	}
 ///////////////////////////////////////////////
 	
-	
-	
-	
-
 	public PdfReader getPdfReader() throws ApplicationException {
 		try {
 			if(barr!=null) {
 				if(password!=null)return new PdfReader(barr,password.getBytes());
 				return new PdfReader(barr);
 			}
-			if(password!=null)return new PdfReader(resource.getInputStream(),password.getBytes());
-			return new PdfReader(resource.getInputStream());
-			
-			
+			if(password!=null)return new PdfReader(IOUtil.toBytes(resource),password.getBytes());
+			return new PdfReader(IOUtil.toBytes(resource));
 		}
 		catch(IOException ioe) {
 			throw new ApplicationException("can not load file ["+resource+"]",ioe.getMessage());
