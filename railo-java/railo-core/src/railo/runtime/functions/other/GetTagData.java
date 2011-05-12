@@ -125,7 +125,9 @@ public final class GetTagData implements Function {
 			if(srcAttrs!=null){
 				Key[] keys = srcAttrs.keys();
 				for(int i=0;i<keys.length;i++){
+					
 					src = Caster.toStruct(srcAttrs.get(keys[i]),null,false);
+					if(Caster.toBooleanValue(src.get("hidden",null),false))continue;
 					Struct _attr=new StructImpl();
 					_attr.set("status","implemeted");
 					_attr.set("description",src.get("hint",""));

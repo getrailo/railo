@@ -7,13 +7,14 @@ import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 import railo.runtime.functions.decision.IsDefined;
 import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 
 public final class StructKeyExists implements Function {
 	public static boolean call(PageContext pc , railo.runtime.type.Struct struct, String key) {
-		return struct.get(key,null)!=null;
+		return call(pc, struct, KeyImpl.init(key));
 	}
 	
 	public static boolean call(PageContext pc , railo.runtime.type.Struct struct, Collection.Key key) {
-		return struct.get(key,null)!=null;
+		return struct.containsKey(key) && struct.get(key,null)!=null;
 	}
 }
