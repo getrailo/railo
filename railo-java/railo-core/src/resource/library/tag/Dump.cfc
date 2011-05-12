@@ -32,7 +32,8 @@ component {
 - text (default when output equal console): plain text output (no html)
 - html (default when output  equal ""browser""): regular output with html/css/javascript
 - classic: classic view with html/css/javascript"},
-		abort:{required:false,type:"boolean",default:false,hint="stops further processing of request."}
+		abort:{required:false,type:"boolean",default:false,hint="stops further processing of request."},
+		contextlevel:{required:false,type:"number",default:2,hidden:true}
 	};
 
 
