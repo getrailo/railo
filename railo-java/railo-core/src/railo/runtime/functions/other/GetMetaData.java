@@ -18,6 +18,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.scope.UndefinedImpl;
 
 public final class GetMetaData implements Function {
+	// TODO support enties more deeply
 	public static Object call(PageContext pc ) throws PageException {
         Component ac = pc.getActiveComponent();
         if(ac!=null) {
