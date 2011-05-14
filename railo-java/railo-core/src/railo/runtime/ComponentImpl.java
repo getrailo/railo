@@ -13,8 +13,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.Cookie;
+
+import railo.commons.io.DevNullOutputStream;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
+import railo.commons.lang.Pair;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -24,7 +28,9 @@ import railo.runtime.component.DataMember;
 import railo.runtime.component.InterfaceCollection;
 import railo.runtime.component.Member;
 import railo.runtime.component.Property;
+import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.debug.DebugEntry;
@@ -34,6 +40,7 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DeprecatedException;
@@ -46,6 +53,7 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.op.Operator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
+import railo.runtime.thread.ThreadUtil;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
@@ -1966,9 +1974,19 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
 // MUST more native impl
 	public void readExternal(ObjectInput in) throws IOException,ClassNotFoundException {
+		boolean pcCreated=false;
+		PageContext pc = ThreadLocalPageContext.get();
+		// MUST this is just a workaround
+		if(pc==null){
+			pcCreated=true;
+			ConfigWeb config = (ConfigWeb) ThreadLocalConfig.get();
+			Pair[] parr = new Pair[0];
+			pc=ThreadUtil.createPageContext(config, DevNullOutputStream.DEV_NULL_OUTPUT_STREAM, "localhost", "/","", new Cookie[0], parr, parr, new StructImpl());
+		}
+		
 		try {
-			// MUST nicht gut
-			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(ThreadLocalPageContext.get(),in.readUTF());
+			// MUST do serialisation more like the cloning way
+			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(pc,in.readUTF());
 			
 			
 			this._data=other._data;
@@ -1994,6 +2012,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			
 		} catch (PageException e) {
 			throw new IOException(e.getMessage());
+		}
+		finally {
+			if(pcCreated)ThreadLocalPageContext.release();
 		}
 	}
 
