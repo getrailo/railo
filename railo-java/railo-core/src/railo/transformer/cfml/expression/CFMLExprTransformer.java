@@ -4,6 +4,8 @@ package railo.transformer.cfml.expression;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.text.StyledEditorKit.BoldAction;
+
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
@@ -1049,10 +1051,18 @@ public class CFMLExprTransformer implements ExprTransformer {
 			rtn.append('.');
 			String rightSite=digit(data);
 			if(rightSite.length()> 0 && data.cfml.forwardIfCurrent('e')) {
-			    if(data.cfml.isCurrentBetween('0','9')) {
-			        rightSite+='e'+digit(data);
+				Boolean expOp=null;
+				if(data.cfml.forwardIfCurrent('+')) expOp=Boolean.TRUE;
+				else if(data.cfml.forwardIfCurrent('-')) expOp=Boolean.FALSE;
+				
+				if(data.cfml.isCurrentBetween('0','9')) {
+					if(expOp==Boolean.FALSE) rightSite+="e-";
+					else if(expOp==Boolean.TRUE) rightSite+="e+";
+					else rightSite+="e";
+			        rightSite+=digit(data);
 			    }
 			    else {
+			    	if(expOp!=null) data.cfml.previous();
 			        data.cfml.previous();
 			    }
 			}
