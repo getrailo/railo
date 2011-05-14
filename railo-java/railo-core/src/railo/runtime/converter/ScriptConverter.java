@@ -89,7 +89,7 @@ public final class ScriptConverter {
 		    sb.append("createDateTime(");
 		    sb.append(DateFormat.call(null,dateTime,"yyyy,m,d"));
 		    sb.append(',');
-		    sb.append(TimeFormat.call(null,dateTime,"H,m,s,l"));
+		    sb.append(TimeFormat.call(null,dateTime,"H,m,s,l,\"z\""));
 		    sb.append(')');
 		} 
 	    catch (PageException e) {

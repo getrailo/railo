@@ -2,7 +2,7 @@
 package railo.runtime.op.date;
 
 import java.text.DateFormat;
-import java.text.ParseException;
+import java.text.ParsePosition;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -109,23 +109,32 @@ public final class DateCaster {
 	 * @param defaultValue 
 	 * @return Date Time Object
 	 */
-	public static DateTime toDateAdvanced(String str,TimeZone timeZone, DateTime defaultValue) {
+	public static DateTime toDateAdvanced(String str,boolean alsoNumbers,TimeZone timeZone, DateTime defaultValue) {
+		str=str.trim();
 		timeZone=ThreadLocalPageContext.getTimeZone(timeZone);
-		DateTime dt=toDateSimple(str,true,timeZone,defaultValue);
+		DateTime dt=toDateSimple(str,alsoNumbers,timeZone,defaultValue);
 		if(dt==null) {	
 	    	DateFormat[] formats = FormatUtil.getCFMLFormats(timeZone, true);
 		    synchronized(formats){
+		    	Date d;
+		    	ParsePosition pp=new ParsePosition(0);
 		    	for(int i=0;i<formats.length;i++) {
-					try {
-						
-						dt= new DateTimeImpl(formats[i].parse(str).getTime(),false);
+					//try {
+						pp.setErrorIndex(-1);
+						pp.setIndex(0);
+						d = formats[i].parse(str,pp);
+						if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;						
+						dt= new DateTimeImpl(d.getTime(),false);
 						return dt;
-					} 
-	                catch (ParseException e) {}
+					//}catch (ParseException e) {}
 				}
 	    	}
 	    }
 	    return dt;
+	}
+	
+	public static DateTime toDateAdvanced(String str, TimeZone timeZone, DateTime defaultValue) {
+	    return toDateAdvanced(str, true, timeZone,defaultValue);
 	}
 	
 	/**
@@ -415,23 +424,6 @@ public final class DateCaster {
 		
 		
 		//return defaultValue;
-	}
-	
-	public static DateTime toDateAdvanced(String str,boolean alsoNumbers, TimeZone timeZone, DateTime defaultValue) {
-		timeZone=ThreadLocalPageContext.getTimeZone(timeZone);
-		DateTime dt=toDateSimple(str,alsoNumbers, timeZone, defaultValue);
-	    if(dt==null) {
-	    	DateFormat[] formats = FormatUtil.getCFMLFormats(timeZone, true);
-		    synchronized(formats){
-				for(int i=0;i<formats.length;i++) {
-					try {
-						return new DateTimeImpl(formats[i].parse(str).getTime(),false);
-					} 
-	                catch (ParseException e) {}
-				}
-	    	}
-	    }
-	    return dt;
 	}
 
 	
