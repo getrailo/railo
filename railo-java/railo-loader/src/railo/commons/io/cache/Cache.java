@@ -15,7 +15,7 @@ public interface Cache {
 	 * @param arguments configuration arguments
 	 * @throws CacheException 
 	 */
-	public void init(String cacheName,Struct arguments) throws IOException;
+	public void init(String cacheName,Struct arguments) throws IOException;// FUTURE deprecated
 	
 	//FUTURE public void init(Config config,String cacheName,Struct arguments) throws IOException;
 	
