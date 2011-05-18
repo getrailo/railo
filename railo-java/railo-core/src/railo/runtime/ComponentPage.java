@@ -329,7 +329,7 @@ public abstract class ComponentPage extends PagePlus  {
     	
     	// WDDX
 		if(UDF.RETURN_FORMAT_WDDX==props.format) {
-			WDDXConverter converter = new WDDXConverter(pc.getTimeZone(),false);
+			WDDXConverter converter = new WDDXConverter(pc.getTimeZone(),false,false);
             converter.setTimeZone(pc.getTimeZone());
     		return converter.serialize(rtn);
 		}
@@ -342,14 +342,14 @@ public abstract class ComponentPage extends PagePlus  {
     			else if(strQF.equalsIgnoreCase("column"))byColumn=true;
     			else throw new ApplicationException("invalid queryformat definition ["+strQF+"], valid formats are [row,column]");
     		}
-    		JSONConverter converter = new JSONConverter();
+    		JSONConverter converter = new JSONConverter(false);
     		if(props.secureJson)
     			return pc.getApplicationContext().getSecureJsonPrefix();
             return converter.serialize(pc,rtn,byColumn);
 		}
 		// Serialize
 		else if(UDF.RETURN_FORMAT_SERIALIZE==props.format) {
-			ScriptConverter converter = new ScriptConverter();
+			ScriptConverter converter = new ScriptConverter(false);
 			return converter.serialize(rtn);
 		}
 		// Plain

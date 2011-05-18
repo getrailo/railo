@@ -5,7 +5,6 @@ package railo.runtime.functions.struct;
 
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
-import railo.runtime.functions.decision.IsDefined;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 

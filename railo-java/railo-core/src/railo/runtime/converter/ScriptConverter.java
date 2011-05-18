@@ -16,13 +16,17 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
+import railo.runtime.component.Property;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.displayFormatting.DateFormat;
 import railo.runtime.functions.displayFormatting.TimeFormat;
 import railo.runtime.op.Caster;
+import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
@@ -37,13 +41,18 @@ import railo.runtime.type.util.ComponentUtil;
  * class to serialize and desirilize WDDX Packes
  */
 public final class ScriptConverter {
+	private static final Collection.Key REMOTING_FETCH = KeyImpl.init("remotingFetch");
     
 	private int deep=1;
+	private boolean ignoreRemotingFetch=true;
 	
     /**
      * constructor of the class
      */
     public ScriptConverter() {
+    }
+    public ScriptConverter(boolean ignoreRemotingFetch) {
+    	this.ignoreRemotingFetch=ignoreRemotingFetch;
     }
 	
 	
@@ -255,15 +264,33 @@ public final class ScriptConverter {
         deep--;
         
         if(true){
-        	
+        	boolean isPeristent=ci.isPersistent();
+    		
         	ComponentScope scope = ci.getComponentScope();
         	it=scope.keyIterator();
             sb.append(",struct(");
         	deep++;
         	doIt=false;
+        	Property p;
+            Boolean remotingFetch;
+        	Struct props = ignoreRemotingFetch?null:ComponentUtil.getPropertiesAsStruct(ci,false);
             while(it.hasNext()) {
                 String key=Caster.toString(it.next(),"");
                 if("this".equalsIgnoreCase(key))continue;
+                
+                if(!ignoreRemotingFetch) {
+            		p=(Property) props.get(key,null);
+                	if(p!=null) {
+                		remotingFetch=Caster.toBoolean(p.getMeta().get(REMOTING_FETCH,null),null);
+    	            	if(remotingFetch==null){
+        					if(isPeristent  && HBMCreator.isRelated(p)) continue;
+    	    			}
+    	    			else if(!remotingFetch.booleanValue()) continue;
+                	}
+        		}
+                
+                
+                
                 member = scope.get(key,null);
                 if(member instanceof UDF)continue;
                 if(doIt)sb.append(',');
@@ -276,9 +303,6 @@ public final class ScriptConverter {
             }
             sb.append(")");
             deep--;
-        	
-        	
-        	
         }
         
         sb.append(")");

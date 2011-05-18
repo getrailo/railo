@@ -23,7 +23,7 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.util.StructUtil; 
+import railo.runtime.type.util.StructUtil;
 
 public final class DumpStruct implements Function {
 	

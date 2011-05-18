@@ -223,7 +223,7 @@ public class HBMCreator {
 				// missing column
 				String columns=null;
 				try {
-					if(isRelation(props[i])){
+					if(isRelated(props[i])){
 			        	columns=toString(engine,cfc,props[i], prop.getMeta(), "fkcolumn");
 			        }
 			        else {
@@ -371,7 +371,7 @@ public class HBMCreator {
         
         Property first = properties[0];
         String schema = null, catalog=null, mappedBy=null, columns=null;
-        if(isRelation(first)){
+        if(isRelated(first)){
         	catalog=toString(engine,cfc,first, first.getMeta(), "linkcatalog");
         	schema=toString(engine,cfc,first, first.getMeta(), "linkschema");
         	columns=toString(engine,cfc,first, first.getMeta(), "fkcolumn");
@@ -435,7 +435,7 @@ public class HBMCreator {
     	return count;
 	}
 	
-	private static boolean isRelation(Property prop) {
+	public static boolean isRelated(Property prop) {
 		String fieldType = Caster.toString(prop.getMeta().get(FIELD_TYPE,"column"),"column");
 		if(StringUtil.isEmpty(fieldType,true)) return false;
 		fieldType=fieldType.toLowerCase().trim();

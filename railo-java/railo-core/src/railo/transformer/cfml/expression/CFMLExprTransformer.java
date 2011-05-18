@@ -4,8 +4,6 @@ package railo.transformer.cfml.expression;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.swing.text.StyledEditorKit.BoldAction;
-
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;

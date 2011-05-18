@@ -27,11 +27,13 @@ import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
+import railo.runtime.component.Property;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
+import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
@@ -51,6 +53,7 @@ import railo.runtime.type.util.ComponentUtil;
  * class to serialize and desirilize WDDX Packes
  */
 public final class WDDXConverter {
+	private static final Collection.Key REMOTING_FETCH = KeyImpl.init("remotingFetch");
 	
 	
 	private static final Collection.Key KEY_THIS = KeyImpl.getInstance("this");
@@ -58,6 +61,7 @@ public final class WDDXConverter {
 	private boolean xmlConform;
 	private char _;
 	private TimeZone timeZone;
+	private boolean ignoreRemotingFetch=true;
     //private PageContext pcx;
 
 	/**
@@ -65,10 +69,11 @@ public final class WDDXConverter {
 	 * @param timeZone 
 	 * @param xmlConform define if generated xml conform output or wddx conform output (wddx is not xml conform)
 	 */
-	public WDDXConverter(TimeZone timeZone, boolean xmlConform) {
+	public WDDXConverter(TimeZone timeZone, boolean xmlConform,boolean ignoreRemotingFetch) {
 		this.xmlConform=xmlConform;
 		_=(xmlConform)?'"':'\'';
 		this.timeZone=timeZone;
+		this.ignoreRemotingFetch=ignoreRemotingFetch;
 	}
 	
 	/**
@@ -177,6 +182,8 @@ public final class WDDXConverter {
 		} catch (ExpressionException e1) {
 			throw new ConverterException(e1);
 		}
+		boolean isPeristent=ca.isPersistent();
+		
 		
         deep++;
         Object member;
@@ -186,15 +193,29 @@ public final class WDDXConverter {
         	key=Caster.toKey(it.next(),null);
         	member = component.get(key,null);
         	if(member instanceof UDF) continue;
-            sb.append(goIn()+"<var scope=\"this\" name="+_+key.toString()+_+">");
+        	sb.append(goIn()+"<var scope=\"this\" name="+_+key.toString()+_+">");
             sb.append(_serialize(member,done));
             sb.append(goIn()+"</var>");
         }
 
+        Property p;
+        Boolean remotingFetch;
+    	Struct props = ignoreRemotingFetch?null:ComponentUtil.getPropertiesAsStruct(ca,false);
         ComponentScope scope = ca.getComponentScope();
         it=scope.keyIterator();
         while(it.hasNext()) {
         	key=Caster.toKey(it.next(),null);
+        	if(!ignoreRemotingFetch) {
+        		p=(Property) props.get(key,null);
+            	if(p!=null) {
+            		remotingFetch=Caster.toBoolean(p.getMeta().get(REMOTING_FETCH,null),null);
+	            	if(remotingFetch==null){
+    					if(isPeristent  && HBMCreator.isRelated(p)) continue;
+	    			}
+	    			else if(!remotingFetch.booleanValue()) continue;
+            	}
+    		}
+        	
         	member = scope.get(key,null);
         	if(member instanceof UDF || key.equals(KEY_THIS)) continue;
             sb.append(goIn()+"<var scope=\"variables\" name="+_+key.toString()+_+">");

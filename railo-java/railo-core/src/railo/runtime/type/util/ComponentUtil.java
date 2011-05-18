@@ -46,6 +46,8 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.transformer.bytecode.BytecodeContext;
@@ -653,5 +655,14 @@ public final class ComponentUtil {
 		}
 		//print.o("getPage(load):"+ps.getDisplayPath()+":"+psi.hashCode());
 		return psi.loadPage(pc,pc.getConfig());
+	}
+
+	public static Struct getPropertiesAsStruct(ComponentAccess ca, boolean onlyPersistent) {
+		Property[] props = ca.getProperties(onlyPersistent);
+		Struct sct=new StructImpl();
+		if(props!=null)for(int i=0;i<props.length;i++){
+			sct.setEL(KeyImpl.init(props[i].getName()), props[i]);
+		}
+		return sct;
 	}
 }

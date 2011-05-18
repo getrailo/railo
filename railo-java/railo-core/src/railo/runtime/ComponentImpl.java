@@ -28,7 +28,6 @@ import railo.runtime.component.DataMember;
 import railo.runtime.component.InterfaceCollection;
 import railo.runtime.component.Member;
 import railo.runtime.component.Property;
-import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;

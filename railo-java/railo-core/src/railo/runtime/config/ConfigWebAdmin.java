@@ -2788,7 +2788,7 @@ public final class ConfigWebAdmin {
 		Resource storageDir = getStoragDir(config);
 		Resource storage=storageDir.getRealResource(key+".wddx");
 		
-		WDDXConverter converter =new WDDXConverter(config.getTimeZone(),true);
+		WDDXConverter converter =new WDDXConverter(config.getTimeZone(),true,true);
 		String wddx=converter.serialize(value);
 		IOUtil.write(storage, wddx, "UTF-8", false);
 	}
@@ -2799,7 +2799,7 @@ public final class ConfigWebAdmin {
 		Resource storageDir = getStoragDir(config);
 		Resource storage=storageDir.getRealResource(key+".wddx");
 		if(!storage.exists()) throw new IOException("there is no storage with name "+key);
-		WDDXConverter converter =new WDDXConverter(config.getTimeZone(),true);
+		WDDXConverter converter =new WDDXConverter(config.getTimeZone(),true,true);
 		return converter.deserialize(IOUtil.toString(storage,"UTF-8"), true);
 	}
 

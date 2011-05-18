@@ -599,7 +599,7 @@ public final class Decision {
 		if(!(str.indexOf("wddxPacket")>0)) return false;
 		
 		// wrong timezone but this isent importend because date will not be used
-		WDDXConverter converter =new WDDXConverter(TimeZone.getDefault(),false);
+		WDDXConverter converter =new WDDXConverter(TimeZone.getDefault(),false,true);
 		try {
 			converter.deserialize(Caster.toString(o),true);
 		} 
