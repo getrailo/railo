@@ -51,6 +51,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.XMLException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.op.Duplicator;
 import railo.runtime.text.xml.struct.XMLMultiElementStruct;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.text.xml.struct.XMLStructFactory;
@@ -311,7 +312,6 @@ public final class XMLUtil {
 	
 	public static Object setProperty(Node node, Collection.Key k, Object value,boolean caseSensitive) throws PageException {
 		Document doc=(node instanceof Document)?(Document)node:node.getOwnerDocument();
-		
 		// Comment
 			if(k.equals(XMLCOMMENT)) {
 				removeChilds(XMLCaster.toRawNode(node),Node.COMMENT_NODE,false);
@@ -387,17 +387,44 @@ public final class XMLUtil {
 				}
 			}
 			else {
+				boolean isIndex=false;
 			    Node child = XMLCaster.toNode(doc,value);
-				if(!k.getString().equalsIgnoreCase(child.getNodeName())) {
-				    throw new XMLException("if you assign a XML Element to a XMLStruct , assignment property must have same name like XML Node Name", "Property Name is "+k.getString()+" and XML Element Name is "+child.getNodeName());
+				if(!k.getString().equalsIgnoreCase(child.getNodeName()) && !(isIndex=Decision.isInteger(k))) {
+					throw new XMLException("if you assign a XML Element to a XMLStruct , assignment property must have same name like XML Node Name", "Property Name is "+k.getString()+" and XML Element Name is "+child.getNodeName());
 				}
+				Node n;
+				
+				// by index
+				if(isIndex) {
+					NodeList list = XMLUtil.getChildNodes(node.getParentNode(), Node.ELEMENT_NODE,true,node.getNodeName());
+					int len = list.getLength();
+					
+					
+					int index=Caster.toIntValue(k);
+					if(index>len || index<1){
+						String detail=len>1?
+								"your index is "+index+", but there are only "+len+" child elements":
+								"your index is "+index+", but there is only "+len+" child element";
+						
+						
+						throw new XMLException("index is out of range", detail);
+					}
+					n=list.item(index-1);
+					XMLUtil.replaceChild(child, n);
+					return value;
+				}
+				
+				
+				
+				
 				NodeList list = XMLUtil.getChildNodes(node, Node.ELEMENT_NODE);
 				int len = list.getLength();
-				Node n;
+				
+				// by name
 				for(int i=0;i<len;i++) {
 					n=list.item(i);
 					if(nameEqual(n, k.getString(), caseSensitive)) {
-						node.replaceChild(XMLCaster.toRawNode(child), XMLCaster.toRawNode(n));
+						XMLUtil.replaceChild(child, n);
 						return value;
 					}
 				}
@@ -407,6 +434,16 @@ public final class XMLUtil {
 			return value;
 	}
 
+
+	public static void replaceChild(Node newChild, Node oldChild) {
+		
+
+		Node nc = XMLCaster.toRawNode(newChild);
+		Node oc = XMLCaster.toRawNode(oldChild);
+		Node p = oc.getParentNode();
+
+		if(nc!=oc)p.replaceChild(nc, oc);
+	}
 
 	public static Object getPropertyEL(Node node, Collection.Key key) {
 		return getPropertyEL(node, key,isCaseSensitve(node));
