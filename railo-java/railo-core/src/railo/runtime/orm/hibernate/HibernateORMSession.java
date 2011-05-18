@@ -150,6 +150,7 @@ public class HibernateORMSession implements ORMSession{
 	
 	/**
 	 * @see railo.runtime.orm.ORMSession#save(railo.runtime.PageContext, java.lang.Object, boolean)
+	 * TODO also supports array like delete does
 	 */
 	public void save(PageContext pc, Object obj,boolean forceInsert) throws PageException {
 		Component cfc = HibernateCaster.toComponent(obj);
