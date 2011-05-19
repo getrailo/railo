@@ -13,7 +13,6 @@ import org.w3c.dom.NodeList;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.db.DatasourceConnection;
@@ -47,13 +46,12 @@ public class HBMCreator {
 	public static void createXMLMapping(PageContext pc,DatasourceConnection dc, Component cfc,ORMConfiguration ormConf,Element hibernateMapping,HibernateORMEngine engine) throws PageException {
 		
 		// MUST Support for embeded objects 
-		ComponentPro cfci = ComponentUtil.toComponentPro(cfc);
-		Struct meta = cfci.getMetaData(pc);
+		Struct meta = cfc.getMetaData(pc);
 		
 		String extend = cfc.getExtends();
 		boolean isClass=StringUtil.isEmpty(extend);
 		
-		Property[] _props=getProperties(pc,engine,cfci,dc,ormConf,meta,isClass);
+		Property[] _props=getProperties(pc,engine,cfc,dc,ormConf,meta,isClass);
 		
 		
 		
@@ -66,13 +64,13 @@ public class HBMCreator {
 		Document doc = XMLUtil.getDocument(hibernateMapping);
 		
 		StringBuilder comment=new StringBuilder();
-		comment.append("\nsource:").append(cfci.getPageSource().getDisplayPath());
-		comment.append("\ncompilation-time:").append(new DateTimeImpl(ComponentUtil.getCompileTime(pc,cfci.getPageSource()),false)).append("\n");
+		comment.append("\nsource:").append(cfc.getPageSource().getDisplayPath());
+		comment.append("\ncompilation-time:").append(new DateTimeImpl(ComponentUtil.getCompileTime(pc,cfc.getPageSource()),false)).append("\n");
 		
 		hibernateMapping.appendChild(doc.createComment(comment.toString()));
 		
 		//print.e(cfc.getAbsName()+";"+isClass+" -> "+cfci.getBaseAbsName()+":"+cfci.isBasePeristent());
-		if(!isClass && !cfci.isBasePeristent()) {
+		if(!isClass && !cfc.isBasePeristent()) {
 			isClass=true;
 		} 
 		
@@ -132,7 +130,7 @@ public class HBMCreator {
         
         Struct columnsInfo=null;
         if(ormConf.useDBForMapping()){
-        	columnsInfo = engine.getTableInfo(dc,getTableName(engine,pc, meta, cfci),engine);
+        	columnsInfo = engine.getTableInfo(dc,getTableName(engine,pc, meta, cfc),engine);
         }
 
         if(isClass)setCacheStrategy(engine,cfc,null,doc, meta, clazz);
@@ -161,7 +159,7 @@ public class HBMCreator {
 		
 	}
 	
-	private static Property[] getProperties(PageContext pc, HibernateORMEngine engine, ComponentPro cfci, DatasourceConnection dc, ORMConfiguration ormConf, Struct meta, boolean isClass) throws ORMException, PageException {
+	private static Property[] getProperties(PageContext pc, HibernateORMEngine engine, Component cfci, DatasourceConnection dc, ORMConfiguration ormConf, Struct meta, boolean isClass) throws ORMException, PageException {
 		Property[] _props = cfci.getProperties(true);
 		if(isClass && _props.length==0 && ormConf.useDBForMapping()){
 			if(meta==null)meta = cfci.getMetaData(pc);
@@ -718,8 +716,7 @@ public class HBMCreator {
 				try {
 					Component cfc = engine.getEntityByCFCName(foreignCFC.toString(), false);
 					if(cfc!=null){
-						ComponentPro cfcp = ComponentUtil.toComponentPro(cfc);
-						Property[] ids = getIds(engine,cfc,cfcp.getProperties(true),null,true);
+						Property[] ids = getIds(engine,cfc,cfc.getProperties(true),null,true);
 						if(!ArrayUtil.isEmpty(ids)){
 							Property id = ids[0];
 							id.getMeta();
@@ -1318,7 +1315,7 @@ public class HBMCreator {
 		
 		// build fkcolumn name
 		if(StringUtil.isEmpty(str,true)) {
-			ComponentPro other = (ComponentPro) loadForeignCFC(pc, engine, cfc, prop, meta);
+			Component other = (Component) loadForeignCFC(pc, engine, cfc, prop, meta);
 			if(other!=null){
 				boolean isClass=StringUtil.isEmpty(other.getExtends());
 				Property[] _props=getProperties(pc,engine,other,dc,ormConf,meta,isClass);
@@ -1337,9 +1334,8 @@ public class HBMCreator {
 						String othLinkTable=Caster.toString(m.get(LINK_TABLE,null),null);
 						if(currLinkTable.equals(othLinkTable)) {
 							// cfc name
-							ComponentPro cfcp=ComponentUtil.toComponentPro(cfc);
 							String cfcName=Caster.toString(m.get(CFC,null),null);
-							if(cfcp.equalTo(cfcName)){
+							if(cfc.equalTo(cfcName)){
 								_prop=_props[i];
 							}
 						}

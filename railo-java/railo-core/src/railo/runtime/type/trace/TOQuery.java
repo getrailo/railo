@@ -21,20 +21,18 @@ import java.util.Calendar;
 import java.util.Map;
 
 import railo.runtime.debug.Debugger;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
-import railo.runtime.type.QueryPro;
 
-public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Query {
+public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query {
 
 
-	private QueryPro qry;
+	private Query qry;
 
-	protected TOQuery(Debugger debugger,QueryPro qry, int type, String category, String text) {
+	protected TOQuery(Debugger debugger,Query qry, int type, String category, String text) {
 		super(debugger,qry,type,category,text);
 		this.qry=qry;
 	}
@@ -401,7 +399,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public synchronized void rename(Key columnName, Key newColumnName)
-			throws ExpressionException {
+			throws PageException {
 		log(columnName+":"+newColumnName);
 		qry.rename(columnName, newColumnName);
 	}
@@ -2164,9 +2162,9 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	}
 
 	@Override
-	public Collection duplicate(boolean deepCopy) {
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
 		log();
-		return new TOQuery(debugger,(QueryPro)qry.duplicate(deepCopy), type,category,text);
+		return new TOQuery(debugger,(Query)qry.duplicate(deepCopy,done), type,category,text);
 	}
 
 	@Override

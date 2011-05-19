@@ -11,6 +11,7 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
 import railo.runtime.component.Property;
+import railo.runtime.component.PropertyImpl;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.orm.ORMException;
@@ -108,7 +109,7 @@ public class HibernateUtil {
 			Property p;
 			while(res.next()) {
 				name=res.getString("COLUMN_NAME");
-				p=new Property();
+				p=new PropertyImpl();
 				p.setName(name);
 				p.setType(res.getString("TYPE_NAME"));
 				properties.setEL(name, p);

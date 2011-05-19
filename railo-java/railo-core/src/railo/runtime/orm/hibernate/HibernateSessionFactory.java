@@ -23,7 +23,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.Page;
@@ -257,14 +257,14 @@ public class HibernateSessionFactory {
 		done.add(key);
 	}
 
-	public static List<ComponentPro> loadComponents(PageContext pc,HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {
+	public static List<Component> loadComponents(PageContext pc,HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {
 		ExtensionResourceFilter filter = new ExtensionResourceFilter(pc.getConfig().getCFCExtension(),true);
-		List<ComponentPro> components=new ArrayList<ComponentPro>();
+		List<Component> components=new ArrayList<Component>();
 		loadComponents(pc,engine,components,ormConf.getCfcLocations(),filter,ormConf);
 		return components;
 	}
 	
-	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource[] reses,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
+	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<Component> components,Resource[] reses,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
 		Mapping[] mappings = createMappings(pc, reses);
 		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
 		Mapping[] existing = ac.getComponentMappings();
@@ -288,7 +288,7 @@ public class HibernateSessionFactory {
 		}
 	}
 	
-	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource res,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
+	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<Component> components,Resource res,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
 		if(res==null) return;
 
 		if(res.isDirectory()){
@@ -308,7 +308,7 @@ public class HibernateSessionFactory {
 			if(!res.getName().equalsIgnoreCase("Application.cfc"))	{
 				try {
 					PageSource ps = pc.toPageSource(res,null);
-					Page p = ps.loadPage(pc.getConfig());
+					Page p = ps.loadPage(pc);
 					String name=res.getName();
 					name=name.substring(0,name.length()-4);
 					ComponentAccess cfc = ComponentLoader.loadComponent(pc, p, ps, name, true,true);

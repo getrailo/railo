@@ -89,6 +89,7 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.op.Duplicator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.reflection.Reflector;
@@ -1186,7 +1187,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      */
     private void doPrintDebug() {
         try {
-        	DumpWriter writer = pageContext.getConfig().getDefaultDumpWriter();
+        	DumpWriter writer = pageContext.getConfig().getDefaultDumpWriter(DumpWriter.DEFAULT_RICH);
         	DumpData data = pageContext.getDebugger().toDumpData(pageContext, 9999,DumpUtil.toDumpProperties());
             pageContext.forceWrite(writer.toString(pageContext,data,true));
         } catch (IOException e) {}
@@ -3108,7 +3109,7 @@ private void doGetMappings() throws PageException {
 	}
 
 	private Array translateTime(Array exp) {
-		exp=(Array) exp.duplicate(true);
+		exp=(Array) Duplicator.duplicate(exp,true);
 		Iterator it = exp.iterator();
 		Struct sct;
 		while(it.hasNext()) {

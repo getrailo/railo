@@ -1,5 +1,7 @@
 package railo.runtime.type.scope.client;
 
+import java.util.Map;
+
 import railo.commons.io.log.Log;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
@@ -19,8 +21,8 @@ public class ClientDatasource extends StorageScopeDatasource implements ClientPl
 	 * Constructor of the class, clone existing
 	 * @param other
 	 */
-	private ClientDatasource(StorageScopeDatasource other,boolean deepCopy) {
-		super(other,deepCopy);
+	private ClientDatasource(StorageScopeDatasource other,boolean deepCopy,Map<Object, Object> done) {
+		super(other,deepCopy,done);
 	}
 	
 	/**
@@ -53,8 +55,8 @@ public class ClientDatasource extends StorageScopeDatasource implements ClientPl
 	 *
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
-    	return new ClientDatasource(this,deepCopy);
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+    	return new ClientDatasource(this,deepCopy,done);
 	}
 
 

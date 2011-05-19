@@ -12,9 +12,13 @@ public interface ExecutionPlan extends Serializable {
 	/**
 	 * @return the interval in seconds
 	 */
-	// FUTURE deprecated
+	public int getInterval();
+	
+	/**
+	 * @deprecated typo; use instead <code>public int getInterval();</code>
+	 */
 	public int getIntervall();
 	
 
-	// FUTURE public int getInterval();
+	
 }

@@ -50,7 +50,6 @@ import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
-import railo.runtime.cfx.QueryWrap;
 import railo.runtime.coder.Coder;
 import railo.runtime.coder.CoderException;
 import railo.runtime.config.Config;
@@ -89,7 +88,6 @@ import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
-import railo.runtime.type.QueryPro;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -2279,7 +2277,7 @@ public final class Caster {
      */
     public static Map toMap(Object o, boolean duplicate) throws PageException {
         if(o instanceof Struct) {
-            if(duplicate) return (Map) ((Struct)o).duplicate(false);
+            if(duplicate) return (Map) Duplicator.duplicate(o,false);
             return ((Struct)o);
         }
         else if(o instanceof Map){
@@ -2698,38 +2696,6 @@ public final class Caster {
         }
         throw new CasterException(o,"query");
     }
-    
-
-    public static QueryPro toQueryPro(Query q) throws CasterException {
-		QueryPro rtn = toQueryPro(q, null);
-    	if(rtn!=null) return rtn;
-		throw new CasterException(q,"QueryPro");
-	}
-
-    public static QueryPro toQueryPro(Query q, QueryPro defaultValue)  {
-		while(q instanceof QueryWrap){
-			q=((QueryWrap)q).getQuery();
-		}
-		
-		if(q instanceof QueryPro)return (QueryPro) q;
-		return defaultValue;
-	}
-    
-
-    /* *
-     * cast a query to a QueryImpl Object
-     * @param q query to cast
-     * @return casted Query Object
-     * @throws CasterException 
-     * /
-    public static QueryImpl toQueryImpl(Query q,QueryImpl defaultValue) {
-		while(q instanceof QueryWrap){
-			q=((QueryWrap)q).getQuery();
-		}
-		
-		if(q instanceof QueryImpl)return (QueryImpl) q;
-		return defaultValue;
-	}*/
 
     /**
      * cast a Object to a Query Object

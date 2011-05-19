@@ -1,8 +1,11 @@
 package railo.runtime.type.trace;
 
+import java.util.Map;
+
 import railo.runtime.Component;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.PageSource;
 import railo.runtime.debug.Debugger;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.FunctionArgument;
@@ -183,6 +186,14 @@ public class TOUDF extends TOObjects implements UDF {
 		return udf.getPage();
 	}
 
+	/**
+	 * @see railo.runtime.type.UDF#getPageSource()
+	 */
+	public PageSource getPageSource() {
+		log(null);
+		return udf.getPageSource();
+	}
+
 
 	/**
 	 * @see railo.runtime.type.UDF#getMetaData(railo.runtime.PageContext)
@@ -192,13 +203,12 @@ public class TOUDF extends TOObjects implements UDF {
 		return udf.getMetaData(pc);
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#duplicate()
-	 */
-	public UDF duplicate() {
+	@Override
+	public UDF duplicate(Map<Object, Object> done) {
 		log(null);
-		return udf.duplicate();
+		return udf.duplicate(done);
 	}
+	
 
 
 	/**
@@ -208,6 +218,7 @@ public class TOUDF extends TOObjects implements UDF {
 		log(null);
 		return udf.getOwnerComponent();
 	}
-	
+
+
 	
 }

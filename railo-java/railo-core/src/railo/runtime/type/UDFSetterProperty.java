@@ -1,5 +1,7 @@
  package railo.runtime.type;
 
+import java.util.Map;
+
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.ComponentImpl;
@@ -51,7 +53,7 @@ public class UDFSetterProperty extends UDFGSProperty {
 	/**
 	 * @see railo.runtime.type.UDF#duplicate()
 	 */
-	public UDF duplicate(ComponentImpl c) {
+	public UDF duplicate(ComponentImpl c,Map<Object, Object> done) {
 		try {
 			return new UDFSetterProperty(c,prop);
 		} catch (PageException e) {
@@ -61,8 +63,8 @@ public class UDFSetterProperty extends UDFGSProperty {
 
 	
 
-	public UDF duplicate() {
-		return duplicate(component);
+	public UDF duplicate(Map<Object, Object> done) {
+		return duplicate(component,done);
 	}
 	/**
 	 * @see railo.runtime.type.UDF#call(railo.runtime.PageContext, java.lang.Object[], boolean)

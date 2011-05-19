@@ -1,5 +1,6 @@
 package railo.runtime.exp;
 
+import java.util.Map;
 import java.util.Set;
 
 import railo.commons.lang.StringUtil;
@@ -8,12 +9,11 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
-import railo.runtime.op.Castable;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
 
-public class CatchBlock extends StructImpl implements Castable{
+public class CatchBlockImpl extends StructImpl implements CatchBlock {
 
 	public static final Key MESSAGE = KeyImpl.getInstance("Message");
 	public static final Key DETAIL = KeyImpl.getInstance("Detail");
@@ -29,7 +29,7 @@ public class CatchBlock extends StructImpl implements Castable{
 	private SpecialItem si = new SpecialItem();
 	
 
-	public CatchBlock(Config config,PageExceptionImpl pe) {
+	public CatchBlockImpl(Config config,PageExceptionImpl pe) {
 		this.config=config;
 		this.pe=pe;
 		
@@ -46,7 +46,6 @@ public class CatchBlock extends StructImpl implements Castable{
 	}
 
 	/**
-	 * FUTURE add to interface
 	 * @return the pe
 	 */
 	public PageException getPageException() {
@@ -81,11 +80,11 @@ public class CatchBlock extends StructImpl implements Castable{
 	 *
 	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
+	public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
 		initAll();
-		CatchBlock trg = new CatchBlock(config,pe);
+		CatchBlockImpl trg = new CatchBlockImpl(config,pe);
 		trg.initAll();
-		StructImpl.copy(this, trg, deepCopy);
+		StructImpl.copy(this, trg, deepCopy,done);
 		return trg;
 	}
 

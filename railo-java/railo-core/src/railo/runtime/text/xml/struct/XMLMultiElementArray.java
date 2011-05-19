@@ -3,6 +3,7 @@ package railo.runtime.text.xml.struct;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -12,6 +13,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
@@ -216,8 +218,8 @@ public class XMLMultiElementArray extends ArraySupport {
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
-		return new XMLMultiElementArray((XMLMultiElementStruct)struct.duplicate(deepCopy));
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+		return new XMLMultiElementArray((XMLMultiElementStruct)struct.duplicate(deepCopy,done));
 	}
 	
 
@@ -434,7 +436,7 @@ public class XMLMultiElementArray extends ArraySupport {
 	 * @see java.lang.Object#clone()
 	 */
 	public Object clone() {
-		return duplicate(true);
+		return Duplicator.duplicate(this,true);
 	}
 
 	public boolean add(Object o) {

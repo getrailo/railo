@@ -1,5 +1,7 @@
 package railo.runtime.type.scope.session;
 
+import java.util.Map;
+
 import railo.commons.io.log.Log;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
@@ -22,15 +24,15 @@ public final class SessionCache extends StorageScopeCache implements SessionPlus
 	 * Constructor of the class, clone existing
 	 * @param other
 	 */
-	private SessionCache(StorageScopeCache other,boolean deepCopy) {
-		super(other,deepCopy);
+	private SessionCache(StorageScopeCache other,boolean deepCopy,Map<Object, Object> done) {
+		super(other,deepCopy,done);
 	}
 	
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
-    	return new SessionCache(this,deepCopy);
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+    	return new SessionCache(this,deepCopy,done);
 	}
 	
 	/**

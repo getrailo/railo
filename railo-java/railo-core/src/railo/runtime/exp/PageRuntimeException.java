@@ -2,6 +2,7 @@ package railo.runtime.exp;
 
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -82,6 +83,10 @@ public class PageRuntimeException extends RuntimeException implements IPageExcep
 	public Struct getCatchBlock() {
 		// TLPC
 		return pe.getCatchBlock(ThreadLocalPageContext.get());
+	}
+	
+	public CatchBlock getCatchBlock(Config config) {
+		return pe.getCatchBlock(config);
 	}
 	
 	/**

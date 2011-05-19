@@ -1,6 +1,7 @@
 package railo.runtime.type.scope.storage;
 
 import java.io.IOException;
+import java.util.Map;
 
 import railo.commons.io.cache.Cache;
 import railo.commons.io.log.Log;
@@ -73,8 +74,8 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 	 * Constructor of the class, clone existing
 	 * @param other
 	 */
-	protected StorageScopeCache(StorageScopeCache other,boolean deepCopy) {
-		super(other,deepCopy);
+	protected StorageScopeCache(StorageScopeCache other,boolean deepCopy,Map<Object, Object> done) {
+		super(other,deepCopy,done);
 		
 		this.appName=other.appName;
 		this.cacheName=other.cacheName;

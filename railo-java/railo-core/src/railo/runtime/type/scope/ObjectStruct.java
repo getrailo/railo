@@ -1,6 +1,7 @@
 package railo.runtime.type.scope;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -144,7 +145,7 @@ public class ObjectStruct extends StructSupport implements Struct,Objects {
 		//throw new PageRuntimeException(new ExpressionException("can't clear fields from object ["+objects.getClazz().getName()+"]"));
 	}
 
-	public Collection duplicate(boolean deepCopy) {
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
 		throw new PageRuntimeException(new ExpressionException("can't clone object of type ["+jo.getClazz().getName()+"]"));
 		//return null;
 	}

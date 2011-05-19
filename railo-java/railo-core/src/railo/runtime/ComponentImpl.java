@@ -50,7 +50,6 @@ import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.Operator;
-import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.thread.ThreadUtil;
 import railo.runtime.type.ArrayImpl;
@@ -203,8 +202,8 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         return c;
     }*/
 
-    public Collection duplicate(boolean deepCopy) {
-    	ComponentImpl top= _duplicate(deepCopy,true);
+    public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
+    	ComponentImpl top= _duplicate(deepCopy,true,done);
     	setTop(top,top);
     	
 		
@@ -214,9 +213,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     
     
     
-    private ComponentImpl _duplicate( boolean deepCopy, boolean isTop) {
+    private ComponentImpl _duplicate( boolean deepCopy, boolean isTop, Map<Object, Object> done) {
     	ComponentImpl trg=new ComponentImpl();
-    	ThreadLocalDuplication.set(this, trg);
+    	done.put(this, trg);
     	try{
 			// attributes
 	    	trg.pageSource=pageSource;
@@ -234,7 +233,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			if(!useShadow)trg.scope=new ComponentScopeThis(trg);
 			
 	    	if(base!=null){
-				trg.base=base._duplicate(deepCopy,false);
+				trg.base=base._duplicate(deepCopy,false,done);
 				
 				trg._data=trg.base._data;
 				trg._udfs=duplicateUTFMap(this,trg, _udfs,new HashMap<Key,UDF>(trg.base._udfs));
@@ -267,13 +266,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	    			addUDFS(trg,((ComponentScopeShadow)scope).getShadow(),((ComponentScopeShadow)trg.scope).getShadow());
 	    		}
 	    	}
-	    	
-	    	
-	    	
-	    	
     	}
     	finally {
-    		ThreadLocalDuplication.remove(this);
+    		done.remove(this);
     	}
     	
 		return trg;
@@ -311,7 +306,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     			}
     			// udf with no owner
     			if(!done) 
-    				trg.put(key, udf.duplicate());
+    				trg.put(key, Duplicator.duplicate(udf,true));
     			
     			//print.o(owner.pageSource.getComponentName()+":"+udf.getFunctionName());
     		}
@@ -1507,7 +1502,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     private synchronized Object _set(Collection.Key key, Object value) {
     	//print.out("set:"+key);
         if(value instanceof UDFImpl) {
-        	UDFImpl udf = (UDFImpl)((UDF)value).duplicate();
+        	UDFImpl udf = (UDFImpl) Duplicator.duplicate(value,true);
         	//udf.isComponentMember(true);///+++
         	udf.setOwnerComponent(this);
         	if(udf.getAccess()>Component.ACCESS_PUBLIC)

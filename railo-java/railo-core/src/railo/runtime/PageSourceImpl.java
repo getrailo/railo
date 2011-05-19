@@ -112,6 +112,10 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		return loadPage(null,config);
 	}
 	
+	public Page loadPage(PageContext pc) throws PageException {
+		return loadPage(pc,pc.getConfig());
+	}
+	
 	
 	/**
 	 * return page when already loaded, otherwise null
@@ -757,6 +761,13 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
      * @see railo.runtime.SourceFile#getFile()
      */
     public Resource getFile() {
+    	return getResource();
+    }
+    
+    /**
+     * @see railo.runtime.SourceFile#getResource()
+     */
+    public Resource getResource() {
     	Resource res = getPhyscalFile();
     	if(res!=null) return res;
     	return getArchiveFile();

@@ -26,6 +26,7 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -48,7 +49,7 @@ public class QueryCacheQuery extends QueryImpl {
 
 	protected void disconnectCache() {
 		if(isCloned) return;
-		this.query=query.cloneQuery(true);
+		this.query=(QueryImpl) Duplicator.duplicate(query,true);
 		isCloned=true;
 	}
 
@@ -202,8 +203,8 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#cloneQuery(boolean)
 	 */
-	public QueryImpl cloneQuery(boolean deepCopy) {
-		return query.cloneQuery(deepCopy);
+	public QueryImpl cloneQuery(boolean deepCopy,Map<Object, Object> done) {
+		return query.cloneQuery(deepCopy,done);
 	}
 
 	/**
@@ -259,8 +260,8 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
-		return query.duplicate(deepCopy);
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+		return query.duplicate(deepCopy,done);
 	}
 
 	/**

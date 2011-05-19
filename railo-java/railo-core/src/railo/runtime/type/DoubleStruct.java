@@ -1,6 +1,7 @@
 package railo.runtime.type;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -136,9 +137,9 @@ public class DoubleStruct extends StructImpl  {
 	 *
 	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
+	public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
 		Struct sct=new DoubleStruct();
-		copy(this,sct,deepCopy);
+		copy(this,sct,deepCopy,done);
 		return sct;
 	}
 

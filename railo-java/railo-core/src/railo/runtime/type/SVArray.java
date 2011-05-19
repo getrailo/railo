@@ -1,6 +1,7 @@
 package railo.runtime.type;
 
 import java.util.Date;
+import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -10,6 +11,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
+import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.ref.Reference;
@@ -250,16 +252,16 @@ public final class SVArray extends ArrayImpl implements Reference {
 	 * @see railo.runtime.type.ArrayImpl#clone()
 	 */
 	public synchronized Object clone() {
-		return duplicate(true);
+		return duplicate(true,ThreadLocalDuplication.getMap());
 	}
 
 	/**
 	 *
 	 * @see railo.runtime.type.ArrayImpl#duplicate(boolean)
 	 */
-	public synchronized Collection duplicate(boolean deepCopy) {
+	public synchronized Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
 		SVArray sva = new SVArray();
-		duplicate(sva,deepCopy);
+		duplicate(sva,deepCopy,done);
 		sva.position=position;
 		return sva;
 	}

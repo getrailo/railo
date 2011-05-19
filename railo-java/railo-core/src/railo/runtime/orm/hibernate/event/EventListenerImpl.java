@@ -22,7 +22,6 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.util.ComponentUtil;
 
 public class EventListenerImpl 
 	implements 	PreDeleteEventListener, PreInsertEventListener, PreLoadEventListener, PreUpdateEventListener,
@@ -97,7 +96,7 @@ public class EventListenerImpl
 			Object[] args=allEvents?new Object[]{obj}:new Object[]{};
 			
 			if(!allEvents) {
-				if(!ComponentUtil.toComponentPro(component).getPageSource().equals(ComponentUtil.toComponentPro(obj).getPageSource()))
+				if(!component.getPageSource().equals(Caster.toComponent(obj).getPageSource()))
 					return true;
 			}
 			return Caster.toBooleanValue(c.call(pc, name, args),false);

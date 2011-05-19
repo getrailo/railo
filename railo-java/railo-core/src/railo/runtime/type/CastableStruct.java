@@ -1,6 +1,7 @@
 package railo.runtime.type;
 
 import java.util.Date;
+import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -154,10 +155,10 @@ public class CastableStruct extends StructImpl  {
 	 *
 	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
-		if(value==null) return super.duplicate(deepCopy);
+	public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
+		if(value==null) return super.duplicate(deepCopy,done);
 		Struct sct=new CastableStruct(deepCopy?Duplicator.duplicate(value,deepCopy):value);
-		copy(this,sct,deepCopy);
+		copy(this,sct,deepCopy,done);
 		return sct;
 	}
 

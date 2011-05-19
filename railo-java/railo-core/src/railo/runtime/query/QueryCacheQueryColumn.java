@@ -1,6 +1,7 @@
 package railo.runtime.query;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -200,8 +201,8 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 	 *
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
-		return column.duplicate(deepCopy);
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+		return column.duplicate(deepCopy,done);
 	}
 	
 
@@ -461,7 +462,7 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 	 * @see railo.runtime.type.ref.Reference#getKeyAsString()
 	 */
 	public String getKeyAsString() throws PageException {
-		return column.getKeyAsString();
+		return column.getKey().getString();
 	}
 
 	/**

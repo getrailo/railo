@@ -67,9 +67,15 @@ public class TOStruct extends TOCollection implements Struct {
 		return sct.entrySet();
 	}
 
-	public Collection duplicate(boolean deepCopy) {
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
 		log(null);
-		return new TOStruct(debugger,(Struct)sct.duplicate(deepCopy), type, category, text);
+		return new TOStruct(debugger,(Struct)sct.duplicate(deepCopy,done), type, category, text);
+	}
+
+	@Override
+	public long sizeOf() {
+		log(null);
+		return sct.sizeOf();
 	}
 
 }

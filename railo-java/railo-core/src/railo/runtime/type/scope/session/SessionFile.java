@@ -1,5 +1,7 @@
 package railo.runtime.type.scope.session;
 
+import java.util.Map;
+
 import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
 import railo.runtime.PageContext;
@@ -28,8 +30,8 @@ public class SessionFile extends StorageScopeFile implements SessionPlus {
 	 * Constructor of the class, clone existing
 	 * @param other
 	 */
-	private SessionFile(SessionFile other,boolean deepCopy) {
-		super(other,deepCopy);
+	private SessionFile(SessionFile other,boolean deepCopy,Map<Object, Object> done) {
+		super(other,deepCopy,done);
 	}
 
 	/**
@@ -58,7 +60,7 @@ public class SessionFile extends StorageScopeFile implements SessionPlus {
 	 *
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
-    	return new SessionFile(this,deepCopy);
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+    	return new SessionFile(this,deepCopy,done);
 	}
 }

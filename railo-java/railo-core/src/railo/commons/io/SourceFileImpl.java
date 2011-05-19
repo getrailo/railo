@@ -163,6 +163,13 @@ public final class SourceFileImpl implements SourceFile {
 	 * @see railo.runtime.SourceFile#getFile()
 	 */
 	public Resource getFile() {
+		return getResource();
+	}
+
+	/**
+	 * @see railo.runtime.SourceFile#getResource()
+	 */
+	public Resource getResource() {
 		if(file==null) {
 			if(isOutSide) {
 				try {

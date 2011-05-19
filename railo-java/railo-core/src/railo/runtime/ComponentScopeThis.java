@@ -1,6 +1,7 @@
 package railo.runtime;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import railo.runtime.component.Member;
@@ -45,9 +46,8 @@ public final class ComponentScopeThis extends StructSupport implements Component
     /**
      * @see railo.runtime.type.Scope#release()
      */
-    public void release() {
-        
-    }
+    public void release() {}
+    public void release(PageContext pc) {}
 
     /**
      * @see railo.runtime.type.Scope#getType()
@@ -270,10 +270,10 @@ public final class ComponentScopeThis extends StructSupport implements Component
     /**
      * @see railo.runtime.type.Collection#duplicate(boolean)
      */
-    public Collection duplicate(boolean deepCopy) {
+    public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
 
 		StructImpl sct = new StructImpl();
-		StructImpl.copy(this, sct, deepCopy);
+		StructImpl.copy(this, sct, deepCopy,done);
 		return sct;
     }
 
@@ -281,7 +281,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
      * Returns the value of component.
      * @return value component
      */
-    public ComponentPro getComponent() {
+    public Component getComponent() {
         return component;
     }
 

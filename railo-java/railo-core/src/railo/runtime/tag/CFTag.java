@@ -9,7 +9,6 @@ import javax.servlet.jsp.tagext.Tag;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.component.ComponentLoader;
@@ -27,6 +26,7 @@ import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.ext.tag.DynamicAttributes;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
@@ -108,7 +108,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     private String appendix;
 	//private boolean doCustomTagDeepSearch;
 	
-	private ComponentPro cfc;
+	private Component cfc;
 	private boolean isEndTag;
 	
 	
@@ -353,26 +353,26 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     
     private static void setCaller(PageContext pageContext, Struct args) throws PageException {
     	UndefinedImpl undefined=(UndefinedImpl) pageContext.undefinedScope();
-    	args.set(CALLER, undefined.duplicate(false));
+    	args.set(CALLER, Duplicator.duplicate(undefined,false));
     	//args.set(CALLER, pageContext.variablesScope());
     	
 	}
 
-	private static void validateAttributes(ComponentPro cfc,StructImpl attributesScope,String tagName) throws ApplicationException, ExpressionException {
+	private static void validateAttributes(Component cfc,StructImpl attributesScope,String tagName) throws ApplicationException, ExpressionException {
 		
 		TagLibTag tag=getAttributeRequirments(cfc,false);
 		if(tag==null) return;
 		
 		if(tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_FIXED || tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_MIXED){
-			Iterator it = tag.getAttributes().entrySet().iterator();
-			Map.Entry entry;
+			Iterator<Entry<String, TagLibTagAttr>> it = tag.getAttributes().entrySet().iterator();
+			Entry<String, TagLibTagAttr> entry;
 			int count=0;
 			Collection.Key key;
 			TagLibTagAttr attr;
 			Object value;
 			// check existing attributes
 			while(it.hasNext()){
-				entry = (Entry) it.next();
+				entry = it.next();
 				count++;
 				key=KeyImpl.toKey(entry.getKey(),null);
 				attr=(TagLibTagAttr) entry.getValue();
@@ -413,7 +413,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     } 
     
 
-	private static TagLibTag getAttributeRequirments(ComponentPro cfc, boolean runtime) throws ExpressionException {
+	private static TagLibTag getAttributeRequirments(Component cfc, boolean runtime) throws ExpressionException {
 		
 		Struct meta=null;
     	//try {

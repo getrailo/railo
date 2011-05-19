@@ -77,7 +77,8 @@ public final class DebugTraceImpl implements DebugTrace {
 	public String getVarName() {
 		return varName;
 	}
-	public String getAction() {// FUTURE add to interface
+	
+	public String getAction() {
 		return action;
 	}
 	

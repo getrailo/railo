@@ -23,7 +23,6 @@ import railo.runtime.orm.hibernate.HibernateUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.util.ComponentUtil;
 
 public class CFCGetter implements Getter {
 
@@ -59,7 +58,7 @@ public class CFCGetter implements Getter {
 			ClassMetadata metaData = engine.getSessionFactory(pc).getClassMetadata(name);
 			Type type = HibernateUtil.getPropertyType(metaData, key.getString());
 			
-			Object rtn = ComponentUtil.toComponentPro(cfc).getComponentScope().get(key,null);
+			Object rtn = cfc.getComponentScope().get(key,null);
 			return HibernateCaster.toSQL(engine, type, rtn);
 		} 
 		catch (PageException e) {

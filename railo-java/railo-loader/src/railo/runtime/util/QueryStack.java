@@ -1,5 +1,7 @@
 package railo.runtime.util;
 
+import java.util.Map;
+
 import railo.runtime.PageContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
@@ -26,13 +28,6 @@ public interface QueryStack {
      */
     public abstract boolean isEmpty();
 
-    /**
-     * loop over all Queries and return value at first ocurrence
-     * @param key column name of the value to get
-     * @return value
-     * @deprecated use instead <code>{@link #getDataFromACollection(PageContext,String)}</code>
-     */
-    public abstract Object getDataFromACollection(String key);
     
     /**
      * loop over all Queries and return value at first ocurrence
@@ -41,13 +36,6 @@ public interface QueryStack {
      */
     public abstract Object getDataFromACollection(PageContext pc,String key);
 
-    /**
-     * loop over all Queries and return value at first ocurrence
-     * @param key column name of the value to get
-     * @return value
-     * @deprecated use instead <code>{@link #getDataFromACollection(PageContext,Collection.Key)}</code>
-     */
-    public abstract Object getDataFromACollection(Collection.Key key);
     
     /**
      * loop over all Queries and return value at first ocurrence
@@ -79,5 +67,7 @@ public interface QueryStack {
      * @return returns all queries in the stack
      */
     public Query[] getQueries();
+    
+    public QueryStack duplicate(boolean deepCopy, Map<Object,Object> done);
 
 }

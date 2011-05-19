@@ -3,6 +3,7 @@ package railo.runtime.type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
@@ -621,18 +622,18 @@ public class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	 * @see java.lang.Object#clone()
 	 */
 	public Object clone() {
-		return duplicate(true);
+		return duplicate(true,ThreadLocalDuplication.getMap());
 	}
 	
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
+	public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
 		ArrayImplNS arr=new ArrayImplNS();
 		arr.dimension=dimension;
 		String[] keys=this.keysAsString();
 		
-		ThreadLocalDuplication.set(this, arr);
+		done.put(this, arr);
 		try {
 			for(int i=0;i<keys.length;i++) {
 				String key=keys[i];
@@ -641,7 +642,7 @@ public class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 		} 
 		catch (ExpressionException e) {}
 		finally{
-			ThreadLocalDuplication.remove(this);
+			done.remove(this);
 		}
 		
 		return arr;

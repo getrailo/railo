@@ -13,7 +13,7 @@ class DCStack {
 	DCStack() {
 	}
 
-	public synchronized void add(DatasourceConnectionPro dc){
+	public synchronized void add(DatasourceConnection dc){
 		item=new Item(item,dc);
 	}
 
@@ -61,11 +61,11 @@ class DCStack {
 	}
 	
 	class Item {
-		private DatasourceConnectionPro dc;
+		private DatasourceConnection dc;
 		private Item prev;
 		private int count=1;
 		
-		public Item(Item item,DatasourceConnectionPro dc) {
+		public Item(Item item,DatasourceConnection dc) {
 			this.prev=item;
 			this.dc=dc;
 			if(prev!=null)count=prev.count+1;

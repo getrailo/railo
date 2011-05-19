@@ -8,6 +8,7 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
 
@@ -64,6 +65,11 @@ public class VariablesAsSession implements Session {
 		
 	}
 
+	public void release(PageContext pc) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	public void clear() {
 		// TODO Auto-generated method stub
 		
@@ -79,7 +85,7 @@ public class VariablesAsSession implements Session {
 		return false;
 	}
 
-	public Collection duplicate(boolean deepCopy) {
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -343,7 +349,11 @@ public class VariablesAsSession implements Session {
 	 * @see java.lang.Object#clone()
 	 */
 	public Object clone() {
-		return duplicate(false);
+		return Duplicator.duplicate(this,false);
+	}
+
+	public long sizeOf(){
+		return session.sizeOf();
 	}
 
 }

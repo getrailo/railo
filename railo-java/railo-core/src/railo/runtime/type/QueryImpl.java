@@ -45,8 +45,6 @@ import railo.runtime.db.CFTypes;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceUtil;
 import railo.runtime.db.DatasourceConnection;
-import railo.runtime.db.DatasourceConnectionImpl;
-import railo.runtime.db.DatasourceConnectionPro;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
@@ -65,7 +63,7 @@ import railo.runtime.functions.arrays.ArrayFind;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.op.ThreadLocalDuplication;
+import railo.runtime.op.Duplicator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.query.caster.Cast;
 import railo.runtime.reflection.Reflector;
@@ -88,7 +86,10 @@ import railo.runtime.type.util.CollectionUtil;
 /**
  * 
  */
-public class QueryImpl implements QueryPro,Objects,Sizeable {
+public class QueryImpl implements Query,Objects,Sizeable {
+
+	private static final long serialVersionUID = 3744531519456606090L;
+
 
 	/**
 	 * @return the template
@@ -205,9 +206,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		// check if datasource support Generated Keys
 		boolean createGeneratedKeys=createUpdateData;
         if(createUpdateData){
-        	DatasourceConnectionImpl dci=(DatasourceConnectionImpl) dc;
-        	dci.supportsGetGeneratedKeys();
-        	if(!dci.supportsGetGeneratedKeys())createGeneratedKeys=false;
+        	if(!dc.supportsGetGeneratedKeys())createGeneratedKeys=false;
         }
 		
 		Stopwatch stopwatch=new Stopwatch();
@@ -224,7 +223,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	        }
 	        else {
 	        	// some driver do not support second argument
-	        	PreparedStatement preStat = ((DatasourceConnectionPro)dc).getPreparedStatement(sql, createGeneratedKeys);
+	        	PreparedStatement preStat = dc.getPreparedStatement(sql, createGeneratedKeys);
 	        	closeStatement=false;
 	        	stat=preStat;
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
@@ -1122,14 +1121,13 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 
 	/**
 	 * @see railo.runtime.type.Iterator#getCurrentrow()
-	 * FUTURE set this to deprectaed
 	 */
 	public int getCurrentrow() {
 		return getCurrentrow(getPid());
 	}
 	
 	/**
-	 * @see railo.runtime.type.QueryPro#getCurrentrow(int)
+	 * @see railo.runtime.type.Query#getCurrentrow(int)
 	 */
 	public int getCurrentrow(int pid) {
 		return arrCurrentRow.get(pid,1);
@@ -1145,7 +1143,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<columnNames.length;i++) {
 			if(i>0)sb.append(',');
-			sb.append(upperCase?columnNames[i].getString().toUpperCase():columnNames[i].getString());// FUTURE getUpperString
+			sb.append(upperCase?columnNames[i].getUpperString():columnNames[i].getString());
 		}
 		return sb.toString();
 	}
@@ -1345,7 +1343,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	public boolean addColumn(Collection.Key columnName, Array content, int type) throws DatabaseException {
 		//disconnectCache();
         // TODO Meta type
-		content=(Array) content.duplicate(false);
+		content=(Array) Duplicator.duplicate(content,false);
 		
 	 	if(getIndexFromKey(columnName)!=-1)
 	 		throw new DatabaseException("column name ["+columnName.getString()+"] already exist",null,sql,null);
@@ -1381,32 +1379,29 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	 * @see railo.runtime.type.Query#clone()
 	 */
     public Object clone() {
-        return cloneQuery(true);
+        return Duplicator.duplicate(this,true);
     }
     
     /**
      * @see railo.runtime.type.Collection#duplicate(boolean)
      */
-    public Collection duplicate(boolean deepCopy) {
-        return cloneQuery(true);
+    public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
+        return cloneQuery(deepCopy,done);
     }
-    
-
-	
     
     /**
      * @return clones the query object
      */
-    public QueryImpl cloneQuery(boolean deepCopy) {
+    public QueryImpl cloneQuery(boolean deepCopy, Map<Object, Object> done) {
         QueryImpl newResult=new QueryImpl();
-        ThreadLocalDuplication.set(this, newResult);
+        done.put(this, newResult);
         try{
 	        if(columnNames!=null){
 		        newResult.columnNames=new Collection.Key[columnNames.length];
 		        newResult.columns=new QueryColumnImpl[columnNames.length];
 		        for(int i=0;i<columnNames.length;i++) {
 		        	newResult.columnNames[i]=columnNames[i];
-		        	newResult.columns[i]=columns[i].cloneColumn(newResult,deepCopy);
+		        	newResult.columns[i]=columns[i].cloneColumn(newResult,deepCopy,done);
 		        }
 	        }
 	        newResult.sql=sql;
@@ -1417,11 +1412,11 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	        newResult.name=name;
 	        newResult.exeTime=exeTime;
 	        newResult.updateCount=updateCount;
-	        if(generatedKeys!=null)newResult.generatedKeys=generatedKeys.cloneQuery(false);
+	        if(generatedKeys!=null)newResult.generatedKeys=generatedKeys.cloneQuery(false,done);
 	        return newResult;
         }
         finally {
-        	ThreadLocalDuplication.remove(this);
+        	done.remove(this);
         }
     }
 
@@ -1721,7 +1716,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
     }
     
     /**
-     * @see railo.runtime.type.QueryPro#getColumnNames()
+     * @see railo.runtime.type.Query#getColumnNames()
      */
     public Collection.Key[] getColumnNames() {
     	Collection.Key[] keys = keys();
@@ -1769,7 +1764,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 
 
 	/**
-	 * @see railo.runtime.type.QueryPro#getColumnNamesAsString()
+	 * @see railo.runtime.type.Query#getColumnNamesAsString()
 	 */
 	public String[] getColumnNamesAsString() {
 		String[] keys = keysAsString();

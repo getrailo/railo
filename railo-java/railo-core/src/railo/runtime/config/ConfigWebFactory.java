@@ -105,6 +105,7 @@ import railo.runtime.net.mail.ServerImpl;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
@@ -3220,7 +3221,7 @@ public final class ConfigWebFactory {
         Struct sct=null;
         if(hasCS) {
         	sct=configServer.getConstants();
-        	if(sct!=null) sct=(Struct) sct.duplicate(false);
+        	if(sct!=null) sct=(Struct) Duplicator.duplicate(sct,false);
         }
         if(sct==null) sct=new StructImpl();
         String name;
