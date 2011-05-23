@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import railo.commons.lang.SizeOf;
+import railo.runtime.type.Sizeable;
+
 /**
  * This class implements a hashtable, which maps keys to values. Any 
  * non-<code>null</code> object can be used as a key or as a value. <p>
@@ -90,7 +93,7 @@ import java.util.Set;
  * should be used only to detect bugs.</i>
  */
 public class HashTable extends Dictionary implements Map, Cloneable,
-                                                   java.io.Serializable {
+                                                   java.io.Serializable,Sizeable {
     /**
      * The hash table data.
      */
@@ -872,7 +875,7 @@ public class HashTable extends Dictionary implements Map, Cloneable,
     /**
      * Hashtable collision list.
      */
-    private static class Entry implements Map.Entry {
+    private static class Entry implements Map.Entry,Sizeable {
 	int hash;
 	Object key;
 	Object value;
@@ -951,6 +954,13 @@ public class HashTable extends Dictionary implements Map, Cloneable,
 	 */
 	public String toString() {
 	    return key.toString()+"="+value.toString();
+	}
+
+	@Override
+	public long sizeOf() {
+		return SizeOf.size(this.key)
+		+SizeOf.size(this.value)
+		+SizeOf.size(this.hash);
 	}
     }
 
@@ -1138,5 +1148,14 @@ public class HashTable extends Dictionary implements Map, Cloneable,
 	}
 
     }
+
+	@Override
+	public long sizeOf() {
+		return SizeOf.size(this.count)
+		+SizeOf.size(this.loadFactor)
+		+SizeOf.size(this.modCount)
+		+SizeOf.size(this.table)
+		+SizeOf.size(this.threshold);
+	}
 
 }

@@ -453,7 +453,8 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		return 
 		SizeOf.size(this.key)+
 		SizeOf.size(this.lcKey)+
-		SizeOf.size(this.ucKey);
+		SizeOf.size(this.ucKey)+
+		SizeOf.REF_SIZE;
 	}
 	
 }

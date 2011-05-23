@@ -54,11 +54,13 @@ import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.other.CreateObject;
+import railo.runtime.functions.string.Hash;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.security.SecurityManager;
@@ -2967,8 +2969,10 @@ public final class ConfigWebAdmin {
 	}
 	
 
-	public void updateExtension(Extension extension) throws SecurityException {
+	public void updateExtension(Extension extension) throws PageException {
 		checkWriteAccess();
+		
+		String uid = createUid(extension.getProvider(),extension.getId());
 		
 		Element extensions=_getRootElement("extensions");
 		Element[] children = ConfigWebFactory.getChildren(extensions,"extension");
@@ -2980,8 +2984,7 @@ public final class ConfigWebAdmin {
       	    el=children[i];
       	    provider=el.getAttribute("provider");
       	    id=el.getAttribute("id");
-  			if(	provider!=null && provider.equalsIgnoreCase(extension.getProvider()) &&
-  				id!=null && id.equalsIgnoreCase(extension.getId())) {
+  			if(uid.equalsIgnoreCase(createUid(provider, id))) {
   				setExtensionAttrs(el,extension);
   				return ;
   			}
@@ -2994,6 +2997,16 @@ public final class ConfigWebAdmin {
   		el.setAttribute("id",extension.getId());
   		setExtensionAttrs(el,extension);
       	extensions.appendChild(el);
+	}
+
+
+	private String createUid(String provider, String id) throws PageException {
+		if(Decision.isUUId(id)) {
+			return Hash.invoke(config,id,null,null);
+		}
+		else {
+			return Hash.invoke(config,provider+id,null,null);
+		}
 	}
 
 

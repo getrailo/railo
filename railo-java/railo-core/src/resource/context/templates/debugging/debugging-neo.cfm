@@ -91,6 +91,10 @@ a.cfdebuglink {color:blue; background-color:white }
 			<td class="cfdebug" nowrap> Host Name </td>
 			<td class="cfdebug">#cgi.server_name#</td>
 		</tr>
+		<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")><tr>
+			<td class="cfdebug" nowrap> Architecture</td>
+			<td class="cfdebug"><cfif server.os.archModel NEQ server.os.archModel>OS #server.os.archModel#bit/JRE #server.java.archModel#bit<cfelse>#server.os.archModel#bit</cfif></td>
+		</tr></cfif>
 		</table>
 		</p>
 	

@@ -13,7 +13,8 @@
     <cfset manager=createObject('component','extension.ExtensionManager')>
     
     <cfset display=true>
-    <cfset detail=getDetail(url.provider,url.app)>
+    <cfset detail=getDetailByUid(url.uid)>
+    
 	<cfset isUpdate=StructKeyExists(detail,'installed')>
     <cfparam name="config" default="#manager.createConfig()#">
     
@@ -28,11 +29,11 @@
     
     
     <!--- create app folder --->
-    <cfset dest=manager.createAppFolder(url.provider,detail.app.name)>
+    <cfset dest=manager.createUIDFolder(url.uid)>
     
     <!--- copy railo extension package to destination directory --->
-    <cfset destFile=manager.copyAppFile(detail.app,dest).destFile>
-    
+    <cfset destFile=manager.copyAppFile(detail.data,dest).destFile>
+     
     
     <!---- load xml ---->
     <cfset zip="zip://"&destFile&"!/">
@@ -104,7 +105,7 @@
 <cfset done=true>
 <cfif (valid and StructKeyExists(form,"install")) or ( StructKeyExists(variables,"steps") and arrayLen(steps) EQ 0)>
     <cftry>
-    	
+    	<cfset systemOutput(isUpdate,true)>
 		<cfset rst=struct(fields:struct(),common:'')>
     	<cfif isUpdate>
 			<cfset message=install.update(rst,zip,config,detail.installed.config)>
@@ -133,26 +134,26 @@
                 password="#session["password"&request.adminType]#"
                 
                 config="#config#"
-                provider="#detail.url#"
+                provider="#detail.data.provider#"
                 
-                id="#detail.app.id#"
-                version="#detail.app.version#"
-                name="#detail.app.name#"
-                label="#detail.app.label#"
-                description="#detail.app.description#"	
-                category="#detail.app.category#"	
-                image="#detail.app.image#"	
+                id="#detail.data.id#"
+                version="#detail.data.version#"
+                name="#detail.data.name#"
+                label="#detail.data.label#"
+                description="#detail.data.description#"	
+                category="#detail.data.category#"	
+                image="#detail.data.image#"	
                 
-                author="#detail.app.author#"	
-                codename ="#detail.app.codename#"	
-                video="#detail.app.video#"	
-                support="#detail.app.support#"	
-                documentation="#detail.app.documentation#"	
-                forum="#detail.app.forum#"	
-                mailinglist="#detail.app.mailinglist#"	
-                network="#detail.app.network#"	
-                _type="#detail.app.type#"
-                created="#detail.app.created#"
+                author="#detail.data.author#"	
+                codename ="#detail.data.codename#"	
+                video="#detail.data.video#"	
+                support="#detail.data.support#"	
+                documentation="#detail.data.documentation#"	
+                forum="#detail.data.forum#"	
+                mailinglist="#detail.data.mailinglist#"	
+                network="#detail.data.network#"	
+                _type="#detail.data.type#"
+                created="#detail.data.created#"
                 >
             <cfset session.confirm.text=message>    
             <cfset session.confirm.success=true>    
@@ -182,7 +183,7 @@
 
 
 
-<cfform action="#request.self#?action=#url.action#&action2=install2&provider=#url.provider#&app=#url.app#&step=#url.step#" method="post" enctype="multipart/form-data">
+<cfform action="#request.self#?action=#url.action#&action2=install2&uid=#url.uid#&step=#url.step#" method="post" enctype="multipart/form-data">
 
 <cfif url.step GT arrayLen(steps)><cfset url.step=arrayLen(steps)></cfif>
 <cfif url.step LT 1><cfset url.step=1></cfif>
