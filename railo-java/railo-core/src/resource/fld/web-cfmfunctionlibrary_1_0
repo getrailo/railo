@@ -11712,20 +11712,22 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		<description></description>
+		<description>the query to sort</description>
     </argument>
 		<argument>
 			<name>column_name</name>
+			<alias>columnnames,columnname,name,names,column_names</alias>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>a list of names or a single column name</description>
     </argument>
 		<argument>
 			<name>direction</name>
+			<alias>directions,dir</alias>
 			<type>string</type>
 			<required>No</required>
-			<default>asc</default>
-		<description></description>
+			<default></default>
+		<description>a list of directions or a single direction defintion (asc,desc), the list must have the same length as the columnName list</description>
     </argument>
 		<return>
 			<type>boolean</type>
