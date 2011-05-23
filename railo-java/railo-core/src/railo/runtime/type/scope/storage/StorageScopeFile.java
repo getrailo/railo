@@ -34,8 +34,6 @@ public abstract class StorageScopeFile extends StorageScopeImpl {
 	
 	private Resource res;
 
-	private TimeSpan timespan;
-
 	/**
 	 * Constructor of the class
 	 * @param pc
@@ -85,10 +83,6 @@ public abstract class StorageScopeFile extends StorageScopeImpl {
 		store(pc.getConfig());
 	}
 	
-	private void setTimeSpan(PageContext pc) {
-		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
-		timespan = getType()==SCOPE_CLIENT?ac.getClientTimeout():ac.getSessionTimeout();
-	}
 	
 	
 	/**
@@ -98,7 +92,7 @@ public abstract class StorageScopeFile extends StorageScopeImpl {
 		//if(!super.hasContent()) return;
 		try {
 			if(!res.exists())ResourceUtil.createFileEL(res, true);
-			IOUtil.write(res, (timespan.getMillis()+System.currentTimeMillis())+":"+serializer.serializeStruct(sct, ignoreSet), "UTF-8", false);
+			IOUtil.write(res, (getTimeSpan()+System.currentTimeMillis())+":"+serializer.serializeStruct(sct, ignoreSet), "UTF-8", false);
 		} 
 		catch (Throwable t) {}
 	}
