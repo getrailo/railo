@@ -10,6 +10,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import railo.runtime.exp.ExpressionException;
@@ -21,12 +22,12 @@ import railo.runtime.type.Sizeable;
  * Calculation of object size.
  */
 public class SizeOf {
-	
+	public static final int OBJECT_GRANULARITY_IN_BYTES = 8;
+	public static final int WORD_SIZE = Architecture.getVMArchitecture().getWordSize();
+    public static final int HEADER_SIZE = 2 * WORD_SIZE;
 
-    private static final int OBJECT_GRANULARITY_IN_BYTES = 8;
-    private static final int WORD_SIZE = Architecture.getVMArchitecture().getWordSize();
-    private static final int HEADER_SIZE = 2 * WORD_SIZE;
-
+    public static final int DOUBLE_SIZE = 8;
+    public static final int FLOAT_SIZE = 4;
     public static final int LONG_SIZE = 8;
     public static final int INT_SIZE = 4;
     public static final int SHORT_SIZE = 2;
@@ -35,13 +36,12 @@ public class SizeOf {
     public static final int CHAR_SIZE = 2;
     public static final int REF_SIZE = WORD_SIZE;
 
-  
 	private static ThreadLocal _inside=new ThreadLocal();
 	private static ThreadLocal map=new ThreadLocal();
 
 
 	private static ThreadLocal<Set<Integer>> done=new ThreadLocal<Set<Integer>>();
-
+	
 
 	private static boolean inside(boolean inside) {
 		Boolean was=(Boolean) _inside.get();
@@ -161,7 +161,52 @@ public class SizeOf {
         
         if(object instanceof Sizeable)return ((Sizeable)object).sizeOf();
         
+        if(object instanceof String){
+        	return (SizeOf.CHAR_SIZE*((String)object).length())+SizeOf.REF_SIZE;
+        }
+        if(object instanceof Number){
+        	if(object instanceof Double) return SizeOf.DOUBLE_SIZE+SizeOf.REF_SIZE;
+        	if(object instanceof Float) return SizeOf.FLOAT_SIZE+SizeOf.REF_SIZE;
+        	if(object instanceof Long) return SizeOf.LONG_SIZE+SizeOf.REF_SIZE;
+        	if(object instanceof Integer) return SizeOf.INT_SIZE+SizeOf.REF_SIZE;
+        	if(object instanceof Short) return SizeOf.SHORT_SIZE+SizeOf.REF_SIZE;
+        	if(object instanceof Byte) return SizeOf.BYTE_SIZE+SizeOf.REF_SIZE;
+        }
+        if(object instanceof Object[]) {
+        	 Object[] arr=(Object[]) object;
+        	 long size=SizeOf.REF_SIZE;
+        	 for(int i=0;i<arr.length;i++){
+        		 size+=_size(arr[i], instances, dictionary, maxDepth - 1, maxSize);
+        	 }
+        	 return size;
+        }
+        if(object instanceof Map) {
+        	long size=SizeOf.REF_SIZE;
+        	Map.Entry entry;
+        	Map map=(Map) object;
+        	Iterator it = map.entrySet().iterator();
+        	while(it.hasNext()){
+        		entry=(Entry) it.next();
+        		size+=SizeOf.REF_SIZE;
+        		size+=_size(entry.getKey(), instances, dictionary, maxDepth - 1, maxSize);
+        		size+=_size(entry.getValue(), instances, dictionary, maxDepth - 1, maxSize);
+        	}
+        	return size;
+	    }
+        if(object instanceof List) {
+        	long size=SizeOf.REF_SIZE;
+        	List list=(List) object;
+        	Iterator it = list.iterator();
+        	while(it.hasNext()){
+        		size+=_size(it.next(), instances, dictionary, maxDepth - 1, maxSize);
+        	}
+        	return size;
+	    }
+        	
+        
+        
         Class clazz = object.getClass();
+        
         Meta cmd = Meta.getMetaData(clazz, dictionary);
         long shallowSize = cmd.calcInstanceSize(object);
         long size = shallowSize;
@@ -181,27 +226,18 @@ public class SizeOf {
     }
 
 	public static long size(long value) {
-		return Meta.LONG_SIZE;
+		return SizeOf.LONG_SIZE;
 	}
 
+
 	public static long size(boolean value) {
-		return Meta.BOOLEAN_SIZE;
+		return SizeOf.BOOLEAN_SIZE;
 	}
 }
 
 
 class Meta {
-    private static final int OBJECT_GRANULARITY_IN_BYTES = 8;
-    private static final int WORD_SIZE = Architecture.getVMArchitecture().getWordSize();
-    private static final int HEADER_SIZE = 2 * WORD_SIZE;
-
-    public static final int LONG_SIZE = 8;
-    public static final int INT_SIZE = 4;
-    public static final int SHORT_SIZE = 2;
-    public static final int BYTE_SIZE = 1;
-    public static final int BOOLEAN_SIZE = 1;
-    public static final int CHAR_SIZE = 2;
-    public static final int REF_SIZE = WORD_SIZE;
+    
 
     /** Class for which this metadata applies */
     private Class aClass;
@@ -271,25 +307,25 @@ class Meta {
     private static int getComponentSize(Class componentClass) {
         if (componentClass.equals(Double.TYPE) ||
             componentClass.equals(Long.TYPE)) {
-            return LONG_SIZE;
+            return SizeOf.LONG_SIZE;
         }
 
         if (componentClass.equals(Integer.TYPE) ||
             componentClass.equals(Float.TYPE)) {
-            return INT_SIZE;
+            return SizeOf.INT_SIZE;
         }
 
         if (componentClass.equals(Character.TYPE) ||
             componentClass.equals(Short.TYPE)) {
-            return SHORT_SIZE;
+            return SizeOf.SHORT_SIZE;
         }
 
         if (componentClass.equals(Byte.TYPE) ||
             componentClass.equals(Boolean.TYPE))  {
-            return BYTE_SIZE;
+            return SizeOf.BYTE_SIZE;
         }
 
-        return REF_SIZE;
+        return SizeOf.REF_SIZE;
     }
 
     public int getFieldSize() {
@@ -300,7 +336,7 @@ class Meta {
         isArray = true;
         componentClass = aClass.getComponentType();
         componentSize = getComponentSize(componentClass);
-        instanceSize = HEADER_SIZE + WORD_SIZE;
+        instanceSize = SizeOf.HEADER_SIZE + SizeOf.WORD_SIZE;
     }
 
     private void processFields(Class aClass) {
@@ -363,45 +399,45 @@ class Meta {
         
         int parentTotalFieldSize = superMetaData == null ? 0 : superMetaData.getFieldSize();
 
-        int alignedParentSize = align(parentTotalFieldSize, OBJECT_GRANULARITY_IN_BYTES);
+        int alignedParentSize = align(parentTotalFieldSize, SizeOf.OBJECT_GRANULARITY_IN_BYTES);
         int paddingSpace = alignedParentSize - parentTotalFieldSize;
         // we try to pad with ints, and then shorts, and then bytes, and then refs.
-        while (localIntCount > 0 && paddingSpace >= INT_SIZE) {
-            paddingSpace -= INT_SIZE;
+        while (localIntCount > 0 && paddingSpace >= SizeOf.INT_SIZE) {
+            paddingSpace -= SizeOf.INT_SIZE;
             localIntCount--;
         }
 
-        while(localShortCount > 0 && paddingSpace >= SHORT_SIZE) {
-            paddingSpace -= SHORT_SIZE;
+        while(localShortCount > 0 && paddingSpace >= SizeOf.SHORT_SIZE) {
+            paddingSpace -= SizeOf.SHORT_SIZE;
             localShortCount--;
         }
 
-        while (localByteCount > 0 && paddingSpace >= BYTE_SIZE) {
-            paddingSpace -= BYTE_SIZE;
+        while (localByteCount > 0 && paddingSpace >= SizeOf.BYTE_SIZE) {
+            paddingSpace -= SizeOf.BYTE_SIZE;
             localByteCount--;
         }
 
-        while (localRefCount > 0 && paddingSpace >= REF_SIZE) {
-            paddingSpace -= REF_SIZE;
+        while (localRefCount > 0 && paddingSpace >= SizeOf.REF_SIZE) {
+            paddingSpace -= SizeOf.REF_SIZE;
             localRefCount--;
         }
 
         int preFieldSize = paddingSpace +
-                longCount * LONG_SIZE +
-                intCount * INT_SIZE +
-                shortCount * SHORT_SIZE +
-                byteCount * BYTE_SIZE +
-                refCount * REF_SIZE;
+                longCount * SizeOf.LONG_SIZE +
+                intCount * SizeOf.INT_SIZE +
+                shortCount * SizeOf.SHORT_SIZE +
+                byteCount * SizeOf.BYTE_SIZE +
+                refCount * SizeOf.REF_SIZE;
 
-        fieldSize = align(preFieldSize, REF_SIZE);
+        fieldSize = align(preFieldSize, SizeOf.REF_SIZE);
         
         totalFieldSize = parentTotalFieldSize + fieldSize;
 
-        instanceSize = align(HEADER_SIZE + totalFieldSize, OBJECT_GRANULARITY_IN_BYTES);
+        instanceSize = align(SizeOf.HEADER_SIZE + totalFieldSize, SizeOf.OBJECT_GRANULARITY_IN_BYTES);
     }
 
     public int calcArraySize(int length) {
-        return align(instanceSize + componentSize * length, OBJECT_GRANULARITY_IN_BYTES);
+        return align(instanceSize + componentSize * length, SizeOf.OBJECT_GRANULARITY_IN_BYTES);
     }
 
     public int calcInstanceSize(Object instance) {
