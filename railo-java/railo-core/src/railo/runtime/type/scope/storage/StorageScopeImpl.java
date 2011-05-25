@@ -21,7 +21,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
-import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
 
