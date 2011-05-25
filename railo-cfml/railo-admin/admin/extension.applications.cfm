@@ -45,10 +45,15 @@
 		<cfif IsSimpleValue(data)>
         	<cfset data=queryNew(_apps.columnlist&",provider,info,uid")>
         </cfif>
+        
+        <!--- check if all column exists --->
+        <cfloop list="#_apps.columnlist#" index="col">
+			<cfif not queryColumnExists(data,col)><cfset QueryAddColumn(data,col,array())></cfif>
+        </cfloop>
 		
         <cfloop query="_apps">
         	<cfset QueryAddRow(data)>
-        	<cfloop list="#_apps.columnlist#" index="col">
+            <cfloop list="#_apps.columnlist#" index="col">
             	<cfset data[col][data.recordcount]=_apps[col]>
             </cfloop>
             <cfset data.provider[data.recordcount]=_url>
@@ -104,7 +109,7 @@
 		</cfcase>
 	</cfswitch>
 <cfinclude template="#url.action#.#url.action2#.cfm"/>
-	<cfcatch><cfrethrow>
+	<cfcatch>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>
