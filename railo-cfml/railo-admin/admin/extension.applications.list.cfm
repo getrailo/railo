@@ -141,7 +141,7 @@ Not Installed Applications --->
 <tr>
 <cfset row=0>
 <cfset missingRows=5>
-<cfoutput query="data" group="uid">
+<cfif isQuery(data)><cfoutput query="data" group="uid">
 	    <cfset info=data.info>
         <cfif 
 			!StructKeyExists(existing,data.uid)
@@ -167,7 +167,7 @@ Not Installed Applications --->
 			<cfif row mod 5 EQ 0></tr><tr></cfif>
         </cfif>
 
-</cfoutput>	
+</cfoutput></cfif>
 	<cfif missingRows LT 5><cfloop from="1" to="#missingRows#" index="i"><td height="80" class="tblHead"><cfmodule template="tp.cfm"  width="100" height="50"></td></cfloop></cfif>
 </tr>
 </table>

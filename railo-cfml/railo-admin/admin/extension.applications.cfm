@@ -71,7 +71,7 @@
         </cfcatch>
     </cftry>
 </cfloop>
-<cfset querySort(query:data,names:"name,uid,category")>
+<cfif isQuery(data)><cfset querySort(query:data,names:"name,uid,category")></cfif>
 
 
 

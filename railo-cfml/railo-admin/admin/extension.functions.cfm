@@ -102,7 +102,7 @@
     <cfset var detail={}>
     <cfset detail.all=[]>
     <cfset var tmp="">
-	<cfloop query="data">
+	<cfif isQuery(data)><cfloop query="data">
     	<cfif data.uid EQ uid>
         	<cfset tmp=querySlice(data,data.currentrow,1)>
             <cfset ArrayAppend(detail.all,tmp)>
@@ -110,7 +110,7 @@
             	<cfset detail.data=tmp>
             </cfif>
         </cfif>
-    </cfloop>
+    </cfloop></cfif>
 	
     <!--- installed --->
     <cfloop query="extensions">
