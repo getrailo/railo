@@ -23,6 +23,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
+import railo.runtime.Component;
 import railo.runtime.ComponentPro;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
@@ -223,7 +224,7 @@ public class HibernateSessionFactory {
     }
 
 
-	public static String createMappings(Map<String, CFCInfo> cfcs) {
+	public static String createMappings(HibernateORMEngine engine, Map<String, CFCInfo> cfcs) {
 		
 		Set<String> done=new HashSet<String>();
 		StringBuffer mappings=new StringBuffer();
@@ -234,22 +235,28 @@ public class HibernateSessionFactory {
 		Entry<String, CFCInfo> entry;
 		while(it.hasNext()){
 			entry = it.next();
-			createMappings(cfcs,entry.getKey(),entry.getValue(),done,mappings);
+			createMappings(engine,cfcs,entry.getKey(),entry.getValue(),done,mappings);
 			
 		}
 		mappings.append("</hibernate-mapping>");
 		return mappings.toString();
 	}
 
-	private static void createMappings(Map<String, CFCInfo> cfcs,String key, CFCInfo value,Set<String> done,StringBuffer mappings) {
+	private static void createMappings(HibernateORMEngine engine, Map<String, CFCInfo> cfcs,String key, CFCInfo value,Set<String> done,StringBuffer mappings) {
 		if(done.contains(key)) return;
 		CFCInfo v;
-		String k = value.getCFC().getExtends();
-		if(!StringUtil.isEmpty(k)){
-			k=HibernateORMEngine.id(railo.runtime.type.List.last(k, '.').trim());
-			if(!done.contains(k)) {
-				v = cfcs.get(k);
-				if(v!=null)createMappings(cfcs, k, v, done, mappings);
+		String ext = value.getCFC().getExtends();
+		if(!StringUtil.isEmpty(ext)){
+			try {
+				Component base = engine.getEntityByCFCName(ext, false);
+				ext=HibernateCaster.getEntityName(base);
+			} catch (Throwable t) {}
+			
+			
+			ext=HibernateORMEngine.id(railo.runtime.type.List.last(ext, '.').trim());
+			if(!done.contains(ext)) {
+				v = cfcs.get(ext);
+				if(v!=null)createMappings(engine,cfcs, ext, v, done, mappings);
 			}
 		}
 		

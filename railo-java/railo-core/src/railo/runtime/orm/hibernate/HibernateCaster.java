@@ -105,8 +105,8 @@ public class HibernateCaster {
 		
 		String name=null;
 		try {
-			ComponentAccess cfci = ComponentUtil.toComponentAccess(cfc);
-			name=Caster.toString(cfci.getMetaStructItem(ENTITY_NAME),null);
+			ComponentAccess cfca = ComponentUtil.toComponentAccess(cfc);
+			name=Caster.toString(cfca.getMetaStructItem(ENTITY_NAME),null);
 		} 
 		catch (Throwable t) {
 			try {
@@ -119,12 +119,17 @@ public class HibernateCaster {
 		if(!StringUtil.isEmpty(name)) {
 			return name;
 		}
+		return getName(cfc);
 		
 		
+	}
+
+	private static String getName(Component cfc) {
+		String name=null;
 		// MUSTMUST cfc.getName() should return the real case, this should not be needed
-		ComponentPro cp = ComponentUtil.toComponentPro(cfc,null);
-		if(cp!=null){
-			name = cp.getPageSource().getDisplayPath();
+		ComponentPro cfcp = ComponentUtil.toComponentPro(cfc,null);
+		if(cfcp!=null){
+			name = cfcp.getPageSource().getDisplayPath();
 	        name=railo.runtime.type.List.last(name, "\\/",true);
 	        int index=name.lastIndexOf('.');
 	        name= name.substring(0,index);
@@ -132,8 +137,7 @@ public class HibernateCaster {
 		}
 		////////////////////////
 		
-		
-		return cfc.getName();//.toLowerCase();
+		return cfc.getName(); 
 	}
 
 	public static int cascade(HibernateORMEngine engine,String cascade) throws ORMException {

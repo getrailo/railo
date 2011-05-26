@@ -250,7 +250,14 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		//print.err(railo.runtime.type.List.arrayToList(cfcs.keySet().toArray(new String[cfcs.size()]), ","));
 		
-		String mappings=HibernateSessionFactory.createMappings(cfcs);
+		String mappings=HibernateSessionFactory.createMappings(this,cfcs);
+		
+		/*try {
+			mappings=IOUtil.toString(ResourcesImpl.getFileResourceProvider().getResource("/Users/mic/mapping.xml"), null);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		
 		/*ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
 		try {

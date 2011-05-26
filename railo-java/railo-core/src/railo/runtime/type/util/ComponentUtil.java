@@ -592,9 +592,15 @@ public final class ComponentUtil {
 	}
 
 	public static ComponentAccess toComponentAccess(Component comp) throws ExpressionException {
+		ComponentAccess ca = toComponentAccess(comp, null);
+		if(ca!=null) return ca;
+		throw new ExpressionException("can't cast class ["+Caster.toClassName(comp)+"] to a class of type ComponentAccess");
+	}
+
+	public static ComponentAccess toComponentAccess(Component comp, ComponentAccess defaultValue) {
 		if(comp instanceof ComponentAccess) return (ComponentAccess) comp;
 		if(comp instanceof ComponentWrap) return ((ComponentWrap) comp).getComponentAccess();
-		throw new ExpressionException("can't cast class ["+Caster.toClassName(comp)+"] to a class of type ComponentAccess");
+		return defaultValue;
 	}
 	
 	
