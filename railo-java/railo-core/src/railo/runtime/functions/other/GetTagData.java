@@ -45,7 +45,7 @@ public final class GetTagData implements Function {
 			}
 			
 		}
-		if(tag == null) throw new ExpressionException("tag ["+nameSpace+strTagName+"] is not a build in tag");
+		if(tag == null) throw new ExpressionException("tag ["+nameSpace+strTagName+"] is not a built in tag");
 
 		// CFML Based Function
 		Class clazz=null;

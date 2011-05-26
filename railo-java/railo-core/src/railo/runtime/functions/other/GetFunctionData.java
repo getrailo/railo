@@ -50,7 +50,7 @@ public final class GetFunctionData implements Function {
 			function = flds[i].getFunction(strFunctionName.toLowerCase());
 			if(function!=null)break;
 		}
-		if(function == null) throw new ExpressionException("function ["+strFunctionName+"] is not a build in function");
+		if(function == null) throw new ExpressionException("function ["+strFunctionName+"] is not a built in function");
 
         //sct.set("returnTypeClass",_class(function.getCazz()));
         //sct.set("class",__class(function.getCazz()));

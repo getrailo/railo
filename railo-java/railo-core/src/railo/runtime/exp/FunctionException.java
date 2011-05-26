@@ -9,7 +9,7 @@ import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 
 /**
- * specified exception for Build In Function
+ * specified exception for Built-In Function
  */
 public final class FunctionException extends ExpressionException {
 

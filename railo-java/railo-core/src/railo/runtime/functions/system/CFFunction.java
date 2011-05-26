@@ -29,7 +29,7 @@ public class CFFunction {
 	
 	public static Object call(PageContext pc , Object[] objArr) throws PageException {
 		if(objArr.length<3)
-			throw new ExpressionException("invalid call of a CFML Based Build in Function");
+			throw new ExpressionException("invalid call of a CFML Based built in function");
 		
 		// translate arguments
 		String filename=Caster.toString((((FunctionValue) objArr[0]).getValue()));
