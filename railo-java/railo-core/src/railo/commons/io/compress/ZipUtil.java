@@ -1,6 +1,7 @@
 package railo.commons.io.compress;
 
 import java.io.IOException;
+import java.util.zip.ZipOutputStream;
 
 import railo.commons.cli.Command;
 import railo.commons.io.CompressUtil;
@@ -21,7 +22,12 @@ public final class ZipUtil {
 			CompressUtil.extract(CompressUtil.FORMAT_ZIP, zip, dir);
 		}
 	}
-    
-    
 
+	public static void cloeseEL(ZipOutputStream zos) {
+		if(zos==null) return;
+		try {
+			zos.close();
+		} 
+		catch (IOException e) {}
+	}
 }

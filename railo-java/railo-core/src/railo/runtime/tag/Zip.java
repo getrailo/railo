@@ -18,6 +18,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.oro.text.regex.MalformedPatternException;
 
 import railo.commons.io.IOUtil;
+import railo.commons.io.compress.ZipUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.DirectoryResourceFilter;
 import railo.commons.io.res.filter.FileResourceFilter;
@@ -440,6 +441,13 @@ public final class Zip extends BodyTagImpl {
 
 	private void actionZip() throws PageException, IOException {
 		required("file",file,false);
+		Resource dir = file.getParentResource();
+		
+		if(!dir.exists()) {
+			throw new ApplicationException("directory ["+dir.toString()+"] doesn't exist"); 
+		}
+		
+		
 		
 		if((params==null || params.isEmpty()) && source!=null) {
 			setParam(new ZipParamSource(source,entryPath,filter,prefix,recurse));
@@ -462,7 +470,7 @@ public final class Zip extends BodyTagImpl {
 				IOUtil.copy(file, existing);
 			}
 			
-			zos = new ZipOutputStream(IOUtil.toBufferedOutputStream(file.getOutputStream()));
+				zos = new ZipOutputStream(IOUtil.toBufferedOutputStream(file.getOutputStream()));
 
 			Object[] arr = params.toArray();
 			for(int i=arr.length-1;i>=0;i--) {
@@ -487,7 +495,7 @@ public final class Zip extends BodyTagImpl {
 			}
 		}
 		finally {
-			zos.close();
+			ZipUtil.cloeseEL(zos);
 			if(existing!=null)existing.delete();
 			
 		}
