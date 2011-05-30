@@ -2729,8 +2729,10 @@ public final class ConfigWebFactory {
 	        	}
 	        }
 	        config.setRemoteClientUsage(sct);
+
+	     // max-threads
+	        int maxThreads=Caster.toIntValue(_clients.getAttribute("max-threads"),20);
 	        
-	    
 	     // Logger
 	        String strLogger=hasAccess?_clients.getAttribute("log"):null;
 	        int logLevel=LogUtil.toIntType(_clients.getAttribute("log-level"),Log.LEVEL_ERROR);
@@ -2788,7 +2790,7 @@ public final class ConfigWebFactory {
         Resource dir = config.getRemoteClientDirectory();
 		if(dir!=null && !dir.exists())dir.mkdirs();
 		if(config.getSpoolerEngine()==null)	{
-			config.setSpoolerEngine(new SpoolerEngineImpl(config,dir,"Remote Client Spooler",config.getRemoteClientLog()));
+			config.setSpoolerEngine(new SpoolerEngineImpl(config,dir,"Remote Client Spooler",config.getRemoteClientLog(),maxThreads));
 		}
 		else	{
 			SpoolerEngineImpl engine = (SpoolerEngineImpl) config.getSpoolerEngine();
