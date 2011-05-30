@@ -268,7 +268,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private boolean hasFamily=false;
 	//private CFMLFactoryImpl factory;
 	private PageContextImpl parent;
-	private Map conns=new HashMap();
+	private Map<String,DatasourceConnection> conns=new HashMap<String,DatasourceConnection>();
 	private boolean fdEnabled;
 	private ExecutionLog execLog;
 	private boolean useSpecialMappings;
@@ -543,10 +543,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
         // transaction connection
         if(!conns.isEmpty()){
-        	java.util.Iterator it = conns.entrySet().iterator();
+        	java.util.Iterator<Entry<String, DatasourceConnection>> it = conns.entrySet().iterator();
         	DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
         	while(it.hasNext())	{
-        		pool.releaseDatasourceConnection((DatasourceConnection)(((Map.Entry)it.next()).getValue()));
+        		pool.releaseDatasourceConnection((it.next().getValue()));
         	}
         	conns.clear();
         }
@@ -2768,7 +2768,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 	
 
-	public DatasourceConnection getConnection(String datasource, String user,String pass) throws PageException {
+	public DatasourceConnection _getConnection(String datasource, String user,String pass) throws PageException {
 		DataSource ds = config.getDataSource(datasource);
 		
 		String id=DatasourceConnectionPool.createId(ds,user,pass);
