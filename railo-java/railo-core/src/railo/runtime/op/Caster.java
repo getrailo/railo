@@ -3465,7 +3465,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
 
         if(type==CFTypes.TYPE_UNDEFINED)
-            throw new ExpressionException("type is'nt defined (TYPE_UNDEFINED)");
+            throw new ExpressionException("type isn't defined (TYPE_UNDEFINED)");
         throw new ExpressionException("invalid type ["+type+"]");
     }
     
