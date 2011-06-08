@@ -2,7 +2,6 @@ package railo.runtime.config;
 
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletConfig;
@@ -17,7 +16,6 @@ import railo.commons.io.res.ResourcesImpl;
 import railo.commons.lang.StringKeyLock;
 import railo.commons.lang.StringUtil;
 import railo.runtime.CFMLFactoryImpl;
-import railo.runtime.Component;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.Page;
@@ -288,16 +286,4 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public StringKeyLock getContextLock() {
 			return contextLock;
 		}
-
-		private Map<String, Component> persistentRemoteCFC;
-		public Component getPersistentRemoteCFC(String id) {
-			if(persistentRemoteCFC==null) persistentRemoteCFC=new HashMap<String,Component>();
-			return persistentRemoteCFC.get(id);
-		}
-		
-		public Component setPersistentRemoteCFC(String id, Component cfc) {
-			if(persistentRemoteCFC==null) persistentRemoteCFC=new HashMap<String,Component>();
-			return persistentRemoteCFC.put(id,cfc);
-		}
-
 }

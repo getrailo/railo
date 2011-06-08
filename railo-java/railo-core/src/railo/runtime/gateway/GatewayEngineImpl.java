@@ -117,7 +117,10 @@ public class GatewayEngineImpl implements GatewayEngine {
 		// does not exist
 		if(existing!=null) {
 			g=existing.getGateway();
-			if(g.getState()==Gateway.RUNNING) g.doStop();
+			try{
+				if(g.getState()==Gateway.RUNNING) g.doStop();
+			}
+			catch(Throwable t){}
 		}
 	}
 
@@ -402,6 +405,18 @@ public class GatewayEngineImpl implements GatewayEngine {
 		break;
 		}
 		log.log(l, "Gateway:"+gateway.getId(), message);
+	}
+	
+
+	private Map<String, Component> persistentRemoteCFC;
+	public Component getPersistentRemoteCFC(String id) {
+		if(persistentRemoteCFC==null) persistentRemoteCFC=new HashMap<String,Component>();
+		return persistentRemoteCFC.get(id);
+	}
+	
+	public Component setPersistentRemoteCFC(String id, Component cfc) {
+		if(persistentRemoteCFC==null) persistentRemoteCFC=new HashMap<String,Component>();
+		return persistentRemoteCFC.put(id,cfc);
 	}
 }
 	

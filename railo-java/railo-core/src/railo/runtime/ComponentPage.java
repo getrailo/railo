@@ -23,6 +23,7 @@ import railo.runtime.dump.DumpUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.interpreter.JSONExpressionInterpreter;
 import railo.runtime.net.rpc.server.ComponentController;
 import railo.runtime.net.rpc.server.RPCServer;
@@ -90,18 +91,16 @@ public abstract class ComponentPage extends PagePlus  {
             pc.setSilent();
             // load the cfc
             try {
-	            if(strRemotePersisId!=null) {
-	            	// FUTURE for application ;String id=pc.getApplicationContext().getName()+":"+getPageSource().getComponentName();
-	            	//String id=getPageSource().getComponentName();
-	            	//id=Hash.call(pc, id);
+	            if(fromGateway && strRemotePersisId!=null) {
 	            	ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
-	            	component=(ComponentPro) config.getPersistentRemoteCFC(strRemotePersisId);
+	            	GatewayEngineImpl engine = config.getGatewayEngine();
+	            	component=(ComponentPro) engine.getPersistentRemoteCFC(strRemotePersisId);
 	            	
 	            	if(component==null) {
 	            		component=newInstance(pc,getPageSource().getComponentName(),false);
 	            		if(!fromGateway)component=ComponentWrap.toComponentWrap(Component.ACCESS_REMOTE,component);
 	            		
-	            		config.setPersistentRemoteCFC(strRemotePersisId,component);
+	            		engine.setPersistentRemoteCFC(strRemotePersisId,component);
 	            	}
 	            	
 	            }

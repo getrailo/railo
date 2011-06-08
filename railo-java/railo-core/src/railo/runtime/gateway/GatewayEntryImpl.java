@@ -17,7 +17,6 @@ import railo.runtime.type.Struct;
 public class GatewayEntryImpl implements GatewayEntry {
 
 	private String id;
-	//private Class clazz;
 	private Struct custom;
 	private boolean readOnly;
 	private String listenerCfcPath;
@@ -31,13 +30,10 @@ public class GatewayEntryImpl implements GatewayEntry {
 		this.engine=engine;
 		this.id=id;
 		this.listenerCfcPath=listenerCfcPath;
-		//this.clazz=clazz;
 		this.className=className;
 		this.custom=custom;
 		this.readOnly=readOnly;
 		this.cfcPath=cfcPath;
-		// ClassUtil.loadClass(config.getClassLoader(),eConnection.getAttribute("class")),
-		//SystemOut.print(config.getErrWriter(), ce.getMessage());
 		startupMode=startupMode.trim().toLowerCase();
 		if("manual".equals(startupMode))this.startupMode=STARTUP_MODE_MANUAL;
 		else if("disabled".equals(startupMode))this.startupMode=STARTUP_MODE_DISABLED;
@@ -104,7 +100,7 @@ public class GatewayEntryImpl implements GatewayEntry {
 	 * @see railo.runtime.gateway.GatewayEntry#getCustom()
 	 */
 	public Struct getCustom() {
-		return custom;
+		return (Struct) custom.duplicate(true);
 	}
 
 	/**
