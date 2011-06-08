@@ -12,7 +12,6 @@
 	    <!--- app no longer exist --->
 		<cfif arrayLen(detail.all) EQ 0><cfreturn false></cfif>
         <cfloop array="#detail.all#" index="local.item">
-        	<cfset systemOutput(extensions.version& " LT "& item.version,true)>
         	<cfif extensions.version LT item.version>
             	<cfreturn true>
 			</cfif>
@@ -183,8 +182,7 @@
         <cfset var id=hash(arguments.imgURL&"-"&width&"-"&height)>
         <cfparam name="application.railodumps" default="#{}#">
         <cfif not structKeyExists(application.railodumps,id)>
-            <cfset systemOutput(id,true)>
-            
+        	<cfset application.railodumps[id]="">
             <cfset var data="">
             <cfset img="">
             <cffile action="readbinary" file="#arguments.imgURL#" variable="data">
