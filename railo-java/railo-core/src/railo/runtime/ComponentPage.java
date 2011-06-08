@@ -23,7 +23,6 @@ import railo.runtime.dump.DumpUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.string.Hash;
 import railo.runtime.interpreter.JSONExpressionInterpreter;
 import railo.runtime.net.rpc.server.ComponentController;
 import railo.runtime.net.rpc.server.RPCServer;
@@ -53,12 +52,13 @@ public abstract class ComponentPage extends PagePlus  {
 	public static final railo.runtime.type.Collection.Key ARGUMENT_COLLECTION = KeyImpl.getInstance("argumentCollection");
 	public static final railo.runtime.type.Collection.Key RETURN_FORMAT = KeyImpl.getInstance("returnFormat");
 	public static final railo.runtime.type.Collection.Key QUERY_FORMAT = KeyImpl.getInstance("queryFormat");
-	public static final railo.runtime.type.Collection.Key REMOTE_PERSISTENT = KeyImpl.getInstance("remotePersistent");
+	//public static final railo.runtime.type.Collection.Key REMOTE_PERSISTENT = KeyImpl.getInstance("remotePersistent");
+	public static final railo.runtime.type.Collection.Key REMOTE_PERSISTENT_ID = KeyImpl.getInstance("Id16hohohh");
 
-	public static final short REMOTE_PERSISTENT_REQUEST = 1;
+	//public static final short REMOTE_PERSISTENT_REQUEST = 1;
 	//public static final short REMOTE_PERSISTENT_SESSION = 2; FUTURE
 	//public static final short REMOTE_PERSISTENT_APPLICATION = 4; FUTURE
-	public static final short REMOTE_PERSISTENT_SERVER = 8;
+	//public static final short REMOTE_PERSISTENT_SERVER = 8;
 	
 	
 	private long lastCheck=-1;
@@ -73,12 +73,12 @@ public abstract class ComponentPage extends PagePlus  {
 	public void call(PageContext pc) throws PageException {
 		
 		// remote persistent (only type server is supported)
-		String strRemotePersis = Caster.toString(pc.urlFormScope().get(REMOTE_PERSISTENT,null),null);
-		short remotePersis=REMOTE_PERSISTENT_REQUEST;
-		if(!StringUtil.isEmpty(strRemotePersis)) {
-			strRemotePersis=strRemotePersis.trim();
-			if("server".equalsIgnoreCase(strRemotePersis)) remotePersis=REMOTE_PERSISTENT_SERVER;
+		String strRemotePersisId = Caster.toString(pc.urlFormScope().get(REMOTE_PERSISTENT_ID,null),null);
+		if(!StringUtil.isEmpty(strRemotePersisId,true)) {
+			strRemotePersisId=strRemotePersisId.trim();
 		}
+		else strRemotePersisId=null;
+		
 		HttpServletRequest req = pc.getHttpServletRequest();
 		// client
 		String client = Caster.toString(req.getAttribute("client"),null);
@@ -90,18 +90,18 @@ public abstract class ComponentPage extends PagePlus  {
             pc.setSilent();
             // load the cfc
             try {
-	            if(remotePersis==REMOTE_PERSISTENT_SERVER) {
+	            if(strRemotePersisId!=null) {
 	            	// FUTURE for application ;String id=pc.getApplicationContext().getName()+":"+getPageSource().getComponentName();
-	            	String id=getPageSource().getComponentName();
-	            	id=Hash.call(pc, id);
+	            	//String id=getPageSource().getComponentName();
+	            	//id=Hash.call(pc, id);
 	            	ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
-	            	component=(ComponentPro) config.getPersistentRemoteCFC(id);
+	            	component=(ComponentPro) config.getPersistentRemoteCFC(strRemotePersisId);
 	            	
 	            	if(component==null) {
 	            		component=newInstance(pc,getPageSource().getComponentName(),false);
 	            		if(!fromGateway)component=ComponentWrap.toComponentWrap(Component.ACCESS_REMOTE,component);
 	            		
-	            		config.setPersistentRemoteCFC(id,component);
+	            		config.setPersistentRemoteCFC(strRemotePersisId,component);
 	            	}
 	            	
 	            }

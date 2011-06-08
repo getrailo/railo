@@ -1,5 +1,6 @@
 package railo.runtime.gateway;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -15,6 +16,7 @@ import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ClassException;
+import railo.commons.lang.Md5;
 import railo.commons.lang.Pair;
 import railo.loader.util.Util;
 import railo.runtime.CFMLFactory;
@@ -303,7 +305,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		String requestURI=toRequestURI(cfcPath);
 		
 		PageContext oldPC = ThreadLocalPageContext.get();
-		PageContextImpl pc = createPageContext(requestURI, "init", null, false);
+		PageContextImpl pc = createPageContext(requestURI,id, "init", null, false);
 		try {
 			ThreadLocalPageContext.register(pc);
 			return getCFC(pc,requestURI);
@@ -320,7 +322,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		String requestURI=toRequestURI(cfcPath);
 		
 		PageContext oldPC = ThreadLocalPageContext.get();
-		PageContextImpl pc=createPageContext(requestURI,functionName,arguments,cfcPeristent);
+		PageContextImpl pc=createPageContext(requestURI,id,functionName,arguments,cfcPeristent);
 		
 		try {
 			ThreadLocalPageContext.register(pc);
@@ -353,10 +355,20 @@ public class GatewayEngineImpl implements GatewayEngine {
 		}
 	}
 	
-	private PageContextImpl createPageContext(String requestURI,String functionName, Struct arguments, boolean cfcPeristent) {
+	private PageContextImpl createPageContext(String requestURI,String id,String functionName, Struct arguments, boolean cfcPeristent) throws PageException {
 		Struct attrs=new StructImpl();
-		
-		PageContextImpl pc = ThreadUtil.createPageContext(getConfig(), DevNullOutputStream.DEV_NULL_OUTPUT_STREAM, "localhost", requestURI, "method="+functionName+(cfcPeristent?"&remotePersistent=server":""), 
+		String remotePersisId;
+		try {
+			remotePersisId=Md5.getDigestAsString(requestURI+id);
+		} catch (IOException e) {
+			throw Caster.toPageException(e);
+		}
+		PageContextImpl pc = ThreadUtil.createPageContext(
+				getConfig(), 
+				DevNullOutputStream.DEV_NULL_OUTPUT_STREAM, 
+				"localhost", 
+				requestURI, 
+				"method="+functionName+(cfcPeristent?"&"+ComponentPage.REMOTE_PERSISTENT_ID+"="+remotePersisId:""), 
 				null, 
 				new Pair[]{new Pair("AMF-Forward","true")}, 
 				null, 
