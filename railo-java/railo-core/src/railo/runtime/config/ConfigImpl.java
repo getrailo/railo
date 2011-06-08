@@ -48,6 +48,7 @@ import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.ExtensionFilter;
 import railo.runtime.CFMLFactory;
+import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Component;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
@@ -66,6 +67,7 @@ import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.dump.DumpWriter;
 import railo.runtime.dump.DumpWriterEntry;
 import railo.runtime.dump.HTMLDumpWriter;
+import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ExecutionLogFactory;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
@@ -79,16 +81,20 @@ import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
 import railo.runtime.gateway.GatewayEngineImpl;
+import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.net.amf.AMFCaster;
 import railo.runtime.net.amf.ClassicAMFCaster;
 import railo.runtime.net.amf.ModernAMFCaster;
+import railo.runtime.net.http.ServletConfigDummy;
+import railo.runtime.net.http.ServletContextDummy;
 import railo.runtime.net.mail.Server;
 import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
+import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.schedule.Scheduler;
 import railo.runtime.schedule.SchedulerImpl;
 import railo.runtime.search.SearchEngine;
@@ -794,12 +800,11 @@ public abstract class ConfigImpl implements Config {
 
 
     public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel) {
-    	return getPageSource(mappings, realPath, onlyTopLevel, ((PageContextImpl)ThreadLocalPageContext.get()).useSpecialMappings());
+    	return getPageSource(mappings, realPath, onlyTopLevel, ((PageContextImpl)ThreadLocalPageContext.get()).useSpecialMappings(),true);
     }
     
-    public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings) {
+    public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
         realPath=realPath.replace('\\','/');
-        
         String lcRealPath = StringUtil.toLowerCase(realPath)+'/';
         Mapping mapping;
         
@@ -844,7 +849,6 @@ public abstract class ConfigImpl implements Config {
         	}
         }
         
-        
         // config mappings
         for(int i=0;i<this.mappings.length-1;i++) {
             mapping = this.mappings[i];
@@ -852,8 +856,8 @@ public abstract class ConfigImpl implements Config {
             	return mapping.getPageSource(realPath.substring(mapping.getVirtual().length()));
             }
         }
-        
-        return this.mappings[this.mappings.length-1].getPageSource(realPath);
+        if(useDefaultMapping)return this.mappings[this.mappings.length-1].getPageSource(realPath);
+        return null;
     }
     
     /**
@@ -1577,6 +1581,14 @@ public abstract class ConfigImpl implements Config {
     }    
     
 
+
+	public void setDefaultMapping(Mapping mapping) {
+		if(!railo.runtime.type.util.ArrayUtil.isEmpty(mappings)) {
+			mappings[mappings.length-1]=mapping;
+		}
+	}
+    
+
     /**
      * @param datasources The datasources to set
      */
@@ -1672,7 +1684,7 @@ public abstract class ConfigImpl implements Config {
      */
     public PageSource getBaseComponentPageSource() {
         if(baseComponentPageSource==null) {
-            baseComponentPageSource=getPageSource(null,getBaseComponentTemplate(),false,false);
+            baseComponentPageSource=getPageSource(null,getBaseComponentTemplate(),false,false,true);
         }
         return baseComponentPageSource;
     }
@@ -3016,7 +3028,7 @@ public abstract class ConfigImpl implements Config {
 		return cacheDefaultConnectionNameResource;
 	}
 
-	protected void setGatewayEntries(Map gatewayEntries,Resource cfcDirectory) {
+	protected void setGatewayEntries(Map<String, GatewayEntry> gatewayEntries,Resource cfcDirectory) {
 		getGatewayEngine().setCFCDirectory(cfcDirectory);
 		
 		try {
@@ -3030,6 +3042,9 @@ public abstract class ConfigImpl implements Config {
 			gatewayEngine=new GatewayEngineImpl(this);
 		}
 		return gatewayEngine;
+	}
+	public void setGatewayEngine(GatewayEngineImpl gatewayEngine) {
+		this.gatewayEngine=gatewayEngine;
 	}
 
 	public String getCacheMD5() { 
@@ -3391,6 +3406,49 @@ public abstract class ConfigImpl implements Config {
 			this.lastMod=lastMod;
 		}
 		
+	}
+	
+
+
+	/**
+	 * this is a config web that reflect the configServer, this allows to run cfml code on server level
+	 * @param gatewayEngine 
+	 * @return
+	 * @throws PageException
+	 */
+	public ConfigWeb createGatewayConfig(GatewayEngineImpl gatewayEngine) {
+		QueryCacheSupport cqc = QueryCacheSupport.getInstance(this);
+		CFMLEngineImpl engine = getConfigServerImpl().getCFMLEngineImpl();
+		CFMLFactoryImpl factory = new CFMLFactoryImpl(engine,cqc);
+		
+		ServletContextDummy sContext = new ServletContextDummy(
+				this,
+				this instanceof ConfigServer?getConfigDir().getRealResource("webroot"):((ConfigWebImpl)this).getRootDirectory(),
+				new StructImpl(),
+				new StructImpl(),
+				1,1);
+		ServletConfigDummy sConfig = new ServletConfigDummy(sContext,"CFMLServlet");
+		ConfigWebImpl cwi = new ConfigWebImpl(
+				factory,
+				getConfigServerImpl(),
+				sConfig,
+				getConfigDir(),
+				getConfigFile());
+		cqc.setConfigWeb(cwi);
+		try {
+			ConfigWebFactory.createContextFiles(getConfigDir(),sConfig);
+	        ConfigWebFactory.load(getConfigServerImpl(), cwi, ConfigWebFactory.loadDocument(getConfigFile()),true);
+	        ConfigWebFactory.createContextFilesPost(getConfigDir(),cwi,sConfig,true);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		cwi.setGatewayEngine(gatewayEngine);
+		
+
+		cwi.setDefaultMapping(new MappingImpl(cwi,"/",gatewayEngine.getCFCDirectory().getAbsolutePath(),null,false,true,false,false,false));
+		return cwi;
 	}
 	
 }

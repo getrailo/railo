@@ -587,9 +587,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	execLog.release();
 			execLog=null;
         }
-        
-        
 	}
+
 	/**
 	 * @see javax.servlet.jsp.PageContext#initialize(javax.servlet.Servlet, javax.servlet.ServletRequest, javax.servlet.ServletResponse, java.lang.String, boolean, int, boolean)
 	 */
@@ -680,7 +679,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
     
     public PageSource getPageSource(String realPath) {
-    	return config.getPageSource(applicationContext.getMappings(),realPath,false,useSpecialMappings);
+    	return config.getPageSource(applicationContext.getMappings(),realPath,false,useSpecialMappings,true);
 	}
 
     public boolean useSpecialMappings(boolean useTagMappings) {
@@ -1949,7 +1948,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @throws PageException 
      * @see railo.runtime.PageContext#execute(java.lang.String)
      */
+
     public void execute(String realPath, boolean throwExcpetion) throws PageException  {
+    	execute(realPath, throwExcpetion, true);
+    }
+    public void execute(String realPath, boolean throwExcpetion, boolean onlyTopLevel) throws PageException  {
     	SystemOut.printDate(config.getOutWriter(),"Call:"+realPath+" ("+getId()+")");
 	    ApplicationListener listener=config.getApplicationListener();
 	    if(realPath.startsWith("/mapping-")){
@@ -1963,17 +1966,21 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    					realPath.substring(index)
 	    					);
 	    		}
-	    		if(type.equalsIgnoreCase("customtag")){
+	    		else if(type.equalsIgnoreCase("customtag")){
 	    			base=getPageSource(
 	    					config.getCustomTagMappings(),
 	    					realPath.substring(index)
 	    					);
 	    		}
+	    		/*else if(type.equalsIgnoreCase("gateway")){
+	    			base=config.getGatewayEngine().getMapping().getPageSource(realPath.substring(index));
+	    			if(!base.exists())base=getPageSource(realPath.substring(index));
+	    		}*/
 	    	}
-	    	if(base==null) base=config.getPageSource(null,realPath,true,false);
+	    	if(base==null) base=config.getPageSource(null,realPath,onlyTopLevel,false,true);
 	    	
 	    }
-	    else base=config.getPageSource(null,realPath,true,false);
+	    else base=config.getPageSource(null,realPath,onlyTopLevel,false,true);
 	    
 	    try {
 	    	listener.onRequest(this,base);

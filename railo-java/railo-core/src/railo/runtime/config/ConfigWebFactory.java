@@ -239,7 +239,7 @@ public final class ConfigWebFactory {
 		ConfigWebImpl configWeb=new ConfigWebImpl(factory,configServer, servletConfig,configDir,configFile);
 		
 		load(configServer,configWeb,doc,false);
-		createContextFilesPost(configDir,configWeb,servletConfig);
+		createContextFilesPost(configDir,configWeb,servletConfig,false);
 	    return configWeb;
     }
     
@@ -288,7 +288,7 @@ public final class ConfigWebFactory {
         config.reset();
         
 		load(config.getConfigServerImpl(),config,doc,false);
-		createContextFilesPost(configDir,config,null);
+		createContextFilesPost(configDir,config,null,false);
     }
     
     private static long second(long ms) {
@@ -365,7 +365,7 @@ public final class ConfigWebFactory {
         settings(config);
         loadListener(cs,config,doc);
     	loadDumpWriter(cs, config, doc);
-    	loadGateway(configServer,config,doc);
+    	loadGateway(configServer,config,doc,isEventGatewayContext);
     	loadExeLog(configServer,config,doc);
     	config.setLoadTime(System.currentTimeMillis());
     	
@@ -1329,7 +1329,7 @@ public final class ConfigWebFactory {
 	}
 	
 
-	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig) throws IOException {
+	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig,boolean isEventGatewayContext) throws IOException {
 		boolean doNew=doNew(configDir,true);
   		
 		
@@ -1358,7 +1358,7 @@ public final class ConfigWebFactory {
         
       	
      // flex
-        if(servletConfig!=null && config.getAMFConfigType()==ConfigImpl.AMF_CONFIG_TYPE_XML){
+        if(!isEventGatewayContext && servletConfig!=null && config.getAMFConfigType()==ConfigImpl.AMF_CONFIG_TYPE_XML){
         	String strPath=servletConfig.getServletContext().getRealPath("/WEB-INF");
         	Resource webInf = ResourcesImpl.getFileResourceProvider().getResource(strPath);
         	
@@ -1999,9 +1999,10 @@ public final class ConfigWebFactory {
 	}
 
 
-	private static void loadGateway(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException  {
+	private static void loadGateway(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isEventGatewayContext) throws IOException  {
+		if(isEventGatewayContext) return;
         boolean hasCS=configServer!=null;
-        HashTable mapGateways=new HashTable();
+        Map<String, GatewayEntry> mapGateways=new HashMap<String, GatewayEntry>();
         
         Resource configDir=config.getConfigDir();
         Element eGateWay=getChildByName(doc.getDocumentElement(),"gateways");
@@ -2037,6 +2038,7 @@ public final class ConfigWebFactory {
 		//if(hasAccess) {
 		String id;
 		GatewayEngineImpl engine = config.getGatewayEngine();
+		engine.reset();
 		
 		// caches
 		if(hasAccess){

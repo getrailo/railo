@@ -651,7 +651,7 @@ public interface Config {
 	public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel);
 	
 	// FUTURE
-	//public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel, boolean useSpecialMappings);
+	//public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel, boolean useSpecialMappings, boolean useDefaultMappings);
 	
 	
 	/**

@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.opencfml.eventgateway.Gateway;
 import org.opencfml.eventgateway.GatewayEngine;
 import org.opencfml.eventgateway.GatewayException;
@@ -13,20 +15,16 @@ import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ClassException;
+import railo.commons.lang.Pair;
 import railo.loader.util.Util;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
-import railo.runtime.Mapping;
-import railo.runtime.MappingImpl;
-import railo.runtime.Page;
+import railo.runtime.ComponentPage;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
-import railo.runtime.PageSource;
-import railo.runtime.PageSourceImpl;
-import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigServerImpl;
+import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -34,6 +32,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.thread.ThreadUtil;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 
 public class GatewayEngineImpl implements GatewayEngine {
 
@@ -41,31 +40,39 @@ public class GatewayEngineImpl implements GatewayEngine {
 
 	private Map<String,GatewayEntry> entries=new HashMap<String,GatewayEntry>();
 	private Resource cfcDirectory;
-	private final ConfigWeb config;
-
-	private Map cfcs=new HashMap();
-
+	private ConfigWeb gatewayConfig;
+	private Config contextConfig;
 	private Log log;
+
 	
 	public GatewayEngineImpl(Config config){
-		if(config instanceof ConfigWeb){
-			this.config=(ConfigWeb) config;
-		}
-		else {
-			Resource root = config.getConfigDir().getRealResource("gatewayRoot");
-			root.mkdirs();
-			this.config=((ConfigServerImpl)config).getConfigWeb(true);
-		}
+		this.contextConfig=config;
 		this.log=((ConfigImpl)config).getGatewayLogger();
 		
 	}
 	
-	public void addEntries(Config config,Map entries) throws ClassException, PageException,GatewayException {
-		Iterator it = entries.entrySet().iterator();
-		Map.Entry entry;
+	public void reset(){
+		gatewayConfig=null;
+	}
+	
+	private ConfigWeb getConfig(){
+		if(gatewayConfig==null) {
+			if(contextConfig instanceof ConfigServer){
+				Resource root = contextConfig.getConfigDir().getRealResource("gatewayRoot");
+				root.mkdirs();
+			}
+			gatewayConfig=((ConfigImpl)contextConfig).createGatewayConfig(this);
+		}
+		return gatewayConfig;
+	}
+	
+	
+	
+	
+	public void addEntries(Config config,Map<String, GatewayEntry> entries) throws ClassException, PageException,GatewayException {
+		Iterator<Entry<String, GatewayEntry>> it = entries.entrySet().iterator();
 		while(it.hasNext()){
-			entry=(Entry) it.next();
-			addEntry(config,(GatewayEntry)entry.getValue());
+			addEntry(config,it.next().getValue());
 		}
 	}
 
@@ -218,7 +225,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 	public Resource getCFCDirectory() {
 		return cfcDirectory;
 	}
-
+	
 	public void setCFCDirectory(Resource cfcDirectory) {
 		this.cfcDirectory=cfcDirectory;
 	}
@@ -258,7 +265,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		return defaultValue;
 	}
 
-	public boolean invokeListener(Gateway gateway, String method, Map data) {
+	public boolean invokeListener(Gateway gateway, String method, Map data) {// FUTUTE add generic type to interface
 		data=GatewayUtil.toCFML(data);
 		
 		GatewayEntry entry = getGatewayEntry(gateway);
@@ -293,63 +300,72 @@ public class GatewayEngineImpl implements GatewayEngine {
 	}
 
 	public Object getComponent(String cfcPath,String id) throws PageException  {
-		DevNullOutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
 		String requestURI=toRequestURI(cfcPath);
 		
 		PageContext oldPC = ThreadLocalPageContext.get();
-		PageContextImpl pc = ThreadUtil.createPageContext(config, os, "localhost", requestURI, "", null, null, null, null);
-		pc.setRequestTimeout(999999999999999999L);      
-		
+		PageContextImpl pc = createPageContext(requestURI, "init", null, false);
 		try {
 			ThreadLocalPageContext.register(pc);
-			return getCFC(pc,requestURI,cfcPath,id,false);
+			return getCFC(pc,requestURI);
 		}
 		finally{
+			CFMLFactory f = getConfig().getFactory();
+			f.releasePageContext(pc);
 			ThreadLocalPageContext.register(oldPC);
 		}
 	}
 
 	public Object call(String cfcPath,String id,String functionName,Struct arguments, boolean cfcPeristent, Object defaultValue) throws PageException  {
-		DevNullOutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
+		// OutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
 		String requestURI=toRequestURI(cfcPath);
 		
 		PageContext oldPC = ThreadLocalPageContext.get();
-		PageContextImpl pc = ThreadUtil.createPageContext(config, os, "localhost", requestURI, "", null, null, null, null);
-		pc.setRequestTimeout(999999999999999999L);      
+		PageContextImpl pc=createPageContext(requestURI,functionName,arguments,cfcPeristent);
+		
 		try {
 			ThreadLocalPageContext.register(pc);
-			Component cfc=getCFC(pc,requestURI,cfcPath,id,cfcPeristent);
+			Component cfc=getCFC(pc,requestURI);
 			if(cfc.containsKey(functionName)){
-				return cfc.callWithNamedValues(pc, functionName, arguments);
+				pc.execute(requestURI, true,false);
+				// Result
+				return pc.variablesScope().get("AMF-Forward",null);
 			}
 		}
 		finally{
-			CFMLFactory factory = config.getFactory();
-			factory.releasePageContext(pc);
+			CFMLFactory f = getConfig().getFactory();
+			f.releasePageContext(pc);
 			ThreadLocalPageContext.register(oldPC);
 		}
 		return defaultValue;
 	}
-	
-	private Component getCFC(PageContext pc,String requestURI,String cfcPath, String id,boolean peristent) throws PageException{
-		Component cfc;
-		if(peristent){
-			cfc=(Component) cfcs.get(requestURI+id);
-			if(cfc!=null)return cfc;
+
+	private Component getCFC(PageContextImpl pc,String requestURI) throws PageException  {
+		HttpServletRequest req = pc.getHttpServletRequest();
+		try {
+			req.setAttribute("client", "railo-gateway-1-0");
+			req.setAttribute("call-type", "store-only");
+			pc.execute(requestURI, true,false);
+			return (Component) req.getAttribute("component");
 		}
-		ConfigImpl config=(ConfigImpl) pc.getConfig();
-		Mapping m=new MappingImpl((ConfigImpl)pc.getConfig(),"/",getCFCDirectory().getAbsolutePath(),null,false,true,false,false,false);
-		
-		PageSource ps = m.getPageSource(requestURI);
-		Page p = ((PageSourceImpl)ps).loadPage(pc,(ConfigWeb)config);
-		cfc= ComponentLoader.loadComponent(pc, p, ps, cfcPath, false,true);
-		if(peristent) cfcs.put(requestURI+id, cfc);
-		return cfc;
+		finally {
+			req.removeAttribute("call-type");
+			req.removeAttribute("component");
+		}
 	}
 	
-	
-	public void clear(String cfcPath,String id)  {
-		cfcs.remove(toRequestURI(cfcPath)+id);
+	private PageContextImpl createPageContext(String requestURI,String functionName, Struct arguments, boolean cfcPeristent) {
+		Struct attrs=new StructImpl();
+		
+		PageContextImpl pc = ThreadUtil.createPageContext(getConfig(), DevNullOutputStream.DEV_NULL_OUTPUT_STREAM, "localhost", requestURI, "method="+functionName+(cfcPeristent?"&remotePersistent=server":""), 
+				null, 
+				new Pair[]{new Pair("AMF-Forward","true")}, 
+				null, 
+				attrs);
+		
+		pc.setRequestTimeout(999999999999999999L);   
+		if(arguments!=null)attrs.setEL(ComponentPage.ARGUMENT_COLLECTION, arguments);
+		attrs.setEL("client", "railo-gateway-1-0");
+		return pc;
 	}
 
 	/**
