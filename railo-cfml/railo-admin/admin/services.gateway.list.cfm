@@ -214,7 +214,7 @@ Error Output--->
 </table>
 </cfif>
 
-<!--- LIST CACHE --->
+<!--- LIST --->
 <cfif srcLocal.recordcount>
 	<h2>#stText.Settings.gateway.titleExisting#</h2>
 	#stText.Settings.gateway.descExisting#
