@@ -23,8 +23,6 @@ public class WildCardFilter implements ResourceAndResourceNameFilter {
 	private final String wildcard;
 	private boolean ignoreCase;
 
-
-
     public WildCardFilter(String wildcard) throws MalformedPatternException {
     	this(wildcard,IS_WIN);
     }
