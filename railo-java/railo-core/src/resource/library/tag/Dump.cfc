@@ -75,7 +75,7 @@ component {
 			else if(attrib.output EQ "browser") attrib['format'] = default.browser;
 			else                                attrib['format'] = default.console;
 		}
-		else if(not arrayFind(supportedFormats, attrib.format)){
+		else if(not arrayFindNoCase(supportedFormats, attrib.format)){
 			throw message="format [#attrib.format#] is not supported, supported formats are [#arrayToList(supportedFormats)#]";
 		}
 
