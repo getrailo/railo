@@ -1,10 +1,12 @@
 package railo.runtime.coder;
 
+import java.io.IOException;
+
 
 /**
  * 
  */
-public final class CoderException extends Exception {
+public final class CoderException extends IOException {
 
 	/**
 	 * @param message
