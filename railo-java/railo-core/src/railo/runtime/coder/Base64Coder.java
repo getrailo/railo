@@ -1,5 +1,7 @@
 package railo.runtime.coder;
 
+import java.io.UnsupportedEncodingException;
+
 import org.apache.commons.codec.binary.Base64;
 
 import railo.runtime.exp.ExpressionException;
@@ -16,15 +18,10 @@ public final class Base64Coder {
      * @return
      * @throws ExpressionException
      */
-    public static String decodeBase64(Object encoded) throws ExpressionException {
-
-        StringBuffer sb=new StringBuffer();
-        byte[] bytes = Caster.toBinary(encoded);
-		for(int i=0;i<bytes.length;i++) {
-			sb.append((char)bytes[i]);
-		}
-        return sb.toString();
-    } 
+    public static String decodeToString(String encoded,String charset) throws CoderException, UnsupportedEncodingException {
+    	byte[] dec = decode(Caster.toString(encoded,null));
+    	return new String(dec,charset);
+    }
     
     /**
      * decodes a Base64 String to a Plain String
@@ -34,14 +31,7 @@ public final class Base64Coder {
      */
     public static byte[] decode(String encoded) throws CoderException {
         try {
-    	char[] chars;
-		chars = encoded.toCharArray();
-		
-		byte[] bytes=new byte[chars.length];
-		for(int i=0;i<chars.length;i++) {
-			bytes[i]=(byte)chars[i];
-		}
-		return Base64.decodeBase64(bytes);
+	    	return Base64.decodeBase64(encoded);
         }
         catch(Throwable t) {
         	throw new CoderException("can't decode input");
@@ -51,29 +41,25 @@ public final class Base64Coder {
      * encodes a String to Base64 String
      * @param plain String to encode
      * @return encoded String
+     * @throws CoderException 
+     * @throws UnsupportedEncodingException 
      */
-    public static String encodeBase64(String plain) {
-        byte[] b=plain.getBytes();
-	    
-		byte[] bytes=Base64.encodeBase64(b);
-		StringBuffer sb=new StringBuffer();
-		for(int i=0;i<bytes.length;i++) {
-			sb.append((char)bytes[i]);
-		}
-		return sb.toString();
-    } 
+    public static String encodeFromString(String plain,String charset) throws CoderException, UnsupportedEncodingException {
+    	return encode(plain.getBytes(charset));
+    }
     
     /**
      * encodes a byte array to Base64 String
      * @param barr byte array to encode
      * @return encoded String
+     * @throws CoderException 
      */
-    public static String encode(byte[] barr) {
-		byte[] bytes=Base64.encodeBase64(barr);
-		StringBuffer sb=new StringBuffer();
-		for(int i=0;i<bytes.length;i++) {
-			sb.append((char)bytes[i]);
+    public static String encode(byte[] barr) throws CoderException {
+		try {
+			return Base64.encodeBase64String(barr);
 		}
-		return sb.toString();
+        catch(Throwable t) {
+        	throw new CoderException("can't encode input");
+        }
     } 
 }
