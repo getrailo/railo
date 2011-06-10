@@ -8497,7 +8497,7 @@ Each type-value pair must start with a hyphen.</description>
 			<description>Clears queries from the cache in the Application scope.</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>filter</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
