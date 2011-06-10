@@ -147,7 +147,14 @@ public final class CredentialImpl implements Credential {
      * @throws PageException
      */
     public static Credential decode(Object encoded,Resource rolesDir) throws PageException {
-    	Array arr=List.listToArray(Base64Coder.decodeBase64(encoded),""+ONE);
+    	String dec;
+    	try {
+			dec=Base64Coder.decodeToString(Caster.toString(encoded),"UTF-8");
+		} catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
+    	
+    	Array arr=List.listToArray(dec,""+ONE);
         int len=arr.size();
         if(len==3) {
         	String str=Caster.toString(arr.get(3,""));
