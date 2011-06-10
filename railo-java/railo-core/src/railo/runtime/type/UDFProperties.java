@@ -306,7 +306,7 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		try {
 			PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
 			ConfigWebImpl cw = (ConfigWebImpl) ThreadLocalPageContext.getConfig(pc);
-			pageSource=cw.getPageSource(null, ExternalizableUtil.readString(in), false,pc.useSpecialMappings(),true);
+			pageSource=cw.getPageSource(pc,null, ExternalizableUtil.readString(in), false,pc.useSpecialMappings(),true);
 			
 		} 
 		catch (Throwable e) {

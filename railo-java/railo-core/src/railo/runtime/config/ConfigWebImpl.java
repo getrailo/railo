@@ -10,6 +10,10 @@ import javax.servlet.ServletContext;
 import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.io.SystemUtil;
+import railo.commons.io.log.Log;
+import railo.commons.io.log.LogAndSource;
+import railo.commons.io.log.LogAndSourceImpl;
+import railo.commons.io.log.LogConsole;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
@@ -27,6 +31,8 @@ import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
+import railo.runtime.gateway.GatewayEngineImpl;
+import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.lock.LockManager;
 import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.security.SecurityManager;
@@ -47,6 +53,8 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private MappingImpl serverTagMapping;
 	private MappingImpl serverFunctionMapping;
 	private StringKeyLock contextLock=new StringKeyLock(-1);
+	private GatewayEngineImpl gatewayEngine;
+    private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
 
     //private File deployDirectory;
 
@@ -222,7 +230,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	
 	 public Page getBaseComponentPage(PageContext pc) throws PageException {
 	        if(baseComponentPage==null) {
-	            baseComponentPage=((PageSourceImpl)getBaseComponentPageSource()).loadPage(pc,this);
+	            baseComponentPage=((PageSourceImpl)getBaseComponentPageSource(pc)).loadPage(pc,this);
 				
 	        }
 	        return baseComponentPage;
@@ -286,4 +294,75 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public StringKeyLock getContextLock() {
 			return contextLock;
 		}
+
+
+		protected void setGatewayEntries(Map<String, GatewayEntry> gatewayEntries) {
+			try {
+				getGatewayEngine().addEntries(this,gatewayEntries);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+		public GatewayEngineImpl getGatewayEngine() {
+			if(gatewayEngine==null){
+				gatewayEngine=new GatewayEngineImpl(this);
+			}
+			return gatewayEngine;
+		}
+		public void setGatewayEngine(GatewayEngineImpl gatewayEngine) {
+			this.gatewayEngine=gatewayEngine;
+		}
+
+	    /**
+	     * @see railo.runtime.config.Config#getMailLogger()
+	     */
+	    public LogAndSource getGatewayLogger() {
+	    	if(gatewayLogger==null)gatewayLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+			return gatewayLogger;
+	    }
+
+
+	    public void setGatewayLogger(LogAndSource gatewayLogger) {
+	    	this.gatewayLogger=gatewayLogger;
+	    }
+		/* *
+		 * this is a config web that reflect the configServer, this allows to run cfml code on server level
+		 * @param gatewayEngine 
+		 * @return
+		 * @throws PageException
+		 * /
+		public ConfigWeb createGatewayConfig(GatewayEngineImpl gatewayEngine) {
+			QueryCacheSupport cqc = QueryCacheSupport.getInstance(this);
+			CFMLEngineImpl engine = getConfigServerImpl().getCFMLEngineImpl();
+			CFMLFactoryImpl factory = new CFMLFactoryImpl(engine,cqc);
+			
+			ServletContextDummy sContext = new ServletContextDummy(
+					this,
+					getRootDirectory(),
+					new StructImpl(),
+					new StructImpl(),
+					1,1);
+			ServletConfigDummy sConfig = new ServletConfigDummy(sContext,"CFMLServlet");
+			ConfigWebImpl cwi = new ConfigWebImpl(
+					factory,
+					getConfigServerImpl(),
+					sConfig,
+					getConfigDir(),
+					getConfigFile(),true);
+			cqc.setConfigWeb(cwi);
+			try {
+				ConfigWebFactory.createContextFiles(getConfigDir(),sConfig);
+		        ConfigWebFactory.load(getConfigServerImpl(), cwi, ConfigWebFactory.loadDocument(getConfigFile()),true);
+		        ConfigWebFactory.createContextFilesPost(getConfigDir(),cwi,sConfig,true);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			cwi.setGatewayEngine(gatewayEngine);
+			
+			//cwi.setGatewayMapping(new MappingImpl(cwi,"/",gatewayEngine.getCFCDirectory().getAbsolutePath(),null,false,true,false,false,false));
+			return cwi;
+		}*/
+
 }

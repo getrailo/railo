@@ -14,7 +14,6 @@ import org.opencfml.eventgateway.GatewayException;
 
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.log.Log;
-import railo.commons.io.res.Resource;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.Md5;
 import railo.commons.lang.Pair;
@@ -25,9 +24,8 @@ import railo.runtime.ComponentPage;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -41,35 +39,15 @@ public class GatewayEngineImpl implements GatewayEngine {
 	private static final Object OBJ = new Object();
 
 	private Map<String,GatewayEntry> entries=new HashMap<String,GatewayEntry>();
-	private Resource cfcDirectory;
-	private ConfigWeb gatewayConfig;
-	private Config contextConfig;
+	private ConfigWeb config;
 	private Log log;
 
 	
-	public GatewayEngineImpl(Config config){
-		this.contextConfig=config;
-		this.log=((ConfigImpl)config).getGatewayLogger();
+	public GatewayEngineImpl(ConfigWeb config){
+		this.config=config;
+		this.log=((ConfigWebImpl)config).getGatewayLogger();
 		
 	}
-	
-	public void reset(){
-		gatewayConfig=null;
-	}
-	
-	private ConfigWeb getConfig(){
-		if(gatewayConfig==null) {
-			if(contextConfig instanceof ConfigServer){
-				Resource root = contextConfig.getConfigDir().getRealResource("gatewayRoot");
-				root.mkdirs();
-			}
-			gatewayConfig=((ConfigImpl)contextConfig).createGatewayConfig(this);
-		}
-		return gatewayConfig;
-	}
-	
-	
-	
 	
 	public void addEntries(Config config,Map<String, GatewayEntry> entries) throws ClassException, PageException,GatewayException {
 		Iterator<Entry<String, GatewayEntry>> it = entries.entrySet().iterator();
@@ -214,27 +192,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		// it must exist, because it only can come from here
 		return (GatewayEntry) entries.get(gatewayId);
 	}
-
-	/*public static void checkRestriction() {
-		PageContext pc = ThreadLocalPageContext.get();
-		boolean enable = false;
-		try {
-			enable=Caster.toBooleanValue(pc.serverScope().get("enableGateway", Boolean.FALSE), false);
-		} 
-		catch (PageException e) {}
-		//enable=false;
-		if(!enable)
-			throw new PageRuntimeException(new FunctionNotSupported("SendGatewayMessage"));
-	}*/
-
-	public Resource getCFCDirectory() {
-		return cfcDirectory;
-	}
 	
-	public void setCFCDirectory(Resource cfcDirectory) {
-		this.cfcDirectory=cfcDirectory;
-	}
-
 	private void executeThread(String gatewayId, int action) throws PageException {
 		new GatewayThread(this,getGateway(gatewayId),action).start();
 	}
@@ -278,7 +236,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		if(!Util.isEmpty(cfcPath,true)){
 			try {
 				if(!callOneWay(cfcPath,gateway.getId(), method, Caster.toStruct(data,null,false), false))
-					log(gateway,LOGLEVEL_ERROR, "function ["+method+"] does not exist in cfc ["+getCFCDirectory()+toRequestURI(cfcPath)+"]");
+					log(gateway,LOGLEVEL_ERROR, "function ["+method+"] does not exist in cfc ["+toRequestURI(cfcPath)+"]");
 				else
 					return true;
 			} 
@@ -314,14 +272,14 @@ public class GatewayEngineImpl implements GatewayEngine {
 			return getCFC(pc,requestURI);
 		}
 		finally{
-			CFMLFactory f = getConfig().getFactory();
+			pc.setGatewayContext(false);
+			CFMLFactory f = config.getFactory();
 			f.releasePageContext(pc);
 			ThreadLocalPageContext.register(oldPC);
 		}
 	}
 
 	public Object call(String cfcPath,String id,String functionName,Struct arguments, boolean cfcPeristent, Object defaultValue) throws PageException  {
-		// OutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
 		String requestURI=toRequestURI(cfcPath);
 		
 		PageContext oldPC = ThreadLocalPageContext.get();
@@ -337,7 +295,8 @@ public class GatewayEngineImpl implements GatewayEngine {
 			}
 		}
 		finally{
-			CFMLFactory f = getConfig().getFactory();
+			pc.setGatewayContext(false);
+			CFMLFactory f = config.getFactory();
 			f.releasePageContext(pc);
 			ThreadLocalPageContext.register(oldPC);
 		}
@@ -367,7 +326,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 			throw Caster.toPageException(e);
 		}
 		PageContextImpl pc = ThreadUtil.createPageContext(
-				getConfig(), 
+				config, 
 				DevNullOutputStream.DEV_NULL_OUTPUT_STREAM, 
 				"localhost", 
 				requestURI, 
@@ -377,7 +336,8 @@ public class GatewayEngineImpl implements GatewayEngine {
 				null, 
 				attrs);
 		
-		pc.setRequestTimeout(999999999999999999L);   
+		pc.setRequestTimeout(999999999999999999L); 
+		pc.setGatewayContext(true);
 		if(arguments!=null)attrs.setEL(ComponentPage.ARGUMENT_COLLECTION, arguments);
 		attrs.setEL("client", "railo-gateway-1-0");
 		return pc;

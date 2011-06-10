@@ -102,7 +102,7 @@ public final class ConfigServerFactory {
      * @throws PageException
      */
     static void load(ConfigServerImpl configServer, Document doc) throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
-        ConfigWebFactory.load(null,configServer,doc,false);
+        ConfigWebFactory.load(null,configServer,doc);
         loadLabel(configServer,doc);
     }
     

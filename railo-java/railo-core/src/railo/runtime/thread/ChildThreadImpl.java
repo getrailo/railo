@@ -138,7 +138,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			ConfigWebImpl cwi;
 			try {
 				cwi = (ConfigWebImpl)config;
-				p=cwi.getPageSource(null, template, false,false,true).loadPage(cwi);
+				p=cwi.getPageSource(oldPc,null, template, false,false,true).loadPage(cwi);
 			} catch (PageException e) {
 				return e;
 			}
