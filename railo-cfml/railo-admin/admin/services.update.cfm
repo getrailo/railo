@@ -216,25 +216,21 @@ try	{
 	content=getAviableVersionDoc();
 	start=1;
 	arr=array();
+	matches=REMatchNoCase("\[\ *(RAILO-([0-9]*)) *\]",content);
 	
-	while(true){
-		res=REFindNoCase("\[\ *(RAILO-([0-9]*)) *\]",content,start,true);
-		if(arraylen(res.pos) LT 3)break;
-		ArrayAppend(arr,res);
-		start=res.pos[1]+res.len[1];
+	for(i=arrayLen(matches);i>=1;i--){
+		match=trim(matches[i]);
+		nbr=mid(match,8,len(match)-8);
+        content=replace(content,match,'<a target="_blank" href="http://jira.jboss.org/jira/browse/RAILO-'&nbr&'">'& mid(match,2,len(match)-2) & '</a>',"all");
 	}
-	
-	for(i=arrayLen(arr);i>=1;i--){
-		res=arr[i];
-		label=mid(content,res.pos[2],res.len[2]);
-		nbr=mid(content,res.pos[3],res.len[3]);
-		content=replace(content,label,'<a target="_blank" href="http://jira.jboss.org/jira/browse/RAILO-'&nbr&'">'& label& '</a>');
-	}
+    content=replace(content,"
+Version ","
+
+Version ","all");
 }
 catch(e){}
 
 </cfscript>
-
 
 <div class="tblContent" style="overflow:auto;width:740px;height:200px;border-style:solid;border-width:1px;padding:10px"><pre>#trim(content)#</pre></div>
 #jira#
