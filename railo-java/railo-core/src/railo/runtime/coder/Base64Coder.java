@@ -19,7 +19,7 @@ public final class Base64Coder {
      * @throws ExpressionException
      */
     public static String decodeToString(String encoded,String charset) throws CoderException, UnsupportedEncodingException {
-    	byte[] dec = decode(Caster.toString(encoded,null));
+    	byte[] dec = decode(Caster.toString(encoded,null),charset);
     	return new String(dec,charset);
     }
     
@@ -29,9 +29,9 @@ public final class Base64Coder {
      * @return decoded binary data 
      * @throws CoderException 
      */
-    public static byte[] decode(String encoded) throws CoderException {
+    public static byte[] decode(String encoded, String charset) throws CoderException {
         try {
-	    	return Base64.decodeBase64(encoded);
+	    	return Base64.decodeBase64(encoded.getBytes(charset));
         }
         catch(Throwable t) {
         	throw new CoderException("can't decode input");
@@ -45,7 +45,7 @@ public final class Base64Coder {
      * @throws UnsupportedEncodingException 
      */
     public static String encodeFromString(String plain,String charset) throws CoderException, UnsupportedEncodingException {
-    	return encode(plain.getBytes(charset));
+    	return encode(plain.getBytes(charset),charset);
     }
     
     /**
@@ -54,9 +54,9 @@ public final class Base64Coder {
      * @return encoded String
      * @throws CoderException 
      */
-    public static String encode(byte[] barr) throws CoderException {
+    public static String encode(byte[] barr, String charset) throws CoderException {
 		try {
-			return Base64.encodeBase64String(barr);
+			return new String(Base64.encodeBase64(barr),charset);
 		}
         catch(Throwable t) {
         	throw new CoderException("can't encode input");

@@ -40,7 +40,7 @@ public final class JavaConverter {
     public static String serialize(Serializable o) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         serialize(o, baos);
-        return Base64Coder.encode(baos.toByteArray());
+        return Base64Coder.encode(baos.toByteArray(),"UTF-8");
     }
 
     public static void serialize(Serializable o, railo.commons.io.res.Resource out) throws IOException {
@@ -68,7 +68,7 @@ public final class JavaConverter {
      * @throws CoderException 
      */
     public static Object deserialize(String str) throws IOException, ClassNotFoundException, CoderException {
-        ByteArrayInputStream bais = new ByteArrayInputStream(Base64Coder.decode(str));
+        ByteArrayInputStream bais = new ByteArrayInputStream(Base64Coder.decode(str,"UTF-8"));
         return deserialize(bais);
     }
     

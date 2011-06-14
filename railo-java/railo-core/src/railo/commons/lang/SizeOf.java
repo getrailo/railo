@@ -155,6 +155,16 @@ public class SizeOf {
 
 
 	private static long _size(Object object, Map instances,Map dictionary, int maxDepth,long maxSize) {
+		try	{
+		return __size(object, instances, dictionary, maxDepth, maxSize);
+		}
+		catch(Throwable t){
+			t.printStackTrace();
+			return 0;
+		}
+	}
+
+	private static long __size(Object object, Map instances,Map dictionary, int maxDepth,long maxSize) {
         if (object==null || instances.containsKey(object) || maxDepth==0 || maxSize < 0) return 0;
         
         instances.put(object, object);
@@ -164,6 +174,7 @@ public class SizeOf {
         if(object instanceof String){
         	return (SizeOf.CHAR_SIZE*((String)object).length())+SizeOf.REF_SIZE;
         }
+        
         if(object instanceof Number){
         	if(object instanceof Double) return SizeOf.DOUBLE_SIZE+SizeOf.REF_SIZE;
         	if(object instanceof Float) return SizeOf.FLOAT_SIZE+SizeOf.REF_SIZE;
@@ -172,6 +183,7 @@ public class SizeOf {
         	if(object instanceof Short) return SizeOf.SHORT_SIZE+SizeOf.REF_SIZE;
         	if(object instanceof Byte) return SizeOf.BYTE_SIZE+SizeOf.REF_SIZE;
         }
+        
         if(object instanceof Object[]) {
         	 Object[] arr=(Object[]) object;
         	 long size=SizeOf.REF_SIZE;
@@ -180,6 +192,7 @@ public class SizeOf {
         	 }
         	 return size;
         }
+        
         if(object instanceof Map) {
         	long size=SizeOf.REF_SIZE;
         	Map.Entry entry;
