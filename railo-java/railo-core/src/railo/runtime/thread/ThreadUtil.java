@@ -29,7 +29,6 @@ public class ThreadUtil {
         HttpServletRequest	req=new HTTPServletRequestWrap(cloneHttpServletRequest(pc));
         HttpServletResponse	rsp=createHttpServletResponse(os);
         
-        
         // copy state
         PageContextImpl pci = (PageContextImpl) pc;
 		PageContextImpl dest = factory.getPageContextImpl(factory.getServlet(), req, rsp, null, false, -1, false,registerPC, isChild);
@@ -65,7 +64,7 @@ public class ThreadUtil {
 	public static HttpServletRequest cloneHttpServletRequest(PageContext pc) {
 		Config config = pc.getConfig();
 		HttpServletRequest req = pc.getHttpServletRequest();
-		HttpServletRequestDummy dest = HttpServletRequestDummy.clone(config.getRootDirectory(),req);
+		HttpServletRequestDummy dest = HttpServletRequestDummy.clone(config,config.getRootDirectory(),req);
 		return dest;
 	}
 	

@@ -24,7 +24,6 @@ import org.hibernate.type.Type;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWebImpl;
@@ -41,9 +40,9 @@ import railo.runtime.orm.ORMTransaction;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.util.ComponentUtil;
 
 public class HibernateORMSession implements ORMSession{
 
@@ -151,6 +150,7 @@ public class HibernateORMSession implements ORMSession{
 	
 	/**
 	 * @see railo.runtime.orm.ORMSession#save(railo.runtime.PageContext, java.lang.Object, boolean)
+	 * TODO also supports array like delete does
 	 */
 	public void save(PageContext pc, Object obj,boolean forceInsert) throws PageException {
 		Component cfc = HibernateCaster.toComponent(obj);
@@ -529,7 +529,7 @@ public class HibernateORMSession implements ORMSession{
 	}
 	
 	private Object loadByExample(PageContext pc, Object obj,  boolean unique) throws PageException {
-		 ComponentPro cfc=ComponentUtil.toComponentPro(HibernateCaster.toComponent(obj));
+		 Component cfc=HibernateCaster.toComponent(obj);
 		 ComponentScope scope = cfc.getComponentScope();
 		 String name=HibernateCaster.getEntityName(cfc);
 		 //Session session=getSession(pc, cfc);
@@ -545,7 +545,7 @@ public class HibernateORMSession implements ORMSession{
 		 
 			Criteria criteria=session().createCriteria(name);
 			if(!StringUtil.isEmpty(idName)){
-				Object idValue = scope.get(idName,null);
+				Object idValue = scope.get(KeyImpl.init(idName),null);
 				if(idValue!=null){
 					criteria.add(Restrictions.eq(idName, HibernateCaster.toSQL(engine, idType, idValue)));
 				}
@@ -578,7 +578,6 @@ public class HibernateORMSession implements ORMSession{
 		String name = HibernateCaster.getEntityName(cfc);
 		ClassMetadata metaData = null;
 		
-		List list=null;
 		Object rtn;
 		try{
 			//trans.begin();
@@ -593,7 +592,6 @@ public class HibernateORMSession implements ORMSession{
 				
 				
 				Object value;
-				ColumnInfo ci;
 				Map.Entry entry;
 				Iterator it = filter.entrySet().iterator();
 				String colName;
@@ -653,7 +651,7 @@ public class HibernateORMSession implements ORMSession{
 		        	railo.runtime.type.List.trimItems(parts);
 		            col=parts[0];
 		            
-		            HibernateUtil.validateColumnName(metaData, col);
+		            col=HibernateUtil.validateColumnName(metaData, col);
 					isDesc=false;
 					if(parts.length>1){
 						if(parts[1].equalsIgnoreCase("desc"))isDesc=true;
@@ -710,7 +708,4 @@ public class HibernateORMSession implements ORMSession{
 	public ORMTransaction getTransaction(boolean autoManage) {
 		return new HibernateORMTransaction(session(),autoManage);
 	}
-
-
-
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Map;
 
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
@@ -17,7 +18,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
-import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.comparator.NumberComparator;
 import railo.runtime.type.comparator.TextComparator;
 import railo.runtime.type.it.KeyIterator;
@@ -617,16 +617,16 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public synchronized Collection duplicate(boolean deepCopy) {
-		return duplicate(new ArrayImpl(),deepCopy);
+	public synchronized Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
+		return duplicate(new ArrayImpl(),deepCopy,done);
 	}
 	
 	
 	
-	protected Collection duplicate(ArrayImpl arr,boolean deepCopy) {
+	protected Collection duplicate(ArrayImpl arr,boolean deepCopy, Map<Object, Object> done) {
 		arr.dimension=dimension;
 		String[] keys=this.keysAsString();
-		ThreadLocalDuplication.set(this, arr);
+		done.put(this, arr);
 		try {
 			for(int i=0;i<keys.length;i++) {
 				String key=keys[i];
@@ -636,7 +636,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		}
 		catch (ExpressionException e) {}
 		finally{
-			ThreadLocalDuplication.remove(this);
+			done.remove(this);
 		}
 		
 		return arr;
@@ -661,6 +661,16 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	 * @see railo.runtime.engine.Sizeable#sizeOf()
 	 */
 	public long sizeOf() {
-		return SizeOf.size(arr);
+		return SizeOf.size(arr)
+		+SizeOf.size(dimension)
+		+SizeOf.size(cap)
+		+SizeOf.size(size)
+		+SizeOf.size(offset)
+		+SizeOf.size(offCount)
+		+SizeOf.REF_SIZE;
 	}
+	
+	
+	
+	
 }

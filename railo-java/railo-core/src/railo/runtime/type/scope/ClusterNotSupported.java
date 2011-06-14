@@ -1,6 +1,7 @@
 package railo.runtime.type.scope;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigServer;
@@ -126,6 +127,8 @@ public final class ClusterNotSupported extends StructSupport implements Cluster 
 	 */
 	public void release() {
 	}
+	public void release(PageContext pc) {
+	}
 	
 	/**
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
@@ -138,7 +141,7 @@ public final class ClusterNotSupported extends StructSupport implements Cluster 
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
 	    return new ClusterNotSupported();
 	}
 	

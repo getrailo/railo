@@ -49,13 +49,13 @@ public class UDFRemoveProperty extends UDFGSProperty {
 	/**
 	 * @see railo.runtime.type.UDF#duplicate()
 	 */
-	public UDF duplicate(ComponentImpl c) {
+	public UDF duplicate(ComponentImpl c,Map<Object, Object> done) {
 		return new UDFRemoveProperty(c,prop);
 	}
 	
  
-	public UDF duplicate() {
-		return duplicate(component);
+	public UDF duplicate(Map<Object, Object> done) {
+		return duplicate(component,done);
 	}
 	
 	/**

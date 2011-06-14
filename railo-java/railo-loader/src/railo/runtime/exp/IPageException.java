@@ -3,6 +3,7 @@ package railo.runtime.exp;
 
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.config.Config;
 import railo.runtime.dump.Dumpable;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.type.Struct;
@@ -60,8 +61,16 @@ public interface IPageException extends Dumpable {
     /**
      * return detailed catch block of the error
      * @return catch block
+     * @deprecated use instead <code>getCatchBlock(Config config);</code>
      */
     public Struct getCatchBlock(PageContext pc);
+    
+    
+    /**
+     * return detailed catch block of the error
+     * @return catch block
+     */
+    public CatchBlock getCatchBlock(Config config);
 
     /**
      * return detailed error block of the error
@@ -107,7 +116,11 @@ public interface IPageException extends Dumpable {
     /**
      * @return Returns the additional.
      */
-    // FUTURE public Struct getAdditional();
+    public Struct getAdditional();
+    
+    /**
+     * @deprecated typo; use instead <code>getAdditional();</code>
+     */
     public Struct getAddional();
 
     /**

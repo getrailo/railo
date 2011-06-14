@@ -5,6 +5,7 @@ package railo.runtime.type.scope;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.commons.fileupload.disk.DiskFileItem;
 
@@ -51,6 +52,15 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 	 * @see railo.runtime.type.Scope#release()
 	 */
 	public void release() {
+		isInit=false;
+		form.release();
+		url.release();
+	}
+	
+	/**
+	 * @see railo.runtime.type.Scope#release(railo.runtime.PageContext)
+	 */
+	public void release(PageContext pc) {
 		isInit=false;
 		form.release();
 		url.release();
@@ -320,8 +330,8 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
-		return form.duplicate(deepCopy);
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+		return form.duplicate(deepCopy,done);
 	}
 	
 

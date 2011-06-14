@@ -3,6 +3,7 @@ package railo.runtime.type.scope;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -11,6 +12,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
@@ -43,8 +45,8 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	private boolean localAlways;
 	private short type;
 	private boolean isInit;
-	private Scope local;
-	private ArgumentPro argument;
+	private Local local;
+	private Argument argument;
 	private PageContextImpl pc;
 	
 	/**
@@ -61,30 +63,24 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	/**
      * @see railo.runtime.type.scope.Undefined#localScope()
      */
-	public Scope localScope() {
+	public Local localScope() {
 		return local;
 	}
 	
 
-	// FUTURE add to interface
-	public ArgumentPro argumentsScope() {
-		// TODO Auto-generated method stub
+	/**
+	 * @see railo.runtime.type.scope.Undefined#argumentsScope()
+	 */
+	public Argument argumentsScope() {
 		return argument;
 	}
 
-	// FUTURE add to interface
+	/**
+	 * @see railo.runtime.type.scope.Undefined#variablesScope()
+	 */
 	public Variables variablesScope() {
 		return (Variables) variable;
 	}
-
-	/*
-     * @see railo.runtime.type.scope.Undefined#check Arguments(boolean)
-     * /
-	public boolean check Arguments(boolean b) {
-		boolean old=this.check Arguments;
-		this.check Arguments=b;
-		return old;
-	}*/
 	
 	/**
 	 * @see railo.runtime.type.scope.Undefined#setMode(int)
@@ -105,9 +101,9 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	/**
      * @see railo.runtime.type.scope.Undefined#setFunctionScopes(railo.runtime.type.Scope, railo.runtime.type.Scope)
      */
-	public void setFunctionScopes(Scope local, Scope argument) {// FUTURE setFunctionScopes(Local local,Argument argument)
+	public void setFunctionScopes(Local local, Argument argument) {
 		this.local=local;
-		this.argument=(ArgumentPro) argument;
+		this.argument=argument;
 	}
 
 	/**
@@ -530,7 +526,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		if(isInitalized()) return;
 		isInit=true;
 		variable=pc.variablesScope();
-        argument=(ArgumentPro) pc.argumentsScope();
+        argument= pc.argumentsScope();
 		local=pc.localScope();
 		allowImplicidQueryCall=pc.getConfig().allowImplicidQueryCall();
         type=pc.getConfig().getScopeCascadingType();
@@ -597,32 +593,42 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		checkArguments=false;
 		localAlways=false;
 		if(allowImplicidQueryCall)qryStack.clear();
-		
-		
-		//threads=null;
-		//hasThreads=false;
+	}
+	
+	/**
+	 * @see railo.runtime.type.Scope#release(railo.runtime.PageContext)
+	 */
+	public void release(PageContext pc) {
+		isInit=false;
+		argument=null;
+		local=null;
+		variable=null;
+		scopes=null;
+		checkArguments=false;
+		localAlways=false;
+		if(allowImplicidQueryCall)qryStack.clear();
 	}
 
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
 		UndefinedImpl dupl = new UndefinedImpl(pc, type);
 		dupl.allowImplicidQueryCall=allowImplicidQueryCall;
 		dupl.checkArguments=checkArguments;
-		dupl.argument=deepCopy?(ArgumentPro)argument.duplicate(deepCopy):argument;
+		dupl.argument=deepCopy?(Argument)argument.duplicate(deepCopy,done):argument;
 		dupl.isInit=isInit;
-		dupl.local=deepCopy?(Scope)local.duplicate(deepCopy):local;
+		dupl.local=deepCopy?(Local)local.duplicate(deepCopy,done):local;
 		dupl.localAlways=localAlways;
-		dupl.qryStack= (deepCopy?(QueryStackImpl)qryStack.duplicate(deepCopy):qryStack);
+		dupl.qryStack= (deepCopy?(QueryStackImpl)Duplicator.duplicate(qryStack,deepCopy):qryStack);
 		
-		dupl.variable=deepCopy?(Scope)variable.duplicate(deepCopy):variable;
+		dupl.variable=deepCopy?(Scope)variable.duplicate(deepCopy,done):variable;
 		
 		// scopes
 		if(deepCopy) {
 			dupl.scopes=new Collection[scopes.length];
 			for(int i=0;i<scopes.length;i++) {
-				dupl.scopes[i]=scopes[i].duplicate(deepCopy);
+				dupl.scopes[i]=scopes[i].duplicate(deepCopy,done);
 			}
 		}
 		else dupl.scopes=scopes;

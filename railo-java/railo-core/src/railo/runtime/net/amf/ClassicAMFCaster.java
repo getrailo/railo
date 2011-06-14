@@ -54,6 +54,8 @@ public class ClassicAMFCaster implements AMFCaster {
 
 	
 	
+	private static final Collection.Key REMOTING_FETCH = KeyImpl.init("remotingFetch");
+
 	private static ClassicAMFCaster singelton;
 	
 	protected boolean forceCFCLower;
@@ -133,6 +135,9 @@ public class ClassicAMFCaster implements AMFCaster {
 		Property[] prop = ComponentUtil.getProperties(cfc,false);
 		Object v; UDF udf;
     	if(prop!=null)for(int i=0;i<prop.length;i++) {
+    		boolean remotingFetch = Caster.toBooleanValue(prop[i].getMeta().get(REMOTING_FETCH,Boolean.TRUE),true);
+    		if(!remotingFetch) continue;
+    		
     		v=cfc.get(prop[i].getName(),null);
     		if(v==null){
     			v=c.get("get"+prop[i].getName(),null);

@@ -2,6 +2,8 @@ package org.opencfml.cfx;
 
 import java.sql.ResultSet;
 
+import railo.runtime.type.Collection;
+
 /**
  * Alternative Implementation of Jeremy Allaire's Query Interface
  */
@@ -21,12 +23,12 @@ public interface Query extends ResultSet {
 
 	/**
 	 * @return All column Names of resultset as string
-	 * FUTURE change to getColumnNamesAsString();
+	 * @deprecated use instead  <code>getColumnNamesAsString()</code>
 	 */
 	public String[] getColumns();
 	
-	// FUTURE public String[] getColumnNamesAsString();
-	// FUTURE public Collection.Key[] getColumnNames();
+	public String[] getColumnNamesAsString();
+	public Collection.Key[] getColumnNames();
 
 
 	/**

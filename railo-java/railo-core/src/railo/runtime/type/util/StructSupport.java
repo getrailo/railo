@@ -10,6 +10,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
@@ -91,7 +92,7 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	 * @see java.lang.Object#clone()
 	 */
 	public final Object clone(){
-		return duplicate(true);
+		return Duplicator.duplicate(this,true);
 	}
 	
 	/**

@@ -54,11 +54,13 @@ import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.other.CreateObject;
+import railo.runtime.functions.string.Hash;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.security.SecurityManager;
@@ -2146,10 +2148,9 @@ public final class ConfigWebAdmin {
 	}
 	public void updateCTPathCache(Boolean ctPathCache) throws SecurityException {
 		checkWriteAccess();
-		boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
-		if(!hasAccess)
-            throw new SecurityException("no access to update Custom Tag Cache Path");
-        
+		if(!ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CUSTOM_TAG)) 
+			throw new SecurityException("no access to update custom tag setting");
+		
 		 if(!Caster.toBooleanValue(ctPathCache,false))
 	        	config.clearCTCache();
 	        Element scope=_getRootElement("custom-tag");
@@ -2297,7 +2298,7 @@ public final class ConfigWebAdmin {
  	      short cfxSetting, short cfxUsage, short debugging,
          short search, short scheduledTasks,
          short tagExecute,short tagImport, short tagObject, short tagRegistry,
-         short cache, short gateway,
+         short cache, short gateway,short orm,
          short accessRead, short accessWrite) throws SecurityException {
     	checkWriteAccess();
         if(!(config instanceof ConfigServer))
@@ -2325,6 +2326,7 @@ public final class ConfigWebAdmin {
         security.setAttribute("tag_registry",         SecurityManagerImpl.toStringAccessValue(tagRegistry));
         security.setAttribute("cache",       SecurityManagerImpl.toStringAccessValue(cache));
         security.setAttribute("gateway",       SecurityManagerImpl.toStringAccessValue(gateway));
+        security.setAttribute("orm",       SecurityManagerImpl.toStringAccessValue(orm));
 
         security.setAttribute("access_read",       SecurityManagerImpl.toStringAccessRWValue(accessRead));
         security.setAttribute("access_write",      SecurityManagerImpl.toStringAccessRWValue(accessWrite));
@@ -2388,7 +2390,7 @@ public final class ConfigWebAdmin {
           short cfxSetting, short cfxUsage, short debugging,
           short search, short scheduledTasks,
           short tagExecute,short tagImport, short tagObject, short tagRegistry, 
-          short cache,short gateway,
+          short cache,short gateway,short orm,
           short accessRead, short accessWrite) throws SecurityException, ApplicationException {
     	checkWriteAccess();
         if(!(config instanceof ConfigServer))
@@ -2420,6 +2422,7 @@ public final class ConfigWebAdmin {
         accessor.setAttribute("scheduled_task",     SecurityManagerImpl.toStringAccessValue(scheduledTasks));
         accessor.setAttribute("cache",     SecurityManagerImpl.toStringAccessValue(cache));
         accessor.setAttribute("gateway",     SecurityManagerImpl.toStringAccessValue(gateway));
+        accessor.setAttribute("orm",     SecurityManagerImpl.toStringAccessValue(orm));
         
         accessor.setAttribute("tag_execute",        SecurityManagerImpl.toStringAccessValue(tagExecute));
         accessor.setAttribute("tag_import",         SecurityManagerImpl.toStringAccessValue(tagImport));
@@ -2549,6 +2552,9 @@ public final class ConfigWebAdmin {
         accessor.setAttribute("cfx_setting",        SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_CFX_SETTING)));
         accessor.setAttribute("cfx_usage",          SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_CFX_USAGE)));
         accessor.setAttribute("debugging",          SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_DEBUGGING)));
+        accessor.setAttribute("cache",          	SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManagerImpl.TYPE_CACHE)));
+        accessor.setAttribute("gateway",          	SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManagerImpl.TYPE_GATEWAY)));
+        accessor.setAttribute("orm",          		SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManagerImpl.TYPE_ORM)));
 
         accessor.setAttribute("tag_execute",        SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_TAG_EXECUTE)));
         accessor.setAttribute("tag_import",         SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_TAG_IMPORT)));
@@ -2784,7 +2790,7 @@ public final class ConfigWebAdmin {
 		Resource storageDir = getStoragDir(config);
 		Resource storage=storageDir.getRealResource(key+".wddx");
 		
-		WDDXConverter converter =new WDDXConverter(config.getTimeZone(),true);
+		WDDXConverter converter =new WDDXConverter(config.getTimeZone(),true,true);
 		String wddx=converter.serialize(value);
 		IOUtil.write(storage, wddx, "UTF-8", false);
 	}
@@ -2795,14 +2801,16 @@ public final class ConfigWebAdmin {
 		Resource storageDir = getStoragDir(config);
 		Resource storage=storageDir.getRealResource(key+".wddx");
 		if(!storage.exists()) throw new IOException("there is no storage with name "+key);
-		WDDXConverter converter =new WDDXConverter(config.getTimeZone(),true);
+		WDDXConverter converter =new WDDXConverter(config.getTimeZone(),true,true);
 		return converter.deserialize(IOUtil.toString(storage,"UTF-8"), true);
 	}
 
 
 	public void updateCustomTagDeepSearch(boolean customTagDeepSearch) throws SecurityException {
 		checkWriteAccess();
-		// update charset
+		if(!ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CUSTOM_TAG)) 
+			throw new SecurityException("no access to update custom tag setting");
+		
 		Element element = _getRootElement("custom-tag");
 		element.setAttribute("custom-tag-deep-search",Caster.toString(customTagDeepSearch));
 	}
@@ -2820,7 +2828,9 @@ public final class ConfigWebAdmin {
 	
 	public void updateCustomTagLocalSearch(boolean customTagLocalSearch) throws SecurityException {
 		checkWriteAccess();
-		// update charset
+		if(!ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CUSTOM_TAG)) 
+			throw new SecurityException("no access to update custom tag setting");
+		
 		Element element = _getRootElement("custom-tag");
 		element.setAttribute("custom-tag-local-search",Caster.toString(customTagLocalSearch));
 	}
@@ -2829,6 +2839,8 @@ public final class ConfigWebAdmin {
 
 	public void updateCustomTagExtensions(String extensions) throws PageException {
 		checkWriteAccess();
+		if(!ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CUSTOM_TAG)) 
+			throw new SecurityException("no access to update custom tag setting");
 		
 		// check
 		Array arr = List.listToArrayRemoveEmpty(extensions, ',');
@@ -2957,8 +2969,10 @@ public final class ConfigWebAdmin {
 	}
 	
 
-	public void updateExtension(Extension extension) throws SecurityException {
+	public void updateExtension(Extension extension) throws PageException {
 		checkWriteAccess();
+		
+		String uid = createUid(extension.getProvider(),extension.getId());
 		
 		Element extensions=_getRootElement("extensions");
 		Element[] children = ConfigWebFactory.getChildren(extensions,"extension");
@@ -2970,8 +2984,7 @@ public final class ConfigWebAdmin {
       	    el=children[i];
       	    provider=el.getAttribute("provider");
       	    id=el.getAttribute("id");
-  			if(	provider!=null && provider.equalsIgnoreCase(extension.getProvider()) &&
-  				id!=null && id.equalsIgnoreCase(extension.getId())) {
+  			if(uid.equalsIgnoreCase(createUid(provider, id))) {
   				setExtensionAttrs(el,extension);
   				return ;
   			}
@@ -2984,6 +2997,16 @@ public final class ConfigWebAdmin {
   		el.setAttribute("id",extension.getId());
   		setExtensionAttrs(el,extension);
       	extensions.appendChild(el);
+	}
+
+
+	private String createUid(String provider, String id) throws PageException {
+		if(Decision.isUUId(id)) {
+			return Hash.invoke(config,id,null,null);
+		}
+		else {
+			return Hash.invoke(config,provider+id,null,null);
+		}
 	}
 
 
@@ -3014,13 +3037,27 @@ public final class ConfigWebAdmin {
 	}
 	
 
-	public void resetORMSetting() {
+	public void resetORMSetting() throws SecurityException {
+		boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_ORM);
+        
+    	if(!hasAccess)
+            throw new SecurityException("no access to update ORM Settings");
+        
+		
+		
 		Element orm=_getRootElement("orm");
 		orm.getParentNode().removeChild(orm);
 	}
 	
 
-	public void updateORMSetting(ORMConfiguration oc) {
+	public void updateORMSetting(ORMConfiguration oc) throws SecurityException {
+		boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_ORM);
+        
+		if(!hasAccess)
+            throw new SecurityException("no access to update ORM Settings");
+        
+		
+		
 		Element orm=_getRootElement("orm");
 		orm.setAttribute("autogenmap",Caster.toString(oc.autogenmap(),"true"));
 		orm.setAttribute("event-handler",Caster.toString(oc.eventHandler(),""));

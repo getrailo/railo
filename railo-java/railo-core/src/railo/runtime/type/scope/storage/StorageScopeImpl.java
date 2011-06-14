@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import railo.commons.lang.SizeOf;
@@ -16,6 +17,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -91,8 +93,8 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	 * @param other
 	 * @param deepCopy
 	 */
-	public StorageScopeImpl(StorageScopeImpl other, boolean deepCopy) {
-		this.sct=(Struct)other.sct.duplicate(deepCopy);
+	public StorageScopeImpl(StorageScopeImpl other, boolean deepCopy,Map<Object, Object> done) {
+		this.sct=(Struct)Duplicator.duplicate(other.sct,deepCopy,done);
 		this.timecreated=other.timecreated;
 		this._lastvisit=other._lastvisit;
 		this.hitcount=other.hitcount;
@@ -130,6 +132,9 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 			sct.setEL(HITCOUNT, new Double(hitcount++));
 			sct.setEL(TIMECREATED, timecreated);
 		}
+		else {
+			sct.setEL(SESSION_ID, pc.getApplicationContext().getName()+"_"+pc.getCFID()+"_"+pc.getCFToken());
+		}
 	}
 	
 
@@ -163,6 +168,11 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	/**
 	 * @see railo.runtime.type.Scope#release()
 	 */
+	public final void release(PageContext pc) {
+		clear();
+		isinit=false;
+	}
+	
 	public final void release() {
 		clear();
 		isinit=false;

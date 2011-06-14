@@ -11,19 +11,22 @@ import java.util.regex.Pattern;
 
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
+import railo.runtime.PageContext;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.op.Constants;
 import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
-import railo.runtime.type.QueryPro;
 import railo.runtime.type.SVArray;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -47,6 +50,7 @@ public final class DBInfo extends TagImpl {
 	private static final Key REFERENCED_PRIMARYKEY_TABLE = KeyImpl.getInstance("REFERENCED_PRIMARYKEY_TABLE");
 	private static final Key USER = KeyImpl.getInstance("USER");
 	private static final Key TABLE_SCHEM = KeyImpl.getInstance("TABLE_SCHEM");
+	private static final Key DECIMAL_DIGITS = KeyImpl.getInstance("DECIMAL_DIGITS");
 	
 	
 	
@@ -214,7 +218,7 @@ public final class DBInfo extends TagImpl {
 	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws PageException	{
-		
+		datasource=getDatasource(pageContext, datasource);
 		DataSourceManager manager = pageContext.getDataSourceManager();
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
 		try {
@@ -264,18 +268,35 @@ public final class DBInfo extends TagImpl {
 		checkTable(metaData);
 		
         ResultSet columns = metaData.getColumns(dbname, schema, table, pattern);
-        QueryPro qry = new QueryImpl(columns,"query");
+        railo.runtime.type.Query qry = new QueryImpl(columns,"query");
         
+		int len=qry.getRecordcount();
 		
 		qry.rename(COLUMN_DEF,COLUMN_DEFAULT_VALUE);
         
+		// make sure decimal digits exists
+		QueryColumn col = qry.getColumn(DECIMAL_DIGITS,null);
+		if(col==null){
+			Array arr=new ArrayImpl();
+			for(int i=1;i<=len;i++) {
+				arr.append(Constants.DOUBLE_ZERO);
+			}
+			qry.addColumn(DECIMAL_DIGITS, arr);
+		}
+		
+		
 		// add is primary
-		int len=qry.getRecordcount();
 		Map primaries = new HashMap();
 		String tblName;
 		Array isPrimary=new ArrayImpl();
 		Set set;
+		Object o;
 		for(int i=1;i<=len;i++) {
+			
+			// decimal digits
+			o=qry.getAt(DECIMAL_DIGITS, i,null);
+			if(o==null)qry.setAtEL(DECIMAL_DIGITS, i,Constants.DOUBLE_ZERO);
+			
 			set=(Set) primaries.get(tblName=(String) qry.getAt(TABLE_NAME, i));
 			if(set==null) {
 				set=toSet(metaData.getPrimaryKeys(dbname, null, tblName),"COLUMN_NAME");
@@ -290,14 +311,16 @@ public final class DBInfo extends TagImpl {
 		Array isForeign=new ArrayImpl();
 		Array refPrim=new ArrayImpl();
 		Array refPrimTbl=new ArrayImpl();
-		Map map,inner;
+		//Map map,inner;
+		Map<String, Map<String, SVArray>> map;
+		Map<String, SVArray> inner;
 		for(int i=1;i<=len;i++) {
 			map=(Map) foreigns.get(tblName=(String) qry.getAt(TABLE_NAME, i));
 			if(map==null) {
-				map=toMap(metaData.getCrossReference(dbname, null,tblName, dbname, null, tblName),"FKCOLUMN_NAME",new String[]{"PKCOLUMN_NAME","PKTABLE_NAME"});
+				map=toMap(metaData.getImportedKeys(dbname, schema, table),"FKCOLUMN_NAME",new String[]{"PKCOLUMN_NAME","PKTABLE_NAME"});
 				foreigns.put(tblName, map);
 			}
-			inner=(Map) map.get(qry.getAt(COLUMN_NAME, i));
+			inner = map.get(qry.getAt(COLUMN_NAME, i));
 			if(inner!=null) {
 				isForeign.append("YES");
 				refPrim.append(inner.get("PKCOLUMN_NAME")); 
@@ -579,7 +602,7 @@ public final class DBInfo extends TagImpl {
         
 		checkTable(metaData);
 		ResultSet result = metaData.getSchemas();
-		QueryPro qry = new QueryImpl(result,"query");
+		railo.runtime.type.Query qry = new QueryImpl(result,"query");
 		
 		
 		qry.rename(TABLE_SCHEM,USER);
@@ -605,5 +628,18 @@ public final class DBInfo extends TagImpl {
 	*/
 	public int doEndTag()	{
 		return EVAL_PAGE;
+	}
+	
+
+	public static String getDatasource(PageContext pageContext, String datasource) throws ApplicationException {
+		if(StringUtil.isEmpty(datasource)){
+			datasource=((ApplicationContextPro)pageContext.getApplicationContext()).getDefaultDataSource();
+
+			if(StringUtil.isEmpty(datasource))
+				throw new ApplicationException(
+						"attribute [datasource] is required, when no default datasource is defined",
+						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+		}
+		return datasource;
 	}
 }

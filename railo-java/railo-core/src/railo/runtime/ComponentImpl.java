@@ -13,8 +13,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.Cookie;
+
+import railo.commons.io.DevNullOutputStream;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
+import railo.commons.lang.Pair;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -25,6 +29,7 @@ import railo.runtime.component.InterfaceCollection;
 import railo.runtime.component.Member;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.debug.DebugEntry;
@@ -34,6 +39,7 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DeprecatedException;
@@ -44,8 +50,8 @@ import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.Operator;
-import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
+import railo.runtime.thread.ThreadUtil;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
@@ -196,8 +202,8 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         return c;
     }*/
 
-    public Collection duplicate(boolean deepCopy) {
-    	ComponentImpl top= _duplicate(deepCopy,true);
+    public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
+    	ComponentImpl top= _duplicate(deepCopy,true,done);
     	setTop(top,top);
     	
 		
@@ -207,9 +213,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     
     
     
-    private ComponentImpl _duplicate( boolean deepCopy, boolean isTop) {
+    private ComponentImpl _duplicate( boolean deepCopy, boolean isTop, Map<Object, Object> done) {
     	ComponentImpl trg=new ComponentImpl();
-    	ThreadLocalDuplication.set(this, trg);
+    	done.put(this, trg);
     	try{
 			// attributes
 	    	trg.pageSource=pageSource;
@@ -227,7 +233,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			if(!useShadow)trg.scope=new ComponentScopeThis(trg);
 			
 	    	if(base!=null){
-				trg.base=base._duplicate(deepCopy,false);
+				trg.base=base._duplicate(deepCopy,false,done);
 				
 				trg._data=trg.base._data;
 				trg._udfs=duplicateUTFMap(this,trg, _udfs,new HashMap<Key,UDF>(trg.base._udfs));
@@ -260,13 +266,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	    			addUDFS(trg,((ComponentScopeShadow)scope).getShadow(),((ComponentScopeShadow)trg.scope).getShadow());
 	    		}
 	    	}
-	    	
-	    	
-	    	
-	    	
     	}
     	finally {
-    		ThreadLocalDuplication.remove(this);
+    		done.remove(this);
     	}
     	
 		return trg;
@@ -304,7 +306,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     			}
     			// udf with no owner
     			if(!done) 
-    				trg.put(key, udf.duplicate());
+    				trg.put(key, Duplicator.duplicate(udf,true));
     			
     			//print.o(owner.pageSource.getComponentName()+":"+udf.getFunctionName());
     		}
@@ -1500,7 +1502,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     private synchronized Object _set(Collection.Key key, Object value) {
     	//print.out("set:"+key);
         if(value instanceof UDFImpl) {
-        	UDFImpl udf = (UDFImpl)((UDF)value).duplicate();
+        	UDFImpl udf = (UDFImpl) Duplicator.duplicate(value,true);
         	//udf.isComponentMember(true);///+++
         	udf.setOwnerComponent(this);
         	if(udf.getAccess()>Component.ACCESS_PUBLIC)
@@ -1966,13 +1968,25 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
 // MUST more native impl
 	public void readExternal(ObjectInput in) throws IOException,ClassNotFoundException {
+		boolean pcCreated=false;
+		PageContext pc = ThreadLocalPageContext.get();
+		// MUST this is just a workaround
+		if(pc==null){
+			pcCreated=true;
+			ConfigWeb config = (ConfigWeb) ThreadLocalConfig.get();
+			Pair[] parr = new Pair[0];
+			pc=ThreadUtil.createPageContext(config, DevNullOutputStream.DEV_NULL_OUTPUT_STREAM, "localhost", "/","", new Cookie[0], parr, parr, new StructImpl());
+		}
+		
 		try {
-			// MUST nicht gut
-			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(ThreadLocalPageContext.get(),in.readUTF());
+			// MUST do serialisation more like the cloning way
+			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(pc,in.readUTF());
 			
 			
 			this._data=other._data;
 			this._udfs=other._udfs;
+			setOwner(_udfs);
+			setOwner(_data);
 			this.afterConstructor=other.afterConstructor;
 			this.base=other.base;
 			//this.componentPage=other.componentPage;
@@ -1992,6 +2006,20 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			
 		} catch (PageException e) {
 			throw new IOException(e.getMessage());
+		}
+		finally {
+			if(pcCreated)ThreadLocalPageContext.release();
+		}
+	}
+
+	private void  setOwner(Map<Key,? extends Member> data) {
+		Member m;
+		Iterator<? extends Member> it = data.values().iterator();
+		while(it.hasNext()){
+			m=it.next();
+			if(m instanceof UDFImpl) {
+				((UDFImpl)m).setOwnerComponent(this);
+			}
 		}
 	}
 

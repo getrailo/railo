@@ -93,7 +93,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	}
 	
 	/**
-	 * similar to getPageContext Method but return the concret implementation of the railo PageCOntext
+	 * similar to getPageContext Method but return the concrete implementation of the railo PageCOntext
 	 * and take the HTTP Version of the Servlet Objects
 	 * @param servlet
 	 * @param req

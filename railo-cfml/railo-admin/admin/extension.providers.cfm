@@ -1,4 +1,6 @@
 <!--- Action --->
+<cfinclude template="extension.functions.cfm">
+
 <cfset stVeritfyMessages=struct()>
 <cfparam name="error" default="#struct(message:"",detail:"")#">
 <cfparam name="form.mainAction" default="none">
@@ -95,7 +97,14 @@ Error Output --->
 <cfset hasAccess=true>
 
 
-
+<cfset infos={}>
+<cfloop query="providers">
+	
+		<cfset provider=loadCFC(providers.url)>
+    	<cfset infos[providers.url]=provider.getInfo()>
+    	<cftry><cfcatch></cfcatch>
+    </cftry>
+</cfloop>
 
 
 
@@ -118,51 +127,68 @@ function selectAll(field) {
 }
 </script>
 <cfoutput>
+<cfset stText.ext.prov.title="Title">
+<cfset stText.ext.prov.mode="Mode">
 
+<cfset doMode=false>
+<cfloop query="providers"><cfif StructKeyExists(infos,providers.url) and StructKeyExists(infos[providers.url],"mode") and trim(infos[providers.url].mode) EQ "develop"><cfset doMode=true></cfif></cfloop>
+
+<cfset columns=doMode?5:4>
 
 <table class="tbl" width="740">
 <tr>
-	<td colspan="3">#stText.ext.prov.IntroText#</td>
+	<td colspan="#columns#">#stText.ext.prov.IntroText#</td>
 </tr>
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td width="30"><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"><cfmodule template="tp.cfm"  width="10" height="1"></td>
-		<td width="640" class="tblHead" nowrap>#stText.ext.prov.url#</td>
+		<td width="300" class="tblHead" nowrap>#stText.ext.prov.url#</td>
+		<td width="260" class="tblHead" nowrap>#stText.ext.prov.title#</td>
+		<cfif doMode><td width="80" class="tblHead" nowrap>#stText.ext.prov.mode#</td></cfif>
 		<td width="70" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 	</tr>
     
 	<cfloop query="providers">
-		<cfif true>
+    <tr>
+        <!--- checkbox ---->
+        <td><table border="0" cellpadding="0" cellspacing="0">
         <tr>
-            <!--- checkbox ---->
-            <td><table border="0" cellpadding="0" cellspacing="0">
-            <tr>
-                <td><cfif not providers.isReadOnly><input type="checkbox" class="checkbox" name="row_#providers.currentrow#" value="#providers.currentrow#"></cfif></td>
-            </tr>
-            </table></td>
-            
-            <!--- url --->
-            <td height="30" class="tblContent" title="#providers.url#" nowrap>
-            	<input type="hidden" name="url_#providers.currentrow#" value="#providers.url#">#providers.url#
-             </td>
-			<td class="tblContent" nowrap valign="middle" align="center">
-				<cfif StructKeyExists(stVeritfyMessages, providers.url)>
-					#stVeritfyMessages[providers.url].label#
-					<cfif stVeritfyMessages[providers.url].label neq "OK">
-						&nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
-							width="9" 
-							height="9" 
-							border="0" 
-                            title="#stVeritfyMessages[providers.url].message##Chr(13)#"
-							alt="#stVeritfyMessages[providers.url].message##Chr(13)#">
-					</cfif>
-				<cfelse>
-					&nbsp;				
-				</cfif>
-			</td>
-            
+            <td><cfif not providers.isReadOnly><input type="checkbox" class="checkbox" name="row_#providers.currentrow#" value="#providers.currentrow#"></cfif></td>
         </tr>
-        </cfif>
+        </table></td>
+        
+        <!--- url --->
+        <td height="30" class="tblContent" title="#providers.url#" nowrap>
+            <input type="hidden" name="url_#providers.currentrow#" value="#providers.url#">#providers.url#
+         </td>
+         
+         
+         <cfset hasData= StructKeyExists(infos,providers.url)>
+         
+        <!--- title --->
+        <td height="30" class="tblContent" nowrap>
+			<cfif hasData and StructKeyExists(infos[providers.url],"image")><cfset dn=getDumpNail(infos[providers.url].image,100,30)><cfif len(dn)><img src="#dn#" border="0"/>&nbsp;&nbsp;</cfif></cfif>
+			<cfif hasData and StructKeyExists(infos[providers.url],"title") and len(trim(infos[providers.url].title))>#infos[providers.url].title#<cfelse>&nbsp;</cfif></td>
+        <!--- mode --->
+        <cfif doMode><td height="30" class="tblContent" nowrap><cfif hasData and StructKeyExists(infos[providers.url],"mode") and len(trim(infos[providers.url].mode))>#infos[providers.url].mode#<cfelse>production</cfif></td></cfif>
+        <!--- check --->
+        <td class="tblContent" nowrap valign="middle" align="center">
+            <cfif StructKeyExists(stVeritfyMessages, providers.url)>
+                #stVeritfyMessages[providers.url].label#
+                <cfif stVeritfyMessages[providers.url].label neq "OK">
+                    &nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
+                        width="9" 
+                        height="9" 
+                        border="0" 
+                        title="#stVeritfyMessages[providers.url].message##Chr(13)#"
+                        alt="#stVeritfyMessages[providers.url].message##Chr(13)#">
+                </cfif>
+            <cfelse>
+                &nbsp;				
+            </cfif>
+        </td>
+        
+    </tr>
     </cfloop>
     
     
@@ -175,7 +201,7 @@ function selectAll(field) {
 		</tr>
 		</table></td>
 		
-		<td class="tblContent" nowrap colspan="2"><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td class="tblContent" nowrap colspan="#columns-1#"><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="url_#providers.recordcount+1#" value="" required="no"  style="width:600px">
             <br /><span class="comment">&nbsp;&nbsp;#stText.ext.prov.urlDesc#</span></td>
 	</tr>
@@ -183,7 +209,7 @@ function selectAll(field) {
 <cfif hasAccess>
 <cfmodule template="remoteclients.cfm" colspan="8" line=true>
 	<tr>
-		<td colspan="3">
+		<td colspan="#columns#">
 		 <table border="0" cellpadding="0" cellspacing="0">
 		 <tr>
 			<td><cfmodule template="tp.cfm"  width="8" height="1"></td>		

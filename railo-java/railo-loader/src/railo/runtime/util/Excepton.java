@@ -109,10 +109,20 @@ public interface Excepton {
      * @param errorcode 
      * @param customType 
      * @return CustomTypeException
+     * @deprecated use instead <code>createCustomTypeException(String message, String detail, String errorcode, String customType, String extendedInfo);</code>
      */
-    public PageException createCustomTypeException(String message, String detail, String errorcode, String customType); // FUTURE set to deprecated
+    public PageException createCustomTypeException(String message, String detail, String errorcode, String customType);
     
- // FUTURE  public PageException createCustomTypeException(String message, String detail, String errorcode, String customType, String extendedInfo);
+ 	/**
+ 	 * create exception "CustomTypeException"
+     * @param message
+ 	 * @param detail
+ 	 * @param errorcode
+ 	 * @param customType
+ 	 * @param extendedInfo
+ 	 * @return
+ 	 */
+ 	public PageException createCustomTypeException(String message, String detail, String errorcode, String customType, String extendedInfo);
     
     /**
      * create exception "DatabaseException"

@@ -1,6 +1,7 @@
 package railo.runtime.text.xml.struct;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.DOMException;
@@ -145,7 +146,7 @@ public final class XMLCDATASectionStruct extends XMLNodeStruct implements CDATAS
 	 *
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
 		return new XMLCDATASectionStruct((CDATASection)section.cloneNode(deepCopy),caseSensitive);
 	}
 	

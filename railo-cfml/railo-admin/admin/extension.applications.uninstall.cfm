@@ -1,5 +1,5 @@
 
-<cfset detail=getDetail(url.provider,url.app)>
+<cfset detail=getDetailbyUid(url.uid)>
 
 
 
@@ -10,23 +10,18 @@
 	password="#session["password"&request.adminType]#"
 	returnVariable="info">
 
-<cfset data.directory=info.directory>
+<cfset detail.directory=info.directory>
    
 <cfset session.confirm.text="">
 <cfset session.confirm.success=true>
 
 <!--- get REP --->
-<cfset dest=data.directory>
+<cfset dest=detail.directory>
 <cfif not DirectoryExists(dest)>
 	<cfset session.confirm.text=stText.ext.uninstallMissingCFC>
     <cfset session.confirm.success=false>
 </cfif>
-<cfset dest=dest&"/"&url.provider>
-<cfif not DirectoryExists(dest)>
-	<cfset session.confirm.text=stText.ext.uninstallMissingCFC>
-    <cfset session.confirm.success=false>
-</cfif>
-<cfset dest=dest&"/"&detail.installed.name>
+<cfset dest=dest&"/"&url.uid>
 <cfif not DirectoryExists(dest)>
 	<cfset session.confirm.text=stText.ext.uninstallMissingCFC>
     <cfset session.confirm.success=false>
@@ -37,7 +32,36 @@
     <cfset session.confirm.success=false>
 </cfif>
 
-
+<!--- ALLOW to unisntall from old structure --->
+<cfif not session.confirm.success>
+	<cfset tmp=session.confirm>
+	<cfset session.confirm.text="">
+    <cfset session.confirm.success=true>
+	
+    <cfset dest=detail.directory>
+    <cfif not DirectoryExists(dest)>
+        <cfset session.confirm.text=stText.ext.uninstallMissingCFC>
+        <cfset session.confirm.success=false>
+    </cfif>
+    <cfset dest=dest&"/"&hash(trim(detail.installed.provider))>
+    <cfif not DirectoryExists(dest)>
+        <cfset session.confirm.text=stText.ext.uninstallMissingCFC>
+        <cfset session.confirm.success=false>
+    </cfif>
+    <cfset dest=dest&"/"&detail.installed.name>
+    <cfif not DirectoryExists(dest)>
+        <cfset session.confirm.text=stText.ext.uninstallMissingCFC>
+        <cfset session.confirm.success=false>
+    </cfif>
+    <cfset destFile="#dest#/#detail.installed.version#.rep">
+    <cfif not FileExists(destFile)>
+        <cfset session.confirm.text=stText.ext.uninstallMissingCFC>
+        <cfset session.confirm.success=false>
+    </cfif>
+    <cfif not session.confirm.success>
+    	<cfset session.confirm=tmp>
+    </cfif>
+</cfif>
 
 
 <cfif session.confirm.success>

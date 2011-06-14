@@ -63,6 +63,9 @@ Redirtect to entry  --->
 
 
 
+<!--- 
+Error Output--->
+<cfset printError(error)>
 
 <cfoutput>
 
@@ -86,7 +89,7 @@ Redirtect to entry  --->
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.orm.autogenmap#</td>
 	<td class="tblContent">
-			<input type="checkbox" name="autogenmap" value="true"<cfif settings.autogenmap>  checked="checked"</cfif>>
+			<cfif not hasAccess><b>#yesNoFormat(settings.autogenmap)#</b><cfelse><input type="checkbox" name="autogenmap" value="true"<cfif settings.autogenmap>  checked="checked"</cfif>></cfif>
 			<span class="comment">#stText.Settings.orm.autogenmapDesc#</span>
 		
 		
@@ -97,7 +100,7 @@ Redirtect to entry  --->
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.orm.catalog#</td>
 	<td class="tblContent">
-			<input type="text" name="catalog" size="80" value="#settings.catalog#" /><br />
+			<cfif not hasAccess><b>#settings.catalog#</b><cfelse><input type="text" name="catalog" size="80" value="#settings.catalog#" /></cfif><br />
 			<span class="comment">#stText.Settings.orm.catalogDesc#</span>
 		
 		
@@ -109,7 +112,7 @@ Redirtect to entry  --->
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.orm.schema#</td>
 	<td class="tblContent">
-			<input type="text" name="schema" size="80" value="#settings.schema#" /><br />
+			<cfif not hasAccess><b>#settings.schema#</b><cfelse><input type="text" name="schema" size="80" value="#settings.schema#" /></cfif><br />
 			<span class="comment">#stText.Settings.orm.schemaDesc#</span>
 		
 		
@@ -120,7 +123,7 @@ Redirtect to entry  --->
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.orm.cfclocation#</td>
 	<td class="tblContent">
-			<input type="text" name="cfclocation" size="80" value="#settings.isDefaultCfclocation?"":arrayToList(settings.cfclocation)#" /><br />
+			<cfif not hasAccess><b>#settings.isDefaultCfclocation?"":arrayToList(settings.cfclocation)#</b><cfelse><input type="text" name="cfclocation" size="80" value="#settings.isDefaultCfclocation?"":arrayToList(settings.cfclocation)#" /></cfif><br />
 			<span class="comment">#stText.Settings.orm.cfclocationDesc#</span>
 		
 		
@@ -132,11 +135,14 @@ Redirtect to entry  --->
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.orm.dbcreate#</td>
 	<td class="tblContent">
-    	<span class="comment">#stText.Settings.orm.autogenmapDesc#<br /><br /></span>
-		<cfloop index="item" list="none,update,dropcreate">
+    	<cfif not hasAccess><b>#settings.dbcreate#</b></cfif>
+        <span class="comment">#stText.Settings.orm.autogenmapDesc#<br /><br /></span>
+		<cfif hasAccess>
+        <cfloop index="item" list="none,update,dropcreate">
         	<input type="radio" class="radio" name="dbcreate" value="#item#" <cfif settings.dbcreate EQ item>checked="checked"</cfif>> #item#<br />
             <span class="comment">#stText.Settings.orm['dbcreate'& item]#</span><BR />
         </cfloop>
+        </cfif>
 	</td>
 </tr>
 
@@ -158,7 +164,7 @@ makes no sense to define this here
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.orm.eventHandling#</td>
 	<td class="tblContent">
-			<input type="checkbox" name="eventHandling" value="true"<cfif settings.eventHandling>  checked="checked"</cfif>>
+			<cfif not hasAccess><b>#yesNoFormat(settings.eventHandling)#</b><cfelse><input type="checkbox" name="eventHandling" value="true"<cfif settings.eventHandling>  checked="checked"</cfif>></cfif>
 			<span class="comment">#stText.Settings.orm.eventHandlingDesc#</span>
 		
 		
@@ -169,7 +175,7 @@ makes no sense to define this here
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.orm.flushatrequestend#</td>
 	<td class="tblContent">
-			<input type="checkbox" name="flushatrequestend" value="true"<cfif settings.flushatrequestend>  checked="checked"</cfif>>
+			<cfif not hasAccess><b>#yesNoFormat(settings.flushatrequestend)#</b><cfelse><input type="checkbox" name="flushatrequestend" value="true"<cfif settings.flushatrequestend>  checked="checked"</cfif>></cfif>
 			<span class="comment">#stText.Settings.orm.flushatrequestendDesc#</span>
 		
 		
@@ -180,7 +186,7 @@ makes no sense to define this here
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.orm.logSQL#</td>
 	<td class="tblContent">
-			<input type="checkbox" name="logSQL" value="true"<cfif settings.logSQL>  checked="checked"</cfif>>
+			<cfif not hasAccess><b>#yesNoFormat(settings.logSQL)#</b><cfelse><input type="checkbox" name="logSQL" value="true"<cfif settings.logSQL>  checked="checked"</cfif>></cfif>
 			<span class="comment">#stText.Settings.orm.logSQLDesc#</span>
 		
 		
@@ -191,7 +197,7 @@ makes no sense to define this here
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.orm.savemapping#</td>
 	<td class="tblContent">
-			<input type="checkbox" name="savemapping" value="true"<cfif settings.savemapping>  checked="checked"</cfif>>
+			<cfif not hasAccess><b>#yesNoFormat(settings.savemapping)#</b><cfelse><input type="checkbox" name="savemapping" value="true"<cfif settings.savemapping>  checked="checked"</cfif>></cfif>
 			<span class="comment">#stText.Settings.orm.savemappingDesc#</span>
 		
 		
@@ -202,7 +208,7 @@ makes no sense to define this here
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.orm.useDBForMapping#</td>
 	<td class="tblContent">
-			<input type="checkbox" name="useDBForMapping" value="true"<cfif settings.useDBForMapping>  checked="checked"</cfif>>
+			<cfif not hasAccess><b>#yesNoFormat(settings.useDBForMapping)#</b><cfelse><input type="checkbox" name="useDBForMapping" value="true"<cfif settings.useDBForMapping>  checked="checked"</cfif>></cfif>
 			<span class="comment">#stText.Settings.orm.useDBForMappingDesc#</span>
 		
 		

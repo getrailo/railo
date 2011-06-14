@@ -1,6 +1,7 @@
 package railo.runtime.tag;
 
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -16,7 +17,7 @@ public class FeedProperties {
 	
 	
 	public static Struct toProperties(Struct data) {
-		data=(Struct) data.duplicate(true);
+		data=(Struct) Duplicator.duplicate(data,true);
 		
 		
 

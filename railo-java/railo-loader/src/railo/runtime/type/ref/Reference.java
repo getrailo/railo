@@ -8,12 +8,6 @@ import railo.runtime.type.Collection;
  */
 public interface Reference {
 
-	/**
-	 * @return returns the value of the Variable
-	 * @throws PageException
-	 * @deprecated use instead <code>{@link #getKey()}</code>
-	 */
-	public abstract String getKeyAsString() throws PageException;
 
 	/**
 	 * @return returns the value of the Variable

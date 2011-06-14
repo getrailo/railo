@@ -17,6 +17,7 @@ public interface StorageScope extends SharedScope {
 	public static Collection.Key LASTVISIT=KeyImpl.getInstance("lastvisit");
 	public static Collection.Key HITCOUNT=KeyImpl.getInstance("hitcount");
 	public static Collection.Key TIMECREATED=KeyImpl.getInstance("timecreated");
+	public static Collection.Key SESSION_ID=KeyImpl.getInstance("sessionid");
 	
 	/**
 	 * @return time when the Scope last time was visited

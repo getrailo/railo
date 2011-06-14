@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
@@ -46,6 +47,8 @@ import railo.commons.net.ResourcePart;
 import railo.commons.net.ResourcePartSource;
 import railo.commons.net.ResourceRequestEntity;
 import railo.commons.net.URLEncoder;
+import railo.runtime.config.Config;
+import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.HTTPException;
@@ -593,6 +596,7 @@ public final class Http extends BodyTagImpl {
 	// Write Response Scope
 		//String rawHeader=httpMethod.getStatusLine().toString();
 			String mimetype=null;
+			String contentEncoding=null;
 			
 		// status code
 			cfhttp.set(STATUSCODE,((httpMethod.getStatusCode()+" "+httpMethod.getStatusText()).trim()));
@@ -631,12 +635,17 @@ public final class Http extends BodyTagImpl {
 	        		}
 	        	}
 	        	
+	        	// Content-Type
 	        	if(header.getName().equalsIgnoreCase("Content-Type")) {
 	        		mimetype=header.getValue();
-	    	        
-	        	// mime type
-	        		if(mimetype==null)mimetype=NO_MIMETYPE;
+		    	    if(mimetype==null)mimetype=NO_MIMETYPE;
 	        	}
+	        	
+	        	// Content-Encoding
+        		if(header.getName().equalsIgnoreCase("Content-Encoding")) {
+        			contentEncoding=header.getValue();
+        		}
+	        	
 	        }
 	        cfhttp.set(RESPONSEHEADER,responseHeader);
 	        responseHeader.set(STATUS_CODE,new Double(httpMethod.getStatusCode()));
@@ -651,22 +660,15 @@ public final class Http extends BodyTagImpl {
 	        
 	       
 	        cfhttp.set(TEXT,Caster.toBoolean(isText));
+	        
 	    // mimetype charset
 	        //boolean responseProvideCharset=false;
 	        if(!StringUtil.isEmpty(mimetype)){
 		        if(isText) {
-		        	String[] types=mimetype.split(";");
-		        	cfhttp.set(MIME_TYPE,types[0]);
-		        	
-	                if(types.length>1) {
-	                    String tmp=types[types.length-1];
-	                    int index=tmp.indexOf("charset=");
-	                    if(index!=-1) {
-	                    	responseCharset=StringUtil.removeQuotes(tmp.substring(index+8),true);
-	                        cfhttp.set(CHARSET,responseCharset);
-	                        //responseProvideCharset=true;
-	                    }
-	                }
+		        	String[] types=splitMimeTypeAndCharset(mimetype);
+		        	if(types[0]!=null)cfhttp.set(MIME_TYPE,types[0]);
+		        	if(types[1]!=null)cfhttp.set(CHARSET,types[1]);
+	                
 		        }
 		        else cfhttp.set(MIME_TYPE,mimetype);
 	        }
@@ -695,85 +697,87 @@ public final class Http extends BodyTagImpl {
 	        // filecontent
 	        //try {
 	        //print.ln(">> "+responseCharset);
-	        
-		        if(isText && getAsBinary!=GET_AS_BINARY_YES) {
-		            
-		    String str;
+
+		    InputStream is=null;
+		    if(isText && getAsBinary!=GET_AS_BINARY_YES) {
+		    	String str;
+                try {
+                	is = httpMethod.getResponseBodyAsStream();
+                    if(isGzipEncoded(contentEncoding))
+                    	is = new GZIPInputStream(is);
+                        	
                     try {
-                        InputStream stream = httpMethod.getResponseBodyAsStream();
-                        try{
-                        	str = stream==null?"":IOUtil.toString(stream,responseCharset);
-                        }
-                        catch (UnsupportedEncodingException uee) {
-                        	str = stream==null?"":IOUtil.toString(stream,null);
-                        }
+                    	str = is==null?"":IOUtil.toString(is,responseCharset);
                     }
-                    catch (IOException ioe) {
-                        throw Caster.toPageException(ioe);
+                    catch (UnsupportedEncodingException uee) {
+                    	str = is==null?"":IOUtil.toString(is,null);
                     }
+                }
+                catch (IOException ioe) {
+                	throw Caster.toPageException(ioe);
+                }
+                finally {
+                	IOUtil.closeEL(is);
+                }
                     
-                    if(str==null)str="";
-		        	if(resolveurl)str=new URLResolver().transform(str,new URL(url),false);
-		        	cfhttp.set(FILE_CONTENT,str);
+                if(str==null)str="";
+		        if(resolveurl)str=new URLResolver().transform(str,new URL(url),false);
+		        cfhttp.set(FILE_CONTENT,str);
+		        try {
+		        	if(file!=null){
+		        		IOUtil.write(file,str,pageContext.getConfig().getWebCharset(),false);
+                    }
+                } 
+		        catch (IOException e1) {}
+		        
+		        if(name!=null) {
+		        	Query qry = new CSVParser().parse(str,delimiter,textqualifier,columns,firstrowasheaders);
+                    pageContext.setVariable(name,qry);
+		        }
+		    }
+		    // Binary
+		    else {
+		    	byte[] barr=null;
+		        if(isGzipEncoded(contentEncoding)){
+		        	is = new GZIPInputStream(httpMethod.getResponseBodyAsStream());
 		        	try {
-                        if(file!=null){
-                            IOUtil.write(file,str,pageContext.getConfig().getWebCharset(),false);
-                        }
-                    } 
-		        	catch (IOException e1) {}
-		        	if(name!=null) {
-                        Query qry = new CSVParser().parse(str,delimiter,textqualifier,columns,firstrowasheaders);
-                        pageContext.setVariable(name,qry);
-		        	}
+		        		barr = IOUtil.toBytes(is);
+					} 
+		        	catch (IOException t) {
+		        		throw Caster.toPageException(t);
+					}
+					finally{
+						IOUtil.closeEL(is);
+					}
 		        }
 		        else {
-		            byte[] barr=null;
-					try {
-						barr = httpMethod.getResponseBody();
-					} catch (IOException t) {
-						throw Caster.toPageException(t);
+		        	try {
+		        		barr = httpMethod.getResponseBody();
+					} 
+		        	catch (IOException t) {
+		        		throw Caster.toPageException(t);
 					}
-                    
-                    /*if(getAsBinary==GET_AS_BINARY_NO) {
-		                ByteArrayOutputStream os = new ByteArrayOutputStream();
-		                
-		                try {
-		                    if(barr!=null)os.write(barr);
-			                cfhttp.set(FILE_CONTENT,os);
-                        } 
-                        catch (IOException ioe) {
-                            throw Caster.toPageException(ioe);
-                        }
-		            }
-		            else {*/
-		                cfhttp.set(FILE_CONTENT,barr);
-		            //}
-
-		            if(file!=null) {
-                        try {
-                        	if(barr!=null)IOUtil.copy(
-                                    new ByteArrayInputStream(barr),
-                                    file,
-                                    true);
-                            //new File(file.getAbsolutePath()).write(barr);
-                        } 
-                        catch (IOException ioe) {
-                            throw Caster.toPageException(ioe);
-                        }
-		            }   
 		        }
-	        /*} catch (IOException e) {
-                throw new ApplicationException(e);
-            }*/
+		        	
+		        cfhttp.set(FILE_CONTENT,barr);
+		        
+		        if(file!=null) {
+		        	try {
+		        		if(barr!=null)IOUtil.copy(new ByteArrayInputStream(barr),file,true);
+		        	} 
+		        	catch (IOException ioe) {
+                		throw Caster.toPageException(ioe);
+		        	}
+		        }   
+		    }
+	        
 	    // header		
 	        cfhttp.set(HEADER,raw.toString());
-	        
-	    
-
-        if(status!=STATUS_OK){
-            cfhttp.setEL(ERROR_DETAIL,httpMethod.getStatusCode()+" "+httpMethod.getStatusText());
-            if(throwonerror)throw new HTTPException(httpMethod);
-        }
+	       
+	        if(status!=STATUS_OK){
+	            cfhttp.setEL(ERROR_DETAIL,httpMethod.getStatusCode()+" "+httpMethod.getStatusText());
+	            if(throwonerror)throw new HTTPException(httpMethod);
+	        }
 		}
 		finally {
 			releaseConnection(httpMethod);
@@ -781,6 +785,23 @@ public final class Http extends BodyTagImpl {
 	    
 	}
 	
+	public static String[] splitMimeTypeAndCharset(String mimetype) {
+		String[] types=mimetype.split(";");
+		String[] rtn=new String[2];
+    	
+    	if(types.length>0){
+    		rtn[0]=types[0];
+	        if(types.length>1) {
+	            String tmp=types[types.length-1];
+	            int index=tmp.indexOf("charset=");
+	            if(index!=-1) {
+	            	rtn[1]= StringUtil.removeQuotes(tmp.substring(index+8),true);
+	            }
+	        }
+    	}
+    	return rtn;
+	}
+
 	public static boolean isText(String mimetype) {
 		if(mimetype==null)mimetype="";
 		else mimetype=mimetype.trim().toLowerCase();
@@ -959,6 +980,7 @@ public final class Http extends BodyTagImpl {
 		ArrayList<NameValuePair> listQS=new ArrayList<NameValuePair>();
 		ArrayList<Part> parts=new ArrayList<Part>();
 		int len=http.params.size();
+		StringBuilder acceptEncoding=new StringBuilder();
 		for(int i=0;i<len;i++) {
 			HttpParamBean param=(HttpParamBean)http.params.get(i);
 			String type=param.getType();
@@ -990,7 +1012,12 @@ public final class Http extends BodyTagImpl {
         // Header
             else if(type.startsWith("head")) {
             	if(param.getName().equalsIgnoreCase("content-type")) hasContentType=true;
-            	httpMethod.addRequestHeader(param.getName(),headerValue(param.getValueAsString()));
+            	
+            	if(param.getName().equalsIgnoreCase("Accept-Encoding")) {
+            		acceptEncoding.append(headerValue(param.getValueAsString()));
+            		acceptEncoding.append(", ");
+            	}
+            	else httpMethod.addRequestHeader(param.getName(),headerValue(param.getValueAsString()));
             }
 		// Cookie
 			else if(type.equals("cookie")) {
@@ -1045,6 +1072,10 @@ public final class Http extends BodyTagImpl {
             }
 		    
 		}
+		
+		httpMethod.setRequestHeader("Accept-Encoding",acceptEncoding.append("gzip").toString());
+		
+		
 		
 		// multipart
 		if(doMultiPart && eem!=null) {
@@ -1320,6 +1351,53 @@ public final class Http extends BodyTagImpl {
 		}
 		return mimeType;
 	}
+
+	public static boolean isGzipEncoded(String contentEncoding) {
+		return !StringUtil.isEmpty(contentEncoding) && StringUtil.indexOfIgnoreCase(contentEncoding, "gzip")!=-1;
+	}
+
+	public static Object getOutput(InputStream is, String contentType, String contentEncoding, boolean closeIS) {
+		if(StringUtil.isEmpty(contentType))contentType="text/html";
+		
+		// Gzip
+		if(Http.isGzipEncoded(contentEncoding)){
+			try {
+				is=new GZIPInputStream(is);
+			} 
+			catch (IOException e) {}
+		}
+		
+		try {
+			// text
+			if(isText(contentType)) {
+				String[] tmp = splitMimeTypeAndCharset(contentType);
+				//String mimetype=tmp[0];
+				String charset=tmp[1];
+				
+				if(StringUtil.isEmpty(charset,true)) {
+					Config config = ThreadLocalConfig.get();
+					if(config!=null)charset=config.getWebCharset();
+				}
+				
+				try {
+					return IOUtil.toString(is, charset);
+				} catch (IOException e) {}
+			}
+			// Binary
+			else {
+				try {
+					return IOUtil.toBytes(is);
+				} 
+				catch (IOException e) {}
+			}
+		}
+		finally{
+			if(closeIS)IOUtil.closeEL(is);
+		}
+
+		return "";
+	}
+	
 }
 
 class MultipartRequestEntityFlex extends MultipartRequestEntity {

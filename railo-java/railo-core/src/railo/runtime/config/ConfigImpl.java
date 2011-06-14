@@ -410,6 +410,7 @@ public abstract class ConfigImpl implements Config {
         clearFunctionCache();
         clearCTCache();
         clearComponentCache();
+        clearComponentMetadata();
     }
     
     /**
@@ -2380,9 +2381,7 @@ public abstract class ConfigImpl implements Config {
 	 * @see railo.runtime.config.Config#getDefaultDumpWriter()
 	 */
 	public DumpWriter getDefaultDumpWriter() {
-		//throw new PageRuntimeException(new ApplicationException("this method is no longer supported"));
-		return getDefaultDumpWriter(HTMLDumpWriter.DEFAULT_RICH);
-		
+		return getDefaultDumpWriter(DumpWriter.DEFAULT_RICH);
 	}
 	
 	public DumpWriter getDefaultDumpWriter(int defaultType) {
@@ -3142,14 +3141,15 @@ public abstract class ConfigImpl implements Config {
 	}
 	
 	/**
-	 * FUTURE add to interface
-	 * @return the componentMappings
+	 * @see railo.runtime.config.Config#getComponentMappings()
 	 */
 	public Mapping[] getComponentMappings() {
 		return componentMappings;
 	}
 	
-	// FUTURE remove from interface
+	/**
+	 * @see railo.runtime.config.Config#getComponentMapping()
+	 */
 	public Mapping getComponentMapping() {
 		throw new PageRuntimeException(new ApplicationException("this method is no longer supported"));
 	}
@@ -3364,4 +3364,32 @@ public abstract class ConfigImpl implements Config {
 	public boolean getClientCluster() {
 		return false;
 	}
+	
+	private Map<String,ComponentMetaData> componentMetaData=null;
+	public ComponentMetaData getComponentMetadata(String key) {
+		if(componentMetaData==null) return null;
+		return componentMetaData.get(key.toLowerCase());
+	}
+	public void putComponentMetadata(String key,ComponentMetaData data) {
+		if(componentMetaData==null) componentMetaData=new HashMap<String, ComponentMetaData>();
+		componentMetaData.put(key.toLowerCase(),data);
+	}
+	
+	public void clearComponentMetadata() {
+		if(componentMetaData==null) return; 
+		componentMetaData.clear();
+	}
+	
+	public static class ComponentMetaData {
+
+		public final Struct meta;
+		public final long lastMod;
+
+		public ComponentMetaData(Struct meta, long lastMod) {
+			this.meta=meta;
+			this.lastMod=lastMod;
+		}
+		
+	}
+	
 }

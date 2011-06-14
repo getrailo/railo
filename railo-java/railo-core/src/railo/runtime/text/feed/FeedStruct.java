@@ -1,5 +1,7 @@
 package railo.runtime.text.feed;
 
+import java.util.Map;
+
 import railo.runtime.type.Collection;
 import railo.runtime.type.StructImpl;
 
@@ -68,10 +70,10 @@ public class FeedStruct extends StructImpl {
 	/**
 	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
+	public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
 		FeedStruct trg=new FeedStruct(path,inside,uri);
 		trg.hasAttribute=hasAttribute;
-		copy(this, trg, deepCopy);
+		copy(this, trg, deepCopy,done);
 		return trg;
 	}
 

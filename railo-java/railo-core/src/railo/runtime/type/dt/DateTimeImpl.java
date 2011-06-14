@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import railo.commons.date.DateTimeUtil;
+import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
@@ -18,11 +19,12 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Operator;
 import railo.runtime.type.SimpleValue;
+import railo.runtime.type.Sizeable;
 
 /**
  * Printable and Castable DateTime Object
  */
-public final class DateTimeImpl extends DateTime implements SimpleValue,Localized {
+public final class DateTimeImpl extends DateTime implements SimpleValue,Localized,Sizeable {
 	
 	public DateTimeImpl(PageContext pc) {
 		this(pc,System.currentTimeMillis(),true);
@@ -179,29 +181,14 @@ public final class DateTimeImpl extends DateTime implements SimpleValue,Localize
 	public int compareTo(String str) {
 		return Operator.compare(castToString(), str);
 	}
-
-	/* *
-	 * FUTURE add to interface
-	 * @return the timezone
-	 * /
-	public TimeZone getTimezone() {
-		return timezone;
-	}*/
-
-	/* *
-	 * FUTURE add to interface
-	 * @param timezone the timezone to set
-	 * /
-	public void setTimezone(TimeZone timezone) {
-		this.timezone = timezone;
-	}*/
 	
 	public String toString() {
 		return castToString();
-        /*synchronized (javaFormatter) {
-        	javaFormatter.setTimeZone(timezone);
-            return javaFormatter.format(this);
-        }*/
+	}
+
+	@Override
+	public long sizeOf() {
+		return SizeOf.LONG_SIZE+SizeOf.REF_SIZE;
 	}
 	
 	

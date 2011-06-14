@@ -3,6 +3,7 @@ package railo.runtime.helpers;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
@@ -46,9 +47,9 @@ public final class HttpSessionBindingListenerStruct extends StructImpl implement
 	/**
 	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
+	public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
 		HttpSessionBindingListenerStruct trg=new HttpSessionBindingListenerStruct(url);
-		copy(this, trg, deepCopy);
+		copy(this, trg, deepCopy,done);
 		return trg;
 	}
 }

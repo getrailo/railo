@@ -21,6 +21,6 @@ public final class StructNew implements Function {
         else if(type.equals("soft")) return new StructImpl(StructImpl.TYPE_SOFT);
         else if(type.equals("normal")) return new StructImpl();
         
-        else throw new FunctionException(pc,"structNew",1,"type","valid values are [normal, weak, linked,sycronized]");
+        else throw new FunctionException(pc,"structNew",1,"type","valid values are [normal, weak, linked,syncronized]");
     }
 }

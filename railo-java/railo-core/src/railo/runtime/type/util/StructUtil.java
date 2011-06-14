@@ -160,9 +160,16 @@ public final class StructUtil {
 	public static long sizeOf(Struct sct) {
 		Key[] keys = sct.keys();
 		long size = SizeOf.size(keys);
-		for(int i=0;i<keys.length;i++) {
+		if(keys!=null)for(int i=0;i<keys.length;i++) {
 			size += SizeOf.size(sct.get(keys[i],null));
 		}
 		return size;
+	}
+
+	public static void setELIgnoreWhenNull(Struct sct, String key, Object value) {
+		setELIgnoreWhenNull(sct, KeyImpl.init(key), value);
+	}
+	public static void setELIgnoreWhenNull(Struct sct, Collection.Key key, Object value) {
+		if(value!=null)sct.setEL(key, value);
 	}
 }

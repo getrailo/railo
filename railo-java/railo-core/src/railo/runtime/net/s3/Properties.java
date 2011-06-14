@@ -6,7 +6,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
 
-public class Properties {
+public final class Properties {
 	private String accessKeyId;
 	private String secretAccessKey;
 	private int defaultLocation=S3Constants.STORAGE_UNKNOW;
@@ -73,5 +73,12 @@ public class Properties {
 	 */
 	public void setSecretAccessKey(String secretAccessKey) {
 		this.secretAccessKey = secretAccessKey;
+	}
+	
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString(){
+		return "accessKeyId:"+accessKeyId+";defaultLocation:"+defaultLocation+";host:"+host+";secretAccessKey:"+secretAccessKey;
 	}
 }

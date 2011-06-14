@@ -73,6 +73,12 @@ Error Output --->
 <!--- 
 Create Datasource --->
 <cfoutput>
+
+
+<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
+
+
+
 <table class="tbl" width="740">
 <colgroup>
     <col width="150">

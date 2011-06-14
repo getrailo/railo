@@ -113,11 +113,11 @@ Create Datasource --->
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.PreserveSingleQuotes#</td>
 	<td class="tblContent">
-	<input type="checkbox" class="checkbox" name="psq" value="yes" <cfif dbSetting.psq>checked</cfif>>
+	<cfif access NEQ 0><input type="checkbox" class="checkbox" name="psq" value="yes" <cfif dbSetting.psq>checked</cfif>><cfelse><b>#yesNoFormat(dbSetting.psq)#</b></cfif>
 	<span class="comment">#stText.Settings.PreserveSingleQuotesDescription#</span></td>
 	
 </tr>
-<cfif true>
+<cfif access NEQ 0>
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">

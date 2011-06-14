@@ -1858,7 +1858,7 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<attribute>
 			<type>string</type>
 			<name>datasource</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Datasource to use to connect to the database.</description>
 		</attribute>

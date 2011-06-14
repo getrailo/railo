@@ -4754,6 +4754,58 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>number</type>
 		</return>
 	</function>
+	<!-- createPageContext
+	<function>
+		<name>createPageContext</name>
+		<class>railo.runtime.functions.other.CreatePageContext</class>
+		<description>Creates a PageContext (http://www.getrailo.org/javadoc/railo/runtime/PageContext.html) object that provides access to page attributes and configuration, request and response objects.</description>
+		<argument>
+			<name>serverName</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>name of the server, for example "localhost" or "www.getrailo.com"</description>
+    	</argument>
+		<argument>
+			<name>scriptName</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>script name, for example "/test/test.cfm"</description>
+    	</argument>
+		<argument>
+			<name>queryString</name>
+			<type>string</type>
+			<required>no</required>
+			<description>query string, for example "?test=1"</description>
+    	</argument>
+		<argument>
+			<name>cookies</name>
+			<type>struct</type>
+			<required>no</required>
+			<description>cookies values for the context</description>
+    	</argument>
+		<argument>
+			<name>headers</name>
+			<type>struct</type>
+			<required>no</required>
+			<description>header values for the context</description>
+    	</argument>
+		<argument>
+			<name>parameters</name>
+			<type>struct</type>
+			<required>no</required>
+			<description>parameters values for the context</description>
+    	</argument>
+		<argument>
+			<name>attributes</name>
+			<type>struct</type>
+			<required>no</required>
+			<description>attributes values for the context</description>
+    	</argument>	
+		<return>
+			<type>any</type>
+		</return>
+	</function> -->
+	
 	<!-- getPageContext -->
 	<function>
 		<name>getPageContext</name>
@@ -11660,20 +11712,22 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		<description></description>
+		<description>the query to sort</description>
     </argument>
 		<argument>
 			<name>column_name</name>
+			<alias>columnnames,columnname,name,names,column_names</alias>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>a list of names or a single column name</description>
     </argument>
 		<argument>
 			<name>direction</name>
+			<alias>directions,dir</alias>
 			<type>string</type>
 			<required>No</required>
-			<default>asc</default>
-		<description></description>
+			<default></default>
+		<description>a list of directions or a single direction defintion (asc,desc), the list must have the same length as the columnName list</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -12629,6 +12683,64 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<return>
 			<type>number</type>
+		</return>
+	</function>
+	
+	<!-- StoreAddACL -->
+	<function>
+		<name>StoreAddACL</name>
+		<class>railo.runtime.functions.s3.StoreAddACL</class>
+		<description>Adds ACL to existing ACL for object or bucket.</description>
+		<argument>
+			<name>url</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>Amazon S3 URL</description>
+	    </argument>
+		<argument>
+			<name>aclObject</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>an array of struct where each struct represents an ACL grant</description>
+	    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- StoreGetACL -->
+	<function>
+		<name>StoreGetACL</name>
+		<class>railo.runtime.functions.s3.StoreGetACL</class>
+		<description>returns an array of struct where each struct represents an ACL grant</description>
+		<argument>
+			<name>url</name>
+			<type>string</type>
+				<required>Yes</required>
+			<description>Amazon S3 URL</description>
+	    </argument>
+		<return>
+			<type>Object</type>
+		</return>
+	</function>
+	<!-- StoreSetACL -->
+	<function>
+		<name>StoreSetACL</name>
+		<class>railo.runtime.functions.s3.StoreSetACL</class>
+		<description>Sets the ACL for object or bucket.</description>
+		<argument>
+			<name>url</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>Amazon S3 URL</description>
+	    </argument>
+		<argument>
+			<name>aclObject</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>an array of struct where each struct represents an ACL grant</description>
+	    </argument>
+		<return>
+			<type>void</type>
 		</return>
 	</function>
 	

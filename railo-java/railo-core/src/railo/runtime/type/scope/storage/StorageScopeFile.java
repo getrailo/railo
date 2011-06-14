@@ -1,5 +1,7 @@
 package railo.runtime.type.scope.storage;
 
+import java.util.Map;
+
 import railo.commons.io.IOUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
@@ -63,8 +65,8 @@ public abstract class StorageScopeFile extends StorageScopeImpl {
 	 * Constructor of the class, clone existing
 	 * @param other
 	 */
-	protected StorageScopeFile(StorageScopeFile other,boolean deepCopy) {
-		super(other,deepCopy);
+	protected StorageScopeFile(StorageScopeFile other,boolean deepCopy,Map<Object, Object> done) {
+		super(other,deepCopy,done);
 		this.res=other.res;
 	}
 

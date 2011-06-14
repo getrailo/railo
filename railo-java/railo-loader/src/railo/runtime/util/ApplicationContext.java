@@ -82,10 +82,6 @@ public interface ApplicationContext extends Serializable {
 
 	public boolean getSecureJson();
 
-
-	// FUTURE
-	//public abstract String getDefaultDataSource();
-	//public abstract boolean hasOnSessionStart();
-	//public abstract boolean hasOnApplicationStart();
+	public abstract String getDefaultDataSource();
 
 }

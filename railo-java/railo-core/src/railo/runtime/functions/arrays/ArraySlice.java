@@ -11,6 +11,9 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 
 public final class ArraySlice implements Function {
+	
+	private static final long serialVersionUID = 7309769117464009924L;
+
 	public static Array call(PageContext pc , Array arr,double offset) throws PageException {
 		return call(pc , arr, offset,0);
 	}

@@ -176,6 +176,7 @@ function checkTheRadio(field) {
 
 </script>
 
+<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
 <!--- 
 Error Output --->
 <cfset printError(error)>
@@ -367,8 +368,8 @@ Use Shadow --->
 
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<tr>
-		<td><input type="checkbox" class="checkbox" 
-			name="rro" onclick="selectAll(this)"></td>
+		<td><cfif hasAccess><input type="checkbox" class="checkbox" 
+			name="rro" onclick="selectAll(this)"></cfif></td>
 		<td class="tblHead" nowrap>#stText.Components.Physical#</td>
 		<td class="tblHead" nowrap>#stText.Components.Archive#</td>
 		<td class="tblHead" nowrap>#stText.Components.Primary#</td>

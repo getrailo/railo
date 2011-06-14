@@ -44,7 +44,7 @@ public class ComponentLoader {
     	boolean doCache=config.useComponentPathCache();
     	
     	//print.o(rawPath);
-    	String appName=pc.getApplicationContext().getName();
+    	//app-String appName=pc.getApplicationContext().getName();
     	rawPath=rawPath.trim().replace('\\','/');
     	String path=(rawPath.indexOf("./")==-1)?rawPath.replace('.','/'):rawPath;
     	String pathWithCFC=path.concat(".cfc");
@@ -85,8 +85,8 @@ public class ComponentLoader {
 	    			page=config.getCachedPage(pc, "import:"+impDef.getPackageAsPath()+pathWithCFC);
 	    			if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 	    			
-	    			page=config.getCachedPage(pc, "import:"+appName+":"+impDef.getPackageAsPath()+pathWithCFC);
-	    			if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+	    			//app-page=config.getCachedPage(pc, "import:"+appName+":"+impDef.getPackageAsPath()+pathWithCFC);
+	    			//app-if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 		    	}
 		    	impDef=++i<impDefs.length?impDefs[i]:null;
 	    	}
@@ -99,8 +99,8 @@ public class ComponentLoader {
 	    	if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 	    	
 	    	// get pages from application mappings
-	    	page=config.getCachedPage(pc, ":"+appName+":"+pathWithCFC);
-	    	if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+	    	//app-page=config.getCachedPage(pc, ":"+appName+":"+pathWithCFC);
+	    	//app-if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
     	}
     	
     // SEARCH
@@ -121,7 +121,7 @@ public class ComponentLoader {
     	// search with imports
     	Mapping[] cMappings = config.getComponentMappings();
     	ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
-    	Mapping[] lcMappings = ac.getComponentMappings();
+    	//Mapping[] lcMappings = ac.getComponentMappings();
     	
     	if(isRealPath){
 
@@ -145,7 +145,7 @@ public class ComponentLoader {
 	    			}
 	    			
 	    			// search local component mappings
-	    			if(lcMappings!=null) {
+	    			/*app-if(lcMappings!=null) {
 			    		Mapping m;
 			        	for(int y=0;y<lcMappings.length;y++){
 			        		m=lcMappings[y];
@@ -157,16 +157,17 @@ public class ComponentLoader {
 				    			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 				        	}
 			        	}
-		        	}
+		        	}*/
 	    			
 	    			// search mappings and webroot
 	    	    	ps=((PageContextImpl)pc).getPageSource("/"+impDef.getPackageAsPath()+pathWithCFC);
 	    	    	page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
 	    	    	if(page!=null){
 	    	    		String key=impDef.getPackageAsPath()+pathWithCFC;
-	    	    		if(((MappingImpl)ps.getMapping()).isAppMapping())key=appName+":"+key;
+	    	    		//app-if(((MappingImpl)ps.getMapping()).isAppMapping())key=appName+":"+key;
 	    	    		
-	    	    		if(doCache)config.putCachedPageSource("import:"+key, page.getPageSource());
+	    	    		if(doCache && !((MappingImpl)ps.getMapping()).isAppMapping())
+	    	    			config.putCachedPageSource("import:"+key, page.getPageSource());
 	    				return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 	    	    	}
 		    		
@@ -195,7 +196,7 @@ public class ComponentLoader {
 
 		
     	// search local component mappings
-    	if(lcMappings!=null) {
+    	/* app-if(lcMappings!=null) {
 	    	Mapping m;
 	    	for(int i=0;i<lcMappings.length;i++){
 	    		m=lcMappings[i];
@@ -207,14 +208,15 @@ public class ComponentLoader {
 	    			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 	        	}
 	    	}
-    	}
+    	}*/
     	
     	// search mappings and webroot
     	ps=((PageContextImpl)pc).getPageSource(p);
     	page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
     	if(page!=null){
-    		String key=((MappingImpl)ps.getMapping()).isAppMapping()?":"+appName+":"+pathWithCFC:pathWithCFC;
-    		if(doCache)config.putCachedPageSource(key, page.getPageSource());
+    		//app-String key=((MappingImpl)ps.getMapping()).isAppMapping()?":"+appName+":"+pathWithCFC:pathWithCFC;
+    		String key=pathWithCFC;
+    		if(doCache && !((MappingImpl)ps.getMapping()).isAppMapping())config.putCachedPageSource(key, page.getPageSource());
 			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
     	}
 		

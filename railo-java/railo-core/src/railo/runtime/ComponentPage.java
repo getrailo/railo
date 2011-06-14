@@ -19,6 +19,7 @@ import railo.runtime.converter.JSONConverter;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.dump.DumpUtil;
+import railo.runtime.dump.DumpWriter;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -145,7 +146,7 @@ public abstract class ComponentPage extends PagePlus  {
 			    pc.variablesScope().set("component",component);
 			    pc.doInclude(pc.getRelativePageSource(cdf));
 			}
-			else pc.write(pc.getConfig().getDefaultDumpWriter().toString(pc,component.toDumpData(pc,9999,DumpUtil.toDumpProperties() ),true));
+			else pc.write(pc.getConfig().getDefaultDumpWriter(DumpWriter.DEFAULT_RICH).toString(pc,component.toDumpData(pc,9999,DumpUtil.toDumpProperties() ),true));
 			
 		}
 		catch(Throwable t) {
@@ -329,7 +330,7 @@ public abstract class ComponentPage extends PagePlus  {
     	
     	// WDDX
 		if(UDF.RETURN_FORMAT_WDDX==props.format) {
-			WDDXConverter converter = new WDDXConverter(pc.getTimeZone(),false);
+			WDDXConverter converter = new WDDXConverter(pc.getTimeZone(),false,false);
             converter.setTimeZone(pc.getTimeZone());
     		return converter.serialize(rtn);
 		}
@@ -342,14 +343,14 @@ public abstract class ComponentPage extends PagePlus  {
     			else if(strQF.equalsIgnoreCase("column"))byColumn=true;
     			else throw new ApplicationException("invalid queryformat definition ["+strQF+"], valid formats are [row,column]");
     		}
-    		JSONConverter converter = new JSONConverter();
+    		JSONConverter converter = new JSONConverter(false);
     		if(props.secureJson)
     			return pc.getApplicationContext().getSecureJsonPrefix();
             return converter.serialize(pc,rtn,byColumn);
 		}
 		// Serialize
 		else if(UDF.RETURN_FORMAT_SERIALIZE==props.format) {
-			ScriptConverter converter = new ScriptConverter();
+			ScriptConverter converter = new ScriptConverter(false);
 			return converter.serialize(rtn);
 		}
 		// Plain

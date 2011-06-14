@@ -343,7 +343,9 @@ Error Output--->
     
 	</cfoutput>
 <cfelse>
- 	<cfoutput>#stText.Settings.gateway.noAccess#</cfoutput>
+ 	<cfset noAccess(stText.Settings.gateway.noAccess)>
+
+
 </cfif>
 
     

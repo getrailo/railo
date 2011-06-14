@@ -7,6 +7,7 @@ import railo.runtime.debug.Debugger;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
 
@@ -26,7 +27,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 * @see java.lang.Object#clone()
 	 */
 	public Object clone() {
-		return duplicate(true);
+		return Duplicator.duplicate(this,true);
 	}
 
 

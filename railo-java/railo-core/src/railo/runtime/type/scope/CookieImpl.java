@@ -9,14 +9,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.net.URLCodec;
-
 import railo.commons.lang.StringUtil;
-import railo.commons.lang.URLEncoder;
+import railo.commons.net.URLDecoder;
+import railo.commons.net.URLEncoder;
 import railo.runtime.PageContext;
+import railo.runtime.config.Config;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.security.ScriptProtect;
@@ -31,18 +32,14 @@ import railo.runtime.util.ApplicationContext;
  */
 public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProtected {
 	
-	
+	private static final long serialVersionUID = -2341079090783313736L;
+
 	public static final int NEVER = 946626690;
-	private static URLCodec codec=new URLCodec();
 	
-	
-	
-	//private javax.servlet.http.Cookie[] cookies;
-	//private HttpServletRequest req;
 	private HttpServletResponse rsp;
-    private String charset;
     private int scriptProtected=ScriptProtected.UNDEFINED;
-	private Map raw=new HashMap();
+	private Map<String,String> raw=new HashMap<String,String>();
+	private String charset;
     
 	/**
 	 * constructor for the Cookie Scope
@@ -69,15 +66,11 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 		return value;
 	}
 	
-	private void set(javax.servlet.http.Cookie cookie) throws PageException {
-	    try {
-	    	String name=StringUtil.toLowerCase(cookie.getName());
-	    	raw.put(name,cookie.getValue());
-	    	if(isScriptProtected())	super.set (KeyImpl.init(name),ScriptProtect.translate(codec.decode(cookie.getValue())));
-            else 				super.set (KeyImpl.init(name),codec.decode(cookie.getValue()));
-        } catch (DecoderException e) {
-            throw Caster.toPageException(e);
-        }
+	private void set(Config config,javax.servlet.http.Cookie cookie) throws PageException {
+		String name=StringUtil.toLowerCase(cookie.getName());
+		raw.put(name,cookie.getValue());
+    	if(isScriptProtected())	super.set (KeyImpl.init(name),ScriptProtect.translate(dec(cookie.getValue())));
+        else super.set (KeyImpl.init(name),dec(cookie.getValue()));
 	}
 	
     /**
@@ -203,24 +196,19 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
     public void setCookie(Collection.Key key, Object value, int expires, boolean secure, String path, String domain) 
         throws PageException {
     	
-        javax.servlet.http.Cookie cookie;
-        try {
-            cookie = new javax.servlet.http.Cookie(
-            		key.getUpperString(),
-            		URLEncoder.encode(Caster.toString(value),charset));
-        } 
-        catch (Exception e) {
-            throw ExpressionException.newInstance(e);
-        }
+        javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie(enc(key.getUpperString()),enc(Caster.toString(value)));
         cookie.setMaxAge(expires);
         cookie.setSecure(secure);
         cookie.setPath(path);
         if(domain!=null && domain.trim().length()>0)cookie.setDomain(domain);
+        
         rsp.addCookie(cookie);
         super.set (key, value);
     }
 
-    /**
+
+
+	/**
      * @see railo.runtime.type.scope.Cookie#setCookieEL(java.lang.String, java.lang.Object, int, boolean, java.lang.String, java.lang.String)
      */
     public void setCookieEL(String name, Object value, int expires, boolean secure, String path, String domain) {
@@ -228,12 +216,8 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
     }
     
     public void setCookieEL(Collection.Key key, Object value, int expires, boolean secure, String path, String domain) {
-        javax.servlet.http.Cookie cookie;
-        try {
-            cookie = new javax.servlet.http.Cookie(key.getUpperString(),URLEncoder.encode(Caster.toString(value,"")));
-        } catch (UnsupportedEncodingException e) {
-            return;
-        }
+        javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie(enc(key.getUpperString()),enc(Caster.toString(value,"")));// encoding removed
+       
         cookie.setMaxAge(	expires);
         cookie.setSecure(secure);
         cookie.setPath(path);
@@ -248,7 +232,9 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void initialize(PageContext pc) {
-		charset="ISO-8859-1";
+		charset = pc.getConfig().getWebCharset();
+		Config config = ThreadLocalPageContext.getConfig(pc);
+		
 		if(scriptProtected==ScriptProtected.UNDEFINED) {
 			scriptProtected=((pc.getApplicationContext().getScriptProtect()&ApplicationContext.SCRIPT_PROTECT_COOKIE)>0)?
 					ScriptProtected.YES:ScriptProtected.NO;
@@ -257,13 +243,12 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 		
 		HttpServletRequest req = pc. getHttpServletRequest();
 		this.rsp=pc. getHttpServletResponse();
-		javax.servlet.http.Cookie[] cookies=req.getCookies();
+		javax.servlet.http.Cookie[] cookies=ReqRspUtil.getCookies(config,req);
 		try {
 			for(int i=0;i<cookies.length;i++) {
-				set(cookies[i]);
+				set(config,cookies[i]);
 			}
 		} 
-		//catch (ExpressionException e) {}
 		catch (Exception e) {}
 	}
 	
@@ -293,20 +278,42 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	public void setScriptProtecting(boolean scriptProtected) {
 		int _scriptProtected = scriptProtected?ScriptProtected.YES:ScriptProtected.NO;
 		if(isInitalized() && _scriptProtected!=this.scriptProtected) {
-			Iterator it = raw.entrySet().iterator();
-			Map.Entry entry;
+			Iterator<Entry<String, String>> it = raw.entrySet().iterator();
+			Entry<String, String>  entry;
 			String key,value;
 			
 			while(it.hasNext()){
-				entry=(Entry) it.next();
+				entry = it.next();
 				key=entry.getKey().toString();
-				value=entry.getValue().toString();
-				try {
-					value=codec.decode(value);
-				} catch (DecoderException e) {}
+				value=dec(entry.getValue().toString());
 				super.setEL(KeyImpl.init(key), scriptProtected?ScriptProtect.translate(value):value);
 			}
 		}
 		this.scriptProtected=_scriptProtected;
+	}
+
+
+    public String dec(String str) {
+    	return dec(str,charset);
+	}
+    public String enc(String str) {
+    	return enc(str,charset);
+	}
+
+    public static String dec(String str,String charset) {
+		try {
+			return URLDecoder.decode(str, charset);
+		} 
+		catch (UnsupportedEncodingException e) {
+			return str;
+		}
+	}
+    public static String enc(String str,String charset) {
+		try {
+			return URLEncoder.encode(str, charset);
+		} 
+		catch (UnsupportedEncodingException e) {
+			return str;
+		}
 	}
 }

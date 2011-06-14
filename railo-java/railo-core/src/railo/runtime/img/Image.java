@@ -44,6 +44,7 @@ import java.io.OutputStream;
 import java.text.AttributedString;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -1392,7 +1393,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	 *
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
 		try {
 			//if(_image!=null) return new Image(getBufferedImage());
 			return new Image(getImageBytes(null));

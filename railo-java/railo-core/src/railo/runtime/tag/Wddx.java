@@ -169,12 +169,12 @@ public final class Wddx extends TagImpl {
 	}
 	
 	private String cfml2wddx(Object input) throws ConverterException {
-		WDDXConverter converter =new WDDXConverter(pageContext.getTimeZone(),xmlConform);
+		WDDXConverter converter =new WDDXConverter(pageContext.getTimeZone(),xmlConform,true);
 		if(!usetimezoneinfo)converter.setTimeZone(null);
 		return converter.serialize(input);
 	}
 	private Object wddx2cfml(String input) throws ConverterException, IOException, FactoryConfigurationError {
-		WDDXConverter converter =new WDDXConverter(pageContext.getTimeZone(),xmlConform);
+		WDDXConverter converter =new WDDXConverter(pageContext.getTimeZone(),xmlConform,true);
 		converter.setTimeZone(pageContext.getTimeZone());
 		return converter.deserialize(input,validate);
 	}

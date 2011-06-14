@@ -41,4 +41,6 @@ public interface DebugTrace {
 	 */
 	public String getVarValue();
 	
+	public String getAction();
+	
 }

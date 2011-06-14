@@ -117,6 +117,7 @@ function selectAll(field) {
 }
 </script>
 
+	<cfif  access NEQ "yes"><cfset noAccess(stText.Settings.cache.noAccess)></cfif>
 
 <!---- READ ONLY ---->
 <cfif request.adminType EQ "web" and srcGlobal.recordcount>
@@ -357,9 +358,8 @@ function selectAll(field) {
     #stText.Settings.cache.noDriver#
     </cfif>
 	</cfoutput>
-<cfelse>
-<cfoutput><br /><br />#stText.Settings.cache.noAccess#</cfoutput>
 </cfif>
 
     
+
     

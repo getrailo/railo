@@ -100,6 +100,8 @@ Create Datasource --->
 <cfoutput>
 
 
+<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
+
 
 
 

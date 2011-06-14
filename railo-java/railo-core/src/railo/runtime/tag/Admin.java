@@ -89,6 +89,7 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.op.Duplicator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.reflection.Reflector;
@@ -783,8 +784,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 		key=it.next();
                 		if(sb.length()>0)sb.append("\n\n");
                 		sb.append(errors.get(key));
-                		sb.append("\nError Occurred in File ");
-                		sb.append("["+key+"]");
+                		
                 	}
                 	throw new ApplicationException(sb.toString());
                 }
@@ -794,7 +794,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         return null;
     }
 
-    private void doCompileFile(Mapping mapping,Resource file,String path,Map errors) throws PageException {
+    private void doCompileFile(Mapping mapping,Resource file,String path,Map<String,String> errors) throws PageException {
         if(ResourceUtil.exists(file)) {
             if(file.isDirectory()) {
             	Resource[] files = file.listResources(filter);
@@ -817,10 +817,24 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 	//PageException pe = pse.getPageException();
                     
                     String template=ps.getDisplayPath();
-                    //if(!StringUtil.isEmpty(pe.getLine())) template+=":"+pe.getLine();
-                    
-                    if(errors!=null) errors.put(template,pe.getMessage());
-                    else throw new ApplicationException(pe.getMessage(),"Error Occurred in File ["+template+"]");
+                    StringBuilder msg=new StringBuilder(pe.getMessage());
+                    msg.append(", Error Occurred in File [");
+                    msg.append(template);
+                    if(pe instanceof PageExceptionImpl) {
+                    	try{
+                    	PageExceptionImpl pei=(PageExceptionImpl)pe;
+                    	Array context = pei.getTagContext(config);
+                    	if(context.size()>0){
+                            msg.append(":");
+                            msg.append(Caster.toString(((Struct)context.getE(1)).get("line")));
+                    	}
+                    	}
+                    	catch(Throwable t){}
+                    	
+                    }
+                    msg.append("]");
+                    if(errors!=null) errors.put(template,msg.toString());
+                    else throw new ApplicationException(msg.toString());
                 
                 }
             }
@@ -1186,7 +1200,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      */
     private void doPrintDebug() {
         try {
-        	DumpWriter writer = pageContext.getConfig().getDefaultDumpWriter();
+        	DumpWriter writer = pageContext.getConfig().getDefaultDumpWriter(DumpWriter.DEFAULT_RICH);
         	DumpData data = pageContext.getDebugger().toDumpData(pageContext, 9999,DumpUtil.toDumpProperties());
             pageContext.forceWrite(writer.toString(pageContext,data,true));
         } catch (IOException e) {}
@@ -1238,6 +1252,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 fb("tag_registry"),
                 fb("cache"),
                 fb("gateway"),
+                fb("orm"),
                 fb2("access_read"),
                 fb2("access_write")
         );
@@ -1290,6 +1305,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 fb("tag_registry"),
                 fb("cache"),
                 fb("gateway"),
+                fb("orm"),
                 fb2("access_read"),
                 fb2("access_write")
         );
@@ -1330,6 +1346,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         sct.set("scheduled_task",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_SCHEDULED_TASK)==SecurityManager.VALUE_YES));
         sct.set("cache",Caster.toBoolean(sm.getAccess(SecurityManagerImpl.TYPE_CACHE)==SecurityManager.VALUE_YES));
         sct.set("gateway",Caster.toBoolean(sm.getAccess(SecurityManagerImpl.TYPE_GATEWAY)==SecurityManager.VALUE_YES));
+        sct.set("orm",Caster.toBoolean(sm.getAccess(SecurityManagerImpl.TYPE_ORM)==SecurityManager.VALUE_YES));
         
         sct.set("tag_execute",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_TAG_EXECUTE)==SecurityManager.VALUE_YES));
         sct.set("tag_import",Caster.toBoolean(sm.getAccess(SecurityManager.TYPE_TAG_IMPORT)==SecurityManager.VALUE_YES));
@@ -3105,7 +3122,7 @@ private void doGetMappings() throws PageException {
 	}
 
 	private Array translateTime(Array exp) {
-		exp=(Array) exp.duplicate(true);
+		exp=(Array) Duplicator.duplicate(exp,true);
 		Iterator it = exp.iterator();
 		Struct sct;
 		while(it.hasNext()) {
@@ -3812,10 +3829,28 @@ private void doGetMappings() throws PageException {
     
 
 	private void doSurveillance() throws PageException {
+		// Server
+		if(config instanceof ConfigServer) {
+			ConfigServer cs=(ConfigServer) config;
+			ConfigWeb[] webs = cs.getConfigWebs();
+			Struct sct=new StructImpl();
+			for(int i=0;i<webs.length;i++){
+				ConfigWebImpl cw=(ConfigWebImpl) webs[i];
+				sct.setEL(cw.getLabel(), ((CFMLFactoryImpl)cw.getFactory()).getInfo());
+			}
+			pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
+			
+		}
+		// Web
+		else {
+			CFMLFactoryImpl factory = (CFMLFactoryImpl) config.getFactory();
+			pageContext.setVariable(getString("admin",action,"returnVariable"),
+					factory.getInfo());
+		}
 		
-		CFMLFactoryImpl factory = (CFMLFactoryImpl) config.getFactory();
-		pageContext.setVariable(getString("admin",action,"returnVariable"),
-				factory.getInfo());
+		
+		
+		
 		//pageContext.setVariable(getString("admin",action,"returnVariable"),Surveillance.getInfo(config));
 	}
     

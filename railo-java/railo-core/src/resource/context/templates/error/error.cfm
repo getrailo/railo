@@ -120,7 +120,7 @@ return st;
 </cfif>
 <tr>
 	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;" nowrap="nowrap">Java Stacktrace</td>
-	<td style="border : 1px solid ##350606;background-color :##FFCC00;">#convertST(catch.stacktrace)#</td>
+	<td style="border : 1px solid ##350606;background-color :##FFCC00;" class="">#convertST(catch.stacktrace)#</td>
 </tr>
 </table><br />
 </cfoutput>

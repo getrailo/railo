@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,6 +14,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.cache.legacy.CacheItem;
 import railo.runtime.cache.legacy.MetaData;
+import railo.runtime.net.http.HttpServletResponseWrap;
 import railo.runtime.net.http.ReqRspUtil;
 
 /**
@@ -289,10 +291,15 @@ public class CFMLWriterImpl extends CFMLWriter {
     private OutputStream getOutputStream() throws IOException {
     	
     	if(allowCompression){
+    		
     		String encodings = request.getHeader("Accept-Encoding");
     	    if(!StringUtil.isEmpty(encodings) && encodings.indexOf("gzip")!=-1) {
-    	    	response.setHeader("Content-Encoding", "gzip");
-        		return new GZIPOutputStream(response.getOutputStream());
+    	    	boolean inline=HttpServletResponseWrap.get();
+    	    	if(!inline) {
+	    	    	ServletOutputStream os = response.getOutputStream();
+	    	    	response.setHeader("Content-Encoding", "gzip");
+	        		return new GZIPOutputStream(os);
+    	    	}
     	    }
         }
         return response.getOutputStream();

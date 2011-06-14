@@ -59,7 +59,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
     			else if(!transConn.equals(dc)) {
                 	if("_queryofquerydb".equalsIgnoreCase(_datasource)) return dc;
     				throw new DatabaseException(
-    						"can't connect different datasource or same with other username/password",null,null,dc);
+    						"can't use different connections inside a transaction",null,null,dc);
     			}
                 else if(dc.getConnection().getAutoCommit()) {
                     dc.getConnection().setAutoCommit(false);
@@ -85,14 +85,14 @@ public final class DatasourceManagerImpl implements DataSourceManager {
                     transConn=dc;
     			}
     			else if(!(transConn instanceof ORMDatasourceConnection)){
-    				if(transConn.getDatasource().equals(session.getEngine().getDataSource())){
+    				/*if(transConn.getDatasource().equals(session.getEngine().getDataSource())){
     					ORMDatasourceConnection dc=new ORMDatasourceConnection(pc,session);
                     	
                         if(isolation!=Connection.TRANSACTION_NONE)
     					    dc.getConnection().setTransactionIsolation(isolation);
                         transConn=dc;
     				}
-    				else
+    				else*/
     					throw new DatabaseException(
     						"can't use transaction for datasource and orm at the same time",null,null,null);
     			}

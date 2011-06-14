@@ -8,13 +8,15 @@ import railo.runtime.type.Scope;
 public interface Session extends Scope {
     /**
      * @return returns the last acces to this session scope
+     * @deprecated
      */
-    public abstract long getLastAccess(); // FUTURE deprecated
+    public abstract long getLastAccess();
 
     /**
      * @return returns the actuell timespan of the session
+     * @deprecated
      */
-    public abstract long getTimeSpan(); // FUTURE deprecated
+    public abstract long getTimeSpan(); 
 
 
     /**

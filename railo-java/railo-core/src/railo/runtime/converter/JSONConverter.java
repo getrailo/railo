@@ -16,7 +16,6 @@ import org.w3c.dom.Node;
 
 import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
@@ -26,9 +25,11 @@ import railo.runtime.exp.PageException;
 import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ObjectWrap;
@@ -37,6 +38,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
@@ -48,16 +50,20 @@ import railo.runtime.type.util.ComponentUtil;
  */
 public final class JSONConverter {
     
+	private static final Collection.Key REMOTING_FETCH = KeyImpl.init("remotingFetch");
 
 	private static final Key TO_JSON = KeyImpl.getInstance("_toJson");
     private static final Object NULL = new Object();
     private static final String NULL_STRING = "";
 
+	private boolean ignoreRemotingFetch;
+
 
 	/**
      * constructor of the class
      */
-    public JSONConverter() {
+    public JSONConverter(boolean ignoreRemotingFetch) {
+    	this.ignoreRemotingFetch=ignoreRemotingFetch;
     }
 	
 	
@@ -220,13 +226,13 @@ public final class JSONConverter {
     	sb.append(goIn());
         sb.append("{");
         Key[] keys = struct.keys();
-       
         Key key;
         Object value;
         boolean doIt=false;
         for(int i=0;i<keys.length;i++) {
         	key=keys[i];
         	value=struct.get(key,null);
+        	
         	if(!addUDFs && (value instanceof UDF || value==null))continue;
         	if(doIt)sb.append(',');
             doIt=true;
@@ -237,11 +243,26 @@ public final class JSONConverter {
             _serialize(pc,test,value,sb,serializeQueryByColumns,done);
         }
         
-        if(struct instanceof ComponentPro){
-        	ComponentPro cp = (ComponentPro)struct;
-        	Property[] props = cp.getProperties(false);
-        	ComponentScope scope = cp.getComponentScope();
+        if(struct instanceof Component){
+        	Boolean remotingFetch;
+        	Component cfc = (Component)struct;
+        	boolean isPeristent=false;
+        	try {
+				ComponentAccess ca = ComponentUtil.toComponentAccess(cfc);
+				isPeristent=ca.isPersistent();
+			} catch (ExpressionException e) {}
+			
+        	Property[] props = cfc.getProperties(false);
+        	ComponentScope scope = cfc.getComponentScope();
         	for(int i=0;i<props.length;i++) {
+        		if(!ignoreRemotingFetch) {
+        			remotingFetch=Caster.toBoolean(props[i].getMeta().get(REMOTING_FETCH,null),null);
+        			if(remotingFetch==null){
+        				if(isPeristent  && HBMCreator.isRelated(props[i])) continue;
+        			}
+        			else if(!remotingFetch.booleanValue()) continue;
+            		
+        		}
         		key=KeyImpl.init(props[i].getName());
             	value=scope.get(key,null);
             	if(!addUDFs && (value instanceof UDF || value==null))continue;

@@ -1,24 +1,23 @@
 package railo.runtime.thread;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.lang.Thread.State;
 import java.util.Iterator;
+import java.util.Map;
 
-import railo.commons.io.IOUtil;
 import railo.runtime.PageContext;
-import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
-import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
-import railo.runtime.op.ThreadLocalDuplication;
+import railo.runtime.tag.Http;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
@@ -28,6 +27,7 @@ import railo.runtime.type.util.StructSupport;
 
 public class ThreadsImpl extends StructSupport implements railo.runtime.type.scope.Threads {
 
+	private static final long serialVersionUID = -7830828937589996006L;
 	private static final Key KEY_ERROR = KeyImpl.getInstance("ERROR");
 	private static final Key KEY_ELAPSEDTIME = KeyImpl.getInstance("ELAPSEDTIME");
 	private static final Key KEY_NAME = KeyImpl.getInstance("NAME");
@@ -89,6 +89,10 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 		
 	}
 
+	public void release(PageContext pc) {
+		
+	}
+
 	public void clear() {
 		ct.content.clear();
 	}
@@ -97,9 +101,9 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
+	public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
 		StructImpl sct=new StructImpl();
-		ThreadLocalDuplication.set(this, sct);
+		done.put(this, sct);
 		try{
 			Key[] keys = keys();
 			Object value;
@@ -109,7 +113,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 			}
 		}
 		finally {
-			ThreadLocalDuplication.remove(this);
+			done.remove(this);
 		}
 		return sct;
 	}
@@ -128,15 +132,10 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 
 	private Object getOutput() {
 		if(ct.output==null)return "";
+
+		InputStream is = new ByteArrayInputStream(ct.output.toByteArray());
+		return Http.getOutput(is, ct.contentType, ct.contentEncoding,true);
 		
-		Config config = ThreadLocalConfig.get();
-		String charset=null;
-		if(config!=null)charset=config.getWebCharset();
-		try {
-			return IOUtil.toString(ct.output.toByteArray(), charset);
-		} catch (IOException e) {
-			return "";
-		}
 	}
 
 

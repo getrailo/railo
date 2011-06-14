@@ -1,5 +1,7 @@
 package railo.runtime.type.scope.client;
 
+import java.util.Map;
+
 import railo.commons.io.log.Log;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -21,8 +23,8 @@ public final class ClientCookie extends StorageScopeCookie implements ClientPlus
 	 * Constructor of the class, clone existing
 	 * @param other
 	 */
-	private ClientCookie(ClientCookie other,boolean deepCopy) {
-		super(other,deepCopy);
+	private ClientCookie(ClientCookie other,boolean deepCopy,Map<Object, Object> done) {
+		super(other,deepCopy,done);
 	}
 	
 	
@@ -30,8 +32,8 @@ public final class ClientCookie extends StorageScopeCookie implements ClientPlus
 	 *
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy) {
-    	return new ClientCookie(this,deepCopy);
+	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+    	return new ClientCookie(this,deepCopy,done);
 	}
 	
 	

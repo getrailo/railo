@@ -599,7 +599,7 @@ public final class Decision {
 		if(!(str.indexOf("wddxPacket")>0)) return false;
 		
 		// wrong timezone but this isent importend because date will not be used
-		WDDXConverter converter =new WDDXConverter(TimeZone.getDefault(),false);
+		WDDXConverter converter =new WDDXConverter(TimeZone.getDefault(),false,true);
 		try {
 			converter.deserialize(Caster.toString(o),true);
 		} 
@@ -806,9 +806,10 @@ public final class Decision {
 		String str = Caster.toString(value,null);
 		if(str==null)return false;
 		
-		if(emailPattern==null)
-			emailPattern=Pattern.compile("^[\\%\\+a-zA-Z_0-9-]+(\\.[\\%\\+a-zA-Z_0-9-]+)*@([a-zA-Z_0-9-]+\\.)+[a-zA-Z]{2,7}$");
-			
+		if(emailPattern==null) {
+			String prefix="\\%\\+a-zA-Z_0-9-'~";
+			emailPattern=Pattern.compile("^["+prefix+"]+(\\.["+prefix+"]+)*@([a-zA-Z_0-9-]+\\.)+[a-zA-Z]{2,7}$");
+		}	
 		return emailPattern.matcher(str).matches();
 	}	
 	

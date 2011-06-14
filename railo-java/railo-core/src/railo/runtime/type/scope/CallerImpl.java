@@ -1,6 +1,7 @@
 package railo.runtime.type.scope;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -204,6 +205,13 @@ public final class CallerImpl extends StructSupport implements Caller  {
     public void release() {
         this.pc=null;
     }
+    
+    /**
+     * @see railo.runtime.type.Scope#release(railo.runtime.PageContext)
+     */
+    public void release(PageContext pc) {
+        this.pc=null;
+    }
 
     /**
      * @see railo.runtime.type.Collection#size()
@@ -282,8 +290,8 @@ public final class CallerImpl extends StructSupport implements Caller  {
     /**
      * @see railo.runtime.type.Collection#duplicate(boolean)
      */
-    public Collection duplicate(boolean deepCopy) {
-        return variablesScope.duplicate(deepCopy);
+    public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+        return variablesScope.duplicate(deepCopy,done);
     }
 
 	/**
@@ -415,23 +423,22 @@ public final class CallerImpl extends StructSupport implements Caller  {
 		return variablesScope.values();
 	}
 
-
-    /** FUTURE add to intrface Caller
-	 * @return the variablesScope
-	 */
-	public Variables getVariablesScope() {
+    /**
+     * @see railo.runtime.type.scope.Caller#getVariablesScope()
+     */
+    public Variables getVariablesScope() {
 		return variablesScope;
 	}
 
-	/**FUTURE add to intrface Caller
-	 * @return the localScope
+	/**
+	 * @see railo.runtime.type.scope.Caller#getLocalScope()
 	 */
 	public Local getLocalScope() {
 		return (Local)localScope;
 	}
 
-	/**FUTURE add to intrface Caller
-	 * @return the argumentsScope
+	/**
+	 * @see railo.runtime.type.scope.Caller#getArgumentsScope()
 	 */
 	public Argument getArgumentsScope() {
 		return (Argument)argumentsScope;

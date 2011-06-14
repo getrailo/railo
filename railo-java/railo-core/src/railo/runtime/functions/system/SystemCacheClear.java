@@ -27,6 +27,8 @@ public final class SystemCacheClear implements Function {
 			ComponentCacheClear.call(pc);
 			CTCacheClear.call(pc);
 			queryCache(pc);
+			tagCache(pc);
+			functionCache(pc);
 		}
 		else if("template".equals(cacheName) || "page".equals(cacheName)) {
 			PagePoolClear.call(pc);
@@ -61,7 +63,6 @@ public final class SystemCacheClear implements Function {
 
 	private static void tagCache(PageContext pc) {
 		ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
-		config.clearTagCache();
 		PagePoolClear.clear(config.getServerTagMapping());
 		PagePoolClear.clear(config.getTagMapping());
 	}

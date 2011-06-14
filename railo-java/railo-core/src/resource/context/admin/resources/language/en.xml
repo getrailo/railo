@@ -75,6 +75,8 @@
 	<data key="security.tagobject">Tag CFObject / &lt;br/&gt;function CreateObject</data>
 	<data key="security.debugging">Debugging</data>
 	<data key="security.gatewaydescription">The gateway settings can be changed in the &quot;web administrator&quot;</data>
+	<data key="security.orm">ORM</data>
+	<data key="security.ormDescription">The ORM settings can be changed in the &quot;web administrator&quot;</data>
 	<data key="security.mail">Mail</data>
 	<data key="security.filecustom">Custom directories</data>
 	<data key="security.accessreaddesc">define the access for reading data</data>
@@ -546,13 +548,15 @@
 	<data key="setting.inspecttemplatealwaysShort">Always</data>
 	<data key="setting.inspecttemplatealways">Always ( Bad )</data>
 	<data key="setting.cachedesc">Different Cache and Performance settings to improve overall performance</data>
-	<data key="setting.showversiondescription">Return the Railo version in the response header</data>
 	<data key="setting.componentcache">Component path Cache</data>
 	<data key="setting.ctcache">Custom tag path Cache</data>
 	
 	<data key="setting.inspecttemplateneverShort">Never</data>
 	<data key="setting.inspecttemplatenever">Never ( Best Performance )</data>
 	<data key="setting.showversion">Output Railo version</data>
+	<data key="setting.showversiondescription">Return the Railo version in the response header</data>
+	<data key="setting.allowCompression">Compression</data>
+	<data key="setting.allowCompressionDescription">Enable compression (Gzip) for the Railo Response stream, if supported by the client (Browser)</data>
 	<data key="setting.server">Railo output control</data>
 	<data key="setting.inspecttemplatealwaysdesc">When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.</data>
 	<data key="setting.querycacheclearcount">Clear query cache ( {count} element(s) )</data>
@@ -789,8 +793,11 @@
 	<data key="cfx.cfxtags">Java CFX tags</data>
 	<data key="cfx.name">Name</data>
 	<data key="cfx.class">Class</data>
-	<data key="cfx.noaccess">No access to CFX functionality</data>
+	<data key="cfx.noaccessUsage">The usage of CFX Tags is completely forbitten for this context.</data>
+	<data key="cfx.noaccessSetting">It is not allowed to create CFX Tags in this context, but it is allowed to use tags defined in the server admin.</data>
 	<data key="cfx.cpp.CFXTags">C++ CFX tags</data>
+	<data key="cfx.cpp.arch">Your Operation System and JRE (Java Runtime Enviroment) is running in a {os-arch}bit environment.</data>
+	<data key="cfx.cpp.archDiff">Your Operation System is running in a {os-arch}bit environment and your JRE (Java Runtime Enviroment) in a {jre-arch}bit environment.</data>
 	<data key="cfx.procedure">Procedure</data>
 	<data key="cfx.serverlibrary">Server Library</data>
 	<data key="cfx.keepAlive">Keep Alive</data>
@@ -1023,6 +1030,7 @@
 	<data key="setting.general.scope">Scope</data>
 	<data key="setting.general.datasource">Datasource</data>
 	<data key="setting.general.customtag">Custom Tag</data>
+	<data key="setting.noAccess">no access to change settings</data>
 	
 	<data key="mail.tls">TLS</data>
 	<data key="mail.ssl">SSL</data>

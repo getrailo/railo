@@ -9,7 +9,6 @@ import javax.servlet.jsp.tagext.Tag;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.component.ComponentLoader;
@@ -27,6 +26,7 @@ import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.ext.tag.DynamicAttributes;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
@@ -108,7 +108,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     private String appendix;
 	//private boolean doCustomTagDeepSearch;
 	
-	private ComponentPro cfc;
+	private Component cfc;
 	private boolean isEndTag;
 	
 	
@@ -228,130 +228,9 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     }
 
     public InitFile initFile(PageContext pageContext) throws PageException {
-    	 
     	return CustomTagUtil.loadInitFile(pageContext, appendix);
-    	
-    	
-    	
-    	
-    	/*
-    	ConfigWeb config = pageContext.getConfig();
-       
-    	// filenames
-        String[] filenames=getFileNames(config,appendix);
-        
-        
-    // search local
-        PageSource source=null;
-        if(config.doLocalCustomTag()){
-            for(int i=0;i<filenames.length;i++){
-                source=pageContext.getRelativePageSource(filenames[i]);
-                if(MappingImpl.isOK(source)) return new InitFile(source,filenames[i],filenames[i].endsWith('.'+config.getCFCExtension()));
-            }
-        }
-        
-        // search in custom tag directory
-        boolean doCustomTagDeepSearch = config.doCustomTagDeepSearch();
-        
-        // per application mappings
-        Mapping[] ctms = pageContext.getApplicationContext().getCustomTagMappings();
-        if(ctms!=null){
-        	for(int i=0;i<filenames.length;i++){
-            	source=getMapping(ctms, filenames[i],doCustomTagDeepSearch);
-                if(source!=null) return new InitFile(source,filenames[i],filenames[i].endsWith('.'+config.getCFCExtension()));
-            }
-        }
-        
-        // config mappings
-        ctms = config.getCustomTagMappings();
-        for(int i=0;i<filenames.length;i++){
-        	source=getMapping(ctms, filenames[i], doCustomTagDeepSearch);
-            if(source!=null) return new InitFile(source,filenames[i],filenames[i].endsWith('.'+config.getCFCExtension()));
-        }
-        
-      // EXCEPTION
-        // message
-        StringBuffer msg=new StringBuffer("custom tag \"");
-        msg.append(getDisplayName(config,appendix));
-        msg.append("\" is not defined in directory \"");
-        msg.append(ResourceUtil.getResource(pageContext, pageContext.getCurrentPageSource()).getParent());
-        msg.append('"');
-        
-        if(!ArrayUtil.isEmpty(ctms)){
-        	if(ctms.length==1)msg.append(" and directory ");
-        	else msg.append(" and directories ");
-        	msg.append("\"");
-        	msg.append(toString(ctms));
-        	msg.append("\"");
-        }
-        throw new ExpressionException(msg.toString(),getDetail(config));
-    	 */
     }
-
-    /*public static String getDetail(Config config) {
-    	boolean hasCFC=false,hasCFML=false;
-    	
-    	String[] extensions=config.getCustomTagExtensions();
-        for(int i =0;i<extensions.length;i++){
-    		if(extensions[i].equalsIgnoreCase(config.getCFCExtension())) hasCFC=true;
-    		else hasCFML=true;
-    	}
-    	StringBuffer sb=new StringBuffer();
-    	if(!hasCFC)sb.append("Component based Custom Tags are not enabled;");
-    	if(!hasCFML)sb.append("CFML based Custom Tags are not enabled;");
-    	return sb.toString();
-	}*/
-
     
-
-	/*public static  String getDisplayName(Config config,String name) {
-		String[] extensions=config.getCustomTagExtensions();
-        if(extensions.length==0) return name;
-        
-		return name+".["+List.arrayToList(extensions, "|")+"]";
-	}*/
-
-	/*public static String[] getFileNames(Config config, String name) throws ExpressionException {
-		String[] extensions=config.getCustomTagExtensions();
-        if(extensions.length==0) throw new ExpressionException("Custom Tags are disabled");
-        String[] fileNames=new String[extensions.length];
-		
-    	for(int i =0;i<fileNames.length;i++){
-    		fileNames[i]=name+'.'+extensions[i];
-    	}
-    	return fileNames;
-	}*/
-
-	
-    /*private static PageSource getMapping(Mapping[] ctms, String filename, boolean doCustomTagDeepSearch) {
-    	//print.o("filename:"+filename);
-    	//MappingImpl ctm;
-    	PageSource ps;
-    	
-    	// first check for cached pathes
-		for(int i=0;i<ctms.length;i++){
-			//ctm=(MappingImpl) ctms[i];
-			ps = ((MappingImpl) ctms[i]).getCustomTagPath(filename, doCustomTagDeepSearch);
-			if(ps!=null) return ps;
-        }
-		return null;
-	}*/
-
-   
-
-	/*static String toString(Mapping[] ctms) {
-		if(ctms==null) return "";
-    	StringBuffer sb=new StringBuffer();
-    	Resource p;
-    	for(int i=0;i<ctms.length;i++){
-    		if(sb.length()!=0)sb.append("; ");
-    		p = ctms[i].getPhysical();
-    		if(p!=null)
-    			sb.append(p.toString());
-        }
-        return sb.toString();
-	}*/
-
 	private int cfmlStartTag() throws PageException {
 		callerScope.initialize(pageContext);
         
@@ -474,26 +353,26 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     
     private static void setCaller(PageContext pageContext, Struct args) throws PageException {
     	UndefinedImpl undefined=(UndefinedImpl) pageContext.undefinedScope();
-    	args.set(CALLER, undefined.duplicate(false));
+    	args.set(CALLER, Duplicator.duplicate(undefined,false));
     	//args.set(CALLER, pageContext.variablesScope());
     	
 	}
 
-	private static void validateAttributes(ComponentPro cfc,StructImpl attributesScope,String tagName) throws ApplicationException, ExpressionException {
+	private static void validateAttributes(Component cfc,StructImpl attributesScope,String tagName) throws ApplicationException, ExpressionException {
 		
 		TagLibTag tag=getAttributeRequirments(cfc,false);
 		if(tag==null) return;
 		
 		if(tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_FIXED || tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_MIXED){
-			Iterator it = tag.getAttributes().entrySet().iterator();
-			Map.Entry entry;
+			Iterator<Entry<String, TagLibTagAttr>> it = tag.getAttributes().entrySet().iterator();
+			Entry<String, TagLibTagAttr> entry;
 			int count=0;
 			Collection.Key key;
 			TagLibTagAttr attr;
 			Object value;
 			// check existing attributes
 			while(it.hasNext()){
-				entry = (Entry) it.next();
+				entry = it.next();
 				count++;
 				key=KeyImpl.toKey(entry.getKey(),null);
 				attr=(TagLibTagAttr) entry.getValue();
@@ -534,7 +413,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     } 
     
 
-	private static TagLibTag getAttributeRequirments(ComponentPro cfc, boolean runtime) throws ExpressionException {
+	private static TagLibTag getAttributeRequirments(Component cfc, boolean runtime) throws ExpressionException {
 		
 		Struct meta=null;
     	//try {

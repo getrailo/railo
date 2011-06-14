@@ -24,19 +24,27 @@ import org.xml.sax.InputSource;
 import railo.commons.date.TimeZoneConstants;
 import railo.commons.lang.NumberUtil;
 import railo.runtime.Component;
+import railo.runtime.ComponentScope;
+import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
+import railo.runtime.component.Property;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
+import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ComponentUtil;
@@ -45,12 +53,15 @@ import railo.runtime.type.util.ComponentUtil;
  * class to serialize and desirilize WDDX Packes
  */
 public final class WDDXConverter {
+	private static final Collection.Key REMOTING_FETCH = KeyImpl.init("remotingFetch");
 	
 	
+	private static final Collection.Key KEY_THIS = KeyImpl.getInstance("this");
 	private int deep=1;
 	private boolean xmlConform;
 	private char _;
 	private TimeZone timeZone;
+	private boolean ignoreRemotingFetch=true;
     //private PageContext pcx;
 
 	/**
@@ -58,10 +69,11 @@ public final class WDDXConverter {
 	 * @param timeZone 
 	 * @param xmlConform define if generated xml conform output or wddx conform output (wddx is not xml conform)
 	 */
-	public WDDXConverter(TimeZone timeZone, boolean xmlConform) {
+	public WDDXConverter(TimeZone timeZone, boolean xmlConform,boolean ignoreRemotingFetch) {
 		this.xmlConform=xmlConform;
 		_=(xmlConform)?'"':'\'';
 		this.timeZone=timeZone;
+		this.ignoreRemotingFetch=ignoreRemotingFetch;
 	}
 	
 	/**
@@ -164,20 +176,57 @@ public final class WDDXConverter {
 	 */
 	private String _serializeComponent(Component component, Set<Object> done) throws ConverterException {
 		StringBuffer sb=new StringBuffer();
+		ComponentAccess ca;
+		try {
+			component=new ComponentWrap(Component.ACCESS_PRIVATE, ca=ComponentUtil.toComponentAccess(component));
+		} catch (ExpressionException e1) {
+			throw new ConverterException(e1);
+		}
+		boolean isPeristent=ca.isPersistent();
 		
-        Iterator it=component.keyIterator();
+		
         deep++;
         Object member;
+        Iterator it=component.keyIterator();
+        Collection.Key key;
         while(it.hasNext()) {
-        	String key=Caster.toString(it.next(),"");
+        	key=Caster.toKey(it.next(),null);
         	member = component.get(key,null);
         	if(member instanceof UDF) continue;
-            sb.append(goIn()+"<var name="+_+key.toString()+_+">");
+        	sb.append(goIn()+"<var scope=\"this\" name="+_+key.toString()+_+">");
             sb.append(_serialize(member,done));
             sb.append(goIn()+"</var>");
         }
+
+        Property p;
+        Boolean remotingFetch;
+    	Struct props = ignoreRemotingFetch?null:ComponentUtil.getPropertiesAsStruct(ca,false);
+        ComponentScope scope = ca.getComponentScope();
+        it=scope.keyIterator();
+        while(it.hasNext()) {
+        	key=Caster.toKey(it.next(),null);
+        	if(!ignoreRemotingFetch) {
+        		p=(Property) props.get(key,null);
+            	if(p!=null) {
+            		remotingFetch=Caster.toBoolean(p.getMeta().get(REMOTING_FETCH,null),null);
+	            	if(remotingFetch==null){
+    					if(isPeristent  && HBMCreator.isRelated(p)) continue;
+	    			}
+	    			else if(!remotingFetch.booleanValue()) continue;
+            	}
+    		}
+        	
+        	member = scope.get(key,null);
+        	if(member instanceof UDF || key.equals(KEY_THIS)) continue;
+            sb.append(goIn()+"<var scope=\"variables\" name="+_+key.toString()+_+">");
+            sb.append(_serialize(member,done));
+            sb.append(goIn()+"</var>");
+        }
+        
+        
         deep--;
         try {
+			//return goIn()+"<struct>"+sb+"</struct>";
 			return goIn()+"<component md5=\""+ComponentUtil.md5(component)+"\" name=\""+component.getAbsName()+"\">"+sb+"</component>";
 		} 
 		catch (Exception e) {
@@ -323,6 +372,12 @@ public final class WDDXConverter {
 		
 		done.add(object);
 		try {
+			// Component
+			if(object instanceof Component) {
+				rtn= _serializeComponent((Component)object,done);
+				deep--;
+				return rtn;
+			}
 			// Struct
 			if(object instanceof Struct) {
 				rtn= _serializeStruct((Struct)object,done);
@@ -344,12 +399,6 @@ public final class WDDXConverter {
 			// List
 			if(object instanceof List) {
 				rtn= _serializeList((List)object,done);
-				deep--;
-				return rtn;
-			}
-			// Component
-			if(object instanceof Component) {
-				rtn= _serializeComponent((Component)object,done);
 				deep--;
 				return rtn;
 			}
@@ -614,9 +663,9 @@ public final class WDDXConverter {
 		PageContext pc = ThreadLocalPageContext.get();
 		
 		// Load comp
-		Component comp=null;
+		ComponentAccess comp=null;
 		try {
-			comp = pc.loadComponent(name);
+			comp = ComponentUtil.toComponentAccess(pc.loadComponent(name));
 			if(!ComponentUtil.md5(comp).equals(md5)){
 				throw new ConverterException("component ["+name+"] in this enviroment has not the same interface as the component to load");
 			}
@@ -630,15 +679,24 @@ public final class WDDXConverter {
 		
 		
 		NodeList list=elComp.getChildNodes();
+		ComponentScope scope = comp.getComponentScope();
 		int len=list.getLength();
+		String scopeName;
+		Element var,value;
+		Collection.Key key;
 		for(int i=0;i<len;i++) {
             Node node=list.item(i);
 			if(node instanceof Element) {
-				Element var=(Element)node;
-				Element value=getChildElement((Element)node);
+				var=(Element)node;
+				value=getChildElement((Element)node);
+				scopeName=var.getAttribute("scope");
 				if(value!=null) {
-					comp.setEL(var.getAttribute("name"),_deserialize(value));
-					
+					key=Caster.toKey(var.getAttribute("name"),null);
+					if(key==null) continue;
+					if("variables".equalsIgnoreCase(scopeName))
+						scope.setEL(key,_deserialize(value));
+					else
+						comp.setEL(key,_deserialize(value));
 				}
             }
 		}

@@ -348,7 +348,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	*/
 	protected Expression impOp(Data data) throws TemplateException {
 		Expression expr = eqvOp(data);
-		while(data.cfml.forwardIfCurrentAndNoWordAfter("imp")) {
+		while(data.cfml.forwardIfCurrentAndNoWordAfter("imp")) { 
 			comments(data.cfml);
             expr=OpBool.toExprBoolean(expr, eqvOp(data), OpBool.IMP);
 		}
@@ -365,7 +365,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	*/
 	protected Expression eqvOp(Data data) throws TemplateException {
 		Expression expr = xorOp(data);
-		while(data.cfml.forwardIfCurrent("eqv")) {
+		while(data.cfml.forwardIfCurrentAndNoWordAfter("eqv")) {
 			comments(data.cfml);
             expr=OpBool.toExprBoolean(expr, xorOp(data), OpBool.EQV);
 		}
@@ -382,7 +382,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	*/
 	protected Expression xorOp(Data data) throws TemplateException {
 		Expression expr = orOp(data);
-		while(data.cfml.forwardIfCurrent("xor")) {
+		while(data.cfml.forwardIfCurrentAndNoWordAfter("xor")) {
 			comments(data.cfml);
             expr=OpBool.toExprBoolean(expr, orOp(data), OpBool.XOR);
 		}
@@ -401,7 +401,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	protected Expression orOp(Data data) throws TemplateException {
 		Expression expr = andOp(data);
 		
-		while(data.cfml.forwardIfCurrent("||") || data.cfml.forwardIfCurrent("or")) {
+		while(data.cfml.forwardIfCurrent("||") || data.cfml.forwardIfCurrentAndNoWordAfter("or")) {
 			comments(data.cfml);
             expr=OpBool.toExprBoolean(expr, andOp(data), OpBool.OR);
 		}
@@ -420,7 +420,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	protected Expression andOp(Data data) throws TemplateException {
 		Expression expr = notOp(data);
 		
-		while(data.cfml.forwardIfCurrent("&&") || data.cfml.forwardIfCurrent("and")) {
+		while(data.cfml.forwardIfCurrent("&&") || data.cfml.forwardIfCurrentAndNoWordAfter("and")) {
 			comments(data.cfml);
 	        expr=OpBool.toExprBoolean(expr, notOp(data), OpBool.AND);
 		}
@@ -531,7 +531,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			// gt, gte, greater than or equal to, greater than
 			else if (data.cfml.isCurrent('g')) {
 				if (data.cfml.forwardIfCurrent("gt")) {
-					if(data.cfml.forwardIfCurrent("e")) {
+					if(data.cfml.forwardIfCurrentAndNoWordAfter("e")) {
 						if(data.cfml.isCurrentVariableCharacter()) {
 							data.cfml.setPos(data.cfml.getPos()-3);
 						}
@@ -571,7 +571,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			// lt, lte, less than, less than or equal to
 			else if (data.cfml.isCurrent('l')) {
 				if (data.cfml.forwardIfCurrent("lt")) {
-					if(data.cfml.forwardIfCurrent("e")) {
+					if(data.cfml.forwardIfCurrentAndNoWordAfter("e")) {
 						if(data.cfml.isCurrentVariableCharacter()) {
 							data.cfml.setPos(data.cfml.getPos()-3);
 						}
@@ -715,7 +715,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		Expression expr = divMultiOp(data);
 		
 		// Modulus Operation
-		while(data.cfml.forwardIfCurrent('%') || data.cfml.forwardIfCurrent("mod")) {
+		while(data.cfml.forwardIfCurrent('%') || data.cfml.forwardIfCurrentAndNoWordAfter("mod")) {
 			expr=_modOp(data,expr);
 			//comments(data.cfml);
             //expr=OpDouble.toExprDouble(expr, divMultiOp(), OpDouble.MODULUS);
@@ -801,7 +801,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		Expression expr = unaryOp(data);
 
 		// Modulus Operation
-		while(data.cfml.forwardIfCurrent('^') || data.cfml.forwardIfCurrent("exp")) {
+		while(data.cfml.forwardIfCurrent('^') || data.cfml.forwardIfCurrentAndNoWordAfter("exp")) {
 			comments(data.cfml);
             expr=OpDouble.toExprDouble(expr, unaryOp(data), OpDouble.EXP);
 		}
@@ -1049,10 +1049,18 @@ public class CFMLExprTransformer implements ExprTransformer {
 			rtn.append('.');
 			String rightSite=digit(data);
 			if(rightSite.length()> 0 && data.cfml.forwardIfCurrent('e')) {
-			    if(data.cfml.isCurrentBetween('0','9')) {
-			        rightSite+='e'+digit(data);
+				Boolean expOp=null;
+				if(data.cfml.forwardIfCurrent('+')) expOp=Boolean.TRUE;
+				else if(data.cfml.forwardIfCurrent('-')) expOp=Boolean.FALSE;
+				
+				if(data.cfml.isCurrentBetween('0','9')) {
+					if(expOp==Boolean.FALSE) rightSite+="e-";
+					else if(expOp==Boolean.TRUE) rightSite+="e+";
+					else rightSite+="e";
+			        rightSite+=digit(data);
 			    }
 			    else {
+			    	if(expOp!=null) data.cfml.previous();
 			        data.cfml.previous();
 			    }
 			}

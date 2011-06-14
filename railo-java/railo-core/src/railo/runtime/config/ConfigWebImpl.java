@@ -233,17 +233,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	    
 
 
-		/*public PageSource getTagPageSource(String filename) {
-			if(serverTagMapping==null){
-				serverTagMapping=((MappingImpl)getConfigServerImpl().tagMapping).cloneReadOnly(this);
-			}
-			PageSource ps = serverTagMapping.getPageSource(filename);
-			print.out("ps+"+ps.getDisplayPath());
-			if(!ps.physcalExists())
-				ps = tagMapping.getPageSource(filename);
-			print.out("ps+"+ps.getDisplayPath());
-			return ps;
-		}*/
+		
 
 	    public Mapping getServerTagMapping() {
 	    	if(serverTagMapping==null){

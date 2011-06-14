@@ -121,7 +121,6 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="security.customtagdescription">Custom tags können im &apos;Web Administrator&apos; hinzugefügt, gelöscht und geändert werden.</data>
 	<data key="security.tagobject">Tag CFObject / &lt;br&gt;Funktion createObject</data>
 	<data key="security.debugging">Debugging</data>
-	<data key="security.gatewaydescription">Gateway Settings können im &apos;Web Administrator&apos; hinzugefügt, gelöscht und geändert werden.</data>
 	<data key="security.mail">Mail</data>
 	<data key="security.filecustom">Zusätzliche Verzeichnisse</data>
 	<data key="security.accessreaddesc">definiert den Lesezugriff</data>
@@ -139,6 +138,9 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="security.tagexecutedescription">Dieser Tag kann verwendet werden um Prozesse auf dem lokalen Hostsystem auszuführen.</data>
 	<data key="security.generaldesc">Definiert den allgemeinen Zugriff auf den Administrator und das Tad cfadmin</data>
 	<data key="security.gateway">Gateway</data>
+	<data key="security.gatewaydescription">Gateway Settings können im &apos;Web Administrator&apos; hinzugefügt, gelöscht und geändert werden.</data>
+	<data key="security.orm">ORM</data>
+	<data key="security.ormDescription">ORM Settings können im &apos;Web Administrator&apos; hinzugefügt, gelöscht und geändert werden.</data>
 	<data key="security.speclistnewtitle">Neuen Web Kontext erstellen</data>
 	<data key="security.accesswritedesc">definiert den Schreibzugriff</data>
 	<data key="security.tagimport">Tag CFImport</data>
@@ -517,12 +519,14 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="setting.inspecttemplatealwaysShort">Immer</data>
 	<data key="setting.inspecttemplatealways">Immer ( Schlecht )</data>
 	<data key="setting.cachedesc">Verschiedene Cache and Performance Einstellungen um die Ausführung zu verbessern.</data>
+	<data key="setting.showversion">Railo Version ausgeben</data>
 	<data key="setting.showversiondescription">Railo Version im Response Header zurückgeben</data>
+	<data key="setting.allowCompression">Kompression</data>
+	<data key="setting.allowCompressionDescription">Kompression (GZip) für den Response Stream einschalten, sofern dies vom Client (Browser) unterstützt ist</data>
 	<data key="setting.componentcache">Komponentenpfad Cache</data>
 	<data key="setting.ctcache">Custom Tag Pfad Cache</data>
 	<data key="setting.inspecttemplateneverShort">Nie</data>
 	<data key="setting.inspecttemplatenever">Nie ( Beste Performance )</data>
-	<data key="setting.showversion">Railo Version ausgeben</data>
 	<data key="setting.server">Kontrolle der Ausgabe von Railo</data>
 	<data key="setting.inspecttemplatealwaysdesc">
 When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.
@@ -802,6 +806,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.dbhost">Host/Server</data>
 	<data key="settings.dbconnlimitinf">- inf -</data>
 	<data key="settings.type">Typ</data>
+	<data key="setting.noAccess">Keinen Zugriff um Einstellungen zu ändern.</data>
 	<data key="regional.timeserverdescription">Time server der die aktuelle Zeit zürück gibt. Falls gesetzt, wird in Railo diese Zeit anstelle der lokalen Server-Zeit verwendet (Beispiel: swisstime.ethz.ch, time.nist.gov).</data>
 	<data key="regional.server">Hier können Sie regionale Einstellungen vornehmen, die Vorgabe für alle Web-Instanzen sind. Auf die aktuelle Instanz haben diese Werte keinen Einfluss.</data>
 	<data key="regional.defaultencodingdescription"></data>
@@ -821,8 +826,11 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="cfx.cfxtags">Java CFX Tags</data>
 	<data key="cfx.name">Name</data>
 	<data key="cfx.class">Klasse</data>
-	<data key="cfx.noaccess">Kein Zugriff auf die CFX Funktionalität</data>
+	<data key="cfx.noaccessUsage">Den Zugriff auf die CFX Funktionalität ist für diesen Kontext komplett gesperrt.</data>
+	<data key="cfx.noaccessSetting">Es ist nicht erlaubt in diesem Kontext CFX Tags anzulegen, Tags welche im Server Admin definiert wurden, können jedoch verwendet werden.</data>
 	<data key="cfx.cpp.CFXTags">C++ CFX tags</data>
+	<data key="cfx.cpp.arch">Ihr Betriebssystem und Ihre JRE (Java Runtime Enviroment) laufen in einer {os-arch}bit Umgebung.</data>
+	<data key="cfx.cpp.archDiff">Ihr Betriebssystem läuft in einer {os-arch}bit Umgebung und Ihre JRE (Java Runtime Enviroment) in einer {jre-arch}bit Umgebung.</data>
 	<data key="cfx.procedure">Prozedur</data>
 	<data key="cfx.serverlibrary">Server Library</data>
 	<data key="cfx.keepAlive">Keep Alive</data>

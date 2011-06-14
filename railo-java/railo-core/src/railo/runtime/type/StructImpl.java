@@ -1,6 +1,7 @@
 package railo.runtime.type;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,12 +10,10 @@ import java.util.Set;
 import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.collections.HashTable;
-import railo.commons.collections.HashTableNotSync;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
-import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.StructSupport;
 
@@ -24,7 +23,6 @@ import railo.runtime.type.util.StructSupport;
 public class StructImpl extends StructSupport {
 	private static final long serialVersionUID = 1421746759512286393L;
 
-	public static final int TYPE_SOFT=4;//FUTURE move to Struct interface
 	
 	private Map<Collection.Key,Object> map;
 	
@@ -46,8 +44,8 @@ public class StructImpl extends StructSupport {
     	if(type==TYPE_LINKED)		map=new LinkedHashMap<Collection.Key,Object>();
     	else if(type==TYPE_WEAKED)	map=new java.util.WeakHashMap<Collection.Key,Object>(); 
     	else if(type==TYPE_SOFT)	map=new ReferenceMap();
-        else if(type==TYPE_SYNC)	map=new HashTable();
-        else 						map=new HashTableNotSync();
+        else if(type==TYPE_SYNC)	map=Collections.synchronizedMap(new HashMap<Collection.Key,Object>());
+        else 						map=new HashMap<Collection.Key,Object>();
     }
     
     private int getType(){
@@ -197,18 +195,17 @@ public class StructImpl extends StructSupport {
 		map.clear();
 	}
 
-	
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
-	public Collection duplicate(boolean deepCopy) {
+
+
+	@Override
+	public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
 		Struct sct=new StructImpl(getType());
-		copy(this,sct,deepCopy);
+		copy(this,sct,deepCopy,done);
 		return sct;
 	}
 	
-	public static void copy(Struct src,Struct trg,boolean deepCopy) {
-		ThreadLocalDuplication.set(src,trg);
+	public static void copy(Struct src,Struct trg,boolean deepCopy, Map<Object, Object> done) {
+		done.put(src,trg);
 		try{
 			Key[] keys = src.keys();
 			Key key;
@@ -219,7 +216,7 @@ public class StructImpl extends StructSupport {
 			}
 		}
 		finally {
-			ThreadLocalDuplication.remove(src);
+			done.remove(src);
 		}	
 	}
 	
@@ -263,7 +260,7 @@ public class StructImpl extends StructSupport {
 	/**
 	 * @return the map
 	 */
-	protected Map getMap() {
+	protected Map<Collection.Key,Object> getMap() {
 		return map;
 	}
 }

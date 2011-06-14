@@ -39,7 +39,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 
 	private static final Object OBJ = new Object();
 
-	private Map entries=new HashMap();
+	private Map<String,GatewayEntry> entries=new HashMap<String,GatewayEntry>();
 	private Resource cfcDirectory;
 	private final ConfigWeb config;
 
@@ -96,7 +96,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 	/**
 	 * @return the entries
 	 */
-	public Map getEntries() {
+	public Map<String,GatewayEntry> getEntries() {
 		return entries;
 	}
 
@@ -162,6 +162,22 @@ public class GatewayEngineImpl implements GatewayEngine {
 	public void stop(String gatewayId) throws PageException {
 		executeThread(gatewayId,GatewayThread.STOP);
 	}
+	private void stop(Gateway gateway) throws PageException {
+		executeThread(gateway,GatewayThread.STOP);
+	}
+	
+
+
+	public synchronized void clear() throws GatewayException, PageException {
+		Iterator<Entry<String, GatewayEntry>> it = entries.entrySet().iterator();
+		Entry<String, GatewayEntry> entry;
+		while(it.hasNext()){
+			entry = it.next();
+			if(entry.getValue().getGateway().getState()==Gateway.RUNNING) 
+				stop(entry.getValue().getGateway());
+		}
+		entries.clear();
+	}
 	
 	/**
 	 * restart the gateway
@@ -208,8 +224,11 @@ public class GatewayEngineImpl implements GatewayEngine {
 	}
 
 	private void executeThread(String gatewayId, int action) throws PageException {
-		
 		new GatewayThread(this,getGateway(gatewayId),action).start();
+	}
+
+	private void executeThread(Gateway g, int action) throws PageException {
+		new GatewayThread(this,g,action).start();
 	}
 	
 	

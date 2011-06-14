@@ -85,7 +85,7 @@ public class DumpUtil {
 			String str=(String) o;
 			if(str.trim().startsWith("<wddxPacket ")) {
 				try {
-					WDDXConverter converter =new WDDXConverter(pageContext.getTimeZone(),false);
+					WDDXConverter converter =new WDDXConverter(pageContext.getTimeZone(),false,true);
 					converter.setTimeZone(pageContext.getTimeZone());
 					Object rst = converter.deserialize(str,false);
 					DumpData data = toDumpData(rst, pageContext, maxlevel, props);
