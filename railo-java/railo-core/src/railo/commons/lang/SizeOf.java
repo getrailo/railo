@@ -184,6 +184,7 @@ public class SizeOf {
         	if(object instanceof Byte) return SizeOf.BYTE_SIZE+SizeOf.REF_SIZE;
         }
         
+        
         if(object instanceof Object[]) {
         	 Object[] arr=(Object[]) object;
         	 long size=SizeOf.REF_SIZE;
@@ -216,7 +217,6 @@ public class SizeOf {
         	return size;
 	    }
         	
-        
         
         Class clazz = object.getClass();
         
