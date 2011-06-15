@@ -76,14 +76,14 @@ public final class CastImpl implements Cast {
      * @see railo.runtime.util.Cast#toBase64(java.lang.Object, java.lang.String)
      */
     public String toBase64(Object o, String defaultValue) {
-        return Caster.toBase64(o,defaultValue);
+        return Caster.toBase64(o,null,defaultValue);
     }
 
     /**
      * @see railo.runtime.util.Cast#toBase64(java.lang.Object)
      */
     public String toBase64(Object o) throws PageException {
-        return Caster.toBase64(o);
+        return Caster.toBase64(o,null);
     }
 
     /**

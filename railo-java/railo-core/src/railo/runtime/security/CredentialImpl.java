@@ -1,11 +1,13 @@
 package railo.runtime.security;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.runtime.coder.Base64Coder;
+import railo.runtime.coder.CoderException;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -133,11 +135,15 @@ public final class CredentialImpl implements Credential {
 	    		if(!rolesDir.exists())rolesDir.mkdirs();
 	    		String md5 = MD5.getDigestAsString(raw);
 				IOUtil.write(rolesDir.getRealResource(md5), raw, "utf-8", false);
-				return Caster.toBase64(username+ONE+password+ONE+"md5:"+md5);
+				return Caster.toB64(username+ONE+password+ONE+"md5:"+md5,"UTF-8");
 			} 
 	    	catch (IOException e) {}
 		}
-    	return Caster.toBase64(username+ONE+password+ONE+raw);
+    	try {
+			return Caster.toB64(username+ONE+password+ONE+raw,"UTF-8");
+		} catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
     } 
     
     /**

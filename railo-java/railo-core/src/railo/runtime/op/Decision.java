@@ -998,7 +998,7 @@ public final class Decision {
                         return isCastableToBinary(o,true);
                     }
                     else if(type.equals("base64")) {
-                        return Caster.toBase64(o,null)!=null;
+                        return Caster.toBase64(o,null,null)!=null;
                     }
                     break;
                 case 'c':

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -51,6 +52,7 @@ import railo.commons.net.HTTPUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.cfx.QueryWrap;
+import railo.runtime.coder.Base64Coder;
 import railo.runtime.coder.Coder;
 import railo.runtime.coder.CoderException;
 import railo.runtime.config.Config;
@@ -2427,18 +2429,6 @@ public final class Caster {
         }
     }
     
-    /**
-     * cast a Object to a Base64 value
-     * @param o Object to cast
-     * @return to Base64 String
-     * @throws PageException
-     */
-    public static String toBase64(Object o) throws PageException {
-        String str=toBase64(o,null);
-        if(str==null) throw new CasterException(o,"base 64");
-        return str;
-    }
-    
     public static Object toCreditCard(Object o) throws PageException {
     	return ValidateCreditCard.toCreditcard(toString(o));
 	}
@@ -2451,6 +2441,18 @@ public final class Caster {
     	
     	return ValidateCreditCard.toCreditcard(str,defaultValue);
 	}
+     
+    /**
+     * cast a Object to a Base64 value
+     * @param o Object to cast
+     * @return to Base64 String
+     * @throws PageException
+     */
+    public static String toBase64(Object o,String charset) throws PageException {
+        String str=toBase64(o,charset,null);
+        if(str==null) throw new CasterException(o,"base 64");
+        return str;
+    }
     
     /**
      * cast a Object to a Base64 value
@@ -2458,28 +2460,48 @@ public final class Caster {
      * @param defaultValue 
      * @return to Base64 String
      */
-    public static String toBase64(Object o, String defaultValue) {
+    public static String toBase64(Object o,String charset,String defaultValue) {
         byte[] b;
         if(o instanceof byte[])b=(byte[]) o;
-        else if(o instanceof String)b=o.toString().getBytes();
+        else if(o instanceof String)return toB64((String)o, charset,defaultValue);
         else if(o instanceof ObjectWrap) {
-            return toBase64(((ObjectWrap)o).getEmbededObject(defaultValue),defaultValue);
+            return toBase64(((ObjectWrap)o).getEmbededObject(defaultValue),charset,defaultValue);
         }
-        else if(o == null) return toBase64("",defaultValue);
+        else if(o == null) return toBase64("",charset,defaultValue);
         else {
         	String str = toString(o,null);
-        	if(str!=null)return toBase64(str,defaultValue);
+        	if(str!=null)return toBase64(str,charset,defaultValue);
         	
         	b=toBinary(o,null);
         	if(b==null)return defaultValue;
         }
-        
-        byte[] bytes=Base64.encodeBase64(b);
-        StringBuffer sb=new StringBuffer();
-        for(int i=0;i<bytes.length;i++) {
-            sb.append((char)bytes[i]);
-        }
-        return sb.toString();
+        return toB64(b,defaultValue);
+    }
+
+
+    public static String toB64(String str,String charset) throws CoderException, UnsupportedEncodingException {
+        return toB64(str.getBytes(charset));
+    }
+    
+    public static String toB64(byte[] b) throws CoderException {
+        return Base64Coder.encode(b);
+    }
+
+    public static String toB64(String str,String charset, String defaultValue) {
+        if(StringUtil.isEmpty(charset,true))charset="UTF-8";
+    	try {
+			return Base64Coder.encodeFromString(str,charset);
+		} catch (Throwable t) {
+			return defaultValue;
+		}
+    }
+    
+    public static String toB64(byte[] b, String defaultValue) {
+        try {
+			return Base64Coder.encode(b);
+		} catch (Throwable t) {
+			return defaultValue;
+		}
     }
 
     /**
@@ -3177,7 +3199,7 @@ public final class Caster {
                         return toBinary(o);
                     }
                     else if(type.equals("base64")) {
-                        return toBase64(o);
+                        return toBase64(o,null);
                     }
                     break;
                 case 'c':

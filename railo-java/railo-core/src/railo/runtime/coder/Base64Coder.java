@@ -19,24 +19,10 @@ public final class Base64Coder {
      * @throws ExpressionException
      */
     public static String decodeToString(String encoded,String charset) throws CoderException, UnsupportedEncodingException {
-    	byte[] dec = decode(Caster.toString(encoded,null),charset);
+    	byte[] dec = decode(Caster.toString(encoded,null));
     	return new String(dec,charset);
     }
-    
-    /**
-     * decodes a Base64 String to a Plain String
-     * @param encoded
-     * @return decoded binary data 
-     * @throws CoderException 
-     */
-    public static byte[] decode(String encoded, String charset) throws CoderException {
-        try {
-	    	return Base64.decodeBase64(encoded.getBytes(charset));
-        }
-        catch(Throwable t) {
-        	return _decode(encoded);
-        }
-    } 
+
     /**
      * encodes a String to Base64 String
      * @param plain String to encode
@@ -45,7 +31,7 @@ public final class Base64Coder {
      * @throws UnsupportedEncodingException 
      */
     public static String encodeFromString(String plain,String charset) throws CoderException, UnsupportedEncodingException {
-    	return encode(plain.getBytes(charset),charset);
+    	return encode(plain.getBytes(charset));
     }
     
     /**
@@ -54,37 +40,33 @@ public final class Base64Coder {
      * @return encoded String
      * @throws CoderException 
      */
-    public static String encode(byte[] barr, String charset) throws CoderException {
-		try {
-			return new String(Base64.encodeBase64(barr),charset);
-		}
-        catch(Throwable t) {
-        	return _encode(barr);
-        }
+    public static String encode(byte[] barr) throws CoderException {
+		barr=Base64.encodeBase64(barr);
+		StringBuilder sb=new StringBuilder();
+	    for(int i=0;i<barr.length;i++) {
+	    	sb.append((char)barr[i]);
+	    }
+	    return sb.toString();
     } 
-  
-    private static byte[] _decode(String encoded) throws CoderException {
+    
+    /**
+     * decodes a Base64 String to a Plain String
+     * @param encoded
+     * @return decoded binary data 
+     * @throws CoderException 
+     */
+    public static byte[] decode(String encoded) throws CoderException {
         try {
-    	char[] chars;
-		chars = encoded.toCharArray();
-		
-		byte[] bytes=new byte[chars.length];
-		for(int i=0;i<chars.length;i++) {
-			bytes[i]=(byte)chars[i];
-		}
-		return Base64.decodeBase64(bytes);
+	    	char[] chars = encoded.toCharArray();
+			byte[] bytes=new byte[chars.length];
+			
+			for(int i=0;i<chars.length;i++) {
+				bytes[i]=(byte)chars[i];
+			}
+			return Base64.decodeBase64(bytes);
         }
         catch(Throwable t) {
         	throw new CoderException("can't decode input ["+encoded+"]");
         }
-    } 
-    
-    private static String _encode(byte[] barr) {
-		byte[] bytes=Base64.encodeBase64(barr);
-		StringBuffer sb=new StringBuffer();
-		for(int i=0;i<bytes.length;i++) {
-			sb.append((char)bytes[i]);
-		}
-		return sb.toString();
     } 
 }

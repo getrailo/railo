@@ -43,7 +43,7 @@ public final class Coder {
 	public static byte[] decode(short type, String value) throws CoderException {
 		if(type==ENCODING_UU)			return UUCoder.decode(value);
 		else if(type==ENCODING_HEX)		return HexCoder.decode(value);
-		else if(type==ENCODING_BASE64)	return Base64Coder.decode(value,"UTF-8");
+		else if(type==ENCODING_BASE64)	return Base64Coder.decode(value);
 		throw new CoderException("invalid encoding definition");
 	}
 
@@ -70,7 +70,7 @@ public final class Coder {
 	public static String encode(short type, byte[] value) throws CoderException {
 		if(type==ENCODING_UU)			return UUCoder.encode(value);
 		else if(type==ENCODING_HEX)		return HexCoder.encode(value);
-		else if(type==ENCODING_BASE64)	return Base64Coder.encode(value,"UTF-8");
+		else if(type==ENCODING_BASE64)	return Base64Coder.encode(value);
 		throw new CoderException("invalid encoding definition");
 	}
 }
