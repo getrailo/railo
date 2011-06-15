@@ -34,7 +34,7 @@ public final class Base64Coder {
 	    	return Base64.decodeBase64(encoded.getBytes(charset));
         }
         catch(Throwable t) {
-        	throw new CoderException("can't decode input");
+        	return _decode(encoded);
         }
     } 
     /**
@@ -59,7 +59,32 @@ public final class Base64Coder {
 			return new String(Base64.encodeBase64(barr),charset);
 		}
         catch(Throwable t) {
-        	throw new CoderException("can't encode input");
+        	return _encode(barr);
         }
+    } 
+  
+    private static byte[] _decode(String encoded) throws CoderException {
+        try {
+    	char[] chars;
+		chars = encoded.toCharArray();
+		
+		byte[] bytes=new byte[chars.length];
+		for(int i=0;i<chars.length;i++) {
+			bytes[i]=(byte)chars[i];
+		}
+		return Base64.decodeBase64(bytes);
+        }
+        catch(Throwable t) {
+        	throw new CoderException("can't decode input ["+encoded+"]");
+        }
+    } 
+    
+    private static String _encode(byte[] barr) {
+		byte[] bytes=Base64.encodeBase64(barr);
+		StringBuffer sb=new StringBuffer();
+		for(int i=0;i<bytes.length;i++) {
+			sb.append((char)bytes[i]);
+		}
+		return sb.toString();
     } 
 }
