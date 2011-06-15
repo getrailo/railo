@@ -10437,6 +10437,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
+			<default>medium</default>
 		<description></description>
     </argument>
 		<argument>
@@ -10722,6 +10723,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
+			<default>short</default>
 		<description></description>
     </argument>
 		<argument>

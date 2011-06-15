@@ -173,8 +173,8 @@ Error Output --->
 	<td class="tblHead" width="150">#stText.Overview.ServerTime#</td>
 	<td class="tblContent">
 		
-		#lsdateFormat(nowServer())#
-		#lstimeFormat(nowServer())#
+		#lsdateFormat(date:now(),timezone:"jvm")#
+		#lstimeFormat(time:now(),timezone:"jvm")#
 	</td> 
 </tr>
 <tr>
