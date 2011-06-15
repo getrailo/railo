@@ -29,6 +29,49 @@
 		<cfset url.action = cookie.railo_admin_lastpage>
 	</cfif>
 </cfif>
+<cfset login_error="">
+<!--- new pw Form --->
+<cfif StructKeyExists(form,"new_password") and StructKeyExists(form,"new_password_re")>
+	<cfif len(form.new_password) LT 6>
+		<cfset login_error="password is to short, it must have at least 6 chars">
+	<cfelseif form.new_password NEQ form.new_password_re>
+		<cfset login_error="password and password retype are not equal">
+	<cfelse>
+		<cfadmin 
+			action="updatePassword"
+			type="#request.adminType#"
+			newPassword="#form.new_password#">
+		<cfset session["password"&request.adminType]=form.new_password>
+	</cfif> 
+</cfif>
+
+<!--- cookie ---->
+<cfset fromCookie=false>
+<cfif not StructKeyExists(session,"password"&request.adminType) and StructKeyExists(cookie,'railo_admin_pw_#ad#')>
+	<cfset fromCookie=true>
+    <cftry>
+		<cfset session["password"&ad]=Decrypt(cookie['railo_admin_pw_#ad#'],cookieKey)>
+    	<cfcatch></cfcatch>
+    </cftry>
+</cfif>
+
+<!--- Session --->
+<cfif StructKeyExists(session,"password"&request.adminType)>
+	<cftry>
+		<cfadmin 
+			action="connect"
+			type="#request.adminType#"
+			password="#session["password"&request.adminType]#">
+		<!--- <cfset admin=createObject("java","railo.runtime.config.ConfigWebAdmin").
+		newInstance(config,session["password"&request.adminType])>
+		 --->
+		 <cfcatch>
+		 	<cfset login_error=cfcatch.message>
+			<cfset StructDelete(session,"password"&request.adminType)>
+		</cfcatch>
+	</cftry>
+</cfif> 
+
 
 <cfif not StructKeyExists(session,'railo_admin_lang')>
 	<cfset session.railo_admin_lang ='en'>
@@ -89,7 +132,7 @@
     <cfif navigation[arrayLen(navigation)].action neq "plugin">
     	
         <cfset plugin=struct(
-            label:"Plugin",
+            label:"Plugins",
             children:plugins,
             action:"plugin"
         )>
@@ -194,48 +237,6 @@ function getRemoteClients() {
 }
 request.getRemoteClients=getRemoteClients;
 </cfscript>
-<cfset login_error="">
-<!--- new pw Form --->
-<cfif StructKeyExists(form,"new_password") and StructKeyExists(form,"new_password_re")>
-	<cfif len(form.new_password) LT 6>
-		<cfset login_error="password is to short, it must have at least 6 chars">
-	<cfelseif form.new_password NEQ form.new_password_re>
-		<cfset login_error="password and password retype are not equal">
-	<cfelse>
-		<cfadmin 
-			action="updatePassword"
-			type="#request.adminType#"
-			newPassword="#form.new_password#">
-		<cfset session["password"&request.adminType]=form.new_password>
-	</cfif> 
-</cfif>
-
-<!--- cookie ---->
-<cfset fromCookie=false>
-<cfif not StructKeyExists(session,"password"&request.adminType) and StructKeyExists(cookie,'railo_admin_pw_#ad#')>
-	<cfset fromCookie=true>
-    <cftry>
-		<cfset session["password"&ad]=Decrypt(cookie['railo_admin_pw_#ad#'],cookieKey)>
-    	<cfcatch></cfcatch>
-    </cftry>
-</cfif>
-
-<!--- Session --->
-<cfif StructKeyExists(session,"password"&request.adminType)>
-	<cftry>
-		<cfadmin 
-			action="connect"
-			type="#request.adminType#"
-			password="#session["password"&request.adminType]#">
-		<!--- <cfset admin=createObject("java","railo.runtime.config.ConfigWebAdmin").
-		newInstance(config,session["password"&request.adminType])>
-		 --->
-		 <cfcatch>
-		 	<cfset login_error=cfcatch.message>
-			<cfset StructDelete(session,"password"&request.adminType)>
-		</cfcatch>
-	</cftry>
-</cfif> 
 
 <cfif not StructKeyExists(session,"password"&request.adminType)>
 		<cfadmin 
