@@ -24,7 +24,7 @@ import org.hibernate.type.Type;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWebImpl;
@@ -221,7 +221,7 @@ public class HibernateORMSession implements ORMSession{
 	 * @see railo.runtime.orm.ORMSession#evictEntity(railo.runtime.PageContext, java.lang.String, java.lang.String)
 	 */
 	public void evictEntity(PageContext pc, String entityName, String id) throws PageException {
-		//ComponentPro cfc = ComponentUtil.toComponentPro(HibernateCaster.toComponent(pc, entityName));
+		//Component cfc = ComponentUtil.toComponent(HibernateCaster.toComponent(pc, entityName));
 		SessionFactory f = getSessionFactory(pc);
 		//entityName=HibernateCaster.getEntityName(pc,engine,cfc);
 		
@@ -244,7 +244,7 @@ public class HibernateORMSession implements ORMSession{
 	 * @see railo.runtime.orm.ORMSession#evictCollection(railo.runtime.PageContext, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	public void evictCollection(PageContext pc, String entityName, String collectionName, String id) throws PageException {
-		//ComponentPro cfc = ComponentUtil.toComponentPro(HibernateCaster.toComponent(pc, entityName));
+		//Component cfc = ComponentUtil.toComponent(HibernateCaster.toComponent(pc, entityName));
 		//entityName=HibernateCaster.getEntityName(pc,engine,cfc);
 		
 		SessionFactory f = getSessionFactory(pc);
@@ -531,7 +531,7 @@ public class HibernateORMSession implements ORMSession{
 	}
 	
 	private Object loadByExample(PageContext pc, Object obj,  boolean unique) throws PageException {
-		 ComponentPro cfc=ComponentUtil.toComponentPro(HibernateCaster.toComponent(obj));
+		 Component cfc=ComponentUtil.toComponent(HibernateCaster.toComponent(obj));
 		 ComponentScope scope = cfc.getComponentScope();
 		 String name=HibernateCaster.getEntityName(cfc);
 		 //Session session=getSession(pc, cfc);

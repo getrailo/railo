@@ -3,7 +3,7 @@ package railo.runtime.type.cfc;
 import java.util.Iterator;
 import java.util.Set;
 
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.component.Member;
 import railo.runtime.dump.DumpData;
@@ -12,17 +12,17 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 
-public abstract class ComponentAccessProxy extends ComponentProProxy implements ComponentAccess {
+public abstract class ComponentAccessProxy extends ComponentProxy implements ComponentAccess {
 
 	public abstract ComponentAccess getComponentAccess();
 	
 
-	public ComponentPro getComponentPro() {
+	public Component getComponent() {
 		return getComponentAccess();
 	}
 	
 	/**
-	 * @see railo.runtime.ComponentPro#getWSDLFile()
+	 * @see railo.runtime.Component#getWSDLFile()
 	 */
 	public String getWSDLFile() {
 		return getComponentAccess().getWSDLFile();

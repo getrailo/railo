@@ -16,7 +16,7 @@ import org.w3c.dom.Node;
 
 import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
@@ -244,9 +244,9 @@ public final class JSONConverter {
             _serialize(pc,test,value,sb,serializeQueryByColumns,done);
         }
         
-        if(struct instanceof ComponentPro){
+        if(struct instanceof Component){
         	Boolean remotingFetch;
-        	ComponentPro cp = (ComponentPro)struct;
+        	Component cp = (Component)struct;
         	boolean isPeristent=false;
         	try {
 				ComponentAccess ca = ComponentUtil.toComponentAccess(cp);

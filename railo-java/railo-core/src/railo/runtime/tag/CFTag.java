@@ -9,7 +9,7 @@ import javax.servlet.jsp.tagext.Tag;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.component.ComponentLoader;
@@ -108,7 +108,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     private String appendix;
 	//private boolean doCustomTagDeepSearch;
 	
-	private ComponentPro cfc;
+	private Component cfc;
 	private boolean isEndTag;
 	
 	
@@ -358,7 +358,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	
 	}
 
-	private static void validateAttributes(ComponentPro cfc,StructImpl attributesScope,String tagName) throws ApplicationException, ExpressionException {
+	private static void validateAttributes(Component cfc,StructImpl attributesScope,String tagName) throws ApplicationException, ExpressionException {
 		
 		TagLibTag tag=getAttributeRequirments(cfc,false);
 		if(tag==null) return;
@@ -413,7 +413,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     } 
     
 
-	private static TagLibTag getAttributeRequirments(ComponentPro cfc, boolean runtime) throws ExpressionException {
+	private static TagLibTag getAttributeRequirments(Component cfc, boolean runtime) throws ExpressionException {
 		
 		Struct meta=null;
     	//try {

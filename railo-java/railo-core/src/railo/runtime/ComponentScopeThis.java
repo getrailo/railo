@@ -281,7 +281,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
      * Returns the value of component.
      * @return value component
      */
-    public ComponentPro getComponent() {
+    public Component getComponent() {
         return component;
     }
 

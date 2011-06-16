@@ -56,7 +56,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	/**
 	 * @see railo.runtime.ComponentScope#getComponent()
 	 */
-	public ComponentPro getComponent() {
+	public Component getComponent() {
 		return component;
 	}
 

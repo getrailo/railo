@@ -13,7 +13,7 @@ import org.w3c.dom.NodeList;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.db.DatasourceConnection;
@@ -47,7 +47,7 @@ public class HBMCreator {
 	public static void createXMLMapping(PageContext pc,DatasourceConnection dc, Component cfc,ORMConfiguration ormConf,Element hibernateMapping,HibernateORMEngine engine) throws PageException {
 		
 		// MUST Support for embeded objects 
-		ComponentPro cfci = ComponentUtil.toComponentPro(cfc);
+		Component cfci = ComponentUtil.toComponent(cfc);
 		Struct meta = cfci.getMetaData(pc);
 		
 		String extend = cfc.getExtends();
@@ -168,7 +168,7 @@ public class HBMCreator {
 		
 	}
 	
-	private static Property[] getProperties(PageContext pc, HibernateORMEngine engine, ComponentPro cfci, DatasourceConnection dc, ORMConfiguration ormConf, Struct meta, boolean isClass) throws ORMException, PageException {
+	private static Property[] getProperties(PageContext pc, HibernateORMEngine engine, Component cfci, DatasourceConnection dc, ORMConfiguration ormConf, Struct meta, boolean isClass) throws ORMException, PageException {
 		Property[] _props = cfci.getProperties(true);
 		if(isClass && _props.length==0 && ormConf.useDBForMapping()){
 			if(meta==null)meta = cfci.getMetaData(pc);
@@ -725,7 +725,7 @@ public class HBMCreator {
 				try {
 					Component cfc = engine.getEntityByCFCName(foreignCFC.toString(), false);
 					if(cfc!=null){
-						ComponentPro cfcp = ComponentUtil.toComponentPro(cfc);
+						Component cfcp = ComponentUtil.toComponent(cfc);
 						Property[] ids = getIds(engine,cfc,cfcp.getProperties(true),null,true);
 						if(!ArrayUtil.isEmpty(ids)){
 							Property id = ids[0];
@@ -1325,7 +1325,7 @@ public class HBMCreator {
 		
 		// build fkcolumn name
 		if(StringUtil.isEmpty(str,true)) {
-			ComponentPro other = (ComponentPro) loadForeignCFC(pc, engine, cfc, prop, meta);
+			Component other = (Component) loadForeignCFC(pc, engine, cfc, prop, meta);
 			if(other!=null){
 				boolean isClass=StringUtil.isEmpty(other.getExtends());
 				Property[] _props=getProperties(pc,engine,other,dc,ormConf,meta,isClass);
@@ -1344,7 +1344,7 @@ public class HBMCreator {
 						String othLinkTable=Caster.toString(m.get(LINK_TABLE,null),null);
 						if(currLinkTable.equals(othLinkTable)) {
 							// cfc name
-							ComponentPro cfcp=ComponentUtil.toComponentPro(cfc);
+							Component cfcp=ComponentUtil.toComponent(cfc);
 							String cfcName=Caster.toString(m.get(CFC,null),null);
 							if(cfcp.equalTo(cfcName)){
 								_prop=_props[i];

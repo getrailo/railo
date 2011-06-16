@@ -868,5 +868,14 @@ public final class ASMUtil {
 		
 		return defaultValue;
 	}
+
+
+	public static ASMProperty[] toASMProperties(Property[] properties) {
+		ASMProperty[] asmp=new ASMProperty[properties.length];
+		for(int i=0;i<asmp.length;i++){
+			asmp[i]=(ASMProperty) properties[i];
+		}
+		return asmp;
+	}
 	
 }

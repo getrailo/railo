@@ -26,7 +26,7 @@ import railo.runtime.type.util.StructUtil;
 /**
  * 
  */
-public class SuperComponent extends MemberSupport implements ComponentPro, Member,Sizeable {
+public class SuperComponent extends MemberSupport implements Component, Member,Sizeable {
 	
 	private ComponentImpl comp;
 
@@ -291,7 +291,7 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	}
     
     /**
-     * @see railo.runtime.ComponentPro#getBaseAbsName()
+     * @see railo.runtime.Component#getBaseAbsName()
      */
     public String getBaseAbsName() {
         return comp.getBaseAbsName();
@@ -524,7 +524,7 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	}
 	
 	/**
-	 * @see railo.runtime.ComponentPro#getPageSource()
+	 * @see railo.runtime.Component#getPageSource()
 	 */
 	public PageSource getPageSource() {
 		return comp.getPageSource();
@@ -611,35 +611,35 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	}
 
 	/**
-	 * @see railo.runtime.ComponentPro#getProperties()
+	 * @see railo.runtime.Component#getProperties()
 	 */
 	public Property[] getProperties(boolean onlyPeristent) {
 		return comp.getProperties(onlyPeristent);
 	}
 
 	/**
-	 * @see railo.runtime.ComponentPro#getComponentScope()
+	 * @see railo.runtime.Component#getComponentScope()
 	 */
 	public ComponentScope getComponentScope() {
 		return comp.getComponentScope();
 	}
 
 	/**
-	 * @see railo.runtime.ComponentPro#contains(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
+	 * @see railo.runtime.Component#contains(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
 	 */
 	public boolean contains(PageContext pc, Key key) {
 		return comp.contains(getAccess(),key);
 	}
 
 	/**
-	 * @see railo.runtime.ComponentPro#getMember(int, railo.runtime.type.Collection.Key, boolean, boolean)
+	 * @see railo.runtime.Component#getMember(int, railo.runtime.type.Collection.Key, boolean, boolean)
 	 */
 	public Member getMember(int access, Key key, boolean dataMember,boolean superAccess) {
 		return comp.getMember(access, key, dataMember, superAccess);
 	}
 
 	/**
-	 * @see railo.runtime.ComponentPro#setProperty(railo.runtime.component.Property)
+	 * @see railo.runtime.Component#setProperty(railo.runtime.component.Property)
 	 */
 	public void setProperty(Property property) throws PageException {
 		comp.setProperty(property);
@@ -659,7 +659,7 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	}
 
 	/**
-	 * @see railo.runtime.ComponentPro#getWSDLFile()
+	 * @see railo.runtime.Component#getWSDLFile()
 	 */
 	public String getWSDLFile() {
 		return comp.getWSDLFile();

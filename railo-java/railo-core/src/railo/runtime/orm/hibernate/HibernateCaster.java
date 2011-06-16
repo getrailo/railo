@@ -9,7 +9,7 @@ import org.hibernate.type.Type;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
@@ -38,8 +38,8 @@ public class HibernateCaster {
 	private static final int NULL = -178696;
 	private static final Key ENTITY_NAME = KeyImpl.init("entityname");
 	/*public static Component toCFML(PageContext pc,Map map, Component cfc) throws PageException {
-		if(map instanceof ComponentPro) return (Component) map;
-		ComponentPro ci = ComponentUtil.toComponentPro(cfc);
+		if(map instanceof Component) return (Component) map;
+		Component ci = ComponentUtil.toComponent(cfc);
 		ComponentScope scope = ci.getComponentScope();
 		
 		map.remove("$type$");
@@ -127,7 +127,7 @@ public class HibernateCaster {
 	private static String getName(Component cfc) {
 		String name=null;
 		// MUSTMUST cfc.getName() should return the real case, this should not be needed
-		ComponentPro cfcp = ComponentUtil.toComponentPro(cfc,null);
+		Component cfcp = ComponentUtil.toComponent(cfc,null);
 		if(cfcp!=null){
 			name = cfcp.getPageSource().getDisplayPath();
 	        name=railo.runtime.type.List.last(name, "\\/",true);
@@ -436,7 +436,7 @@ public class HibernateCaster {
 		Query qry=null;
 		// a single entity
 		if(!Decision.isArray(obj)){
-			qry= toQuery(pc,session,ComponentUtil.toComponentPro(HibernateCaster.toComponent(obj)),name,null,1,1);
+			qry= toQuery(pc,session,ComponentUtil.toComponent(HibernateCaster.toComponent(obj)),name,null,1,1);
 		}
 		
 		// a array of entities
@@ -447,7 +447,7 @@ public class HibernateCaster {
 				Iterator it = arr.valueIterator();
 				int row=1;
 				while(it.hasNext()){
-					qry=toQuery(pc,session,ComponentUtil.toComponentPro(HibernateCaster.toComponent(it.next())),name,qry,len,row++);
+					qry=toQuery(pc,session,ComponentUtil.toComponent(HibernateCaster.toComponent(it.next())),name,qry,len,row++);
 				}
 			}
 			else 
@@ -462,7 +462,7 @@ public class HibernateCaster {
 		return qry;
 	}
 	
-	private static Query toQuery(PageContext pc,HibernateORMSession session,ComponentPro cfc, String entityName,Query qry, int rowcount, int row) throws PageException {
+	private static Query toQuery(PageContext pc,HibernateORMSession session,Component cfc, String entityName,Query qry, int rowcount, int row) throws PageException {
 		// inheritance mapping
 		if(!StringUtil.isEmpty(entityName)){
 			//String cfcName = toComponentName(HibernateCaster.toComponent(pc, entityName));
@@ -474,7 +474,7 @@ public class HibernateCaster {
 
 
 
-	private static Query populateQuery(PageContext pc,HibernateORMSession session,ComponentPro cfc,Query qry) throws PageException {
+	private static Query populateQuery(PageContext pc,HibernateORMSession session,Component cfc,Query qry) throws PageException {
 		Property[] properties = cfc.getProperties(true);
 		ComponentScope scope = cfc.getComponentScope();
 		HibernateORMEngine engine=(HibernateORMEngine) session.getEngine();
@@ -528,26 +528,26 @@ public class HibernateCaster {
 
 
 
-	private static Query inheritance(PageContext pc,HibernateORMSession session,ComponentPro cfc,Query qry, String entityName) throws PageException {
+	private static Query inheritance(PageContext pc,HibernateORMSession session,Component cfc,Query qry, String entityName) throws PageException {
 		Property[] properties = cfc.getProperties(true);
 		ComponentScope scope = cfc.getComponentScope();
 		String name;
 		Object value;
-		ComponentPro child;
+		Component child;
 		Array arr;
 		for(int i=0;i<properties.length;i++){
 			name=properties[i].getName();
 			value=scope.get(name,null);
-			if(value instanceof ComponentPro){
-				qry=inheritance(pc,session,qry,cfc,(ComponentPro) value,entityName);
+			if(value instanceof Component){
+				qry=inheritance(pc,session,qry,cfc,(Component) value,entityName);
 			}
 			else if(Decision.isArray(value)){
 				arr = Caster.toArray(value);
 				Iterator it = arr.valueIterator();
 				while(it.hasNext()){
 					value=it.next();
-					if(value instanceof ComponentPro){
-						qry=inheritance(pc,session,qry,cfc,(ComponentPro) value,entityName);
+					if(value instanceof Component){
+						qry=inheritance(pc,session,qry,cfc,(Component) value,entityName);
 					}
 				}
 			}
@@ -558,7 +558,7 @@ public class HibernateCaster {
 
 
 
-	private static Query inheritance(PageContext pc,HibernateORMSession session,Query qry,ComponentPro parent,ComponentPro child,String entityName) throws PageException {
+	private static Query inheritance(PageContext pc,HibernateORMSession session,Query qry,Component parent,Component child,String entityName) throws PageException {
 		if(getEntityName(child).equalsIgnoreCase(entityName))
 			return populateQuery(pc,session,child,qry);
 		return inheritance(pc,session,child, qry, entityName);// MUST geh ACF auch so tief?
@@ -571,7 +571,7 @@ public class HibernateCaster {
 	 * @return
 	 */
 	public static String toComponentName(Component cfc) {
-		return ((ComponentPro)cfc).getPageSource().getComponentName();
+		return ((Component)cfc).getPageSource().getComponentName();
 	}
 	
 	public static Component toComponent(Object obj) throws PageException {

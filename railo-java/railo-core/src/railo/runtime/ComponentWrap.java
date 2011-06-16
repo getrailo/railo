@@ -19,7 +19,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructSupport;
 
-public final class ComponentWrap extends StructSupport implements ComponentPro, Objects {
+public final class ComponentWrap extends StructSupport implements Component, Objects {
    
     private int access;
     private ComponentAccess component;
@@ -46,7 +46,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
     }
 
     /**
-     * @see railo.runtime.ComponentPro#getPageSource()
+     * @see railo.runtime.Component#getPageSource()
      */
     public PageSource getPageSource(){
     	return component.getPageSource();
@@ -102,7 +102,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
     }
     
     /**
-     * @see railo.runtime.ComponentPro#getBaseAbsName()
+     * @see railo.runtime.Component#getBaseAbsName()
      */
     public String getBaseAbsName() {
         return component.getBaseAbsName();
@@ -461,14 +461,14 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 	}
 
 	/**
-	 * @see railo.runtime.ComponentPro#getProperties()
+	 * @see railo.runtime.Component#getProperties()
 	 */
 	public Property[] getProperties(boolean onlyPeristent) {
 		return component.getProperties(onlyPeristent);
 	}
 	
 	/**
-	 * @see railo.runtime.ComponentPro#getComponentScope()
+	 * @see railo.runtime.Component#getComponentScope()
 	 */
 	public ComponentScope getComponentScope(){
 		return component.getComponentScope();
@@ -479,21 +479,21 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 	}
 
 	/**
-	 * @see railo.runtime.ComponentPro#contains(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
+	 * @see railo.runtime.Component#contains(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
 	 */
 	public boolean contains(PageContext pc, Key key) {
 		return component.contains(access,key);
 	}
 
 	/**
-	 * @see railo.runtime.ComponentPro#getMember(int, railo.runtime.type.Collection.Key, boolean, boolean)
+	 * @see railo.runtime.Component#getMember(int, railo.runtime.type.Collection.Key, boolean, boolean)
 	 */
 	public Member getMember(int access, Key key, boolean dataMember,boolean superAccess) {
 		return component.getMember(access, key, dataMember, superAccess);
 	}
 
 	/**
-	 * @see railo.runtime.ComponentPro#setProperty(railo.runtime.component.Property)
+	 * @see railo.runtime.Component#setProperty(railo.runtime.component.Property)
 	 */
 	public void setProperty(Property property) throws PageException {
 		component.setProperty(property);

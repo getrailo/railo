@@ -20,8 +20,10 @@ import railo.transformer.bytecode.util.ASMUtil;
 /**
  * FUTURE add a interface to public interface
  */
-public final class Property extends MemberSupport implements ASMProperty {
+public final class PropertyImpl extends MemberSupport implements Property,ASMProperty {
     
+
+	private static final long serialVersionUID = 3206074213415946902L;
 
 	private static final Collection.Key PERSITENT = KeyImpl.getInstance("persistent");
 	
@@ -39,7 +41,7 @@ public final class Property extends MemberSupport implements ASMProperty {
 
 	private String ownerName;
 	
-	public Property() {
+	public PropertyImpl() {
 		super(Component.ACCESS_REMOTE);
 	}
 

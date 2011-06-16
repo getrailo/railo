@@ -4,7 +4,7 @@ import java.util.HashSet;
 
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.component.Property;
@@ -113,8 +113,8 @@ public class ORMUtil {
 		done.add(right);
 		
 		
-		ComponentPro cpl =ComponentUtil.toComponentPro(left,null);
-		ComponentPro cpr = ComponentUtil.toComponentPro(right,null);
+		Component cpl =ComponentUtil.toComponent(left,null);
+		Component cpr = ComponentUtil.toComponent(right,null);
 		
 		if(cpl==null || cpr==null) return false;
 		if(!cpl.getPageSource().equals(cpr.getPageSource())) return false;

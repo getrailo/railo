@@ -3,7 +3,7 @@ package railo.runtime.functions.system;
 import java.util.Iterator;
 
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
@@ -31,7 +31,7 @@ public class GetApplicationSettings {
 	
 	public static Struct call(PageContext pc, boolean suppressFunctions) {
 		ApplicationContextPro ac = (ApplicationContextPro)pc.getApplicationContext();
-		ComponentPro cfc = null;
+		Component cfc = null;
 		if(ac instanceof ModernApplicationContext)cfc= ((ModernApplicationContext)ac).getComponent();
 		
 

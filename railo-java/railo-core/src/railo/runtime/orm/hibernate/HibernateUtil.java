@@ -12,8 +12,9 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.component.Property;
+import railo.runtime.component.PropertyImpl;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -122,9 +123,10 @@ public class HibernateUtil {
 			Property p;
 			while(res.next()) {
 				name=res.getString("COLUMN_NAME");
-				p=new Property();
-				p.setName(name);
-				p.setType(res.getString("TYPE_NAME"));
+				PropertyImpl pi=new PropertyImpl();
+				p=pi;
+				pi.setName(name);
+				pi.setType(res.getString("TYPE_NAME"));
 				properties.setEL(name, p);
 			}
 			
@@ -153,7 +155,7 @@ public class HibernateUtil {
 	}
 
 
-	public static Property[] getProperties(ComponentPro component,int fieldType, Property[] defaultValue) {
+	public static Property[] getProperties(Component component,int fieldType, Property[] defaultValue) {
 		Property[] props = component.getProperties(true);
 		java.util.List<Property> rtn=new ArrayList<Property>();
 		

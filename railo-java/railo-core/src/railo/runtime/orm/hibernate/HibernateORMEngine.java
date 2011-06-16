@@ -33,7 +33,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.DataSource;
@@ -85,7 +85,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 	private DataSource ds;
 
-	private List<ComponentPro> arr;
+	private List<Component> arr;
 
 	private Object hash;
 
@@ -206,7 +206,7 @@ public class HibernateORMEngine implements ORMEngine {
 			//DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
 			this.ds=dc.getDatasource();
 			try {
-				Iterator<ComponentPro> it = arr.iterator();
+				Iterator<Component> it = arr.iterator();
 				while(it.hasNext()){
 					createMapping(pc,it.next(),dc,ormConf);
 				}
@@ -216,10 +216,10 @@ public class HibernateORMEngine implements ORMEngine {
 				//manager.releaseConnection(pc,dc);
 			}
 			if(arr.size()!=cfcs.size()){
-				ComponentPro cfc;
+				Component cfc;
 				String name,lcName;
 				Map<String,String> names=new HashMap<String,String>();
-				Iterator<ComponentPro> it = arr.iterator();
+				Iterator<Component> it = arr.iterator();
 				while(it.hasNext()){
 					cfc=it.next();
 					name=HibernateCaster.getEntityName(cfc);
@@ -398,7 +398,7 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 
 	public void createMapping(PageContext pc,Component cfc, DatasourceConnection dc, ORMConfiguration ormConf) throws PageException {
-		ComponentPro cfcp=ComponentUtil.toComponentPro(cfc);
+		Component cfcp=ComponentUtil.toComponent(cfc);
 		String id=id(HibernateCaster.getEntityName(cfcp));
 		CFCInfo info=cfcs.get(id);
 		//Long modified=cfcs.get(id);
@@ -450,7 +450,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 	private static void saveMapping(ORMConfiguration ormConf, Component cfc, Element hm) throws ExpressionException {
 		if(ormConf.saveMapping()){
-			Resource res=ComponentUtil.toComponentPro(cfc).getPageSource().getPhyscalFile();
+			Resource res=ComponentUtil.toComponent(cfc).getPageSource().getPhyscalFile();
 			if(res!=null){
 				res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
 				try{
@@ -463,7 +463,7 @@ public class HibernateORMEngine implements ORMEngine {
 	
 	private static long loadMapping(StringBuilder sb,ORMConfiguration ormConf, Component cfc) throws ExpressionException {
 		
-		Resource res=ComponentUtil.toComponentPro(cfc).getPageSource().getPhyscalFile();
+		Resource res=ComponentUtil.toComponent(cfc).getPageSource().getPhyscalFile();
 		if(res!=null){
 			res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
 			try{
@@ -601,7 +601,7 @@ public class HibernateORMEngine implements ORMEngine {
 	public Component create(PageContext pc, HibernateORMSession session,String entityName, boolean unique) throws PageException {
 		
 		// get existing entity
-		ComponentPro cfc = _create(pc,entityName,unique);
+		Component cfc = _create(pc,entityName,unique);
 		if(cfc!=null)return cfc;
 		
 		// reinit ORMEngine
@@ -637,12 +637,12 @@ public class HibernateORMEngine implements ORMEngine {
 		return sb.toString();
 	}
 
-	private ComponentPro _create(PageContext pc, String entityName, boolean unique) throws PageException {
+	private Component _create(PageContext pc, String entityName, boolean unique) throws PageException {
 		CFCInfo info = cfcs.get(id(entityName));
 		if(info!=null) {
-			ComponentPro cfc = info.getCFC();
+			Component cfc = info.getCFC();
 			if(unique){
-				cfc=(ComponentPro)cfc.duplicate(false);
+				cfc=(Component)cfc.duplicate(false);
 				if(cfc.contains(pc,INIT))cfc.call(pc, "init",new Object[]{});
 			}
 			return cfc;
@@ -665,14 +665,14 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		
 		
-		ComponentPro cfc;
+		Component cfc;
 		String[] names=null;
 		// search array (array exist when cfcs is in generation)
 		
 		if(arr!=null){
 			names=new String[arr.size()];
 			int index=0;
-			Iterator<ComponentPro> it2 = arr.iterator();
+			Iterator<Component> it2 = arr.iterator();
 			while(it2.hasNext()){
 				cfc=it2.next();
 				names[index++]=cfc.getName();
@@ -708,7 +708,7 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 	
 
-	private boolean isEntity(ComponentPro cfc, String cfcName, String name) {
+	private boolean isEntity(Component cfc, String cfcName, String name) {
 		if(!StringUtil.isEmpty(cfcName)) {
 			if(cfc.equalTo(cfcName)) return true;
 
@@ -728,7 +728,7 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 
 	public Component getEntityByEntityName(String entityName,boolean unique) throws PageException {
-		ComponentPro cfc;
+		Component cfc;
 		
 		
 		CFCInfo info = cfcs.get(entityName.toLowerCase());
@@ -738,7 +738,7 @@ public class HibernateORMEngine implements ORMEngine {
 		}
 		
 		if(arr!=null){
-			Iterator<ComponentPro> it2 = arr.iterator();
+			Iterator<Component> it2 = arr.iterator();
 			while(it2.hasNext()){
 				cfc=it2.next();
 				if(HibernateCaster.getEntityName(cfc).equalsIgnoreCase(entityName))
@@ -785,9 +785,9 @@ public class HibernateORMEngine implements ORMEngine {
 class CFCInfo {
 	private String xml;
 	private long modified;
-	private ComponentPro cfc;
+	private Component cfc;
 	
-	public CFCInfo(long modified, String xml, ComponentPro cfc) {
+	public CFCInfo(long modified, String xml, Component cfc) {
 		this.modified=modified;
 		this.xml=xml;
 		this.cfc=cfc;
@@ -795,7 +795,7 @@ class CFCInfo {
 	/**
 	 * @return the cfc
 	 */
-	public ComponentPro getCFC() {
+	public Component getCFC() {
 		return cfc;
 	}
 	/**

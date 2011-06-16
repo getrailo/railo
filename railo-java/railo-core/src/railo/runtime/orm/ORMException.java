@@ -67,7 +67,7 @@ public class ORMException extends ApplicationException {
 
 	private void setContext(Component cfc) {
 		try {
-			if(cfc!=null && getPageDeep()==0)addContext(ComponentUtil.toComponentPro(cfc).getPageSource(), 1, 1, null);
+			if(cfc!=null && getPageDeep()==0)addContext(ComponentUtil.toComponent(cfc).getPageSource(), 1, 1, null);
 			
 			
 		} 

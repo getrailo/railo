@@ -41,7 +41,7 @@ public final class GetComponentMetaData implements Function {
 	}
 
 	private static Struct getMetaData(PageContext pc, Component cfc) throws PageException {
-		return getMetaData(pc, ComponentUtil.toComponentPro(cfc).getPageSource(), cfc);
+		return getMetaData(pc, ComponentUtil.toComponent(cfc).getPageSource(), cfc);
 	}
 	
 	private static Struct getMetaData(PageContext pc, InterfaceImpl inter) throws PageException {

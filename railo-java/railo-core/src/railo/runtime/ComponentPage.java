@@ -86,7 +86,7 @@ public abstract class ComponentPage extends PagePlus  {
 		// call type (invocation, store-only)
 		String callType = Caster.toString(req.getAttribute("call-type"),null);
 		boolean fromGateway="railo-gateway-1-0".equals(client);
-		ComponentPro component;
+		Component component;
         try {
             pc.setSilent();
             // load the cfc
@@ -94,7 +94,7 @@ public abstract class ComponentPage extends PagePlus  {
 	            if(fromGateway && strRemotePersisId!=null) {
 	            	ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
 	            	GatewayEngineImpl engine = config.getGatewayEngine();
-	            	component=(ComponentPro) engine.getPersistentRemoteCFC(strRemotePersisId);
+	            	component=(Component) engine.getPersistentRemoteCFC(strRemotePersisId);
 	            	
 	            	if(component==null) {
 	            		component=newInstance(pc,getPageSource().getComponentName(),false);
@@ -431,7 +431,7 @@ public abstract class ComponentPage extends PagePlus  {
 		return null;
 	}
 
-	private void callWSDL(PageContext pc, ComponentPro component) throws ServletException, IOException, ExpressionException {
+	private void callWSDL(PageContext pc, Component component) throws ServletException, IOException, ExpressionException {
     	// take wsdl file defined by user
     	String wsdl = component.getWSDLFile();
     	if(!StringUtil.isEmpty(wsdl)) {

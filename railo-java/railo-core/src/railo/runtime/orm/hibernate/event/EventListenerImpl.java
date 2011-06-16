@@ -18,7 +18,7 @@ import org.hibernate.event.PreUpdateEvent;
 import org.hibernate.event.PreUpdateEventListener;
 
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -47,11 +47,11 @@ public class EventListenerImpl
 	
 
 	
-    private ComponentPro component;
+    private Component component;
 	private boolean allEvents;
     
 	public EventListenerImpl(Component component, boolean allEvents) {
-	       this.component=ComponentUtil.toComponentPro(component,null); 
+	       this.component=ComponentUtil.toComponent(component,null); 
 	       this.allEvents=allEvents; 
     }
 
@@ -125,7 +125,7 @@ public class EventListenerImpl
 				args=allEvents?new Object[]{obj,data}:new Object[]{data};
 			}
 			if(!allEvents) {
-				if(!ComponentUtil.toComponentPro(component).getPageSource().equals(ComponentUtil.toComponentPro(obj).getPageSource()))
+				if(!ComponentUtil.toComponent(component).getPageSource().equals(ComponentUtil.toComponent(obj).getPageSource()))
 					return;
 			}
 			c.call(pc, name, args);

@@ -2,9 +2,11 @@ package railo.runtime;
 
 
 import railo.commons.lang.types.RefBoolean;
+import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
+import railo.runtime.type.Collection.Key;
 
 /**
  * interface for a Component
@@ -124,10 +126,35 @@ public interface Component extends Struct,Objects {
      */
     public abstract Object callWithNamedValues(PageContext pc, String key, Struct args) throws PageException;
 
-    public Page getPage();// FUTURE deprecated
+    /**
+     * 
+     * @deprecated use instead <code>getPageSource()</code>
+     */
+    public Page getPage();
     
-    // FUTURE public PageSource getPageSource();
     
-
+	/**
+	 * return all properties from component
+	 * @param onlyPeristent if true return only columns where attribute persistent is not set to false
+	 * @return
+	 */
+	public Property[] getProperties(boolean onlyPeristent);
+	
+	public void setProperty(Property property) throws PageException;
+	
+	public ComponentScope getComponentScope();
+	
+	public boolean contains(PageContext pc,Key key);
+	
+	public PageSource getPageSource();
+	//public Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess);
+	
+	public String getBaseAbsName();
+	
+	public boolean isBasePeristent();
+	
+	public boolean equalTo(String type);
+	
+	public String getWSDLFile();
     
 }
