@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -53,17 +52,7 @@ public class RequestImpl extends StructSupport implements Request {
 		return init;
 	}
 
-	/**
-	 * @see railo.runtime.type.Scope#release()
-	 */
 	public void release() {
-		init = false;
-	}
-
-	/**
-	 * @see railo.runtime.type.Scope#release(railo.runtime.PageContext)
-	 */
-	public void release(PageContext pc) {
 		init = false;
 	}
 
@@ -209,9 +198,9 @@ public class RequestImpl extends StructSupport implements Request {
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 		Struct trg=new StructImpl();
-		StructImpl.copy(this, trg,deepCopy,done);
+		StructImpl.copy(this, trg,deepCopy);
 		return trg;
 	}
 

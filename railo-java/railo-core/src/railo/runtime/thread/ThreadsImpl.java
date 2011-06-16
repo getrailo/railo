@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.Thread.State;
 import java.util.Iterator;
-import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -17,6 +16,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
+import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.tag.Http;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -27,7 +27,6 @@ import railo.runtime.type.util.StructSupport;
 
 public class ThreadsImpl extends StructSupport implements railo.runtime.type.scope.Threads {
 
-	private static final long serialVersionUID = -7830828937589996006L;
 	private static final Key KEY_ERROR = KeyImpl.getInstance("ERROR");
 	private static final Key KEY_ELAPSEDTIME = KeyImpl.getInstance("ELAPSEDTIME");
 	private static final Key KEY_NAME = KeyImpl.getInstance("NAME");
@@ -89,10 +88,6 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 		
 	}
 
-	public void release(PageContext pc) {
-		
-	}
-
 	public void clear() {
 		ct.content.clear();
 	}
@@ -101,9 +96,9 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 		StructImpl sct=new StructImpl();
-		done.put(this, sct);
+		ThreadLocalDuplication.set(this, sct);
 		try{
 			Key[] keys = keys();
 			Object value;
@@ -113,7 +108,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 			}
 		}
 		finally {
-			done.remove(this);
+			ThreadLocalDuplication.remove(this);
 		}
 		return sct;
 	}

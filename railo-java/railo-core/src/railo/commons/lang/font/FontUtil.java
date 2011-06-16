@@ -8,7 +8,6 @@ import java.awt.image.BufferedImage;
 import java.util.Iterator;
 
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.op.Duplicator;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 
@@ -37,7 +36,7 @@ public class FontUtil {
     		
 		}
 		if(!duplicate) return fonts;
-		return (Array) Duplicator.duplicate(fonts,false);
+		return (Array) fonts.duplicate(false);
 	}
 
 	public static String toString(Font font) {

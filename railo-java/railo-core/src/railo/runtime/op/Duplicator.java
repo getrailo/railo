@@ -13,8 +13,8 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
+import railo.runtime.type.CollectionPlus;
 import railo.runtime.type.UDF;
-import railo.runtime.util.QueryStack;
 
 
 /**
@@ -84,64 +84,48 @@ public final class Duplicator {
 	 * @param object object to duplicate
 	 * @return duplicated value
 	 */
-
-	public static Object duplicate(Object object, boolean deepCopy) {
-		return duplicate(object,deepCopy,null);
-	}
 	
-	public static Object duplicate(Object object, boolean deepCopy,Map<Object, Object> done) {
-		
-		
+	public static Object duplicate(Object object, boolean deepCopy) {
 		if(object == null) 				return null;
         if(object instanceof Number)	return object;
         if(object instanceof String)	return object;
         if(object instanceof Date)		return ((Date)object).clone();
         if(object instanceof Boolean)	return object;
 		
-        if(done==null)done = ThreadLocalDuplication.getMap();
 		
 		
-		Object copy = done.get(object);
+		Object copy = ThreadLocalDuplication.get(object);
     	if(copy!=null){
     		return copy;
     	}
     	
 
-    	if(object instanceof Collection)return ((Collection)object).duplicate(deepCopy,done);
-    	if(object instanceof UDF)		return ((UDF)object).duplicate(done);
-        if(object instanceof QueryStack)return ((QueryStack)object).duplicate(deepCopy, done);
+    	if(object instanceof CollectionPlus)return ((CollectionPlus)object).duplicate(deepCopy,ThreadLocalDuplication.getMap());
+    	if(object instanceof Collection)return ((Collection)object).duplicate(deepCopy);
+		if(object instanceof UDF)		return ((UDF)object).duplicate();
+        if(object instanceof List)		return duplicateList((List)object,deepCopy);
+        if(object instanceof Map) 		return duplicateMap((Map)object,deepCopy);
 		
-        if(object instanceof List)		return duplicateList((List)object,deepCopy,done);
-        if(object instanceof Map) 		return duplicateMap((Map)object,deepCopy,done);
-        
-         
+	        
 	        
 		return object;
     }
 
     public static List duplicateList(List list, boolean deepCopy) {
-    	return duplicateList(list, deepCopy,ThreadLocalDuplication.getMap());
-	}
-    
-    private static List duplicateList(List list, boolean deepCopy, Map<Object, Object> done) {
     	List newList;
     	try {
     		newList=(List) ClassUtil.loadInstance(list.getClass());
 		} catch (ClassException e) {
 			newList=new ArrayList();
 		}
-    	return duplicateList(list, newList, deepCopy,done);
+    	return duplicateList(list, newList, deepCopy);
 	}
     
     public static List duplicateList(List list,List newList, boolean deepCopy) {
-    	return duplicateList(list, newList, deepCopy, ThreadLocalDuplication.getMap());
-	}
-    
-    private static List duplicateList(List list,List newList, boolean deepCopy, Map<Object, Object> done) {
     	ListIterator it = list.listIterator();	
     	while(it.hasNext()) {
     		if(deepCopy)
-        		newList.add(Duplicator.duplicate(it.next(),deepCopy,done));
+        		newList.add(Duplicator.duplicate(it.next(),deepCopy));
     		else
     			newList.add(it.next());
     	}
@@ -156,9 +140,6 @@ public final class Duplicator {
      * @throws PageException 
      */
     public static Map duplicateMap(Map map, boolean doKeysLower,boolean deepCopy) throws PageException{
-    	return duplicateMap(map, doKeysLower, deepCopy, ThreadLocalDuplication.getMap());
-    }
-    private static Map duplicateMap(Map map, boolean doKeysLower,boolean deepCopy, Map<Object, Object> done) throws PageException{
         if(doKeysLower) {
         	Map newMap;
         	try {
@@ -166,44 +147,39 @@ public final class Duplicator {
     		} catch (ClassException e) {
     			newMap=new HashMap();
     		}
-    		done.put(map,newMap);
+    		ThreadLocalDuplication.set(map,newMap);
             Iterator it=map.keySet().iterator();
             while(it.hasNext()) {
                 Object key=it.next();
-                if(deepCopy)newMap.put(StringUtil.toLowerCase(Caster.toString(key)),duplicate(map.get(key), deepCopy,done));
+                if(deepCopy)newMap.put(StringUtil.toLowerCase(Caster.toString(key)),duplicate(map.get(key), deepCopy));
                 else newMap.put(StringUtil.toLowerCase(Caster.toString(key)),map.get(key));
             }
-            done.remove(map);
+            ThreadLocalDuplication.remove(map);
             return newMap;
         }
         return duplicateMap(map,deepCopy);
     }
 
     public static Map duplicateMap(Map map,boolean deepCopy){
-    	return duplicateMap(map, deepCopy, ThreadLocalDuplication.getMap());
-    }
-    public static Map duplicateMap(Map map,boolean deepCopy, Map<Object, Object> done){
     	Map other;
     	try {
 			other=(Map) ClassUtil.loadInstance(map.getClass());
 		} catch (ClassException e) {
 			other=new HashMap();
     	}
-		done.put(map,other);
+		ThreadLocalDuplication.set(map,other);
         duplicateMap(map,other, deepCopy);
-        done.remove(map);
+        ThreadLocalDuplication.remove(map);
         return other;
     }
-
-    public static Map duplicateMap(Map map,Map newMap,boolean deepCopy){
-    	return duplicateMap(map, newMap, deepCopy, ThreadLocalDuplication.getMap());
-    }
     
-    private static Map duplicateMap(Map map,Map newMap,boolean deepCopy, Map<Object, Object> done){
+    public static Map duplicateMap(Map map,Map newMap,boolean deepCopy){
+    	
+    	
     	Iterator it=map.keySet().iterator();
         while(it.hasNext()) {
             Object key=it.next();
-            if(deepCopy)newMap.put(key,duplicate(map.get(key),deepCopy,done));
+            if(deepCopy)newMap.put(key,duplicate(map.get(key),deepCopy));
             else newMap.put(key,map.get(key));
         }
         return newMap;

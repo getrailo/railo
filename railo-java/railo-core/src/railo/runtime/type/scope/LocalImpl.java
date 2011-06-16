@@ -2,9 +2,8 @@ package railo.runtime.type.scope;
 
 import railo.runtime.type.Scope;
 
-public class LocalImpl extends ScopeSupport implements Scope,Local {
+public class LocalImpl extends ScopeSupport implements Scope,LocalPro {// FUTURE create interface Local
 
-	private static final long serialVersionUID = 5115573947075337768L;
 	private boolean bind;
 	
 	public LocalImpl() {

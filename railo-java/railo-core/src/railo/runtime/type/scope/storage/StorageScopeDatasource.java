@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Map;
 
 import railo.commons.io.log.Log;
 import railo.runtime.PageContext;
@@ -77,8 +76,8 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	 * Constructor of the class, clone existing
 	 * @param other
 	 */
-	protected StorageScopeDatasource(StorageScopeDatasource other,boolean deepCopy,Map<Object, Object> done) {
-		super(other,deepCopy,done);
+	protected StorageScopeDatasource(StorageScopeDatasource other,boolean deepCopy) {
+		super(other,deepCopy);
 		this.datasourceName=other.datasourceName;
 	}
 	

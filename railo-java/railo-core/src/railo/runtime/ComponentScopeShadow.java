@@ -56,7 +56,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	/**
 	 * @see railo.runtime.ComponentScope#getComponent()
 	 */
-	public Component getComponent() {
+	public ComponentPro getComponent() {
 		return component;
 	}
 
@@ -89,7 +89,6 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	/**
 	 * @see railo.runtime.type.Scope#release()
 	 */
-	public void release(PageContext pc) {}
 	public void release() {}
 
 	/**
@@ -351,9 +350,9 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 		StructImpl sct = new StructImpl();
-		StructImpl.copy(this, sct, deepCopy,done);
+		StructImpl.copy(this, sct, deepCopy);
 		return sct;
 //		 MUST muss deepCopy checken
         //return new ComponentScopeShadow(component,shadow);//new ComponentScopeThis(component.cloneComponentImpl());

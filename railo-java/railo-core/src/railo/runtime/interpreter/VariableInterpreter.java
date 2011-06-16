@@ -14,7 +14,6 @@ import railo.runtime.type.Scope;
 import railo.runtime.type.ref.VariableReference;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.CallerImpl;
-import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.Variables;
@@ -141,7 +140,7 @@ public final class VariableInterpreter {
 				boolean check=undefined.getCheckArguments();
 				Variables orgVar=pc.variablesScope();
 				Argument orgArgs=pc.argumentsScope();
-		        Local orgLocal=pc.localScope();
+		        Scope orgLocal=pc.localScope();
 				
 				pci.setVariablesScope(undefined.variablesScope());
 				if(check)pci.setFunctionScopes(undefined.localScope(), undefined.argumentsScope());

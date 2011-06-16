@@ -8,7 +8,6 @@ import java.util.ListIterator;
 
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
-import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.Array;
 
 public class ArrayAsArrayList extends ArrayList {
@@ -239,7 +238,7 @@ public class ArrayAsArrayList extends ArrayList {
 	 * @see java.util.ArrayList#clone()
 	 */
 	public Object clone() {
-		return toArrayList((Array) array.duplicate(true,ThreadLocalDuplication.getMap()));
+		return toArrayList((Array) array.duplicate(true));
 	}
 
 	/**

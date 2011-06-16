@@ -1,7 +1,6 @@
 package railo.runtime.type;
 
 import java.util.Date;
-import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -30,8 +29,8 @@ public class CastableArray extends ArrayImpl {
 	/**
 	 * @see railo.runtime.type.ArrayImpl#duplicate(boolean)
 	 */
-	public synchronized Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
-		return duplicate(new CastableArray(value),deepCopy,done);
+	public synchronized Collection duplicate(boolean deepCopy) {
+		return duplicate(new CastableArray(value),deepCopy);
 	}
 
 

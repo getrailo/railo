@@ -90,7 +90,7 @@ public class DatasourceConnectionPool {
 		
 		DCStack stack=getDCStack(dc.getDatasource(), dc.getUsername(), dc.getPassword());
 		synchronized (stack) {
-			stack.add(dc);
+			stack.add((DatasourceConnectionPro)dc);
 			int max = dc.getDatasource().getConnectionLimit();
 
 			if(max!=-1) {

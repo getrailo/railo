@@ -15,6 +15,18 @@ public interface SpoolerEngine {
 	 * @param task
 	 */
 	public void add(SpoolerTask task);
+	
+	/**
+	 * return all open task that are inside the Engine
+	 * @return all open tasks
+	 */
+	public SpoolerTask[] getOpenTasks(); //FUTURE remove
+	
+	/**
+	 * return all closed task that are inside the Engine
+	 * @return all closed tasks
+	 */
+	public SpoolerTask[] getClosedTasks(); //FUTURE remove
 
 	/**
 	 * remove that task from Spooler

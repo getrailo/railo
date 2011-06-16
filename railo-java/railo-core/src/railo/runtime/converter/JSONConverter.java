@@ -16,6 +16,7 @@ import org.w3c.dom.Node;
 
 import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
@@ -243,17 +244,17 @@ public final class JSONConverter {
             _serialize(pc,test,value,sb,serializeQueryByColumns,done);
         }
         
-        if(struct instanceof Component){
+        if(struct instanceof ComponentPro){
         	Boolean remotingFetch;
-        	Component cfc = (Component)struct;
+        	ComponentPro cp = (ComponentPro)struct;
         	boolean isPeristent=false;
         	try {
-				ComponentAccess ca = ComponentUtil.toComponentAccess(cfc);
+				ComponentAccess ca = ComponentUtil.toComponentAccess(cp);
 				isPeristent=ca.isPersistent();
 			} catch (ExpressionException e) {}
 			
-        	Property[] props = cfc.getProperties(false);
-        	ComponentScope scope = cfc.getComponentScope();
+        	Property[] props = cp.getProperties(false);
+        	ComponentScope scope = cp.getComponentScope();
         	for(int i=0;i<props.length;i++) {
         		if(!ignoreRemotingFetch) {
         			remotingFetch=Caster.toBoolean(props[i].getMeta().get(REMOTING_FETCH,null),null);

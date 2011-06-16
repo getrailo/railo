@@ -9,10 +9,11 @@ import railo.runtime.PageContext;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionImpl;
+import railo.runtime.db.DatasourceConnectionPro;
 import railo.runtime.db.SQL;
 import railo.runtime.op.Caster;
 
-public class ORMDatasourceConnection implements DatasourceConnection {
+public class ORMDatasourceConnection implements DatasourceConnectionPro {
 
 	private DataSource datasource;
 	private Connection connection;

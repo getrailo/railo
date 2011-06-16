@@ -9,7 +9,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Duplicator;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -327,7 +326,7 @@ public abstract class ArraySupport implements Array,List,Sizeable {
 	 * @see java.lang.Object#clone()
 	 */
 	public synchronized Object clone() {
-		return Duplicator.duplicate(this,true);
+		return duplicate(true);
 	}
 
     /**

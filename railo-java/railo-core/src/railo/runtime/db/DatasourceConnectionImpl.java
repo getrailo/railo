@@ -16,7 +16,7 @@ import railo.runtime.op.Caster;
 /**
  * wrap for datasorce and connection from it
  */
-public final class DatasourceConnectionImpl implements DatasourceConnection {
+public final class DatasourceConnectionImpl implements DatasourceConnectionPro {
     
     private static final int MAX_PS = 100;
 	private Connection connection;

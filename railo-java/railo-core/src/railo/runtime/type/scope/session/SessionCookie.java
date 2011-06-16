@@ -1,7 +1,5 @@
 package railo.runtime.type.scope.session;
 
-import java.util.Map;
-
 import railo.commons.io.log.Log;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -24,16 +22,16 @@ public final class SessionCookie extends StorageScopeCookie implements SessionPl
 	 * Constructor of the class, clone existing
 	 * @param other
 	 */
-	private SessionCookie(SessionCookie other,boolean deepCopy,Map<Object, Object> done) {
-		super(other,deepCopy,done);
+	private SessionCookie(SessionCookie other,boolean deepCopy) {
+		super(other,deepCopy);
 	}
 	
 	/**
 	 *
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
-    	return new SessionCookie(this,deepCopy,done);
+	public Collection duplicate(boolean deepCopy) {
+    	return new SessionCookie(this,deepCopy);
 	}
 	
 	

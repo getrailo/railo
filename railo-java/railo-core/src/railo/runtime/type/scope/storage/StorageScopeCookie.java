@@ -1,7 +1,6 @@
 package railo.runtime.type.scope.storage;
 
 import java.util.Date;
-import java.util.Map;
 
 import railo.commons.io.log.Log;
 import railo.commons.lang.StringUtil;
@@ -65,8 +64,8 @@ public abstract class StorageScopeCookie extends StorageScopeImpl {
 	 * Constructor of the class, clone existing
 	 * @param other
 	 */
-	protected StorageScopeCookie(StorageScopeCookie other,boolean deepCopy,Map<Object, Object> done) {
-		super(other,deepCopy,done);
+	protected StorageScopeCookie(StorageScopeCookie other,boolean deepCopy) {
+		super(other,deepCopy);
 		cookieName=other.cookieName;
 	}
 	

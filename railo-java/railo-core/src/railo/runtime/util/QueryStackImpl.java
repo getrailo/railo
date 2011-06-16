@@ -1,10 +1,7 @@
 package railo.runtime.util;
 
-import java.util.Map;
-
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
@@ -18,12 +15,12 @@ public final class QueryStackImpl implements QueryStack {
 	int start=queries.length;
 	
 	// FUTURE add to interface
-	public QueryStack duplicate(boolean deepCopy, Map<Object,Object> done){
+	public QueryStack duplicate(boolean deepCopy){
 		QueryStackImpl qs=new QueryStackImpl();
 		if(deepCopy) {
 			qs.queries=new Query[queries.length];
 			for(int i=0;i<queries.length;i++) {
-				qs.queries[i]=(Query) Duplicator.duplicate(queries[i],deepCopy,done);
+				qs.queries[i]=(Query)queries[i].duplicate(deepCopy);
 			}
 		}
 		else qs.queries=queries;

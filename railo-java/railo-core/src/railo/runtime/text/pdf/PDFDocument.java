@@ -69,7 +69,7 @@ public class PDFDocument extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 		PDFDocument duplicate=new PDFDocument(barr,resource,password);
 		return duplicate;
 	}

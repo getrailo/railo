@@ -1,7 +1,5 @@
 package railo.runtime.type.scope.client;
 
-import java.util.Map;
-
 import railo.commons.io.log.Log;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
@@ -23,8 +21,8 @@ public final class ClientCache extends StorageScopeCache implements ClientPlus {
 	 * Constructor of the class, clone existing
 	 * @param other
 	 */
-	private ClientCache(StorageScopeCache other,boolean deepCopy,Map<Object, Object> done) {
-		super(other,deepCopy,done);
+	private ClientCache(StorageScopeCache other,boolean deepCopy) {
+		super(other,deepCopy);
 	}
 	
 
@@ -32,8 +30,8 @@ public final class ClientCache extends StorageScopeCache implements ClientPlus {
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
-    	return new ClientCache(this,deepCopy,done);
+	public Collection duplicate(boolean deepCopy) {
+    	return new ClientCache(this,deepCopy);
 	}
 	
 	/**

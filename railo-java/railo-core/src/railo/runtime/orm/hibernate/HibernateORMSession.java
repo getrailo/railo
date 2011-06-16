@@ -24,6 +24,7 @@ import org.hibernate.type.Type;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWebImpl;
@@ -43,6 +44,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.ComponentUtil;
 
 public class HibernateORMSession implements ORMSession{
 
@@ -529,7 +531,7 @@ public class HibernateORMSession implements ORMSession{
 	}
 	
 	private Object loadByExample(PageContext pc, Object obj,  boolean unique) throws PageException {
-		 Component cfc=HibernateCaster.toComponent(obj);
+		 ComponentPro cfc=ComponentUtil.toComponentPro(HibernateCaster.toComponent(obj));
 		 ComponentScope scope = cfc.getComponentScope();
 		 String name=HibernateCaster.getEntityName(cfc);
 		 //Session session=getSession(pc, cfc);

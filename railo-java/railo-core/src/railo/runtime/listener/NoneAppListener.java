@@ -53,16 +53,6 @@ public final class NoneAppListener  extends AppListenerSupport {
 		// do nothing
 	}
 
-	@Override
-	public void onServerStart(PageContext pc) throws PageException {
-		// do nothing
-	}
-
-	@Override
-	public void onServerEnd(CFMLFactory cfmlFactory) throws PageException {
-		// do nothing
-	}
-
 	/**
 	 * @see railo.runtime.listener.ApplicationListener#onDebug(railo.runtime.PageContext)
 	 */

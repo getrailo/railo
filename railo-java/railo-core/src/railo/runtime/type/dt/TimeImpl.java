@@ -22,7 +22,7 @@ import railo.runtime.type.SimpleValue;
 /**
  * Printable and Castable Time Object (at the moment, same as DateTime)
  */
-public final class TimeImpl extends Time implements SimpleValue {
+public final class TimeImpl extends Time implements SimpleValue,Localized {
     
 	private static SimpleDateFormat railoFormatter=	new SimpleDateFormat("HH:mm:ss",Locale.US);
 

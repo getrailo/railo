@@ -181,9 +181,29 @@ public final class DateTimeImpl extends DateTime implements SimpleValue,Localize
 	public int compareTo(String str) {
 		return Operator.compare(castToString(), str);
 	}
+
+	/* *
+	 * FUTURE add to interface
+	 * @return the timezone
+	 * /
+	public TimeZone getTimezone() {
+		return timezone;
+	}*/
+
+	/* *
+	 * FUTURE add to interface
+	 * @param timezone the timezone to set
+	 * /
+	public void setTimezone(TimeZone timezone) {
+		this.timezone = timezone;
+	}*/
 	
 	public String toString() {
 		return castToString();
+        /*synchronized (javaFormatter) {
+        	javaFormatter.setTimeZone(timezone);
+            return javaFormatter.format(this);
+        }*/
 	}
 
 	@Override

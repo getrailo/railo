@@ -12,7 +12,6 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
-import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -70,7 +69,7 @@ public final class ModernAppListenerException extends PageException {
 	public Struct getCatchBlock(PageContext pc) {
 		
 		Struct cb=rootCause.getCatchBlock(pc);
-		Collection cause = (Collection) Duplicator.duplicate(cb,false);
+		Collection cause = cb.duplicate(false);
 		//rtn.setEL("message", getMessage());
 		if(!cb.containsKey(DETAIL))cb.setEL(DETAIL, "Exception throwed while invoking function ["+eventName+"] from Application.cfc");
 		cb.setEL(ROOT_CAUSE, cause);

@@ -20,7 +20,6 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpRow;
 import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
-import railo.runtime.dump.DumpWriter;
 import railo.runtime.dump.Dumpable;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.CatchBlock;
@@ -380,7 +379,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		
         // no debug File 
 		if(StringUtil.isEmpty(template)) {
-		    pc.forceWrite(pc.getConfig().getDefaultDumpWriter(DumpWriter.DEFAULT_RICH).toString(pc,toDumpData(pc, 9999,DumpUtil.toDumpProperties()),true)); 
+		    pc.forceWrite(pc.getConfig().getDefaultDumpWriter().toString(pc,toDumpData(pc, 9999,DumpUtil.toDumpProperties()),true)); 
 		    return;
 		} 
 		try {
@@ -592,9 +591,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		return traces.toArray(new DebugTrace[traces.size()]);
 	}
 	
-	/**
-	 * @see railo.runtime.debug.Debugger#addException(railo.runtime.config.Config, railo.runtime.exp.PageException)
-	 */
+	// FUTURE add to interface
 	public void addException(Config config,PageException pe) {
 		if(exceptions.size()>1000) return;
 		try {
@@ -603,9 +600,8 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		catch(Throwable t){}
 	}
 	
-	/**
-	 * @see railo.runtime.debug.Debugger#getExceptions()
-	 */
+	
+	// FUTURE add to interface
 	public CatchBlock[] getExceptions() {
 		return exceptions.toArray(new CatchBlock[exceptions.size()]);
 	}

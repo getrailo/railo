@@ -1,7 +1,5 @@
 package railo.runtime.type.scope.session;
 
-import java.util.Map;
-
 import railo.commons.io.log.Log;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.PageContext;
@@ -25,8 +23,8 @@ public class SessionMemory extends StorageScopeMemory implements SessionPlus,Mem
 	 * Constructor of the class, clone existing
 	 * @param other
 	 */
-	protected SessionMemory(StorageScopeMemory other,boolean deepCopy,Map<Object, Object> done) {
-		super(other,deepCopy,done);
+	protected SessionMemory(StorageScopeMemory other,boolean deepCopy) {
+		super(other,deepCopy);
 	}
 	/**
 	 * load a new instance of the class
@@ -44,7 +42,7 @@ public class SessionMemory extends StorageScopeMemory implements SessionPlus,Mem
 	 *
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
-    	return new SessionMemory(this,deepCopy,done);
+	public Collection duplicate(boolean deepCopy) {
+    	return new SessionMemory(this,deepCopy);
 	}
 }

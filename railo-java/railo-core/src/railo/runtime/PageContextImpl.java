@@ -56,8 +56,6 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
-import railo.runtime.converter.ConverterException;
-import railo.runtime.converter.ScriptConverter;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
@@ -67,7 +65,6 @@ import railo.runtime.debug.DebugEntry;
 import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.dump.DumpUtil;
-import railo.runtime.dump.DumpWriter;
 import railo.runtime.engine.ExecutionLog;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.err.ErrorPageImpl;
@@ -127,8 +124,8 @@ import railo.runtime.type.scope.Cookie;
 import railo.runtime.type.scope.CookieImpl;
 import railo.runtime.type.scope.Form;
 import railo.runtime.type.scope.FormImpl;
-import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.LocalNotSupportedScope;
+import railo.runtime.type.scope.LocalPro;
 import railo.runtime.type.scope.Request;
 import railo.runtime.type.scope.RequestImpl;
 import railo.runtime.type.scope.ScopeContext;
@@ -215,7 +212,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private CGIImpl cgi=new CGIImpl();	
 	private Argument argument=new ArgumentImpl();
     private static LocalNotSupportedScope localUnsupportedScope=LocalNotSupportedScope.getInstance();
-	private Local local=localUnsupportedScope;
+	private LocalPro local=localUnsupportedScope;
 	private SessionPlus session;
 	private Server server;
 	private Cluster cluster;
@@ -1084,17 +1081,19 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     } 
     
     /**
-     * @see railo.runtime.PageContext#localScope()
-     */
-    public Local localScope() { 
+     * @see PageContext#localScope()
+     */// FUTURE remove class from type Local
+    public Scope localScope() { 
+    	//if(local==localUnsupportedScope) 
+    	//	throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope"));
     	return local;
     }
     
-    /**
-     * @see railo.runtime.PageContext#localScope(boolean)
-     */
+// FUTURE remove class from type Local
     public Scope localScope(boolean bind) { 
     	if(bind)local.setBind(true); 
+    	//if(local==localUnsupportedScope) 
+    	//	throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope"));
     	return local; 
     }
 
@@ -1129,10 +1128,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @param local sets the current local scope
      * @param argument sets the current argument scope
      */
-    public void setFunctionScopes(Local local,Argument argument) {
+    public void setFunctionScopes(Scope local,Argument argument) {
     	// FUTURE setFunctionScopes(Local local,Argument argument)
 		this.argument=argument;
-		this.local= local;
+		this.local=(LocalPro) local;
 		undefined.setFunctionScopes(local,argument);
 	}
 	
@@ -1803,7 +1802,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 						pe=e;
 					}
 				}
-				if(!(pe instanceof Abort))forceWrite(getConfig().getDefaultDumpWriter(DumpWriter.DEFAULT_RICH).toString(this,pe.toDumpData(this, 9999,DumpUtil.toDumpProperties()),true));
+				if(!(pe instanceof Abort))forceWrite(getConfig().getDefaultDumpWriter().toString(this,pe.toDumpData(this, 9999,DumpUtil.toDumpProperties()),true));
 			} 
 			catch (Exception e) { 
 			}
@@ -2691,22 +2690,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return manager;
 	}
 
-	/**
-	 * @see railo.runtime.PageContext#evaluate(java.lang.String)
-	 */
 	public Object evaluate(String expression) throws PageException {
+		// TODO kann das objekt nicht variable von object sein
 		return new CFMLExpressionInterpreter().interpret(this,expression);
-	}
-
-	/**
-	 * @see railo.runtime.PageContext#serialize(java.lang.Object)
-	 */
-	public String serialize(Object obj) throws PageException {
-		try {
-            return new ScriptConverter().serialize(obj);
-        } catch (ConverterException e) {
-            throw Caster.toPageException(e);
-        }
 	}
 
 	/**

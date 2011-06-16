@@ -1,7 +1,5 @@
 package railo.runtime.text.xml.struct;
 
-import java.util.Map;
-
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
@@ -80,7 +78,7 @@ public final class XMLAttrStruct extends XMLNodeStruct implements Attr {
 	 *
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 		return new XMLAttrStruct((Attr)attr.cloneNode(deepCopy),caseSensitive);
 	}
 	

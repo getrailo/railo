@@ -1,11 +1,8 @@
 package railo.runtime.type;
 
-import java.util.Map;
-
 import railo.runtime.Component;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
-import railo.runtime.PageSource;
 import railo.runtime.component.Member;
 import railo.runtime.dump.Dumpable;
 import railo.runtime.exp.PageException;
@@ -117,20 +114,18 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
 
     /**
      * @return Returns the page.
-     * @deprecated use instead <code>getPageSource();</code>
      */
-    public abstract Page getPage();
-    
-    public abstract PageSource getPageSource();
+    public abstract Page getPage();// FUTURE deprecated
+    //FUTURE public abstract PageSource getPageSource();
     
     
 
 	public abstract Struct getMetaData(PageContext pc) throws PageException; 
 	
 
-	//public UDF duplicate();
+	public UDF duplicate();
 
-	public UDF duplicate(Map<Object,Object> done);
+	// FUTURE public UDF duplicate(Map<Object,Object> done);
 	
 	/**
 	 * it is the component in whitch this udf is constructed, must not be the same as active udf

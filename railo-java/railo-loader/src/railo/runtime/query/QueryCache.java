@@ -54,9 +54,5 @@ public interface QueryCache {
 	public abstract void remove(SQL sql, String datasource,String username, String password);
 
 	public abstract Object get(SQL sql, String datasource,String username, String password, Date cachedafter);
-	
-	public abstract int size();
-	
-	public  abstract void clear(QueryCacheFilter filter);
-	
+
 }

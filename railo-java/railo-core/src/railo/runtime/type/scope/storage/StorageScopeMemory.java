@@ -1,7 +1,5 @@
 package railo.runtime.type.scope.storage;
 
-import java.util.Map;
-
 import railo.commons.io.log.Log;
 import railo.runtime.PageContext;
 import railo.runtime.type.StructImpl;
@@ -36,8 +34,8 @@ public abstract class StorageScopeMemory extends StorageScopeImpl implements Mem
 	 * Constructor of the class, clone existing
 	 * @param other
 	 */
-	protected StorageScopeMemory(StorageScopeMemory other,boolean deepCopy,Map<Object, Object> done) {
-		super(other,deepCopy,done);
+	protected StorageScopeMemory(StorageScopeMemory other,boolean deepCopy) {
+		super(other,deepCopy);
 	}
 	
 	

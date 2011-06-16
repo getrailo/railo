@@ -20,7 +20,6 @@ import railo.runtime.converter.JSONConverter;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.dump.DumpUtil;
-import railo.runtime.dump.DumpWriter;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -87,7 +86,7 @@ public abstract class ComponentPage extends PagePlus  {
 		// call type (invocation, store-only)
 		String callType = Caster.toString(req.getAttribute("call-type"),null);
 		boolean fromGateway="railo-gateway-1-0".equals(client);
-		Component component;
+		ComponentPro component;
         try {
             pc.setSilent();
             // load the cfc
@@ -95,7 +94,7 @@ public abstract class ComponentPage extends PagePlus  {
 	            if(fromGateway && strRemotePersisId!=null) {
 	            	ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
 	            	GatewayEngineImpl engine = config.getGatewayEngine();
-	            	component= engine.getPersistentRemoteCFC(strRemotePersisId);
+	            	component=(ComponentPro) engine.getPersistentRemoteCFC(strRemotePersisId);
 	            	
 	            	if(component==null) {
 	            		component=newInstance(pc,getPageSource().getComponentName(),false);
@@ -194,7 +193,7 @@ public abstract class ComponentPage extends PagePlus  {
 			    pc.variablesScope().set("component",component);
 			    pc.doInclude(pc.getRelativePageSource(cdf));
 			}
-			else pc.write(pc.getConfig().getDefaultDumpWriter(DumpWriter.DEFAULT_RICH).toString(pc,component.toDumpData(pc,9999,DumpUtil.toDumpProperties() ),true));
+			else pc.write(pc.getConfig().getDefaultDumpWriter().toString(pc,component.toDumpData(pc,9999,DumpUtil.toDumpProperties() ),true));
 			
 		}
 		catch(Throwable t) {
@@ -432,7 +431,7 @@ public abstract class ComponentPage extends PagePlus  {
 		return null;
 	}
 
-	private void callWSDL(PageContext pc, Component component) throws ServletException, IOException, ExpressionException {
+	private void callWSDL(PageContext pc, ComponentPro component) throws ServletException, IOException, ExpressionException {
     	// take wsdl file defined by user
     	String wsdl = component.getWSDLFile();
     	if(!StringUtil.isEmpty(wsdl)) {

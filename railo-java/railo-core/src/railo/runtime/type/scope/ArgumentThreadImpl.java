@@ -12,7 +12,6 @@ import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
@@ -20,7 +19,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructUtil;
 
-public class ArgumentThreadImpl implements Argument,Sizeable {
+public class ArgumentThreadImpl implements ArgumentPro,Sizeable {
 
 	private Struct sct;
 
@@ -113,7 +112,6 @@ public class ArgumentThreadImpl implements Argument,Sizeable {
 	 * @see railo.runtime.type.Scope#release()
 	 */
 	public void release() {}
-	public void release(PageContext pc) {}
 
 	/**
 	 * @see railo.runtime.type.Collection#clear()
@@ -139,8 +137,8 @@ public class ArgumentThreadImpl implements Argument,Sizeable {
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
-		return new ArgumentThreadImpl((Struct)sct.duplicate(deepCopy,done));
+	public Collection duplicate(boolean deepCopy) {
+		return new ArgumentThreadImpl((Struct)sct.duplicate(deepCopy));
 	}
 
 	/**
@@ -548,7 +546,7 @@ public class ArgumentThreadImpl implements Argument,Sizeable {
 	 * @see java.lang.Object#clone()
 	 */
 	public Object clone(){
-		return Duplicator.duplicate(this,true);
+		return duplicate(true);
 	}
 
 	/**

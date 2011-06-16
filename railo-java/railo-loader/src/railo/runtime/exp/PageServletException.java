@@ -5,7 +5,6 @@ import javax.servlet.ServletException;
 
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
-import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.err.ErrorPage;
@@ -68,10 +67,6 @@ public final class PageServletException extends ServletException implements IPag
 	 */
 	public Struct getCatchBlock(PageContext pc) {
 		return pe.getCatchBlock(pc);
-	}
-	
-	public CatchBlock getCatchBlock(Config config) {
-		return pe.getCatchBlock(config);
 	}
 
 	/**

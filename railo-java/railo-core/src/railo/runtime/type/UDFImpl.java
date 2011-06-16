@@ -38,7 +38,7 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.ArgumentIntKey;
-import railo.runtime.type.scope.Local;
+import railo.runtime.type.scope.ArgumentPro;
 import railo.runtime.type.scope.LocalImpl;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ComponentUtil;
@@ -207,14 +207,16 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	
 
 
-	public UDF duplicate(ComponentImpl c,Map<Object, Object> done) {
+	public UDF duplicate(ComponentImpl c) {
 		UDFImpl udf = new UDFImpl(properties);
 		udf.ownerComponent=c;
 		return udf;
 	}
 	
-	public UDF duplicate(Map<Object, Object> done) {
-		return duplicate(ownerComponent,done);
+	public UDF duplicate() {
+		//UDFImpl udf = new UDFImpl(properties);
+		//udf.ownerComponent=ownerComponent;
+		return duplicate(ownerComponent);
 	}
 
 	/**
@@ -240,7 +242,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		throw new UDFCasterException(this,arg,value,index);
 	}
 	
-	private void defineArguments(PageContext pc,FunctionArgument[] funcArgs, Object[] args,Argument newArgs) throws PageException {
+	private void defineArguments(PageContext pc,FunctionArgument[] funcArgs, Object[] args,ArgumentPro newArgs) throws PageException {
 		// define argument scope
 		for(int i=0;i<funcArgs.length;i++) {
 			// argument defined
@@ -254,7 +256,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 					if(funcArgs[i].isRequired()) {
 						throw new ExpressionException("The parameter "+funcArgs[i].getName()+" to function "+getFunctionName()+" is required but was not passed in.");
 					}
-					newArgs.setEL(funcArgs[i].getName(),Argument.NULL);
+					newArgs.setEL(funcArgs[i].getName(),ArgumentPro.NULL);
 				}
 				else {
 					newArgs.setEL(funcArgs[i].getName(),castTo(funcArgs[i],d,i+1));
@@ -267,7 +269,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	}
 
 	
-    private void defineArguments(PageContext pageContext, FunctionArgument[] funcArgs, Struct values, Argument newArgs) throws PageException {
+    private void defineArguments(PageContext pageContext, FunctionArgument[] funcArgs, Struct values, ArgumentPro newArgs) throws PageException {
     	// argumentCollection
     	argumentCollection(values,funcArgs);
     	//print.out(values.size());
@@ -296,7 +298,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 				if(funcArgs[i].isRequired()) {
 					throw new ExpressionException("The parameter "+funcArgs[i].getName()+" to function "+getFunctionName()+" is required but was not passed in.");
 				}
-				newArgs.set(name,Argument.NULL);
+				newArgs.set(name,ArgumentPro.NULL);
 			}
 			else newArgs.set(name,castTo(funcArgs[i],defaultValue,i+1));	
 		}
@@ -324,12 +326,12 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			    for(int i=0;i<keys.length;i++) {
 			    	if(funcArgs.length>i && keys[i] instanceof ArgumentIntKey) {
 	            		if(!values.containsKey(funcArgs[i].getName()))
-	            			values.setEL(funcArgs[i].getName(),argColl.get(keys[i],Argument.NULL));
+	            			values.setEL(funcArgs[i].getName(),argColl.get(keys[i],ArgumentPro.NULL));
 	            		else 
-	            			values.setEL(keys[i],argColl.get(keys[i],Argument.NULL));
+	            			values.setEL(keys[i],argColl.get(keys[i],ArgumentPro.NULL));
 			    	}
 	            	else if(!values.containsKey(keys[i])){
-	            		values.setEL(keys[i],argColl.get(keys[i],Argument.NULL));
+	            		values.setEL(keys[i],argColl.get(keys[i],ArgumentPro.NULL));
 	            	}
 	            }
 		    }
@@ -338,7 +340,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			    Collection.Key[] keys = argColl.keys();
 			    for(int i=0;i<keys.length;i++) {
 			    	if(!values.containsKey(keys[i])){
-	            		values.setEL(keys[i],argColl.get(keys[i],Argument.NULL));
+	            		values.setEL(keys[i],argColl.get(keys[i],ArgumentPro.NULL));
 	            	}
 	            }
 		    }
@@ -400,13 +402,13 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
     private Object _call(PageContext pc, Object[] args, Struct values,boolean doIncludePath) throws PageException {
     	//print.out(count++);
     	PageContextImpl pci=(PageContextImpl) pc;
-        Argument newArgs=(Argument) pci.getScopeFactory().getArgumentInstance();// FUTURE
+        ArgumentPro newArgs=(ArgumentPro) pci.getScopeFactory().getArgumentInstance();// FUTURE
         newArgs.setFunctionArgumentNames(properties.argumentsSet);
         LocalImpl newLocal=pci.getScopeFactory().getLocalInstance();
         
 		Undefined 	undefined=pc.undefinedScope();
 		Argument	oldArgs=pc.argumentsScope();
-        Local		oldLocal=pc.localScope();
+        Scope		oldLocal=pc.localScope();
         
 		pci.setFunctionScopes(newLocal,newArgs);
 		int oldCheckArgs=undefined.setMode(((ApplicationContextPro)pc.getApplicationContext()).getLocalMode());
@@ -723,7 +725,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	}*/
 
 	public Object clone() {
-		return Duplicator.duplicate(this,true);
+		return duplicate();
 	}
 
 
@@ -841,7 +843,6 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		
 		
 	}
-
 
 	
 }

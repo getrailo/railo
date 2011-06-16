@@ -3,7 +3,6 @@ package railo.runtime.text.xml;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -19,7 +18,6 @@ import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Duplicator;
 import railo.runtime.text.xml.struct.XMLObject;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Collection;
@@ -333,14 +331,14 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	 * @see java.lang.Object#clone()
 	 */
 	public Object clone() {
-		return Duplicator.duplicate(this,true);
+		return duplicate(true);
 	}
 
 
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 		return new XMLNodeList(parent.cloneNode(deepCopy),caseSensitive);
 	}
 	

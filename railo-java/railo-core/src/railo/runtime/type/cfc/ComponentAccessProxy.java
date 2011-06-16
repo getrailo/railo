@@ -1,10 +1,9 @@
 package railo.runtime.type.cfc;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
-import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.component.Member;
 import railo.runtime.dump.DumpData;
@@ -13,12 +12,12 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 
-public abstract class ComponentAccessProxy extends ComponentProxy implements ComponentAccess {
+public abstract class ComponentAccessProxy extends ComponentProProxy implements ComponentAccess {
 
 	public abstract ComponentAccess getComponentAccess();
 	
 
-	public Component getComponent() {
+	public ComponentPro getComponentPro() {
 		return getComponentAccess();
 	}
 	
@@ -32,8 +31,8 @@ public abstract class ComponentAccessProxy extends ComponentProxy implements Com
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
-		return getComponentAccess().duplicate(deepCopy,done);
+	public Collection duplicate(boolean deepCopy) {
+		return getComponentAccess().duplicate(deepCopy);
 	}
 
 	/**
@@ -142,10 +141,4 @@ public abstract class ComponentAccessProxy extends ComponentProxy implements Com
 		return getComponentAccess()._base();
 	}
 
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
-	public long sizeOf() {
-		return getComponentAccess().sizeOf();
-	}
 }

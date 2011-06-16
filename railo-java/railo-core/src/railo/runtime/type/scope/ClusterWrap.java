@@ -1,7 +1,6 @@
 package railo.runtime.type.scope;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
@@ -142,7 +141,7 @@ public class ClusterWrap extends ScopeSupport implements Cluster,Sizeable {
 	/**
 	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 		return new ClusterWrap(configServer,core,true);
 	}
 

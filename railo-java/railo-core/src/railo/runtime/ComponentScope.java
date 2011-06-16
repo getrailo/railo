@@ -10,5 +10,9 @@ public interface ComponentScope extends Variables,Objects {
      * Returns the value of component.
      * @return value component
      */
-    public Component getComponent();
+    public ComponentPro getComponent();
+
+    //public void setComponent(ComponentImpl c);
+    //public void getInner(PageContext pc, Collection.Key key, Object defaultValue);
+
 }

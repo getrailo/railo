@@ -16,6 +16,7 @@ import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
 import railo.runtime.ComponentPage;
+import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
@@ -343,7 +344,7 @@ public class ModernAppListener extends AppListenerSupport {
 	}
 
 
-	private Object call(Component app, PageContext pc, Collection.Key eventName, Object[] args) throws ModernAppListenerException {
+	private Object call(ComponentPro app, PageContext pc, Collection.Key eventName, Object[] args) throws ModernAppListenerException {
 		try {
 			return app.call(pc, eventName, args);
 		} 
@@ -419,21 +420,7 @@ public class ModernAppListener extends AppListenerSupport {
 	public boolean hasOnSessionStart(PageContext pc) {
 		return hasOnSessionStart(pc,(ComponentAccess) apps.get(pc.getApplicationContext().getName()));
 	}
-	
 	private boolean hasOnSessionStart(PageContext pc,ComponentAccess app) {
 		return app!=null && app.contains(pc,ON_SESSION_START);
 	}
-	
-	
-	public boolean hasOnApplicationStart(PageContext pc){
-		return hasOnApplicationStart(pc,(ComponentAccess) apps.get(pc.getApplicationContext().getName()));
-	}
-	
-	private boolean hasOnApplicationStart(PageContext pc,ComponentAccess app) {
-		return app!=null && app.contains(pc,ON_APPLICATION_START);
-	}
-
-	
-	
-	
 }

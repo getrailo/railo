@@ -2378,7 +2378,9 @@ public abstract class ConfigImpl implements Config {
 	 * @see railo.runtime.config.Config#getDefaultDumpWriter()
 	 */
 	public DumpWriter getDefaultDumpWriter() {
-		return getDefaultDumpWriter(DumpWriter.DEFAULT_RICH);
+		//throw new PageRuntimeException(new ApplicationException("this method is no longer supported"));
+		return getDefaultDumpWriter(HTMLDumpWriter.DEFAULT_RICH);
+		
 	}
 	
 	public DumpWriter getDefaultDumpWriter(int defaultType) {
@@ -3122,15 +3124,14 @@ public abstract class ConfigImpl implements Config {
 	}
 	
 	/**
-	 * @see railo.runtime.config.Config#getComponentMappings()
+	 * FUTURE add to interface
+	 * @return the componentMappings
 	 */
 	public Mapping[] getComponentMappings() {
 		return componentMappings;
 	}
 	
-	/**
-	 * @see railo.runtime.config.Config#getComponentMapping()
-	 */
+	// FUTURE remove from interface
 	public Mapping getComponentMapping() {
 		throw new PageRuntimeException(new ApplicationException("this method is no longer supported"));
 	}

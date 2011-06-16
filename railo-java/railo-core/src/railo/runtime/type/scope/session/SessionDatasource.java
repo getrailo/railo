@@ -1,7 +1,5 @@
 package railo.runtime.type.scope.session;
 
-import java.util.Map;
-
 import railo.commons.io.log.Log;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
@@ -21,8 +19,8 @@ public class SessionDatasource extends StorageScopeDatasource implements Session
 	 * Constructor of the class, clone existing
 	 * @param other
 	 */
-	private SessionDatasource(StorageScopeDatasource other,boolean deepCopy,Map<Object, Object> done) {
-		super(other,deepCopy,done);
+	private SessionDatasource(StorageScopeDatasource other,boolean deepCopy) {
+		super(other,deepCopy);
 	}
 	
 	/**
@@ -63,7 +61,7 @@ public class SessionDatasource extends StorageScopeDatasource implements Session
 	 *
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
-    	return new SessionDatasource(this,deepCopy,done);
+	public Collection duplicate(boolean deepCopy) {
+    	return new SessionDatasource(this,deepCopy);
 	}
 }

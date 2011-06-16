@@ -17,6 +17,7 @@ import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
+import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 
@@ -187,15 +188,15 @@ public class StructImplKey extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 		Struct sct=new StructImplKey();
-		copy(this,sct,deepCopy,done);
+		copy(this,sct,deepCopy);
 		return sct;
 	}
 	
 	
-	public static void copy(Struct src,Struct trg,boolean deepCopy, Map<Object, Object> done) {
-		done.put(src, trg);
+	public static void copy(Struct src,Struct trg,boolean deepCopy) {
+		ThreadLocalDuplication.set(src, trg);
 		try {
 			Collection.Key[] keys=src.keys();
 			Collection.Key key;
@@ -206,7 +207,7 @@ public class StructImplKey extends StructSupport implements Struct {
 			}
 		}
 		finally {
-			done.remove(src);
+			ThreadLocalDuplication.remove(src);
 		}
 	}
 

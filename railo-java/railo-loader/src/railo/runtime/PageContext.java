@@ -1,7 +1,6 @@
 package railo.runtime;
  
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -36,7 +35,6 @@ import railo.runtime.type.scope.Client;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.Cookie;
 import railo.runtime.type.scope.Form;
-import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.Request;
 import railo.runtime.type.scope.Server;
 import railo.runtime.type.scope.Session;
@@ -61,7 +59,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @return scope matching to defined scope definition
      * @param type type of scope (Scope.xx)
      * @throws PageException
-     * @deprecated
+     * FUTURE set to deprecated
      */
 	public abstract Scope scope(int type) throws PageException;
 
@@ -121,9 +119,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     /**
      * @return arguments scope
      */
-    public abstract Local localScope();
-    
-    public abstract Scope localScope(boolean bind);
+    public abstract Scope localScope();
 
     /**
      * @return session scope
@@ -456,8 +452,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @throws PageException
      **/
     public abstract Object evaluate(String expression) throws PageException;
-    
-    public abstract String serialize(Object expression) throws PageException;
+    // FUTURE public abstract String serialize(Object expression) throws PageException;
 
     /**
      * 
@@ -542,12 +537,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      */
     public abstract HttpServletResponse getHttpServletResponse();
     
-    /**
-     * @deprecated use instead <code>getResponseStream();</code>
-     */
-    public abstract ServletOutputStream getServletOutputStream() throws IOException; 
-    
-    public abstract OutputStream getResponseStream() throws IOException; 
+    public abstract ServletOutputStream getServletOutputStream() throws IOException; /// FUTURE remove
+    // public OutputStream getResponseStream() throws IOException; FUTURE add
     
     /**
      * returns the tag that is in use
@@ -892,7 +883,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      */
     public abstract PageException setCatch(Throwable t);
     
-    public abstract PageException getCatch();
+    // FUTURE
+    //public abstract PageException getCatch();
     
     
     /**
@@ -1006,29 +998,16 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
 	
 	public abstract PageContext getParentPageContext();
 
-	/**
-	 * @param name
-	 * @return
-	 * @deprecated use instead <code>getThreadScope(Collection.Key name,Threads defaultValue);</code>
-	 */
 	public abstract Threads getThreadScope(String name);
-	
-	public abstract Threads getThreadScope(Collection.Key name,Threads defaultValue);
+	//FUTURE public abstract Threads getThreadScope(Collection.Key name,Threads defaultValue);
 	
 	/**
 	 * set a thread to the context
 	 * @param name
 	 * @param t
-	 * @deprecated use instead <code>setThreadScope(Collection.Key name,Threads t);</code>
 	 */
 	public abstract void setThreadScope(String name,Threads t);
-	
-	/**
-	 * set a thread to the context
-	 * @param name
-	 * @param t
-	 */
-	public abstract void setThreadScope(Collection.Key name,Threads t);
+	//FUTURE public abstract void setThreadScope(Collection.Key name,Threads t);
 
 	/**
 	 * @return return a Array with names off all threads running.

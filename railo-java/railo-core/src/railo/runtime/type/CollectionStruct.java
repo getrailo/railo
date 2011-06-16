@@ -1,7 +1,6 @@
 package railo.runtime.type;
 
 import java.util.Iterator;
-import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -35,8 +34,8 @@ public class CollectionStruct extends StructSupport implements ObjectWrap,Struct
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
-		return coll.duplicate(deepCopy,done);
+	public Collection duplicate(boolean deepCopy) {
+		return coll.duplicate(deepCopy);
 	}
 	
 

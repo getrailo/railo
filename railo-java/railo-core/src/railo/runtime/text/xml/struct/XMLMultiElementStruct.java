@@ -1,14 +1,11 @@
 package railo.runtime.text.xml.struct;
 
-import java.util.Map;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Duplicator;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -213,9 +210,9 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
 	}
 	
 
-    public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+    public Collection duplicate(boolean deepCopy) {
         try {
-            return new XMLMultiElementStruct((Array) array.duplicate(deepCopy,done),getCaseSensitive());
+            return new XMLMultiElementStruct((Array) array.duplicate(deepCopy),getCaseSensitive());
         } catch (PageException e) {
             return null;
         }
@@ -226,7 +223,7 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
 	 */
 	public Node cloneNode(boolean deep) {
 		try {
-            return new XMLMultiElementStruct((Array) Duplicator.duplicate(array,deep),getCaseSensitive());
+            return new XMLMultiElementStruct((Array) array.duplicate(deep),getCaseSensitive());
         } catch (PageException e) {
             return null;
         }

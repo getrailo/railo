@@ -1,7 +1,5 @@
 package railo.runtime.type;
 
-import java.util.Map;
-
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
@@ -76,10 +74,10 @@ public class ReadOnlyStruct extends StructImpl {
 	/**
 	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 		ReadOnlyStruct trg=new ReadOnlyStruct();
 		trg.isReadOnly=isReadOnly;
-		copy(this, trg, deepCopy,done);
+		copy(this, trg, deepCopy);
 		return trg;
 	}
 	

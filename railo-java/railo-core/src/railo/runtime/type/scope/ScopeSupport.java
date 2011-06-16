@@ -52,6 +52,8 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
 	private int id=0;
     private static final byte[] EMPTY="".getBytes();
 	
+    public static final int SCOPE_VAR=15; // FUTURE add to interface Scope
+    public static final int SCOPE_COUNT=16;
 	
 	/**
 	 * Field <code>isInit</code>
@@ -276,14 +278,6 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
 	 */
 	public void initialize(PageContext pc) {
         isInit=true;
-	}
-	
-	/**
-	 * @see railo.runtime.type.Scope#release(railo.runtime.PageContext)
-	 */
-	public void release(PageContext pc) {
-		clear();
-		isInit=false;
 	}
 
 	/**

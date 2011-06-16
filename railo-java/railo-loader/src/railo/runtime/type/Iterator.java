@@ -47,8 +47,9 @@ public interface Iterator {
 	/**
 	* return the current position of the internal pointer
 	* @return	int 
-	* @deprecated use instead <code>getCurrentrow(int pageContextId)</code>
+	* 
 	*/
+	// @deprecated use instead getCurrentrow(int pageContextId)
 	public int getCurrentrow();
 
 	/**

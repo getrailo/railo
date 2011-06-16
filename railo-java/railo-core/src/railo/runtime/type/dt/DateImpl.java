@@ -19,7 +19,7 @@ import railo.runtime.type.SimpleValue;
 /**
  * Printable and Castable Date Object (no visible time)
  */
-public final class DateImpl extends  Date implements SimpleValue {
+public final class DateImpl extends  Date implements SimpleValue,Localized {
 	
 	private static SimpleDateFormat railoFormatter=	new SimpleDateFormat("yyyy-MM-dd",Locale.US);
 	

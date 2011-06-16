@@ -1,7 +1,6 @@
 package railo.runtime;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import railo.commons.lang.types.RefBoolean;
@@ -20,7 +19,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructSupport;
 
-public final class ComponentWrap extends StructSupport implements Component, Objects {
+public final class ComponentWrap extends StructSupport implements ComponentPro, Objects {
    
     private int access;
     private ComponentAccess component;
@@ -400,8 +399,8 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
     /**
      * @see railo.runtime.type.Collection#duplicate(boolean)
      */
-    public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
-    	return new ComponentWrap(access,(ComponentAccess) component.duplicate(deepCopy,done));
+    public Collection duplicate(boolean deepCopy) {
+    	return new ComponentWrap(access,(ComponentAccess) component.duplicate(deepCopy));
     }
 
     /**

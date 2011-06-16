@@ -2,6 +2,7 @@ package railo.runtime.functions.dynamicEvaluation;
 
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
@@ -40,10 +41,11 @@ public final class EvaluateComponent {
         return comp;
 	}
 	public static void setInternalState(Component comp, Struct sctThis, Struct sctVariables) throws PageException {
+		ComponentPro ci = ComponentUtil.toComponentPro(comp);
 		
 		// this	
 		// delete this scope data members
-		ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,comp);
+		ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,ci);
 		Collection.Key[] keys = cw.keys();
 		Object member;
 		for(int i=0;i<keys.length;i++) {
@@ -59,24 +61,24 @@ public final class EvaluateComponent {
 		}
 		
 	// Variables
-		//boolean isWrap=comp instanceof ComponentWrap;
-       
-    	ComponentScope scope = comp.getComponentScope();
-    	
-    	// delete variables scope data members
-    	keys = scope.keys();
-		for(int i=0;i<keys.length;i++) {
-			if("this".equalsIgnoreCase(keys[i].getString())) continue;
-			if(scope.get(keys[i]) instanceof UDF) continue;
-            scope.removeEL(keys[i]);
-		}
-    	
-    	
-    	// set variables scope data members
-    	keys = sctVariables.keys();
-		for(int i=0;i<keys.length;i++) {
-			scope.set(keys[i],sctVariables.get(keys[i]));
-		}
-        
+		boolean isWrap=comp instanceof ComponentWrap;
+        if(isWrap || comp instanceof ComponentPro){
+        	ComponentScope scope = ci.getComponentScope();
+        	
+        	// delete variables scope data members
+        	keys = scope.keys();
+    		for(int i=0;i<keys.length;i++) {
+    			if("this".equalsIgnoreCase(keys[i].getString())) continue;
+    			if(scope.get(keys[i]) instanceof UDF) continue;
+                scope.removeEL(keys[i]);
+    		}
+        	
+        	
+        	// set variables scope data members
+        	keys = sctVariables.keys();
+			for(int i=0;i<keys.length;i++) {
+				scope.set(keys[i],sctVariables.get(keys[i]));
+			}
+        }
 	}
 }

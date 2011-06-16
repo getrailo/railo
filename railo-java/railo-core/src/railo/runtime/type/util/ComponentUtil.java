@@ -24,6 +24,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
+import railo.runtime.ComponentPro;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
 import railo.runtime.Page;
@@ -275,7 +276,9 @@ public final class ComponentUtil {
 	}
 
 	private static String getClassname(Component component) throws ExpressionException {
-    	PageSource ps = component.getPageSource();
+    	PageSource ps = ComponentUtil.toComponentPro(component).getPageSource();
+    	//ps.getRealpath()
+    	//String path=ps.getMapping().getVirtual()+ps.getRealpath();
     	String path=ps.getDisplayPath();// Must remove webroot
     	Config config = ps.getMapping().getConfig();
     	String root = config.getRootDirectory().getAbsolutePath();
@@ -364,13 +367,15 @@ public final class ComponentUtil {
     	String className=getClassname(component);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
     	String real=className.replace('.','/');
     	
-    	Mapping mapping = component.getPageSource().getMapping();
+    	ComponentPro cp = ComponentUtil.toComponentPro(component);
+    	
+    	Mapping mapping = cp.getPageSource().getMapping();
 		Config config = mapping.getConfig();
 		PhysicalClassLoader cl = (PhysicalClassLoader)config.getRPCClassLoader(false);
 		
-		Resource classFile = component.getDirectory().getRealResource(real.concat(".class"));
+		Resource classFile = cl.getDirectory().getRealResource(real.concat(".class"));
 		
-    	String classNameOriginal=component.getPageSource().getFullClassName();
+    	String classNameOriginal=cp.getPageSource().getFullClassName();
     	String realOriginal=classNameOriginal.replace('.','/');
 		Resource classFileOriginal = mapping.getClassRootDirectory().getRealResource(realOriginal.concat(".class"));
 		
@@ -387,7 +392,7 @@ public final class ComponentUtil {
     	
 		
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component,false),Object.class,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
+		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component,false),Object.class,new Class[]{Pojo.class},cp.getPageSource().getDisplayPath());
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
@@ -565,7 +570,10 @@ public final class ComponentUtil {
 	}
 
 	public static Property[] getProperties(Component c,boolean onlyPeristent) {
-		return c.getProperties(onlyPeristent);
+		if(c instanceof ComponentPro)
+			return ((ComponentPro)c).getProperties(onlyPeristent);
+		
+		throw new RuntimeException("class ["+Caster.toClassName(c)+"] does not support method [getProperties(boolean)]");
 	}
 	
 	public static Property[] getIDProperties(Component c,boolean onlyPeristent) {
@@ -576,6 +584,11 @@ public final class ComponentUtil {
 				tmp.add(props[i]);
 		}
 		return tmp.toArray(new Property[tmp.size()]);
+	}
+	
+	public static ComponentPro toComponentPro(Component comp) throws ExpressionException {
+		if(comp instanceof ComponentPro) return (ComponentPro) comp;
+		throw new ExpressionException("can't cast class ["+Caster.toClassName(comp)+"] to a class of type ComponentPro");
 	}
 
 	public static ComponentAccess toComponentAccess(Component comp) throws ExpressionException {
@@ -589,10 +602,34 @@ public final class ComponentUtil {
 		if(comp instanceof ComponentWrap) return ((ComponentWrap) comp).getComponentAccess();
 		return defaultValue;
 	}
+	
+	
+	
+	public static ComponentPro toComponentPro(Object obj) throws ExpressionException {
+		if(obj instanceof ComponentPro) return (ComponentPro) obj;
+		throw new ExpressionException("can't cast class ["+Caster.toClassName(obj)+"] to a class of type ComponentPro");
+	}
+	
+
+
+	public static PageSource getPageSource(Component cfc) {
+		// TODO Auto-generated method stub
+		try {
+			return toComponentPro(cfc).getPageSource();
+		} catch (ExpressionException e) {
+			return null;
+		}
+	}
+	
+	
+	public static ComponentPro toComponentPro(Component comp, ComponentPro defaultValue) {
+		if(comp instanceof ComponentPro) return (ComponentPro) comp;
+		return defaultValue;
+	}
 
 	public static ComponentAccess getActiveComponent(PageContext pc, ComponentAccess current) {
 		if(pc.getActiveComponent()==null) return current; 
-		if(pc.getActiveUDF()!=null && pc.getActiveComponent().getPageSource()==pc.getActiveUDF().getOwnerComponent().getPageSource()){
+		if(pc.getActiveUDF()!=null && ((ComponentPro)pc.getActiveComponent()).getPageSource()==((ComponentPro)pc.getActiveUDF().getOwnerComponent()).getPageSource()){
 			
 			return (ComponentImpl) pc.getActiveUDF().getOwnerComponent();
 		}

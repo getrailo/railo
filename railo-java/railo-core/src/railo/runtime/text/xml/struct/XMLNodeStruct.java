@@ -119,7 +119,7 @@ public  class XMLNodeStruct extends StructSupport implements XMLStruct {
 	 *
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 		return new XMLNodeStruct(node.cloneNode(deepCopy),caseSensitive);
 	}
 

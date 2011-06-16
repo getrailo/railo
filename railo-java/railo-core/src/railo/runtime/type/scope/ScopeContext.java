@@ -34,7 +34,6 @@ import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.op.Caster;
-import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
@@ -368,13 +367,13 @@ public final class ScopeContext {
 	
 	public Struct getAllApplicationScopes() {
 		Struct trg=new StructImpl();
-		StructImpl.copy(MapAsStruct.toStruct(applicationContextes, true), trg, false,ThreadLocalDuplication.getMap());
+		StructImpl.copy(MapAsStruct.toStruct(applicationContextes, true), trg, false);
 		return trg;
 	}
 	
 	public Struct getAllCFSessionScopes() {
 		Struct trg=new StructImpl();
-		StructImpl.copy(MapAsStruct.toStruct(this.cfSessionContextes, true), trg, false,ThreadLocalDuplication.getMap());
+		StructImpl.copy(MapAsStruct.toStruct(this.cfSessionContextes, true), trg, false);
 		return trg;
 	}
 	

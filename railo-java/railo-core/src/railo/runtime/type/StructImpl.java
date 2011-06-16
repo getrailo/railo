@@ -14,6 +14,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
+import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.StructSupport;
 
@@ -23,6 +24,7 @@ import railo.runtime.type.util.StructSupport;
 public class StructImpl extends StructSupport {
 	private static final long serialVersionUID = 1421746759512286393L;
 
+	public static final int TYPE_SOFT=4;//FUTURE move to Struct interface
 	
 	private Map<Collection.Key,Object> map;
 	
@@ -195,17 +197,18 @@ public class StructImpl extends StructSupport {
 		map.clear();
 	}
 
-
-
-	@Override
-	public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
+	
+	/**
+	 * @see railo.runtime.type.Collection#duplicate(boolean)
+	 */
+	public Collection duplicate(boolean deepCopy) {
 		Struct sct=new StructImpl(getType());
-		copy(this,sct,deepCopy,done);
+		copy(this,sct,deepCopy);
 		return sct;
 	}
 	
-	public static void copy(Struct src,Struct trg,boolean deepCopy, Map<Object, Object> done) {
-		done.put(src,trg);
+	public static void copy(Struct src,Struct trg,boolean deepCopy) {
+		ThreadLocalDuplication.set(src,trg);
 		try{
 			Key[] keys = src.keys();
 			Key key;
@@ -216,7 +219,7 @@ public class StructImpl extends StructSupport {
 			}
 		}
 		finally {
-			done.remove(src);
+			ThreadLocalDuplication.remove(src);
 		}	
 	}
 	

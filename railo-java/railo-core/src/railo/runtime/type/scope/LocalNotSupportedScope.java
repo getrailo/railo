@@ -1,7 +1,6 @@
 package railo.runtime.type.scope;
 
 import java.util.Iterator;
-import java.util.Map;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -17,7 +16,7 @@ import railo.runtime.type.util.StructSupport;
 /**
  * 
  */
-public final class LocalNotSupportedScope extends StructSupport implements Scope,Local {
+public final class LocalNotSupportedScope extends StructSupport implements Scope,LocalPro {
 	
 	private static final long serialVersionUID = 6670210379924188569L;
 	
@@ -131,8 +130,6 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	 */
 	public void release() {
 	}
-	public void release(PageContext pc) {
-	}
 	
 	/**
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
@@ -144,7 +141,7 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 	    return new LocalNotSupportedScope();
 	}
 	

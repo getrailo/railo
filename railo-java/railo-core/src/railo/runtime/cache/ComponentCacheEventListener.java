@@ -3,7 +3,6 @@ package railo.runtime.cache;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.CacheEventListener;
 import railo.runtime.Component;
-import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
@@ -50,7 +49,7 @@ public class ComponentCacheEventListener implements CacheEventListener {
 	 * @see railo.commons.io.cache.CacheEventListener#duplicate()
 	 */
 	public CacheEventListener duplicate() {
-		return new ComponentCacheEventListener((Component)Duplicator.duplicate(cfc,false));
+		return new ComponentCacheEventListener((Component)cfc.duplicate(false));
 	}
 
 }

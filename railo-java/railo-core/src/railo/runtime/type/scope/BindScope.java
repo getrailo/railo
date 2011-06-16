@@ -1,5 +1,6 @@
 package railo.runtime.type.scope;
 
+/// FUTURE move o loader
 public interface BindScope {
 
     /** 

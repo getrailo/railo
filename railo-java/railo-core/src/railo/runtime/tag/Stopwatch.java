@@ -67,7 +67,7 @@ public final class Stopwatch extends BodyTagImpl {
 		else {
 			DumpTable table = new DumpTable("#ff9900","#ffcc00","#000000");
 			table.appendRow(1,new SimpleDumpData(label==null?"Stopwatch":label),new SimpleDumpData(exe));
-			DumpWriter writer=pageContext.getConfig().getDefaultDumpWriter(DumpWriter.DEFAULT_RICH);
+			DumpWriter writer=pageContext.getConfig().getDefaultDumpWriter();
 			try {
 				
 				pageContext.forceWrite(writer.toString(pageContext,table,true));

@@ -44,14 +44,8 @@ public interface SourceFile extends Serializable {
     /**
      * return file object, based on sourcefile
      * @return file Object
-     * @deprecated use instead <code>getResource();</code>
      */
-	public Resource getFile();
-	
-	/**
-     * return a resource, based on sourcefile
-     * @return file Object
-     */
-	public Resource getResource();
+	public Resource getFile(); // FUTURE mark as deprecated
+	//public Resource getResource(); // FUTURE add
     
 }

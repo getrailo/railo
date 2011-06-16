@@ -1,6 +1,6 @@
 package railo.runtime.tag;
 
-import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.ComponentScope;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -18,14 +18,15 @@ import railo.runtime.type.KeyImpl;
 **/
 public final class Property extends TagImpl  implements DynamicAttributes{
 	
-	private railo.runtime.component.PropertyImpl property=new railo.runtime.component.PropertyImpl();
+	private railo.runtime.component.Property property=new railo.runtime.component.Property();
 	
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
 	*/
 	public void release()	{
 		super.release();
-		property=new railo.runtime.component.PropertyImpl();
+		
+		property=new railo.runtime.component.Property();
 	}
 	
 	/**
@@ -216,7 +217,7 @@ public final class Property extends TagImpl  implements DynamicAttributes{
 	*/
 	public int doStartTag() throws PageException	{
 		if(pageContext.variablesScope() instanceof ComponentScope) {
-			Component comp = ((ComponentScope)pageContext.variablesScope()).getComponent();
+			ComponentPro comp = ((ComponentScope)pageContext.variablesScope()).getComponent();
 			comp.setProperty(property);
 			property.setOwnerName(comp.getAbsName());
 		}

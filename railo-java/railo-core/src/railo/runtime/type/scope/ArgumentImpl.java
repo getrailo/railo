@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import railo.runtime.PageContext;
@@ -26,7 +25,7 @@ import railo.runtime.type.wrap.ArrayAsList;
 /**
  * implementation of the argument scope 
  */
-public class ArgumentImpl extends ScopeSupport implements Argument {
+public class ArgumentImpl extends ScopeSupport implements ArgumentPro {
 		
 	private boolean bind;
 	private Set functionArgumentNames;
@@ -429,12 +428,12 @@ public class ArgumentImpl extends ScopeSupport implements Argument {
 	/**
 	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy, Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 		ArgumentImpl trg=new ArgumentImpl();
 		trg.bind=false;
 		trg.functionArgumentNames=functionArgumentNames;
 		//trg.supportFunctionArguments=supportFunctionArguments;
-		copy(this,trg,deepCopy,done);
+		copy(this,trg,deepCopy);
 		return trg;
 	}
 

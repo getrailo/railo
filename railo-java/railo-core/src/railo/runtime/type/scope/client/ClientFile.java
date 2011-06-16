@@ -1,7 +1,5 @@
 package railo.runtime.type.scope.client;
 
-import java.util.Map;
-
 import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
 import railo.runtime.PageContext;
@@ -28,8 +26,8 @@ public class ClientFile extends StorageScopeFile implements ClientPlus {
 	 * Constructor of the class, clone existing
 	 * @param other
 	 */
-	private ClientFile(ClientFile other,boolean deepCopy,Map<Object, Object> done) {
-		super(other,deepCopy,done);
+	private ClientFile(ClientFile other,boolean deepCopy) {
+		super(other,deepCopy);
 	}
 
 	/**
@@ -50,7 +48,7 @@ public class ClientFile extends StorageScopeFile implements ClientPlus {
 	 *
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
-    	return new ClientFile(this,deepCopy,done);
+	public Collection duplicate(boolean deepCopy) {
+    	return new ClientFile(this,deepCopy);
 	}
 }

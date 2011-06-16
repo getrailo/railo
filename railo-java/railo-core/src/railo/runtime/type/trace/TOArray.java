@@ -1,7 +1,6 @@
 package railo.runtime.type.trace;
 
 import java.util.List;
-import java.util.Map;
 
 import railo.runtime.debug.Debugger;
 import railo.runtime.exp.PageException;
@@ -164,9 +163,9 @@ public class TOArray extends TOCollection implements Array {
 		return arr.containsKey(key);
 	}
 
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 		log();
-		return new TOArray(debugger,(Array)arr.duplicate(deepCopy,done),type,category,text);
+		return new TOArray(debugger,(Array)arr.duplicate(deepCopy),type,category,text);
 	}
 
 }

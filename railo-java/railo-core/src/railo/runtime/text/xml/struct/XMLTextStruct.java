@@ -1,7 +1,5 @@
 package railo.runtime.text.xml.struct;
 
-import java.util.Map;
-
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -123,7 +121,7 @@ public final class XMLTextStruct extends XMLNodeStruct implements Text {
 	 *
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 		return new XMLTextStruct((Text)text.cloneNode(deepCopy),caseSensitive);
 	}
 	

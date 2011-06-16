@@ -67,10 +67,12 @@ public interface Scope extends Struct {
     public static final int SCOPE_CALLER=13;
 
     public static final int SCOPE_CLUSTER=14;
-
-    public static final int SCOPE_VAR=15;
     
-    public static final int SCOPE_COUNT=16;
+
+    // FUTURE public static final int SCOPE_VAR=15;
+    
+    
+    public static final int SCOPE_COUNT=15;
     
     
     
@@ -89,14 +91,8 @@ public interface Scope extends Struct {
 	
 	/**
 	 * release scope for reuse
-	 * @deprecated use instead <code>release(PageContext pc);</code>
 	 */
-	public void release();
-	
-	/**
-	 * release scope for reuse
-	 */
-	public void release(PageContext pc);
+	public void release();// FUTURE add PageContext
 	
     /** 
      * @return return the scope type (SCOPE_SERVER, SCOPE_SESSION usw.) 

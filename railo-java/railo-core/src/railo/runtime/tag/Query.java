@@ -27,6 +27,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.QueryPro;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
@@ -464,8 +465,10 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			sct.setEL(QueryImpl.SQL, sql.getSQLString());
 			
 			// GENERATED KEYS
-			if(query !=null){
-				railo.runtime.type.Query qryKeys = query.getGeneratedKeys();
+			// FUTURE when getGeneratedKeys() exist in interface the toQueryImpl can be removed
+			QueryPro qi = Caster.toQueryPro(query,null);
+			if(qi !=null){
+				QueryPro qryKeys = Caster.toQueryPro(qi.getGeneratedKeys(),null);
 				if(qryKeys!=null){
 					StringBuffer generatedKey=new StringBuffer(),sb;
 					Collection.Key[] columnNames = qryKeys.getColumnNames();

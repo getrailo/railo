@@ -296,6 +296,13 @@ public interface Config {
      */
     public abstract String getDebugTemplate();
 
+    /**
+     * @return Returns the error Template.
+     * @deprecated replaced with getErrorTemplate(int status)
+     */
+    public abstract String getErrorTemplate();
+    
+    
     public abstract String getErrorTemplate(int statusCode);
 
     /**
@@ -375,7 +382,14 @@ public interface Config {
      * @throws PageException
      */ 
     public abstract ConfigServer getConfigServer(String password) throws PageException;
+    
 
+    /**
+     * @deprecated replaced with <code>getConfigServer(String password)</code>
+     * @return
+     */
+    public abstract ConfigServer getConfigServer();
+    
     /**
      * @return Returns the mailLogger.
      */
@@ -497,6 +511,14 @@ public interface Config {
 	 * returns the default DumpWriter  
 	 * @param defaultType
 	 * @return default DumpWriter
+	 * @deprecated use instead <code>getDefaultDumpWriter(int defaultType)</code>
+	 */
+	public abstract DumpWriter getDefaultDumpWriter();
+
+	/**
+	 * returns the default DumpWriter  
+	 * @param defaultType
+	 * @return default DumpWriter
 	 */
 	public abstract DumpWriter getDefaultDumpWriter(int defaultType);
 
@@ -509,6 +531,15 @@ public interface Config {
 	 */
 	public abstract DumpWriter getDumpWriter(String key,int defaultType) throws PageException;
 
+	/**
+	 * returns the DumpWriter matching key
+	 * @param key key for DumpWriter
+	 * @return matching DumpWriter
+	 * @deprecated use instead <code>getDumpWriter(String key,int defaultType)</code>
+	 * @throws PageException if there is no DumpWriter for this key
+	 */
+	public abstract DumpWriter getDumpWriter(String key) throws PageException;
+	
 	
 	/**
 	 * define if components has a "shadow" in the component variables scope or not.
@@ -533,11 +564,11 @@ public interface Config {
 
 	
 	/**
-	 * @deprecated use <code>public Mapping[] getComponentMappings()</code> instead  
+	 * FUTURE deprecated use <code>public Mapping[] getComponentMappings()</code> instead  
 	 */
 	public Mapping getComponentMapping();
 
-	public Mapping[] getComponentMappings();
+	// FUTURE public Mapping[] getComponentMappings();
 
 	public abstract boolean doCustomTagDeepSearch();
 
@@ -616,12 +647,12 @@ public interface Config {
 	public Resource getTldFile();
 	
 	
-	/**
-	 * @deprecated use instead <code>public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel, boolean useSpecialMappings);</code>
-	 */
+	// FUTURE set as deprecated
 	public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel);
-
-	public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel, boolean useSpecialMappings, boolean useDefaultMappings);
+	
+	// FUTURE
+	//public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel, boolean useSpecialMappings, boolean useDefaultMappings);
+	
 	
 	/**
      * @param mappings2 

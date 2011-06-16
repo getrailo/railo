@@ -185,8 +185,8 @@ public  class MapAsStruct extends StructSupport implements Struct {
     /**
      * @see railo.runtime.type.Collection#duplicate(boolean)
      */
-    public synchronized Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
-        return new MapAsStruct(Duplicator.duplicateMap(map,deepCopy,done),caseSensitive);
+    public synchronized Collection duplicate(boolean deepCopy) {
+        return new MapAsStruct(Duplicator.duplicateMap(map,deepCopy),caseSensitive);
     }
 
 	

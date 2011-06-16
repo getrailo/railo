@@ -7,6 +7,7 @@ import org.objectweb.asm.commons.Method;
 import railo.runtime.type.Scope;
 import railo.runtime.type.scope.Application;
 import railo.runtime.type.scope.ArgumentImpl;
+import railo.runtime.type.scope.ArgumentPro;
 import railo.runtime.type.scope.CGI;
 import railo.runtime.type.scope.Client;
 import railo.runtime.type.scope.Cluster;
@@ -18,8 +19,6 @@ import railo.runtime.type.scope.Server;
 import railo.runtime.type.scope.Session;
 import railo.runtime.type.scope.URL;
 import railo.runtime.type.scope.Undefined;
-
-import com.sun.jdi.connect.Connector.Argument;
 
 public final class TypeScope {
 	
@@ -69,7 +68,7 @@ public final class TypeScope {
 	
     
     
-    public final static Type SCOPE_ARGUMENT=		Type.getType(Argument.class);
+    public final static Type SCOPE_ARGUMENT=		Type.getType(ArgumentPro.class);
     public final static Type SCOPE_ARGUMENT_IMPL=		Type.getType(ArgumentImpl.class);
     
     

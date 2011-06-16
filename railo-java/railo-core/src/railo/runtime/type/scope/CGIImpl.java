@@ -4,7 +4,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -121,9 +120,9 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	/**
 	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
 	 */
-	public Collection duplicate(boolean deepCopy,Map<Object, Object> done) {
+	public Collection duplicate(boolean deepCopy) {
 		Struct sct=new StructImpl();
-		copy(this,sct,deepCopy,done);
+		copy(this,sct,deepCopy);
 		return sct;
 	}
 	
@@ -313,16 +312,6 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	 * @see railo.runtime.type.Scope#release()
 	 */
 	public void release() {
-		isInit=false;
-		this.req=null;
-		scriptProtected=ScriptProtected.UNDEFINED; 
-		pc=null;
-	}
-	
-	/**
-	 * @see railo.runtime.type.Scope#release(railo.runtime.PageContext)
-	 */
-	public void release(PageContext pc) {
 		isInit=false;
 		this.req=null;
 		scriptProtected=ScriptProtected.UNDEFINED; 
