@@ -13,6 +13,8 @@ import railo.commons.io.res.ResourceMetaData;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.util.ResourceSupport;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 
 
@@ -50,7 +52,7 @@ public final class CacheResource extends ResourceSupport implements ResourceMeta
 		return provider.getCore(parent,name);
 	}
 
-	private void removeCore() {
+	private void removeCore() throws IOException {
 		provider.removeCore(parent,name);
 	}
 	
@@ -208,7 +210,11 @@ public final class CacheResource extends ResourceSupport implements ResourceMeta
 		if(core.getType()!=CacheResourceCore.TYPE_DIRECTORY)
 			return null;
 		
-		return provider.getChildNames(getInnerPath());
+		try {
+			return provider.getChildNames(getInnerPath());
+		} catch (IOException e) {
+			throw new PageRuntimeException(Caster.toPageException(e));
+		}
 	}
 
 	/**

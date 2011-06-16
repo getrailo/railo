@@ -107,7 +107,7 @@ public final class CacheResourceProvider implements ResourceProvider {
 		return null;
 	}
 
-	String[] getChildNames(String path) {
+	String[] getChildNames(String path) throws IOException {
 		List list = getCache().values(new ChildrenFilter(path));
 		String[] arr = new String[list.size()];
 		Iterator it = list.iterator();
@@ -156,7 +156,7 @@ public final class CacheResourceProvider implements ResourceProvider {
 	
 
 
-	void removeCore(String path, String name) {
+	void removeCore(String path, String name) throws IOException {
 		getCache().remove(toKey(path,name));
 	}
 

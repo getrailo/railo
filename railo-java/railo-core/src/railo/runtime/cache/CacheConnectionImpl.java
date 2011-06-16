@@ -1,8 +1,6 @@
 package railo.runtime.cache;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.exp.CacheException;
@@ -10,7 +8,6 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.net.JarLoader;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
-import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.tag.Admin;
 import railo.runtime.type.Struct;
@@ -56,28 +53,7 @@ public class CacheConnectionImpl implements CacheConnection  {
 								"cannot initilaize Cache ["+clazz.getName()+"], make sure you have added all the required jars files. "+
 								"if you have updated the JAR's in the Railo Administrator, please restart your Servlet Engine.");
 				}
-				
-				try {
-					// FUTURE Workaround to provide config oject, add to interface
-					Method m = clazz.getMethod("init", new Class[]{Config.class,String.class,Struct.class});
-					m.invoke(cache, new Object[]{config,getName(), getCustom()});
-					
-				} catch (InvocationTargetException e) {
-					Throwable target = e.getTargetException();
-					if(target instanceof IOException) throw ((IOException)target);
-					target.printStackTrace();
-					IOException ioe = new IOException(Caster.toClassName(target)+":"+target.getMessage());
-					ioe.setStackTrace(target.getStackTrace());
-					throw ioe;
-				} 
-				catch (Throwable e) {
-					
-					cache.init(getName(), getCustom());
-				}
-				
-				
-				
-				//ConfigWeb config,String cacheName, Struct arguments
+				cache.init(config,getName(), getCustom());
 			}
 			return cache;
 		}

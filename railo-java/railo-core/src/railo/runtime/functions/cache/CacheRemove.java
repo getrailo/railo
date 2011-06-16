@@ -40,15 +40,17 @@ public final class CacheRemove implements Function {
 			throw Caster.toPageException(e);
 		}
 		StringBuffer sb=null;
-		while(it.hasNext()){
-			id= Util.key(Caster.toString(it.next()));
-			if(!cache.remove(id) && throwOnError){
-				if(sb==null)sb=new StringBuffer();
-				else sb.append(',');
-				sb.append(id);
+		try{
+			while(it.hasNext()){
+				id= Util.key(Caster.toString(it.next()));
+				if(!cache.remove(id) && throwOnError){
+					if(sb==null)sb=new StringBuffer();
+					else sb.append(',');
+					sb.append(id);
+				}		
 			}
-				
-		}
+		} 
+		catch (IOException e) {}
 		if(throwOnError && sb!=null)
 			throw new ApplicationException("can not remove the elements with the following id(s) ["+sb+"]");
 		return null;

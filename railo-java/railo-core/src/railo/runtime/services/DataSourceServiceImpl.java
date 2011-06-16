@@ -1,5 +1,6 @@
 package railo.runtime.services;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import railo.commons.io.res.Resource;
@@ -96,7 +97,7 @@ public class DataSourceServiceImpl extends ServiceSupport implements DataSourceS
 	/**
 	 * @see coldfusion.server.DataSourceService#purgeQueryCache()
 	 */
-	public void purgeQueryCache() {
+	public void purgeQueryCache() throws IOException {
 		pc().getQueryCache().clearUnused();
 
 	}

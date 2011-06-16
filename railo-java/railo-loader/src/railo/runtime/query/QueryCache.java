@@ -1,5 +1,6 @@
 package railo.runtime.query;
 
+import java.io.IOException;
 import java.util.Date;
 
 import railo.runtime.db.SQL;
@@ -12,8 +13,9 @@ public interface QueryCache {
 
     /**
      * clear expired queries from cache
+     * @throws IOException 
      */
-    public abstract void clearUnused();
+    public abstract void clearUnused() throws IOException;
 
     /**
      * returns a Query from Query Cache or null if no match found
@@ -41,6 +43,7 @@ public interface QueryCache {
 
     /**
      * clear the cache
+     * @throws IOException 
      */
     public abstract void clear();
 
@@ -50,6 +53,7 @@ public interface QueryCache {
 	 * @param datasource
 	 * @param username
 	 * @param password
+	 * @throws IOException 
 	 */
 	public abstract void remove(SQL sql, String datasource,String username, String password);
 

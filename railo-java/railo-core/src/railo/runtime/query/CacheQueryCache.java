@@ -42,14 +42,16 @@ import railo.runtime.type.QueryImpl;
 	 * @see railo.runtime.query.QueryCache#clear()
 	 */
 	public void clear() {
-		getCache().remove(CacheKeyFilterAll.getInstance());
+		try {
+			getCache().remove(CacheKeyFilterAll.getInstance());
+		} catch (IOException e) {}
 	}
 
 
 	/**
 	 * @see railo.runtime.query.QueryCache#clearUnused()
 	 */
-	public void clearUnused() {
+	public void clearUnused() throws IOException {
 		
 		Cache c = getCache();
 		List entries = c.entries();
@@ -87,7 +89,9 @@ import railo.runtime.type.QueryImpl;
 	}
 
 	public void remove(SQL sql, String datasource, String username,String password) {
-		getCache().remove(key(sql, datasource, username, password));
+		try {
+			getCache().remove(key(sql, datasource, username, password));
+		} catch (IOException e) {}
 	}
 
 	public void set(SQL sql, String datasource, String username,String password, Object value, Date cacheBefore) {
@@ -115,9 +119,13 @@ import railo.runtime.type.QueryImpl;
 		}
 	}
     
-	
+    public void clear(QueryCacheFilter filter) {
+    	try {
+			_clear(filter);
+		} catch (IOException e) {}
+    }
 
-	public void clear(QueryCacheFilter filter) {
+	public void _clear(QueryCacheFilter filter) throws IOException {
 		Cache c = getCache();
 		Iterator it = c.entries().iterator();
     	String key;
@@ -142,7 +150,11 @@ import railo.runtime.type.QueryImpl;
 	 * @see railo.runtime.query.QueryCacheSupport#size()
 	 */
 	public int size() {
-		return getCache().keys().size();
+		try {
+			return getCache().keys().size();
+		} catch (IOException e) {
+			return 0;
+		}
 	}
 
 

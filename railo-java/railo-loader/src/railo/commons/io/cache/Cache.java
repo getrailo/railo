@@ -4,21 +4,19 @@ import java.io.IOException;
 import java.util.List;
 
 import railo.commons.io.cache.exp.CacheException;
+import railo.runtime.config.Config;
 import railo.runtime.type.Struct;
 
 public interface Cache {
 	
-	// FUTURE remove
-	public static final String DEFAULT_CACHE_NAME = "default789575785";
+	//public static final String DEFAULT_CACHE_NAME = "default789575785";
 	
 	/**
 	 * initialize the cache
 	 * @param arguments configuration arguments
 	 * @throws CacheException 
 	 */
-	public void init(String cacheName,Struct arguments) throws IOException;// FUTURE deprecated
-	
-	//FUTURE public void init(Config config,String cacheName,Struct arguments) throws IOException;
+	public void init(Config config,String cacheName,Struct arguments) throws IOException;
 	
 	/**
 	 * return cache entry that match the key, throws a CacheException when entry does not exists or is stale
@@ -69,21 +67,21 @@ public interface Cache {
 	 * @param key
 	 * @return returns if there was a removal
 	 */
-	public boolean remove(String key);//FUTURE throws IOException;
+	public boolean remove(String key) throws IOException;
 	
 	/**
 	 * remove all entries that match the given filter
 	 * @param filter 
 	 * @return returns the count of the removal or -1 if this information is not available
 	 */
-	public int remove(CacheKeyFilter filter);//FUTURE throws IOException;
+	public int remove(CacheKeyFilter filter) throws IOException;
 	
 	/**
 	 * remove all entries that match the given filter
 	 * @param filter 
 	 * @return returns the count of the removal or -1 if this information is not available
 	 */
-	public int remove(CacheEntryFilter filter);//FUTURE throws IOException;
+	public int remove(CacheEntryFilter filter) throws IOException;
 
 
 	/**
@@ -92,7 +90,7 @@ public interface Cache {
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the keys contained in this cache.
 	 */
-	public List keys();//FUTURE throws IOException;
+	public List keys() throws IOException;
 	
 	/**
 	 * 
@@ -101,7 +99,7 @@ public interface Cache {
 	 * @param filter 
 	 * @return a set of the keys contained in this cache.
 	 */
-	public List keys(CacheKeyFilter filter);//FUTURE throws IOException;
+	public List keys(CacheKeyFilter filter) throws IOException;
 	
 	/**
 	 * 
@@ -110,35 +108,35 @@ public interface Cache {
 	 * @param filter 
 	 * @return a set of the keys contained in this cache.
 	 */
-	public List keys(CacheEntryFilter filter);//FUTURE throws IOException; // FUTURE List<CacheEntry>
+	public List keys(CacheEntryFilter filter) throws IOException; // FUTURE List<CacheEntry>
 	
 	/**
 	 * Returns a List of values containing in this cache. 
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List values();//FUTURE throws IOException; // FUTURE List<CacheEntry>
+	public List values() throws IOException; // FUTURE List<CacheEntry>
 	
 	/**
 	 * Returns a list of values containing in this cache that match the given filter.
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List values(CacheKeyFilter filter);//FUTURE throws IOException; // FUTURE List<CacheEntry>
+	public List values(CacheKeyFilter filter) throws IOException; // FUTURE List<CacheEntry>
 	
 	/**
 	 * Returns a list of values containing in this cache that match the given filter.
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List values(CacheEntryFilter filter);//FUTURE throws IOException;  List<CacheEntry>
+	public List values(CacheEntryFilter filter) throws IOException; // List<CacheEntry>
 	
 	/**
 	 * Returns a List of entries containing in this cache Each element in the returned list is a CacheEntry. 
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List entries();// FUTURE public List<CacheEntry> entries();
+	public List entries() throws IOException;// FUTURE public List<CacheEntry> entries();
 	
 	/**
 	 * Returns a list of entries containing in this cache that match the given filter.
@@ -146,7 +144,7 @@ public interface Cache {
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List entries(CacheKeyFilter filter); // FUTURE List<CacheEntry>
+	public List entries(CacheKeyFilter filter) throws IOException; // FUTURE List<CacheEntry>
 	
 	/**
 	 * Returns a list of entries containing in this cache that match the given filter.
@@ -154,7 +152,7 @@ public interface Cache {
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List entries(CacheEntryFilter filter); // FUTURE List<CacheEntry>
+	public List entries(CacheEntryFilter filter) throws IOException; // FUTURE List<CacheEntry>
 
 
 	/**

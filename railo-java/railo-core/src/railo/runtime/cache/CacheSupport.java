@@ -17,7 +17,7 @@ public abstract class CacheSupport implements Cache {
 	/**
 	 * @see railo.commons.io.cache.Cache#keys(railo.commons.io.cache.CacheKeyFilter)
 	 */
-	public List keys(CacheKeyFilter filter) {
+	public List keys(CacheKeyFilter filter) throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
 		Iterator it = keys.iterator();
@@ -30,9 +30,10 @@ public abstract class CacheSupport implements Cache {
 	}
 	
 	/**
+	 * @throws IOException 
 	 * @see railo.commons.io.cache.Cache#keys(railo.commons.io.cache.CacheEntryFilter)
 	 */
-	public List keys(CacheEntryFilter filter) {
+	public List keys(CacheEntryFilter filter) throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
 		Iterator it = keys.iterator();
@@ -49,7 +50,7 @@ public abstract class CacheSupport implements Cache {
 	/**
 	 * @see railo.commons.io.cache.Cache#entries()
 	 */
-	public List entries() {
+	public List entries() throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
 		Iterator it = keys.iterator();
@@ -64,7 +65,7 @@ public abstract class CacheSupport implements Cache {
 	/**
 	 * @see railo.commons.io.cache.Cache#entries(railo.commons.io.cache.CacheKeyFilter)
 	 */
-	public List entries(CacheKeyFilter filter) {
+	public List entries(CacheKeyFilter filter) throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
 		Iterator it = keys.iterator();
@@ -79,7 +80,7 @@ public abstract class CacheSupport implements Cache {
 	/**
 	 * @see railo.commons.io.cache.Cache#entries(railo.commons.io.cache.CacheEntryFilter)
 	 */
-	public List entries(CacheEntryFilter filter) {
+	public List entries(CacheEntryFilter filter) throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
 		Iterator it = keys.iterator();
@@ -96,7 +97,7 @@ public abstract class CacheSupport implements Cache {
 	/**
 	 * @see railo.commons.io.cache.Cache#values()
 	 */
-	public List values() {
+	public List values() throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
 		Iterator it = keys.iterator();
@@ -112,7 +113,7 @@ public abstract class CacheSupport implements Cache {
 	/**
 	 * @see railo.commons.io.cache.Cache#values(railo.commons.io.cache.CacheEntryFilter)
 	 */
-	public List values(CacheEntryFilter filter) {
+	public List values(CacheEntryFilter filter) throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
 		Iterator it = keys.iterator();
@@ -129,7 +130,7 @@ public abstract class CacheSupport implements Cache {
 	/**
 	 * @see railo.commons.io.cache.Cache#values(railo.commons.io.cache.CacheKeyFilter)
 	 */
-	public List values(CacheKeyFilter filter) {
+	public List values(CacheKeyFilter filter) throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
 		Iterator it = keys.iterator();
@@ -144,7 +145,7 @@ public abstract class CacheSupport implements Cache {
 	/**
 	 * @see railo.commons.io.cache.Cache#remove(railo.commons.io.cache.CacheEntryFilter)
 	 */
-	public int remove(CacheEntryFilter filter) {
+	public int remove(CacheEntryFilter filter) throws IOException {
 		List keys = keys();
 		int count=0;
 		Iterator it = keys.iterator();
@@ -165,7 +166,7 @@ public abstract class CacheSupport implements Cache {
 	/**
 	 * @see railo.commons.io.cache.Cache#remove(railo.commons.io.cache.CacheKeyFilter)
 	 */
-	public int remove(CacheKeyFilter filter) {
+	public int remove(CacheKeyFilter filter) throws IOException {
 		List keys = keys();
 		int count=0;
 		Iterator it = keys.iterator();
