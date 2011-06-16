@@ -26,17 +26,19 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Argument;
-import railo.runtime.type.scope.ArgumentPro;
 import railo.runtime.type.scope.ArgumentThreadImpl;
+import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.LocalImpl;
 import railo.runtime.type.scope.Threads;
 import railo.runtime.type.scope.Undefined;
 
 public class ChildThreadImpl extends ChildThread implements Serializable {
+
+	private static final long serialVersionUID = -8902836175312356628L;
+
 	private static final Collection.Key KEY_ATTRIBUTES = KeyImpl.getInstance("attributes");
 
 	//private static final Set EMPTY = new HashSet(); 
@@ -153,7 +155,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		
 		Undefined undefined=pc.us();
 		
-		ArgumentPro newArgs=new ArgumentThreadImpl((Struct) attrs.duplicate(false));//(ArgumentPro) pc.getScopeFactory().getArgumentInstance();// FUTURE
+		Argument newArgs=new ArgumentThreadImpl((Struct) attrs.duplicate(false));//(ArgumentPro) pc.getScopeFactory().getArgumentInstance();// FUTURE
         LocalImpl newLocal=pc.getScopeFactory().getLocalInstance();
         Key[] keys = attrs.keys();
 		for(int i=0;i<keys.length;i++){
@@ -165,7 +167,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		
 		newLocal.setEL(KEY_ATTRIBUTES, newArgs);
 		Argument oldArgs=pc.as();
-        Scope oldLocal=pc.localScope();
+        Local oldLocal=pc.localScope();
         
         int oldMode=undefined.setMode(Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS);
 		pc.setFunctionScopes(newLocal,newArgs);

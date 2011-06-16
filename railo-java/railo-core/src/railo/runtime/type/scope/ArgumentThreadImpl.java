@@ -19,7 +19,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructUtil;
 
-public class ArgumentThreadImpl implements ArgumentPro,Sizeable {
+public class ArgumentThreadImpl implements Argument,Sizeable {
 
 	private Struct sct;
 

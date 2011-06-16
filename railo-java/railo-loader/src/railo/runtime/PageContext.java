@@ -35,6 +35,7 @@ import railo.runtime.type.scope.Client;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.Cookie;
 import railo.runtime.type.scope.Form;
+import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.Request;
 import railo.runtime.type.scope.Server;
 import railo.runtime.type.scope.Session;
@@ -119,7 +120,9 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     /**
      * @return arguments scope
      */
-    public abstract Scope localScope();
+    public abstract Local localScope();
+    
+    public abstract Local localScope(boolean bind);
 
     /**
      * @return session scope

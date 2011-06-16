@@ -19,9 +19,11 @@ public interface Undefined extends Scope {
     /**
      * @return returns the current local scope defined in the undefined scope
      */
-    public abstract Scope localScope();
+    public abstract Local localScope();
     
-    // FUTURE public Argument argumentsScope();
+    public Argument argumentsScope();
+    
+    public Variables variablesScope();
 
     /**
      * sets mode of scope
@@ -36,7 +38,7 @@ public interface Undefined extends Scope {
      * @param local local scope
      * @param argument argument scope
      */
-    public abstract void setFunctionScopes(Scope local, Scope argument);
+    public abstract void setFunctionScopes(Local local, Argument argument);
 
     /**
      * @return returns actuell collection stack

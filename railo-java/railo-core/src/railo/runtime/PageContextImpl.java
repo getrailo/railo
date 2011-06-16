@@ -1081,16 +1081,18 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     } 
     
     /**
-     * @see PageContext#localScope()
-     */// FUTURE remove class from type Local
-    public Scope localScope() { 
+     * @see railo.runtime.PageContext#localScope()
+     */
+    public Local localScope() { 
     	//if(local==localUnsupportedScope) 
     	//	throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope"));
     	return local;
     }
     
-// FUTURE remove class from type Local
-    public Scope localScope(boolean bind) { 
+    /**
+     * @see railo.runtime.PageContext#localScope(boolean)
+     */
+    public Local localScope(boolean bind) { 
     	if(bind)local.setBind(true); 
     	//if(local==localUnsupportedScope) 
     	//	throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope"));
@@ -1128,7 +1130,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @param local sets the current local scope
      * @param argument sets the current argument scope
      */
-    public void setFunctionScopes(Scope local,Argument argument) {
+    public void setFunctionScopes(Local local,Argument argument) {
     	// FUTURE setFunctionScopes(Local local,Argument argument)
 		this.argument=argument;
 		this.local=(Local) local;

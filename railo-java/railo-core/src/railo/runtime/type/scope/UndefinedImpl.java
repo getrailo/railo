@@ -43,8 +43,8 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	private boolean localAlways;
 	private short type;
 	private boolean isInit;
-	private Scope local;
-	private ArgumentPro argument;
+	private Local local;
+	private Argument argument;
 	private PageContextImpl pc;
 	
 	/**
@@ -61,18 +61,20 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	/**
      * @see railo.runtime.type.scope.Undefined#localScope()
      */
-	public Scope localScope() {
+	public Local localScope() {
 		return local;
 	}
 	
-
-	// FUTURE add to interface
-	public ArgumentPro argumentsScope() {
-		// TODO Auto-generated method stub
+	/**
+	 * @see railo.runtime.type.scope.Undefined#argumentsScope()
+	 */
+	public Argument argumentsScope() {
 		return argument;
 	}
 
-	// FUTURE add to interface
+	/**
+	 * @see railo.runtime.type.scope.Undefined#variablesScope()
+	 */
 	public Variables variablesScope() {
 		return (Variables) variable;
 	}
@@ -105,9 +107,9 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	/**
      * @see railo.runtime.type.scope.Undefined#setFunctionScopes(railo.runtime.type.Scope, railo.runtime.type.Scope)
      */
-	public void setFunctionScopes(Scope local, Scope argument) {// FUTURE setFunctionScopes(Local local,Argument argument)
+	public void setFunctionScopes(Local local, Argument argument) {
 		this.local=local;
-		this.argument=(ArgumentPro) argument;
+		this.argument=argument;
 	}
 
 	/**
@@ -530,7 +532,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		if(isInitalized()) return;
 		isInit=true;
 		variable=pc.variablesScope();
-        argument=(ArgumentPro) pc.argumentsScope();
+        argument=pc.argumentsScope();
 		local=pc.localScope();
 		allowImplicidQueryCall=pc.getConfig().allowImplicidQueryCall();
         type=pc.getConfig().getScopeCascadingType();
@@ -610,9 +612,9 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		UndefinedImpl dupl = new UndefinedImpl(pc, type);
 		dupl.allowImplicidQueryCall=allowImplicidQueryCall;
 		dupl.checkArguments=checkArguments;
-		dupl.argument=deepCopy?(ArgumentPro)argument.duplicate(deepCopy):argument;
+		dupl.argument=deepCopy?(Argument)argument.duplicate(deepCopy):argument;
 		dupl.isInit=isInit;
-		dupl.local=deepCopy?(Scope)local.duplicate(deepCopy):local;
+		dupl.local=deepCopy?(Local)local.duplicate(deepCopy):local;
 		dupl.localAlways=localAlways;
 		dupl.qryStack= (deepCopy?(QueryStackImpl)qryStack.duplicate(deepCopy):qryStack);
 		
