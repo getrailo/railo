@@ -250,7 +250,14 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		//print.err(railo.runtime.type.List.arrayToList(cfcs.keySet().toArray(new String[cfcs.size()]), ","));
 		
-		String mappings=HibernateSessionFactory.createMappings(cfcs);
+		String mappings=HibernateSessionFactory.createMappings(this,cfcs);
+		
+		/*try {
+			mappings=IOUtil.toString(ResourcesImpl.getFileResourceProvider().getResource("/Users/mic/mapping.xml"), null);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		
 		/*ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
 		try {
@@ -309,17 +316,16 @@ public class HibernateORMEngine implements ORMEngine {
 		}
 	}
 
-	private static void addEventListeners(PageContext pc, Configuration config,ORMConfiguration ormConfig, Map<String, CFCInfo> cfcs) {
+	private static void addEventListeners(PageContext pc, Configuration config,ORMConfiguration ormConfig, Map<String, CFCInfo> cfcs) throws PageException {
 		if(!ormConfig.eventHandling()) return;
 		String eventHandler = ormConfig.eventHandler();
 		EventListenerImpl listener=null;
 		if(!StringUtil.isEmpty(eventHandler,true)){
-			try {
+			//try {
 				Component c = pc.loadComponent(eventHandler.trim());
 				listener = new EventListenerImpl(c,true);
 		        //config.setInterceptor(listener);
-			} 
-			catch (PageException e) {e.printStackTrace();}
+			//}catch (PageException e) {e.printStackTrace();}
 		}
         EventListeners listeners = config.getEventListeners();
 		
@@ -361,9 +367,6 @@ public class HibernateORMEngine implements ORMEngine {
 
 	private static List<EventListenerImpl> merge(EventListenerImpl listener, Map<String, CFCInfo> cfcs, Collection.Key eventType) {
 		List<EventListenerImpl> list=new ArrayList<EventListenerImpl>();
-		// general listener
-		if(listener!=null && is(listener.getCFC(),eventType))
-			list.add(listener);
 			
 		
 		Iterator<Entry<String, CFCInfo>> it = cfcs.entrySet().iterator();
@@ -376,7 +379,11 @@ public class HibernateORMEngine implements ORMEngine {
 				list.add(new EventListenerImpl(cfc,false));
 			}
 		}
-		//print.o(eventType+":"+list.size());
+		
+		// general listener
+		if(listener!=null && is(listener.getCFC(),eventType))
+			list.add(listener);
+		
 		return list;
 	}
 

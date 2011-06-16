@@ -14,10 +14,9 @@ import railo.runtime.type.scope.storage.StorageScopeCache;
 public final class SessionCache extends StorageScopeCache implements SessionPlus {
 	
 	private static final long serialVersionUID = -875719423763891692L;
-	private static final boolean expiresControlFromOutside=false;
 
 	private SessionCache(PageContext pc,String cacheName, String appName,Struct sct) { 
-		super(pc,cacheName,appName,"session",SCOPE_SESSION,sct,expiresControlFromOutside);
+		super(pc,cacheName,appName,"session",SCOPE_SESSION,sct);
 	}
 
 	/**

@@ -620,9 +620,8 @@ public interface Config {
 	 * @deprecated use instead <code>public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel, boolean useSpecialMappings);</code>
 	 */
 	public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel);
-	
-	public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel, boolean useSpecialMappings);
-	
+
+	public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel, boolean useSpecialMappings, boolean useDefaultMappings);
 	
 	/**
      * @param mappings2 

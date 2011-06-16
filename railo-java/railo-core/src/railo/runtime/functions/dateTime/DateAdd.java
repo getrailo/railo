@@ -14,12 +14,9 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 
 public final class DateAdd implements Function {
-	//private static Calendar c;
 
-	/*public static DateTime invoke(String datepart, double number, DateTime date) throws ExpressionException {
-		return call(ThreadLocalPageContext .get() , datepart, number, date);
-	}*/
-	
+	private static final long serialVersionUID = -5827644560609841341L;
+
 	public static DateTime call(PageContext pc , String datepart, double number, DateTime date) throws ExpressionException {
 		return _call(pc,pc.getTimeZone(), datepart, number, date);
 	}
@@ -52,7 +49,27 @@ public final class DateAdd implements Function {
 			else if(first=='y') c.add(Calendar.DAY_OF_YEAR,n);
 			else if(first=='d') c.add(Calendar.DATE,n);
 			else if(first=='w') {
-				c.add(Calendar.DAY_OF_YEAR,n);
+				int dow = c.get(Calendar.DAY_OF_WEEK);
+	            int offset;
+	            // -
+	            if(n < 0) {
+	                if(Calendar.SUNDAY==dow) offset=2;
+	                else offset=-(6-dow);
+	            } 
+	            // +
+	            else {
+	                if(Calendar.SATURDAY==dow) offset=-2;
+	                else offset=dow-2;
+	            }
+	            c.add(Calendar.DAY_OF_WEEK, -offset);
+	            
+	            if(dow==Calendar.SATURDAY || dow==Calendar.SUNDAY) {
+	                if(n>0) n--;
+	                else if(n<0) n++;
+	            }
+	            else n+=offset;
+	            c.add(Calendar.DAY_OF_WEEK, (n / 5) * 7 + n % 5);
+	            
 			}
 			
 			else {

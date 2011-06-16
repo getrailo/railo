@@ -202,12 +202,12 @@ replaced with encoding output
 	<span class="comment">
 		#stText.Overview.ServerTime#
 		#stText.Overview.DateTime#
-		#dateFormat(nowServer(),"mm/dd/yyyy")#
-		#timeFormat(nowServer(),"HH:mm:ss")#<br>
+		#lsdateFormat(date:now(),timezone:"jvm")#
+		#lstimeFormat(time:now(),timezone:"jvm")#<br>
         
 		#stText.Overview.DateTime#
-		#dateFormat(now(),"mm/dd/yyyy")#
-		#timeFormat(now(),"HH:mm:ss")#<br>
+		#lsdateFormat(now())#
+		#lstimeFormat(now())#<br>
         
         
         

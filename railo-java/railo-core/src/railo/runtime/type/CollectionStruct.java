@@ -189,4 +189,11 @@ public class CollectionStruct extends StructSupport implements ObjectWrap,Struct
 	public Object getEmbededObject() throws PageException {
 		return coll;
 	}
+
+	/**
+	 * @return
+	 */
+	public Collection getCollection() {
+		return coll;
+	}
 }

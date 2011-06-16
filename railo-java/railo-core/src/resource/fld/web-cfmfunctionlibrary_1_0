@@ -10437,6 +10437,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
+			<default>medium</default>
 		<description></description>
     </argument>
 		<argument>
@@ -10722,6 +10723,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
+			<default>short</default>
 		<description></description>
     </argument>
 		<argument>
@@ -11463,6 +11465,28 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>	
 		<return>
 			<type>number</type>
+		</return>
+	</function>
+	
+	<!-- queryColumnExists -->
+	<function>
+		<name>queryColumnExists</name>
+		<class>railo.runtime.functions.query.QueryColumnExists</class>
+		<description>Determines whether a specific column is present in a query.</description>
+		<argument>
+			<name>query</name>
+			<type>query</type>
+			<required>Yes</required>
+			<description></description>
+    	</argument>	
+		<argument>
+			<name>column</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description></description>
+    	</argument>	
+		<return>
+			<type>boolean</type>
 		</return>
 	</function>
 	

@@ -128,9 +128,9 @@ public final class S3 implements S3Constants {
 		//str=StringUtil.replace(str, "\\n", String.valueOf((char)10), false);
 		byte[] digest = HMAC_SHA1(secretAccessKey,str,charset);
 		try {
-			return Caster.toBase64(digest);
-		} catch (PageException e) {
-			throw new IOException(e.getMessage());
+			return Caster.toB64(digest);
+		} catch (Throwable t) {
+			throw new IOException(t.getMessage());
 		}
 	}
 	

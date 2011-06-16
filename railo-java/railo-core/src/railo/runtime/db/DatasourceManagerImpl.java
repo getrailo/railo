@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.exp.PageException;
@@ -39,15 +40,15 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 	 */
 
 	public DatasourceConnection getConnection(PageContext pc,String _datasource, String user, String pass) throws PageException {
+		if(autoCommit)
+			return config.getDatasourceConnectionPool().getDatasourceConnection(pc,config.getDataSource(_datasource),user,pass);
 		
-		DatasourceConnection dc;
-		if(pc!=null && !autoCommit)
-			dc=((PageContextImpl)pc).getConnection(_datasource,user,pass);
-		else
-			dc=config.getDatasourceConnectionPool().getDatasourceConnection(pc,config.getDataSource(_datasource),user,pass);
+		
+		pc=ThreadLocalPageContext.get(pc);
+		DatasourceConnection dc=((PageContextImpl)pc)._getConnection(_datasource,user,pass);
 		
 		// transaction
-		if(!autoCommit) {
+		//if(!autoCommit) {
             try {
                 if(transConn==null) {
                 	dc.getConnection().setAutoCommit(false);
@@ -67,7 +68,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
             } catch (SQLException e) {
                ExceptionHandler.printStackTrace(e);
             }
-		}
+		//}
 		return dc;
 	}
 	
@@ -106,8 +107,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 	 * @see railo.runtime.db.DataSourceManager#releaseConnection(railo.runtime.db.DatasourceConnection)
 	 */
 	public void releaseConnection(PageContext pc,DatasourceConnection dc) {
-		if(autoCommit || pc==null)
-			config.getDatasourceConnectionPool().releaseDatasourceConnection(dc);
+		if(autoCommit) config.getDatasourceConnectionPool().releaseDatasourceConnection(dc);
 	}
 	
 	/*private void releaseConnection(int pid,DatasourceConnection dc) {

@@ -497,19 +497,20 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			    }
 			    while((isResult=callStat.getMoreResults()) || (callStat.getUpdateCount() != -1));
 
-	
 			    // params
 			    it = params.iterator();
 			    while(it.hasNext()) {
 			    	param=(ProcParamBean) it.next();
 			    	if(param.getDirection()!=ProcParamBean.DIRECTION_IN){
-			    		Object value;
+			    		Object value=null;
 			    		if(!StringUtil.isEmpty(param.getVariable())){
-			    			value=emptyIfNull(SQLCaster.toCFType(callStat.getObject(param.getIndex())));
-			    			if(param==STATUS_CODE){
-			    				
-			    				res.set(STATUSCODE, value);
+			    			try{
+			    				value=SQLCaster.toCFType(callStat.getObject(param.getIndex()));
 			    			}
+			    			catch(Throwable t){}
+			    			value=emptyIfNull(value);
+			    			
+			    			if(param==STATUS_CODE) res.set(STATUSCODE, value);
 			    			else setVariable(param.getVariable(), value);
 			    			if(hasCached)cache.set(KeyImpl.init(param.getVariable()), value);
 			    		}

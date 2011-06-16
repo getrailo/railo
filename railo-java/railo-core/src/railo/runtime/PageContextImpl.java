@@ -271,7 +271,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private boolean hasFamily=false;
 	//private CFMLFactoryImpl factory;
 	private PageContextImpl parent;
-	private Map conns=new HashMap();
+	private Map<String,DatasourceConnection> conns=new HashMap<String,DatasourceConnection>();
 	private boolean fdEnabled;
 	private ExecutionLog execLog;
 	private boolean useSpecialMappings;
@@ -279,6 +279,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	private ORMSession ormSession;
 	private boolean isChild;
+	private boolean gatewayContext;
 
 	public long sizeOf() {
 		
@@ -546,10 +547,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
         // transaction connection
         if(!conns.isEmpty()){
-        	java.util.Iterator it = conns.entrySet().iterator();
+        	java.util.Iterator<Entry<String, DatasourceConnection>> it = conns.entrySet().iterator();
         	DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
         	while(it.hasNext())	{
-        		pool.releaseDatasourceConnection((DatasourceConnection)(((Map.Entry)it.next()).getValue()));
+        		pool.releaseDatasourceConnection((it.next().getValue()));
         	}
         	conns.clear();
         }
@@ -590,9 +591,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	execLog.release();
 			execLog=null;
         }
-        
-        
+
+    	gatewayContext=false;
 	}
+
 	/**
 	 * @see javax.servlet.jsp.PageContext#initialize(javax.servlet.Servlet, javax.servlet.ServletRequest, javax.servlet.ServletResponse, java.lang.String, boolean, int, boolean)
 	 */
@@ -683,7 +685,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
     
     public PageSource getPageSource(String realPath) {
-    	return config.getPageSource(applicationContext.getMappings(),realPath,false,useSpecialMappings);
+    	return config.getPageSource(this,applicationContext.getMappings(),realPath,false,useSpecialMappings,true);
 	}
 
     public boolean useSpecialMappings(boolean useTagMappings) {
@@ -861,7 +863,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	other.writer=other.bodyContentStack.getWriter();
     	other.forceWriter=other.writer;
         
-        other.psq=psq;
+    	other.psq=psq;
+    	other.gatewayContext=gatewayContext;
         
         // thread
         if(threads!=null){
@@ -1950,7 +1953,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @throws PageException 
      * @see railo.runtime.PageContext#execute(java.lang.String)
      */
+
     public void execute(String realPath, boolean throwExcpetion) throws PageException  {
+    	execute(realPath, throwExcpetion, true);
+    }
+    public void execute(String realPath, boolean throwExcpetion, boolean onlyTopLevel) throws PageException  {
     	SystemOut.printDate(config.getOutWriter(),"Call:"+realPath+" ("+getId()+")");
 	    ApplicationListener listener=config.getApplicationListener();
 	    if(realPath.startsWith("/mapping-")){
@@ -1964,17 +1971,21 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    					realPath.substring(index)
 	    					);
 	    		}
-	    		if(type.equalsIgnoreCase("customtag")){
+	    		else if(type.equalsIgnoreCase("customtag")){
 	    			base=getPageSource(
 	    					config.getCustomTagMappings(),
 	    					realPath.substring(index)
 	    					);
 	    		}
+	    		/*else if(type.equalsIgnoreCase("gateway")){
+	    			base=config.getGatewayEngine().getMapping().getPageSource(realPath.substring(index));
+	    			if(!base.exists())base=getPageSource(realPath.substring(index));
+	    		}*/
 	    	}
-	    	if(base==null) base=config.getPageSource(null,realPath,true,false);
+	    	if(base==null) base=config.getPageSource(this,null,realPath,onlyTopLevel,false,true);
 	    	
 	    }
-	    else base=config.getPageSource(null,realPath,true,false);
+	    else base=config.getPageSource(this,null,realPath,onlyTopLevel,false,true);
 	    
 	    try {
 	    	listener.onRequest(this,base);
@@ -2782,7 +2793,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 	
 
-	public DatasourceConnection getConnection(String datasource, String user,String pass) throws PageException {
+	public DatasourceConnection _getConnection(String datasource, String user,String pass) throws PageException {
 		DataSource ds = config.getDataSource(datasource);
 		
 		String id=DatasourceConnectionPool.createId(ds,user,pass);
@@ -2820,6 +2831,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private Set pagesUsed=new HashSet();
 	
 	
+
+
+
 	public boolean isTrusted(Page page) {
 		if(page==null)return false;
 		short it = config.getInspectTemplate();
@@ -2859,5 +2873,19 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public void resetSession() {
 		this.session=null;
 	}
-	
+	/**
+	 * @return the gatewayContext
+	 */
+	public boolean isGatewayContext() {
+		return gatewayContext;
+	}
+
+
+
+	/**
+	 * @param gatewayContext the gatewayContext to set
+	 */
+	public void setGatewayContext(boolean gatewayContext) {
+		this.gatewayContext = gatewayContext;
+	}
 }

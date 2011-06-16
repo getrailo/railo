@@ -11,7 +11,6 @@ import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.cache.Util;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
@@ -34,9 +33,6 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 	private final String appName;
 	private final String cfid;
 
-	private long timespan;
-
-	private final boolean expiresControlFromOutside;
 
 	
 	
@@ -47,7 +43,7 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 	 * @param sct
 	 * @param b 
 	 */
-	protected StorageScopeCache(PageContext pc,String cacheName, String appName,String strType,int type,Struct sct,boolean expiresControlFromOutside) { 
+	protected StorageScopeCache(PageContext pc,String cacheName, String appName,String strType,int type,Struct sct) { 
 		// !!! do not store the pagecontext or config object, this object is Serializable !!!
 		super(
 				sct,
@@ -61,13 +57,6 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 		this.appName=appName;
 		this.cacheName=cacheName;
 		this.cfid=pc.getCFID();
-		
-		this.expiresControlFromOutside=expiresControlFromOutside;
-		
-		
-		/*try {
-			supportCacheEvents = getCache(pc.getConfig(), cacheName) instanceof CacheEvent;
-		} catch (PageException e) {}*/
 	}
 
 	/**
@@ -80,7 +69,6 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 		this.appName=other.appName;
 		this.cacheName=other.cacheName;
 		this.cfid=other.cfid;
-		this.expiresControlFromOutside=other.expiresControlFromOutside;
 	}
 	
 	private static DateTime doNowIfNull(Config config,DateTime dt) {
@@ -136,7 +124,7 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 				ce.register(new SessionEndCacheEvent());
 			}*/
 			String key=getKey(cfid, appName, getTypeAsString());
-			cache.put(key, sct,new Long(timespan), null);
+			cache.put(key, sct,new Long(getTimeSpan()), null);
 		} 
 		catch (PageException pe) {}
 	}
@@ -167,9 +155,9 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 		return new StringBuilder("railo-storage:").append(type).append(":").append(cfid).append(":").append(appName).toString();
 	}
 	
-	private void setTimeSpan(PageContext pc) {
+	/*private void setTimeSpan(PageContext pc) {
 		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
 		timespan = (getType()==SCOPE_CLIENT?ac.getClientTimeout().getMillis():ac.getSessionTimeout().getMillis())+(expiresControlFromOutside?SAVE_EXPIRES_OFFSET:0L);
 		
-	}
+	}*/
 }

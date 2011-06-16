@@ -1,9 +1,12 @@
 package railo.runtime.tag;
 
+import java.io.IOException;
+
 import railo.runtime.coder.Base64Coder;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.op.Caster;
 import railo.runtime.security.Credential;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
@@ -84,9 +87,16 @@ public final class Login extends BodyTagImpl {
                     String format=strAuth.substring(0,pos).toLowerCase();
                     if(format.equals("basic")) {
                         String encoded=strAuth.substring(pos+1);
+                        String dec;
+                        try {
+							dec=Base64Coder.decodeToString(encoded,"UTF-8");
+						} catch (IOException e) {
+							throw Caster.toPageException(e);
+						}
+                        
                         //print.ln("encoded:"+encoded);
                         //print.ln("decoded:"+Base64Util.decodeBase64(encoded));
-                        Array arr=List.listToArray(Base64Coder.decodeBase64(encoded),":");
+                        Array arr=List.listToArray(dec,":");
                         if(arr.size()<3) {
                             if(arr.size()==1) setCFLogin(arr.get(1,null),"");
                             else setCFLogin(arr.get(1,null),arr.get(2,null));

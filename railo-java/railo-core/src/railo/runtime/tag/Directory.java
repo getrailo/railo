@@ -374,7 +374,7 @@ public final class Directory extends TagImpl  {
 		}
 		if(!directory.isDirectory()){
 			if(directory instanceof FileResource) return rtn;
-			throw new ApplicationException("file ["+directory.toString()+"] exists, but is'nt a directory");
+			throw new ApplicationException("file ["+directory.toString()+"] exists, but isn't a directory");
 		}
 		if(!directory.isReadable()){
 			if(directory instanceof FileResource) return rtn;
@@ -592,12 +592,12 @@ public final class Directory extends TagImpl  {
 			if(dir.isDirectory())
 				throw new ApplicationException("directory ["+dir.toString()+"] doesn't exist");
 			else if(dir.isFile())
-				throw new ApplicationException("file ["+dir.toString()+"] doesn't exist and is'nt a directory");
+				throw new ApplicationException("file ["+dir.toString()+"] doesn't exist and isn't a directory");
 		}
 		
 		// check if file
 		if(dir.isFile())
-			throw new ApplicationException("can't delete ["+dir.toString()+"], it is'nt a directory it is a file");
+			throw new ApplicationException("can't delete ["+dir.toString()+"], it isn't a directory it is a file");
 		
 		// delete directory
 		try {
@@ -621,7 +621,7 @@ public final class Directory extends TagImpl  {
 		if(!directory.exists())
 			throw new ApplicationException("directory ["+directory.toString()+"] doesn't exist");
 		if(!directory.isDirectory())
-			throw new ApplicationException("file ["+directory.toString()+"] exists, but is'nt a directory");
+			throw new ApplicationException("file ["+directory.toString()+"] exists, but isn't a directory");
 		if(!directory.canRead())
 			throw new ApplicationException("no access to read directory ["+directory.toString()+"]");
 		

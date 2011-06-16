@@ -487,10 +487,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getLogSetting", ACCESS_FREE) && check2(ACCESS_READ  )) doGetLogSetting();
         else if(check("getLogSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetLogSettings();
         else if(check("updatePerformanceSettings",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdatePerformanceSettings();
-        else if(check("getGatewayentries",    ACCESS_FREE) && check2(ACCESS_READ  )) doGetGatewayEntries();
-        else if(check("getGatewayentry",     ACCESS_FREE) && check2(ACCESS_READ  )) doGetGatewayEntry();
+        else if(check("getGatewayentries",    ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_READ  )) doGetGatewayEntries();
+        else if(check("getGatewayentry",     ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_READ  )) doGetGatewayEntry();
         else if(check("getRunningThreads",     ACCESS_FREE) && check2(ACCESS_READ  )) doGetRunningThreads();
-        else if(check("gateway",     ACCESS_FREE) && check2(ACCESS_READ  )) doGateway();
+        else if(check("gateway",     ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_READ  )) doGateway();
         
     	
     	
@@ -567,7 +567,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateExtension",		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtension();
         else if(check("updateExtensionProvider",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionProvider();
         else if(check("updateExtensionInfo",	ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionInfo();
-        else if(check("updateGatewayEntry",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateGatewayEntry();
+        else if(check("updateGatewayEntry",  ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_WRITE  )) doUpdateGatewayEntry();
         else if(check("updateLogSettings",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateUpdateLogSettings();
         
     	
@@ -594,7 +594,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("removeExtension",        ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveExtension();
         else if(check("removeExtensionProvider",ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveExtensionProvider();
         else if(check("removeDefaultPassword",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveDefaultPassword();
-        else if(check("removeGatewayEntry",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveGatewayEntry();
+        else if(check("removeGatewayEntry",  ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_WRITE  )) doRemoveGatewayEntry();
         else if(check("removeCacheDefaultConnection",ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveCacheDefaultConnection();
         
         else if(check("storageGet",             ACCESS_FREE) && check2(ACCESS_READ  )) doStorageGet();
@@ -2686,7 +2686,7 @@ private void doGetMappings() throws PageException {
         doGetLogSettings(qry,"application",config.getApplicationLogger(),++row);
         doGetLogSettings(qry,"scope",config.getScopeLogger(),++row);
         doGetLogSettings(qry,"exception",config.getExceptionLogger(),++row);
-        doGetLogSettings(qry,"gateway",config.getGatewayLogger(),++row);
+        if(config instanceof ConfigWeb)doGetLogSettings(qry,"gateway",((ConfigWebImpl)config).getGatewayLogger(),++row);
         doGetLogSettings(qry,"mail",config.getMailLogger(),++row);
         doGetLogSettings(qry,"mapping",config.getMappingLogger(),++row);
         doGetLogSettings(qry,"orm",config.getORMLogger(),++row);
@@ -2780,7 +2780,7 @@ private void doGetMappings() throws PageException {
     }
 	
 	private void doGetGatewayEntries() throws PageException  {
-		Map entries = config.getGatewayEngine().getEntries();
+		Map entries = ((ConfigWebImpl)config).getGatewayEngine().getEntries();
 		Iterator it = entries.entrySet().iterator();
 		railo.runtime.type.Query qry=
 			new QueryImpl(new String[]{"class","id","custom","cfcPath","listenerCfcPath","startupMode","state","readOnly"}, 0, "entries");
@@ -2810,7 +2810,7 @@ private void doGetMappings() throws PageException {
 	private void doGetGatewayEntry() throws PageException {
         
         String id=getString("admin",action,"id");
-        Map entries = config.getGatewayEngine().getEntries();
+        Map entries = ((ConfigWebImpl)config).getGatewayEngine().getEntries();
 		Iterator it = entries.keySet().iterator();
 		GatewayEntry ge;
 		Gateway g;
@@ -2841,9 +2841,9 @@ private void doGetMappings() throws PageException {
         
 		String id=getString("admin",action,"id");
 		String act=getString("admin",action,"gatewayAction").trim().toLowerCase();
-		if("restart".equals(act))	config.getGatewayEngine().restart(id);
-		else if("start".equals(act))config.getGatewayEngine().start(id);
-		else if("stop".equals(act))	config.getGatewayEngine().stop(id);
+		if("restart".equals(act))	((ConfigWebImpl)config).getGatewayEngine().restart(id);
+		else if("start".equals(act))((ConfigWebImpl)config).getGatewayEngine().start(id);
+		else if("stop".equals(act))	((ConfigWebImpl)config).getGatewayEngine().stop(id);
 		else throw new ApplicationException("invalid gateway action ["+act+"], valid actions are [start,stop,restart]");
     }
 	

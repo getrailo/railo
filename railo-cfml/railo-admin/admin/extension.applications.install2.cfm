@@ -105,7 +105,6 @@
 <cfset done=true>
 <cfif (valid and StructKeyExists(form,"install")) or ( StructKeyExists(variables,"steps") and arrayLen(steps) EQ 0)>
     <cftry>
-    	<cfset systemOutput(isUpdate,true)>
 		<cfset rst=struct(fields:struct(),common:'')>
     	<cfif isUpdate>
 			<cfset message=install.update(rst,zip,config,detail.installed.config)>

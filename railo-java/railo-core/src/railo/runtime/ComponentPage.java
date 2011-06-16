@@ -14,6 +14,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.JSONConverter;
 import railo.runtime.converter.ScriptConverter;
@@ -23,6 +24,7 @@ import railo.runtime.dump.DumpWriter;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.interpreter.JSONExpressionInterpreter;
 import railo.runtime.net.rpc.server.ComponentController;
 import railo.runtime.net.rpc.server.RPCServer;
@@ -37,6 +39,7 @@ import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
+import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructUtil;
 
 /**
@@ -51,6 +54,13 @@ public abstract class ComponentPage extends PagePlus  {
 	public static final railo.runtime.type.Collection.Key ARGUMENT_COLLECTION = KeyImpl.getInstance("argumentCollection");
 	public static final railo.runtime.type.Collection.Key RETURN_FORMAT = KeyImpl.getInstance("returnFormat");
 	public static final railo.runtime.type.Collection.Key QUERY_FORMAT = KeyImpl.getInstance("queryFormat");
+	//public static final railo.runtime.type.Collection.Key REMOTE_PERSISTENT = KeyImpl.getInstance("remotePersistent");
+	public static final railo.runtime.type.Collection.Key REMOTE_PERSISTENT_ID = KeyImpl.getInstance("Id16hohohh");
+
+	//public static final short REMOTE_PERSISTENT_REQUEST = 1;
+	//public static final short REMOTE_PERSISTENT_SESSION = 2; FUTURE
+	//public static final short REMOTE_PERSISTENT_APPLICATION = 4; FUTURE
+	//public static final short REMOTE_PERSISTENT_SERVER = 8;
 	
 	
 	private long lastCheck=-1;
@@ -63,16 +73,56 @@ public abstract class ComponentPage extends PagePlus  {
 	 * @see railo.runtime.Page#call(railo.runtime.PageContext)
 	 */
 	public void call(PageContext pc) throws PageException {
+		
+		// remote persistent (only type server is supported)
+		String strRemotePersisId = Caster.toString(pc.urlFormScope().get(REMOTE_PERSISTENT_ID,null),null);
+		if(!StringUtil.isEmpty(strRemotePersisId,true)) {
+			strRemotePersisId=strRemotePersisId.trim();
+		}
+		else strRemotePersisId=null;
+		
+		HttpServletRequest req = pc.getHttpServletRequest();
+		// client
+		String client = Caster.toString(req.getAttribute("client"),null);
+		// call type (invocation, store-only)
+		String callType = Caster.toString(req.getAttribute("call-type"),null);
+		boolean fromGateway="railo-gateway-1-0".equals(client);
+		ComponentPro component;
         try {
             pc.setSilent();
-            ComponentWrap component;
+            // load the cfc
             try {
-                component=ComponentWrap.toComponentWrap(Component.ACCESS_REMOTE,newInstance(pc,getPageSource().getComponentName(),false));
+	            if(fromGateway && strRemotePersisId!=null) {
+	            	ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
+	            	GatewayEngineImpl engine = config.getGatewayEngine();
+	            	component=(ComponentPro) engine.getPersistentRemoteCFC(strRemotePersisId);
+	            	
+	            	if(component==null) {
+	            		component=newInstance(pc,getPageSource().getComponentName(),false);
+	            		if(!fromGateway)component=ComponentWrap.toComponentWrap(Component.ACCESS_REMOTE,component);
+	            		
+	            		engine.setPersistentRemoteCFC(strRemotePersisId,component);
+	            	}
+	            	
+	            }
+	            else {
+	            	component=newInstance(pc,getPageSource().getComponentName(),false);
+            		if(!fromGateway)component=ComponentWrap.toComponentWrap(Component.ACCESS_REMOTE,component);
+	            }
             }
             finally {
                 pc.unsetSilent();
             }
             
+            // Only get the Component, no invocation
+            if("store-only".equals(callType)) {
+            	req.setAttribute("component", component);
+            	return;
+            }
+            
+            
+            
+            // METHOD INVOCATION
 			String qs=pc.getHttpServletRequest().getQueryString();
             if(pc.getBasePageSource()==this.getPageSource())
             	pc.getDebugger().setOutput(false);
@@ -81,8 +131,6 @@ public abstract class ComponentPage extends PagePlus  {
             
             boolean suppressContent = ((ConfigImpl)pc.getConfig()).isSuppressContent();
             if(suppressContent)pc.clear();
-            
-            //pc.getHttpServletRequest().getHeader("");
             
             // POST
             if(isPost) {
@@ -123,7 +171,7 @@ public abstract class ComponentPage extends PagePlus  {
             //if(path.size()>1 ) {
             if(path.size()>1 && !(path.size()==3 && List.last(path.getE(2).toString(),"/\\",true).equalsIgnoreCase("application.cfc")) ) {// MUSTMUST bad impl -> check with and without application.cfc
             	
-            	ComponentWrap c = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,component.getComponentAccess());
+            	ComponentWrap c = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,ComponentUtil.toComponentAccess(component));
             	Key[] keys = c.keys();
             	Object el;
             	Scope var = pc.variablesScope();
@@ -180,8 +228,8 @@ public abstract class ComponentPage extends PagePlus  {
 	
 	
     private void callWDDX(PageContext pc, Component component, String methodName, boolean suppressContent) throws IOException, ConverterException, PageException {
-        Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
-        
+    	Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
+
         // define args
         url.removeEL(FIELDNAMES);
         url.removeEL(METHOD);
@@ -192,7 +240,6 @@ public abstract class ComponentPage extends PagePlus  {
         if(args==null){
         	args=pc.getHttpServletRequest().getAttribute("argumentCollection");
         }
-        
         
       //content-type
         Object o = component.get(KeyImpl.init(methodName),null);
@@ -385,7 +432,7 @@ public abstract class ComponentPage extends PagePlus  {
 		return null;
 	}
 
-	private void callWSDL(PageContext pc, ComponentWrap component) throws ServletException, IOException, ExpressionException {
+	private void callWSDL(PageContext pc, ComponentPro component) throws ServletException, IOException, ExpressionException {
     	// take wsdl file defined by user
     	String wsdl = component.getWSDLFile();
     	if(!StringUtil.isEmpty(wsdl)) {

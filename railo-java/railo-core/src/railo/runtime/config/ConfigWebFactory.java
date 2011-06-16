@@ -239,8 +239,8 @@ public final class ConfigWebFactory {
         createContextFiles(configDir,servletConfig);
 		ConfigWebImpl configWeb=new ConfigWebImpl(factory,configServer, servletConfig,configDir,configFile);
 		
-		load(configServer,configWeb,doc,false);
-		createContextFilesPost(configDir,configWeb,servletConfig);
+		load(configServer,configWeb,doc);
+		createContextFilesPost(configDir,configWeb,servletConfig,false);
 	    return configWeb;
     }
     
@@ -288,8 +288,8 @@ public final class ConfigWebFactory {
         createContextFiles(configDir,null);
         config.reset();
         
-		load(config.getConfigServerImpl(),config,doc,false);
-		createContextFilesPost(configDir,config,null);
+		load(config.getConfigServerImpl(),config,doc);
+		createContextFilesPost(configDir,config,null,false);
     }
     
     private static long second(long ms) {
@@ -307,7 +307,7 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws PageException
      */
-    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc,boolean isEventGatewayContext) 
+    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	ThreadLocalConfig.register(config);
     	
@@ -350,7 +350,7 @@ public final class ConfigWebFactory {
     	loadScope(configServer,config,doc);
     	loadMail(configServer,config,doc);
         loadSearch(configServer,config,doc);
-    	loadScheduler(configServer,config,doc,isEventGatewayContext);
+    	loadScheduler(configServer,config,doc);
     	loadDebug(configServer,config,doc);
     	loadError(configServer,config,doc);
         loadCFX(configServer,config,doc);
@@ -1137,8 +1137,8 @@ public final class ConfigWebFactory {
 	        if(!f.exists())createFileFromResourceEL("/resource/context/admin/plugin/Note/Action.cfc",f);
 	        
 	        // gateway
-	        Resource gatewayDir = configDir.getRealResource("gateway");
-	        if(!gatewayDir.exists())videoDir.mkdirs();
+	        Resource gatewayDir = configDir.getRealResource("components");
+	        if(!gatewayDir.exists())gatewayDir.mkdirs();
 	        
 	        Resource dir = gatewayDir.getRealResource("railo/extension/gateway/");
 	        if(!dir.exists())dir.mkdirs();
@@ -1330,7 +1330,7 @@ public final class ConfigWebFactory {
 	}
 	
 
-	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig) throws IOException {
+	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig,boolean isEventGatewayContext) throws IOException {
 		boolean doNew=doNew(configDir,true);
   		
 		
@@ -1359,7 +1359,7 @@ public final class ConfigWebFactory {
         
       	
      // flex
-        if(servletConfig!=null && config.getAMFConfigType()==ConfigImpl.AMF_CONFIG_TYPE_XML){
+        if(!isEventGatewayContext && servletConfig!=null && config.getAMFConfigType()==ConfigImpl.AMF_CONFIG_TYPE_XML){
         	String strPath=servletConfig.getServletContext().getRealPath("/WEB-INF");
         	Resource webInf = ResourcesImpl.getFileResourceProvider().getResource(strPath);
         	
@@ -2001,8 +2001,12 @@ public final class ConfigWebFactory {
 
 
 	private static void loadGateway(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException  {
-        boolean hasCS=configServer!=null;
-        HashTable mapGateways=new HashTable();
+		boolean hasCS=configServer!=null;
+        
+		if(!hasCS) return;
+		ConfigWebImpl cw=(ConfigWebImpl) config;
+		
+        Map<String, GatewayEntry> mapGateways=new HashMap<String, GatewayEntry>();
         
         Resource configDir=config.getConfigDir();
         Element eGateWay=getChildByName(doc.getDocumentElement(),"gateways");
@@ -2011,24 +2015,21 @@ public final class ConfigWebFactory {
 	  	if(StringUtil.isEmpty(strCFCDirectory))strCFCDirectory="{railo-config}/gateway/";
 	  	
 	  	// Deploy Dir
-	  	Resource cfcDirectory = ConfigWebUtil.getFile(configDir,strCFCDirectory, "gateway",configDir,FileUtil.TYPE_DIR,config);
+	  	//Resource cfcDirectory = ConfigWebUtil.getFile(configDir,strCFCDirectory, "gateway",configDir,FileUtil.TYPE_DIR,config);
 	  	
 	  	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_GATEWAY);
 	  	
     	// Logger
         String strLogger=hasAccess?eGateWay.getAttribute("log"):"";
-        if(StringUtil.isEmpty(strLogger) && hasCS)
-        	strLogger=configServer.getGatewayLogger().getSource();
-        if(StringUtil.isEmpty(strLogger))
-        	strLogger="{railo-config}/logs/gateway.log";
+        //if(StringUtil.isEmpty(strLogger) && hasCS) strLogger=configServer.getGatewayLogger().getSource();
+        if(StringUtil.isEmpty(strLogger))strLogger="{railo-config}/logs/gateway.log";
+        
         int logLevel=LogUtil.toIntType(eGateWay.getAttribute("log-level"),-1);
         if(logLevel==-1 && hasCS)
         	logLevel=configServer.getMailLogger().getLogLevel();
         if(logLevel==-1)logLevel=Log.LEVEL_ERROR;
-        config.setGatewayLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,hasAccess,logLevel));
+        cw.setGatewayLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,hasAccess,logLevel));
         
-    	
-    	
     	GatewayEntry ge; 
     
     	
@@ -2037,7 +2038,8 @@ public final class ConfigWebFactory {
 		
 		//if(hasAccess) {
 		String id;
-		GatewayEngineImpl engine = config.getGatewayEngine();
+		GatewayEngineImpl engine = cw.getGatewayEngine();
+		//engine.reset();
 		
 		// caches
 		if(hasAccess){
@@ -2059,16 +2061,15 @@ public final class ConfigWebFactory {
 		  		}
 		  		else
 		  			SystemOut.print(config.getErrWriter(), "missing id");
-			  	}
-
-				config.setGatewayEntries(mapGateways,cfcDirectory);
 			}
-			else {
-				try {
-					config.getGatewayEngine().clear();
-				} catch (PageException e) {e.printStackTrace();}
-			}
+			cw.setGatewayEntries(mapGateways);
 		}
+		else {
+			try {
+				cw.getGatewayEngine().clear();
+			} catch (PageException e) {e.printStackTrace();}
+		}
+	}
     
     private static Struct[] _toArguments(ArrayList list) {
     	Iterator it = list.iterator();
@@ -2730,8 +2731,10 @@ public final class ConfigWebFactory {
 	        	}
 	        }
 	        config.setRemoteClientUsage(sct);
+
+	     // max-threads
+	        int maxThreads=Caster.toIntValue(_clients.getAttribute("max-threads"),20);
 	        
-	    
 	     // Logger
 	        String strLogger=hasAccess?_clients.getAttribute("log"):null;
 	        int logLevel=LogUtil.toIntType(_clients.getAttribute("log-level"),Log.LEVEL_ERROR);
@@ -2789,7 +2792,7 @@ public final class ConfigWebFactory {
         Resource dir = config.getRemoteClientDirectory();
 		if(dir!=null && !dir.exists())dir.mkdirs();
 		if(config.getSpoolerEngine()==null)	{
-			config.setSpoolerEngine(new SpoolerEngineImpl(config,dir,"Remote Client Spooler",config.getRemoteClientLog()));
+			config.setSpoolerEngine(new SpoolerEngineImpl(config,dir,"Remote Client Spooler",config.getRemoteClientLog(),maxThreads));
 		}
 		else	{
 			SpoolerEngineImpl engine = (SpoolerEngineImpl) config.getSpoolerEngine();
@@ -3368,7 +3371,7 @@ public final class ConfigWebFactory {
      * @throws IOException
      * @throws PageException
      */
-    private static void loadScheduler(ConfigServer configServer, ConfigImpl config, Document doc, boolean isEventGatewayContext) throws PageException, IOException {
+    private static void loadScheduler(ConfigServer configServer, ConfigImpl config, Document doc) throws PageException, IOException {
         if(config instanceof ConfigServer) return;
         
         Resource configDir=config.getConfigDir();
@@ -3383,7 +3386,7 @@ public final class ConfigWebFactory {
         Resource file = ConfigWebUtil.getFile(config.getRootDirectory(),(scheduler==null)?
                 null:
                 scheduler.getAttribute("directory"), "scheduler",configDir,FileUtil.TYPE_DIR,config);
-        config.setScheduler(configServer.getCFMLEngine(),isEventGatewayContext?null:file,log);
+        config.setScheduler(configServer.getCFMLEngine(),file,log);
     }
 
     /**

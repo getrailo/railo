@@ -78,7 +78,6 @@ import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
-import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.net.amf.AMFCaster;
 import railo.runtime.net.amf.ClassicAMFCaster;
@@ -236,7 +235,6 @@ public abstract class ConfigImpl implements Config {
     
     
     private LogAndSource mailLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
-    private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
     private LogAndSource threadLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
     
     private LogAndSource requestTimeoutLogger=null;
@@ -353,7 +351,6 @@ public abstract class ConfigImpl implements Config {
 	private String defaultDataSource;
 	private short inspectTemplate=INSPECT_ONCE;
 	private String serial="";
-	private GatewayEngineImpl gatewayEngine;
 	private String cacheMD5;
 	private boolean executionLogEnabled;
 	private ExecutionLogFactory executionLogFactory;
@@ -698,19 +695,6 @@ public abstract class ConfigImpl implements Config {
     /**
      * @see railo.runtime.config.Config#getMailLogger()
      */
-    public LogAndSource getGatewayLogger() {
-    	if(gatewayLogger==null)gatewayLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return gatewayLogger;
-    }
-
-
-    public void setGatewayLogger(LogAndSource gatewayLogger) {
-    	this.gatewayLogger=gatewayLogger;
-    }
-
-    /**
-     * @see railo.runtime.config.Config#getMailLogger()
-     */
     public LogAndSource getThreadLogger() {
     	if(threadLogger==null)threadLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return threadLogger;
@@ -794,12 +778,11 @@ public abstract class ConfigImpl implements Config {
 
 
     public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel) {
-    	return getPageSource(mappings, realPath, onlyTopLevel, ((PageContextImpl)ThreadLocalPageContext.get()).useSpecialMappings());
+    	return getPageSource(ThreadLocalPageContext.get(),mappings, realPath, onlyTopLevel, ((PageContextImpl)ThreadLocalPageContext.get()).useSpecialMappings(),true);
     }
     
-    public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings) {
+    public PageSource getPageSource(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
         realPath=realPath.replace('\\','/');
-        
         String lcRealPath = StringUtil.toLowerCase(realPath)+'/';
         Mapping mapping;
         
@@ -844,6 +827,17 @@ public abstract class ConfigImpl implements Config {
         	}
         }
         
+        // component mappings (only used for gateway)
+        if(pc!=null && ((PageContextImpl)pc).isGatewayContext()) {
+        	boolean isCFC=getCFCExtension().equalsIgnoreCase(ResourceUtil.getExtension(realPath, null));
+            if(isCFC) {
+	        	Mapping[] cmappings = getComponentMappings();
+	        	for(int i=0;i<cmappings.length-1;i++) {
+	                PageSource ps = cmappings[i].getPageSource(realPath);
+	            	if(ps.exists()) return ps;
+	            }
+        	}
+        }
         
         // config mappings
         for(int i=0;i<this.mappings.length-1;i++) {
@@ -853,7 +847,8 @@ public abstract class ConfigImpl implements Config {
             }
         }
         
-        return this.mappings[this.mappings.length-1].getPageSource(realPath);
+        if(useDefaultMapping)return this.mappings[this.mappings.length-1].getPageSource(realPath);
+        return null;
     }
     
     /**
@@ -1574,9 +1569,8 @@ public abstract class ConfigImpl implements Config {
 			} 
         }); 
         this.mappings = mappings;
-    }    
+    }
     
-
     /**
      * @param datasources The datasources to set
      */
@@ -1671,8 +1665,11 @@ public abstract class ConfigImpl implements Config {
      * @return pagesource of the base component
      */
     public PageSource getBaseComponentPageSource() {
+        return getBaseComponentPageSource(ThreadLocalPageContext.get());
+    }
+    public PageSource getBaseComponentPageSource(PageContext pc) {
         if(baseComponentPageSource==null) {
-            baseComponentPageSource=getPageSource(null,getBaseComponentTemplate(),false,false);
+            baseComponentPageSource=getPageSource(pc,null,getBaseComponentTemplate(),false,false,true);
         }
         return baseComponentPageSource;
     }
@@ -3012,22 +3009,6 @@ public abstract class ConfigImpl implements Config {
 		if(type==CACHE_DEFAULT_OBJECT)		return cacheDefaultConnectionNameObject;
 		if(type==CACHE_DEFAULT_QUERY)		return cacheDefaultConnectionNameQuery;
 		return cacheDefaultConnectionNameResource;
-	}
-
-	protected void setGatewayEntries(Map gatewayEntries,Resource cfcDirectory) {
-		getGatewayEngine().setCFCDirectory(cfcDirectory);
-		
-		try {
-			getGatewayEngine().addEntries(this,gatewayEntries);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	
-	}
-	public GatewayEngineImpl getGatewayEngine() {
-		if(gatewayEngine==null){
-			gatewayEngine=new GatewayEngineImpl(this);
-		}
-		return gatewayEngine;
 	}
 
 	public String getCacheMD5() { 

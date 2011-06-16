@@ -614,7 +614,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 			if(id==null) throw new TemplateException(data.cfml,"invalid name for a function");
 			if(!data.isCFC && !data.isInterface){
 				FunctionLibFunction flf = getFLF(data,id);
-				if(flf!=null && flf.getCazz()!=CFFunction.class)throw new TemplateException(data.cfml,"The name ["+id+"] is already used by a Build in Function");
+				if(flf!=null && flf.getCazz()!=CFFunction.class)throw new TemplateException(data.cfml,"The name ["+id+"] is already used by a built in Function");
 			}
 				
 			Body body=new FunctionBody();
@@ -1143,7 +1143,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 						
 			if(!data.isCFC){
 				FunctionLibFunction flf = getFLF(data,id);
-				if(flf!=null && flf.getCazz()!=CFFunction.class)throw new TemplateException(data.cfml,"The name ["+id+"] is already used by a Build in Function");
+				if(flf!=null && flf.getCazz()!=CFFunction.class)throw new TemplateException(data.cfml,"The name ["+id+"] is already used by a built in Function");
 			}
 				
 			Body body=new FunctionBody();

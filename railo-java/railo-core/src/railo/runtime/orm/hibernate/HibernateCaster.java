@@ -103,8 +103,8 @@ public class HibernateCaster {
 		
 		String name=null;
 		try {
-			ComponentAccess cfci = ComponentUtil.toComponentAccess(cfc);
-			name=Caster.toString(cfci.getMetaStructItem(ENTITY_NAME),null);
+			ComponentAccess cfca = ComponentUtil.toComponentAccess(cfc);
+			name=Caster.toString(cfca.getMetaStructItem(ENTITY_NAME),null);
 		} 
 		catch (Throwable t) {
 			try {
@@ -117,8 +117,13 @@ public class HibernateCaster {
 		if(!StringUtil.isEmpty(name)) {
 			return name;
 		}
+		return getName(cfc);
 		
 		
+	}
+
+	private static String getName(Component cfc) {
+		String name=null;
 		// MUSTMUST cfc.getName() should return the real case, this should not be needed
 		if(cfc!=null){
 			name = cfc.getPageSource().getDisplayPath();
@@ -129,8 +134,7 @@ public class HibernateCaster {
 		}
 		////////////////////////
 		
-		
-		return cfc.getName();//.toLowerCase();
+		return cfc.getName(); 
 	}
 
 	public static int cascade(HibernateORMEngine engine,String cascade) throws ORMException {

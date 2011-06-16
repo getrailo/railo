@@ -1600,11 +1600,11 @@ public final class ConfigWebAdmin {
       	for(int i=0;i<children.length;i++) {
       	    String n=children[i].getAttribute("id"); 
   	    	if(n!=null && n.equalsIgnoreCase(name)) {
-  	    		Map conns = config.getGatewayEngine().getEntries();
+  	    		Map conns = ((ConfigWebImpl)config).getGatewayEngine().getEntries();
   	    		GatewayEntry ge=(GatewayEntry) conns.get(n);
   	    		if(ge!=null){
   	    			try {
-						config.getGatewayEngine().remove(ge);
+  	    				((ConfigWebImpl)config).getGatewayEngine().remove(ge);
 					} catch (GatewayException e) {
 						throw Caster.toPageException(e);
 					}

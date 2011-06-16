@@ -23,7 +23,6 @@ import railo.runtime.exp.PageException;
 public class ORMConnection implements Connection {
 
 	private ORMSession session;
-	private PageContext pc;
 	private boolean autoCommit=false;
 	private int isolation=Connection.TRANSACTION_SERIALIZABLE;
 	private ORMTransaction trans;
@@ -34,7 +33,6 @@ public class ORMConnection implements Connection {
 	 * @throws PageException 
 	 */
 	public ORMConnection(PageContext pc,ORMSession session) {
-		this.pc=pc;
 		this.session=session;
 		trans = session.getTransaction(session.getEngine().getConfiguration(pc).autoManageSession());
 		trans.begin();
@@ -283,11 +281,11 @@ public class ORMConnection implements Connection {
 		throw notSupported();
 	}
 
-	private SQLException toSQLException(PageException pe) {
+	/*private SQLException toSQLException(PageException pe) {
 		SQLException e = new SQLException(pe.getMessage());
 		e.initCause(pe);
 		return e;
-	}
+	}*/
 
 	public <T> T unwrap(Class<T> iface) throws SQLException {
 		throw notSupported();

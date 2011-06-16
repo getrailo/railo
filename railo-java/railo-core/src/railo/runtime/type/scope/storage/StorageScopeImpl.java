@@ -29,6 +29,7 @@ import railo.runtime.type.util.StructUtil;
 public abstract class StorageScopeImpl extends StructSupport implements StorageScope,Sizeable {
 	
 
+
 	private static int _id=0;
 	private int id=0;
 
@@ -112,11 +113,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	public void touchBeforeRequest(PageContext pc) {
 		
 		hasChanges=false;
-		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
-		
-		this.timeSpan=getType()==SCOPE_SESSION?
-				ac.getSessionTimeout().getMillis():
-				ac.getClientTimeout().getMillis();
+		setTimeSpan(pc);
 		
 		
 		//lastvisit=System.currentTimeMillis();
@@ -136,6 +133,32 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 			sct.setEL(SESSION_ID, pc.getApplicationContext().getName()+"_"+pc.getCFID()+"_"+pc.getCFToken());
 		}
 	}
+	
+	void setTimeSpan(PageContext pc) {
+		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
+		this.timeSpan=getType()==SCOPE_SESSION?
+				ac.getSessionTimeout().getMillis():
+				ac.getClientTimeout().getMillis();
+	}
+	
+
+	/**
+	 * @see railo.runtime.type.scope.storage.StorageScope#setMaxInactiveInterval(int)
+	 */
+	@Override
+	public void setMaxInactiveInterval(int interval) {
+		this.timeSpan=interval*1000L;
+	}
+
+	/**
+	 * @see railo.runtime.type.scope.storage.StorageScope#getMaxInactiveInterval()
+	 */
+	@Override
+	public int getMaxInactiveInterval() {
+		return (int)(this.timeSpan/1000L);
+	}
+	
+	
 	
 
 	/**

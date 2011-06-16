@@ -86,6 +86,13 @@ public class HBMCreator {
 		// extended CFC
 		else{
 			String ext = List.last(extend,'.').trim();
+			try {
+				Component base = engine.getEntityByCFCName(ext, false);
+				ext = HibernateCaster.getEntityName(base);
+			}
+			catch(Throwable t){}
+			
+			
 			String discriminatorValue = toString(engine,cfc,null,meta,"discriminatorValue");
 			if(!StringUtil.isEmpty(discriminatorValue,true)) {
 				doTable=false;

@@ -23,7 +23,6 @@ import railo.runtime.db.SQLItemImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -32,7 +31,6 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
-import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.ScopeContext;
 
 /**
@@ -46,11 +44,8 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	public static final Collection.Key EXPIRES = KeyImpl.getInstance("expires");
 
 	public static final String PREFIX = "cf";
-	//private static boolean structOk;
-
+	
 	private String datasourceName;
-
-	private TimeSpan timespan;
 
 	private String appName;
 
@@ -116,9 +111,6 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 			if(!((DataSourceImpl)dc.getDatasource()).isStorage()) 
 				throw new ApplicationException("storage usage for this datasource is disabled, you can enable this in the railo administrator.");
 			query = new QueryImpl(dc,sqlSelect,-1,-1,-1,"query");
-			ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
-			TimeSpan timespan=type==SCOPE_CLIENT?ac.getClientTimeout():ac.getSessionTimeout();
-			
 		}
 	    catch (DatabaseException de) {
 	    	if(dc==null) throw de;
@@ -212,7 +204,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	private int executeUpdate(Config config,Connection conn, String strSQL, boolean ignoreData) throws SQLException, PageException, ConverterException {
 		//String appName = pc.getApplicationContext().getName();
 		SQLImpl sql = new SQLImpl(strSQL,new SQLItem[]{
-				new SQLItemImpl(createExpires(timespan, config),Types.VARCHAR),
+				new SQLItemImpl(createExpires(getTimeSpan(), config),Types.VARCHAR),
 				new SQLItemImpl(new ScriptConverter().serializeStruct(sct,ignoreSet),Types.VARCHAR),
 				new SQLItemImpl(cfid,Types.VARCHAR),
 				new SQLItemImpl(appName,Types.VARCHAR)
@@ -229,8 +221,8 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	
 	
 
-	private static String createExpires(TimeSpan timespan,Config config) {
-		return Caster.toString(timespan.getMillis()+new DateTimeImpl(config).getTime());
+	private static String createExpires(long timespan,Config config) {
+		return Caster.toString(timespan+new DateTimeImpl(config).getTime());
 	}
 
 	private static int execute(Connection conn, SQLImpl sql) throws SQLException, PageException {
@@ -298,10 +290,5 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	 */
 	public String getStorageType() {
 		return "Datasource";
-	}
-	
-	private void setTimeSpan(PageContext pc) {
-		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
-		timespan = getType()==SCOPE_CLIENT?ac.getClientTimeout():ac.getSessionTimeout();
 	}
 }

@@ -548,13 +548,13 @@ public final class SQLCaster {
         }
     }
 
-	/**
+	/* *
 	 * cast a String SQL Type to int Type
 	 * @param strType
 	 * @return SQL Type as int
 	 * @throws DatabaseException
 	 */
-	public static int cfSQLTypeToIntType(String strType) throws DatabaseException	{
+	/*public static int cfSQLTypeToIntType(String strType) throws DatabaseException	{
 	    strType=strType.toUpperCase().trim();
 	    
 		if(strType.equals("CF_SQL_ARRAY"))			return Types.ARRAY;
@@ -596,7 +596,7 @@ public final class SQLCaster {
 		
 		
 		else throw new DatabaseException("invalid CF SQL Type ["+strType+"]",null,null,null);
-	}
+	}*/
 	
 
 	/**

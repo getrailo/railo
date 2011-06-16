@@ -25,7 +25,7 @@ import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 
 /**
- * a Build In Function call
+ * a built In Function call
  *
  *
  */
@@ -209,7 +209,7 @@ public final class BIFCall extends RefSupport implements Ref {
 	 * @see railo.runtime.interpreter.ref.Ref#getTypeName()
 	 */
 	public String getTypeName() {
-		return "build in function";
+		return "built in function";
 	}
 
 }

@@ -99,10 +99,10 @@ Error Output --->
 
 <cfset infos={}>
 <cfloop query="providers">
-	
+		<cftry>
 		<cfset provider=loadCFC(providers.url)>
     	<cfset infos[providers.url]=provider.getInfo()>
-    	<cftry><cfcatch></cfcatch>
+    	<cfcatch></cfcatch>
     </cftry>
 </cfloop>
 
@@ -170,7 +170,7 @@ function selectAll(field) {
 			<cfif hasData and StructKeyExists(infos[providers.url],"image")><cfset dn=getDumpNail(infos[providers.url].image,100,30)><cfif len(dn)><img src="#dn#" border="0"/>&nbsp;&nbsp;</cfif></cfif>
 			<cfif hasData and StructKeyExists(infos[providers.url],"title") and len(trim(infos[providers.url].title))>#infos[providers.url].title#<cfelse>&nbsp;</cfif></td>
         <!--- mode --->
-        <cfif doMode><td height="30" class="tblContent" nowrap><cfif hasData and StructKeyExists(infos[providers.url],"mode") and len(trim(infos[providers.url].mode))>#infos[providers.url].mode#<cfelse>production</cfif></td></cfif>
+        <cfif doMode><td height="30" class="tblContent" nowrap><cfif hasData><cfif StructKeyExists(infos[providers.url],"mode") and len(trim(infos[providers.url].mode))>#infos[providers.url].mode#<cfelse>production</cfif></cfif></td></cfif>
         <!--- check --->
         <td class="tblContent" nowrap valign="middle" align="center">
             <cfif StructKeyExists(stVeritfyMessages, providers.url)>

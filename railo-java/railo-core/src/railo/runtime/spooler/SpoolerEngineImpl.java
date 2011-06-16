@@ -66,8 +66,10 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 
 	private Resource closedDirectory;
 	private Resource openDirectory;
+
+	private int maxThreads;
 	
-	public SpoolerEngineImpl(Config config,Resource persisDirectory,String label, Log log) throws IOException {
+	public SpoolerEngineImpl(Config config,Resource persisDirectory,String label, Log log, int maxThreads) throws IOException {
 		this.config=config;
 		this.persisDirectory=persisDirectory;
 
@@ -75,7 +77,8 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		openDirectory = persisDirectory.getRealResource("open");
 		//calculateSize();
 		
-		
+
+		this.maxThreads=maxThreads;
 		this.label=label;
 		this.log=log;
 		//print.ds(persisDirectory.getAbsolutePath());
@@ -87,6 +90,13 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		closedCount=calculateSize(closedDirectory);
 		openCount=calculateSize(openDirectory);
 	}*/
+
+	/**
+	 * @return the maxThreads
+	 */
+	public int getMaxThreads() {
+		return maxThreads;
+	}
 
 	private int calculateSize(Resource res) {
 		return ResourceUtil.directrySize(res,FILTER);
@@ -356,9 +366,10 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 
 		private SpoolerEngineImpl engine;
 		private boolean sleeping;
-		private int maxThreads=20;
+		private final int maxThreads;
 
 		public SpoolerThread(SpoolerEngineImpl engine) {
+			this.maxThreads=engine.getMaxThreads();
 			this.engine=engine;
 			try{
 				this.setPriority(MIN_PRIORITY);
