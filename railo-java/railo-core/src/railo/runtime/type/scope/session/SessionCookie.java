@@ -5,10 +5,10 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
-import railo.runtime.type.scope.SessionPlus;
+import railo.runtime.type.scope.Session;
 import railo.runtime.type.scope.storage.StorageScopeCookie;
 
-public final class SessionCookie extends StorageScopeCookie implements SessionPlus {
+public final class SessionCookie extends StorageScopeCookie implements Session {
 
 	private static final long serialVersionUID = -3166541654190337670L;
 	
@@ -42,7 +42,7 @@ public final class SessionCookie extends StorageScopeCookie implements SessionPl
 	 * @param pc
 	 * @return
 	 */
-	public static SessionPlus getInstance(String name, PageContext pc,Log log) {
+	public static Session getInstance(String name, PageContext pc,Log log) {
 		if(!StringUtil.isEmpty(name))
 			name=StringUtil.toUpperCase(StringUtil.toVariableName(name));
 		String cookieName="CF_"+TYPE+"_"+name;

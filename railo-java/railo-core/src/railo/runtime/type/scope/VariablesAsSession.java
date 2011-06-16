@@ -346,4 +346,24 @@ public class VariablesAsSession implements Session {
 		return duplicate(false);
 	}
 
+	@Override
+	public long sizeOf() {
+		return session.sizeOf();
+	}
+
+	@Override
+	public void touchBeforeRequest(PageContext pc) {
+		session.touchBeforeRequest(pc);
+	}
+
+	@Override
+	public void touchAfterRequest(PageContext pc) {
+		session.touchAfterRequest(pc);
+	}
+
+	@Override
+	public int _getId() {
+		return session._getId();
+	}
+
 }

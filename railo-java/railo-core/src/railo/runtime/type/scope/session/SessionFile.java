@@ -5,10 +5,10 @@ import railo.commons.io.res.Resource;
 import railo.runtime.PageContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
-import railo.runtime.type.scope.SessionPlus;
+import railo.runtime.type.scope.Session;
 import railo.runtime.type.scope.storage.StorageScopeFile;
 
-public class SessionFile extends StorageScopeFile implements SessionPlus {
+public class SessionFile extends StorageScopeFile implements Session {
 
 	private static final long serialVersionUID = 3896214476118229640L;
 
@@ -39,7 +39,7 @@ public class SessionFile extends StorageScopeFile implements SessionPlus {
 	 * @param checkExpires 
 	 * @return
 	 */
-	public static SessionPlus getInstance(String name, PageContext pc,Log log) {
+	public static Session getInstance(String name, PageContext pc,Log log) {
 
 		Resource res=_loadResource(pc.getConfig(),SCOPE_SESSION,name,pc.getCFID());
 		Struct data=_loadData(pc,res,log);

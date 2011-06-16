@@ -148,7 +148,7 @@ public final class CFMLTransformer {
 		while(true){
 			try {
 				cfml=new CFMLString(sf,charset,writeLog);
-				p = transform(config,cfml,tlibs,flibs,sf.getFile().lastModified());
+				p = transform(config,cfml,tlibs,flibs,sf.getResource().lastModified());
 				break;
 			}
 			catch(ProcessingDirectiveException pde) {
@@ -158,7 +158,7 @@ public final class CFMLTransformer {
 		}
 		
 		// if cfc has no component tag or is script without cfscript
-		if(p.isPage() && ResourceUtil.getExtension(sf.getFile(),"").equalsIgnoreCase(config.getCFCExtension())){
+		if(p.isPage() && ResourceUtil.getExtension(sf.getResource(),"").equalsIgnoreCase(config.getCFCExtension())){
 			cfml.setPos(0);
 			TagLibTag tlt;
 			CFMLString original = cfml; 
@@ -176,7 +176,7 @@ public final class CFMLTransformer {
 						cfml=new CFMLString(text,charset,writeLog,sf);
 					}
 					try {
-						p= transform(config,cfml,tlibs,flibs,sf.getFile().lastModified());
+						p= transform(config,cfml,tlibs,flibs,sf.getResource().lastModified());
 						break;
 					}
 					catch(ProcessingDirectiveException pde) {
@@ -209,7 +209,7 @@ public final class CFMLTransformer {
 						cfml=new CFMLString(text,charset,writeLog,sf);
 					}
 					try {
-						p= transform(config,cfml,tlibs,flibs,sf.getFile().lastModified());
+						p= transform(config,cfml,tlibs,flibs,sf.getResource().lastModified());
 						break;
 					}
 					catch(ProcessingDirectiveException pde) {

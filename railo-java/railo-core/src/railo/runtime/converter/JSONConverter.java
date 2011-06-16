@@ -361,7 +361,7 @@ public final class JSONConverter {
 		sct.setEL("Output", Caster.toBoolean(udf.getOutput()));
 		sct.setEL("ReturnType", udf.getReturnTypeAsString());
 		try{
-			sct.setEL("PagePath", ((UDFImpl)udf).getPageSource().getFile().getAbsolutePath());
+			sct.setEL("PagePath", ((UDFImpl)udf).getPageSource().getResource().getAbsolutePath());
 		}catch(Throwable t){}
 		
 		_serializeStruct(pc,test,sct, sb, serializeQueryByColumns, true,done);

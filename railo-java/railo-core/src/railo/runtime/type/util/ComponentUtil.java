@@ -659,7 +659,7 @@ public final class ComponentUtil {
 			return p;
 		}
 		//print.o("getPage(load):"+ps.getDisplayPath()+":"+psi.hashCode());
-		return psi.loadPage(pc,pc.getConfig());
+		return psi.loadPage(pc);
 	}
 
 	public static Struct getPropertiesAsStruct(ComponentAccess ca, boolean onlyPersistent) {

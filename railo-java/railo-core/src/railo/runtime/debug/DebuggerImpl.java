@@ -591,7 +591,6 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		return traces.toArray(new DebugTrace[traces.size()]);
 	}
 	
-	// FUTURE add to interface
 	public void addException(Config config,PageException pe) {
 		if(exceptions.size()>1000) return;
 		try {
@@ -600,8 +599,9 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		catch(Throwable t){}
 	}
 	
-	
-	// FUTURE add to interface
+	/**
+	 * @see railo.runtime.debug.Debugger#getExceptions()
+	 */
 	public CatchBlock[] getExceptions() {
 		return exceptions.toArray(new CatchBlock[exceptions.size()]);
 	}

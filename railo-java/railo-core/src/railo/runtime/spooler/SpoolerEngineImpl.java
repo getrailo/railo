@@ -218,22 +218,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		if(plan==null)return -1;
 		return task.lastExecution()+(plan.getIntervall()*1000);
 	}
-
-	/**
-	 * @see railo.runtime.spooler.SpoolerEngine#getOpenTasks()
-	 */
-	public SpoolerTask[] getOpenTasks() {
-		throw new PageRuntimeException(new ApplicationException("this method is no longer supported"));
-	}
 	
-	/**
-	 * @see railo.runtime.spooler.SpoolerEngine#getClosedTasks()
-	 */
-	public SpoolerTask[] getClosedTasks() {
-		throw new PageRuntimeException(new ApplicationException("this method is no longer supported"));
-	}
-	
-	// FUTURE add to interface
 	public Query getOpenTasksAsQuery(int startrow, int maxrow) throws PageException {
 		return getTasksAsQuery(createQuery(),openDirectory,startrow, maxrow);
 	}

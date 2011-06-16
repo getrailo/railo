@@ -238,7 +238,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#release()
+	 * @see railo.runtime.type.scope.Scope#release()
 	 */
 	public void release() {
 		super.release();

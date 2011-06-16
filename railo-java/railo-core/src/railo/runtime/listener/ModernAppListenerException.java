@@ -8,8 +8,10 @@ import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.err.ErrorPage;
+import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.type.Collection;
@@ -60,15 +62,19 @@ public final class ModernAppListenerException extends PageException {
 	 * @see railo.runtime.exp.IPageException#getCatchBlock()
 	 */
 	public Struct getCatchBlock() {
-		return getCatchBlock(ThreadLocalPageContext.get());
+		return getCatchBlock(ThreadLocalConfig.get());
+	}
+	
+
+	public Struct getCatchBlock(PageContext pc) {
+		return getCatchBlock(pc.getConfig());
 	}
 	
 	/**
 	 * @see railo.runtime.exp.IPageException#getCatchBlock(railo.runtime.PageContext)
 	 */
-	public Struct getCatchBlock(PageContext pc) {
-		
-		Struct cb=rootCause.getCatchBlock(pc);
+	public CatchBlock getCatchBlock(Config config) {
+		CatchBlock cb=rootCause.getCatchBlock(config);
 		Collection cause = cb.duplicate(false);
 		//rtn.setEL("message", getMessage());
 		if(!cb.containsKey(DETAIL))cb.setEL(DETAIL, "Exception throwed while invoking function ["+eventName+"] from Application.cfc");
@@ -78,9 +84,6 @@ public final class ModernAppListenerException extends PageException {
 		//rtn.setEL("tagcontext", new ArrayImpl());
 		//rtn.setEL("type", getTypeAsString());
 		cb.setEL(NAME, eventName);
-
-		
-		
 		return cb;
 	}
 

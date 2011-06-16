@@ -34,17 +34,17 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructUtil;
 
 /**
  * A Page that can produce Components
  */
-public abstract class ComponentPage extends PagePlus  {
+public abstract class ComponentPage extends Page  {
 	
 	private static final long serialVersionUID = -3483642653131058030L;
 	

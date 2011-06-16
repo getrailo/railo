@@ -57,14 +57,14 @@ public class RequestImpl extends StructSupport implements Request {
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#getType()
+	 * @see railo.runtime.type.scope.Scope#getType()
 	 */
 	public int getType() {
 		return SCOPE_REQUEST;
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#getTypeAsString()
+	 * @see railo.runtime.type.scope.Scope#getTypeAsString()
 	 */
 	public String getTypeAsString() {
 		return "request";

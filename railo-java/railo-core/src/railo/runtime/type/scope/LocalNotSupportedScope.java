@@ -9,7 +9,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Scope;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 
@@ -115,18 +114,18 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#isInitalized()
+	 * @see railo.runtime.type.scope.Scope#isInitalized()
 	 */
 	public boolean isInitalized() {
 		return false;
 	}
 	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void initialize(PageContext pc) {
 	}
 	/**
-	 * @see railo.runtime.type.Scope#release()
+	 * @see railo.runtime.type.scope.Scope#release()
 	 */
 	public void release() {
 	}

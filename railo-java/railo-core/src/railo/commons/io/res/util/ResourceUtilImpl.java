@@ -97,10 +97,24 @@ public class ResourceUtilImpl implements railo.runtime.util.ResourceUtil {
 	}
 
 	/**
+	 * @see railo.runtime.util.ResourceUtil#getExtension(railo.commons.io.res.Resource, java.lang.String)
+	 */
+	public String getExtension(Resource res, String defaultValue) {
+		return ResourceUtil.getExtension(res,defaultValue);
+	}
+
+	/**
 	 * @see railo.runtime.util.ResourceUtil#getExtension(java.lang.String)
 	 */
 	public String getExtension(String strFile) {
 		return ResourceUtil.getExtension(strFile,null);
+	}
+
+	/**
+	 * @see railo.runtime.util.ResourceUtil#getExtension(java.lang.String, java.lang.String)
+	 */
+	public String getExtension(String strFile, String defaultValue) {
+		return ResourceUtil.getExtension(strFile,defaultValue);
 	}
 
 	/**

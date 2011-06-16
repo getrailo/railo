@@ -20,7 +20,7 @@ import railo.runtime.InterfacePage;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
-import railo.runtime.PagePlus;
+import railo.runtime.Page;
 import railo.runtime.PageSource;
 import railo.runtime.component.ImportDefintion;
 import railo.runtime.component.Member;
@@ -36,12 +36,12 @@ import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.List;
-import railo.runtime.type.Scope;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.ref.Reference;
 import railo.runtime.type.ref.VariableReference;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ArrayUtil;
@@ -104,7 +104,6 @@ public final class Types {
     public static final Type COMPONENT=Type.getType(railo.runtime.Component.class);
 
     public final static Type PAGE=Type.getType(Page.class);
-    public final static Type PAGE_PLUS=Type.getType(PagePlus.class);
     public final static Type PAGE_SOURCE=Type.getType(PageSource.class);
     public static final Type COMPONENT_PAGE=Type.getType(railo.runtime.ComponentPage.class);
 	public static final Type INTERFACE_PAGE = Type.getType(InterfacePage.class);
@@ -131,7 +130,7 @@ public final class Types {
     public static final Type OBJECT_ARRAY=Type.getType(Object[].class);
 
     public static final Type PAGE_CONTEXT=Type.getType(PageContext.class);
-    public static final Type PAGE_CONTEXT_IMPL=Type.getType(PageContextImpl.class);
+    //public static final Type PAGE_CONTEXT_IMPL=Type.getType(PageContextImpl.class);
 
 
     public final static Type QUERY=Type.getType(railo.runtime.type.Query.class);

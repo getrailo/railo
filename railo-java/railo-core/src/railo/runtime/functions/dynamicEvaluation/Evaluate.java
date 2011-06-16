@@ -6,10 +6,10 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Scope;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.CallerImpl;
 import railo.runtime.type.scope.Local;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.Variables;
 

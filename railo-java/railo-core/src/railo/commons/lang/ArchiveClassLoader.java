@@ -16,7 +16,6 @@ import railo.runtime.type.Sizeable;
 
 // TODO umbauen auf ZipInputStream oder ein wrapper schreiben fﾟr resorces der das file interface einhﾊlt
 
-// FUTURE hat nichts mit dem hier zutun, es braucht eine methode die mir ein Key Object erzeugt beim casterUtil
 
 public final class ArchiveClassLoader extends ClassLoader implements Sizeable,Closeable {
     

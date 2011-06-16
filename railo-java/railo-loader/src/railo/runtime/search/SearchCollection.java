@@ -247,5 +247,4 @@ public interface SearchCollection extends Serializable {
 
 	public abstract Object getCategoryInfo();
 
-
 }

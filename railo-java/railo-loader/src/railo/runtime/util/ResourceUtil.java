@@ -130,17 +130,31 @@ public interface ResourceUtil {
 	     * get the Extension of a file resource
 	     * @param res
 	     * @return extension of file
+	     * @deprecated use instead <code>getExtension(Resource res, String defaultValue);</code>
 	     */
-	    public String getExtension(Resource res);// FUTURE set deprecated
-	 // FUTURE public String getExtension(Resource res, String defaultValue);
+	    public String getExtension(Resource res);
+
+	    /**
+	     * get the Extension of a file resource
+	     * @param res
+	     * @return extension of file
+	     */
+	    public String getExtension(Resource res, String defaultValue);
 
 	    /**
 	     * get the Extension of a file
 	     * @param strFile
 	     * @return extension of file
+	     * @deprecated use instead <code>getExtension(String strFile, String defaultValue);</code>
 	     */
-	    public String getExtension(String strFile);// FUTURE set deprecated
-	    // FUTURE public String getExtension(String strFile, String defaultValue);
+	    public String getExtension(String strFile);
+
+	    /**
+	     * get the Extension of a file resource
+	     * @param res
+	     * @return extension of file
+	     */
+	    public String getExtension(String strFile, String defaultValue);
 	    
 
 	    /**

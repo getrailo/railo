@@ -3,6 +3,7 @@ package railo.runtime.type;
 import railo.runtime.Component;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.PageSource;
 import railo.runtime.component.Member;
 import railo.runtime.dump.Dumpable;
 import railo.runtime.exp.PageException;
@@ -112,11 +113,8 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
      */
     public abstract String getHint();
 
-    /**
-     * @return Returns the page.
-     */
-    public abstract Page getPage();// FUTURE deprecated
-    //FUTURE public abstract PageSource getPageSource();
+    
+    public abstract PageSource getPageSource();
     
     
 
@@ -124,12 +122,11 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
 	
 
 	public UDF duplicate();
-
-	// FUTURE public UDF duplicate(Map<Object,Object> done);
 	
 	/**
 	 * it is the component in whitch this udf is constructed, must not be the same as active udf
 	 * @return owner component
+	 * @deprecated 
 	 */
 	public Component getOwnerComponent();
 

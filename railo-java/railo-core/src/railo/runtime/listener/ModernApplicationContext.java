@@ -15,11 +15,11 @@ import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.scope.Scope;
 
 /**
  * @author mic

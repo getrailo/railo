@@ -1,6 +1,7 @@
 package railo.runtime.type;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import railo.runtime.dump.Dumpable;
 import railo.runtime.exp.PageException;
@@ -214,5 +215,6 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
     	 * @return return id for this key, this key is unique for the system but ignore case of input
     	 */
     	public int getId();
+    	
     }
 }

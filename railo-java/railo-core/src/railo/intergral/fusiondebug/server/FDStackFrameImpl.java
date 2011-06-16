@@ -16,9 +16,9 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.scope.ClusterNotSupported;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.UndefinedImpl;
 
 import com.intergral.fusiondebug.server.FDLanguageException;

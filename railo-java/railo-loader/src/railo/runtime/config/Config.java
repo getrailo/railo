@@ -12,6 +12,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Mapping;
+import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.db.DataSource;
@@ -564,11 +565,11 @@ public interface Config {
 
 	
 	/**
-	 * FUTURE deprecated use <code>public Mapping[] getComponentMappings()</code> instead  
+	 * @deprecated use <code>public Mapping[] getComponentMappings()</code> instead  
 	 */
 	public Mapping getComponentMapping();
 
-	// FUTURE public Mapping[] getComponentMappings();
+	public Mapping[] getComponentMappings();
 
 	public abstract boolean doCustomTagDeepSearch();
 
@@ -615,6 +616,8 @@ public interface Config {
 	 */
 	public ClassLoader getClassLoader();
 	
+	public ClassLoader getClassLoader(Resource[] reses) throws IOException;
+	
 	public Resource getExtensionDirectory();
 	
 	public ExtensionProvider[] getExtensionProviders();
@@ -647,11 +650,13 @@ public interface Config {
 	public Resource getTldFile();
 	
 	
-	// FUTURE set as deprecated
+	/**
+	* @deprecated use instead <code></code>
+	*/
 	public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel);
 	
-	// FUTURE
-	//public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel, boolean useSpecialMappings, boolean useDefaultMappings);
+	
+	public PageSource getPageSource(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping);
 	
 	
 	/**

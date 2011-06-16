@@ -230,7 +230,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	
 	 public Page getBaseComponentPage(PageContext pc) throws PageException {
 	        if(baseComponentPage==null) {
-	            baseComponentPage=((PageSourceImpl)getBaseComponentPageSource(pc)).loadPage(pc,this);
+	            baseComponentPage=((PageSourceImpl)getBaseComponentPageSource(pc)).loadPage(pc);
 				
 	        }
 	        return baseComponentPage;

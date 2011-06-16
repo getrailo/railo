@@ -4,7 +4,7 @@ import railo.commons.lang.StringList;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.type.CollectionKey;

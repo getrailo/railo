@@ -8,7 +8,6 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Scope;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 
@@ -175,14 +174,14 @@ public final class CallerImpl extends StructSupport implements Caller  {
     }
     
     /**
-     * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+     * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
      */
     public void initialize(PageContext pc) {
         this.pc=pc;
     }
 
     /**
-     * @see railo.runtime.type.scope.Caller#setScope(railo.runtime.type.Scope, railo.runtime.type.Scope, railo.runtime.type.Scope, boolean)
+     * @see railo.runtime.type.scope.Caller#setScope(railo.runtime.type.scope.Scope, railo.runtime.type.scope.Scope, railo.runtime.type.scope.Scope, boolean)
      */
     public void setScope(Scope variablesScope, Scope localScope, Scope argumentsScope, boolean checkArgs) {
         this.variablesScope = (Variables)variablesScope;
@@ -192,14 +191,14 @@ public final class CallerImpl extends StructSupport implements Caller  {
     }
 
     /**
-     * @see railo.runtime.type.Scope#isInitalized()
+     * @see railo.runtime.type.scope.Scope#isInitalized()
      */
     public boolean isInitalized() {
         return pc!=null;
     }
 
     /**
-     * @see railo.runtime.type.Scope#release()
+     * @see railo.runtime.type.scope.Scope#release()
      */
     public void release() {
         this.pc=null;
@@ -388,14 +387,14 @@ public final class CallerImpl extends StructSupport implements Caller  {
 	}
 
     /**
-     * @see railo.runtime.type.Scope#getType()
+     * @see railo.runtime.type.scope.Scope#getType()
      */
     public int getType() {
         return SCOPE_CALLER;
     }
 
     /**
-     * @see railo.runtime.type.Scope#getTypeAsString()
+     * @see railo.runtime.type.scope.Scope#getTypeAsString()
      */
     public String getTypeAsString() {
         return "caller";

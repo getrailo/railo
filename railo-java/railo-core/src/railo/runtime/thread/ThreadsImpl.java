@@ -69,7 +69,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#getTypeAsString()
+	 * @see railo.runtime.type.scope.Scope#getTypeAsString()
 	 */
 	public String getTypeAsString() {
 		return "thread";

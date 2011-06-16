@@ -68,18 +68,18 @@ public interface ApplicationListener {
 	 */ 
 	public void onApplicationEnd(CFMLFactory cfmlFactory, String applicationName) throws PageException;
 
-	/* * FUTURE
+	/**
 	 * this method will be called when a server starts
 	 * @throws PageException
-	 * /
-	public void onServerStart(PageContext pc) throws PageException;
+	 */
+	public void onServerStart() throws PageException;
 
-	/ * *FUTURE
+	/**
 	 * this method will be called when the server shutdown correctly (no crashes)
 	 * @throws PageException
-	 * /
+	 */
 	public void onServerEnd() throws PageException;
-*/
+
 	/**
 	 * this method will be called if server has a error (exception) not throwed by a try-catch block
 	 * @param pe PageExcpetion Exception that has been throwed
@@ -92,11 +92,11 @@ public interface ApplicationListener {
 	 */
 	public void onDebug(PageContext pc) throws PageException;
 
-	/* *FUTURE
+	/**
 	 * will be called when server is run int a timeout
-	 * /
+	 */
 	public void onTimeout(PageContext pc);
-	*/
+	
 	
 	public boolean hasOnSessionStart(PageContext pc);
 }

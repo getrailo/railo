@@ -19,6 +19,7 @@ import org.objectweb.asm.commons.Method;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.component.ImportDefintion;
+import railo.runtime.component.ImportDefintionImpl;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
@@ -365,7 +366,7 @@ public final class Page extends BodyBase {
         getImports(list, this); 
     	
     	// parent
-    	String parent="railo/runtime/PagePlus";// FUTURE use Page instead of PagePlus
+    	String parent="railo/runtime/Page";
     	if(isComponent()) parent="railo/runtime/ComponentPage";
     	else if(isInterface()) parent="railo/runtime/InterfacePage";
     	
@@ -405,7 +406,7 @@ public final class Page extends BodyBase {
         ga = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_PS,null,null,cw);
 		BytecodeContext constr = new BytecodeContext(null,null,keys,cw,name,ga,CONSTRUCTOR_PS,writeLog());
 		ga.loadThis();
-        Type t=Types.PAGE_PLUS;
+        Type t=Types.PAGE;
         if(isComponent())t=Types.COMPONENT_PAGE;
         else if(isInterface())t=Types.INTERFACE_PAGE;
         
@@ -416,8 +417,6 @@ public final class Page extends BodyBase {
         ga.visitVarInsn(Opcodes.ALOAD, 0);
         ga.visitVarInsn(Opcodes.ALOAD, 1);
         ga.invokeVirtual(t, SET_PAGE_SOURCE);
-       // mv.visitMethodInsn(INVOKEVIRTUAL, "railo/runtime/PagePlus", "setPageSource", "(Lrailo/runtime/PageSource;)V");
-
         
         
         
@@ -1221,7 +1220,7 @@ public final class Page extends BodyBase {
         	
         	// IFunction
         	if(stat instanceof TagImport && !StringUtil.isEmpty(((TagImport)stat).getPath(),true)) {
-        		ImportDefintion id = ImportDefintion.getInstance(((TagImport) stat).getPath(), null);
+        		ImportDefintion id = ImportDefintionImpl.getInstance(((TagImport) stat).getPath(), null);
         		if(id!=null && (!list.contains(id.toString()) && !list.contains(id.getPackage()+".*"))){
         			list.add(id.toString());
         		}

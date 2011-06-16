@@ -464,7 +464,6 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			sct.setEL(QueryImpl.SQL, sql.getSQLString());
 			
 			// GENERATED KEYS
-			// FUTURE when getGeneratedKeys() exist in interface the toQueryImpl can be removed
 			railo.runtime.type.Query qi = Caster.toQuery(query,null);
 			if(qi !=null){
 				railo.runtime.type.Query qryKeys = Caster.toQuery(qi.getGeneratedKeys(),null);

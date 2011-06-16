@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.Scope;
 
 public interface RuntimeService extends Service {
 

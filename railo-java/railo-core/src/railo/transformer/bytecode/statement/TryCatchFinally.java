@@ -10,7 +10,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.Scope;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -197,8 +197,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	        // PageExceptionImpl old=pc.getCatch();
 	        int old=adapter.newLocal(Types.PAGE_EXCEPTION);
 	        adapter.loadArg(0);
-	        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
-	        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, TagTry.GET_CATCH);
+	        adapter.invokeVirtual(Types.PAGE_CONTEXT, TagTry.GET_CATCH);
 			adapter.storeLocal(old);
 	        
 	        
@@ -254,11 +253,10 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 			else{
 			// pc.setCatch(pe,true);
 				adapter.loadArg(0);
-		        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
 		        adapter.loadLocal(pe);
 		        adapter.push(false);
 		        adapter.push(false);
-		        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, TagTry.SET_CATCH3);
+		        adapter.invokeVirtual(Types.PAGE_CONTEXT, TagTry.SET_CATCH3);
 	            
 				
 				adapter.loadLocal(pe);
@@ -268,20 +266,18 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 			
     		// PageExceptionImpl old=pc.setCatch(old);
             adapter.loadArg(0);
-            adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
             adapter.loadLocal(old);
-            adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, TagTry.SET_CATCH_PE);
+            adapter.invokeVirtual(Types.PAGE_CONTEXT, TagTry.SET_CATCH_PE);
 			
 	}
 
 	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter, Catch ct, int pe, int lRef,boolean caugth) throws BytecodeException {
 		// pc.setCatch(pe,true);
 		adapter.loadArg(0);
-        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
         adapter.loadLocal(pe);
         adapter.push(caugth);
         adapter.push(false);
-        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, TagTry.SET_CATCH3);
+        adapter.invokeVirtual(Types.PAGE_CONTEXT, TagTry.SET_CATCH3);
         
         
         // ref=

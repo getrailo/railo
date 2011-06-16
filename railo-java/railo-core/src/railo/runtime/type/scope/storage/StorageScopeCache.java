@@ -125,7 +125,7 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 			String key=getKey(cfid, appName, getTypeAsString());
 			cache.put(key, sct,new Long(getTimeSpan()), null);
 		} 
-		catch (PageException pe) {}
+		catch (Exception pe) {}
 	}
 	
 	public void unstore(Config config) {

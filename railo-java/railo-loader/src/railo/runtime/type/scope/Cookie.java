@@ -2,7 +2,6 @@ package railo.runtime.type.scope;
 
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Scope;
 
 /**
  * interface for the cookie scope

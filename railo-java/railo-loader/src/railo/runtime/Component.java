@@ -4,9 +4,10 @@ package railo.runtime;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
-
+import railo.runtime.type.UDF;
 /**
  * interface for a Component
  */
@@ -155,5 +156,6 @@ public interface Component extends Struct,Objects {
 	public boolean equalTo(String type);
 	
 	public String getWSDLFile();
+	
     
 }

@@ -8,7 +8,7 @@ import railo.runtime.functions.system.GetApplicationSettings;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.SharedScope;
+import railo.runtime.type.scope.SharedScope;
 
 
 
@@ -45,7 +45,7 @@ public final class ApplicationImpl extends ScopeSupport implements Application,S
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void touchBeforeRequest(PageContext pc){
 	    ApplicationContext appContext = pc.getApplicationContext();

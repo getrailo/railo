@@ -18,7 +18,6 @@ import railo.transformer.bytecode.util.ASMProperty;
 import railo.transformer.bytecode.util.ASMUtil;
 
 /**
- * FUTURE add a interface to public interface
  */
 public final class PropertyImpl extends MemberSupport implements Property,ASMProperty {
     

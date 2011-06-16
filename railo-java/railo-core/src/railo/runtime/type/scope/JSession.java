@@ -12,11 +12,12 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.scope.storage.MemoryScope;
 import railo.runtime.type.scope.storage.StorageScope;
+import railo.runtime.type.scope.storage.StorageScopeImpl;
 
 /**
  * 
  */
-public final class JSession extends ScopeSupport implements SessionPlus,HttpSessionBindingListener,MemoryScope {
+public final class JSession extends ScopeSupport implements Session,HttpSessionBindingListener,MemoryScope {
     
 	//public static final Collection.Key URL_TOKEN = KeyImpl.getInstance("urltoken");
 	public static final Collection.Key SESSION_ID = KeyImpl.getInstance("sessionid");
@@ -60,7 +61,7 @@ public final class JSession extends ScopeSupport implements SessionPlus,HttpSess
 
 	    lastAccess=System.currentTimeMillis();
         setEL(SESSION_ID,id);
-        setEL(StorageScope.URLTOKEN,"CFID="+pc.getCFID()+"&CFTOKEN="+pc.getCFToken()+"&jsessionid="+id);
+        setEL(StorageScopeImpl.URLTOKEN,"CFID="+pc.getCFID()+"&CFTOKEN="+pc.getCFToken()+"&jsessionid="+id);
 	}
 
 	public void touchAfterRequest(PageContext pc) {

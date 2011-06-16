@@ -174,13 +174,11 @@ public final class NumberIterator {
 	 * @throws PageException
 	 */
 	public static synchronized NumberIterator load(PageContext pc, NumberIterator ni, Query query, String groupName, boolean caseSensitive) throws PageException {
-		int startIndex=query.getCurrentrow(); 
-		// FUTURE int startIndex=query.getCurrentrow(pc.getId()); 
-        
+		int startIndex=query.getCurrentrow(pc.getId()); 
+		
         Object startValue=query.get(KeyImpl.init(groupName)); 
-        // FUTURE Object startValue=query.get(pc,KeyImpl.init(groupName)); 
         while(ni.hasNext()) { 
-            if(!Operator.equals(startValue,query.getAt(groupName,ni.next()),caseSensitive)) { 
+            if(!Operator.equals(startValue,query.getAt(KeyImpl.init(groupName),ni.next()),caseSensitive)) { 
                         ni.previous();
                         return _load(startIndex,ni.current());
             } 

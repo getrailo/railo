@@ -240,8 +240,9 @@ public final class DataSourceImpl implements Cloneable, DataSource {
         return connectionTimeout;
     }
 
-
-	//FUTURE add to interface
+	/**
+	 * @see railo.runtime.db.DataSource#getMetaCacheTimeout()
+	 */
 	public long getMetaCacheTimeout() {
 		return metaCacheTimeout;
 	} 

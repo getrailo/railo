@@ -14,7 +14,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
@@ -105,7 +104,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	
 	
 	/**
-     * @see railo.runtime.type.scope.Undefined#setFunctionScopes(railo.runtime.type.Scope, railo.runtime.type.Scope)
+     * @see railo.runtime.type.scope.Undefined#setFunctionScopes(railo.runtime.type.scope.Scope, railo.runtime.type.scope.Scope)
      */
 	public void setFunctionScopes(Local local, Argument argument) {
 		this.local=local;
@@ -519,14 +518,14 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 	
 	/**
-	 * @see railo.runtime.type.Scope#isInitalized()
+	 * @see railo.runtime.type.scope.Scope#isInitalized()
 	 */
 	public boolean isInitalized() {
 		return isInit;
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void initialize(PageContext pc) {
 		if(isInitalized()) return;
@@ -588,7 +587,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 
 
 	/**
-	 * @see railo.runtime.type.Scope#release()
+	 * @see railo.runtime.type.scope.Scope#release()
 	 */
 	public void release() {
 		isInit=false;
@@ -729,21 +728,21 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 
     /**
-     * @see railo.runtime.type.scope.Undefined#setVariableScope(railo.runtime.type.Scope)
+     * @see railo.runtime.type.scope.Undefined#setVariableScope(railo.runtime.type.scope.Scope)
      */
     public void setVariableScope(Scope scope) {
     	variable=scope;
     }
 
     /**
-     * @see railo.runtime.type.Scope#getType()
+     * @see railo.runtime.type.scope.Scope#getType()
      */
     public int getType() {
         return SCOPE_UNDEFINED;
     }
 
     /**
-     * @see railo.runtime.type.Scope#getTypeAsString()
+     * @see railo.runtime.type.scope.Scope#getTypeAsString()
      */
     public String getTypeAsString() {
         return "undefined";

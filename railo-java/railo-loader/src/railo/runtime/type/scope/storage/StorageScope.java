@@ -1,24 +1,22 @@
 package railo.runtime.type.scope.storage;
 
 import railo.runtime.config.Config;
-import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
-import railo.runtime.type.SharedScope;
+import railo.runtime.type.scope.SharedScope;
 
 
 /**
  * scope that can be stored, in a storage
  */
 public interface StorageScope extends SharedScope {
-	
-	public static Collection.Key CFID=KeyImpl.getInstance("cfid");
-	public static Collection.Key CFTOKEN=KeyImpl.getInstance("cftoken");
-	public static Collection.Key URLTOKEN=KeyImpl.getInstance("urltoken");
-	public static Collection.Key LASTVISIT=KeyImpl.getInstance("lastvisit");
-	public static Collection.Key HITCOUNT=KeyImpl.getInstance("hitcount");
-	public static Collection.Key TIMECREATED=KeyImpl.getInstance("timecreated");
-	public static Collection.Key SESSION_ID=KeyImpl.getInstance("sessionid");
-	
+	/*
+	public static Collection.Key CFID=Util.toKey("cfid");
+	public static Collection.Key CFTOKEN=Util.toKey("cftoken");
+	public static Collection.Key URLTOKEN=Util.toKey("urltoken");
+	public static Collection.Key LASTVISIT=Util.toKey("lastvisit");
+	public static Collection.Key HITCOUNT=Util.toKey("hitcount");
+	public static Collection.Key TIMECREATED=Util.toKey("timecreated");
+	public static Collection.Key SESSION_ID=Util.toKey("sessionid");
+	*/
 	/**
 	 * @return time when the Scope last time was visited
 	 */

@@ -16,6 +16,8 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -25,7 +27,14 @@ import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
 
 public abstract class StorageScopeImpl extends StructSupport implements StorageScope,Sizeable {
-	
+
+	public static Collection.Key CFID=KeyImpl.getInstance("cfid");
+	public static Collection.Key CFTOKEN=KeyImpl.getInstance("cftoken");
+	public static Collection.Key URLTOKEN=KeyImpl.getInstance("urltoken");
+	public static Collection.Key LASTVISIT=KeyImpl.getInstance("lastvisit");
+	public static Collection.Key HITCOUNT=KeyImpl.getInstance("hitcount");
+	public static Collection.Key TIMECREATED=KeyImpl.getInstance("timecreated");
+	public static Collection.Key SESSION_ID=KeyImpl.getInstance("sessionid");
 
 
 	private static int _id=0;
@@ -106,7 +115,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void touchBeforeRequest(PageContext pc) {
 		
@@ -160,14 +169,14 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	
 
 	/**
-	 * @see railo.runtime.type.Scope#isInitalized()
+	 * @see railo.runtime.type.scope.Scope#isInitalized()
 	 */
 	public final boolean isInitalized() {
 		return isinit;
 	}
 	
 	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public final void initialize(PageContext pc) {
 		// StorageScopes need only request initialisation no global init, they are not reused;
@@ -187,7 +196,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	}
 	
 	/**
-	 * @see railo.runtime.type.Scope#release()
+	 * @see railo.runtime.type.scope.Scope#release()
 	 */
 	public final void release() {
 		clear();

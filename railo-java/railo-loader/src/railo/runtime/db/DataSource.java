@@ -139,6 +139,8 @@ public interface DataSource extends Cloneable {
      * @return Returns the connectionTimeout.
      */
     public abstract int getConnectionTimeout();
+    
+    public long getMetaCacheTimeout();
 
     /**
      * @param key 
@@ -171,10 +173,10 @@ public interface DataSource extends Cloneable {
      */
     public abstract void setClazz(Class clazz);
 
-    // FUTURE public abstract boolean isStorage();
+    public abstract boolean isStorage();
 
-	// FUTURE public abstract boolean validate();
+	public abstract boolean validate();
 
-	//public abstract int getMaxConnection();
+	//  public abstract int getMaxConnection();
 
 }

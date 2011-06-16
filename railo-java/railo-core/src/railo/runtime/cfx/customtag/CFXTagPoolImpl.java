@@ -54,7 +54,9 @@ public final class CFXTagPoolImpl implements CFXTagPool {
 		return ct;
 	}
 	
-	// FUTURE add to interface
+	/**
+	 * @see railo.runtime.cfx.CFXTagPool#getCFXTagClass(java.lang.String)
+	 */
 	public synchronized CFXTagClass getCFXTagClass(String name) throws CFXTagException {
 		name=name.toLowerCase();
 		CFXTagClass ctc=(CFXTagClass) classes.get(name);

@@ -5,10 +5,10 @@ import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.ext.tag.DynamicAttributes;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Caller;
+import railo.runtime.type.scope.Scope;
 
 public abstract class CustomTag extends BodyTagTryCatchFinallyImpl implements DynamicAttributes,AppendixTag {
 	

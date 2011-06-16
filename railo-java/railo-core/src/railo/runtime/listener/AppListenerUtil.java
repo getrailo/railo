@@ -25,9 +25,9 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
 
 public final class AppListenerUtil {

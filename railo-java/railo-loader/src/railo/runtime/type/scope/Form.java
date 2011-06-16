@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 
 import railo.runtime.exp.PageException;
-import railo.runtime.type.Scope;
 
 /**
  * interface fro scope form

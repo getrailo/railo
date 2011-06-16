@@ -229,7 +229,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	
 
 	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void initialize(PageContext pc) {
 		charset = pc.getConfig().getWebCharset();

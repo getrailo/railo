@@ -11,7 +11,7 @@ import org.objectweb.asm.commons.Method;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.TemplateException;
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.util.VariableUtilImpl;
@@ -261,14 +261,12 @@ public class Variable extends ExpressionBase implements Invoker {
 			 m = TypeScope.METHOD_ARGUMENT_BIND;
 		}
 		else if(scope==Scope.SCOPE_LOCAL) {
-			adapter.checkCast(Types.PAGE_CONTEXT_IMPL);// FUTURE remove when function localScope(boolean) is part of class PageContext
-			t=Types.PAGE_CONTEXT_IMPL;
+			t=Types.PAGE_CONTEXT;
 			LitBoolean.TRUE.writeOut(bc, MODE_VALUE);
 			 m = TypeScope.METHOD_LOCAL_BIND;
 		}
 		else if(scope==ScopeSupport.SCOPE_VAR) {
-			adapter.checkCast(Types.PAGE_CONTEXT_IMPL);// FUTURE remove when function localScope(boolean) is part of class PageContext
-			t=Types.PAGE_CONTEXT_IMPL;
+			t=Types.PAGE_CONTEXT;
 			LitBoolean.TRUE.writeOut(bc, MODE_VALUE);
 			 m = TypeScope.METHOD_VAR_BIND;
 		}

@@ -10,9 +10,9 @@ import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMUtil;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.scope.Scope;
 
 /**
 * Defines scoping for a CFML application, enables or disables storing client variables, 

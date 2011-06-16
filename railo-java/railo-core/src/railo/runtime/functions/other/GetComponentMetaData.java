@@ -52,7 +52,7 @@ public final class GetComponentMetaData implements Function {
 	private static Struct getMetaData(PageContext pc, PageSource ps, Object obj) throws PageException {// FUTURE make a class instance of cfc instead of all this
 		String key=ps.getDisplayPath();
 		long lastMod=0;
-		if(ps.physcalExists()) lastMod=ps.getFile().lastModified();
+		if(ps.physcalExists()) lastMod=ps.getResource().lastModified();
 		
 		ConfigImpl config=(ConfigWebImpl) pc.getConfig();
 		ComponentMetaData data = config.getComponentMetadata(key);

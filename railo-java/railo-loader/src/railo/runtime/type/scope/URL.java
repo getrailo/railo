@@ -2,7 +2,6 @@ package railo.runtime.type.scope;
 
 import java.io.UnsupportedEncodingException;
 
-import railo.runtime.type.Scope;
 
 /**
  * inteface for the url scope

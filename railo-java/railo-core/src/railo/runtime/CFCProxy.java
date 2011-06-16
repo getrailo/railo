@@ -36,6 +36,11 @@ public class CFCProxy extends ComponentAccessProxy implements HibernateProxy, Se
 	public LazyInitializer getHibernateLazyInitializer() {
 		return li;
 	}
+
+	@Override
+	public long sizeOf() {
+		return li.getCFC().sizeOf();
+	}
 	
 
 }

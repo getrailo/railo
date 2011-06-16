@@ -1,6 +1,5 @@
 package railo.runtime.type.scope;
 
-import railo.runtime.type.Scope;
 
 /**
  * implemetnation of the application scope

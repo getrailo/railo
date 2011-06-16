@@ -538,6 +538,10 @@ public interface Cast {
      */
     public Long toLong(Object o, Long defaultValue);
 
+    public Collection.Key toKey(Object o) throws PageException;
+    
+    public Collection.Key toKey(Object o, Collection.Key defaultValue);
+
     /**
      * cast a boolean value to a short value
      * @param b boolean value to cast

@@ -24,7 +24,7 @@ import railo.runtime.type.util.StructSupport;
 public class StructImpl extends StructSupport {
 	private static final long serialVersionUID = 1421746759512286393L;
 
-	public static final int TYPE_SOFT=4;//FUTURE move to Struct interface
+	
 	
 	private Map<Collection.Key,Object> map;
 	

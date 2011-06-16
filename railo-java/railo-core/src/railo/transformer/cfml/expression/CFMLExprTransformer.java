@@ -8,7 +8,7 @@ import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.cast.CastDouble;

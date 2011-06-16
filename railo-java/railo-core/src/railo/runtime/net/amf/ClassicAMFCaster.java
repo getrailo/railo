@@ -259,7 +259,7 @@ public class ClassicAMFCaster implements AMFCaster {
 			if(pc!=null){
 				String name="/"+aso.getType().replace('.', '/')+".cfc";
 				PageSourceImpl ps = (PageSourceImpl) pc.getPageSource(name);
-				Page p=ps.loadPage(pc,config,null);
+				Page p=ps.loadPage(pc,null);
 				if(p==null)throw new ApplicationException("Could not find a Component with name ["+aso.getType()+"]");
 				
 				Component cfc = ComponentLoader.loadComponent(pc, p, ps, aso.getType(), false);

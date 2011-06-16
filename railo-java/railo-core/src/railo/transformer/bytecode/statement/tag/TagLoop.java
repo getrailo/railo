@@ -155,10 +155,10 @@ public final class TagLoop extends TagBase implements FlowControl {
 			new Type[]{Types.STRING});
 
 	// int getCurrentrow()
-	static final Method GET_CURRENTROW_0 = new Method(
+	/*OLD static final Method GET_CURRENTROW_0X = new Method(
 			"getCurrentrow",
 			Types.INT_VALUE,
-			new Type[]{});
+			new Type[]{});*/
 	
 	// int getCurrentrow()
 	static final Method GET_CURRENTROW_1 = new Method(
@@ -727,18 +727,17 @@ public final class TagLoop extends TagBase implements FlowControl {
 		
 		// int startAt=query.getCurrentrow();
 		int startAt=adapter.newLocal(Types.INT_VALUE);
-		/* FUTURE
+		
 		adapter.loadLocal(query);
 		adapter.loadArg(0);
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
 		adapter.invokeInterface(Types.QUERY, GET_CURRENTROW_1);
 		adapter.storeLocal(startAt);
-		
-		*/
+		/* OLD
 		adapter.loadLocal(query);
 		adapter.invokeInterface(Types.QUERY, GET_CURRENTROW_0);
 		adapter.storeLocal(startAt);
-		
+		*/
 		
 		// startrow
 		int start=adapter.newLocal(Types.INT_VALUE);
@@ -785,13 +784,14 @@ public final class TagLoop extends TagBase implements FlowControl {
 					av.visitBegin();
 						adapter.loadLocal(query);
 						adapter.visitVarInsn(Opcodes.ILOAD, i);
-						/* FUTURE
+						
 						adapter.loadArg(0);
 						adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
 						adapter.invokeVirtual(Types.QUERY, GO_2); 
-						*/
+						
+						/* FUTURE
 						adapter.invokeInterface(Types.QUERY, GO_1); 
-					
+						 */
 						av.visitMiddle(bc);
 						//LitBoolean.TRUE.writeOut(bc, Expression.MODE_VALUE);
 						DecisionIntVisitor dv=new DecisionIntVisitor();
@@ -805,13 +805,14 @@ public final class TagLoop extends TagBase implements FlowControl {
 				else {
 					adapter.loadLocal(query);
 					adapter.visitVarInsn(Opcodes.ILOAD, i);
-					/* FUTURE
+					
 					adapter.loadArg(0);
 					adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
 					adapter.invokeInterface(Types.QUERY, GO_2);
-					*/
+					
+					/* OLD
 					adapter.invokeInterface(Types.QUERY, GO_1);
-
+					*/
 				
 				
 				}
@@ -829,13 +830,14 @@ public final class TagLoop extends TagBase implements FlowControl {
 			// query.go(startAt);
 			adapter.loadLocal(query);
 			adapter.loadLocal(startAt);
-			/* FUTURE
+			
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
 			adapter.invokeInterface(Types.QUERY, GO_2);
-			*/
-			adapter.invokeInterface(Types.QUERY, GO_1);
 			
+			/* OLD
+			adapter.invokeInterface(Types.QUERY, GO_1);
+			*/
 			adapter.pop();
 			
 			

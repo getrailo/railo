@@ -136,8 +136,7 @@ public final class TagTry extends TagBase {
 	        // PageExceptionImpl old=pc.getCatch();
 	        int old=adapter.newLocal(Types.PAGE_EXCEPTION);
 	        adapter.loadArg(0);
-	        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
-	        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, GET_CATCH);
+	        adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_CATCH);
 			adapter.storeLocal(old);
 			
 			/*int obj=adapter.newLocal(Types.OBJECT);
@@ -200,11 +199,10 @@ public final class TagTry extends TagBase {
 			else{
 				// pc.setCatch(pe,true);
 				adapter.loadArg(0);
-		        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
 		        adapter.loadLocal(pe);
 		        adapter.push(false);
 		        adapter.push(true);
-		        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, SET_CATCH3);
+		        adapter.invokeVirtual(Types.PAGE_CONTEXT, SET_CATCH3);
 				
 				//throw pe;
 				adapter.loadLocal(pe);
@@ -215,9 +213,8 @@ public final class TagTry extends TagBase {
 		
 		// PageExceptionImpl old=pc.getCatch();
         adapter.loadArg(0);
-        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
         adapter.loadLocal(old);
-        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, SET_CATCH_PE);
+        adapter.invokeVirtual(Types.PAGE_CONTEXT, SET_CATCH_PE);
 			
 		tcfv.visitCatchEnd(bc);
 		
@@ -239,11 +236,10 @@ public final class TagTry extends TagBase {
 	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter,Tag tag, int pe,boolean caugth) throws BytecodeException {
 		// pc.setCatch(pe,true);
 		adapter.loadArg(0);
-        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
         adapter.loadLocal(pe);
         adapter.push(caugth);
         adapter.push(true);
-        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, SET_CATCH3);
+        adapter.invokeVirtual(Types.PAGE_CONTEXT, SET_CATCH3);
 		tag.getBody().writeOut(bc);
     	
 	}

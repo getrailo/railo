@@ -171,7 +171,9 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		}
 	}
 	
-	// FUTURE add to interface
+	/**
+	 * @see railo.runtime.db.DataSourceManager#savepoint()
+	 */
 	public void savepoint() throws DatabaseException {
 		if(autoCommit)return;
         //autoCommit=true;

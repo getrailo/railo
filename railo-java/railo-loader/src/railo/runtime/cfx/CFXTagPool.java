@@ -2,6 +2,8 @@ package railo.runtime.cfx;
 
 import java.util.Map;
 
+import railo.runtime.cfx.customtag.CFXTagClass;
+
 import com.allaire.cfx.CustomTag;
 
 /**
@@ -20,13 +22,16 @@ public interface CFXTagPool {
      * @return matching tag
      * @throws CFXTagException
      */
-    public abstract CustomTag getCustomTag(String name) throws CFXTagException;
+    public CustomTag getCustomTag(String name) throws CFXTagException;
 
+    public CFXTagClass getCFXTagClass(String name) throws CFXTagException;
+    
     /**
      * realese custom tag
      * @param ct
      */
-    public abstract void releaseCustomTag(CustomTag ct);
+    public void releaseCustomTag(CustomTag ct);
     
+    public void releaseTag(Object tag);
 
 }

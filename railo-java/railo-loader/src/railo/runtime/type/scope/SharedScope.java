@@ -1,5 +1,4 @@
-// FUTURE move to loader
-package railo.runtime.type;
+package railo.runtime.type.scope;
 
 import railo.runtime.PageContext;
 

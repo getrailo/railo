@@ -12,7 +12,7 @@ import railo.runtime.type.KeyImpl;
 /**
  * A Page that can produce Components
  */
-public abstract class InterfacePage extends PagePlus  {
+public abstract class InterfacePage extends Page  {
 	
 	//private static final railo.runtime.type.Collection.Key FIELDNAMES = KeyImpl.getInstance("fieldnames");
 	private static final railo.runtime.type.Collection.Key METHOD = KeyImpl.getInstance("method");

@@ -18,7 +18,6 @@ import railo.runtime.type.CastableStruct;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -52,8 +51,6 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
 	private int id=0;
     private static final byte[] EMPTY="".getBytes();
 	
-    public static final int SCOPE_VAR=15; // FUTURE add to interface Scope
-    public static final int SCOPE_COUNT=16;
 	
 	/**
 	 * Field <code>isInit</code>
@@ -267,21 +264,21 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
     }*/
     
     /**
-	 * @see railo.runtime.type.Scope#isInitalized()
+	 * @see railo.runtime.type.scope.Scope#isInitalized()
 	 */
 	public boolean isInitalized() {
 		return isInit;
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void initialize(PageContext pc) {
         isInit=true;
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#release()
+	 * @see railo.runtime.type.scope.Scope#release()
 	 */
 	public void release() {
 		clear();
@@ -305,14 +302,14 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
     }
     
     /**
-     * @see railo.runtime.type.Scope#getType()
+     * @see railo.runtime.type.scope.Scope#getType()
      */
     public int getType() {
         return type;
     }
     
     /**
-     * @see railo.runtime.type.Scope#getTypeAsString()
+     * @see railo.runtime.type.scope.Scope#getTypeAsString()
      */
     public String getTypeAsString() {
         return name;

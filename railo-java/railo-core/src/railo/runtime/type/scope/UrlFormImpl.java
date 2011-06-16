@@ -31,7 +31,7 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 	}
 	
 	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void initialize(PageContext pc) {
 		if(isInit) return;
@@ -48,7 +48,7 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 	}
 	/**
 	 *
-	 * @see railo.runtime.type.Scope#release()
+	 * @see railo.runtime.type.scope.Scope#release()
 	 */
 	public void release() {
 		isInit=false;
@@ -90,7 +90,7 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 
 	/**
 	 *
-	 * @see railo.runtime.type.Scope#getType()
+	 * @see railo.runtime.type.scope.Scope#getType()
 	 */
 	public int getType() {
 		return form.getType();
@@ -98,7 +98,7 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 
 	/**
 	 *
-	 * @see railo.runtime.type.Scope#getTypeAsString()
+	 * @see railo.runtime.type.scope.Scope#getTypeAsString()
 	 */
 	public String getTypeAsString() {
 		return form.getTypeAsString();
@@ -106,7 +106,7 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 
 	/**
 	 *
-	 * @see railo.runtime.type.Scope#isInitalized()
+	 * @see railo.runtime.type.scope.Scope#isInitalized()
 	 */
 	public boolean isInitalized() {
 		return isInit;

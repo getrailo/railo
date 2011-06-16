@@ -11,8 +11,8 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
-import railo.runtime.type.Scope;
 import railo.runtime.type.ref.VariableReference;
+import railo.runtime.type.scope.Scope;
 
 public class ValueList implements Function {
 	public static String call(PageContext pc , String strQueryColumn) throws PageException {

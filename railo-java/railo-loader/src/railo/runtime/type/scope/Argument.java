@@ -5,7 +5,6 @@ import java.util.Set;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Scope;
 
 /**
  * interface for Argument scope

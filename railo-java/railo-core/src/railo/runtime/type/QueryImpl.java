@@ -1120,7 +1120,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 
 	/**
 	 * @see railo.runtime.type.Iterator#getCurrentrow()
-	 * FUTURE set this to deprectaed
 	 */
 	public int getCurrentrow() {
 		return getCurrentrow(getPid());
@@ -1143,7 +1142,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<columnNames.length;i++) {
 			if(i>0)sb.append(',');
-			sb.append(upperCase?columnNames[i].getString().toUpperCase():columnNames[i].getString());// FUTURE getUpperString
+			sb.append(upperCase?columnNames[i].getUpperString():columnNames[i].getString());
 		}
 		return sb.toString();
 	}

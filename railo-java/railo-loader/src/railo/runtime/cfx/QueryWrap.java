@@ -27,6 +27,7 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 
 import com.allaire.cfx.Query;
@@ -79,8 +80,6 @@ public class QueryWrap implements Query {
 		return rst.getColumns();
 	}
 	
-	/*
-	FUTURE
 	public Collection.Key[] getColumnNames() {
     	return rst.getColumnNames();
     }
@@ -88,7 +87,7 @@ public class QueryWrap implements Query {
 
 	public String[] getColumnNamesAsString() {
 		return rst.getColumnNamesAsString();
-	}*/
+	}
 
 	/**
 	 * @see com.allaire.cfx.Query#getData(int, int)

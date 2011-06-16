@@ -11,7 +11,7 @@ import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ReadOnlyStruct;
-import railo.runtime.type.SharedScope;
+import railo.runtime.type.scope.SharedScope;
 import railo.runtime.type.dt.DateTimeImpl;
 
 

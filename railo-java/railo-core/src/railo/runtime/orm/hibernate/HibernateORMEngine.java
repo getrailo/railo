@@ -714,7 +714,7 @@ public class HibernateORMEngine implements ORMEngine {
 				String path=cfcName.replace('.', '/')+".cfc";
 				Resource[] locations = ormConf.getCfcLocations();
 				for(int i=0;i<locations.length;i++){
-					if(locations[i].getRealResource(path).equals(cfc.getPageSource().getFile()))
+					if(locations[i].getRealResource(path).equals(cfc.getPageSource().getResource()))
 						return true;
 				}
 				return false;

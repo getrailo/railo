@@ -8,7 +8,7 @@ import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.security.CredentialImpl;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.Scope;
 
 /**
  * 

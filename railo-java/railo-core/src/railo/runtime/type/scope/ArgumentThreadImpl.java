@@ -82,36 +82,37 @@ public class ArgumentThreadImpl implements Argument,Sizeable {
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#getType()
+	 * @see railo.runtime.type.scope.Scope#getType()
 	 */
 	public int getType() {
 		return SCOPE_ARGUMENTS;
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#getTypeAsString()
+	 * @see railo.runtime.type.scope.Scope#getTypeAsString()
 	 */
 	public String getTypeAsString() {
 		return "arguments";
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void initialize(PageContext pc) {
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#isInitalized()
+	 * @see railo.runtime.type.scope.Scope#isInitalized()
 	 */
 	public boolean isInitalized() {
 		return true;
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#release()
+	 * @see railo.runtime.type.scope.Scope#release()
 	 */
 	public void release() {}
+	public void release(PageContext pc) {}
 
 	/**
 	 * @see railo.runtime.type.Collection#clear()

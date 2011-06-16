@@ -55,7 +55,7 @@ import railo.runtime.interpreter.ref.var.Assign;
 import railo.runtime.interpreter.ref.var.Bind;
 import railo.runtime.interpreter.ref.var.DynAssign;
 import railo.runtime.interpreter.ref.var.Variable;
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;

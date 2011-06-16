@@ -30,10 +30,10 @@ public final class TagOutput extends TagBase {
 	public static final int TYPE_NORMAL= 4;
 	
 	// int getCurrentrow()
-	public static final Method GET_CURRENTROW = new Method(
+	/*public static final Method GET_CURRENTROW_1 = new Method(
 			"getCurrentrow",
 			Types.INT_VALUE,
-			new Type[]{});
+			new Type[]{Types.INT_VALUE});*/
 
 	// Undefined us()
 	public static final Type UNDEFINED = Type.getType(Undefined.class);
@@ -252,13 +252,14 @@ public final class TagOutput extends TagBase {
 			adapter.loadLocal(query);
 			adapter.loadLocal(numberIterator);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-			/* FUTURE
+			
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
 			adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
-			*/
-			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
 			
+			/* OLD
+			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
+			*/
 			NotVisitor.visitNot(bc);
 			Label _if=new Label();
 			adapter.ifZCmp(Opcodes.IFEQ, _if);
@@ -325,13 +326,13 @@ public final class TagOutput extends TagBase {
 		//query.go(ni.current(),pc.getId())
 		adapter.loadLocal(query);
 		adapter.loadLocal(current);
-		/* FUTURE
 		adapter.loadArg(0);
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
 		adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
-		*/
-		adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
 		
+		/* FUTURE
+		adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
+		*/
 		adapter.pop();
 		
 	}
@@ -365,13 +366,14 @@ public final class TagOutput extends TagBase {
 			adapter.loadLocal(query);
 			adapter.loadLocal(numberIterator);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-			/*FUTURE
+			
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
 			adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
-			*/
-			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
 			
+			/*OLD
+			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
+			*/
 			NotVisitor.visitNot(bc);
 			Label _if=new Label();
 			adapter.ifZCmp(Opcodes.IFEQ, _if);
@@ -434,13 +436,14 @@ public final class TagOutput extends TagBase {
 			adapter.loadLocal(query);
 			adapter.loadLocal(numberIterator);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-			/* FUTURE
+			
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
 			adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
-			*/
-			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
 			
+			/* OLD
+			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
+			*/
 			NotVisitor.visitNot(bc);
 			Label _if=new Label();
 			adapter.ifZCmp(Opcodes.IFEQ, _if);
@@ -516,13 +519,13 @@ public final class TagOutput extends TagBase {
 		int startAt=adapter.newLocal(Types.INT_VALUE);
 		adapter.loadLocal(query);
 		
-		/* FUTURE
 		adapter.loadArg(0);
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
-		adapter.invokeInterface(Types.QUERY_IMPL, TagLoop.GET_CURRENTROW_1);
-		*/
-		adapter.invokeInterface(Types.QUERY, TagLoop.GET_CURRENTROW_0);
+		adapter.invokeInterface(Types.QUERY, TagLoop.GET_CURRENTROW_1);
 		
+		/* OLD
+		adapter.invokeInterface(Types.QUERY, TagLoop.GET_CURRENTROW_0);
+		*/
 		adapter.storeLocal(startAt);
 		
 		
@@ -609,13 +612,14 @@ public final class TagOutput extends TagBase {
 					adapter.loadLocal(query);
 					adapter.loadLocal(numberIterator);
 					adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-					/* FUTURE
+					
 					adapter.loadArg(0);
 					adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
 					adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
-					*/
-					adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
 					
+					/* OLD
+					adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
+					*/
 					NotVisitor.visitNot(bc);
 					Label _if=new Label();
 					adapter.ifZCmp(Opcodes.IFEQ, _if);
@@ -683,13 +687,14 @@ public final class TagOutput extends TagBase {
 				// query.go(startAt);
 				adapter.loadLocal(query);
 				adapter.loadLocal(startAt);
-				/* FUTURE
+				
 				adapter.loadArg(0);
 				adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
 				adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
-				*/
-				adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
 				
+				/* FUTURE
+				adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
+				*/
 				adapter.pop();
 				
 				

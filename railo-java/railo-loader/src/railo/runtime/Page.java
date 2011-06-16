@@ -2,13 +2,15 @@ package railo.runtime;
 
 import java.io.Serializable;
 
+import railo.runtime.component.ImportDefintion;
 import railo.runtime.type.UDF;
 
 /**
  * abstract Method for all generated Page Object
  */
 public abstract class Page implements Serializable{
-	
+
+	private static final ImportDefintion[] ZERO=new ImportDefintion[0];
     /**
      * Field <code>FALSE</code>
      */
@@ -35,7 +37,9 @@ public abstract class Page implements Serializable{
 	 * @param pc PageContext 
 	 * @throws Throwable
 	 */
-	public abstract void call(PageContext pc) throws Throwable;
+	public void call(PageContext pc) throws Throwable{
+		
+	}
 
 	
 	/**
@@ -87,4 +91,9 @@ public abstract class Page implements Serializable{
 		return null;
 	}
 
+
+
+	public ImportDefintion[] getImportDefintions() {
+		return ZERO;
+	}
 }

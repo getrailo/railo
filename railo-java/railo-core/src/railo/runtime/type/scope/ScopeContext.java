@@ -35,7 +35,6 @@ import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.client.ClientCache;
@@ -198,8 +197,8 @@ public final class ScopeContext {
 	}
 	
 	
-	public ClientPlus getClientScope(PageContext pc) throws PageException {
-		ClientPlus client=null;
+	public Client getClientScope(PageContext pc) throws PageException {
+		Client client=null;
 		ApplicationContext appContext = (ApplicationContext) pc.getApplicationContext(); 
 		// get Context
 			Map context=getSubMap(cfClientContextes,appContext.getName());
@@ -223,7 +222,7 @@ public final class ScopeContext {
 			}
 			
 			final boolean doMemory=isMemory || !appContext.getClientCluster();
-			client=doMemory?(ClientPlus) context.get(pc.getCFID()):null;
+			client=doMemory?(Client) context.get(pc.getCFID()):null;
 			if(client==null || client.isExpired() || !client.getStorage().equalsIgnoreCase(storage)) {
 				if("file".equals(storage)){
 					client=ClientFile.getInstance(appContext.getName(),pc,getLog());
@@ -261,7 +260,7 @@ public final class ScopeContext {
 			return client;
 	}
 	
-	public ClientPlus getClientScopeEL(PageContext pc) {
+	public Client getClientScopeEL(PageContext pc) {
 		try {
 			return getClientScope(pc);
 		} catch (PageException pe) {
@@ -422,7 +421,7 @@ public final class ScopeContext {
 	 * @return session matching the context
 	 * @throws PageException
 	 */
-	public SessionPlus getSessionScope(PageContext pc,RefBoolean isNew) throws PageException {
+	public Session getSessionScope(PageContext pc,RefBoolean isNew) throws PageException {
         if(((ApplicationContext)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_CFML)return getCFSessionScope(pc,isNew);
 		return getJSessionScope(pc,isNew);
 	}
@@ -437,7 +436,7 @@ public final class ScopeContext {
 		String storage = ac.getSessionstorage();
 		
 		Map context=getSubMap(cfSessionContextes,ac.getName());
-		SessionPlus session=(SessionPlus) context.get(pc.getCFID());
+		Session session=(Session) context.get(pc.getCFID());
 		if(!(session instanceof StorageScope)) return false;
 		
 		
@@ -469,7 +468,7 @@ public final class ScopeContext {
 			
 			
 			
-			SessionPlus session=(SessionPlus) context.get(pc.getCFID());
+			Session session=(Session) context.get(pc.getCFID());
 			
 			if(!(session instanceof StorageScope) || session.isExpired() || !((StorageScope)session).getStorage().equalsIgnoreCase(storage)) {
 				
@@ -499,7 +498,7 @@ public final class ScopeContext {
 	 * @return cf session matching the context
 	 * @throws PageException 
 	 */
-	private synchronized SessionPlus getCFSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
+	private synchronized Session getCFSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
 		
 		ApplicationContext appContext = (ApplicationContext) pc.getApplicationContext(); 
 		// get Context
@@ -525,7 +524,7 @@ public final class ScopeContext {
 			}
 			
 			final boolean doMemory=isMemory || !appContext.getSessionCluster();
-			SessionPlus session=doMemory?appContext.getSessionCluster()?null:(SessionPlus) context.get(pc.getCFID()):null;
+			Session session=doMemory?appContext.getSessionCluster()?null:(Session) context.get(pc.getCFID()):null;
 			if(!(session instanceof StorageScope) || session.isExpired() || !((StorageScope)session).getStorage().equalsIgnoreCase(storage)) {
 				
 				if(isMemory){
@@ -581,7 +580,7 @@ public final class ScopeContext {
 	 * @return j session matching the context
 	 * @throws PageException
 	 */
-	private synchronized SessionPlus getJSessionScope(PageContext pc, RefBoolean isNew) {
+	private synchronized Session getJSessionScope(PageContext pc, RefBoolean isNew) {
         HttpSession httpSession=pc.getSession();
         ApplicationContext appContext = pc.getApplicationContext(); 
         Object session=null;// this is from type object, because it is possible that httpSession return object from prior restart

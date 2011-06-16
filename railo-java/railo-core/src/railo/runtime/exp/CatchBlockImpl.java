@@ -13,7 +13,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
 
-public class CatchBlock extends StructImpl implements Castable{
+public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable{
 
 	public static final Key MESSAGE = KeyImpl.getInstance("Message");
 	public static final Key DETAIL = KeyImpl.getInstance("Detail");
@@ -29,7 +29,7 @@ public class CatchBlock extends StructImpl implements Castable{
 	private SpecialItem si = new SpecialItem();
 	
 
-	public CatchBlock(Config config,PageExceptionImpl pe) {
+	public CatchBlockImpl(Config config,PageExceptionImpl pe) {
 		this.config=config;
 		this.pe=pe;
 		
@@ -83,7 +83,7 @@ public class CatchBlock extends StructImpl implements Castable{
 	 */
 	public Collection duplicate(boolean deepCopy) {
 		initAll();
-		CatchBlock trg = new CatchBlock(config,pe);
+		CatchBlockImpl trg = new CatchBlockImpl(config,pe);
 		trg.initAll();
 		StructImpl.copy(this, trg, deepCopy);
 		return trg;

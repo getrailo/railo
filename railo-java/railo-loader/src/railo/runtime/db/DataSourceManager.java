@@ -40,6 +40,8 @@ public interface DataSourceManager {
 	 * @throws DatabaseException
 	 */
 	public abstract void rollback() throws PageException;
+	
+	public abstract void savepoint() throws PageException;
 
 	/**
 	 * commit hanging transaction

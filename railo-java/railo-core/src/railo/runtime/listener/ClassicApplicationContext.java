@@ -7,8 +7,8 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.net.s3.PropertiesImpl;
 import railo.runtime.orm.ORMConfiguration;
-import railo.runtime.type.Scope;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.scope.Scope;
 
 /**
  * 

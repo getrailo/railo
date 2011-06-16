@@ -1,6 +1,7 @@
-package railo.runtime.type;
+package railo.runtime.type.scope;
 
 import railo.runtime.PageContext;
+import railo.runtime.type.Struct;
 
 /**
  * abstract class for all cold fusion scopes 
@@ -69,10 +70,8 @@ public interface Scope extends Struct {
     public static final int SCOPE_CLUSTER=14;
     
 
-    // FUTURE public static final int SCOPE_VAR=15;
-    
-    
-    public static final int SCOPE_COUNT=15;
+    public static final int SCOPE_VAR=15; 
+    public static final int SCOPE_COUNT=16;
     
     
     
@@ -92,7 +91,8 @@ public interface Scope extends Struct {
 	/**
 	 * release scope for reuse
 	 */
-	public void release();// FUTURE add PageContext
+	public void release();
+	// public void release(PageContext pc);// FUTURE add PageContext
 	
     /** 
      * @return return the scope type (SCOPE_SERVER, SCOPE_SESSION usw.) 

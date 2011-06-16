@@ -2,14 +2,14 @@ package railo.runtime.component;
 
 import railo.commons.lang.StringUtil;
 
-public class ImportDefintion {
+public class ImportDefintionImpl implements ImportDefintion {
 
 	private String pack;
 	private String name;
 	private boolean wildcard;
 	private String packAsPath;
 
-	public ImportDefintion(String pack, String name) {
+	public ImportDefintionImpl(String pack, String name) {
 		this.pack=pack;
 		this.name=name;
 		this.wildcard=name.equals("*");
@@ -24,7 +24,7 @@ public class ImportDefintion {
 		if(StringUtil.isEmpty(p) || StringUtil.isEmpty(n))
 			return defaultValue;
 		
-		return new ImportDefintion(p,n);
+		return new ImportDefintionImpl(p,n);
 	}
 
 	/**

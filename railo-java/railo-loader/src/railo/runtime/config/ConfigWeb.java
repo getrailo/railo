@@ -19,5 +19,5 @@ public interface ConfigWeb extends Config {
 
 	public abstract String getServerId();
 
-
+	public String getLabel();
 }

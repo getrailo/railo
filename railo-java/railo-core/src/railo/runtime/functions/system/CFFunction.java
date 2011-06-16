@@ -83,7 +83,7 @@ public class CFFunction {
 		
 		Mapping mapping=isweb?config.getFunctionMapping():config.getServerFunctionMapping();
     	PageSourceImpl ps = (PageSourceImpl) mapping.getPageSource(filename);
-    	Page p = ps.loadPage(pc,pc.getConfig());	
+    	Page p = ps.loadPage(pc);	
 		
     	
     	// execute page

@@ -99,26 +99,12 @@ public final class ExpressionUtil {
     	try{
 	    	GeneratorAdapter adapter = bc.getAdapter();
 	    	adapter.loadArg(0);
-	        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
 	        adapter.push(line);
-		    adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, END_LINE);
+		    adapter.invokeVirtual(Types.PAGE_CONTEXT, END_LINE);
 			
 		}
 		catch(Throwable t) {
 			t.printStackTrace();
 		}		
 	}
-  
-    /*public static void writeLogEnd(BytecodeContext bc) {
-    	if(!bc.writeLog())return;
-		try{
-	    	GeneratorAdapter adapter = bc.getAdapter();
-	    	adapter.loadArg(0);
-	        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
-	        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, END);
-		}
-		catch(Throwable t) {
-			t.printStackTrace();
-		}		
-	}*/
 }

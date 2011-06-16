@@ -5,8 +5,11 @@ import java.util.List;
 
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.config.Config;
 import railo.runtime.db.SQL;
 import railo.runtime.dump.Dumpable;
+import railo.runtime.exp.CatchBlock;
+import railo.runtime.exp.PageException;
 import railo.runtime.type.Struct;
 
 /**
@@ -87,6 +90,6 @@ public interface Debugger extends Dumpable {
 
 	public abstract DebugTrace[] getTraces();
 
-	// FUTURE public abstract void addException(PageException exception);
-
+	public abstract void addException(Config config,PageException pe);
+	public CatchBlock[] getExceptions();
 }

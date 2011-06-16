@@ -1,11 +1,12 @@
 package railo.runtime.type.scope;
 
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.storage.StorageScope;
+
 
 /**
  * Interface of the scope client
  */
-public interface Client extends Scope { 
+public interface Client extends Scope,SharedScope,StorageScope { 
 
     
 	/**

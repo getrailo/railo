@@ -60,6 +60,7 @@ import railo.runtime.cache.CacheConnection;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.cfx.customtag.CFXTagPoolImpl;
 import railo.runtime.component.ImportDefintion;
+import railo.runtime.component.ImportDefintionImpl;
 import railo.runtime.customtag.InitFile;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnectionPool;
@@ -360,7 +361,7 @@ public abstract class ConfigImpl implements Config {
 	private ORMConfiguration ormConfig;
 	private ResourceClassLoaderFactory classLoaderFactory;
 	
-	private ImportDefintion componentDefaultImport=new ImportDefintion("org.railo.cfml","*");
+	private ImportDefintion componentDefaultImport=new ImportDefintionImpl("org.railo.cfml","*");
 	private boolean componentLocalSearch=true;
 	private boolean componentRootSearch=true;
 	private LogAndSource mappingLogger;
@@ -631,7 +632,9 @@ public abstract class ConfigImpl implements Config {
     	return classLoaderFactory.getResourceClassLoader();   
     }
 
-    // FUTURE add to interface
+    /**
+     * @see railo.runtime.config.Config#getClassLoader(railo.commons.io.res.Resource[])
+     */
     public ClassLoader getClassLoader(Resource[] reses) throws IOException {
     	return classLoaderFactory.getResourceClassLoader(reses);   
     }
@@ -3217,7 +3220,7 @@ public abstract class ConfigImpl implements Config {
 		
 		PageSource ps = componentPathCache.get(pathWithCFC.toLowerCase());
 		if(ps==null) return null;
-		return ((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+		return ((PageSourceImpl)ps).loadPage(pc,null);
 	}
 	
 	public void putCachedPageSource(String pathWithCFC,PageSource ps) {
@@ -3297,7 +3300,7 @@ public abstract class ConfigImpl implements Config {
 		return componentDefaultImport;
 	}
 	protected void setComponentDefaultImport(String str) {
-		ImportDefintion cdi = ImportDefintion.getInstance(str, null);
+		ImportDefintion cdi = ImportDefintionImpl.getInstance(str, null);
 		if(cdi!=null)this.componentDefaultImport= cdi;
 	}
 

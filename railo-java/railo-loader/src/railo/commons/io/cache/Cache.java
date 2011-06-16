@@ -52,7 +52,7 @@ public interface Cache {
 	 * puts a cache entry to the cache, overwrite existing entries that already exists inside the cache with the same key
 	 * @param value
 	 */
-	public void put(String key, Object value,Long idleTime,Long until);//FUTURE throws IOException;
+	public void put(String key, Object value,Long idleTime,Long until);
 	
 	/**
 	 * check if there is a entry inside the cache that match the given key
@@ -179,7 +179,7 @@ public interface Cache {
 	/**
 	 * removes the cache coplitly
 	 */
-	// FUTURE public void remove() throws IOException; or better clear()
+	// FUTURE public void remove() throws IOException; //or better clear()
 	
 	// FUTURE public void verify() throws IOException;
 

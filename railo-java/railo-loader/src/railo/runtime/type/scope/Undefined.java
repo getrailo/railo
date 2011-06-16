@@ -3,7 +3,6 @@ package railo.runtime.type.scope;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
-import railo.runtime.type.Scope;
 import railo.runtime.util.QueryStack;
 
 /**

@@ -1,6 +1,6 @@
 package railo.runtime.type.scope.storage;
 
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.Scope;
 
 public interface MemoryScope extends Scope {
 	/**

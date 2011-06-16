@@ -50,7 +50,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     private Resource archiveSource;
     private String fileName;
     private String compName;
-    private PagePlus page;
+    private Page page;
 	private long lastAccess;	
 	private int accessCount=0;
     private boolean recompileAlways;
@@ -103,15 +103,6 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		this.realPath=realPath;
 		
 	}
-
-	
-	/**
-     * @see railo.runtime.PageSource#loadPage(railo.runtime.PageContext)
-     */
-	public Page loadPage(ConfigWeb config) throws PageException {
-		return loadPage(null,config);
-	}
-	
 	
 	/**
 	 * return page when already loaded, otherwise null
@@ -123,48 +114,57 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	public Page getPage() {
 		return page;
 	}
+
 	
-	// FUTURE add to interface without config
-	public Page loadPage(PageContext pc,ConfigWeb config) throws PageException {
-		PagePlus page=this.page;
+	/**
+     * @see railo.runtime.PageSource#loadPage(railo.runtime.PageContext)
+     */
+	public Page loadPage(ConfigWeb config) throws PageException {
+		return loadPage(ThreadLocalPageContext.get());
+	}
+
+	/**
+	 * @see railo.runtime.PageSource#loadPage(railo.runtime.PageContext, railo.runtime.Page)
+	 */
+	public Page loadPage(ConfigWeb config, Page defaultValue) throws PageException {
+		return loadPage(ThreadLocalPageContext.get(), defaultValue);
+	}
+	
+	public Page loadPage(PageContext pc) throws PageException {
+		Page page=this.page;
 		if(mapping.isPhysicalFirst()) {
-			page=loadPhysical(pc,page,config);
+			page=loadPhysical(pc,page);
 			if(page==null) page=loadArchive(page); 
 	        if(page!=null) return page;
 	    }
 	    else {
 	        page=loadArchive(page);
-	        if(page==null)page=loadPhysical(pc,page,config);
+	        if(page==null)page=loadPhysical(pc,page);
 	        if(page!=null) return page;
 	    }
 		throw new MissingIncludeException(this);
 	    
 	}
 	
-
 	/**
 	 * @see railo.runtime.PageSource#loadPage(railo.runtime.PageContext, railo.runtime.Page)
 	 */
-	public Page loadPage(ConfigWeb config, Page defaultValue) throws PageException {
-		return loadPage(null,config, defaultValue);
-	}
-	
-	public Page loadPage(PageContext pc,ConfigWeb config, Page defaultValue) throws PageException {
-		PagePlus page=this.page;
+	public Page loadPage(PageContext pc, Page defaultValue) throws PageException {
+		Page page=this.page;
 		if(mapping.isPhysicalFirst()) {
-	        page=loadPhysical(pc,page,config);
+	        page=loadPhysical(pc,page);
 	        if(page==null) page=loadArchive(page); 
 	        if(page!=null) return page;
 	    }
 	    else {
 	        page=loadArchive(page);
-	        if(page==null)page=loadPhysical(pc,page,config);
+	        if(page==null)page=loadPhysical(pc,page);
 	        if(page!=null) return page;
 	    }
 	    return defaultValue;
 	}
 	
-    private PagePlus loadArchive(PagePlus page) {
+    private Page loadArchive(Page page) {
     	if(!mapping.hasArchive()) return null;
 		if(page!=null) return page;
         
@@ -186,11 +186,10 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     }
     
 
-    private PagePlus loadPhysical(PageContext pc,PagePlus page, ConfigWeb config) throws PageException {
+    private Page loadPhysical(PageContext pc,Page page) throws PageException {
     	if(!mapping.hasPhysical()) return null;
     	
-    	// FUTURE change interface loadPage to PageContext
-    	pc=ThreadLocalPageContext.get(pc);
+    	ConfigWeb config=pc.getConfig();
     	PageContextImpl pci=(PageContextImpl) pc;
     	//if(pc.isPageAlreadyUsed(page)) return page;
     	
@@ -269,7 +268,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	}
     
 
-	private synchronized PagePlus compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws PageException {
+	private synchronized Page compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws PageException {
     	try {
             ConfigWebImpl cwi=(ConfigWebImpl) config;
             byte[] barr = cwi.getCompiler().
@@ -300,16 +299,16 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         }
     }
 
-    private PagePlus newInstance(Class clazz) throws SecurityException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+    private Page newInstance(Class clazz) throws SecurityException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
     	try{
 			Constructor c = clazz.getConstructor(new Class[]{PageSource.class});
-			return (PagePlus) c.newInstance(new Object[]{this});
+			return (Page) c.newInstance(new Object[]{this});
 		}
     	// this only happens with old code from ra files
 		catch(NoSuchMethodException e){
 			ThreadLocalPageSource.register(this);
 			try{
-				return (PagePlus) clazz.newInstance();
+				return (Page) clazz.newInstance();
 			}
 			finally {
 				ThreadLocalPageSource.release();
@@ -757,6 +756,13 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
      * @see railo.runtime.SourceFile#getFile()
      */
     public Resource getFile() {
+    	return getResource();
+    }
+    
+    /**
+     * @see railo.runtime.SourceFile#getResource()
+     */
+    public Resource getResource() {
     	Resource res = getPhyscalFile();
     	if(res!=null) return res;
     	return getArchiveFile();

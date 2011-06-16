@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.objectweb.asm.Type;
 
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeFactory;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;

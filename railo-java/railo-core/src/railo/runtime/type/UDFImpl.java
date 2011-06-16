@@ -545,16 +545,10 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	public String getHint() {
 		return properties.hint;
 	}
-    /**
-     * @see railo.runtime.type.UDF#getPage()
-     * @deprecated use instead getPageSource()
-     */
-    public Page getPage() {
-    	throw new PageRuntimeException(new DeprecatedException("method getPage():Page is no longer suppoted, use instead getPageSource():PageSource"));
-        //return properties.page;
-    }
     
-    // FUTURE add to interface
+    /**
+     * @see railo.runtime.type.UDF#getPageSource()
+     */
     public PageSource getPageSource() {
         return properties.pageSource;
     }
@@ -671,13 +665,11 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	 * @param injected 
 	 */
 	public void setOwnerComponent(ComponentImpl component) {
-		//print.err("setOwnerComponent("+this.hashCode()+"-"+component.hashCode()+"):"+component.getPage().getPageSource().getDisplayPath());
 		this.ownerComponent = component;
 	}
 	
 	/**
 	 * @see railo.runtime.type.UDF#getOwnerComponent()
-	// FUTURE deprecated
 	 */
 	public Component getOwnerComponent() {
 		return ownerComponent;//+++
@@ -814,8 +806,6 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		else throw new ExpressionException("invalid returnFormat definition, valid values are [wddx,plain,json,serialize]");
 	}
 	
-	
-	// FUTURE move to interface
 	public static String toReturnFormat(int returnFormat,String defaultValue) {
 		if(RETURN_FORMAT_WDDX==returnFormat)		return "wddx";
 		else if(RETURN_FORMAT_JSON==returnFormat)	return "json";

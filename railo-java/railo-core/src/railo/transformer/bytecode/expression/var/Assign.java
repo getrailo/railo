@@ -4,7 +4,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeFactory;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.transformer.bytecode.BytecodeContext;
@@ -176,8 +176,7 @@ public class Assign extends ExpressionBase {
     	if(doOnlyScope){
     		adapter.loadArg(0);
     		if(variable.scope==Scope.SCOPE_LOCAL){
-    			adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
-    			return TypeScope.invokeScope(adapter, TypeScope.METHOD_LOCAL_TOUCH,Types.PAGE_CONTEXT_IMPL);
+    			return TypeScope.invokeScope(adapter, TypeScope.METHOD_LOCAL_TOUCH,Types.PAGE_CONTEXT);
     		}
     		return TypeScope.invokeScope(adapter, variable.scope);
     	}
@@ -214,9 +213,8 @@ public class Assign extends ExpressionBase {
 		if(variable.scope==Scope.SCOPE_ARGUMENTS) {
 			adapter.loadArg(0);
 			TypeScope.invokeScope(adapter, Scope.SCOPE_ARGUMENTS);
-			adapter.checkCast(TypeScope.SCOPE_ARGUMENT_IMPL);
 			value.writeOut(bc, MODE_REF);
-			adapter.invokeVirtual(TypeScope.SCOPE_ARGUMENT_IMPL,SET_ARGUMENT);
+			adapter.invokeVirtual(TypeScope.SCOPE_ARGUMENT,SET_ARGUMENT);
 		}
 		else {
 			adapter.loadArg(0);

@@ -36,28 +36,28 @@ public final class ComponentScopeThis extends StructSupport implements Component
     }
 
     /**
-     * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+     * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
      */
     public void initialize(PageContext pc) {
         
     }
 
     /**
-     * @see railo.runtime.type.Scope#release()
+     * @see railo.runtime.type.scope.Scope#release()
      */
     public void release() {
         
     }
 
     /**
-     * @see railo.runtime.type.Scope#getType()
+     * @see railo.runtime.type.scope.Scope#getType()
      */
     public int getType() {
         return SCOPE_VARIABLES;
     }
 
     /**
-     * @see railo.runtime.type.Scope#getTypeAsString()
+     * @see railo.runtime.type.scope.Scope#getTypeAsString()
      */
     public String getTypeAsString() {
         return "variables";

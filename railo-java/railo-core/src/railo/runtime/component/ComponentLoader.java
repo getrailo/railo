@@ -15,7 +15,7 @@ import railo.runtime.MappingImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
-import railo.runtime.PagePlus;
+import railo.runtime.Page;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.config.ConfigImpl;
@@ -50,11 +50,10 @@ public class ComponentLoader {
     	String pathWithCFC=path.concat(".cfc");
     	boolean isRealPath=!StringUtil.startsWith(pathWithCFC,'/');
     	PageSource currPS = pc.getCurrentPageSource();
-    	Page currP=((PageSourceImpl)currPS).loadPage(pc,pc.getConfig(),null);
+    	Page currP=((PageSourceImpl)currPS).loadPage(pc,null);
     	
     	PageSource ps=null;
     	Page page=null;
-	    PagePlus pp=(currP instanceof PagePlus)?(PagePlus) currP:null;
     	
 	    if(searchLocal==null)
 	    	searchLocal=Caster.toBoolean(config.getComponentLocalSearch());
@@ -77,7 +76,7 @@ public class ComponentLoader {
     	// check import cache
     	if(doCache && isRealPath){
     		ImportDefintion impDef = config.getComponentDefaultImport();
-	    	ImportDefintion[] impDefs=pp==null?new ImportDefintion[0]:pp.getImportDefintions();
+	    	ImportDefintion[] impDefs=currP.getImportDefintions();
 	    	int i=-1;
 	    	do{
 	    		
@@ -109,7 +108,7 @@ public class ComponentLoader {
     		// check realpath
 	    	ps=pc.getRelativePageSource(pathWithCFC);
     		if(ps!=null) {
-				page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+				page=((PageSourceImpl)ps).loadPage(pc,null);
 
 				if(page!=null){
 					if(doCache)config.putCachedPageSource(localCacheName, page.getPageSource());
@@ -126,7 +125,7 @@ public class ComponentLoader {
     	if(isRealPath){
 
     		ImportDefintion impDef = config.getComponentDefaultImport();
-	    	ImportDefintion[] impDefs=pp==null?new ImportDefintion[0]:pp.getImportDefintions();
+	    	ImportDefintion[] impDefs=currP.getImportDefintions();
 	    	
     		
 	    	int i=-1;
@@ -137,7 +136,7 @@ public class ComponentLoader {
 	    			if(searchLocal){
 		    			ps=pc.getRelativePageSource(impDef.getPackageAsPath()+pathWithCFC);
 		    			//print.o("ps1:"+ps.getDisplayPath());
-			    		page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+			    		page=((PageSourceImpl)ps).loadPage(pc,null);
 			    		if(page!=null)	{
 			    			if(doCache)config.putCachedPageSource("import:"+impDef.getPackageAsPath()+pathWithCFC, page.getPageSource());
 			    			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
@@ -161,7 +160,7 @@ public class ComponentLoader {
 	    			
 	    			// search mappings and webroot
 	    	    	ps=((PageContextImpl)pc).getPageSource("/"+impDef.getPackageAsPath()+pathWithCFC);
-	    	    	page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+	    	    	page=((PageSourceImpl)ps).loadPage(pc,null);
 	    	    	if(page!=null){
 	    	    		String key=impDef.getPackageAsPath()+pathWithCFC;
 	    	    		//app-if(((MappingImpl)ps.getMapping()).isAppMapping())key=appName+":"+key;
@@ -176,7 +175,7 @@ public class ComponentLoader {
 		        	for(int y=0;y<cMappings.length;y++){
 		        		m=cMappings[y];
 		        		ps=m.getPageSource(impDef.getPackageAsPath()+pathWithCFC);
-		        		page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+		        		page=((PageSourceImpl)ps).loadPage(pc,null);
 			    		if(page!=null)	{    
 			    			if(doCache)config.putCachedPageSource("import:"+impDef.getPackageAsPath()+pathWithCFC, page.getPageSource());
 			    			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
@@ -212,7 +211,7 @@ public class ComponentLoader {
     	
     	// search mappings and webroot
     	ps=((PageContextImpl)pc).getPageSource(p);
-    	page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+    	page=((PageSourceImpl)ps).loadPage(pc,null);
     	if(page!=null){
     		//app-String key=((MappingImpl)ps.getMapping()).isAppMapping()?":"+appName+":"+pathWithCFC:pathWithCFC;
     		String key=pathWithCFC;
@@ -225,7 +224,7 @@ public class ComponentLoader {
     	for(int i=0;i<cMappings.length;i++){
     		m=cMappings[i];
     		ps=m.getPageSource(p);
-    		page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+    		page=((PageSourceImpl)ps).loadPage(pc,null);
     		
     		if(page!=null){
     			if(doCache)config.putCachedPageSource(pathWithCFC, page.getPageSource());
@@ -262,7 +261,7 @@ public class ComponentLoader {
 	    if(searchLocal && isRealPath.toBooleanValue()){
 	    	ps=pc.getRelativePageSource(path);
 		    if(ps==null) return null;
-		    page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+		    page=((PageSourceImpl)ps).loadPage(pc,null);
 	    }
 	    // search from root
 	    if(page==null) {
@@ -273,7 +272,7 @@ public class ComponentLoader {
 	    	else {
 	    		ps=pc.getPageSource(path);
 	    	}
-    	    page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+    	    page=((PageSourceImpl)ps).loadPage(pc,null);
         }
     	return page;
 	}
@@ -313,7 +312,7 @@ public class ComponentLoader {
             try {
             	debugEntry.updateFileLoadTime((int)(System.currentTimeMillis()-time));
             	exeTime=System.currentTimeMillis();
-                if(page==null)page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig());
+                if(page==null)page=((PageSourceImpl)ps).loadPage(pc);
             	rtn=initComponent(pc,page,callPath,isRealPath);
                 
                 
@@ -329,7 +328,7 @@ public class ComponentLoader {
         else {
             pc.addPageSource(ps,true);
             try {   
-            	if(page==null)page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig());
+            	if(page==null)page=((PageSourceImpl)ps).loadPage(pc);
             	rtn=initComponent(pc,page,callPath,isRealPath);
             }
             finally {
@@ -352,7 +351,7 @@ public class ComponentLoader {
             try {
                 debugEntry.updateFileLoadTime((int)(System.currentTimeMillis()-time));
                 exeTime=System.currentTimeMillis();
-            	if(page==null)page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig());
+            	if(page==null)page=((PageSourceImpl)ps).loadPage(pc);
             	rtn=initInterface(pc,page,callPath,isRealPath,interfaceUDFs);
             }
             finally {
@@ -366,7 +365,7 @@ public class ComponentLoader {
         else {
             pc.addPageSource(ps,true);
             try {   
-            	if(page==null)page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig());
+            	if(page==null)page=((PageSourceImpl)ps).loadPage(pc);
             	rtn=initInterface(pc,page,callPath,isRealPath,interfaceUDFs);
             }
             finally {
