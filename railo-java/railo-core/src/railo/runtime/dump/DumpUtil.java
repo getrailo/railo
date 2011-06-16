@@ -319,7 +319,7 @@ public class DumpUtil {
 			
 			// Fields
 			Field[] fields=clazz.getFields();
-			DumpTable fieldDump = new DumpTable(null,"#cc9999","#ffcccc","#000000");
+			DumpTable fieldDump = new DumpTable("#cc9999","#ffcccc","#000000");
 			fieldDump.appendRow(7,new SimpleDumpData("name"),new SimpleDumpData("pattern"),new SimpleDumpData("value"));
 			for(int i=0;i<fields.length;i++) {
 				Field field = fields[i];
