@@ -16,7 +16,7 @@ import railo.runtime.type.util.StructSupport;
 /**
  * 
  */
-public final class LocalNotSupportedScope extends StructSupport implements Scope,LocalPro {
+public final class LocalNotSupportedScope extends StructSupport implements Scope,Local {
 	
 	private static final long serialVersionUID = 6670210379924188569L;
 	

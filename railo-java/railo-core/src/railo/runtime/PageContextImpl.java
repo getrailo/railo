@@ -124,8 +124,8 @@ import railo.runtime.type.scope.Cookie;
 import railo.runtime.type.scope.CookieImpl;
 import railo.runtime.type.scope.Form;
 import railo.runtime.type.scope.FormImpl;
+import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.LocalNotSupportedScope;
-import railo.runtime.type.scope.LocalPro;
 import railo.runtime.type.scope.Request;
 import railo.runtime.type.scope.RequestImpl;
 import railo.runtime.type.scope.ScopeContext;
@@ -212,7 +212,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private CGIImpl cgi=new CGIImpl();	
 	private Argument argument=new ArgumentImpl();
     private static LocalNotSupportedScope localUnsupportedScope=LocalNotSupportedScope.getInstance();
-	private LocalPro local=localUnsupportedScope;
+	private Local local=localUnsupportedScope;
 	private SessionPlus session;
 	private Server server;
 	private Cluster cluster;
@@ -1131,7 +1131,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public void setFunctionScopes(Scope local,Argument argument) {
     	// FUTURE setFunctionScopes(Local local,Argument argument)
 		this.argument=argument;
-		this.local=(LocalPro) local;
+		this.local=(Local) local;
 		undefined.setFunctionScopes(local,argument);
 	}
 	
