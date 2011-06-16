@@ -235,8 +235,8 @@ public class GlintFilter extends AbstractBufferedImageOp  implements DynFilterin
 						dstPixels[j] = PixelUtils.combinePixels( dstPixels[j], colors[k], PixelUtils.ADD );
 
 					// Diagonals
-					int xymin = Math.max( xmin2, ymin2 );
-					int xymax = Math.min( xmax2, ymax2 );
+					//int xymin = Math.max( xmin2, ymin2 );
+					//int xymax = Math.min( xmax2, ymax2 );
 					// SE
 					int count = Math.min( xmax2, ymax2 );
 					for ( int i = 1, j = index+width+1, k = 0; i <= count; i++, j += width+1, k++ )

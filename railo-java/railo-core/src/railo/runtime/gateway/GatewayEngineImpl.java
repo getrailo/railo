@@ -58,7 +58,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 
 	public void addEntry(Config config,GatewayEntry ge) throws ClassException, PageException,GatewayException {
 		String id=ge.getId().toLowerCase().trim();
-		GatewayEntry existing=(GatewayEntry) entries.get(id);
+		GatewayEntry existing=entries.get(id);
 		Gateway g=null;
 		
 		// does not exist
@@ -87,9 +87,9 @@ public class GatewayEngineImpl implements GatewayEngine {
 		return entries;
 	}
 
-	public void remove(GatewayEntry ge) throws GatewayException {
+	public void remove(GatewayEntry ge) {
 		String id=ge.getId().toLowerCase().trim();
-		GatewayEntry existing=(GatewayEntry) entries.remove(id);
+		GatewayEntry existing=entries.remove(id);
 		Gateway g=null;
 		
 		// does not exist
@@ -152,13 +152,13 @@ public class GatewayEngineImpl implements GatewayEngine {
 	public void stop(String gatewayId) throws PageException {
 		executeThread(gatewayId,GatewayThread.STOP);
 	}
-	private void stop(Gateway gateway) throws PageException {
+	private void stop(Gateway gateway) {
 		executeThread(gateway,GatewayThread.STOP);
 	}
 	
 
 
-	public synchronized void clear() throws GatewayException, PageException {
+	public synchronized void clear() {
 		Iterator<Entry<String, GatewayEntry>> it = entries.entrySet().iterator();
 		Entry<String, GatewayEntry> entry;
 		while(it.hasNext()){
@@ -183,21 +183,21 @@ public class GatewayEngineImpl implements GatewayEngine {
 	}
 	
 	private GatewayEntry getGatewayEntry(String gatewayId) throws PageException {
-		GatewayEntry ge=(GatewayEntry) entries.get(gatewayId);
+		GatewayEntry ge=entries.get(gatewayId);
 		if(ge!=null) return ge;
 		throw new ExpressionException("there is no Gateway instance with id ["+gatewayId+"]");
 	}
 	private GatewayEntry getGatewayEntry(Gateway gateway)  {
 		String gatewayId=gateway.getId();
 		// it must exist, because it only can come from here
-		return (GatewayEntry) entries.get(gatewayId);
+		return entries.get(gatewayId);
 	}
 	
 	private void executeThread(String gatewayId, int action) throws PageException {
 		new GatewayThread(this,getGateway(gatewayId),action).start();
 	}
 
-	private void executeThread(Gateway g, int action) throws PageException {
+	private void executeThread(Gateway g, int action) {
 		new GatewayThread(this,g,action).start();
 	}
 	

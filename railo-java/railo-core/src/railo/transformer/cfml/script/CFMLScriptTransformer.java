@@ -1621,7 +1621,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 				Iterator<String> it = hash.keySet().iterator();
 				
 				while(it.hasNext())	{
-					TagLibTagAttr att=(TagLibTagAttr) hash.get(it.next());
+					TagLibTagAttr att=hash.get(it.next());
 					if(att.isRequired() && !contains(attrs,att.getName()) && att.getDefaultValue()==null && !att.getName().equals(ignoreAttrReqFor))	{
 						if(!hasAttributeCollection)throw new TemplateException(data.cfml,"attribute "+att.getName()+" is required for statement "+tlt.getName());
 						if(tag!=null)tag.addMissingAttribute(att.getName(),att.getType());

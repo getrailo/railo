@@ -44,7 +44,7 @@ public final class GetBaseTagList implements Function {
         
         
         for(int i=0;i<tlds.length;i++) {
-            String ns = tlds[i].getNameSpaceAndSeparator();
+            //String ns = tlds[i].getNameSpaceAndSeparator();
             
             
             Map tags = tlds[i].getTags();

@@ -45,7 +45,7 @@ public final class JavaScriptTransformer extends CFMLExprTransformer implements 
 			sb.append(cfml.getCurrent());
 			cfml.next();
 		}
-		int endline=cfml.getLine();
+		//int endline=cfml.getLine();
 		if(cfml.isAfterLast())
 			throw new TemplateException(cfml,"missing end tag"); // TODO better error message
 		

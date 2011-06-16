@@ -79,7 +79,7 @@ public class EqualizeFilter extends WholeImageFilter  implements DynFiltering {
 		return "Colors/Equalize";
 	}
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
-		Object o;
+		//Object o;
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

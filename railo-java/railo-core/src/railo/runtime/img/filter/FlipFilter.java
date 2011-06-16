@@ -16,7 +16,6 @@ limitations under the License.
 
 package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
@@ -101,47 +100,48 @@ public class FlipFilter extends AbstractBufferedImageOp  implements DynFiltering
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
-		int type = src.getType();
-		WritableRaster srcRaster = src.getRaster();
+		//int type = src.getType();
+		//WritableRaster srcRaster = 
+        src.getRaster();
 
 		int[] inPixels = getRGB( src, 0, 0, width, height, null );
 
-		int x = 0, y = 0;
+		//int x = 0, y = 0;
 		int w = width;
 		int h = height;
 
-		int newX = 0;
-		int newY = 0;
+		//int newX = 0;
+		//int newY = 0;
 		int newW = w;
 		int newH = h;
 		switch (operation) {
 		case FLIP_H:
-			newX = width - (x + w);
+			//newX = width - (x + w);
 			break;
 		case FLIP_V:
-			newY = height - (y + h);
+			//newY = height - (y + h);
 			break;
 		case FLIP_HV:
 			newW = h;
 			newH = w;
-			newX = y;
-			newY = x;
+			//newX = y;
+			//newY = x;
 			break;
 		case FLIP_90CW:
 			newW = h;
 			newH = w;
-			newX = height - (y + h);
-			newY = x;
+			//newX = height - (y + h);
+			//newY = x;
 			break;
 		case FLIP_90CCW:
 			newW = h;
 			newH = w;
-			newX = y;
-			newY = width - (x + w);
+			//newX = y;
+			//newY = width - (x + w);
 			break;
 		case FLIP_180:
-			newX = width - (x + w);
-			newY = height - (y + h);
+			//newX = width - (x + w);
+			//newY = height - (y + h);
 			break;
 		}
 
@@ -185,7 +185,8 @@ public class FlipFilter extends AbstractBufferedImageOp  implements DynFiltering
             ColorModel dstCM = src.getColorModel();
 			dst = new BufferedImage(dstCM, dstCM.createCompatibleWritableRaster(newW, newH), dstCM.isAlphaPremultiplied(), null);
 		}
-		WritableRaster dstRaster = dst.getRaster();
+		//WritableRaster dstRaster = 
+		dst.getRaster();
 		setRGB( dst, 0, 0, newW, newH, newPixels );
 
         return dst;

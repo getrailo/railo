@@ -101,7 +101,7 @@ public class MarbleTexFilter extends PointFilter  implements DynFiltering {
 		nx /= scale * stretch;
 		ny /= scale;
 
-		int a = rgb & 0xff000000;
+		//int a = rgb & 0xff000000;
 		if (colormap != null) {
 //			float f = Noise.turbulence2(nx, ny, turbulence);
 //			f = 3*turbulenceFactor*f+ny;

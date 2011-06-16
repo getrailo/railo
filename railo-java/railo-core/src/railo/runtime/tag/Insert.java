@@ -17,7 +17,6 @@ import railo.runtime.db.SQLItemImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.listener.ApplicationContext;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -182,7 +181,7 @@ public final class Insert extends TagImpl {
 
 	public static String getDatasource(PageContext pageContext, String datasource) throws ApplicationException {
 		if(StringUtil.isEmpty(datasource)){
-			datasource=((ApplicationContext)pageContext.getApplicationContext()).getDefaultDataSource();
+			datasource=pageContext.getApplicationContext().getDefaultDataSource();
 
 			if(StringUtil.isEmpty(datasource))
 				throw new ApplicationException(

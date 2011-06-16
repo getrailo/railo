@@ -60,7 +60,7 @@ public class SkeletonFilter extends BinaryFilter  implements DynFiltering {
 
 		int count = 0;
 		int black = 0xff000000;
-		int white = 0xffffffff;
+		//int white = 0xffffffff;
 		for (int i = 0; i < iterations; i++) {
 			count = 0;
 			for (int pass = 0; pass < 2; pass++) {

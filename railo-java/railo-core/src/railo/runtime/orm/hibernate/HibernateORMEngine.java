@@ -38,7 +38,6 @@ import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
@@ -112,7 +111,7 @@ public class HibernateORMEngine implements ORMEngine {
 	 * @see railo.runtime.orm.ORMEngine#getSession(railo.runtime.PageContext)
 	 */
 	public ORMSession createSession(PageContext pc) throws PageException {
-		ApplicationContext appContext = ((ApplicationContext)pc.getApplicationContext());
+		ApplicationContext appContext = pc.getApplicationContext();
 		String dsn=appContext.getORMDatasource();
 		
 		//DatasourceManager manager = pc.getDataSourceManager();
@@ -155,7 +154,7 @@ public class HibernateORMEngine implements ORMEngine {
 			}
 		}
 		else {
-			Object h = hash((ApplicationContext)pc.getApplicationContext());
+			Object h = hash(pc.getApplicationContext());
 			if(this.hash.equals(h))return false;
 		}
 		
@@ -165,7 +164,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 
 	private synchronized SessionFactory getSessionFactory(PageContext pc,boolean init) throws PageException {
-		ApplicationContext appContext = ((ApplicationContext)pc.getApplicationContext());
+		ApplicationContext appContext = pc.getApplicationContext();
 		if(!appContext.isORMEnabled())
 			throw new ORMException(this,"ORM is not enabled in application.cfc/cfapplication");
 		
@@ -396,16 +395,15 @@ public class HibernateORMEngine implements ORMEngine {
 	}
 
 	public void createMapping(PageContext pc,Component cfc, DatasourceConnection dc, ORMConfiguration ormConf) throws PageException {
-		Component cfcp=ComponentUtil.toComponent(cfc);
-		String id=id(HibernateCaster.getEntityName(cfcp));
+		String id=id(HibernateCaster.getEntityName(cfc));
 		CFCInfo info=cfcs.get(id);
 		//Long modified=cfcs.get(id);
 		String xml;
-		long cfcCompTime = ComponentUtil.getCompileTime(pc,cfcp.getPageSource());
-		if(info==null || (info.getCFC().equals(cfcp) && info.getModified()!=cfcCompTime))	{
+		long cfcCompTime = ComponentUtil.getCompileTime(pc,cfc.getPageSource());
+		if(info==null || (info.getCFC().equals(cfc) && info.getModified()!=cfcCompTime))	{
 			StringBuilder sb=new StringBuilder();
 			
-			long xmlLastMod = loadMapping(sb,ormConf, cfcp);
+			long xmlLastMod = loadMapping(sb,ormConf, cfc);
 			Element root;
 			// create maaping
 			if(true || xmlLastMod< cfcCompTime) {//MUSTMUST
@@ -417,15 +415,15 @@ public class HibernateORMEngine implements ORMEngine {
 				
 				root=doc.createElement("hibernate-mapping");
 				doc.appendChild(root);
-				pc.addPageSource(cfcp.getPageSource(), true);
+				pc.addPageSource(cfc.getPageSource(), true);
 				try{
-					HBMCreator.createXMLMapping(pc,dc,cfcp,ormConf,root, this);
+					HBMCreator.createXMLMapping(pc,dc,cfc,ormConf,root, this);
 				}
 				finally{
 					pc.removeLastPageSource(true);
 				}
 				xml=XMLCaster.toString(root.getChildNodes(),true);
-				saveMapping(ormConf,cfcp,root);
+				saveMapping(ormConf,cfc,root);
 			}
 			// load
 			else {
@@ -440,15 +438,15 @@ public class HibernateORMEngine implements ORMEngine {
 			}
 			
 			
-			cfcs.put(id, new CFCInfo(ComponentUtil.getCompileTime(pc,cfcp.getPageSource()),xml,cfcp));
+			cfcs.put(id, new CFCInfo(ComponentUtil.getCompileTime(pc,cfc.getPageSource()),xml,cfc));
 			
 		}
 		
 	}
 
-	private static void saveMapping(ORMConfiguration ormConf, Component cfc, Element hm) throws ExpressionException {
+	private static void saveMapping(ORMConfiguration ormConf, Component cfc, Element hm) {
 		if(ormConf.saveMapping()){
-			Resource res=ComponentUtil.toComponent(cfc).getPageSource().getPhyscalFile();
+			Resource res=cfc.getPageSource().getPhyscalFile();
 			if(res!=null){
 				res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
 				try{
@@ -459,9 +457,9 @@ public class HibernateORMEngine implements ORMEngine {
 		}
 	}
 	
-	private static long loadMapping(StringBuilder sb,ORMConfiguration ormConf, Component cfc) throws ExpressionException {
+	private static long loadMapping(StringBuilder sb,ORMConfiguration ormConf, Component cfc) {
 		
-		Resource res=ComponentUtil.toComponent(cfc).getPageSource().getPhyscalFile();
+		Resource res=cfc.getPageSource().getPhyscalFile();
 		if(res!=null){
 			res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
 			try{
@@ -579,12 +577,9 @@ public class HibernateORMEngine implements ORMEngine {
 	 */
 	public ORMConfiguration getConfiguration(PageContext pc) {
 		ApplicationContext ac = pc.getApplicationContext();
-		if(!(ac instanceof ApplicationContext))
+		if(!ac.isORMEnabled())
 			return null;
-		ApplicationContext acp=(ApplicationContext) ac;
-		if(!acp.isORMEnabled())
-			return null;
-		return  acp.getORMConfiguration();
+		return  ac.getORMConfiguration();
 	}
 
 	/**
@@ -613,8 +608,7 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		
 		
-		ApplicationContext appContext = ((ApplicationContext)pc.getApplicationContext());
-		ORMConfiguration ormConf = appContext.getORMConfiguration();
+		ORMConfiguration ormConf = pc.getApplicationContext().getORMConfiguration();
 		Resource[] locations = ormConf.getCfcLocations();
 		
 		throw new ORMException(

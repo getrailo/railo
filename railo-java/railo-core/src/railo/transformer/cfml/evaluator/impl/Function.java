@@ -36,8 +36,8 @@ public final class Function extends EvaluatorSupport {
 	 * @see railo.transformer.cfml.evaluator.EvaluatorSupport#evaluate(org.w3c.dom.Element, railo.transformer.library.tag.TagLibTag)
 	 */
 	public void evaluate(Tag tag, TagLibTag libTag, FunctionLib[] flibs) throws EvaluatorException {
-		Body p=(Body) tag.getParent();
-		Statement pp = p.getParent();
+		//Body p=(Body) tag.getParent();
+		//Statement pp = p.getParent();
 		
 		boolean isCFC=true;
         try {
@@ -69,7 +69,7 @@ public final class Function extends EvaluatorSupport {
 			Expression expr = CastBoolean.toExprBoolean(attrOutput.getValue());
 			if(!(expr instanceof LitBoolean))
 				throw new EvaluatorException("Attribute output of the Tag Function, must be a literal boolean value (true or false, yes or no)");
-			boolean output = ((LitBoolean)expr).getBooleanValue();
+			//boolean output = ((LitBoolean)expr).getBooleanValue();
 			//if(!output) ASMUtil.removeLiterlChildren(tag, true);
 		}
 		

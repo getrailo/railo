@@ -959,7 +959,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         ResourceUtil.copyRecursive(srcDir, trgDir);    
         store();
     }
-    private void doUpdateLabel() throws PageException, IOException {
+    private void doUpdateLabel() throws PageException {
     	if(config instanceof ConfigServer) {
     		 if(admin.updateLabel(getString("admin",action,"hash"),getString("admin",action,"label"))) {
 	    	     store();
@@ -2552,7 +2552,7 @@ private void doGetMappings() throws PageException {
     private void doRemoveSpoolerTask() throws PageException {
     	config.getSpoolerEngine().remove(getString("admin",action,"id"));
     }
-    private void doRemoveAllSpoolerTask() throws PageException {
+    private void doRemoveAllSpoolerTask() {
     	((SpoolerEngineImpl)config.getSpoolerEngine()).removeAll();
     }
     private void doExecuteSpoolerTask() throws PageException {
@@ -2606,7 +2606,7 @@ private void doGetMappings() throws PageException {
     	else if("update".equals(strDbcreate))		dbcreate="update";
     	else if("dropcreate".equals(strDbcreate))	dbcreate="dropcreate";
 		else throw new ApplicationException("invalid dbcreate definition ["+strDbcreate+"], valid dbcreate definitions are [none,update,dropcreate]");
-    	settings.set(ORMConfigurationImpl.DB_CREATE, getString("admin",action,"dbcreate"));
+    	settings.set(ORMConfigurationImpl.DB_CREATE, dbcreate);
     	
     	// cfclocation
     	String strCfclocation=getString("admin",action,"cfclocation");
@@ -2627,10 +2627,8 @@ private void doGetMappings() throws PageException {
 	}
     
     private void doResetORMSetting() throws SecurityException, PageException {
-    	ORMConfiguration oc = config.getORMConfig();
-    	
+    	config.getORMConfig();
     	admin.resetORMSetting();
-    	
     	store();
         adminSync.broadcast(attributes, config);
 	}
@@ -3090,7 +3088,7 @@ private void doGetMappings() throws PageException {
     	
     }
     
-    private int doGetRemoteClientTasks(railo.runtime.type.Query qry, SpoolerTask[] tasks, int row) throws PageException {
+    private int doGetRemoteClientTasks(railo.runtime.type.Query qry, SpoolerTask[] tasks, int row) {
     	SpoolerTask task;
 		for(int i=0;i<tasks.length;i++) {
 			row++;

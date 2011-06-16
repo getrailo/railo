@@ -124,7 +124,7 @@ public final class ConfigServerFactory {
         configServer.setLabels(labels);
 	}
 	
-	public static void createContextFiles(Resource configDir, ConfigServer config) throws IOException {
+	public static void createContextFiles(Resource configDir, ConfigServer config) {
 		//Resource tagDir = configDir.getRealResource("library/tag/");
 		//if()
 		//f=cDir.getRealResource("Cache.cfc");

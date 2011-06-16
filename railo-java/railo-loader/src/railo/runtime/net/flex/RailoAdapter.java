@@ -6,13 +6,10 @@ import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.engine.EngineChangeListener;
 import railo.runtime.util.BlazeDS;
-import flex.messaging.FactoryInstance;
 import flex.messaging.FlexContext;
 import flex.messaging.config.ConfigMap;
 import flex.messaging.messages.Message;
-import flex.messaging.messages.RemotingMessage;
 import flex.messaging.services.ServiceAdapter;
-import flex.messaging.services.remoting.RemotingDestination;
 
 /**
  * Railo implementation of the ServiceAdapter, forward all BlazeDS Request to the CFMLEngine. 
@@ -63,9 +60,8 @@ public class RailoAdapter extends ServiceAdapter implements EngineChangeListener
 			}
 			
 			
-			RemotingDestination remotingDestination = (RemotingDestination)getDestination();
-	        RemotingMessage remotingMessage = (RemotingMessage)message;
-	        FactoryInstance factoryInstance = remotingDestination.getFactoryInstance();
+			//RemotingDestination remotingDestination = (RemotingDestination)getDestination();
+	        //FactoryInstance factoryInstance = remotingDestination.getFactoryInstance();
 
 			
 			/*

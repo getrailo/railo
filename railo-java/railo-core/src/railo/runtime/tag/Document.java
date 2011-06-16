@@ -636,7 +636,7 @@ public final class Document extends BodyTagImpl {
 			pdf=baos.toByteArray();
 		}
 		else if(documents.size()==1){
-			pdf=((PDFDocument)documents.get(0)).render(getDimension(),unitFactor,pageContext,doHtmlBookmarks);
+			pdf=(documents.get(0)).render(getDimension(),unitFactor,pageContext,doHtmlBookmarks);
 		}
 		else {
 			pdf=getDocument().render(getDimension(),unitFactor,pageContext,doHtmlBookmarks);

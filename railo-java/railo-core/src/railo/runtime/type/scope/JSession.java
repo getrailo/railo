@@ -11,7 +11,6 @@ import railo.runtime.listener.ApplicationContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.scope.storage.MemoryScope;
-import railo.runtime.type.scope.storage.StorageScope;
 import railo.runtime.type.scope.storage.StorageScopeImpl;
 
 /**

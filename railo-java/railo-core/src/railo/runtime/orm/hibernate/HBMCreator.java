@@ -46,13 +46,12 @@ public class HBMCreator {
 	public static void createXMLMapping(PageContext pc,DatasourceConnection dc, Component cfc,ORMConfiguration ormConf,Element hibernateMapping,HibernateORMEngine engine) throws PageException {
 		
 		// MUST Support for embeded objects 
-		Component cfci = ComponentUtil.toComponent(cfc);
-		Struct meta = cfci.getMetaData(pc);
+		Struct meta = cfc.getMetaData(pc);
 		
 		String extend = cfc.getExtends();
 		boolean isClass=StringUtil.isEmpty(extend);
 		
-		Property[] _props=getProperties(pc,engine,cfci,dc,ormConf,meta,isClass);
+		Property[] _props=getProperties(pc,engine,cfc,dc,ormConf,meta,isClass);
 		
 		
 		
@@ -65,13 +64,13 @@ public class HBMCreator {
 		Document doc = XMLUtil.getDocument(hibernateMapping);
 		
 		StringBuilder comment=new StringBuilder();
-		comment.append("\nsource:").append(cfci.getPageSource().getDisplayPath());
-		comment.append("\ncompilation-time:").append(new DateTimeImpl(ComponentUtil.getCompileTime(pc,cfci.getPageSource()),false)).append("\n");
+		comment.append("\nsource:").append(cfc.getPageSource().getDisplayPath());
+		comment.append("\ncompilation-time:").append(new DateTimeImpl(ComponentUtil.getCompileTime(pc,cfc.getPageSource()),false)).append("\n");
 		
 		hibernateMapping.appendChild(doc.createComment(comment.toString()));
 		
 		//print.e(cfc.getAbsName()+";"+isClass+" -> "+cfci.getBaseAbsName()+":"+cfci.isBasePeristent());
-		if(!isClass && !cfci.isBasePeristent()) {
+		if(!isClass && !cfc.isBasePeristent()) {
 			isClass=true;
 		} 
 		
@@ -138,7 +137,7 @@ public class HBMCreator {
         
         Struct columnsInfo=null;
         if(ormConf.useDBForMapping()){
-        	columnsInfo = engine.getTableInfo(dc,getTableName(engine,pc, meta, cfci),engine);
+        	columnsInfo = engine.getTableInfo(dc,getTableName(engine,pc, meta, cfc),engine);
         }
 
         if(isClass)setCacheStrategy(engine,cfc,null,doc, meta, clazz);
@@ -354,7 +353,6 @@ public class HBMCreator {
 		Entry<String, PropertyCollection> entry;
 		while(it.hasNext()){
 			entry = it.next();
-			PropertyCollection coll = entry.getValue();
 			addJoin(cfc,engine,pc,columnsInfo,ormConf,clazz,entry.getValue(),dc);
 		}
 		
@@ -677,7 +675,6 @@ public class HBMCreator {
 	private static void createXMLMappingId(Component cfc,Element clazz, PageContext pc,Property prop,Struct columnsInfo,String tableName,HibernateORMEngine engine) throws PageException {
 		Struct meta = prop.getMeta();
 		String str;
-		Integer i;
 		
 		Document doc = XMLUtil.getDocument(clazz);
 		Element id = doc.createElement("id");
@@ -724,8 +721,7 @@ public class HBMCreator {
 				try {
 					Component cfc = engine.getEntityByCFCName(foreignCFC.toString(), false);
 					if(cfc!=null){
-						Component cfcp = ComponentUtil.toComponent(cfc);
-						Property[] ids = getIds(engine,cfc,cfcp.getProperties(true),null,true);
+						Property[] ids = getIds(engine,cfc,cfc.getProperties(true),null,true);
 						if(!ArrayUtil.isEmpty(ids)){
 							Property id = ids[0];
 							id.getMeta();
@@ -802,7 +798,7 @@ public class HBMCreator {
 
 
 
-	private static ColumnInfo getColumnInfo(Struct columnsInfo,String tableName,String columnName,ORMEngine engine,ColumnInfo defaultValue) throws ORMException {
+	private static ColumnInfo getColumnInfo(Struct columnsInfo,String tableName,String columnName,ORMEngine engine,ColumnInfo defaultValue) {
 		if(columnsInfo!=null) {
 	    	ColumnInfo info = (ColumnInfo) columnsInfo.get(KeyImpl.init(columnName),null);
 			if(info==null) return defaultValue;
@@ -1324,7 +1320,7 @@ public class HBMCreator {
 		
 		// build fkcolumn name
 		if(StringUtil.isEmpty(str,true)) {
-			Component other = (Component) loadForeignCFC(pc, engine, cfc, prop, meta);
+			Component other = loadForeignCFC(pc, engine, cfc, prop, meta);
 			if(other!=null){
 				boolean isClass=StringUtil.isEmpty(other.getExtends());
 				Property[] _props=getProperties(pc,engine,other,dc,ormConf,meta,isClass);
@@ -1343,9 +1339,8 @@ public class HBMCreator {
 						String othLinkTable=Caster.toString(m.get(LINK_TABLE,null),null);
 						if(currLinkTable.equals(othLinkTable)) {
 							// cfc name
-							Component cfcp=ComponentUtil.toComponent(cfc);
 							String cfcName=Caster.toString(m.get(CFC,null),null);
-							if(cfcp.equalTo(cfcName)){
+							if(cfc.equalTo(cfcName)){
 								_prop=_props[i];
 							}
 						}
@@ -1755,7 +1750,6 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 	private static void createXMLMappingTimestamp(HibernateORMEngine engine,Element clazz, PageContext pc,Component cfc,Property prop) throws PageException {
 		Struct meta = prop.getMeta();
 		String str;
-		Integer i;
 		Boolean b;
 		
 

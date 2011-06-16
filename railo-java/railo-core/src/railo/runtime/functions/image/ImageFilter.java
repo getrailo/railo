@@ -229,9 +229,9 @@ public class ImageFilter {
 			child=children[i];
 			name=child.getName();
 			if(name.endsWith("Filter.java")){
-				String key=name.substring(0,name.length()-11);
+				//String key=name.substring(0,name.length()-11);
 				//print.o("filters.put(\""+key.toLowerCase()+"\","+key+"Filter.class);");
-				StringBuilder sb=new StringBuilder();
+				//StringBuilder sb=new StringBuilder();
 				//Class clazz = ClassUtil.loadClass("railo.runtime.img.filter."+key+"Filter");
 				//if(clazz!=GlowFilter.class) continue;
 				

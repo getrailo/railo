@@ -18,9 +18,6 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.LegendItem;
-import org.jfree.chart.LegendItemCollection;
-import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.axis.Axis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.block.ColumnArrangement;
@@ -633,27 +630,15 @@ public final class Chart extends BodyTagImpl implements Serializable {
 	        pp.setShadowPaint(backgroundcolor);
 		}
 		// Bar
-		if(plot instanceof CategoryPlot) {
+		/*if(plot instanceof CategoryPlot) {
 			CategoryPlot cp=(CategoryPlot) plot;
 			
-		}
+		}*/
 	}
 
 
 
-	private void _commons(LegendItemSource[] sources) {
-		for(int i=0;i<sources.length;i++) {
-			_commons(sources[i].getLegendItems());
-		}
-	}
-
-	private void _commons(LegendItemCollection legendItems) {
-		Iterator it = legendItems.iterator();
-		LegendItem li;
-		while(it.hasNext()){
-			
-		}
-	}
+	
  
 	private Font getFont() {
 		return new Font(font,fontstyle,fontsize);
@@ -915,7 +900,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		
 		
 		Iterator cs = _series.iterator();
-		int seriesCount=_series.size();
+		//int seriesCount=_series.size();
 		ChartSeriesBean csb;
 		GradientPaint gp;
 		Color c=null;
@@ -962,7 +947,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 	private CategoryDataset createDatasetCategory() {
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         Iterator it = _series.iterator();
-        int seriesCount=_series.size();
+        //int seriesCount=_series.size();
         Iterator itt;
         List datas;
         ChartSeriesBean csb;

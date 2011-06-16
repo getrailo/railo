@@ -78,8 +78,8 @@ public class DisplaceFilter extends TransformFilter  implements DynFiltering {
 	}
 	
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
-		int w = src.getWidth();
-		int h = src.getHeight();
+		//int w = src.getWidth();
+		//int h = src.getHeight();
 
 		BufferedImage dm = displacementMap != null ? displacementMap : src;
 
@@ -124,9 +124,9 @@ public class DisplaceFilter extends TransformFilter  implements DynFiltering {
 	}
 	
 	protected void transformInverse(int x, int y, float[] out) {
-		float xDisplacement, yDisplacement;
-		float nx = x;
-		float ny = y;
+		//float xDisplacement, yDisplacement;
+		//float nx = x;
+		//float ny = y;
 		int i = (y % dh)*dw + x % dw;
 		out[0] = x + amount * xmap[i];
 		out[1] = y + amount * ymap[i];

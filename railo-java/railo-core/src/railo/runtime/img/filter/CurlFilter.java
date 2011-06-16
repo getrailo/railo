@@ -17,7 +17,6 @@ limitations under the License.
 package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
@@ -86,7 +85,7 @@ public final class CurlFilter extends TransformFilter  implements DynFiltering {
 		public Sampler( BufferedImage image ) {
 			int width = image.getWidth();
 			int height = image.getHeight();
-			int type = image.getType();
+			//int type = image.getType();
 			inPixels = ImageUtils.getRGB( image, 0, 0, width, height, null );
 		}
 		
@@ -135,7 +134,7 @@ public final class CurlFilter extends TransformFilter  implements DynFiltering {
         int height = src.getHeight();
 		this.width = src.getWidth();
 		this.height = src.getHeight();
-		int type = src.getType();
+		//int type = src.getType();
 
 		originalSpace = new Rectangle(0, 0, width, height);
 		transformedSpace = new Rectangle(0, 0, width, height);
@@ -145,7 +144,8 @@ public final class CurlFilter extends TransformFilter  implements DynFiltering {
             ColorModel dstCM = src.getColorModel();
 			dst = new BufferedImage(dstCM, dstCM.createCompatibleWritableRaster(transformedSpace.width, transformedSpace.height), dstCM.isAlphaPremultiplied(), null);
 		}
-		WritableRaster dstRaster = dst.getRaster();
+		//WritableRaster dstRaster = 
+        dst.getRaster();
 
 		int[] inPixels = getRGB( src, 0, 0, width, height, null );
 
@@ -159,7 +159,7 @@ public final class CurlFilter extends TransformFilter  implements DynFiltering {
 		int outWidth = transformedSpace.width;
 		int outHeight = transformedSpace.height;
 		int outX, outY;
-		int index = 0;
+		//int index = 0;
 		int[] outPixels = new int[outWidth];
 
 		outX = transformedSpace.x;

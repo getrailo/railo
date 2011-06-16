@@ -97,6 +97,6 @@ public interface ApplicationListener {
 	 */
 	public void onTimeout(PageContext pc);
 	
-	
+	public boolean hasOnApplicationStart();
 	public boolean hasOnSessionStart(PageContext pc);
 }

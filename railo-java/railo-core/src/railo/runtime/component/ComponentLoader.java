@@ -15,7 +15,6 @@ import railo.runtime.MappingImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
-import railo.runtime.Page;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.config.ConfigImpl;
@@ -23,7 +22,6 @@ import railo.runtime.debug.DebugEntry;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.writer.BodyContentUtil;
 
@@ -119,8 +117,6 @@ public class ComponentLoader {
     	
     	// search with imports
     	Mapping[] cMappings = config.getComponentMappings();
-    	ApplicationContext ac=(ApplicationContext) pc.getApplicationContext();
-    	//Mapping[] lcMappings = ac.getComponentMappings();
     	
     	if(isRealPath){
 

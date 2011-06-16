@@ -42,7 +42,7 @@ public final class Val implements Function {
         else return 0; 
 
         boolean hasDot=false; 
-        boolean hasExp=false; 
+        //boolean hasExp=false; 
         for(;pos<len;pos++) { 
             curr=str.charAt(pos); 
             if(curr<'0') {

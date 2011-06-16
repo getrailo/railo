@@ -124,13 +124,13 @@ public class DatasourceConnectionPool {
         for(int i=0;i<arr.length;i++) {
         	key=(String) arr[i];
         	if(key.startsWith(datasource.toLowerCase())) {
-				DCStack conns=(DCStack) dcs.get(key);
+				DCStack conns=dcs.get(key);
 				conns.clear();
         	}
 		}
         
         String did = createId(datasource);
-		RefInteger ri=(RefInteger) counter.get(did);
+		RefInteger ri=counter.get(did);
 		if(ri!=null)ri.setValue(0);
 		else counter.put(did,new RefIntegerImpl(0));
         
@@ -163,7 +163,7 @@ public class DatasourceConnectionPool {
 	private DCStack getDCStack(DataSource datasource, String user, String pass) {
 		String id = createId(datasource,user,pass);
 		
-		DCStack stack=(DCStack)dcs.get(id);
+		DCStack stack=dcs.get(id);
 		
 		if(stack==null){
 			dcs.put(id, stack=new DCStack());
@@ -183,7 +183,7 @@ public class DatasourceConnectionPool {
 
 	private RefInteger _getCounter(String datasource) {
 		String did = createId(datasource);
-		RefInteger ri=(RefInteger) counter.get(did);
+		RefInteger ri=counter.get(did);
 		if(ri==null) {
 			counter.put(did,ri=new RefIntegerImpl(0));
 		}

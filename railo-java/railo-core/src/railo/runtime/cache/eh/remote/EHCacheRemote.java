@@ -30,7 +30,7 @@ public class EHCacheRemote extends CacheSupport {
 	public EHCacheRemote() {	
 	}
 	
-	public static void init(ConfigWeb config,String[] cacheNames,Struct[] arguments) throws IOException {
+	public static void init(ConfigWeb config,String[] cacheNames,Struct[] arguments) {
 		
 	}
 

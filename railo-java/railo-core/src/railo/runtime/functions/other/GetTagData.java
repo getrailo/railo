@@ -74,10 +74,10 @@ public final class GetTagData implements Function {
 
 	private static Struct cfmlBasedTag(PageContext pc, TagLib tld, TagLibTag tag) throws PageException {
 		
-		Map attrs = tag.getAttributes();
+		//Map attrs = tag.getAttributes();
 
 		TagLibTagAttr attrFilename = tag.getAttribute("__filename");
-		TagLibTagAttr attrName = tag.getAttribute("__name");
+		//TagLibTagAttr attrName = tag.getAttribute("__name");
 		TagLibTagAttr attrIsWeb = tag.getAttribute("__isweb");
 		
 		String filename = attrFilename.getDefaultValue();

@@ -99,7 +99,10 @@ public final class VariableUtilImpl implements VariableUtil {
 		return null;
 		
 	}
-	// FUTURE add all Key functions like this to interface
+	
+	/**
+	 * @see railo.runtime.util.VariableUtil#get(railo.runtime.PageContext, java.lang.Object, railo.runtime.type.Collection.Key, java.lang.Object)
+	 */
 	public Object get(PageContext pc, Object coll, Collection.Key key, Object defaultValue) {
         // Objects
 		//print.out("key:"+key.getString());
@@ -537,7 +540,9 @@ public final class VariableUtilImpl implements VariableUtil {
 		return null;
     }
     
-    // FUTURE add to interface
+    /**
+     * @see railo.runtime.util.VariableUtil#setEL(railo.runtime.PageContext, java.lang.Object, railo.runtime.type.Collection.Key, java.lang.Object)
+     */
     public Object setEL(PageContext pc, Object coll, Collection.Key key,Object value) {
         // Objects
         if(coll instanceof Objects) { 

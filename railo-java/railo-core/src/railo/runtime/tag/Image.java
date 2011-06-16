@@ -454,7 +454,7 @@ public final class Image extends TagImpl {
 	private void doActionResize() throws PageException, IOException {
 		required("source", source);
 		
-		Info i = new Info(source);
+		//Info i = new Info(source);
 		/*int w = toDimension("width",width,i);
 		int h = toDimension("height",height,i);
 		if(w==-1 && h==-1)

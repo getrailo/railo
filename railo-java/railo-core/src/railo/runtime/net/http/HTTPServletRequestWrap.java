@@ -100,7 +100,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	public static HttpServletRequest pure(HttpServletRequest req) {
 		HttpServletRequest req2;
 		while(req instanceof HTTPServletRequestWrap){
-			req2 = (HttpServletRequest) ((HTTPServletRequestWrap)req).getOriginalRequest();
+			req2 =  ((HTTPServletRequestWrap)req).getOriginalRequest();
 			if(req2==req) break;
 			req=req2;
 		}

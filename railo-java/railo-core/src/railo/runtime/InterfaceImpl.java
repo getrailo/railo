@@ -12,7 +12,6 @@ import railo.runtime.component.ComponentLoader;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.Dumpable;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
@@ -30,7 +29,9 @@ import railo.runtime.type.util.ArrayUtil;
  * 
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
-public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for this and a base interface for this and Coponent
+public class InterfaceImpl implements Interface {
+
+	private static final long serialVersionUID = -2488865504508636253L;
 
 	private static final InterfaceImpl[] EMPTY = new InterfaceImpl[]{};
 	

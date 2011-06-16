@@ -199,7 +199,7 @@ public final class ScopeContext {
 	
 	public Client getClientScope(PageContext pc) throws PageException {
 		Client client=null;
-		ApplicationContext appContext = (ApplicationContext) pc.getApplicationContext(); 
+		ApplicationContext appContext = pc.getApplicationContext(); 
 		// get Context
 			Map context=getSubMap(cfClientContextes,appContext.getName());
 			
@@ -315,7 +315,7 @@ public final class ScopeContext {
 	 * @return
 	 */
 	public int getSessionCount(PageContext pc) {
-		if(((ApplicationContext)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_J2EE) return 0;
+		if(pc.getApplicationContext().getSessionType()==Config.SESSION_TYPE_J2EE) return 0;
 		
 		Iterator it = cfSessionContextes.entrySet().iterator();
 		Map.Entry entry;
@@ -332,7 +332,7 @@ public final class ScopeContext {
 	 * @return
 	 */
 	public int getAppContextSessionCount(PageContext pc) {
-		ApplicationContext appContext = (ApplicationContext) pc.getApplicationContext(); 
+		ApplicationContext appContext = pc.getApplicationContext(); 
 		if(appContext.getSessionType()==Config.SESSION_TYPE_J2EE) return 0;
 		Map context=getSubMap(cfSessionContextes,appContext.getName());
 		return getSessionCount(context);
@@ -397,7 +397,7 @@ public final class ScopeContext {
 	 * @return
 	 */
 	public Struct getAllSessionScopes(PageContext pc, String appName) {
-        if(((ApplicationContext)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_J2EE)return new StructImpl();
+        if((pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_J2EE)return new StructImpl();
 		return getAllSessionScopes(getSubMap(cfSessionContextes,appName),appName);
 	}
 	
@@ -422,17 +422,17 @@ public final class ScopeContext {
 	 * @throws PageException
 	 */
 	public Session getSessionScope(PageContext pc,RefBoolean isNew) throws PageException {
-        if(((ApplicationContext)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_CFML)return getCFSessionScope(pc,isNew);
+        if((pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_CFML)return getCFSessionScope(pc,isNew);
 		return getJSessionScope(pc,isNew);
 	}
 	
 	public boolean hasExistingSessionScope(PageContext pc) {
-        if(((ApplicationContext)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_CFML)return hasExistingCFSessionScope(pc);
+        if((pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_CFML)return hasExistingCFSessionScope(pc);
 		return hasExistingJSessionScope(pc);
 	}
 	
 	private synchronized boolean hasExistingCFSessionScopeX(PageContext pc) {
-		ApplicationContext ac=(ApplicationContext) pc.getApplicationContext();
+		ApplicationContext ac= pc.getApplicationContext();
 		String storage = ac.getSessionstorage();
 		
 		Map context=getSubMap(cfSessionContextes,ac.getName());
@@ -455,7 +455,7 @@ public final class ScopeContext {
 	
 	private boolean hasExistingCFSessionScope(PageContext pc) {
 		
-		ApplicationContext appContext = (ApplicationContext) pc.getApplicationContext(); 
+		ApplicationContext appContext = pc.getApplicationContext(); 
 		// get Context
 			Map context=getSubMap(cfSessionContextes,appContext.getName());
 			
@@ -500,7 +500,7 @@ public final class ScopeContext {
 	 */
 	private synchronized Session getCFSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
 		
-		ApplicationContext appContext = (ApplicationContext) pc.getApplicationContext(); 
+		ApplicationContext appContext = pc.getApplicationContext(); 
 		// get Context
 			Map context=getSubMap(cfSessionContextes,appContext.getName());
 			

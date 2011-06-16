@@ -13,7 +13,6 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.xerces.parsers.DOMParser;
-import org.opencfml.eventgateway.GatewayException;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -750,7 +749,7 @@ public final class ConfigWebAdmin {
 
     public void updateComponentMapping(String virtual,String physical,String archive,String primary, boolean trusted) throws ExpressionException, SecurityException {
     	checkWriteAccess();
-    	boolean hasAccess=true;// TODO ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_CUSTOM_TAG);
+    	//boolean hasAccess=true;// TODO ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_CUSTOM_TAG);
         //if(!hasAccess)
         //    throw new SecurityException("no access to change custom tag settings");
         
@@ -938,7 +937,7 @@ public final class ConfigWebAdmin {
 	}
     
     
-    public static boolean fixPSQ(Document doc) throws SecurityException {
+    public static boolean fixPSQ(Document doc) {
     	
     	Element datasources=ConfigWebFactory.getChildByName(doc.getDocumentElement(),"data-sources",false,true);
         if(datasources!=null && datasources.hasAttribute("preserve-single-quote")){
@@ -1190,7 +1189,7 @@ public final class ConfigWebAdmin {
     	
         try {
         	if(!StringUtil.isEmpty(className)){
-	        	Class clazz = ClassUtil.loadClass(className);
+	        	ClassUtil.loadClass(className);
         	}
 		}
         catch (ClassException e) {
@@ -1604,11 +1603,7 @@ public final class ConfigWebAdmin {
   	    		Map conns = ((ConfigWebImpl)config).getGatewayEngine().getEntries();
   	    		GatewayEntry ge=(GatewayEntry) conns.get(n);
   	    		if(ge!=null){
-  	    			try {
-  	    				((ConfigWebImpl)config).getGatewayEngine().remove(ge);
-					} catch (GatewayException e) {
-						throw Caster.toPageException(e);
-					}
+  	    			((ConfigWebImpl)config).getGatewayEngine().remove(ge);
   	    		}
   	    		parent.removeChild(children[i]);
   			}

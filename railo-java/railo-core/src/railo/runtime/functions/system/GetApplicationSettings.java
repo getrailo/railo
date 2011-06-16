@@ -29,7 +29,7 @@ public class GetApplicationSettings {
 	}
 	
 	public static Struct call(PageContext pc, boolean suppressFunctions) {
-		ApplicationContext ac = (ApplicationContext)pc.getApplicationContext();
+		ApplicationContext ac = pc.getApplicationContext();
 		Component cfc = null;
 		if(ac instanceof ModernApplicationContext)cfc= ((ModernApplicationContext)ac).getComponent();
 		

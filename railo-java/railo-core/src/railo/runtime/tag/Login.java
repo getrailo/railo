@@ -63,10 +63,8 @@ public final class Login extends BodyTagImpl {
      */
     public int doStartTag() throws PageException  {
     	
-    	if(pageContext.getApplicationContext() instanceof ApplicationContext){
-    		ApplicationContext ac=(ApplicationContext) pageContext.getApplicationContext();
-    		ac.setSecuritySettings(applicationtoken,cookiedomain,idletimeout);
-    	}
+    	ApplicationContext ac=pageContext.getApplicationContext();
+    	ac.setSecuritySettings(applicationtoken,cookiedomain,idletimeout);
     	
         Credential remoteUser = pageContext.getRemoteUser();
         if(remoteUser==null) {
@@ -132,23 +130,14 @@ public final class Login extends BodyTagImpl {
     }
 
 	public static String getApplicationName(ApplicationContext appContext) {
-		if(appContext instanceof ApplicationContext) {
-	    	return "cfauthorization_"+((ApplicationContext) appContext).getSecurityApplicationToken();
-	    }
-	    return "cfauthorization_"+appContext.getName();
+		return "cfauthorization_"+appContext.getSecurityApplicationToken();
 	}
 
 	public static String getCookieDomain(ApplicationContext appContext) {
-		if(appContext instanceof ApplicationContext) {
-			((ApplicationContext) appContext).getSecurityCookieDomain();
-	    }
-	    return null;
+		return appContext.getSecurityCookieDomain();
 	}
 
 	public static int getIdleTimeout(ApplicationContext appContext) {
-		if(appContext instanceof ApplicationContext) {
-	    	return ((ApplicationContext) appContext).getSecurityIdleTimeout();
-	    }
-	    return 1800;
+		return appContext.getSecurityIdleTimeout();
 	}
 }

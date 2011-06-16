@@ -183,7 +183,7 @@ public final class FeedHandler extends DefaultHandler {
 				// wenn wert schon existiert wird castableArray in setContent erstellt
 			}
 			else {
-				El el=(El) decl.getDeclaration().get(path);
+				El el= decl.getDeclaration().get(path);
 				if(el!=null && (el.getQuantity()==El.QUANTITY_0_N || el.getQuantity()==El.QUANTITY_1_N)){
 					Array arr = new ArrayImpl();
 					arr.appendEL(sct);
@@ -256,7 +256,7 @@ public final class FeedHandler extends DefaultHandler {
 		
 		
 		
-		data=(FeedStruct) parents.pop();
+		data=parents.pop();
 		path=data.getPath();
 		inside=data.getInside();	
 	}
@@ -274,7 +274,7 @@ public final class FeedHandler extends DefaultHandler {
 				if(!StringUtil.isEmpty(value))setEl(data,VALUE,value);
 			}
 			else {
-				FeedStruct parent=(FeedStruct) parents.peek();
+				FeedStruct parent=parents.peek();
 				setEl(parent,inside,value);
 			}
 				
@@ -308,7 +308,7 @@ public final class FeedHandler extends DefaultHandler {
 	}
 	
 	private Map<String,String> getAttributes(Attributes attrs, String path) {
-		El el = (El) decl.getDeclaration().get(path);
+		El el =decl.getDeclaration().get(path);
 		
 		int len=attrs.getLength();
 		if((el==null || el.getAttrs()==null) && len==0) return null;

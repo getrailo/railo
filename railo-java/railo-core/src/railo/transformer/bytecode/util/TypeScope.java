@@ -6,7 +6,6 @@ import org.objectweb.asm.commons.Method;
 
 import railo.runtime.type.scope.Application;
 import railo.runtime.type.scope.Argument;
-import railo.runtime.type.scope.ArgumentImpl;
 import railo.runtime.type.scope.CGI;
 import railo.runtime.type.scope.Client;
 import railo.runtime.type.scope.Cluster;

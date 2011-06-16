@@ -36,24 +36,6 @@ public class HibernateCaster {
 	
 	private static final int NULL = -178696;
 	private static final Key ENTITY_NAME = KeyImpl.init("entityname");
-	/*public static Component toCFML(PageContext pc,Map map, Component cfc) throws PageException {
-		if(map instanceof Component) return (Component) map;
-		Component ci = ComponentUtil.toComponent(cfc);
-		ComponentScope scope = ci.getComponentScope();
-		
-		map.remove("$type$");
-		
-		Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator();
-		Map.Entry<String, Object> entry;
-		while(it.hasNext()){
-			entry=it.next();
-			scope.setEL(entry.getKey(), toCFML(pc,entry.getValue()));
-		}
-		return cfc;
-	}*/
-	
-	
-	
 	
 	public static Object toCFML(Object src) throws PageException {
 		if(src==null) return null;
@@ -126,17 +108,11 @@ public class HibernateCaster {
 	private static String getName(Component cfc) {
 		String name=null;
 		// MUSTMUST cfc.getName() should return the real case, this should not be needed
-		Component cfcp = ComponentUtil.toComponent(cfc,null);
-		if(cfcp!=null){
-			name = cfcp.getPageSource().getDisplayPath();
-	        name=railo.runtime.type.List.last(name, "\\/",true);
-	        int index=name.lastIndexOf('.');
-	        name= name.substring(0,index);
-			return name;
-		}
-		////////////////////////
-		
-		return cfc.getName(); 
+		name = cfc.getPageSource().getDisplayPath();
+	    name=railo.runtime.type.List.last(name, "\\/",true);
+	    int index=name.lastIndexOf('.');
+	    name= name.substring(0,index);
+		return name;
 	}
 
 	public static int cascade(HibernateORMEngine engine,String cascade) throws ORMException {
@@ -435,7 +411,7 @@ public class HibernateCaster {
 		Query qry=null;
 		// a single entity
 		if(!Decision.isArray(obj)){
-			qry= toQuery(pc,session,ComponentUtil.toComponent(HibernateCaster.toComponent(obj)),name,null,1,1);
+			qry= toQuery(pc,session,HibernateCaster.toComponent(obj),name,null,1,1);
 		}
 		
 		// a array of entities
@@ -446,7 +422,7 @@ public class HibernateCaster {
 				Iterator it = arr.valueIterator();
 				int row=1;
 				while(it.hasNext()){
-					qry=toQuery(pc,session,ComponentUtil.toComponent(HibernateCaster.toComponent(it.next())),name,qry,len,row++);
+					qry=toQuery(pc,session,HibernateCaster.toComponent(it.next()),name,qry,len,row++);
 				}
 			}
 			else 
@@ -532,7 +508,6 @@ public class HibernateCaster {
 		ComponentScope scope = cfc.getComponentScope();
 		String name;
 		Object value;
-		Component child;
 		Array arr;
 		for(int i=0;i<properties.length;i++){
 			name=properties[i].getName();
@@ -570,7 +545,7 @@ public class HibernateCaster {
 	 * @return
 	 */
 	public static String toComponentName(Component cfc) {
-		return ((Component)cfc).getPageSource().getComponentName();
+		return cfc.getPageSource().getComponentName();
 	}
 	
 	public static Component toComponent(Object obj) throws PageException {

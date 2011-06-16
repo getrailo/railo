@@ -3,8 +3,6 @@ package railo.transformer.bytecode.statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.objectweb.asm.commons.GeneratorAdapter;
-
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -80,8 +78,7 @@ public final class Contition extends StatementBase implements HasBodies {
     
 
     public void _writeOut(BytecodeContext bc) throws BytecodeException {
-    	GeneratorAdapter adapter = bc.getAdapter();
-        Iterator it = ifs.iterator();
+    	Iterator it = ifs.iterator();
         Pair pair;
         ConditionVisitor cv=new ConditionVisitor();
         cv.visitBefore();

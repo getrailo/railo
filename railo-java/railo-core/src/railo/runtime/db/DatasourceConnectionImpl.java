@@ -181,7 +181,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 	}
 	
 
-	public void closePreparedStatements(int maxDelete) throws SQLException {
+	public void closePreparedStatements(int maxDelete) {
 		Iterator<Entry<String, PreparedStatement>> it = preparedStatements.entrySet().iterator();
 		int count=0;
 		while(it.hasNext()){

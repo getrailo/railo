@@ -44,6 +44,7 @@ public class VariableDecl extends ExpressionBase {
 			Type rtn = Assign.writeOut(db, bc, t,mode, value, getLine(),false);
 			
 			bc.getAdapter().storeLocal(local,t);
+			return rtn;
 		}
 		
 		return Types.VOID;

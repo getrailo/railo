@@ -104,16 +104,14 @@ public final class DumpStruct implements Function {
 		StructUtil.setELIgnoreWhenNull(sct,"normalColor", toShortColor(dt.getNormalColor()));
 		StructUtil.setELIgnoreWhenNull(sct,"title", dt.getTitle());
 		
-		if(dt instanceof DumpTable){
-			DumpTable dtp = (DumpTable)dt;
-			sct.setEL("type", dtp.getType());
-			sct.setEL("id", dtp.getId());
+		if(!StringUtil.isEmpty(dt.getType()))sct.setEL("type", dt.getType());
+		if(!StringUtil.isEmpty(dt.getId()))sct.setEL("id", dt.getId());
 			
-			if("ref".equals(dtp.getType())){
-				hasReference.setValue(true);
-				sct.setEL("ref", dtp.getRef());
-			}
+		if("ref".equals(dt.getType())){
+			hasReference.setValue(true);
+			sct.setEL("ref", dt.getRef());
 		}
+		
 		
 		DumpRow[] drs = dt.getRows();
 		DumpRow dr;

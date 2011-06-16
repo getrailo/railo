@@ -362,7 +362,7 @@ public final class ASMUtil {
 		}
 	}
 	
-	public static void listAncestor(Statement stat) throws BytecodeException {
+	public static void listAncestor(Statement stat) {
 		Statement parent=stat;
 		aprint.o(stat);
 		while(true)	{
@@ -717,7 +717,6 @@ public final class ASMUtil {
 		return "_call"+ASMUtil.getId();
 	}
 	
-	// FUTURE add to loader, same method is also in FD Extension railo.intergral.fusiondebug.server.util.FDUtil
 	public static boolean isOverfowMethod(String name) {
 		return name.startsWith("_call") && name.length()>=11;
 	}

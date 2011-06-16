@@ -272,7 +272,7 @@ public class HibernateSessionFactory {
 	
 	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<Component> components,Resource[] reses,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
 		Mapping[] mappings = createMappings(pc, reses);
-		ApplicationContext ac=(ApplicationContext) pc.getApplicationContext();
+		ApplicationContext ac=pc.getApplicationContext();
 		Mapping[] existing = ac.getComponentMappings();
 		if(existing==null) existing=new Mapping[0];
 		try{
@@ -331,7 +331,7 @@ public class HibernateSessionFactory {
 	}
 
 	
-	public static Mapping[] createMappings(PageContext pc,Resource[] resources) throws PageException {
+	public static Mapping[] createMappings(PageContext pc,Resource[] resources) {
 			
 			MappingImpl[] mappings=new MappingImpl[resources.length];
 			ConfigImpl config=(ConfigImpl) pc.getConfig();

@@ -105,7 +105,7 @@ public class CacheFactory extends DefaultHandler {
 	
 	
 	
-    private void _setContent(String value) throws SAXException {
+    private void _setContent(String value) {
     	
     	/*if(insideError && insideMessage)	{
     		throw new SAXException(value);
@@ -114,7 +114,7 @@ public class CacheFactory extends DefaultHandler {
     	
     }
 
-    protected void setContent(String value) throws SAXException 	{
+    protected void setContent(String value) 	{
 		if(insideCacheConfiguration)	{
 			if("clearOnFlush".equalsIgnoreCase(inside))
 				cc.setClearOnFlush(toBooleanValue(value,true));

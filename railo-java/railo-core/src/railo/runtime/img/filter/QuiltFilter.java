@@ -133,7 +133,7 @@ public class QuiltFilter extends WholeImageFilter  implements DynFiltering {
 	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
 		int[] outPixels = new int[width * height];
 
-		int i = 0;
+		//int i = 0;
 		int max = 0;
 
 		float x = 0.1f;

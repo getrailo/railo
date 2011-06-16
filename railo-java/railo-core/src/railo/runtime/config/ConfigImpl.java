@@ -1159,7 +1159,7 @@ public abstract class ConfigImpl implements Config {
     }
     
     public void createFunction(FunctionLib fl,String filename) {
-    	PageSource ps = functionMapping.getPageSource(filename);
+    	//PageSource ps = functionMapping.getPageSource(filename);
     	
     	String name=toName(filename);//filename.substring(0,filename.length()-(getCFMLExtensions().length()+1));
         FunctionLibFunction flf = new FunctionLibFunction(fl);
@@ -3228,7 +3228,7 @@ public abstract class ConfigImpl implements Config {
 		componentPathCache.put(pathWithCFC.toLowerCase(),ps);
 	}
 	
-	public InitFile getCTInitFile(PageContext pc,String key) throws PageException {
+	public InitFile getCTInitFile(PageContext pc,String key) {
 		if(ctPatchCache==null) return null; 
 		
 		InitFile initFile = ctPatchCache.get(key.toLowerCase());

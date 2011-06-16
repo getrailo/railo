@@ -25,12 +25,9 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpRow;
 import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.SimpleDumpData;
-import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.UDFCasterException;
-import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Duplicator;
@@ -410,7 +407,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         Local		oldLocal=pc.localScope();
         
 		pci.setFunctionScopes(newLocal,newArgs);
-		int oldCheckArgs=undefined.setMode(((ApplicationContext)pc.getApplicationContext()).getLocalMode());
+		int oldCheckArgs=undefined.setMode((pc.getApplicationContext()).getLocalMode());
 		
 		try {
 			pc.addPageSource(getPageSource(),doIncludePath);

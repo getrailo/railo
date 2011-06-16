@@ -16,7 +16,6 @@ import railo.runtime.Component;
 import railo.runtime.component.Property;
 import railo.runtime.component.PropertyImpl;
 import railo.runtime.db.DatasourceConnection;
-import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMException;
 import railo.runtime.type.Array;
@@ -110,7 +109,7 @@ public class HibernateUtil {
 	
 	// 
 	
-	public static Property[] createPropertiesFromTable(DatasourceConnection dc, String tableName) throws ORMException, PageException {
+	public static Property[] createPropertiesFromTable(DatasourceConnection dc, String tableName) {
 		Struct properties = new StructImpl();
 		try {
 			DatabaseMetaData md = dc.getConnection().getMetaData();

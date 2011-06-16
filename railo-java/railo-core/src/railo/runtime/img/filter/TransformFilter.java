@@ -16,7 +16,6 @@ limitations under the License.
 
 package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -153,8 +152,9 @@ public abstract class TransformFilter extends AbstractBufferedImageOp  implement
         
         
         
-		int type = src.getType();
-		WritableRaster srcRaster = src.getRaster();
+		//int type = src.getType();
+		//WritableRaster srcRaster = 
+        src.getRaster();
 
 		originalSpace = new Rectangle(0, 0, width, height);
 		transformedSpace = new Rectangle(0, 0, width, height);
@@ -166,7 +166,8 @@ public abstract class TransformFilter extends AbstractBufferedImageOp  implement
         	dst=ImageUtil.createBufferedImage(src,transformedSpace.width,transformedSpace.height);
         }
         
-        WritableRaster dstRaster = dst.getRaster();
+        //WritableRaster dstRaster = 
+        dst.getRaster();
 
 		int[] inPixels = getRGB( src, 0, 0, width, height, null );
 
@@ -180,7 +181,7 @@ public abstract class TransformFilter extends AbstractBufferedImageOp  implement
 		int outWidth = transformedSpace.width;
 		int outHeight = transformedSpace.height;
 		int outX, outY;
-		int index = 0;
+		//int index = 0;
 		int[] outPixels = new int[outWidth];
 
 		outX = transformedSpace.x;

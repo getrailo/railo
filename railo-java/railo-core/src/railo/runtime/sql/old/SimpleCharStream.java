@@ -320,8 +320,8 @@ public final class SimpleCharStream
             l = (bufsize - tokenBegin) + bufpos + 1 + inBuf;
         int i1 = 0;
         int j1 = 0;
-        boolean flag = false;
-        boolean flag1 = false;
+        //boolean flag = false;
+        //boolean flag1 = false;
         int i2 = 0;
         int k1;
         for(; i1 < l && bufline[j1 = k % bufsize] == bufline[k1 = ++k % bufsize]; i1++)

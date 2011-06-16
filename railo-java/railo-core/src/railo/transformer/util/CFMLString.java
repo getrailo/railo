@@ -128,7 +128,7 @@ public final class CFMLString {
 		}
 		pos=0;
 		arr.add(new Integer(text.length));
-		lines=(Integer[])arr.toArray(new Integer[arr.size()]);
+		lines=arr.toArray(new Integer[arr.size()]);
 	}
 
 	/**

@@ -551,7 +551,7 @@ public final class S3Resource extends ResourceSupport {
 	}
 
 
-	public AccessControlPolicy getAccessControlPolicy() throws IOException {
+	public AccessControlPolicy getAccessControlPolicy() {
 		String p = getInnerPath();
 		try {
 			AccessControlPolicy acp = s3.getACP(p);
@@ -568,7 +568,7 @@ public final class S3Resource extends ResourceSupport {
 		}
 	}
 	
-	public void setAccessControlPolicy(AccessControlPolicy acp) throws IOException {
+	public void setAccessControlPolicy(AccessControlPolicy acp) {
 		
 		try {
 			s3.setAccessControlPolicy(bucketName, getObjectName(),acp);

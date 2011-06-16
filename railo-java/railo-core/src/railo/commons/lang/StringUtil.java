@@ -865,7 +865,7 @@ public final class StringUtil {
 		if(isEmpty(str)) return str;
 		
 		StringBuilder sb=new StringBuilder();
-		int len=str.length();
+		//int len=str.length();
 		char c;
 		
 		sb.append(Character.toLowerCase(str.charAt(0)));

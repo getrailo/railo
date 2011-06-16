@@ -330,7 +330,7 @@ public final class TagOutput extends TagBase {
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
 		adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
 		
-		/* FUTURE
+		/* OLD
 		adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
 		*/
 		adapter.pop();
@@ -692,7 +692,7 @@ public final class TagOutput extends TagBase {
 				adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
 				adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
 				
-				/* FUTURE
+				/* OLD
 				adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
 				*/
 				adapter.pop();

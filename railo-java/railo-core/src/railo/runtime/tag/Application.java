@@ -295,7 +295,7 @@ public final class Application extends TagImpl {
         	pageContext.setApplicationContext(ac);
         }
         else {
-        	ac=(ApplicationContext) pageContext.getApplicationContext();
+        	ac= pageContext.getApplicationContext();
         	initORM=set(ac);
         }
         

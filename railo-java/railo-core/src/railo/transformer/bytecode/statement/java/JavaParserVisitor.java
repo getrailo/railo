@@ -239,7 +239,7 @@ public class JavaParserVisitor extends VoidVisitorAdapter {
 	 * @see japa.parser.ast.visitor.VoidVisitorAdapter#visit(japa.parser.ast.expr.CharLiteralExpr, java.lang.Object)
 	 */
 	public void visit(CharLiteralExpr n, Object arg) {
-		String str=n.getValue();
+		//String str=n.getValue();
 		
 		//BytecodeContext bc=toBytecodeContext(arg);
 		//bc.getAdapter().push((int)str.charAt(0));

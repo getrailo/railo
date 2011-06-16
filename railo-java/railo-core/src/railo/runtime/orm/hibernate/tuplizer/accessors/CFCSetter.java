@@ -13,7 +13,6 @@ import railo.runtime.orm.hibernate.HibernateRuntimeException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.util.ComponentUtil;
 
 public final class CFCSetter implements Setter {
 	
@@ -55,8 +54,7 @@ public final class CFCSetter implements Setter {
 	public void set(Object trg, Object value, SessionFactoryImplementor factory) throws HibernateException {
 		try {
 			Component cfc = Caster.toComponent(trg);
-			//ComponentUtil.toComponent(cfc).getComponentScope().set(key,HibernateCaster.toCFML(value));// MUST HibernateCaster
-			ComponentUtil.toComponent(cfc).getComponentScope().set(key,value);
+			cfc.getComponentScope().set(key,value);
 		} 
 		catch (PageException e) {
 			throw new HibernateRuntimeException(e);

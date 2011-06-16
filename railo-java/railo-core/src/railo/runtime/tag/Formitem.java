@@ -26,7 +26,6 @@ public final class Formitem extends BodyTagImpl {
 	 */
 	public void release() {
 		super.release();
-		String label=null;
 		style=null;
 		width=-1;
 		height=-1;

@@ -8,14 +8,13 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.exp.SecurityException;
 import railo.runtime.img.Image;
 import railo.runtime.op.Caster;
 
 public class ImageNew {
 
 
-	public static Object call(PageContext pc) throws SecurityException {
+	public static Object call(PageContext pc) {
 		return new Image();
 	}
 	

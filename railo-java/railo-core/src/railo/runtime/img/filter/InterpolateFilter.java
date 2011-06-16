@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
@@ -76,12 +75,12 @@ public class InterpolateFilter extends AbstractBufferedImageOp  implements DynFi
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
-		int type = src.getType();
-		WritableRaster srcRaster = src.getRaster();
+		src.getType();
+		src.getRaster();
 
         if ( dst == null )
             dst = createCompatibleDestImage( src, null );
-		WritableRaster dstRaster = dst.getRaster();
+		dst.getRaster();
 
         if ( destination != null ) {
 			width = Math.min( width, destination.getWidth() );
@@ -99,7 +98,7 @@ public class InterpolateFilter extends AbstractBufferedImageOp  implements DynFi
 					int r1 = (rgb1 >> 16) & 0xff;
 					int g1 = (rgb1 >> 8) & 0xff;
 					int b1 = rgb1 & 0xff;
-					int a2 = (rgb2 >> 24) & 0xff;
+					//int a2 = (rgb2 >> 24) & 0xff;
 					int r2 = (rgb2 >> 16) & 0xff;
 					int g2 = (rgb2 >> 8) & 0xff;
 					int b2 = rgb2 & 0xff;

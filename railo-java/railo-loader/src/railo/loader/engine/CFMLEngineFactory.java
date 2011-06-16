@@ -1,12 +1,10 @@
 package railo.loader.engine;
 
-import java.io.BufferedOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -207,7 +205,8 @@ public class CFMLEngineFactory {
            throw new ServletException(e);
         }
         
-        File[] patches=patcheDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
+        //PATCHLOAD File[] patches=patcheDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
+        File[] patches=null;
         File railo=null;
         if(patches!=null) {
             for(int i=0;i<patches.length;i++) {
@@ -229,18 +228,18 @@ public class CFMLEngineFactory {
         try {
             // Load core version when no patch available
             if(railo==null) {
-                
+            	tlog("Load Build in Core");
                 // 
                 String coreExt=getCoreExtension();
                 engine=getCore(coreExt);
             	
                 
                 railo=new File(patcheDir,engine.getVersion()+"."+coreExt);
-                
+              /*PATCHLOAD remove deploying to patch dir
                 InputStream bis = new TP().getClass().getResourceAsStream("/core/core."+coreExt);
                 OutputStream bos=new BufferedOutputStream(new FileOutputStream(railo));
                 Util.copy(bis,bos);
-                Util.closeEL(bis,bos);
+                Util.closeEL(bis,bos);*/
             }
             else {
             	try {

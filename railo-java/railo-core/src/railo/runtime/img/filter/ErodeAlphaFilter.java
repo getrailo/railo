@@ -75,9 +75,9 @@ public class ErodeAlphaFilter extends PointFilter  implements DynFiltering {
 
 	public int filterRGB(int x, int y, int rgb) {
 		int a = (rgb >> 24) & 0xff;
-		int r = (rgb >> 16) & 0xff;
-		int g = (rgb >> 8) & 0xff;
-		int b = rgb & 0xff;
+		//int r = (rgb >> 16) & 0xff;
+		//int g = (rgb >> 8) & 0xff;
+		//int b = rgb & 0xff;
 		if ( a == 255 )
             return 0xffffffff;
         float f = ImageMath.smoothStep(lowerThreshold, upperThreshold, a);

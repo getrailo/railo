@@ -178,7 +178,7 @@ public class Assign extends ExpressionBase {
 	
 	private static boolean canConvert(float f, Class trg) {
 		if(trg==double.class) return true;
-		if(trg==float.class) return f==(float)f;
+		if(trg==float.class) return true;
 		if(trg==long.class) return f==(long)f;
 		if(trg==int.class) return f==(int)f;
 		if(trg==char.class) return f==(char)f;
@@ -192,7 +192,7 @@ public class Assign extends ExpressionBase {
 		if(trg==double.class) return true;
 		if(trg==float.class) return i==(float)i;
 		if(trg==long.class) return i==(long)i;
-		if(trg==int.class) return i==(int)i;
+		if(trg==int.class) return true;
 		if(trg==char.class) return i==(char)i;
 		if(trg==short.class) return i==(short)i;
 		if(trg==byte.class) return i==(byte)i;

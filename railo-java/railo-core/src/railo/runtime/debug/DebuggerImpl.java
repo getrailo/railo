@@ -99,7 +99,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
     	lastEntry = System.currentTimeMillis();
         String src=DebugEntryImpl.getSrc(source,key);
         
-        DebugEntryImpl de=(DebugEntryImpl) pages.get(src);
+        DebugEntryImpl de= pages.get(src);
         if(de!=null ){
             de.countPP();
 			historyId.appendEL(de.getId());
@@ -121,7 +121,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		
         // fill pages to aray
         ArrayList arrPages=toArray();
-        QueryEntry[] arrQueries=(QueryEntry[]) queries.toArray(new QueryEntry[queries.size()]);
+        QueryEntry[] arrQueries= queries.toArray(new QueryEntry[queries.size()]);
 
 		
 		DumpTable boxPage = new DumpTable("#cccccc","#ffffff","#000000");
@@ -314,7 +314,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         ArrayList arrPages=new ArrayList(pages.size());
         Iterator it = pages.keySet().iterator();
         while(it.hasNext()) {
-            DebugEntry page = (DebugEntry) pages.get(it.next());
+            DebugEntry page =pages.get(it.next());
             page.resetQueryTime();
             arrPages.add(page);
             
@@ -326,7 +326,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         // Queries
         int len=queries.size();
         for(int i=0;i<len;i++) {
-            QueryEntry entry=(QueryEntry) queries.get(i);
+            QueryEntry entry=queries.get(i);
             String path=entry.getSrc();
             Object o=pages.get(path);
             

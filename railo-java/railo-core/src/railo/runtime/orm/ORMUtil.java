@@ -16,7 +16,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
-import railo.runtime.type.util.ComponentUtil;
 
 public class ORMUtil {
 
@@ -112,17 +111,15 @@ public class ORMUtil {
 		done.add(right);
 		
 		
-		Component cpl =ComponentUtil.toComponent(left,null);
-		Component cpr = ComponentUtil.toComponent(right,null);
 		
-		if(cpl==null || cpr==null) return false;
-		if(!cpl.getPageSource().equals(cpr.getPageSource())) return false;
-		Property[] props = cpl.getProperties(true);
+		if(left==null || right==null) return false;
+		if(!left.getPageSource().equals(right.getPageSource())) return false;
+		Property[] props = left.getProperties(true);
 		Object l,r;
 		props=HBMCreator.getIds(null,null,props,null,true);
 		for(int i=0;i<props.length;i++){
-			l=cpl.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
-			r=cpr.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
+			l=left.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
+			r=right.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
 			if(!_equals(done,l, r)) return false;
 		}
 		return true;

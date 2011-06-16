@@ -39,9 +39,9 @@ public class LifeFilter extends BinaryFilter  implements DynFiltering {
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				int r = 0, g = 0, b = 0;
+				//int r = 0, g = 0, b = 0;
 				int pixel = inPixels[y*width+x];
-				int a = pixel & 0xff000000;
+				//int a = pixel & 0xff000000;
 				int neighbours = 0;
 
 				for (int row = -1; row <= 1; row++) {

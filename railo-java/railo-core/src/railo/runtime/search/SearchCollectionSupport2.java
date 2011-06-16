@@ -169,7 +169,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
     	try {
         SearchIndex si = new SearchIndex(title,key,type,query,extensions,language,urlpath,categoryTree,categories,
         		custom1,custom2,custom3,custom4);
-        String id=si.getId();
+        //String id=si.getId();
         IndexResult ir=IndexResultImpl.EMPTY;
         if(type==SearchIndex.TYPE_FILE){
         	Resource file=ResourceUtil.toResourceNotExisting(pc,key);

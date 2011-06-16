@@ -1,7 +1,6 @@
 package railo.runtime.type;
 
 import railo.runtime.Component;
-import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.component.Member;

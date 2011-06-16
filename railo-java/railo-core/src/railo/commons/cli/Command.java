@@ -69,11 +69,11 @@ public class Command {
     	StringBuilder sb=new StringBuilder();
     	ArrayList<String> list=new ArrayList<String>();
 		char[] carr = str.toCharArray();
-		char c,last=0;
+		char c;//,last=0;
 		char inside=0;
 		for(int i=0;i<carr.length;i++){
 			c=carr[i];
-			if(i>0)last=carr[i-1];
+			//if(i>0)last=carr[i-1];
 			switch(c){
 		// DELIMETER
 			/*case '\\':	
@@ -117,7 +117,7 @@ public class Command {
 		populateList(sb, list);
 		
 		
-    	return (String[]) list.toArray(new String[list.size()]);
+    	return  list.toArray(new String[list.size()]);
 	}
     
     private static void populateList(StringBuilder sb, ArrayList<String> list) {

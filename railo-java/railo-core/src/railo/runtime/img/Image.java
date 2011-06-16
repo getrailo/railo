@@ -308,7 +308,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		if(StringUtil.isEmpty(format)) return null;
 		Iterator<ImageReader> it = ImageIO.getImageReadersBySuffix(format);
 		while(it.hasNext()) {
-			ImageReader ir=(ImageReader) it.next();
+			ImageReader ir= it.next();
 			ImageInputStream iis=null;
 			IIOMetadata metadata=null;
 			InputStream is=null;
@@ -339,7 +339,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		if(StringUtil.isEmpty(format)) return;
 		Iterator<ImageReader> it = ImageIO.getImageReadersBySuffix(format);
 		while(it.hasNext()) {
-			ImageReader ir=(ImageReader) it.next();
+			ImageReader ir= it.next();
 			ImageInputStream iis=null;
 			try {
 				IIOMetadata metadata=null;
@@ -924,7 +924,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
     	Iterator<ImageWriter> iter = ImageIO.getImageWriters(type, format);
     	
     	if (iter.hasNext()) {
-    		writer = (ImageWriter)iter.next();
+    		writer = iter.next();
     	}
     	if (writer == null) throw new IOException("no writer for format ["+format+"] available, available writer formats are ["+List.arrayToList(ImageUtil.getWriterFormatNames(), ",")+"]");
 

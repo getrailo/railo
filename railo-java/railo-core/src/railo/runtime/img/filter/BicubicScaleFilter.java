@@ -54,8 +54,8 @@ public class BicubicScaleFilter extends AbstractBufferedImageOp  implements DynF
 	}
 
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
-        int w = src.getWidth();
-        int h = src.getHeight();
+        //int w = src.getWidth();
+        //int h = src.getHeight();
 
 		if ( dst == null ) {
 			ColorModel dstCM = src.getColorModel();
@@ -75,7 +75,7 @@ public class BicubicScaleFilter extends AbstractBufferedImageOp  implements DynF
 	}
 
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
-		Object o;
+		//Object o;
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

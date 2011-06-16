@@ -165,7 +165,7 @@ public final class BIFCall extends RefSupport implements Ref {
 		throw ee;
 	}
 
-	private String[] getNames(FunctionValue[] fvalues) throws PageException {
+	private String[] getNames(FunctionValue[] fvalues) {
     	String[] names=new String[fvalues.length];
     	for(int i=0;i<fvalues.length;i++){
 			names[i]=fvalues[i].getName();

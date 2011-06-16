@@ -178,8 +178,7 @@ public final class TagLibTag {
 	 * @return Attribute das angfragt wurde oder null.
 	 */
 	public TagLibTagAttr getAttribute(String name) {
-		return (TagLibTagAttr)
-			attributes.get(name);
+		return attributes.get(name);
 	}
 	
 
@@ -683,7 +682,7 @@ public final class TagLibTag {
 		if(tagLib.isCore())
 			return "set"+StringUtil.ucFirst(attr.getName());
 		
-		String setter=(String) setters.get(attr.getName());
+		String setter=setters.get(attr.getName());
 		if(setter!=null)return setter;
 		setter = "set"+StringUtil.ucFirst(attr.getName());
 		Class clazz;

@@ -155,7 +155,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
         return configServer;
     }
     
-    // FUTURE
     public String getServerId() {
         return configServer.getId();
     }

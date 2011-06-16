@@ -17,10 +17,8 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalConfig;
-import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
-import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -68,7 +66,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 
 	private int maxThreads;
 	
-	public SpoolerEngineImpl(Config config,Resource persisDirectory,String label, Log log, int maxThreads) throws IOException {
+	public SpoolerEngineImpl(Config config,Resource persisDirectory,String label, Log log, int maxThreads) {
 		this.config=config;
 		this.persisDirectory=persisDirectory;
 
@@ -255,7 +253,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	}
 	
 	
-	private Query getTasksAsQuery(Query qry,Resource dir, int startrow, int maxrow) throws PageException {
+	private Query getTasksAsQuery(Query qry,Resource dir, int startrow, int maxrow) {
 		String[] children = dir.list(FILTER);
 		if(ArrayUtil.isEmpty(children)) return qry;
 		if(children.length<maxrow)maxrow=children.length;
@@ -283,7 +281,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		return qry;
 	}
 	
-	private void addQueryRow(railo.runtime.type.Query qry, SpoolerTask task) throws PageException {
+	private void addQueryRow(railo.runtime.type.Query qry, SpoolerTask task) {
     	int row = qry.addRow();
 		try{
 			qry.setAt(TYPE, row, task.getType());

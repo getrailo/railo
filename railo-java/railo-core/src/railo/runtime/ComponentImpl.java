@@ -560,7 +560,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			
 			try {
 				openLock(pc.getId());
-				parent=beforeCall(pc);// FUTURE add to interface
+				parent=beforeCall(pc);
 				if(args!=null)rtn=udf.call(pc,args,true);
 				else rtn=udf.callWithNamedValues(pc,namedArgs,true);
 			}		
@@ -575,7 +575,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		else {
 		    try {
 				openLock(pc.getId());
-            	parent=beforeCall(pc); // FUTURE add to interface
+            	parent=beforeCall(pc); 
             	if(args!=null)rtn=udf.call(pc,args,true);
 				else rtn=udf.callWithNamedValues(pc,namedArgs,true);
 			}		
@@ -765,14 +765,14 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     public Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess) {
     	// check super
         if(dataMember && access==ACCESS_PRIVATE && key.equalsIgnoreCase(KEY_SUPER)) {
-        	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent((PageContextImpl)ThreadLocalPageContext.get(),this)._base());
+        	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),this)._base());
             //return SuperComponent . superMember(base);
         }
     	if(superAccess) {
-    		return (Member) _udfs.get(key);
+    		return  _udfs.get(key);
         }
         // check data
-        Member member=(Member)_data.get(key);
+        Member member=_data.get(key);
         if(member!=null) {
             if(member.getAccess()<=access)return member;
             return null;
@@ -792,13 +792,13 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     protected Member getMember(PageContext pc, Collection.Key key, boolean dataMember,boolean superAccess) {
         // check super
         if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KEY_SUPER)) {
-        	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent((PageContextImpl)pc,this)._base());
+        	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent(pc,this)._base());
         }
         if(superAccess) 
-        	return (Member) _udfs.get(key);
+        	return  _udfs.get(key);
         
         // check data
-        Member member=(Member)_data.get(key);
+        Member member=_data.get(key);
         if(isAccessible(pc,member)) return member;
         return null;
     }
@@ -1038,7 +1038,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		return top.properties.hint;
 	}
     
-    // FUTURE add to interface
+    /**
+     * @see railo.runtime.Component#getWSDLFile()
+     */
     public String getWSDLFile() {
 		return top.properties.getWsdlFile();
 	}
@@ -1147,9 +1149,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         //return properties.page;
     }
     
-    
-    
-    // FUTURE add to interface
+    /**
+     * @see railo.runtime.Component#getPageSource()
+     */
     public PageSource getPageSource() {
         return top.pageSource;
     }
@@ -1537,7 +1539,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	registerUDF(key, new UDFImpl(prop),useShadow,false);
     }
     
-    // FUTURE deprecated injected is not used
+    /*
+     *  @deprecated injected is not used
+     */
     public void registerUDF(Collection.Key key, UDFImpl udf,boolean useShadow,boolean injected) {
     	udf.setOwnerComponent(this);//+++
     	_udfs.put(key,udf);
@@ -1901,7 +1905,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		}
 	}
 
-	// FUTURE add to interface and then search for #321 and change this as well
 	public Property[] getProperties(boolean onlyPeristent) {
 		if(top.properties.properties==null) return new Property[0];
 		
@@ -1967,7 +1970,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	public void addConstructorUDF(Key key, UDF value) {
 		if(constructorUDFs==null)
 			constructorUDFs=new HashMap<Key,UDF>();
-		constructorUDFs.put(key, (UDF) value);
+		constructorUDFs.put(key, value);
 	}
 
 // MUST more native impl

@@ -16,7 +16,7 @@ public class FormatUtil {
 	public static DateFormat[] getDateTimeFormats(Locale locale,TimeZone tz,boolean lenient) {
 
 		String id="dt-"+locale.hashCode()+"-"+tz.getID()+"-"+lenient;
-		DateFormat[] df=(DateFormat[]) formats.get(id);
+		DateFormat[] df=formats.get(id);
 		if(df==null) {
 			df= new DateFormat[]{
 					DateFormat.getDateTimeInstance(DateFormat.FULL,DateFormat.FULL,locale),
@@ -51,7 +51,7 @@ public class FormatUtil {
 	}
 	public static DateFormat[] getDateFormats(Locale locale,TimeZone tz,boolean lenient) {
 		String id="d-"+locale.hashCode()+"-"+tz.getID()+"-"+lenient;
-		DateFormat[] df=(DateFormat[]) formats.get(id);
+		DateFormat[] df= formats.get(id);
 		if(df==null) {
 			df= new DateFormat[]{
                 DateFormat.getDateInstance(DateFormat.FULL,locale),
@@ -79,7 +79,7 @@ public class FormatUtil {
 	 */
 	public static DateFormat[] getCFMLFormats(TimeZone tz,boolean lenient) {
 		String id="cfml-"+Locale.ENGLISH.hashCode()+"-"+tz.getID()+"-"+lenient;
-		DateFormat[] df=(DateFormat[]) formats.get(id);
+		DateFormat[] df= formats.get(id);
 		if(df==null) {
 			df= new SimpleDateFormat[]{
 					  new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy",Locale.ENGLISH)
@@ -118,7 +118,7 @@ public class FormatUtil {
 	
 	public static DateFormat[] getTimeFormats(Locale locale,TimeZone tz,boolean lenient) {
 		String id="t-"+locale.hashCode()+"-"+tz.getID()+"-"+lenient;
-		DateFormat[] df=(DateFormat[]) formats.get(id);
+		DateFormat[] df= formats.get(id);
 		if(df==null) {
 			df= new DateFormat[]{
 	                DateFormat.getTimeInstance(DateFormat.FULL,locale),

@@ -142,7 +142,7 @@ public final class PageSourcePool implements Dumpable,Sizeable {
 		table.setTitle("Page Source Pool");
 		table.appendRow(1,new SimpleDumpData("Count"),new SimpleDumpData(pageSources.size()));
 		while(it.hasNext()) {
-		    PageSource ps=(PageSource) pageSources.get(it.next());
+		    PageSource ps= pageSources.get(it.next());
 		    DumpTable inner = new DumpTable("#FFCC00","#FFFF00","#000000");
 			inner.setWidth("100%");
 			inner.appendRow(1,new SimpleDumpData("source"),new SimpleDumpData(ps.getDisplayPath()));

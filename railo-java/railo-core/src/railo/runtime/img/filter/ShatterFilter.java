@@ -142,7 +142,7 @@ public class ShatterFilter extends AbstractBufferedImageOp  implements DynFilter
         float height = src.getHeight();
         float cx = src.getWidth() * centreX;
         float cy = src.getHeight() * centreY;
-        float imageRadius = (float)Math.sqrt( cx*cx + cy*cy );
+        //float imageRadius = (float)Math.sqrt( cx*cx + cy*cy );
 
 //        BufferedImage[] tiles = new BufferedImage[iterations];
 		int numTiles = iterations*iterations;
@@ -155,7 +155,7 @@ public class ShatterFilter extends AbstractBufferedImageOp  implements DynFilter
 //		g.drawImage( src, null, null );
 
         Random random = new Random( 0 );
-		float lastx = 0, lasty = 0;
+		//float lastx = 0, lasty = 0;
 /*
         for ( int i = 0; i <= numTiles; i++ ) {
             double angle = (double)i * 2*Math.PI / numTiles;
@@ -211,7 +211,8 @@ public class ShatterFilter extends AbstractBufferedImageOp  implements DynFilter
 			float y = transition * height*(float)Math.sin(angle);
 
 			Tile tile = shapes[i];
-			Rectangle r = tile.shape.getBounds();
+			//Rectangle r = 
+			tile.shape.getBounds();
 			AffineTransform t = g.getTransform();
 x = tile.x + transition * tile.vx;
 y = tile.y + transition * tile.vy;

@@ -27,7 +27,7 @@ public class ToNumeric {
 			else throw invalidRadix(pc,str);
 		}
 		
-		return (double)Integer.parseInt(Caster.toString(value), radix);
+		return Integer.parseInt(Caster.toString(value), radix);
 	}
 	
 	private static FunctionException invalidRadix(PageContext pc , String radix) {

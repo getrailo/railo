@@ -171,7 +171,7 @@ public final class S3 implements S3Constants {
 		}
 		strUrl+="?acl";
 		
-		HttpMethod method = railo.commons.net.HTTPUtil.invoke(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,(Header[])headers.toArray(new Header[headers.size()]));
+		HttpMethod method = railo.commons.net.HTTPUtil.invoke(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,headers.toArray(new Header[headers.size()]));
 		return method.getResponseBodyAsStream();
 		
 	}
@@ -262,7 +262,7 @@ public final class S3 implements S3Constants {
 			amp='&';
 		}
 		
-		HttpMethod method = railo.commons.net.HTTPUtil.invoke(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,(Header[])headers.toArray(new Header[headers.size()]));
+		HttpMethod method = railo.commons.net.HTTPUtil.invoke(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,headers.toArray(new Header[headers.size()]));
 		return method.getResponseBodyAsStream();
 		
 	}
@@ -287,7 +287,7 @@ public final class S3 implements S3Constants {
 			else break;
 		}
 		
-		if(list.size()==1) return (Content[]) list.get(0);
+		if(list.size()==1) return list.get(0);
 		if(list.size()==0) return new Content[0];
 		
 		Content[] rtn=new Content[size];
@@ -635,7 +635,7 @@ public final class S3 implements S3Constants {
 	}
 
 	public S3Info getInfo(String path) {
-		return (S3Info) infos.get(toKey(path));
+		return infos.get(toKey(path));
 	}
 
 	public void setInfo(String path,S3Info info) {

@@ -43,7 +43,6 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.util.ComponentUtil;
 
 public class HibernateORMSession implements ORMSession{
 
@@ -220,9 +219,7 @@ public class HibernateORMSession implements ORMSession{
 	 * @see railo.runtime.orm.ORMSession#evictEntity(railo.runtime.PageContext, java.lang.String, java.lang.String)
 	 */
 	public void evictEntity(PageContext pc, String entityName, String id) throws PageException {
-		//Component cfc = ComponentUtil.toComponent(HibernateCaster.toComponent(pc, entityName));
 		SessionFactory f = getSessionFactory(pc);
-		//entityName=HibernateCaster.getEntityName(pc,engine,cfc);
 		
 		if(id==null) {
 			f.evictEntity(entityName);
@@ -243,9 +240,6 @@ public class HibernateORMSession implements ORMSession{
 	 * @see railo.runtime.orm.ORMSession#evictCollection(railo.runtime.PageContext, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	public void evictCollection(PageContext pc, String entityName, String collectionName, String id) throws PageException {
-		//Component cfc = ComponentUtil.toComponent(HibernateCaster.toComponent(pc, entityName));
-		//entityName=HibernateCaster.getEntityName(pc,engine,cfc);
-		
 		SessionFactory f = getSessionFactory(pc);
 		String role=entityName+"."+collectionName;
 		if(id==null) {
@@ -530,7 +524,7 @@ public class HibernateORMSession implements ORMSession{
 	}
 	
 	private Object loadByExample(PageContext pc, Object obj,  boolean unique) throws PageException {
-		 Component cfc=ComponentUtil.toComponent(HibernateCaster.toComponent(obj));
+		 Component cfc=HibernateCaster.toComponent(obj);
 		 ComponentScope scope = cfc.getComponentScope();
 		 String name=HibernateCaster.getEntityName(cfc);
 		 //Session session=getSession(pc, cfc);

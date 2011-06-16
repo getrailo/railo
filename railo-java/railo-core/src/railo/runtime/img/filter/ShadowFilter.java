@@ -252,7 +252,7 @@ public class ShadowFilter extends AbstractBufferedImageOp  implements DynFilteri
 		Graphics2D g = dst.createGraphics();
 		g.setComposite( AlphaComposite.getInstance( AlphaComposite.SRC_OVER, opacity ) );
 		if ( addMargins ) {
-			float radius2 = radius/2;
+			//float radius2 = radius/2;
 			float topShadow = Math.max( 0, radius-yOffset );
 			float leftShadow = Math.max( 0, radius-xOffset );
 			g.translate( topShadow, leftShadow );

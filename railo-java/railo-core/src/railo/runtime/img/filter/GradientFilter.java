@@ -157,7 +157,7 @@ public class GradientFilter extends AbstractBufferedImageOp  implements DynFilte
         if ( dst == null )
             dst = createCompatibleDestImage( src, null );
 
-		int rgb1, rgb2;
+		//int rgb1, rgb2;
 		float x1, y1, x2, y2;
 		x1 = p1.x;
 		x2 = p2.x;
@@ -168,13 +168,13 @@ public class GradientFilter extends AbstractBufferedImageOp  implements DynFilte
 			x2 = y1;
 			y1 = p2.y;
 			y2 = p1.y;
-			rgb1 = color2;
-			rgb2 = color1;
+			//rgb1 = color2;
+			//rgb2 = color1;
 		} else {
 			y1 = p1.y;
 			y2 = p2.y;
-			rgb1 = color1;
-			rgb2 = color2;
+			//rgb1 = color1;
+			//rgb2 = color2;
 		}
 		float dx = x2 - x1;
 		float dy = y2 - y1;

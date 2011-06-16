@@ -36,7 +36,7 @@ public final class JSStringFormat implements Function {
 	
 	public static String callx(PageContext pc , String jsString) {// MUST ????
 		int len=jsString.length();
-		StringBuffer sb=new StringBuffer(len);
+		//StringBuffer sb=new StringBuffer(len);
 		int plus=0;
 		
 		for(int pos=0;pos<len;pos++) {

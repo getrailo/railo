@@ -311,7 +311,6 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		return SizeOf.size(pcs);
 	}
 	
-	// FUTURE add to interface
 	public Array getInfo() {
 		Array info=new ArrayImpl();
 		

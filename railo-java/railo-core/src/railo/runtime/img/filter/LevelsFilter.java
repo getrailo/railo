@@ -77,7 +77,7 @@ public class LevelsFilter extends WholeImageFilter  implements DynFiltering {
 		int i, j;
 
 		if (histogram.getNumSamples() > 0) {
-			float scale = 255.0f / histogram.getNumSamples();
+			//float scale = 255.0f / histogram.getNumSamples();
 			lut = new int[3][256];
 
             float low = lowLevel * 255;

@@ -95,7 +95,7 @@ public class UDFHasProperty extends UDFGSProperty {
 			return false;
 		}
 		else {
-			Object o;
+			//Object o;
 			if(propValue instanceof Array) {
 				Array arr = ((Array)propValue);
 				return arr.size()>0;

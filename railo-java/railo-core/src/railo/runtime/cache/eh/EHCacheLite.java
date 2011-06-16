@@ -240,10 +240,10 @@ public class EHCacheLite extends EHCacheSupport {
 
 	private static String createXML(String path, String[] cacheNames,Struct[] arguments, String[] hashes, String hash) {
 		
-		Struct global=null;
+		//Struct global=null;
 		for(int i=0;i<hashes.length;i++){
 			if(hash.equals(hashes[i])){
-				global=arguments[i];
+				//global=arguments[i];
 				break;
 			}
 		}

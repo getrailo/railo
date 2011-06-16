@@ -375,7 +375,7 @@ public class PSDReader {
         if (miscLen == 0) {
             return; // no layers, only base image
         }
-        int layerInfoLen = readInt();
+        readInt();
         nLayers = readShort();
         if (nLayers > 0) {
             layers = new LayerInfo[nLayers];
@@ -391,7 +391,7 @@ public class PSDReader {
             info.chanID = new int[info.nChan];
             for (int j = 0; j < info.nChan; j++) {
                 int id = readShort();
-                int size = readInt();
+                readInt();
                 info.chanID[j] = id;
             }
             String s = readString(4);
@@ -401,8 +401,8 @@ public class PSDReader {
             }
             skipBytes(4); // blend mode
             info.alpha = readByte();
-            int clipping = readByte();
-            int flags = readByte();
+            readByte();
+            readByte();
             readByte(); // filler
             int extraSize = readInt();
             skipBytes(extraSize);

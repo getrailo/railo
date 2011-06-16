@@ -8,7 +8,6 @@ import railo.runtime.functions.system.GetApplicationSettings;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.scope.SharedScope;
 
 
 

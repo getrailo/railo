@@ -112,7 +112,7 @@ public class MirrorFilter extends AbstractBufferedImageOp  implements DynFilteri
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         if ( dst == null )
             dst = createCompatibleDestImage( src, null );
-        BufferedImage tsrc = src;
+        //BufferedImage tsrc = src;
 		Shape clip;
 		int width = src.getWidth();
 		int height = src.getHeight();

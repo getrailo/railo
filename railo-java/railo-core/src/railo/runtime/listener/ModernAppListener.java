@@ -225,7 +225,7 @@ public class ModernAppListener extends AppListenerSupport {
 		
 		PageContextImpl pc=null;
 		try {
-			pc = (PageContextImpl) createPageContext(factory,app,applicationName,null,ON_APPLICATION_END);
+			pc =  createPageContext(factory,app,applicationName,null,ON_APPLICATION_END);
 			call(app,pc, ON_APPLICATION_END, new Object[]{pc.applicationScope()});
 		}
 		finally {

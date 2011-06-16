@@ -2008,7 +2008,6 @@ public final class ConfigWebFactory {
 		
         Map<String, GatewayEntry> mapGateways=new HashMap<String, GatewayEntry>();
         
-        Resource configDir=config.getConfigDir();
         Element eGateWay=getChildByName(doc.getDocumentElement(),"gateways");
         
         String strCFCDirectory = ConfigWebUtil.translateOldPath(eGateWay.getAttribute("cfc-directory"));
@@ -2065,9 +2064,7 @@ public final class ConfigWebFactory {
 			cw.setGatewayEntries(mapGateways);
 		}
 		else {
-			try {
-				cw.getGatewayEngine().clear();
-			} catch (PageException e) {e.printStackTrace();}
+			cw.getGatewayEngine().clear();
 		}
 	}
     
@@ -2342,7 +2339,7 @@ public final class ConfigWebFactory {
         
     
     
-    private static void loadTempDirectory(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws ExpressionException, TagLibException, FunctionLibException {
+    private static void loadTempDirectory(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws ExpressionException {
         Resource configDir=config.getConfigDir();
         boolean hasCS=configServer!=null;
         
@@ -2785,7 +2782,7 @@ public final class ConfigWebFactory {
 	        	}
 	        	list.add(new RemoteClientImpl(label,type,url,sUser,sPass,aPass,pd,aCode,usage));
 	        }
-	        if(list.size()>0)config.setRemoteClients((RemoteClient[])list.toArray(new RemoteClient[list.size()]));
+	        if(list.size()>0)config.setRemoteClients(list.toArray(new RemoteClient[list.size()]));
 	        else config.setRemoteClients(new RemoteClient[0]);
         
         // init spooler engine

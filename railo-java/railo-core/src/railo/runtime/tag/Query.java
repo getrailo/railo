@@ -14,7 +14,6 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
-import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMSession;
@@ -369,7 +368,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	public int doEndTag() throws PageException	{
 		
 		if(StringUtil.isEmpty(datasource) && (dbtype==null || !dbtype.equals("query"))){
-			datasource=((ApplicationContext)pageContext.getApplicationContext()).getDefaultDataSource();
+			datasource=pageContext.getApplicationContext().getDefaultDataSource();
 			if(StringUtil.isEmpty(datasource))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when attribute [dbtype] has not value [query] and no default datasource is defined",
@@ -380,7 +379,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		if(hasChangedPSQ)pageContext.setPsq(orgPSQ);
 		String strSQL=bodyContent.getString();
 		if(strSQL.length()==0) throw new DatabaseException("no sql string defined, inside query tag",null,null,null);
-		SQL sql=items.size()>0?new SQLImpl(strSQL,(SQLItem[])items.toArray(new SQLItem[items.size()])):new SQLImpl(strSQL);
+		SQL sql=items.size()>0?new SQLImpl(strSQL,items.toArray(new SQLItem[items.size()])):new SQLImpl(strSQL);
 		
 		railo.runtime.type.Query query=null;
 		int exe=0;

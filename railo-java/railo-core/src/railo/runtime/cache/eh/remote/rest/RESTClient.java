@@ -34,12 +34,11 @@ public class RESTClient {
 		
 	}
 	
-	public Object getMetaRaw(String cacheName) throws IOException, SAXException {
+	public Object getMetaRaw(String cacheName) throws IOException {
 		HttpURLConnection connection = (HttpURLConnection) toURL(cacheName).openConnection();
 	    connection.setRequestMethod("GET");
 	    connection.setRequestProperty("id", "getKeysWithExpiryCheck");
 	    connection.connect();
-	    InputStream is=null;
 	    try	{
 	    	return getContent(connection);
 		} 
@@ -64,8 +63,7 @@ public class RESTClient {
     	}
 	}	
 	
-	public CacheEntry getMeta2(String cacheName) throws IOException, ClassNotFoundException {
-		Object obj=null;
+	public CacheEntry getMeta2(String cacheName) throws IOException {
 		HttpURLConnection connection = (HttpURLConnection) toURL(cacheName).openConnection();
 	    connection.setRequestMethod("HEAD");
 	    connection.connect();
@@ -113,7 +111,7 @@ public class RESTClient {
 		HttpURLConnection urlConnection = (HttpURLConnection) toURL(cacheName).openConnection();
         urlConnection.setRequestMethod("PUT");
 
-        int status = urlConnection.getResponseCode();
+        urlConnection.getResponseCode();
         urlConnection.disconnect();
 	}
 	
@@ -177,15 +175,15 @@ public class RESTClient {
 	
 
 
-	public CacheEntry getEntry(String cacheName,String key) throws IOException, ClassNotFoundException {
+	public CacheEntry getEntry(String cacheName,String key) throws IOException {
 		Object obj=null;
 		HttpURLConnection connection = (HttpURLConnection) toURL(cacheName, key).openConnection();
 	    connection.setRequestMethod("GET");
 	    connection.connect();
 	    try	{
-	    	int length = connection.getContentLength();
-	    	String expires = connection.getHeaderField("Expires");
-	    	String lastModified = connection.getHeaderField("Last-Modified");
+	    	connection.getContentLength();
+	    	connection.getHeaderField("Expires");
+	    	connection.getHeaderField("Last-Modified");
 	    	
 	    	obj=getContent(connection);
 	    	

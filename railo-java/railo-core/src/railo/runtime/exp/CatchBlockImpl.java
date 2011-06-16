@@ -46,7 +46,6 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable{
 	}
 
 	/**
-	 * FUTURE add to interface
 	 * @return the pe
 	 */
 	public PageException getPageException() {

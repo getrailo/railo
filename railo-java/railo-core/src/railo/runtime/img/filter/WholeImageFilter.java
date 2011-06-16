@@ -17,7 +17,6 @@ limitations under the License.
 package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
@@ -52,8 +51,9 @@ public abstract class WholeImageFilter extends AbstractBufferedImageOp  implemen
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
-		int type = src.getType();
-		WritableRaster srcRaster = src.getRaster();
+		//int type = src.getType();
+		//WritableRaster srcRaster = 
+		src.getRaster();
 
 		originalSpace = new Rectangle(0, 0, width, height);
 		transformedSpace = new Rectangle(0, 0, width, height);
@@ -63,7 +63,8 @@ public abstract class WholeImageFilter extends AbstractBufferedImageOp  implemen
             ColorModel dstCM = src.getColorModel();
 			dst = new BufferedImage(dstCM, dstCM.createCompatibleWritableRaster(transformedSpace.width, transformedSpace.height), dstCM.isAlphaPremultiplied(), null);
 		}
-		WritableRaster dstRaster = dst.getRaster();
+		//WritableRaster dstRaster = 
+        dst.getRaster();
 
 		int[] inPixels = getRGB( src, 0, 0, width, height, null );
 		inPixels = filterPixels( width, height, inPixels, transformedSpace );
@@ -89,7 +90,7 @@ public abstract class WholeImageFilter extends AbstractBufferedImageOp  implemen
      */
 	protected abstract int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace );
 	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
-		Object o;
+		//Object o;
 
 		// check for arguments not supported
 		if(parameters.size()>0) {

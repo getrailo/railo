@@ -274,8 +274,8 @@ public final class ComponentUtil {
 		registerTypeMapping(server,clazz);
 	}
 
-	private static String getClassname(Component component) throws ExpressionException {
-    	PageSource ps = ComponentUtil.toComponent(component).getPageSource();
+	private static String getClassname(Component component) {
+    	PageSource ps = component.getPageSource();
     	//ps.getRealpath()
     	//String path=ps.getMapping().getVirtual()+ps.getRealpath();
     	String path=ps.getDisplayPath();// Must remove webroot
@@ -366,15 +366,14 @@ public final class ComponentUtil {
     	String className=getClassname(component);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
     	String real=className.replace('.','/');
     	
-    	Component cp = ComponentUtil.toComponent(component);
     	
-    	Mapping mapping = cp.getPageSource().getMapping();
+    	Mapping mapping = component.getPageSource().getMapping();
 		Config config = mapping.getConfig();
 		PhysicalClassLoader cl = (PhysicalClassLoader)config.getRPCClassLoader(false);
 		
 		Resource classFile = cl.getDirectory().getRealResource(real.concat(".class"));
 		
-    	String classNameOriginal=cp.getPageSource().getFullClassName();
+    	String classNameOriginal=component.getPageSource().getFullClassName();
     	String realOriginal=classNameOriginal.replace('.','/');
 		Resource classFileOriginal = mapping.getClassRootDirectory().getRealResource(realOriginal.concat(".class"));
 		
@@ -391,7 +390,7 @@ public final class ComponentUtil {
     	
 		
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, ASMUtil.toASMProperties(ComponentUtil.getProperties(component,false)),Object.class,new Class[]{Pojo.class},cp.getPageSource().getDisplayPath());
+		byte[] barr = ASMUtil.createPojo(real, ASMUtil.toASMProperties(ComponentUtil.getProperties(component,false)),Object.class,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
@@ -569,10 +568,7 @@ public final class ComponentUtil {
 	}
 
 	public static Property[] getProperties(Component c,boolean onlyPeristent) {
-		if(c instanceof Component)
-			return ((Component)c).getProperties(onlyPeristent);
-		
-		throw new RuntimeException("class ["+Caster.toClassName(c)+"] does not support method [getProperties(boolean)]");
+		return c.getProperties(onlyPeristent);
 	}
 	
 	public static Property[] getIDProperties(Component c,boolean onlyPeristent) {
@@ -583,11 +579,6 @@ public final class ComponentUtil {
 				tmp.add(props[i]);
 		}
 		return tmp.toArray(new Property[tmp.size()]);
-	}
-	
-	public static Component toComponent(Component comp) throws ExpressionException {
-		if(comp instanceof Component) return (Component) comp;
-		throw new ExpressionException("can't cast class ["+Caster.toClassName(comp)+"] to a class of type Component");
 	}
 
 	public static ComponentAccess toComponentAccess(Component comp) throws ExpressionException {
@@ -619,16 +610,10 @@ public final class ComponentUtil {
 			return null;
 		}
 	}
-	
-	
-	public static Component toComponent(Component comp, Component defaultValue) {
-		if(comp instanceof Component) return (Component) comp;
-		return defaultValue;
-	}
 
 	public static ComponentAccess getActiveComponent(PageContext pc, ComponentAccess current) {
 		if(pc.getActiveComponent()==null) return current; 
-		if(pc.getActiveUDF()!=null && ((Component)pc.getActiveComponent()).getPageSource()==((Component)pc.getActiveUDF().getOwnerComponent()).getPageSource()){
+		if(pc.getActiveUDF()!=null && (pc.getActiveComponent()).getPageSource()==(pc.getActiveUDF().getOwnerComponent()).getPageSource()){
 			
 			return (ComponentImpl) pc.getActiveUDF().getOwnerComponent();
 		}

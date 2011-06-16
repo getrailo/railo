@@ -50,7 +50,6 @@ import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
-import railo.runtime.cfx.QueryWrap;
 import railo.runtime.coder.Base64Coder;
 import railo.runtime.coder.Coder;
 import railo.runtime.coder.CoderException;
@@ -414,7 +413,7 @@ public final class Caster {
         throw new CasterException(o,"number");
     }
 
-    public static double toDoubleValue(Double d) throws PageException {
+    public static double toDoubleValue(Double d) {
         if(d == null) return 0;
         return d.doubleValue();
     }
@@ -2718,38 +2717,6 @@ public final class Caster {
         }
         throw new CasterException(o,"query");
     }
-    
-
-    public static Query toQuery(Query q) throws CasterException {
-		Query rtn = toQuery(q, null);
-    	if(rtn!=null) return rtn;
-		throw new CasterException(q,"Query");
-	}
-
-    public static Query toQuery(Query q, Query defaultValue)  {
-		while(q instanceof QueryWrap){
-			q=((QueryWrap)q).getQuery();
-		}
-		
-		if(q instanceof Query)return (Query) q;
-		return defaultValue;
-	}
-    
-
-    /* *
-     * cast a query to a QueryImpl Object
-     * @param q query to cast
-     * @return casted Query Object
-     * @throws CasterException 
-     * /
-    public static QueryImpl toQueryImpl(Query q,QueryImpl defaultValue) {
-		while(q instanceof QueryWrap){
-			q=((QueryWrap)q).getQuery();
-		}
-		
-		if(q instanceof QueryImpl)return (QueryImpl) q;
-		return defaultValue;
-	}*/
 
     /**
      * cast a Object to a Query Object

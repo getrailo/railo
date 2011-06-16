@@ -57,8 +57,8 @@ public abstract class ComponentPage extends Page  {
 	public static final railo.runtime.type.Collection.Key REMOTE_PERSISTENT_ID = KeyImpl.getInstance("Id16hohohh");
 
 	//public static final short REMOTE_PERSISTENT_REQUEST = 1;
-	//public static final short REMOTE_PERSISTENT_SESSION = 2; FUTURE
-	//public static final short REMOTE_PERSISTENT_APPLICATION = 4; FUTURE
+	//public static final short REMOTE_PERSISTENT_SESSION = 2;
+	//public static final short REMOTE_PERSISTENT_APPLICATION = 4;
 	//public static final short REMOTE_PERSISTENT_SERVER = 8;
 	
 	
@@ -94,7 +94,7 @@ public abstract class ComponentPage extends Page  {
 	            if(fromGateway && strRemotePersisId!=null) {
 	            	ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
 	            	GatewayEngineImpl engine = config.getGatewayEngine();
-	            	component=(Component) engine.getPersistentRemoteCFC(strRemotePersisId);
+	            	component=engine.getPersistentRemoteCFC(strRemotePersisId);
 	            	
 	            	if(component==null) {
 	            		component=newInstance(pc,getPageSource().getComponentName(),false);
@@ -436,10 +436,10 @@ public abstract class ComponentPage extends Page  {
     	String wsdl = component.getWSDLFile();
     	if(!StringUtil.isEmpty(wsdl)) {
     		
-    		OutputStream os=null;// FUTURE add to interface
+    		OutputStream os=null;
     		Resource input = ResourceUtil.toResourceExisting(pc, wsdl);
     		try {
-    			os=((PageContextImpl)pc).getResponseStream();
+    			os=pc.getResponseStream();
 				pc.getResponse().setContentType("text/xml; charset=utf-8");
     			IOUtil.copy(input, os, false);
     			

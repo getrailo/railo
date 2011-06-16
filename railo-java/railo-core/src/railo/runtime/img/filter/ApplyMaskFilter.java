@@ -133,14 +133,16 @@ public class ApplyMaskFilter extends AbstractBufferedImageOp  implements DynFilt
 	}
 
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
-        int width = src.getWidth();
-        int height = src.getHeight();
-		int type = src.getType();
-		WritableRaster srcRaster = src.getRaster();
+        //int width = src.getWidth();
+        //int height = src.getHeight();
+		//int type = src.getType();
+		//WritableRaster srcRaster = 
+    	src.getRaster();
 
         if ( dst == null )
             dst = createCompatibleDestImage( src, null );
-		WritableRaster dstRaster = dst.getRaster();
+		//WritableRaster dstRaster = 
+        dst.getRaster();
 
         if ( destination != null && maskImage != null )
 			composeThroughMask( src.getRaster(), dst.getRaster(), maskImage.getRaster() );

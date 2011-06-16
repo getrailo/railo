@@ -75,7 +75,7 @@ public final class Dump implements Function {
 		if(hide!=null && "all".equalsIgnoreCase(hide.trim()))hide=null;
 		
 		
-		String context = getContext();
+		//String context = getContext();
 		//PageContext pcc = pc;	
 		try { 
 			

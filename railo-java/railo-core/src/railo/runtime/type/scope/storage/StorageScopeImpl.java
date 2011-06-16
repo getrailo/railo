@@ -142,7 +142,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	}
 	
 	void setTimeSpan(PageContext pc) {
-		ApplicationContext ac=(ApplicationContext) pc.getApplicationContext();
+		ApplicationContext ac=pc.getApplicationContext();
 		this.timeSpan=getType()==SCOPE_SESSION?
 				ac.getSessionTimeout().getMillis():
 				ac.getClientTimeout().getMillis();
@@ -517,7 +517,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 				sb.append(c);
 			else {
 				sb.append('$');
-				sb.append(Integer.toString(((int)c),Character.MAX_RADIX));
+				sb.append(Integer.toString((c),Character.MAX_RADIX));
 				sb.append('$');
 			}
 		}

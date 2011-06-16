@@ -405,19 +405,19 @@ public final class Form extends BodyTagImpl {
         
         
         
-        boolean hasListener=false;
+        //boolean hasListener=false;
         if(onsubmit==null) attributes.setEL("onsubmit","return "+funcName+".check();");
         else {
             attributes.setEL("onsubmit","return "+checkName+"();");
-            hasListener=true;
+            //hasListener=true;
         }
         if(onreset!=null) {
             attributes.setEL("onreset",resetName+"();");
-            hasListener=true;
+            //hasListener=true;
         }
         if(onload!=null) {
             attributes.setEL("onload",loadName+"();");
-            hasListener=true;
+            //hasListener=true;
         }
         
         if(scriptSrc==null)scriptSrc=contextPath+"/railo-context/form.cfm";

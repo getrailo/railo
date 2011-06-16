@@ -909,7 +909,7 @@ public final class Http extends BodyTagImpl {
 	// check if has fileUploads	
 		boolean doUploadFile=false;
 		for(int i=0;i<http.params.size();i++) {
-			if(((HttpParamBean)http.params.get(i)).getType().equals("file")) {
+			if((http.params.get(i)).getType().equals("file")) {
 				doUploadFile=true;
 				break;
 			}
@@ -982,7 +982,7 @@ public final class Http extends BodyTagImpl {
 		int len=http.params.size();
 		StringBuilder acceptEncoding=new StringBuilder();
 		for(int i=0;i<len;i++) {
-			HttpParamBean param=(HttpParamBean)http.params.get(i);
+			HttpParamBean param=http.params.get(i);
 			String type=param.getType();
 		// URL
 			if(type.equals("url")) {
@@ -1150,7 +1150,7 @@ public final class Http extends BodyTagImpl {
 		}
 		
 		// set to method
-		String qs = toQueryString((NameValuePair[]) listPairs.toArray(new NameValuePair[listPairs.size()]));
+		String qs = toQueryString(listPairs.toArray(new NameValuePair[listPairs.size()]));
 		if(!StringUtil.isEmpty(qs))
 			httpMethod.setQueryString(qs);
 

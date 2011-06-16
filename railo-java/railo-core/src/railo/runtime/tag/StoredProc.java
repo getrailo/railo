@@ -30,7 +30,6 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallySupport;
-import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Array;
@@ -304,7 +303,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 							params.add(index, param);
 						}
 						else {								
-							ProcParamBean param=(ProcParamBean) params.get(index);
+							ProcParamBean param= params.get(index);
 							if(coll.metas[i].dataType!=Types.OTHER && coll.metas[i].dataType!=param.getType()){
 								param.setType(coll.metas[i].dataType);
 							}
@@ -402,7 +401,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		long start=System.currentTimeMillis();
 		
 		if(StringUtil.isEmpty(datasource)){
-			datasource=((ApplicationContext)pageContext.getApplicationContext()).getDefaultDataSource();
+			datasource=pageContext.getApplicationContext().getDefaultDataSource();
 			if(StringUtil.isEmpty(datasource))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when no default datasource is defined",
@@ -500,7 +499,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			    // params
 			    it = params.iterator();
 			    while(it.hasNext()) {
-			    	param=(ProcParamBean) it.next();
+			    	param= it.next();
 			    	if(param.getDirection()!=ProcParamBean.DIRECTION_IN){
 			    		Object value=null;
 			    		if(!StringUtil.isEmpty(param.getVariable())){

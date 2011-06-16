@@ -1007,7 +1007,7 @@ public class PDF extends BodyTagImpl  {
 		
 		
 	}
-	private void doActionRead() throws PageException, IOException {
+	private void doActionRead() throws PageException {
 		required("pdf", "read", "name", name,true);
 		required("pdf", "read", "source", source);
 		
@@ -1119,7 +1119,7 @@ public class PDF extends BodyTagImpl  {
 	}
 	
 	
-	private void doActionGetInfo() throws PageException, IOException {
+	private void doActionGetInfo() throws PageException {
 		required("pdf", "getInfo", "name", name,true);
 		required("pdf", "getInfo", "source", source);
 		
@@ -1133,7 +1133,7 @@ public class PDF extends BodyTagImpl  {
 	}
 	
 
-	private PDFDocument toPDFDocument(Object source,String password, Resource directory) throws ExpressionException, IOException {
+	private PDFDocument toPDFDocument(Object source,String password, Resource directory) throws ExpressionException {
 		
 		if(source instanceof PDFDocument) 
 			return (PDFDocument)source;

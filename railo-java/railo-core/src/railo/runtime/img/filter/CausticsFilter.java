@@ -206,8 +206,8 @@ public class CausticsFilter extends WholeImageFilter  implements DynFiltering {
 		s = (float)Math.sin(0.1);
 		c = (float)Math.cos(0.1);
 
-		int srcWidth = originalSpace.width;
-		int srcHeight = originalSpace.height;
+		//int srcWidth = originalSpace.width;
+		//int srcHeight = originalSpace.height;
 		int outWidth = transformedSpace.width;
 		int outHeight = transformedSpace.height;
 		int index = 0;

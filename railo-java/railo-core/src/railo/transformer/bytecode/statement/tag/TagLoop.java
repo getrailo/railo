@@ -789,7 +789,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 						adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
 						adapter.invokeVirtual(Types.QUERY, GO_2); 
 						
-						/* FUTURE
+						/* OLD
 						adapter.invokeInterface(Types.QUERY, GO_1); 
 						 */
 						av.visitMiddle(bc);

@@ -333,7 +333,7 @@ public final class SystemUtil {
     
 
 	public static String addPlaceHolder(Resource file,  Config config, String defaultValue) {
-    	ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
+    	//ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
     	
         // temp
         	Resource dir = config.getTempDirectory();

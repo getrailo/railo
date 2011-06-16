@@ -816,7 +816,7 @@ public final class CFMLTransformer {
 				Iterator<String> it = hash.keySet().iterator();
 			
 				while(it.hasNext())	{
-					TagLibTagAttr att=(TagLibTagAttr) hash.get(it.next());
+					TagLibTagAttr att=hash.get(it.next());
 					if(!parent.containsAttribute(att.getName()) && att.hasDefaultValue())	{
 				    	
 						Attribute attr=new Attribute(tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_DYNAMIC,
@@ -844,7 +844,7 @@ public final class CFMLTransformer {
 				Iterator<String> it = hash.keySet().iterator();
 				
 				while(it.hasNext())	{
-					TagLibTagAttr att=(TagLibTagAttr) hash.get(it.next());
+					TagLibTagAttr att=hash.get(it.next());
 					if(att.isRequired() && !args.contains(att.getName()) && att.getDefaultValue()==null)	{
 						if(!hasAttributeCollection)throw createTemplateException(data.cfml,"attribute "+att.getName()+" is required for tag "+tag.getFullName(),tag);
 						parent.addMissingAttribute(att.getName(),att.getType());

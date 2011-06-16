@@ -97,9 +97,9 @@ public class HalftoneFilter extends AbstractBufferedImageOp  implements DynFilte
         int maskWidth = mask.getWidth();
         int maskHeight = mask.getHeight();
 
-		float d = density * (1+softness);
-		float lower = 255 * (d-softness);
-		float upper = 255 * d;
+		//float d = density * (1+softness);
+		//float lower = 255 * (d-softness);
+		//float upper = 255 * d;
         float s = 255*softness;
 
 		int[] inPixels = new int[width];

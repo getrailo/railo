@@ -40,11 +40,10 @@ public final class EvaluateComponent {
         return comp;
 	}
 	public static void setInternalState(Component comp, Struct sctThis, Struct sctVariables) throws PageException {
-		Component ci = ComponentUtil.toComponent(comp);
 		
 		// this	
 		// delete this scope data members
-		ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,ci);
+		ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,comp);
 		Collection.Key[] keys = cw.keys();
 		Object member;
 		for(int i=0;i<keys.length;i++) {
@@ -60,9 +59,8 @@ public final class EvaluateComponent {
 		}
 		
 	// Variables
-		boolean isWrap=comp instanceof ComponentWrap;
-        if(isWrap || comp instanceof Component){
-        	ComponentScope scope = ci.getComponentScope();
+        
+        	ComponentScope scope = comp.getComponentScope();
         	
         	// delete variables scope data members
         	keys = scope.keys();
@@ -78,6 +76,6 @@ public final class EvaluateComponent {
 			for(int i=0;i<keys.length;i++) {
 				scope.set(keys[i],sctVariables.get(keys[i]));
 			}
-        }
+        
 	}
 }

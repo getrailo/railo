@@ -7,7 +7,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Client;
-import railo.runtime.type.scope.Client;
 import railo.runtime.type.scope.storage.StorageScopeCache;
 
 public final class ClientCache extends StorageScopeCache implements Client {

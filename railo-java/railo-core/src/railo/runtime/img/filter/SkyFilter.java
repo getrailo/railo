@@ -311,7 +311,7 @@ mx = -10000;
 		Graphics2D g = dst.createGraphics();
 		g.drawImage( skyColors, 0, 0, dst.getWidth(), dst.getHeight(), t, 0, t+1, 64, null );
 		g.dispose();
-		BufferedImage clouds = super.filter( dst, dst );
+		super.filter( dst, dst );
 //		g.drawRenderedImage( clouds, null );
 //		g.dispose();
 long finish = System.currentTimeMillis();
@@ -368,14 +368,14 @@ ny += t*windSpeed;// Wind towards the camera
 		nx /= scale;
 		ny /= scale * stretch;
 		float f = evaluate(nx, ny);
-float fg = f;//FIXME-bump map
+//float fg = f;//FIXME-bump map
 		// Normalize to 0..1
 //		f = (f-min)/(max-min);
 
 		f = (f+1.23f)/2.46f;
 
 //		f *= amount;
-		int a = rgb & 0xff000000;
+		//int a = rgb & 0xff000000;
 		int v;
 
 		// Work out cloud cover

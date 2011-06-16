@@ -19,7 +19,6 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
@@ -119,7 +118,6 @@ import railo.runtime.type.scope.ArgumentImpl;
 import railo.runtime.type.scope.CGI;
 import railo.runtime.type.scope.CGIImpl;
 import railo.runtime.type.scope.Client;
-import railo.runtime.type.scope.Client;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.Cookie;
 import railo.runtime.type.scope.CookieImpl;
@@ -135,7 +133,6 @@ import railo.runtime.type.scope.ScopeFactory;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.scope.Server;
 import railo.runtime.type.scope.Session;
-import railo.runtime.type.scope.Session;
 import railo.runtime.type.scope.Threads;
 import railo.runtime.type.scope.URL;
 import railo.runtime.type.scope.URLForm;
@@ -145,7 +142,6 @@ import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
-import railo.runtime.type.scope.storage.StorageScope;
 import railo.runtime.type.scope.storage.StorageScopeImpl;
 import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
@@ -363,6 +359,27 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		defaultApplicationContext=new ClassicApplicationContext(config,"",true);
 		
 	}
+
+	/**
+	 * @see javax.servlet.jsp.PageContext#initialize(javax.servlet.Servlet, javax.servlet.ServletRequest, javax.servlet.ServletResponse, java.lang.String, boolean, int, boolean)
+	 */
+	public void initialize(
+			Servlet servlet, 
+			ServletRequest req, 
+			ServletResponse rsp, 
+			String errorPageURL, 
+			boolean needsSession, 
+			int bufferSize, 
+			boolean autoFlush) throws IOException, IllegalStateException, IllegalArgumentException {
+	   initialize(
+			   (HttpServlet)servlet,
+			   (HttpServletRequest)req,
+			   (HttpServletResponse)rsp,
+			   errorPageURL,
+			   needsSession,
+			   bufferSize,
+			   autoFlush,false);
+	}
 	
 	/**
 	 * initialize a existing page context
@@ -381,7 +398,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			 String errorPageURL, 
 			 boolean needsSession, 
 			 int bufferSize, 
-			 boolean autoFlush,boolean isChild) {
+			 boolean autoFlush,
+			 boolean isChild) {
 		requestId=counter++;
 		rsp.setContentType("text/html; charset=UTF-8");
 		
@@ -594,21 +612,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	gatewayContext=false;
 	}
 
-	/**
-	 * @see javax.servlet.jsp.PageContext#initialize(javax.servlet.Servlet, javax.servlet.ServletRequest, javax.servlet.ServletResponse, java.lang.String, boolean, int, boolean)
-	 */
-	public void initialize(
-			Servlet servlet, 
-			ServletRequest req, 
-			ServletResponse rsp, 
-			String errorPageURL, 
-			boolean needsSession, 
-			int bufferSize, 
-			boolean autoFlush) throws IOException, IllegalStateException, IllegalArgumentException {
-	   initialize((HttpServlet)servlet,(HttpServletRequest)req,(HttpServletResponse)rsp,errorPageURL,needsSession,bufferSize,autoFlush);
-	}
 	
-	// FUTURE add to abstract class
 	
 	/* *
 	 * called when parent thread end
@@ -1133,9 +1137,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @param argument sets the current argument scope
      */
     public void setFunctionScopes(Local local,Argument argument) {
-    	// FUTURE setFunctionScopes(Local local,Argument argument)
-		this.argument=argument;
-		this.local=(Local) local;
+    	this.argument=argument;
+		this.local=local;
 		undefined.setFunctionScopes(local,argument);
 	}
 	
@@ -2795,7 +2798,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		DataSource ds = config.getDataSource(datasource);
 		
 		String id=DatasourceConnectionPool.createId(ds,user,pass);
-		DatasourceConnection dc=(DatasourceConnection) conns.get(id);
+		DatasourceConnection dc=conns.get(id);
 		if(dc!=null && DatasourceConnectionPool.isValid(dc,null)){
 			return dc;
 		}

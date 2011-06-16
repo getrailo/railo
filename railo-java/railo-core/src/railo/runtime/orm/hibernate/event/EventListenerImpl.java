@@ -50,7 +50,7 @@ public class EventListenerImpl
 	private boolean allEvents;
     
 	public EventListenerImpl(Component component, boolean allEvents) {
-	       this.component=ComponentUtil.toComponent(component,null); 
+	       this.component=component; 
 	       this.allEvents=allEvents; 
     }
 
@@ -124,7 +124,7 @@ public class EventListenerImpl
 				args=allEvents?new Object[]{obj,data}:new Object[]{data};
 			}
 			if(!allEvents) {
-				if(!ComponentUtil.toComponent(component).getPageSource().equals(ComponentUtil.toComponent(obj).getPageSource()))
+				if(!component.getPageSource().equals(ComponentUtil.toComponent(obj).getPageSource()))
 					return;
 			}
 			c.call(pc, name, args);
