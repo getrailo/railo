@@ -613,14 +613,12 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
             String custom3;
             String custom4;
             String url;
-            SearchResultItemPro record;
+            SearchResulItem record;
             SearchIndex si;
-            boolean hasContextSummary=false;
             for(int y=0;y<to;y++) {
             		
                 int row=len+y+1;
-                record = SearchResulItemImpl.toSearchResultItemPro(records[y]);
-                if(y==0)hasContextSummary=record instanceof SearchResultItemPro;
+                record = records[y];
             	si=(SearchIndex)indexes.get(record.getId());
 
                 title=record.getTitle();
@@ -642,7 +640,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
                 qry.setAt("size",row,record.getSize());
 
                 qry.setAt("summary",row,record.getSummary());
-                if(hasContextSummary)qry.setAt("context",row,((SearchResultItemPro)record).getContextSummary());
+                qry.setAt("context",row,record.getContextSummary());
                 qry.setAt("score",row,new Float(record.getScore()));
                 qry.setAt("key",row,record.getKey());
                 qry.setAt("url",row,url);

@@ -5,7 +5,7 @@ package railo.runtime.search;
 /**
  * A Single Record of a Search Result
  */
-public class SearchResulItemImpl implements SearchResultItemPro {
+public class SearchResulItemImpl implements SearchResulItem {
     
 	private String title;
     private float score;
@@ -131,6 +131,16 @@ public class SearchResulItemImpl implements SearchResultItemPro {
     public String getCustom4() {
         return custom4;
     }
+    
+    public String getCustom(int index) throws SearchException {
+    	if(index==1) return custom1;
+    	if(index==2) return custom2;
+    	if(index==3) return custom3;
+    	if(index==4) return custom4;
+    	
+        throw new SearchException("invalid index ["+index+"], valid index is [1,2,3,4]");
+    }
+    
 	/**
 	 * @return the category
 	 */
@@ -168,8 +178,5 @@ public class SearchResulItemImpl implements SearchResultItemPro {
 	 */
 	public String getContextSummary() {
 		return contextSummary;
-	}
-	public static SearchResultItemPro toSearchResultItemPro(SearchResulItem item) {
-		return (SearchResultItemPro) item;
 	}
 }
