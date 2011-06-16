@@ -12,7 +12,7 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.component.Property;
 import railo.runtime.component.PropertyImpl;
 import railo.runtime.db.DatasourceConnection;
@@ -154,7 +154,7 @@ public class HibernateUtil {
 	}
 
 
-	public static Property[] getProperties(ComponentPro component,int fieldType, Property[] defaultValue) {
+	public static Property[] getProperties(Component component,int fieldType, Property[] defaultValue) {
 		Property[] props = component.getProperties(true);
 		java.util.List<Property> rtn=new ArrayList<Property>();
 		
