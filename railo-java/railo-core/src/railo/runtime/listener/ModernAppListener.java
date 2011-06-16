@@ -65,7 +65,6 @@ public class ModernAppListener extends AppListenerSupport {
 	private Map apps=new HashMap();
 	protected int mode=MODE_CURRENT2ROOT;
 	private String type;
-	private Boolean hasOnSessionStart;
 	
 	//private ApplicationContextImpl appContext;
 	//private long cfcCompileTime;

@@ -1,6 +1,7 @@
 package railo.runtime.component;
 
 import java.io.Serializable;
+
 import railo.runtime.type.Struct;
 
 /**

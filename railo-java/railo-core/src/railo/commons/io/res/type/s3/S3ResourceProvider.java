@@ -12,8 +12,9 @@ import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.net.s3.Properties;
+import railo.runtime.net.s3.PropertiesImpl;
 
 public final class S3ResourceProvider implements ResourceProvider {
 	
@@ -93,9 +94,9 @@ public final class S3ResourceProvider implements ResourceProvider {
 		PageContext pc = ThreadLocalPageContext.get();
 		Properties prop=null; 
 		if(pc!=null){
-			prop=((ApplicationContextPro)pc.getApplicationContext()).getS3();
+			prop=((ApplicationContext)pc.getApplicationContext()).getS3();
 		}
-		if(prop==null) prop=new Properties();
+		if(prop==null) prop=new PropertiesImpl();
 		
 		int defaultLocation = prop.getDefaultLocation();
 		storage.setValue(defaultLocation);

@@ -6,7 +6,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
 
-public final class Properties {
+public final class PropertiesImpl implements Properties {
 	private String accessKeyId;
 	private String secretAccessKey;
 	private int defaultLocation=S3Constants.STORAGE_UNKNOW;

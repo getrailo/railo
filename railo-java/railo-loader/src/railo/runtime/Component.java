@@ -6,7 +6,6 @@ import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
-import railo.runtime.type.Collection.Key;
 
 /**
  * interface for a Component

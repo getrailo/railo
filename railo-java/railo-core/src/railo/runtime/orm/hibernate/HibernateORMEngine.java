@@ -40,7 +40,7 @@ import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
@@ -62,7 +62,6 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
-import railo.runtime.util.ApplicationContext;
 
 public class HibernateORMEngine implements ORMEngine {
 
@@ -113,7 +112,7 @@ public class HibernateORMEngine implements ORMEngine {
 	 * @see railo.runtime.orm.ORMEngine#getSession(railo.runtime.PageContext)
 	 */
 	public ORMSession createSession(PageContext pc) throws PageException {
-		ApplicationContextPro appContext = ((ApplicationContextPro)pc.getApplicationContext());
+		ApplicationContext appContext = ((ApplicationContext)pc.getApplicationContext());
 		String dsn=appContext.getORMDatasource();
 		
 		//DatasourceManager manager = pc.getDataSourceManager();
@@ -156,7 +155,7 @@ public class HibernateORMEngine implements ORMEngine {
 			}
 		}
 		else {
-			Object h = hash((ApplicationContextPro)pc.getApplicationContext());
+			Object h = hash((ApplicationContext)pc.getApplicationContext());
 			if(this.hash.equals(h))return false;
 		}
 		
@@ -166,7 +165,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 
 	private synchronized SessionFactory getSessionFactory(PageContext pc,boolean init) throws PageException {
-		ApplicationContextPro appContext = ((ApplicationContextPro)pc.getApplicationContext());
+		ApplicationContext appContext = ((ApplicationContext)pc.getApplicationContext());
 		if(!appContext.isORMEnabled())
 			throw new ORMException(this,"ORM is not enabled in application.cfc/cfapplication");
 		
@@ -390,7 +389,7 @@ public class HibernateORMEngine implements ORMEngine {
 		return cfc.get(eventType,null) instanceof UDF;
 	}
 
-	private Object hash(ApplicationContextPro appContext) {
+	private Object hash(ApplicationContext appContext) {
 		String hash=appContext.getORMDatasource()+":"+appContext.getORMConfiguration().hash();
 		//print.ds(hash);
 		return hash;
@@ -580,9 +579,9 @@ public class HibernateORMEngine implements ORMEngine {
 	 */
 	public ORMConfiguration getConfiguration(PageContext pc) {
 		ApplicationContext ac = pc.getApplicationContext();
-		if(!(ac instanceof ApplicationContextPro))
+		if(!(ac instanceof ApplicationContext))
 			return null;
-		ApplicationContextPro acp=(ApplicationContextPro) ac;
+		ApplicationContext acp=(ApplicationContext) ac;
 		if(!acp.isORMEnabled())
 			return null;
 		return  acp.getORMConfiguration();
@@ -614,7 +613,7 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		
 		
-		ApplicationContextPro appContext = ((ApplicationContextPro)pc.getApplicationContext());
+		ApplicationContext appContext = ((ApplicationContext)pc.getApplicationContext());
 		ORMConfiguration ormConf = appContext.getORMConfiguration();
 		Resource[] locations = ormConf.getCfcLocations();
 		

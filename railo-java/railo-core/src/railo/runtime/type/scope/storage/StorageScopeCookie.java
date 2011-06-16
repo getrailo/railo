@@ -7,7 +7,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -79,7 +79,7 @@ public abstract class StorageScopeCookie extends StorageScopeImpl {
 		super.touchAfterRequest(pc);
 		if(!_isInit) return;
 		
-		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
+		ApplicationContext ac=(ApplicationContext) pc.getApplicationContext();
 		TimeSpan timespan=(getType()==SCOPE_CLIENT)?ac.getClientTimeout():ac.getSessionTimeout();
 		Cookie cookie = pc.cookieScope();
 		

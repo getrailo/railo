@@ -23,12 +23,12 @@ import railo.commons.net.URLItem;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.net.http.ServletInputStreamDummy;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
-import railo.runtime.util.ApplicationContext;
 
 
 /**

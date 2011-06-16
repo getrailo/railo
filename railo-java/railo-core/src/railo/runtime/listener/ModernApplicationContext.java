@@ -245,7 +245,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getClientTimeout()
+	 * @see railo.runtime.listener.ApplicationContext#getClientTimeout()
 	 */
 	public TimeSpan getClientTimeout() {
 		if(!initClientTimeout) {
@@ -357,7 +357,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getSessionstorage()
+	 * @see railo.runtime.listener.ApplicationContext#getSessionstorage()
 	 */
 	public String getSessionstorage() {
 		if(!initSessionStorage) {
@@ -369,7 +369,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getSessionCluster()
+	 * @see railo.runtime.listener.ApplicationContext#getSessionCluster()
 	 */
 	public boolean getSessionCluster() {
 		if(!initSessionCluster) {
@@ -381,7 +381,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getClientCluster()
+	 * @see railo.runtime.listener.ApplicationContext#getClientCluster()
 	 */
 	public boolean getClientCluster() {
 		if(!initClientCluster) {
@@ -393,7 +393,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getSessionType()
+	 * @see railo.runtime.listener.ApplicationContext#getSessionType()
 	 */
 	public short getSessionType() {
 		if(!initSessionType) {
@@ -433,7 +433,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getComponentMappings()
+	 * @see railo.runtime.listener.ApplicationContext#getComponentMappings()
 	 */
 	public Mapping[] getComponentMappings() {
 		if(!initCMappings) {
@@ -445,7 +445,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getLocalMode()
+	 * @see railo.runtime.listener.ApplicationContext#getLocalMode()
 	 */
 	public int getLocalMode() {
 		if(!initLocalMode) {
@@ -457,7 +457,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getS3()
+	 * @see railo.runtime.listener.ApplicationContext#getS3()
 	 */
 	public Properties getS3() {
 		if(!initS3) {
@@ -469,42 +469,42 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getDefaultDataSource()
+	 * @see railo.runtime.listener.ApplicationContext#getDefaultDataSource()
 	 */
 	public String getDefaultDataSource() {
 		return defaultDataSource;
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#isORMEnabled()
+	 * @see railo.runtime.listener.ApplicationContext#isORMEnabled()
 	 */
 	public boolean isORMEnabled() {
 		return this.ormEnabled;
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getORMDatasource()
+	 * @see railo.runtime.listener.ApplicationContext#getORMDatasource()
 	 */
 	public String getORMDatasource() {
 		return ormDatasource;
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getORMConfiguration()
+	 * @see railo.runtime.listener.ApplicationContext#getORMConfiguration()
 	 */
 	public ORMConfiguration getORMConfiguration() {
 		return ormConfig;
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getComponent()
+	 * @see railo.runtime.listener.ApplicationContext#getComponent()
 	 */
 	public ComponentAccess getComponent() {
 		return component;
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getCustom(railo.runtime.type.Collection.Key)
+	 * @see railo.runtime.listener.ApplicationContext#getCustom(railo.runtime.type.Collection.Key)
 	 */
 	public Object getCustom(Key key) {
 		try {
@@ -533,7 +533,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	
 	
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setApplicationTimeout(railo.runtime.type.dt.TimeSpan)
+	 * @see railo.runtime.util.ApplicationContext#setApplicationTimeout(railo.runtime.type.dt.TimeSpan)
 	 */
 	public void setApplicationTimeout(TimeSpan applicationTimeout) {
 		initApplicationTimeout=true;
@@ -541,7 +541,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSessionTimeout(railo.runtime.type.dt.TimeSpan)
+	 * @see railo.runtime.util.ApplicationContext#setSessionTimeout(railo.runtime.type.dt.TimeSpan)
 	 */
 	public void setSessionTimeout(TimeSpan sessionTimeout) {
 		initSessionTimeout=true;
@@ -549,7 +549,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setClientTimeout(railo.runtime.type.dt.TimeSpan)
+	 * @see railo.runtime.util.ApplicationContext#setClientTimeout(railo.runtime.type.dt.TimeSpan)
 	 */
 	public void setClientTimeout(TimeSpan clientTimeout) {
 		initClientTimeout=true;
@@ -557,7 +557,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setClientstorage(java.lang.String)
+	 * @see railo.runtime.util.ApplicationContext#setClientstorage(java.lang.String)
 	 */
 	public void setClientstorage(String clientstorage) {
 		initClientStorage=true;
@@ -565,7 +565,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSessionstorage(java.lang.String)
+	 * @see railo.runtime.util.ApplicationContext#setSessionstorage(java.lang.String)
 	 */
 	public void setSessionstorage(String sessionstorage) {
 		initSessionStorage=true;
@@ -573,7 +573,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setCustomTagMappings(railo.runtime.Mapping[])
+	 * @see railo.runtime.util.ApplicationContext#setCustomTagMappings(railo.runtime.Mapping[])
 	 */
 	public void setCustomTagMappings(Mapping[] customTagMappings) {
 		initCTMappings=true;
@@ -581,7 +581,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setComponentMappings(railo.runtime.Mapping[])
+	 * @see railo.runtime.util.ApplicationContext#setComponentMappings(railo.runtime.Mapping[])
 	 */
 	public void setComponentMappings(Mapping[] componentMappings) {
 		initCMappings=true;
@@ -589,7 +589,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setMappings(railo.runtime.Mapping[])
+	 * @see railo.runtime.util.ApplicationContext#setMappings(railo.runtime.Mapping[])
 	 */
 	public void setMappings(Mapping[] mappings) {
 		initMappings=true;
@@ -597,7 +597,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setLoginStorage(int)
+	 * @see railo.runtime.util.ApplicationContext#setLoginStorage(int)
 	 */
 	public void setLoginStorage(int loginStorage) {
 		initLoginStorage=true;
@@ -610,7 +610,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setScriptProtect(int)
+	 * @see railo.runtime.util.ApplicationContext#setScriptProtect(int)
 	 */
 	public void setScriptProtect(int scriptrotect) {
 		initScriptProtect=true;
@@ -618,7 +618,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSecureJson(boolean)
+	 * @see railo.runtime.util.ApplicationContext#setSecureJson(boolean)
 	 */
 	public void setSecureJson(boolean secureJson) {
 		initSecureJson=true;
@@ -626,7 +626,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSecureJsonPrefix(java.lang.String)
+	 * @see railo.runtime.util.ApplicationContext#setSecureJsonPrefix(java.lang.String)
 	 */
 	public void setSecureJsonPrefix(String secureJsonPrefix) {
 		initSecureJsonPrefix=true;
@@ -634,7 +634,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSetClientCookies(boolean)
+	 * @see railo.runtime.util.ApplicationContext#setSetClientCookies(boolean)
 	 */
 	public void setSetClientCookies(boolean setClientCookies) {
 		initSetClientCookies=true;
@@ -642,7 +642,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSetClientManagement(boolean)
+	 * @see railo.runtime.util.ApplicationContext#setSetClientManagement(boolean)
 	 */
 	public void setSetClientManagement(boolean setClientManagement) {
 		initSetClientManagement=true;
@@ -650,7 +650,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSetDomainCookies(boolean)
+	 * @see railo.runtime.util.ApplicationContext#setSetDomainCookies(boolean)
 	 */
 	public void setSetDomainCookies(boolean setDomainCookies) {
 		initSetDomainCookies=true;
@@ -658,7 +658,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSetSessionManagement(boolean)
+	 * @see railo.runtime.util.ApplicationContext#setSetSessionManagement(boolean)
 	 */
 	public void setSetSessionManagement(boolean setSessionManagement) {
 		initSetSessionManagement=true;
@@ -666,7 +666,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setLocalMode(int)
+	 * @see railo.runtime.util.ApplicationContext#setLocalMode(int)
 	 */
 	public void setLocalMode(int localMode) {
 		initLocalMode=true;
@@ -674,7 +674,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#setSessionType(short)
+	 * @see railo.runtime.listener.ApplicationContext#setSessionType(short)
 	 */
 	public void setSessionType(short sessionType) {
 		initSessionType=true;
@@ -682,7 +682,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setClientCluster(boolean)
+	 * @see railo.runtime.util.ApplicationContext#setClientCluster(boolean)
 	 */
 	public void setClientCluster(boolean clientCluster) {
 		initClientCluster=true;
@@ -690,7 +690,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSessionCluster(boolean)
+	 * @see railo.runtime.util.ApplicationContext#setSessionCluster(boolean)
 	 */
 	public void setSessionCluster(boolean sessionCluster) {
 		initSessionCluster=true;
@@ -698,7 +698,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#setS3(railo.runtime.net.s3.Properties)
+	 * @see railo.runtime.listener.ApplicationContext#setS3(railo.runtime.net.s3.Properties)
 	 */
 	public void setS3(Properties s3) {
 		initS3=true;
@@ -706,7 +706,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#setORMEnabled(boolean)
+	 * @see railo.runtime.listener.ApplicationContext#setORMEnabled(boolean)
 	 */
 	public void setORMEnabled(boolean ormEnabled) {
 		this.ormEnabled=ormEnabled;
@@ -717,7 +717,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#setORMDatasource(java.lang.String)
+	 * @see railo.runtime.listener.ApplicationContext#setORMDatasource(java.lang.String)
 	 */
 	public void setORMDatasource(String ormDatasource) {
 		this.ormDatasource=ormDatasource;

@@ -155,7 +155,7 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 	}
 	
 	/*private void setTimeSpan(PageContext pc) {
-		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
+		ApplicationContext ac=(ApplicationContext) pc.getApplicationContext();
 		timespan = (getType()==SCOPE_CLIENT?ac.getClientTimeout().getMillis():ac.getSessionTimeout().getMillis())+(expiresControlFromOutside?SAVE_EXPIRES_OFFSET:0L);
 		
 	}*/

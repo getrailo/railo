@@ -4,10 +4,10 @@ import java.io.UnsupportedEncodingException;
 
 import railo.commons.net.URLItem;
 import railo.runtime.PageContext;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.util.ApplicationContext;
 
 /**
  * Implements URL Scope 

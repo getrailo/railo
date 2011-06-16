@@ -12,6 +12,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.security.ScriptProtect;
 import railo.runtime.type.Collection;
@@ -21,7 +22,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.StructUtil;
-import railo.runtime.util.ApplicationContext;
 
 /**
  *

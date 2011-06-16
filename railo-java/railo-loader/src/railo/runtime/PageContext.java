@@ -18,6 +18,7 @@ import railo.runtime.db.DataSourceManager;
 import railo.runtime.debug.Debugger;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.exp.PageException;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.query.QueryCache;
 import railo.runtime.security.Credential;
@@ -44,7 +45,6 @@ import railo.runtime.type.scope.URL;
 import railo.runtime.type.scope.URLForm;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
-import railo.runtime.util.ApplicationContext;
 import railo.runtime.util.VariableUtil;
 
 /**

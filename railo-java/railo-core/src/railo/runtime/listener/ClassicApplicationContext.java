@@ -5,10 +5,10 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.net.s3.Properties;
+import railo.runtime.net.s3.PropertiesImpl;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.type.Scope;
 import railo.runtime.type.dt.TimeSpan;
-import railo.runtime.util.ApplicationContext;
 
 /**
  * 
@@ -374,7 +374,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	 * @return the s3
 	 */
 	public Properties getS3() {
-		if(s3==null) s3=new Properties();
+		if(s3==null) s3=new PropertiesImpl();
 		return s3;
 	}
 
@@ -447,7 +447,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#setORMDatasource(java.lang.String)
+	 * @see railo.runtime.listener.ApplicationContext#setORMDatasource(java.lang.String)
 	 */
 	public void setORMDatasource(String ormdatasource) {
 		this.ormdatasource=ormdatasource;

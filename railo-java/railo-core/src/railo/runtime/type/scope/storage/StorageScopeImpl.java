@@ -14,7 +14,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
@@ -133,7 +133,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	}
 	
 	void setTimeSpan(PageContext pc) {
-		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
+		ApplicationContext ac=(ApplicationContext) pc.getApplicationContext();
 		this.timeSpan=getType()==SCOPE_SESSION?
 				ac.getSessionTimeout().getMillis():
 				ac.getClientTimeout().getMillis();

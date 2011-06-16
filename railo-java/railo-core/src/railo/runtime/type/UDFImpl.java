@@ -30,7 +30,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.UDFCasterException;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Duplicator;
@@ -410,7 +410,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         Local		oldLocal=pc.localScope();
         
 		pci.setFunctionScopes(newLocal,newArgs);
-		int oldCheckArgs=undefined.setMode(((ApplicationContextPro)pc.getApplicationContext()).getLocalMode());
+		int oldCheckArgs=undefined.setMode(((ApplicationContext)pc.getApplicationContext()).getLocalMode());
 		
 		try {
 			pc.addPageSource(getPageSource(),doIncludePath);

@@ -91,6 +91,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.orm.ORMConfigurationImpl;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
@@ -2582,20 +2583,20 @@ private void doGetMappings() throws PageException {
     	ORMConfiguration oc = config.getORMConfig();
     	Struct settings=new StructImpl();
     	
-    	settings.set(ORMConfiguration.AUTO_GEN_MAP, getBool("admin",action,"autogenmap"));
-    	settings.set(ORMConfiguration.EVENT_HANDLING, getBool("admin",action,"eventHandling"));
-    	settings.set(ORMConfiguration.FLUSH_AT_REQUEST_END, getBool("admin",action,"flushatrequestend"));
-    	settings.set(ORMConfiguration.LOG_SQL, getBool("admin",action,"logSQL"));
-    	settings.set(ORMConfiguration.SAVE_MAPPING, getBool("admin",action,"savemapping"));
-    	settings.set(ORMConfiguration.USE_DB_FOR_MAPPING, getBool("admin",action,"useDBForMapping"));
-    	settings.set(ORMConfiguration.SECONDARY_CACHE_ENABLED, getBool("admin",action,"secondarycacheenabled"));
+    	settings.set(ORMConfigurationImpl.AUTO_GEN_MAP, getBool("admin",action,"autogenmap"));
+    	settings.set(ORMConfigurationImpl.EVENT_HANDLING, getBool("admin",action,"eventHandling"));
+    	settings.set(ORMConfigurationImpl.FLUSH_AT_REQUEST_END, getBool("admin",action,"flushatrequestend"));
+    	settings.set(ORMConfigurationImpl.LOG_SQL, getBool("admin",action,"logSQL"));
+    	settings.set(ORMConfigurationImpl.SAVE_MAPPING, getBool("admin",action,"savemapping"));
+    	settings.set(ORMConfigurationImpl.USE_DB_FOR_MAPPING, getBool("admin",action,"useDBForMapping"));
+    	settings.set(ORMConfigurationImpl.SECONDARY_CACHE_ENABLED, getBool("admin",action,"secondarycacheenabled"));
     	
-    	settings.set(ORMConfiguration.CATALOG, getString("admin",action,"catalog"));
-    	settings.set(ORMConfiguration.SCHEMA, getString("admin",action,"schema"));
-    	settings.set(ORMConfiguration.SQL_SCRIPT, getString("admin",action,"sqlscript"));
-    	settings.set(ORMConfiguration.CACHE_CONFIG, getString("admin",action,"cacheconfig"));
-    	settings.set(ORMConfiguration.CACHE_PROVIDER, getString("admin",action,"cacheProvider"));
-    	settings.set(ORMConfiguration.ORM_CONFIG, getString("admin",action,"ormConfig"));
+    	settings.set(ORMConfigurationImpl.CATALOG, getString("admin",action,"catalog"));
+    	settings.set(ORMConfigurationImpl.SCHEMA, getString("admin",action,"schema"));
+    	settings.set(ORMConfigurationImpl.SQL_SCRIPT, getString("admin",action,"sqlscript"));
+    	settings.set(ORMConfigurationImpl.CACHE_CONFIG, getString("admin",action,"cacheconfig"));
+    	settings.set(ORMConfigurationImpl.CACHE_PROVIDER, getString("admin",action,"cacheProvider"));
+    	settings.set(ORMConfigurationImpl.ORM_CONFIG, getString("admin",action,"ormConfig"));
     	
     	
     	// dbcreate
@@ -2605,7 +2606,7 @@ private void doGetMappings() throws PageException {
     	else if("update".equals(strDbcreate))		dbcreate="update";
     	else if("dropcreate".equals(strDbcreate))	dbcreate="dropcreate";
 		else throw new ApplicationException("invalid dbcreate definition ["+strDbcreate+"], valid dbcreate definitions are [none,update,dropcreate]");
-    	settings.set(ORMConfiguration.DB_CREATE, getString("admin",action,"dbcreate"));
+    	settings.set(ORMConfigurationImpl.DB_CREATE, getString("admin",action,"dbcreate"));
     	
     	// cfclocation
     	String strCfclocation=getString("admin",action,"cfclocation");
@@ -2616,9 +2617,9 @@ private void doGetMappings() throws PageException {
     		path=(String) it.next();
     		ResourceUtil.toResourceExisting(config, path);
     	}
-    	settings.set(ORMConfiguration.CFC_LOCATION, arrCfclocation);
+    	settings.set(ORMConfigurationImpl.CFC_LOCATION, arrCfclocation);
     	
-    	admin.updateORMSetting(ORMConfiguration.load(config, settings, null, oc));
+    	admin.updateORMSetting(ORMConfigurationImpl.load(config, settings, null, oc));
         
     	
     	store();

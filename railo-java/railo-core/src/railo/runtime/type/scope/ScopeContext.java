@@ -31,7 +31,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.interpreter.VariableInterpreter;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
@@ -56,7 +56,6 @@ import railo.runtime.type.scope.storage.clean.DatasourceStorageScopeCleaner;
 import railo.runtime.type.scope.storage.clean.FileStorageScopeCleaner;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.wrap.MapAsStruct;
-import railo.runtime.util.ApplicationContext;
 
 /**
  * Scope Context handle Apllication and Session Scopes
@@ -201,7 +200,7 @@ public final class ScopeContext {
 	
 	public ClientPlus getClientScope(PageContext pc) throws PageException {
 		ClientPlus client=null;
-		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext(); 
+		ApplicationContext appContext = (ApplicationContext) pc.getApplicationContext(); 
 		// get Context
 			Map context=getSubMap(cfClientContextes,appContext.getName());
 			
@@ -317,7 +316,7 @@ public final class ScopeContext {
 	 * @return
 	 */
 	public int getSessionCount(PageContext pc) {
-		if(((ApplicationContextPro)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_J2EE) return 0;
+		if(((ApplicationContext)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_J2EE) return 0;
 		
 		Iterator it = cfSessionContextes.entrySet().iterator();
 		Map.Entry entry;
@@ -334,7 +333,7 @@ public final class ScopeContext {
 	 * @return
 	 */
 	public int getAppContextSessionCount(PageContext pc) {
-		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext(); 
+		ApplicationContext appContext = (ApplicationContext) pc.getApplicationContext(); 
 		if(appContext.getSessionType()==Config.SESSION_TYPE_J2EE) return 0;
 		Map context=getSubMap(cfSessionContextes,appContext.getName());
 		return getSessionCount(context);
@@ -399,7 +398,7 @@ public final class ScopeContext {
 	 * @return
 	 */
 	public Struct getAllSessionScopes(PageContext pc, String appName) {
-        if(((ApplicationContextPro)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_J2EE)return new StructImpl();
+        if(((ApplicationContext)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_J2EE)return new StructImpl();
 		return getAllSessionScopes(getSubMap(cfSessionContextes,appName),appName);
 	}
 	
@@ -424,17 +423,17 @@ public final class ScopeContext {
 	 * @throws PageException
 	 */
 	public SessionPlus getSessionScope(PageContext pc,RefBoolean isNew) throws PageException {
-        if(((ApplicationContextPro)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_CFML)return getCFSessionScope(pc,isNew);
+        if(((ApplicationContext)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_CFML)return getCFSessionScope(pc,isNew);
 		return getJSessionScope(pc,isNew);
 	}
 	
 	public boolean hasExistingSessionScope(PageContext pc) {
-        if(((ApplicationContextPro)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_CFML)return hasExistingCFSessionScope(pc);
+        if(((ApplicationContext)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_CFML)return hasExistingCFSessionScope(pc);
 		return hasExistingJSessionScope(pc);
 	}
 	
 	private synchronized boolean hasExistingCFSessionScopeX(PageContext pc) {
-		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
+		ApplicationContext ac=(ApplicationContext) pc.getApplicationContext();
 		String storage = ac.getSessionstorage();
 		
 		Map context=getSubMap(cfSessionContextes,ac.getName());
@@ -457,7 +456,7 @@ public final class ScopeContext {
 	
 	private boolean hasExistingCFSessionScope(PageContext pc) {
 		
-		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext(); 
+		ApplicationContext appContext = (ApplicationContext) pc.getApplicationContext(); 
 		// get Context
 			Map context=getSubMap(cfSessionContextes,appContext.getName());
 			
@@ -502,7 +501,7 @@ public final class ScopeContext {
 	 */
 	private synchronized SessionPlus getCFSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
 		
-		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext(); 
+		ApplicationContext appContext = (ApplicationContext) pc.getApplicationContext(); 
 		// get Context
 			Map context=getSubMap(cfSessionContextes,appContext.getName());
 			

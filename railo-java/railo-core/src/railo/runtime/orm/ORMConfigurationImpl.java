@@ -26,7 +26,7 @@ import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
-public class ORMConfiguration {
+public class ORMConfigurationImpl implements ORMConfiguration {
 	public static final int DBCREATE_NONE=0;
 	public static final int DBCREATE_UPDATE=1;
 	public static final int DBCREATE_DROP_CREATE=2;
@@ -76,7 +76,7 @@ public class ORMConfiguration {
 	private boolean skipCFCWithError=true;
 	private boolean autoManageSession=true;
 
-	private ORMConfiguration(){
+	private ORMConfigurationImpl(){
 		autogenmap=true;
 		dbCreate=DBCREATE_NONE;
 		flushAtRequestEnd=true;
@@ -98,8 +98,8 @@ public class ORMConfiguration {
 
 	private static ORMConfiguration _load(Config config,_Get settings, Resource defaultCFCLocation,ORMConfiguration dc) {
 		
-		if(dc==null)dc=new ORMConfiguration();
-		ORMConfiguration c = dc.duplicate();
+		if(dc==null)dc=new ORMConfigurationImpl();
+		ORMConfigurationImpl c = ((ORMConfigurationImpl)dc).duplicate();
 		c.cfcLocations=defaultCFCLocation==null?new Resource[0]:new Resource[]{defaultCFCLocation};
 		
 		// autogenmap
@@ -171,7 +171,7 @@ public class ORMConfiguration {
 		// eventHandling
 		Boolean b=Caster.toBoolean(settings.get(EVENT_HANDLING,null),null);
 		if(b==null) {
-			if(dc.eventHandling!=null && dc.eventHandling) 
+			if(dc.eventHandling()) 
 				b=Boolean.TRUE;
 			else 
 				b=!StringUtil.isEmpty(c.eventHandler,true);
@@ -263,9 +263,9 @@ public class ORMConfiguration {
 
 
 
-	private ORMConfiguration duplicate() {
+	private ORMConfigurationImpl duplicate() {
 		
-		ORMConfiguration other = new ORMConfiguration();
+		ORMConfigurationImpl other = new ORMConfigurationImpl();
 		
 		
 		
@@ -373,7 +373,7 @@ public class ORMConfiguration {
 	 * @return the eventHandling
 	 */
 	public boolean eventHandling() {
-		return eventHandling==null?false:eventHandling;
+		return eventHandling==null?false:eventHandling.booleanValue();
 	}
 
 	public String eventHandler() {

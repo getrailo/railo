@@ -11,8 +11,8 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
-import railo.runtime.util.ApplicationContext;
 
 
 public final class Location extends TagImpl {

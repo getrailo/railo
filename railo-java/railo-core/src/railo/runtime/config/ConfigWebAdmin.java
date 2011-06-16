@@ -62,6 +62,7 @@ import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.orm.ORMConfigurationImpl;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
@@ -3067,7 +3068,7 @@ public final class ConfigWebAdmin {
 		orm.setAttribute("cache-provider",Caster.toString(oc.getCacheProvider(),""));
 		orm.setAttribute("cache-config",Caster.toString(oc.getCacheConfig(),"true"));
 		orm.setAttribute("catalog",Caster.toString(oc.getCatalog(),""));
-		orm.setAttribute("db-create",ORMConfiguration.dbCreateAsString(oc.getDbCreate()));
+		orm.setAttribute("db-create",ORMConfigurationImpl.dbCreateAsString(oc.getDbCreate()));
 		orm.setAttribute("dialect",Caster.toString(oc.getDialect(),""));
 		orm.setAttribute("schema",Caster.toString(oc.getSchema(),""));
 		orm.setAttribute("log-sql",Caster.toString(oc.logSQL(),"false"));

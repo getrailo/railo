@@ -17,6 +17,7 @@ import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
@@ -25,7 +26,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.TimeSpan;
-import railo.runtime.util.ApplicationContext;
 
 /**
  * Implementation of the Cookie scope

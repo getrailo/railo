@@ -15,9 +15,10 @@ import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
+import railo.runtime.net.s3.PropertiesImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.orm.ORMConfigurationImpl;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
@@ -28,7 +29,6 @@ import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Undefined;
-import railo.runtime.util.ApplicationContext;
 
 public final class AppListenerUtil {
 	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.getInstance("accessKeyId");
@@ -284,7 +284,7 @@ public final class AppListenerUtil {
 	}
 
 	public static Properties toS3(String accessKeyId, String awsSecretKey, String defaultLocation, String host) {
-		Properties s3 = new Properties();
+		PropertiesImpl s3 = new PropertiesImpl();
 		if(!StringUtil.isEmpty(accessKeyId))s3.setAccessKeyId(accessKeyId);
 		if(!StringUtil.isEmpty(awsSecretKey))s3.setSecretAccessKey(awsSecretKey);
 		if(!StringUtil.isEmpty(defaultLocation))s3.setDefaultLocation(defaultLocation);
@@ -292,11 +292,11 @@ public final class AppListenerUtil {
 		return s3;
 	}
 
-	public static void setORMConfiguration(PageContext pc, ApplicationContextPro ac,Struct sct) throws PageException {
+	public static void setORMConfiguration(PageContext pc, ApplicationContext ac,Struct sct) throws PageException {
 		if(sct==null)sct=new StructImpl();
 		Resource res=ResourceUtil.getResource(pc, pc.getCurrentTemplatePageSource()).getParentResource();
 		ConfigImpl config=(ConfigImpl) pc.getConfig();
-		ac.setORMConfiguration(ORMConfiguration.load(config,sct,res,config.getORMConfig()));
+		ac.setORMConfiguration(ORMConfigurationImpl.load(config,sct,res,config.getORMConfig()));
 		
 		// datasource
 		Object o = sct.get(DATA_SOURCE,null);

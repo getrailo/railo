@@ -3,6 +3,7 @@ package railo.commons.io.cache;
 import java.io.IOException;
 import java.util.List;
 
+import railo.commons.io.cache.exp.CacheException;
 import railo.runtime.type.Struct;
 
 public interface Cache {

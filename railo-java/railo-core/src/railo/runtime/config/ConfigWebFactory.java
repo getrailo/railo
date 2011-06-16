@@ -107,6 +107,7 @@ import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.orm.ORMConfigurationImpl;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.hibernate.HibernateORMEngine;
 import railo.runtime.reflection.Reflector;
@@ -3007,7 +3008,7 @@ public final class ConfigWebFactory {
     // config
         if(orm==null) orm = doc.createElement("orm"); // this is just a dummy 
         ORMConfiguration def=hasCS?((ConfigServerImpl)configServer).getORMConfig():null;
-        ORMConfiguration ormConfig=ORMConfiguration.load(config,orm,config.getRootDirectory(),def);
+        ORMConfiguration ormConfig=ORMConfigurationImpl.load(config,orm,config.getRootDirectory(),def);
         config.setORMConfig(ormConfig);
         
     }

@@ -23,7 +23,7 @@ import railo.runtime.debug.DebugEntry;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.writer.BodyContentUtil;
 
@@ -120,7 +120,7 @@ public class ComponentLoader {
     	
     	// search with imports
     	Mapping[] cMappings = config.getComponentMappings();
-    	ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
+    	ApplicationContext ac=(ApplicationContext) pc.getApplicationContext();
     	//Mapping[] lcMappings = ac.getComponentMappings();
     	
     	if(isRealPath){
