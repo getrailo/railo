@@ -36,7 +36,6 @@ import railo.runtime.debug.DebugEntry;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalConfig;
@@ -901,7 +900,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @return html output
      */
     public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp, int access) {
-	    DumpTable table = new DumpTablePro("component","#99cc99","#ccffcc","#000000");
+	    DumpTable table = new DumpTable("component","#99cc99","#ccffcc","#000000");
         table.setTitle("Component "+getCallPath()+""+(" "+StringUtil.escapeHTML(top.properties.dspName)));
         table.setComment("Only the functions and data members that are accessible from your location are displayed");
         if(top.properties.extend.length()>0)table.appendRow(1,new SimpleDumpData("Extends"),new SimpleDumpData(top.properties.extend));
@@ -962,7 +961,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 				child = ci.scope.get(KeyImpl.init(p.getName()),null);
 				DumpData dd;
 				if(child instanceof Component) {
-					DumpTable t = new DumpTablePro("component","#99cc99","#ffffff","#000000");
+					DumpTable t = new DumpTable("component","#99cc99","#ffffff","#000000");
 					t.appendRow(1,new SimpleDumpData("Component"),new SimpleDumpData(((Component)child).getCallName()));
 					dd=t;
 					

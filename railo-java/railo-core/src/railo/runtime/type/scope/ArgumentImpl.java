@@ -10,7 +10,6 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
@@ -155,7 +154,7 @@ public class ArgumentImpl extends ScopeSupport implements Argument {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable htmlBox = new DumpTablePro("struct","#9999ff","#ccccff","#000000");
+		DumpTable htmlBox = new DumpTable("struct","#9999ff","#ccccff","#000000");
 		htmlBox.setTitle("Scope Arguments");
 		if(size()>10 && dp.getMetainfo())htmlBox.setComment("Entries:"+size());
 	    

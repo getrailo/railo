@@ -20,7 +20,6 @@ import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.err.ErrorPage;
@@ -422,7 +421,7 @@ public abstract class PageExceptionImpl extends PageException {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		
 		//FFFFCF
-    	DumpTable htmlBox = new DumpTablePro("exception","#ff9900","#FFCC00","#000000");
+    	DumpTable htmlBox = new DumpTable("exception","#ff9900","#FFCC00","#000000");
 		htmlBox.setTitle("Railo ["+Info.getVersionAsString()+"] - Error ("+StringUtil.ucFirst(getTypeAsString())+")");
 		
 		

@@ -8,7 +8,6 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
@@ -86,7 +85,7 @@ public final class DateImpl extends  Date implements SimpleValue,Localized {
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		String str=castToString("");
-        DumpTable table=new DumpTablePro("date","#ff9900","#ffcc00","#000000");
+        DumpTable table=new DumpTable("date","#ff9900","#ffcc00","#000000");
         table.appendRow(1, new SimpleDumpData("Date"), new SimpleDumpData(str));
         return table;
     }

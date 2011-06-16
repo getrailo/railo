@@ -11,7 +11,6 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
@@ -161,7 +160,7 @@ public class StructImplKey extends StructSupport implements Struct {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 	    Iterator it=_map.keySet().iterator();
 		
-		DumpTable table = new DumpTablePro("struct","#9999ff","#ccccff","#000000");
+		DumpTable table = new DumpTable("struct","#9999ff","#ccccff","#000000");
 		table.setTitle("Struct");
 		maxlevel--;
 		int maxkeys=dp.getMaxKeys();

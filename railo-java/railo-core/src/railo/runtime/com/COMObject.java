@@ -6,7 +6,6 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -162,7 +161,7 @@ public final class COMObject implements Objects, Iteratorable {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable table = new DumpTablePro("com","#ff3300","#ff9966","#660000");
+		DumpTable table = new DumpTable("com","#ff3300","#ff9966","#660000");
 		table.appendRow(1,new SimpleDumpData("COM Object"),new SimpleDumpData(name));
 		return table;
     }

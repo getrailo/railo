@@ -48,7 +48,6 @@ import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -707,14 +706,14 @@ public final class RPCClient implements Objects, Iteratorable{
     	try {
             return _toDumpData(pageContext,maxlevel,dp);
         } catch (Exception e) {
-            DumpTable table = new DumpTablePro("webservice","#ccccff","#cccc00","#000000");
+            DumpTable table = new DumpTable("webservice","#ccccff","#cccc00","#000000");
             table.appendRow(1,new SimpleDumpData("webservice"),new SimpleDumpData(wsdlUrl));
             return table;
         }
     }
     private DumpData _toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) throws RPCException {
                 
-    	DumpTable box = new DumpTablePro("webservice","#ccccff","#cccc00","#000000");
+    	DumpTable box = new DumpTable("webservice","#ccccff","#cccc00","#000000");
         box.setTitle("Web Service");
         if(dp.getMetainfo())box.appendRow(1,new SimpleDumpData("url"),new SimpleDumpData(wsdlUrl));
         DumpTable functions = new DumpTable("#ccccff","#cccc00","#000000");

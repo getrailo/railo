@@ -10,7 +10,6 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
@@ -581,7 +580,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable table = new DumpTablePro("array","#99cc33","#ccff33","#000000");
+		DumpTable table = new DumpTable("array","#99cc33","#ccff33","#000000");
 		table.setTitle("Array");
 		//if(size()>10)table.setComment("Size:"+size());
 		int length=size();

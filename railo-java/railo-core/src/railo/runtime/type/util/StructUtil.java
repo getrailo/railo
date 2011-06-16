@@ -13,7 +13,6 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.PageException;
@@ -101,7 +100,7 @@ public final class StructUtil {
 	
 	public static DumpTable toDumpTable(Struct sct,String title,PageContext pageContext, int maxlevel, DumpProperties dp) {
 		Key[] keys = order(sct.keys());
-		DumpTable table = new DumpTablePro("struct","#9999ff","#ccccff","#000000");// "#9999ff","#ccccff","#000000"
+		DumpTable table = new DumpTable("struct","#9999ff","#ccccff","#000000");// "#9999ff","#ccccff","#000000"
 		if(sct.size()>10 && dp.getMetainfo())table.setComment("Entries:"+sct.size());
 	    if(!StringUtil.isEmpty(title))table.setTitle(title);
 		maxlevel--;

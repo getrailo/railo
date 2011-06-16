@@ -12,7 +12,6 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
@@ -302,7 +301,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		maxlevel--;
-		DumpTable table = new DumpTablePro("xml","#cc9999","#ffffff","#000000");
+		DumpTable table = new DumpTable("xml","#cc9999","#ffffff","#000000");
 		table.setTitle("Array (XML Node List)");
 		int len=size();
 		
