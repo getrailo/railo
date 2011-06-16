@@ -8,7 +8,6 @@ import railo.intergral.fusiondebug.server.type.FDValueSupport;
 import railo.intergral.fusiondebug.server.type.FDVariable;
 import railo.intergral.fusiondebug.server.util.FDCaster;
 import railo.runtime.Component;
-import railo.runtime.Component;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;

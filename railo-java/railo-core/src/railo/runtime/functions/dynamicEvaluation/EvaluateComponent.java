@@ -2,7 +2,6 @@ package railo.runtime.functions.dynamicEvaluation;
 
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
-import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;

@@ -8,7 +8,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.QueryPro;
+import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
@@ -133,8 +133,8 @@ public class TraceObjectSupport implements TraceObject {
 			return (TraceObject) obj;
 		else if(obj instanceof UDF)
 			return new TOUDF(debugger,(UDF) obj,type,category,text);
-		else if(obj instanceof QueryPro)
-			return new TOQuery(debugger,(QueryPro) obj,type,category,text);
+		else if(obj instanceof Query)
+			return new TOQuery(debugger,(Query) obj,type,category,text);
 		else if(obj instanceof Array)
 			return new TOArray(debugger,(Array) obj,type,category,text);
 		else if(obj instanceof Struct)

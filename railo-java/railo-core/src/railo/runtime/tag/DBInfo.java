@@ -25,9 +25,9 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
-import railo.runtime.type.QueryPro;
 import railo.runtime.type.SVArray;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -269,7 +269,7 @@ public final class DBInfo extends TagImpl {
 		checkTable(metaData);
 		
         ResultSet columns = metaData.getColumns(dbname, schema, table, pattern);
-        QueryPro qry = new QueryImpl(columns,"query");
+        Query qry = new QueryImpl(columns,"query");
         
 		int len=qry.getRecordcount();
 		
@@ -603,7 +603,7 @@ public final class DBInfo extends TagImpl {
         
 		checkTable(metaData);
 		ResultSet result = metaData.getSchemas();
-		QueryPro qry = new QueryImpl(result,"query");
+		Query qry = new QueryImpl(result,"query");
 		
 		
 		qry.rename(TABLE_SCHEM,USER);

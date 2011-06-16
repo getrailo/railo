@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import org.apache.commons.codec.binary.Base64;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -91,7 +90,6 @@ import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
-import railo.runtime.type.QueryPro;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -2722,18 +2720,18 @@ public final class Caster {
     }
     
 
-    public static QueryPro toQueryPro(Query q) throws CasterException {
-		QueryPro rtn = toQueryPro(q, null);
+    public static Query toQuery(Query q) throws CasterException {
+		Query rtn = toQuery(q, null);
     	if(rtn!=null) return rtn;
-		throw new CasterException(q,"QueryPro");
+		throw new CasterException(q,"Query");
 	}
 
-    public static QueryPro toQueryPro(Query q, QueryPro defaultValue)  {
+    public static Query toQuery(Query q, Query defaultValue)  {
 		while(q instanceof QueryWrap){
 			q=((QueryWrap)q).getQuery();
 		}
 		
-		if(q instanceof QueryPro)return (QueryPro) q;
+		if(q instanceof Query)return (Query) q;
 		return defaultValue;
 	}
     

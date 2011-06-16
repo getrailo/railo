@@ -13,7 +13,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
-import railo.runtime.type.QueryPro;
 
 public final class QuerySetColumn implements Function {
 	public static String call(PageContext pc , Query query, String columnName,String newColumnName) throws PageException {
@@ -22,7 +21,7 @@ public final class QuerySetColumn implements Function {
 		Collection.Key src=KeyImpl.init(columnName);
 		Collection.Key trg=KeyImpl.init(newColumnName);
 		
-		QueryPro qp = Caster.toQueryPro(query,null);
+		Query qp = Caster.toQuery(query,null);
 		if(qp!=null) qp.rename(src, trg);
 		else {
 			QueryColumn qc = query.removeColumn(src);

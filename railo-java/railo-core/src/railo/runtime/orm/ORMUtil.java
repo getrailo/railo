@@ -4,7 +4,6 @@ import java.util.HashSet;
 
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
-import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.component.Property;

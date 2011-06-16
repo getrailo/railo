@@ -7,7 +7,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryColumnImpl;
-import railo.runtime.type.QueryPro;
 
 public class QueryUtil {
 
@@ -30,7 +29,7 @@ public class QueryUtil {
 	 * @return
 	 */
 	public static Key[] getColumnNames(Query qry) {
-		QueryPro qp = Caster.toQueryPro(qry,null);
+		Query qp = Caster.toQuery(qry,null);
 		
 		if(qp!=null) return qp.getColumnNames();
 		String[] strNames = qry.getColumns();

@@ -24,7 +24,6 @@ import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.Component;
-import railo.runtime.Component;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.Page;

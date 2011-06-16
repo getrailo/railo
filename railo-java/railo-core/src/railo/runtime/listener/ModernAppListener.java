@@ -16,7 +16,6 @@ import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
 import railo.runtime.ComponentPage;
-import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;

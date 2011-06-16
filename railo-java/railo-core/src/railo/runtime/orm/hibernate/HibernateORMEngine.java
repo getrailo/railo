@@ -33,7 +33,6 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.DataSource;

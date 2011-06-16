@@ -1,7 +1,6 @@
 package railo.runtime.tag;
 
 import railo.runtime.Component;
-import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;

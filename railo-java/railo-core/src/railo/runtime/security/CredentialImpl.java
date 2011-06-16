@@ -1,13 +1,11 @@
 package railo.runtime.security;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.runtime.coder.Base64Coder;
-import railo.runtime.coder.CoderException;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;

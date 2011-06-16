@@ -13,7 +13,6 @@ import org.w3c.dom.NodeList;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.db.DatasourceConnection;

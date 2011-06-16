@@ -24,6 +24,8 @@ public interface Iterator {
 	*/
 	public boolean next(int pid)throws PageException;
 
+	public boolean previous(int pid);
+	
 	/**
 	* reset ther intern pointer
 	* @throws PageException
@@ -47,10 +49,16 @@ public interface Iterator {
 	/**
 	* return the current position of the internal pointer
 	* @return	int 
-	* 
+	* @deprecated use instead getCurrentrow(int pageContextId)
 	*/
-	// @deprecated use instead getCurrentrow(int pageContextId)
+	// 
 	public int getCurrentrow();
+	
+	/**
+	* return the current position of the internal pointer
+	* @return	int 
+	*/
+	public int getCurrentrow(int pid);
 
 	/**
 	* set the internal pointer to defined position

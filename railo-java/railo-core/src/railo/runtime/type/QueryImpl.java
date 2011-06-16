@@ -46,7 +46,6 @@ import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceUtil;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionImpl;
-import railo.runtime.db.DatasourceConnectionPro;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
@@ -88,7 +87,7 @@ import railo.runtime.type.util.CollectionUtil;
 /**
  * 
  */
-public class QueryImpl implements QueryPro,Objects,Sizeable {
+public class QueryImpl implements Query,Objects,Sizeable {
 
 	/**
 	 * @return the template
@@ -224,7 +223,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	        }
 	        else {
 	        	// some driver do not support second argument
-	        	PreparedStatement preStat = ((DatasourceConnectionPro)dc).getPreparedStatement(sql, createGeneratedKeys);
+	        	PreparedStatement preStat = dc.getPreparedStatement(sql, createGeneratedKeys);
 	        	closeStatement=false;
 	        	stat=preStat;
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
@@ -1129,7 +1128,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	}
 	
 	/**
-	 * @see railo.runtime.type.QueryPro#getCurrentrow(int)
+	 * @see railo.runtime.type.Query#getCurrentrow(int)
 	 */
 	public int getCurrentrow(int pid) {
 		return arrCurrentRow.get(pid,1);
@@ -1721,7 +1720,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
     }
     
     /**
-     * @see railo.runtime.type.QueryPro#getColumnNames()
+     * @see railo.runtime.type.Query#getColumnNames()
      */
     public Collection.Key[] getColumnNames() {
     	Collection.Key[] keys = keys();
@@ -1769,7 +1768,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 
 
 	/**
-	 * @see railo.runtime.type.QueryPro#getColumnNamesAsString()
+	 * @see railo.runtime.type.Query#getColumnNamesAsString()
 	 */
 	public String[] getColumnNamesAsString() {
 		String[] keys = keysAsString();

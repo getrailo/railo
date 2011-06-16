@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import railo.runtime.Component;
-import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;

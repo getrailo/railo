@@ -25,8 +25,6 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
 	 */
 	public int getUpdateCount();
 	
-	// FUTURE public Query getGeneratedKeys();
-	
 	/**
 	 * return a value of the resultset by specifed colmn and row
 	 * @param key column to get 
@@ -312,6 +310,15 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
      * @return returns array with meta data to the query (only column names and type)
      */
     public Array getMetaDataSimple();
-
+    
+	
+	
+	public void rename(Collection.Key columnName,Collection.Key newColumnName) throws PageException;
+	
+	public Collection.Key[] getColumnNames();
+	
+	public String[] getColumnNamesAsString();
+	
+	public Query getGeneratedKeys();
 	
 }
