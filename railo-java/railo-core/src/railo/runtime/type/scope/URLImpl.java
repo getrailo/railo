@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import railo.commons.net.URLItem;
 import railo.runtime.PageContext;
 import railo.runtime.listener.ApplicationContext;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -56,7 +57,7 @@ public final class URLImpl extends ScopeSupport implements URL,ScriptProtected {
         
         try {
 			super.initialize(pc); 
-            raw=setFromQueryString(pc. getHttpServletRequest().getQueryString());
+            raw=setFromQueryString(ReqRspUtil.getQueryString(pc.getHttpServletRequest()));
             
             fillDecoded(raw,encoding,isScriptProtected());
             

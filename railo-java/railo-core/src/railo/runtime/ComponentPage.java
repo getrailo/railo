@@ -25,6 +25,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.interpreter.JSONExpressionInterpreter;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.net.rpc.server.ComponentController;
 import railo.runtime.net.rpc.server.RPCServer;
 import railo.runtime.op.Caster;
@@ -122,7 +123,7 @@ public abstract class ComponentPage extends Page  {
             
             
             // METHOD INVOCATION
-			String qs=pc.getHttpServletRequest().getQueryString();
+			String qs=ReqRspUtil.getQueryString(pc.getHttpServletRequest());
             if(pc.getBasePageSource()==this.getPageSource())
             	pc.getDebugger().setOutput(false);
             boolean isPost=pc. getHttpServletRequest().getMethod().equalsIgnoreCase("POST");

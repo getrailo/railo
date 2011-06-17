@@ -107,7 +107,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			this.template=page.getPageSource().getFullRealpath();
 			HttpServletRequest req = parent.getHttpServletRequest();
 			serverName=req.getServerName();
-			queryString=req.getQueryString();
+			queryString=ReqRspUtil.getQueryString(req);
 			cookies=SerializableCookie.toSerializableCookie(ReqRspUtil.getCookies(ThreadLocalPageContext.getConfig(parent),req));
 			parameters=HttpUtil.cloneParameters(req);
 			requestURI=req.getRequestURI();

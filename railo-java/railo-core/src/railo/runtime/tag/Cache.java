@@ -33,6 +33,7 @@ import railo.runtime.functions.cache.CachePut;
 import railo.runtime.functions.cache.CacheRemove;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.dateTime.GetHttpTimeString;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
@@ -476,8 +477,9 @@ public final class Cache extends BodyTagImpl {
 
     private CacheItem generateCacheResource(HttpServletRequest req, String key, boolean useId) throws IOException {
     	String filename=req.getServletPath();
-        if(!StringUtil.isEmpty(req.getQueryString())) {
-        	filename+="?"+req.getQueryString();
+    	String qs=ReqRspUtil.getQueryString(req);
+        if(!StringUtil.isEmpty(qs)) {
+        	filename+="?"+qs;
         	if(useId)filename+="&cfcache_id="+_id;
         }
         else {

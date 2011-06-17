@@ -13,6 +13,7 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.listener.ApplicationContext;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.security.ScriptProtect;
 import railo.runtime.type.Collection;
@@ -249,7 +250,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
             	}
             }
             else if(first=='q') {
-            	if(key.equals(QUERY_STRING))return doScriptProtect(toString(req.getQueryString()));
+            	if(key.equals(QUERY_STRING))return doScriptProtect(toString(ReqRspUtil.getQueryString(req)));
             }
         }
         

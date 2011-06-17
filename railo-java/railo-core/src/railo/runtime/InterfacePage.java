@@ -6,6 +6,7 @@ import java.util.Map;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
 
@@ -35,7 +36,7 @@ public abstract class InterfacePage extends Page  {
                 pc.unsetSilent();
             }
             
-			String qs=pc. getHttpServletRequest().getQueryString();
+			String qs=ReqRspUtil.getQueryString(pc.getHttpServletRequest());
             if(pc.getBasePageSource()==this.getPageSource())
             	pc.getDebugger().setOutput(false);
             boolean isPost=pc. getHttpServletRequest().getMethod().equalsIgnoreCase("POST");
