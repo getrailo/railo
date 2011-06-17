@@ -37,6 +37,7 @@ import railo.runtime.lock.LockManager;
 import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
+import railo.runtime.tag.TagHandlerPool;
 
 /**
  * Web Context
@@ -79,6 +80,11 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
         // Fix for tomcat
         if(this.rootDir.getName().equals(".") || this.rootDir.getName().equals(".."))
         	this.rootDir=this.rootDir.getParentResource();
+    }
+    
+    public void reset() {
+    	super.reset();
+    	tagHandlerPool.reset();
     }
     
     /* *
@@ -256,6 +262,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return serverFunctionMapping;
 		}
 	    private Map applicationMappings=new ReferenceMap();
+		private TagHandlerPool tagHandlerPool=new TagHandlerPool();
 		public Mapping getApplicationMapping(String virtual, String physical) {
 			String key=virtual.toLowerCase()+physical.toLowerCase();
 			Mapping m=(Mapping) applicationMappings.get(key);
@@ -364,5 +371,9 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			//cwi.setGatewayMapping(new MappingImpl(cwi,"/",gatewayEngine.getCFCDirectory().getAbsolutePath(),null,false,true,false,false,false));
 			return cwi;
 		}*/
+
+		public TagHandlerPool getTagHandlerPool() {
+			return tagHandlerPool;
+		}
 
 }

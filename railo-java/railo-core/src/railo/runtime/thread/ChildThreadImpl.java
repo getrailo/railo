@@ -164,7 +164,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		//print.out(newArgs);
 		
 		newLocal.setEL(KEY_ATTRIBUTES, newArgs);
-		Argument oldArgs=pc.as();
+		Argument oldArgs=pc.argumentsScope();
         Scope oldLocal=pc.localScope();
         
         int oldMode=undefined.setMode(Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS);

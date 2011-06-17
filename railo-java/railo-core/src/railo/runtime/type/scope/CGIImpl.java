@@ -43,31 +43,31 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
             , "local_addr", "local_host"
 	};
 
-	private static final Collection.Key SCRIPT_NAME = KeyImpl.getInstance("script_name");
-	private static final Collection.Key PATH_INFO = KeyImpl.getInstance("path_info");
-	private static final Collection.Key HTTP_IF_MODIFIED_SINCE = KeyImpl.getInstance("http_if_modified_since");
-	private static final Collection.Key AUTH_TYPE = KeyImpl.getInstance("auth_type");
-	private static final Collection.Key CF_TEMPLATE_PATH = KeyImpl.getInstance("cf_template_path");
-	private static final Collection.Key REMOTE_USER = KeyImpl.getInstance("remote_user");
-	private static final Collection.Key REMOTE_ADDR = KeyImpl.getInstance("remote_addr");
-	private static final Collection.Key REMOTE_HOST = KeyImpl.getInstance("remote_host");
-	private static final Collection.Key REQUEST_METHOD = KeyImpl.getInstance("request_method");
-	private static final Collection.Key REQUEST_URI = KeyImpl.getInstance("request_uri");
-	private static final Collection.Key REDIRECT_URL = KeyImpl.getInstance("REDIRECT_URL");
-	private static final Collection.Key REDIRECT_QUERY_STRING = KeyImpl.getInstance("REDIRECT_QUERY_STRING");
+	public static final Collection.Key SCRIPT_NAME = KeyImpl.getInstance("script_name");
+	public static final Collection.Key PATH_INFO = KeyImpl.getInstance("path_info");
+	public static final Collection.Key HTTP_IF_MODIFIED_SINCE = KeyImpl.getInstance("http_if_modified_since");
+	public static final Collection.Key AUTH_TYPE = KeyImpl.getInstance("auth_type");
+	public static final Collection.Key CF_TEMPLATE_PATH = KeyImpl.getInstance("cf_template_path");
+	public static final Collection.Key REMOTE_USER = KeyImpl.getInstance("remote_user");
+	public static final Collection.Key REMOTE_ADDR = KeyImpl.getInstance("remote_addr");
+	public static final Collection.Key REMOTE_HOST = KeyImpl.getInstance("remote_host");
+	public static final Collection.Key REQUEST_METHOD = KeyImpl.getInstance("request_method");
+	public static final Collection.Key REQUEST_URI = KeyImpl.getInstance("request_uri");
+	public static final Collection.Key REDIRECT_URL = KeyImpl.getInstance("REDIRECT_URL");
+	public static final Collection.Key REDIRECT_QUERY_STRING = KeyImpl.getInstance("REDIRECT_QUERY_STRING");
 	
 	
 	
-	private static final Collection.Key LOCAL_ADDR = KeyImpl.getInstance("local_addr");
-	private static final Collection.Key LOCAL_HOST = KeyImpl.getInstance("local_host");
-	private static final Collection.Key SERVER_NAME = KeyImpl.getInstance("server_name");
-	private static final Collection.Key SERVER_PROTOCOL = KeyImpl.getInstance("server_protocol");
-	private static final Collection.Key SERVER_PORT = KeyImpl.getInstance("server_port");
-	private static final Collection.Key SERVER_PORT_SECURE = KeyImpl.getInstance("server_port_secure");
-	private static final Collection.Key PATH_TRANSLATED = KeyImpl.getInstance("path_translated");
-	private static final Collection.Key QUERY_STRING = KeyImpl.getInstance("query_string");
-	private static final Collection.Key CONTEXT_PATH = KeyImpl.getInstance("context_path");
-	private static final Collection.Key LAST_MODIFIED = KeyImpl.getInstance("last_modified");
+	public static final Collection.Key LOCAL_ADDR = KeyImpl.getInstance("local_addr");
+	public static final Collection.Key LOCAL_HOST = KeyImpl.getInstance("local_host");
+	public static final Collection.Key SERVER_NAME = KeyImpl.getInstance("server_name");
+	public static final Collection.Key SERVER_PROTOCOL = KeyImpl.getInstance("server_protocol");
+	public static final Collection.Key SERVER_PORT = KeyImpl.getInstance("server_port");
+	public static final Collection.Key SERVER_PORT_SECURE = KeyImpl.getInstance("server_port_secure");
+	public static final Collection.Key PATH_TRANSLATED = KeyImpl.getInstance("path_translated");
+	public static final Collection.Key QUERY_STRING = KeyImpl.getInstance("query_string");
+	public static final Collection.Key CONTEXT_PATH = KeyImpl.getInstance("context_path");
+	public static final Collection.Key LAST_MODIFIED = KeyImpl.getInstance("last_modified");
 	
 	
 	private static Struct staticKeys=new StructImpl();
@@ -319,6 +319,8 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		this.req=null;
 		scriptProtected=ScriptProtected.UNDEFINED; 
 		pc=null;
+		https=null;
+		headers=null;
 	}
 	
 	/**

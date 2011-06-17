@@ -371,7 +371,7 @@ public final class Reflector {
 		if(methods!=null) {
 		    Class[] clazzArgs = getClasses(args);
 			// exact comparsion
-		    //print.o("exact:"+methodName);
+		    //print.e("exact:"+methodName);
 		    outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
 					Class[] parameterTypes = methods[i].getParameterTypes();
@@ -383,7 +383,7 @@ public final class Reflector {
 			}
 			// like comparsion
 		    MethodInstance mi=null;
-		    //print.o("like:"+methodName);
+		    // print.e("like:"+methodName);
 		    outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
 					Class[] parameterTypes = methods[i].getParameterTypes();
@@ -397,7 +397,7 @@ public final class Reflector {
 		    
 		    
 			// convert comparsion
-		    //print.o("convert:"+methodName);
+		    // print.e("convert:"+methodName);
 		    mi=null;
 			outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
@@ -407,7 +407,7 @@ public final class Reflector {
 						try {
 							//newArgs[y]=convert(args[y],clazzArgs[y],toReferenceClass(parameterTypes[y]));
 							newArgs[y]=convert(args[y],toReferenceClass(parameterTypes[y]));
-						} catch (PageException e) {e.printStackTrace();
+						} catch (PageException e) {
 							continue outer;
 						}
 						//if(newArgs[y]==null) continue outer;
