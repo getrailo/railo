@@ -23,7 +23,6 @@ import railo.runtime.op.Constants;
 import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryColumn;

@@ -2,10 +2,9 @@ package railo.runtime.tag;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 import javax.servlet.jsp.tagext.Tag;
-
-import java.util.Stack;
 
 import railo.commons.lang.ClassUtil;
 import railo.runtime.exp.ExpressionException;

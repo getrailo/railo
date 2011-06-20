@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import railo.commons.lang.SizeOf;
 import railo.runtime.type.Sizeable;
 
 public class SoftHashMap extends AbstractMap implements Sizeable {

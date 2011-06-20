@@ -70,7 +70,6 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.query.caster.Cast;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.timer.Stopwatch;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.comparator.NumberSortRegisterComparator;
 import railo.runtime.type.comparator.SortRegister;
 import railo.runtime.type.comparator.SortRegisterComparator;
