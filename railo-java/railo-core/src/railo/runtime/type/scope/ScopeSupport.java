@@ -198,7 +198,7 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
     private Struct _fill(Struct parent, String name, Object value, boolean isLast, boolean scriptProteced) {
         Object curr;
         boolean isArrayDef=false;
-        Collection.Key key=KeyImpl.init(name);
+        Collection.Key key=KeyImpl.getInstance(name);
         
         // script protect
         if(scriptProteced && value instanceof String) {
@@ -208,7 +208,7 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
         if(name.length() >2 && name.endsWith("[]")) {
             isArrayDef=true;
             name=name.substring(0,name.length()-2);
-            key=KeyImpl.init(name);
+            key=KeyImpl.getInstance(name);
             curr=parent.get(key,null);                
         }
         else {

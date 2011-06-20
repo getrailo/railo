@@ -16,9 +16,9 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Argument;
 
 public final class StructFindKey implements Function {
-	private static final Collection.Key VALUE = KeyImpl.init("value");
-	private static final Collection.Key PATH = KeyImpl.init("path");
-	private static final Collection.Key OWNER = KeyImpl.init("owner");
+	private static final Collection.Key VALUE = KeyImpl.getInstance("value");
+	private static final Collection.Key PATH = KeyImpl.getInstance("path");
+	private static final Collection.Key OWNER = KeyImpl.getInstance("owner");
 	
 	public static Array call(PageContext pc , railo.runtime.type.Struct struct, String value) throws PageException {
 		return _call(pc,struct,value,false);

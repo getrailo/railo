@@ -89,7 +89,7 @@ public class EventListenerImpl
 		
 		if(data!=null && properties!=null && data.length==properties.length) {
 			for(int i=0;i<data.length;i++){
-				oldData.setEL(KeyImpl.init(properties[i].getName()), data[i]);
+				oldData.setEL(KeyImpl.getInstance(properties[i].getName()), data[i]);
 			}
 		}
 		

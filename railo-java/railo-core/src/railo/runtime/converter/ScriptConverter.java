@@ -41,7 +41,7 @@ import railo.runtime.type.util.ComponentUtil;
  * class to serialize and desirilize WDDX Packes
  */
 public final class ScriptConverter {
-	private static final Collection.Key REMOTING_FETCH = KeyImpl.init("remotingFetch");
+	private static final Collection.Key REMOTING_FETCH = KeyImpl.getInstance("remotingFetch");
     
 	private int deep=1;
 	private boolean ignoreRemotingFetch=true;

@@ -619,8 +619,8 @@ public final class Http extends BodyTagImpl {
 	        		setCookie.append(header.getValue());
 	        	else {
 	        	    //print.ln(header.getName()+"-"+header.getValue());
-	        		Object value=responseHeader.get(KeyImpl.init(header.getName()),null);
-	        		if(value==null) responseHeader.set(KeyImpl.init(header.getName()),header.getValue());
+	        		Object value=responseHeader.get(KeyImpl.getInstance(header.getName()),null);
+	        		if(value==null) responseHeader.set(KeyImpl.getInstance(header.getName()),header.getValue());
 	        		else {
 	        		    Array arr=null;
 	        		    if(value instanceof Array) {
@@ -628,7 +628,7 @@ public final class Http extends BodyTagImpl {
 	        		    }
 	        		    else {
 	        		        arr=new ArrayImpl();
-	        		        responseHeader.set(KeyImpl.init(header.getName()),arr);
+	        		        responseHeader.set(KeyImpl.getInstance(header.getName()),arr);
 	        		        arr.appendEL(value);
 	        		    }
 	        		    arr.appendEL(header.getValue());

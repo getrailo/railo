@@ -122,8 +122,8 @@ public class ORMUtil {
 		Object l,r;
 		props=HBMCreator.getIds(null,null,props,null,true);
 		for(int i=0;i<props.length;i++){
-			l=cpl.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
-			r=cpr.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
+			l=cpl.getComponentScope().get(KeyImpl.getInstance(props[i].getName()),null);
+			r=cpr.getComponentScope().get(KeyImpl.getInstance(props[i].getName()),null);
 			if(!_equals(done,l, r)) return false;
 		}
 		return true;

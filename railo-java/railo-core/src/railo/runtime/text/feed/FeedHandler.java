@@ -131,7 +131,7 @@ public final class FeedHandler extends DefaultHandler {
 		//print.o("iniside("+deep+"):"+name+"->"+uri);
 		
 		
-		inside = KeyImpl.init(name);
+		inside = KeyImpl.getInstance(name);
 		if(StringUtil.isEmpty(path))path=name;
 		else {
 			path+="."+name;

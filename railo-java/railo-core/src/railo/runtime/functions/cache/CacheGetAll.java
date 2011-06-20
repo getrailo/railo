@@ -38,7 +38,7 @@ public final class CacheGetAll implements Function {
 			CacheEntry entry;
 			while(it.hasNext()){
 				entry= it.next();
-				sct.setEL(KeyImpl.init(entry.getKey()),entry.getValue());
+				sct.setEL(KeyImpl.getInstance(entry.getKey()),entry.getValue());
 			}
 			return sct;
 		} catch (Exception e) {

@@ -51,7 +51,7 @@ import railo.runtime.type.util.ComponentUtil;
  */
 public final class JSONConverter {
     
-	private static final Collection.Key REMOTING_FETCH = KeyImpl.init("remotingFetch");
+	private static final Collection.Key REMOTING_FETCH = KeyImpl.getInstance("remotingFetch");
 
 	private static final Key TO_JSON = KeyImpl.getInstance("_toJson");
     private static final Object NULL = new Object();
@@ -264,7 +264,7 @@ public final class JSONConverter {
         			else if(!remotingFetch.booleanValue()) continue;
             		
         		}
-        		key=KeyImpl.init(props[i].getName());
+        		key=KeyImpl.getInstance(props[i].getName());
             	value=scope.get(key,null);
             	if(!addUDFs && (value instanceof UDF || value==null))continue;
             	if(doIt)sb.append(',');

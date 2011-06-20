@@ -144,7 +144,22 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	public static final String[] CACHE_JARS = new String[]{"ehcache.jar"};
 	public static final String[] CFX_JARS = new String[]{"com.naryx.tagfusion.cfx.jar"};
 	public static final String[] UPDATE_JARS = new String[]{"ehcache.jar","antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","railo-sl4j.jar","metadata-extractor.jar","icepdf-core.jar","com.naryx.tagfusion.cfx.jar"};
-    
+	private static final Collection.Key DEBUG = KeyImpl.getInstance("debug");
+	private static final Collection.Key DEBUG_SRC = KeyImpl.getInstance("debugSrc");
+	private static final Collection.Key DEBUG_TEMPLATE = KeyImpl.getInstance("debugTemplate");
+	private static final Collection.Key STR_DEBUG_TEMPLATE = KeyImpl.getInstance("strdebugTemplate");
+	private static final Collection.Key TEMPLATES = KeyImpl.getInstance("templates");
+	private static final Collection.Key STR = KeyImpl.getInstance("str");
+	private static final Collection.Key DO_STATUS_CODE = KeyImpl.getInstance("doStatusCode");
+	private static final Collection.Key LABEL = KeyImpl.getInstance("label");
+	private static final Collection.Key HASH = KeyImpl.getInstance("hash");
+	private static final Collection.Key ROOT = KeyImpl.getInstance("root");
+	private static final Collection.Key CONFIG = KeyImpl.getInstance("config");
+	private static final Collection.Key FILE_ACCESS = KeyImpl.getInstance("file_access");
+	
+	
+	
+	
 	/*
 	others:
 	PDFRenderer.jar
@@ -191,7 +206,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      * @see railo.runtime.ext.tag.DynamicAttributes#setDynamicAttribute(java.lang.String, java.lang.String, java.lang.Object)
      */
     public void setDynamicAttribute(String uri, String localName, Object value) {
-        attributes.setEL(KeyImpl.init(localName),value);
+        attributes.setEL(KeyImpl.getInstance(localName),value);
     }
     
     /**
@@ -1112,19 +1127,19 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         String src = config.intDebug()==ConfigImpl.SERVER_BOOLEAN_TRUE || config.intDebug()==ConfigImpl.SERVER_BOOLEAN_FALSE?"server":"web";
         
-        sct.set("debug",Caster.toBoolean(config.debug()));
-        sct.set("debugSrc",src);
-        sct.set("debugTemplate",config.getDebugTemplate());
+        sct.set(DEBUG,Caster.toBoolean(config.debug()));
+        sct.set(DEBUG_SRC,src);
+        sct.set(DEBUG_TEMPLATE,config.getDebugTemplate());
         
         
         try {
             PageSource ps = pageContext.getPageSource(config.getDebugTemplate());
-            if(ps.exists()) sct.set("debugTemplate",ps.getDisplayPath());
-            else sct.set("debugTemplate","");
+            if(ps.exists()) sct.set(DEBUG_TEMPLATE,ps.getDisplayPath());
+            else sct.set(DEBUG_TEMPLATE,"");
         } catch (PageException e) {
-            sct.set("debugTemplate","");
+            sct.set(DEBUG_TEMPLATE,"");
         }
-        sct.set("strdebugTemplate",config.getDebugTemplate());
+        sct.set(STR_DEBUG_TEMPLATE,config.getDebugTemplate());
     }
     
     private void doGetError() throws PageException {
@@ -1134,9 +1149,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         Struct templates=new StructImpl();
         Struct str=new StructImpl();
-        sct.set("templates", templates);
-        sct.set("str", str);
-        sct.set("doStatusCode", Caster.toBoolean(config.getErrorStatusCode()));
+        sct.set(TEMPLATES, templates);
+        sct.set(STR, str);
+        sct.set(DO_STATUS_CODE, Caster.toBoolean(config.getErrorStatusCode()));
         
         // 500
         String template=config.getErrorTemplate(500);
@@ -1185,12 +1200,12 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         if(config instanceof ConfigWebImpl){
         	ConfigWebImpl cw=(ConfigWebImpl) config;
-        	sct.setEL("label", cw.getLabel());
-        	sct.setEL("hash", cw.getHash());
-        	sct.setEL("root", cw.getRootDirectory().getAbsolutePath());
+        	sct.setEL(LABEL, cw.getLabel());
+        	sct.setEL(HASH, cw.getHash());
+        	sct.setEL(ROOT, cw.getRootDirectory().getAbsolutePath());
         }
         
-        sct.setEL("config", config.getConfigFile().getAbsolutePath());
+        sct.setEL(CONFIG, config.getConfigFile().getAbsolutePath());
         
     }
 
@@ -1260,7 +1275,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
 
     private Resource[] getFileAcces() throws PageException {
-    	Object value=attributes.get("file_access",null);
+    	Object value=attributes.get(FILE_ACCESS,null);
         if(value==null) return null;
         Array arr = Caster.toArray(value);
         List rtn = new ArrayList();
@@ -3179,7 +3194,7 @@ private void doGetMappings() throws PageException {
 			entry=Caster.toStruct(entries.get(keys[i]));
 			cluster.setEntry(
 				new ClusterEntryImpl(
-						KeyImpl.init(Caster.toString(entry.get(KEY))),
+						KeyImpl.getInstance(Caster.toString(entry.get(KEY))),
 						Caster.toSerializable(entry.get(VALUE,null),null),
 						Caster.toLongValue(entry.get(TIME))
 				)

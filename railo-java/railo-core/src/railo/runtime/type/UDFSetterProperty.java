@@ -14,8 +14,8 @@ import railo.runtime.type.Collection.Key;
 
 public class UDFSetterProperty extends UDFGSProperty {
 
-	private static final Collection.Key VALIDATE = KeyImpl.init("validate");
-	private static final Collection.Key VALIDATE_PARAMS = KeyImpl.init("validateParams");
+	private static final Collection.Key VALIDATE = KeyImpl.getInstance("validate");
+	private static final Collection.Key VALIDATE_PARAMS = KeyImpl.getInstance("validateParams");
 	private Property prop;
 	private Key propName;
 	private String validate;
@@ -28,7 +28,7 @@ public class UDFSetterProperty extends UDFGSProperty {
 		
 		
 		this.prop=prop; 
-		this.propName=KeyImpl.init(prop.getName());
+		this.propName=KeyImpl.getInstance(prop.getName());
 		
 		this.validate=Caster.toString(prop.getMeta().get(VALIDATE,null),null);
 		if(!StringUtil.isEmpty(validate,true)) {

@@ -31,12 +31,16 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.thread.ThreadUtil;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
 public class GatewayEngineImpl implements GatewayEngine {
 
 	private static final Object OBJ = new Object();
+
+	private static final Collection.Key AMF_FORWARD = KeyImpl.init("AMF-Forward");
 
 	private Map<String,GatewayEntry> entries=new HashMap<String,GatewayEntry>();
 	private ConfigWeb config;
@@ -291,7 +295,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 			if(cfc.containsKey(functionName)){
 				pc.execute(requestURI, true,false);
 				// Result
-				return pc.variablesScope().get("AMF-Forward",null);
+				return pc.variablesScope().get(AMF_FORWARD,null);
 			}
 		}
 		finally{

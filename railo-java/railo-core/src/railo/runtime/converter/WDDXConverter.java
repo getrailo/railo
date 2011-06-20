@@ -53,7 +53,7 @@ import railo.runtime.type.util.ComponentUtil;
  * class to serialize and desirilize WDDX Packes
  */
 public final class WDDXConverter {
-	private static final Collection.Key REMOTING_FETCH = KeyImpl.init("remotingFetch");
+	private static final Collection.Key REMOTING_FETCH = KeyImpl.getInstance("remotingFetch");
 	
 	
 	private static final Collection.Key KEY_THIS = KeyImpl.getInstance("this");

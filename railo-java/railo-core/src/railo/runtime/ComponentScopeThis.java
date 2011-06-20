@@ -25,7 +25,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
     
     private final ComponentImpl component;
     private static final int access=Component.ACCESS_PRIVATE;
-	private static final Collection.Key THIS = KeyImpl.init("this");
+	private static final Collection.Key THIS = KeyImpl.getInstance("this");
     
     /**
      * constructor of the class

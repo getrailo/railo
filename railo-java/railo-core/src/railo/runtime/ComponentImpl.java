@@ -1631,7 +1631,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     }
 
     private Object callGetter(PageContext pc,Collection.Key key) throws PageException {
-    	Member member=getMember(pc,KeyImpl.init("get"+key.getLowerString()),false,false);
+    	Member member=getMember(pc,KeyImpl.getInstance("get"+key.getLowerString()),false,false);
         if(member instanceof UDF) {
             UDF udf = (UDF)member;
             if(udf.getFunctionArguments().length==0 && udf.getReturnType()!=CFTypes.TYPE_VOID) {
@@ -1642,7 +1642,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	}
     
     private Object callGetter(PageContext pc,Collection.Key key, Object defaultValue) {
-    	Member member=getMember(pc,KeyImpl.init("get"+key.getLowerString()),false,false);
+    	Member member=getMember(pc,KeyImpl.getInstance("get"+key.getLowerString()),false,false);
         if(member instanceof UDF) {
             UDF udf = (UDF)member;
             if(udf.getFunctionArguments().length==0 && udf.getReturnType()!=CFTypes.TYPE_VOID) {
@@ -1657,7 +1657,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	}
     
     private Object callSetter(PageContext pc,Collection.Key key, Object value) throws PageException {
-    	Member member=getMember(pc,KeyImpl.init("set"+key.getLowerString()),false,false);
+    	Member member=getMember(pc,KeyImpl.getInstance("set"+key.getLowerString()),false,false);
     	if(member instanceof UDF) {
         	UDF udf = (UDF)member;
         	if(udf.getFunctionArguments().length==1 && (udf.getReturnType()==CFTypes.TYPE_VOID) || udf.getReturnType()==CFTypes.TYPE_ANY   ) {// TDOO support int return type

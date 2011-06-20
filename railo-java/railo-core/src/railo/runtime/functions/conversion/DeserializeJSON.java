@@ -169,7 +169,7 @@ public final class DeserializeJSON implements Function {
 			while(it.hasNext()) {
 				column=Caster.toString(it.next(),null);
 				if(StringUtil.isEmpty(column)) return null;
-				columns[index++]=KeyImpl.init(column);
+				columns[index++]=KeyImpl.getInstance(column);
 			}
 			return columns;
 		}

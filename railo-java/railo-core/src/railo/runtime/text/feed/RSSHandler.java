@@ -145,7 +145,7 @@ public final class RSSHandler extends DefaultHandler {
 	 * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
 	 */
 	public void startElement(String uri, String name, String qName, Attributes atts) {
-		inside = KeyImpl.init(qName);
+		inside = KeyImpl.getInstance(qName);
 		lcInside=qName.toLowerCase();
 		if(lcInside.equals("image")) 		insideImage=true;
 		else if(qName.equals("item")) 	{

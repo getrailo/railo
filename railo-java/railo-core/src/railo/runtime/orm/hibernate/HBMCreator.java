@@ -805,7 +805,7 @@ public class HBMCreator {
 
 	private static ColumnInfo getColumnInfo(Struct columnsInfo,String tableName,String columnName,ORMEngine engine,ColumnInfo defaultValue) throws ORMException {
 		if(columnsInfo!=null) {
-	    	ColumnInfo info = (ColumnInfo) columnsInfo.get(KeyImpl.init(columnName),null);
+	    	ColumnInfo info = (ColumnInfo) columnsInfo.get(KeyImpl.getInstance(columnName),null);
 			if(info==null) return defaultValue;
 			return info;
     	}

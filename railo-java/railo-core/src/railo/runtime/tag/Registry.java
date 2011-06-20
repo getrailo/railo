@@ -24,9 +24,9 @@ public final class Registry extends TagImpl {
     private static final short ACTION_GET=1;
     private static final short ACTION_SET=2;
     private static final short ACTION_DELETE=3;
-	private static final railo.runtime.type.Collection.Key TYPE = KeyImpl.init("type");
-	private static final railo.runtime.type.Collection.Key ENTRY = KeyImpl.init("entry");
-	private static final railo.runtime.type.Collection.Key VALUE = KeyImpl.init("value");
+	private static final railo.runtime.type.Collection.Key TYPE = KeyImpl.getInstance("type");
+	private static final railo.runtime.type.Collection.Key ENTRY = KeyImpl.getInstance("entry");
+	private static final railo.runtime.type.Collection.Key VALUE = KeyImpl.getInstance("value");
     
     
 

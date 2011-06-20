@@ -486,7 +486,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 									railo.runtime.type.Query q = new QueryImpl(rs,result.getMaxrows(),result.getName());	
 									count+=q.getRecordcount();
 									setVariable(result.getName(), q);
-									if(hasCached)cache.set(KeyImpl.init(result.getName()), q);
+									if(hasCached)cache.set(KeyImpl.getInstance(result.getName()), q);
 								}
 							}
 							finally{
@@ -512,7 +512,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			    			
 			    			if(param==STATUS_CODE) res.set(STATUSCODE, value);
 			    			else setVariable(param.getVariable(), value);
-			    			if(hasCached)cache.set(KeyImpl.init(param.getVariable()), value);
+			    			if(hasCached)cache.set(KeyImpl.getInstance(param.getVariable()), value);
 			    		}
 			    	}
 				}

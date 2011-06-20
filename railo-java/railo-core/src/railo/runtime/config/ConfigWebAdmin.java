@@ -3325,7 +3325,7 @@ public final class ConfigWebAdmin {
 	
 	public void removeRemoteClientUsage(String code) {
 		Struct usage = config.getRemoteClientUsage();
-		usage.removeEL(KeyImpl.init(code));
+		usage.removeEL(KeyImpl.getInstance(code));
 		
 		Element extensions=_getRootElement("remote-clients");
 		extensions.setAttribute("usage", toStringURLStyle(usage));		

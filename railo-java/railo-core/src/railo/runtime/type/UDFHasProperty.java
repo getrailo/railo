@@ -27,7 +27,7 @@ public class UDFHasProperty extends UDFGSProperty {
 	public UDFHasProperty(ComponentImpl component,Property prop)  {
 		super(component,"has"+StringUtil.ucFirst(PropertyFactory.getSingularName(prop)),getFunctionArgument(prop),CFTypes.TYPE_BOOLEAN,"wddx");
 		this.prop=prop;
-		this.propName=KeyImpl.init(prop.getName());
+		this.propName=KeyImpl.getInstance(prop.getName());
 	} 
 
 	private static FunctionArgument[] getFunctionArgument(Property prop) {
@@ -117,7 +117,7 @@ public class UDFHasProperty extends UDFGSProperty {
 			//if(strKey==NULL) throw new ;
 			
 			if(propValue instanceof Struct) {
-				return ((Struct)propValue).containsKey(KeyImpl.init(strKey));
+				return ((Struct)propValue).containsKey(KeyImpl.getInstance(strKey));
 			}
 			else if(propValue instanceof Map) {
 				return ((Map)propValue).containsKey(strKey);

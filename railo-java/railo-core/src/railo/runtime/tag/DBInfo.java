@@ -23,6 +23,7 @@ import railo.runtime.op.Constants;
 import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryColumn;
@@ -52,8 +53,19 @@ public final class DBInfo extends TagImpl {
 	private static final Key USER = KeyImpl.getInstance("USER");
 	private static final Key TABLE_SCHEM = KeyImpl.getInstance("TABLE_SCHEM");
 	private static final Key DECIMAL_DIGITS = KeyImpl.getInstance("DECIMAL_DIGITS");
-	
-	
+
+	private static final Key TYPE = KeyImpl.getInstance("type");
+	private static final Key DATABASE_NAME = KeyImpl.getInstance("database_name");
+	private static final Key TABLE_CAT = KeyImpl.getInstance("TABLE_CAT");
+	private static final Key PROCEDURE = KeyImpl.getInstance("procedure");
+	private static final Key CATALOG = KeyImpl.getInstance("catalog");
+	private static final Key SCHEMA = KeyImpl.getInstance("schema");
+	private static final Key DATABASE_PRODUCTNAME = KeyImpl.getInstance("DATABASE_PRODUCTNAME");
+	private static final Key DATABASE_VERSION = KeyImpl.getInstance("DATABASE_VERSION");
+	private static final Key DRIVER_NAME = KeyImpl.getInstance("DRIVER_NAME");
+	private static final Key DRIVER_VERSION = KeyImpl.getInstance("DRIVER_VERSION");
+	private static final Key JDBC_MAJOR_VERSION = KeyImpl.getInstance("JDBC_MAJOR_VERSION");
+	private static final Key JDBC_MINOR_VERSION = KeyImpl.getInstance("JDBC_MINOR_VERSION");	
 	
 	private static final int TYPE_NONE=0;
 	private static final int TYPE_DBNAMES=1;
@@ -66,6 +78,7 @@ public final class DBInfo extends TagImpl {
 	private static final int TYPE_INDEX = 8;
 	private static final int TYPE_USERS = 9;
 	private static final int TYPE_TERMS = 10;
+
 	
 	//private static final String[] ALL_TABLE_TYPES = {"TABLE", "VIEW", "SYSTEM TABLE", "SYNONYM"};
 	
@@ -401,21 +414,21 @@ public final class DBInfo extends TagImpl {
 		String value;
 		// catalog
 		for(int i=1;i<=len;i++) {
-			value=(String) catalogs.getAt("TABLE_CAT", i);
+			value=(String) catalogs.getAt(TABLE_CAT, i);
 			if(!matchPattern(value,p)) continue;
 			qry.addRow();
-			qry.setAt("database_name", row, value);
-			qry.setAt(KeyImpl.init("type"), row, "CATALOG");
+			qry.setAt(DATABASE_NAME, row, value);
+			qry.setAt(TYPE, row, "CATALOG");
 			row++;
 		}
 		// scheme
 		len=scheme.getRecordcount();
 		for(int i=1;i<=len;i++) {
-			value=(String) scheme.getAt("TABLE_SCHEM", i);
+			value=(String) scheme.getAt(TABLE_SCHEM, i);
 			if(!matchPattern(value,p)) continue;
 			qry.addRow();
-			qry.setAt("database_name", row, value);
-			qry.setAt("type", row, "SCHEMA");
+			qry.setAt(DATABASE_NAME, row, value);
+			qry.setAt(TYPE, row, "SCHEMA");
 			row++;
 		}
 		
@@ -540,9 +553,9 @@ public final class DBInfo extends TagImpl {
 
 	private void typeTerms(DatabaseMetaData metaData) throws SQLException, PageException {
 		Struct sct=new StructImpl();
-		sct.setEL("procedure", metaData.getProcedureTerm());
-		sct.setEL("catalog", metaData.getCatalogTerm());
-		sct.setEL("schema", metaData.getSchemaTerm());
+		sct.setEL(PROCEDURE, metaData.getProcedureTerm());
+		sct.setEL(CATALOG, metaData.getCatalogTerm());
+		sct.setEL(SCHEMA, metaData.getSchemaTerm());
 		
 		pageContext.setVariable(name, sct);
 	}
@@ -569,25 +582,18 @@ public final class DBInfo extends TagImpl {
 
 		Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
-
-		String dbproductname="DATABASE_PRODUCTNAME";
-		String dbversion="DATABASE_VERSION";
-		String drname="DRIVER_NAME";
-		String drversion="DRIVER_VERSION";
-		String major="JDBC_MAJOR_VERSION";
-		String minor="JDBC_MINOR_VERSION";
 		
-		String[] columns=new String[]{dbproductname,dbversion,drname,drversion,major,minor};
+		Key[] columns=new Key[]{DATABASE_PRODUCTNAME,DATABASE_VERSION,DRIVER_NAME,DRIVER_VERSION,JDBC_MAJOR_VERSION,JDBC_MINOR_VERSION};
 		String[] types=new String[]{"VARCHAR","VARCHAR","VARCHAR","VARCHAR","DOUBLE","DOUBLE"};
 		
 		railo.runtime.type.Query qry=new QueryImpl(columns,types,1,"query");
 
-		qry.setAt(dbproductname,1,metaData.getDatabaseProductName());
-		qry.setAt(dbversion,1,metaData.getDatabaseProductVersion());
-		qry.setAt(drname,1,metaData.getDriverName());
-		qry.setAt(drversion,1,metaData.getDriverVersion());
-		qry.setAt(major,1,new Double(metaData.getJDBCMajorVersion()));
-		qry.setAt(minor,1,new Double(metaData.getJDBCMinorVersion()));
+		qry.setAt(DATABASE_PRODUCTNAME,1,metaData.getDatabaseProductName());
+		qry.setAt(DATABASE_VERSION,1,metaData.getDatabaseProductVersion());
+		qry.setAt(DRIVER_NAME,1,metaData.getDriverName());
+		qry.setAt(DRIVER_VERSION,1,metaData.getDriverVersion());
+		qry.setAt(JDBC_MAJOR_VERSION,1,new Double(metaData.getJDBCMajorVersion()));
+		qry.setAt(JDBC_MINOR_VERSION,1,new Double(metaData.getJDBCMinorVersion()));
 		
 		
         qry.setExecutionTime(stopwatch.time());

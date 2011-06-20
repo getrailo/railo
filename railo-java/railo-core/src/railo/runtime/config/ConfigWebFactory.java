@@ -2117,8 +2117,8 @@ public final class ConfigWebFactory {
             String[] item;
             for(int i=0;i<arr.length;i++) {
                 item = List.toStringArray(List.listToArrayRemoveEmpty(arr[i],'='));
-                if(item.length==2) sct.setEL(KeyImpl.init(URLDecoder.decode(item[0]).trim()),URLDecoder.decode(item[1]));
-                else if(item.length==1) sct.setEL(KeyImpl.init(URLDecoder.decode(item[0]).trim()),"");
+                if(item.length==2) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0]).trim()),URLDecoder.decode(item[1]));
+                else if(item.length==1) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0]).trim()),"");
             }   
         }
         catch(PageException ee) {}
@@ -3230,7 +3230,7 @@ public final class ConfigWebFactory {
         for(int i=0;i<elConstants.length;i++) {
         	name=elConstants[i].getAttribute("name");
         	if(StringUtil.isEmpty(name))continue;
-        	sct.setEL(KeyImpl.init(name.trim()), elConstants[i].getAttribute("value"));
+        	sct.setEL(KeyImpl.getInstance(name.trim()), elConstants[i].getAttribute("value"));
         }
         config.setConstants(sct);
     }
