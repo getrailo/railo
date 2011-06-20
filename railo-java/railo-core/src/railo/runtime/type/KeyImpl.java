@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.CasterException;
@@ -57,75 +58,20 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		this.lcKey=StringUtil.toLowerCase(key).intern();
 		keys.put(key,this);
 		
-	}
-	/*public static void main(String[] args) {
-		KeyImpl k1 = (KeyImpl) KeyImpl.init("an");
-		KeyImpl k2 = (KeyImpl) KeyImpl.init("c0");
-		KeyImpl k3 = (KeyImpl) KeyImpl.init("AN");
-
-		print.o(k1.equals(k2));
-		print.o(k1.equals(k3));
-		
-		long start=System.currentTimeMillis();
-		for(int i=0;i<10000000;i++){
-			k1.equals(k3);
-		}
-		print.o(System.currentTimeMillis()-start);
-
-
-		start=System.currentTimeMillis();
-		for(int i=0;i<10000000;i++){
-			k1.equals(k3);
-		}
-		print.o(System.currentTimeMillis()-start);
-
-		
-		
-		
-		start=System.currentTimeMillis();
-		for(int i=0;i<10000000;i++){
-			k1.equals(k2);
-		}
-		print.o(System.currentTimeMillis()-start);
-
-
-		start=System.currentTimeMillis();
-		for(int i=0;i<10000000;i++){
-			k1.equals(k2);
-		}
-		print.o(System.currentTimeMillis()-start);
-		
-	}*/
-
-	
-	/*private static int sunCRC32( byte[] ba )
-    {
-    // create a new CRC-calculating object
-    final CRC32 crc = new CRC32();
-    crc.update( ba );
-    // crc.update( int ) processes only the low order 8-bits. It actually expects an unsigned byte.
-    return ( int ) crc.getValue();
-    }*/
-	
-	/*private static int digest( byte[] theTextToDigestAsBytes )
-    {
-    final Adler32 digester = new Adler32();
-    digester.update( theTextToDigestAsBytes );
-    // digester.update( int ) processes only the low order 8-bits. It actually expects an unsigned byte.
-    // getValue produces a long to conform to the Checksum interface.
-    // Actual result is 32 bits long not 64.
-    return ( int ) digester.getValue();
-    }*/
-	
+	}	
 	
 	/**
 	 * for dynamic loading of key objects
 	 * @param string
 	 * @return
 	 */
-	
-	public static Collection.Key init(String key) {
-		return getInstance(key);
+	static long initc=0;
+	static long getic=0;
+	public static Collection.Key init(String key) {print.e("init:"+key+":"+(++initc));
+		if(true) return new KeyImpl(key);
+		Collection.Key k= (Key) keys.get(key);
+		if(k!=null) return k;
+		return new KeyImpl(key);
 	}
 	
 
@@ -134,13 +80,10 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	 * @param string
 	 * @return
 	 */
-	public synchronized static Collection.Key getInstance(String key) {
+	public synchronized static Collection.Key getInstance(String key) {print.o("getInstance:"+key+":"+(++getic));
 		Collection.Key k= (Key) keys.get(key);
 		if(k!=null) return k;
 		return new KeyImpl(key);
-		
-		
-		
 	}
 	
 	/**

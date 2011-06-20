@@ -263,7 +263,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private long startTime;
 	private boolean isCFCRequest;
 	
-	private DataSourceManager manager;
+	private DatasourceManagerImpl manager;
 	private Struct threads;
 	private boolean hasFamily=false;
 	//private CFMLFactoryImpl factory;
@@ -590,6 +590,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
 
     	gatewayContext=false;
+    	
+    	manager.release();
 	}
 
 	/**

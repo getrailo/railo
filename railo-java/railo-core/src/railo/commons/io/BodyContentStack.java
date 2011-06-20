@@ -49,6 +49,8 @@ public final class BodyContentStack {
         this.base=null;
         current=root;
         current.body=null;
+        current.after=null;
+        current.before=null;
     }
     
 
