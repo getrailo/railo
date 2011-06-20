@@ -67,7 +67,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	 */
 	static long initc=0;
 	static long getic=0;
-	public static Collection.Key init(String key) {print.e("init:"+key+":"+(++initc));
+	public static Collection.Key init(String key) {//print.e("init:"+key+":"+(++initc));
 		if(true) return new KeyImpl(key);
 		Collection.Key k= (Key) keys.get(key);
 		if(k!=null) return k;
@@ -80,7 +80,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	 * @param string
 	 * @return
 	 */
-	public synchronized static Collection.Key getInstance(String key) {print.o("getInstance:"+key+":"+(++getic));
+	public synchronized static Collection.Key getInstance(String key) {//print.o("getInstance:"+key+":"+(++getic));
 		Collection.Key k= (Key) keys.get(key);
 		if(k!=null) return k;
 		return new KeyImpl(key);
