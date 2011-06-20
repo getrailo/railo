@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import org.apache.commons.codec.binary.Base64;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
