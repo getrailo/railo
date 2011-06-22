@@ -2025,11 +2025,12 @@ public final class ConfigWebAdmin {
     /**
      * update the timeServer
      * @param timeServer
+     * @param useTimeServer 
      * @throws PageException 
      */
-    public void updateTimeServer(String timeServer) throws PageException {
+    public void updateTimeServer(String timeServer, Boolean useTimeServer) throws PageException {
     	checkWriteAccess();
-       if(timeServer.trim().length()>0) {
+       if(useTimeServer!=null && useTimeServer.booleanValue() && !StringUtil.isEmpty(timeServer,true)) {
             try {
                 new NtpClient(timeServer).getOffset();
             } catch (IOException e) {
@@ -2043,6 +2044,8 @@ public final class ConfigWebAdmin {
         
         Element scope=_getRootElement("regional");
         scope.setAttribute("timeserver",timeServer.trim());
+        if(useTimeServer!=null)scope.setAttribute("use-timeserver",Caster.toString(useTimeServer));
+        else scope.removeAttribute("use-timeserver");
     }
     
     /**

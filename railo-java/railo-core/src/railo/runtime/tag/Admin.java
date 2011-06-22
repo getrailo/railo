@@ -319,15 +319,15 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 			schedule.setPageContext(pageContext);
 			schedule.setAction(getString("admin",action,"scheduleAction"));
 			schedule.setTask(getString("task",null));
-			schedule.setHidden(getBool("hidden",false));
-			schedule.setReadonly(getBool("readonly",false));
+			schedule.setHidden(getBoolV("hidden",false));
+			schedule.setReadonly(getBoolV("readonly",false));
 			schedule.setOperation(getString("operation",null));
 			schedule.setFile(getString("file",null));
 			schedule.setPath(getString("path",null));
 			schedule.setStartdate(getObject("startDate",null));
 			schedule.setStarttime(getObject("startTime",null));
 			schedule.setUrl(getString("url",null));
-			schedule.setPublish(getBool("publish",false));
+			schedule.setPublish(getBoolV("publish",false));
 			schedule.setEnddate(getObject("endDate",null));
 			schedule.setEndtime(getObject("endTime",null));
 			schedule.setInterval(getString("interval",null));
@@ -337,7 +337,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 			schedule.setProxyserver(getString("proxyServer",null));
 			schedule.setProxyuser(getString("proxyuser",null));
 			schedule.setProxypassword(getString("proxyPassword",null));
-			schedule.setResolveurl(getBool("resolveURL",false));
+			schedule.setResolveurl(getBoolV("resolveURL",false));
 			schedule.setPort(new Double(getDouble("port",-1)));
 			schedule.setProxyport(new Double(getDouble("proxyPort",80)));
 			schedule.setReturnvariable(getString("returnvariable","cfschedule"));
@@ -393,7 +393,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 			index.setUrlpath(getString("URLpath",null));
 			index.setExtensions(getString("extensions",null));
 			index.setQuery(getString("query",null));
-			index.setRecurse(getBool("recurse",false));
+			index.setRecurse(getBoolV("recurse",false));
 			index.setLanguage(getString("language",null));
 			index.setCategory(getString("category",null));
 			index.setCategorytree(getString("categoryTree",null));
@@ -707,7 +707,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
     
     private void doRemoveUpdate() throws PageException {
-    	boolean onlyLatest = getBool("onlyLatest", false);
+    	boolean onlyLatest = getBoolV("onlyLatest", false);
     	
 
         if(onlyLatest)	admin.removeLatestUpdate();
@@ -725,7 +725,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	String strFile = getString("admin",action,"file");
     	Resource file = ResourceUtil.toResourceNotExisting(pageContext, strFile);
     	
-    	boolean secure = getBool("secure", false);
+    	boolean secure = getBoolV("secure", false);
     	
     	// compile
     	Mapping mapping = doCompileMapping(virtual, true);
@@ -753,7 +753,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 				CompressUtil.compressZip(classRoot.listResources(filter), file, filter);
 			}
 			
-			if(getBool("append", false)) {
+			if(getBoolV("append", false)) {
 				admin.updateMapping(
 						mapping.getVirtual(),
 		                mapping.getStrPhysical(),
@@ -773,7 +773,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	adminSync.broadcast(attributes, config);
     }
     private void doCompileMapping() throws PageException {
-        doCompileMapping(getString("admin",action,"virtual").toLowerCase(), getBool("stoponerror", true));
+        doCompileMapping(getString("admin",action,"virtual").toLowerCase(), getBoolV("stoponerror", true));
         adminSync.broadcast(attributes, config);
     }
     
@@ -1901,8 +1901,8 @@ private void doGetMappings() throws PageException {
                 getString("admin",action,"dbusername"),
                 getString("admin",action,"dbpassword"),
                 Caster.toIntValue(getString("admin",action,"port")),
-                getBool("tls", false),
-                getBool("ssl", false)
+                getBoolV("tls", false),
+                getBoolV("ssl", false)
         );
         store();
         adminSync.broadcast(attributes, config);
@@ -2171,15 +2171,15 @@ private void doGetMappings() throws PageException {
      */
     private void doUpdateDatasource() throws PageException {
         int allow=
-        (getBool("allowed_select",false)?DataSource.ALLOW_SELECT:0)+
-        (getBool("allowed_insert",false)?DataSource.ALLOW_INSERT:0)+
-        (getBool("allowed_update",false)?DataSource.ALLOW_UPDATE:0)+
-        (getBool("allowed_delete",false)?DataSource.ALLOW_DELETE:0)+
-        (getBool("allowed_alter",false)?DataSource.ALLOW_ALTER:0)+
-        (getBool("allowed_drop",false)?DataSource.ALLOW_DROP:0)+
-        (getBool("allowed_revoke",false)?DataSource.ALLOW_REVOKE:0)+
-        (getBool("allowed_grant",false)?DataSource.ALLOW_GRANT:0)+
-        (getBool("allowed_create",false)?DataSource.ALLOW_CREATE:0);
+        (getBoolV("allowed_select",false)?DataSource.ALLOW_SELECT:0)+
+        (getBoolV("allowed_insert",false)?DataSource.ALLOW_INSERT:0)+
+        (getBoolV("allowed_update",false)?DataSource.ALLOW_UPDATE:0)+
+        (getBoolV("allowed_delete",false)?DataSource.ALLOW_DELETE:0)+
+        (getBoolV("allowed_alter",false)?DataSource.ALLOW_ALTER:0)+
+        (getBoolV("allowed_drop",false)?DataSource.ALLOW_DROP:0)+
+        (getBoolV("allowed_revoke",false)?DataSource.ALLOW_REVOKE:0)+
+        (getBoolV("allowed_grant",false)?DataSource.ALLOW_GRANT:0)+
+        (getBoolV("allowed_create",false)?DataSource.ALLOW_CREATE:0);
         if(allow==0)allow=DataSource.ALLOW_ALL;
         String classname=getString("admin",action,"classname");
         /*Class clazz=null;
@@ -2201,11 +2201,11 @@ private void doGetMappings() throws PageException {
         int connLimit=getInt("connectionLimit",-1);
         int connTimeout=getInt("connectionTimeout",-1);
         long metaCacheTimeout=getLong("metaCacheTimeout",60000);
-        boolean blob=getBool("blob",false);
-        boolean clob=getBool("clob",false);
-        boolean validate=getBool("validate",false);
-        boolean storage=getBool("storage",false);
-        boolean verify=getBool("verify",true);
+        boolean blob=getBoolV("blob",false);
+        boolean clob=getBoolV("clob",false);
+        boolean validate=getBoolV("validate",false);
+        boolean storage=getBoolV("storage",false);
+        boolean verify=getBoolV("verify",true);
         Struct custom=getStruct("custom",new StructImpl());
         
         config.getDatasourceConnectionPool().remove(name);
@@ -2250,8 +2250,8 @@ private void doGetMappings() throws PageException {
                 getString("admin",action,"class"),
                 toCacheConstant("default"),
                 getStruct("admin", action, "custom"),
-                getBool("readOnly", false),
-                getBool("storage", false)
+                getBoolV("readOnly", false),
+                getBoolV("storage", false)
                 
         );
         store();
@@ -2271,7 +2271,7 @@ private void doGetMappings() throws PageException {
         		getString("admin",action,"listenerCfcPath"),
                 startup,
                 getStruct("admin", action, "custom"),
-                getBool("readOnly", false)
+                getBoolV("readOnly", false)
                 
         );
         store();
@@ -3557,10 +3557,12 @@ private void doGetMappings() throws PageException {
      * 
      */
     private void doUpdateRegional() throws PageException {
+    	Boolean useTimeServer=getBool("usetimeserver",null);
+    	
         try{
         	admin.updateLocale(getString("admin",action,"locale"));
 	    	admin.updateTimeZone(getString("admin",action,"timezone"));
-	    	admin.updateTimeServer(getString("admin",action,"timeserver"));
+	    	admin.updateTimeServer(getString("admin",action,"timeserver"),useTimeServer);
 	    	admin.updateTimeZone(getString("admin",action,"timezone"));
         }
         finally {
@@ -3838,6 +3840,7 @@ private void doGetMappings() throws PageException {
         sct.set("locale",Caster.toString(config.getLocale()));
         sct.set("timezone",pageContext.getTimeZone().getID());
         sct.set("timeserver",config.getTimeServer());
+        sct.set("usetimeserver",config.getUseTimeServer());
 		// replaced with encoding outputsct.set("defaultencoding", config.get DefaultEncoding());
     }
     
@@ -3972,10 +3975,16 @@ private void doGetMappings() throws PageException {
         return value;
     }
 
-    private boolean getBool(String attributeName, boolean defaultValue) {
+    private boolean getBoolV(String attributeName, boolean defaultValue) {
         Object value=attributes.get(attributeName,null);
         if(value==null) return defaultValue;
         return Caster.toBooleanValue(value,defaultValue);
+    }
+
+    private Boolean getBool(String attributeName, Boolean defaultValue) {
+        Object value=attributes.get(attributeName,null);
+        if(value==null) return defaultValue;
+        return Caster.toBoolean(value,defaultValue);
     }
     
     private Struct getStruct(String attributeName, Struct defaultValue) {

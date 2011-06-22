@@ -812,7 +812,8 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="regional.defaultencodingdescription"></data>
 	<data key="regional.web">Railo lässt Sie Ihre eigenen individuellen Locale-, Zeitzonen- und Zeitservereinstellungen vorzunehmen.</data>
 	<data key="regional.timezone">Zeitzone</data>
-	<data key="regional.timeserver">Time server (NTP)</data>
+	<data key="regional.timeserver">Time Server (NTP)</data>
+	<data key="regional.usetimeserver">verwende Time Server</data>
 	<data key="regional.other"> --- andere --- </data>
 	<data key="regional.defaultencoding">Standard Encoding</data>
 	<data key="regional.timeservermissing">Bitte wählen Sie einen Wert für die Zeitzone aus.</data>
