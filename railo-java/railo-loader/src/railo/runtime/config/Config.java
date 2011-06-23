@@ -89,12 +89,22 @@ public interface Config {
     public static final short RECOMPILE_ALWAYS = 2;
     
 
+	public static final short INSPECT_ALWAYS = 0;
+	public static final short INSPECT_ONCE = 1;
+	public static final short INSPECT_NEVER = 2;
+
     /*public static final int CUSTOM_TAG_MODE_NONE = 0;
     public static final int CUSTOM_TAG_MODE_CLASSIC = 1;
     public static final int CUSTOM_TAG_MODE_MODERN = 2;
     public static final int CUSTOM_TAG_MODE_CLASSIC_MODERN = 4;
     public static final int CUSTOM_TAG_MODE_MODERN_CLASSIC = 8;
     */
+	
+	/**
+	 * @return the inspectTemplate 
+	 * FUTURE to interface
+	 */
+	public short getInspectTemplate();
     
 
     /**
@@ -631,6 +641,8 @@ public interface Config {
 	public Struct getConstants();
 	
 	public DataSource getDataSource(String datasource) throws PageException;
+	
+	public DataSource getDataSource(String datasource, DataSource defaultValue);
 	
 	public Map getDataSourcesAsMap();
 	

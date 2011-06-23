@@ -143,7 +143,6 @@ import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
 import railo.runtime.type.scope.storage.StorageScopeImpl;
-import railo.runtime.util.ApplicationContext;
 import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.runtime.writer.CFMLWriter;
@@ -684,7 +683,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public PageSource getRelativePageSource(String realPath) {
     	if(StringUtil.startsWith(realPath,'/')) return getPageSource(realPath);
     	if(pathList.size()==0) return null;
-		return ((PageSource) pathList.getLast()).getRealPage(realPath);
+		return pathList.getLast().getRealPage(realPath);
 	}
     
     public PageSource getPageSource(String realPath) {
@@ -788,7 +787,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         SVArray sva = new SVArray();
         PageSource ps;
         for(int i=0;i<len;i++) {
-        	ps=(PageSource)includePathList.get(i);
+        	ps=includePathList.get(i);
         	if(i==0) {
         		if(!ps.equals(getBasePageSource()))
         			sva.append(ResourceUtil.getResource(this,getBasePageSource()).getAbsolutePath());
@@ -807,7 +806,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     
     
     protected PageSource getPageSource(int index) {
-        return (PageSource) includePathList.get(index-1);
+        return includePathList.get(index-1);
     }
     public synchronized void copyStateTo(PageContextImpl other) {
     	
@@ -928,14 +927,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @return the current template SourceFile
      */
     public PageSource getCurrentPageSource() {
-    	return (PageSource) pathList.getLast();
+    	return pathList.getLast();
     }
     
     /**
      * @return the current template SourceFile
      */
     public PageSource getCurrentTemplatePageSource() {
-        return (PageSource) includePathList.getLast();
+        return includePathList.getLast();
     }
 	
     /**
@@ -2401,7 +2400,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	else {
     		exception = Caster.toPageException(t);
     		undefinedScope().setEL(CFCATCH,exception.getCatchBlock(this));
-    		if(config.debug()) ((DebuggerImpl)debugger).addException(config,exception);
+    		if(config.debug()) debugger.addException(config,exception);
     	}
     	return exception;
     }
@@ -2413,7 +2412,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	}
     	else {
     		undefinedScope().setEL(CFCATCH,pe.getCatchBlock(config));
-    		if(config.debug()) ((DebuggerImpl)debugger).addException(config,exception);
+    		if(config.debug()) debugger.addException(config,exception);
     	}
     }
     
@@ -2428,7 +2427,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    	}
 	    	else {
 	    		undefinedScope().setEL(CFCATCH,pe.getCatchBlock(config));
-	    		if(config.debug()) ((DebuggerImpl)debugger).addException(config,exception);
+	    		if(config.debug()) debugger.addException(config,exception);
 	    	}
     	}
     }

@@ -124,9 +124,6 @@ public abstract class ConfigImpl implements Config {
 
 
 
-	public static final short INSPECT_ALWAYS = 0;
-	public static final short INSPECT_ONCE = 1;
-	public static final short INSPECT_NEVER = 2;
 
 	public static final int CLIENT_BOOLEAN_TRUE = 0;
 	public static final int CLIENT_BOOLEAN_FALSE = 1;
@@ -2461,6 +2458,9 @@ public abstract class ConfigImpl implements Config {
 		this.useComponentShadow = useComponentShadow;
 	}
 	
+	/**
+	 * @see railo.runtime.config.Config#getDataSource(java.lang.String)
+	 */
 	public DataSource getDataSource(String datasource) throws DatabaseException {
 		DataSource ds=(datasource==null)?null:(DataSource) datasources.get(datasource.toLowerCase());
 		if(ds!=null) return ds;
@@ -2469,7 +2469,9 @@ public abstract class ConfigImpl implements Config {
 		throw de;
 	}
 	
-	// FUTURE add to interface
+	/**
+	 * @see railo.runtime.config.Config#getDataSource(java.lang.String, railo.runtime.db.DataSource)
+	 */
 	public DataSource getDataSource(String datasource, DataSource defaultValue) {
 		DataSource ds=(datasource==null)?null:(DataSource) datasources.get(datasource.toLowerCase());
 		if(ds!=null) return ds;
@@ -2939,7 +2941,6 @@ public abstract class ConfigImpl implements Config {
 
 	/**
 	 * @return the inspectTemplate 
-	 * FUTURE to interface
 	 */
 	public short getInspectTemplate() {
 		return inspectTemplate;
@@ -2947,7 +2948,6 @@ public abstract class ConfigImpl implements Config {
 
 	/**
 	 * @param inspectTemplate the inspectTemplate to set
-	 * FUTURE to interface
 	 */
 	protected void setInspectTemplate(short inspectTemplate) {
 		this.inspectTemplate = inspectTemplate;

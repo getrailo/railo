@@ -2,6 +2,7 @@ package railo.runtime;
 
 import java.io.IOException;
 
+import railo.commons.io.res.Resource;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
 
@@ -51,6 +52,11 @@ public interface PageSource extends SourceFile {
      * @return return the file name of the source file (test.cfm)
      */
     public abstract String getFileName();
+
+    /**
+     * @return return the Resource matching this PageSource
+     */
+    public abstract Resource getResource();
 
     /**
      * @return returns the a classname matching to filename (Example: /railo/web/test_cfm)

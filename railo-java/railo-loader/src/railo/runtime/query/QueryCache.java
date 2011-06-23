@@ -48,6 +48,12 @@ public interface QueryCache {
     public abstract void clear();
 
 	/**
+	 * clear the cache
+     * @param filter
+	 */
+	public abstract void clear(QueryCacheFilter filter);
+
+	/**
 	 * removes query from cache
 	 * @param sql
 	 * @param datasource
@@ -59,4 +65,5 @@ public interface QueryCache {
 
 	public abstract Object get(SQL sql, String datasource,String username, String password, Date cachedafter);
 
+	public abstract int size();
 }
