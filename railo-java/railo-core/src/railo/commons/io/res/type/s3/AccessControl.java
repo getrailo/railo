@@ -11,6 +11,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.functions.s3.StoreGetACL;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 
 public class AccessControl {
@@ -174,7 +175,7 @@ public class AccessControl {
         }
         
         // Canonical
-        String id = Caster.toString(sct.get(StoreGetACL.ID),null);
+        String id = Caster.toString(sct.get(KeyImpl.ID),null);
         String displayName = Caster.toString(sct.get(StoreGetACL.DISPLAY_NAME),null);
         if(StringUtil.isEmpty(id)) 
         	throw new S3Exception("missing id for Canonical User defintion");

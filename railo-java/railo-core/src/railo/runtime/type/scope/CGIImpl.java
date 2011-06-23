@@ -43,31 +43,31 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
             , "local_addr", "local_host"
 	};
 
-	public static final Collection.Key SCRIPT_NAME = KeyImpl.getInstance("script_name");
-	public static final Collection.Key PATH_INFO = KeyImpl.getInstance("path_info");
-	public static final Collection.Key HTTP_IF_MODIFIED_SINCE = KeyImpl.getInstance("http_if_modified_since");
-	public static final Collection.Key AUTH_TYPE = KeyImpl.getInstance("auth_type");
-	public static final Collection.Key CF_TEMPLATE_PATH = KeyImpl.getInstance("cf_template_path");
-	public static final Collection.Key REMOTE_USER = KeyImpl.getInstance("remote_user");
-	public static final Collection.Key REMOTE_ADDR = KeyImpl.getInstance("remote_addr");
-	public static final Collection.Key REMOTE_HOST = KeyImpl.getInstance("remote_host");
-	public static final Collection.Key REQUEST_METHOD = KeyImpl.getInstance("request_method");
-	public static final Collection.Key REQUEST_URI = KeyImpl.getInstance("request_uri");
-	public static final Collection.Key REDIRECT_URL = KeyImpl.getInstance("REDIRECT_URL");
-	public static final Collection.Key REDIRECT_QUERY_STRING = KeyImpl.getInstance("REDIRECT_QUERY_STRING");
+	public static final Collection.Key SCRIPT_NAME = KeyImpl.intern("script_name");
+	public static final Collection.Key PATH_INFO = KeyImpl.intern("path_info");
+	public static final Collection.Key HTTP_IF_MODIFIED_SINCE = KeyImpl.intern("http_if_modified_since");
+	public static final Collection.Key AUTH_TYPE = KeyImpl.intern("auth_type");
+	public static final Collection.Key CF_TEMPLATE_PATH = KeyImpl.intern("cf_template_path");
+	public static final Collection.Key REMOTE_USER = KeyImpl.intern("remote_user");
+	public static final Collection.Key REMOTE_ADDR = KeyImpl.intern("remote_addr");
+	public static final Collection.Key REMOTE_HOST = KeyImpl.intern("remote_host");
+	public static final Collection.Key REQUEST_METHOD = KeyImpl.intern("request_method");
+	public static final Collection.Key REQUEST_URI = KeyImpl.intern("request_uri");
+	public static final Collection.Key REDIRECT_URL = KeyImpl.intern("REDIRECT_URL");
+	public static final Collection.Key REDIRECT_QUERY_STRING = KeyImpl.intern("REDIRECT_QUERY_STRING");
 	
 	
 	
-	public static final Collection.Key LOCAL_ADDR = KeyImpl.getInstance("local_addr");
-	public static final Collection.Key LOCAL_HOST = KeyImpl.getInstance("local_host");
-	public static final Collection.Key SERVER_NAME = KeyImpl.getInstance("server_name");
-	public static final Collection.Key SERVER_PROTOCOL = KeyImpl.getInstance("server_protocol");
-	public static final Collection.Key SERVER_PORT = KeyImpl.getInstance("server_port");
-	public static final Collection.Key SERVER_PORT_SECURE = KeyImpl.getInstance("server_port_secure");
-	public static final Collection.Key PATH_TRANSLATED = KeyImpl.getInstance("path_translated");
-	public static final Collection.Key QUERY_STRING = KeyImpl.getInstance("query_string");
-	public static final Collection.Key CONTEXT_PATH = KeyImpl.getInstance("context_path");
-	public static final Collection.Key LAST_MODIFIED = KeyImpl.getInstance("last_modified");
+	public static final Collection.Key LOCAL_ADDR = KeyImpl.intern("local_addr");
+	public static final Collection.Key LOCAL_HOST = KeyImpl.intern("local_host");
+	public static final Collection.Key SERVER_NAME = KeyImpl.intern("server_name");
+	public static final Collection.Key SERVER_PROTOCOL = KeyImpl.intern("server_protocol");
+	public static final Collection.Key SERVER_PORT = KeyImpl.intern("server_port");
+	public static final Collection.Key SERVER_PORT_SECURE = KeyImpl.intern("server_port_secure");
+	public static final Collection.Key PATH_TRANSLATED = KeyImpl.intern("path_translated");
+	public static final Collection.Key QUERY_STRING = KeyImpl.intern("query_string");
+	public static final Collection.Key CONTEXT_PATH = KeyImpl.intern("context_path");
+	public static final Collection.Key LAST_MODIFIED = KeyImpl.intern("last_modified");
 	
 	
 	private static Struct staticKeys=new StructImpl();
@@ -161,9 +161,9 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	    		k = (String)e.nextElement();
 	    		v = req.getHeader(k);
 	    		//print.err(k.length()+":"+k);
-	    		headers.setEL(KeyImpl.getInstance(k),v);
-	    		headers.setEL(KeyImpl.getInstance(k=k.replace('-','_')),v);
-	    		https.setEL(KeyImpl.getInstance("http_"+k),v);	
+	    		headers.setEL(KeyImpl.init(k),v);
+	    		headers.setEL(KeyImpl.init(k=k.replace('-','_')),v);
+	    		https.setEL(KeyImpl.init("http_"+k),v);	
 	    	}
 		}
 		String lkey=key.getLowerString();

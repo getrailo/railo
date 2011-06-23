@@ -125,21 +125,21 @@ public final class Http extends BodyTagImpl {
 	private static final short GET_AS_BINARY_YES=1;
 	private static final short GET_AS_BINARY_AUTO=2;
 
-	private static final Key ERROR_DETAIL = KeyImpl.getInstance("errordetail");
-	private static final Key STATUSCODE = KeyImpl.getInstance("statuscode");
-	private static final Key STATUS_CODE = KeyImpl.getInstance("status_code");
-	private static final Key STATUS_TEXT = KeyImpl.getInstance("status_text");
-	private static final Key HTTP_VERSION = KeyImpl.getInstance("http_version");
+	private static final Key ERROR_DETAIL = KeyImpl.intern("errordetail");
+	private static final Key STATUSCODE = KeyImpl.intern("statuscode");
+	private static final Key STATUS_CODE = KeyImpl.intern("status_code");
+	private static final Key STATUS_TEXT = KeyImpl.intern("status_text");
+	private static final Key HTTP_VERSION = KeyImpl.intern("http_version");
 	
 
-	private static final Key MIME_TYPE = KeyImpl.getInstance("mimetype");
-	private static final Key CHARSET = KeyImpl.getInstance("charset");
-	private static final Key FILE_CONTENT = KeyImpl.getInstance("filecontent");
-	private static final Key HEADER = KeyImpl.getInstance("header");
-	private static final Key TEXT = KeyImpl.getInstance("text");
-	private static final Key EXPLANATION = KeyImpl.getInstance("explanation");
-	private static final Key RESPONSEHEADER = KeyImpl.getInstance("responseheader");
-	private static final Key SET_COOKIE = KeyImpl.getInstance("set-cookie");
+	private static final Key MIME_TYPE = KeyImpl.intern("mimetype");
+	private static final Key CHARSET = KeyImpl.intern("charset");
+	private static final Key FILE_CONTENT = KeyImpl.intern("filecontent");
+	private static final Key HEADER = KeyImpl.intern("header");
+	private static final Key TEXT = KeyImpl.intern("text");
+	private static final Key EXPLANATION = KeyImpl.intern("explanation");
+	private static final Key RESPONSEHEADER = KeyImpl.intern("responseheader");
+	private static final Key SET_COOKIE = KeyImpl.intern("set-cookie");
 
 	
 	

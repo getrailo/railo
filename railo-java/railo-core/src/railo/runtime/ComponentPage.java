@@ -48,13 +48,10 @@ public abstract class ComponentPage extends PagePlus  {
 	
 	private static final long serialVersionUID = -3483642653131058030L;
 	
-	public static final railo.runtime.type.Collection.Key FIELDNAMES = KeyImpl.getInstance("fieldnames");
-	public static final railo.runtime.type.Collection.Key METHOD = KeyImpl.getInstance("method");
-	public static final railo.runtime.type.Collection.Key ARGUMENT_COLLECTION = KeyImpl.getInstance("argumentCollection");
-	public static final railo.runtime.type.Collection.Key RETURN_FORMAT = KeyImpl.getInstance("returnFormat");
-	public static final railo.runtime.type.Collection.Key QUERY_FORMAT = KeyImpl.getInstance("queryFormat");
-	//public static final railo.runtime.type.Collection.Key REMOTE_PERSISTENT = KeyImpl.getInstance("remotePersistent");
-	public static final railo.runtime.type.Collection.Key REMOTE_PERSISTENT_ID = KeyImpl.getInstance("Id16hohohh");
+	public static final railo.runtime.type.Collection.Key METHOD = KeyImpl.intern("method");
+	public static final railo.runtime.type.Collection.Key QUERY_FORMAT = KeyImpl.intern("queryFormat");
+	//public static final railo.runtime.type.Collection.Key REMOTE_PERSISTENT = KeyImpl.intern("remotePersistent");
+	public static final railo.runtime.type.Collection.Key REMOTE_PERSISTENT_ID = KeyImpl.intern("Id16hohohh");
 
 	//public static final short REMOTE_PERSISTENT_REQUEST = 1;
 	//public static final short REMOTE_PERSISTENT_SESSION = 2; FUTURE
@@ -230,10 +227,10 @@ public abstract class ComponentPage extends PagePlus  {
     	Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
 
         // define args
-        url.removeEL(FIELDNAMES);
+        url.removeEL(KeyImpl.FIELD_NAMES);
         url.removeEL(METHOD);
-        Object args=url.get(ARGUMENT_COLLECTION,null);
-        Object returnFormat=url.get(RETURN_FORMAT,null);
+        Object args=url.get(KeyImpl.ARGUMENT_COLLECTION,null);
+        Object returnFormat=url.get(KeyImpl.RETURN_FORMAT,null);
         Object queryFormat=url.get(QUERY_FORMAT,null);
         
         if(args==null){

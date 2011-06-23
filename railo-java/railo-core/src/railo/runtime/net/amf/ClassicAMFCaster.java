@@ -54,7 +54,7 @@ public class ClassicAMFCaster implements AMFCaster {
 
 	
 	
-	private static final Collection.Key REMOTING_FETCH = KeyImpl.getInstance("remotingFetch");
+	private static final Collection.Key REMOTING_FETCH = KeyImpl.intern("remotingFetch");
 
 	private static ClassicAMFCaster singelton;
 	

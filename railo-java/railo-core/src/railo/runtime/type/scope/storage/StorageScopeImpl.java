@@ -16,6 +16,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -116,8 +117,8 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		
 		//lastvisit=System.currentTimeMillis();
 		if(sct==null) sct=new StructImpl();
-		sct.setEL(CFID, pc.getCFID());
-		sct.setEL(CFTOKEN, pc.getCFToken());
+		sct.setEL(KeyImpl.CFID, pc.getCFID());
+		sct.setEL(KeyImpl.CFTOKEN, pc.getCFToken());
 		sct.setEL(URLTOKEN, pc.getURLToken());
 		sct.setEL(LASTVISIT, _lastvisit);
 		_lastvisit=new DateTimeImpl(pc.getConfig());
@@ -199,7 +200,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	 * @return returns if the scope is empty or not, this method ignore the "constant" entries of the scope (cfid,cftoken,urltoken)
 	 */
 	public boolean hasContent() {
-		if(sct.size()==(type==SCOPE_CLIENT?6:4) && sct.containsKey(URLTOKEN) && sct.containsKey(CFTOKEN) && sct.containsKey(CFID)) {
+		if(sct.size()==(type==SCOPE_CLIENT?6:4) && sct.containsKey(URLTOKEN) && sct.containsKey(KeyImpl.CFTOKEN) && sct.containsKey(KeyImpl.CFID)) {
 			return false;
 		}
 		return true;

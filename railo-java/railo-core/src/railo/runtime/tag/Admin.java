@@ -136,26 +136,22 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
 	//private static final String USAGE_SYNC = "synchronisation";
 	//private static final String USAGE_CLUSTER = "cluster";
-	private static final Collection.Key ACTION = KeyImpl.getInstance("action");
-	private static final Collection.Key KEY = KeyImpl.getInstance("key");
-	private static final Collection.Key VALUE = KeyImpl.getInstance("value");
-	private static final Collection.Key TIME = KeyImpl.getInstance("time");
 	public static final String[] ORM_JARS = new String[]{"antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","railo-sl4j.jar"};
 	public static final String[] CACHE_JARS = new String[]{"ehcache.jar"};
 	public static final String[] CFX_JARS = new String[]{"com.naryx.tagfusion.cfx.jar"};
 	public static final String[] UPDATE_JARS = new String[]{"ehcache.jar","antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","railo-sl4j.jar","metadata-extractor.jar","icepdf-core.jar","com.naryx.tagfusion.cfx.jar"};
-	private static final Collection.Key DEBUG = KeyImpl.getInstance("debug");
-	private static final Collection.Key DEBUG_SRC = KeyImpl.getInstance("debugSrc");
-	private static final Collection.Key DEBUG_TEMPLATE = KeyImpl.getInstance("debugTemplate");
-	private static final Collection.Key STR_DEBUG_TEMPLATE = KeyImpl.getInstance("strdebugTemplate");
-	private static final Collection.Key TEMPLATES = KeyImpl.getInstance("templates");
-	private static final Collection.Key STR = KeyImpl.getInstance("str");
-	private static final Collection.Key DO_STATUS_CODE = KeyImpl.getInstance("doStatusCode");
-	private static final Collection.Key LABEL = KeyImpl.getInstance("label");
-	private static final Collection.Key HASH = KeyImpl.getInstance("hash");
-	private static final Collection.Key ROOT = KeyImpl.getInstance("root");
-	private static final Collection.Key CONFIG = KeyImpl.getInstance("config");
-	private static final Collection.Key FILE_ACCESS = KeyImpl.getInstance("file_access");
+	private static final Collection.Key DEBUG = KeyImpl.intern("debug");
+	private static final Collection.Key DEBUG_SRC = KeyImpl.intern("debugSrc");
+	private static final Collection.Key DEBUG_TEMPLATE = KeyImpl.intern("debugTemplate");
+	private static final Collection.Key STR_DEBUG_TEMPLATE = KeyImpl.intern("strdebugTemplate");
+	private static final Collection.Key TEMPLATES = KeyImpl.intern("templates");
+	private static final Collection.Key STR = KeyImpl.intern("str");
+	private static final Collection.Key DO_STATUS_CODE = KeyImpl.intern("doStatusCode");
+	private static final Collection.Key LABEL = KeyImpl.intern("label");
+	private static final Collection.Key HASH = KeyImpl.intern("hash");
+	private static final Collection.Key ROOT = KeyImpl.intern("root");
+	private static final Collection.Key CONFIG = KeyImpl.intern("config");
+	private static final Collection.Key FILE_ACCESS = KeyImpl.intern("file_access");
 	
 	
 	
@@ -216,7 +212,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	//adminSync = pageContext.getAdminSync();
     	
         // Action
-        Object objAction=attributes.get(ACTION);
+        Object objAction=attributes.get(KeyImpl.ACTION);
         if(objAction==null)throw new ApplicationException("missing attrbute action for tag admin");
         action=StringUtil.toLowerCase(Caster.toString(objAction)).trim();
         
@@ -3194,9 +3190,9 @@ private void doGetMappings() throws PageException {
 			entry=Caster.toStruct(entries.get(keys[i]));
 			cluster.setEntry(
 				new ClusterEntryImpl(
-						KeyImpl.getInstance(Caster.toString(entry.get(KEY))),
-						Caster.toSerializable(entry.get(VALUE,null),null),
-						Caster.toLongValue(entry.get(TIME))
+						KeyImpl.getInstance(Caster.toString(entry.get(KeyImpl.KEY))),
+						Caster.toSerializable(entry.get(KeyImpl.VALUE,null),null),
+						Caster.toLongValue(entry.get(KeyImpl.TIME))
 				)
 			);
 		}

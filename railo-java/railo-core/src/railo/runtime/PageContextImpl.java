@@ -143,7 +143,6 @@ import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
-import railo.runtime.type.scope.storage.StorageScope;
 import railo.runtime.util.ApplicationContext;
 import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
@@ -159,14 +158,11 @@ import railo.runtime.writer.DevNullBodyContent;
 public final class PageContextImpl extends PageContext implements Sizeable {
 	
 	private static final RefBoolean DUMMY_BOOL = new RefBooleanImpl(false);
-	private static final Key CFCATCH = KeyImpl.getInstance("cfcatch");
-	private static final Key CATCH = KeyImpl.getInstance("catch");
-	private static final Key CFTHREAD = KeyImpl.getInstance("cfthread");
-	private static final Key CFID = KeyImpl.getInstance("cfid");
-	private static final Key CFTOKEN = KeyImpl.getInstance("cftoken");
-	private static final Key LOCAL = KeyImpl.getInstance("local");
-	private static final Key ERROR = KeyImpl.getInstance("error");
-	private static final Key CFERROR = KeyImpl.getInstance("cferror");
+	private static final Key CFCATCH = KeyImpl.intern("cfcatch");
+	private static final Key CATCH = KeyImpl.intern("catch");
+	private static final Key CFTHREAD = KeyImpl.intern("cfthread");
+	private static final Key ERROR = KeyImpl.intern("error");
+	private static final Key CFERROR = KeyImpl.intern("cferror");
 	
 	private static int counter=0;
 	
@@ -444,7 +440,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	/**
 	 * @see javax.servlet.jsp.PageContext#release()
 	 */
-	public void release() {
+	public void release() {//KeyImpl.dump();
 		boolean isChild=parent!=null;
 		parent=null;
 		// Attention have to be before close
@@ -1106,7 +1102,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	if(undefined.getCheckArguments()){
     		return localScope(bind);
     	}
-    	return undefinedScope().get(LOCAL);
+    	return undefinedScope().get(KeyImpl.LOCAL);
     }
 
     public Object localTouch() throws PageException { 
@@ -1118,7 +1114,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	if(undefined.getCheckArguments()){
     		return localScope(bind);
     	}
-    	return touch(undefinedScope(), LOCAL);
+    	return touch(undefinedScope(), KeyImpl.LOCAL);
     	//return undefinedScope().get(LOCAL);
     }
     
@@ -2124,13 +2120,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private void initIdAndToken() {
         boolean setCookie=true;
         // From URL
-        Object oCfid = urlScope().get(StorageScope.CFID,null);
-        Object oCftoken = urlScope().get(StorageScope.CFTOKEN,null);
+        Object oCfid = urlScope().get(KeyImpl.CFID,null);
+        Object oCftoken = urlScope().get(KeyImpl.CFTOKEN,null);
         // Cookie
         if((oCfid==null || !Decision.isGUIdSimple(oCfid)) || oCftoken==null) {
             setCookie=false;
-            oCfid = cookieScope().get(StorageScope.CFID,null);
-            oCftoken = cookieScope().get(StorageScope.CFTOKEN,null);
+            oCfid = cookieScope().get(KeyImpl.CFID,null);
+            oCftoken = cookieScope().get(KeyImpl.CFTOKEN,null);
         }
         if(oCfid!=null && !Decision.isGUIdSimple(oCfid) ) {
         	oCfid=null;
@@ -2147,8 +2143,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
         
         if(setCookie && applicationContext.isSetClientCookies()) {
-            cookieScope().setCookieEL(CFID,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
-            cookieScope().setCookieEL(CFTOKEN,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
+            cookieScope().setCookieEL(KeyImpl.CFID,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
+            cookieScope().setCookieEL(KeyImpl.CFTOKEN,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
         }
     }
 

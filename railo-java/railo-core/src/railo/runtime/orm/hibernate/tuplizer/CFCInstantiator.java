@@ -22,7 +22,7 @@ import railo.runtime.type.KeyImpl;
 
 public class CFCInstantiator implements Instantiator {
 	
-	private static final Collection.Key INIT = KeyImpl.getInstance("init");
+	private static final Collection.Key INIT = KeyImpl.intern("init");
 	private String entityName;
 	private Set<String> isInstanceEntityNames = new HashSet<String>();
 	

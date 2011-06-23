@@ -15,14 +15,13 @@ import railo.runtime.type.StructImpl;
 
 public class CatchBlock extends StructImpl implements Castable{
 
-	public static final Key MESSAGE = KeyImpl.getInstance("Message");
-	public static final Key DETAIL = KeyImpl.getInstance("Detail");
-	public static final Key ERROR_CODE = KeyImpl.getInstance("ErrorCode");
-	public static final Key EXTENDED_INFO = KeyImpl.getInstance("ExtendedInfo");
-	public static final Key TYPE = KeyImpl.getInstance("type");
-	public static final Key TAG_CONTEXT = KeyImpl.getInstance("TagContext");
-	public static final Key STACK_TRACE = KeyImpl.getInstance("StackTrace");
-	public static final Key ADDITIONAL = KeyImpl.getInstance("additional");
+	public static final Key MESSAGE = KeyImpl.intern("Message");
+	public static final Key DETAIL = KeyImpl.intern("Detail");
+	public static final Key ERROR_CODE = KeyImpl.intern("ErrorCode");
+	public static final Key EXTENDED_INFO = KeyImpl.intern("ExtendedInfo");
+	public static final Key TAG_CONTEXT = KeyImpl.intern("TagContext");
+	public static final Key STACK_TRACE = KeyImpl.intern("StackTrace");
+	public static final Key ADDITIONAL = KeyImpl.intern("additional");
 	
 	private Config config;// MUSTMUST remove this -> serialiable
 	private PageExceptionImpl pe;
@@ -37,7 +36,7 @@ public class CatchBlock extends StructImpl implements Castable{
 		setEL(DETAIL,si);
 		setEL(ERROR_CODE,si);
 		setEL(EXTENDED_INFO,si);
-		setEL(TYPE,si);
+		setEL(KeyImpl.TYPE,si);
 		setEL(TAG_CONTEXT,si);
 		setEL(STACK_TRACE,si);
 		setEL(ADDITIONAL,si);
@@ -149,7 +148,7 @@ public class CatchBlock extends StructImpl implements Castable{
 		if(DETAIL.equals(key)) 		return setEL(key, StringUtil.emptyIfNull(pe.getDetail()));
 		if(ERROR_CODE.equals(key)) 	return setEL(key, StringUtil.emptyIfNull(pe.getErrorCode()));
 		if(EXTENDED_INFO.equals(key)) 	return setEL(key, StringUtil.emptyIfNull(pe.getExtendedInfo()));
-		if(TYPE.equals(key)) 			return setEL(key, StringUtil.emptyIfNull(pe.getTypeAsString()));
+		if(KeyImpl.TYPE.equals(key)) 			return setEL(key, StringUtil.emptyIfNull(pe.getTypeAsString()));
 		if(STACK_TRACE.equals(key)) 	return setEL(key, StringUtil.emptyIfNull(pe.getStackTraceAsString()));
 		if(ADDITIONAL.equals(key)) 		return setEL(key, pe.getAdditional());
 		if(TAG_CONTEXT.equals(key)) 	return setEL(key, pe.getTagContext(config)); 	
@@ -161,7 +160,7 @@ public class CatchBlock extends StructImpl implements Castable{
 		get(DETAIL,null);
 		get(ERROR_CODE,null);
 		get(EXTENDED_INFO,null);
-		get(TYPE,null);
+		get(KeyImpl.TYPE,null);
 		get(STACK_TRACE,null);
 		get(ADDITIONAL,null);
 		get(TAG_CONTEXT,null);

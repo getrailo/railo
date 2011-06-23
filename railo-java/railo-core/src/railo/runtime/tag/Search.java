@@ -29,11 +29,10 @@ public final class Search extends TagImpl {
 	private static final int SUGGESTIONS_ALWAYS = Integer.MAX_VALUE;
 	private static final int SUGGESTIONS_NEVER = -1;
 
-	private static final railo.runtime.type.Collection.Key FOUND = KeyImpl.getInstance("found");
-	private static final railo.runtime.type.Collection.Key SEARCHED = KeyImpl.getInstance("searched");
-	private static final railo.runtime.type.Collection.Key KEYWORDS = KeyImpl.getInstance("keywords");
-	private static final railo.runtime.type.Collection.Key KEYWORD_SCORE = KeyImpl.getInstance("keywordScore");
-	private static final railo.runtime.type.Collection.Key TIME = KeyImpl.getInstance("time");
+	private static final railo.runtime.type.Collection.Key FOUND = KeyImpl.intern("found");
+	private static final railo.runtime.type.Collection.Key SEARCHED = KeyImpl.intern("searched");
+	private static final railo.runtime.type.Collection.Key KEYWORDS = KeyImpl.intern("keywords");
+	private static final railo.runtime.type.Collection.Key KEYWORD_SCORE = KeyImpl.intern("keywordScore");
 	
 	/** Specifies the criteria type for the search. */
 	private short type=SearchCollection.SEARCH_TYPE_SIMPLE;
@@ -323,7 +322,7 @@ public final class Search extends TagImpl {
 	    	pageContext.setVariable(status, sct);
 	    	sct.set(FOUND, new Double(qry.getRecordcount()));
 	    	sct.set(SEARCHED, recSearched);
-	    	sct.set(TIME, new Double(time));
+	    	sct.set(KeyImpl.TIME, new Double(time));
 	    	
 	    	// TODO impl this values
 	    	

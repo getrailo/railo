@@ -51,9 +51,9 @@ import railo.runtime.type.util.ComponentUtil;
  */
 public final class JSONConverter {
     
-	private static final Collection.Key REMOTING_FETCH = KeyImpl.getInstance("remotingFetch");
+	private static final Collection.Key REMOTING_FETCH = KeyImpl.intern("remotingFetch");
 
-	private static final Key TO_JSON = KeyImpl.getInstance("_toJson");
+	private static final Key TO_JSON = KeyImpl.intern("_toJson");
     private static final Object NULL = new Object();
     private static final String NULL_STRING = "";
 

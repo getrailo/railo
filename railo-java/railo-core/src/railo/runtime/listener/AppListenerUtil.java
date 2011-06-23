@@ -31,12 +31,10 @@ import railo.runtime.type.scope.Undefined;
 import railo.runtime.util.ApplicationContext;
 
 public final class AppListenerUtil {
-	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.getInstance("accessKeyId");
-	private static final Collection.Key AWS_SECRET_KEY = KeyImpl.getInstance("awsSecretKey");
-	private static final Collection.Key DEFAULT_LOCATION = KeyImpl.getInstance("defaultLocation");
-	private static final Collection.Key HOST = KeyImpl.getInstance("host");
-	private static final Collection.Key SERVER = KeyImpl.getInstance("server");
-	private static final Collection.Key DATA_SOURCE = KeyImpl.getInstance("datasource");
+	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.intern("accessKeyId");
+	private static final Collection.Key AWS_SECRET_KEY = KeyImpl.intern("awsSecretKey");
+	private static final Collection.Key DEFAULT_LOCATION = KeyImpl.intern("defaultLocation");
+	private static final Collection.Key HOST = KeyImpl.intern("host");
 	
 	
 	public static PageSource getApplicationPageSource(PageContext pc,PageSource requestedPage, String filename, int mode) {
@@ -273,7 +271,7 @@ public final class AppListenerUtil {
 	
 	public static Properties toS3(Struct sct) {
 		String host=Caster.toString(sct.get(HOST,null),null);
-		if(StringUtil.isEmpty(host))host=Caster.toString(sct.get(SERVER,null),null);
+		if(StringUtil.isEmpty(host))host=Caster.toString(sct.get(KeyImpl.SERVER,null),null);
 		
 		return toS3(
 				Caster.toString(sct.get(ACCESS_KEY_ID,null),null),
@@ -299,7 +297,7 @@ public final class AppListenerUtil {
 		ac.setORMConfiguration(ORMConfiguration.load(config,sct,res,config.getORMConfig()));
 		
 		// datasource
-		Object o = sct.get(DATA_SOURCE,null);
+		Object o = sct.get(KeyImpl.DATA_SOURCE,null);
 		if(o!=null) ac.setORMDatasource(Caster.toString(o));
 	}
 	

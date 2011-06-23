@@ -11,13 +11,11 @@ import railo.runtime.type.SharedScope;
  */
 public interface StorageScope extends SharedScope {
 	
-	public static Collection.Key CFID=KeyImpl.getInstance("cfid");
-	public static Collection.Key CFTOKEN=KeyImpl.getInstance("cftoken");
-	public static Collection.Key URLTOKEN=KeyImpl.getInstance("urltoken");
-	public static Collection.Key LASTVISIT=KeyImpl.getInstance("lastvisit");
-	public static Collection.Key HITCOUNT=KeyImpl.getInstance("hitcount");
-	public static Collection.Key TIMECREATED=KeyImpl.getInstance("timecreated");
-	public static Collection.Key SESSION_ID=KeyImpl.getInstance("sessionid");
+	public static Collection.Key URLTOKEN=KeyImpl.intern("urltoken");
+	public static Collection.Key LASTVISIT=KeyImpl.intern("lastvisit");
+	public static Collection.Key HITCOUNT=KeyImpl.intern("hitcount");
+	public static Collection.Key TIMECREATED=KeyImpl.intern("timecreated");
+	public static Collection.Key SESSION_ID=KeyImpl.intern("sessionid");
 	
 	/**
 	 * @return time when the Scope last time was visited

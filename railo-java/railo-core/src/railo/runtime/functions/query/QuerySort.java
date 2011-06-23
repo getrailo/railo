@@ -45,7 +45,7 @@ public final class QuerySort implements Function {
 		
 		
 		for(int i=arrColumnNames.length-1;i>=0;i--)
-			query.sort(KeyImpl.getInstance(arrColumnNames[i]),dirs[i]);
+			query.sort(KeyImpl.init(arrColumnNames[i]),dirs[i]);
 		
 		
 		

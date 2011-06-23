@@ -18,8 +18,8 @@ import railo.runtime.util.ApplicationContext;
  */
 public final class JSession extends ScopeSupport implements SessionPlus,HttpSessionBindingListener,MemoryScope {
     
-	//public static final Collection.Key URL_TOKEN = KeyImpl.getInstance("urltoken");
-	public static final Collection.Key SESSION_ID = KeyImpl.getInstance("sessionid");
+	//public static final Collection.Key URL_TOKEN = KeyImpl.intern("urltoken");
+	public static final Collection.Key SESSION_ID = KeyImpl.intern("sessionid");
 	
 	private String name;
     private long timespan=-1;

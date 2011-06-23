@@ -21,9 +21,8 @@ import railo.runtime.util.ApplicationContext;
  */
 public final class Login extends BodyTagImpl {
     
-    private static final Key CFLOGIN = KeyImpl.getInstance("cflogin");
-	private static final Key NAME = KeyImpl.getInstance("name");
-	private static final Key PASSWORD = KeyImpl.getInstance("password");
+    private static final Key CFLOGIN = KeyImpl.intern("cflogin");
+	private static final Key PASSWORD = KeyImpl.intern("password");
 	private int idletimeout=1800;
     private String applicationtoken;
     private String cookiedomain;
@@ -119,7 +118,7 @@ public final class Login extends BodyTagImpl {
         if(password==null) password="";
         
         Struct sct=new StructImpl();
-        sct.setEL(NAME,username);
+        sct.setEL(KeyImpl.NAME,username);
         sct.setEL(PASSWORD,password);
         pageContext.undefinedScope().setEL(CFLOGIN,sct);
     }

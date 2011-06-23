@@ -97,16 +97,15 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		return template;
 	}
 
-	public static final Collection.Key NAME = KeyImpl.getInstance("NAME");
-	public static final Collection.Key COLUMNS = KeyImpl.getInstance("COLUMNS");
-	public static final Collection.Key SQL = KeyImpl.getInstance("SQL");
-	public static final Collection.Key EXECUTION_TIME = KeyImpl.getInstance("executionTime");
-	public static final Collection.Key RECORDCOUNT = KeyImpl.getInstance("RECORDCOUNT");
-	public static final Collection.Key CACHED = KeyImpl.getInstance("cached");
-	public static final Collection.Key COLUMNLIST = KeyImpl.getInstance("COLUMNLIST");
-	public static final Collection.Key CURRENTROW = KeyImpl.getInstance("CURRENTROW");
-	public static final Collection.Key IDENTITYCOL =  KeyImpl.getInstance("IDENTITYCOL");
-	public static final Collection.Key GENERATED_KEYS = KeyImpl.getInstance("GENERATED_KEYS");
+	public static final Collection.Key COLUMNS = KeyImpl.intern("COLUMNS");
+	public static final Collection.Key SQL = KeyImpl.intern("SQL");
+	public static final Collection.Key EXECUTION_TIME = KeyImpl.intern("executionTime");
+	public static final Collection.Key RECORDCOUNT = KeyImpl.intern("RECORDCOUNT");
+	public static final Collection.Key CACHED = KeyImpl.intern("cached");
+	public static final Collection.Key COLUMNLIST = KeyImpl.intern("COLUMNLIST");
+	public static final Collection.Key CURRENTROW = KeyImpl.intern("CURRENTROW");
+	public static final Collection.Key IDENTITYCOL =  KeyImpl.intern("IDENTITYCOL");
+	public static final Collection.Key GENERATED_KEYS = KeyImpl.intern("GENERATED_KEYS");
 	
 	
 	
@@ -1973,7 +1972,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
         }
         
         Struct sct=new StructImpl();
-        sct.setEL(NAME,getName());
+        sct.setEL(KeyImpl.NAME_UC,getName());
         sct.setEL(COLUMNS,cols);
         sct.setEL(SQL,sql==null?"":sql.toString());
         sct.setEL(EXECUTION_TIME,new Double(exeTime));

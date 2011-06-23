@@ -18,10 +18,8 @@ import railo.runtime.type.Struct;
 
 public final class ModernAppListenerException extends PageException {
 
-	private static final Collection.Key DETAIL = KeyImpl.getInstance("detail");
-	private static final Collection.Key ROOT_CAUSE = KeyImpl.getInstance("rootCause");
-	private static final Collection.Key CAUSE = KeyImpl.getInstance("cause");
-	private static final Collection.Key NAME = KeyImpl.getInstance("name");
+	private static final Collection.Key ROOT_CAUSE = KeyImpl.intern("rootCause");
+	private static final Collection.Key CAUSE = KeyImpl.intern("cause");
 	private PageException rootCause;
 	private String eventName;
 
@@ -71,13 +69,13 @@ public final class ModernAppListenerException extends PageException {
 		Struct cb=rootCause.getCatchBlock(pc);
 		Collection cause = cb.duplicate(false);
 		//rtn.setEL("message", getMessage());
-		if(!cb.containsKey(DETAIL))cb.setEL(DETAIL, "Exception throwed while invoking function ["+eventName+"] from Application.cfc");
+		if(!cb.containsKey(KeyImpl.DETAIL))cb.setEL(KeyImpl.DETAIL, "Exception throwed while invoking function ["+eventName+"] from Application.cfc");
 		cb.setEL(ROOT_CAUSE, cause);
 		cb.setEL(CAUSE, cause);
 		//cb.setEL("stacktrace", getStackTraceAsString());
 		//rtn.setEL("tagcontext", new ArrayImpl());
 		//rtn.setEL("type", getTypeAsString());
-		cb.setEL(NAME, eventName);
+		cb.setEL(KeyImpl.NAME, eventName);
 
 		
 		

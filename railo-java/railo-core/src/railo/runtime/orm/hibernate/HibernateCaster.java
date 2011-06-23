@@ -36,7 +36,7 @@ import railo.runtime.type.util.QueryUtil;
 public class HibernateCaster {
 	
 	private static final int NULL = -178696;
-	private static final Key ENTITY_NAME = KeyImpl.getInstance("entityname");
+	private static final Key ENTITY_NAME = KeyImpl.intern("entityname");
 	/*public static Component toCFML(PageContext pc,Map map, Component cfc) throws PageException {
 		if(map instanceof ComponentPro) return (Component) map;
 		ComponentPro ci = ComponentUtil.toComponentPro(cfc);

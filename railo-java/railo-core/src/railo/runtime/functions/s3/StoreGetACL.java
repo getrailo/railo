@@ -24,11 +24,10 @@ import railo.runtime.type.StructImpl;
 
 public class StoreGetACL {
 
-	public static final Collection.Key ID = KeyImpl.getInstance("id");
-	public static final Collection.Key GROUP = KeyImpl.getInstance("group");
-	public static final Collection.Key DISPLAY_NAME = KeyImpl.getInstance("displayName");
-	public static final Collection.Key EMAIL = KeyImpl.getInstance("email");
-	public static final Collection.Key PERMISSION = KeyImpl.getInstance("permission");
+	public static final Collection.Key GROUP = KeyImpl.intern("group");
+	public static final Collection.Key DISPLAY_NAME = KeyImpl.intern("displayName");
+	public static final Collection.Key EMAIL = KeyImpl.intern("email");
+	public static final Collection.Key PERMISSION = KeyImpl.intern("permission");
 	
 	
 	public static Object call(PageContext pc , String url) throws PageException {
@@ -59,7 +58,7 @@ public class StoreGetACL {
 		while(it.hasNext()){
 			ac=it.next();
 			arr.appendEL(sct=new StructImpl());
-			sct.setEL(ID, ac.getId());
+			sct.setEL(KeyImpl.ID, ac.getId());
 			sct.setEL(PERMISSION, ac.getPermission());
 			
 			type = AccessControl.toType(ac.getType());
@@ -75,7 +74,7 @@ public class StoreGetACL {
 	
 	private static void setGroup(Struct sct, AccessControl ac) {
 		String uri = ac.getUri();
-		sct.setEL(ID, uri);
+		sct.setEL(KeyImpl.ID, uri);
 		if("http://acs.amazonaws.com/groups/global/AllUsers".equalsIgnoreCase(uri))
 			sct.setEL(GROUP, "all");
 		else if("http://acs.amazonaws.com/groups/global/AuthenticatedUsers".equalsIgnoreCase(uri))

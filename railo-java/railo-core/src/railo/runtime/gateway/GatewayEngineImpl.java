@@ -342,7 +342,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		
 		pc.setRequestTimeout(999999999999999999L); 
 		pc.setGatewayContext(true);
-		if(arguments!=null)attrs.setEL(ComponentPage.ARGUMENT_COLLECTION, arguments);
+		if(arguments!=null)attrs.setEL(KeyImpl.ARGUMENT_COLLECTION, arguments);
 		attrs.setEL("client", "railo-gateway-1-0");
 		return pc;
 	}

@@ -40,14 +40,9 @@ import railo.runtime.writer.CFMLWriter;
  */
 public abstract class PageExceptionImpl extends PageException {
 
-	private static final Collection.Key RAW_TRACE = KeyImpl.getInstance("raw_trace");
-	private static final Collection.Key TEMPLATE = KeyImpl.getInstance("template");
-	private static final Collection.Key ID = KeyImpl.getInstance("id");
-	private static final Collection.Key LINE = KeyImpl.getInstance("line");
-	private static final Collection.Key TYPE = KeyImpl.getInstance("type");
-	private static final Collection.Key COLUMN = KeyImpl.getInstance("column");
-	private static final Collection.Key CODE_PRINT_HTML = KeyImpl.getInstance("codePrintHTML");
-	private static final Collection.Key CODE_PRINT_PLAIN = KeyImpl.getInstance("codePrintPlain");
+	private static final Collection.Key RAW_TRACE = KeyImpl.intern("raw_trace");
+	private static final Collection.Key CODE_PRINT_HTML = KeyImpl.intern("codePrintHTML");
+	private static final Collection.Key CODE_PRINT_PLAIN = KeyImpl.intern("codePrintPlain");
 	
 	
 	
@@ -272,12 +267,12 @@ public abstract class PageExceptionImpl extends PageException {
 			
 			item=new StructImpl();
 			line=trace.getLineNumber();
-			item.setEL(TEMPLATE,template);
-			item.setEL(LINE,new Double(line));
-			item.setEL(ID,"??");
+			item.setEL(KeyImpl.TEMPLATE,template);
+			item.setEL(KeyImpl.LINE,new Double(line));
+			item.setEL(KeyImpl.ID,"??");
 			item.setEL(RAW_TRACE,trace.toString());
-			item.setEL(TYPE,"cfml");
-			item.setEL(COLUMN,new Double(0));
+			item.setEL(KeyImpl.TYPE,"cfml");
+			item.setEL(KeyImpl.COLUMN,new Double(0));
 			if(content!=null) {
 				item.setEL(CODE_PRINT_HTML,getCodePrint(content,line,true));
 				item.setEL(CODE_PRINT_PLAIN,getCodePrint(content,line,false));

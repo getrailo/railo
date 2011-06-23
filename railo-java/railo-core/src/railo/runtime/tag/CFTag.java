@@ -52,37 +52,32 @@ import railo.transformer.library.tag.TagLibTagAttr;
 **/
 public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttributes,AppendixTag {
 
-	private static Collection.Key GENERATED_CONTENT=KeyImpl.getInstance("GENERATEDCONTENT");
-	private static Collection.Key EXECUTION_MODE=KeyImpl.getInstance("EXECUTIONMODE");      
-	private static Collection.Key EXECUTE_BODY=KeyImpl.getInstance("EXECUTEBODY");
-	private static Collection.Key HAS_END_TAG=KeyImpl.getInstance("HASENDTAG");
-	private static Collection.Key PARENT=KeyImpl.getInstance("PARENT");
-	private static Collection.Key CFCATCH=KeyImpl.getInstance("CFCATCH");
-	private static Collection.Key SOURCE=KeyImpl.getInstance("SOURCE");
+	private static Collection.Key GENERATED_CONTENT=KeyImpl.intern("GENERATEDCONTENT");
+	private static Collection.Key EXECUTION_MODE=KeyImpl.intern("EXECUTIONMODE");      
+	private static Collection.Key EXECUTE_BODY=KeyImpl.intern("EXECUTEBODY");
+	private static Collection.Key HAS_END_TAG=KeyImpl.intern("HASENDTAG");
+	private static Collection.Key PARENT=KeyImpl.intern("PARENT");
+	private static Collection.Key CFCATCH=KeyImpl.intern("CFCATCH");
+	private static Collection.Key SOURCE=KeyImpl.intern("SOURCE");
 	
 	
-	private static Collection.Key ATTRIBUTES=KeyImpl.getInstance("ATTRIBUTES");
-	private static Collection.Key ATTRIBUTE=KeyImpl.getInstance("ATTRIBUTE");
-	private static Collection.Key CALLER=KeyImpl.getInstance("CALLER");
-	private static Collection.Key THIS_TAG=KeyImpl.getInstance("THISTAG");
+	private static Collection.Key ATTRIBUTES=KeyImpl.intern("ATTRIBUTES");
+	private static Collection.Key ATTRIBUTE=KeyImpl.intern("ATTRIBUTE");
+	private static Collection.Key CALLER=KeyImpl.intern("CALLER");
+	private static Collection.Key THIS_TAG=KeyImpl.intern("THISTAG");
 	
 
-	private static final Collection.Key ON_ERROR = KeyImpl.getInstance("onError");
-	private static final Collection.Key ON_FINALLY = KeyImpl.getInstance("onFinally");
-	private static final Collection.Key ON_START_TAG = KeyImpl.getInstance("onStartTag");
-	private static final Collection.Key ON_END_TAG = KeyImpl.getInstance("onEndTag");
-	private static final Collection.Key INIT = KeyImpl.getInstance("init");
+	private static final Collection.Key ON_ERROR = KeyImpl.intern("onError");
+	private static final Collection.Key ON_FINALLY = KeyImpl.intern("onFinally");
+	private static final Collection.Key ON_START_TAG = KeyImpl.intern("onStartTag");
+	private static final Collection.Key ON_END_TAG = KeyImpl.intern("onEndTag");
+	private static final Collection.Key INIT = KeyImpl.intern("init");
 
-	private static final Collection.Key ATTRIBUTE_TYPE = KeyImpl.getInstance("attributetype");
-	private static final Collection.Key TYPE = KeyImpl.getInstance("type");
-	private static final Collection.Key HINT = KeyImpl.getInstance("hint");
-	private static final Collection.Key DESCRIPTION = KeyImpl.getInstance("description");
-	private static final Collection.Key RT_EXPR_VALUE = KeyImpl.getInstance("rtexprvalue");
-	private static final Collection.Key PARSE_BODY = KeyImpl.getInstance("parsebody");
-	private static final Collection.Key EVALUATE_BODY = KeyImpl.getInstance("evaluatebody");
-	private static final Collection.Key REQUIRED = KeyImpl.getInstance("required");
-	private static final Collection.Key DEFAULT = KeyImpl.getInstance("default");
-	private static final Collection.Key METADATA = KeyImpl.getInstance("metadata");
+	private static final Collection.Key ATTRIBUTE_TYPE = KeyImpl.intern("attributetype");
+	private static final Collection.Key RT_EXPR_VALUE = KeyImpl.intern("rtexprvalue");
+	private static final Collection.Key PARSE_BODY = KeyImpl.intern("parsebody");
+	private static final Collection.Key EVALUATE_BODY = KeyImpl.intern("evaluatebody");
+	private static final Collection.Key METADATA = KeyImpl.intern("metadata");
 	
     /**
      * Field <code>attributesScope</code>
@@ -437,7 +432,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	
     	if(!runtime){
     		// hint
-    		String hint=Caster.toString(meta.get(HINT,null),null);
+    		String hint=Caster.toString(meta.get(KeyImpl.HINT,null),null);
     		if(!StringUtil.isEmpty(hint))tag.setDescription(hint);
     		
     		// parseBody
@@ -463,9 +458,9 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     			
     			sct=Caster.toStruct(entry.getValue(),null,false);
     			if(sct!=null){
-    				attr.setRequired(Caster.toBooleanValue(sct.get(REQUIRED,Boolean.FALSE),false));
-    				attr.setType(Caster.toString(sct.get(TYPE,"any"),"any"));
-    				o= sct.get(DEFAULT,null);
+    				attr.setRequired(Caster.toBooleanValue(sct.get(KeyImpl.REQUIRED,Boolean.FALSE),false));
+    				attr.setType(Caster.toString(sct.get(KeyImpl.TYPE,"any"),"any"));
+    				o= sct.get(KeyImpl.DEFAULT,null);
     				if(o!=null){
     					defaultValue=Caster.toString(o,null);
     					if(defaultValue!=null)
@@ -473,7 +468,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     				}
     				
     				if(!runtime){
-    					attr.setDescription(Caster.toString(sct.get(HINT,null),null));
+    					attr.setDescription(Caster.toString(sct.get(KeyImpl.HINT,null),null));
     					attr.setRtexpr(Caster.toBooleanValue(sct.get(RT_EXPR_VALUE,Boolean.TRUE),true));
     				}
     			}

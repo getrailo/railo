@@ -461,7 +461,7 @@ public final class VariableInterpreter {
 		char c=type.lowerCharAt(0);
 		if('a'==c) {
 			if(ScopeSupport.APPLICATION.equalsIgnoreCase(type)) 		return Scope.SCOPE_APPLICATION;
-			else if(ScopeSupport.ARGUMENTS.equalsIgnoreCase(type))	return Scope.SCOPE_ARGUMENTS;
+			else if(KeyImpl.ARGUMENTS.equalsIgnoreCase(type))	return Scope.SCOPE_ARGUMENTS;
 		}
 		else if('c'==c) {
 			if(ScopeSupport.CGI.equalsIgnoreCase(type))				return Scope.SCOPE_CGI;
@@ -477,13 +477,13 @@ public final class VariableInterpreter {
 		}
 		else if('s'==c) {
 			if(ScopeSupport.SESSION.equalsIgnoreCase(type))			return Scope.SCOPE_SESSION;
-			if(ScopeSupport.SERVER.equalsIgnoreCase(type))			return Scope.SCOPE_SERVER;
+			if(KeyImpl.SERVER.equalsIgnoreCase(type))			return Scope.SCOPE_SERVER;
 		}
 		else if('u'==c) {
 			if(ScopeSupport.URL.equalsIgnoreCase(type))				return Scope.SCOPE_URL;
 		}
 		else if('v'==c) {
-			if(ScopeSupport.VARIABLES.equalsIgnoreCase(type))		return Scope.SCOPE_VARIABLES;
+			if(KeyImpl.VARIABLES.equalsIgnoreCase(type))		return Scope.SCOPE_VARIABLES;
 		}
 		return Scope.SCOPE_UNDEFINED;
 	}

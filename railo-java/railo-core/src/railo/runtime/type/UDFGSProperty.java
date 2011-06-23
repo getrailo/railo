@@ -21,11 +21,11 @@ import railo.runtime.type.util.ComponentUtil;
 
 public abstract class UDFGSProperty extends UDFImpl {
 
-	private static final Collection.Key MIN_LENGTH = KeyImpl.getInstance("minLength");
-	private static final Collection.Key MAX_LENGTH = KeyImpl.getInstance("maxLength");
-	private static final Collection.Key MIN = KeyImpl.getInstance("min");
-	private static final Collection.Key MAX = KeyImpl.getInstance("max");
-	private static final Collection.Key PATTERN = KeyImpl.getInstance("pattern");
+	private static final Collection.Key MIN_LENGTH = KeyImpl.intern("minLength");
+	private static final Collection.Key MAX_LENGTH = KeyImpl.intern("maxLength");
+	private static final Collection.Key MIN = KeyImpl.intern("min");
+	private static final Collection.Key MAX = KeyImpl.intern("max");
+	private static final Collection.Key PATTERN = KeyImpl.intern("pattern");
 	
 	protected final FunctionArgument[] arguments;
 	protected final String name;

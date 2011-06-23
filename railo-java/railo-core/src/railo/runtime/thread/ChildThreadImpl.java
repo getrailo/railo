@@ -37,7 +37,7 @@ import railo.runtime.type.scope.Threads;
 import railo.runtime.type.scope.Undefined;
 
 public class ChildThreadImpl extends ChildThread implements Serializable {
-	private static final Collection.Key KEY_ATTRIBUTES = KeyImpl.getInstance("attributes");
+	private static final Collection.Key KEY_ATTRIBUTES = KeyImpl.intern("attributes");
 
 	//private static final Set EMPTY = new HashSet(); 
 	

@@ -109,27 +109,20 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	boolean afterConstructor;
 	private Map<Key,UDF> constructorUDFs;
 
+	private static final Key TO_DATETIME = KeyImpl.intern("_toDateTime");
+	private static final Key TO_NUMERIC = KeyImpl.intern("_toNumeric");
+	private static final Key TO_BOOLEAN = KeyImpl.intern("_toBoolean");
+	private static final Key TO_STRING = KeyImpl.intern("_toString");
 
-	public static final Key KEY_SUPER=KeyImpl.getInstance("SUPER");
-	public static final Key KEY_THIS=KeyImpl.getInstance("THIS");
+	private static final Key ON_MISSING_METHOD = KeyImpl.intern("onmissingmethod");
 
-	private static final Key TO_DATETIME = KeyImpl.getInstance("_toDateTime");
-	private static final Key TO_NUMERIC = KeyImpl.getInstance("_toNumeric");
-	private static final Key TO_BOOLEAN = KeyImpl.getInstance("_toBoolean");
-	private static final Key TO_STRING = KeyImpl.getInstance("_toString");
-
-	private static final Key ON_MISSING_METHOD = KeyImpl.getInstance("onmissingmethod");
-
-	protected static final Key EXTENDS = KeyImpl.getInstance("extends");
-	protected static final Key IMPLEMENTS = KeyImpl.getInstance("implements");
-	protected static final Key FUNCTIONS = KeyImpl.getInstance("functions");
-	protected static final Key FULLNAME = KeyImpl.getInstance("fullname");
-	protected static final Key NAME = KeyImpl.getInstance("name");
-	protected static final Key PATH = KeyImpl.getInstance("path");
-	protected static final Key TYPE = KeyImpl.getInstance("type");
-	protected static final Key SKELETON = KeyImpl.getInstance("skeleton");
-	protected static final Key PROPERTIES = KeyImpl.getInstance("properties");
-	private static final Key MAPPED_SUPER_CLASS = KeyImpl.getInstance("mappedSuperClass");
+	protected static final Key EXTENDS = KeyImpl.intern("extends");
+	protected static final Key IMPLEMENTS = KeyImpl.intern("implements");
+	protected static final Key FUNCTIONS = KeyImpl.intern("functions");
+	protected static final Key FULLNAME = KeyImpl.intern("fullname");
+	protected static final Key SKELETON = KeyImpl.intern("skeleton");
+	protected static final Key PROPERTIES = KeyImpl.intern("properties");
+	private static final Key MAPPED_SUPER_CLASS = KeyImpl.intern("mappedSuperClass");
 	
 	public long sizeOf() {
 		return 
@@ -765,7 +758,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
     public Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess) {
     	// check super
-        if(dataMember && access==ACCESS_PRIVATE && key.equalsIgnoreCase(KEY_SUPER)) {
+        if(dataMember && access==ACCESS_PRIVATE && key.equalsIgnoreCase(KeyImpl.SUPER)) {
         	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent((PageContextImpl)ThreadLocalPageContext.get(),this)._base());
             //return SuperComponent . superMember(base);
         }
@@ -792,7 +785,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      */
     protected Member getMember(PageContext pc, Collection.Key key, boolean dataMember,boolean superAccess) {
         // check super
-        if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KEY_SUPER)) {
+        if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KeyImpl.SUPER)) {
         	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent((PageContextImpl)pc,this)._base());
         }
         if(superAccess) 
@@ -1437,9 +1430,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             PageSource ps = comp.pageSource;
             
             sct.set(FULLNAME,ps.getComponentName());
-            sct.set(NAME,ps.getComponentName());
-            sct.set(PATH,ps.getDisplayPath());
-            sct.set(TYPE,"component");
+            sct.set(KeyImpl.NAME,ps.getComponentName());
+            sct.set(KeyImpl.PATH,ps.getDisplayPath());
+            sct.set(KeyImpl.TYPE,"component");
             Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false);
             if(skeleton !=null)sct.set(SKELETON, skeleton);
             
@@ -1452,7 +1445,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             		p=pit.next().getValue();
             		parr.add(p.getMetaData());
             	}
-            	parr.sort(new ArrayOfStructComparator(NAME));
+            	parr.sort(new ArrayOfStructComparator(KeyImpl.NAME));
             	
             	
             	sct.set(PROPERTIES,parr);

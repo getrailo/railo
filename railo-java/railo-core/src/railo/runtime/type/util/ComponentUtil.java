@@ -62,7 +62,7 @@ public final class ComponentUtil {
 	private final static Method CONSTRUCTOR_OBJECT = Method.getMethod("void <init> ()");
 	private static final Type COMPONENT_CONTROLLER = Type.getType(ComponentController.class); 
 	private static final Method INVOKE = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
-	private static final Collection.Key FIELD_TYPE = KeyImpl.getInstance("fieldtype");
+	private static final Collection.Key FIELD_TYPE = KeyImpl.intern("fieldtype");
 	
 	//private static final Method INVOKE_PROPERTY = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
 	

@@ -52,18 +52,15 @@ public final class Directory extends TagImpl  {
 	public static final ResourceFilter DIRECTORY_FILTER = new DirectoryResourceFilter();
 	public static final ResourceFilter FILE_FILTER = new FileResourceFilter();
 	
-	private static final Key NAME = KeyImpl.getInstance("name");
-	private static final Key SIZE = KeyImpl.getInstance("size");
-	private static final Key TYPE = KeyImpl.getInstance("type");
-	private static final Key MODE = KeyImpl.getInstance("mode");
-	private static final Key META = KeyImpl.getInstance("meta");
-	private static final Key DATE_LAST_MODIFIED = KeyImpl.getInstance("dateLastModified");
-	private static final Key ATTRIBUTES = KeyImpl.getInstance("attributes");
-	private static final Key DIRECTORY = KeyImpl.getInstance("directory");
+	private static final Key MODE = KeyImpl.intern("mode");
+	private static final Key META = KeyImpl.intern("meta");
+	private static final Key DATE_LAST_MODIFIED = KeyImpl.intern("dateLastModified");
+	private static final Key ATTRIBUTES = KeyImpl.intern("attributes");
+	private static final Key DIRECTORY = KeyImpl.intern("directory");
 	
 
-	private static final Key SET_ACL = KeyImpl.getInstance("setACL");
-	private static final Key SET_STORAGE = KeyImpl.getInstance("setStorage");
+	private static final Key SET_ACL = KeyImpl.intern("setACL");
+	private static final Key SET_STORAGE = KeyImpl.intern("setStorage");
 	
 	public static final int LIST_INFO_QUERY_ALL = 1;
 	public static final int LIST_INFO_QUERY_NAME = 2;
@@ -446,10 +443,10 @@ public final class Directory extends TagImpl  {
             if(filter==null || filter.accept(list[i])) {
                 query.addRow(1);
                 count++;
-                query.setAt(NAME,count,list[i].getName());
+                query.setAt(KeyImpl.NAME,count,list[i].getName());
                 isDir=list[i].isDirectory();
-                query.setAt(SIZE,count,new Double(isDir?0:list[i].length()));
-                query.setAt(TYPE,count,isDir?"Dir":"File");
+                query.setAt(KeyImpl.SIZE,count,new Double(isDir?0:list[i].length()));
+                query.setAt(KeyImpl.TYPE,count,isDir?"Dir":"File");
                 if(directory.getResourceProvider().isModeSupported()){
                         	
                 	query.setAt(MODE,count,new ModeObjectWrap(list[i]));
@@ -476,7 +473,7 @@ public final class Directory extends TagImpl  {
             if(filter==null || filter.accept(directory,list[i])) {
                 query.addRow(1);
                 count++;
-                query.setAt(NAME,count,list[i]);  
+                query.setAt(KeyImpl.NAME,count,list[i]);  
             }     
         }
         return count;
@@ -489,7 +486,7 @@ public final class Directory extends TagImpl  {
             if(filter==null || filter.accept(list[i])) {
                 query.addRow(1);
                 count++;
-                query.setAt(NAME,count,parent.concat(list[i].getName()));
+                query.setAt(KeyImpl.NAME,count,parent.concat(list[i].getName()));
                 
             } 
             if(recurse && list[i].isDirectory())

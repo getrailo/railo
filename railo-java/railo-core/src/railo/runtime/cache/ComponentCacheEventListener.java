@@ -10,9 +10,9 @@ import railo.runtime.type.KeyImpl;
 public class ComponentCacheEventListener implements CacheEventListener {
 
 	private static final long serialVersionUID = 6271280246677734153L;
-	private static final Collection.Key ON_EXPIRES = KeyImpl.getInstance("onExpires");
-	private static final Collection.Key ON_PUT = KeyImpl.getInstance("onPut");
-	private static final Collection.Key ON_REMOVE = KeyImpl.getInstance("onRemove");
+	private static final Collection.Key ON_EXPIRES = KeyImpl.intern("onExpires");
+	private static final Collection.Key ON_PUT = KeyImpl.intern("onPut");
+	private static final Collection.Key ON_REMOVE = KeyImpl.intern("onRemove");
 	private Component cfc;
 
 	public ComponentCacheEventListener(Component cfc) {

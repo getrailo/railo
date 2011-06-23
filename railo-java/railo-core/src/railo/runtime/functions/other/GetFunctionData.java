@@ -28,17 +28,11 @@ import railo.transformer.library.function.FunctionLibFunctionArg;
 import railo.transformer.library.tag.TagLibFactory;
 
 public final class GetFunctionData implements Function {
-	private static final Collection.Key NAME = KeyImpl.getInstance("name");
-	private static final Collection.Key TYPE = KeyImpl.getInstance("type");
-	private static final Collection.Key SOURCE = KeyImpl.getInstance("source");
-	private static final Collection.Key DESCRIPTION = KeyImpl.getInstance("description");
-	private static final Collection.Key REQUIRED = KeyImpl.getInstance("required");
-	private static final Collection.Key ARGUMENTS = KeyImpl.getInstance("arguments");
-	private static final Collection.Key RETURN_TYPE = KeyImpl.getInstance("returnType");
-	private static final Collection.Key ARGUMENT_TYPE = KeyImpl.getInstance("argumentType");
-	private static final Collection.Key ARG_MIN = KeyImpl.getInstance("argMin");
-	private static final Collection.Key ARG_MAX = KeyImpl.getInstance("argMax");
-	private static final Collection.Key STATUS = KeyImpl.getInstance("status");
+	private static final Collection.Key SOURCE = KeyImpl.intern("source");
+	private static final Collection.Key RETURN_TYPE = KeyImpl.intern("returnType");
+	private static final Collection.Key ARGUMENT_TYPE = KeyImpl.intern("argumentType");
+	private static final Collection.Key ARG_MIN = KeyImpl.intern("argMin");
+	private static final Collection.Key ARG_MAX = KeyImpl.intern("argMax");
 	
 	public static Struct call(PageContext pc , String strFunctionName) throws PageException {
 		FunctionLib[] flds;
@@ -74,28 +68,28 @@ public final class GetFunctionData implements Function {
 
 	private static Struct javaBasedFunction(FunctionLibFunction function) throws PageException {
 		Struct sct=new StructImpl();
-        sct.set(NAME,function.getName());
-        sct.set(STATUS,TagLibFactory.toStatus(function.getStatus()));
-		sct.set(DESCRIPTION,StringUtil.emptyIfNull(function.getDescription()));
+        sct.set(KeyImpl.NAME,function.getName());
+        sct.set(KeyImpl.STATUS,TagLibFactory.toStatus(function.getStatus()));
+		sct.set(KeyImpl.DESCRIPTION,StringUtil.emptyIfNull(function.getDescription()));
         sct.set(RETURN_TYPE,StringUtil.emptyIfNull(function.getReturnTypeAsString()));
         sct.set(ARGUMENT_TYPE,StringUtil.emptyIfNull(function.getArgTypeAsString()));
         sct.set(ARG_MIN,Caster.toDouble(function.getArgMin()));
         sct.set(ARG_MAX,Caster.toDouble(function.getArgMax()));
-        sct.set(TYPE,"java");
+        sct.set(KeyImpl.TYPE,"java");
 		
 		
 		Array _args=new ArrayImpl();
-		sct.set(ARGUMENTS,_args);
+		sct.set(KeyImpl.ARGUMENTS,_args);
 		if(function.getArgType()!=FunctionLibFunction.ARG_DYNAMIC){
 			ArrayList<FunctionLibFunctionArg> args = function.getArg();
 			for(int i=0;i<args.size();i++) {
 				FunctionLibFunctionArg arg=args.get(i);
 				Struct _arg=new StructImpl();
-				_arg.set(REQUIRED,arg.getRequired()?Boolean.TRUE:Boolean.FALSE);
-				_arg.set(TYPE,StringUtil.emptyIfNull(arg.getTypeAsString()));
-				_arg.set(NAME,StringUtil.emptyIfNull(arg.getName()));
-				_arg.set(STATUS,TagLibFactory.toStatus(arg.getStatus()));
-				_arg.set(DESCRIPTION,StringUtil.toStringEmptyIfNull(arg.getDescription()));
+				_arg.set(KeyImpl.REQUIRED,arg.getRequired()?Boolean.TRUE:Boolean.FALSE);
+				_arg.set(KeyImpl.TYPE,StringUtil.emptyIfNull(arg.getTypeAsString()));
+				_arg.set(KeyImpl.NAME,StringUtil.emptyIfNull(arg.getName()));
+				_arg.set(KeyImpl.STATUS,TagLibFactory.toStatus(arg.getStatus()));
+				_arg.set(KeyImpl.DESCRIPTION,StringUtil.toStringEmptyIfNull(arg.getDescription()));
 				
 				
 				_args.append(_arg);
@@ -113,18 +107,18 @@ public final class GetFunctionData implements Function {
 		boolean isWeb = Caster.toBooleanValue(args.get(2).getDefaultValue());
 		UDFImpl udf = (UDFImpl) CFFunction.loadUDF(pc, filename, name, isWeb);
 		
-		sct.set(NAME,function.getName());
+		sct.set(KeyImpl.NAME,function.getName());
         sct.set(ARGUMENT_TYPE,"fixed");
-        sct.set(DESCRIPTION,StringUtil.emptyIfNull(udf.getHint()));
+        sct.set(KeyImpl.DESCRIPTION,StringUtil.emptyIfNull(udf.getHint()));
         sct.set(RETURN_TYPE,StringUtil.emptyIfNull(udf.getReturnTypeAsString()));
-        sct.set(TYPE,"cfml");
+        sct.set(KeyImpl.TYPE,"cfml");
         sct.set(SOURCE,udf.getPageSource().getDisplayPath());
-		sct.set(STATUS,"implemeted");
+		sct.set(KeyImpl.STATUS,"implemeted");
 		
 		
         FunctionArgument[] fas = udf.getFunctionArguments();
         Array _args=new ArrayImpl();
-		sct.set(ARGUMENTS,_args);
+		sct.set(KeyImpl.ARGUMENTS,_args);
         int min=0,max=0;
 		for(int i=0;i<fas.length;i++) {
         	FunctionArgument fa=fas[i];
@@ -133,16 +127,16 @@ public final class GetFunctionData implements Function {
 			Struct _arg=new StructImpl();
 			if(fa.isRequired()) min++;
 			max++;
-			_arg.set(REQUIRED,fa.isRequired()?Boolean.TRUE:Boolean.FALSE);
-			_arg.set(TYPE,StringUtil.emptyIfNull(fa.getTypeAsString()));
-			_arg.set(NAME,StringUtil.emptyIfNull(fa.getName()));
-			_arg.set(DESCRIPTION,StringUtil.emptyIfNull(fa.getHint()));
+			_arg.set(KeyImpl.REQUIRED,fa.isRequired()?Boolean.TRUE:Boolean.FALSE);
+			_arg.set(KeyImpl.TYPE,StringUtil.emptyIfNull(fa.getTypeAsString()));
+			_arg.set(KeyImpl.NAME,StringUtil.emptyIfNull(fa.getName()));
+			_arg.set(KeyImpl.DESCRIPTION,StringUtil.emptyIfNull(fa.getHint()));
 			
 			String status;
 			if(meta==null)status="implemeted";
-			else status=TagLibFactory.toStatus(TagLibFactory.toStatus(Caster.toString(meta.get(STATUS,"implemeted"))));
+			else status=TagLibFactory.toStatus(TagLibFactory.toStatus(Caster.toString(meta.get(KeyImpl.STATUS,"implemeted"))));
 			
-			_arg.set(STATUS,status);
+			_arg.set(KeyImpl.STATUS,status);
 			
 			_args.append(_arg);
 		}

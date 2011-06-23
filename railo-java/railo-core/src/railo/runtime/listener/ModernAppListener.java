@@ -47,19 +47,17 @@ public class ModernAppListener extends AppListenerSupport {
 
 	
 
-	private static final Collection.Key ON_REQUEST_START = KeyImpl.getInstance("onRequestStart");
-	private static final Collection.Key ON_CFCREQUEST = KeyImpl.getInstance("onCFCRequest");
-	private static final Collection.Key ON_REQUEST = KeyImpl.getInstance("onRequest");
-	private static final Collection.Key ON_REQUEST_END = KeyImpl.getInstance("onRequestEnd");
-	private static final Collection.Key ON_APPLICATION_START = KeyImpl.getInstance("onApplicationStart");
-	private static final Collection.Key ON_APPLICATION_END = KeyImpl.getInstance("onApplicationEnd");
-	private static final Collection.Key ON_SESSION_START = KeyImpl.getInstance("onSessionStart");
-	private static final Collection.Key ON_SESSION_END = KeyImpl.getInstance("onSessionEnd");
-	private static final Collection.Key ON_DEBUG = KeyImpl.getInstance("onDebug");
-	private static final Collection.Key ON_ERROR = KeyImpl.getInstance("onError");
-	private static final Collection.Key ON_MISSING_TEMPLATE = KeyImpl.getInstance("onMissingTemplate");
-	
-	public static final Collection.Key S3 = KeyImpl.getInstance("s3");
+	private static final Collection.Key ON_REQUEST_START = KeyImpl.intern("onRequestStart");
+	private static final Collection.Key ON_CFCREQUEST = KeyImpl.intern("onCFCRequest");
+	private static final Collection.Key ON_REQUEST = KeyImpl.intern("onRequest");
+	private static final Collection.Key ON_REQUEST_END = KeyImpl.intern("onRequestEnd");
+	private static final Collection.Key ON_APPLICATION_START = KeyImpl.intern("onApplicationStart");
+	private static final Collection.Key ON_APPLICATION_END = KeyImpl.intern("onApplicationEnd");
+	private static final Collection.Key ON_SESSION_START = KeyImpl.intern("onSessionStart");
+	private static final Collection.Key ON_SESSION_END = KeyImpl.intern("onSessionEnd");
+	private static final Collection.Key ON_DEBUG = KeyImpl.intern("onDebug");
+	private static final Collection.Key ON_ERROR = KeyImpl.intern("onError");
+	private static final Collection.Key ON_MISSING_TEMPLATE = KeyImpl.intern("onMissingTemplate");
 	
 	
 	//private ComponentImpl app;
@@ -117,10 +115,10 @@ public class ModernAppListener extends AppListenerSupport {
 				
 				Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
 		        
-		        url.removeEL(ComponentPage.FIELDNAMES);
+		        url.removeEL(KeyImpl.FIELD_NAMES);
 		        url.removeEL(ComponentPage.METHOD);
-		        Object args=url.get(ComponentPage.ARGUMENT_COLLECTION,null);
-		        Object returnFormat=url.removeEL(ComponentPage.RETURN_FORMAT);
+		        Object args=url.get(KeyImpl.ARGUMENT_COLLECTION,null);
+		        Object returnFormat=url.removeEL(KeyImpl.RETURN_FORMAT);
 		        Object queryFormat=url.removeEL(ComponentPage.QUERY_FORMAT);
 		        
 		        if(args==null){

@@ -23,7 +23,7 @@ import railo.transformer.bytecode.util.ASMUtil;
 public final class Property extends MemberSupport implements ASMProperty {
     
 
-	private static final Collection.Key PERSITENT = KeyImpl.getInstance("persistent");
+	private static final Collection.Key PERSITENT = KeyImpl.intern("persistent");
 	
 	private String type="any";
 	private String name;

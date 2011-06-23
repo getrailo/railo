@@ -25,39 +25,36 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 	private static final DateTimeImpl expired=new DateTimeImpl(2145913200000L,false);
 
 
-	private static final Key PRODUCT_NAME = KeyImpl.getInstance("productname");
-	private static final Key PRODUCT_LEVEL = KeyImpl.getInstance("productlevel");
-    private static final Key PRODUCT_CONTEXT_COUNT = KeyImpl.getInstance("productcontextcount");
-    private static final Key PRODUCT_VERSION = KeyImpl.getInstance("productversion");
-    private static final Key SERIAL_NUMBER = KeyImpl.getInstance("serialnumber");
-    private static final Key APP_SERVER = KeyImpl.getInstance("appserver");
-    private static final Key EXPIRATION = KeyImpl.getInstance("expiration");
-    private static final Key INSTALL_KIT = KeyImpl.getInstance("installkit");
-    private static final Key ROOT_DIR = KeyImpl.getInstance("rootdir");
-    private static final Key SUPPORTED_LOCALES = KeyImpl.getInstance("supportedlocales");
-    private static final Key  COLDFUSION= KeyImpl.getInstance("coldfusion");
-    private static final Key  NAME= KeyImpl.getInstance("name");
-    private static final Key  SERVLET= KeyImpl.getInstance("servlet");
-    private static final Key  ARCH= KeyImpl.getInstance("arch");
-    private static final Key  ARCH_MODEL= KeyImpl.getInstance("archModel");
-    private static final Key  VERSION= KeyImpl.getInstance("version");
-    private static final Key  ADDITIONAL_INFORMATION= KeyImpl.getInstance("additionalinformation");
-    private static final Key BUILD_NUMBER = KeyImpl.getInstance("buildnumber");
-    private static final Key OS = KeyImpl.getInstance("os");
-    private static final Key STATE = KeyImpl.getInstance("state");
-    private static final Key RELEASE_DATE = KeyImpl.getInstance("release-date");
-    private static final Key RAILO = KeyImpl.getInstance("railo");
-    private static final Key PATH = KeyImpl.getInstance("path");
-    private static final Key FILE = KeyImpl.getInstance("file");
-    private static final Key LINE = KeyImpl.getInstance("line");
-    private static final Key SEPARATOR = KeyImpl.getInstance("separator");
-    private static final Key VENDOR = KeyImpl.getInstance("vendor");
-    private static final Key FREE_MEMORY = KeyImpl.getInstance("freeMemory");
-    private static final Key MAX_MEMORY = KeyImpl.getInstance("maxMemory");
-    private static final Key TOTAL_MEMORY = KeyImpl.getInstance("totalMemory");
-    private static final Key JAVA = KeyImpl.getInstance("java");
-	private static final Key VERSION_NAME = KeyImpl.getInstance("versionName");
-	private static final Key VERSION_NAME_EXPLANATION = KeyImpl.getInstance("versionNameExplanation");
+	private static final Key PRODUCT_NAME = KeyImpl.intern("productname");
+	private static final Key PRODUCT_LEVEL = KeyImpl.intern("productlevel");
+    private static final Key PRODUCT_CONTEXT_COUNT = KeyImpl.intern("productcontextcount");
+    private static final Key PRODUCT_VERSION = KeyImpl.intern("productversion");
+    private static final Key SERIAL_NUMBER = KeyImpl.intern("serialnumber");
+    private static final Key APP_SERVER = KeyImpl.intern("appserver");
+    private static final Key EXPIRATION = KeyImpl.intern("expiration");
+    private static final Key INSTALL_KIT = KeyImpl.intern("installkit");
+    private static final Key ROOT_DIR = KeyImpl.intern("rootdir");
+    private static final Key SUPPORTED_LOCALES = KeyImpl.intern("supportedlocales");
+    private static final Key  COLDFUSION= KeyImpl.intern("coldfusion");
+    private static final Key  SERVLET= KeyImpl.intern("servlet");
+    private static final Key  ARCH= KeyImpl.intern("arch");
+    private static final Key  ARCH_MODEL= KeyImpl.intern("archModel");
+    private static final Key  VERSION= KeyImpl.intern("version");
+    private static final Key  ADDITIONAL_INFORMATION= KeyImpl.intern("additionalinformation");
+    private static final Key BUILD_NUMBER = KeyImpl.intern("buildnumber");
+    private static final Key OS = KeyImpl.intern("os");
+    private static final Key STATE = KeyImpl.intern("state");
+    private static final Key RELEASE_DATE = KeyImpl.intern("release-date");
+    private static final Key RAILO = KeyImpl.intern("railo");
+    private static final Key FILE = KeyImpl.intern("file");
+    private static final Key SEPARATOR = KeyImpl.intern("separator");
+    private static final Key VENDOR = KeyImpl.intern("vendor");
+    private static final Key FREE_MEMORY = KeyImpl.intern("freeMemory");
+    private static final Key MAX_MEMORY = KeyImpl.intern("maxMemory");
+    private static final Key TOTAL_MEMORY = KeyImpl.intern("totalMemory");
+    private static final Key JAVA = KeyImpl.intern("java");
+	private static final Key VERSION_NAME = KeyImpl.intern("versionName");
+	private static final Key VERSION_NAME_EXPLANATION = KeyImpl.intern("versionNameExplanation");
 
 	/*
     Supported CFML Application
@@ -116,7 +113,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 		super.setEL (COLDFUSION,coldfusion);
 		
 		ReadOnlyStruct os=new ReadOnlyStruct();
-			os.setEL(NAME,System.getProperty("os.name") );
+			os.setEL(KeyImpl.NAME,System.getProperty("os.name") );
 			os.setEL(ARCH,System.getProperty("os.arch") );
 			int arch=SystemUtil.getOSArch();
 			if(arch!=SystemUtil.ARCH_UNKNOW)os.setEL(ARCH_MODEL,new Double(arch) );
@@ -137,9 +134,9 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 		super.setEL (RAILO,railo);
 		
 		ReadOnlyStruct separator=new ReadOnlyStruct();
-			separator.setEL(PATH,System.getProperty("path.separator"));
+			separator.setEL(KeyImpl.PATH,System.getProperty("path.separator"));
 			separator.setEL(FILE,System.getProperty("file.separator"));
-			separator.setEL(LINE,System.getProperty("line.separator"));
+			separator.setEL(KeyImpl.LINE,System.getProperty("line.separator"));
 			separator.setReadOnly(true);
 		super.setEL (SEPARATOR,separator);
 			
@@ -162,7 +159,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 				name=pc.getServletContext().getServerInfo();
 			}
 			catch(Throwable t){}
-			servlet.setEL(NAME,name);
+			servlet.setEL(KeyImpl.NAME,name);
 			servlet.setReadOnly(true);
 			
 			
