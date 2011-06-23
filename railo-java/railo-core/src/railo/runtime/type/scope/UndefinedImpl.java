@@ -26,11 +26,7 @@ import railo.runtime.util.QueryStackImpl;
  */
 public final class UndefinedImpl extends StructSupport implements Undefined {
 
-	private static final Collection.Key THREAD = KeyImpl.getInstance("thread");
-	private static final Collection.Key VARIABLES = KeyImpl.getInstance("variables");
-	private static final Collection.Key QUERY = KeyImpl.getInstance("query");
-	private static final Collection.Key LOCAL = KeyImpl.getInstance("local");
-	private static final Collection.Key ARGUMENTS = KeyImpl.getInstance("arguments");
+	private static final Collection.Key QUERY = KeyImpl.intern("query");
 	private Collection[] scopes;
 	private QueryStackImpl qryStack=new QueryStackImpl();
 	private Scope variable;
@@ -304,9 +300,9 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		
 		if(checkArguments) {
 		    rtn=local.get(key,null);
-		    if(rtn!=null) sct.setEL(LOCAL, rtn);
+		    if(rtn!=null) sct.setEL(KeyImpl.LOCAL, rtn);
 		    rtn=argument.getFunctionArgument(key,null);
-		    if(rtn!=null) sct.setEL(ARGUMENTS, rtn);
+		    if(rtn!=null) sct.setEL(KeyImpl.ARGUMENTS, rtn);
 		}
 				
 		// get data from queries
@@ -318,13 +314,13 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		// variable
 		rtn=variable.get(key,null);
 		if(rtn!=null) {
-			sct.setEL(VARIABLES, rtn);
+			sct.setEL(KeyImpl.VARIABLES, rtn);
 		}
 		
 		// thread scopes
 		if(pc.hasFamily()) {
 			rtn = pc.getThreadScope(key,null);
-			if(rtn!=null) sct.setEL(THREAD, rtn); 
+			if(rtn!=null) sct.setEL(KeyImpl.THREAD, rtn); 
 		}
 		
 		// get a scope value

@@ -64,7 +64,7 @@ public class ArgumentImpl extends ScopeSupport implements Argument {
     } 
     
     public Object getFunctionArgument(String key, Object defaultValue) {
-		return getFunctionArgument(KeyImpl.init(key), defaultValue);
+		return getFunctionArgument(KeyImpl.getInstance(key), defaultValue);
 	}
 
 	public Object getFunctionArgument(Collection.Key key, Object defaultValue) {
@@ -261,7 +261,7 @@ public class ArgumentImpl extends ScopeSupport implements Argument {
 				if(i<index)continue;
 				k=keys[i-1];
 				lhm.put(k,get(k,null));
-				removeEL(KeyImpl.init(k));
+				removeEL(KeyImpl.getInstance(k));
 			}
 		
 		// set new value

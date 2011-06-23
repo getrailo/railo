@@ -34,8 +34,6 @@ public final class Form extends BodyTagImpl {
 	private static final int WMODE_TRANSPARENT = 1;
 	private static final int WMODE_OPAQUE = 2;
 
-	private static final railo.runtime.type.Collection.Key NAME = KeyImpl.getInstance("name");
-	private static final railo.runtime.type.Collection.Key ACTION = KeyImpl.getInstance("action");
 
 	//private static int _count=0;
 	private int count=0;
@@ -391,10 +389,10 @@ public final class Form extends BodyTagImpl {
         if(name==null) {
             name="CFForm_"+count;
         }
-        attributes.setEL(NAME,name);
+        attributes.setEL(KeyImpl.NAME,name);
         
         if(action==null) 	action=ReqRspUtil.self(pageContext. getHttpServletRequest());
-        attributes.setEL(ACTION,action);
+        attributes.setEL(KeyImpl.ACTION,action);
         
         String suffix=StringUtil.isEmpty(name)?""+count:StringUtil.toVariableName(name);
         String funcName="railo_form_"+count;

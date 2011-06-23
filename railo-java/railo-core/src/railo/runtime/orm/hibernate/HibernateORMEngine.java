@@ -65,7 +65,7 @@ import railo.runtime.type.util.ComponentUtil;
 public class HibernateORMEngine implements ORMEngine {
 
 
-	private static final Collection.Key INIT = KeyImpl.getInstance("init");
+	private static final Collection.Key INIT = KeyImpl.intern("init");
 
 	private Configuration configuration;
 

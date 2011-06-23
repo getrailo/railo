@@ -19,11 +19,9 @@ import railo.runtime.type.StructImpl;
  */
 public final class GetRailoId implements Function {
 
-    private static final Collection.Key SECURITY_KEY = KeyImpl.getInstance("securityKey");
-    private static final Collection.Key WEB = KeyImpl.getInstance("web");
-    private static final Collection.Key SERVER = KeyImpl.getInstance("server");
-    private static final Collection.Key ID = KeyImpl.getInstance("id");
-    private static final Collection.Key REQUEST = KeyImpl.getInstance("request");
+    private static final Collection.Key SECURITY_KEY = KeyImpl.intern("securityKey");
+    private static final Collection.Key WEB = KeyImpl.intern("web");
+    private static final Collection.Key REQUEST = KeyImpl.intern("request");
 
 	public static Struct call(PageContext pc ) throws PageException {
 		Struct sct=new StructImpl();
@@ -32,14 +30,14 @@ public final class GetRailoId implements Function {
 	    ConfigWeb config = pc.getConfig();
     	
 		web.set(SECURITY_KEY, ((ConfigImpl)config).getSecurityKey());
-		web.set(ID, config.getId());
+		web.set(KeyImpl.ID, config.getId());
 		sct.set(WEB, web);
     	
     	if(config instanceof ConfigWebImpl){
     		ConfigWebImpl cwi = (ConfigWebImpl)config;
     		server.set(SECURITY_KEY, cwi.getServerSecurityKey());
-    		server.set(ID, cwi.getServerId());
-    		sct.set(SERVER, server);
+    		server.set(KeyImpl.ID, cwi.getServerId());
+    		sct.set(KeyImpl.SERVER, server);
     	}
     	
     	sct.set(REQUEST, Caster.toString(pc.getId()));

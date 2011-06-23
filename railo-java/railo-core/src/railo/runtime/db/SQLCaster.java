@@ -150,7 +150,8 @@ public final class SQLCaster {
     	return;
     	case Types.CLOB:			
     		try {
-    			if(value instanceof String) {
+    			stat.setClob(parameterIndex,SQLUtil.toClob(stat.getConnection(),value));
+    			/*if(value instanceof String) {
     				try{
     					stat.setString(parameterIndex,Caster.toString(value));
     				}
@@ -159,7 +160,7 @@ public final class SQLCaster {
     				}
     				
     			}
-    			else stat.setClob(parameterIndex,SQLUtil.toClob(stat.getConnection(),value));
+    			else stat.setClob(parameterIndex,SQLUtil.toClob(stat.getConnection(),value));*/
     		}
     		catch(PageException pe) {
     			if(value instanceof String && StringUtil.isEmpty((String)value))

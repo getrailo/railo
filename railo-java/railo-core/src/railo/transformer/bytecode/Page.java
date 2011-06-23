@@ -57,8 +57,13 @@ public final class Page extends BodyBase {
 	}
 
 	private static final Type KEY_IMPL = Type.getType(KeyImpl.class);
-	private static final Method GET_INSTANCE = new Method(
-			"getInstance",
+	private static final Method KEY_INIT = new Method(
+			"init",
+			Types.COLLECTION_KEY,
+			new Type[]{Types.STRING}
+    		);
+	private static final Method KEY_INTERN = new Method(
+			"intern",
 			Types.COLLECTION_KEY,
 			new Type[]{Types.STRING}
     		);
@@ -649,9 +654,12 @@ public final class Page extends BodyBase {
 			FieldVisitor fv = staticBC.getClassWriter().visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, 
 					name, "Lrailo/runtime/type/Collection$Key;", null, null);
 			fv.visitEnd();
-			
 			ExpressionUtil.writeOutSilent(value,staticBC, Expression.MODE_REF);
-			statcConst.invokeStatic(KEY_IMPL, GET_INSTANCE);
+			if(value instanceof Literal)
+				statcConst.invokeStatic(KEY_IMPL, KEY_INTERN);
+			else 
+				statcConst.invokeStatic(KEY_IMPL, KEY_INIT);
+			
 			statcConst.visitFieldInsn(Opcodes.PUTSTATIC, staticBC.getClassName(), name, "Lrailo/runtime/type/Collection$Key;");
 			
 			

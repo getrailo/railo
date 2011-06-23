@@ -11,7 +11,6 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 
 // TODO tag textarea
@@ -31,8 +30,6 @@ public final class Textarea extends Input  implements BodyTag {
 	private static final int WRAP_SOFT = 2;
 	private static final int WRAP_PHYSICAL = 3;
 	private static final int WRAP_VIRTUAL = 4;
-	private static final Collection.Key NAME = KeyImpl.getInstance("name");
-	private static final Collection.Key ID = KeyImpl.getInstance("id");
 	
 	private BodyContent bodyContent=null;
 
@@ -146,8 +143,8 @@ public final class Textarea extends Input  implements BodyTag {
         	value=enc(attrValue);
         }
         // id
-		if(StringUtil.isEmpty(attributes.get(ID,null)))
-			attributes.set(ID,StringUtil.toVariableName((String)attributes.get(NAME)));
+		if(StringUtil.isEmpty(attributes.get(KeyImpl.ID,null)))
+			attributes.set(KeyImpl.ID,StringUtil.toVariableName((String)attributes.get(KeyImpl.NAME)));
 		
 		// start output
         pageContext.write("<textarea");

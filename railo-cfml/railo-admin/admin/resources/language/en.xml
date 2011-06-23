@@ -780,6 +780,7 @@
 	<data key="regional.web">Railo lets you set your own individual locale, timezone and timeserver.</data>
 	<data key="regional.timezone">Time zone</data>
 	<data key="regional.timeserver">Time server (NTP)</data>
+	<data key="regional.usetimeserver">use time server</data>
 	<data key="regional.other"> --- other --- </data>
 	<data key="regional.timezonedescription">Define the desired time zone for Railo, this will also change the time for the context of the web.&lt;br/&gt;</data>
 	<data key="regional.timeservermissing">Please define a value for the field timezone</data>

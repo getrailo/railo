@@ -65,18 +65,18 @@ import railo.runtime.type.Struct;
  * 
  */
 public final class XMLUtil {
-    public static final Collection.Key XMLCOMMENT = KeyImpl.getInstance("xmlcomment");
-    public static final Collection.Key XMLTEXT = KeyImpl.getInstance("xmltext");
-    public static final Collection.Key XMLCDATA = KeyImpl.getInstance("xmlcdata");
-    public static final Collection.Key XMLCHILDREN = KeyImpl.getInstance("xmlchildren");
-    public static final Collection.Key XMLNSURI = KeyImpl.getInstance("xmlnsuri");
-    public static final Collection.Key XMLNSPREFIX = KeyImpl.getInstance("xmlnsprefix");
-    public static final Collection.Key XMLROOT = KeyImpl.getInstance("xmlroot");
-    public static final Collection.Key XMLPARENT = KeyImpl.getInstance("xmlparent");
-    public static final Collection.Key XMLNAME = KeyImpl.getInstance("xmlname");
-    public static final Collection.Key XMLTYPE = KeyImpl.getInstance("xmltype");
-    public static final Collection.Key XMLVALUE = KeyImpl.getInstance("xmlvalue");
-    public static final Collection.Key XMLATTRIBUTES = KeyImpl.getInstance("xmlattributes");
+    public static final Collection.Key XMLCOMMENT = KeyImpl.intern("xmlcomment");
+    public static final Collection.Key XMLTEXT = KeyImpl.intern("xmltext");
+    public static final Collection.Key XMLCDATA = KeyImpl.intern("xmlcdata");
+    public static final Collection.Key XMLCHILDREN = KeyImpl.intern("xmlchildren");
+    public static final Collection.Key XMLNSURI = KeyImpl.intern("xmlnsuri");
+    public static final Collection.Key XMLNSPREFIX = KeyImpl.intern("xmlnsprefix");
+    public static final Collection.Key XMLROOT = KeyImpl.intern("xmlroot");
+    public static final Collection.Key XMLPARENT = KeyImpl.intern("xmlparent");
+    public static final Collection.Key XMLNAME = KeyImpl.intern("xmlname");
+    public static final Collection.Key XMLTYPE = KeyImpl.intern("xmltype");
+    public static final Collection.Key XMLVALUE = KeyImpl.intern("xmlvalue");
+    public static final Collection.Key XMLATTRIBUTES = KeyImpl.intern("xmlattributes");
 	/*
 	private static final Collection.Key  = KeyImpl.getInstance();
 	private static final Collection.Key  = KeyImpl.getInstance();

@@ -7,7 +7,7 @@ import railo.runtime.type.Query;
 
 public class QueryColumnExists {
 	public static boolean call(PageContext pc , Query qry, String key) {
-		return call(pc,qry,KeyImpl.init(key));
+		return call(pc,qry,KeyImpl.getInstance(key));
 	}
 	public static boolean call(PageContext pc , Query qry, Collection.Key key) {
 		return qry.getColumn(key,null)!=null;

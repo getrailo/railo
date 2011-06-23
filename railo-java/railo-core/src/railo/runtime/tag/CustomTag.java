@@ -13,21 +13,21 @@ import railo.runtime.type.scope.Scope;
 public abstract class CustomTag extends BodyTagTryCatchFinallyImpl implements DynamicAttributes,AppendixTag {
 	
 
-	protected static final Collection.Key ON_ERROR = KeyImpl.getInstance("onError");
-	protected static final Collection.Key ON_FINALLY = KeyImpl.getInstance("onFinally");
-	protected static final Collection.Key ON_START_TAG = KeyImpl.getInstance("onStartTag");
-	protected static final Collection.Key ON_END_TAG = KeyImpl.getInstance("onEndTag");
-	protected static final Collection.Key INIT = KeyImpl.getInstance("init");
-	protected static final Collection.Key GENERATED_CONTENT=KeyImpl.getInstance("GENERATEDCONTENT");
+	protected static final Collection.Key ON_ERROR = KeyImpl.intern("onError");
+	protected static final Collection.Key ON_FINALLY = KeyImpl.intern("onFinally");
+	protected static final Collection.Key ON_START_TAG = KeyImpl.intern("onStartTag");
+	protected static final Collection.Key ON_END_TAG = KeyImpl.intern("onEndTag");
+	protected static final Collection.Key INIT = KeyImpl.intern("init");
+	protected static final Collection.Key GENERATED_CONTENT=KeyImpl.intern("GENERATEDCONTENT");
 
-	protected static final Collection.Key EXECUTION_MODE=KeyImpl.getInstance("EXECUTIONMODE");      
-	protected static final Collection.Key EXECUTE_BODY=KeyImpl.getInstance("EXECUTEBODY");
-	protected static final Collection.Key HAS_END_TAG=KeyImpl.getInstance("HASENDTAG");
+	protected static final Collection.Key EXECUTION_MODE=KeyImpl.intern("EXECUTIONMODE");      
+	protected static final Collection.Key EXECUTE_BODY=KeyImpl.intern("EXECUTEBODY");
+	protected static final Collection.Key HAS_END_TAG=KeyImpl.intern("HASENDTAG");
 	
 
-	protected static final Collection.Key ATTRIBUTES=KeyImpl.getInstance("ATTRIBUTES");
-	protected static final Collection.Key CALLER=KeyImpl.getInstance("CALLER");
-	protected static final Collection.Key THIS_TAG=KeyImpl.getInstance("THISTAG");
+	protected static final Collection.Key ATTRIBUTES=KeyImpl.intern("ATTRIBUTES");
+	protected static final Collection.Key CALLER=KeyImpl.intern("CALLER");
+	protected static final Collection.Key THIS_TAG=KeyImpl.intern("THISTAG");
 	
 
     protected StructImpl attributesScope;

@@ -43,12 +43,11 @@ import railo.runtime.type.StructImpl;
  */
 public final class DebuggerImpl implements Dumpable, Debugger {
 
-	private static final Collection.Key PAGES = KeyImpl.getInstance("pages");
-	private static final Collection.Key QUERIES = KeyImpl.getInstance("queries");
-	private static final Collection.Key TIMERS = KeyImpl.getInstance("timers");
-	private static final Collection.Key TRACES = KeyImpl.getInstance("traces");
-	private static final Collection.Key EXCEPTIONS = KeyImpl.getInstance("exceptions");
-	private static final Collection.Key HISTORY = KeyImpl.getInstance("history");
+	private static final Collection.Key PAGES = KeyImpl.intern("pages");
+	private static final Collection.Key QUERIES = KeyImpl.intern("queries");
+	private static final Collection.Key TIMERS = KeyImpl.intern("timers");
+	private static final Collection.Key TRACES = KeyImpl.intern("traces");
+	private static final Collection.Key HISTORY = KeyImpl.intern("history");
 	
 	private Map<String,DebugEntryImpl> pages=new HashMap<String,DebugEntryImpl>();
 	private List<QueryEntryImpl> queries=new ArrayList<QueryEntryImpl>();
@@ -532,7 +531,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		debugging.setEL(TIMERS,qryTimers);
 		debugging.setEL(TRACES,qryTraces);
 		debugging.setEL(HISTORY,history);
-		debugging.setEL(EXCEPTIONS,arrExceptions);
+		debugging.setEL(KeyImpl.EXCEPTIONS,arrExceptions);
 		//debugging.setEL(TRACE_OBJECTS,arrTO);
 		return debugging;
     }

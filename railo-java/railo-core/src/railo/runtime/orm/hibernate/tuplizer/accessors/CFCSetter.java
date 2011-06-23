@@ -23,7 +23,7 @@ public final class CFCSetter implements Setter {
 	 * @param key
 	 */
 	public CFCSetter(String key){
-		this(KeyImpl.init(key));
+		this(KeyImpl.getInstance(key));
 	}
 	
 	/**

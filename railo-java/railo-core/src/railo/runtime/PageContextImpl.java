@@ -143,6 +143,7 @@ import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
 import railo.runtime.type.scope.storage.StorageScopeImpl;
+import railo.runtime.util.ApplicationContext;
 import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.runtime.writer.CFMLWriter;
@@ -157,22 +158,19 @@ import railo.runtime.writer.DevNullBodyContent;
 public final class PageContextImpl extends PageContext implements Sizeable {
 	
 	private static final RefBoolean DUMMY_BOOL = new RefBooleanImpl(false);
-	private static final Key CFCATCH = KeyImpl.getInstance("cfcatch");
-	private static final Key CATCH = KeyImpl.getInstance("catch");
-	private static final Key CFTHREAD = KeyImpl.getInstance("cfthread");
-	private static final Key CFID = KeyImpl.getInstance("cfid");
-	private static final Key CFTOKEN = KeyImpl.getInstance("cftoken");
-	private static final Key LOCAL = KeyImpl.getInstance("local");
-	private static final Key ERROR = KeyImpl.getInstance("error");
-	private static final Key CFERROR = KeyImpl.getInstance("cferror");
+	private static final Key CFCATCH = KeyImpl.intern("cfcatch");
+	private static final Key CATCH = KeyImpl.intern("catch");
+	private static final Key CFTHREAD = KeyImpl.intern("cfthread");
+	private static final Key ERROR = KeyImpl.intern("error");
+	private static final Key CFERROR = KeyImpl.intern("cferror");
 	
 	private static int counter=0;
 	
 	/** 
 	 * Field <code>pathList</code>
 	 */
-    private LinkedList pathList=new LinkedList();
-    private LinkedList includePathList=new LinkedList();
+    private LinkedList<PageSource> pathList=new LinkedList<PageSource>();
+    private LinkedList<PageSource> includePathList=new LinkedList<PageSource>();
 	
 	/**
 	 * Field <code>executionTime</code>
@@ -218,7 +216,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private Client client;
 	private Application application;
 
-    private Debugger debugger=new DebuggerImpl();
+    private DebuggerImpl debugger=new DebuggerImpl();
 	private long requestTimeout=-1;
 	private short enablecfoutputonly=0;
 	private int outputState;
@@ -235,7 +233,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	
     // Pools
     private ErrorPagePool errorPagePool=new ErrorPagePool();
-	private TagHandlerPool tagHandlerPool=new TagHandlerPool();
+	private TagHandlerPool tagHandlerPool;
 	private FTPPool ftpPool=new FTPPoolImpl();
 	private QueryCache queryCache;
 
@@ -261,7 +259,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private long startTime;
 	private boolean isCFCRequest;
 	
-	private DataSourceManager manager;
+	private DatasourceManagerImpl manager;
 	private Struct threads;
 	private boolean hasFamily=false;
 	//private CFMLFactoryImpl factory;
@@ -335,7 +333,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public PageContextImpl(ScopeContext scopeContext, ConfigWebImpl config, QueryCache queryCache,int id,HttpServlet servlet) {
 		// must be first because is used after
-
+		tagHandlerPool=config.getTagHandlerPool();
         this.servlet=servlet;
 		this.id=id;
 		//this.factory=factory;
@@ -452,8 +450,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		 
          
         psq=config.getPSQL();
-		activeComponent=null;
-		activeUDF=null;
 		
 		fdEnabled=!config.getCFMLEngineImpl().allowRequestTimeout();
 		
@@ -508,7 +504,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		
 		close();
         thread=null;
-        
+        base=null;
         //RequestImpl r = request;
         
         // Scopes
@@ -548,6 +544,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         
         
 		application=null;// not needed at the moment -> application.releaseAfterRequest();
+		applicationContext=null;
 		
 		// Properties
         requestTimeout=-1;
@@ -556,7 +553,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         cftoken=null;
         locale=null;
         timeZone=null;
-        
+        url=null;
+        form=null;
         if(config.debug()) debugger.reset();
         
         // Pools
@@ -610,6 +608,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
 
     	gatewayContext=false;
+    	
+    	manager.release();
 	}
 
 	
@@ -798,8 +798,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         //sva.setPosition(sva.size());
         return sva;
     }
-    public List getPageSourceList() {
-        return (List) pathList.clone();
+  
+    public List<PageSource> getPageSourceList() {
+        return (List<PageSource>) pathList.clone();
         
     }
     
@@ -834,7 +835,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         
     	// path
     	other.base=base;
-    	java.util.Iterator it = includePathList.iterator();
+    	java.util.Iterator<PageSource> it = includePathList.iterator();
     	while(it.hasNext()) {
     		other.includePathList.add(it.next());
     	}
@@ -873,10 +874,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         if(threads!=null){
         	synchronized (threads) {
 				
-	        	it=threads.entrySet().iterator();
+	        	java.util.Iterator it2 = threads.entrySet().iterator();
 	        	Map.Entry entry;
-	        	while(it.hasNext()) {
-	        		entry=(Entry) it.next();
+	        	while(it2.hasNext()) {
+	        		entry=(Entry) it2.next();
 	        		other.setThreadScope((String)entry.getKey(), (Threads)entry.getValue());
 	        	}
 			}
@@ -1072,10 +1073,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public Argument argumentsScope() { return argument; }
 
-    /**
-     * @return argument scope
-     */
-    public Argument as() { return argument; }
     
     /**
      * @see PageContext#argumentsScope(boolean)
@@ -1115,7 +1112,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	if(undefined.getCheckArguments()){
     		return localScope(bind);
     	}
-    	return undefinedScope().get(LOCAL);
+    	return undefinedScope().get(KeyImpl.LOCAL);
     }
 
     public Object localTouch() throws PageException { 
@@ -1127,7 +1124,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	if(undefined.getCheckArguments()){
     		return localScope(bind);
     	}
-    	return touch(undefinedScope(), LOCAL);
+    	return touch(undefinedScope(), KeyImpl.LOCAL);
     	//return undefinedScope().get(LOCAL);
     }
     
@@ -2128,13 +2125,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private void initIdAndToken() {
         boolean setCookie=true;
         // From URL
-        Object oCfid = urlScope().get(StorageScopeImpl.CFID,null);
-        Object oCftoken = urlScope().get(StorageScopeImpl.CFTOKEN,null);
+        Object oCfid = urlScope().get(KeyImpl.CFID,null);
+        Object oCftoken = urlScope().get(KeyImpl.CFTOKEN,null);
         // Cookie
         if((oCfid==null || !Decision.isGUIdSimple(oCfid)) || oCftoken==null) {
             setCookie=false;
-            oCfid = cookieScope().get(StorageScopeImpl.CFID,null);
-            oCftoken = cookieScope().get(StorageScopeImpl.CFTOKEN,null);
+            oCfid = cookieScope().get(KeyImpl.CFID,null);
+            oCftoken = cookieScope().get(KeyImpl.CFTOKEN,null);
         }
         if(oCfid!=null && !Decision.isGUIdSimple(oCfid) ) {
         	oCfid=null;
@@ -2151,8 +2148,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
         
         if(setCookie && applicationContext.isSetClientCookies()) {
-            cookieScope().setCookieEL(CFID,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get("server_name",null):null);
-            cookieScope().setCookieEL(CFTOKEN,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get("server_name",null):null);
+            cookieScope().setCookieEL(KeyImpl.CFID,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
+            cookieScope().setCookieEL(KeyImpl.CFTOKEN,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
         }
     }
 
@@ -2498,7 +2495,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
         session=null;
         application=null;
-        
         client=null;
         this.applicationContext = applicationContext;
         
@@ -2521,7 +2517,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
     
     /**
-     * @return return return value of method "onApplicationStart" or true
+     * @return return  value of method "onApplicationStart" or true
      * @throws PageException 
      * @throws PageException
      */
@@ -2829,7 +2825,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return requestId;
 	}
 
-	private Set pagesUsed=new HashSet();
+	private Set<String> pagesUsed=new HashSet<String>();
 	
 	
 

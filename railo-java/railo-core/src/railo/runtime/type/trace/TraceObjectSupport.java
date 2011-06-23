@@ -15,12 +15,6 @@ import railo.runtime.type.dt.DateTime;
 
 public class TraceObjectSupport implements TraceObject {
 
-	private static final Collection.Key LABEL = KeyImpl.getInstance("label");
-	private static final Collection.Key ACTION = KeyImpl.getInstance("action");
-	private static final Collection.Key PARAMS = KeyImpl.getInstance("params");
-	private static final Collection.Key TEMPLATE = KeyImpl.getInstance("template");
-	private static final Collection.Key LINE = KeyImpl.getInstance("line");
-	private static final Collection.Key TIME = KeyImpl.getInstance("time");
 
 	
 	protected Object o;

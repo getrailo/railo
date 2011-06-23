@@ -14,7 +14,6 @@ import railo.runtime.db.SQLItem;
 import railo.runtime.db.SQLItemImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
@@ -23,8 +22,6 @@ import railo.runtime.type.scope.storage.StorageScopeEngine;
 import railo.runtime.type.scope.storage.StorageScopeListener;
 
 public class DatasourceStorageScopeCleaner extends StorageScopeCleanerSupport {
-	public static final Collection.Key CFID = KeyImpl.getInstance("cfid");
-	public static final Collection.Key NAME = KeyImpl.getInstance("name");
 	
 	//private String strType;
 	
@@ -75,8 +72,8 @@ public class DatasourceStorageScopeCleaner extends StorageScopeCleanerSupport {
 			
 			String cfid,name;
 			for(int row=1;row<=recordcount;row++){
-				cfid=Caster.toString(query.getAt(CFID, row, null),null);
-				name=Caster.toString(query.getAt(NAME, row, null),null);
+				cfid=Caster.toString(query.getAt(KeyImpl.CFID, row, null),null);
+				name=Caster.toString(query.getAt(KeyImpl.NAME, row, null),null);
 				
 				if(listener!=null)listener.doEnd(engine, this,name, cfid);
 				

@@ -61,4 +61,6 @@ public interface DataSourceManager {
 
 	public abstract void remove(String datasource);
 
+	// FUTURE public abstract void release();
+
 }

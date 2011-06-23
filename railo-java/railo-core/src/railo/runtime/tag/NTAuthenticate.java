@@ -4,15 +4,11 @@ import railo.commons.io.SystemUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
 public class NTAuthenticate extends TagImpl	{
 
-    private static final railo.runtime.type.Collection.Key AUTH = KeyImpl.getInstance("auth");
-    private static final railo.runtime.type.Collection.Key STATUS = KeyImpl.getInstance("status");
-    private static final railo.runtime.type.Collection.Key GROUPS = KeyImpl.getInstance("groups");
 
 	private String username;
     private String password;

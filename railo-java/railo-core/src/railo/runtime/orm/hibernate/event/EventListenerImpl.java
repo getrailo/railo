@@ -35,14 +35,14 @@ public class EventListenerImpl
 
 	private static final long serialVersionUID = -4842481789634140033L;
 	
-	public static final Collection.Key POST_INSERT=KeyImpl.getInstance("postInsert");
-	public static final Collection.Key POST_UPDATE=KeyImpl.getInstance("postUpdate");
-	public static final Collection.Key PRE_DELETE=KeyImpl.getInstance("preDelete");
-	public static final Collection.Key POST_DELETE=KeyImpl.getInstance("postDelete");
-	public static final Collection.Key PRE_LOAD=KeyImpl.getInstance("preLoad");
-	public static final Collection.Key POST_LOAD=KeyImpl.getInstance("postLoad");
-	public static final Collection.Key PRE_UPDATE=KeyImpl.getInstance("preUpdate");
-	public static final Collection.Key PRE_INSERT=KeyImpl.getInstance("preInsert");
+	public static final Collection.Key POST_INSERT=KeyImpl.intern("postInsert");
+	public static final Collection.Key POST_UPDATE=KeyImpl.intern("postUpdate");
+	public static final Collection.Key PRE_DELETE=KeyImpl.intern("preDelete");
+	public static final Collection.Key POST_DELETE=KeyImpl.intern("postDelete");
+	public static final Collection.Key PRE_LOAD=KeyImpl.intern("preLoad");
+	public static final Collection.Key POST_LOAD=KeyImpl.intern("postLoad");
+	public static final Collection.Key PRE_UPDATE=KeyImpl.intern("preUpdate");
+	public static final Collection.Key PRE_INSERT=KeyImpl.intern("preInsert");
 	
 
 	
@@ -88,7 +88,7 @@ public class EventListenerImpl
 		
 		if(data!=null && properties!=null && data.length==properties.length) {
 			for(int i=0;i<data.length;i++){
-				oldData.setEL(KeyImpl.init(properties[i].getName()), data[i]);
+				oldData.setEL(KeyImpl.getInstance(properties[i].getName()), data[i]);
 			}
 		}
 		

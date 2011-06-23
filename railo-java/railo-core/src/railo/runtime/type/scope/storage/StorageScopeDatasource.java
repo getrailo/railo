@@ -39,8 +39,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 
 	private static final long serialVersionUID = 239179599401918216L;
 
-	public static final Collection.Key DATA = KeyImpl.getInstance("data");
-	public static final Collection.Key EXPIRES = KeyImpl.getInstance("expires");
+	public static final Collection.Key EXPIRES = KeyImpl.intern("expires");
 
 	public static final String PREFIX = "cf";
 	
@@ -137,7 +136,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	    	ScopeContext.info(log,"create new "+strType+" scope for "+pc.getApplicationContext().getName()+"/"+pc.getCFID()+" in datasource ["+datasourceName+"]");
 			return null;
 	    }
-	    String str=Caster.toString(query.get(DATA));
+	    String str=Caster.toString(query.get(KeyImpl.DATA));
 	    //long expires=Caster.toLongValue(query.get(EXPIRES));
 	    if(mxStyle) return null;
 	    //if(checkExpires && expires<=System.currentTimeMillis()) return null;

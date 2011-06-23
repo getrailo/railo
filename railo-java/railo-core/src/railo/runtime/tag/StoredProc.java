@@ -59,12 +59,12 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	//|PRECISION|LENGTH|SCALE|RADIX|NULLABLE|REMARKS|SEQUENCE|OVERLOAD|DEFAULT_VALUE
 	
 
-	private static final railo.runtime.type.Collection.Key KEY_SC = KeyImpl.getInstance("StatusCode");
+	private static final railo.runtime.type.Collection.Key KEY_SC = KeyImpl.intern("StatusCode");
 	
-	private static final railo.runtime.type.Collection.Key COUNT = KeyImpl.getInstance("count_afsdsfgdfgdsfsdfsgsdgsgsdgsasegfwef");
+	private static final railo.runtime.type.Collection.Key COUNT = KeyImpl.intern("count_afsdsfgdfgdsfsdfsgsdgsgsdgsasegfwef");
 	
 	private static final ProcParamBean STATUS_CODE;
-	private static final railo.runtime.type.Collection.Key STATUSCODE = KeyImpl.getInstance("StatusCode");
+	private static final railo.runtime.type.Collection.Key STATUSCODE = KeyImpl.intern("StatusCode");
 	
 	static{
 		STATUS_CODE = new ProcParamBean();
@@ -485,7 +485,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 									railo.runtime.type.Query q = new QueryImpl(rs,result.getMaxrows(),result.getName());	
 									count+=q.getRecordcount();
 									setVariable(result.getName(), q);
-									if(hasCached)cache.set(KeyImpl.init(result.getName()), q);
+									if(hasCached)cache.set(KeyImpl.getInstance(result.getName()), q);
 								}
 							}
 							finally{
@@ -511,7 +511,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			    			
 			    			if(param==STATUS_CODE) res.set(STATUSCODE, value);
 			    			else setVariable(param.getVariable(), value);
-			    			if(hasCached)cache.set(KeyImpl.init(param.getVariable()), value);
+			    			if(hasCached)cache.set(KeyImpl.getInstance(param.getVariable()), value);
 			    		}
 			    	}
 				}

@@ -18,7 +18,7 @@ public final class ApplicationImpl extends ScopeSupport implements Application,S
 
 	private static final long serialVersionUID = 700830188207594563L;
 	
-	private static final Collection.Key APPLICATION_NAME = KeyImpl.getInstance("applicationname");
+	private static final Collection.Key APPLICATION_NAME = KeyImpl.intern("applicationname");
 	private long lastAccess;
 	private long timeSpan;
 	

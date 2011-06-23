@@ -36,11 +36,10 @@ import railo.runtime.type.util.ComponentUtil;
 public class HBMCreator {
 	
 	
-	private static final Collection.Key PROPERTY = KeyImpl.getInstance("property");
-	private static final Collection.Key FIELD_TYPE = KeyImpl.getInstance("fieldType");
-	private static final Collection.Key LINK_TABLE = KeyImpl.getInstance("linktable");
-	private static final Collection.Key CFC = KeyImpl.getInstance("cfc");
-	private static final Collection.Key TYPE = KeyImpl.getInstance("type");
+	private static final Collection.Key PROPERTY = KeyImpl.intern("property");
+	private static final Collection.Key FIELD_TYPE = KeyImpl.intern("fieldType");
+	private static final Collection.Key LINK_TABLE = KeyImpl.intern("linktable");
+	private static final Collection.Key CFC = KeyImpl.intern("cfc");
 	
 
 	public static void createXMLMapping(PageContext pc,DatasourceConnection dc, Component cfc,ORMConfiguration ormConf,Element hibernateMapping,HibernateORMEngine engine) throws PageException {
@@ -727,7 +726,7 @@ public class HBMCreator {
 							id.getMeta();
 							Struct meta = id.getMeta();
 							if(meta!=null){
-								String type=Caster.toString(meta.get(TYPE,null));
+								String type=Caster.toString(meta.get(KeyImpl.TYPE,null));
 								
 								if(!StringUtil.isEmpty(type) && (!type.equalsIgnoreCase("any") && !type.equalsIgnoreCase("object"))){
 									return type;
@@ -800,7 +799,7 @@ public class HBMCreator {
 
 	private static ColumnInfo getColumnInfo(Struct columnsInfo,String tableName,String columnName,ORMEngine engine,ColumnInfo defaultValue) {
 		if(columnsInfo!=null) {
-	    	ColumnInfo info = (ColumnInfo) columnsInfo.get(KeyImpl.init(columnName),null);
+	    	ColumnInfo info = (ColumnInfo) columnsInfo.get(KeyImpl.getInstance(columnName),null);
 			if(info==null) return defaultValue;
 			return info;
     	}

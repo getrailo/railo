@@ -371,7 +371,7 @@ public final class Reflector {
 		if(methods!=null) {
 		    Class[] clazzArgs = getClasses(args);
 			// exact comparsion
-		    //print.o("exact:"+methodName);
+		    //print.e("exact:"+methodName);
 		    outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
 					Class[] parameterTypes = methods[i].getParameterTypes();
@@ -383,7 +383,7 @@ public final class Reflector {
 			}
 			// like comparsion
 		    MethodInstance mi=null;
-		    //print.o("like:"+methodName);
+		    // print.e("like:"+methodName);
 		    outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
 					Class[] parameterTypes = methods[i].getParameterTypes();
@@ -397,7 +397,7 @@ public final class Reflector {
 		    
 		    
 			// convert comparsion
-		    //print.o("convert:"+methodName);
+		    // print.e("convert:"+methodName);
 		    mi=null;
 			outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
@@ -407,7 +407,7 @@ public final class Reflector {
 						try {
 							//newArgs[y]=convert(args[y],clazzArgs[y],toReferenceClass(parameterTypes[y]));
 							newArgs[y]=convert(args[y],toReferenceClass(parameterTypes[y]));
-						} catch (PageException e) {e.printStackTrace();
+						} catch (PageException e) {
 							continue outer;
 						}
 						//if(newArgs[y]==null) continue outer;
@@ -449,7 +449,7 @@ public final class Reflector {
      */
     public static MethodInstance getMethodInstance(Class clazz, String methodName, Object[] args) 
         throws NoSuchMethodException {
-        MethodInstance mi=getMethodInstanceEL(clazz, KeyImpl.init(methodName), args);
+        MethodInstance mi=getMethodInstanceEL(clazz, KeyImpl.getInstance(methodName), args);
         if(mi!=null) return mi;
         
         Class[] classes = getClasses(args);
@@ -611,7 +611,7 @@ public final class Reflector {
 	 * @throws PageException
 	 */
 	public static Object callMethod(Object obj, String methodName, Object[] args) throws PageException {
-		return callMethod(obj, KeyImpl.init(methodName), args);
+		return callMethod(obj, KeyImpl.getInstance(methodName), args);
 	}
 	
 	public static Object callMethod(Object obj, Collection.Key methodName, Object[] args) throws PageException {
@@ -674,7 +674,7 @@ public final class Reflector {
      */
     public static MethodInstance getGetter(Class clazz, String prop) throws PageException, NoSuchMethodException {
         String getterName = "get"+StringUtil.ucFirst(prop);
-        MethodInstance mi = getMethodInstanceEL(clazz,KeyImpl.init(getterName),ArrayUtil.OBJECT_EMPTY);
+        MethodInstance mi = getMethodInstanceEL(clazz,KeyImpl.getInstance(getterName),ArrayUtil.OBJECT_EMPTY);
         if(mi==null)
         	throw new ExpressionException("No matching property ["+prop+"] found in ["+Caster.toTypeName(clazz)+"]");
         Method m=mi.getMethod();
@@ -693,7 +693,7 @@ public final class Reflector {
      */
     public static MethodInstance getGetterEL(Class clazz, String prop) {
         prop="get"+StringUtil.ucFirst(prop);
-        MethodInstance mi = getMethodInstanceEL(clazz,KeyImpl.init(prop),ArrayUtil.OBJECT_EMPTY);
+        MethodInstance mi = getMethodInstanceEL(clazz,KeyImpl.getInstance(prop),ArrayUtil.OBJECT_EMPTY);
         if(mi==null) return null;
         if(mi.getMethod().getReturnType()==void.class) return null;
         return mi;
@@ -751,7 +751,7 @@ public final class Reflector {
      */
     public static MethodInstance getSetterEL(Object obj, String prop,Object value)  {
             prop="set"+StringUtil.ucFirst(prop);
-            MethodInstance mi = getMethodInstanceEL(obj.getClass(),KeyImpl.init(prop),new Object[]{value});
+            MethodInstance mi = getMethodInstanceEL(obj.getClass(),KeyImpl.getInstance(prop),new Object[]{value});
             if(mi==null) return null;
             Method m=mi.getMethod();
             

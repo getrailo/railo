@@ -39,12 +39,12 @@ import railo.runtime.type.dt.TimeSpan;
 **/
 public final class Query extends BodyTagTryCatchFinallyImpl {
 
-	private static final Collection.Key SQL_PARAMETERS = KeyImpl.getInstance("sqlparameters");
-	private static final Collection.Key EXECUTION_TIME = KeyImpl.getInstance("executiontime");
-	private static final Collection.Key CFQUERY = KeyImpl.getInstance("cfquery");
-	private static final Collection.Key GENERATEDKEY = KeyImpl.getInstance("generatedKey");
-	private static final Collection.Key MAX_RESULTS = KeyImpl.getInstance("maxResults");
-	private static final Collection.Key TIMEOUT = KeyImpl.getInstance("timeout");
+	private static final Collection.Key SQL_PARAMETERS = KeyImpl.intern("sqlparameters");
+	private static final Collection.Key EXECUTION_TIME = KeyImpl.intern("executiontime");
+	private static final Collection.Key CFQUERY = KeyImpl.intern("cfquery");
+	private static final Collection.Key GENERATEDKEY = KeyImpl.intern("generatedKey");
+	private static final Collection.Key MAX_RESULTS = KeyImpl.intern("maxResults");
+	private static final Collection.Key TIMEOUT = KeyImpl.intern("timeout");
 	
 	private static final int RETURN_TYPE_QUERY = 1;
 	private static final int RETURN_TYPE_ARRAY_OF_ENTITY = 2;

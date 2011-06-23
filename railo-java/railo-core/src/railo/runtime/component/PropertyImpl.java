@@ -24,7 +24,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 
 	private static final long serialVersionUID = 3206074213415946902L;
 
-	private static final Collection.Key PERSITENT = KeyImpl.getInstance("persistent");
+	private static final Collection.Key PERSITENT = KeyImpl.intern("persistent");
 	
 	private String type="any";
 	private String name;

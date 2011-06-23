@@ -35,7 +35,6 @@ public final class FeedHandler extends DefaultHandler {
 
 	public final static String DEFAULT_SAX_PARSER="org.apache.xerces.parsers.SAXParser";
 
-	private static final Key VALUE = KeyImpl.getInstance("value");
 	
 	private XMLReader xmlReader;
 
@@ -131,7 +130,7 @@ public final class FeedHandler extends DefaultHandler {
 		//print.o("iniside("+deep+"):"+name+"->"+uri);
 		
 		
-		inside = KeyImpl.init(name);
+		inside = KeyImpl.getInstance(name);
 		if(StringUtil.isEmpty(path))path=name;
 		else {
 			path+="."+name;
@@ -271,7 +270,7 @@ public final class FeedHandler extends DefaultHandler {
 		if(StringUtil.isEmpty(inside)) return;
 			
 			if(data.hasAttribute()) {
-				if(!StringUtil.isEmpty(value))setEl(data,VALUE,value);
+				if(!StringUtil.isEmpty(value))setEl(data,KeyImpl.VALUE,value);
 			}
 			else {
 				FeedStruct parent=parents.peek();

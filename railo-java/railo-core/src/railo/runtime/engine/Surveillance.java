@@ -22,13 +22,13 @@ import railo.runtime.type.scope.ScopeContext;
 
 public class Surveillance {
 
-	private static final Collection.Key MEMORY = KeyImpl.getInstance("memory");
-	private static final Collection.Key SCOPES = KeyImpl.getInstance("scopes");
-	private static final Collection.Key MAPPINGS = KeyImpl.getInstance("mappings");
-	private static final Collection.Key PAGE_POOL = KeyImpl.getInstance("pagePool");
-	private static final Collection.Key CLASS_LOADER = KeyImpl.getInstance("classLoader");
-	private static final Collection.Key QUERY_CACHE = KeyImpl.getInstance("queryCache");
-	private static final Collection.Key PAGE_CONTEXT_STACK = KeyImpl.getInstance("pageContextStack");
+	private static final Collection.Key MEMORY = KeyImpl.intern("memory");
+	private static final Collection.Key SCOPES = KeyImpl.intern("scopes");
+	private static final Collection.Key MAPPINGS = KeyImpl.intern("mappings");
+	private static final Collection.Key PAGE_POOL = KeyImpl.intern("pagePool");
+	private static final Collection.Key CLASS_LOADER = KeyImpl.intern("classLoader");
+	private static final Collection.Key QUERY_CACHE = KeyImpl.intern("queryCache");
+	private static final Collection.Key PAGE_CONTEXT_STACK = KeyImpl.intern("pageContextStack");
 	
 	
 	public static Struct getInfo(ConfigImpl config) throws PageException {

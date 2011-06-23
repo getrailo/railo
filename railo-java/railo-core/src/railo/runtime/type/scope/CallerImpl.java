@@ -8,6 +8,8 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Scope;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 
@@ -34,7 +36,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
     	char c=key.lowerCharAt(0);
 		if('a'==c) {
 			if(ScopeSupport.APPLICATION.equalsIgnoreCase(key)) 		return pc.applicationScope();
-			else if(ScopeSupport.ARGUMENTS.equalsIgnoreCase(key))		return pc.argumentsScope();
+			else if(KeyImpl.ARGUMENTS.equalsIgnoreCase(key))		return pc.argumentsScope();
 		}
 		else if('c'==c) {
 			if(ScopeSupport.CGI.equalsIgnoreCase(key))					return pc.cgiScope();
@@ -49,17 +51,17 @@ public final class CallerImpl extends StructSupport implements Caller  {
 			if(ScopeSupport.REQUEST.equalsIgnoreCase(key))				return pc.requestScope();
 		}
 		else if('l'==c) {
-			if(ScopeSupport.LOCAL.equalsIgnoreCase(key) && checkArgs)	return pc.localScope();
+			if(KeyImpl.LOCAL.equalsIgnoreCase(key) && checkArgs)	return pc.localScope();
 		}
 		else if('s'==c) {
 			if(ScopeSupport.SESSION.equalsIgnoreCase(key))				return pc.sessionScope();
-			if(ScopeSupport.SERVER.equalsIgnoreCase(key))				return pc.serverScope();
+			if(KeyImpl.SERVER.equalsIgnoreCase(key))				return pc.serverScope();
 		}
 		else if('u'==c) {
 			if(ScopeSupport.URL.equalsIgnoreCase(key))					return pc.urlScope();
 		}
 		else if('v'==c) {
-			if(ScopeSupport.VARIABLES.equalsIgnoreCase(key))			return variablesScope;
+			if(KeyImpl.VARIABLES.equalsIgnoreCase(key))			return variablesScope;
 		}
     	
     	// upper variable scope
@@ -105,7 +107,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
 				} 
 				catch (PageException e) {}
 			}
-			else if(ScopeSupport.ARGUMENTS.equalsIgnoreCase(key))		return pc.argumentsScope();
+			else if(KeyImpl.ARGUMENTS.equalsIgnoreCase(key))		return pc.argumentsScope();
 		}
 		else if('c'==c) {
 			if(ScopeSupport.CGI.equalsIgnoreCase(key))					return pc.cgiScope();
@@ -130,7 +132,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
 			if(ScopeSupport.REQUEST.equalsIgnoreCase(key))				return pc.requestScope();
 		}
 		else if('l'==c) {
-			if(ScopeSupport.LOCAL.equalsIgnoreCase(key) && checkArgs)	return pc.localScope();
+			if(KeyImpl.LOCAL.equalsIgnoreCase(key) && checkArgs)	return pc.localScope();
 		}
 		else if('s'==c) {
 			if(ScopeSupport.SESSION.equalsIgnoreCase(key)){
@@ -139,7 +141,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
 				} 
 				catch (PageException e) {}
 			}
-			if(ScopeSupport.SERVER.equalsIgnoreCase(key)){
+			if(KeyImpl.SERVER.equalsIgnoreCase(key)){
 				try {
 					return pc.serverScope();
 				} 
@@ -150,7 +152,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
 			if(ScopeSupport.URL.equalsIgnoreCase(key))					return pc.urlScope();
 		}
 		else if('v'==c) {
-			if(ScopeSupport.VARIABLES.equalsIgnoreCase(key))			return variablesScope;
+			if(KeyImpl.VARIABLES.equalsIgnoreCase(key))			return variablesScope;
 		}
     	
     	

@@ -25,7 +25,6 @@ public final class ComponentScopeThis extends StructSupport implements Component
     
     private final ComponentImpl component;
     private static final int access=Component.ACCESS_PRIVATE;
-	private static final Collection.Key THIS = KeyImpl.init("this");
     
     /**
      * constructor of the class
@@ -129,7 +128,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
 	 */
 	public Object get(Key key) throws PageException {
-        if(key.equalsIgnoreCase(THIS)){
+        if(key.equalsIgnoreCase(KeyImpl.THIS)){
             return component;
         }
         return component.get(access,key);
@@ -139,7 +138,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(Collection.Key key, Object defaultValue) {
-        if(key.equalsIgnoreCase(THIS)){
+        if(key.equalsIgnoreCase(KeyImpl.THIS)){
             return component;
         }
         return component.get(access,key,defaultValue);

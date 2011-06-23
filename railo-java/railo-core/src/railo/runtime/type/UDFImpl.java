@@ -45,22 +45,6 @@ import railo.runtime.writer.BodyContentUtil;
  */
 public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizable {
 	
-	public static final Key ARGUMENT_COLLECTION = KeyImpl.getInstance("argumentCollection");
-	
-	private static final Key ACCESS = 		KeyImpl.getInstance("access");
-	private static final Key NAME = 		KeyImpl.getInstance("name");
-	private static final Key OUTPUT = 		KeyImpl.getInstance("output");
-	private static final Key RETURN_TYPE = 	KeyImpl.getInstance("returntype");
-	private static final Key DESCRIPTION = 	KeyImpl.getInstance("description");
-	private static final Key OWNER = 	KeyImpl.getInstance("owner");
-	private static final Key DISPLAY_NAME = KeyImpl.getInstance("displayname");
-	private static final Key HINT = 		KeyImpl.getInstance("hint");
-	private static final Key RETURN_FORMAT =KeyImpl.getInstance("returnFormat");
-	
-	private static final Key REQUIRED = 	KeyImpl.getInstance("required");
-	private static final Key TYPE = 		KeyImpl.getInstance("type");
-	private static final Key DEFAULT = 		KeyImpl.getInstance("default");
-	private static final Key PARAMETERS = 	KeyImpl.getInstance("parameters");
 	private static final FunctionArgument[] EMPTY = new FunctionArgument[0];
 	
 	
@@ -312,7 +296,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	}
 
 	public static void argumentCollection(Struct values, FunctionArgument[] funcArgs) {
-		Object value=values.removeEL(ARGUMENT_COLLECTION);
+		Object value=values.removeEL(KeyImpl.ARGUMENT_COLLECTION);
 		if(value !=null) {
 			value=Caster.unwrap(value,value);
 			
@@ -368,7 +352,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	            }
 		    }
 		    else {
-		        values.setEL(ARGUMENT_COLLECTION,value);
+		        values.setEL(KeyImpl.ARGUMENT_COLLECTION,value);
 		    }
 		} 
 	}
@@ -561,24 +545,24 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	public static Struct getMetaData(PageContext pc,UDFImpl udf) throws PageException {
 		
         StructImpl func=new StructImpl();
-        func.set(ACCESS,ComponentUtil.toStringAccess(udf.getAccess()));
+        func.set(KeyImpl.ACCESS,ComponentUtil.toStringAccess(udf.getAccess()));
         String hint=udf.getHint();
-        if(!StringUtil.isEmpty(hint))func.set(HINT,hint);
+        if(!StringUtil.isEmpty(hint))func.set(KeyImpl.HINT,hint);
         String displayname=udf.getDisplayName();
-        if(!StringUtil.isEmpty(displayname))func.set(DISPLAY_NAME,displayname);
-        func.set(NAME,udf.getFunctionName());
-        func.set(OUTPUT,Caster.toBoolean(udf.getOutput()));
-        func.set(RETURN_TYPE, udf.getReturnTypeAsString());
-        func.set(DESCRIPTION, udf.getDescription());
+        if(!StringUtil.isEmpty(displayname))func.set(KeyImpl.DISPLAY_NAME,displayname);
+        func.set(KeyImpl.NAME,udf.getFunctionName());
+        func.set(KeyImpl.OUTPUT,Caster.toBoolean(udf.getOutput()));
+        func.set(KeyImpl.RETURN_TYPE, udf.getReturnTypeAsString());
+        func.set(KeyImpl.DESCRIPTION, udf.getDescription());
         
-        func.set(OWNER, udf.getPageSource().getDisplayPath());
+        func.set(KeyImpl.OWNER, udf.getPageSource().getDisplayPath());
         
 	    	   
 	    int format = udf.getReturnFormat();
-        if(format==UDF.RETURN_FORMAT_WDDX)			func.set(RETURN_FORMAT, "wddx");
-        else if(format==UDF.RETURN_FORMAT_PLAIN)	func.set(RETURN_FORMAT, "plain");
-        else if(format==UDF.RETURN_FORMAT_JSON)	func.set(RETURN_FORMAT, "json");
-        else if(format==UDF.RETURN_FORMAT_SERIALIZE)func.set(RETURN_FORMAT, "serialize");
+        if(format==UDF.RETURN_FORMAT_WDDX)			func.set(KeyImpl.RETURN_FORMAT, "wddx");
+        else if(format==UDF.RETURN_FORMAT_PLAIN)	func.set(KeyImpl.RETURN_FORMAT, "plain");
+        else if(format==UDF.RETURN_FORMAT_JSON)	func.set(KeyImpl.RETURN_FORMAT, "json");
+        else if(format==UDF.RETURN_FORMAT_SERIALIZE)func.set(KeyImpl.RETURN_FORMAT, "serialize");
         
         
         // TODO func.set("roles", value);
@@ -601,20 +585,20 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         //Object defaultValue;
         for(int y=0;y<args.length;y++) {
             StructImpl param=new StructImpl();
-            param.set(NAME,args[y].getName().getString());
-            param.set(REQUIRED,Caster.toBoolean(args[y].isRequired()));
-            param.set(TYPE,args[y].getTypeAsString());
+            param.set(KeyImpl.NAME,args[y].getName().getString());
+            param.set(KeyImpl.REQUIRED,Caster.toBoolean(args[y].isRequired()));
+            param.set(KeyImpl.TYPE,args[y].getTypeAsString());
             displayname=args[y].getDisplayName();
-            if(!StringUtil.isEmpty(displayname)) param.set(DISPLAY_NAME,displayname);
+            if(!StringUtil.isEmpty(displayname)) param.set(KeyImpl.DISPLAY_NAME,displayname);
             
             int defType = args[y].getDefaultType();
             if(defType==FunctionArgument.DEFAULT_TYPE_RUNTIME_EXPRESSION){
-            	param.set(DEFAULT, "[runtime expression]");
+            	param.set(KeyImpl.DEFAULT, "[runtime expression]");
             	//param.set(DEFAULT, new UDFDefaultValue(this,y));
             	//print.err(args[y].getName()+":re");
             }
             else if(defType==FunctionArgument.DEFAULT_TYPE_LITERAL){
-            	param.set(DEFAULT, udf.getDefaultValue(pc,y));
+            	param.set(KeyImpl.DEFAULT, udf.getDefaultValue(pc,y));
             }
             /*
              try {
@@ -634,7 +618,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
             
             
             hint=args[y].getHint();
-            if(!StringUtil.isEmpty(hint))param.set(HINT,hint);
+            if(!StringUtil.isEmpty(hint))param.set(KeyImpl.HINT,hint);
             // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche attr, die dann hier ausgebenen werden blﾚdsinn
             
             // meta data
@@ -648,7 +632,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
                 
             params.append(param);
         }
-        func.set(PARAMETERS,params);
+        func.set(KeyImpl.PARAMETERS,params);
 		return func;
 	}
 

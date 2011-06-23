@@ -22,7 +22,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 	private ConfigImpl config;
 	
 	boolean autoCommit=true;
-	private int isolation;
+	private int isolation=Connection.TRANSACTION_NONE;
 	private DatasourceConnection transConn;
     
 
@@ -234,6 +234,11 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 
 	public void remove(String datasource) {
 		config.getDatasourceConnectionPool().remove(datasource);
+	}
+
+	public void release() {
+		this.transConn=null;
+		this.isolation=Connection.TRANSACTION_NONE;
 	}
 
 }

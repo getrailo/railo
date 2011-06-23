@@ -40,6 +40,7 @@ Defaults --->
 				timezone="#form.timezone#"
 				locale="#form.locale#"
 				timeserver="#form.timeserver#"
+				usetimeserver="#structKeyExists(form,"usetimeserver") and form.usetimeserver#"
 				remoteClients="#request.getRemoteClients()#"
 				>
 		
@@ -58,6 +59,7 @@ Defaults --->
 				timezone=""
 				locale=""
 				timeserver=""
+				usetimeserver=""
 				remoteClients="#request.getRemoteClients()#"
 				>
 		
@@ -191,9 +193,9 @@ replaced with encoding output
 	<cfif hasAccess>
 		<br /><cfinput type="text" name="timeserver" value="#regional.timeserver#" 
 			style="width:200px" required="no" message="#stText.Regional.TimeServerMissing#">
-			
+		<br /><input type="checkbox" name="usetimeserver" <cfif regional.usetimeserver>checked="checked"</cfif> value="true" /> #stText.Regional.useTimeServer#
 	<cfelse>
-		<b>#regional.timeserver#</b>
+		<b>#regional.timeserver#</b><input type="hidden" name="usetimeserver" value="#regional.usetimeserver#" />
 	</cfif>
 	</td>
 </tr>

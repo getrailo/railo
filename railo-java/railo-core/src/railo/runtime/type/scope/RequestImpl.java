@@ -99,7 +99,7 @@ public class RequestImpl extends StructSupport implements Request {
 		Enumeration<String> names = req.getAttributeNames();
 		List<Key> list=new ArrayList<Key>();
 		while(names.hasMoreElements()){
-			list.add(KeyImpl.init(names.nextElement()));
+			list.add(KeyImpl.getInstance(names.nextElement()));
 		}
 		return list.toArray(new Key[list.size()]);
 	}

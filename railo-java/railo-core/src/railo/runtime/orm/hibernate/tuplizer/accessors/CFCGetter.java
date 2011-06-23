@@ -33,7 +33,7 @@ public class CFCGetter implements Getter {
 	 * @param key
 	 */
 	public CFCGetter(String key){
-		this(KeyImpl.init(key));
+		this(KeyImpl.getInstance(key));
 	}
 	
 	/**

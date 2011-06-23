@@ -26,17 +26,16 @@ import railo.runtime.type.util.StructSupport;
 
 public class ThreadsImpl extends StructSupport implements railo.runtime.type.scope.Threads {
 
-	private static final Key KEY_ERROR = KeyImpl.getInstance("ERROR");
-	private static final Key KEY_ELAPSEDTIME = KeyImpl.getInstance("ELAPSEDTIME");
-	private static final Key KEY_NAME = KeyImpl.getInstance("NAME");
-	private static final Key KEY_OUTPUT = KeyImpl.getInstance("OUTPUT");
-	private static final Key KEY_PRIORITY = KeyImpl.getInstance("PRIORITY");
-	private static final Key KEY_STARTTIME = KeyImpl.getInstance("STARTTIME");
-	private static final Key KEY_STATUS = KeyImpl.getInstance("STATUS");
+	private static final Key KEY_ERROR = KeyImpl.intern("ERROR");
+	private static final Key KEY_ELAPSEDTIME = KeyImpl.intern("ELAPSEDTIME");
+	private static final Key KEY_OUTPUT = KeyImpl.intern("OUTPUT");
+	private static final Key KEY_PRIORITY = KeyImpl.intern("PRIORITY");
+	private static final Key KEY_STARTTIME = KeyImpl.intern("STARTTIME");
+	private static final Key KEY_STATUS = KeyImpl.intern("STATUS");
 	
 	private static final Key[] DEFAULT_KEYS=new Key[]{
 		KEY_ELAPSEDTIME,
-		KEY_NAME,
+		KeyImpl.NAME_UC,
 		KEY_OUTPUT,
 		KEY_PRIORITY,
 		KEY_STARTTIME,
@@ -115,7 +114,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 
 	private Object getMeta(Key key) {
 		if(KEY_ELAPSEDTIME.equalsIgnoreCase(key)) return new Double(System.currentTimeMillis()-ct.getStartTime());
-		if(KEY_NAME.equalsIgnoreCase(key)) return ct.getTagName();
+		if(KeyImpl.NAME_UC.equalsIgnoreCase(key)) return ct.getTagName();
 		if(KEY_OUTPUT.equalsIgnoreCase(key)) return getOutput();
 		if(KEY_PRIORITY.equalsIgnoreCase(key)) return ThreadUtil.toStringPriority(ct.getPriority());
 		if(KEY_STARTTIME.equalsIgnoreCase(key)) return new DateTimeImpl(ct.getStartTime(),true);

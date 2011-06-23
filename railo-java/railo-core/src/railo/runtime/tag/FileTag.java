@@ -52,7 +52,7 @@ public final class FileTag extends TagImpl {
 	public static final int NAMECONFLICT_SKIP=2;
 	public static final int NAMECONFLICT_OVERWRITE=3;
 	public static final int NAMECONFLICT_MAKEUNIQUE=4;
-	private static final Key SET_ACL = KeyImpl.getInstance("setACL");
+	private static final Key SET_ACL = KeyImpl.intern("setACL");
     
     //private static final String DEFAULT_ENCODING=Charset.getDefault();
 

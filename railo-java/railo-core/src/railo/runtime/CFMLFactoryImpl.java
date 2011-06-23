@@ -158,7 +158,8 @@ public final class CFMLFactoryImpl extends CFMLFactory {
         //if(!pc.hasFamily()){
 			synchronized (pcs) {
 	            runningPcs.removeEL(ArgumentIntKey.init(pc.getId()));
-	            pcs.push(pc);
+	            if(pcs.size()<100)// not more than 100 PCs
+	            	pcs.push(pc);
 	            SystemOut.printDate(config.getOutWriter(),"Release: ("+pc.getId()+")");
 	        }
        /*}

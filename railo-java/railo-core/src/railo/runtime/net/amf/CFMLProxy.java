@@ -38,10 +38,10 @@ import flex.messaging.config.ConfigMap;
 
 public class CFMLProxy {
 
-	private static final Collection.Key FLASH = KeyImpl.getInstance("flash");
-	private static final Collection.Key PARAMS = KeyImpl.getInstance("params");
-	private static final Collection.Key RESULT = KeyImpl.getInstance("result");
-	private static final Collection.Key AMF_FORWARD = KeyImpl.getInstance("AMF-Forward");
+	private static final Collection.Key FLASH = KeyImpl.intern("flash");
+	private static final Collection.Key PARAMS = KeyImpl.intern("params");
+	private static final Collection.Key RESULT = KeyImpl.intern("result");
+	private static final Collection.Key AMF_FORWARD = KeyImpl.intern("AMF-Forward");
 	
 	
 

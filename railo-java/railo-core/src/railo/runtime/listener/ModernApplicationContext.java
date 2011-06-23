@@ -33,34 +33,31 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	private static final long serialVersionUID = -8230105685329758613L;
 
-	private static final Collection.Key NAME = KeyImpl.getInstance("name");
-	private static final Collection.Key APPLICATION_TIMEOUT = KeyImpl.getInstance("applicationTimeout");
-	private static final Collection.Key CLIENT_MANAGEMENT = KeyImpl.getInstance("clientManagement");
-	private static final Collection.Key CLIENT_STORAGE = KeyImpl.getInstance("clientStorage");
-	private static final Collection.Key SESSION_STORAGE = KeyImpl.getInstance("sessionStorage");
-	private static final Collection.Key LOGIN_STORAGE = KeyImpl.getInstance("loginStorage");
-	private static final Collection.Key SESSION_TYPE = KeyImpl.getInstance("sessionType");
-	private static final Collection.Key SESSION_MANAGEMENT = KeyImpl.getInstance("sessionManagement");
-	private static final Collection.Key SESSION_TIMEOUT = KeyImpl.getInstance("sessionTimeout");
-	private static final Collection.Key CLIENT_TIMEOUT = KeyImpl.getInstance("clientTimeout");
-	private static final Collection.Key SET_CLIENT_COOKIES = KeyImpl.getInstance("setClientCookies");
-	private static final Collection.Key SET_DOMAIN_COOKIES = KeyImpl.getInstance("setDomainCookies");
-	private static final Collection.Key SCRIPT_PROTECT = KeyImpl.getInstance("scriptProtect");
-	private static final Collection.Key MAPPINGS = KeyImpl.getInstance("mappings");
-	private static final Collection.Key CUSTOM_TAG_PATHS = KeyImpl.getInstance("customtagpaths");
-	private static final Collection.Key COMPONENT_PATHS = KeyImpl.getInstance("componentpaths");
-	private static final Collection.Key SECURE_JSON_PREFIX = KeyImpl.getInstance("secureJsonPrefix");
-	private static final Collection.Key SECURE_JSON = KeyImpl.getInstance("secureJson");
-	private static final Collection.Key LOCAL_MODE = KeyImpl.getInstance("localMode");
-	private static final Collection.Key SESSION_CLUSTER = KeyImpl.getInstance("sessionCluster");
-	private static final Collection.Key CLIENT_CLUSTER = KeyImpl.getInstance("clientCluster");
+	private static final Collection.Key APPLICATION_TIMEOUT = KeyImpl.intern("applicationTimeout");
+	private static final Collection.Key CLIENT_MANAGEMENT = KeyImpl.intern("clientManagement");
+	private static final Collection.Key CLIENT_STORAGE = KeyImpl.intern("clientStorage");
+	private static final Collection.Key SESSION_STORAGE = KeyImpl.intern("sessionStorage");
+	private static final Collection.Key LOGIN_STORAGE = KeyImpl.intern("loginStorage");
+	private static final Collection.Key SESSION_TYPE = KeyImpl.intern("sessionType");
+	private static final Collection.Key SESSION_MANAGEMENT = KeyImpl.intern("sessionManagement");
+	private static final Collection.Key SESSION_TIMEOUT = KeyImpl.intern("sessionTimeout");
+	private static final Collection.Key CLIENT_TIMEOUT = KeyImpl.intern("clientTimeout");
+	private static final Collection.Key SET_CLIENT_COOKIES = KeyImpl.intern("setClientCookies");
+	private static final Collection.Key SET_DOMAIN_COOKIES = KeyImpl.intern("setDomainCookies");
+	private static final Collection.Key SCRIPT_PROTECT = KeyImpl.intern("scriptProtect");
+	private static final Collection.Key MAPPINGS = KeyImpl.intern("mappings");
+	private static final Collection.Key CUSTOM_TAG_PATHS = KeyImpl.intern("customtagpaths");
+	private static final Collection.Key COMPONENT_PATHS = KeyImpl.intern("componentpaths");
+	private static final Collection.Key SECURE_JSON_PREFIX = KeyImpl.intern("secureJsonPrefix");
+	private static final Collection.Key SECURE_JSON = KeyImpl.intern("secureJson");
+	private static final Collection.Key LOCAL_MODE = KeyImpl.intern("localMode");
+	private static final Collection.Key SESSION_CLUSTER = KeyImpl.intern("sessionCluster");
+	private static final Collection.Key CLIENT_CLUSTER = KeyImpl.intern("clientCluster");
 	
 
-	private static final Collection.Key DEFAULT_DATA_SOURCE = KeyImpl.getInstance("defaultdatasource");
-	private static final Collection.Key DATA_SOURCE = KeyImpl.getInstance("datasource");
-	private static final Collection.Key ORM_ENABLED = KeyImpl.getInstance("ormenabled");
-	private static final Collection.Key ORM_SETTINGS = KeyImpl.getInstance("ormsettings");
-	public static final Collection.Key S3 = KeyImpl.getInstance("s3");
+	private static final Collection.Key DEFAULT_DATA_SOURCE = KeyImpl.intern("defaultdatasource");
+	private static final Collection.Key ORM_ENABLED = KeyImpl.intern("ormenabled");
+	private static final Collection.Key ORM_SETTINGS = KeyImpl.intern("ormsettings");
 	
 	
 	private ComponentAccess component;
@@ -152,7 +149,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 
 			// datasource
-			o = get(component,DATA_SOURCE,null);
+			o = get(component,KeyImpl.DATA_SOURCE,null);
 			if(o!=null) {
 				String ds = Caster.toString(o);
 				this.defaultDataSource = ds;
@@ -199,7 +196,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	 */
 	public String getName() {
 		if(this.name==null) {
-			this.name=Caster.toString(get(component,NAME,""),"");
+			this.name=Caster.toString(get(component,KeyImpl.NAME,""),"");
 		}
 		return name;
 	}
@@ -461,7 +458,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	 */
 	public Properties getS3() {
 		if(!initS3) {
-			Object o = get(component,S3,null);
+			Object o = get(component,KeyImpl.S3,null);
 			if(o!=null && Decision.isStruct(o))s3=AppListenerUtil.toS3(Caster.toStruct(o,null));
 			initS3=true; 
 		}
