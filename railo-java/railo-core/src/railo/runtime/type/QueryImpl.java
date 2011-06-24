@@ -88,6 +88,9 @@ import railo.runtime.type.util.CollectionUtil;
  */
 public class QueryImpl implements Query,Objects,Sizeable {
 
+	private static final long serialVersionUID = 1035795427320192551L;
+
+
 	/**
 	 * @return the template
 	 */
@@ -141,7 +144,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
 		try {
-            fillResult(result,maxrow,false);
+            fillResult(null,result,maxrow,false,false);
         } catch (SQLException e) {
             throw new DatabaseException(e,null);
         } catch (IOException e) {
@@ -162,7 +165,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		this.name=name;
         
 		try {	
-		    fillResult(result,-1,true);
+		    fillResult(null,result,-1,true,false);
 		} 
 		catch (SQLException e) {
 			throw new DatabaseException(e,null);
@@ -229,18 +232,21 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	            setItems(preStat,items);
 		        hasResult=preStat.execute();    
 	        }
+			int uc;
+			ResultSet res;
 			
-			if(hasResult){
-				fillResult(stat.getResultSet(), maxrow, true);
+			do {
+				if(hasResult) {
+					res=stat.getResultSet();
+					if(fillResult(dc,res, maxrow, true,createGeneratedKeys))break;
+				}
+				else if((uc=setUpdateCount(stat))!=-1){
+					if(uc>0 && createGeneratedKeys)setGeneratedKeys(dc, stat);
+				}
+				else break;
+				hasResult=stat.getMoreResults(Statement.CLOSE_CURRENT_RESULT);
 			}
-			else {
-				setUpdateCount(stat);
-				if(createGeneratedKeys)setGeneratedKeys(dc, stat);
-			}
-				
-			if(!hasResult && (hasResult=stat.getMoreResults() || setUpdateCount(stat))){
-				if(hasResult)fillResult(stat.getResultSet(), maxrow, true);
-			}
+			while(true);
 		} 
 		catch (SQLException e) {
 			throw new DatabaseException(e,sql,dc);
@@ -253,33 +259,33 @@ public class QueryImpl implements Query,Objects,Sizeable {
         }  
 		exeTime=stopwatch.time();
 	}
-    
-	private boolean setUpdateCount(Statement stat)  {
-		
+	
+	private int setUpdateCount(Statement stat)  {
 		try{
 			int uc=stat.getUpdateCount();
 			if(uc>-1){
 				updateCount+=uc;
-				return true;
+				return uc;
 			}
 		}
 		catch(Throwable t){}
-		return false;
+		return -1;
 	}
 	
 	private boolean setGeneratedKeys(DatasourceConnection dc,Statement stat)  {
 		try{
 			ResultSet rs = stat.getGeneratedKeys();
-			generatedKeys=new QueryImpl(rs,"");
-			if(DataSourceUtil.isMSSQL(dc))
-				generatedKeys.renameEL(GENERATED_KEYS,IDENTITYCOL);
-			
+			setGeneratedKeys(dc, rs);
 			return true;
 		}
-		catch(Throwable t){
-			//MUST t.printStackTrace();
+		catch(Throwable t) {
 			return false;
 		}
+	}
+	
+	private void setGeneratedKeys(DatasourceConnection dc,ResultSet rs) throws PageException  {
+		generatedKeys=new QueryImpl(rs,"");
+		if(DataSourceUtil.isMSSQL(dc)) generatedKeys.renameEL(GENERATED_KEYS,IDENTITYCOL);
 	}
 	
 	/*private void setUpdateData(Statement stat, boolean createGeneratedKeys, boolean createUpdateCount)  {
@@ -368,9 +374,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
         }
     }
 
-    private void fillResult(ResultSet result, int maxrow, boolean closeResult) throws SQLException, IOException {
-    	if(result==null) return;
-    	
+    private boolean fillResult(DatasourceConnection dc, ResultSet result, int maxrow, boolean closeResult,boolean createGeneratedKeys) throws SQLException, IOException, PageException {
+    	if(result==null) return false;
+    	recordcount=0;
 		ResultSetMetaData meta = result.getMetaData();
 		columncount=meta.getColumnCount();
 		
@@ -389,6 +395,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 				count++;
 			}
 		}
+		
 
 		columncount=count;
 		columnNames=new Collection.Key[columncount];
@@ -428,9 +435,17 @@ public class QueryImpl implements Query,Objects,Sizeable {
             }
             else casts[i]=Cast.OTHER;
 		}
-			
-	// fill data
 		
+		if(createGeneratedKeys && columncount==1 && columnNames[0].equals(GENERATED_KEYS) && dc!=null && DataSourceUtil.isMSSQLDriver(dc)) {
+			columncount=0;
+			columnNames=null;
+			columns=null;
+			setGeneratedKeys(dc, result);
+			return false;
+		}
+		
+
+	// fill data
 		//Object o;
 		while(result.next()) {
 			if(maxrow>-1 && recordcount>=maxrow) {
@@ -442,6 +457,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 			++recordcount;
 		}
 		if(closeResult)result.close();
+		return true;
 	}
 
     private Object toBytes(Blob blob) throws IOException, SQLException {
