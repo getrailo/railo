@@ -1,7 +1,15 @@
 package railo.runtime.util;
 
+import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.w3c.dom.Document;
 
@@ -199,6 +207,11 @@ public interface Creation {
 
 
 	public Resource createResource(String path, boolean existing) throws PageException;
+
+
+	public abstract HttpServletRequest createHttpServletRequest(File contextRoot,String serverName, String scriptName,String queryString, 
+			Cookie[] cookies, Map<String,Object> headers, Map<String, String> parameters, Map<String,Object> attributes, HttpSession session);
+	public abstract HttpServletResponse createHttpServletResponse(OutputStream io);
 	
 
 		

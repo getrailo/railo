@@ -1,7 +1,17 @@
 package railo.runtime.op;
 
+import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -10,12 +20,15 @@ import railo.commons.date.DateTimeUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.Pair;
 import railo.runtime.config.RemoteClient;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.net.http.HttpServletRequestDummy;
+import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.spooler.ExecutionPlan;
 import railo.runtime.spooler.SpoolerTask;
 import railo.runtime.spooler.remote.RemoteClientTask;
@@ -228,6 +241,40 @@ public final class CreationImpl implements Creation {
 	public Resource createResource(String path, boolean existing) throws PageException {
 		if(existing)return ResourceUtil.toResourceExisting(ThreadLocalPageContext.get(), path);
 		return ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), path);
+	}
+
+	public HttpServletRequest createHttpServletRequest(File contextRoot,String serverName, String scriptName,String queryString, 
+			Cookie[] cookies, Map<String,Object> headers, Map<String, String> parameters, Map<String,Object> attributes, HttpSession session) {
+
+		// header
+		Pair[] _headers=new Pair[headers.size()];
+		{
+			int index=0;
+			Iterator<Entry<String, Object>> it = headers.entrySet().iterator();
+			Entry<String, Object> entry;
+			while(it.hasNext()){
+				entry = it.next();
+				_headers[index++]=new Pair(entry.getKey(), entry.getValue());
+			}
+		}
+		// parameters
+		Pair[] _parameters=new Pair[headers.size()];
+		{
+			int index=0;
+			Iterator<Entry<String, String>> it = parameters.entrySet().iterator();
+			Entry<String, String> entry;
+			while(it.hasNext()){
+				entry = it.next();
+				_parameters[index++]=new Pair(entry.getKey(), entry.getValue());
+			}
+		}
+		
+		return new HttpServletRequestDummy(ResourceUtil.toResource(contextRoot), serverName, scriptName, queryString, cookies,
+				_headers, _parameters, Caster.toStruct(attributes,null), session);
+	}
+
+	public HttpServletResponse createHttpServletResponse(OutputStream io) {
+		return new HttpServletResponseDummy(io);
 	}
 
 

@@ -1,18 +1,30 @@
 package railo.runtime.engine;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspException;
 
+import railo.commons.net.HTTPUtil;
+import railo.print;
+import railo.cli.servlet.HTTPServletImpl;
+import railo.cli.servlet.ServletConfigImpl;
 import railo.commons.collections.HashTable;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -22,6 +34,7 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.io.res.util.ResourceUtilImpl;
+import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
@@ -30,6 +43,7 @@ import railo.intergral.fusiondebug.server.FDControllerImpl;
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.engine.CFMLEngineWrapper;
+import railo.loader.util.Util;
 import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Info;
@@ -43,19 +57,22 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
 import railo.runtime.net.http.HTTPServletRequestWrap;
+import railo.runtime.net.http.HttpServletRequestDummy;
+import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.CastImpl;
+import railo.runtime.op.Caster;
 import railo.runtime.op.CreationImpl;
 import railo.runtime.op.DecisionImpl;
 import railo.runtime.op.ExceptonImpl;
 import railo.runtime.op.OperationImpl;
 import railo.runtime.query.QueryCacheSupport;
+import railo.runtime.type.StructImpl;
 import railo.runtime.util.BlazeDSImpl;
 import railo.runtime.util.Cast;
 import railo.runtime.util.Creation;
 import railo.runtime.util.Decision;
 import railo.runtime.util.Excepton;
-import railo.runtime.util.HTTPUtil;
 import railo.runtime.util.HTTPUtilImpl;
 import railo.runtime.util.Operation;
 import railo.runtime.util.ZipUtil;
@@ -456,7 +473,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	/**
 	 * @see railo.loader.engine.CFMLEngine#getHTTPUtil()
 	 */
-	public HTTPUtil getHTTPUtil() {
+	public railo.runtime.util.HTTPUtil getHTTPUtil() {
 		return HTTPUtilImpl.getInstance();
 	}
 
@@ -509,6 +526,72 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		}
 		catch(Throwable t){}
 		return controlerState.toBooleanValue();
+	}
+
+	@Override
+	public void cli(Map<String, String> config, ServletConfig servletConfig) throws IOException,JspException,ServletException {
+		ServletContext servletContext = servletConfig.getServletContext();
+		HTTPServletImpl servlet=new HTTPServletImpl(servletConfig, servletContext, servletConfig.getServletName());
+
+		// webroot
+		String strWebroot=config.get("webroot");
+		if(Util.isEmpty(strWebroot,true)) throw new IOException("missing webroot configuration");
+		Resource root=ResourcesImpl.getFileResourceProvider().getResource(strWebroot);
+		root.mkdirs();
+		
+		// serverName
+		String serverName=config.get("server-name");
+		if(Util.isEmpty(serverName,true))serverName="localhost";
+		
+		// uri
+		String strUri=config.get("uri");
+		if(Util.isEmpty(strUri,true)) throw new IOException("missing uri configuration");
+		URI uri;
+		try {
+			uri = railo.commons.net.HTTPUtil.toURI(strUri);
+		} catch (URISyntaxException e) {
+			throw Caster.toPageException(e);
+		}
+		
+		// cookie
+		Cookie[] cookies;
+		String strCookie=config.get("cookie");
+		if(Util.isEmpty(strCookie,true)) cookies=new Cookie[0];
+		else {
+			Map<String,String> mapCookies=HTTPUtil.parseParameterList(strCookie,false,null);
+			int index=0;
+			cookies=new Cookie[mapCookies.size()];
+			Entry<String, String> entry;
+			Iterator<Entry<String, String>> it = mapCookies.entrySet().iterator();
+			while(it.hasNext()){
+				entry = it.next();
+				cookies[index++]=new Cookie(entry.getKey(),entry.getValue());
+			}
+		}
+		
+
+		// header
+		Pair[] headers=new Pair[0];
+		
+		// parameters
+		Pair[] parameters=new Pair[0];
+		
+		// attributes
+		StructImpl attributes = new StructImpl();
+		ByteArrayOutputStream os=new ByteArrayOutputStream();
+		
+		
+		
+		
+		HttpServletRequest req=new HttpServletRequestDummy(
+				root,serverName,uri.getPath(),uri.getQuery(),cookies,headers,parameters,attributes,null);
+		HttpServletResponse rsp=new HttpServletResponseDummy(os);
+		
+		serviceCFML(servlet, req, rsp);
+		String res = os.toString(rsp.getCharacterEncoding());
+		print.o(res);
+		
+
 	}
 
 }

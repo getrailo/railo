@@ -3,15 +3,22 @@ package railo.runtime.util;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 
+import railo.commons.lang.StringList;
 import railo.commons.net.URLDecoder;
 import railo.commons.net.URLEncoder;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.List;
+import railo.runtime.type.scope.FormImpl;
 
 public class HTTPUtilImpl implements HTTPUtil {
 	
@@ -109,5 +116,15 @@ public class HTTPUtilImpl implements HTTPUtil {
 	public Object toURL(HttpMethod httpMethod) {
 		return railo.commons.net.HTTPUtil.toURL(httpMethod);
 	}
+	
+
+	public URI toURI(String strUrl) throws URISyntaxException {
+		return railo.commons.net.HTTPUtil.toURI(strUrl);
+	}
+	
+	public URI toURI(String strUrl, int port) throws URISyntaxException {
+		return railo.commons.net.HTTPUtil.toURI(strUrl,port);
+	}
+
 
 }

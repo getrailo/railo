@@ -3,6 +3,8 @@ package railo.runtime.util;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.commons.httpclient.Header;
@@ -86,6 +88,12 @@ public interface HTTPUtil {
     public URL toURL(String strUrl) throws MalformedURLException;
 
 	public Object toURL(HttpMethod httpMethod);
+	
+
+
+	public URI toURI(String strUrl) throws URISyntaxException;
+	
+	public URI toURI(String strUrl, int port) throws URISyntaxException;
 	
 	/**
 	 * translate a string in the URLEncoded Format

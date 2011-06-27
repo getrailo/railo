@@ -2,6 +2,7 @@ package railo.loader.engine;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -9,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspException;
 
 import railo.runtime.CFMLFactory;
 import railo.runtime.PageContext;
@@ -232,5 +234,10 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
 			other=((CFMLEngineWrapper)other).engine;
 		if(checkReferenceEqualityOnly) return engine==other;
 		return engine.equals(other);
+	}
+
+	@Override
+	public void cli(Map<String, String> config, ServletConfig servletConfig) throws IOException, JspException, ServletException {
+		engine.cli(config, servletConfig);
 	}
 }
