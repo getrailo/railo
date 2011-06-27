@@ -388,9 +388,12 @@ public abstract class ComponentPage extends Page  {
     			else throw new ApplicationException("invalid queryformat definition ["+strQF+"], valid formats are [row,column]");
     		}
     		JSONConverter converter = new JSONConverter(false);
-    		if(props.secureJson)
-    			return pc.getApplicationContext().getSecureJsonPrefix();
-            return converter.serialize(pc,rtn,byColumn);
+    		String prefix="";
+    		if(props.secureJson) {
+    			prefix=pc.getApplicationContext().getSecureJsonPrefix();
+    			if(prefix==null)prefix="";
+    		}
+            return prefix+converter.serialize(pc,rtn,byColumn);
 		}
 		// Serialize
 		else if(UDF.RETURN_FORMAT_SERIALIZE==props.format) {

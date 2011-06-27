@@ -703,7 +703,7 @@ public final class Http extends BodyTagImpl {
 		    	String str;
                 try {
                 	is = httpMethod.getResponseBodyAsStream();
-                    if(isGzipEncoded(contentEncoding))
+                    if(is!=null &&isGzipEncoded(contentEncoding))
                     	is = new GZIPInputStream(is);
                         	
                     try {
