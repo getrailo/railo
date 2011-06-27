@@ -18,7 +18,7 @@ public class CLI {
 /**
  * Config
  * 
- * webroot - webrrot directory
+ * webroot - webroot directory
  * servlet-name - name of the servlet (default:CFMLServlet)
  * server-name - server name (default:localhost)
  * uri - host/scriptname/query
