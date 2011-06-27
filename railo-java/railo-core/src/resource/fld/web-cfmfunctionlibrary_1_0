@@ -11042,6 +11042,44 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
+	<!-- ObjectLoad -->
+	<function>
+		<name>ObjectLoad</name>
+		<class>railo.runtime.functions.other.ObjectLoad</class>
+		<description>loads a object serialized in a binary form from a file or as binary input</description>
+		<argument>
+			<name>input</name>
+			<type>any</type>
+			<required>no</required>
+			<description>a binary represenation of a object or a path to a file that contains this</description>
+   		</argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	<!-- ObjectSave -->
+	<function>
+		<name>ObjectSave</name>
+		<class>railo.runtime.functions.other.ObjectSave</class>
+		<description>serialize a (Serialiable) object to a binary repersentation of th object</description>
+		<argument>
+			<name>input</name>
+			<type>any</type>
+			<required>yes</required>
+			<description>object to serialize</description>
+   		</argument>
+		<argument>
+			<name>filepath</name>
+			<type>string</type>
+			<required>no</required>
+			<description>path where railo should save the object</description>
+   		</argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
 	<!-- ORMExecuteQuery -->
 	<function>
 		<name>ORMExecuteQuery</name>
