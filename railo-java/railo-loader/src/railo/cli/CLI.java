@@ -14,7 +14,7 @@ import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.Util;
 
-public class Main {
+public class CLI {
 /**
  * Config
  * 
