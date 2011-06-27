@@ -39,6 +39,7 @@ import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -1091,5 +1092,14 @@ public final class XMLUtil {
 		Node first = parent.getFirstChild();
 		if(first!=null) parent.insertBefore(node, first);
 		else parent.appendChild(node);
+	}
+
+	public static XMLReader createXMLReader(String oprionalDefaultSaxParser) throws SAXException {
+		try{
+			return XMLReaderFactory.createXMLReader(oprionalDefaultSaxParser);
+		}
+		catch(Throwable t){
+			return XMLReaderFactory.createXMLReader();
+		}
 	}
 }

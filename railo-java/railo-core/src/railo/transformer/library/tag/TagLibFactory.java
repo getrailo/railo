@@ -22,7 +22,9 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ClassUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
@@ -125,7 +127,7 @@ public final class TagLibFactory extends DefaultHandler {
 	private void init(String saxParser,InputSource is) throws TagLibException	{
 		//print.dumpStack();
 		try {
-			xmlReader=XMLReaderFactory.createXMLReader(saxParser);
+			xmlReader=XMLUtil.createXMLReader(saxParser);
 			xmlReader.setContentHandler(this);
 			xmlReader.setErrorHandler(this);
 			xmlReader.setEntityResolver(new TagLibEntityResolver());

@@ -96,7 +96,7 @@ public class XMLValidator extends XMLEntityResolverDefaultHandler {
 		fatals=new ArrayImpl();
 		
 		try {
-            XMLReader parser = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+            XMLReader parser = XMLUtil.createXMLReader("org.apache.xerces.parsers.SAXParser");
             parser.setContentHandler(this);
             parser.setErrorHandler(this);
             parser.setEntityResolver(this);

@@ -17,6 +17,7 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
+import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
@@ -123,7 +124,7 @@ public final class RSSHandler extends DefaultHandler {
 	private void init(String saxParser,InputSource is) throws SAXException, IOException	{
 		properties=new StructImpl();
 		items=new QueryImpl(COLUMNS,0,"query");
-		xmlReader=XMLReaderFactory.createXMLReader(saxParser);
+		xmlReader=XMLUtil.createXMLReader(saxParser);
 		xmlReader.setContentHandler(this);
 		xmlReader.setErrorHandler(this);
 		

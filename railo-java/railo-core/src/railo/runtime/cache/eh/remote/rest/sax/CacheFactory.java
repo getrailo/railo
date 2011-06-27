@@ -12,6 +12,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import railo.loader.util.Util;
+import railo.runtime.text.xml.XMLUtil;
 
 public class CacheFactory extends DefaultHandler {
 	
@@ -58,7 +59,7 @@ public class CacheFactory extends DefaultHandler {
 		try {
 			InputSource is=new InputSource(in);
 			
-			xmlReader=XMLReaderFactory.createXMLReader(DEFAULT_SAX_PARSER);
+			xmlReader=XMLUtil.createXMLReader(DEFAULT_SAX_PARSER);
 			xmlReader.setContentHandler(this);
 			xmlReader.setErrorHandler(this);
 			xmlReader.parse(is);

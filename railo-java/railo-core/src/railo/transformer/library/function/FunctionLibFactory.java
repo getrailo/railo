@@ -20,6 +20,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.library.tag.TagLibFactory;
 
@@ -102,8 +103,12 @@ public final class FunctionLibFactory extends DefaultHandler {
 	 * @throws FunctionLibException
 	 */
 	private void init(String saxParser,InputSource is) throws FunctionLibException	{
+		
+		
+		
 		try {
-			xmlReader=XMLReaderFactory.createXMLReader(saxParser);
+
+			xmlReader=XMLUtil.createXMLReader(saxParser);
 			xmlReader.setContentHandler(this);
 			xmlReader.setErrorHandler(this);
 			xmlReader.setEntityResolver(new FunctionLibEntityResolver());

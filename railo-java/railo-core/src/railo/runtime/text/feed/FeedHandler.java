@@ -22,6 +22,7 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.CastableArray;
@@ -93,7 +94,7 @@ public final class FeedHandler extends DefaultHandler {
 		//print.out("is:"+is);
 		hasDC=false;
 		data=new FeedStruct();
-		xmlReader=XMLReaderFactory.createXMLReader(saxParser);
+		xmlReader=XMLUtil.createXMLReader(saxParser);
 		xmlReader.setContentHandler(this);
 		xmlReader.setErrorHandler(this);
 		xmlReader.setDTDHandler(new DummyDTDHandler());
