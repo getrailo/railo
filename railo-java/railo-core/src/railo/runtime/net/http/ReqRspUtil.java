@@ -124,4 +124,13 @@ public final class ReqRspUtil {
 		}
 		
 	}
+
+	public static String getHeader(HttpServletRequest request, String name,String defaultValue) {
+		try {
+			return request.getHeader(name);
+		}
+		catch(Throwable t){
+			return defaultValue;
+		}
+	}
 }

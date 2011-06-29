@@ -153,18 +153,22 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		if(req==null) {
 			req=pc. getHttpServletRequest();
 			
-			Enumeration e = req.getHeaderNames();
 			https=new StructImpl();
 			headers=new StructImpl();
 			String k,v;
-			while(e.hasMoreElements()) {
-	    		k = (String)e.nextElement();
-	    		v = req.getHeader(k);
-	    		//print.err(k.length()+":"+k);
-	    		headers.setEL(KeyImpl.init(k),v);
-	    		headers.setEL(KeyImpl.init(k=k.replace('-','_')),v);
-	    		https.setEL(KeyImpl.init("http_"+k),v);	
-	    	}
+			try {
+				Enumeration e = req.getHeaderNames();
+			
+				while(e.hasMoreElements()) {
+		    		k = (String)e.nextElement();
+		    		v = req.getHeader(k);
+		    		//print.err(k.length()+":"+k);
+		    		headers.setEL(KeyImpl.init(k),v);
+		    		headers.setEL(KeyImpl.init(k=k.replace('-','_')),v);
+		    		https.setEL(KeyImpl.init("http_"+k),v);	
+		    	}
+			}
+			catch(Throwable t){t.printStackTrace();}
 		}
 		String lkey=key.getLowerString();
         

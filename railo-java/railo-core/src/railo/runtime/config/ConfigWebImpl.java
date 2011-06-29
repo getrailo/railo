@@ -47,13 +47,13 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     private ServletConfig config;
     private ConfigServerImpl configServer;
     private SecurityManager securityManager;
-    private LockManager lockManager= LockManagerImpl.getInstance();
+    private final LockManager lockManager= LockManagerImpl.getInstance();
     private Resource rootDir;
     private CFMLCompilerImpl compiler=new CFMLCompilerImpl();
     private Page baseComponentPage;
 	private MappingImpl serverTagMapping;
 	private MappingImpl serverFunctionMapping;
-	private StringKeyLock contextLock=new StringKeyLock(-1);
+	private StringKeyLock contextLock;
 	private GatewayEngineImpl gatewayEngine;
     private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
 
@@ -85,6 +85,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     public void reset() {
     	super.reset();
     	tagHandlerPool.reset();
+    	contextLock=null;
     }
     
     /* *
@@ -299,6 +300,9 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		}
 
 		public StringKeyLock getContextLock() {
+			if(contextLock==null) {
+				contextLock=new StringKeyLock(getRequestTimeout().getMillis());
+			}
 			return contextLock;
 		}
 

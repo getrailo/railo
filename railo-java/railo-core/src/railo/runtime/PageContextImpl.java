@@ -2521,8 +2521,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	boolean initSession=false;
 	    AppListenerSupport listener = (AppListenerSupport) config.getApplicationListener();
     	StringKeyLock lock = config.getContextLock();
-	    
-    	String token=applicationContext.getName()+":"+getCFID();
+    	String name=StringUtil.emptyIfNull(applicationContext.getName());
+    	String token=name+":"+getCFID();
     	
     	lock.lock(token);
     	//print.o("outer-lock  :"+token);
@@ -2531,7 +2531,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    	initSession=applicationContext.isSetSessionManagement() && listener.hasOnSessionStart(this) && !scopeContext.hasExistingSessionScope(this);
 	    	
 	    	// init application
-	    	lock.lock(applicationContext.getName());
+	    	
+	    	lock.lock(name);
 	    	//print.o("inner-lock  :"+token);
 	    	try {
 	    		RefBoolean isNew=new RefBooleanImpl(false);
@@ -2550,7 +2551,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    	}
 	    	finally{
 		    	//print.o("inner-unlock:"+token);
-	    		lock.unlock(applicationContext.getName());
+	    		lock.unlock(name);
 	    	}
     	
 	    	// init session
