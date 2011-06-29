@@ -505,11 +505,11 @@ public class HBMCreator {
         b=toBoolean(engine,cfc,meta,"dynamicupdate");
         if(b!=null && b.booleanValue())clazz.setAttribute("dynamic-update","true");
         
-		// lazy
+		// lazy (dtd defintion:<!ATTLIST class lazy (true|false) #IMPLIED>)
         b=toBoolean(engine,cfc,meta,"lazy");
         if(b==null) b=Boolean.TRUE;
         clazz.setAttribute("lazy",Caster.toString(b.booleanValue()));
-        
+		
         // select-before-update
         b=toBoolean(engine,cfc,meta,"selectbeforeupdate");
         if(b!=null && b.booleanValue())clazz.setAttribute("select-before-update","true");
@@ -906,7 +906,7 @@ public class HBMCreator {
     	ColumnInfo info=getColumnInfo(columnsInfo,tableName,columnName,engine,null);
 		
 		Document doc = XMLUtil.getDocument(clazz);
-		Element property = doc.createElement("property");
+		final Element property = doc.createElement("property");
 		clazz.appendChild(property);
 		
 		//name
@@ -996,7 +996,7 @@ public class HBMCreator {
         b=toBoolean(engine,cfc,meta,"insert");
         if(b!=null && !b.booleanValue())property.setAttribute("insert","false");
         
-        // lazy
+        // lazy (dtd defintion:<!ATTLIST property lazy (true|false) "false">)
         b=toBoolean(engine,cfc,meta,"lazy");
         if(b!=null && b.booleanValue())property.setAttribute("lazy","true");
         
@@ -1741,14 +1741,35 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 
 	private static void setLazy(HibernateORMEngine engine, Component cfc,Property prop, Struct meta, Element x2x) throws ORMException {
 		String str = toString(engine,cfc,prop,meta, "lazy");
-		if(!StringUtil.isEmpty(str)){
+		if(!StringUtil.isEmpty(str,true)){
+			str=str.trim();
+			String name=x2x.getNodeName();
 			Boolean b = Caster.toBoolean(str,null);
-			if(b!=null)
-				x2x.setAttribute("lazy", b.booleanValue()?"true":"false");
-			else if("extra".equalsIgnoreCase(str))
-				x2x.setAttribute("lazy", "extra");
-			else 
-				throw invalidValue(engine,cfc,prop,"lazy",str,"true,false,extra");
+			
+			// <!ATTLIST many-to-one lazy (false|proxy|no-proxy) #IMPLIED>
+			// <!ATTLIST one-to-one lazy (false|proxy|no-proxy) #IMPLIED>
+			if("many-to-one".equals(name) || "one-to-one".equals(name)) {
+				if(b!=null) x2x.setAttribute("lazy", b.booleanValue()?"proxy":"false");
+				else if("proxy".equalsIgnoreCase(str)) x2x.setAttribute("lazy", "proxy");
+				else if("no-proxy".equalsIgnoreCase(str)) x2x.setAttribute("lazy", "no-proxy");
+				else throw invalidValue(engine,cfc,prop,"lazy",str,"true,false,proxy,no-proxy");
+			}
+			
+
+			// <!ATTLIST many-to-many lazy (false|proxy) #IMPLIED>
+			// <!ATTLIST key-many-to-one lazy (false|proxy) #IMPLIED>
+			else if("many-to-many".equals(name) || "key-many-to-one".equals(name)) {
+				if(b!=null) x2x.setAttribute("lazy", b.booleanValue()?"proxy":"false");
+				else if("proxy".equalsIgnoreCase(str)) x2x.setAttribute("lazy", "proxy");
+				throw invalidValue(engine,cfc,prop,"lazy",str,"true,false,proxy");
+				
+			}
+			
+			else {
+				if(b!=null)	x2x.setAttribute("lazy", b.booleanValue()?"true":"false");
+				else if("extra".equalsIgnoreCase(str)) x2x.setAttribute("lazy", "extra");
+				else  throw invalidValue(engine,cfc,prop,"lazy",str,"true,false,extra");
+			}
 		}
 	}
 
