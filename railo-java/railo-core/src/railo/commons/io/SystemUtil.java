@@ -450,13 +450,14 @@ public final class SystemUtil {
 			t.join();
 		} catch (InterruptedException e) {}
 	}
+	
 	/**
 	 * locks the object (synchronized) before calling wait
 	 * @param lock
 	 * @param timeout
 	 * @throws InterruptedException
 	 */
-	public static void wait(Object lock, int timeout) {
+	public static void wait(Object lock, long timeout) {
 		try {
 			synchronized (lock) {lock.wait(timeout);}
 		} catch (InterruptedException e) {}

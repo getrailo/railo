@@ -16,8 +16,8 @@ import railo.commons.collections.HashTable;
  */
 public final class LockManagerImpl implements LockManager {
 
-	private static List managers=new ArrayList();
-    private Map locks=new HashTable();
+	private static List<LockManagerImpl> managers=new ArrayList<LockManagerImpl>();
+    private Map<String,LockToken> locks=new HashTable();
 	
     private LockManagerImpl() {
     	
@@ -33,9 +33,7 @@ public final class LockManagerImpl implements LockManager {
      * @see railo.runtime.lock.LockManager#lock(int, java.lang.String, int, int)
      */
 	public LockData lock(int type, String name, int timeout, int pageContextId) throws LockTimeoutException, InterruptedException {
-		//print.out("lock:"+timeout);
-        
-        LockData data = new LockDataImpl(type,name,pageContextId);
+		LockData data = new LockDataImpl(type,name,pageContextId);
         LockToken token=touchLookToken(data);
         long start=System.currentTimeMillis();
         if(timeout<=0)timeout=1;
@@ -65,8 +63,8 @@ public final class LockManagerImpl implements LockManager {
         LockToken token=(LockToken)locks.get(data.getName());
         
         if(token!=null) {
-           if(token.removeLockData(data));
-               //locks.remove(data.getName());
+           if(token.removeLockData(data))
+               locks.remove(data.getName());
         }
 	}
     
@@ -94,7 +92,7 @@ public final class LockManagerImpl implements LockManager {
         
         //private LockData data;
         //private int count;
-        private Set datas=new HashSet();
+        private Set<LockData> datas=new HashSet<LockData>();
 
         public int getDataCount() {
         	return datas.size();

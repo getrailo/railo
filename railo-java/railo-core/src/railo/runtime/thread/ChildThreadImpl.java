@@ -89,7 +89,6 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		else this.attrs=attrs;
 		
 		
-		
 		if(!serializable){
 			this.page=page;
 			if(parent!=null){
@@ -132,7 +131,6 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		Page p=page;
 		
 		if(parent!=null){
-			
 			pc=parent;
 			ThreadLocalPageContext.register(pc);
 		}
@@ -146,7 +144,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			}
 			DevNullOutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
 			pc=ThreadUtil.createPageContext(cwi, os, serverName, requestURI, queryString, SerializableCookie.toCookies(cookies), headers, parameters, attributes);
-			pc.setRequestTimeout(requestTimeout);
+			pc.setRequestTimeout(requestTimeout);pc.addPageSource(p.getPageSource(), true);
 		}
 		pc.setThreadScope("thread", new ThreadsImpl(this));
 		pc.setThread(Thread.currentThread());
@@ -225,7 +223,6 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 	 * @see railo.runtime.thread.ChildThread#getStartTime()
 	 */
 	public long getStartTime() {
-		// TODO Auto-generated method stub
 		return start;
 	}
 
