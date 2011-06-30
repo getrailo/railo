@@ -55,6 +55,7 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebAdmin;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.ConfigWebUtil;
+import railo.runtime.config.DebugEntry;
 import railo.runtime.config.RemoteClient;
 import railo.runtime.config.RemoteClientImpl;
 import railo.runtime.db.DataSource;
@@ -153,6 +154,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Collection.Key ROOT = KeyImpl.intern("root");
 	private static final Collection.Key CONFIG = KeyImpl.intern("config");
 	private static final Collection.Key FILE_ACCESS = KeyImpl.intern("file_access");
+	private static final Collection.Key IP_RANGE = KeyImpl.intern("ipRange");
+	private static final Collection.Key CUSTOM = KeyImpl.intern("custom");
+	private static final Collection.Key READONLY = KeyImpl.intern("readOnly");
 	
 	
 	
@@ -536,6 +540,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getCPPCfxTags",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetCPPCFXTags();
         else if(check("getJavaCfxTags",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetJavaCFXTags();
         else if(check("getDebug",               ACCESS_FREE) && check2(ACCESS_READ  )) doGetDebug();
+        else if(check("getDebugEntry",        ACCESS_FREE) && check2(ACCESS_READ  )) doGetDebugEntry();
         else if(check("getError",               ACCESS_FREE) && check2(ACCESS_READ  )) doGetError();
         else if(check("verifyremoteclient",     ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyRemoteClient();
         else if(check("verifyDatasource",       ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyDatasource();
@@ -573,6 +578,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updatejavacfx",          ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateJavaCFX();
         else if(check("updatecppcfx",          ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCPPCFX();
         else if(check("updatedebug",            ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateDebug();
+        else if(check("updatedebugentry",            ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateDebugEntry();
+    	
         else if(check("updateerror",            ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateError();
         else if(check("updateCustomTagSetting",	ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCustomTagSetting();
         else if(check("updateExtension",		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtension();
@@ -605,7 +612,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("removeExtension",        ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveExtension();
         else if(check("removeExtensionProvider",ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveExtensionProvider();
         else if(check("removeDefaultPassword",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveDefaultPassword();
-        else if(check("removeGatewayEntry",  ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_WRITE  )) doRemoveGatewayEntry();
+        else if(check("removeGatewayEntry",  	ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_WRITE  )) doRemoveGatewayEntry();
+        else if(check("removeDebugEntry",  		ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveDebugEntry();
         else if(check("removeCacheDefaultConnection",ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveCacheDefaultConnection();
         
         else if(check("storageGet",             ACCESS_FREE) && check2(ACCESS_READ  )) doStorageGet();
@@ -1409,6 +1417,42 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         store();
         adminSync.broadcast(attributes, config);
     }
+    
+    private void doUpdateDebugEntry() throws PageException {
+    	admin.updateDebugEntry(
+    			getString("admin","updateDebugEntry","debugtype"),
+    			getString("admin","updateDebugEntry","iprange"),
+    			getString("admin","updateDebugEntry","label"),
+    			getString("admin","updateDebugEntry","path"),
+    			getString("admin","updateDebugEntry","fullname"),
+    			getStruct("admin","updateDebugEntry","custom")
+    		);
+    	
+    	store();
+        adminSync.broadcast(attributes, config);
+    }
+    
+    private void doGetDebugEntry() throws PageException {
+    	DebugEntry[] entries = config.getDebugEntries();
+    	
+    	String rtn = getString("admin",action,"returnVariable");
+    	railo.runtime.type.Query qry=
+        	new QueryImpl(new Collection.Key[]{KeyImpl.ID,LABEL,IP_RANGE,READONLY,KeyImpl.TYPE,CUSTOM},entries.length,rtn);
+        pageContext.setVariable(rtn,qry);
+        DebugEntry de;
+        for(int i=0;i<entries.length;i++) {
+            int row=i+1;
+            de=entries[i];
+            qry.setAtEL(KeyImpl.ID,row,de.getId());
+            qry.setAtEL(LABEL,row,de.getLabel());
+            qry.setAtEL(IP_RANGE,row,de.getIpRange());
+            qry.setAtEL(KeyImpl.TYPE,row,de.getType());
+            qry.setAtEL(READONLY,row,Caster.toBoolean(de.isReadOnly()));
+            qry.setAtEL(CUSTOM,row,de.getCustom());
+        }
+    }
+    
+    
     private void doUpdateError() throws PageException {
 
         admin.updateErrorTemplate(500,getString("admin",action,"template500"));
@@ -2967,6 +3011,12 @@ private void doGetMappings() throws PageException {
 	
 	private void doRemoveGatewayEntry() throws PageException {
 		admin.removeCacheGatewayEntry(getString("admin",action,"id"));
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+	
+	private void doRemoveDebugEntry() throws PageException {
+		admin.removeDebugEntry(getString("admin",action,"id"));
         store();
         adminSync.broadcast(attributes, config);
     }

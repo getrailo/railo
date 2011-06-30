@@ -3436,4 +3436,71 @@ public final class ConfigWebAdmin {
   		
       	return true;
 	}
+
+
+	public void updateDebugEntry(String type, String iprange,String label,String path,String fullname, Struct custom) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
+        if(!hasAccess)
+            throw new SecurityException("no access to change debugging settings");
+		
+		String id=DebugEntry.ipRangeToId(iprange);
+		type=type.trim();
+		iprange=iprange.trim();
+		label=label.trim();
+		
+        Element debugging=_getRootElement("debugging");
+        
+        // Update
+        Element[] children = ConfigWebFactory.getChildren(debugging,"debug-entry");
+        Element el=null;
+      	for(int i=0;i<children.length;i++) {
+      	    String _id=children[i].getAttribute("id");
+      	    if(_id!=null) {
+      	        if(_id.equals(id)) {
+		      		el=children[i];
+		      		break;
+	  			}
+      	    }
+      	}
+      	
+      	// Insert
+      	if(el==null) {
+      		el=doc.createElement("debug-entry");
+          	debugging.appendChild(el);
+          	el.setAttribute("id",id);
+      	}
+      	
+
+  		el.setAttribute("type",type);
+  		el.setAttribute("iprange",iprange);
+  		el.setAttribute("label",label);
+  		el.setAttribute("path",path);
+  		el.setAttribute("fullname",fullname);
+  		el.setAttribute("custom",toStringURLStyle(custom));
+	}
+
+
+
+
+	public void removeDebugEntry(String id) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
+        if(!hasAccess)
+            throw new SecurityException("no access to change debugging settings");
+
+    	
+        Element debugging=_getRootElement("debugging");
+        Element[] children = ConfigWebFactory.getChildren(debugging,"debug-entry");
+        String _id;
+        if(children.length>0) {
+	      	for(int i=0;i<children.length;i++) {
+	      	    Element el=children[i];
+	      	    _id=el.getAttribute("id");
+	  			if(_id!=null && _id.equalsIgnoreCase(id)) {
+		      		debugging.removeChild(children[i]);
+	  			}
+	      	}
+        }
+	}
 }

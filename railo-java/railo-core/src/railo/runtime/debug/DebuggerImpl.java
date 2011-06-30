@@ -11,9 +11,11 @@ import java.util.Map;
 
 import railo.commons.io.log.LogUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.SQL;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -373,16 +375,29 @@ public final class DebuggerImpl implements Dumpable, Debugger {
     public void writeOut(PageContext pc) throws IOException {
         //stop();
         if(!output)return;
-        
-        String template=pc.getConfig().getDebugTemplate();
+        String addr = pc.getHttpServletRequest().getRemoteAddr();
+        railo.runtime.config.DebugEntry debugEntry = ((ConfigImpl)pc.getConfig()).getDebugEntry(addr, null);
 		
         // no debug File 
-		if(StringUtil.isEmpty(template)) {
+
+		if(debugEntry==null) {
 		    pc.forceWrite(pc.getConfig().getDefaultDumpWriter().toString(pc,toDumpData(pc, 9999,DumpUtil.toDumpProperties()),true)); 
 		    return;
 		} 
+		
+		Struct args=new StructImpl();
+		args.setEL("custom", debugEntry.getCustom());
 		try {
-		    pc.doInclude(pc.getRelativePageSource(template));
+			PageSource ps = pc.getPageSource(debugEntry.getPath());
+			ps.loadPage(pc);
+			pc.addPageSource(ps, true);
+			try{
+				Component cfc = pc.loadComponent(debugEntry.getFullname());
+				cfc.callWithNamedValues(pc, "output", args);
+			}
+			finally {
+				pc.removeLastPageSource(true);
+			}
         } 
 		catch (PageException e) {
             pc.handlePageException(e);

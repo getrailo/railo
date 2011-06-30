@@ -3397,6 +3397,44 @@ public final class ConfigWebFactory {
       	Element debugging=getChildByName(doc.getDocumentElement(),"debugging");
       	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
         
+      	
+      	
+
+        // Entries
+        Element[] entries = getChildren(debugging,"debug-entry");
+        Map<String,DebugEntry> list=new HashMap<String,DebugEntry>();
+        Struct sct=null;
+        if(hasCS) {
+        	 DebugEntry[] _entries = ((ConfigImpl)configServer).getDebugEntries();
+        	 for(int i=0;i<_entries.length;i++) {
+        		list.put(_entries[i].getId(),_entries[i].duplicate(true)); 
+        	 }
+        	 
+        	 
+        	 
+        }
+        if(sct==null) sct=new StructImpl();
+        Element e;
+        String id;
+        for(int i=0;i<entries.length;i++) {
+        	e=entries[i];
+        	id=e.getAttribute("id");
+        	list.put(id,new DebugEntry(
+        			id,
+        			e.getAttribute("type"),
+        			e.getAttribute("iprange"),
+        			e.getAttribute("label"),
+        			e.getAttribute("path"),
+        			e.getAttribute("fullname"),
+        			toStruct(e.getAttribute("custom"))
+        			));
+        }
+        config.setDebugEntries(list.values().toArray(new DebugEntry[list.size()]));
+      	
+      	
+
+      	
+// OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD
       	// debug
       	String strDebug=debugging.getAttribute("debug");
       	if(hasAccess && !StringUtil.isEmpty(strDebug)) {

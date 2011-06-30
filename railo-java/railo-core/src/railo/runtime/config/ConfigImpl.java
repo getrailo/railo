@@ -3376,5 +3376,19 @@ public abstract class ConfigImpl implements Config {
 		}
 		
 	}
+
+	private DebugEntry[] debugEntries;
+	protected void setDebugEntries(DebugEntry[] debugEntries) {
+		this.debugEntries=debugEntries;
+	}
+
+	public DebugEntry[] getDebugEntries() {
+		return debugEntries;
+	}
+	
+	public DebugEntry getDebugEntry(String ip, DebugEntry defaultValue) {
+		if(debugEntries.length==0) return defaultValue;
+		return debugEntries[0];
+	}
 	
 }
