@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.lang.Thread.State;
 import java.util.Iterator;
 
-import railo.commons.lang.ExceptionUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
