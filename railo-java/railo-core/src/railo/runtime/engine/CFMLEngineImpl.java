@@ -1,13 +1,11 @@
 package railo.runtime.engine;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,10 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
-import railo.commons.net.HTTPUtil;
-import railo.print;
 import railo.cli.servlet.HTTPServletImpl;
-import railo.cli.servlet.ServletConfigImpl;
 import railo.commons.collections.HashTable;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -39,6 +34,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
+import railo.commons.net.HTTPUtil;
 import railo.intergral.fusiondebug.server.FDControllerImpl;
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
@@ -589,7 +585,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		
 		serviceCFML(servlet, req, rsp);
 		String res = os.toString(rsp.getCharacterEncoding());
-		print.o(res);
+		System.out.println(res);
 		
 
 	}
