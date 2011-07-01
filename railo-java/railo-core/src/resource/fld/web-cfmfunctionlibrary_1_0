@@ -8653,6 +8653,31 @@ The value determines whether the image is blurred or sharpened:
 			<type>boolean</type>
 		</return>
 	</function>
+	<!-- IsIPInRange -->
+	<function>
+		<name>IsIPInRange</name>
+		<class>railo.runtime.functions.decision.IsIPInRange</class>
+		<description>Checks if an ip is in the range of a list of given ips. IPv4 and IPv6 are supported.</description>
+		<argument>
+			<name>ips</name>
+			<type>any</type>
+			<required>Yes</required>
+			<description>A comma separeted list of strings or a string array of ip defintions. The following patterns are allowed:
+- a single ip, like "127.0.0.1"
+- an ip with wildcards like "127.0.0.*", in this case all ips between "127.0.0.0" and "127.0.0.255" are valid
+- an ip range like "127.0.0.1-127.0.0.10", in this case all ips between "127.0.0.1" and "127.0.0.10" are valid
+</description>
+    	</argument>
+    	<argument>
+			<name>ip</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>ip to search</description>
+    	</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
 	<!-- IsJson -->
 	<function>
 		<name>IsJson</name>
