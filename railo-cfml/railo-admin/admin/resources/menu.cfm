@@ -57,7 +57,7 @@
 		),
 		struct(action:"development",label:stMenu.development.label,
 			children:array(
-				struct(action:"debugging",label:stMenu.development.debugging)
+				struct(action:"debug",label:stMenu.development.debugging)
 			)
 		),
 		struct(action:"security",label:stMenu.security.label,

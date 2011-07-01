@@ -1185,7 +1185,23 @@ public final class ConfigWebFactory {
 
             f=gDir.getRealResource("Group.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/gdriver/Group.cfc",f);
-	        	
+
+        // DEBUG
+            Resource debug = adminDir.getRealResource("debug");
+            if(!debug.exists())debug.mkdirs();
+
+            f=debug.getRealResource("Debug.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Debug.cfc",f);
+            
+            f=debug.getRealResource("Field.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Field.cfc",f);
+            
+            f=debug.getRealResource("Group.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Group.cfc",f);
+            
+            f=debug.getRealResource("Classic.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Classic.cfc",f);
+            
         // C DRIVER
             Resource cDir = adminDir.getRealResource("cdriver");
             if(!cDir.exists())cDir.mkdirs();
@@ -1204,7 +1220,7 @@ public final class ConfigWebFactory {
 
             f=cDir.getRealResource("Group.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/cdriver/Group.cfc",f);
-	    	       
+        	    	       
 	        	        
         
     // DB DRIVER
@@ -1271,7 +1287,7 @@ public final class ConfigWebFactory {
         f=errorDir.getRealResource("error-public.cfm");
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/error/error-public.cfm",f);
         
-        Resource debuggingDir = templatesDir.getRealResource("debugging");
+        /*Resource debuggingDir = templatesDir.getRealResource("debugging");
         if(!debuggingDir.exists())debuggingDir.mkdirs();
         
         f=debuggingDir.getRealResource("debugging.cfm");
@@ -1291,7 +1307,7 @@ public final class ConfigWebFactory {
         
         //f=debuggingDir.getRealResource("debugging-stats.cfm");
         //if(!f.exists() || doNew)createFileFromResource("/resource/context/templates/debugging/debugging-stats.cfm",f);
-
+		*/
         Resource displayDir = templatesDir.getRealResource("display");
         if(!displayDir.exists())displayDir.mkdirs();
 
@@ -1300,7 +1316,7 @@ public final class ConfigWebFactory {
         
         f=displayDir.getRealResource("Application.cfc");
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/Application.cfc",f);
-        
+        /*
         f=displayDir.getRealResource("debugging-console-output-pages.cfm");
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/debugging-console-output-pages.cfm",f);
         
@@ -1315,7 +1331,7 @@ public final class ConfigWebFactory {
         
         //f=displayDir.getRealResource("debugging-stats.cfm");
         //if(!f.exists() || doNew)createFileFromResource("/resource/context/templates/display/debugging-stats.cfm",f);
-
+*/
         
         
         
