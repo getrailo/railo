@@ -67,7 +67,7 @@ component extends="Debug" {
 	function output(struct custom) {
 		admin action="getDebugData" returnVariable="local.debugging";
 		
-		writeOutput("<pre>"&NL);
+		writeOutput("<!--"&NL);
  		echo("=================================================================================="&NL);
         echo("=========================== RAILO DEBUGGING INFORMATION =========================="&NL);
  		echo("=================================================================================="&NL&NL);
@@ -169,7 +169,7 @@ component extends="Debug" {
 				try{
 					scp=evaluate(name);
    				}
-                catch(e){
+                catch(any e){
                 	doPrint=false;
                 }
                 
@@ -215,7 +215,7 @@ component extends="Debug" {
 </cfif>
         */
 		
-		writeOutput("</pre>");
+		writeOutput(NL& "-->");
 	}
     
     
