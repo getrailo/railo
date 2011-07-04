@@ -80,8 +80,19 @@ Redirtect to entry --->
 <!--- 
 Error Output--->
 <cfset printError(error)>
+<script language="javascript">
+var drivers={};
+<cfloop collection="#drivers#" item="key">drivers['#JSStringFormat(key)#']='#JSStringFormat(drivers[key].getDescription())#';
+</cfloop>
+function setDesc(id,key){
+	var div = document.getElementById(id);
+	if(div.hasChildNodes())
+		div.removeChild(div.firstChild);
+	div.appendChild(document.createTextNode(drivers[key]));
+	
 
-
+}
+</script>
 
 <table class="tbl" width="740">
 <cfoutput><cfform action="#request.self#?action=#url.action#" method="post" name="debug_settings">
@@ -202,8 +213,6 @@ Error Output--->
 
 
 </cfoutput>
-
-
 <!--- 
 	Create debug entry --->
 <cfif access EQ "yes">
@@ -212,22 +221,27 @@ Error Output--->
 	
     <cfif listLen(_drivers)>
     <h2>#stText.debug.titleCreate#</h2>
-	<table class="tbl" width="350">
+	<table class="tbl" width="420">
 	<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
 		<td class="tblHead" width="50">#stText.debug.label#</td>
-		<td class="tblContent" width="300"><cfinput type="text" name="label" value="" style="width:300px" required="yes" 
+		<td class="tblContent" width="370"><cfinput type="text" name="label" value="" style="width:370px" required="yes" 
 			message="#stText.debug.labelMissing#"></td>
 	</tr>
 	
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.gateway.type#</td>
-		<td class="tblContent" width="300"><select name="type">
+		<td class="tblContent" width="300"><select name="type" onchange="setDesc('typeDesc',this.value);" on>
 					<cfloop list="#_drivers#" index="key">
                     <cfset driver=drivers[key]>
                     <option value="#trim(driver.getId())#">#trim(driver.getLabel())#</option>
 					</cfloop>
-				</select></td>
+				</select>
+                <div id="typeDesc" style="position:relative"></div>
+                <script>setDesc('typeDesc','#JSStringFormat(listFirst(_drivers))#');</script>
+                
+                
+                </td>
 	</tr>
 	<tr>
 		<td colspan="2">
