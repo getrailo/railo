@@ -19,6 +19,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import railo.commons.digest.MD5;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
@@ -33,6 +34,7 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
+import railo.commons.net.IPRange;
 import railo.commons.net.URLEncoder;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
@@ -3438,13 +3440,16 @@ public final class ConfigWebAdmin {
 	}
 
 
-	public void updateDebugEntry(String type, String iprange,String label,String path,String fullname, Struct custom) throws SecurityException {
+	public void updateDebugEntry(String type, String iprange,String label,String path,String fullname, Struct custom) throws SecurityException, IOException {
 		checkWriteAccess();
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
         if(!hasAccess)
             throw new SecurityException("no access to change debugging settings");
 		
-		String id=DebugEntry.ipRangeToId(iprange);
+        // leave this, this method throws a exception when ip range is not valid
+        IPRange.getInstance(iprange);
+        
+		String id=MD5.getDigestAsString(label.trim().toLowerCase());
 		type=type.trim();
 		iprange=iprange.trim();
 		label=label.trim();

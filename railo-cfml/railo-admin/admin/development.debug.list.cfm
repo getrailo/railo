@@ -136,14 +136,14 @@ Error Output--->
 	<h2>#stText.debug.list[k & "title"]#</h2>
 	#stText.debug.list[k & "titleDesc"]#
     
-<table class="tbl" width="570">
+<table class="tbl" width="740">
 
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<tr>
-		<cfif isWeb><td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td></cfif>
-		<td width="240" class="tblHead" nowrap>#stText.debug.label#</td>
-		<td width="100" class="tblHead" nowrap>#stText.debug.ipRange#</td>
-		<td width="180" class="tblHead" nowrap># stText.debug.type#</td>
+		<cfif isWeb><td width="40"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td></cfif>
+		<td width="160" class="tblHead" nowrap>#stText.debug.label#</td>
+		<td width="#isWeb?440:480#" class="tblHead" nowrap>#stText.debug.ipRange#</td>
+		<td width="100" class="tblHead" nowrap># stText.debug.type#</td>
 	</tr>
 	<cfloop query="qry">
     <cfif IsSimpleValue(qry.driver)><cfcontinue></cfif>
@@ -167,7 +167,7 @@ Error Output--->
 		</td>
      </cfif>
 		<td class="tblContent" nowrap>#qry.label#</td>
-		<td class="tblContent" nowrap>#qry.ipRange#</td>
+		<td class="tblContent" nowrap>#replace(qry.ipRange,",","<br />","all")#</td>
 		<td class="tblContent" nowrap>#qry.driver.getLabel()#</td>
 		
 	</tr>

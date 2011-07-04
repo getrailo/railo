@@ -76,7 +76,20 @@ Redirtect to entry --->
 
 <cfoutput>
 
-
+<script>
+function add(field){
+	var ip='#cgi.remote_addr#';
+	var value=field.form.iprange.value;
+	
+	if(value && value.indexOf(ip)!=-1) return;
+	
+	
+	if(value)
+		field.form.iprange.value+=","+ip;
+	else
+		field.form.iprange.value=ip;
+}
+</script>
 
 <!--- 
 Error Output--->
@@ -98,9 +111,13 @@ Error Output--->
 		<td width="450" class="tblContent" nowrap>
         <cfinput type="text" 
                 name="iprange" 
-                value="#entry.iprange#" style="width:400px" required="yes"
-                message="#stText.debug.iprangeMissing#">
-        <br /><span class="comment">#stText.debug.iprangeDesc#</span></td>
+                value="#entry.iprange#" style="width:350px" required="yes"
+                message="#stText.debug.iprangeMissing#"><input type="button" name="addmyip" value="#stText.debug.addMyIp#" onclick="add(this)" class="submit">
+        <br /><span class="comment">#replace(stText.debug.iprangeDesc,"
+","<br />","all")#</span>
+
+
+</td>
 	</tr>
     
 	<tr>

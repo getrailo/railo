@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import railo.commons.digest.MD5;
+import railo.commons.net.IPRange;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 
@@ -13,20 +14,22 @@ public class DebugEntry {
 
 	private final String id;
 	private final String type;
-	private final String ipRange;
+	private final String strIpRange;
+	private final IPRange ipRange;
 	private final String label;
 	private final Struct custom;
 	private final boolean readOnly;
 	private final String path;
 	private final String fullname;
 
-	public DebugEntry(String id, String type, String ipRange, String label, String path, String fullname, Struct custom) {
-		this(id,type,ipRange,label,path,fullname,custom,false);
+	public DebugEntry(String id, String type, String ipRange, String label, String path, String fullname, Struct custom) throws IOException {
+		this(id,type,IPRange.getInstance(ipRange),ipRange,label,path,fullname,custom,false);
 	}
 	
-	private DebugEntry(String id, String type, String ipRange, String label, String path, String fullname, Struct custom, boolean readOnly) {
+	private DebugEntry(String id, String type, IPRange ipRange,String strIpRange, String label, String path, String fullname, Struct custom, boolean readOnly) {
 		this.id=id;
 		this.type=type;
+		this.strIpRange=strIpRange;
 		this.ipRange=ipRange;
 		this.label=label;
 		this.custom=custom;
@@ -73,7 +76,10 @@ public class DebugEntry {
 	/**
 	 * @return the ipRange
 	 */
-	public String getIpRange() {
+	public String getIpRangeAsString() {
+		return strIpRange;
+	}
+	public IPRange getIpRange() {
 		return ipRange;
 	}
 
@@ -92,7 +98,7 @@ public class DebugEntry {
 	}
 
 	public DebugEntry duplicate(boolean readOnly) {
-		DebugEntry de = new DebugEntry(id, type, ipRange, label, path,fullname,custom,readOnly);
+		DebugEntry de = new DebugEntry(id, type, ipRange,strIpRange, label, path,fullname,custom,readOnly);
 		return de;
 	}
 	

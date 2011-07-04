@@ -22,7 +22,7 @@ public class IsIPInRange {
 			for(int i=0;i<_ips.length;i++){
 				_ips[i]=Caster.toString(arr.getE(i+1),null);
 				if(_ips[i]==null)
-					throw new FunctionException(pc, "IsIpRange", 1, "ips", "argument number "+(i+1)+" in ips array is not a string");
+					throw new FunctionException(pc, "IsIpRange", 1, "ips", "element number "+(i+1)+" in ips array is not a string");
 			}
 			return IPRange.getInstance(_ips).inRange(ip);
 			
@@ -30,8 +30,6 @@ public class IsIPInRange {
 		catch(IOException e){
 			throw Caster.toPageException(e);
 		}
-		
-		
 		
 		
 	}

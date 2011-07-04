@@ -1202,6 +1202,9 @@ public final class ConfigWebFactory {
             f=debug.getRealResource("Classic.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Classic.cfc",f);
             
+            f=debug.getRealResource("Comment.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Comment.cfc",f);
+            
         // C DRIVER
             Resource cDir = adminDir.getRealResource("cdriver");
             if(!cDir.exists())cDir.mkdirs();
@@ -3435,15 +3438,18 @@ public final class ConfigWebFactory {
         for(int i=0;i<entries.length;i++) {
         	e=entries[i];
         	id=e.getAttribute("id");
-        	list.put(id,new DebugEntry(
-        			id,
-        			e.getAttribute("type"),
-        			e.getAttribute("iprange"),
-        			e.getAttribute("label"),
-        			e.getAttribute("path"),
-        			e.getAttribute("fullname"),
-        			toStruct(e.getAttribute("custom"))
-        			));
+        	try {
+				list.put(id,new DebugEntry(
+						id,
+						e.getAttribute("type"),
+						e.getAttribute("iprange"),
+						e.getAttribute("label"),
+						e.getAttribute("path"),
+						e.getAttribute("fullname"),
+						toStruct(e.getAttribute("custom"))
+						));
+			} 
+        	catch (IOException ioe) {}
         }
         config.setDebugEntries(list.values().toArray(new DebugEntry[list.size()]));
       	

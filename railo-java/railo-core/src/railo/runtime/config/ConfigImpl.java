@@ -42,6 +42,7 @@ import railo.commons.lang.Md5;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
+import railo.commons.net.IPRange;
 import railo.commons.net.JarLoader;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngine;
@@ -3388,7 +3389,19 @@ public abstract class ConfigImpl implements Config {
 	
 	public DebugEntry getDebugEntry(String ip, DebugEntry defaultValue) {
 		if(debugEntries.length==0) return defaultValue;
-		return debugEntries[0];
+		short[] sarr;
+		try {
+			sarr = IPRange.toShortArray(ip);
+		} catch (IOException e) {
+			return defaultValue;
+		}
+		for(int i=0;i<debugEntries.length;i++){
+			if(debugEntries[i].getIpRange().inRange(sarr)) return debugEntries[i];
+		}
+		
+		
+		
+		return defaultValue;
 	}
 	
 }

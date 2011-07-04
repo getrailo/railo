@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.type.List;
@@ -100,25 +101,32 @@ public class IPRange implements Serializable {
 	}
 	
 
-	public void add(String ip) throws IOException {
+	private void add(String ip) throws IOException {
+		ip=ip.trim();
 		// no wildcard defined
 		if(ip.indexOf('*')==-1) {
-			add(new Range(toShortArray(InetAddress.getByName(ip))));
+			add(new Range(toShortArray(toInetAddress(ip))));
+			return;
+		}
+		
+		if("*".equals(ip)) {
+			add("*.*.*.*");
+			add("*:*:*:*:*:*:*:*");
 			return;
 		}
 		
 		String from = ip.replace('*', '0');
 		String to;
-		InetAddress addr1 = InetAddress.getByName(from);
+		InetAddress addr1 = toInetAddress(from);
 		if(addr1 instanceof Inet6Address) 
 			to=StringUtil.replace(ip, "*","ffff",false);
 		else 
 			to=StringUtil.replace(ip, "*","255",false);
-		add(new Range(toShortArray(addr1),toShortArray(InetAddress.getByName(to))));
+		add(new Range(toShortArray(addr1),toShortArray(toInetAddress(to))));
 	}
 
-	public void add(String ip1,String ip2) throws IOException {
-		add(new Range(toShortArray(InetAddress.getByName(ip1)),toShortArray(InetAddress.getByName(ip2))));
+	private void add(String ip1,String ip2) throws IOException {
+		add(new Range(toShortArray(toInetAddress(ip1)),toShortArray(toInetAddress(ip2))));
 	}
 	public static IPRange getInstance(String raw) throws IOException {
 		return getInstance(List.listToStringArray(raw, ','));
@@ -154,11 +162,12 @@ public class IPRange implements Serializable {
 	}
 
 	public boolean inRange(String ip) throws IOException {
-		InetAddress addr = InetAddress.getByName(ip);
-		short[] sarr = toShortArray(addr);
-		
+		return inRange(toShortArray(ip));
+	}
+
+	public boolean inRange(short[] ip) {
 		for(int i=0;i<max;i++){
-			if(ranges[i].inRange(sarr)) return true;
+			if(ranges[i].inRange(ip)) return true;
 		}
 		return false;
 	}
@@ -171,6 +180,19 @@ public class IPRange implements Serializable {
 			sb.append(ranges[i].toString());
 		}
 		return sb.toString();
+	}
+
+	public static short[] toShortArray(String ip) throws IOException {
+		return toShortArray(toInetAddress(ip));
+	}
+	
+	private static InetAddress toInetAddress(String ip) throws IOException {
+		// TODO Auto-generated method stub
+		try {
+			return InetAddress.getByName(ip);
+		} catch (UnknownHostException e) {
+			throw new IOException("cannot parse the ip ["+ip+"]");
+		}
 	}
 
 	private static short[] toShortArray(InetAddress ia){
@@ -186,34 +208,4 @@ public class IPRange implements Serializable {
 		if(b<0) return (short)(b+N256);
 		return b;
 	}
-
-	/*public static void main(String[] args) throws IOException {
-		IPRange r=IPRange.getInstance("127.0.0.1-127.0.0.10,128.0.*.*,,129.0.0.1,ff:db8::8d3:*:8a2e:70:7344,::");
-		//IPRange r=IPRange.getInstance("::");
-		print.o(r);
-		
-		
-		
-		if(true) return;
-		IPRange range=new IPRange();
-		range.add("127.128.255.0");
-		range.add("::","0:0:0:0:0:0:0:1%0");
-		range.add("0:0:0:0:0:0:0:1%0");
-		range.add("2001:db8::8d3:*:8a2e:70:7344");
-		range.add("127.0.0.1","127.0.0.10");
-		range.add("127.0.0.20");
-		range.add("127.0.0.23");
-		range.add("127.0.0.25");
-		range.add("127.0.*.*");
-
-		print.o(range.inRange("127.0.0.1"));
-		print.o(range.inRange("127.0.0.4"));
-		print.o(range.inRange("127.0.0.10"));
-		print.o(range.inRange("127.0.0.23"));
-		print.o(range.inRange("0:0:0:0:0:0:0:1%0"));
-
-		print.o(range.inRange("127.0.0.24"));
-		
-		
-	}*/
 }

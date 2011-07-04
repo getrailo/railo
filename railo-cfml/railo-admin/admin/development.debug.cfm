@@ -12,8 +12,14 @@
 <cfset stText.debug.noDriver="there is no debug template defined">
 <cfset stText.debug.noAccess="you have no access to manipulate the debug settings">
 <cfset stText.debug.ipRange="IP Range">
-<cfset stText.debug.ipRangeDesc="the ip range where this template is used, use ""*"" as wilddard. Example:127.0.0,1,138.*.*.*">
+<cfset stText.debug.ipRangeDesc="A comma separeted list of strings of ip defintions. The following patterns are allowed:
+- * including all ips
+- a single ip, like ""127.0.0.1"" or ""0:0:0:0:0:0:0:1%0""
+- an ip with wildcards like ""127.0.0.*"", in this case all ips between ""127.0.0.0"" and ""127.0.0.255"" are valid
+- an ip range like ""127.0.0.1-127.0.0.10"", in this case all ips between ""127.0.0.1"" and ""127.0.0.10"" are valid
+You can define IPv4 or IPv6 IPs, a IPv4 can not be converted to a IPv6 and visa versa.">
 <cfset stText.debug.ipRangeMIssing="Missing IP Range defintion">
+<cfset stText.debug.addMyIp="Add my IP">
 
 <cfset stText.debug.list.serverTitle="Readonly Debug Templates">
 <cfset stText.debug.list.webTitle="Debug Templates">

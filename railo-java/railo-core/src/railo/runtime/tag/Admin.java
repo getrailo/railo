@@ -1419,14 +1419,18 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
     
     private void doUpdateDebugEntry() throws PageException {
-    	admin.updateDebugEntry(
-    			getString("admin","updateDebugEntry","debugtype"),
-    			getString("admin","updateDebugEntry","iprange"),
-    			getString("admin","updateDebugEntry","label"),
-    			getString("admin","updateDebugEntry","path"),
-    			getString("admin","updateDebugEntry","fullname"),
-    			getStruct("admin","updateDebugEntry","custom")
-    		);
+    	try {
+			admin.updateDebugEntry(
+					getString("admin","updateDebugEntry","debugtype"),
+					getString("admin","updateDebugEntry","iprange"),
+					getString("admin","updateDebugEntry","label"),
+					getString("admin","updateDebugEntry","path"),
+					getString("admin","updateDebugEntry","fullname"),
+					getStruct("admin","updateDebugEntry","custom")
+				);
+		} catch (IOException e) {
+			throw Caster.toPageException(e);
+		}
     	
     	store();
         adminSync.broadcast(attributes, config);
@@ -1445,7 +1449,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             de=entries[i];
             qry.setAtEL(KeyImpl.ID,row,de.getId());
             qry.setAtEL(LABEL,row,de.getLabel());
-            qry.setAtEL(IP_RANGE,row,de.getIpRange());
+            qry.setAtEL(IP_RANGE,row,de.getIpRangeAsString());
             qry.setAtEL(KeyImpl.TYPE,row,de.getType());
             qry.setAtEL(READONLY,row,Caster.toBoolean(de.isReadOnly()));
             qry.setAtEL(CUSTOM,row,de.getCustom());

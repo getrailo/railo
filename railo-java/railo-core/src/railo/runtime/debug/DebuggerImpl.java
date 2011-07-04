@@ -381,7 +381,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         // no debug File 
 
 		if(debugEntry==null) {
-		    pc.forceWrite(pc.getConfig().getDefaultDumpWriter().toString(pc,toDumpData(pc, 9999,DumpUtil.toDumpProperties()),true)); 
+		    //pc.forceWrite(pc.getConfig().getDefaultDumpWriter().toString(pc,toDumpData(pc, 9999,DumpUtil.toDumpProperties()),true)); 
 		    return;
 		} 
 		

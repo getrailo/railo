@@ -1,22 +1,16 @@
-<cfcomponent extends="Debug" output="no">
+<cfcomponent extends="Debug" output="no"><cfscript>
 
-	
-    <cfset fields=array(
-		field("Style","style","classic",true,"Select classic or modern style.","select","classic,modern")
-	)>
-    
-    
-    <cfset fields=array(
+    fields=array(
 		
 		group("Execution Time","Execution times for templates, includes, modules, custom tags, and component method calls. Template execution times over this minimum highlight time appear in red.",3)
 		//,field("Extensions","extension","cfm,cfc,cfml",false,"Output the templates with the following extensions","checkbox","cfm,cfc,cfml")
 		
 		
 		,field("Minimal","minimal","0",true,
-				"output only templates taking longer than the following (ms)","text40")
+				"output only templates taking longer than the following (ms).","text40")
 		
 		,field("Highlight","highlight","250",true,
-				"Highlight templates taking longer than the following (ms)","text40")
+				"Highlight templates taking longer than the following (ms) in red.","text40")
 		
 		
 		,group("Custom Debugging Output","Define what is outputted",3)
@@ -36,51 +30,40 @@
 		,field("Tracing","tracing",true,false,"Select this option to show trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag.","checkbox")
 		
 		,field("Timer","timer",true,false,"Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag. ","checkbox")
-	)>
+		
+		
+		,group("Output Format","Define details to the fomrat of the debug output",3)
+		,field("Background Color","bgcolor","white",true,"Color in the back, ","text80")
+		,field("Font Color","color","black",true,"Color used for the Font, ","text80")
+		,field("Font Family","font","Times New Roman, Times, serif",true,"What kind of Font is used, ","text200")
+		,field("Font Size","size","medium",true,"What kind of Font is usedThe size of the font in Pixel, ","select","small,medium,large")
+	);
     
     
-    
-    
-   	 	 
- 	 	 
- 	 	 
 
-    
-	<cffunction name="getLabel" returntype="string" output="no">
-    	<cfreturn "Classic">
-    </cffunction>
-	<cffunction name="getDescription" returntype="string" output="no">
-    	<cfreturn "the old style debug template">
-    </cffunction>
-    
-	<cffunction name="onBeforeUpdate" returntype="void" output="false">
-		<cfargument name="custom" required="true" type="struct">
-        
-        
-	</cffunction>
-    
-    
-	<cffunction name="getid" returntype="string">
-    	<cfreturn "railo-classic">
-    </cffunction>
-    
-    
-<cfscript>
 
- 
- 
-/**
- * do first Letter Upper case
- * @param str String to operate
- * @return uppercase string
- */
-private function uCaseFirst(String str) {
-	var size=len(str);
-	if(     size EQ 0)return str;
-	else if(size EQ 1) return uCase(str);
-	else {
-		return uCase(mid(str,1,1))&mid(str,2,size);
-	}
+
+string function getLabel(){
+	return "Classic";
+}
+string function getDescription(){
+	return "The old style debug template";
+}
+string function getid(){
+	return "railo-classic";
+}
+
+
+void function onBeforeUpdate(struct custom){
+	throwWhenEmpty(custom,"color");
+	throwWhenEmpty(custom,"bgcolor");
+}
+
+
+
+private void function throwWhenEmpty(struct custom, string name){
+	if(!structKeyExists(custom,name) or len(trim(custom[name])) EQ 0)
+		throw "value for ["&name&"] is not defined";
 }
 
 private function isColumnEmpty(string columnName){
@@ -93,7 +76,7 @@ private function isColumnEmpty(string columnName){
     
     
     <cffunction name="output" returntype="void">
-    	<cfargument name="custom" type="struct" required="yes">
+    	<cfargument name="custom" type="struct" required="yes"><cfsilent>
 <cfset time=getTickCount()>
 
 <cfadmin 
@@ -111,19 +94,24 @@ private function isColumnEmpty(string columnName){
 <cfset traces=debugging.traces>
 <cfset querySort(pages,"avg","desc")>
 
+<cfparam name="custom.color" default="black">
+<cfparam name="custom.bgcolor" default="white">
+<cfparam name="custom.font" default="Times New Roman">
+<cfparam name="custom.size" default="medium">
 
-</td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp>
+
+</cfsilent></td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp>
 <style type="text/css">
-
-.cfdebug {color:black;background-color:white;font-family:"Times New Roman", Times, serif;font-size:small;}
-.cfdebuglge {color:black;background-color:white;font-family:"Times New Roman", Times, serif; font-size:medium;}
-a.cfdebuglink {color:blue; background-color:white }
-
-.template {	color: black; font-family: "Times New Roman", Times, serif; font-weight: normal; }
-.template_overage {	color: red; background-color: white; font-family: "Times New Roman", Times, serif; font-weight: bold; }
-</style>
 <cfoutput>
-<table class="cfdebug" bgcolor="white">
+.cfdebug {color:#custom.color#;background-color:#custom.bgcolor#;font-family:"#custom.font#";
+	font-size:<cfif custom.size EQ "small">smaller<cfelseif custom.size EQ "medium">small<cfelse>medium</cfif>;}
+.cfdebuglge {color:#custom.color#;background-color:#custom.bgcolor#;font-family:#custom.font#;
+	font-size:<cfif custom.size EQ "small">small<cfelseif custom.size EQ "medium">medium<cfelse>large</cfif>;}
+
+.template_overage {	color: red; background-color: #custom.bgcolor#; font-family:#custom.font#; font-weight: bold;
+	font-size:<cfif custom.size EQ "small">smaller<cfelseif custom.size EQ "medium">small<cfelse>medium</cfif>; }
+</style>
+<table class="cfdebug" bgcolor="#custom.bgcolor#" style="border-color:#custom.color#">
 <tr>
 	<td>
  <!--- General --->
@@ -135,7 +123,7 @@ a.cfdebuglink {color:blue; background-color:white }
 			<td class="cfdebug" colspan="2" nowrap>
 			#server.coldfusion.productname#
 			<cfif StructKeyExists(server.railo,'versionName')>(<a href="#server.railo.versionNameExplanation#" target="_blank">#server.railo.versionName#</a>)</cfif>
-			#uCaseFirst(server.coldfusion.productlevel)# 
+			#ucFirst(server.coldfusion.productlevel)# 
 			#uCase(server.railo.state)#
 			#server.railo.version#
 			(CFML Version #server.ColdFusion.ProductVersion#)
@@ -151,11 +139,11 @@ a.cfdebuglink {color:blue; background-color:white }
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> Time Zone </td>
-			<td class="cfdebug"><cftry>#GetPageContext().getConfig().getTimeZone().getDisplayName()#<cfcatch></cfcatch></cftry></td>
+			<td class="cfdebug">#getTimeZone()#</td>
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> Locale </td>
-			<td class="cfdebug">#uCaseFirst(GetLocale())#</td>
+			<td class="cfdebug">#ucFirst(GetLocale())#</td>
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> User Agent </td>
@@ -176,7 +164,7 @@ a.cfdebuglink {color:blue; background-color:white }
 		</table>
 		</p>
 	</cfif>
-
+<!--- Execution Time --->
 	<p class="cfdebug"><hr/><b class="cfdebuglge"><a name="cfdebug_execution">Execution Time</a></b></p>
 	<a name="cfdebug_templates">
 		<table border="1" cellpadding="2" cellspacing="0" class="cfdebug">
@@ -325,7 +313,7 @@ a.cfdebuglink {color:blue; background-color:white }
 </cftry>
 
 <cfif doPrint and structCount(scp)>
-<pre><b>#name# Variables:</b><cftry><cfloop index="key" list="#ListSort(StructKeyList(scp),"textnocase")#">
+<pre class="cfdebug"><b>#name# Variables:</b><cftry><cfloop index="key" list="#ListSort(StructKeyList(scp),"textnocase")#">
 #(key)#=<cftry><cfif IsSimpleValue(scp[key])>#scp[key]#<!--- 
 ---><cfelseif isArray(scp[key])>Array (#arrayLen(scp[key])#)<!--- 
 ---><cfelseif isValid('component',scp[key])>Component (#GetMetaData(scp[key]).name#)<!--- 
