@@ -3438,6 +3438,21 @@ public final class ConfigWebAdmin {
   		
       	return true;
 	}
+	
+	
+	public void updateDebugSetting(int maxLogs) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
+        if(!hasAccess)
+            throw new SecurityException("no access to change debugging settings");
+		
+        
+        Element debugging=_getRootElement("debugging");
+        if(maxLogs==-1)
+        	debugging.removeAttribute("max-records-logged");
+        else
+        	debugging.setAttribute("max-records-logged", Caster.toString(maxLogs));
+	}
 
 
 	public void updateDebugEntry(String type, String iprange,String label,String path,String fullname, Struct custom) throws SecurityException, IOException {

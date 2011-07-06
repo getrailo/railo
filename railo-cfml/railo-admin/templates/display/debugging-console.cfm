@@ -19,13 +19,32 @@
 <cfparam name="cookie.DISPLAY_OPTIONS" default="3">
 <cfset sWeb_ID = getPageContext().getConfig().getId()>
 <cfif isDefined("url.action") and url.action eq "reset_debug">
-	<cfset structClear(server[sWeb_ID])>
+	<cfset structClear(logs)>
 	<cfset structDelete(server, sWeb_ID)>
 	<cflocation url="#cgi.script_name#" addtoken="No">
 </cfif>
 <cfset bFilter4MyIP = (BitAnd(cookie.display_options, 16) eq 16)>
 <cfparam name="url.opt" default="0|5">
+
+<cfadmin type="web" passowrd="server" action="getLoggedDebugData" returnvariable="data">
+<cfset logs.debugEntryCount=arrayLen(data)>
+<cfset logs.debugEntries=[]>
+
+<cfloop from="1" to="#arrayLen(data)#" index="i">
+	<cfset el=data[i]>
+	<cfset logs.debugEntries[i].recorded=el.starttime>
+	<cfset logs.debugEntries[i].ipAddress=el.cgi.REMOTE_ADDR>
+	<cfset logs.debugEntries[i].calledUrl=el.cgi.script_name & "?" & el.cgi.query_string>
+	<cfset logs.debugEntries[i].debugInfo=el>
+    
+</cfloop>
+
+
+
 </cfsilent>
+
+
+
 <html>
 	<head>
 		<title>Railo 3.2 - Debugging console</title>
@@ -47,10 +66,10 @@
 	</head><body>
 	<cfoutput>
 	<table class="tbl" width="100%"><tr>
-	<cfif not StructKeyExists(server, sWeb_ID)>
+	<cfif false>
 		#sNoDebugInfoAvailable#
 	<cfelse>
-		<cfset iStart = server[sWeb_ID].debugEntryCount>
+		<cfset iStart = logs.debugEntryCount>
 		<td valign="top" width="100%">
 			<table class="tbl" width="100%">
 				<tr>
@@ -62,16 +81,16 @@
 				<cfset bDrawn = False>
 				<cfloop from="1" to="10" index="i">
 					<cfif iStart lt 1><cfset iStart = 10></cfif>
-					<cfif ArrayIndexExists(server[sWeb_ID].debugEntries, iStart)>
-						<cfif structKeyExists(server[sWeb_ID].debugEntries[iStart], "ipAddress")>
-							<cfset sIPAddress = server[sWeb_ID].debugEntries[iStart].ipAddress>
+					<cfif ArrayIndexExists(logs.debugEntries, iStart)>
+						<cfif structKeyExists(logs.debugEntries[iStart], "ipAddress")>
+							<cfset sIPAddress = logs.debugEntries[iStart].ipAddress>
 						<cfelse>
 							<cfset sIPAddress = "">
 						</cfif>
 					</cfif>
 					<cfif (bFilter4MyIP AND (sIPAddress eq cgi.remote_addr)) or not bFilter4MyIP>
-						<cfif ArrayIndexExists(server[sWeb_ID].debugEntries, iStart)>
-							<cfset stDebug = server[sWeb_ID].debugEntries[iStart]>
+						<cfif ArrayIndexExists(logs.debugEntries, iStart)>
+							<cfset stDebug = logs.debugEntries[iStart]>
 							<cfset iQry   = 0>
 							<cfset iTotal = 0>
 							<cfif not structKeyExists(stDebug, "iTotal")>
@@ -134,7 +153,7 @@
 	</cfif>
 	<td valign="top" align="right">
 		<table cellpadding="0" cellspacing="0" height="312"><tr>
-			<td class="tblHead" style="border-right: 1px solid ##ffffff;cursor:pointer;" id="DEBUGOPTIONS_TD" onclick="javascript:toggle('DEBUGOPTIONS')">></td>
+			<td class="tblHead" style="border-right: 1px solid ##ffffff;cursor:pointer;" id="DEBUGOPTIONS_TD" onClick="javascript:toggle('DEBUGOPTIONS')">></td>
 			<td>
 				<table class="tbl" bgcolor="white" align="right" border="1" cellpadding="3" cellspacing="0" id="DEBUGOPTIONS" style="border-collapse:collapse"><!---
 					---><tr><!---
@@ -143,15 +162,15 @@
 					---></td></tr><!---
 					---><tr><!---
 					---><td class="tblContent"><!---
-						---><input type="Checkbox" id="outputexecution" value="1" onclick="enableOption()" class="checkbox" checked><span title="#sTitleExecTimes#" alt="#sTitleExecTimes#">#sExecTimes#</span><br><!---
-						---><input type="Checkbox" id="outputastree" value="8" onclick="enableOption()" class="checkbox" checked><span title="#sTitleDispAsTree#" alt="#sTitleDispAsTree#">#sDisplayAsTree#</span><br><!---
+						---><input type="Checkbox" id="outputexecution" value="1" onClick="enableOption()" class="checkbox" checked><span title="#sTitleExecTimes#" alt="#sTitleExecTimes#">#sExecTimes#</span><br><!---
+						---><input type="Checkbox" id="outputastree" value="8" onClick="enableOption()" class="checkbox" checked><span title="#sTitleDispAsTree#" alt="#sTitleDispAsTree#">#sDisplayAsTree#</span><br><!---
 					---></td><td class="tblContent"><!---
-						---><input type="Checkbox" id="outputsql" value="2" onclick="enableOption()" class="checkbox" checked><span title="#sTitleShowSQL#" alt="#sTitleShowSQL#">#sShowSQLStatements#</span><br><!---
-						---><input type="Checkbox" id="hidestatements" value="4" onclick="enableOption()" class="checkbox" checked><span title="#sTitleHideSQL#" alt="#sTitleHideSQL#">#sHideSQLStatements#</span><br><!---
-						---><input type="Checkbox" id="plainoutput" value="32" onclick="enableOption()" class="checkbox" checked><span title="#sTitleHideSQL#" alt="#sTitleHideSQL#">#sPlainSQLStatements#</span><!---
+						---><input type="Checkbox" id="outputsql" value="2" onClick="enableOption()" class="checkbox" checked><span title="#sTitleShowSQL#" alt="#sTitleShowSQL#">#sShowSQLStatements#</span><br><!---
+						---><input type="Checkbox" id="hidestatements" value="4" onClick="enableOption()" class="checkbox" checked><span title="#sTitleHideSQL#" alt="#sTitleHideSQL#">#sHideSQLStatements#</span><br><!---
+						---><input type="Checkbox" id="plainoutput" value="32" onClick="enableOption()" class="checkbox" checked><span title="#sTitleHideSQL#" alt="#sTitleHideSQL#">#sPlainSQLStatements#</span><!---
 					---></td></tr><!---
 					---><tr><td class="tblContent"><!---
-						---><span title="#sTitleDisplay#" alt="#sTitleDisplay#">#sDisplay#&nbsp;<select name="outputMaxFiles" id="outputMaxFiles" onchange="enableOption()">
+						---><span title="#sTitleDisplay#" alt="#sTitleDisplay#">#sDisplay#&nbsp;<select name="outputMaxFiles" id="outputMaxFiles" onChange="enableOption()">
 							<option value="-1">all</option>
 							<option value="10">10</option>
 							<option value="50">50</option>
@@ -160,7 +179,7 @@
 							<option value="1000">1000</option>
 						</select>&nbsp;#sFiles#</span><!---
 					---></td><td class="tblContent"><!---
-						---><span title="#sTitleDisplay#" alt="#sTitleDisplay#">#sDisplay#&nbsp;<select name="outputMaxQueries" id="outputMaxQueries" onchange="enableOption()">
+						---><span title="#sTitleDisplay#" alt="#sTitleDisplay#">#sDisplay#&nbsp;<select name="outputMaxQueries" id="outputMaxQueries" onChange="enableOption()">
 							<option value="-1">all</option>
 							<option value="10">10</option>
 							<option value="50">50</option>
@@ -170,13 +189,13 @@
 						</select>&nbsp;#sQueries#</span><!---
 					---></td></tr><!---
 					---><tr><!---
-						---><td class="tblContent">#sSortOrder#:<br><select id="filenamesortorder" onchange="enableOption()" class="cfdebug"><!---
+						---><td class="tblContent">#sSortOrder#:<br><select id="filenamesortorder" onChange="enableOption()" class="cfdebug"><!---
 							---><option value="1">ExecutionTime (desc)</option><!---
 							---><option value="2">FileName (asc)</option><!---
 							---><option value="3">Count (desc)</option><!---
 							---><option value="4">Average (desc)</option><!---
 						---></select></td><!---
-						---><td class="tblContent">#sSortorder#:<br><select id="querysortorder" onchange="enableOption()" class="cfdebug"><!---
+						---><td class="tblContent">#sSortorder#:<br><select id="querysortorder" onChange="enableOption()" class="cfdebug"><!---
 							---><option value="1">ExecutionTime (desc)</option><!---
 							---><option value="2">QueryName (asc)</option><!---
 							---><option value="3">Records (desc)</option><!---
@@ -184,7 +203,7 @@
 							---><option value="5">Chronological</option><!---
 						---></select></td><!---
 					---></tr><tr><td class="tblContent" colspan="2"><!---
-						---><input type="Checkbox" id="filter4myip" value="16" onclick="enableOption()" class="checkbox" checked><span title="#sTitleOwnAddress#" alt="#sTitleOwnAddress#">#sFilterOwnAddress#</span>&nbsp;<!---
+						---><input type="Checkbox" id="filter4myip" value="16" onClick="enableOption()" class="checkbox" checked><span title="#sTitleOwnAddress#" alt="#sTitleOwnAddress#">#sFilterOwnAddress#</span>&nbsp;<!---
 					---></td></tr><tr><form action="#cgi.script_name#" method="post"><td class="tblContent" colspan="2"><!---
 						---><cfparam name="form.templates" default=""><!--- 
 						---><cfparam name="form.filterType" default="0"><!--- 

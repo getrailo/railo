@@ -137,4 +137,8 @@ public final class ReqRspUtil {
 			return defaultValue;
 		}
 	}
+
+	public static String getScriptName(HttpServletRequest req) {
+		return StringUtil.emptyIfNull(req.getContextPath())+StringUtil.emptyIfNull(req.getServletPath());
+	}
 }

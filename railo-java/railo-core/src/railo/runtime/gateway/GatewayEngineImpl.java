@@ -276,7 +276,6 @@ public class GatewayEngineImpl implements GatewayEngine {
 			return getCFC(pc,requestURI);
 		}
 		finally{
-			pc.setGatewayContext(false);
 			CFMLFactory f = config.getFactory();
 			f.releasePageContext(pc);
 			ThreadLocalPageContext.register(oldPC);
@@ -299,7 +298,6 @@ public class GatewayEngineImpl implements GatewayEngine {
 			}
 		}
 		finally{
-			pc.setGatewayContext(false);
 			CFMLFactory f = config.getFactory();
 			f.releasePageContext(pc);
 			ThreadLocalPageContext.register(oldPC);

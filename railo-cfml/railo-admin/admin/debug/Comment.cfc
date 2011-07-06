@@ -64,8 +64,7 @@ component extends="Debug" {
 	* output the debugging information
 	* @param custom settings done by the user
 	*/
-	function output(struct custom) {
-		admin action="getDebugData" returnVariable="local.debugging";
+	function output(struct custom, struct debugging) {
 		
 		writeOutput("<!--"&NL);
  		echo("=================================================================================="&NL);
@@ -192,29 +191,7 @@ component extends="Debug" {
                 }
                 
             }
-        }
-			
-        
-        
-        /*
-        <p class="cfdebug"><hr/><b class="cfdebuglge"><a name="cfdebug_scopevars">Scope Variables</a></b></p>
-<cfloop list="#scopes#" index="name"><cfif not ListFindNoCase(custom.scopes,name)><cfcontinue></cfif>
-
-
-<cfif doPrint and structCount(scp)>
-<pre><b>#name# Variables:</b><cftry><cfloop index="key" list="#ListSort(StructKeyList(scp),"textnocase")#">
-#(key)#=<cftry><cfif IsSimpleValue(scp[key])>#scp[key]#<!--- 
----><cfelseif isArray(scp[key])>Array (#arrayLen(scp[key])#)<!--- 
----><cfelseif isValid('component',scp[key])>Component (#GetMetaData(scp[key]).name#)<!--- 
----><cfelseif isStruct(scp[key])>Struct (#StructCount(scp[key])#)<!--- 
----><cfelseif IsQuery(scp[key])>Query (#scp[key].recordcount#)<!--- 
----><cfelse>Complex type</cfif><cfcatch></cfcatch></cftry></cfloop><cfcatch>error (#cfcatch.message#) occurred while displaying Scope #name#</cfcatch></cftry>
-</pre>
-</cfif>
-</cfloop>
-</cfif>
-        */
-		
+        }	
 		writeOutput(NL& "-->");
 	}
     

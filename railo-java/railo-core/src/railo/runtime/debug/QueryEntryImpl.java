@@ -6,6 +6,9 @@ import railo.runtime.db.SQL;
  * 
  */
 public final class QueryEntryImpl implements QueryEntry {
+
+	private static final long serialVersionUID = 8655915268130645466L;
+	
 	private String src;
 	private SQL sql;
 	private int exe;

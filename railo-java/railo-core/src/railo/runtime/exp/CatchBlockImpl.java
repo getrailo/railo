@@ -1,13 +1,14 @@
 package railo.runtime.exp;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
-import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Castable;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -15,6 +16,8 @@ import railo.runtime.type.StructImpl;
 
 public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable{
 
+	private static final long serialVersionUID = 2488904376947387039L;
+	
 	public static final Key MESSAGE = KeyImpl.intern("Message");
 	public static final Key DETAIL = KeyImpl.intern("Detail");
 	public static final Key ERROR_CODE = KeyImpl.intern("ErrorCode");
@@ -23,13 +26,12 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable{
 	public static final Key STACK_TRACE = KeyImpl.intern("StackTrace");
 	public static final Key ADDITIONAL = KeyImpl.intern("additional");
 	
-	private Config config;// MUSTMUST remove this -> serialiable
+	//private Config config;// MUSTMUST remove this -> serialiable
 	private PageExceptionImpl pe;
 	private SpecialItem si = new SpecialItem();
 	
 
-	public CatchBlockImpl(Config config,PageExceptionImpl pe) {
-		this.config=config;
+	public CatchBlockImpl(PageExceptionImpl pe) {
 		this.pe=pe;
 		
 		setEL(MESSAGE,si);
@@ -81,7 +83,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable{
 	 */
 	public Collection duplicate(boolean deepCopy) {
 		initAll();
-		CatchBlockImpl trg = new CatchBlockImpl(config,pe);
+		CatchBlockImpl trg = new CatchBlockImpl(pe);
 		trg.initAll();
 		StructImpl.copy(this, trg, deepCopy);
 		return trg;
@@ -150,7 +152,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable{
 		if(KeyImpl.TYPE.equals(key)) 			return setEL(key, StringUtil.emptyIfNull(pe.getTypeAsString()));
 		if(STACK_TRACE.equals(key)) 	return setEL(key, StringUtil.emptyIfNull(pe.getStackTraceAsString()));
 		if(ADDITIONAL.equals(key)) 		return setEL(key, pe.getAdditional());
-		if(TAG_CONTEXT.equals(key)) 	return setEL(key, pe.getTagContext(config)); 	
+		if(TAG_CONTEXT.equals(key)) 	return setEL(key, pe.getTagContext(ThreadLocalPageContext.getConfig())); 	
 		return null;
 	}
 	
@@ -165,7 +167,9 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable{
 		get(TAG_CONTEXT,null);
 	}
 	
-	class SpecialItem {
+	class SpecialItem implements Serializable {
+
+		private static final long serialVersionUID = -8839174054224300183L;
 		
 	}
 	

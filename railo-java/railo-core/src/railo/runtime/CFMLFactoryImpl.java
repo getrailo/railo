@@ -349,7 +349,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 data.setEL("TagContext",PageExceptionImpl.getTagContext(pc.getConfig(),thread.getStackTrace() ));
 
                 data.setEL("urlToken", pc.getURLToken());
-                data.setEL("debugger", pc.getDebugger().getDebuggingData());
+                data.setEL("debugger", pc.getDebugger().getDebuggingData(pc));
                 data.setEL("id", pc.getId());
 
                 // Scopes

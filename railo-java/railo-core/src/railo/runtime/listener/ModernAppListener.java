@@ -306,7 +306,7 @@ public class ModernAppListener extends AppListenerSupport {
 	public void onDebug(PageContext pc) throws PageException {
 		ComponentAccess app = (ComponentAccess) apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.contains(pc,ON_DEBUG)) {
-			call(app,pc, ON_DEBUG, new Object[]{pc.getDebugger().getDebuggingData()});
+			call(app,pc, ON_DEBUG, new Object[]{pc.getDebugger().getDebuggingData(pc)});
 			return;
 		}
 		try {

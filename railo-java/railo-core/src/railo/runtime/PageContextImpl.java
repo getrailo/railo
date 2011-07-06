@@ -453,7 +453,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		
 		if(config.getExecutionLogEnabled())
 			this.execLog=config.getExecutionLogFactory().getInstance(this);
-		
+		if(config.debug())
+			debugger.init(config);
+			
         return this;
 	 }
 	
@@ -461,6 +463,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @see javax.servlet.jsp.PageContext#release()
 	 */
 	public void release() {
+		
+	if(config.debug()) {
+    	if(!gatewayContext)config.getDebuggerPool().store(this, debugger);
+    	debugger.reset();
+    }
+	
 		boolean isChild=parent!=null;
 		parent=null;
 		// Attention have to be before close
@@ -553,7 +561,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         timeZone=null;
         url=null;
         form=null;
-        if(config.debug()) debugger.reset();
+        
         
         // Pools
         errorPagePool.clear();
@@ -720,7 +728,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public void doInclude(PageSource source) throws PageException {
     	// debug
-		if(config.debug()) {
+		if(!gatewayContext && config.debug()) {
 			DebugEntry debugEntry=debugger.getEntry(this,source);
 			int currTime=executionTime;
             long exeTime=0;
@@ -2002,7 +2010,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             if(enablecfoutputonly>0){
             	setCFOutputOnly((short)0);
             }
-            if(getConfig().debug()) {
+            if(!gatewayContext && getConfig().debug()) {
             	try {
 					listener.onDebug(this);
 				} 
@@ -2399,7 +2407,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	else {
     		exception = Caster.toPageException(t);
     		undefinedScope().setEL(CFCATCH,exception.getCatchBlock(this));
-    		if(config.debug()) debugger.addException(config,exception);
+    		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
     	}
     	return exception;
     }
@@ -2411,7 +2419,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	}
     	else {
     		undefinedScope().setEL(CFCATCH,pe.getCatchBlock(config));
-    		if(config.debug()) debugger.addException(config,exception);
+    		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
     	}
     }
     
@@ -2426,7 +2434,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    	}
 	    	else {
 	    		undefinedScope().setEL(CFCATCH,pe.getCatchBlock(config));
-	    		if(config.debug()) debugger.addException(config,exception);
+	    		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
 	    	}
     	}
     }

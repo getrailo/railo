@@ -227,7 +227,8 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
             }
             else if(first=='s') {
             	if(key.equals(SCRIPT_NAME)) 
-        			return StringUtil.emptyIfNull(req.getContextPath())+StringUtil.emptyIfNull(req.getServletPath());
+            		return ReqRspUtil.getScriptName(req);
+        			//return StringUtil.emptyIfNull(req.getContextPath())+StringUtil.emptyIfNull(req.getServletPath());
         		if(key.equals(SERVER_NAME))		return toString(req.getServerName());
                 if(key.equals(SERVER_PROTOCOL))	return toString(req.getProtocol());
                 if(key.equals(SERVER_PORT))		return Caster.toString(req.getServerPort());

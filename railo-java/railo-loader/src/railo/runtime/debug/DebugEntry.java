@@ -1,11 +1,13 @@
 package railo.runtime.debug;
 
+import java.io.Serializable;
+
 import railo.runtime.PageSource;
 
 /**
  * a single debug entry
  */
-public interface DebugEntry {
+public interface DebugEntry extends Serializable {
 
     /* *
      * start the watch
@@ -80,8 +82,16 @@ public interface DebugEntry {
 
     /**
      * @return Returns the PageSource.
+     * @deprecated no longer supported, use <code>getPath()</code> instead
      */
     public abstract PageSource getPageSource();
+    
+    /**
+     * @return the file path of this entry
+     */
+    public abstract String getPath();
+    
+    
     
     public abstract String getId();
 

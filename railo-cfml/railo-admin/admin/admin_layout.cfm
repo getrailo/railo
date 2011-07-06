@@ -7,6 +7,7 @@
 
 <cfscript>
 ad=request.adminType;
+fgColor=(ad EQ "server")?"##9c0000":"##007bb7";
 
 hasNavigation=len(attributes.navigation) GT 0;
 
@@ -29,15 +30,15 @@ if(structKeyExists(url,'action'))otherURL&="?action="&url.action;
 	  
 		body {background-image:url(<cfmodule type="css" template="img.cfm" src="#ad#-back.png" />);background-repeat:repeat-x;background-color:##f7f7f7;margin-top:0px;margin-left:0px;}
 		body, tr, td,div {font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 9pt;color:##3c3e40;}
-		.box {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 14pt;color:##568bc1;}
-		h1 {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 20pt;color:##568bc1;}
-		h2 {height:6pt;font-size : 12pt;font-weight:normal;color:##568bc1;}
+		.box {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 14pt;color:#fgColor#;}
+		h1 {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 20pt;color:#fgColor#;}
+		h2 {height:6pt;font-size : 12pt;font-weight:normal;color:#fgColor#;}
 		
 		div.navtop		{margin-top:8px;margin-bottom:3px;color:##333333;font-weight:bold;font-size : 9pt;}
     	a.navtop		{text-decoration:none;font-weight:bold;font-size : 9pt;}
 		
-    	a.navsub		{text-decoration:none;color:##568bc1;font-size : 8pt;}
-    	a.navsub_active	{text-decoration:none;color:##568bc1;font-size : 8pt;font-weight:bold;}
+    	a.navsub		{text-decoration:none;color:#fgColor#;font-size : 8pt;}
+    	a.navsub_active	{text-decoration:none;color:#fgColor#;font-size : 8pt;font-weight:bold;}
 		
 		.comment{font-size : 10px;color:##787a7d;text-decoration:none;}
 		.commentHead{font-size : 10px;color:##DFE9F6;}
@@ -75,7 +76,7 @@ background-color:white;
 		select {font-size : 11px;color:##3c3e40;margin:3px 0px 3px 0px;}
 		.checkbox,.radio {border:0px;}
 		
-		a{color:##568bc1;}
+		a{color:#fgColor#;}
 		
 		
 		<!---/*
@@ -100,7 +101,7 @@ background-color:white;
 
 <tr>
 	<td colspan="#hasNavigation?3:2#" height="91" valign="bottom"><cfmodule template="tp.cfm" width="1" height="34" /><br>
-    <a href="#request.self#"><cfmodule template="img.cfm" src="railo.png" width="92" height="59" vspace="10"/></a></td>
+    <a href="#request.self#"><cfmodule template="img.cfm" src="#ad#-railo.png" width="102" height="69" vspace="5"/></a></td>
     
     <td colspan="2" height="91" align="right" valign="bottom"><a <cfif ad EQ "web">href="#otherURL#"</cfif>><cfmodule template="img.cfm" src="left-tab-#ad#.png" /></a><a <cfif ad EQ "server">href="#otherURL#"</cfif>><cfmodule template="img.cfm" src="right-tab-#ad#.png" /></a></td>
     <td><cfmodule template="tp.cfm" width="1" height="1" /></td>

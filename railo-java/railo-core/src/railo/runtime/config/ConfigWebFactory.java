@@ -3412,12 +3412,8 @@ public final class ConfigWebFactory {
      */
     private static void loadDebug(ConfigServer configServer, ConfigImpl config, Document doc) {
         boolean hasCS=configServer!=null;
-        
-      	Element debugging=getChildByName(doc.getDocumentElement(),"debugging");
+        Element debugging=getChildByName(doc.getDocumentElement(),"debugging");
       	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
-        
-      	
-      	
 
         // Entries
         Element[] entries = getChildren(debugging,"debug-entry");
@@ -3428,9 +3424,6 @@ public final class ConfigWebFactory {
         	 for(int i=0;i<_entries.length;i++) {
         		list.put(_entries[i].getId(),_entries[i].duplicate(true)); 
         	 }
-        	 
-        	 
-        	 
         }
         if(sct==null) sct=new StructImpl();
         Element e;
@@ -3456,7 +3449,6 @@ public final class ConfigWebFactory {
       	
 
       	
-// OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD
       	// debug
       	String strDebug=debugging.getAttribute("debug");
       	if(hasAccess && !StringUtil.isEmpty(strDebug)) {
@@ -3464,17 +3456,14 @@ public final class ConfigWebFactory {
       	}
       	else if(hasCS)config.setDebug(configServer.debug()?ConfigImpl.SERVER_BOOLEAN_TRUE:ConfigImpl.SERVER_BOOLEAN_FALSE);
       	
-      	// debug template
-      	String template=debugging.getAttribute("template");
-      	if(hasAccess && !StringUtil.isEmpty(template)) {
-      	    config.setDebugTemplate(template);
+      	
+     // max records logged
+      	String strMax=debugging.getAttribute("max-records-logged");
+      	if(hasAccess && !StringUtil.isEmpty(strMax)) {
+      	    config.setDebugMaxRecordsLogged(toInt(strMax,10));
       	}
-      	else if(hasCS) {
-      	    config.setDebugTemplate(configServer.getDebugTemplate());
-      	}
-      	else {
-      	    config.setDebugTemplate("/railo-context/templates/debugging/debugging.cfm");
-        }	
+      	else if(hasCS)config.setDebugMaxRecordsLogged(((ConfigServerImpl)configServer).getDebugMaxRecordsLogged());
+      	
     }
 
     /**

@@ -24,6 +24,7 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.Dumpable;
 import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
@@ -38,18 +39,22 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.dt.DateTimeImpl;
 
 
 /**
  * Class to debug the application
  */
 public final class DebuggerImpl implements Dumpable, Debugger {
-
+	
+	private static final long serialVersionUID = 3957043879267494311L;
+	
 	private static final Collection.Key PAGES = KeyImpl.intern("pages");
 	private static final Collection.Key QUERIES = KeyImpl.intern("queries");
 	private static final Collection.Key TIMERS = KeyImpl.intern("timers");
 	private static final Collection.Key TRACES = KeyImpl.intern("traces");
 	private static final Collection.Key HISTORY = KeyImpl.intern("history");
+	private static final Collection.Key CGI = KeyImpl.intern("cgi");
 	
 	private Map<String,DebugEntryImpl> pages=new HashMap<String,DebugEntryImpl>();
 	private List<QueryEntryImpl> queries=new ArrayList<QueryEntryImpl>();
@@ -62,6 +67,10 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	private long lastTrace;
 	private Array historyId=new ArrayImpl();
 	private Array historyLevel=new ArrayImpl();
+
+	private DateTimeImpl starttime; 
+	
+	
 	
 	/**
      * @see railo.runtime.debug.Debugger#reset()
@@ -98,7 +107,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
      */
     public DebugEntry getEntry(PageContext pc,PageSource source, String key) {
     	lastEntry = System.currentTimeMillis();
-        String src=DebugEntryImpl.getSrc(source,key);
+        String src=DebugEntryImpl.getSrc(source==null?"":source.getDisplayPath(),key);
         
         DebugEntryImpl de= pages.get(src);
         if(de!=null ){
@@ -387,6 +396,8 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		
 		Struct args=new StructImpl();
 		args.setEL("custom", debugEntry.getCustom());
+		args.setEL("debugging", pc.getDebugger().getDebuggingData(pc));
+		
 		try {
 			PageSource ps = pc.getPageSource(debugEntry.getPath());
 			ps.loadPage(pc);
@@ -404,10 +415,23 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         }
     }
     
+
     /**
      * @see railo.runtime.debug.Debugger#getDebuggingData()
      */
     public Struct getDebuggingData() {
+    	return getDebuggingData(ThreadLocalPageContext.get());
+    }
+    
+
+    public Struct getDebuggingData(PageContext pc) {
+    	return getDebuggingData(pc, false);
+    }
+    
+    /**
+     * @see railo.runtime.debug.Debugger#getDebuggingData(PageContext pc)
+     */
+    public Struct getDebuggingData(PageContext pc, boolean addAddionalInfo) {
 		List queries = getQueries();
 	    Struct qryExe=new StructImpl();
 	    ListIterator qryIt = queries.listIterator();
@@ -540,14 +564,22 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	        history.addColumn("level", historyLevel);
 		} catch (PageException e) {
 		}
-        
+		
+		if(addAddionalInfo) {
+			debugging.setEL(CGI,pc.cgiScope());
+			debugging.setEL("starttime",starttime);
+			
+			
+			
+		}
+		
 		debugging.setEL(PAGES,qryPage);
 		debugging.setEL(QUERIES,qryQueries);
 		debugging.setEL(TIMERS,qryTimers);
 		debugging.setEL(TRACES,qryTraces);
 		debugging.setEL(HISTORY,history);
 		debugging.setEL(KeyImpl.EXCEPTIONS,arrExceptions);
-		//debugging.setEL(TRACE_OBJECTS,arrTO);
+		
 		return debugging;
     }
 
@@ -618,6 +650,10 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	 */
 	public CatchBlock[] getExceptions() {
 		return exceptions.toArray(new CatchBlock[exceptions.size()]);
+	}
+
+	public void init(Config config) {
+		this.starttime=new DateTimeImpl(config);
 	}
 
 }

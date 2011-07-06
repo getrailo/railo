@@ -1,6 +1,8 @@
 package railo.runtime.debug;
 
 import railo.runtime.PageSource;
+import railo.runtime.exp.DeprecatedException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 
 
@@ -8,7 +10,10 @@ import railo.runtime.op.Caster;
  * a single debug entry
  */
 public final class DebugEntryImpl implements DebugEntry {
-	private PageSource source;
+	
+	private static final long serialVersionUID = 809949164432900481L;
+	
+	private String path;
 	//private long start;
 	private int fileLoadTime;
 	private int exeTime;
@@ -29,7 +34,7 @@ public final class DebugEntryImpl implements DebugEntry {
 	 * @param key 
 	 */
     protected DebugEntryImpl(PageSource source, String key) {
-		this.source=source;
+		this.path=source==null?"":source.getDisplayPath();
 		this.key=key;
 		id=Caster.toString(++_id);
 	}
@@ -118,16 +123,25 @@ public final class DebugEntryImpl implements DebugEntry {
      * @see railo.runtime.debug.DebugEntry#getSrc()
      */
     public String getSrc() {
-        return getSrc(source,key);//source.getDisplayPath()+(key==null?"":"$"+key);
+        return getSrc(path,key);//source.getDisplayPath()+(key==null?"":"$"+key);
     }
+    
+
+    /**
+     * @see railo.runtime.debug.DebugEntry#getPath()
+     */
+    public String getPath() {
+        return path;
+    }
+    
     /**
      * @param source 
      * @param key 
      * @return Returns the src.
      */
-    public static String getSrc(PageSource source, String key) {
+    public static String getSrc(String path, String key) {
         return 
-        	(source==null?"":source.getDisplayPath())
+        	path
             +
             (key==null?"":"$"+key);
     }
@@ -172,7 +186,8 @@ public final class DebugEntryImpl implements DebugEntry {
 
 
     public PageSource getPageSource() {
-        return source;
+        throw new PageRuntimeException(new DeprecatedException("no longer supported"));
+    	//return source;
     }
 
 

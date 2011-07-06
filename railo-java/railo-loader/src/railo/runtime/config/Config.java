@@ -304,6 +304,7 @@ public interface Config {
 
     /**
      * @return Returns the debug Template.
+     * @deprecated use instead <code>getDebugEntry(ip, defaultValue)</code>
      */
     public abstract String getDebugTemplate();
 

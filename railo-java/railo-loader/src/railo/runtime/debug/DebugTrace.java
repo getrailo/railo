@@ -1,6 +1,8 @@
 package railo.runtime.debug;
 
-public interface DebugTrace {
+import java.io.Serializable;
+
+public interface DebugTrace extends Serializable {
 
 	/**
 	 * @return the category

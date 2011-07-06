@@ -1,1 +1,1 @@
-<cflocation url="#request.self#?action=development.debug" addtoken="no">
+<cflocation url="#request.self#?action=debugging.templates" addtoken="no">

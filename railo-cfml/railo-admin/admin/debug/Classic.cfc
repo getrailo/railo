@@ -76,12 +76,10 @@ private function isColumnEmpty(string columnName){
     
     
     <cffunction name="output" returntype="void">
-    	<cfargument name="custom" type="struct" required="yes"><cfsilent>
+    	<cfargument name="custom" type="struct" required="yes">
+		<cfargument name="debugging" required="true" type="struct"><cfsilent>
 <cfset time=getTickCount()>
 
-<cfadmin 
-	action="getDebugData"
-	returnVariable="debugging">
 <cfset pages=debugging.pages>
 <cfset queries=debugging.queries>
 <cfif not isDefined('debugging.timers')>

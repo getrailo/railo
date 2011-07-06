@@ -212,7 +212,7 @@ public abstract class ConfigImpl implements Config {
 
     private boolean psq=false;
 
-    private String debugTemplate;
+   // private String debugTemplate;
     private Map errorTemplates=new HashMap();
 
     private String password;
@@ -1823,13 +1823,7 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getDebugTemplate()
      */
     public String getDebugTemplate() {
-        return debugTemplate;
-    }
-    /**
-     * @param debugTemplate The debugTemplate to set.
-     */
-    protected void setDebugTemplate(String debugTemplate) {
-        this.debugTemplate = debugTemplate;
+    	throw new PageRuntimeException(new DeprecatedException("no longer supported, use instead getDebugEntry(ip, defaultValue)"));
     }
 
 	/**
@@ -3402,6 +3396,14 @@ public abstract class ConfigImpl implements Config {
 		
 		
 		return defaultValue;
+	}
+
+	private int debugMaxRecordsLogged=10;
+	protected void setDebugMaxRecordsLogged(int debugMaxRecordsLogged) {
+		this.debugMaxRecordsLogged=debugMaxRecordsLogged;
+	}
+	public int getDebugMaxRecordsLogged() {
+		return debugMaxRecordsLogged;
 	}
 	
 }

@@ -513,6 +513,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getRemoteClientTasks",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetSpoolerTasks();
         else if(check("getDatasourceDriverList",ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasourceDriverList();
         else if(check("getDebuggingList",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetDebuggingList();
+        else if(check("getLoggedDebugData",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetLoggedDebugData();
+        else if(check("getDebugSetting",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetDebugSetting();
         
         else if(check("getPluginDirectory",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetPluginDirectory();
         else if(check("getPlugins",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetPlugins();
@@ -579,6 +581,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updatecppcfx",          ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCPPCFX();
         else if(check("updatedebug",            ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateDebug();
         else if(check("updatedebugentry",            ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateDebugEntry();
+        else if(check("updatedebugsetting",     ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateDebugSetting();
     	
         else if(check("updateerror",            ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateError();
         else if(check("updateCustomTagSetting",	ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCustomTagSetting();
@@ -1134,9 +1137,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         sct.set(DEBUG,Caster.toBoolean(config.debug()));
         sct.set(DEBUG_SRC,src);
-        sct.set(DEBUG_TEMPLATE,config.getDebugTemplate());
         
-        
+        /*sct.set(DEBUG_TEMPLATE,config.getDebugTemplate());
         try {
             PageSource ps = pageContext.getPageSource(config.getDebugTemplate());
             if(ps.exists()) sct.set(DEBUG_TEMPLATE,ps.getDisplayPath());
@@ -1144,7 +1146,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         } catch (PageException e) {
             sct.set(DEBUG_TEMPLATE,"");
         }
-        sct.set(STR_DEBUG_TEMPLATE,config.getDebugTemplate());
+        sct.set(STR_DEBUG_TEMPLATE,config.getDebugTemplate());*/
     }
     
     private void doGetError() throws PageException {
@@ -1194,8 +1196,20 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doGetDebugData() throws PageException {
         pageContext.setVariable(
                 getString("admin",action,"returnVariable"),
-                pageContext.getDebugger().getDebuggingData());
+                pageContext.getDebugger().getDebuggingData(pageContext));
     }
+    private void doGetLoggedDebugData() throws PageException {
+    	
+    	if(config instanceof ConfigServer) return ;
+    	
+    	ConfigWebImpl cw=(ConfigWebImpl) config;
+    	
+    	
+    	pageContext.setVariable(
+                getString("admin",action,"returnVariable"),
+                cw.getDebuggerPool().getData(pageContext));
+    }
+    
     private void doGetInfo() throws PageException {
     	Struct sct=new StructImpl();
         pageContext.setVariable(
@@ -1411,9 +1425,26 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      * @throws PageException
      * 
      */
-    private void doUpdateDebug() throws PageException {
+	private void doUpdateDebug() throws PageException {
     	admin.updateDebug(Caster.toBoolean(getString("debug",""),null));
         admin.updateDebugTemplate(getString("admin",action,"debugTemplate"));
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+
+	private void doGetDebugSetting() throws PageException {
+		Struct sct=new StructImpl();
+		sct.set("maxLogs", Caster.toDouble(config.getDebugMaxRecordsLogged()));
+		pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
+        
+    }
+	private void doUpdateDebugSetting() throws PageException {
+		String str = getString("admin",action,"maxLogs");
+		int maxLogs;
+		if(StringUtil.isEmpty(str,true))maxLogs=-1;
+		else
+			maxLogs=Caster.toIntValue(str);
+    	admin.updateDebugSetting(maxLogs);
         store();
         adminSync.broadcast(attributes, config);
     }

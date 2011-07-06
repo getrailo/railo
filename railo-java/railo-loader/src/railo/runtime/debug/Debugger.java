@@ -63,11 +63,23 @@ public interface Debugger extends Dumpable {
      */
     public abstract void writeOut(PageContext pc) throws IOException;
 
+
+    /**
+     * returns the Debugging Info
+     * @return debugging Info
+     * @deprecated use instead <code>getDebuggingData(PageContext pc)</code>
+     */
+    public abstract Struct getDebuggingData();
+    
+    
     /**
      * returns the Debugging Info
      * @return debugging Info
      */
-    public abstract Struct getDebuggingData();
+    public abstract Struct getDebuggingData(PageContext pc);
+    
+
+    public abstract Struct getDebuggingData(PageContext pc, boolean addAddionalInfo);
 
 	/**
 	 * adds ne Timer info to debug

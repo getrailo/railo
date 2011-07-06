@@ -27,6 +27,7 @@ import railo.runtime.PageContext;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.compiler.CFMLCompilerImpl;
+import railo.runtime.debug.DebuggerPool;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -55,7 +56,9 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private MappingImpl serverFunctionMapping;
 	private StringKeyLock contextLock;
 	private GatewayEngineImpl gatewayEngine;
-    private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
+    private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");private DebuggerPool debuggerPool;
+    private DebuggerPool debuggerPool;
+	
 
     //private File deployDirectory;
 
@@ -377,6 +380,15 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 
 		public TagHandlerPool getTagHandlerPool() {
 			return tagHandlerPool;
+		}
+
+		public DebuggerPool getDebuggerPool() {
+			if(debuggerPool==null){
+				Resource dir = getConfigDir().getRealResource("debugger");
+				dir.mkdirs();
+				debuggerPool=new DebuggerPool(dir);
+			}
+			return debuggerPool;
 		}
 
 }

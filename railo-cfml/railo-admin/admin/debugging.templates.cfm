@@ -69,7 +69,7 @@ If you have any problems while using the Gateway Implementation, please post the
 
 
 <cfswitch expression="#url.action2#">
-	<cfcase value="list"><cfinclude template="development.debug.list.cfm"/></cfcase>
-	<cfcase value="create"><cfinclude template="development.debug.create.cfm"/></cfcase>
+	<cfcase value="list"><cfinclude template="debugging.templates.list.cfm"/></cfcase>
+	<cfcase value="create"><cfinclude template="debugging.templates.create.cfm"/></cfcase>
 
 </cfswitch>

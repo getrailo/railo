@@ -55,9 +55,10 @@
 				struct(action:"cfx_tags",label:stMenu.resources.cfx_tags)
 			)
 		),
-		struct(action:"development",label:stMenu.development.label,
+		struct(action:"debugging",label:stMenu.debugging.label,
 			children:array(
-				struct(action:"debug",label:stMenu.development.debugging)
+				struct(action:"templates",label:stMenu.debugging.templates),
+				struct(action:"logs",label:stMenu.debugging.logs)
 			)
 		),
 		struct(action:"security",label:stMenu.security.label,
