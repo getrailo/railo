@@ -42,6 +42,7 @@
     
 	<cffunction name="output" returntype="string">
 		<cfargument name="custom" required="true" type="struct">
+		<cfargument name="debugging" required="true" type="struct">
     	<cfthrow message="implement function output():string">
     </cffunction>
     
