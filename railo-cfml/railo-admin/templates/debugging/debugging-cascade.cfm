@@ -539,7 +539,7 @@
 	
 	<cfset sError = "">
 	<cfset iTimer = GetTickCount()>
-	<cftry>
+	<!--- <cftry>
 		<cfquery name="qry" datasource="#form.datasource#" psq="no">
 			#form.sql#
 		</cfquery>
@@ -553,7 +553,7 @@
 				</div>
 			</cfsavecontent>
 		</cfcatch>
-	</cftry>
+	</cftry> --->
 	
 	<cfif sError neq "">
 		</table>
