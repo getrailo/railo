@@ -202,11 +202,11 @@ public class ORMConfiguration {
 		
 		// sqlscript
 		obj = settings.get(SQL_SCRIPT,null);
-		if(obj!=null){
+		if(!StringUtil.isEmpty(obj)){
 			try {
-				c.sqlScript=Caster.toResource(config, obj, true);
+				c.sqlScript=toRes(config, obj, true);
 			} catch (ExpressionException e) {
-				//print.printST(e);
+				//print.e(e);
 			}
 		}
 		
@@ -215,9 +215,9 @@ public class ORMConfiguration {
 		
 		// cacheconfig
 		obj = settings.get(CACHE_CONFIG,null);
-		if(obj!=null){
+		if(!StringUtil.isEmpty(obj)){
 			try {
-				c.cacheConfig=Caster.toResource(config, obj, true);
+				c.cacheConfig=toRes(config, obj, true);
 			} catch (ExpressionException e) {
 				//print.printST(e);
 			}
@@ -228,9 +228,9 @@ public class ORMConfiguration {
 		
 		// ormconfig
 		obj = settings.get(ORM_CONFIG,null);
-		if(obj!=null){
+		if(!StringUtil.isEmpty(obj)){
 			try {
-				c.ormConfig=Caster.toResource(config, obj, true);
+				c.ormConfig=toRes(config, obj, true);
 			} catch (ExpressionException e) {
 				//print.printST(e);
 			}
@@ -239,21 +239,40 @@ public class ORMConfiguration {
 		return c;
 	}	
 
+	private static Resource toRes(Config config, Object obj, boolean existing) throws ExpressionException {
+		PageContext pc = ThreadLocalPageContext.get();
+		if(pc!=null)return Caster.toResource(pc, obj, existing);
+		return Caster.toResource(config, obj, existing);
+	}
+
+
+
+
+
+
 	private static Resource toResourceExisting(Config config, Object obj) {
 		//Resource root = config.getRootDirectory();
 		String path = Caster.toString(obj,null);
 		if(StringUtil.isEmpty(path,true)) return null;
 		path=path.trim();
-		Resource res = ResourceUtil.toResourceNotExisting(config, path);
-		if(res.isDirectory()) return res;
-		res=config.getRootDirectory().getRealResource(path);
-		if(res.isDirectory()) return res;
+		Resource res;
 		
+		// first check local
 		PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null){
 			res=ResourceUtil.toResourceNotExisting(pc, path);
 			if(res.isDirectory()) return res;
 		}
+		
+		// then in the webroot
+		res=config.getRootDirectory().getRealResource(path);
+		if(res.isDirectory()) return res;
+		
+		// then absolute
+		res = ResourceUtil.toResourceNotExisting(config, path);
+		if(res.isDirectory()) return res;
+		
+		
 		
 		return null;
 	}
