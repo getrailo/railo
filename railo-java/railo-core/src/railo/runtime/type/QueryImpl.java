@@ -544,6 +544,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	 */
 	public QueryImpl(Collection.Key[] columnNames, String[] strTypes, int rowNumber, String name) throws DatabaseException {
         this.name=name;
+        this.columnNames=columnNames;
         columncount=columnNames.length;
 		if(strTypes.length!=columncount) throw new DatabaseException("columns and types has not the same count",null,null,null);
 		recordcount=rowNumber;
@@ -1672,6 +1673,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	}
 	
 	private int getIndexFromKey(Collection.Key key) {
+		
 		for(int i=0;i<columnNames.length;i++) {
 			if(columnNames[i].equalsIgnoreCase(key)) return i;
 		}
