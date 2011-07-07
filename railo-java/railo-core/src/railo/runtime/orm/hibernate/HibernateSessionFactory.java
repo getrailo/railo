@@ -340,7 +340,7 @@ public class HibernateSessionFactory {
 				mappings[i]=new MappingImpl(config,
 						"/",
 						resources[i].getAbsolutePath(),
-						null,false,true,false,false,false,true
+						null,false,true,false,false,false,true,true
 						);
 			}
 			return mappings;
