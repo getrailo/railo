@@ -3,6 +3,8 @@ package railo.runtime.listener;
 import java.io.Serializable;
 
 import railo.runtime.Mapping;
+import railo.runtime.PageContext;
+import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.type.dt.TimeSpan;
@@ -148,5 +150,7 @@ public interface ApplicationContext extends Serializable {
 	public String getSecurityCookieDomain();
 	public int getSecurityIdleTimeout();
 	public void setSecuritySettings(String applicationtoken,String cookiedomain, int idletimeout);
+	
+	public void reinitORM(PageContext pc) throws PageException ;
 
 }
