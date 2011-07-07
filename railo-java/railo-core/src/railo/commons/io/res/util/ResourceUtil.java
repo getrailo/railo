@@ -697,19 +697,12 @@ public final class ResourceUtil {
      * @throws IOException
      */
     public static void touch(Resource res) throws IOException {
-    	ResourceProvider provider = res.getResourceProvider();
-    	try{
-    		provider.lock(res);
-	        if(res.exists()) {
-	            res.setLastModified(System.currentTimeMillis());
-	        }
-	        else {
-	            res.createFile(true);
-	        }
-    	}
-    	finally {
-    		provider.unlock(res);
-    	}
+    	if(res.exists()) {
+    		res.setLastModified(System.currentTimeMillis());
+	    }
+	    else {
+	        res.createFile(true);
+	    }
     }
     	
     
