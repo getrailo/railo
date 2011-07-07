@@ -1578,11 +1578,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      */
     private void doUpdateComponentMapping() throws PageException {
         admin.updateComponentMapping(
-                getString("admin",action,"virtual"),
-                getString("admin",action,"physical"),
-                getString("admin",action,"archive"),
-                getString("admin",action,"primary"),
-                Caster.toBooleanValue(getString("admin",action,"trusted"))
+                getString("virtual",""),
+                getString("physical",""),
+                getString("archive",""),
+                getString("primary","physical"),
+                getBool("trusted",false)
         );
         store();
         adminSync.broadcast(attributes, config);
