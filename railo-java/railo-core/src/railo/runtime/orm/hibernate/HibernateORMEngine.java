@@ -47,6 +47,7 @@ import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMSession;
+import railo.runtime.orm.ORMUtil;
 import railo.runtime.orm.hibernate.event.EventListenerImpl;
 import railo.runtime.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 import railo.runtime.orm.naming.CFCNamingStrategy;
@@ -230,48 +231,18 @@ public class HibernateORMEngine implements ORMEngine {
 				}	
 			}
 		}
-		arr=null;
-		
-		
-		
+		arr=null;		
 		if(configuration!=null) return _factory;
-		
 
-		
-		
-		
-		//DataSource ds = config.getDataSource(dsn);
-		
-		
 		//MUST
 		//cacheconfig
 		//cacheprovider
 		//...
 		
-		//print.err(railo.runtime.type.List.arrayToList(cfcs.keySet().toArray(new String[cfcs.size()]), ","));
-		
 		String mappings=HibernateSessionFactory.createMappings(this,cfcs);
-		
-		/*try {
-			mappings=IOUtil.toString(ResourcesImpl.getFileResourceProvider().getResource("/Users/mic/mapping.xml"), null);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		
-		/*ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
-		try {
-			mappings=IOUtil.toString(frp.getResource("/Users/mic/mapping.xml"),null);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		print.o(cfcs.keySet());*/
 		
 		DatasourceConnectionPool pool = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool();
 		DatasourceConnection dc = pool.getDatasourceConnection(pc,pc.getConfig().getDataSource(dsn),null,null);
-		//DataSourceManager manager = pc.getDataSourceManager();
-		//DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
 		try{
 			configuration = HibernateSessionFactory.createConfiguration(this,mappings,dc,ormConf);
 		} 
@@ -280,7 +251,6 @@ public class HibernateORMEngine implements ORMEngine {
 		}
 		finally {
 			pool.releaseDatasourceConnection(dc);
-			//manager.releaseConnection(pc,dc);
 		}
 		
 		addEventListeners(pc, configuration,ormConf,cfcs);
@@ -404,7 +374,7 @@ public class HibernateORMEngine implements ORMEngine {
 		//Long modified=cfcs.get(id);
 		String xml;
 		long cfcCompTime = ComponentUtil.getCompileTime(pc,cfcp.getPageSource());
-		if(info==null || (info.getCFC().equals(cfcp) && info.getModified()!=cfcCompTime))	{
+		if(info==null || (ORMUtil.equals(info.getCFC(),cfcp) ))	{//&& info.getModified()!=cfcCompTime
 			StringBuilder sb=new StringBuilder();
 			
 			long xmlLastMod = loadMapping(sb,ormConf, cfcp);
@@ -440,8 +410,6 @@ public class HibernateORMEngine implements ORMEngine {
 				print.o("3+++++++++++++++++++++++++++++++++++++++++");*/
 				
 			}
-			
-			
 			cfcs.put(id, new CFCInfo(ComponentUtil.getCompileTime(pc,cfcp.getPageSource()),xml,cfcp));
 			
 		}
