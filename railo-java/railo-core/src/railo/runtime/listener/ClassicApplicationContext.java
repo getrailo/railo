@@ -1,9 +1,11 @@
 package railo.runtime.listener;
 
 import railo.runtime.Mapping;
+import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.net.s3.PropertiesImpl;
 import railo.runtime.orm.ORMConfiguration;
@@ -451,5 +453,10 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	 */
 	public void setORMDatasource(String ormdatasource) {
 		this.ormdatasource=ormdatasource;
+	}
+
+	@Override
+	public void reinitORM(PageContext pc) throws PageException {
+		// do nothing
 	}
 }

@@ -62,17 +62,11 @@ public final class MappingImpl implements Mapping {
     //private final Map<String,Object> customTagPath=new HashMap<String, Object>();
 	private int classLoaderMaxElements=5000;
 	private boolean appMapping;
-
-
-    public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
-            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel) {
-    	this(config, virtual, strPhysical, strArchive, trusted, physicalFirst, hidden, readonly,topLevel,false,5000);
-    }
-    
+	private boolean ignoreVirtual;
 
     public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
-            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping) {
-    	this(config, virtual, strPhysical, strArchive, trusted, physicalFirst, hidden, readonly,topLevel,appMapping,5000);
+            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping,boolean ignoreVirtual) {
+    	this(config, virtual, strPhysical, strArchive, trusted, physicalFirst, hidden, readonly,topLevel,appMapping,ignoreVirtual,5000);
     	
     }
 
@@ -89,9 +83,10 @@ public final class MappingImpl implements Mapping {
      * @throws IOException
      */
     public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
-            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping, int classLoaderMaxElements) {
+            boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping, boolean ignoreVirtual, int classLoaderMaxElements) {
     	//print.dumpStack();
     	//if(virtual.equals("/map"))print.ds();
+    	this.ignoreVirtual=ignoreVirtual;
     	this.config=config;
         this.hidden=hidden;
         this.readonly=readonly;
@@ -241,7 +236,7 @@ public final class MappingImpl implements Mapping {
      * @throws IOException
      */
     public MappingImpl cloneReadOnly(ConfigImpl config) {
-    	return new MappingImpl(config,virtual,strPhysical,strArchive,trusted,physicalFirst,hidden,true,topLevel,appMapping,classLoaderMaxElements);
+    	return new MappingImpl(config,virtual,strPhysical,strArchive,trusted,physicalFirst,hidden,true,topLevel,appMapping,ignoreVirtual,classLoaderMaxElements);
     }
     
     /**
@@ -425,6 +420,10 @@ public final class MappingImpl implements Mapping {
 	
 	public PageSource getCustomTagPath(String name, boolean doCustomTagDeepSearch) {
 		return searchFor(name, name.toLowerCase().trim(), doCustomTagDeepSearch);
+	}
+	
+	public boolean ignoreVirtual(){
+		return ignoreVirtual;
 	}
 	
 	

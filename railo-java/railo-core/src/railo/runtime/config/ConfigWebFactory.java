@@ -1539,7 +1539,7 @@ public final class ConfigWebFactory {
 	               String primary=el.getAttribute("primary");
 	               boolean physicalFirst=primary==null || !primary.equalsIgnoreCase("archive");
 	               
-	               tmp=new MappingImpl(config,virtual,physical,archive,trusted,physicalFirst,hidden,readonly,toplevel,false,clMaxEl);
+	               tmp=new MappingImpl(config,virtual,physical,archive,trusted,physicalFirst,hidden,readonly,toplevel,false,false,clMaxEl);
 	               mappings.put(tmp.getVirtualLowerCase(),tmp);
 	               if(virtual.equals("/")) {
 	                   finished=true;
@@ -1551,7 +1551,7 @@ public final class ConfigWebFactory {
         }
         
         if(!finished) {
-            tmp=new MappingImpl(config,"/","/",null,false,true,true,true,true);
+            tmp=new MappingImpl(config,"/","/",null,false,true,true,true,true,false,false);
             mappings.put(tmp.getVirtualLowerCase(),tmp);
         }
         
@@ -2238,7 +2238,7 @@ public final class ConfigWebFactory {
 	           boolean physicalFirst=archive==null || !primary.equalsIgnoreCase("archive");
 	           //print.out("xxx:"+physicalFirst);
 	           hasSet=true;
-	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,false,clMaxEl);
+	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,false,true,clMaxEl);
 	           //print.out(mappings[i].isPhysicalFirst());
 	        }
 	        
@@ -2282,7 +2282,7 @@ public final class ConfigWebFactory {
         }
         
 	    if(!hasSet) {
-	        MappingImpl m=new MappingImpl(config,"/0/","{railo-web}/customtags/",null,false,true,false,false,true);
+	        MappingImpl m=new MappingImpl(config,"/0/","{railo-web}/customtags/",null,false,true,false,false,true,false,true);
 	        if(m!=null)config.setCustomTagMappings(new Mapping[]{m.cloneReadOnly(config)});
 	    }
         
@@ -3714,7 +3714,7 @@ public final class ConfigWebFactory {
 	           boolean physicalFirst=archive==null || !primary.equalsIgnoreCase("archive");
 	           //print.out("xxx:"+physicalFirst);
 	           hasSet=true;
-	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,false,clMaxEl);
+	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,false,true,clMaxEl);
 	           //print.out(mappings[i].isPhysicalFirst());
 	        }
 	        
@@ -3759,7 +3759,7 @@ public final class ConfigWebFactory {
         
       	
 	    if(!hasSet) {
-	        MappingImpl m=new MappingImpl(config,"/0","{railo-web}/components/",null,false,true,false,false,true);
+	        MappingImpl m=new MappingImpl(config,"/0","{railo-web}/components/",null,false,true,false,false,true,false,true);
 	        if(m!=null)config.setComponentMappings(new Mapping[]{m.cloneReadOnly(config)});
 	    }
       	
