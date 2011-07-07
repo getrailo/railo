@@ -323,7 +323,7 @@ public final class LDAPClient {
                             strValue=Caster.toString(value,null);
                             existing=Caster.toString(qry.getAt(key, len,null),null);
                             if(!StringUtil.isEmpty(existing) && !StringUtil.isEmpty(strValue)) {
-                            	value = existing + ", " + strValue;
+                            	value = existing + separator + strValue;
                          	}
                             else if(!StringUtil.isEmpty(existing))
                             	value = existing;
