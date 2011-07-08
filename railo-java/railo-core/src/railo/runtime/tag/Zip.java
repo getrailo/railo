@@ -510,7 +510,7 @@ public final class Zip extends BodyTagImpl {
 
 
 
-	private void actionZip(ZipOutputStream zos, ZipParamContent zpc) throws ExpressionException, IOException {
+	private void actionZip(ZipOutputStream zos, ZipParamContent zpc) throws PageException, IOException {
 		Object content = zpc.getContent();
 		if(Decision.isBinary(content)) {
 			add(zos, new ByteArrayInputStream(Caster.toBinary(content)), zpc.getEntryPath(), System.currentTimeMillis(), true);

@@ -1,13 +1,12 @@
 package railo.runtime.functions.image;
 
-import javax.imageio.ImageIO;
-
 import railo.runtime.PageContext;
+import railo.runtime.img.ImageUtil;
 
 public class GetWriteableImageFormats {
 
 	public static String call(PageContext pc) {
-		return GetReadableImageFormats.format(add(ImageIO.getWriterFormatNames(),"gif"));
+		return GetReadableImageFormats.format(add(ImageUtil.getWriterFormatNames(),"gif"));
 	}
 
 	private static String[] add(String[] formats, String value) {

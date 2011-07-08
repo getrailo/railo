@@ -34,6 +34,11 @@ public class ImageUtil {
 	 */
 	public static BufferedImage toBufferedImage(Resource res,String format) throws IOException {
 		if(StringUtil.isEmpty(format))format=getFormat(res);
+		
+		if(JAIUtil.isSupportedReadFormat(format)){
+			return JAIUtil.read(res);
+		}
+		
 		InputStream is=null;
 		try {
 			is=res.getInputStream();
@@ -60,9 +65,6 @@ public class ImageUtil {
 		finally {
 			IOUtil.closeEL(is);
 		} 
-		
-		
-		
 	}
 
 	private static BufferedImage read(InputStream is, String format) throws IOException {
@@ -71,15 +73,12 @@ public class ImageUtil {
 			reader.read(is);
 			return reader.getImage();
 		}
+		if(JAIUtil.isSupportedReadFormat(format)){
+			return JAIUtil.read(is,format);
+		}
 		return ImageIO.read(is);
-		
 	}
-	
-	
-	
-	
-	
-	
+
 	public static byte[] readBase64(String b64str) throws ExpressionException {
 		if(StringUtil.isEmpty(b64str))
 			throw new ExpressionException("base64 string is empty");
@@ -110,14 +109,16 @@ public class ImageUtil {
 		if("jpeg".equalsIgnoreCase(ext))return "jpg";
 		if("png".equalsIgnoreCase(ext))return "png";
 		if("tiff".equalsIgnoreCase(ext))return "tiff";
+		if("tif".equalsIgnoreCase(ext))return "tiff";
 		if("bmp".equalsIgnoreCase(ext))return "bmp";
 		if("bmg".equalsIgnoreCase(ext))return "bmg";
 		if("wbmp".equalsIgnoreCase(ext))return "wbmp";
 		if("ico".equalsIgnoreCase(ext))return "bmp";
 		if("wbmg".equalsIgnoreCase(ext))return "wbmg";
 		if("psd".equalsIgnoreCase(ext))return "psd";
-		return defaultValue;
-		
+		if("pnm".equalsIgnoreCase(ext))return "pnm";
+		if("fpx".equalsIgnoreCase(ext))return "fpx";
+		return defaultValue;	
 	}
 	
 	public static String getFormatFromMimeType(String mt) throws IOException {
@@ -130,7 +131,16 @@ public class ImageUtil {
 		if("image/x-png".equals(mt))return "png";
 		if("image/tiff".equals(mt)) return "tiff";
 		if("image/bmg".equals(mt)) return "bmg";
+		if("image/pnm".equals(mt)) return "pnm";
+		if("image/x-portable-anymap".equals(mt)) return "pnm";
 		if("image/vnd.wap.wbmp".equals(mt)) return "wbmg";
+		if("image/fpx".equals(mt)) return "fpx";
+		if("application/vnd.fpx".equals(mt)) return "fpx";
+		if("application/vnd.netfpx".equals(mt)) return "fpx";
+		if("image/x-fpx".equals(mt)) return "fpx";
+		if("image/vnd.fpx".equals(mt)) return "fpx";
+		
+		
 		
 		if(StringUtil.isEmpty(mt))throw new IOException("can't find Format of given image");//31
 		throw new IOException("can't find Format ("+mt+") of given image");
@@ -144,7 +154,9 @@ public class ImageUtil {
 		if("png".equals(mt)) return "image/x-png";
 		if("tiff".equals(mt)) return "image/tiff";
 		if("bmg".equals(mt)) return "image/bmg";
+		if("pnm".equals(mt)) return "image/pnm";
 		if("wbmg".equals(mt)) return "image/vnd.wap.wbmp";
+		if("fpx".equals(mt)) return "image/fpx";
 
 		if(StringUtil.isEmpty(mt))throw new IOException("can't find Format of given image");//31
 		throw new IOException("can't find Format ("+mt+") of given image");
@@ -160,44 +172,53 @@ public class ImageUtil {
 	}
 
 	public static String[] getWriterFormatNames() {
-		if(writerFormatNames==null)
-			writerFormatNames=_getFormatNames(ImageIO.getWriterFormatNames());
+		if(writerFormatNames==null)	{
+			String[] iio = ImageIO.getWriterFormatNames();
+			String[] jai = JAIUtil.isJAISupported()?JAIUtil.getSupportedWriteFormat():null;
+			writerFormatNames=_getFormatNames(iio,jai);
+		}
 		return writerFormatNames;
 	}
 	public static String[] getReaderFormatNames() {
-		if(readerFormatNames==null)
-			readerFormatNames=_getFormatNames(ImageIO.getReaderFormatNames());
+		if(readerFormatNames==null){
+			String[] iio = ImageIO.getReaderFormatNames();
+			String[] jai = JAIUtil.isJAISupported()?JAIUtil.getSupportedReadFormat():null;
+			readerFormatNames=_getFormatNames(iio,jai);
+		}
 		return readerFormatNames;
 	}
 	
-	private static String[] _getFormatNames(String[] names) {
+	private static String[] _getFormatNames(String[] names1,String[] names2) {
 		Set<String> set=new HashSet<String>();
-		if(names!=null)for(int i=0;i<names.length;i++){
-			set.add(names[i].toLowerCase());
+		
+		if(names1!=null)for(int i=0;i<names1.length;i++){
+			set.add(names1[i].toLowerCase());
 		}
-		names= set.toArray(new String[set.size()]);
-		Arrays.sort(names);
-		return names;
+		if(names2!=null)for(int i=0;i<names2.length;i++){
+			set.add(names2[i].toLowerCase());
+		}
+		
+		names1= set.toArray(new String[set.size()]);
+		Arrays.sort(names1);
+		return names1;
 	}
-	
 
-	
-		public static BufferedImage createBufferedImage(BufferedImage image, int columns, int rows) {
-	        ColorModel colormodel = image.getColorModel();
-	        BufferedImage newImage;
-	        if(colormodel instanceof IndexColorModel) {
-	            if(colormodel.getTransparency() != 1)
-	                newImage = new BufferedImage(columns, rows, 2);
-	            else
-	                newImage = new BufferedImage(columns, rows, 1);
-	        } 
-	        else {
-	            newImage = new BufferedImage(colormodel, image.getRaster().createCompatibleWritableRaster(columns, rows), colormodel.isAlphaPremultiplied(), null);
-	        }
-	        return newImage;
-	    }
-	    
-	    public static BufferedImage createBufferedImage(BufferedImage image) {
-	        return createBufferedImage(image, image.getWidth(), image.getHeight());
-	    }
+	public static BufferedImage createBufferedImage(BufferedImage image, int columns, int rows) {
+        ColorModel colormodel = image.getColorModel();
+        BufferedImage newImage;
+        if(colormodel instanceof IndexColorModel) {
+            if(colormodel.getTransparency() != 1)
+                newImage = new BufferedImage(columns, rows, 2);
+            else
+                newImage = new BufferedImage(columns, rows, 1);
+        } 
+        else {
+            newImage = new BufferedImage(colormodel, image.getRaster().createCompatibleWritableRaster(columns, rows), colormodel.isAlphaPremultiplied(), null);
+        }
+        return newImage;
+    }
+    
+    public static BufferedImage createBufferedImage(BufferedImage image) {
+        return createBufferedImage(image, image.getWidth(), image.getHeight());
+    }
 }
