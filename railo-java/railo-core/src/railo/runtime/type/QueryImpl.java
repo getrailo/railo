@@ -2347,7 +2347,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		try {
 			return BlobImpl.toBlob(bytes);
 		} 
-		catch (ExpressionException e) {
+		catch (PageException e) {
 			throw new SQLException(e.getMessage());
 		}
 	}
@@ -2360,7 +2360,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		if(bytes==null) return null;
 		try {
 			return BlobImpl.toBlob(bytes);
-		} catch (ExpressionException e) {
+		} catch (PageException e) {
 			throw new SQLException(e.getMessage());
 		}
 	}

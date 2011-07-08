@@ -2366,9 +2366,9 @@ public final class Caster {
      * cast a Object to a Binary
      * @param o Object to cast
      * @return casted Binary
-     * @throws ExpressionException
+     * @throws PageException 
      */
-    public static byte[] toBinary(Object o) throws ExpressionException {
+    public static byte[] toBinary(Object o) throws PageException {
     	if(o instanceof byte[]) return (byte[])o;
         else if(o instanceof ObjectWrap) return toBinary(((ObjectWrap)o).getEmbededObject(""));
 		
@@ -2423,7 +2423,7 @@ public final class Caster {
         try {
             return toBinary(o);
         } 
-        catch (ExpressionException e) {
+        catch (PageException e) {
             return defaultValue;
         }
     }

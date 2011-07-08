@@ -4,16 +4,21 @@ import java.util.HashSet;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.img.Image;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
 public class ImageFormats {
 
+	private static Collection.Key DECODER=KeyImpl.getInstance("decoder");
+	private static Collection.Key ENCODER=KeyImpl.getInstance("encoder");
+	
 	public static Struct call(PageContext pc) throws PageException {
 		Struct sct=new StructImpl();
-		sct.set("decoder", toArray(Image.getReaderFormatNames()));
-		sct.set("encoder", toArray(Image.getWriterFormatNames()));
+		sct.set(DECODER, toArray(ImageUtil.getReaderFormatNames()));
+		sct.set(ENCODER, toArray(ImageUtil.getWriterFormatNames()));
 		
 		return sct;
 	}

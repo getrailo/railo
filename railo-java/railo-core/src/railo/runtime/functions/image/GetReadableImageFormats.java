@@ -3,15 +3,14 @@ package railo.runtime.functions.image;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import javax.imageio.ImageIO;
-
 import railo.runtime.PageContext;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.type.List;
 
 public class GetReadableImageFormats {
 
 	public static String call(PageContext pc) {
-		return format(ImageIO.getReaderFormatNames());
+		return format(ImageUtil.getReaderFormatNames());
 		
 	}
 
