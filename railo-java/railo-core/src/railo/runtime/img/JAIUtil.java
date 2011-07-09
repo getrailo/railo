@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import railo.commons.io.IOUtil;
@@ -14,6 +15,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.IDGenerator;
+import railo.commons.lang.StringUtil;
 
 public class JAIUtil {
 
@@ -70,7 +72,7 @@ public class JAIUtil {
 	public static BufferedImage read(InputStream is,String format) throws IOException {
 		Resource tmp=null;
 		try{
-			tmp=SystemUtil.getTempDirectory().getRealResource(IDGenerator.intId()+"."+format);
+			tmp=SystemUtil.getTempDirectory().getRealResource(IDGenerator.intId()+(StringUtil.isEmpty(format)?"":"."+format));
 			IOUtil.copy(is, tmp,false);
 			//Object im = JAI.create("fileload", tmp.getAbsolutePath());
 			return getAsBufferedImage(create("fileload", tmp.getAbsolutePath()));
@@ -79,6 +81,7 @@ public class JAIUtil {
 			if(tmp!=null) ResourceUtil.removeEL(tmp, false);
 		}
 	}
+	
 	public static void write(BufferedImage img, Resource res,String format) throws IOException {
 		Resource tmp=res;
 		try{
@@ -193,7 +196,10 @@ public class JAIUtil {
 	
 
 	
-	private static IOException toIOException(Exception e) {
+	private static IOException toIOException(Throwable e) {
+		if(e instanceof InvocationTargetException)
+			e=((InvocationTargetException)e).getTargetException();
+		
 		if(e instanceof IOException) return (IOException) e;
 		IOException ioe = new IOException(e.getMessage());
 		ioe.setStackTrace(e.getStackTrace());

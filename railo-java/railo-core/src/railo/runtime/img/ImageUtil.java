@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -34,19 +35,34 @@ public class ImageUtil {
 	 */
 	public static BufferedImage toBufferedImage(Resource res,String format) throws IOException {
 		if(StringUtil.isEmpty(format))format=getFormat(res);
-		
+		if("psd".equalsIgnoreCase(format)) {
+			PSDReader reader = new PSDReader();
+			InputStream is=null;
+			try {
+				reader.read(is=res.getInputStream());
+				return reader.getImage();
+			}
+			finally {
+				IOUtil.closeEL(is);
+			}
+		}
 		if(JAIUtil.isSupportedReadFormat(format)){
 			return JAIUtil.read(res);
 		}
 		
+		BufferedImage img=null;
 		InputStream is=null;
 		try {
-			is=res.getInputStream();
-			return read(is,format);
+			img = ImageIO.read(is=res.getInputStream());
 		}
 		finally {
 			IOUtil.closeEL(is);
-		} 
+		}
+		
+		if(img==null && StringUtil.isEmpty(format)) {
+			return JAIUtil.read(res);
+		}
+		return img;
 	}
 
 	/**
@@ -55,28 +71,20 @@ public class ImageUtil {
 	 * @return
 	 * @throws IOException
 	 */
-	public static BufferedImage toBufferedImage(byte[] binary,String format) throws IOException {
-		if(StringUtil.isEmpty(format))format=getFormat(binary);
-		InputStream is=null;
-		try {
-			is=new ByteArrayInputStream(binary);
-			return read(is, format);
-		}
-		finally {
-			IOUtil.closeEL(is);
-		} 
-	}
-
-	private static BufferedImage read(InputStream is, String format) throws IOException {
+	public static BufferedImage toBufferedImage(byte[] bytes,String format) throws IOException {
+		if(StringUtil.isEmpty(format))format=getFormat(bytes,null);
 		if("psd".equalsIgnoreCase(format)) {
 			PSDReader reader = new PSDReader();
-			reader.read(is);
+			reader.read(new ByteArrayInputStream(bytes));
 			return reader.getImage();
 		}
 		if(JAIUtil.isSupportedReadFormat(format)){
-			return JAIUtil.read(is,format);
+			return JAIUtil.read(new ByteArrayInputStream(bytes),format);
 		}
-		return ImageIO.read(is);
+		BufferedImage img = ImageIO.read(new ByteArrayInputStream(bytes));
+		if(img==null && StringUtil.isEmpty(format))
+			return JAIUtil.read(new ByteArrayInputStream(bytes),null);
+		return img;
 	}
 
 	public static byte[] readBase64(String b64str) throws ExpressionException {
@@ -101,6 +109,10 @@ public class ImageUtil {
 		return getFormatFromMimeType(IOUtil.getMymeType(binary, ""));
 	}
 
+	public static String getFormat(byte[] binary,String defaultValue) {
+		return getFormatFromMimeType(IOUtil.getMymeType(binary, ""),defaultValue);
+	}
+
 	public static String getFormatFromExtension(Resource res, String defaultValue) {
 		String ext=ResourceUtil.getExtension(res,null);
 		if("gif".equalsIgnoreCase(ext))return "gif";
@@ -122,6 +134,14 @@ public class ImageUtil {
 	}
 	
 	public static String getFormatFromMimeType(String mt) throws IOException {
+		String format = getFormatFromMimeType(mt, null);
+		if(format!=null) return format;
+		
+		if(StringUtil.isEmpty(mt))throw new IOException("cannot find Format of given image");//31
+		throw new IOException("can't find Format ("+mt+") of given image");
+	}
+	
+	public static String getFormatFromMimeType(String mt, String defaultValue) {
 		if("image/gif".equals(mt)) return "gif";
 		if("image/jpeg".equals(mt)) return "jpg";
 		if("image/jpg".equals(mt)) return "jpg";
@@ -140,10 +160,7 @@ public class ImageUtil {
 		if("image/x-fpx".equals(mt)) return "fpx";
 		if("image/vnd.fpx".equals(mt)) return "fpx";
 		
-		
-		
-		if(StringUtil.isEmpty(mt))throw new IOException("can't find Format of given image");//31
-		throw new IOException("can't find Format ("+mt+") of given image");
+		return defaultValue;
 	}
 	
 	public static String getMimeTypeFromFormat(String mt) throws IOException {
