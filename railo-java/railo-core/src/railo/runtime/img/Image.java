@@ -172,7 +172,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	}
 
 	public Image(byte[] binary) throws IOException {
-		this(binary, ImageUtil.getFormat(binary)); 
+		this(binary, ImageUtil.getFormat(binary,null)); 
 	}
 	
 	public Image(byte[] binary, String format) throws IOException {
