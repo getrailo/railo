@@ -29,6 +29,7 @@ import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.compiler.CFMLCompilerImpl;
 import railo.runtime.debug.DebuggerPool;
 import railo.runtime.engine.CFMLEngineImpl;
+import railo.runtime.engine.ThreadQueueImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
@@ -389,6 +390,11 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 				debuggerPool=new DebuggerPool(dir);
 			}
 			return debuggerPool;
+		}
+		
+
+		public ThreadQueueImpl getThreadQueue() {
+			return configServer.getThreadQueue();
 		}
 
 }

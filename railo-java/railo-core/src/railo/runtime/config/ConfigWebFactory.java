@@ -83,6 +83,7 @@ import railo.runtime.engine.ConsoleExecutionLog;
 import railo.runtime.engine.ExecutionLog;
 import railo.runtime.engine.ExecutionLogFactory;
 import railo.runtime.engine.ThreadLocalConfig;
+import railo.runtime.engine.ThreadQueueImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -368,6 +369,7 @@ public final class ConfigWebFactory {
     	loadDumpWriter(cs, config, doc);
     	loadGateway(configServer,config,doc);
     	loadExeLog(configServer,config,doc);
+    	loadThreadQueue(configServer, config, doc);
     	config.setLoadTime(System.currentTimeMillis());
     	
     	// this call is needed to make sure the railo StaticLoggerBinder is loaded
@@ -2929,6 +2931,22 @@ public final class ConfigWebFactory {
 		
       	
 		
+    }
+    
+
+    private static void loadThreadQueue(ConfigServer configServer, ConfigImpl config, Document doc) {
+    	Element queue=getChildByName(doc.getDocumentElement(),"queue");
+      	
+    	// Server
+    	if(config instanceof ConfigServerImpl) {
+    		int max = Caster.toIntValue(queue.getAttribute("max"),100);
+    		int timeout = Caster.toIntValue(queue.getAttribute("timeout"),0);
+    		((ConfigServerImpl)config).setThreadQueue(new ThreadQueueImpl(max,timeout));
+    		
+    	}
+    	// Web
+    	else {
+    	}
     }
     
     /**

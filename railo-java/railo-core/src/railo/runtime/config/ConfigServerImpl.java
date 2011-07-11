@@ -12,6 +12,7 @@ import railo.commons.lang.StringUtil;
 import railo.loader.engine.CFMLEngine;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.engine.CFMLEngineImpl;
+import railo.runtime.engine.ThreadQueueImpl;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 
@@ -297,6 +298,22 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		if(labels==null) labels=new HashMap<String, String>();
 		return labels;
 	}
+
+	
+	private ThreadQueueImpl threadQueue;
+	protected void setThreadQueue(ThreadQueueImpl threadQueue) {
+		this.threadQueue=threadQueue;
+	}
+	public ThreadQueueImpl getThreadQueue() {
+		return threadQueue;
+	}
+	
+
+    
+    public void reset() {
+    	super.reset();
+    	getThreadQueue().clear();
+    }
 	
 
 }

@@ -271,7 +271,10 @@ public final class CFMLEngineImpl implements CFMLEngine {
     public void serviceCFML(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
     	
     	CFMLFactory factory=getCFMLFactory(servlet.getServletContext(), servlet.getServletConfig(), req);
+    	
         PageContext pc = factory.getRailoPageContext(servlet,req,rsp,null,false,-1,false);
+        ThreadQueue queue = factory.getConfig().getThreadQueue();
+        queue.enter(pc);
         try {
         	/*print.out("INCLUDE");
         	print.out("servlet_path:"+req.getAttribute("javax.servlet.include.servlet_path"));
@@ -290,14 +293,13 @@ public final class CFMLEngineImpl implements CFMLEngine {
         	print.out(pc.getHttpServletRequest().getServletPath());
         	*/
         	
-        	
-        	
         	pc.execute(pc.getHttpServletRequest().getServletPath(),false);
         } 
         catch (PageException pe) {
 			throw new PageServletException(pe);
 		}
         finally {
+        	queue.exit(pc);
             factory.releaseRailoPageContext(pc);
             FDControllerFactory.notifyPageComplete();
         }

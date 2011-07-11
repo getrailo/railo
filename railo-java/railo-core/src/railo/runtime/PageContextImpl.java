@@ -1963,7 +1963,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	execute(realPath, throwExcpetion, true);
     }
     public void execute(String realPath, boolean throwExcpetion, boolean onlyTopLevel) throws PageException  {
-    	SystemOut.printDate(config.getOutWriter(),"Call:"+realPath+" ("+getId()+")");
+    	SystemOut.printDate(config.getOutWriter(),"Call:"+realPath+" (id:"+getId()+";running-requests:"+config.getThreadQueue().size()+";)");
 	    ApplicationListener listener=config.getApplicationListener();
 	    if(realPath.startsWith("/mapping-")){
 	    	base=null;

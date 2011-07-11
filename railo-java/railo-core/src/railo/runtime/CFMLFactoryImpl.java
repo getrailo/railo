@@ -160,7 +160,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	            runningPcs.removeEL(ArgumentIntKey.init(pc.getId()));
 	            if(pcs.size()<100)// not more than 100 PCs
 	            	pcs.push(pc);
-	            SystemOut.printDate(config.getOutWriter(),"Release: ("+pc.getId()+")");
+	            SystemOut.printDate(config.getOutWriter(),"Release: (id:"+pc.getId()+";running-requests:"+config.getThreadQueue().size()+";)");
 	        }
        /*}
         else {

@@ -14,7 +14,6 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.sanselan.Sanselan;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -22,7 +21,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ExpressionException;
 
-public class ImageUtil {
+public class JREImageUtil {
 	
 	private static String[] writerFormatNames;
 	private static String[] readerFormatNames;
@@ -34,15 +33,35 @@ public class ImageUtil {
 	 * @throws IOException
 	 */
 	public static BufferedImage toBufferedImage(Resource res,String format) throws IOException {
+		if(StringUtil.isEmpty(format))format=getFormat(res);
+		if("psd".equalsIgnoreCase(format)) {
+			PSDReader reader = new PSDReader();
+			InputStream is=null;
+			try {
+				reader.read(is=res.getInputStream());
+				return reader.getImage();
+			}
+			finally {
+				IOUtil.closeEL(is);
+			}
+		}
+		if(JAIUtil.isSupportedReadFormat(format)){
+			return JAIUtil.read(res);
+		}
+		
+		BufferedImage img=null;
 		InputStream is=null;
 		try {
-			return Sanselan.getBufferedImage(is=res.getInputStream());
+			img = ImageIO.read(is=res.getInputStream());
 		}
-		catch(Exception e){}
 		finally {
 			IOUtil.closeEL(is);
 		}
-		return JREImageUtil.toBufferedImage(res, format);
+		
+		if(img==null && StringUtil.isEmpty(format)) {
+			return JAIUtil.read(res);
+		}
+		return img;
 	}
 
 	/**
@@ -52,11 +71,19 @@ public class ImageUtil {
 	 * @throws IOException
 	 */
 	public static BufferedImage toBufferedImage(byte[] bytes,String format) throws IOException {
-		try {
-			return Sanselan.getBufferedImage(new ByteArrayInputStream(bytes));
+		if(StringUtil.isEmpty(format))format=getFormat(bytes,null);
+		if("psd".equalsIgnoreCase(format)) {
+			PSDReader reader = new PSDReader();
+			reader.read(new ByteArrayInputStream(bytes));
+			return reader.getImage();
 		}
-		catch(Exception e){}
-		return JREImageUtil.toBufferedImage(bytes, format);
+		if(JAIUtil.isSupportedReadFormat(format)){
+			return JAIUtil.read(new ByteArrayInputStream(bytes),format);
+		}
+		BufferedImage img = ImageIO.read(new ByteArrayInputStream(bytes));
+		if(img==null && StringUtil.isEmpty(format))
+			return JAIUtil.read(new ByteArrayInputStream(bytes),null);
+		return img;
 	}
 
 	public static byte[] readBase64(String b64str) throws ExpressionException {

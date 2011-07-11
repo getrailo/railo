@@ -3405,5 +3405,6 @@ public abstract class ConfigImpl implements Config {
 	public int getDebugMaxRecordsLogged() {
 		return debugMaxRecordsLogged;
 	}
+
 	
 }

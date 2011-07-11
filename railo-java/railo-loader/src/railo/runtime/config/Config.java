@@ -17,6 +17,7 @@ import railo.runtime.PageSource;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.db.DataSource;
 import railo.runtime.dump.DumpWriter;
+import railo.runtime.engine.ThreadQueue;
 import railo.runtime.exp.PageException;
 import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
@@ -708,6 +709,6 @@ public interface Config {
 	
 	public Class getVideoExecuterClass();
 	
-	
+	public ThreadQueue getThreadQueue();
 	
 }
