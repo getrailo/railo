@@ -713,7 +713,7 @@ public class HBMCreator {
 		
 		// unsaved-value
 		str=toString(engine,cfc,prop,meta,"unsavedValue");  
-		if(!StringUtil.isEmpty(str,true))id.setAttribute("unsaved-value", str);
+		if(str!=null)id.setAttribute("unsaved-value", str);
 		
 	}
 	
