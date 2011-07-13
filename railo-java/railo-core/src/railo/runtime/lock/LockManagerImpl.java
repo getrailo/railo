@@ -63,8 +63,10 @@ public final class LockManagerImpl implements LockManager {
         LockToken token=(LockToken)locks.get(data.getName());
         
         if(token!=null) {
-           if(token.removeLockData(data))
-               locks.remove(data.getName());
+        	synchronized (locks) {
+            	if(token.removeLockData(data))
+                   locks.remove(data.getName());
+			}
         }
 	}
     
