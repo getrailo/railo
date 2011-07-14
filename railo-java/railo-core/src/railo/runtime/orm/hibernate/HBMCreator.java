@@ -40,8 +40,12 @@ public class HBMCreator {
 	private static final Collection.Key FIELD_TYPE = KeyImpl.intern("fieldType");
 	private static final Collection.Key LINK_TABLE = KeyImpl.intern("linktable");
 	private static final Collection.Key CFC = KeyImpl.intern("cfc");
+	private static final Collection.Key GENERATOR = KeyImpl.intern("generator");
+	private static final Collection.Key PARAMS = KeyImpl.intern("params");
+	private static final Collection.Key SEQUENCE = KeyImpl.intern("sequence");
+	private static final Collection.Key UNIQUE_KEY_NAME = KeyImpl.intern("uniqueKeyName");
+	private static final Collection.Key GENERATED = KeyImpl.intern("generated");
 	
-
 	public static void createXMLMapping(PageContext pc,DatasourceConnection dc, Component cfc,ORMConfiguration ormConf,Element hibernateMapping,HibernateORMEngine engine) throws PageException {
 		
 		// MUST Support for embeded objects 
@@ -242,7 +246,7 @@ public class HBMCreator {
 					list = (java.util.List<Property>) sct.get(table,null);
 					if(list==null){
 						list=new ArrayList<Property>();
-						sct.setEL(table, list);
+						sct.setEL(KeyImpl.init(table), list);
 					}
 					list.add(prop);
 					continue;
@@ -423,7 +427,7 @@ public class HBMCreator {
 				count++;
 			}
 			else if("many-to-one".equalsIgnoreCase(fieldType)){
-				createXMLMappingManyToOne(clazz,pc, cfc,props[y],engine);
+				createXMLMappingManyToOne(clazz,pc, cfc,props[y],engine,propColl);
 				count++;
 			}
 			else if("one-to-many".equalsIgnoreCase(fieldType)){
@@ -707,7 +711,7 @@ public class HBMCreator {
 		
 		// unsaved-value
 		str=toString(engine,cfc,prop,meta,"unsavedValue");  
-		if(!StringUtil.isEmpty(str,true))id.setAttribute("unsaved-value", str);
+		if(str!=null)id.setAttribute("unsaved-value", str);
 		
 	}
 	
@@ -732,7 +736,7 @@ public class HBMCreator {
 									return type;
 								}
 								else {
-									String g=Caster.toString(meta.get("generator",null));
+									String g=Caster.toString(meta.get(GENERATOR,null));
 									if(!StringUtil.isEmpty(g)){
 										return getDefaultTypeForGenerator(engine,g,foreignCFC);
 									}
@@ -839,7 +843,7 @@ public class HBMCreator {
 		//print.e("generator:"+className);
 		
 		// params
-		Object obj=meta.get("params",null);
+		Object obj=meta.get(PARAMS,null);
 		//if(obj!=null){
 			Struct sct=null;
 			if(obj==null) obj=new StructImpl();
@@ -862,10 +866,10 @@ public class HBMCreator {
 			}
 			else if("select".equals(className)){
 				//print.e("select:"+toString(meta, "selectKey",true));
-				if(!sct.containsKey("key")) sct.setEL("key", toString(engine,cfc,prop,meta, "selectKey",true));
+				if(!sct.containsKey(KeyImpl.KEY)) sct.setEL(KeyImpl.KEY, toString(engine,cfc,prop,meta, "selectKey",true));
 			}
 			else if("sequence".equals(className)){
-				if(!sct.containsKey("sequence")) sct.setEL("sequence", toString(engine,cfc,prop,meta, "sequence",true));
+				if(!sct.containsKey(SEQUENCE)) sct.setEL(SEQUENCE, toString(engine,cfc,prop,meta, "sequence",true));
 			}
 			
 			Key[] keys = sct.keys();
@@ -964,7 +968,7 @@ public class HBMCreator {
 	        
 	        // unique-key
 	        str=toString(engine,cfc,prop,meta,"uniqueKey");
-	        if(StringUtil.isEmpty(str))str=Caster.toString(meta.get("uniqueKeyName",null),null);
+	        if(StringUtil.isEmpty(str))str=Caster.toString(meta.get(UNIQUE_KEY_NAME,null),null);
 	        if(!StringUtil.isEmpty(str,true)) column.setAttribute("unique-key",str);
 	        
 	        
@@ -1105,24 +1109,7 @@ public class HBMCreator {
 	
 	
 	
-	private static void setForeignEntityName(PageContext pc,HibernateORMEngine engine,Component cfc,Property prop, Struct meta, Element el, boolean cfcRequired) throws PageException {
-		// entity
-		String str=cfcRequired?null:toString(engine,cfc,prop,meta,"entityName");
-		if(!StringUtil.isEmpty(str,true)) {
-			el.setAttribute("entity-name", str);
-		}
-		else {
-			// cfc
-			//createFKColumnName(engine, cfc, prop, propColl);
-			
-			str = toString(engine,cfc,prop,meta,"cfc",cfcRequired);
-			if(!StringUtil.isEmpty(str,true)){
-				Component _cfc=engine.getEntityByCFCName(str, false);
-				str=HibernateCaster.getEntityName(_cfc);
-				el.setAttribute("entity-name", str);
-			}
-		}
-	}
+	
 	private static Component loadForeignCFC(PageContext pc,HibernateORMEngine engine,Component cfc,Property prop, Struct meta) throws PageException {
 		// entity
 		String str=toString(engine,cfc,prop,meta,"entityName");
@@ -1484,7 +1471,7 @@ public class HBMCreator {
         setCacheStrategy(engine,cfc,prop,doc, meta, el);
         
         // column
-        str=createM2MFKColumnName(engine,cfc,prop,propColl);
+        str=createFKColumnName(engine,cfc,prop,propColl);
 		
 		if(!StringUtil.isEmpty(str,true)){
 			Element key = doc.createElement("key");
@@ -1525,6 +1512,53 @@ public class HBMCreator {
 		return el;
 	}
 	
+	
+	
+	private static String createFKColumnName(HibernateORMEngine engine, Component cfc, Property prop, PropertyCollection propColl) throws PageException {
+		
+		
+		// fk column from local defintion
+		String str=prop==null?null:toString(engine,cfc,prop,prop.getMeta(),"fkcolumn");
+		if(!StringUtil.isEmpty(str))
+			return str;
+		
+		// no local defintion, get from Foreign enity
+		Struct meta = prop.getMeta();
+		String type=toString(engine,cfc,prop,meta,"fieldtype",false);
+		String otherType;
+		if("many-to-one".equalsIgnoreCase(type)) 		otherType="one-to-many";
+		else if("one-to-many".equalsIgnoreCase(type)) 	otherType="many-to-one";
+		else return createM2MFKColumnName(engine, cfc, prop, propColl);
+		
+		String feName = toString(engine,cfc,prop,meta,"cfc",true);
+		ComponentPro feCFC=(ComponentPro) engine.getEntityByCFCName(feName, false);
+		Property[] feProps = feCFC.getProperties(true);
+		
+		Property p;
+		ComponentPro _cfc;
+		for(int i=0;i<feProps.length;i++){
+			p=feProps[i];
+
+			// compare fieldType
+			str=toString(engine,feCFC,p,p.getMeta(),"fieldtype",false);
+			if(!otherType.equalsIgnoreCase(str)) continue;
+			
+			// compare cfc
+			str=toString(engine,feCFC,p,p.getMeta(),"cfc",false);
+			if(StringUtil.isEmpty(str)) continue;
+			_cfc=(ComponentPro) engine.getEntityByCFCName(str, false);
+			if(_cfc==null || !_cfc.equals(cfc))continue;
+			
+			// get fkcolumn
+			str=toString(engine,_cfc,p,p.getMeta(),"fkcolumn");
+			if(!StringUtil.isEmpty(str)) return str;
+			
+			
+		}
+		throw new ORMException(engine, "cannot terminate forgein key column name");
+	}
+	
+	
 	private static String createM2MFKColumnName(HibernateORMEngine engine, Component cfc, Property prop, PropertyCollection propColl) throws ORMException {
 		
 		String str=prop==null?null:toString(engine,cfc,prop,prop.getMeta(),"fkcolumn");
@@ -1543,7 +1577,24 @@ public class HBMCreator {
     	return str;
 	}
 
-
+	private static void setForeignEntityName(PageContext pc,HibernateORMEngine engine,Component cfc,Property prop, Struct meta, Element el, boolean cfcRequired) throws PageException {
+		// entity
+		String str=cfcRequired?null:toString(engine,cfc,prop,meta,"entityName");
+		if(!StringUtil.isEmpty(str,true)) {
+			el.setAttribute("entity-name", str);
+		}
+		else {
+			// cfc
+			//createFKColumnName(engine, cfc, prop, propColl);
+			
+			str = toString(engine,cfc,prop,meta,"cfc",cfcRequired);
+			if(!StringUtil.isEmpty(str,true)){
+				Component _cfc=engine.getEntityByCFCName(str, false);
+				str=HibernateCaster.getEntityName(_cfc);
+				el.setAttribute("entity-name", str);
+			}
+		}
+	}
 
 
 
@@ -1605,7 +1656,7 @@ public class HBMCreator {
 
 
 
-	private static void createXMLMappingManyToOne(Element clazz, PageContext pc,Component cfc,Property prop, HibernateORMEngine engine) throws PageException {
+	private static void createXMLMappingManyToOne(Element clazz, PageContext pc,Component cfc,Property prop, HibernateORMEngine engine, PropertyCollection propColl) throws PageException {
 		Struct meta = prop.getMeta();
 		Boolean b;
 		
@@ -1619,7 +1670,7 @@ public class HBMCreator {
 		String linktable = toString(engine,cfc,prop,meta,"linktable");
 		String _columns;
 		if(!StringUtil.isEmpty(linktable,true)) _columns=toString(engine,cfc,prop,meta,"inversejoincolumn");
-		else _columns=toString(engine,cfc,prop,meta,"fkcolumn");
+		else _columns=createFKColumnName(engine, cfc, prop, propColl);//toString(engine,cfc,prop,meta,"fkcolumn");
 		setColumn(engine,doc, m2o, _columns);
 		
 		// cfc
@@ -1846,7 +1897,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 		if(!StringUtil.isEmpty(str,true))version.setAttribute("access", str);
 		
 		// generated
-		Object o=meta.get("generated",null);
+		Object o=meta.get(GENERATED,null);
 		if(o!=null){
 			Boolean b = Caster.toBoolean(o,null); 
 			str=null;
@@ -1971,7 +2022,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 	
 	
 	private static Boolean toBoolean(HibernateORMEngine engine,Component cfc,Struct sct, String key) throws ORMException {
-		Object value = sct.get(key,null);
+		Object value = sct.get(KeyImpl.init(key),null);
 		if(value==null) return null;
 		
 		Boolean b=Caster.toBoolean(value,null);
@@ -1980,7 +2031,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 	}
 
 	private static Integer toInteger(HibernateORMEngine engine,Component cfc,Struct sct, String key) throws ORMException {
-		Object value = sct.get(key,null);
+		Object value = sct.get(KeyImpl.init(key),null);
 		if(value==null) return null;
 		
 		Integer i=Caster.toInteger(value,null);

@@ -721,7 +721,11 @@ public final class Http extends BodyTagImpl {
                 }
                     
                 if(str==null)str="";
-		        if(resolveurl)str=new URLResolver().transform(str,new URL(url),false);
+		        if(resolveurl){
+		        	//URI uri = httpMethod.getURI();
+		        	if(e!=null && e.redirectURL!=null)url=e.redirectURL.toExternalForm();
+		        	str=new URLResolver().transform(str,new URL(url),false);
+		        }
 		        cfhttp.set(FILE_CONTENT,str);
 		        try {
 		        	if(file!=null){
@@ -1441,6 +1445,7 @@ class Executor extends Thread {
 	 final boolean redirect;
 	 Throwable t;
 	 boolean done;
+	URL redirectURL;
 
 	public Executor(Http http, HttpClient client,HttpMethod httpMethod,boolean redirect) {
 		this.http=http;
@@ -1469,6 +1474,7 @@ class Executor extends Thread {
         URL lu;
         while(Http.isRedirect(client.executeMethod(httpMethod)) && redirect && count++ < Http.MAX_REDIRECT) { 
         	lu=Http.locationURL(httpMethod);
+        	redirectURL=lu;
         	HttpMethod oldHttpMethod = httpMethod;
         	httpMethod=Http.createMethod(http,client,lu.toExternalForm(),-1);
         	Http.releaseConnection(oldHttpMethod);

@@ -176,7 +176,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		}
 		catch (Throwable t) {
 			//t.printStackTrace(pc.getConfig().getErrWriter());
-			t.printStackTrace();
+			//t.printStackTrace();
 			ConfigWeb c = pc.getConfig();
 			if(c instanceof ConfigImpl) {
 				ConfigImpl ci=(ConfigImpl) c;

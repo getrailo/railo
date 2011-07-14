@@ -98,8 +98,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	private boolean triggerDataMember;
     	
 	// state control of component
-	private int threadUsingLock=0;
-	private int threadsWaiting=0;
 	boolean isInit=false;
 
 	private InterfaceCollection interfaceCollection;
@@ -130,8 +128,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			SizeOf.size(scope)+
 			SizeOf.size(dataMemberDefaultAccess)+
 			SizeOf.size(triggerDataMember)+
-			SizeOf.size(threadUsingLock)+
-			SizeOf.size(threadsWaiting)+
 			SizeOf.size(false)+
 			SizeOf.size(interfaceCollection)+
 			SizeOf.size(useShadow)+
@@ -212,8 +208,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	try{
 			// attributes
 	    	trg.pageSource=pageSource;
-			trg.threadsWaiting=threadsWaiting;
-	        trg.threadUsingLock=threadUsingLock;
 	        trg.triggerDataMember=triggerDataMember;
 	        trg.useShadow=useShadow;
 	        trg.afterConstructor=afterConstructor;
@@ -540,72 +534,87 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         if(member==null)throw ComponentUtil.notFunction(this, KeyImpl.init(name), null,access);
         throw ComponentUtil.notFunction(this, KeyImpl.init(name), member.getValue(),access);
     }
-    
+	
 	Object _call(PageContext pc, UDF udf, Struct namedArgs, Object[] args) throws PageException {
 			
 		Object rtn=null;
 		Variables parent=null;
         
+		// INFO duplicate code is for faster execution -> less contions
+		
+		
+		// debug yes
 		if(pc.getConfig().debug()) {
 		    DebugEntry debugEntry=pc.getDebugger().getEntry(pc,pageSource,udf.getFunctionName());//new DebugEntry(src,udf.getFunctionName());
 			int currTime=pc.getExecutionTime();
 			long time=System.currentTimeMillis();
 			
-			try {
-				openLock(pc.getId());
-				parent=beforeCall(pc);
-				if(args!=null)rtn=udf.call(pc,args,true);
-				else rtn=udf.callWithNamedValues(pc,namedArgs,true);
-			}		
-			finally {
-				pc.setVariablesScope(parent);
-				int diff= ((int)(System.currentTimeMillis()-time)-(pc.getExecutionTime()-currTime));
-				pc.setExecutionTime(pc.getExecutionTime()+diff);
-				debugEntry.updateExeTime(diff);	
-				closeLock();
-			}	
+			// sync yes
+			if(top.properties._synchronized){
+				synchronized (this) {
+					try {
+						parent=beforeCall(pc);
+						if(args!=null)rtn=udf.call(pc,args,true);
+						else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+					}		
+					finally {
+						pc.setVariablesScope(parent);
+						int diff= ((int)(System.currentTimeMillis()-time)-(pc.getExecutionTime()-currTime));
+						pc.setExecutionTime(pc.getExecutionTime()+diff);
+						debugEntry.updateExeTime(diff);	
+					}	
+				}
+			}
+
+			// sync no
+			else {
+				try {
+					parent=beforeCall(pc);
+					if(args!=null)rtn=udf.call(pc,args,true);
+					else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+				}		
+				finally {
+					pc.setVariablesScope(parent);
+					int diff= ((int)(System.currentTimeMillis()-time)-(pc.getExecutionTime()-currTime));
+					pc.setExecutionTime(pc.getExecutionTime()+diff);
+					debugEntry.updateExeTime(diff);	
+				}	
+			}
+			
+			
 		}
+		
+		// debug no
 		else {
-		    try {
-				openLock(pc.getId());
-            	parent=beforeCall(pc); 
-            	if(args!=null)rtn=udf.call(pc,args,true);
-				else rtn=udf.callWithNamedValues(pc,namedArgs,true);
-			}		
-			finally {
-				pc.setVariablesScope(parent);
-				closeLock();
+			
+			// sync yes
+			if(top.properties._synchronized){
+				synchronized (this) {
+				    try {
+		            	parent=beforeCall(pc); // FUTURE add to interface
+		            	if(args!=null)rtn=udf.call(pc,args,true);
+						else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+					}		
+					finally {
+						pc.setVariablesScope(parent);
+					}
+				}
+			}
+			
+			// sync no
+			else {
+			    try {
+	            	parent=beforeCall(pc); // FUTURE add to interface
+	            	if(args!=null)rtn=udf.call(pc,args,true);
+					else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+				}		
+				finally {
+					pc.setVariablesScope(parent);
+				}
 			}
 		}
 		return rtn;
 	}
-
-	private void openLock(int id) {
-		// check log
-		if(top.properties._synchronized) {
-			if(top.threadUsingLock!=0 && top.threadUsingLock!=id){
-				try {
-					top.threadsWaiting++;
-					synchronized(this) {
-		    			wait();
-		    			top.threadsWaiting--;
-		    		}
-				} catch (InterruptedException e) {
-					
-				}
-			}
-			else top.threadUsingLock=id;
-		}
-	}
-
-	private void closeLock() {
-		top.threadUsingLock=0;
-		if(top.threadsWaiting==0)return;
-		synchronized(this) {
-    		notify();
-    	}
-	}
-	
 	
 	/**
      * will be called before executing method or constructor
@@ -1399,6 +1408,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             
             sct.set("persistent",comp.properties.persistent);
             sct.set("accessors",comp.properties.accessors);
+            sct.set("synchronized",comp.properties._synchronized);
             
             
             
@@ -1997,8 +2007,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			this.isInit=other.isInit;
 			this.properties=other.properties;
 			this.scope=other.scope;
-			this.threadsWaiting=other.threadsWaiting;
-			this.threadUsingLock=other.threadUsingLock;
 			this.top=this;
 			this.triggerDataMember=other.triggerDataMember;
 			this.useShadow=other.useShadow;
