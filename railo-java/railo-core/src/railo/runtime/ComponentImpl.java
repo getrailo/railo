@@ -99,8 +99,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	private boolean triggerDataMember;
     	
 	// state control of component
-	private int threadUsingLock=0;
-	private int threadsWaiting=0;
 	boolean isInit=false;
 
 	private InterfaceCollection interfaceCollection;
@@ -131,8 +129,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			SizeOf.size(scope)+
 			SizeOf.size(dataMemberDefaultAccess)+
 			SizeOf.size(triggerDataMember)+
-			SizeOf.size(threadUsingLock)+
-			SizeOf.size(threadsWaiting)+
 			SizeOf.size(false)+
 			SizeOf.size(interfaceCollection)+
 			SizeOf.size(useShadow)+
@@ -213,8 +209,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	try{
 			// attributes
 	    	trg.pageSource=pageSource;
-			trg.threadsWaiting=threadsWaiting;
-	        trg.threadUsingLock=threadUsingLock;
 	        trg.triggerDataMember=triggerDataMember;
 	        trg.useShadow=useShadow;
 	        trg.afterConstructor=afterConstructor;
@@ -2038,8 +2032,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			this.isInit=other.isInit;
 			this.properties=other.properties;
 			this.scope=other.scope;
-			this.threadsWaiting=other.threadsWaiting;
-			this.threadUsingLock=other.threadUsingLock;
 			this.top=this;
 			this.triggerDataMember=other.triggerDataMember;
 			this.useShadow=other.useShadow;
