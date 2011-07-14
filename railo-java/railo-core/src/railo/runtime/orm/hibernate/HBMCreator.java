@@ -1535,11 +1535,11 @@ public class HBMCreator {
 		else return createM2MFKColumnName(engine, cfc, prop, propColl);
 		
 		String feName = toString(engine,cfc,prop,meta,"cfc",true);
-		ComponentPro feCFC=(ComponentPro) engine.getEntityByCFCName(feName, false);
+		Component feCFC=engine.getEntityByCFCName(feName, false);
 		Property[] feProps = feCFC.getProperties(true);
 		
 		Property p;
-		ComponentPro _cfc;
+		Component _cfc;
 		for(int i=0;i<feProps.length;i++){
 			p=feProps[i];
 
@@ -1550,7 +1550,7 @@ public class HBMCreator {
 			// compare cfc
 			str=toString(engine,feCFC,p,p.getMeta(),"cfc",false);
 			if(StringUtil.isEmpty(str)) continue;
-			_cfc=(ComponentPro) engine.getEntityByCFCName(str, false);
+			_cfc=engine.getEntityByCFCName(str, false);
 			if(_cfc==null || !_cfc.equals(cfc))continue;
 			
 			// get fkcolumn
