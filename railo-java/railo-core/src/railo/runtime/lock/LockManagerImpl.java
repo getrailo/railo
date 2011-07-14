@@ -64,7 +64,7 @@ public final class LockManagerImpl implements LockManager {
 	public void unlock(LockData data) {
         if(data==null)return;
         synchronized (locks) {
-	        LockToken token=(LockToken)locks.get(data.getName());
+	        LockToken token=locks.get(data.getName());
 	        if(token!=null) {
 	        	if(token.removeLockData(data))
 	        		locks.remove(data.getName());
