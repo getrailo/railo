@@ -14,13 +14,12 @@ import railo.commons.io.log.Log;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lock.KeyLock;
+import railo.commons.lock.Lock;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.PageContext;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
-import railo.runtime.lock.LockManager;
-import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.List;
@@ -37,8 +36,8 @@ import railo.runtime.type.util.ArrayUtil;
 public abstract class SearchCollectionSupport implements SearchCollectionPlus {
 
     private static final int LOCK_TIMEOUT = 10*60*1000; // ten minutes
-    private String name;
-	private Resource path;
+    private final String name;
+	private final Resource path;
 	private String language;
 	private DateTime lastUpdate;
     private SearchEngineSupport searchEngine;
@@ -48,8 +47,10 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
     private DateTime created;
 
     private Log log;
-	private static LockManager manager=LockManagerImpl.getInstance();
-
+	//private static LockManager manager=Lock Manager Impl.getInstance();
+    private KeyLock<String> lock=new KeyLock<String>();
+    
+    
 	/**
 	 * constructor of the class
 	 * @param searchEngine
@@ -74,12 +75,12 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      * @see railo.runtime.search.SearchCollection#create()
      */
 	public final void create() throws SearchException {
-		lock();
+		Lock l = lock();
 		try {
 	    _create();
 	}
 		finally {
-			unlock();
+			unlock(l);
 		}
 	}
 
@@ -93,13 +94,13 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      * @see railo.runtime.search.SearchCollection#optimize()
      */
     public final void optimize() throws SearchException  {
-         lock();
+    	Lock l = lock();
          try {
          _optimize();
         changeLastUpdate();
     }
  		finally {
- 			unlock();
+ 			unlock(l);
  		}
     }
 
@@ -113,13 +114,13 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      * @see railo.runtime.search.SearchCollection#map(railo.commons.io.res.Resource)
      */
     public final void map(Resource path) throws SearchException  {
-	    lock();
+    	Lock l = lock();
     	try {
         _map(path);
         changeLastUpdate();
     }
 		finally {
-			unlock();
+			unlock(l);
 		}
     }
 
@@ -134,13 +135,13 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      * @see railo.runtime.search.SearchCollection#repair()
      */
     public final void repair() throws SearchException  {
-        lock();
+    	Lock l = lock();
     	try {
         _repair();
         changeLastUpdate();
     }
 		finally {
-			unlock();
+			unlock(l);
 		}
     }
 
@@ -165,7 +166,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
             String[] extensions, String query, boolean recurse,String categoryTree, String[] categories, long timeout,
             String custom1, String custom2, String custom3, String custom4) throws PageException, MalformedURLException, SearchException {
         language=SearchUtil.translateLanguage(language);
-        lock();
+        Lock l = lock();
     	try {
         SearchIndex si = new SearchIndex(title,key,type,query,extensions,language,urlpath,categoryTree,categories,custom1,custom2,custom3,custom4);
         String id=si.getId();
@@ -266,7 +267,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
         return ir;
     }
 		finally {
-			unlock();
+			unlock(l);
 		}
     }
  
@@ -442,7 +443,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      * @see railo.runtime.search.SearchCollection#purge()
      */
 	public final IndexResult purge() throws SearchException {
-		lock();
+		Lock l = lock();
 	try {
         indexes.clear();
         IndexResult ir=_purge();
@@ -451,7 +452,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
         return ir;
 	}
 		finally {
-			unlock();
+			unlock(l);
 		}
 	}
 
@@ -465,14 +466,14 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      * @see railo.runtime.search.SearchCollection#delete()
      */
     public final IndexResult delete() throws SearchException {
-    	lock();
+    	Lock l = lock();
     	try {
     	IndexResult ir=_delete();
 	    searchEngine.removeCollection(this);
 	    return ir;
     }
 		finally {
-			unlock();
+			unlock(l);
 		}
     }
 
@@ -580,12 +581,12 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
         aa.setStartrow(startrow);
         if(maxrow!=-1)aa.setMaxrows(maxrow-len);
         
-        lock();
+        Lock l = lock();
         try {
         	records = _search(data, criteria,language,type,categoryTree,categories);
         }
         finally {
-        	unlock();
+        	unlock(l);
         	if(hasRowHandling=aa.hasRowHandling())
         		startrow = aa.getStartrow();
         	
@@ -752,9 +753,10 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
 	}
 
 
-	private void lock() throws SearchException {
+	private Lock lock() throws SearchException {
 		try {
-			manager.lock(LockManager.TYPE_EXCLUSIVE,getId(),LOCK_TIMEOUT,ThreadLocalPageContext.get().getId());
+			return lock.lock(getId(),LOCK_TIMEOUT);
+			//manager.lock(LockManager.TYPE_EXCLUSIVE,getId(),LOCK_TIMEOUT,ThreadLocalPageContext.get().getId());
 		} 
 		catch (Exception e) {
 			throw new SearchException(e);
@@ -762,9 +764,9 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
 		
 	}
 
-	private void unlock() {
-		manager.unlock(ThreadLocalPageContext.get().getId());
-		
+	private void unlock(Lock l) {
+		lock.unlock(l);
+		//manager.unlock(ThreadLocalPageContext.get().getId());
 	}
 
 

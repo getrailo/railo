@@ -15,7 +15,6 @@ import javax.servlet.jsp.JspEngineInfo;
 import railo.commons.io.log.Log;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
-import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
@@ -24,15 +23,12 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.RequestTimeoutException;
-import railo.runtime.lock.LockManager;
-import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.query.QueryCache;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -206,17 +202,16 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	
 	public static void terminate(PageContext pc) {
 		Log log = pc.getConfig().getRequestTimeoutLogger();
-        LockManager manager = pc.getConfig().getLockManager();
-        String[] locks = manager.getOpenLockNames();
-        String strLocks=List.arrayToList(locks, ", ");
-        if(StringUtil.isEmpty(strLocks))strLocks="no open locks";
-        else //manager.unlock(pc.getId());
-        strLocks="open locks ("+strLocks+")";
-        LockManagerImpl.unlockAll(pc.getId());
+        //LockManager manager = pc.getConfig().getLockManager();
+        //String[] locks = manager.getOpenLockNames();
+        //String strLocks=List.arrayToList(locks, ", ");
+        //if(StringUtil.isEmpty(strLocks))strLocks="no open locks";
+        //else strLocks="open locks ("+strLocks+")";
+        //LockManagerImpl.unlockAll(pc.getId());
         
         if(log!=null)log.error("controler",
-        		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+". "+strLocks);
-        pc.getThread().stop(new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") is run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped. "+strLocks));
+        		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+".");
+        pc.getThread().stop(new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") is run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."));
         
 	}
 

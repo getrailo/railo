@@ -124,7 +124,7 @@ public final class TagOther {
 			Types.VOID,
 			new Type[]{Types.TAG});
 	
-	public static void writeOut(Tag tag, BytecodeContext bc) throws BytecodeException {
+	public static void writeOut(Tag tag, BytecodeContext bc, boolean doReuse) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		TagLibTag tlt = tag.getTagLibTag();
 		Type currType=null;
@@ -150,7 +150,7 @@ public final class TagOther {
 		adapter.storeLocal(currLocal);
 	
 	TryFinallyVisitor outerTcfv=new TryFinallyVisitor();
-	outerTcfv.visitTryBegin(bc);
+	if(doReuse)outerTcfv.visitTryBegin(bc);
 		
 	// appendix
 		if(tlt.hasAppendix()) {
@@ -334,15 +334,15 @@ public final class TagOther {
 		adapter.visitLabel(endDoEndTag);
 		
 		
-		
-		// } finally{pc.reuse(tag);}
-		outerTcfv.visitTryEndFinallyBegin(bc);
-			// pc.reuse(tag);
-			adapter.loadArg(0);
-			adapter.loadLocal(currLocal);
-			adapter.invokeVirtual(Types.PAGE_CONTEXT, RE_USE);
-		outerTcfv.visitFinallyEnd(bc);
-		
+		if(doReuse) {
+			// } finally{pc.reuse(tag);}
+			outerTcfv.visitTryEndFinallyBegin(bc);
+				// pc.reuse(tag);
+				adapter.loadArg(0);
+				adapter.loadLocal(currLocal);
+				adapter.invokeVirtual(Types.PAGE_CONTEXT, RE_USE);
+			outerTcfv.visitFinallyEnd(bc);
+		}
 		
 
 		adapter.visitLabel(tagEnd);
