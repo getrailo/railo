@@ -17,8 +17,8 @@ import railo.commons.io.log.LogConsole;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
-import railo.commons.lang.StringKeyLock;
 import railo.commons.lang.StringUtil;
+import railo.commons.lock.KeyLock;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
@@ -53,7 +53,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     private Page baseComponentPage;
 	private MappingImpl serverTagMapping;
 	private MappingImpl serverFunctionMapping;
-	private StringKeyLock contextLock;
+	private KeyLock<String> contextLock;
 	private GatewayEngineImpl gatewayEngine;
     private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
 
@@ -299,9 +299,9 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return SystemUtil.hash(getServletContext());
 		}
 
-		public StringKeyLock getContextLock() {
+		public KeyLock<String> getContextLock() {
 			if(contextLock==null) {
-				contextLock=new StringKeyLock(getRequestTimeout().getMillis());
+				contextLock=new KeyLock<String>();
 			}
 			return contextLock;
 		}

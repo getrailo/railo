@@ -44,11 +44,12 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
-import railo.commons.lang.StringKeyLock;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
+import railo.commons.lock.KeyLock;
+import railo.commons.lock.Lock;
 import railo.commons.net.HTTPUtil;
 import railo.intergral.fusiondebug.server.FDSignal;
 import railo.runtime.component.ComponentLoader;
@@ -2515,16 +2516,15 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     /**
      * @return return  value of method "onApplicationStart" or true
      * @throws PageException 
-     * @throws PageException
      */
     public boolean initApplicationContext() throws PageException {
     	boolean initSession=false;
 	    AppListenerSupport listener = (AppListenerSupport) config.getApplicationListener();
-    	StringKeyLock lock = config.getContextLock();
+    	KeyLock<String> lock = config.getContextLock();
     	String name=StringUtil.emptyIfNull(applicationContext.getName());
     	String token=name+":"+getCFID();
     	
-    	lock.lock(token);
+    	Lock tokenLock = lock.lock(token,getRequestTimeout());
     	//print.o("outer-lock  :"+token);
     	try {
     		// check session before executing any code
@@ -2532,7 +2532,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    	
 	    	// init application
 	    	
-	    	lock.lock(name);
+	    	Lock nameLock = lock.lock(name,getRequestTimeout());
 	    	//print.o("inner-lock  :"+token);
 	    	try {
 	    		RefBoolean isNew=new RefBooleanImpl(false);
@@ -2551,7 +2551,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    	}
 	    	finally{
 		    	//print.o("inner-unlock:"+token);
-	    		lock.unlock(name);
+	    		lock.unlock(nameLock);
 	    	}
     	
 	    	// init session
@@ -2562,7 +2562,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	}
     	finally{
 	    	//print.o("outer-unlock:"+token);
-    		lock.unlock(token);
+    		lock.unlock(tokenLock);
     	}
 	    return true;
     }

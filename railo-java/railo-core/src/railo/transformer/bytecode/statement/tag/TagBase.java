@@ -121,21 +121,25 @@ public class TagBase extends StatementBase implements Tag {
 	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+		_writeOut(bc, true);
+	}
+	
+	public void _writeOut(BytecodeContext bc, boolean doReuse) throws BytecodeException {
 		boolean output=tagLibTag.getParseBody() || Caster.toBooleanValue(getAttribute("output"), false);
 		
 		if(output) {
 			ParseBodyVisitor pbv=new ParseBodyVisitor();
 			pbv.visitBegin(bc);
-				_writeOutTag(bc);
+				_writeOutTag(bc,doReuse);
 			pbv.visitEnd(bc);
 			
 			
 		}
-		else _writeOutTag(bc);
+		else _writeOutTag(bc,doReuse);
 	}
 
-	private void _writeOutTag(BytecodeContext bc) throws BytecodeException {
-		TagOther.writeOut(this,bc);
+	private void _writeOutTag(BytecodeContext bc, boolean doReuse) throws BytecodeException {
+		TagOther.writeOut(this,bc, doReuse);
 		
 	}
 
