@@ -673,7 +673,7 @@ public final class IOUtil {
     public static String[] toStringArray(Reader reader) throws IOException {
         if(reader==null)return new String[0];
         BufferedReader br = new BufferedReader(reader); 
-        LinkedList list=new LinkedList();
+        LinkedList<String> list=new LinkedList<String>();
         
         String line;
         while((line=br.readLine())!=null)   {
@@ -683,7 +683,7 @@ public final class IOUtil {
         String[] content=new String[list.size()];
         int count=0;
         while(!list.isEmpty()) {
-            content[count++]=list.removeFirst().toString();
+            content[count++]=list.removeFirst();
         }
         return content;
     }
