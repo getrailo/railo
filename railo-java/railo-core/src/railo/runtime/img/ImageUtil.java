@@ -3,14 +3,8 @@ package railo.runtime.img;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
-import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.codec.binary.Base64;

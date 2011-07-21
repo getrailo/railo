@@ -21,6 +21,7 @@ import org.w3c.dom.Document;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.Component;
@@ -284,8 +285,8 @@ public class HibernateSessionFactory {
 			for(int i=0;i<reses.length;i++){
 				if(reses[i]!=null && reses[i].isDirectory()){
 					tmp[0] = mappings[i];
-					//ac.setMappings(_mappings);
-					loadComponents(pc,engine,components,reses[i], filter,ormConf);
+					ac.setComponentMappings(tmp);
+					loadComponents(pc,engine,mappings[i],components,reses[i], filter,ormConf);
 				}
 			}
 		}
@@ -294,7 +295,7 @@ public class HibernateSessionFactory {
 		}
 	}
 	
-	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<Component> components,Resource res,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
+	private static void loadComponents(PageContext pc, HibernateORMEngine engine,Mapping cfclocation,List<Component> components,Resource res,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
 		if(res==null) return;
 
 		if(res.isDirectory()){
@@ -302,18 +303,24 @@ public class HibernateSessionFactory {
 			
 			// first load all files
 			for(int i=0;i<children.length;i++){
-				if(children[i].isFile())loadComponents(pc,engine,components,children[i], filter,ormConf);
+				if(children[i].isFile())loadComponents(pc,engine,cfclocation,components,children[i], filter,ormConf);
 			}
 			
 			// and then invoke subfiles
 			for(int i=0;i<children.length;i++){
-				if(children[i].isDirectory())loadComponents(pc,engine,components,children[i], filter,ormConf);
+				if(children[i].isDirectory())loadComponents(pc,engine,cfclocation,components,children[i], filter,ormConf);
 			}
 		}
 		else if(res.isFile()){
 			if(!res.getName().equalsIgnoreCase("Application.cfc"))	{
 				try {
-					PageSource ps = pc.toPageSource(res,null);
+					PageSource ps=null;
+					Resource root = cfclocation.getPhysical();
+	                String path = ResourceUtil.getPathToChild(res, root);
+	                if(!StringUtil.isEmpty(path,true)) {
+	                	ps=cfclocation.getPageSource(path);
+	                }
+					if(ps==null) ps = pc.toPageSource(res,null);
 					Page p = ps.loadPage(pc.getConfig());
 					String name=res.getName();
 					name=name.substring(0,name.length()-4);
