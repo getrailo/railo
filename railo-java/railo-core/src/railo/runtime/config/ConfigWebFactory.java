@@ -367,7 +367,7 @@ public final class ConfigWebFactory {
         settings(config);
         loadListener(cs,config,doc);
     	loadDumpWriter(cs, config, doc);
-    	loadGateway(configServer,config,doc);
+    	loadGatewayEL(configServer,config,doc);
     	loadExeLog(configServer,config,doc);
     	loadThreadQueue(configServer, config, doc);
     	config.setLoadTime(System.currentTimeMillis());
@@ -2020,6 +2020,14 @@ public final class ConfigWebFactory {
 		}
 	}
 
+
+	private static void loadGatewayEL(ConfigServerImpl configServer, ConfigImpl config, Document doc)  {
+		try {
+			loadGateway(configServer, config, doc);
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+	}
 
 	private static void loadGateway(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException  {
 		boolean hasCS=configServer!=null;

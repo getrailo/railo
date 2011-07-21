@@ -194,6 +194,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
         String strConfig=sg.getInitParameter("configuration");
         if(strConfig==null)strConfig=sg.getInitParameter("railo-web-directory");
         if(strConfig==null)strConfig="{web-root-directory}/WEB-INF/railo/";
+        else if("/WEB-INF/railo/".equals(strConfig))strConfig="{web-root-directory}/WEB-INF/railo/";
         
         // static path is not allowed
         if(countExistingContextes>1 && strConfig!=null && strConfig.indexOf('{')==-1){

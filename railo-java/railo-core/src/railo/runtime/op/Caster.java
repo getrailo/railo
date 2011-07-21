@@ -72,6 +72,7 @@ import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
+import railo.runtime.text.xml.struct.XMLElementStruct;
 import railo.runtime.text.xml.struct.XMLMultiElementArray;
 import railo.runtime.text.xml.struct.XMLMultiElementStruct;
 import railo.runtime.text.xml.struct.XMLStruct;
@@ -2091,11 +2092,17 @@ public final class Caster {
             return toArray(((Set)o).toArray());//new ArrayImpl(((List) o).toArray());
         }
         else if(o instanceof XMLStruct) {
-            XMLStruct sct=((XMLStruct)o);
-            if(sct instanceof XMLMultiElementStruct) return new XMLMultiElementArray((XMLMultiElementStruct)sct);
-            Array a=new ArrayImpl();
-            a.append(sct);
-            return a;
+        	XMLMultiElementStruct xmes;
+        	if(o instanceof XMLMultiElementStruct) {
+        		xmes=(XMLMultiElementStruct)o;
+        	}
+        	else {
+        		XMLStruct sct=(XMLStruct) o;
+	            Array a=new ArrayImpl();
+	            a.append(o);
+	            xmes=new XMLMultiElementStruct(a, sct.getCaseSensitive());
+        	}
+    		return new XMLMultiElementArray(xmes);
         }
         else if(o instanceof ObjectWrap) {
             return toArray(((ObjectWrap)o).getEmbededObject());

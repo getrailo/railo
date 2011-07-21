@@ -22,6 +22,7 @@ import railo.runtime.util.ArrayIterator;
 
 public class XMLMultiElementArray extends ArraySupport {
 
+	private static final long serialVersionUID = -2673749147723742450L;
 	private XMLMultiElementStruct struct;
 
 	public XMLMultiElementArray(XMLMultiElementStruct struct) {

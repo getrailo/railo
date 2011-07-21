@@ -46,7 +46,8 @@ public final class LockManagerImpl implements LockManager {
 	
 	public void unlock(LockData data) {
 		if(data.isReadOnly()) return;
-		((ExklLockData)data).getLock().unlock();
+		Lock l = ((ExklLockData)data).getLock();
+		locks.unlock(l);
 		//locks.unlock(data.getName());
 	}
 	
