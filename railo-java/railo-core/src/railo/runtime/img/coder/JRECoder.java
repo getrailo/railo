@@ -1,8 +1,6 @@
 package railo.runtime.img.coder;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.IndexColorModel;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,15 +9,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageInputStream;
-
-import org.apache.commons.codec.binary.Base64;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.img.JAIUtil;
 import railo.runtime.img.PSDReader;

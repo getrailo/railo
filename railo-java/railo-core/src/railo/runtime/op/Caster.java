@@ -72,7 +72,6 @@ import railo.runtime.op.validators.ValidateCreditCard;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
-import railo.runtime.text.xml.struct.XMLElementStruct;
 import railo.runtime.text.xml.struct.XMLMultiElementArray;
 import railo.runtime.text.xml.struct.XMLMultiElementStruct;
 import railo.runtime.text.xml.struct.XMLStruct;

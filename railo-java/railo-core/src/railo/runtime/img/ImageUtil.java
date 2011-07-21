@@ -8,7 +8,6 @@ import java.io.IOException;
 import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.sanselan.Sanselan;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;

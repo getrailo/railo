@@ -3,11 +3,8 @@ package railo.runtime.img.coder;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
 import railo.commons.io.res.Resource;
 import railo.commons.lang.SystemOut;
-import railo.runtime.img.JAIUtil;
 public abstract class Coder {
 	
 	private static Coder instance;
