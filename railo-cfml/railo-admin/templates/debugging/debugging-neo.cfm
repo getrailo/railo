@@ -73,7 +73,7 @@ a.cfdebuglink {color:blue; background-color:white }
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> Time Zone </td>
-			<td class="cfdebug"><cftry>#GetPageContext().getConfig().getTimeZone().getDisplayName()#<cfcatch></cfcatch></cftry></td>
+			<td class="cfdebug"><cftry>#getTimeZone()#<cfcatch></cfcatch></cftry></td>
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> Locale </td>
