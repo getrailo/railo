@@ -145,7 +145,7 @@ public class CFMLEngineFactory {
         if(Util.isEmpty(initParam))initParam=config.getInitParameter("railo-server-root");
         if(Util.isEmpty(initParam))initParam=config.getInitParameter("railo-server-dir");
         if(Util.isEmpty(initParam))initParam=config.getInitParameter("railo-server");
-        initParam=Util.parsePlaceHolder(initParam);
+        initParam=Util.parsePlaceHolder(Util.removeQuotes(initParam,true));
         
         try {
             if(!Util.isEmpty(initParam)) {
@@ -165,8 +165,8 @@ public class CFMLEngineFactory {
         catch(IOException ioe){}
     }
     
-    
-    /**
+
+	/**
      * adds a listener to the factory that will be informed when a new engine will be loaded.
      * @param listener
      */
