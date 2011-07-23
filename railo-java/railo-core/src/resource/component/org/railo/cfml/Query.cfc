@@ -20,11 +20,14 @@ component output="false" extends="Base" accessors="true"{
 	/*
 	 * @hint Execute the query
 	 */	
-	public Result function execute(String sql=""){
-		if(len(arguments.sql)){
+	public Result function execute(){
+		if(!structIsempty(arguments)){
+			structappend(variables.attributes,arguments,"yes");
+        }
+		if(structKeyExists(arguments,"sql") && len(arguments.sql)){
 			 setSql(arguments.sql);
 		}
-		
+
 		//parse the sql into an array and save it
 		setQArray(parseSql());
 		
