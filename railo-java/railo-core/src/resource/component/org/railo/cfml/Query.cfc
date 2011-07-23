@@ -48,7 +48,7 @@ component output="false" extends="Base" accessors="true"{
 		var str = "";
 		var cursor = 1;
 		var lastMatch = 0;
-		var regex = '[\s]+:[a-zA-Z1-9]*|\?';
+		var regex = '[\s]+:[a-zA-Z1-9]*|[\s]+\?';
 
 		var match = refindNoCase(regex,sql,cursor,true);
 
