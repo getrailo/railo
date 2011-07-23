@@ -8,6 +8,7 @@ import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.component.Member;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -130,49 +131,21 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         this.sessionType=ci.getSessionType();
         this.sessionCluster=ci.getSessionCluster();
         this.clientCluster=ci.getClientCluster();
-        /* TODO
-        this.secureJsonPrefix=ci.getSecureJsonPrefix();
-        this.secureJson=ci.getSecureJson();
-        this.clientStorage=ci.getClientStorage();
-        this.sessionStorage=ci.getSessionStorage();
-        this.loginStorage=ci.getLoginStorage();
-        */
+        
         
         
 		this.component=cfc;
 		
-		Object o;
 		pc.addPageSource(component.getPageSource(), true);
 		try {
 			
 		
 
 
-			// datasource
-			o = get(component,KeyImpl.DATA_SOURCE,null);
-			if(o!=null) {
-				String ds = Caster.toString(o);
-				this.defaultDataSource = ds;
-				this.ormDatasource = ds;
-			}
-
-			// default datasource
-			o=get(component,DEFAULT_DATA_SOURCE,null);
-			if(o!=null) this.defaultDataSource =Caster.toString(o);
 			
 			/////////// ORM /////////////////////////////////
-			// ormenabled
-			o=get(component,ORM_ENABLED,null);
-			if(o!=null && Caster.toBooleanValue(o,false)){
-				this.ormEnabled=true;
-				
-				// settings
-				o=get(component,ORM_SETTINGS,null);
-				Struct settings;
-				if(o instanceof Struct)	settings=(Struct) o;
-				else	settings=new StructImpl();
-				AppListenerUtil.setORMConfiguration(pc, this, settings);
-			}
+			reinitORM(pc);
+			
 			
 			throwsErrorWhileInit.setValue(false);
 		}
@@ -184,6 +157,36 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 
 	
+	public void reinitORM(PageContext pc) throws PageException {
+
+		// datasource
+		Object o = get(component,KeyImpl.DATA_SOURCE,null);
+		if(o!=null) {
+			String ds = Caster.toString(o);
+			this.defaultDataSource = ds;
+			this.ormDatasource = ds;
+		}
+
+		// default datasource
+		o=get(component,DEFAULT_DATA_SOURCE,null);
+		if(o!=null) this.defaultDataSource =Caster.toString(o);
+		
+		// ormenabled
+		o = get(component,ORM_ENABLED,null);
+		if(o!=null && Caster.toBooleanValue(o,false)){
+			this.ormEnabled=true;
+			
+			// settings
+			o=get(component,ORM_SETTINGS,null);
+			Struct settings;
+			if(o instanceof Struct)	settings=(Struct) o;
+			else	settings=new StructImpl();
+			AppListenerUtil.setORMConfiguration(pc, this, settings);
+		}
+	}
+
+
+
 	/**
 	 * @see railo.runtime.util.ApplicationContext#hasName()
 	 */

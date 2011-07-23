@@ -202,6 +202,7 @@ public class aprint {
     	else if(o instanceof long[]) _(ps,(long[])o);
     	else if(o instanceof double[]) _(ps,(double[])o);
     	else if(o instanceof char[]) _(ps,(char[])o);
+    	else if(o instanceof short[]) _(ps,(short[])o);
     	else if(o instanceof Set) _(ps,(Set)o);
     	else if(o instanceof List) _(ps,(List)o);
     	else if(o instanceof Map) _(ps,(Map)o);
@@ -275,6 +276,15 @@ public class aprint {
     
     private static void _(PrintStream ps,char[] arr) {
         ps.print("char[]{");
+        for(int i=0;i<arr.length;i++) {
+            if(i>0)ps.print(',');
+            ps.print(arr[i]);
+        }
+        ps.println("}");
+    }
+    
+    private static void _(PrintStream ps,short[] arr) {
+        ps.print("short[]{");
         for(int i=0;i<arr.length;i++) {
             if(i>0)ps.print(',');
             ps.print(arr[i]);

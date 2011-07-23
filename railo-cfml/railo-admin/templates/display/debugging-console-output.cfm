@@ -87,9 +87,9 @@
 		<cfif FindListNoCase("INSERT ,DROP , DELETE ,ALTER ,UPDATE ,CREATE ,DROP ,REVOKE ,GRANT ", form.sql)>
 			<cfthrow message="Query is not executable">
 		<cfelse>
-			<cfquery name="qry" datasource="#form.datasource#" psq="no" result="result">
+			<!--- <cfquery name="qry" datasource="#form.datasource#" psq="no" result="result">
 				#form.sql#
-			</cfquery>
+			</cfquery>--->
 		</cfif>
 		<cfset iTimer = GetTickCount() - iTimer>
 		<cfcatch type="Database">

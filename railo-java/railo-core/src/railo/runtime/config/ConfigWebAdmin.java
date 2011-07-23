@@ -754,6 +754,7 @@ public final class ConfigWebAdmin {
         //    throw new SecurityException("no access to change custom tag settings");
         
         //virtual="/custom-tag";
+    	primary=primary.equalsIgnoreCase("archive")?"archive":"physical";
         
         boolean isArchive=primary.equalsIgnoreCase("archive");
         if(isArchive && archive.length()==0 ) {
@@ -764,12 +765,25 @@ public final class ConfigWebAdmin {
         }
         
         Element mappings=_getRootElement("component");
+        Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
+        Element el;
+        
+        // ignore when exists
+        for(int i=0;i<children.length;i++) {
+      		el=children[i];
+      	    if(el.getAttribute("physical").equals(physical) &&
+      	    		el.getAttribute("archive").equals(archive) &&
+      	    		el.getAttribute("primary").equals(primary) &&
+      	    		el.getAttribute("trusted").equals(Caster.toString(trusted))){
+      	    	return;
+  			}
+      	}
+        
         
         // Update
-        Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
         for(int i=0;i<children.length;i++) {
       	    if(("/"+i).equals(virtual)) {
-	      		Element el=children[i];
+	      		el=children[i];
 	      		el.setAttribute("physical",physical);
 	      		el.setAttribute("archive",archive);
 	      		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
@@ -779,7 +793,7 @@ public final class ConfigWebAdmin {
       	}
       	
       	// Insert
-      	Element el=doc.createElement("mapping");
+      	el=doc.createElement("mapping");
       	mappings.appendChild(el);
       	if(physical.length()>0)el.setAttribute("physical",physical);
   		if(archive.length()>0)el.setAttribute("archive",archive);

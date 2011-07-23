@@ -68,11 +68,6 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 	* @see javax.servlet.jsp.tagext.Tag#release()
 	*/
 	public void release()	{
-		if(ACTION_RUN==action) return;
-		_release();
-		
-	}
-	private void _release()	{
 		super.release();
 		action=ACTION_RUN;
 		duration=-1;
@@ -83,6 +78,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 		plans=EXECUTION_PLAN;
 		timeout=0;
 		attrs=null;
+		pc=null;
 	}
 	
 	/**
@@ -296,7 +292,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 			throw Caster.toPageException(t);
 		}
 		finally {
-			_release();
+			pc.reuse(this);// this method is not called from template when type is run, a call from template is to early,
 		}
 	}
 	
@@ -318,7 +314,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
     		PageContextImpl mpc=(PageContextImpl)getMainPageContext(pc);
     		ts = mpc.getThreadScope(names[i]);
     		if(ts==null)
-    			throw new ApplicationException("there is no thread running with the name ["+names[i]+"]");
+    			throw new ApplicationException("there is no thread running with the name ["+names[i]+"], only the following threads existing ["+List.arrayToList(mpc.getThreadScopeNames(),", ")+"]");
     		ct=ts.getChildThread();
     		
     		if(ct.isAlive()) {

@@ -544,6 +544,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	 */
 	public QueryImpl(Collection.Key[] columnNames, String[] strTypes, int rowNumber, String name) throws DatabaseException {
         this.name=name;
+        this.columnNames=columnNames;
         columncount=columnNames.length;
 		if(strTypes.length!=columncount) throw new DatabaseException("columns and types has not the same count",null,null,null);
 		recordcount=rowNumber;
@@ -857,14 +858,16 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		if(index!=-1) {
 			return columns[index].get(row,defaultValue);
 		}
-        char c=key.charAt(0);
-        if(c=='r' || c=='R') {
-            if(key.equalsIgnoreCase("recordcount")) return new Double(getRecordcount());
-        }
-        if(c=='c' || c=='C') {
-            if(key.equalsIgnoreCase("currentrow")) return new Double(row);
-            else if(key.equalsIgnoreCase("columnlist")) return getColumnlist(true);
-        }
+		if(key.length()>0) {
+	        char c=key.charAt(0);
+	        if(c=='r' || c=='R') {
+	            if(key.equalsIgnoreCase("recordcount")) return new Double(getRecordcount());
+	        }
+	        if(c=='c' || c=='C') {
+	            if(key.equalsIgnoreCase("currentrow")) return new Double(row);
+	            else if(key.equalsIgnoreCase("columnlist")) return getColumnlist(true);
+	        }
+		}
         return null;
 	}
 
@@ -873,14 +876,16 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		if(index!=-1) {
 			return columns[index].get(row,defaultValue);
 		}
-        char c=key.lowerCharAt(0);
-        if(c=='r') {
-            if(key.equals(RECORDCOUNT)) return new Double(getRecordcount());
-        }
-        else if(c=='c') {
-            if(key.equals(CURRENTROW)) return new Double(row);
-            else if(key.equals(COLUMNLIST)) return getColumnlist(true);
-        }
+		if(key.getString().length()>0) {
+	        char c=key.lowerCharAt(0);
+	        if(c=='r') {
+	            if(key.equals(RECORDCOUNT)) return new Double(getRecordcount());
+	        }
+	        else if(c=='c') {
+	            if(key.equals(CURRENTROW)) return new Double(row);
+	            else if(key.equals(COLUMNLIST)) return getColumnlist(true);
+	        }
+		}
         return null;
 	}
 	
@@ -893,13 +898,15 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		if(index!=-1) {
 			return columns[index].get(row);
 		}
-        char c=key.charAt(0);
-        if(c=='r' || c=='R') {
-            if(key.equalsIgnoreCase("recordcount")) return new Double(getRecordcount());
-		}
-        else if(c=='c' || c=='C') {
-		    if(key.equalsIgnoreCase("currentrow")) return new Double(row);
-		    else if(key.equalsIgnoreCase("columnlist")) return getColumnlist(true);
+		if(key.length()>0){
+	        char c=key.charAt(0);
+	        if(c=='r' || c=='R') {
+	            if(key.equalsIgnoreCase("recordcount")) return new Double(getRecordcount());
+			}
+	        else if(c=='c' || c=='C') {
+			    if(key.equalsIgnoreCase("currentrow")) return new Double(row);
+			    else if(key.equalsIgnoreCase("columnlist")) return getColumnlist(true);
+			}
 		}
 		throw new DatabaseException("column ["+key+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
 	}
@@ -912,14 +919,16 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		if(index!=-1) {
 			return columns[index].get(row);
 		}
-        char c=key.lowerCharAt(0);
-        if(c=='r') {
-            if(key.equals(RECORDCOUNT)) return new Double(getRecordcount());
-		}
-        else if(c=='c') {
-		    if(key.equals(CURRENTROW)) return new Double(row);
-		    else if(key.equals(COLUMNLIST)) return getColumnlist(true);
-		}
+        if(key.getString().length()>0) {
+        	char c=key.lowerCharAt(0);
+	        if(c=='r') {
+	            if(key.equals(RECORDCOUNT)) return new Double(getRecordcount());
+			}
+	        else if(c=='c') {
+			    if(key.equals(CURRENTROW)) return new Double(row);
+			    else if(key.equals(COLUMNLIST)) return getColumnlist(true);
+			}
+        }
 		throw new DatabaseException("column ["+key+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
 	}
 
@@ -1497,14 +1506,16 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		int index=getIndexFromKey(key);
 		if(index!=-1) return columns[index];
         
-        char c=key.lowerCharAt(0);
-        if(c=='r') {
-            if(key.equals(RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
-        }
-        if(c=='c') {
-            if(key.equals(CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
-            else if(key.equals(COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
-        }
+		if(key.getString().length()>0) {
+        	char c=key.lowerCharAt(0);
+	        if(c=='r') {
+	            if(key.equals(RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
+	        }
+	        if(c=='c') {
+	            if(key.equals(CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            else if(key.equals(COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
+	        }
+		}
         throw new DatabaseException("key ["+key.getString()+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
 	}
 	
@@ -1539,14 +1550,15 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	public QueryColumn getColumn(Collection.Key key, QueryColumn defaultValue) {
         int index=getIndexFromKey(key);
 		if(index!=-1) return columns[index];
-        
-        char c=key.lowerCharAt(0);
-        if(c=='r') {
-            if(key.equals(RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
-        }
-        if(c=='c') {
-            if(key.equals(CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
-            else if(key.equals(COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
+        if(key.getString().length()>0) {//FUTURE add length method to Key Interface
+        	char c=key.lowerCharAt(0);
+	        if(c=='r') {
+	            if(key.equals(RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
+	        }
+	        if(c=='c') {
+	            if(key.equals(CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            else if(key.equals(COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
+	        }
         }
         return defaultValue;
 	}
@@ -1672,6 +1684,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	}
 	
 	private int getIndexFromKey(Collection.Key key) {
+		
 		for(int i=0;i<columnNames.length;i++) {
 			if(columnNames[i].equalsIgnoreCase(key)) return i;
 		}
@@ -2345,7 +2358,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		try {
 			return BlobImpl.toBlob(bytes);
 		} 
-		catch (ExpressionException e) {
+		catch (PageException e) {
 			throw new SQLException(e.getMessage());
 		}
 	}
@@ -2358,7 +2371,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		if(bytes==null) return null;
 		try {
 			return BlobImpl.toBlob(bytes);
-		} catch (ExpressionException e) {
+		} catch (PageException e) {
 			throw new SQLException(e.getMessage());
 		}
 	}

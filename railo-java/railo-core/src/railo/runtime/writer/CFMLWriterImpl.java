@@ -292,7 +292,7 @@ public class CFMLWriterImpl extends CFMLWriter {
     	
     	if(allowCompression){
     		
-    		String encodings = request.getHeader("Accept-Encoding");
+    		String encodings = ReqRspUtil.getHeader(request,"Accept-Encoding",null);
     	    if(!StringUtil.isEmpty(encodings) && encodings.indexOf("gzip")!=-1) {
     	    	boolean inline=HttpServletResponseWrap.get();
     	    	if(!inline) {

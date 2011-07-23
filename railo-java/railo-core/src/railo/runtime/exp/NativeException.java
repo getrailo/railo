@@ -12,7 +12,7 @@ import railo.runtime.reflection.Reflector;
 /**
  * Box a Native Exception, Native = !PageException
  */
-public final class NativeException extends PageExceptionImpl {
+public class NativeException extends PageExceptionImpl {
 
 	private static final long serialVersionUID = 6221156691846424801L;
 	
