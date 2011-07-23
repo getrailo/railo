@@ -45,8 +45,9 @@ component output="false" extends="Base" accessors="true"{
 		var str = "";
 		var cursor = 1;
 		var lastMatch = 0;
+		var regex = '[\s]+:[a-zA-Z1-9]*|\?';
 
-		var match = refindNoCase(':[a-zA-Z1-9]*|\?',sql,cursor,true);
+		var match = refindNoCase(regex,sql,cursor,true);
 
 		//if no match there is no need to enter in the loop
 		if(match.pos[1] eq 0){
@@ -58,15 +59,15 @@ component output="false" extends="Base" accessors="true"{
 			// trace the lastmatch position to add any string after the last match if found
 			lastMatch =  cursor;
 			
-			match = refindNoCase(':[a-zA-Z1-9]*|\?',sql,cursor,true);
-			
+			match = refindNoCase(regex,sql,cursor,true);
+
 			if(match.pos[1] gt 0){
 				// string from cursor to match			
 				str = mid(sql,cursor,match.pos[1] - cursor);
 				result.add({type='String',value=str})
 				
 				//add match
-				str = mid(sql,match.pos[1],match.len[1]);
+				str = trim(mid(sql,match.pos[1],match.len[1]));
 				if(left(str,1) eq ':'){
 					result.add(findNamedParam(namedParams,right(str,len(str) - 1)));
 				}else{
