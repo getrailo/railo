@@ -25,7 +25,7 @@ component output="false" extends="Base" accessors="true"{
 			structappend(variables.attributes,arguments,"yes");
         }
 		if(structKeyExists(arguments,"sql") && len(arguments.sql)){
-			 setSql(arguments.sql);
+			 this.setSql(arguments.sql);
 		}
 
 		//parse the sql into an array and save it
@@ -80,9 +80,9 @@ component output="false" extends="Base" accessors="true"{
 			}
 			
 			// point the cursor after the match
-			cursor = match.pos[1] + match.len[1];	
+			cursor = match.pos[1] + match.len[1];
 		}
-		
+
 		// no more match check if we have string to close the statement
 		if(len(sql) gt lastMatch){
 			str = mid(sql,lastMatch,len(sql));
