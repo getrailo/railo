@@ -14,6 +14,7 @@ public final class NumberIterator {
 	private int _from;
 	private int _to;
 	private int _current;
+	private int recordcount;
 	
 	//private static int count=0;
 	
@@ -21,15 +22,17 @@ public final class NumberIterator {
 	 * constructor of the number iterator
 	 * @param from iterate from
 	 * @param to iterate to
+	 * @param recordcount 
 	 */
-	private NumberIterator(int from, int to) {
+	private NumberIterator(int from, int to, int recordcount) {
 	    //railo.print.ln(count++);
-        init(from,to);
+        init(from,to,recordcount);
 	}
-	private NumberIterator init(int from, int to) {
+	private NumberIterator init(int from, int to, int recordcount) {
 	    this._from=from;
 		this._current=from;
 		this._to=to; 
+		this.recordcount=recordcount;
 		return this;
 	}
 		
@@ -38,6 +41,9 @@ public final class NumberIterator {
 	 */
 	public boolean hasNext() {
 		return _current<_to;
+	}
+	public boolean hasNext(boolean useRecordcount) {
+		return _current<(useRecordcount?recordcount:_to);
 	}
 	
 	/**
@@ -120,16 +126,16 @@ public final class NumberIterator {
 	
 	
 	private static NumberIterator[] iterators=new NumberIterator[]{
-		    new NumberIterator(1,1),
-		    new NumberIterator(1,1),
-		    new NumberIterator(1,1),
-		    new NumberIterator(1,1),
-		    new NumberIterator(1,1),
-		    new NumberIterator(1,1),
-		    new NumberIterator(1,1),
-		    new NumberIterator(1,1),
-		    new NumberIterator(1,1),
-		    new NumberIterator(1,1)
+		    new NumberIterator(1,1,1),
+		    new NumberIterator(1,1,1),
+		    new NumberIterator(1,1,1),
+		    new NumberIterator(1,1,1),
+		    new NumberIterator(1,1,1),
+		    new NumberIterator(1,1,1),
+		    new NumberIterator(1,1,1),
+		    new NumberIterator(1,1,1),
+		    new NumberIterator(1,1,1),
+		    new NumberIterator(1,1,1)
 	};
 	private static int pointer=0;
 	
@@ -140,8 +146,11 @@ public final class NumberIterator {
 	 * @return NumberIterator
 	 */
 	private static NumberIterator _load(int from, int to) {
-	    if(pointer>=iterators.length) return new NumberIterator(from,to);
-	    return iterators[pointer++].init(from,to);
+		return _load(from, to, to);
+	}
+	private static NumberIterator _load(int from, int to, int recordcount) {
+		if(pointer>=iterators.length) return new NumberIterator(from,to,recordcount);
+	    return iterators[pointer++].init(from,to,recordcount);
 	}
 	
 	/**
@@ -151,7 +160,7 @@ public final class NumberIterator {
 	 * @return NumberIterator
 	 */
 	public static synchronized NumberIterator load(double from, double to) {
-		return _load((int)from,(int)to);
+		return _load((int)from,(int)to,(int)to);
 	}
 	
 	/**
@@ -162,7 +171,7 @@ public final class NumberIterator {
 	 * @return NumberIterator
 	 */
 	public static synchronized NumberIterator load(double from, double to, double max) {
-	    return _load((int)from,(int)((from+max-1<to)?from+max-1:to));
+	    return _load((int)from,(int)((from+max-1<to)?from+max-1:to),(int)to);
 	}
 	
 	/**
@@ -179,7 +188,7 @@ public final class NumberIterator {
         
         Object startValue=query.get(KeyImpl.init(groupName)); 
         // FUTURE Object startValue=query.get(pc,KeyImpl.init(groupName)); 
-        while(ni.hasNext()) { 
+        while(ni.hasNext(true)) { 
             if(!Operator.equals(startValue,query.getAt(groupName,ni.next()),caseSensitive)) { 
                         ni.previous();
                         return _load(startIndex,ni.current());
