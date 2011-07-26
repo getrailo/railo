@@ -9,6 +9,7 @@ import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.xml.sax.SAXException;
 
+import railo.print;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.URLEncoder;
@@ -31,6 +33,7 @@ import railo.loader.util.Util;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 
 public final class S3 implements S3Constants {
@@ -148,9 +151,37 @@ public final class S3 implements S3Constants {
 		
 	}
 	
+
+	public HttpMethod head(String bucketName, String objectName) throws MalformedURLException, IOException, InvalidKeyException, NoSuchAlgorithmException {
+		bucketName=checkBucket(bucketName);
+		boolean hasObj=!StringUtil.isEmpty(objectName);
+		if(hasObj)objectName=checkObjectName(objectName);
+		
+		String dateTimeString = Util.toHTTPTimeString();
+		String signature = createSignature("HEAD\n\n\n"+dateTimeString+"\n/"+bucketName+"/"+(hasObj?objectName:""), getSecretAccessKeyValidate(), "iso-8859-1");
+		
+		
+		List<Header> headers=new ArrayList<Header>();
+		headers.add(new Header("Date",dateTimeString));
+		headers.add(new Header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature));
+		headers.add(new Header("Host",bucketName+"."+host));
+		
+		String strUrl="http://"+bucketName+"."+host+"/";
+		//if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/";
+		if(hasObj) {
+			strUrl+=objectName;
+		}
+		//strUrl+="?acl";
+		print.o("here");
+		HttpMethod method = railo.commons.net.HTTPUtil.head(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,(Header[])headers.toArray(new Header[headers.size()]));
+		return method;
+		
+	}
 	
 	
-	private InputStream aclRaw(String bucketName, String objectName) throws MalformedURLException, IOException, InvalidKeyException, NoSuchAlgorithmException {
+	
+	
+	public InputStream aclRaw(String bucketName, String objectName) throws MalformedURLException, IOException, InvalidKeyException, NoSuchAlgorithmException {
 		bucketName=checkBucket(bucketName);
 		boolean hasObj=!StringUtil.isEmpty(objectName);
 		if(hasObj)objectName=checkObjectName(objectName);
@@ -264,7 +295,6 @@ public final class S3 implements S3Constants {
 		
 		HttpMethod method = railo.commons.net.HTTPUtil.invoke(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,(Header[])headers.toArray(new Header[headers.size()]));
 		return method.getResponseBodyAsStream();
-		
 	}
 	
 
@@ -419,6 +449,23 @@ public final class S3 implements S3Constants {
 	}
 
 	public InputStream getInputStream(String bucketName,String objectName) throws InvalidKeyException, NoSuchAlgorithmException, IOException, SAXException  {
+		return getData(bucketName, objectName).getResponseBodyAsStream();
+	}
+	
+	public Map<String, String> getMetadata(String bucketName,String objectName) throws InvalidKeyException, NoSuchAlgorithmException, IOException, SAXException  {
+		HttpMethod method = getData(bucketName, objectName);
+		Header[] headers = method.getResponseHeaders();
+		Map<String,String> rtn=new HashMap<String, String>();
+		String name;
+		if(headers!=null)for(int i=0;i<headers.length;i++){
+			name=headers[i].getName();
+			if(name.startsWith("x-amz-meta-"))
+				rtn.put(name.substring(11), headers[i].getValue());
+		}
+		return rtn;
+	}
+	
+	private HttpMethod getData(String bucketName,String objectName) throws InvalidKeyException, NoSuchAlgorithmException, IOException, SAXException  {
 		bucketName=checkBucket(bucketName);
 		objectName=checkObjectName(objectName);
 		
@@ -443,39 +490,10 @@ public final class S3 implements S3Constants {
 		);
 		if(method.getStatusCode()!=200)
 			new ErrorFactory(method.getResponseBodyAsStream());
-		
-		return method.getResponseBodyAsStream();
-		
-		
-		
-		
-		//URL url = new URL(getObjectLink(bucketName, objectName, 6000));
-		//HttpMethod method = HTTPUtil.invoke(url, null, null, -1, null, null, null, -1, null, null, null);
-		//if(method.getStatusCode()!=200)new ErrorFactory(method.getResponseBodyAsStream());
-		
-		//return method.getResponseBodyAsStream();
+		return method;
 	}
 	
-	
-	
-	/*
-<cffunction name="getObject" access="public" output="false" returntype="string" description="Returns a link to an object.">
-		<cfargument name="minutesValid" type="string" required="false" default="60">
 
-		<cfreturn timedAmazonLink>
-	</cffunction>
-
-
-	 */
-	
-
-	/*public void deleteBucket(String bucketName) throws InvalidKeyException, NoSuchAlgorithmException, IOException, SAXException {
-		_delete(bucketName, "");
-	}
-
-	public void deleteObject(String bucketName,String objectName) throws InvalidKeyException, NoSuchAlgorithmException, IOException, SAXException {
-		_delete(bucketName, checkObjectName(objectName));
-	}*/
 	
 
 	public void delete(String bucketName, String objectName) throws IOException, InvalidKeyException, NoSuchAlgorithmException, SAXException {
