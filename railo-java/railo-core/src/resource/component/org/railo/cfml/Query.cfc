@@ -20,11 +20,14 @@ component output="false" extends="Base" accessors="true"{
 	/*
 	 * @hint Execute the query
 	 */	
-	public Result function execute(String sql=""){
-		if(len(arguments.sql)){
-			 setSql(arguments.sql);
+	public Result function execute(){
+		if(!structIsempty(arguments)){
+			structappend(variables.attributes,arguments,"yes");
+        }
+		if(structKeyExists(arguments,"sql") && len(arguments.sql)){
+			 this.setSql(arguments.sql);
 		}
-		
+
 		//parse the sql into an array and save it
 		setQArray(parseSql());
 		
@@ -45,9 +48,10 @@ component output="false" extends="Base" accessors="true"{
 		var str = "";
 		var cursor = 1;
 		var lastMatch = 0;
-		
-		var match = refindNoCase(':[a-z]*|\?',sql,cursor,true);
-		
+		var regex = '[\s]+:[a-zA-Z1-9]*|[\s]+\?';
+
+		var match = refindNoCase(regex,sql,cursor,true);
+
 		//if no match there is no need to enter in the loop
 		if(match.pos[1] eq 0){
 			result.add({type='String',value=sql});
@@ -58,15 +62,15 @@ component output="false" extends="Base" accessors="true"{
 			// trace the lastmatch position to add any string after the last match if found
 			lastMatch =  cursor;
 			
-			match = refindNoCase(':[a-z]*|\?',sql,cursor,true);
-			
+			match = refindNoCase(regex,sql,cursor,true);
+
 			if(match.pos[1] gt 0){
 				// string from cursor to match			
 				str = mid(sql,cursor,match.pos[1] - cursor);
 				result.add({type='String',value=str})
 				
 				//add match
-				str = mid(sql,match.pos[1],match.len[1]);
+				str = trim(mid(sql,match.pos[1],match.len[1]));
 				if(left(str,1) eq ':'){
 					result.add(findNamedParam(namedParams,right(str,len(str) - 1)));
 				}else{
@@ -76,9 +80,9 @@ component output="false" extends="Base" accessors="true"{
 			}
 			
 			// point the cursor after the match
-			cursor = match.pos[1] + match.len[1];	
+			cursor = match.pos[1] + match.len[1];
 		}
-		
+
 		// no more match check if we have string to close the statement
 		if(len(sql) gt lastMatch){
 			str = mid(sql,lastMatch,len(sql));
