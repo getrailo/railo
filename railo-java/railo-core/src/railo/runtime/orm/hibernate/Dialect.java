@@ -1,12 +1,19 @@
 package railo.runtime.orm.hibernate;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import railo.commons.lang.StringUtil;
 import railo.runtime.db.DataSource;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
 public class Dialect {
 	private static Struct dialects=new StructImpl();
+	private static Struct dialects2=new StructImpl();
 	
 	static {
 		// if this list change, also update list in web-cfmtaglibrary_1 for "application-ormsettings-dialect" 
@@ -82,6 +89,18 @@ public class Dialect {
 		dialects.setEL("SybaseAnywhere", org.hibernate.dialect.SybaseAnywhereDialect.class.getName());
 		dialects.setEL("SybaseASE15", org.hibernate.dialect.SybaseASE15Dialect.class.getName());
 		dialects.setEL("Sybase", org.hibernate.dialect.SybaseDialect.class.getName());
+		
+		Iterator it = dialects.entrySet().iterator();
+		String value;
+		Map.Entry entry;
+		while(it.hasNext()){
+			entry=(Entry) it.next();
+			value=(String) entry.getValue();
+
+			dialects2.setEL(KeyImpl.init(value), value);
+			dialects2.setEL(KeyImpl.init(List.last(value, ".")), value);
+		}
+		
     }
 	
 	/**
@@ -101,7 +120,9 @@ public class Dialect {
 
 	public static String getDialect(String name){
 		if(StringUtil.isEmpty(name))return null;
-		return (String) dialects.get(name, null);
+		String dialect= (String) dialects.get(KeyImpl.init(name), null);
+		if(dialect==null)dialect= (String) dialects2.get(KeyImpl.init(name), null);
+		return dialect;
 	}
 	
 	public static String[] listDialectNames(){
