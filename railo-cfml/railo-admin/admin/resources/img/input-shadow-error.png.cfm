@@ -1,0 +1,1 @@
+<cfsavecontent variable="c">R0lGODlhAQAKAKIAAPrg4PbIyPjS0vrd3fXBwfnY2Pri4gAAACH5BAAAAAAALAAAAAABAAoAAAMGSCE1YNAkADs=</cfsavecontent><cfoutput><cfif getBaseTemplatePath() EQ getCurrentTemplatePath()><cfcontent type="image/png" variable="#toBinary(c)#"><cfsetting showdebugoutput="no"><cfelse>data:image/png;base64,#c#</cfif></cfoutput>
