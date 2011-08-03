@@ -658,7 +658,7 @@ public final class FileTag extends TagImpl {
 	            sct.setEL("img",img);
             }
         } 
-		catch (IOException e) {}
+		catch (Throwable t) {}
 	}
 
 	private static String getFileAttribute(Resource file){
