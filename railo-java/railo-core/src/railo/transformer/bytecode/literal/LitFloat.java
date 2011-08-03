@@ -35,7 +35,7 @@ public final class LitFloat extends ExpressionBase implements Literal,ExprFloat 
 	/**
      * @return return value as double value
      */ 
-    public double getFloatValue() {
+    public float getFloatValue() {
         return f;
     }
     

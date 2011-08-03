@@ -54,7 +54,7 @@ public final class CastFloat extends ExpressionBase implements ExprFloat {
     	GeneratorAdapter adapter = bc.getAdapter();
 
     	if(expr instanceof OpDouble) {
-            ((OpDouble)expr).writeOutDouble(bc);
+            ((OpDouble)expr).writeOutDouble(bc,MODE_VALUE);
             if(mode==MODE_REF)adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_FLOAT_FROM_FLOAT);
         }
     	else if(expr instanceof ExprBoolean) {

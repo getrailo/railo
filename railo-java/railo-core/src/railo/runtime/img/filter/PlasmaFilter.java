@@ -14,13 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.Date;
 import java.util.Random;
 
-public class PlasmaFilter extends WholeImageFilter {
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
+public class PlasmaFilter extends WholeImageFilter  implements DynFiltering {
 	
 	public float turbulence = 1.0f;
 	private float scaling = 0.0f;
@@ -244,4 +251,20 @@ public class PlasmaFilter extends WholeImageFilter {
 		return "Texture/Plasma...";
 	}
 	
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));
+		if((o=parameters.removeEL(KeyImpl.init("Turbulence")))!=null)setTurbulence(ImageFilterUtil.toFloatValue(o,"Turbulence"));
+		if((o=parameters.removeEL(KeyImpl.init("Scaling")))!=null)setScaling(ImageFilterUtil.toFloatValue(o,"Scaling"));
+		if((o=parameters.removeEL(KeyImpl.init("UseColormap")))!=null)setUseColormap(ImageFilterUtil.toBooleanValue(o,"UseColormap"));
+		if((o=parameters.removeEL(KeyImpl.init("UseImageColors")))!=null)setUseImageColors(ImageFilterUtil.toBooleanValue(o,"UseImageColors"));
+		if((o=parameters.removeEL(KeyImpl.init("Seed")))!=null)setSeed(ImageFilterUtil.toIntValue(o,"Seed"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Colormap, Turbulence, Scaling, UseColormap, UseImageColors, Seed]");
+		}
+
+		return filter(src, dst);
+	}
 }

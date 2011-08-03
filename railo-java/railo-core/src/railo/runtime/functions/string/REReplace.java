@@ -13,7 +13,7 @@ import railo.runtime.regex.Perl5Util;
 
 public final class REReplace implements Function {
 
-	public static String call(String string, String regExp, String replace) throws ExpressionException {
+	public static String call(String string, String regExp, String replace) throws ExpressionException { // MUST is this really needed?
 	    try {
 			return Perl5Util.replace(string,regExp,replace,true,false);
 		} catch (MalformedPatternException e) {

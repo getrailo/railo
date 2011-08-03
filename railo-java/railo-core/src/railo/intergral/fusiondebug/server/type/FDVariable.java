@@ -14,7 +14,7 @@ public class FDVariable implements IFDVariable {
 	private IFDStackFrame frame;
 
 	public FDVariable(IFDStackFrame frame,String name,IFDValue value){
-		this(frame,KeyImpl.init(name), value);
+		this(frame,KeyImpl.getInstance(name), value);
 	}
 	
 	/**

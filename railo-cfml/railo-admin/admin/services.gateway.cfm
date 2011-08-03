@@ -1,3 +1,5 @@
+<cfif request.admintype EQ "server"><cflocation url="#request.self#" addtoken="no"></cfif>
+
 <cfset error.message="">
 <cfset error.detail="">
 <cfparam name="url.action2" default="list">
@@ -48,7 +50,7 @@
 <span class="CheckError">
 The Gateway Implementation is currently in Beta State. Its functionality can change before it's final release.
 If you have any problems while using the Gateway Implementation, please post the bugs and errors in our <a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank" class="CheckError">bugtracking system</a>. 
-</span>
+</span><br /><br />
 
 <cfswitch expression="#url.action2#">
 	<cfcase value="list"><cfinclude template="services.gateway.list.cfm"/></cfcase>

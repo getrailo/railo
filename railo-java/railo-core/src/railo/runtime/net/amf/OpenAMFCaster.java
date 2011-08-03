@@ -11,7 +11,6 @@ import org.openamf.config.PageableRecordsetConfig;
 import org.openamf.recordset.ASRecordSet;
 
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
 import railo.runtime.component.Property;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -21,6 +20,7 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ComponentUtil;
 import flashgateway.io.ASObject;
 
@@ -89,7 +89,7 @@ public final class OpenAMFCaster implements AMFCaster {
     }
     private Object toAMFObject(Component c) throws PageException {
     	ASObject aso = new ASObject();
-    	if(c instanceof ComponentImpl) {
+    	if(c instanceof ComponentAccess) {
     		Property[] prop = ComponentUtil.getProperties(c,false);
         	if(prop!=null)for(int i=0;i<prop.length;i++) {
         		aso.put(prop[i].getName().toUpperCase(), toAMFObject(c.get(prop[i].getName(),null)));

@@ -135,6 +135,7 @@
 					<td class="cfdebug"><b>Text</b></td>
 					<td class="cfdebug"><b>Template</b></td>
 					<td class="cfdebug"><b>Line</b></td>
+					<td class="cfdebug"><b>Action</b></td>
 					<td class="cfdebug"><b>Var</b></td>
 					<td class="cfdebug"><b>Total Time</b></td>
 					<td class="cfdebug"><b>Trace Slot Time</b></td>
@@ -148,6 +149,7 @@
 					<td align="let" class="cfdebug" nowrap valign="top">#traces.text#&nbsp;</td>
 					<td align="left" class="cfdebug" nowrap valign="top">#traces.template#</td>
 					<td align="right" class="cfdebug" nowrap valign="top">#traces.line#</td>
+					<cfif isDefined('traces.action')><td align="left" class="cfdebug" nowrap>#traces.action#</td></cfif>
 					<td align="left" class="cfdebug" nowrap valign="top"><cfif len(traces.varName)>#traces.varName# = #traces.varValue#<cftry><cfdump var="#evaluate(traces.varValue)#" label="#traces.varName#"><cfcatch></cfcatch></cftry><cfelse>&nbsp;<br />
 					</cfif></td>
 					<td align="right" class="cfdebug" nowrap valign="top">#total# ms</td>
@@ -537,7 +539,7 @@
 	
 	<cfset sError = "">
 	<cfset iTimer = GetTickCount()>
-	<cftry>
+	<!--- <cftry>
 		<cfquery name="qry" datasource="#form.datasource#" psq="no">
 			#form.sql#
 		</cfquery>
@@ -551,7 +553,7 @@
 				</div>
 			</cfsavecontent>
 		</cfcatch>
-	</cftry>
+	</cftry> --->
 	
 	<cfif sError neq "">
 		</table>

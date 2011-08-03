@@ -8,6 +8,8 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 
 public final class LSEuroCurrencyFormat implements Function { 
+
+	private static final long serialVersionUID = -9214893090412056842L;
 	public static String call(PageContext pc , Object number) throws PageException {
 		return LSCurrencyFormat.call(pc,number);
 	}

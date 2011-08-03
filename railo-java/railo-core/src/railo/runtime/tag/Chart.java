@@ -897,6 +897,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		if(plot instanceof CategoryPlot) {
 			CategoryPlot cp=(CategoryPlot) plot;
 			ValueAxis rangeAxis = cp.getRangeAxis();
+			rangeAxis.setAutoTickUnitSelection(true);
 			rangeAxis.setStandardTickUnits(new TickUnitsImpl(rangeAxis.getStandardTickUnits(),labelFormat));	
 		}
 	}

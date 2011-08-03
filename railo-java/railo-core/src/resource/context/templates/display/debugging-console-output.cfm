@@ -87,9 +87,9 @@
 		<cfif FindListNoCase("INSERT ,DROP , DELETE ,ALTER ,UPDATE ,CREATE ,DROP ,REVOKE ,GRANT ", form.sql)>
 			<cfthrow message="Query is not executable">
 		<cfelse>
-			<cfquery name="qry" datasource="#form.datasource#" psq="no" result="result">
+			<!--- <cfquery name="qry" datasource="#form.datasource#" psq="no" result="result">
 				#form.sql#
-			</cfquery>
+			</cfquery>--->
 		</cfif>
 		<cfset iTimer = GetTickCount() - iTimer>
 		<cfcatch type="Database">
@@ -359,6 +359,7 @@ function uCaseFirst(String str) {
 					<td class="cfdebug"><b>Text</b></td>
 					<td class="cfdebug"><b>Template</b></td>
 					<td class="cfdebug"><b>Line</b></td>
+					<td class="cfdebug"><b>Action</b></td>
 					<td class="cfdebug"><b>Var</b></td>
 					<td class="cfdebug"><b>Total Time</b></td>
 					<td class="cfdebug"><b>Trace Slot Time</b></td>
@@ -372,6 +373,7 @@ function uCaseFirst(String str) {
 					<td align="let" class="cfdebug" nowrap valign="top">#traces.text#&nbsp;</td>
 					<td align="left" class="cfdebug" nowrap valign="top">#traces.template#</td>
 					<td align="right" class="cfdebug" nowrap valign="top">#traces.line#</td>
+					<cfif isDefined('traces.action')><td align="right" class="cfdebug" nowrap valign="top">#traces.action#</td></cfif>
 					<td align="left" class="cfdebug" nowrap valign="top"><cfif len(traces.varName)>#traces.varName# = #traces.varValue#<cftry><cfdump var="#evaluate(traces.varValue)#" label="#traces.varName#"><cfcatch></cfcatch></cftry><cfelse>&nbsp;<br />
 					</cfif></td>
 					<td align="right" class="cfdebug" nowrap valign="top">#total# ms</td>

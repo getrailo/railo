@@ -14,14 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 
-import java.awt.image.BufferedImage;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which distorts and image by performing coordinate conversions between rectangular and polar coordinates.
  */
-public class PolarFilter extends TransformFilter {
+public class PolarFilter extends TransformFilter  implements DynFiltering {
 	
 	/**
      * Convert from rectangular to polar coordinates.
@@ -55,8 +61,8 @@ public class PolarFilter extends TransformFilter {
      * @param type the distortion type
      */
 	public PolarFilter(int type) {
-		this.type = type;
-		setEdgeAction(CLAMP);
+		super(ConvolveFilter.CLAMP_EDGES);
+		this.type=type;
 	}
 
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
@@ -69,12 +75,18 @@ public class PolarFilter extends TransformFilter {
 	}
 	
 	/**
-     * Set the distortion type.
-     * @param type the distortion type
-     * @see #getType
+     * Set the distortion type, valid values are
+     * - RECT_TO_POLAR = Convert from rectangular to polar coordinates
+     * - POLAR_TO_RECT = Convert from polar to rectangular coordinates
+     * - INVERT_IN_CIRCLE = Invert the image in a circle
      */
-	public void setType(int type) {
-		this.type = type;
+	public void setType(String type) throws ExpressionException {
+		type=type.trim().toUpperCase();
+		if("RECT_TO_POLAR".equals(type)) this.type = RECT_TO_POLAR;
+		else if("POLAR_TO_RECT".equals(type)) this.type = POLAR_TO_RECT;
+		else if("INVERT_IN_CIRCLE".equals(type)) this.type = INVERT_IN_CIRCLE;
+		else
+			throw new ExpressionException("inavlid type defintion ["+type+"], valid types are [RECT_TO_POLAR,POLAR_TO_RECT,INVERT_IN_CIRCLE]");
 	}
 
 	/**
@@ -207,4 +219,17 @@ public class PolarFilter extends TransformFilter {
 		return "Distort/Polar Coordinates...";
 	}
 
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=null;//ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Type")))!=null)setType(ImageFilterUtil.toString(o,"Type"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Type, EdgeAction, Interpolation]");
+		}
+
+		return filter(src, dst);
+	}
 }

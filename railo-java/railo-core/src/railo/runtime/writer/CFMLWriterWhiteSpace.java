@@ -2,6 +2,7 @@ package railo.runtime.writer;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -25,8 +26,9 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl implements WhiteS
 	 * @param bufferSize 
 	 * @param autoFlush 
 	 */
-	public CFMLWriterWhiteSpace(HttpServletResponse rsp, int bufferSize, boolean autoFlush, boolean closeConn, boolean showVersion, boolean contentLength) {
-		super(rsp, bufferSize, autoFlush,closeConn,showVersion,contentLength);
+	public CFMLWriterWhiteSpace(HttpServletRequest req, HttpServletResponse rsp, int bufferSize, boolean autoFlush, boolean closeConn, 
+			boolean showVersion, boolean contentLength, boolean allowCompression) {
+		super(req,rsp, bufferSize, autoFlush,closeConn,showVersion,contentLength,allowCompression);
 	}
 	
 

@@ -2,13 +2,30 @@ package railo.runtime.net.s3;
 
 import railo.commons.io.res.type.s3.S3;
 import railo.commons.io.res.type.s3.S3Constants;
+import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 
 
-public class Properties {
+public final class Properties {
 	private String accessKeyId;
 	private String secretAccessKey;
 	private int defaultLocation=S3Constants.STORAGE_UNKNOW;
 	private String host=S3.HOST;
+	
+	
+
+	public Struct toStruct() {
+		Struct sct=new StructImpl();
+
+		sct.setEL("accessKeyId", accessKeyId);
+		sct.setEL("awsSecretKey", accessKeyId);
+		sct.setEL("defaultLocation", S3.toStringStorage(defaultLocation,""));
+		sct.setEL("host", host);
+		
+		
+		return sct;
+	}
+	
 	/**
 	 * @return the accessKeyId
 	 */
@@ -56,5 +73,12 @@ public class Properties {
 	 */
 	public void setSecretAccessKey(String secretAccessKey) {
 		this.secretAccessKey = secretAccessKey;
+	}
+	
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString(){
+		return "accessKeyId:"+accessKeyId+";defaultLocation:"+defaultLocation+";host:"+host+";secretAccessKey:"+secretAccessKey;
 	}
 }

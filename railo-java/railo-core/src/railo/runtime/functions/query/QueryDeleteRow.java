@@ -11,7 +11,8 @@ public final class QueryDeleteRow {
     }
     
     public static boolean call(PageContext pc, Query query, double row) throws PageException {
-        query.removeRow((int)row);
+        if(row==-9999) row=query.getRowCount();// used for named arguments
+    	query.removeRow((int)row);
         return true;
     }
 }

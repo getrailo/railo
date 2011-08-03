@@ -14,9 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.Color;
+package railo.runtime.img.filter;import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -25,7 +23,15 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
-public class ShatterFilter extends AbstractBufferedImageOp {
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
+public class ShatterFilter extends AbstractBufferedImageOp  implements DynFiltering {
     private float centreX = 0.5f, centreY = 0.5f;
     private float distance;
     private float transition;
@@ -101,11 +107,6 @@ public class ShatterFilter extends AbstractBufferedImageOp {
 
 	public float getCentreY() {
 		return centreY;
-	}
-	
-	public void setCentre( Point2D centre ) {
-		this.centreX = (float)centre.getX();
-		this.centreY = (float)centre.getY();
 	}
 
 	public Point2D getCentre() {
@@ -233,5 +234,26 @@ y = tile.y + transition * tile.vy;
     
 	public String toString() {
 		return "Transition/Shatter...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Iterations")))!=null)setIterations(ImageFilterUtil.toIntValue(o,"Iterations"));
+		if((o=parameters.removeEL(KeyImpl.init("CentreX")))!=null)setCentreX(ImageFilterUtil.toFloatValue(o,"CentreX"));
+		if((o=parameters.removeEL(KeyImpl.init("CentreY")))!=null)setCentreY(ImageFilterUtil.toFloatValue(o,"CentreY"));
+		//if((o=parameters.removeEL(KeyImpl.init("Centre")))!=null)setCentre(ImageFilterUtil.toPoint2D(o,"Centre"));
+		if((o=parameters.removeEL(KeyImpl.init("Transition")))!=null)setTransition(ImageFilterUtil.toFloatValue(o,"Transition"));
+		if((o=parameters.removeEL(KeyImpl.init("Distance")))!=null)setDistance(ImageFilterUtil.toFloatValue(o,"Distance"));
+		if((o=parameters.removeEL(KeyImpl.init("Rotation")))!=null)setRotation(ImageFilterUtil.toFloatValue(o,"Rotation"));
+		if((o=parameters.removeEL(KeyImpl.init("Zoom")))!=null)setZoom(ImageFilterUtil.toFloatValue(o,"Zoom"));
+		if((o=parameters.removeEL(KeyImpl.init("StartAlpha")))!=null)setStartAlpha(ImageFilterUtil.toFloatValue(o,"StartAlpha"));
+		if((o=parameters.removeEL(KeyImpl.init("EndAlpha")))!=null)setEndAlpha(ImageFilterUtil.toFloatValue(o,"EndAlpha"));
+		if((o=parameters.removeEL(KeyImpl.init("Tile")))!=null)setTile(ImageFilterUtil.toIntValue(o,"Tile"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Iterations, CentreX, CentreY, Centre, Transition, Distance, Rotation, Zoom, StartAlpha, EndAlpha, Tile]");
+		}
+
+		return filter(src, dst);
 	}
 }

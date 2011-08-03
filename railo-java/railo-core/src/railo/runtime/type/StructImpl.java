@@ -10,10 +10,8 @@ import java.util.Set;
 import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.collections.HashTable;
-import railo.commons.collections.HashTableNotSync;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.struct.StructKeyExists;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;

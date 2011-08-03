@@ -10,11 +10,9 @@ import railo.runtime.type.StructImpl;
 
 public class RemoteClientTask extends SpoolerTaskWS {
 	
-	public static final Collection.Key ACTION = KeyImpl.getInstance("action");
-	public static final Collection.Key TYPE = KeyImpl.getInstance("type");
-	public static final Collection.Key PASSWORD = KeyImpl.getInstance("password");
-	public static final Collection.Key ATTRIBUTE_COLLECTION = KeyImpl.getInstance("attributeCollection");
-	public static final Collection.Key CALLER_ID = KeyImpl.getInstance("callerId");
+	public static final Collection.Key PASSWORD = KeyImpl.intern("password");
+	public static final Collection.Key ATTRIBUTE_COLLECTION = KeyImpl.intern("attributeCollection");
+	public static final Collection.Key CALLER_ID = KeyImpl.intern("callerId");
 	private StructImpl args;
 	private String action;
 	private String type;
@@ -22,9 +20,9 @@ public class RemoteClientTask extends SpoolerTaskWS {
 	public RemoteClientTask(ExecutionPlan[] plans,RemoteClient client, Struct attrColl,String callerId, String type) {
 		super(plans,client);
 		this.type=type;
-		action=(String) attrColl.get(ACTION,null);
+		action=(String) attrColl.get(KeyImpl.ACTION,null);
 		args = new StructImpl();
-		args.setEL(TYPE, client.getType());
+		args.setEL(KeyImpl.TYPE, client.getType());
 		args.setEL(PASSWORD, client.getAdminPasswordEncrypted());
 		args.setEL(ATTRIBUTE_COLLECTION, attrColl);
 		args.setEL(CALLER_ID, callerId);

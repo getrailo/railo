@@ -54,11 +54,13 @@ import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.other.CreateObject;
+import railo.runtime.functions.string.Hash;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
-import railo.runtime.listener.ApplicationContextUtil;
+import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.security.SecurityManager;
@@ -752,6 +754,7 @@ public final class ConfigWebAdmin {
         //    throw new SecurityException("no access to change custom tag settings");
         
         //virtual="/custom-tag";
+    	primary=primary.equalsIgnoreCase("archive")?"archive":"physical";
         
         boolean isArchive=primary.equalsIgnoreCase("archive");
         if(isArchive && archive.length()==0 ) {
@@ -762,12 +765,25 @@ public final class ConfigWebAdmin {
         }
         
         Element mappings=_getRootElement("component");
+        Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
+        Element el;
+        
+        // ignore when exists
+        for(int i=0;i<children.length;i++) {
+      		el=children[i];
+      	    if(el.getAttribute("physical").equals(physical) &&
+      	    		el.getAttribute("archive").equals(archive) &&
+      	    		el.getAttribute("primary").equals(primary) &&
+      	    		el.getAttribute("trusted").equals(Caster.toString(trusted))){
+      	    	return;
+  			}
+      	}
+        
         
         // Update
-        Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
         for(int i=0;i<children.length;i++) {
       	    if(("/"+i).equals(virtual)) {
-	      		Element el=children[i];
+	      		el=children[i];
 	      		el.setAttribute("physical",physical);
 	      		el.setAttribute("archive",archive);
 	      		el.setAttribute("primary",primary.equalsIgnoreCase("archive")?"archive":"physical");
@@ -777,7 +793,7 @@ public final class ConfigWebAdmin {
       	}
       	
       	// Insert
-      	Element el=doc.createElement("mapping");
+      	el=doc.createElement("mapping");
       	mappings.appendChild(el);
       	if(physical.length()>0)el.setAttribute("physical",physical);
   		if(archive.length()>0)el.setAttribute("archive",archive);
@@ -1051,13 +1067,14 @@ public final class ConfigWebAdmin {
      * @param blob 
      * @param clob 
      * @param allow 
+     * @param storage 
      * @param custom 
      * @throws ExpressionException
      * @throws SecurityException
      */
     public void updateDataSource(String name, String newName, String clazzName, String dsn, String username,String password,
             String host,String database,int port,int connectionLimit, int connectionTimeout,long metaCacheTimeout,
-            boolean blob,boolean clob,int allow,Struct custom) throws ExpressionException, SecurityException {
+            boolean blob,boolean clob,int allow,boolean validate,boolean storage, Struct custom) throws ExpressionException, SecurityException {
 
     	checkWriteAccess();
     	SecurityManager sm = config.getSecurityManager();
@@ -1121,6 +1138,8 @@ public final class ConfigWebAdmin {
                 el.setAttribute("blob",Caster.toString(blob));
                 el.setAttribute("clob",Caster.toString(clob));
                 el.setAttribute("allow",Caster.toString(allow));
+                el.setAttribute("validate",Caster.toString(validate));
+                el.setAttribute("storage",Caster.toString(storage));
                 el.setAttribute("custom",toStringURLStyle(custom));
                 
 	      		return ;
@@ -1153,6 +1172,8 @@ public final class ConfigWebAdmin {
         
         el.setAttribute("blob",Caster.toString(blob));
         el.setAttribute("clob",Caster.toString(clob));
+        el.setAttribute("validate",Caster.toString(validate));
+        el.setAttribute("storage",Caster.toString(storage));
         if(allow>-1)el.setAttribute("allow",Caster.toString(allow));
         el.setAttribute("custom",toStringURLStyle(custom));
         /*
@@ -1220,7 +1241,7 @@ public final class ConfigWebAdmin {
         
     }
 
-	public void updateCacheConnection(String name, String classname,int _default, Struct custom,boolean readOnly) throws PageException {
+	public void updateCacheConnection(String name, String classname,int _default, Struct custom,boolean readOnly,boolean storage) throws PageException {
     	checkWriteAccess();
     	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_CACHE);
 		if(!hasAccess)
@@ -1279,6 +1300,7 @@ public final class ConfigWebAdmin {
 	      		//el.setAttribute("default",Caster.toString(_default));
 	      		el.setAttribute("custom",toStringURLStyle(custom));
 	      		el.setAttribute("read-only",Caster.toString(readOnly));
+	      		el.setAttribute("storage",Caster.toString(storage));
 	      		return;
   			}
       	  
@@ -1292,6 +1314,7 @@ public final class ConfigWebAdmin {
   		//el.setAttribute("default",Caster.toString(_default));
   		el.setAttribute("custom",toStringURLStyle(custom));
   		el.setAttribute("read-only",Caster.toString(readOnly));
+  		el.setAttribute("storage",Caster.toString(storage));
         
     }
 	
@@ -1591,11 +1614,11 @@ public final class ConfigWebAdmin {
       	for(int i=0;i<children.length;i++) {
       	    String n=children[i].getAttribute("id"); 
   	    	if(n!=null && n.equalsIgnoreCase(name)) {
-  	    		Map conns = config.getGatewayEngine().getEntries();
+  	    		Map conns = ((ConfigWebImpl)config).getGatewayEngine().getEntries();
   	    		GatewayEntry ge=(GatewayEntry) conns.get(n);
   	    		if(ge!=null){
   	    			try {
-						config.getGatewayEngine().remove(ge);
+  	    				((ConfigWebImpl)config).getGatewayEngine().remove(ge);
 					} catch (GatewayException e) {
 						throw Caster.toPageException(e);
 					}
@@ -1823,6 +1846,26 @@ public final class ConfigWebAdmin {
         scope.setAttribute("show-version",Caster.toString(value,""));
     }
     
+    public void updateAllowCompression(Boolean value) throws SecurityException {
+    	checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        
+        Element scope=_getRootElement("setting");
+        scope.setAttribute("allow-compression",Caster.toString(value,""));
+    }
+    
+    public void updateContentLength(Boolean value) throws SecurityException {
+    	checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        
+        Element scope=_getRootElement("setting");
+        scope.setAttribute("content-length",Caster.toString(value,""));
+    }
+    
     /**
      * updates request timeout value
      * @param span
@@ -1974,7 +2017,7 @@ public final class ConfigWebAdmin {
     
     
     public void updateScriptProtect(int scriptProtect) throws SecurityException { 
-    	updateScriptProtect(ApplicationContextUtil.translateScriptProtect(scriptProtect));
+    	updateScriptProtect(AppListenerUtil.translateScriptProtect(scriptProtect));
     }
     
     /**
@@ -1996,11 +2039,12 @@ public final class ConfigWebAdmin {
     /**
      * update the timeServer
      * @param timeServer
+     * @param useTimeServer 
      * @throws PageException 
      */
-    public void updateTimeServer(String timeServer) throws PageException {
+    public void updateTimeServer(String timeServer, Boolean useTimeServer) throws PageException {
     	checkWriteAccess();
-       if(timeServer.trim().length()>0) {
+       if(useTimeServer!=null && useTimeServer.booleanValue() && !StringUtil.isEmpty(timeServer,true)) {
             try {
                 new NtpClient(timeServer).getOffset();
             } catch (IOException e) {
@@ -2014,6 +2058,8 @@ public final class ConfigWebAdmin {
         
         Element scope=_getRootElement("regional");
         scope.setAttribute("timeserver",timeServer.trim());
+        if(useTimeServer!=null)scope.setAttribute("use-timeserver",Caster.toString(useTimeServer));
+        else scope.removeAttribute("use-timeserver");
     }
     
     /**
@@ -2119,10 +2165,9 @@ public final class ConfigWebAdmin {
 	}
 	public void updateCTPathCache(Boolean ctPathCache) throws SecurityException {
 		checkWriteAccess();
-		boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
-		if(!hasAccess)
-            throw new SecurityException("no access to update Custom Tag Cache Path");
-        
+		if(!ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CUSTOM_TAG)) 
+			throw new SecurityException("no access to update custom tag setting");
+		
 		 if(!Caster.toBooleanValue(ctPathCache,false))
 	        	config.clearCTCache();
 	        Element scope=_getRootElement("custom-tag");
@@ -2270,7 +2315,7 @@ public final class ConfigWebAdmin {
  	      short cfxSetting, short cfxUsage, short debugging,
          short search, short scheduledTasks,
          short tagExecute,short tagImport, short tagObject, short tagRegistry,
-         short cache, short gateway,
+         short cache, short gateway,short orm,
          short accessRead, short accessWrite) throws SecurityException {
     	checkWriteAccess();
         if(!(config instanceof ConfigServer))
@@ -2298,6 +2343,7 @@ public final class ConfigWebAdmin {
         security.setAttribute("tag_registry",         SecurityManagerImpl.toStringAccessValue(tagRegistry));
         security.setAttribute("cache",       SecurityManagerImpl.toStringAccessValue(cache));
         security.setAttribute("gateway",       SecurityManagerImpl.toStringAccessValue(gateway));
+        security.setAttribute("orm",       SecurityManagerImpl.toStringAccessValue(orm));
 
         security.setAttribute("access_read",       SecurityManagerImpl.toStringAccessRWValue(accessRead));
         security.setAttribute("access_write",      SecurityManagerImpl.toStringAccessRWValue(accessWrite));
@@ -2361,7 +2407,7 @@ public final class ConfigWebAdmin {
           short cfxSetting, short cfxUsage, short debugging,
           short search, short scheduledTasks,
           short tagExecute,short tagImport, short tagObject, short tagRegistry, 
-          short cache,short gateway,
+          short cache,short gateway,short orm,
           short accessRead, short accessWrite) throws SecurityException, ApplicationException {
     	checkWriteAccess();
         if(!(config instanceof ConfigServer))
@@ -2393,6 +2439,7 @@ public final class ConfigWebAdmin {
         accessor.setAttribute("scheduled_task",     SecurityManagerImpl.toStringAccessValue(scheduledTasks));
         accessor.setAttribute("cache",     SecurityManagerImpl.toStringAccessValue(cache));
         accessor.setAttribute("gateway",     SecurityManagerImpl.toStringAccessValue(gateway));
+        accessor.setAttribute("orm",     SecurityManagerImpl.toStringAccessValue(orm));
         
         accessor.setAttribute("tag_execute",        SecurityManagerImpl.toStringAccessValue(tagExecute));
         accessor.setAttribute("tag_import",         SecurityManagerImpl.toStringAccessValue(tagImport));
@@ -2522,6 +2569,9 @@ public final class ConfigWebAdmin {
         accessor.setAttribute("cfx_setting",        SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_CFX_SETTING)));
         accessor.setAttribute("cfx_usage",          SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_CFX_USAGE)));
         accessor.setAttribute("debugging",          SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_DEBUGGING)));
+        accessor.setAttribute("cache",          	SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManagerImpl.TYPE_CACHE)));
+        accessor.setAttribute("gateway",          	SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManagerImpl.TYPE_GATEWAY)));
+        accessor.setAttribute("orm",          		SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManagerImpl.TYPE_ORM)));
 
         accessor.setAttribute("tag_execute",        SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_TAG_EXECUTE)));
         accessor.setAttribute("tag_import",         SecurityManagerImpl.toStringAccessValue(dsm.getAccess(SecurityManager.TYPE_TAG_IMPORT)));
@@ -2757,7 +2807,7 @@ public final class ConfigWebAdmin {
 		Resource storageDir = getStoragDir(config);
 		Resource storage=storageDir.getRealResource(key+".wddx");
 		
-		WDDXConverter converter =new WDDXConverter(config.getTimeZone(),true);
+		WDDXConverter converter =new WDDXConverter(config.getTimeZone(),true,true);
 		String wddx=converter.serialize(value);
 		IOUtil.write(storage, wddx, "UTF-8", false);
 	}
@@ -2768,14 +2818,16 @@ public final class ConfigWebAdmin {
 		Resource storageDir = getStoragDir(config);
 		Resource storage=storageDir.getRealResource(key+".wddx");
 		if(!storage.exists()) throw new IOException("there is no storage with name "+key);
-		WDDXConverter converter =new WDDXConverter(config.getTimeZone(),true);
+		WDDXConverter converter =new WDDXConverter(config.getTimeZone(),true,true);
 		return converter.deserialize(IOUtil.toString(storage,"UTF-8"), true);
 	}
 
 
 	public void updateCustomTagDeepSearch(boolean customTagDeepSearch) throws SecurityException {
 		checkWriteAccess();
-		// update charset
+		if(!ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CUSTOM_TAG)) 
+			throw new SecurityException("no access to update custom tag setting");
+		
 		Element element = _getRootElement("custom-tag");
 		element.setAttribute("custom-tag-deep-search",Caster.toString(customTagDeepSearch));
 	}
@@ -2793,7 +2845,9 @@ public final class ConfigWebAdmin {
 	
 	public void updateCustomTagLocalSearch(boolean customTagLocalSearch) throws SecurityException {
 		checkWriteAccess();
-		// update charset
+		if(!ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CUSTOM_TAG)) 
+			throw new SecurityException("no access to update custom tag setting");
+		
 		Element element = _getRootElement("custom-tag");
 		element.setAttribute("custom-tag-local-search",Caster.toString(customTagLocalSearch));
 	}
@@ -2802,6 +2856,8 @@ public final class ConfigWebAdmin {
 
 	public void updateCustomTagExtensions(String extensions) throws PageException {
 		checkWriteAccess();
+		if(!ConfigWebUtil.hasAccess(config, SecurityManager.TYPE_CUSTOM_TAG)) 
+			throw new SecurityException("no access to update custom tag setting");
 		
 		// check
 		Array arr = List.listToArrayRemoveEmpty(extensions, ',');
@@ -2930,8 +2986,10 @@ public final class ConfigWebAdmin {
 	}
 	
 
-	public void updateExtension(Extension extension) throws SecurityException {
+	public void updateExtension(Extension extension) throws PageException {
 		checkWriteAccess();
+		
+		String uid = createUid(extension.getProvider(),extension.getId());
 		
 		Element extensions=_getRootElement("extensions");
 		Element[] children = ConfigWebFactory.getChildren(extensions,"extension");
@@ -2943,8 +3001,7 @@ public final class ConfigWebAdmin {
       	    el=children[i];
       	    provider=el.getAttribute("provider");
       	    id=el.getAttribute("id");
-  			if(	provider!=null && provider.equalsIgnoreCase(extension.getProvider()) &&
-  				id!=null && id.equalsIgnoreCase(extension.getId())) {
+  			if(uid.equalsIgnoreCase(createUid(provider, id))) {
   				setExtensionAttrs(el,extension);
   				return ;
   			}
@@ -2957,6 +3014,16 @@ public final class ConfigWebAdmin {
   		el.setAttribute("id",extension.getId());
   		setExtensionAttrs(el,extension);
       	extensions.appendChild(el);
+	}
+
+
+	private String createUid(String provider, String id) throws PageException {
+		if(Decision.isUUId(id)) {
+			return Hash.invoke(config,id,null,null);
+		}
+		else {
+			return Hash.invoke(config,provider+id,null,null);
+		}
 	}
 
 
@@ -2987,17 +3054,32 @@ public final class ConfigWebAdmin {
 	}
 	
 
-	public void resetORMSetting() {
+	public void resetORMSetting() throws SecurityException {
+		boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_ORM);
+        
+    	if(!hasAccess)
+            throw new SecurityException("no access to update ORM Settings");
+        
+		
+		
 		Element orm=_getRootElement("orm");
 		orm.getParentNode().removeChild(orm);
 	}
 	
 
-	public void updateORMSetting(ORMConfiguration oc) {
+	public void updateORMSetting(ORMConfiguration oc) throws SecurityException {
+		boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_ORM);
+        
+		if(!hasAccess)
+            throw new SecurityException("no access to update ORM Settings");
+        
+		
+		
 		Element orm=_getRootElement("orm");
 		orm.setAttribute("autogenmap",Caster.toString(oc.autogenmap(),"true"));
 		orm.setAttribute("event-handler",Caster.toString(oc.eventHandler(),""));
 		orm.setAttribute("event-handling",Caster.toString(oc.eventHandling(),"false"));
+		orm.setAttribute("naming-strategy",Caster.toString(oc.namingStrategy(),""));
 		orm.setAttribute("flush-at-request-end",Caster.toString(oc.flushAtRequestEnd(),"true"));
 		orm.setAttribute("cache-provider",Caster.toString(oc.getCacheProvider(),""));
 		orm.setAttribute("cache-config",Caster.toString(oc.getCacheConfig(),"true"));
@@ -3260,7 +3342,7 @@ public final class ConfigWebAdmin {
 	
 	public void removeRemoteClientUsage(String code) {
 		Struct usage = config.getRemoteClientUsage();
-		usage.removeEL(KeyImpl.init(code));
+		usage.removeEL(KeyImpl.getInstance(code));
 		
 		Element extensions=_getRootElement("remote-clients");
 		extensions.setAttribute("usage", toStringURLStyle(usage));		
@@ -3340,8 +3422,36 @@ public final class ConfigWebAdmin {
 	    }
 
 
-	
-
-
-	
+	public boolean updateLabel(String hash, String label) {
+		// check
+        if(StringUtil.isEmpty(hash,true))  return false;
+        if(StringUtil.isEmpty(label,true)) return false;
+        
+		hash=hash.trim(); 
+		label=label.trim();
+        
+        Element labels=_getRootElement("labels");
+        
+        // Update
+        Element[] children = ConfigWebFactory.getChildren(labels,"label");
+      	for(int i=0;i<children.length;i++) {
+      	    String h=children[i].getAttribute("id");
+      	    if(h!=null) {
+      	        if(h.equals(hash)) {
+		      		Element el=children[i];
+		      		if(label.equals(el.getAttribute("name"))) return false;
+		      		el.setAttribute("name",label);
+		      		return true;
+	  			}
+      	    }
+      	}
+      	
+      	// Insert
+      	Element el=doc.createElement("label");
+      	labels.appendChild(el);
+      	el.setAttribute("id",hash);
+      	el.setAttribute("name",label);
+  		
+      	return true;
+	}
 }

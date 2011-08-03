@@ -1,4 +1,5 @@
 package railo.runtime.orm.hibernate.event;
+
 import org.hibernate.event.PostDeleteEvent;
 import org.hibernate.event.PostDeleteEventListener;
 import org.hibernate.event.PostInsertEvent;
@@ -17,33 +18,40 @@ import org.hibernate.event.PreUpdateEvent;
 import org.hibernate.event.PreUpdateEventListener;
 
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
+import railo.runtime.component.Property;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
+import railo.runtime.orm.hibernate.HibernateUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.ComponentUtil;
 
 public class EventListenerImpl 
 	implements 	PreDeleteEventListener, PreInsertEventListener, PreLoadEventListener, PreUpdateEventListener,
     			PostDeleteEventListener, PostInsertEventListener, PostLoadEventListener, PostUpdateEventListener {
 
-	public static final Collection.Key POST_INSERT=KeyImpl.getInstance("postInsert");
-	public static final Collection.Key POST_UPDATE=KeyImpl.getInstance("postUpdate");
-	public static final Collection.Key PRE_DELETE=KeyImpl.getInstance("preDelete");
-	public static final Collection.Key POST_DELETE=KeyImpl.getInstance("postDelete");
-	public static final Collection.Key PRE_LOAD=KeyImpl.getInstance("preLoad");
-	public static final Collection.Key POST_LOAD=KeyImpl.getInstance("postLoad");
-	public static final Collection.Key PRE_UPDATE=KeyImpl.getInstance("preUpdate");
-	public static final Collection.Key PRE_INSERT=KeyImpl.getInstance("preInsert");
+	private static final long serialVersionUID = -4842481789634140033L;
+	
+	public static final Collection.Key POST_INSERT=KeyImpl.intern("postInsert");
+	public static final Collection.Key POST_UPDATE=KeyImpl.intern("postUpdate");
+	public static final Collection.Key PRE_DELETE=KeyImpl.intern("preDelete");
+	public static final Collection.Key POST_DELETE=KeyImpl.intern("postDelete");
+	public static final Collection.Key PRE_LOAD=KeyImpl.intern("preLoad");
+	public static final Collection.Key POST_LOAD=KeyImpl.intern("postLoad");
+	public static final Collection.Key PRE_UPDATE=KeyImpl.intern("preUpdate");
+	public static final Collection.Key PRE_INSERT=KeyImpl.intern("preInsert");
 	
 
 	
-    private Component component;
+    private ComponentPro component;
 	private boolean allEvents;
     
 	public EventListenerImpl(Component component, boolean allEvents) {
-	       this.component=component; 
+	       this.component=ComponentUtil.toComponentPro(component,null); 
 	       this.allEvents=allEvents; 
     }
 
@@ -58,7 +66,8 @@ public class EventListenerImpl
     }
 
     public boolean onPreDelete(PreDeleteEvent event) {
-        return invoke(PRE_DELETE, event.getEntity());
+        invoke(PRE_DELETE, event.getEntity());
+		return false;
     }
 
     public void onPostDelete(PostDeleteEvent event) {
@@ -74,37 +83,54 @@ public class EventListenerImpl
     }
 
 	public boolean onPreUpdate(PreUpdateEvent event) {
-		// MUST olddata -> preUpdate(Struct oldData)
-		return invoke(PRE_UPDATE, event.getEntity());
+		Struct oldData=new StructImpl();
+		Property[] properties = HibernateUtil.getProperties(component,HibernateUtil.FIELDTYPE_COLUMN,null);
+		Object[] data = event.getOldState();
+		
+		if(data!=null && properties!=null && data.length==properties.length) {
+			for(int i=0;i<data.length;i++){
+				oldData.setEL(KeyImpl.getInstance(properties[i].getName()), data[i]);
+			}
+		}
+		
+		invoke(PRE_UPDATE, event.getEntity(),oldData);
+		return false;
 	}
 
 
 
 	public boolean onPreInsert(PreInsertEvent event) {
-		return invoke(PRE_INSERT, event.getEntity());
+		invoke(PRE_INSERT, event.getEntity());
+		return false;
 	}
     public Component getCFC() {
 		return component;
 	}
     
-    
-    private boolean invoke(Collection.Key name, Object obj) {
+
+    private void invoke(Collection.Key name, Object obj) {
+    	invoke(name, obj,null);
+    }
+    private void invoke(Collection.Key name, Object obj, Struct data) {
     	Component c=allEvents?component:Caster.toComponent(obj,null);
-    	if(c==null) return false;
+    	if(c==null) return;
     	
 		try {
 			PageContext pc = ThreadLocalPageContext.get();
-			Object[] args=allEvents?new Object[]{obj}:new Object[]{};
-			
+			Object[] args;
+			if(data==null) {
+				args=allEvents?new Object[]{obj}:new Object[]{};
+			}
+			else {
+				args=allEvents?new Object[]{obj,data}:new Object[]{data};
+			}
 			if(!allEvents) {
 				if(!ComponentUtil.toComponentPro(component).getPageSource().equals(ComponentUtil.toComponentPro(obj).getPageSource()))
-					return true;
+					return;
 			}
-			return Caster.toBooleanValue(c.call(pc, name, args),false);
+			c.call(pc, name, args);
 		}
 		catch (Throwable e) {}
-		
-    	return false;
 	}
     
 }

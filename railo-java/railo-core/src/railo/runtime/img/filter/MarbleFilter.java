@@ -14,16 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 
-import java.awt.image.BufferedImage;
-
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.img.math.Noise;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * This filter applies a marbling effect to an image, displacing pixels by random amounts.
  */
-public class MarbleFilter extends TransformFilter {
+public class MarbleFilter extends TransformFilter  implements DynFiltering {
 
 	private float[] sinTable, cosTable;
 	private float xScale = 4;
@@ -32,7 +36,7 @@ public class MarbleFilter extends TransformFilter {
 	private float turbulence = 1;
 	
 	public MarbleFilter() {
-		setEdgeAction(CLAMP);
+		super(ConvolveFilter.CLAMP_EDGES);
 	}
 	
 	/**
@@ -138,5 +142,21 @@ public class MarbleFilter extends TransformFilter {
 
 	public String toString() {
 		return "Distort/Marble...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=null;//ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
+		if((o=parameters.removeEL(KeyImpl.init("Turbulence")))!=null)setTurbulence(ImageFilterUtil.toFloatValue(o,"Turbulence"));
+		if((o=parameters.removeEL(KeyImpl.init("XScale")))!=null)setXScale(ImageFilterUtil.toFloatValue(o,"XScale"));
+		if((o=parameters.removeEL(KeyImpl.init("YScale")))!=null)setYScale(ImageFilterUtil.toFloatValue(o,"YScale"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, Turbulence, XScale, YScale, EdgeAction, Interpolation]");
+		}
+
+		return filter(src, dst);
 	}
 }

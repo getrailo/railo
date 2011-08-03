@@ -114,7 +114,7 @@ public class TagUtil {
             }
         }
         
-        attributes.setEL(KeyImpl.init(name), value);
+        attributes.setEL(KeyImpl.getInstance(name), value);
 	}
 
 	

@@ -9,10 +9,16 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import railo.commons.io.SystemUtil;
+import railo.commons.io.log.Log;
+import railo.commons.io.log.LogAndSource;
+import railo.commons.io.log.LogAndSourceImpl;
+import railo.commons.io.log.LogConsole;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.lang.StringKeyLock;
+import railo.commons.lang.StringUtil;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
@@ -25,10 +31,13 @@ import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
+import railo.runtime.gateway.GatewayEngineImpl;
+import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.lock.LockManager;
 import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
+import railo.runtime.tag.TagHandlerPool;
 
 /**
  * Web Context
@@ -38,13 +47,15 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     private ServletConfig config;
     private ConfigServerImpl configServer;
     private SecurityManager securityManager;
-    private LockManager lockManager= LockManagerImpl.getInstance();
+    private final LockManager lockManager= LockManagerImpl.getInstance();
     private Resource rootDir;
     private CFMLCompilerImpl compiler=new CFMLCompilerImpl();
     private Page baseComponentPage;
 	private MappingImpl serverTagMapping;
 	private MappingImpl serverFunctionMapping;
-	private StringKeyLock contextLock=new StringKeyLock(-1);
+	private StringKeyLock contextLock;
+	private GatewayEngineImpl gatewayEngine;
+    private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
 
     //private File deployDirectory;
 
@@ -69,6 +80,12 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
         // Fix for tomcat
         if(this.rootDir.getName().equals(".") || this.rootDir.getName().equals(".."))
         	this.rootDir=this.rootDir.getParentResource();
+    }
+    
+    public void reset() {
+    	super.reset();
+    	tagHandlerPool.reset();
+    	contextLock=null;
     }
     
     /* *
@@ -220,7 +237,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	
 	 public Page getBaseComponentPage(PageContext pc) throws PageException {
 	        if(baseComponentPage==null) {
-	            baseComponentPage=((PageSourceImpl)getBaseComponentPageSource()).loadPage(pc,this);
+	            baseComponentPage=((PageSourceImpl)getBaseComponentPageSource(pc)).loadPage(pc,this);
 				
 	        }
 	        return baseComponentPage;
@@ -231,17 +248,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	    
 
 
-		/*public PageSource getTagPageSource(String filename) {
-			if(serverTagMapping==null){
-				serverTagMapping=((MappingImpl)getConfigServerImpl().tagMapping).cloneReadOnly(this);
-			}
-			PageSource ps = serverTagMapping.getPageSource(filename);
-			print.out("ps+"+ps.getDisplayPath());
-			if(!ps.physcalExists())
-				ps = tagMapping.getPageSource(filename);
-			print.out("ps+"+ps.getDisplayPath());
-			return ps;
-		}*/
+		
 
 	    public Mapping getServerTagMapping() {
 	    	if(serverTagMapping==null){
@@ -256,6 +263,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return serverFunctionMapping;
 		}
 	    private Map applicationMappings=new ReferenceMap();
+		private TagHandlerPool tagHandlerPool=new TagHandlerPool();
 		public Mapping getApplicationMapping(String virtual, String physical) {
 			String key=virtual.toLowerCase()+physical.toLowerCase();
 			Mapping m=(Mapping) applicationMappings.get(key);
@@ -263,7 +271,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 				m=new MappingImpl(this,
 					virtual,
 					physical,
-					null,false,true,false,false,false,true
+					null,false,true,false,false,false,true,false
 					);
 				applicationMappings.put(key, m);
 			}
@@ -274,8 +282,102 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return getConfigServerImpl().getCFMLEngineImpl();
 		}
 
+		public String getLabel() {
+			String hash=getHash();
+			String label=hash;
+			Map<String, String> labels = configServer.getLabels();
+			if(labels!=null) {
+				String l = labels.get(hash);
+				if(!StringUtil.isEmpty(l)) {
+					label=l;
+				}
+			}
+			return label;
+		}
+		
+		public String getHash() {
+			return SystemUtil.hash(getServletContext());
+		}
+
 		public StringKeyLock getContextLock() {
+			if(contextLock==null) {
+				contextLock=new StringKeyLock(getRequestTimeout().getMillis());
+			}
 			return contextLock;
+		}
+
+
+		protected void setGatewayEntries(Map<String, GatewayEntry> gatewayEntries) {
+			try {
+				getGatewayEngine().addEntries(this,gatewayEntries);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+		public GatewayEngineImpl getGatewayEngine() {
+			if(gatewayEngine==null){
+				gatewayEngine=new GatewayEngineImpl(this);
+			}
+			return gatewayEngine;
+		}
+		public void setGatewayEngine(GatewayEngineImpl gatewayEngine) {
+			this.gatewayEngine=gatewayEngine;
+		}
+
+	    /**
+	     * @see railo.runtime.config.Config#getMailLogger()
+	     */
+	    public LogAndSource getGatewayLogger() {
+	    	if(gatewayLogger==null)gatewayLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+			return gatewayLogger;
+	    }
+
+
+	    public void setGatewayLogger(LogAndSource gatewayLogger) {
+	    	this.gatewayLogger=gatewayLogger;
+	    }
+		/* *
+		 * this is a config web that reflect the configServer, this allows to run cfml code on server level
+		 * @param gatewayEngine 
+		 * @return
+		 * @throws PageException
+		 * /
+		public ConfigWeb createGatewayConfig(GatewayEngineImpl gatewayEngine) {
+			QueryCacheSupport cqc = QueryCacheSupport.getInstance(this);
+			CFMLEngineImpl engine = getConfigServerImpl().getCFMLEngineImpl();
+			CFMLFactoryImpl factory = new CFMLFactoryImpl(engine,cqc);
+			
+			ServletContextDummy sContext = new ServletContextDummy(
+					this,
+					getRootDirectory(),
+					new StructImpl(),
+					new StructImpl(),
+					1,1);
+			ServletConfigDummy sConfig = new ServletConfigDummy(sContext,"CFMLServlet");
+			ConfigWebImpl cwi = new ConfigWebImpl(
+					factory,
+					getConfigServerImpl(),
+					sConfig,
+					getConfigDir(),
+					getConfigFile(),true);
+			cqc.setConfigWeb(cwi);
+			try {
+				ConfigWebFactory.createContextFiles(getConfigDir(),sConfig);
+		        ConfigWebFactory.load(getConfigServerImpl(), cwi, ConfigWebFactory.loadDocument(getConfigFile()),true);
+		        ConfigWebFactory.createContextFilesPost(getConfigDir(),cwi,sConfig,true);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			cwi.setGatewayEngine(gatewayEngine);
+			
+			//cwi.setGatewayMapping(new MappingImpl(cwi,"/",gatewayEngine.getCFCDirectory().getAbsolutePath(),null,false,true,false,false,false));
+			return cwi;
+		}*/
+
+		public TagHandlerPool getTagHandlerPool() {
+			return tagHandlerPool;
 		}
 
 }

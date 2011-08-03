@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 
 import org.apache.xerces.dom.AttributeMap;
@@ -84,7 +85,7 @@ public class DumpUtil {
 			String str=(String) o;
 			if(str.trim().startsWith("<wddxPacket ")) {
 				try {
-					WDDXConverter converter =new WDDXConverter(pageContext.getTimeZone(),false);
+					WDDXConverter converter =new WDDXConverter(pageContext.getTimeZone(),false,true);
 					converter.setTimeZone(pageContext.getTimeZone());
 					Object rst = converter.deserialize(str,false);
 					DumpData data = toDumpData(rst, pageContext, maxlevel, props);
@@ -123,6 +124,21 @@ public class DumpUtil {
 		if(o instanceof File) {
 			DumpTable table = new DumpTablePro("file","#ffcc00","#ffff66","#000000");
 			table.appendRow(1,new SimpleDumpData("File"),new SimpleDumpData(o.toString()));
+			return table;
+		}
+		// Cookie
+		if(o instanceof Cookie) {
+			Cookie c=(Cookie) o;
+			DumpTable table = new DumpTablePro("Cookie","#979EAA","#DEE9FB","#000000");
+			table.setTitle("Cookie ("+c.getClass().getName()+")");
+			table.appendRow(1,new SimpleDumpData("name"),new SimpleDumpData(c.getName()));
+			table.appendRow(1,new SimpleDumpData("value"),new SimpleDumpData(c.getValue()));
+			table.appendRow(1,new SimpleDumpData("path"),new SimpleDumpData(c.getPath()));
+			table.appendRow(1,new SimpleDumpData("secure"),new SimpleDumpData(c.getSecure()));
+			table.appendRow(1,new SimpleDumpData("maxAge"),new SimpleDumpData(c.getMaxAge()));
+			table.appendRow(1,new SimpleDumpData("version"),new SimpleDumpData(c.getVersion()));
+			table.appendRow(1,new SimpleDumpData("domain"),new SimpleDumpData(c.getDomain()));
+			table.appendRow(1,new SimpleDumpData("comment"),new SimpleDumpData(c.getComment()));
 			return table;
 		}
 		// Resource

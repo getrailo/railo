@@ -7,6 +7,7 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.rpc.client.RPCClient;
 import railo.runtime.op.Caster;
 import railo.runtime.spooler.remote.RemoteClientTask;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -111,10 +112,10 @@ public class RemoteClientImpl implements RemoteClient {
 		if(id!=null) return id;
 		
 		Struct attrColl = new StructImpl();
-		attrColl.setEL(RemoteClientTask.ACTION, "getToken");
+		attrColl.setEL(KeyImpl.ACTION, "getToken");
 		
 		Struct args = new StructImpl();
-		args.setEL(RemoteClientTask.TYPE, getType());
+		args.setEL(KeyImpl.TYPE, getType());
 		args.setEL(RemoteClientTask.PASSWORD, getAdminPasswordEncrypted());
 		args.setEL(RemoteClientTask.CALLER_ID, "undefined");
 		args.setEL(RemoteClientTask.ATTRIBUTE_COLLECTION, attrColl);

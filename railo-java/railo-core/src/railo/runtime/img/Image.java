@@ -39,6 +39,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.AttributedString;
 import java.util.Iterator;
@@ -171,7 +172,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	}
 
 	public Image(byte[] binary) throws IOException {
-		this(binary, ImageUtil.getFormat(binary)); 
+		this(binary, ImageUtil.getFormat(binary,null)); 
 	}
 	
 	public Image(byte[] binary, String format) throws IOException {
@@ -301,6 +302,37 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		
 		this.sctInfo=sctInfo;
 		return sctInfo;
+	}
+	
+	private IIOMetadata metadata(String format) {
+		if(StringUtil.isEmpty(format)) return null;
+		Iterator<ImageReader> it = ImageIO.getImageReadersBySuffix(format);
+		while(it.hasNext()) {
+			ImageReader ir=(ImageReader) it.next();
+			ImageInputStream iis=null;
+			IIOMetadata metadata=null;
+			InputStream is=null;
+			try {
+				if(source instanceof File) { // TODO create ResourceImageInputStream
+					iis=new FileImageInputStream((File) source);
+				}
+				//else iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format,false)));
+				else if(source==null)iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format,true)));
+				//else iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format,false)));
+				else iis=new MemoryCacheImageInputStream(is=source.getInputStream());
+				ir.setInput(iis);
+				
+				metadata = ir.getImageMetadata(0);
+				ir.reset();
+			} 
+			catch (Throwable t) {}
+			finally {
+				ImageUtil.closeEL(iis);
+				IOUtil.closeEL(is);
+			}
+			if(metadata!=null) return metadata;
+		}
+		return null;
 	}
 	
 	private void metadata(Struct parent) {
@@ -828,17 +860,21 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		if(destination.exists()) {
 			if(!overwrite)throw new IOException("can't overwrite existing image");
 		}
-		 
 
+    	if(JAIUtil.isSupportedWriteFormat(format)){
+    		JAIUtil.write(getBufferedImage(),destination,format);
+    		return;
+    	}
+    	
 		OutputStream os=null;
 		ImageOutputStream ios = null;
 		try {
 			os=destination.getOutputStream();
 			ios = ImageIO.createImageOutputStream(os);
-			writeOut(ios, format, quality);
+			_writeOut(ios, format, quality);
 		}
 		finally {
-			IOUtil.closeEL(ios);
+			ImageUtil.closeEL(ios);
 			IOUtil.closeEL(os);
 		}		
 	}
@@ -866,32 +902,38 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	public void writeOut(OutputStream os, String format,float quality, boolean closeStream) throws IOException, ExpressionException {
 		ImageOutputStream ios = ImageIO.createImageOutputStream(os);
 		try{
-			writeOut(ios, format, quality);
+			_writeOut(ios, format, quality);
 		}
 		finally{
 			IOUtil.closeEL(ios);
 		}
 	}
+
+	private void _writeOut(ImageOutputStream ios, String format,float quality) throws IOException, ExpressionException {
+		_writeOut(ios, format, quality, false);
+	}
 	
-	public void writeOut(ImageOutputStream ios, String format,float quality) throws IOException, ExpressionException {
+	private void _writeOut(ImageOutputStream ios, String format,float quality,boolean noMeta) throws IOException, ExpressionException {
 		if(quality<0 || quality>1)
 			throw new IOException("quality has a invalid value ["+quality+"], value has to be between 0 and 1");
 		if(StringUtil.isEmpty(format))	format=this.format;
 		if(StringUtil.isEmpty(format))	throw new IOException("missing format");
-
+		
 		BufferedImage im = image();
+		
+		IIOMetadata meta = noMeta?null:metadata(format);
 		
 		ImageWriter writer = null;
     	ImageTypeSpecifier type =ImageTypeSpecifier.createFromRenderedImage(im);
     	Iterator<ImageWriter> iter = ImageIO.getImageWriters(type, format);
+    	
     	
     	if (iter.hasNext()) {
     		writer = (ImageWriter)iter.next();
     	}
     	if (writer == null) throw new IOException("no writer for format ["+format+"] available, available writer formats are ["+List.arrayToList(ImageUtil.getWriterFormatNames(), ",")+"]");
 
-    	
-    	ImageWriteParam iwp=null;
+		ImageWriteParam iwp=null;
     	if("jpg".equalsIgnoreCase(format)) {
     		ColorModel cm = im.getColorModel();
     		if(cm.hasAlpha())im=jpgImage(im);
@@ -900,21 +942,21 @@ public class Image extends StructSupport implements Cloneable,Struct {
     		iwp=jiwp;
     	}
     	else iwp = writer.getDefaultWriteParam();
-    	
-    	setCompressionModeEL(iwp,ImageWriteParam.MODE_EXPLICIT);
+
+		setCompressionModeEL(iwp,ImageWriteParam.MODE_EXPLICIT);
     	setCompressionQualityEL(iwp,quality);
     	
     	writer.setOutput(ios);
     	try {
-    		writer.write(null, new IIOImage(im, null, null), iwp);
-    		//writer.write(im);
+    		writer.write(null, new IIOImage(im, null, meta), iwp);
+    		
     	} finally {
     		writer.dispose();
     		ios.flush();
     	}
-}
-	private BufferedImage jpgImage(BufferedImage src)
-    {
+	}
+	
+	private BufferedImage jpgImage(BufferedImage src) {
         int w = src.getWidth();
         int h = src.getHeight();
         SampleModel srcSM = src.getSampleModel();
@@ -961,17 +1003,6 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		this.format=format;
 	}
 
-	public static String[] getReaderFormatNames() {
-		return ImageIO.getReaderFormatNames();
-	}
-
-	public static String[] getWriterFormatNames() {
-		return ImageIO.getWriterFormatNames();
-	}
-
-	
-	
-	
 	public void scaleToFit(String fitWidth, String fitHeight,String interpolation, double blurFactor) throws PageException {
 		if (StringUtil.isEmpty(fitWidth) || StringUtil.isEmpty(fitHeight))	
 			resize(fitWidth, fitHeight, interpolation, blurFactor);
@@ -1325,11 +1356,16 @@ public class Image extends StructSupport implements Cloneable,Struct {
 						try {
 							return createImage(pc, pc.getVariable(Caster.toString(obj)), false,clone,checkAccess);
 						}
-						catch (PageException pe) {
+						catch (Throwable t) {
 							throw ee;
 						}
 					}
-					return new Image(Caster.toString(obj));
+					try {
+						return new Image(Caster.toString(obj));
+					}
+					catch (Throwable t) {
+						throw ee;
+					}
 				}
 			}
 			if(obj instanceof Image)	{
@@ -1352,7 +1388,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	 */
 	public Collection duplicate(boolean deepCopy) {
 		try {
-			if(_image!=null) return new Image(getBufferedImage());
+			//if(_image!=null) return new Image(getBufferedImage());
 			return new Image(getImageBytes(null));
 			
 		} catch (Exception e) {
@@ -1397,17 +1433,32 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		return format;
 	}
 
-	public byte[] getImageBytes(String format) throws ExpressionException {
+	public byte[] getImageBytes(String format) throws PageException{
+		return getImageBytes(format,false);
+	}
+	public byte[] getImageBytes(String format,boolean noMeta) throws PageException {
+		
+		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ImageOutputStream ios = null;
-		try {
-			ios = ImageIO.createImageOutputStream(baos);
-			writeOut(ios, format, 1);
-		} catch (IOException e) {
-			throw new ExpressionException(e.getMessage());
-		}
-		finally {
-			IOUtil.closeEL(ios);
+		
+		if(JAIUtil.isSupportedWriteFormat(format)){
+    		try {
+				JAIUtil.write(getBufferedImage(),baos,format);
+			}catch (IOException e) {
+				throw Caster.toPageException(e);
+			}
+    	}
+		else {
+			ImageOutputStream ios = null;
+			try {
+				ios = ImageIO.createImageOutputStream(baos);
+				_writeOut(ios, format, 1,noMeta);
+			} catch (IOException e) {
+				throw Caster.toPageException(e);
+			}
+			finally {
+				IOUtil.closeEL(ios);
+			}
 		}
 		return baos.toByteArray();
 	}

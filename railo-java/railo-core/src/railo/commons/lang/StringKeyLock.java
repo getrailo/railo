@@ -7,9 +7,9 @@ import railo.commons.io.SystemUtil;
 
 public class StringKeyLock {
 	private Map<String,SerializableObject> locks=new HashMap<String, SerializableObject>();
-	private int timeout;
+	private long timeout;
 	
-	public StringKeyLock(int timeout){
+	public StringKeyLock(long timeout){
 		this.timeout=timeout;
 	}
 	

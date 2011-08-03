@@ -55,7 +55,6 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
     private static final int HEADER_TEXT_PLAIN=0;
     private static final int HEADER_MULTIPART_FORM_DATA=1;
     private static final int HEADER_APP_URL_ENC=2;
-	private static final Key FIELD_NAMES = KeyImpl.getInstance("fieldnames");
 	private int headerType=-1;
     
 	/**
@@ -118,7 +117,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 
     void setFieldNames() {
     	if(size()>0) {
-    		setEL(FIELD_NAMES,List.arrayToList(keysAsString(), ","));
+    		setEL(KeyImpl.FIELD_NAMES,List.arrayToList(keysAsString(), ","));
         }
     }
 
@@ -259,6 +258,21 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		
 	}
 
+	public FormImpl.Item[] getFileItems() {
+		if(fileItems==null || fileItems.isEmpty()) return new FormImpl.Item[0];
+		
+		Iterator it = fileItems.entrySet().iterator();
+		Map.Entry entry;
+		FormImpl.Item[] rtn=new FormImpl.Item[fileItems.size()];
+		int index=0;
+		while(it.hasNext()){
+			entry=(Entry) it.next();
+			rtn[index++]=(Item) entry.getValue();
+		}
+		return rtn;
+	}
+	
+	
 	/**
      * @see railo.runtime.type.scope.Form#getFileUpload(java.lang.String)
      */

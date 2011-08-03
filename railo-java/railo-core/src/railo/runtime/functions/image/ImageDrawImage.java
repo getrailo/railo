@@ -16,13 +16,4 @@ public class ImageDrawImage {
 		return null;
 	}
 	
-	/*public static String call(PageContext pc, Object name, Object image,double x, double y, double width, double height) throws PageException {
-		if(name instanceof String) name=pc.getVariable(Caster.toString(name));
-		Image img = Image.toImage(name);
-		
-		
-		img.drawImage(Image.createImage(pc, image, true, false), (int)x, (int)y,(int)width,(int)height);
-		return null;
-	}*/
-	
 }

@@ -223,7 +223,7 @@ public final class Content extends BodyTagImpl {
 
 	private OutputStream getOutputStream() throws PageException, IOException {
         try {
-        	return ((PageContextImpl)pageContext).getServletOutputStream();
+        	return ((PageContextImpl)pageContext).getResponseStream();
         } 
         catch(IllegalStateException ise) {
             throw new TemplateException("content is already send to user, flush");

@@ -52,12 +52,6 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 	private static final int TYPE_TASK = 1;
 	private static final ExecutionPlan[] EXECUTION_PLAN = new ExecutionPlan[0];
 	
-	private static final Key DURATION = KeyImpl.getInstance("duration");
-	private static final Key NAME = KeyImpl.getInstance("name");
-	
-	
-	
-	
 	private int action=ACTION_RUN;
 	private long duration=-1;
 	private String name;
@@ -222,7 +216,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 
 	public void setDynamicAttribute(String uri, String name, Object value) {
 		if(attrs==null)attrs=new StructImpl();
-		Key key = KeyImpl.init(name=StringUtil.trim(name,""));
+		Key key = KeyImpl.getInstance(name=StringUtil.trim(name,""));
 		
 		/*if(key.equals(NAME))	setName(name);
 		else if(key.equals(DURATION)){

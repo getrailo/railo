@@ -60,7 +60,7 @@ public final class GetBaseTagList implements Function {
                             return tlt.getFullName().toUpperCase()+atag.getAppendix().toUpperCase();
                         }
                     }
-                	// build in cfc based custom tag
+                	// built in cfc based custom tag
                 	if(tag instanceof CFTagCore) {
                 		if(((CFTagCore)tag).getName().equals(tlt.getAttribute("__name").getDefaultValue()))
                 			return tlt.getFullName().toUpperCase();

@@ -38,7 +38,9 @@ public final class LSTimeFormat implements Function {
 		return _call(pc, o, mask, LocaleFactory.getLocale(strLocale),pc.getTimeZone());
 	}
 	public static String call(PageContext pc , Object o, String mask,String strLocale,String strTimezone) throws PageException {
-		return _call(pc, o, mask, LocaleFactory.getLocale(strLocale),TimeZoneUtil.toTimeZone(strTimezone));
+		return _call(pc, o, mask, 
+				strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),
+				strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
 	}
 
 	private static String _call(PageContext pc, Object o, String mask,Locale locale,TimeZone tz) throws PageException {

@@ -23,20 +23,25 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
-import railo.runtime.ComponentImpl;
+import railo.runtime.Component;
 import railo.runtime.ComponentPro;
+import railo.runtime.Mapping;
+import railo.runtime.MappingImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.text.xml.XMLUtil;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
 
 public class HibernateSessionFactory {
@@ -150,9 +155,7 @@ public class HibernateSessionFactory {
 	}
 
 	private static void schemaExport(HibernateORMEngine engine,Configuration configuration, ORMConfiguration ormConf,DatasourceConnection dc) throws PageException,ORMException, SQLException, IOException {
-		
 		if(ORMConfiguration.DBCREATE_NONE==ormConf.getDbCreate()) {
-			//print.out("dbcreate:none");
 			return;
 		}
 		else if(ORMConfiguration.DBCREATE_DROP_CREATE==ormConf.getDbCreate()) {
@@ -164,7 +167,6 @@ public class HibernateSessionFactory {
             executeSQLScript(ormConf,dc);
 		}
 		else if(ORMConfiguration.DBCREATE_UPDATE==ormConf.getDbCreate()) {
-			//print.out("dbcreate:update");
 			SchemaUpdate update = new SchemaUpdate(configuration);
             update.setHaltOnError(true);
             update.execute(false, true);
@@ -222,7 +224,7 @@ public class HibernateSessionFactory {
     }
 
 
-	public static String createMappings(Map<String, CFCInfo> cfcs) {
+	public static String createMappings(HibernateORMEngine engine, Map<String, CFCInfo> cfcs) {
 		
 		Set<String> done=new HashSet<String>();
 		StringBuffer mappings=new StringBuffer();
@@ -233,22 +235,28 @@ public class HibernateSessionFactory {
 		Entry<String, CFCInfo> entry;
 		while(it.hasNext()){
 			entry = it.next();
-			createMappings(cfcs,entry.getKey(),entry.getValue(),done,mappings);
+			createMappings(engine,cfcs,entry.getKey(),entry.getValue(),done,mappings);
 			
 		}
 		mappings.append("</hibernate-mapping>");
 		return mappings.toString();
 	}
 
-	private static void createMappings(Map<String, CFCInfo> cfcs,String key, CFCInfo value,Set<String> done,StringBuffer mappings) {
+	private static void createMappings(HibernateORMEngine engine, Map<String, CFCInfo> cfcs,String key, CFCInfo value,Set<String> done,StringBuffer mappings) {
 		if(done.contains(key)) return;
 		CFCInfo v;
-		String k = value.getCFC().getExtends();
-		if(!StringUtil.isEmpty(k)){
-			k=HibernateORMEngine.id(railo.runtime.type.List.last(k, '.').trim());
-			if(!done.contains(k)) {
-				v = cfcs.get(k);
-				if(v!=null)createMappings(cfcs, k, v, done, mappings);
+		String ext = value.getCFC().getExtends();
+		if(!StringUtil.isEmpty(ext)){
+			try {
+				Component base = engine.getEntityByCFCName(ext, false);
+				ext=HibernateCaster.getEntityName(base);
+			} catch (Throwable t) {}
+			
+			
+			ext=HibernateORMEngine.id(railo.runtime.type.List.last(ext, '.').trim());
+			if(!done.contains(ext)) {
+				v = cfcs.get(ext);
+				if(v!=null)createMappings(engine,cfcs, ext, v, done, mappings);
 			}
 		}
 		
@@ -256,20 +264,38 @@ public class HibernateSessionFactory {
 		done.add(key);
 	}
 
-	public static List<ComponentPro> loadComponents(PageContext pc,HibernateORMEngine engine, ORMConfiguration ormConf) {
+	public static List<ComponentPro> loadComponents(PageContext pc,HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {
 		ExtensionResourceFilter filter = new ExtensionResourceFilter(pc.getConfig().getCFCExtension(),true);
 		List<ComponentPro> components=new ArrayList<ComponentPro>();
-		loadComponents(pc,engine,components,ormConf.getCfcLocations(),filter);
+		loadComponents(pc,engine,components,ormConf.getCfcLocations(),filter,ormConf);
 		return components;
 	}
 	
-	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource[] reses,ExtensionResourceFilter filter) {
-		for(int i=0;i<reses.length;i++){
-			if(reses[i]!=null && reses[i].isDirectory())loadComponents(pc,engine,components,reses[i], filter);
+	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource[] reses,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
+		Mapping[] mappings = createMappings(pc, reses);
+		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
+		Mapping[] existing = ac.getComponentMappings();
+		if(existing==null) existing=new Mapping[0];
+		try{
+			Mapping[] tmp = new Mapping[existing.length+1];
+			for(int i=1;i<tmp.length;i++){
+				tmp[i]=existing[i-1];
+			}
+			ac.setComponentMappings(tmp);
+			for(int i=0;i<reses.length;i++){
+				if(reses[i]!=null && reses[i].isDirectory()){
+					tmp[0] = mappings[i];
+					//ac.setMappings(_mappings);
+					loadComponents(pc,engine,components,reses[i], filter,ormConf);
+				}
+			}
+		}
+		finally {
+			ac.setComponentMappings(existing);
 		}
 	}
 	
-	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource res,ExtensionResourceFilter filter) {
+	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource res,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
 		if(res==null) return;
 
 		if(res.isDirectory()){
@@ -277,32 +303,46 @@ public class HibernateSessionFactory {
 			
 			// first load all files
 			for(int i=0;i<children.length;i++){
-				if(children[i].isFile())loadComponents(pc,engine,components,children[i], filter);
+				if(children[i].isFile())loadComponents(pc,engine,components,children[i], filter,ormConf);
 			}
 			
 			// and then invoke subfiles
 			for(int i=0;i<children.length;i++){
-				if(children[i].isDirectory())loadComponents(pc,engine,components,children[i], filter);
+				if(children[i].isDirectory())loadComponents(pc,engine,components,children[i], filter,ormConf);
 			}
 		}
 		else if(res.isFile()){
 			if(!res.getName().equalsIgnoreCase("Application.cfc"))	{
 				try {
 					PageSource ps = pc.toPageSource(res,null);
-
 					Page p = ps.loadPage(pc.getConfig());
 					String name=res.getName();
 					name=name.substring(0,name.length()-4);
-					ComponentImpl cfc = ComponentLoader.loadComponentImpl(pc, p, ps, name, true,true);
+					ComponentAccess cfc = ComponentLoader.loadComponent(pc, p, ps, name, true,true);
 					if(cfc.isPersistent()){
 						components.add(cfc);
 					}
 				} 
 				catch (PageException e) {
-					e.printStackTrace();
+					if(!ormConf.skipCFCWithError())throw e;
+					//e.printStackTrace();
 				}
 			}
 		}
 	}
 
+	
+	public static Mapping[] createMappings(PageContext pc,Resource[] resources) throws PageException {
+			
+			MappingImpl[] mappings=new MappingImpl[resources.length];
+			ConfigImpl config=(ConfigImpl) pc.getConfig();
+			for(int i=0;i<mappings.length;i++) {
+				mappings[i]=new MappingImpl(config,
+						"/",
+						resources[i].getAbsolutePath(),
+						null,false,true,false,false,false,true,true
+						);
+			}
+			return mappings;
+		}
 }

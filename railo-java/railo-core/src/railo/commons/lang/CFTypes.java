@@ -155,6 +155,7 @@ public final class CFTypes {
 	        	case 't':
 	        	    if(type.equals("timespan")) return TYPE_TIMESPAN;
 	        	    if(type.equals("time")) return TYPE_DATETIME;
+	        	    if(type.equals("timestamp")) return TYPE_DATETIME;
 	        	    break;
 	        	case 'u':
 	        	    if(type.equals("uuid")) return TYPE_UUID;
@@ -228,6 +229,7 @@ public final class CFTypes {
 	        	    else if(type.equals("number")) return TYPE_NUMERIC;
 	        	    else if(type.equals("node")) return TYPE_XML;
 	        	    else if(type.equals("nvarchar")) return TYPE_STRING;
+	        	    else if(type.equals("nchar")) return TYPE_STRING;
 	        	    break;
 	        	case 'o':
 	        	    if(type.equals("object")) return TYPE_ANY;
@@ -244,6 +246,7 @@ public final class CFTypes {
 	        	case 't':
 	        	    if(type.equals("timespan")) return TYPE_TIMESPAN;
 	        	    if(type.equals("time")) return TYPE_DATETIME;
+	        	    if(type.equals("timestamp")) return TYPE_DATETIME;
 	        	    if(type.equals("text")) return TYPE_STRING;
 	        	    break;
 	        	case 'u':

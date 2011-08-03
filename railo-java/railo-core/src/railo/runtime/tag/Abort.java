@@ -6,7 +6,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 
 /**
-* Stops processing of a page at the tag location. ColdFusion returns everything that was processed before the cfabort tag. The cfabort tag is often used with conditional logic to stop processing a page when a condition occurs.
+* Stops processing of a page at the tag location. Railo returns everything that was processed before the cfabort tag. The cfabort tag is often used with conditional logic to stop processing a page when a condition occurs.
 *
 *
 *
@@ -14,13 +14,13 @@ import railo.runtime.ext.tag.TagImpl;
 public final class Abort extends TagImpl {
 
 	/** The error to display when cfabort executes. 
-	** 				The error message displays in the standard ColdFusion error page. */
+	** 				The error message displays in the standard CFML error page. */
 	private String showerror;
     private int type=railo.runtime.exp.Abort.SCOPE_REQUEST;
 
     /** set the value showerror
     *  The error to display when cfabort executes. 
-    *               The error message displays in the standard ColdFusion error page.
+    *               The error message displays in the standard CFML error page.
     * @param showerror value to set
     **/
     public void setShowerror(String showerror)  {

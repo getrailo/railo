@@ -29,7 +29,6 @@ ACTIONS --->
 		<cfset verify=getForm('verify',false)>
         <cfparam name="form.metaCacheTimeout" default="60000">
         
-        
 		<cfadmin 
 			action="updateDatasource"
 			type="#request.adminType#"
@@ -52,6 +51,8 @@ ACTIONS --->
 			metaCacheTimeout="#form.metaCacheTimeout#"
 			blob="#getForm('blob',false)#"
 			clob="#getForm('clob',false)#"
+			validate="#getForm('validate',false)#"
+			storage="#getForm('storage',false)#"
 			
 			
 			allowed_select="#getForm('allowed_select',false)#"
@@ -93,6 +94,8 @@ Error Output--->
 	<cfset datasource=struct()>
 	<cfset datasource.type=form.type>
 	<cfset datasource.name=form.name>
+	<cfset datasource.storage=false>
+	<cfset datasource.validate=false>
 	
 <cfelse>
 	<cfset actionType="update">
@@ -291,6 +294,21 @@ Connection Timeout --->
 		<span class="comment">#stText.Settings.dbConnTimeoutDesc#</span>
 	</td>
 </tr>
+
+
+<!--- 
+
+validate --->
+<tr>
+	<td class="tblHead" width="150">#stText.Settings.dbValidate#</td>
+	<td class="tblContent" width="300">
+		<cfinput type="checkbox" class="checkbox" name="validate" value="yes" checked="#isDefined('datasource.validate') and datasource.validate#">
+		<span class="comment">#stText.Settings.dbValidateDesc#</span>
+	</td>
+</tr>
+
+
+
 <!--- 
 
 Meta Cache--->
@@ -372,6 +390,18 @@ Allow --->
 		
 	</td>
 </tr>
+<!--- 
+
+storage --->
+<tr>
+	<td class="tblHead" width="150"><b>#stText.Settings.dbStorage#</b></td>
+	<td class="tblContent" width="300">
+		<cfinput type="checkbox" class="checkbox" name="storage" value="yes" checked="#isDefined('datasource.storage') and datasource.storage#">
+		<span class="comment">#stText.Settings.dbStorageDesc#</span>
+	</td>
+</tr>
+
+
 <cfif arrayLen(fields)>
 <tr>
 	<td width="150" colspan="2">&nbsp;</td>

@@ -15,13 +15,13 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.db.SQL;
 import railo.runtime.functions.cache.Util;
-import railo.runtime.op.Caster;
 import railo.runtime.type.Query;
+import railo.runtime.type.QueryImpl;
 
  class CacheQueryCache extends QueryCacheSupport {
 	
+	private static final long serialVersionUID = -2321532150542424070L;
 	
-
 	private Config config;
 	private final RamCache DEFAULT_CACHE=new RamCache();
 
@@ -122,10 +122,16 @@ import railo.runtime.type.Query;
 		Iterator it = c.entries().iterator();
     	String key;
     	CacheEntry entry;
+    	QueryCacheEntry ce;
+    	QueryImpl q;
     	while(it.hasNext()){
 			entry=(CacheEntry) it.next();
-    		key=Caster.toString(entry.getKey(),"@@@@@");
-    		if(filter.accept(key)){
+			if(!(entry.getValue() instanceof QueryCacheEntry)) continue;
+			ce=(QueryCacheEntry) entry.getValue();
+			if(!(ce.getValue() instanceof QueryImpl)) continue;
+			q=(QueryImpl) ce.getValue();
+			key=entry.getKey();
+    		if(filter.accept(q.getSql().toString())){
 				c.remove(key);
     		}
     	}

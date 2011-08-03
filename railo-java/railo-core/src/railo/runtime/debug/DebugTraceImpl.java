@@ -1,5 +1,7 @@
 package railo.runtime.debug;
 
+import railo.commons.lang.StringUtil;
+
 public final class DebugTraceImpl implements DebugTrace {
 
 	private int type;
@@ -10,8 +12,9 @@ public final class DebugTraceImpl implements DebugTrace {
 	private String varValue;
 	private long time;
 	private String varName;
+	private String action;
 
-	public DebugTraceImpl(int type, String category, String text, String template, int line, String varName, String varValue, long time) {
+	public DebugTraceImpl(int type, String category, String text, String template, int line, String action,String varName, String varValue, long time) {
 		this.type=type;
 		this.category=category;
 		this.text=text;
@@ -20,6 +23,7 @@ public final class DebugTraceImpl implements DebugTrace {
 		this.varName=varName;
 		this.varValue=varValue;
 		this.time=(time<0)?0:time;
+		this.action=StringUtil.emptyIfNull(action);
 	}
 
 	/**
@@ -72,6 +76,9 @@ public final class DebugTraceImpl implements DebugTrace {
 	}
 	public String getVarName() {
 		return varName;
+	}
+	public String getAction() {// FUTURE add to interface
+		return action;
 	}
 	
 }

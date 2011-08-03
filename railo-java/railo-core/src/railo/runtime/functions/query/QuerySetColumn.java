@@ -19,8 +19,8 @@ public final class QuerySetColumn implements Function {
 	public static String call(PageContext pc , Query query, String columnName,String newColumnName) throws PageException {
 		columnName=columnName.trim();
 		newColumnName=newColumnName.trim();
-		Collection.Key src=KeyImpl.init(columnName);
-		Collection.Key trg=KeyImpl.init(newColumnName);
+		Collection.Key src=KeyImpl.getInstance(columnName);
+		Collection.Key trg=KeyImpl.getInstance(newColumnName);
 		
 		QueryPro qp = Caster.toQueryPro(query,null);
 		if(qp!=null) qp.rename(src, trg);

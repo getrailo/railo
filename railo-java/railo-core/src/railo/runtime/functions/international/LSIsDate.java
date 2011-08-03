@@ -16,6 +16,9 @@ import railo.runtime.op.Decision;
 
 public final class LSIsDate implements Function {
 
+	private static final long serialVersionUID = -8517171925554806088L;
+
+
 	public static boolean call(PageContext pc , Object object) {
 		return call(pc, object, pc.getLocale(),pc.getTimeZone());
 	}
@@ -24,7 +27,9 @@ public final class LSIsDate implements Function {
 		return call(pc, object, LocaleFactory.getLocale(strLocale),pc.getTimeZone());
 	}
 	public static boolean call(PageContext pc , Object object,String strLocale,String strTimezone) throws ExpressionException {
-		return call(pc, object, LocaleFactory.getLocale(strLocale),TimeZoneUtil.toTimeZone(strTimezone));
+		return call(pc, object, 
+				strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),
+				strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	
 	

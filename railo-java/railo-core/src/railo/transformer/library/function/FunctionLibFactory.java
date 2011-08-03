@@ -216,9 +216,11 @@ public final class FunctionLibFactory extends DefaultHandler {
 			if(insideAttribute)	{
 				if(inside.equals("type")) arg.setType(value);
 				else if(inside.equals("name")) arg.setName(value);
-				else if(inside.equals("default-value")) arg.setDefaultValue(value);
+				else if(inside.equals("default")) arg.setDefaultValue(value);
+				else if(inside.equals("default-value")) arg.setDefaultValue(value); // deprecated
 				else if(inside.equals("status")) arg.setStatus(TagLibFactory.toStatus(value));
 				else if(inside.equals("description")) arg.setDescription(value);
+				else if(inside.equals("alias")) arg.setAlias(value);
 				
 				else if(inside.equals("required"))	{
 					arg.setRequired(value);

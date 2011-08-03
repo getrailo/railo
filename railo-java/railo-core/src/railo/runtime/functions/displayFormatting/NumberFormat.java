@@ -37,7 +37,8 @@ public final class NumberFormat implements Function {
      * @throws ExpressionException
      */
     public static String call(PageContext pc , Object object, String mask) throws PageException {
-    	 if(mask.equalsIgnoreCase("roman")) {
+    	if(mask==null) return call(pc, object);
+    	if(mask.equalsIgnoreCase("roman")) {
              return intToRoman(pc,(int)toNumber(pc,object));
          }
     	 else if(mask.equalsIgnoreCase("hex")) {

@@ -180,7 +180,7 @@ public interface ORMSession {
 	
 	public Object getRawSession();
 
-	public ORMTransaction getTransaction();
+	public ORMTransaction getTransaction(boolean autoManage);
 
 	public DatasourceConnection getDatasourceConnection();
 	

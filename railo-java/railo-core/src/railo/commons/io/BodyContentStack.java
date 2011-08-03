@@ -1,4 +1,5 @@
 package railo.commons.io;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyContent;
@@ -33,12 +34,12 @@ public final class BodyContentStack {
      * initialize the BodyContentStack
      * @param rsp
      */
-    public void init(HttpServletResponse rsp, boolean suppresswhitespace, boolean closeConn, boolean showVersion, boolean contentLength) {
+    public void init(HttpServletRequest req, HttpServletResponse rsp, boolean suppresswhitespace, boolean closeConn, boolean showVersion, boolean contentLength,boolean allowCompression) {
 //      this.base=new JSPWriterWhiteSpace(rsp,-1,false);
         if(suppresswhitespace)
-            this.base=new CFMLWriterWhiteSpace(rsp,-1,false,closeConn,showVersion,contentLength);
+            this.base=new CFMLWriterWhiteSpace(req,rsp,-1,false,closeConn,showVersion,contentLength,allowCompression);
         else 
-            this.base=new CFMLWriterImpl(rsp,-1,false,closeConn,showVersion,contentLength);
+            this.base=new CFMLWriterImpl(req,rsp,-1,false,closeConn,showVersion,contentLength,allowCompression);
     }
 
     /**
@@ -48,6 +49,8 @@ public final class BodyContentStack {
         this.base=null;
         current=root;
         current.body=null;
+        current.after=null;
+        current.before=null;
     }
     
 

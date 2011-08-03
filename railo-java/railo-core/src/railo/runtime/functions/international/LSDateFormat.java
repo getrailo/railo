@@ -3,11 +3,9 @@
  */
 package railo.runtime.functions.international;
 
-import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import railo.commons.date.JREDateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -19,7 +17,10 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
 
 public final class LSDateFormat implements Function {
-	private static Calendar calendar;
+
+	private static final long serialVersionUID = 4720003854756942610L;
+	
+	//private static Calendar calendar;
 	public static String call(PageContext pc , Object object) throws PageException {
 		return _call(pc, object, "medium", pc.getLocale(),pc.getTimeZone());
 	}
@@ -30,7 +31,9 @@ public final class LSDateFormat implements Function {
 		return _call(pc, object, mask, LocaleFactory.getLocale(strLocale),pc.getTimeZone());
 	}
 	public static synchronized String call(PageContext pc , Object object, String mask,String strLocale,String strTimezone) throws PageException {
-		return _call(pc, object, mask, LocaleFactory.getLocale(strLocale),TimeZoneUtil.toTimeZone(strTimezone));
+		return _call(pc, object, mask, 
+				strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),
+				strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	
 	
@@ -69,7 +72,7 @@ public final class LSDateFormat implements Function {
 		}*/
 	}
 	
-	private static long fixYear(TimeZone timezone,long time) {  
+	/*private static long fixYear(TimeZone timezone,long time) {  
 		if (calendar == null)
         	calendar=JREDateTimeUtil.newInstance();
         synchronized (calendar) {
@@ -85,5 +88,5 @@ public final class LSDateFormat implements Function {
             }
         }
        return time;
-	}
+	}*/
 }

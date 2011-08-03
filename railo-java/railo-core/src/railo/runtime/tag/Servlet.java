@@ -12,27 +12,10 @@ import railo.runtime.ext.tag.TagImpl;
 **/
 public final class Servlet extends TagImpl {
 
-	/** Boolean specifying whether additional information about the JRun connection status and 
-	** 		activity is to be written to the JRun error log */
 	private boolean debug;
-
-	/** The class name of the Java servlet to execute. */
 	private String code;
-
-	/** Boolean specifying whether the text output of the tag should appear as inline text on the 
-	** 		generated page or returned inside a ColdFusion variable for further processing . The default value, 
-	** 		Yes, means output is returned as text to appear inline on the generated page. Setting it to No means 
-	** 		no visible text is returned but, instead, the text is returned as the value of the cfservlet.output 
-	** 		variable */
 	private boolean writeoutput;
-
-	/** Specifies how many seconds JRun waits for the servlet to complete before timing out. */
 	private double timeout;
-
-	/** A remote computer where the JRun engine is executing. By default, the JRun engine is assumed to 
-	** 		be on the host running ColdFusion. To indicate the name of a remote host, specify the IP address of 
-	** 		the remote host followed by a colon and the port number at which JRun is listening. By default, for 
-	** 		the JCP server, JRun 2.3.3 listens at port 8081; JRun 3.0 listens at port 51000. */
 	private String jrunproxy;
 
 
@@ -62,11 +45,6 @@ public final class Servlet extends TagImpl {
 	}
 
 	/** set the value writeoutput
-	*  Boolean specifying whether the text output of the tag should appear as inline text on the 
-	* 		generated page or returned inside a ColdFusion variable for further processing . The default value, 
-	* 		Yes, means output is returned as text to appear inline on the generated page. Setting it to No means 
-	* 		no visible text is returned but, instead, the text is returned as the value of the cfservlet.output 
-	* 		variable
 	* @param writeoutput value to set
 	**/
 	public void setWriteoutput(boolean writeoutput)	{
@@ -82,10 +60,6 @@ public final class Servlet extends TagImpl {
 	}
 
 	/** set the value jrunproxy
-	*  A remote computer where the JRun engine is executing. By default, the JRun engine is assumed to 
-	* 		be on the host running ColdFusion. To indicate the name of a remote host, specify the IP address of 
-	* 		the remote host followed by a colon and the port number at which JRun is listening. By default, for 
-	* 		the JCP server, JRun 2.3.3 listens at port 8081; JRun 3.0 listens at port 51000.
 	* @param jrunproxy value to set
 	**/
 	public void setJrunproxy(String jrunproxy)	{

@@ -17,7 +17,7 @@ import railo.runtime.type.Struct;
 
 public class CacheSetProperties {
 
-	private static final Key OBJECT_TYPE = KeyImpl.getInstance("objecttype");
+	private static final Key OBJECT_TYPE = KeyImpl.intern("objecttype");
 
 	public static Object call(PageContext pc,Struct properties) throws PageException {
 		try {

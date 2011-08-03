@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
@@ -20,9 +21,9 @@ import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.net.smtp.SMTPConnectionPool;
-import railo.runtime.type.dt.DateTimeImpl;
-import railo.runtime.type.scope.ClientFile;
+import railo.runtime.op.Caster;
 import railo.runtime.type.scope.ScopeContext;
+import railo.runtime.type.scope.client.ClientFile;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
@@ -117,11 +118,21 @@ public final class Controler extends Thread {
 					}
 					config.reloadTimeServerOffset();
 					checkOldClientFile(config);
-					try{checkClientFileSize(config);}catch(Throwable t){}
+					
+					//try{checkStorageScopeFile(config,Session.SCOPE_CLIENT);}catch(Throwable t){}
+					//try{checkStorageScopeFile(config,Session.SCOPE_SESSION);}catch(Throwable t){}
 					try{config.reloadTimeServerOffset();}catch(Throwable t){}
 					try{checkTempDirectorySize(config);}catch(Throwable t){}
 					try{checkCacheFileSize(config);}catch(Throwable t){}
+					try{cfmlFactory.getScopeContext().clearUnused();}catch(Throwable t){}
 				}
+				
+				if(config==null) {
+					config = cfmlFactory.getConfig();
+					ThreadLocalConfig.register(config);
+				}
+				//try{cfmlFactory.getScopeContext().clearUnused();}catch(Throwable t){}
+				
 				
 				//every Minute
 				if(doMinute) {
@@ -133,7 +144,7 @@ public final class Controler extends Thread {
 					// clear unused DB Connections
 					try{((ConfigImpl)config).getDatasourceConnectionPool().clear();}catch(Throwable t){}
 					// clear all unused scopes
-					try{cfmlFactory.getScopeContext().clearUnused(cfmlFactory);}catch(Throwable t){}
+					try{cfmlFactory.getScopeContext().clearUnused();}catch(Throwable t){}
 					// Memory usage
 					// clear Query Cache
 					try{cfmlFactory.getQueryCache().clearUnused();}catch(Throwable t){}
@@ -150,8 +161,9 @@ public final class Controler extends Thread {
 					}
 					// time server offset
 					try{config.reloadTimeServerOffset();}catch(Throwable t){}
-					// check file based client scope
-					try{checkClientFileSize(config);}catch(Throwable t){}
+					// check file based client/session scope
+					//try{checkStorageScopeFile(config,Session.SCOPE_CLIENT);}catch(Throwable t){}
+					//try{checkStorageScopeFile(config,Session.SCOPE_SESSION);}catch(Throwable t){}
 					// check temp directory
 					try{checkTempDirectorySize(config);}catch(Throwable t){}
 					// check cache directory
@@ -170,21 +182,6 @@ public final class Controler extends Thread {
 		SMTPConnectionPool.closeSessions();
 	}
 
-	private void checkClientFileSize(ConfigWeb config) {
-		ExtensionResourceFilter filter = new ExtensionResourceFilter(".script",true);
-		
-		try {
-			long date = new DateTimeImpl(config).getTime()-((ConfigWebImpl)config).getClientTimeout().getMillis();
-			
-			//long date = DateAdd.invoke("d", -((ConfigWebImpl)config).getClientScopeMaxAge(), new DateTimeImpl(config)).getTime();
-			ResourceUtil.deleteFileOlderThan(config.getClientScopeDir(),date,filter);
-			ResourceUtil.deleteEmptyFolders(config.getClientScopeDir());
-		
-		} catch (Exception e) {}
-
-		checkSize(config,config.getClientScopeDir(),config.getClientScopeDirSize(),new ExtensionResourceFilter(".script",true));
-	}
-	
 	private void checkOldClientFile(ConfigWeb config) {
 		ExtensionResourceFilter filter = new ExtensionResourceFilter(".script",false);
 		
@@ -323,5 +320,53 @@ public final class Controler extends Thread {
 		if(config.logMemoryUsage()&& config.getMemoryLogger()!=null)
 			config.getMemoryLogger().write();
 	}*/
+    
+    
+    static class ExpiresFilter implements ResourceFilter {
+
+		private long time;
+		private boolean allowDir;
+
+		public ExpiresFilter(long time, boolean allowDir) {
+			this.allowDir=allowDir;
+			this.time=time;
+		}
+
+		public boolean accept(Resource res) {
+
+			if(res.isDirectory()) return allowDir;
+			
+			// load content
+			String str=null;
+			try {
+				str = IOUtil.toString(res,"UTF-8");
+			} 
+			catch (IOException e) {
+				return false;
+			}
+			
+			int index=str.indexOf(':');
+			if(index!=-1){
+				long expires=Caster.toLongValue(str.substring(0,index),-1L);
+				// check is for backward compatibility, old files have no expires date inside. they do ot expire
+				if(expires!=-1) {
+					if(expires<System.currentTimeMillis()){
+						return true;
+					}
+					else {
+						str=str.substring(index+1);
+						return false;
+					}
+				}
+			}
+			// old files not having a timestamp inside
+			else if(res.lastModified()<=time) {
+				return true;
+				
+			}
+			return false;
+		}
+    	
+    }
 
 }

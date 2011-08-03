@@ -13,14 +13,14 @@ import railo.runtime.op.Caster;
 
 public class ImageWrite implements Function {
 
-	public static String call(PageContext pc, Object name, String destination) throws PageException {
-		return call(pc, name, destination, 0.75,true);
-	}
-	
 	public static String call(PageContext pc, Object name) throws PageException {
 		return call(pc, name, null, 0.75,true);
 	}
 
+	public static String call(PageContext pc, Object name, String destination) throws PageException {
+		return call(pc, name, destination, 0.75,true);
+	}
+	
 	public static String call(PageContext pc, Object name, String destination, double quality) throws PageException {
 		return call(pc, name,destination,quality,true);
 	}

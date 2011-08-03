@@ -16,7 +16,6 @@ limitations under the License.
 
 package railo.runtime.img.filter;
 
-
 /**
  * A warp grid.
  * From "A simplified approach to Image Processing" by Randy Crane

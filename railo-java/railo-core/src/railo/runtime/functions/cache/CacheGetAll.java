@@ -31,14 +31,14 @@ public final class CacheGetAll implements Function {
 	
 	public static Struct call(PageContext pc,String filter, String cacheName) throws PageException {
 		try {
-			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			Cache cache = Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
 			List<CacheEntry> entries = CacheGetAllIds.isFilter(filter)?cache.entries(new WildCardFilter(filter,true)):cache.entries();
 			Iterator<CacheEntry> it=entries.iterator();
 			Struct sct = new StructImpl();
 			CacheEntry entry;
 			while(it.hasNext()){
 				entry= it.next();
-				sct.setEL(KeyImpl.init(entry.getKey()),entry.getValue());
+				sct.setEL(KeyImpl.getInstance(entry.getKey()),entry.getValue());
 			}
 			return sct;
 		} catch (Exception e) {

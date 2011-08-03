@@ -14,12 +14,9 @@ import railo.runtime.type.KeyImpl;
  */
 public abstract class InterfacePage extends PagePlus  {
 	
-	//private static final railo.runtime.type.Collection.Key FIELDNAMES = KeyImpl.getInstance("fieldnames");
-	private static final railo.runtime.type.Collection.Key METHOD = KeyImpl.getInstance("method");
-	private static final railo.runtime.type.Collection.Key COMPONENT = KeyImpl.getInstance("component");
-	//private InterfaceImpl interfaceimpl;
+	private static final railo.runtime.type.Collection.Key METHOD = KeyImpl.intern("method");
+	private static final railo.runtime.type.Collection.Key COMPONENT = KeyImpl.intern("component");
 	
-
 	
 	/**
 	 * @see railo.runtime.Page#call(railo.runtime.PageContext)

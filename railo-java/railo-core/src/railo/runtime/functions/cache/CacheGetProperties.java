@@ -50,7 +50,7 @@ public final class CacheGetProperties implements Function {
 					else if(name.equalsIgnoreCase("resource"))
 						arr.appendEL(Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_RESOURCE).getCustomInfo());
 					else
-						arr.appendEL(Util.getCache(pc,name).getCustomInfo());
+						arr.appendEL(Util.getCache(pc.getConfig(),name).getCustomInfo());
 				}
 			}
 			

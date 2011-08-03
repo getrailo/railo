@@ -31,6 +31,10 @@ function printError(error,boolean longversion=false) {
 	}
 }
 
+function noAccess(string text){
+	writeOutput('<div class="CheckError">#text#</div></cfoutput><br /><br />');
+}
+
 function br(str) {
 	str=replace(str,'
 ','<br>','all');

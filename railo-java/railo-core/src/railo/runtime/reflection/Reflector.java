@@ -22,6 +22,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
+import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.reflection.pairs.ConstructorInstance;
@@ -370,7 +371,7 @@ public final class Reflector {
 		if(methods!=null) {
 		    Class[] clazzArgs = getClasses(args);
 			// exact comparsion
-		    //print.o("exact:"+methodName);
+		    //print.e("exact:"+methodName);
 		    outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
 					Class[] parameterTypes = methods[i].getParameterTypes();
@@ -382,7 +383,7 @@ public final class Reflector {
 			}
 			// like comparsion
 		    MethodInstance mi=null;
-		    //print.o("like:"+methodName);
+		    // print.e("like:"+methodName);
 		    outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
 					Class[] parameterTypes = methods[i].getParameterTypes();
@@ -396,7 +397,7 @@ public final class Reflector {
 		    
 		    
 			// convert comparsion
-		    //print.o("convert:"+methodName);
+		    // print.e("convert:"+methodName);
 		    mi=null;
 			outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
@@ -448,12 +449,46 @@ public final class Reflector {
      */
     public static MethodInstance getMethodInstance(Class clazz, String methodName, Object[] args) 
         throws NoSuchMethodException {
-        MethodInstance mi=getMethodInstanceEL(clazz, KeyImpl.init(methodName), args);
+        MethodInstance mi=getMethodInstanceEL(clazz, KeyImpl.getInstance(methodName), args);
         if(mi!=null) return mi;
-        throw new NoSuchMethodException("No matching Method for "+methodName+"("+getDspMethods(getClasses(args))+") found for "+
+        
+        Class[] classes = getClasses(args);
+        StringBuilder sb=null;
+        JavaObject jo;
+        Class c;
+        ConstructorInstance ci;
+        for(int i=0;i<classes.length;i++){
+        	if(args[i] instanceof JavaObject) {
+        		jo=(JavaObject) args[i];
+        		c=jo.getClazz();
+        		ci = Reflector.getConstructorInstance(c, new Object[0], null);
+        		if(ci==null) {
+        			
+        		throw new NoSuchMethodException("The "+pos(i+1)+" parameter of "+methodName+"("+getDspMethods(classes)+") ia a object created " +
+        				"by the createObject function (JavaObject/JavaProxy). This object has not been instantiated because it does not have a constructor " +
+        				"that takes zero arguments. Railo cannot instantiate it for you, please use the .init(...) method to instantiate it with the correct parameters first");
+        			
+        			
+        		}
+        	}
+        }
+        /*
+        the argument list contains objects created by createObject, 
+        that are no instantiated (first,third,10th) and because this object have no constructor taking no arguments, Railo cannot instantiate them.
+        you need first to instantiate this objects. 
+        */
+        throw new NoSuchMethodException("No matching Method for "+methodName+"("+getDspMethods(classes)+") found for "+
         		Caster.toTypeName(clazz));
     }
 	
+	private static String pos(int index) {
+		if(index==1) return "first";
+		if(index==2) return "second";
+		if(index==3) return "third";
+		
+		return index+"th";
+	}
+
 	/**
 	 * same like method getField from Class but ignore case from field name
 	 * @param clazz class to search the field
@@ -576,7 +611,7 @@ public final class Reflector {
 	 * @throws PageException
 	 */
 	public static Object callMethod(Object obj, String methodName, Object[] args) throws PageException {
-		return callMethod(obj, KeyImpl.init(methodName), args);
+		return callMethod(obj, KeyImpl.getInstance(methodName), args);
 	}
 	
 	public static Object callMethod(Object obj, Collection.Key methodName, Object[] args) throws PageException {
@@ -639,7 +674,7 @@ public final class Reflector {
      */
     public static MethodInstance getGetter(Class clazz, String prop) throws PageException, NoSuchMethodException {
         String getterName = "get"+StringUtil.ucFirst(prop);
-        MethodInstance mi = getMethodInstanceEL(clazz,KeyImpl.init(getterName),ArrayUtil.OBJECT_EMPTY);
+        MethodInstance mi = getMethodInstanceEL(clazz,KeyImpl.getInstance(getterName),ArrayUtil.OBJECT_EMPTY);
         if(mi==null)
         	throw new ExpressionException("No matching property ["+prop+"] found in ["+Caster.toTypeName(clazz)+"]");
         Method m=mi.getMethod();
@@ -658,7 +693,7 @@ public final class Reflector {
      */
     public static MethodInstance getGetterEL(Class clazz, String prop) {
         prop="get"+StringUtil.ucFirst(prop);
-        MethodInstance mi = getMethodInstanceEL(clazz,KeyImpl.init(prop),ArrayUtil.OBJECT_EMPTY);
+        MethodInstance mi = getMethodInstanceEL(clazz,KeyImpl.getInstance(prop),ArrayUtil.OBJECT_EMPTY);
         if(mi==null) return null;
         if(mi.getMethod().getReturnType()==void.class) return null;
         return mi;
@@ -716,7 +751,7 @@ public final class Reflector {
      */
     public static MethodInstance getSetterEL(Object obj, String prop,Object value)  {
             prop="set"+StringUtil.ucFirst(prop);
-            MethodInstance mi = getMethodInstanceEL(obj.getClass(),KeyImpl.init(prop),new Object[]{value});
+            MethodInstance mi = getMethodInstanceEL(obj.getClass(),KeyImpl.getInstance(prop),new Object[]{value});
             if(mi==null) return null;
             Method m=mi.getMethod();
             
@@ -1100,6 +1135,40 @@ public final class Reflector {
 		if(list.size()==0) return new Method[0];
 		return (Method[]) list.toArray(new Method[list.size()]);
 	}
+
+	/**
+	 * check if given class "from" can be converted to class "to" without explicit casting
+	 * @param from source class
+	 * @param to target class
+	 * @return is it possible to convert from "from" to "to"
+	 */
+	public static boolean canConvert(Class from, Class to) {
+		// Identity Conversions
+		if(from==to) return true;
+		
+		// Widening Primitive Conversion
+		if(from==byte.class) {
+			return to==short.class || to==int.class || to==long.class || to==float.class || to==double.class ;
+		}
+		if(from==short.class) {
+			return to==int.class || to==long.class || to==float.class || to==double.class ;
+		}
+		if(from==char.class) {
+			return to==int.class || to==long.class || to==float.class || to==double.class ;
+		}
+		if(from==int.class) {
+			return to==long.class || to==float.class || to==double.class ;
+		}
+		if(from==long.class) {
+			return to==float.class || to==double.class ;
+		}
+		if(from==float.class) {
+			return to==double.class ;
+		}
+		return false;
+	}
+
+	
 
 	 
 }

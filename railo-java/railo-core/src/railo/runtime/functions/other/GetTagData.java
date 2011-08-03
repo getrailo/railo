@@ -7,9 +7,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
+import railo.runtime.ComponentPro;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.customtag.InitFile;
@@ -25,6 +26,7 @@ import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
+import railo.transformer.library.tag.TagLibTagScript;
 
 public final class GetTagData implements Function {
 	
@@ -43,7 +45,7 @@ public final class GetTagData implements Function {
 			}
 			
 		}
-		if(tag == null) throw new ExpressionException("tag ["+nameSpace+strTagName+"] is not a build in tag");
+		if(tag == null) throw new ExpressionException("tag ["+nameSpace+strTagName+"] is not a built in tag");
 
 		// CFML Based Function
 		Class clazz=null;
@@ -53,7 +55,15 @@ public final class GetTagData implements Function {
 		catch(Throwable t){}
 		
 		if(clazz==CFTagCore.class){
-			return cfmlBasedTag(pc,tld,tag);
+			PageContextImpl pci=(PageContextImpl) pc;
+			boolean prior = pci.useSpecialMappings(true);
+			try{
+				return cfmlBasedTag(pc,tld,tag);
+			}
+			finally {
+				pci.useSpecialMappings(prior);
+			}
+			
 		}
 		return javaBasedTag(tld,tag);
 		
@@ -76,8 +86,8 @@ public final class GetTagData implements Function {
 		boolean isWeb = Caster.toBooleanValue(attrIsWeb.getDefaultValue());
 		InitFile source = CFTagCore.createInitFile(pc, isWeb, filename);
 		
-		ComponentImpl cfc = ComponentLoader.loadComponentImpl(pc,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pc.getConfig().getCFCExtension().length()+1)), false,true);
-        ComponentWrap cw=new ComponentWrap(Component.ACCESS_PRIVATE, cfc);
+		ComponentPro cfc = ComponentLoader.loadComponent(pc,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pc.getConfig().getCFCExtension().length()+1)), false,true);
+        ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE, cfc);
 		Struct metadata=Caster.toStruct(cw.get("metadata",null),null,false);
 		
 		
@@ -92,6 +102,15 @@ public final class GetTagData implements Function {
 		sct.set("bodyType",getBodyType(tag));
 		sct.set("attrMin",Caster.toDouble(0));
 		sct.set("attrMax",Caster.toDouble(0));
+		
+		// TODO add support for script for cfml tags
+		Struct scp=new StructImpl();
+		sct.set("script",scp);
+		scp.set("rtexpr", Boolean.FALSE);
+		scp.set("type", "none");
+		
+		
+		
 		
 		if(metadata!=null) {
 			sct.set("description",metadata.get("hint",""));
@@ -114,6 +133,8 @@ public final class GetTagData implements Function {
 					_attr.set("description",src.get("hint",""));
 					_attr.set("type",src.get("type","any"));
 					_attr.set("required",Caster.toBoolean(src.get("required",""),null));
+					_attr.set("scriptSupport","none");
+					
 					_attrs.setEL(keys[i].getLowerString(),_attr);
 					
 				}
@@ -161,6 +182,22 @@ public final class GetTagData implements Function {
 		sct.set("attrMin",Caster.toDouble(tag.getMin()));
 		sct.set("attrMax",Caster.toDouble(tag.getMax()));
 		sct.set("hasNameAppendix",Caster.toBoolean(tag.hasAppendix()));
+		
+		// script
+		TagLibTagScript script = tag.getScript();
+		if(script!=null) {
+			Struct scp=new StructImpl();
+			sct.set("script",scp);
+			scp.set("rtexpr", Caster.toBoolean(script.getRtexpr()));
+			scp.set("type", script.getTypeAsString());
+			if(script.getType()==TagLibTagScript.TYPE_SINGLE) {
+				TagLibTagAttr attr = script.getSingleAttr();
+				if(attr!=null)scp.set("singletype", attr.getScriptSupportAsString());
+				else scp.set("singletype", "none");
+			}
+		}
+		
+		
 		sct.set("type","java");
 		
 		Struct _args=new StructImpl();
@@ -179,6 +216,7 @@ public final class GetTagData implements Function {
 			_arg.set("description",attr.getDescription());
 			_arg.set("type",attr.getType());
 			_arg.set("required",attr.isRequired()?Boolean.TRUE:Boolean.FALSE);
+			_arg.set("scriptSupport",attr.getScriptSupportAsString());
 			_args.setEL(attr.getName(),_arg);
 		}
 		return sct;

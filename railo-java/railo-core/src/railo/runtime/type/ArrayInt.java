@@ -188,7 +188,12 @@ public class ArrayInt implements Sizeable,Serializable {
 	 * @see railo.runtime.engine.Sizeable#sizeOf()
 	 */
 	public long sizeOf() {
-		return SizeOf.size(arr);
+		return SizeOf.size(arr)
+		+SizeOf.size(cap)
+		+SizeOf.size(size)
+		+SizeOf.size(offset)
+		+SizeOf.size(offCount)
+		+SizeOf.REF_SIZE;
 	}
 
 }

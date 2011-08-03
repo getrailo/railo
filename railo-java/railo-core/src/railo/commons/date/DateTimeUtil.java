@@ -56,7 +56,7 @@ public abstract class DateTimeUtil {
 	
 	/**
      * returns a date time instance by a number, the conversion from the double to 
-     * date is o the base of the coldfusion rules.
+     * date is o the base of the CFML rules.
      * @param days double value to convert to a number
      * @return DateTime Instance
      */

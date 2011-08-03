@@ -2,6 +2,7 @@ package railo.runtime.config;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -11,13 +12,8 @@ import railo.commons.lang.StringUtil;
 import railo.loader.engine.CFMLEngine;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.engine.CFMLEngineImpl;
-import railo.runtime.exp.PageException;
-import railo.runtime.net.http.ServletConfigDummy;
-import railo.runtime.net.http.ServletContextDummy;
-import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
-import railo.runtime.type.StructImpl;
 
 /**
  * config server impl
@@ -35,7 +31,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     private URL updateLocation;
     private String updateType="";
 	private ConfigListener configListener;
-	private ConfigWeb configWeb;
+	private Map<String, String> labels;
 	private static ConfigServerImpl instance;
 	
 	/**
@@ -294,44 +290,12 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		return instance;
 	}
 
-	/**
-	 * this is a config web that reflect the configServer, this allows to run cfml code on server level
-	 * @return
-	 * @throws PageException
-	 */
-	public ConfigWeb getConfigWeb(boolean isEventGatewayContext) {
-		if(configWeb!=null)
-			return configWeb;
-		QueryCacheSupport cqc = QueryCacheSupport.getInstance(this);
-		CFMLEngineImpl engine = (CFMLEngineImpl)getCFMLEngine();
-		CFMLFactoryImpl factory = new CFMLFactoryImpl(engine,cqc);
-		
-		ServletContextDummy sContext = new ServletContextDummy(
-				this,
-				getConfigDir().getRealResource("webroot"),
-				new StructImpl(),
-				new StructImpl(),
-				1,1);
-		ServletConfigDummy sConfig = new ServletConfigDummy(sContext,"CFMLServlet");
-		
-		ConfigWebImpl cwi = new ConfigWebImpl(
-				factory,
-				this,
-				sConfig,
-				getConfigDir(),
-				getConfigFile());
-		cqc.setConfigWeb(cwi);
-		try {
-			ConfigWebFactory.createContextFiles(getConfigDir(),sConfig);
-	        ConfigWebFactory.load(this, cwi, ConfigWebFactory.loadDocument(getConfigFile()),isEventGatewayContext);
-	        ConfigWebFactory.createContextFilesPost(getConfigDir(),cwi);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			//throw Caster.toPageException(e);
-		}
-		configWeb=cwi;
-		return cwi;
+	public void setLabels(Map<String, String> labels) {
+		this.labels=labels;
+	}
+	public Map<String, String> getLabels() {
+		if(labels==null) labels=new HashMap<String, String>();
+		return labels;
 	}
 	
 

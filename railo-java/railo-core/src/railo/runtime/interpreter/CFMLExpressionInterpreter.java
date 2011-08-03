@@ -20,6 +20,12 @@ import railo.runtime.interpreter.ref.literal.LString;
 import railo.runtime.interpreter.ref.literal.LStringBuffer;
 import railo.runtime.interpreter.ref.literal.Literal;
 import railo.runtime.interpreter.ref.op.And;
+import railo.runtime.interpreter.ref.op.BigDiv;
+import railo.runtime.interpreter.ref.op.BigIntDiv;
+import railo.runtime.interpreter.ref.op.BigMinus;
+import railo.runtime.interpreter.ref.op.BigMod;
+import railo.runtime.interpreter.ref.op.BigMulti;
+import railo.runtime.interpreter.ref.op.BigPlus;
 import railo.runtime.interpreter.ref.op.CT;
 import railo.runtime.interpreter.ref.op.Concat;
 import railo.runtime.interpreter.ref.op.Cont;
@@ -145,6 +151,7 @@ public class CFMLExpressionInterpreter {
     protected PageContext pc;
     private FunctionLib fld;
 	protected boolean allowNullConstant=false;
+	private boolean preciseMath;
     //private Null nulls=Null.getInstance();
     
     
@@ -163,8 +170,12 @@ public class CFMLExpressionInterpreter {
      * @return
      * @throws PageException
      */
-    public Object interpret(PageContext pc,ParserString cfml) throws PageException {    
-        this.cfml = cfml;
+    public Object interpret(PageContext pc,ParserString cfml) throws PageException { 
+    	return interpret(pc, cfml, false);
+    }
+    public Object interpret(PageContext pc,ParserString cfml, boolean preciseMath) throws PageException {    
+    	this.preciseMath = preciseMath;
+    	this.cfml = cfml;
         this.pc=pc;
         if(pc!=null)fld=((ConfigImpl)pc.getConfig()).getCombinedFLDs();
         
@@ -220,7 +231,11 @@ public class CFMLExpressionInterpreter {
     public Object interpret(PageContext pc,String str) throws PageException {
     	return interpret(pc,new ParserString(str));
     }
-
+    
+    public Object interpret(PageContext pc,String str, boolean preciseMath) throws PageException {
+    	return interpret(pc,new ParserString(str),preciseMath);
+    }
+    
     /**
     * Liest einen gelableten  Funktionsparamter ein
     * <br />
@@ -671,7 +686,7 @@ public class CFMLExpressionInterpreter {
 			cfml.next();
 			cfml.removeSpace();
 			Ref right = assignOp();
-			Ref res = new Plus(ref,right);
+			Ref res = preciseMath?new BigPlus(ref,right):new Plus(ref,right);
 			ref=new Assign(ref,res);
 		}
 		/*/ ++
@@ -684,7 +699,7 @@ public class CFMLExpressionInterpreter {
 		}*/
 		else {	
             cfml.removeSpace();
-            ref=new Plus(ref,modOp());
+            ref=preciseMath?new BigPlus(ref,modOp()):new Plus(ref,modOp());
 		}
 		return ref;
 	}
@@ -695,7 +710,7 @@ public class CFMLExpressionInterpreter {
 			cfml.next();
 			cfml.removeSpace();
 			Ref right = assignOp();
-			Ref res = new Minus(ref,right);
+			Ref res = preciseMath?new BigMinus(ref,right):new Minus(ref,right);
 			ref=new Assign(ref,res);
 		}
 		/*/ --
@@ -708,7 +723,7 @@ public class CFMLExpressionInterpreter {
 		}*/
 		else {	
             cfml.removeSpace();
-            ref=new Minus(ref,modOp());
+            ref=preciseMath?new BigMinus(ref,modOp()):new Minus(ref,modOp());
 		}
 		return ref;
 	}
@@ -719,12 +734,12 @@ public class CFMLExpressionInterpreter {
 		if (cfml.forwardIfCurrent('=')) {
 			cfml.removeSpace();
 			Ref right = assignOp();
-			Ref res = new Div(ref,right);
+			Ref res = preciseMath?new BigDiv(ref, right):new Div(ref,right);
 			ref=new Assign(ref,res);
 		}
 		else {	
             cfml.removeSpace();
-            ref=new Div(ref,expoOp());
+            ref=preciseMath?new BigDiv(ref,expoOp()):new Div(ref,expoOp());
 		}
 		return ref;
 	}
@@ -734,12 +749,12 @@ public class CFMLExpressionInterpreter {
 		if (cfml.forwardIfCurrent('=')) {
 			cfml.removeSpace();
 			Ref right = assignOp();
-			Ref res = new IntDiv(ref,right);
+			Ref res = preciseMath?new BigIntDiv(ref,right):new IntDiv(ref,right);
 			ref=new Assign(ref,res);
 		}
 		else {	
             cfml.removeSpace();
-            ref=new IntDiv(ref,expoOp());
+            ref=preciseMath?new BigIntDiv(ref,expoOp()):new IntDiv(ref,expoOp());
 		}
 		return ref;
 	}
@@ -749,12 +764,12 @@ public class CFMLExpressionInterpreter {
 		if (cfml.forwardIfCurrent('=')) {
 			cfml.removeSpace();
 			Ref right = assignOp();
-			Ref res = new Mod(ref,right);
+			Ref res = preciseMath?new BigMod(ref,right):new Mod(ref,right);
 			ref=new Assign(ref,res);
 		}
 		else {	
             cfml.removeSpace();
-            ref=new Mod(ref,divMultiOp());
+            ref=preciseMath?new BigMod(ref,divMultiOp()):new Mod(ref,divMultiOp());
 		}
 		return ref;
 	}
@@ -778,12 +793,12 @@ public class CFMLExpressionInterpreter {
 		if (cfml.forwardIfCurrent('=')) {
 			cfml.removeSpace();
 			Ref right = assignOp();
-			Ref res = new Multi(ref,right);
+			Ref res = preciseMath?new BigMulti(ref,right):new Multi(ref,right);
 			ref=new Assign(ref,res);
 		}
 		else {	
             cfml.removeSpace();
-            ref=new Multi(ref,expoOp());
+            ref=preciseMath?new BigMulti(ref,expoOp()):new Multi(ref,expoOp());
 		}
 		return ref;
 	}
@@ -885,9 +900,9 @@ public class CFMLExpressionInterpreter {
     
     private Ref _unaryOp(Ref ref,boolean isPlus) throws PageException {
         cfml.removeSpace();
-		Ref res = new Plus(ref,isPlus?PLUS_ONE:MINUS_ONE);
+		Ref res = preciseMath?new BigPlus(ref,isPlus?PLUS_ONE:MINUS_ONE):new Plus(ref,isPlus?PLUS_ONE:MINUS_ONE);
 		ref=new Assign(ref,res);
-		return new Plus(ref,isPlus?MINUS_ONE:PLUS_ONE);
+		return preciseMath?new BigPlus(ref,isPlus?MINUS_ONE:PLUS_ONE):new Plus(ref,isPlus?MINUS_ONE:PLUS_ONE);
 	}
     
 
@@ -902,7 +917,7 @@ public class CFMLExpressionInterpreter {
         	if (cfml.forwardIfCurrent('-')) {
         		cfml.removeSpace();
 				Ref expr = clip();
-				Minus res = new Minus(expr,new LNumber(new Double(1)));
+				Ref res = preciseMath?new BigMinus(expr,new LNumber(new Double(1))):new Minus(expr,new LNumber(new Double(1)));
 				return new Assign(expr,res);
 			}	
             cfml.removeSpace();
@@ -913,7 +928,7 @@ public class CFMLExpressionInterpreter {
         	if (cfml.forwardIfCurrent('+')) {
         		cfml.removeSpace();
 				Ref expr = clip();
-				Plus res = new Plus(expr,new LNumber(new Double(1)));
+				Ref res = preciseMath?new BigPlus(expr,new LNumber(new Double(1))):new Plus(expr,new LNumber(new Double(1)));
 				return new Assign(expr,res);
 			}
         	cfml.removeSpace();
@@ -1072,7 +1087,7 @@ public class CFMLExpressionInterpreter {
         // check first character is a number literal representation
         //if(!cfml.isCurrentDigit()) return null;
         
-        StringBuffer rtn=new StringBuffer(6);
+        StringBuilder rtn=new StringBuilder(6);
         
         // get digit on the left site of the dot
         if(cfml.isCurrent('.')) rtn.append('0');
@@ -1084,12 +1099,20 @@ public class CFMLExpressionInterpreter {
             digit(rtn);
 
             if(before<cfml.getPos() && cfml.forwardIfCurrent('e')) {
-                if(cfml.isCurrentDigit()) {
-                    rtn.append('e');
+            	Boolean expOp=null;
+				if(cfml.forwardIfCurrent('+')) expOp=Boolean.TRUE;
+				else if(cfml.forwardIfCurrent('-')) expOp=Boolean.FALSE;
+				
+            	
+            	if(cfml.isCurrentDigit()) {
+            		if(expOp==Boolean.FALSE) rtn.append("e-");
+					else if(expOp==Boolean.TRUE) rtn.append("e+");
+					else rtn.append('e');
                     digit(rtn);
                 }
                 else {
-                    cfml.previous();
+                	if(expOp!=null) cfml.previous();
+			        cfml.previous();
                 }
             }
             
@@ -1112,7 +1135,7 @@ public class CFMLExpressionInterpreter {
     * <code>"0"|..|"9";</code>
      * @param rtn
     */
-    private void digit(StringBuffer rtn) {
+    private void digit(StringBuilder rtn) {
         
         while (cfml.isValidIndex()) {
             if(!cfml.isCurrentDigit())break;
@@ -1433,6 +1456,7 @@ public class CFMLExpressionInterpreter {
             libLen = arrFuncLibAtt.size();
         }
         int count = 0;
+        Ref ref;
         do {
             cfml.next();
             cfml.removeSpace();
@@ -1468,7 +1492,8 @@ public class CFMLExpressionInterpreter {
                     arr.add(functionArgDeclarationVarString());
                 }
                 else {
-                    arr.add(new Casting(pc,funcLibAtt.getTypeAsString(),type,functionArgDeclaration()));
+                	ref = functionArgDeclaration();
+                	arr.add(new Casting(pc,funcLibAtt.getTypeAsString(),type,ref));
                 }
             } 
             else {

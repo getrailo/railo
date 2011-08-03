@@ -231,7 +231,7 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 	private Core getCore(ConnectionData data) throws PageException{
 		Core core = (Core) cores.get(data.datasourceName);
 		if(core==null){
-			DatasourceConnection dc = getManager().getConnection(null, data.getDatasourceName(), data.getUsername(), data.getPassword());
+			DatasourceConnection dc = getManager().getConnection(ThreadLocalPageContext.get(), data.getDatasourceName(), data.getUsername(), data.getPassword());
 			try {		
 				
 				dc.getConnection().setAutoCommit(false);
@@ -262,7 +262,7 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 	}
 	
 	private DatasourceConnection getDatasourceConnection(ConnectionData data, boolean autoCommit) throws PageException {
-		DatasourceConnection dc = getManager().getConnection(null, data.getDatasourceName(), data.getUsername(), data.getPassword());
+		DatasourceConnection dc = getManager().getConnection(ThreadLocalPageContext.get(), data.getDatasourceName(), data.getUsername(), data.getPassword());
 		
 		try {
 			dc.getConnection().setAutoCommit(autoCommit);
@@ -302,7 +302,7 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 				throw new DatabaseException(e,dc);
 			}
 		    finally {
-		    	getManager().releaseConnection(null,dc);
+		    	getManager().releaseConnection(ThreadLocalPageContext.get(),dc);
 		    }
 		}
 		return putToCache(data,path,name,Attr.notExists(name,path));
@@ -621,7 +621,7 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 				} 
 				catch (SQLException e) {}
 			
-			getManager().releaseConnection(null,dc);
+			getManager().releaseConnection(ThreadLocalPageContext.get(),dc);
 		}
 	}
 

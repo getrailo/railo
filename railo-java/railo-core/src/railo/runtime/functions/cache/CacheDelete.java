@@ -26,7 +26,7 @@ public final class CacheDelete implements Function {
 	
 	public static String call(PageContext pc, String id, boolean throwOnError, String cacheName) throws PageException {
 		try {
-			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			Cache cache = Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
 			if(!cache.remove(Util.key(id)) && throwOnError){
 				throw new ApplicationException("can not remove the element with the following id ["+id+"]");
 			}	

@@ -27,7 +27,7 @@ public final class LSParseCurrency implements Function {
 		return Caster.toString(toDoubleValue(pc.getLocale(),string,false));
 	}
 	public static String call(PageContext pc , String string,String strLocale) throws PageException {
-		return Caster.toString(toDoubleValue(LocaleFactory.getLocale(strLocale),string,false));
+		return Caster.toString(toDoubleValue(strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),string,false));
 	}
 
 	public static synchronized double toDoubleValue(Locale locale,String str) throws PageException {

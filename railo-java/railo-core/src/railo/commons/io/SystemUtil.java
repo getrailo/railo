@@ -3,10 +3,13 @@ package railo.commons.io;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 
@@ -15,6 +18,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.config.Config;
@@ -26,7 +30,15 @@ import railo.runtime.type.List;
  * 
  */
 public final class SystemUtil {
-    
+
+	public static final int ARCH_UNKNOW=0;
+	public static final int ARCH_32=32;
+	public static final int ARCH_64=64;
+
+	public static final char CHAR_DOLLAR=(char)36;
+	public static final char CHAR_POUND=(char)163;
+	public static final char CHAR_EURO=(char)8364;
+	
 	public static final PrintWriter PRINTWRITER_OUT = new PrintWriter(System.out);
 	public static final PrintWriter PRINTWRITER_ERR = new PrintWriter(System.err);
     
@@ -38,6 +50,9 @@ public final class SystemUtil {
     private static Resource[] classPathes;
     private static String charset=System.getProperty("file.encoding");
     private static String lineSeparator=System.getProperty("line.separator","\n");
+
+	public static int osArch=-1;
+	public static int jreArch=-1;
 	
 	static {
 		if(charset==null || charset.equalsIgnoreCase("MacRoman"))
@@ -356,6 +371,21 @@ public final class SystemUtil {
     	
         return addPlaceHolder(file, defaultValue);
     }
+	
+	public static String parsePlaceHolder(String path, ServletContext sc, Map<String,String> labels) {
+		if(path==null) return null;
+        if(path.indexOf('{')!=-1){
+        	if((path.indexOf("{web-context-label}"))!=-1){
+        		String id=hash(sc);
+        		
+        		String label=labels.get(id);
+        		if(StringUtil.isEmpty(label)) label=id;
+        		
+        		path=StringUtil.replace(path, "{web-context-label}", label, false);
+        	}
+        }
+        return parsePlaceHolder(path, sc);
+    }
     
 	public static String parsePlaceHolder(String path, ServletContext sc) {
     	ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
@@ -376,15 +406,20 @@ public final class SystemUtil {
 	        }
         	
         	if((path.indexOf("{web-context-hash}"))!=-1){
-        		String id=null;
-        		try {
-        			id=MD5.getDigestAsString(sc.getRealPath("/"));
-        		} 
-        		catch (IOException e) {}
+        		String id=hash(sc);
         		path=StringUtil.replace(path, "{web-context-hash}", id, false);
         	}
         }
         return path;
+    }
+	
+	public static String hash(ServletContext sc) {
+    	String id=null;
+		try {
+			id=MD5.getDigestAsString(sc.getRealPath("/"));
+		} 
+		catch (IOException e) {}
+		return id;
     }
 
     public static String getCharset() {
@@ -415,13 +450,14 @@ public final class SystemUtil {
 			t.join();
 		} catch (InterruptedException e) {}
 	}
+	
 	/**
 	 * locks the object (synchronized) before calling wait
 	 * @param lock
 	 * @param timeout
 	 * @throws InterruptedException
 	 */
-	public static void wait(Object lock, int timeout) {
+	public static void wait(Object lock, long timeout) {
 		try {
 			synchronized (lock) {lock.wait(timeout);}
 		} catch (InterruptedException e) {}
@@ -460,5 +496,64 @@ public final class SystemUtil {
 		synchronized (lock) {lock.notifyAll();}
 	}
 
+	/**
+	 * return the operating system architecture
+	 * @return one of the following SystemUtil.ARCH_UNKNOW, SystemUtil.ARCH_32, SystemUtil.ARCH_64
+	 */
+	public static int getOSArch(){
+		if(osArch==-1) {
+			osArch = toIntArch(System.getProperty("os.arch.data.model"));
+			if(osArch==ARCH_UNKNOW)osArch = toIntArch(System.getProperty("os.arch"));
+		}
+		return osArch;
+	}
+	
+	/**
+	 * return the JRE (Java Runtime Engine) architecture, this can be different from the operating system architecture
+	 * @return one of the following SystemUtil.ARCH_UNKNOW, SystemUtil.ARCH_32, SystemUtil.ARCH_64
+	 */
+	public static int getJREArch(){
+		if(jreArch==-1) {
+			jreArch = toIntArch(System.getProperty("sun.arch.data.model"));
+			if(jreArch==ARCH_UNKNOW)jreArch = toIntArch(System.getProperty("com.ibm.vm.bitmode"));
+			if(jreArch==ARCH_UNKNOW) {
+				int addrSize = getAddressSize();
+				if(addrSize==4) return ARCH_32;
+				if(addrSize==8) return ARCH_64;
+			}
+			
+		}
+		return jreArch;
+	}
+	
+	private static int toIntArch(String strArch){
+		if(!StringUtil.isEmpty(strArch)) {
+			if(strArch.indexOf("64")!=-1) return ARCH_64;
+			if(strArch.indexOf("32")!=-1) return ARCH_32;
+			if(strArch.indexOf("i386")!=-1) return ARCH_32;
+			if(strArch.indexOf("x86")!=-1) return ARCH_32;
+		}
+		return ARCH_UNKNOW;
+	}
+	
 
+	
+	public static int getAddressSize() {
+		try {
+			Class unsafe = ClassUtil.loadClass(null,"sun.misc.Unsafe",null);
+			if(unsafe==null) return 0;
+		
+			Field unsafeField = unsafe.getDeclaredField("theUnsafe");
+		    unsafeField.setAccessible(true);
+		    Object obj = unsafeField.get(null);
+		    Method addressSize = unsafe.getMethod("addressSize", new Class[0]);
+		    
+		    Object res = addressSize.invoke(obj, new Object[0]);
+		    return Caster.toIntValue(res,0);
+		}
+		catch(Throwable t){
+			return 0;
+		}
+	    
+	}
 }

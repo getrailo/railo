@@ -48,41 +48,36 @@ import railo.transformer.library.tag.TagLibTagAttr;
 
 
 /**
-* Creates a ColdFusion Custom Tag
+* Creates a CFML Custom Tag
 **/
 public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttributes,AppendixTag {
 
-	private static Collection.Key GENERATED_CONTENT=KeyImpl.getInstance("GENERATEDCONTENT");
-	private static Collection.Key EXECUTION_MODE=KeyImpl.getInstance("EXECUTIONMODE");      
-	private static Collection.Key EXECUTE_BODY=KeyImpl.getInstance("EXECUTEBODY");
-	private static Collection.Key HAS_END_TAG=KeyImpl.getInstance("HASENDTAG");
-	private static Collection.Key PARENT=KeyImpl.getInstance("PARENT");
-	private static Collection.Key CFCATCH=KeyImpl.getInstance("CFCATCH");
-	private static Collection.Key SOURCE=KeyImpl.getInstance("SOURCE");
+	private static Collection.Key GENERATED_CONTENT=KeyImpl.intern("GENERATEDCONTENT");
+	private static Collection.Key EXECUTION_MODE=KeyImpl.intern("EXECUTIONMODE");      
+	private static Collection.Key EXECUTE_BODY=KeyImpl.intern("EXECUTEBODY");
+	private static Collection.Key HAS_END_TAG=KeyImpl.intern("HASENDTAG");
+	private static Collection.Key PARENT=KeyImpl.intern("PARENT");
+	private static Collection.Key CFCATCH=KeyImpl.intern("CFCATCH");
+	private static Collection.Key SOURCE=KeyImpl.intern("SOURCE");
 	
 	
-	private static Collection.Key ATTRIBUTES=KeyImpl.getInstance("ATTRIBUTES");
-	private static Collection.Key ATTRIBUTE=KeyImpl.getInstance("ATTRIBUTE");
-	private static Collection.Key CALLER=KeyImpl.getInstance("CALLER");
-	private static Collection.Key THIS_TAG=KeyImpl.getInstance("THISTAG");
+	private static Collection.Key ATTRIBUTES=KeyImpl.intern("ATTRIBUTES");
+	private static Collection.Key ATTRIBUTE=KeyImpl.intern("ATTRIBUTE");
+	private static Collection.Key CALLER=KeyImpl.intern("CALLER");
+	private static Collection.Key THIS_TAG=KeyImpl.intern("THISTAG");
 	
 
-	private static final Collection.Key ON_ERROR = KeyImpl.getInstance("onError");
-	private static final Collection.Key ON_FINALLY = KeyImpl.getInstance("onFinally");
-	private static final Collection.Key ON_START_TAG = KeyImpl.getInstance("onStartTag");
-	private static final Collection.Key ON_END_TAG = KeyImpl.getInstance("onEndTag");
-	private static final Collection.Key INIT = KeyImpl.getInstance("init");
+	private static final Collection.Key ON_ERROR = KeyImpl.intern("onError");
+	private static final Collection.Key ON_FINALLY = KeyImpl.intern("onFinally");
+	private static final Collection.Key ON_START_TAG = KeyImpl.intern("onStartTag");
+	private static final Collection.Key ON_END_TAG = KeyImpl.intern("onEndTag");
+	private static final Collection.Key INIT = KeyImpl.intern("init");
 
-	private static final Collection.Key ATTRIBUTE_TYPE = KeyImpl.getInstance("attributetype");
-	private static final Collection.Key TYPE = KeyImpl.getInstance("type");
-	private static final Collection.Key HINT = KeyImpl.getInstance("hint");
-	private static final Collection.Key DESCRIPTION = KeyImpl.getInstance("description");
-	private static final Collection.Key RT_EXPR_VALUE = KeyImpl.getInstance("rtexprvalue");
-	private static final Collection.Key PARSE_BODY = KeyImpl.getInstance("parsebody");
-	private static final Collection.Key EVALUATE_BODY = KeyImpl.getInstance("evaluatebody");
-	private static final Collection.Key REQUIRED = KeyImpl.getInstance("required");
-	private static final Collection.Key DEFAULT = KeyImpl.getInstance("default");
-	private static final Collection.Key METADATA = KeyImpl.getInstance("metadata");
+	private static final Collection.Key ATTRIBUTE_TYPE = KeyImpl.intern("attributetype");
+	private static final Collection.Key RT_EXPR_VALUE = KeyImpl.intern("rtexprvalue");
+	private static final Collection.Key PARSE_BODY = KeyImpl.intern("parsebody");
+	private static final Collection.Key EVALUATE_BODY = KeyImpl.intern("evaluatebody");
+	private static final Collection.Key METADATA = KeyImpl.intern("metadata");
 	
     /**
      * Field <code>attributesScope</code>
@@ -228,130 +223,9 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     }
 
     public InitFile initFile(PageContext pageContext) throws PageException {
-    	 
     	return CustomTagUtil.loadInitFile(pageContext, appendix);
-    	
-    	
-    	
-    	
-    	/*
-    	ConfigWeb config = pageContext.getConfig();
-       
-    	// filenames
-        String[] filenames=getFileNames(config,appendix);
-        
-        
-    // search local
-        PageSource source=null;
-        if(config.doLocalCustomTag()){
-            for(int i=0;i<filenames.length;i++){
-                source=pageContext.getRelativePageSource(filenames[i]);
-                if(MappingImpl.isOK(source)) return new InitFile(source,filenames[i],filenames[i].endsWith('.'+config.getCFCExtension()));
-            }
-        }
-        
-        // search in custom tag directory
-        boolean doCustomTagDeepSearch = config.doCustomTagDeepSearch();
-        
-        // per application mappings
-        Mapping[] ctms = pageContext.getApplicationContext().getCustomTagMappings();
-        if(ctms!=null){
-        	for(int i=0;i<filenames.length;i++){
-            	source=getMapping(ctms, filenames[i],doCustomTagDeepSearch);
-                if(source!=null) return new InitFile(source,filenames[i],filenames[i].endsWith('.'+config.getCFCExtension()));
-            }
-        }
-        
-        // config mappings
-        ctms = config.getCustomTagMappings();
-        for(int i=0;i<filenames.length;i++){
-        	source=getMapping(ctms, filenames[i], doCustomTagDeepSearch);
-            if(source!=null) return new InitFile(source,filenames[i],filenames[i].endsWith('.'+config.getCFCExtension()));
-        }
-        
-      // EXCEPTION
-        // message
-        StringBuffer msg=new StringBuffer("custom tag \"");
-        msg.append(getDisplayName(config,appendix));
-        msg.append("\" is not defined in directory \"");
-        msg.append(ResourceUtil.getResource(pageContext, pageContext.getCurrentPageSource()).getParent());
-        msg.append('"');
-        
-        if(!ArrayUtil.isEmpty(ctms)){
-        	if(ctms.length==1)msg.append(" and directory ");
-        	else msg.append(" and directories ");
-        	msg.append("\"");
-        	msg.append(toString(ctms));
-        	msg.append("\"");
-        }
-        throw new ExpressionException(msg.toString(),getDetail(config));
-    	 */
     }
-
-    /*public static String getDetail(Config config) {
-    	boolean hasCFC=false,hasCFML=false;
-    	
-    	String[] extensions=config.getCustomTagExtensions();
-        for(int i =0;i<extensions.length;i++){
-    		if(extensions[i].equalsIgnoreCase(config.getCFCExtension())) hasCFC=true;
-    		else hasCFML=true;
-    	}
-    	StringBuffer sb=new StringBuffer();
-    	if(!hasCFC)sb.append("Component based Custom Tags are not enabled;");
-    	if(!hasCFML)sb.append("CFML based Custom Tags are not enabled;");
-    	return sb.toString();
-	}*/
-
     
-
-	/*public static  String getDisplayName(Config config,String name) {
-		String[] extensions=config.getCustomTagExtensions();
-        if(extensions.length==0) return name;
-        
-		return name+".["+List.arrayToList(extensions, "|")+"]";
-	}*/
-
-	/*public static String[] getFileNames(Config config, String name) throws ExpressionException {
-		String[] extensions=config.getCustomTagExtensions();
-        if(extensions.length==0) throw new ExpressionException("Custom Tags are disabled");
-        String[] fileNames=new String[extensions.length];
-		
-    	for(int i =0;i<fileNames.length;i++){
-    		fileNames[i]=name+'.'+extensions[i];
-    	}
-    	return fileNames;
-	}*/
-
-	
-    /*private static PageSource getMapping(Mapping[] ctms, String filename, boolean doCustomTagDeepSearch) {
-    	//print.o("filename:"+filename);
-    	//MappingImpl ctm;
-    	PageSource ps;
-    	
-    	// first check for cached pathes
-		for(int i=0;i<ctms.length;i++){
-			//ctm=(MappingImpl) ctms[i];
-			ps = ((MappingImpl) ctms[i]).getCustomTagPath(filename, doCustomTagDeepSearch);
-			if(ps!=null) return ps;
-        }
-		return null;
-	}*/
-
-   
-
-	/*static String toString(Mapping[] ctms) {
-		if(ctms==null) return "";
-    	StringBuffer sb=new StringBuffer();
-    	Resource p;
-    	for(int i=0;i<ctms.length;i++){
-    		if(sb.length()!=0)sb.append("; ");
-    		p = ctms[i].getPhysical();
-    		if(p!=null)
-    			sb.append(p.toString());
-        }
-        return sb.toString();
-	}*/
-
 	private int cfmlStartTag() throws PageException {
 		callerScope.initialize(pageContext);
         
@@ -436,7 +310,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     private int cfcStartTag() throws PageException {
     	
     	callerScope.initialize(pageContext);
-        cfc = ComponentLoader.loadComponentImpl(pageContext,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
+        cfc = ComponentLoader.loadComponent(pageContext,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pageContext.getConfig().getCFCExtension().length()+1)), false,true);
         validateAttributes(cfc,attributesScope,StringUtil.ucFirst(List.last(source.getPageSource().getComponentName(),'.')));
         
         boolean exeBody = false;
@@ -539,7 +413,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		Struct meta=null;
     	//try {
     		//meta = Caster.toStruct(cfc.get(Component.ACCESS_PRIVATE, METADATA),null,false);
-    		Member mem = ComponentUtil.toComponentImpl(cfc).getMember(Component.ACCESS_PRIVATE, METADATA,true,false);
+    		Member mem = ComponentUtil.toComponentAccess(cfc).getMember(Component.ACCESS_PRIVATE, METADATA,true,false);
     		if(mem!=null)meta = Caster.toStruct(mem.getValue(),null,false);
 		//}catch (PageException e) {e.printStackTrace();}
     	if(meta==null) return null;
@@ -558,7 +432,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	
     	if(!runtime){
     		// hint
-    		String hint=Caster.toString(meta.get(HINT,null),null);
+    		String hint=Caster.toString(meta.get(KeyImpl.HINT,null),null);
     		if(!StringUtil.isEmpty(hint))tag.setDescription(hint);
     		
     		// parseBody
@@ -584,9 +458,9 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     			
     			sct=Caster.toStruct(entry.getValue(),null,false);
     			if(sct!=null){
-    				attr.setRequired(Caster.toBooleanValue(sct.get(REQUIRED,Boolean.FALSE),false));
-    				attr.setType(Caster.toString(sct.get(TYPE,"any"),"any"));
-    				o= sct.get(DEFAULT,null);
+    				attr.setRequired(Caster.toBooleanValue(sct.get(KeyImpl.REQUIRED,Boolean.FALSE),false));
+    				attr.setType(Caster.toString(sct.get(KeyImpl.TYPE,"any"),"any"));
+    				o= sct.get(KeyImpl.DEFAULT,null);
     				if(o!=null){
     					defaultValue=Caster.toString(o,null);
     					if(defaultValue!=null)
@@ -594,7 +468,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     				}
     				
     				if(!runtime){
-    					attr.setDescription(Caster.toString(sct.get(HINT,null),null));
+    					attr.setDescription(Caster.toString(sct.get(KeyImpl.HINT,null),null));
     					attr.setRtexpr(Caster.toBooleanValue(sct.get(RT_EXPR_VALUE,Boolean.TRUE),true));
     				}
     			}

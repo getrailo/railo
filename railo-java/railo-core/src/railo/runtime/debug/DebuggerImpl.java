@@ -43,12 +43,11 @@ import railo.runtime.type.StructImpl;
  */
 public final class DebuggerImpl implements Dumpable, Debugger {
 
-	private static final Collection.Key PAGES = KeyImpl.getInstance("pages");
-	private static final Collection.Key QUERIES = KeyImpl.getInstance("queries");
-	private static final Collection.Key TIMERS = KeyImpl.getInstance("timers");
-	private static final Collection.Key TRACES = KeyImpl.getInstance("traces");
-	private static final Collection.Key EXCEPTIONS = KeyImpl.getInstance("exceptions");
-	private static final Collection.Key HISTORY = KeyImpl.getInstance("history");
+	private static final Collection.Key PAGES = KeyImpl.intern("pages");
+	private static final Collection.Key QUERIES = KeyImpl.intern("queries");
+	private static final Collection.Key TIMERS = KeyImpl.intern("timers");
+	private static final Collection.Key TRACES = KeyImpl.intern("traces");
+	private static final Collection.Key HISTORY = KeyImpl.intern("history");
 	
 	private Map<String,DebugEntryImpl> pages=new HashMap<String,DebugEntryImpl>();
 	private List<QueryEntryImpl> queries=new ArrayList<QueryEntryImpl>();
@@ -160,7 +159,6 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         boxPage.appendRow(row);
         boxPage.prependRow(row);
 
-
 //      Exceptions
         DumpTable tableExceptions=null;
 		int tl=exceptions==null?0:exceptions.size();
@@ -189,7 +187,6 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	        	}
 		}
 		
-		
 //      Timers
         DumpTable tableTimer=null;
 		tl=timers==null?0:timers.size();
@@ -213,14 +210,25 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		if(tl>0) {
 			tableTraces = new DumpTable("#cccccc","#ffffff","#000000");
 			tableTraces.setWidth("100%");
-			tableTraces.appendRow(new DumpRow(2047, new DumpData[]{new SimpleDumpData("type"), new SimpleDumpData("category"),new SimpleDumpData("text"),new SimpleDumpData("template"),new SimpleDumpData("line")
-					,new SimpleDumpData("var name"),new SimpleDumpData("var value"),new SimpleDumpData("total time (ms)"),new SimpleDumpData("trace slot time (ms)")}));
+			tableTraces.appendRow(
+					new DumpRow(2047, 
+							new DumpData[]{
+							new SimpleDumpData("type"), 
+							new SimpleDumpData("category"),
+							new SimpleDumpData("text"),
+							new SimpleDumpData("template"),
+							new SimpleDumpData("line"),
+							new SimpleDumpData("action"),
+							new SimpleDumpData("var name"),
+							new SimpleDumpData("var value"),
+							new SimpleDumpData("total time (ms)"),
+							new SimpleDumpData("trace slot time (ms)")}));
 		
             	Iterator it = traces.iterator();
-	        	DebugTrace trace;
+	        	DebugTraceImpl trace;
 	        	int total=0;
 	        	while(it.hasNext()) {
-	        		trace=(DebugTrace) it.next();
+	        		trace=(DebugTraceImpl) it.next();
 	        		total+=trace.getTime();
 	        		DumpTable tableVar=new DumpTable("#cccccc","#ffffff","#000000");
 	        		SimpleDumpData varValue = new SimpleDumpData(toString(trace.getVarValue()));
@@ -241,6 +249,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	        				new SimpleDumpData(toString(trace.getText())),
 	        				new SimpleDumpData(toString(trace.getTemplate())),
 	        				new SimpleDumpData(Caster.toString(trace.getLine())),
+	        				new SimpleDumpData(trace.getAction()),
 	        				new SimpleDumpData(toString(trace.getVarName())),
 	        				var,
 	        				new SimpleDumpData(Caster.toString(total)),
@@ -486,21 +495,22 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		// traces
 		len=traces==null?0:traces.size();
         Query qryTraces=new QueryImpl(
-                new String[]{"type","category","text","template","line","varname","varvalue","time"},
+                new String[]{"type","category","text","template","line","action","varname","varvalue","time"},
                 len,"traces");
         if(len>0) {
         	try {
 	        	Iterator it = traces.iterator();
-	        	DebugTrace trace;
+	        	DebugTraceImpl trace;
 	        	row=0;
 	        	while(it.hasNext()) {
-	        		trace=(DebugTrace) it.next();
+	        		trace=(DebugTraceImpl) it.next();
 	        		row++;
 	        		qryTraces.setAt("type",row,LogUtil.toStringType(trace.getType(), "INFO"));  
 	        		if(!StringUtil.isEmpty(trace.getCategory()))qryTraces.setAt("category",row,trace.getCategory()); 
 	        		if(!StringUtil.isEmpty(trace.getText()))qryTraces.setAt("text",row,trace.getText()); 
 	        		if(!StringUtil.isEmpty(trace.getTemplate()))qryTraces.setAt("template",row,trace.getTemplate()); 
 	        		if(trace.getLine()>0)qryTraces.setAt("line",row,new Double(trace.getLine())); 
+	        		if(!StringUtil.isEmpty(trace.getAction()))qryTraces.setAt("action",row,trace.getAction()); 
 	        		if(!StringUtil.isEmpty(trace.getVarName()))qryTraces.setAt("varname",row,trace.getVarName()); 
 	        		if(!StringUtil.isEmpty(trace.getVarValue()))qryTraces.setAt("varvalue",row,trace.getVarValue()); 
 	        		qryTraces.setAt("time",row,new Double(trace.getTime())); 
@@ -521,7 +531,8 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		debugging.setEL(TIMERS,qryTimers);
 		debugging.setEL(TRACES,qryTraces);
 		debugging.setEL(HISTORY,history);
-		debugging.setEL(EXCEPTIONS,arrExceptions);
+		debugging.setEL(KeyImpl.EXCEPTIONS,arrExceptions);
+		//debugging.setEL(TRACE_OBJECTS,arrTO);
 		return debugging;
     }
 
@@ -555,11 +566,22 @@ public final class DebuggerImpl implements Dumpable, Debugger {
     			line=trace.getLineNumber();
 			}
 		}
+		
 		DebugTraceImpl t;
-		traces.add(t=new DebugTraceImpl(type,category,text,page.getDisplayPath(),line,varName,varValue,lastTrace-_lastTrace));
+		traces.add(t=new DebugTraceImpl(type,category,text,page.getDisplayPath(),line,"",varName,varValue,lastTrace-_lastTrace));
 		return t;
 	}
-
+	
+	public DebugTrace addTrace(int type, String category, String text, String template,int line,String action,String varName,String varValue) {
+		
+		long _lastTrace =(traces.isEmpty())?lastEntry: lastTrace;
+		lastTrace = System.currentTimeMillis();
+        
+		DebugTraceImpl t;
+		traces.add(t=new DebugTraceImpl(type,category,text,template,line,action,varName,varValue,lastTrace-_lastTrace));
+		return t;
+	}
+	
 	/**
 	 *
 	 * @see railo.runtime.debug.Debugger#getTraces()
@@ -567,7 +589,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	public DebugTrace[] getTraces() {
 		return traces.toArray(new DebugTrace[traces.size()]);
 	}
-
+	
 	// FUTURE add to interface
 	public void addException(Config config,PageException pe) {
 		if(exceptions.size()>1000) return;

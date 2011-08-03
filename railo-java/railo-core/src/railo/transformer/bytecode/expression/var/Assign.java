@@ -163,8 +163,8 @@ public class Assign extends ExpressionBase {
     		return Variable._writeOutFirstUDF(bc,(UDF)member,variable.scope,doOnlyScope);
     	}
     	else {
-    		if(last)throw new BytecodeException("can't assign value to a build in function",getLine());
-    		return Variable._writeOutFirstBIF(bc,(BIF)member,mode,last);
+    		if(last)throw new BytecodeException("can't assign value to a built in function",getLine());
+    		return Variable._writeOutFirstBIF(bc,(BIF)member,mode,last,getLine());
     	}
 	}
 

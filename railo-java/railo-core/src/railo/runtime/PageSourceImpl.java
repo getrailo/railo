@@ -475,7 +475,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
      * @see railo.runtime.PageSource#getFullRealpath()
      */
 	public String getFullRealpath() {
-		if(mapping.getVirtual().length()==1)
+		if(mapping.getVirtual().length()==1 || mapping.ignoreVirtual())
 			return realPath;
 		return mapping.getVirtual()+realPath;
 	}
@@ -589,21 +589,20 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		}
 		else str=realPath;
 	    
-	    
-	    
 		StringBuffer compName=new StringBuffer();
 		String[] arr;
 		
-
-		arr=List.toStringArrayEL(List.listToArrayRemoveEmpty(mapping.getVirtual(),"\\/"));
-		
-		for(int i=0;i<arr.length;i++) {
-			if(compName.length()>0) compName.append('.');
-			compName.append(arr[i]);
+		// virtual part
+		if(!mapping.ignoreVirtual()) {
+			arr=List.toStringArrayEL(List.listToArrayRemoveEmpty(mapping.getVirtual(),"\\/"));
+			for(int i=0;i<arr.length;i++) {
+				if(compName.length()>0) compName.append('.');
+				compName.append(arr[i]);
+			}
 		}
-
-		arr=List.toStringArrayEL(List.listToArrayRemoveEmpty(str,'/'));
-				
+		
+		// physical part
+		arr=List.toStringArrayEL(List.listToArrayRemoveEmpty(str,'/'));	
 		for(int i=0;i<arr.length;i++) {
 		    if(compName.length()>0) compName.append('.');
 			if(i==(arr.length-1)) {

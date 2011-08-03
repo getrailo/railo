@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -13,6 +14,8 @@ import railo.runtime.Info;
 import railo.runtime.SourceFile;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
@@ -557,7 +560,7 @@ public final class CFMLTransformer {
 			if(tagLibTag.getHasBody())tag.setBody(new BodyBase());
 		}
 		else {
-			throw new TemplateException(data.cfml, "tag ["+tagLibTag.getFullName()+"] is not closed");
+			throw createTemplateException(data.cfml, "tag ["+tagLibTag.getFullName()+"] is not closed",tagLibTag);
 		}
 		
 
@@ -574,8 +577,8 @@ public final class CFMLTransformer {
 				} catch (TagLibException e) {
 					throw new TemplateException(data.cfml,e);
 				}
-				if(tdbt==null) throw new TemplateException(data.cfml,"Tag dependent body Transformer is invalid for Tag ["+tagLibTag.getFullName()+"]");
-				tdbt.transform(this,data.ep,data.flibs,tag,tagLibTag,data.cfml);
+				if(tdbt==null) throw createTemplateException(data.cfml,"Tag dependent body Transformer is invalid for Tag ["+tagLibTag.getFullName()+"]",tagLibTag);
+				tdbt.transform(data.config,this,data.ep,data.flibs,tag,tagLibTag,data.cfml);
 				
 				
 				//	get TagLib of end Tag
@@ -629,7 +632,7 @@ public final class CFMLTransformer {
 					    
 						if(tagLibTag.isBodyReq()) {
 						    data.cfml.setPos(start);
-							throw new TemplateException(data.cfml,"No matching end tag found for tag ["+tagLibTag.getFullName()+"]");
+							throw createTemplateException(data.cfml,"No matching end tag found for tag ["+tagLibTag.getFullName()+"]",tagLibTag);
 						}
 						body.moveStatmentsTo(parent);
 						return executeEvaluator(data,tagLibTag, tag);
@@ -638,7 +641,7 @@ public final class CFMLTransformer {
 					// Invalid Construct
 					int posBeforeEndTag=data.cfml.getPos();
 					if(!data.cfml.forwardIfCurrent('<','/'))
-						throw new TemplateException(data.cfml,"Missing end tag for ["+tagLibTag.getFullName()+"]");
+						throw createTemplateException(data.cfml,"Missing end tag for ["+tagLibTag.getFullName()+"]",tagLibTag);
 					
 					// get TagLib of end Tag
 					TagLib tagLibEnd=nameSpace(data);
@@ -809,8 +812,8 @@ public final class CFMLTransformer {
             
 			// set default values
 			if(tag.hasDefaultValue()) {
-			    Map hash=tag.getAttributes();
-				Iterator it=hash.keySet().iterator();
+			    Map<String, TagLibTagAttr> hash = tag.getAttributes();
+				Iterator<String> it = hash.keySet().iterator();
 			
 				while(it.hasNext())	{
 					TagLibTagAttr att=(TagLibTagAttr) hash.get(it.next());
@@ -829,21 +832,21 @@ public final class CFMLTransformer {
 			
 			// to less attributes
 			if(!hasAttributeCollection && min>count)
-				throw new TemplateException(data.cfml,"the tag "+tag.getFullName()+" must have "+min+" attributes at least");
+				throw createTemplateException(data.cfml,"the tag "+tag.getFullName()+" must have "+min+" attributes at least",tag);
 			
 			// to much attributes
 			if(!hasAttributeCollection && max>0 && max<count)
-				throw new TemplateException(data.cfml,"the tag "+tag.getFullName()+" can have "+max+" attributes maximal");
+				throw createTemplateException(data.cfml,"the tag "+tag.getFullName()+" can have "+max+" attributes maximal",tag);
 			
 			// not defined attributes
 			if(type==TagLibTag.ATTRIBUTE_TYPE_FIXED || type==TagLibTag.ATTRIBUTE_TYPE_MIXED)	{
-				Map hash=tag.getAttributes();
-				Iterator it=hash.keySet().iterator();
+				Map<String, TagLibTagAttr> hash = tag.getAttributes();
+				Iterator<String> it = hash.keySet().iterator();
 				
 				while(it.hasNext())	{
 					TagLibTagAttr att=(TagLibTagAttr) hash.get(it.next());
 					if(att.isRequired() && !args.contains(att.getName()) && att.getDefaultValue()==null)	{
-						if(!hasAttributeCollection)throw new TemplateException(data.cfml,"attribute "+att.getName()+" is required for tag "+tag.getFullName());
+						if(!hasAttributeCollection)throw createTemplateException(data.cfml,"attribute "+att.getName()+" is required for tag "+tag.getFullName(),tag);
 						parent.addMissingAttribute(att.getName(),att.getType());
 					}
 				}
@@ -947,7 +950,7 @@ public final class CFMLTransformer {
 		
 		int typeDef=tag.getAttributeType();
 		String id=StringUtil.toLowerCase(_id);
-        if(args.contains(id)) throw new TemplateException(cfml,"you can't use the same tag attribute ["+id+"] twice");
+        if(args.contains(id)) throw createTemplateException(cfml,"you can't use the same tag attribute ["+id+"] twice",tag);
 		args.add(id);
 		
 		if("attributecollection".equals(id)){
@@ -962,12 +965,12 @@ public final class CFMLTransformer {
 				if(typeDef==TagLibTag.ATTRIBUTE_TYPE_FIXED) {
 					String names=tag.getAttributeNames();
 					if(StringUtil.isEmpty(names))
-						throw new TemplateException(cfml,
-								"Attribute "+id+" is not allowed for tag "+tag.getFullName());
+						throw createTemplateException(cfml,
+								"Attribute "+id+" is not allowed for tag "+tag.getFullName(),tag);
 					
-						throw new TemplateException(cfml,
+						throw createTemplateException(cfml,
 							"Attribute "+id+" is not allowed for tag "+tag.getFullName(),
-							"valid attribute names are ["+names+"]");
+							"valid attribute names are ["+names+"]",tag);
 				}
 				dynamic.setValue(true);
 			}
@@ -985,6 +988,9 @@ public final class CFMLTransformer {
 	
 	
 	
+	
+
+
 	/**
 	 * Liest den Wert eines Attribut, mithilfe des innerhalb der Tag-Lib definierten Expression Transformer, ein.
 	  * <br />
@@ -1059,6 +1065,110 @@ public final class CFMLTransformer {
 		while (cfml.isValidIndex());
 		return cfml.substring(start,cfml.getPos()-start);
 	}
+	
+	
+	public static TemplateException createTemplateException(CFMLString cfml,String msg, String detail,TagLibTag tag) {
+		TemplateException te = new TemplateException(cfml,msg,detail);
+		setAddional(te,tag);
+		return te;
+	}
+	public static TemplateException createTemplateException(CFMLString cfml,String msg, TagLibTag tag) {
+		TemplateException te = new TemplateException(cfml,msg);
+		setAddional(te,tag);
+		return te;
+	}
+	
+	public static TemplateException setAddional(TemplateException te, TagLibTag tlt) {
+		setAddional((PageExceptionImpl)te, tlt);
+		return te;
+	}
+	
+	public static ApplicationException setAddional(ApplicationException ae, TagLibTag tlt) {
+		setAddional((PageExceptionImpl)ae, tlt);
+		return ae;
+	}
+
+
+	private static void setAddional(PageExceptionImpl pe, TagLibTag tlt) {
+		Map<String, TagLibTagAttr> attrs = tlt.getAttributes();
+		Iterator<Entry<String, TagLibTagAttr>> it = attrs.entrySet().iterator();
+		Entry<String, TagLibTagAttr> entry;
+		TagLibTagAttr attr;
+		
+		// Pattern
+		StringBuilder pattern=new StringBuilder("<");
+		pattern.append((tlt.getFullName()));
+		StringBuilder req=new StringBuilder();
+		StringBuilder opt=new StringBuilder();
+		StringBuilder tmp;
+		
+		
+		pattern.append(" ");
+		int c=0;
+		while(it.hasNext()){
+			entry = it.next();
+			attr=entry.getValue();
+			tmp=attr.isRequired()?req:opt;
+			
+			tmp.append(" ");
+			if(!attr.isRequired()) tmp.append("[");
+			if(c++>0)pattern.append(" ");
+			tmp.append(attr.getName());
+			tmp.append("\"");
+			tmp.append(attr.getType());
+			tmp.append("\"");
+			if(!attr.isRequired()) tmp.append("]");
+		}
+
+		if(req.length()>0)pattern.append(req);
+		if(opt.length()>0)pattern.append(opt);
+		
+		if(tlt.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_MIXED || tlt.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_DYNAMIC)
+			pattern.append(" ...");
+		pattern.append(">");
+		if(tlt.getHasBody()) {
+			if(tlt.isBodyReq()){
+				pattern.append("</");
+				pattern.append(tlt.getFullName());
+				pattern.append(">");
+			}
+			else if(tlt.isBodyFree()){
+				pattern.append("[</");
+				pattern.append(tlt.getFullName());
+				pattern.append(">]");
+			}
+		}
+		
+		pe.setAdditional("Pattern", pattern);
+		
+		// Documentation
+		StringBuilder doc=new StringBuilder(tlt.getDescription());
+		req=new StringBuilder();
+		opt=new StringBuilder();
+		
+		doc.append("\n");
+		
+		it = attrs.entrySet().iterator();
+		while(it.hasNext()){
+			entry = it.next();
+			attr=entry.getValue();
+			tmp=attr.isRequired()?req:opt;
+			
+			tmp.append("* ");
+			tmp.append(attr.getName());
+			tmp.append(" (");
+			tmp.append(attr.getType());
+			tmp.append("): ");
+			tmp.append(attr.getDescription());
+			tmp.append("\n");
+		}
+
+		if(req.length()>0)doc.append("\nRequired:\n").append(req);
+		if(opt.length()>0)doc.append("\nOptional:\n").append(opt);
+		
+		pe.setAdditional("Documentation", doc);
+	}
+	
 }
 
 

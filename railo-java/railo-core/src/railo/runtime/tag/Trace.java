@@ -14,16 +14,18 @@ import railo.runtime.exp.Abort;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
-import railo.runtime.functions.dynamicEvaluation.Evaluate;
 import railo.runtime.functions.other.Dump;
+import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.trace.TraceObjectSupport;
 
 public final class Trace extends BodyTagImpl {
-	
+
 	private boolean abort=false;
+	private boolean follow=false;
 	private String category;
 	private boolean inline=false;
 	private String text;
@@ -45,6 +47,7 @@ public final class Trace extends BodyTagImpl {
 		type=Log.LEVEL_INFO;
 		var=null;
 		caller=null;
+		follow=false;
 	}
 
 	/**
@@ -52,6 +55,9 @@ public final class Trace extends BodyTagImpl {
 	 */
 	public void setAbort(boolean abort) {
 		this.abort = abort;
+	}
+	public void setFollow(boolean follow) {
+		this.follow = follow;
 	}
 
 	/**
@@ -148,19 +154,37 @@ public final class Trace extends BodyTagImpl {
 		
 		// var
 		String varValue=null;
-		Object value=null;
+		Object value=null,traceValue=null;
 		if(!StringUtil.isEmpty(var)) {
+			
 			try {
-				if(caller instanceof Scope) value=Evaluate.call(pageContext, new Object[]{var,caller});
+				if(caller instanceof Scope) value=VariableInterpreter.getVariable(pageContext,var,(Scope)caller);
 				else value = pageContext.getVariable(var);
-				varValue=new ScriptConverter().serialize(pageContext.getVariable(var));
 			} 
 			catch (PageException e) {
 				varValue="(undefined)";
+				follow=false;
 			} 
+			
+			if(follow){
+				//print.o(1);
+				if(StringUtil.isEmpty(text,true)) text=var;
+				//print.o(2);
+				traceValue=TraceObjectSupport.toTraceObject(pageContext.getDebugger(), value, type, category, text);
+				
+				if(caller instanceof Scope) VariableInterpreter.setVariable(pageContext,var,traceValue,(Scope)caller);
+				else pageContext.setVariable(var,traceValue);
+			}
+			
+			try {
+				varValue=new ScriptConverter().serialize(value);
+			}
 			catch (ConverterException e) {
 				if(value!=null)varValue="("+Caster.toTypeName(value)+")";
 			}
+			
+			
+			
 		}
 		
 		DebugTrace trace = pageContext.getDebugger().addTrace(type,category,text,page,var,varValue);

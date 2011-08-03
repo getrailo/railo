@@ -14,14 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.img.math.Noise;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which produces a simulated wood texture. This is a bit of a hack, but might be usefult to some people.
  */
-public class WoodFilter extends PointFilter {
+public class WoodFilter extends PointFilter  implements DynFiltering {
 
 	private float scale = 200;
 	private float stretch = 10.0f;
@@ -239,4 +246,26 @@ public class WoodFilter extends PointFilter {
 		return "Texture/Wood...";
 	}
 	
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));
+		if((o=parameters.removeEL(KeyImpl.init("Turbulence")))!=null)setTurbulence(ImageFilterUtil.toFloatValue(o,"Turbulence"));
+		if((o=parameters.removeEL(KeyImpl.init("Stretch")))!=null)setStretch(ImageFilterUtil.toFloatValue(o,"Stretch"));
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("Gain")))!=null)setGain(ImageFilterUtil.toFloatValue(o,"Gain"));
+		if((o=parameters.removeEL(KeyImpl.init("Rings")))!=null)setRings(ImageFilterUtil.toFloatValue(o,"Rings"));
+		if((o=parameters.removeEL(KeyImpl.init("Fibres")))!=null)setFibres(ImageFilterUtil.toFloatValue(o,"Fibres"));
+		if((o=parameters.removeEL(KeyImpl.init("Scale")))!=null)setScale(ImageFilterUtil.toFloatValue(o,"Scale"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Colormap, Turbulence, Stretch, Angle, Gain, Rings, Fibres, Scale, Dimensions]");
+		}
+
+		return filter(src, dst);
+	}
 }

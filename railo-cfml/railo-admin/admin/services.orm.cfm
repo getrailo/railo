@@ -5,9 +5,14 @@
 <cfparam name="form.subAction" default="none">
 
 
-
-<!--- TODO  ---->
-<cfset hasAccess=true>
+<cfadmin 
+	action="securityManager"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	returnVariable="hasAccess"
+	secType="orm"
+	secValue="yes">
+	
 
 
 

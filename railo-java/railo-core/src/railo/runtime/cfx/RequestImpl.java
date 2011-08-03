@@ -19,8 +19,8 @@ import com.allaire.cfx.Request;
  */
 public final class RequestImpl implements Request {
 	
-	private static final Collection.Key QUERY = KeyImpl.getInstance("query");
-	private static final Collection.Key DEBUG = KeyImpl.getInstance("debug");
+	private static final Collection.Key QUERY = KeyImpl.intern("query");
+	private static final Collection.Key DEBUG = KeyImpl.intern("debug");
 	private Struct attributes;
 	private Struct settings;
 	private Query query;

@@ -6,6 +6,7 @@ import java.util.Date;
 
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
+import railo.commons.lang.StringUtil;
 
 
 /**
@@ -13,6 +14,10 @@ import railo.commons.lang.Md5;
  * und hält sämtliche Informationen zu diesem Attribut.
  */
 public final class TagLibTagAttr {
+
+	public static final short SCRIPT_SUPPORT_NONE = 0;
+	public static final short SCRIPT_SUPPORT_OPTIONAL = 1;
+	public static final short SCRIPT_SUPPORT_REQUIRED = 2;
 	
 	private String name="noname";
 	private String type;
@@ -24,6 +29,7 @@ public final class TagLibTagAttr {
 	private boolean hidden;
 	private boolean _default;
 	private short status=TagLib.STATUS_IMPLEMENTED;
+	private short scriptSupport=SCRIPT_SUPPORT_NONE;
 
 	
 	public TagLibTagAttr duplicate(TagLibTag tag) {
@@ -223,6 +229,32 @@ public final class TagLibTagAttr {
 
 	public boolean isDefault() {
 		return _default;
+	}
+
+
+	public void setScriptSupport(String str) {
+		if(!StringUtil.isEmpty(str))  {
+			str=str.trim().toLowerCase();
+			if("optional".equals(str)) this.scriptSupport=SCRIPT_SUPPORT_OPTIONAL;
+			else if("opt".equals(str)) this.scriptSupport=SCRIPT_SUPPORT_OPTIONAL;
+			else if("required".equals(str)) this.scriptSupport=SCRIPT_SUPPORT_REQUIRED;
+			else if("req".equals(str)) this.scriptSupport=SCRIPT_SUPPORT_REQUIRED;
+		}
+	}
+
+
+	/**
+	 * @return the scriptSupport
+	 */
+	public short getScriptSupport() {
+		return scriptSupport;
+	}
+
+
+	public Object getScriptSupportAsString() {
+		if(scriptSupport==SCRIPT_SUPPORT_OPTIONAL) return "optional";
+		if(scriptSupport==SCRIPT_SUPPORT_REQUIRED) return "required";
+		return "none";
 	}
 
 }

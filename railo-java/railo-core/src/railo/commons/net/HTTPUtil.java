@@ -748,24 +748,6 @@ public final class HTTPUtil {
         }
 	}
 	
-	/*public static void include(PageContext pc,String realPath) throws ServletException,IOException  {
-		HttpServletRequest req = pc.getHttpServletRequest();
-		HttpServletResponse rsp = pc.getHttpServletResponse();
-		realPath=optimizeRealPath(pc,realPath);
-		
-		RequestDispatcher disp = pc.getHttpServletRequest().getRequestDispatcher(realPath);
-        try{
-        	((PageContextImpl)pc).getRootOut().getServletOutputStream();
-        	print.out("include:"+realPath);
-        	disp.include(req,rsp);
-        }
-        finally{
-        	ThreadLocalPageContext.register(pc);
-        }
-	}*/
-	
-
-	
 	public static ServletRequest removeWrap(ServletRequest req) {
 		while(req instanceof HTTPServletRequestWrap)
 			return ((HTTPServletRequestWrap)req).getOriginalRequest();

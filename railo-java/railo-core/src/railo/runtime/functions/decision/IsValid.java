@@ -19,7 +19,8 @@ import railo.runtime.op.Decision;
  */
 public final class IsValid implements Function {
 
-	// others
+	private static final long serialVersionUID = -1383105304624662986L;
+
 	/**
 	 * check for many diff types
 	 * @param pc
@@ -31,9 +32,9 @@ public final class IsValid implements Function {
 	public static boolean call(PageContext pc, String type, Object value) throws ExpressionException {
 		type=type.trim().toLowerCase();
 		if("range".equals(type))
-			throw new FunctionException(pc,"isValid",1,"type","for [range] you have to define a min and max value [isValid(\"range\",value,min,max)]");
+			throw new FunctionException(pc,"isValid",1,"type","for [range] you have to define a min and max value");
 		if("regex".equals(type) || "regular_expression".equals(type))
-			throw new FunctionException(pc,"isValid",1,"type","for [regex] you have to define a pattern [isValid(\"regex\",value,pattern)]");
+			throw new FunctionException(pc,"isValid",1,"type","for [regex] you have to define a pattern");
 
 		return Decision.isValid(type, value);
 	}
@@ -52,32 +53,33 @@ public final class IsValid implements Function {
 		if(!"regex".equals(type) && !"regular_expression".equals(type))
 			throw new FunctionException(pc,"isValid",1,"type","wrong attribute count for type ["+type+"]");
 		
-		String str=Caster.toString(value,null);
-		if(str==null)
+		return regex(Caster.toString(value,null),Caster.toString(objPattern));
+	}
+	
+	
+	
+	
+	public static boolean regex(String value,String strPattern) {
+		if(value==null)
 			return false;
 		
 		try {
-			Pattern pattern = new Perl5Compiler().compile(Caster.toString(objPattern), Perl5Compiler.MULTILINE_MASK);
-	        PatternMatcherInput input = new PatternMatcherInput(str);
+			Pattern pattern = new Perl5Compiler().compile(strPattern, Perl5Compiler.MULTILINE_MASK);
+	        PatternMatcherInput input = new PatternMatcherInput(value);
 	        return new Perl5Matcher().matches(input, pattern);
 		} catch (MalformedPatternException e) {
 			return false;
 		}
 	}
-	
-	
-	
-	/**
-	 * range check
-	 * @param pc
-	 * @param type
-	 * @param value
-	 * @param pattern_or_min
-	 * @param max
-	 * @return
-	 * @throws ExpressionException
-	 */
-	public static boolean call(PageContext pc, String type, Object value, Object objMin, Object objMax) throws ExpressionException {
+
+	public static boolean call(PageContext pc, String type, Object value, Object objMin, Object objMax) throws PageException {
+		
+		// for named argument calls
+		if(objMax==null) {
+			if(objMin==null) return call(pc, type, value);
+			return call(pc, type, value, objMin);
+		}
+		
 		type=type.trim().toLowerCase();
 		
 		// numeric

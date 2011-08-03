@@ -10,19 +10,18 @@ public class HibernateORMTransaction implements ORMTransaction {
 	private Transaction trans;
 	private Session session;
 	private boolean doRollback;
+	private boolean autoManage;
 
-	public HibernateORMTransaction(Session session){
+	public HibernateORMTransaction(Session session, boolean autoManage){
 		this.session=session;
-		//this.trans=session.getTransaction();
+		this.autoManage=autoManage;
 	}
 
 	/**
 	 * @see railo.runtime.orm.ORMTransaction#begin()
 	 */
 	public void begin() {
-		session.flush();
-		
-		//print.err("begin:"+session.hashCode());
+		if(autoManage)session.flush();
 		trans=session.beginTransaction();
 		
 	}
@@ -31,9 +30,7 @@ public class HibernateORMTransaction implements ORMTransaction {
 	 * @see railo.runtime.orm.ORMTransaction#commit()
 	 */
 	public void commit() {
-		/*if(!trans.isActive()) return;
-		print.err("commit:"+session.hashCode());
-		trans.commit();*/
+		// do nothing
 	}
 
 	/**
@@ -41,9 +38,6 @@ public class HibernateORMTransaction implements ORMTransaction {
 	 */
 	public void rollback() {
 		doRollback=true;
-		/*if(!trans.isActive()) return;
-		print.err("rollback:"+session.hashCode());
-		trans.rollback();*/
 	}
 
 	/**
@@ -52,15 +46,11 @@ public class HibernateORMTransaction implements ORMTransaction {
 	public void end() {
 		if(doRollback){
 			trans.rollback();
-			session.clear();
+			if(autoManage)session.clear();
 		}
 		else{
 			trans.commit();
 			session.flush();
 		}
-		//print.err("end:"+doRollback);
-		
 	}
-
-
 }

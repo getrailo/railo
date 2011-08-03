@@ -1,6 +1,8 @@
 package railo.runtime.tag;
 
 
+import javax.mail.internet.InternetAddress;
+
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -149,7 +151,7 @@ public final class Mail extends BodyTagImpl {
 	 * @throws PageException 
 	**/
 	public void setFrom(Object from) throws PageException	{
-		if(isEmpty(from)) return;
+		if(StringUtil.isEmpty(from)) return;
 		try {
 			smtp.setFrom(from);
 		} catch (Exception e) {
@@ -163,7 +165,7 @@ public final class Mail extends BodyTagImpl {
 	 * @throws ApplicationException
 	**/
 	public void setTo(Object to) throws ApplicationException	{
-		if(isEmpty(to)) return;
+		if(StringUtil.isEmpty(to)) return;
 		try {
 			smtp.addTo(to);
 		} catch (Exception e) {
@@ -177,7 +179,7 @@ public final class Mail extends BodyTagImpl {
 	 * @throws ApplicationException
 	**/
 	public void setCc(Object cc) throws ApplicationException	{
-		if(isEmpty(cc)) return;
+		if(StringUtil.isEmpty(cc)) return;
 		try {
 			smtp.addCC(cc);
 		} catch (Exception e) {
@@ -185,9 +187,6 @@ public final class Mail extends BodyTagImpl {
 		}
 	}
 
-	private boolean isEmpty(Object obj) {
-		return obj instanceof String && obj.toString().trim().length()==0;
-	}
 
 
 	/** set the value bcc
@@ -197,7 +196,7 @@ public final class Mail extends BodyTagImpl {
 	 * @throws ApplicationException
 	**/
 	public void setBcc(Object bcc) throws ApplicationException	{
-		if(isEmpty(bcc)) return;
+		if(StringUtil.isEmpty(bcc)) return;
 		try {
 			smtp.addBCC(bcc);
 		} catch (Exception e) {
@@ -210,7 +209,7 @@ public final class Mail extends BodyTagImpl {
 	 * @throws ApplicationException
 	 */
 	public void setFailto(Object failto) throws ApplicationException {
-		if(isEmpty(failto)) return;
+		if(StringUtil.isEmpty(failto)) return;
 		try {
 			smtp.addFailTo(failto);
 		} catch (Exception e) {
@@ -222,7 +221,7 @@ public final class Mail extends BodyTagImpl {
 	 * @throws ApplicationException
 	 */
 	public void setReplyto(Object replyto) throws ApplicationException {
-		if(isEmpty(replyto)) return;
+		if(StringUtil.isEmpty(replyto)) return;
 		try {
 			smtp.addReplyTo(replyto);
 		} catch (Exception e) {
@@ -299,8 +298,6 @@ public final class Mail extends BodyTagImpl {
 	}
 	
 	/** set the value server
-	*  The address of the SMTP server to use for sending messages. If no server is specified, the 
-	* 		server name specified in the ColdFusion Administrator is used.
 	* @param strServer value to set
 	 * @throws PageException 
 	**/
@@ -309,8 +306,6 @@ public final class Mail extends BodyTagImpl {
 	}
  
 	/** set the value mailerid
-	*  Specifies a mailer ID to be passed in the X-Mailer SMTP header, which identifies the mailer 
-	* 		application. The default is ColdFusion Application Server.
 	* @param mailerid value to set
 	**/
 	public void setMailerid(String mailerid)	{
@@ -482,11 +477,20 @@ public final class Mail extends BodyTagImpl {
 
 
     /**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
+	* @throws ApplicationException 
+     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
-	public int doStartTag()	{
+	public int doStartTag() throws ApplicationException	{
+		if(isEmpty(smtp.getTos()) && isEmpty(smtp.getCcs()) && isEmpty(smtp.getBccs())) 
+			throw new ApplicationException("One of the following attribtues must be defined [to, cc, bcc]");
+			
 		return EVAL_BODY_BUFFERED;
 	}
+
+	private boolean isEmpty(InternetAddress[] addrs) {
+		return addrs==null || addrs.length==0;
+	}
+
 
 	/**
 	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()

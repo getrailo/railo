@@ -16,14 +16,16 @@ import railo.runtime.i18n.LocaleFactory;
  */
 public final class LSParseNumber implements Function {
 	
-	private static WeakHashMap whm=new WeakHashMap();
+	private static final long serialVersionUID = 2219030609677513651L;
+	
+	private static WeakHashMap<Locale,NumberFormat> whm=new WeakHashMap<Locale,NumberFormat>();
 
 	public static double call(PageContext pc , String string) throws PageException {
 		return toDoubleValue(pc.getLocale(),string);
 	}
 	
 	public static double call(PageContext pc , String string,String strLocale) throws PageException {
-		return toDoubleValue(LocaleFactory.getLocale(strLocale),string);
+		return toDoubleValue(strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),string);
 	}
 	
 	

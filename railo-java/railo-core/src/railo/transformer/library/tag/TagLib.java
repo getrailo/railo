@@ -3,8 +3,10 @@ package railo.transformer.library.tag;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -39,8 +41,8 @@ public class TagLib implements Cloneable {
     private String nameSpace;
 	private String nameSpaceSeperator=":";
 	private String ELClass=EXPR_TRANSFORMER;
-	private HashMap tags=new HashMap();
-	private HashMap appendixTags=new HashMap();
+	private HashMap<String,TagLibTag> tags=new HashMap<String,TagLibTag>();
+	private HashMap<String,TagLibTag> appendixTags=new HashMap<String,TagLibTag>();
 	private ExprTransformer exprTransformer;
 
     private char[] nameSpaceAndNameSpaceSeperator;
@@ -52,6 +54,7 @@ public class TagLib implements Cloneable {
 	private URI uri;
 
 	private String description;
+	private TagLibTag[] scriptTags;
 
 	
 	/**
@@ -114,7 +117,7 @@ public class TagLib implements Cloneable {
 	 * @return TagLibTag Tag das auf den Namen passt.
 	 */
 	public TagLibTag getTag(String name)	{
-		return (TagLibTag)tags.get(name);
+		return tags.get(name);
 	}
 	
 	/**
@@ -126,7 +129,7 @@ public class TagLib implements Cloneable {
 	 * @return TagLibTag Tag das auf den Namen passt.
 	 */
 	public TagLibTag getAppendixTag(String name)	{
-		Iterator it=appendixTags.keySet().iterator();
+		Iterator<String> it = appendixTags.keySet().iterator();
 		String match="";
 		while(it.hasNext()) {
 			String tagName=it.next().toString();
@@ -141,7 +144,7 @@ public class TagLib implements Cloneable {
 	 * Gibt alle Tags (TagLibTag) als HashMap zurück.
 	 * @return Alle Tags als HashMap.
 	 */
-	public Map getTags() {
+	public Map<String,TagLibTag> getTags() {
 		return tags;
 	}
 
@@ -264,11 +267,11 @@ public class TagLib implements Cloneable {
     
     public String getHash() {
     	StringBuffer sb=new StringBuffer();
-    	Iterator it = tags.keySet().iterator();
+    	Iterator<String> it = tags.keySet().iterator();
     	while(it.hasNext()) {
     		//"__filename"
     		
-    		sb.append(((TagLibTag)tags.get(it.next())).getHash()+"\n");
+    		sb.append((tags.get(it.next())).getHash()+"\n");
     	}
     	try {
 			return Md5.getDigestAsString(sb.toString());
@@ -323,14 +326,14 @@ public class TagLib implements Cloneable {
 	 * @param deepCopy
 	 * @return cloned map
 	 */
-	private HashMap duplicate(HashMap tags, boolean deepCopy) {
+	private HashMap<String,TagLibTag> duplicate(HashMap<String,TagLibTag> tags, boolean deepCopy) {
 		if(deepCopy) throw new PageRuntimeException(new ExpressionException("deep copy not supported"));
 		
-		Iterator it = tags.entrySet().iterator();
-		Map.Entry entry;
-		HashMap cm = new HashMap();
+		Iterator<Entry<String, TagLibTag>> it = tags.entrySet().iterator();
+		HashMap<String,TagLibTag> cm = new HashMap<String,TagLibTag>();
+		Entry<String, TagLibTag>  entry;
 		while(it.hasNext()){
-			entry=(Entry) it.next();
+			entry = it.next();
 			cm.put(
 					entry.getKey(), 
 					deepCopy?
@@ -358,6 +361,25 @@ public class TagLib implements Cloneable {
 	
 	public String getDescription() {
 		return description;
+	}
+	
+	public TagLibTag[] getScriptTags() {
+		if(scriptTags==null) {
+			Iterator<TagLibTag> it = getTags().values().iterator();
+			TagLibTag tag;
+			TagLibTagScript script;
+			List<TagLibTag> tags=new ArrayList<TagLibTag>();
+			while(it.hasNext()){
+				tag = it.next();
+				script = tag.getScript();
+				if(script!=null && script.getType()!=TagLibTagScript.TYPE_NONE) {
+					tags.add(tag);
+					//print.o(tag.getName()+":"+tag.getScript().getType());
+				}
+			}
+			scriptTags=tags.toArray(new TagLibTag[tags.size()]);
+		}
+		return scriptTags;
 	}
 	
 }

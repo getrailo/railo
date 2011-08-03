@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -32,7 +33,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import org.apache.commons.codec.binary.Base64;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -51,6 +51,7 @@ import railo.commons.net.HTTPUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.cfx.QueryWrap;
+import railo.runtime.coder.Base64Coder;
 import railo.runtime.coder.Coder;
 import railo.runtime.coder.CoderException;
 import railo.runtime.config.Config;
@@ -83,6 +84,7 @@ import railo.runtime.type.CollectionStruct;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.Iteratorable;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
@@ -413,6 +415,11 @@ public final class Caster {
         throw new CasterException(o,"number");
     }
 
+    public static double toDoubleValue(Double d) throws PageException {
+        if(d == null) return 0;
+        return d.doubleValue();
+    }
+    
     /**
      * cast a Object to a double value (primitive value Type)
      * @param str String to cast
@@ -1826,6 +1833,13 @@ public final class Caster {
     	if(obj instanceof StringBuffer) return (StringBuffer) obj;
         return new StringBuffer(toString(obj));
     }
+
+    public static Collection.Key toKey(Object o) throws CasterException { 
+    	return KeyImpl.toKey(o);
+    }
+    public static Collection.Key toKey(Object o,Collection.Key defaultValue) {
+    	return KeyImpl.toKey(o, defaultValue);
+    }
     
 
     /**
@@ -2314,13 +2328,15 @@ public final class Caster {
     	return toStruct(o,true);
     }
     
+    public static Struct toStruct(Object o,Struct defaultValue) {
+    	return toStruct(o, defaultValue, true);
+    }
     
     public static Struct toStruct(Object o,boolean caseSensitive) throws PageException {
         if(o instanceof Struct) return (Struct)o;
         else if(o instanceof Map)return MapAsStruct.toStruct((Map)o,caseSensitive);//_toStruct((Map)o,caseSensitive);
         else if(o instanceof Node)return XMLCaster.toXMLStruct((Node)o,false);
         else if(o instanceof ObjectWrap) {
-        	
         	if(o instanceof JavaObject ) {
         		Struct sct = toStruct(((JavaObject)o).getEmbededObject(null),null,caseSensitive);
             	if(sct!=null) return sct;
@@ -2350,9 +2366,9 @@ public final class Caster {
      * cast a Object to a Binary
      * @param o Object to cast
      * @return casted Binary
-     * @throws ExpressionException
+     * @throws PageException 
      */
-    public static byte[] toBinary(Object o) throws ExpressionException {
+    public static byte[] toBinary(Object o) throws PageException {
     	if(o instanceof byte[]) return (byte[])o;
         else if(o instanceof ObjectWrap) return toBinary(((ObjectWrap)o).getEmbededObject(""));
 		
@@ -2407,21 +2423,9 @@ public final class Caster {
         try {
             return toBinary(o);
         } 
-        catch (ExpressionException e) {
+        catch (PageException e) {
             return defaultValue;
         }
-    }
-    
-    /**
-     * cast a Object to a Base64 value
-     * @param o Object to cast
-     * @return to Base64 String
-     * @throws PageException
-     */
-    public static String toBase64(Object o) throws PageException {
-        String str=toBase64(o,null);
-        if(str==null) throw new CasterException(o,"base 64");
-        return str;
     }
     
     public static Object toCreditCard(Object o) throws PageException {
@@ -2436,6 +2440,18 @@ public final class Caster {
     	
     	return ValidateCreditCard.toCreditcard(str,defaultValue);
 	}
+     
+    /**
+     * cast a Object to a Base64 value
+     * @param o Object to cast
+     * @return to Base64 String
+     * @throws PageException
+     */
+    public static String toBase64(Object o,String charset) throws PageException {
+        String str=toBase64(o,charset,null);
+        if(str==null) throw new CasterException(o,"base 64");
+        return str;
+    }
     
     /**
      * cast a Object to a Base64 value
@@ -2443,28 +2459,48 @@ public final class Caster {
      * @param defaultValue 
      * @return to Base64 String
      */
-    public static String toBase64(Object o, String defaultValue) {
+    public static String toBase64(Object o,String charset,String defaultValue) {
         byte[] b;
         if(o instanceof byte[])b=(byte[]) o;
-        else if(o instanceof String)b=o.toString().getBytes();
+        else if(o instanceof String)return toB64((String)o, charset,defaultValue);
         else if(o instanceof ObjectWrap) {
-            return toBase64(((ObjectWrap)o).getEmbededObject(defaultValue),defaultValue);
+            return toBase64(((ObjectWrap)o).getEmbededObject(defaultValue),charset,defaultValue);
         }
-        else if(o == null) return toBase64("",defaultValue);
+        else if(o == null) return toBase64("",charset,defaultValue);
         else {
         	String str = toString(o,null);
-        	if(str!=null)return toBase64(str,defaultValue);
+        	if(str!=null)return toBase64(str,charset,defaultValue);
         	
         	b=toBinary(o,null);
         	if(b==null)return defaultValue;
         }
-        
-        byte[] bytes=Base64.encodeBase64(b);
-        StringBuffer sb=new StringBuffer();
-        for(int i=0;i<bytes.length;i++) {
-            sb.append((char)bytes[i]);
-        }
-        return sb.toString();
+        return toB64(b,defaultValue);
+    }
+
+
+    public static String toB64(String str,String charset) throws CoderException, UnsupportedEncodingException {
+        return toB64(str.getBytes(charset));
+    }
+    
+    public static String toB64(byte[] b) throws CoderException {
+        return Base64Coder.encode(b);
+    }
+
+    public static String toB64(String str,String charset, String defaultValue) {
+        if(StringUtil.isEmpty(charset,true))charset="UTF-8";
+    	try {
+			return Base64Coder.encodeFromString(str,charset);
+		} catch (Throwable t) {
+			return defaultValue;
+		}
+    }
+    
+    public static String toB64(byte[] b, String defaultValue) {
+        try {
+			return Base64Coder.encode(b);
+		} catch (Throwable t) {
+			return defaultValue;
+		}
     }
 
     /**
@@ -2701,12 +2737,12 @@ public final class Caster {
 	}
     
 
-    /**
+    /* *
      * cast a query to a QueryImpl Object
      * @param q query to cast
      * @return casted Query Object
      * @throws CasterException 
-     */
+     * /
     public static QueryImpl toQueryImpl(Query q,QueryImpl defaultValue) {
 		while(q instanceof QueryWrap){
 			q=((QueryWrap)q).getQuery();
@@ -2714,7 +2750,7 @@ public final class Caster {
 		
 		if(q instanceof QueryImpl)return (QueryImpl) q;
 		return defaultValue;
-	}
+	}*/
 
     /**
      * cast a Object to a Query Object
@@ -2935,15 +2971,19 @@ public final class Caster {
         else if(t instanceof PageExceptionBox)
             return ((PageExceptionBox)t).getPageException();
         else if(t instanceof InvocationTargetException){
-            return new NativeException(((InvocationTargetException)t).getTargetException());
+            return toPageException(((InvocationTargetException)t).getTargetException());
         }
         else if(t instanceof ExceptionInInitializerError){
-            return new NativeException(((ExceptionInInitializerError)t).getCause());
+            return toPageException(((ExceptionInInitializerError)t).getCause());
         }
         else {
+        	//Throwable cause = t.getCause();
+        	//if(cause!=null && cause!=t) return toPageException(cause);
         	return new NativeException(t);
         }
     }
+    
+    
     
     /**
      * return the type name of a object (string, boolean, int aso.), type is not same like class name
@@ -3034,6 +3074,9 @@ public final class Caster {
                 case 'c':
                     if(lcType.equals("creditcard")) {
                         return String.class;
+                    }
+                    else if(lcType.equals("component")) {
+                        return Component.class;
                     }
                     break;
                 case 'd':
@@ -3155,7 +3198,7 @@ public final class Caster {
                         return toBinary(o);
                     }
                     else if(type.equals("base64")) {
-                        return toBase64(o);
+                        return toBase64(o,null);
                     }
                     break;
                 case 'c':
@@ -3443,7 +3486,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
 
         if(type==CFTypes.TYPE_UNDEFINED)
-            throw new ExpressionException("type is'nt defined (TYPE_UNDEFINED)");
+            throw new ExpressionException("type isn't defined (TYPE_UNDEFINED)");
         throw new ExpressionException("invalid type ["+type+"]");
     }
     
@@ -4150,6 +4193,17 @@ public final class Caster {
 		 throw new CasterException(o,"UDF");
     }
 
+	public static BigDecimal toBigDecimal(Object o) throws PageException {
+		if(o instanceof BigDecimal) return (BigDecimal) o;
+		if(o instanceof Number) return new BigDecimal(((Number)o).doubleValue());
+        else if(o instanceof Boolean) return new BigDecimal(((Boolean)o).booleanValue()?1:0);
+        else if(o instanceof String) return new BigDecimal(o.toString());
+        else if(o instanceof Castable) return new BigDecimal(((Castable)o).castToDoubleValue());
+        else if(o == null) return BigDecimal.ZERO;
+        else if(o instanceof ObjectWrap) return toBigDecimal(((ObjectWrap)o).getEmbededObject());
+        throw new CasterException(o,"number");
+	}
+
 	public static Object unwrap(Object value) throws PageException {
 		if(value==null) return null;
 		if(value instanceof ObjectWrap) {
@@ -4157,6 +4211,7 @@ public final class Caster {
 		}
 		return value;
 	}
+	
 	public static Object unwrap(Object value,Object defaultValue) {
 		if(value==null) return null;
 		if(value instanceof ObjectWrap) {

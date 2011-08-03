@@ -41,23 +41,21 @@ public class aprint {
     			+" "+value);
 	}
 
-	public static void ds() {
-		Thread.dumpStack();
+	public static void ds(boolean useOutStream) {
+		new Exception("Stack trace").printStackTrace(useOutStream?System.out:System.err);
 	}
 	
-	public static void ds(Object label) {
-		err(label);
-		Thread.dumpStack();
+	public static void ds(Object label,boolean useOutStream) {
+		_(useOutStream?System.out:System.err, label);
+		ds(useOutStream);
 	}
 	
-	public static void dumpStack() {
-		Thread.dumpStack();
-	}
-	
-	public static void dumpStack(String label) {
-		err(label);
-		Thread.dumpStack();
-	}
+	public static void ds() {ds(false);}
+	public static void ds(Object label) {ds(label,false);}
+	public static void dumpStack() {ds(false);}
+	public static void dumpStack(boolean useOutStream) {ds(useOutStream);}
+	public static void dumpStack(String label) {ds(label,false);}
+	public static void dumpStack(String label,boolean useOutStream) {ds(label,useOutStream);}
     
     public static void err(boolean o) { 
 		System.err.println(o);
@@ -204,6 +202,7 @@ public class aprint {
     	else if(o instanceof long[]) _(ps,(long[])o);
     	else if(o instanceof double[]) _(ps,(double[])o);
     	else if(o instanceof char[]) _(ps,(char[])o);
+    	else if(o instanceof short[]) _(ps,(short[])o);
     	else if(o instanceof Set) _(ps,(Set)o);
     	else if(o instanceof List) _(ps,(List)o);
     	else if(o instanceof Map) _(ps,(Map)o);
@@ -277,6 +276,15 @@ public class aprint {
     
     private static void _(PrintStream ps,char[] arr) {
         ps.print("char[]{");
+        for(int i=0;i<arr.length;i++) {
+            if(i>0)ps.print(',');
+            ps.print(arr[i]);
+        }
+        ps.println("}");
+    }
+    
+    private static void _(PrintStream ps,short[] arr) {
+        ps.print("short[]{");
         for(int i=0;i<arr.length;i++) {
             if(i>0)ps.print(',');
             ps.print(arr[i]);

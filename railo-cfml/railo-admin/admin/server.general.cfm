@@ -249,7 +249,6 @@ Create Datasource --->
     <cfset var speed=setting[group].speed[name]>
     <cfset var strict=setting[group].strict[name]>
     <cfset var color="">
-    <cfset systemOutput("#serialize(value)# EQ #serialize(compat)#",true)>
 	<cfif value EQ compat>
     	<cfset color=colorCompatibility>
     <cfelseif value EQ speed>

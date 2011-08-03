@@ -7,4 +7,5 @@
     sessiontimeout="#createTimeSpan(0,0,30,0)#"
     setclientcookies="yes" 
     setdomaincookies="no" 
-    applicationtimeout="#createTimeSpan(1,0,0,0)#">
+    applicationtimeout="#createTimeSpan(1,0,0,0)#"
+    localmode="update">

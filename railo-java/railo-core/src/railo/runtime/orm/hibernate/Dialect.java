@@ -9,7 +9,7 @@ public class Dialect {
 	private static Struct dialects=new StructImpl();
 	
 	static {
-		
+		// if this list change, also update list in web-cfmtaglibrary_1 for "application-ormsettings-dialect" 
 		dialects.setEL("Cache71", org.hibernate.dialect.Cache71Dialect.class.getName());
 		dialects.setEL("Caché 2007.1", org.hibernate.dialect.Cache71Dialect.class.getName());
 		dialects.setEL("Cache 2007.1", org.hibernate.dialect.Cache71Dialect.class.getName());
@@ -98,9 +98,19 @@ public class Dialect {
 		}
 		return getDialect(name);
 	}
-	
+
 	public static String getDialect(String name){
 		if(StringUtil.isEmpty(name))return null;
 		return (String) dialects.get(name, null);
 	}
+	
+	public static String[] listDialectNames(){
+		return dialects.keysAsString();
+	}
+	
+	/*public static void main(String[] args) {
+		String[] arr = listDialectNames();
+		Arrays.sort(arr);
+		print.o(List.arrayToList(arr, ", "));
+	}*/
 }

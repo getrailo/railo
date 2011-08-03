@@ -1,14 +1,75 @@
+<!--- 
+Defaults --->
+<cfset error.message="">
+<cfset error.detail="">
+<cfparam name="form.mainAction" default="none">
+
+<cftry>
+	<cfswitch expression="#form.mainAction#">
+	<!--- UPDATE --->
+		<cfcase value="#stText.Buttons.Update#">
+			<cfset data.label=toArrayFromForm("label")>
+			<cfset data.hash=toArrayFromForm("hash")>
+            
+			<cfloop index="idx" from="1" to="#arrayLen(data.label)#">
+				<cfif len(trim(data.label[idx]))>
+                	<cfadmin 
+                    action="updateLabel"
+                    type="#request.adminType#"
+                    password="#session["password"&request.adminType]#"
+                    
+                    label="#data.label[idx]#"
+                    hash="#data.hash[idx]#">
+                 </cfif>
+            </cfloop>
+		</cfcase>
+	</cfswitch>
+	<cfcatch>
+	
+		<cfset error.message=cfcatch.message>
+		<cfset error.detail=cfcatch.Detail>
+	</cfcatch>
+</cftry>
+
+<!--- 
+Redirtect to entry --->
+<cfif cgi.request_method EQ "POST" and error.message EQ "" and form.mainAction NEQ "none">
+	<cflocation url="#request.self#" addtoken="no">
+</cfif>
+
+<!--- 
+Error Output --->
+<cfset printError(error)>
+
+
 <cfoutput>
 <div style="width:740px">
 #stText.Overview.introdesc[request.adminType]#
 </div>
 <br />
-  
 
 <table class="tbl" width="740">
 <tr>
 	<td colspan="2"><h2>#stText.Overview.Info#</h2></td>
 </tr>
+
+    <cfadmin 
+        action="getInfo"
+        type="#request.adminType#"
+        password="#session["password"&request.adminType]#"
+        returnVariable="info">
+<cfif request.adminType EQ "web">
+<tr>
+	<td class="tblHead" width="150">#stText.Overview.label#</td>
+	<td class="tblContent">#info.label#</td>
+</tr>
+<tr>
+	<td class="tblHead" width="150">#stText.Overview.hash#</td>
+	<td class="tblContent">#info.hash#</td>
+</tr>
+</cfif>
+
+
 <tr>
 	<td class="tblHead" width="150">#stText.Overview.Version#</td>
 	<td class="tblContent">Railo #server.railo.version# #server.railo.state#</td>
@@ -28,7 +89,23 @@
 	<td class="tblContent">#replace(server.ColdFusion.ProductVersion,',','.','all')#</td>
 </tr>
 
+
+
+<tr>
+	<td width="150" colspan="2">&nbsp;</td>
+</tr>
+<tr>
+	<td class="tblHead" width="150">#stText.Overview.config#</td>
+	<td class="tblContent">#info.config#</td>
+</tr>
+
+
 <cfif request.adminType EQ "web">
+<tr>
+	<td class="tblHead" width="150">#stText.Overview.webroot#</td>
+	<td class="tblContent">#info.root#</td>
+</tr>
+
 <cfadmin 
 	action="getTLDs"
 	type="#request.adminType#"
@@ -50,7 +127,7 @@
 
 <tr>
 	<td class="tblHead" width="150">#stText.Overview.OS#</td>
-	<td class="tblContent">#server.OS.Name# (#server.OS.Version#)</td>
+	<td class="tblContent">#server.OS.Name# (#server.OS.Version#)<cfif structKeyExists(server.os,"archModel")> #server.os.archModel#bit</cfif></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Overview.remote_addr#</td>
@@ -96,15 +173,15 @@
 	<td class="tblHead" width="150">#stText.Overview.ServerTime#</td>
 	<td class="tblContent">
 		
-		#lsdateFormat(nowServer())#
-		#lstimeFormat(nowServer())#
+		#lsdateFormat(date:now(),timezone:"jvm")#
+		#lstimeFormat(time:now(),timezone:"jvm")#
 	</td> 
 </tr>
 <tr>
 	<td class="tblHead" width="150">Java</td>
 	<td class="tblContent">
 		<!--- <cfset serverNow=createObject('java','java.util.Date')> --->
-		#server.java.version# (#server.java.vendor#)
+		#server.java.version# (#server.java.vendor#)<cfif structKeyExists(server.java,"archModel")> #server.java.archModel#bit</cfif>
 	</td> 
 </tr>
 <tr>
@@ -148,16 +225,26 @@
 	<td class="tblHead" width="220">#stText.Overview.contexts.webroot#</td>
 	<td class="tblHead" width="220">#stText.Overview.contexts.config_file#</td>
 </tr>
-<form>
+<cfform action="#request.self#" method="post">
 <cfloop query="rst">
+<input type="hidden" name="hash_#rst.currentrow#" value="#rst.hash#"/>
 <tr>
-	<td class="tblContent" width="100"><input type="text" style="width:100px" name="label#rst.currentrow#" value="#rst.label#"/></td>
+	<td class="tblContent" width="100"><input type="text" style="width:100px" name="label_#rst.currentrow#" value="#rst.label#"/></td>
 	<td class="tblContent" width="150"><cfif len(rst.url)><a target="_blank" href="#rst.url#/railo-context/admin/web.cfm">#rst.url#</a></cfif></td>
-	<td class="tblContent"><input type="text" style="width:220px" name="path#rst.currentrow#" value="#rst.path#" readonly="readonly"/></td>
-	<td class="tblContent"><input type="text" style="width:220px" name="cf#rst.currentrow#" value="#rst.config_file#" readonly="readonly"/></td>
+	<td class="tblContent"><input type="text" style="width:220px" name="path_#rst.currentrow#" value="#rst.path#" readonly="readonly"/></td>
+	<td class="tblContent"><input type="text" style="width:220px" name="cf_#rst.currentrow#" value="#rst.config_file#" readonly="readonly"/></td>
 </tr>
 </cfloop>
-</form>
+
+<tr>
+	<td colspan="4">
+		<input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+	</td>
+</tr>
+
+
+</cfform>
 </table><br /><br />
 </cfif>
  

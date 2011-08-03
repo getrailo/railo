@@ -21,20 +21,27 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.RequestTimeoutException;
 import railo.runtime.lock.LockManager;
 import railo.runtime.lock.LockManagerImpl;
+import railo.runtime.op.Caster;
 import railo.runtime.query.QueryCache;
+import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.scope.ArgumentIntKey;
+import railo.runtime.type.scope.LocalNotSupportedScope;
 import railo.runtime.type.scope.ScopeContext;
 
 /**
- * implements a JSP Factory, this class procduce JSP Compatible PageContext Object
+ * implements a JSP Factory, this class produce JSP Compatible PageContext Object
  * this object holds also the must interfaces to coldfusion specified functionlity
  */
 public final class CFMLFactoryImpl extends CFMLFactory {
@@ -45,9 +52,8 @@ public final class CFMLFactoryImpl extends CFMLFactory {
     private Struct runningPcs=new StructImpl();
     int idCounter=1;
     private QueryCache queryCache;
-    private ScopeContext scopeContext=new ScopeContext();
-    private String label;
-	private HttpServlet servlet;
+    private ScopeContext scopeContext=new ScopeContext(this);
+    private HttpServlet servlet;
 	private URL url=null;
 	private CFMLEngineImpl engine;
 
@@ -87,7 +93,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	}
 	
 	/**
-	 * similar to getPageContext Method but return the concret implementation of the railo PageCOntext
+	 * similar to getPageContext Method but return the concrete implementation of the railo PageCOntext
 	 * and take the HTTP Version of the Servlet Objects
 	 * @param servlet
 	 * @param req
@@ -152,7 +158,8 @@ public final class CFMLFactoryImpl extends CFMLFactory {
         //if(!pc.hasFamily()){
 			synchronized (pcs) {
 	            runningPcs.removeEL(ArgumentIntKey.init(pc.getId()));
-	            pcs.push(pc);
+	            if(pcs.size()<100)// not more than 100 PCs
+	            	pcs.push(pc);
 	            SystemOut.printDate(config.getOutWriter(),"Release: ("+pc.getId()+")");
 	        }
        /*}
@@ -265,11 +272,13 @@ public final class CFMLFactoryImpl extends CFMLFactory {
      * @return label of the factory
      */
     public Object getLabel() {
-    	if(label==null){
-    		return getConfig().getId();
-    		//return "";
-    	}
-        return label;
+    	return ((ConfigWebImpl)getConfig()).getLabel();
+    }
+    /**
+     * @param label
+     */
+    public void setLabel(String label) {
+        // deprecated
     }
 
 	/**
@@ -278,12 +287,6 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	public URL getURL() {
 		return url;
 	}
-    /**
-     * @param label
-     */
-    public void setLabel(String label) {
-        this.label=label;
-    }
     
 
 	public void setURL(URL url) {
@@ -307,5 +310,78 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 
 	public long getPageContextesSize() {
 		return SizeOf.size(pcs);
+	}
+	
+	// FUTURE add to interface
+	public Array getInfo() {
+		Array info=new ArrayImpl();
+		
+		synchronized (pcs) {
+            //int len=runningPcs.size();
+			Iterator it = runningPcs.keyIterator();
+            PageContext pc;
+            Struct data,sctThread,scopes;
+    		Collection.Key key;
+            Thread thread;
+    		while(it.hasNext()) {
+            	data=new StructImpl();
+            	sctThread=new StructImpl();
+            	scopes=new StructImpl();
+            	data.setEL("thread", sctThread);
+                data.setEL("scopes", scopes);
+                
+            	
+            	key=KeyImpl.toKey(it.next(),null);
+                //print.out("key:"+key);
+                pc=(PageContext) runningPcs.get(key,null);
+                if(pc==null) continue;
+                thread=pc.getThread();
+                
+                
+                
+                
+                
+                data.setEL("startTime", new DateTimeImpl(pc.getStartTime(),false));
+                data.setEL("timeout", Caster.toDouble(pc.getRequestTimeout()));
+                
+                // thread
+                sctThread.setEL("name",thread.getName());
+                sctThread.setEL("priority",Caster.toDouble(thread.getPriority()));
+                data.setEL("TagContext",PageExceptionImpl.getTagContext(pc.getConfig(),thread.getStackTrace() ));
+
+                data.setEL("urlToken", pc.getURLToken());
+                data.setEL("debugger", pc.getDebugger().getDebuggingData());
+                data.setEL("id", pc.getId());
+
+                // Scopes
+                scopes.setEL("name", pc.getApplicationContext().getName());
+                try {
+					scopes.setEL("application", pc.applicationScope());
+				} catch (PageException e) {}
+
+                try {
+					scopes.setEL("session", pc.sessionScope());
+				} catch (PageException e) {}
+                
+                try {
+					scopes.setEL("client", pc.clientScope());
+				} catch (PageException e) {}
+                scopes.setEL("cookie", pc.cookieScope());
+                scopes.setEL("variables", pc.variablesScope());
+                if(!(pc.localScope() instanceof LocalNotSupportedScope)){
+                	scopes.setEL("local", pc.localScope());
+                	scopes.setEL("arguments", pc.argumentsScope());
+                }
+                scopes.setEL("cgi", pc.cgiScope());
+                scopes.setEL("form", pc.formScope());
+                scopes.setEL("url", pc.urlScope());
+                scopes.setEL("request", pc.requestScope());
+                
+                info.appendEL(data);
+                
+                
+            }
+            return info;
+        }
 	}
 }

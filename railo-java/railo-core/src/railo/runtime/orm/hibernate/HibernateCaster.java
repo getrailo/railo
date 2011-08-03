@@ -25,15 +25,18 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.QueryUtil;
 
 public class HibernateCaster {
 	
 	private static final int NULL = -178696;
+	private static final Key ENTITY_NAME = KeyImpl.intern("entityname");
 	/*public static Component toCFML(PageContext pc,Map map, Component cfc) throws PageException {
 		if(map instanceof ComponentPro) return (Component) map;
 		ComponentPro ci = ComponentUtil.toComponentPro(cfc);
@@ -98,23 +101,35 @@ public class HibernateCaster {
 	
 
 	
-	public static String getEntityName(PageContext pc,Component cfc) {
+	public static String getEntityName(Component cfc) {
+		
+		String name=null;
 		try {
-			Struct md = cfc.getMetaData(ThreadLocalPageContext.get(pc));
-			String name = Caster.toString(md.get("entityname"),"");
-			if(!StringUtil.isEmpty(name)) {
-				//print.o("name1:"+cfc.getName());
-				return name;//.toLowerCase();
-			}
+			ComponentAccess cfca = ComponentUtil.toComponentAccess(cfc);
+			name=Caster.toString(cfca.getMetaStructItem(ENTITY_NAME),null);
 		} 
-		catch (PageException e) {}
+		catch (Throwable t) {
+			try {
+				Struct md = cfc.getMetaData(ThreadLocalPageContext.get());
+				name = Caster.toString(md.get(ENTITY_NAME),null);
+				
+			}catch (PageException e) {}
+		}
+		
+		if(!StringUtil.isEmpty(name)) {
+			return name;
+		}
+		return getName(cfc);
 		
 		
-		
+	}
+
+	private static String getName(Component cfc) {
+		String name=null;
 		// MUSTMUST cfc.getName() should return the real case, this should not be needed
-		ComponentPro cp = ComponentUtil.toComponentPro(cfc,null);
-		if(cp!=null){
-			String name = cp.getPageSource().getDisplayPath();
+		ComponentPro cfcp = ComponentUtil.toComponentPro(cfc,null);
+		if(cfcp!=null){
+			name = cfcp.getPageSource().getDisplayPath();
 	        name=railo.runtime.type.List.last(name, "\\/",true);
 	        int index=name.lastIndexOf('.');
 	        name= name.substring(0,index);
@@ -122,8 +137,7 @@ public class HibernateCaster {
 		}
 		////////////////////////
 		
-		
-		return cfc.getName();//.toLowerCase();
+		return cfc.getName(); 
 	}
 
 	public static int cascade(HibernateORMEngine engine,String cascade) throws ORMException {
@@ -219,12 +233,12 @@ public class HibernateCaster {
 	public static String toHibernateType(ColumnInfo info, String defaultValue)	{
 		if(info==null)return defaultValue;
 		
-		String rtn = toHibernateType(info.getType(), null);
+		String rtn = toHibernateType(info.getType(),info.getSize(), null);
 		if(rtn!=null) return rtn;
 		return toHibernateType(info.getTypeName(),defaultValue);
 	}
 	
-	public static String toHibernateType(int type, String defaultValue) {
+	public static String toHibernateType(int type, int size, String defaultValue) {
 		// MUST do better
 		switch(type){
 		case Types.ARRAY: return "";
@@ -233,7 +247,10 @@ public class HibernateCaster {
 		case Types.BIT: return "boolean";
 		case Types.BLOB: return "blob";
 		case Types.BOOLEAN: return "boolean";
-		case Types.CHAR: return "character";
+		case Types.CHAR:
+			return "string";
+			//if(size>1) return "string";
+			//return "character";
 		case Types.CLOB: return "clob";
 		//case Types.DATALINK: return "";
 		case Types.DATE: return "date";
@@ -256,6 +273,7 @@ public class HibernateCaster {
 		case Types.TIMESTAMP: return "timestamp";
 		case Types.TINYINT: return "byte";
 		case Types.VARBINARY: return "binary";
+		case Types.NVARCHAR: return "string";
 		case Types.VARCHAR: return "string";
 		}
 		return defaultValue;
@@ -276,7 +294,6 @@ public class HibernateCaster {
 		type=StringUtil.replace(type, "java.util.", "", true);
 		type=StringUtil.replace(type, "java.sql.", "", true);
 		
-		
 		// return same value
 		if("long".equals(type)) return type;
 		if("binary".equals(type)) return type;
@@ -292,7 +309,7 @@ public class HibernateCaster {
 		if("integer".equals(type)) return type;
 		if("binary".equals(type)) return type;
 		if("string".equals(type)) return type;
-		if("big_decimal".equals(type)) return type;
+		if("big_integer".equals(type)) return type;
 		if("short".equals(type)) return type;
 		if("time".equals(type)) return type;
 		if("timestamp".equals(type)) return type;
@@ -300,14 +317,23 @@ public class HibernateCaster {
 		if("binary".equals(type)) return type;
 		if("string".equals(type)) return type;
 		if("text".equals(type)) return type;
+		if("calendar".equals(type)) return type;
+		if("calendar_date".equals(type)) return type;
+		if("locale".equals(type)) return type;
+		if("timezone".equals(type)) return type;
+		if("currency".equals(type)) return type;
 		
+		if("imm_date".equals(type)) return type;
+		if("imm_time".equals(type)) return type;
+		if("imm_timestamp".equals(type)) return type;
+		if("imm_calendar".equals(type)) return type;
+		if("imm_calendar_date".equals(type)) return type;
+		if("imm_serializable".equals(type)) return type;
+		if("imm_binary".equals(type)) return type;
 		
 		// return different value
 		if("bigint".equals(type)) 						return "long";
 		if("bit".equals(type)) 						return "boolean";
-		
-		
-		
 		
 		if("int".equals(type)) 						return "integer";
 		if("char".equals(type)) 					return "character";
@@ -325,11 +351,45 @@ public class HibernateCaster {
 		if("java.math.bigdecimal".equals(type)) 	return "big_decimal";
 		if("big-integer".equals(type)) 				return "big_integer";
 		if("biginteger".equals(type)) 				return "big_integer";
+		if("bigint".equals(type)) 				return "big_integer";
 		if("java.math.biginteger".equals(type)) 	return "big_integer";
 		if("byte[]".equals(type)) 					return "binary";
 		if("serializable".equals(type)) 			return "serializable";
 		
+		if("datetime".equals(type)) 				return "timestamp";
+		if("numeric".equals(type)) 					return "double";
+		if("number".equals(type)) 					return "double";
+		if("char".equals(type)) 					return "character";
+		if("nchar".equals(type)) 					return "character";
+		if("decimal".equals(type)) 					return "double";
+		if("eurodate".equals(type)) 				return "timestamp";
+		if("usdate".equals(type)) 				return "timestamp";
+		if("int".equals(type)) 						return "integer";
+		if("varchar".equals(type)) 						return "string";
+		if("nvarchar".equals(type)) 						return "string";
+		
 		return defaultValue;
+		
+		// FUTURE
+		/*
+		
+		add support for 
+		- any, object,other
+		
+		add support for custom types https://issues.jboss.org/browse/RAILO-1341
+		- array
+	    - base64
+	    - guid
+        - memory
+	    - node, xml
+	    - query
+	    - struct
+        - uuid
+        - variablename, variable_name
+	    - variablestring, variable_string
+	    
+		*/
+		
     }
 
 	/**
@@ -383,17 +443,21 @@ public class HibernateCaster {
 		else {
 			Array arr=Caster.toArray(obj);
 			int len=arr.size();
-			Iterator it = arr.valueIterator();
-			int row=1;
-			while(it.hasNext()){
-				qry=toQuery(pc,session,ComponentUtil.toComponentPro(HibernateCaster.toComponent(it.next())),name,qry,len,row++);
+			if(len>0) {
+				Iterator it = arr.valueIterator();
+				int row=1;
+				while(it.hasNext()){
+					qry=toQuery(pc,session,ComponentUtil.toComponentPro(HibernateCaster.toComponent(it.next())),name,qry,len,row++);
+				}
 			}
+			else 
+				qry=new QueryImpl(new Collection.Key[0],1,"orm");
 		}
 		
 		if(qry==null) {
 			if(!StringUtil.isEmpty(name))
 				throw new ORMException(session.getEngine(),"there is no entity inheritance that match the name ["+name+"]");
-			throw new ORMException(session.getEngine(),"can not create query");
+			throw new ORMException(session.getEngine(),"cannot create query");
 		}
 		return qry;
 	}
@@ -417,7 +481,7 @@ public class HibernateCaster {
 		
 		// init
 		if(qry==null){
-			ClassMetadata md = ((HibernateORMEngine)session.getEngine()).getSessionFactory(pc).getClassMetadata(getEntityName(pc, cfc));
+			ClassMetadata md = ((HibernateORMEngine)session.getEngine()).getSessionFactory(pc).getClassMetadata(getEntityName(cfc));
 			//Struct columnsInfo= engine.getTableInfo(session.getDatasourceConnection(),toEntityName(engine, cfc),session.getEngine());
 			Array names=new ArrayImpl();
 			Array types=new ArrayImpl();
@@ -441,12 +505,12 @@ public class HibernateCaster {
 					types.append("object");
 			}
 			
-			qry=new QueryImpl(names,types,0,getEntityName(pc,cfc));
+			qry=new QueryImpl(names,types,0,getEntityName(cfc));
 			
 		}
 		// check
 		else if(engine.getMode() == ORMEngine.MODE_STRICT){
-			if(!qry.getName().equals(getEntityName(pc,cfc)))
+			if(!qry.getName().equals(getEntityName(cfc)))
 				throw new ORMException(session.getEngine(),"can only merge entities of the same kind to a query");
 		}
 		
@@ -495,7 +559,7 @@ public class HibernateCaster {
 
 
 	private static Query inheritance(PageContext pc,HibernateORMSession session,Query qry,ComponentPro parent,ComponentPro child,String entityName) throws PageException {
-		if(getEntityName(pc, child).equalsIgnoreCase(entityName))
+		if(getEntityName(child).equalsIgnoreCase(entityName))
 			return populateQuery(pc,session,child,qry);
 		return inheritance(pc,session,child, qry, entityName);// MUST geh ACF auch so tief?
 	}
