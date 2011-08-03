@@ -733,7 +733,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 	private String formatToString(int format) {
 		if(format==FORMAT_GIF) return "gif";
 		if(format==FORMAT_JPG) return "jpeg";
-		if(format==FORMAT_PNG) return "x-png";
+		if(format==FORMAT_PNG) return "png";
 		return "swf";
 	}
 
