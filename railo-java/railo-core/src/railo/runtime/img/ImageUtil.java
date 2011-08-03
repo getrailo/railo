@@ -207,7 +207,7 @@ public class ImageUtil {
 		if("jpeg".equals(mt)) return "image/jpg";
 		if("jpg".equals(mt)) return "image/jpg";
 		if("jpe".equals(mt)) return "image/jpg";
-		if("png".equals(mt)) return "image/x-png";
+		if("png".equals(mt)) return "image/png";
 		if("tiff".equals(mt)) return "image/tiff";
 		if("tif".equals(mt)) return "image/tiff";
 		if("bmg".equals(mt)) return "image/bmp";

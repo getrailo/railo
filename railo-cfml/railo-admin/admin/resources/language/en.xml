@@ -372,6 +372,7 @@
 	<data key="general.minuteerror">The field &quot;minute&quot; must contain a positive integer</data>
 	<data key="general.day">Day</data>
 	<data key="general.hours">Hours</data>
+	<data key="general.wait">Please wait...</data>
 	<data key="general.seconds">Seconds</data>
 	<data key="general.no">No</data>
 	<data key="general.days">Days</data>

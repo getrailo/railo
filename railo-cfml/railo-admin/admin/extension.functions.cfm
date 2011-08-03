@@ -203,7 +203,7 @@
             
             
             
-            <cfset var mimetypes={png:'x-png',gif:'gif',jpg:'jpeg'}>
+            <cfset var mimetypes={png:'png',gif:'gif',jpg:'jpeg'}>
             <cfset ext=listLast(arguments.imgURL,'.')>
             
             <cfset application.railodumps[id]="data:image/#mimetypes[ext]#;base64,#trim(data)#">

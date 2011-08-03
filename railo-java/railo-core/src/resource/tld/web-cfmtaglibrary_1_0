@@ -3286,6 +3286,13 @@ The browser uses file extension to determine file type. </description>
 		
 		<attribute>
 			<type>string</type>
+			<name>onError</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The name of a JavaScript function that runs if a form submission fails.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
 			<name>onReset</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

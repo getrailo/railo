@@ -2,7 +2,7 @@
 /**
 * represent a cfform 
 */
-function RailoForms(form) {
+function RailoForms(form,onError) {
 	var pub=this;
 	var prv={};
 	
@@ -43,6 +43,7 @@ function RailoForms(form) {
     pub.VALIDATE_RANGE=16;
 	
 	prv.form=form;
+	prv.onError=onError;
 	prv.elements={};
 	prv.errors=[];
 			
@@ -73,23 +74,41 @@ function RailoForms(form) {
 			else if(pub.TYPE_SELECT==el.type) prv.checkSelect(el);		
 		}
 		if(prv.errors.length) {
-			for(var i=0;i<prv.errors.length;i++) {
+			var _errors=[];
+			var _form=document.forms[prv.form]
+            for(var i=0;i<prv.errors.length;i++) {
 				var err=prv.errors[i];
 				var el=err.element;
-				
-				if(el.onerror) {
-					if(typeof(el.onerror) == "string" && typeof(eval(el.onerror)) == "function") {
-						var func=eval(el.onerror);
-						var f=document.forms[prv.form]
-						var i=f[el.name];				
-						var v=i.value;
-						if(!v && err.value)v='';
-						func(f,i,i.v);
-					}
+				var _input=_form[el.name];				
+                var v=_input.value;
+                if(!v && err.value)v='';
+                if(el.onerror && typeof(el.onerror) == "string" && typeof(eval(el.onerror)) == "function") {
+                	var func=eval(el.onerror);
+                    func(_form,_input.name,v,err.error);
 				}		
-				else alert(err.error);
+                else {
+                	_errors[_errors.length]={form:_form,name:_input.name,value:v,error:err.error};
+                }
 			}
-			
+            
+            if(_errors.length>0) {
+                // general on error
+                if(prv.onError && typeof(prv.onError) == "string" && typeof(eval(prv.onError)) == "function") {
+                	var func=eval(prv.onError);
+                    func(_errors);
+                }
+                else {                
+                    if(_errors.length==1)
+                        alert(_errors[0]);
+                    else if(_errors.length>1) {
+                        var msg="";
+                        for(var x=0;x<_errors.length;x++) {
+                            msg+="- "+_errors[x]+"\n";
+                        }
+                        alert(msg);
+                    }
+                }
+			}
 			prv.errors=[];
 			return false;
 		}
