@@ -99,7 +99,7 @@ Error Output--->
 #driver.getDescription()#
 <table class="tbl" width="650">
 
-<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 <cfinput type="hidden" name="type" value="#entry.type#" >
 <cfinput type="hidden" name="label" value="#entry.label#" >
 	<tr>

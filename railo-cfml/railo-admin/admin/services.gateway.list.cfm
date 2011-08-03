@@ -144,7 +144,7 @@ Error Output--->
 	#stText.Settings.cache.descReadOnly#
 <table class="tbl" width="570">
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td>
 		<td width="250" class="tblHead" nowrap>#stText.Settings.gateway.id#</td>
@@ -221,7 +221,7 @@ Error Output--->
     
 <table class="tbl" width="570">
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td>
 		<td width="240" class="tblHead" nowrap>#stText.Settings.gateway.id#</td>
@@ -312,7 +312,7 @@ Error Output--->
     <cfif listLen(_drivers)>
     <h2>#stText.Settings.gateway.titleCreate#</h2>
 	<table class="tbl" width="350">
-	<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
+	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.gateway.id#</td>
 		<td class="tblContent" width="300"><cfinput type="text" name="_id" value="" style="width:300px" required="yes" 

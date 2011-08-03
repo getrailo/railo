@@ -267,7 +267,7 @@ Create Datasource --->
 
 
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
 <table class="tbl" width="700">
 <!---- data member default access --->

@@ -109,7 +109,7 @@ Create Datasource --->
 	<td colspan="2"><h2>#stText.Settings.DatasourceSettings#</h2></td>
 </tr>
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.PreserveSingleQuotes#</td>
 	<td class="tblContent">
@@ -204,7 +204,7 @@ function selectAll(field) {
 	<tr>
 		<td colspan="5"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 	</tr>
-	<cfform action="#request.self#?action=#url.action#" method="post">
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<tr>
 			<td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)">
 				</td>
@@ -280,7 +280,7 @@ function selectAll(field) {
 	<tr>
 		<td colspan="5"><h2>#stText.Settings.ListDatasources#</h2>#stText.Settings['ListDatasourcesDesc'& request.adminType ]#</td> 
 	</tr>
-	<cfform action="#request.self#?action=#url.action#" method="post">
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<tr>
 			<td width="60"><input type="checkbox" class="checkbox" name="rowread" onclick="selectAll(this)"></td>
 			<td width="205" class="tblHead" nowrap>#stText.Settings.Name#</td>
@@ -363,7 +363,7 @@ function selectAll(field) {
 	<tr>
 		<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 	</tr>
-	<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
+	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.Name#</td>
 		<td class="tblContent" width="300"><cfinput type="text" name="name" value="" style="width:300px" required="yes" 

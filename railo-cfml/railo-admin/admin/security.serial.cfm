@@ -59,7 +59,7 @@ Create Datasource --->
 <tr>
 	<td colspan="3"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
 	<td class="tblHead" width="150">#stText.Overview.SerialNumber#</td>
 	<td class="tblContent">

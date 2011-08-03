@@ -99,7 +99,7 @@ Create Datasource --->
 <tr>
 	<td colspan="2">#stText.err.descr#</td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <cfloop list="500,404" index="statusCode">
 <tr>
 	<td class="tblHead" width="150" height="28">#stText.err.errorTemplate[statusCode]#</td>

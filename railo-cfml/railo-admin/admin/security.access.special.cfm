@@ -70,7 +70,7 @@ Overview
 	<tr>
 		<td colspan="3"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 	</tr>
-	<cfform action="#go(url.action,"removeSecurityManager")#" method="post">
+	<cfform onerror="customError" action="#go(url.action,"removeSecurityManager")#" method="post">
 		<tr>
 			<td width="20"></td>
 			<td width="205" class="tblHead" nowrap>#stText.Security.specListHost#</td>
@@ -131,7 +131,7 @@ Overview
 		<tr>
 			<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 		</tr>
-		<cfform action="#go(url.action,'createSecurityManager')#" method="post">
+		<cfform onerror="customError" action="#go(url.action,'createSecurityManager')#" method="post">
 			<td class="tblHead"  nowrap>#stText.Security.specListWebContext#</td>
 			<td class="tblContent"><select name="id">
 						<cfoutput><cfloop query="contextes"><cfif not contextes.hasOwnSecContext>

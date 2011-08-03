@@ -225,7 +225,7 @@ Error Output --->
 	<td class="tblHead" width="220">#stText.Overview.contexts.webroot#</td>
 	<td class="tblHead" width="220">#stText.Overview.contexts.config_file#</td>
 </tr>
-<cfform action="#request.self#" method="post">
+<cfform onerror="customError" action="#request.self#" method="post">
 <cfloop query="rst">
 <input type="hidden" name="hash_#rst.currentrow#" value="#rst.hash#"/>
 <tr>

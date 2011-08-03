@@ -127,7 +127,7 @@ function doEnableProxy(enableProxy) {
 
 <table class="tbl" width="600">
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
 <tr>
 	<td colspan="2">#stText.proxy[request.adminType]#</td>

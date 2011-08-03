@@ -195,7 +195,7 @@ Create Datasource --->
 <tr>
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
 <!--- Base Component ---->
 <tr>
@@ -366,7 +366,7 @@ Use Shadow --->
 #stText.Components.componentMappingsDesc#</td>
 </tr>
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td><cfif hasAccess><input type="checkbox" class="checkbox" 
 			name="rro" onclick="selectAll(this)"></cfif></td>

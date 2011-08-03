@@ -1,7 +1,7 @@
 <cfoutput>
 <cfset color=iif(req.ddns.enabled,de('595F73'),de('595F73'))>
 
-<cfform action="#action('update')#">
+<cfform onerror="customError" action="#action('update')#">
 <table class="tbl" width="600">
 <tr>
 	<td colspan="2">&nbsp;

@@ -95,7 +95,7 @@ function setDesc(id,key){
 </script>
 
 <table class="tbl" width="740">
-<cfoutput><cfform action="#request.self#?action=#url.action#" method="post" name="debug_settings">
+<cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
 <tr>
 	<td class="tblHead" width="150">#stText.Debug.EnableDebugging#</td>
 	<td class="tblContent" height="28">
@@ -149,7 +149,7 @@ function setDesc(id,key){
     
 <table class="tbl" width="740">
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<cfif isWeb><td width="40"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td></cfif>
 		<td width="160" class="tblHead" nowrap>#stText.debug.label#</td>
@@ -222,7 +222,7 @@ function setDesc(id,key){
     <cfif listLen(_drivers)>
     <h2>#stText.debug.titleCreate#</h2>
 	<table class="tbl" width="420">
-	<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
+	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
 		<td class="tblHead" width="50">#stText.debug.label#</td>
 		<td class="tblContent" width="370"><cfinput type="text" name="label" value="" style="width:370px" required="yes" 

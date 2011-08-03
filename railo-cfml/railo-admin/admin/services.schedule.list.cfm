@@ -194,7 +194,7 @@ List --->
 <tr>
 	<td colspan="4"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<cfoutput>
 	<tr>
 		<td width="20"></td>
@@ -293,7 +293,7 @@ Create Task --->
 <tr>
 	<td colspan="2"><h2>#stText.Schedule.CreateTask#</h2></td>
 </tr>
-<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 <tr>
 	<td class="tblHead" width="100">#stText.Schedule.Name#</td>
 	<td class="tblContent" width="500"><cfinput type="text" name="name" value="" style="width:200px" required="yes" 

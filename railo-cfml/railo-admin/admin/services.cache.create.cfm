@@ -81,7 +81,7 @@ Error Output --->
 #driver.getDescription()#
 <table class="tbl" width="650">
 
-<cfform action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.name'),de('&name=##url.name##'),de(''))#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.name'),de('&name=##url.name##'),de(''))#" method="post">
 <cfinput type="hidden" name="class" value="#connection.class#">
 <cfinput type="hidden" name="name" value="#connection.name#" >
 <cfinput type="hidden" name="_name" value="#connection.name#" >

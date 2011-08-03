@@ -98,7 +98,7 @@ Error Output--->
 #driver.getDescription()#
 <table class="tbl" width="650">
 
-<cfform action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.id'),de('&id=##url.id##'),de(''))#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.id'),de('&id=##url.id##'),de(''))#" method="post">
 <cfinput type="hidden" name="name" value="#listLast(getMetaData(driver).name,'.')#.cfc">
 <cfinput type="hidden" name="class" value="#entry.class#">
 <cfinput type="hidden" name="cfcPath" value="#entry.cfcPath#">

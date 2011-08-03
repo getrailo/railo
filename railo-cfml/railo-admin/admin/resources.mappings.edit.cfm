@@ -19,7 +19,7 @@
 <tr>
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<cfform action="#request.self#?virtual=#mapping.virtual#&action=#url.action#&action2=#url.action2#" method="post">
+<cfform onerror="customError" action="#request.self#?virtual=#mapping.virtual#&action=#url.action#&action2=#url.action2#" method="post">
 <input type="hidden" name="mainAction" value="#stText.Buttons.save#">
 <input type="hidden"  name="row_#mapping.id#" value="#mapping.id#">
 

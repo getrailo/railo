@@ -25,7 +25,7 @@
 	</td>
 </tr>
 
-<cfform action="#go(url.action,"update#iif(type EQ "generell",de('Default'),de(''))#SecurityManager")#" method="post">
+<cfform onerror="customError" action="#go(url.action,"update#iif(type EQ "generell",de('Default'),de(''))#SecurityManager")#" method="post">
 <cfset values=struct(
 			'open':"open",
 			'protected':"password protected",
@@ -68,7 +68,7 @@
 	</td>
 </tr>
 
-<!--- <cfform action="#go(url.action,"update#iif(type EQ "generell",de('Default'),de(''))#SecurityManager")#" method="post">--->
+<!--- <cfform onerror="customError" action="#go(url.action,"update#iif(type EQ "generell",de('Default'),de(''))#SecurityManager")#" method="post">--->
 
 <!--- Setting --->
 <tr>

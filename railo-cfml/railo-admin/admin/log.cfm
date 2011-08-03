@@ -21,7 +21,7 @@
 <tr>
 	<td colspan="2"><h2>#ucFirst(logs.name)# #attributes.title#</h2>#attributes.description#</td>
 </tr>
-<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 <tr>
 	<td class="tblHead">#caller.stText.log.level#</td>
 	<td class="tblContent">
