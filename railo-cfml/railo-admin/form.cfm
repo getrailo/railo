@@ -40,6 +40,7 @@ function RailoForms(form,onError) {
     pub.VALIDATE_GUID=21;
     pub.VALIDATE_MAXLENGTH=22;
     pub.VALIDATE_NOBLANKS=23;
+    pub.VALIDATE_CFC=24;
     pub.VALIDATE_RANGE=16;
 	
 	prv.form=form;
@@ -50,9 +51,9 @@ function RailoForms(form,onError) {
 	/*
 	* adds a input definition to the for Object
 	*/
-	pub.addInput=function(name,required,type,validate,pattern,message,onerror,onvalidate,rangeMin,rangeMax,maxLength) {
+	pub.addInput=function(name,required,type,validate,pattern,message,onerror,onvalidate,rangeMin,rangeMax,maxLength,validateCFC) {
 		if((rangeMin || rangeMax) && validate!=pub.VALIDATE_FLOAT && validate!=pub.VALIDATE_INTEGER)validate=pub.VALIDATE_FLOAT;
-		prv.elements[name]={'maxlength':maxLength,'name':name,'required':required,'type':type,'validate':validate,'pattern':pattern,'message':message,'onerror':onerror,'onvalidate':onvalidate,'rangeMin':rangeMin,'rangeMax':rangeMax};
+		prv.elements[name]={'maxlength':maxLength,'name':name,'required':required,'type':type,'validate':validate,'pattern':pattern,'message':message,'onerror':onerror,'onvalidate':onvalidate,'rangeMin':rangeMin,'rangeMax':rangeMax,'validateCFC':validateCFC};
 	}
 	
 	/*
@@ -194,8 +195,16 @@ function RailoForms(form,onError) {
 		
 	}
 	
+    prv.validate=function(el,value) {
+    	try{
+        	prv._validate(el,value);
+        }
+        catch(e){
+        	alert(e);
+        }
+    }
 	
-	prv.validate=function(el,value) {
+	prv._validate=function(el,value) {
 		var v=el.validate;
 		
         
@@ -235,7 +244,57 @@ function RailoForms(form,onError) {
 		else if(v==pub.VALIDATE_CREDITCARD) 			prv.validateCreditCard(el,value);
 		else if(v==pub.VALIDATE_SOCIAL_SECURITY_NUMBER)	prv.validateSocialSecurityNumber(el,value);
 		else if(v==pub.VALIDATE_REGULAR_EXPRESSION)		prv.validateRegularExpression(el,value);
+		else if(v==pub.VALIDATE_CFC)					prv.validateCFC(el,value);
 		
+	}
+	
+	/*
+	* check if value contains a time value or not (hh:mm:ss)
+	* @param el Element with all data to the input field
+	* @param value value from input field
+	*/
+	prv.validateCFC=function(el,value) {
+    	var id=el.validateCFC.id;
+    	var funcName=el.validateCFC.funcName;
+        var args=el.validateCFC.args;
+        
+        // do el lower case
+        var ellc={};
+        for(var key in el){
+        	ellc[key.toLowerCase()]=el[key];
+        }
+        
+        
+        // populateArgs
+        var _args=[];
+        for(var i=0;i < args.length;i++){
+        	if(args[i]=="value")
+            	_args[i]=value;
+            else if(ellc[args[i].toLowerCase()])
+            	_args[i]=ellc[args[i].toLowerCase()];
+            else {
+            	try{
+            		_args[i]=eval(args[i]);
+                }
+                catch(e){
+                	_args[i]=args[i];
+                }
+            }
+        }
+        
+        var clazz=eval(id);
+    	var validator = new clazz(); 
+    	try{
+        	var answer=validator[funcName].apply(validator, Array.prototype.slice.call(_args, 0));   
+            if(answer && answer!="") 
+        		prv.addError(el,answer);
+        }
+        catch(e){
+        	prv.addError(el,"error while calling remote functionn "+funcName+":"+e);
+        }
+        
+        
+        
 	}
 	
 	/*
