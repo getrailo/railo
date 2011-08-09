@@ -172,8 +172,6 @@ public class HibernateORMEngine implements ORMEngine {
 		if(!appContext.isORMEnabled())
 			throw new ORMException(this,"ORM is not enabled in application.cfc/cfapplication");
 		
-		//ConfigWeb config = pc.getConfig();
-		
 		this.hash=hash(appContext);
 		
 		// datasource
@@ -193,8 +191,10 @@ public class HibernateORMEngine implements ORMEngine {
 		//List<Component> arr = null;
 		arr=null;
 		if(init && ormConf.autogenmap()){
-			arr = HibernateSessionFactory.loadComponents(pc, this, ormConf);	
+			arr = HibernateSessionFactory.loadComponents(pc, this, ormConf);
+			cfcs.clear();
 		}
+		
 		
 		// load entities
 		if(!ArrayUtil.isEmpty(arr)) {
