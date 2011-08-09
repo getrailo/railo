@@ -99,11 +99,11 @@ function RailoForms(form,onError) {
                 }
                 else {                
                     if(_errors.length==1)
-                        alert(_errors[0]);
+                        alert(_errors[0].error);
                     else if(_errors.length>1) {
                         var msg="";
                         for(var x=0;x<_errors.length;x++) {
-                            msg+="- "+_errors[x]+"\n";
+                            msg+="- "+_errors[x].error+"\n";
                         }
                         alert(msg);
                     }
