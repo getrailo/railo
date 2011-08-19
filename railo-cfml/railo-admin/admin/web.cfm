@@ -257,7 +257,7 @@ request.getRemoteClients=getRemoteClients;
 	
 <cfelse>
 	<cfsavecontent variable="content">
-			<cfinclude template="#current.action#.cfm">
+				<cfif not FindOneOf("\/",current.action)><cfinclude template="#current.action#.cfm"><cfelse><cfset current.label="Error">invalid action definition</cfif>
 	</cfsavecontent>
 	<cfmodule  template="admin_layout.cfm" width="960" navigation="#strNav#" right="#context#" title="#current.label#">
 		<cfoutput>#content#</cfoutput>
