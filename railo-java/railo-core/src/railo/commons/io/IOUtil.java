@@ -800,8 +800,13 @@ public final class IOUtil {
      * @throws IOException
      */
     public static byte[] toBytes(InputStream is) throws IOException {
+       return toBytes(is,false);
+    }
+    
+
+    public static byte[] toBytes(InputStream is, boolean closeStream) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        copy(is,baos,false,true);
+        copy(is,baos,closeStream,true);
         return baos.toByteArray();
     }
 
