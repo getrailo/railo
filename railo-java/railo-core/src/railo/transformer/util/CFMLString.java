@@ -64,7 +64,7 @@ public final class CFMLString {
 		InputStream is=null;
 		try {
 			is = IOUtil.toBufferedInputStream(sf.getPhyscalFile().getInputStream());
-			if(ClassUtil.isBytecodeStream(is))throw new AlreadyClassException(sf.getPhyscalFile());
+			if(ClassUtil.isBytecode(is))throw new AlreadyClassException(sf.getPhyscalFile());
 			content=IOUtil.toString(is,charset);
 			
 		}
