@@ -2,6 +2,7 @@ package railo.runtime.type.util;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -730,6 +731,11 @@ public final class ArrayUtil {
 		Object[] arr = set.toArray();
 		if(arr==null) return new Object[0];
 		return arr;
+	}
+	
+	public static Object[] values(Map map) {
+		if(map==null) return new Object[0];
+		return map.values().toArray();
 	}
 
 
