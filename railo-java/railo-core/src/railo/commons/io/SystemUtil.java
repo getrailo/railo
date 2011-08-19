@@ -3,12 +3,18 @@ package railo.commons.io;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryManagerMXBean;
+import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.MemoryType;
+import java.lang.management.MemoryUsage;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -24,12 +30,23 @@ import railo.runtime.Info;
 import railo.runtime.config.Config;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
+import railo.runtime.type.Query;
+import railo.runtime.type.QueryImpl;
+import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 
 /**
  * 
  */
 public final class SystemUtil {
+	
+
+	public static final int MEMORY_TYPE_ALL=0;
+	public static final int MEMORY_TYPE_HEAP=1;
+	public static final int MEMORY_TYPE_NON_HEAP=2;
 
 	public static final int ARCH_UNKNOW=0;
 	public static final int ARCH_32=32;
@@ -45,6 +62,7 @@ public final class SystemUtil {
     
 	private static final boolean isWindows=System.getProperty("os.name").toLowerCase().startsWith("windows");
     private static final boolean isUnix=!isWindows &&  File.separatorChar == '/';
+	
     private static Resource tempFile;
     private static Resource homeFile;
     private static Resource[] classPathes;
@@ -555,5 +573,57 @@ public final class SystemUtil {
 			return 0;
 		}
 	    
+	}
+	public static MemoryUsage getPermGenSpaceSize() {
+		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
+		Iterator<MemoryPoolMXBean> it = manager.iterator();
+		MemoryPoolMXBean bean;
+		while(it.hasNext()){
+			bean = it.next();
+			if(bean.getName().indexOf("Perm Gen")!=-1) {
+				return bean.getUsage();
+			}
+		}
+		throw new RuntimeException("Perm Gen Space information not available");
+	}
+
+	private static final Collection.Key MAX = KeyImpl.intern("max");
+	private static final Collection.Key INIT = KeyImpl.intern("init");
+	private static final Collection.Key USED = KeyImpl.intern("used");
+	
+	public static Query getMemoryUsage(int type) {
+		
+		
+		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
+		Iterator<MemoryPoolMXBean> it = manager.iterator();
+		Query qry=new QueryImpl(new Collection.Key[]{
+				KeyImpl.NAME,
+				KeyImpl.TYPE,
+				USED,
+				MAX,
+				INIT
+		},0,"memory");
+		
+		int row=0;
+		MemoryPoolMXBean bean;
+		MemoryUsage usage;
+		MemoryType _type;
+		while(it.hasNext()){
+			bean = it.next();
+			usage = bean.getUsage();
+			_type = bean.getType();
+			if(type==MEMORY_TYPE_HEAP && _type!=MemoryType.HEAP)continue;
+			if(type==MEMORY_TYPE_NON_HEAP && _type!=MemoryType.NON_HEAP)continue;
+				
+			row++;
+			qry.addRow();
+			qry.setAtEL(KeyImpl.NAME, row, bean.getName());
+			qry.setAtEL(KeyImpl.TYPE, row, _type.name());
+			qry.setAtEL(MAX, row, Caster.toDouble(usage.getMax()));
+			qry.setAtEL(USED, row, Caster.toDouble(usage.getUsed()));
+			qry.setAtEL(INIT, row, Caster.toDouble(usage.getInit()));
+			
+		}
+		return qry;
 	}
 }
