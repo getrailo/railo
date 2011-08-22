@@ -3183,7 +3183,7 @@ The browser uses file extension to determine file type. </description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Builds a form with CFML custom control tags that provide more functionality than standard 
-  HTML form input elements (XML and Flash type no supported).</description>
+  HTML form input elements (XML and Flash type not supported).</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>

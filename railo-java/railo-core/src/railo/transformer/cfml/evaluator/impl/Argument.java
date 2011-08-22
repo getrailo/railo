@@ -1,7 +1,11 @@
 package railo.transformer.cfml.evaluator.impl;
 
+import railo.runtime.op.Caster;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ExprString;
+import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.literal.LitBoolean;
+import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
@@ -31,8 +35,47 @@ public final class Argument extends EvaluatorSupport {
 			ASMUtil.isLiteralAttribute(tag,"name",ASMUtil.TYPE_STRING,false,true);
 			//ASMUtil.isLiteralAttribute(tag,"hint",ASMUtil.TYPE_STRING,false,true);
 			//ASMUtil.isLiteralAttribute(tag,"displayname",ASMUtil.TYPE_STRING,false,true);
-				
 			
+			// check if default can be converted to a literal value that match the type declration.
+			{
+				Attribute _type = tag.getAttribute("type");
+				if(_type!=null) {
+					ExprString typeValue = CastString.toExprString(_type.getValue());
+					if(typeValue instanceof LitString) {
+						String strType=((LitString)typeValue).getString();
+						Attribute _default = tag.getAttribute("default");
+						if(_default!=null) {
+							Expression defaultValue = _default.getValue();
+							if(defaultValue instanceof LitString) {
+								String strDefault=((LitString)defaultValue).getString();
+								
+								
+								
+								// check for boolean
+								if("boolean".equalsIgnoreCase(strType)) {
+									if("true".equalsIgnoreCase(strDefault) || "yes".equalsIgnoreCase(strDefault))
+										tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), LitBoolean.TRUE, _default.getType()));
+									if("false".equalsIgnoreCase(strDefault) || "no".equalsIgnoreCase(strDefault))
+										tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), LitBoolean.FALSE, _default.getType()));
+								}
+
+								// check for numbers
+								if("number".equalsIgnoreCase(strType) || "numeric".equalsIgnoreCase(strType)) {
+									Double dbl = Caster.toDouble(strDefault,null);
+									if(dbl!=null) {
+										tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), LitDouble.toExprDouble(dbl.doubleValue(), -1), _default.getType()));
+									}
+								}
+								
+								
+							}
+						}
+						
+						
+						
+					}
+				}
+			}
 				
 			// check attribute passby
 			Attribute attrPassBy = tag.getAttribute("passby");

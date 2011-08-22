@@ -10,7 +10,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 
-public class StoreSetACL {
+public class StoreSetACL extends S3Function {
 	
 	public static String call(PageContext pc , String url, Object objACL) throws PageException {
 		try {
@@ -21,7 +21,7 @@ public class StoreSetACL {
 	}
 
 	public static String _call(PageContext pc , String url, Object objACL) throws PageException, IOException {
-		S3Resource res=StoreGetACL.toS3Resource(pc,url);
+		S3Resource res=toS3Resource(pc,url,"StoreSetACL");
 		AccessControlPolicy acp = res.getAccessControlPolicy();
 		
 		List<AccessControl> acl = AccessControl.toAccessControlList(objACL);

@@ -4702,6 +4702,25 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	<!-- GetMemoryUsage -->
+	<function>
+		<name>GetMemoryUsage</name>
+		<class>railo.runtime.functions.system.GetMemoryUsage</class>
+		<description>Returns detailed information to the memory usage of the container.</description>
+		<argument>
+			<name>type</name>
+			<type>string</type>
+			<required>No</required>
+			<description>type of the memory informtion, valid values are:
+- heap
+- non_heap
+
+if this attribute is not provided all types are returned.</description>
+		</argument>
+		<return>
+			<type>query</type>
+		</return>
+	</function>
 	<!-- getMetadata -->
 	<function>
 		<name>getMetadata</name>

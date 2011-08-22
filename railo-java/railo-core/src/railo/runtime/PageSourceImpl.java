@@ -3,12 +3,15 @@ package railo.runtime;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.instrument.ClassDefinition;
+import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ClassUtil;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -21,6 +24,8 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.engine.ThreadLocalPageSource;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.TemplateException;
+import railo.runtime.instrumentation.InstrumentationFactory;
 import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
@@ -53,8 +58,8 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     private Page page;
 	private long lastAccess;	
 	private int accessCount=0;
-    private boolean recompileAlways;
-    private boolean recompileAfterStartUp;
+    //private boolean recompileAlways;
+    //private boolean recompileAfterStartUp;
     
     
     
@@ -71,8 +76,8 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	 */
 	PageSourceImpl(MappingImpl mapping,String realPath) {
 		this.mapping=mapping;
-        recompileAlways=mapping.getConfig().getCompileType()==Config.RECOMPILE_ALWAYS;
-        recompileAfterStartUp=mapping.getConfig().getCompileType()==Config.RECOMPILE_AFTER_STARTUP || recompileAlways;
+        //recompileAlways=mapping.getConfig().getCompileType()==Config.RECOMPILE_ALWAYS;
+        //recompileAfterStartUp=mapping.getConfig().getCompileType()==Config.RECOMPILE_AFTER_STARTUP || recompileAlways;
         realPath=realPath.replace('\\','/');
 		if(realPath.indexOf('/')!=0) {
 		    if(realPath.startsWith("../")) {
@@ -96,8 +101,8 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	 * @param isOutSide
 	 */
     PageSourceImpl(MappingImpl mapping, String realPath, boolean isOutSide) {
-    	recompileAlways=mapping.getConfig().getCompileType()==Config.RECOMPILE_ALWAYS;
-        recompileAfterStartUp=mapping.getConfig().getCompileType()==Config.RECOMPILE_AFTER_STARTUP || recompileAlways;
+    	//recompileAlways=mapping.getConfig().getCompileType()==Config.RECOMPILE_ALWAYS;
+        //recompileAfterStartUp=mapping.getConfig().getCompileType()==Config.RECOMPILE_AFTER_STARTUP || recompileAlways;
         this.mapping=mapping;
 	    this.isOutSide=isOutSide;
 		this.realPath=realPath;
@@ -195,7 +200,8 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     	
     	if((mapping.isTrusted() || 
     			pc!=null && pci.isTrusted(page)) 
-    		&& isLoad(LOAD_PHYSICAL) && !recompileAlways) return page;
+        		&& isLoad(LOAD_PHYSICAL)) return page;
+				//&& isLoad(LOAD_PHYSICAL) && !recompileAlways) return page;
         
     	Resource srcFile = getPhyscalFile();
     	
@@ -204,7 +210,8 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         if(srcLastModified==0L) return null;
     	
 		// Page exists    
-			if(page!=null && !recompileAlways) {
+			if(page!=null) {
+			//if(page!=null && !recompileAlways) {
 				// java file is newer !mapping.isTrusted() && 
 				if(srcLastModified!=page.getSourceLastModified()) {
                 	this.page=page=compile(config,mapping.getClassRootDirectory(),Boolean.TRUE);
@@ -218,26 +225,32 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 			}
 		// page doesn't exist
 			else {
-                    
                 ///synchronized(this) {
                     Resource classRootDir=mapping.getClassRootDirectory();
                     Resource classFile=classRootDir.getRealResource(getJavaName()+".class");
                     boolean isNew=false;
                     // new class
-                    if(!classFile.exists() || recompileAfterStartUp) {
-                    	this.page=page= compile(config,classRootDir,null);
+                    if(!classFile.exists()) {
+                    //if(!classFile.exists() || recompileAfterStartUp) {
+                    	this.page=page= compile(config,classRootDir,Boolean.FALSE);
                         isNew=true;
                     }
                     // load page
                     else {
                     	try {
-                    		this.page=page=newInstance(mapping.getClassLoaderForPhysical(isNew).loadClass(getClazz()));
-                        	
-                        	
+                    		long lastMod=PhysicalClassLoader.lastModified(classFile,-1);
+                    		if(lastMod!=-1 && srcLastModified!=lastMod) {
+                    			isNew=true;
+                                this.page=page=compile(config,classRootDir,null);
+                    		}
+                    		else {
+                        		this.page=page=newInstance(mapping.getClassLoaderForPhysical(isNew).loadClass(getClazz()));
+                    		}
+                    		
                         } 
                         // if there is a problem to load the existing version, it will be recompiled
                         catch (Throwable e) {
-                        	this.page=page=compile(config,classRootDir,null);
+                        	this.page=page=compile(config,classRootDir,Boolean.TRUE);
                             isNew=true;
                         }
                         
@@ -269,34 +282,43 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     
 
 	private synchronized Page compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws PageException {
-    	try {
-            ConfigWebImpl cwi=(ConfigWebImpl) config;
-            byte[] barr = cwi.getCompiler().
-            	compile(cwi,this,cwi.getTLDs(),cwi.getFLDs(),classRootDir,getJavaName());
-           
-            PhysicalClassLoader cl;
-            if(resetCL==null){
-            	cl = (PhysicalClassLoader)mapping.getClassLoaderForPhysical();
-                resetCL=Caster.toBoolean(cl!=null && cl.isClassLoaded(getClazz()));
-            }
-            cl = (PhysicalClassLoader)mapping.getClassLoaderForPhysical(resetCL.booleanValue());
-            
-            Class clazz=null;
-            clazz = cl.loadClass(getClazz(),barr);
-            
-            /*try {
-            	clazz = cl.loadClass(getClazz(),barr);
-				
-			} 
-            catch (Throwable t) {
-				t.printStackTrace();
-				clazz = cl.loadClass(getClazz(),barr);
-			}*/
-			return  newInstance(clazz);
+		try {
+			return _compile(config, classRootDir, resetCL);
         }
         catch(Throwable t) {
         	throw Caster.toPageException(t);
         }
+	}
+
+	private synchronized Page _compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws TemplateException, IOException, ClassNotFoundException, SecurityException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        ConfigWebImpl cwi=(ConfigWebImpl) config;
+        byte[] barr = cwi.getCompiler().
+        	compile(cwi,this,cwi.getTLDs(),cwi.getFLDs(),classRootDir,getJavaName());
+           
+        PhysicalClassLoader cl;
+        if(resetCL==null){
+        	cl = (PhysicalClassLoader)mapping.getClassLoaderForPhysical();
+            resetCL=Caster.toBoolean(cl!=null && cl.isClassLoaded(getClazz()));
+        }
+        Class clazz=null;
+        Instrumentation inst = InstrumentationFactory.getInstance();
+        if(resetCL.booleanValue() && inst!=null && inst.isRedefineClassesSupported()) {
+        	try {
+            	cl = (PhysicalClassLoader)mapping.getClassLoaderForPhysical(false);
+            	if(page!=null) clazz=page.getClass();
+            	else clazz=cl.loadClass(getClazz());
+            	inst.redefineClasses(new ClassDefinition(clazz,ClassUtil.removeCF33Prefix(barr)));
+				return  newInstance(clazz);
+			} 
+        	catch (Throwable t) {
+				t.printStackTrace();
+			}
+        	
+        }
+        
+        cl = (PhysicalClassLoader)mapping.getClassLoaderForPhysical(resetCL.booleanValue());
+        clazz = cl.loadClass(getClazz(),barr);
+        return  newInstance(clazz);
     }
 
     private Page newInstance(Class clazz) throws SecurityException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
@@ -811,9 +833,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		SizeOf.size(fileName)+
 		SizeOf.size(compName)+
 		SizeOf.size(lastAccess)+
-		SizeOf.size(accessCount)+
-		SizeOf.size(recompileAlways)+
-		SizeOf.size(recompileAfterStartUp);
+		SizeOf.size(accessCount);
 	}
 	
 	

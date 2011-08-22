@@ -1529,7 +1529,7 @@ public final class ConfigWebFactory {
 	           boolean readonly=toBoolean(el.getAttribute("readonly"),false);
 	           boolean hidden=toBoolean(el.getAttribute("hidden"),false);
 	           boolean toplevel=toBoolean(el.getAttribute("toplevel"),true);
-	           int clMaxEl=toInt(el.getAttribute("classloader-max-elements"),5000);
+	           int clMaxEl=toInt(el.getAttribute("classloader-max-elements"),100);
 	           
 	           if(virtual.equalsIgnoreCase("/railo-context/"))toplevel=true;
 	           

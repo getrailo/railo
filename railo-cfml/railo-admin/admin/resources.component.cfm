@@ -247,7 +247,7 @@ Create Datasource --->
 	<td class="tblHead" width="150">#stText.Components.componentMappingSearch#</td>
 	<td class="tblContent">
 		
-		<b>Yes (cooming soon)</b><br />
+		<b>Yes (coming soon)</b><br />
 		<span class="comment">#stText.Components.componentMappingSearchDesc#</span>
 	</td>
 </tr>

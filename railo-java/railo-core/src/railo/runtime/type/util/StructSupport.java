@@ -29,6 +29,9 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	protected ExpressionException invalidKey(Key key) {
 		return new ExpressionException("key ["+key.getString()+"] doesn't exist in struct (keys:"+List.arrayToList(keysAsString(), ",")+")");
 	}
+	public static ExpressionException invalidKey(String[] keys, Key key) {
+		return new ExpressionException("key ["+key.getString()+"] doesn't exist in struct (keys:"+List.arrayToList(keys, ",")+")");
+	}
 	
 	
 	/**

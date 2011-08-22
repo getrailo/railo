@@ -594,8 +594,6 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
             int defType = args[y].getDefaultType();
             if(defType==FunctionArgument.DEFAULT_TYPE_RUNTIME_EXPRESSION){
             	param.set(KeyImpl.DEFAULT, "[runtime expression]");
-            	//param.set(DEFAULT, new UDFDefaultValue(this,y));
-            	//print.err(args[y].getName()+":re");
             }
             else if(defType==FunctionArgument.DEFAULT_TYPE_LITERAL){
             	param.set(KeyImpl.DEFAULT, udf.getDefaultValue(pc,y));
@@ -713,7 +711,6 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
      * @see railo.runtime.type.UDF#getDefaultValue(railo.runtime.PageContext, int)
      */
     public Object getDefaultValue(PageContext pc,int index) throws PageException {
-    	//return new UDFDefaultValue(properties,index);
     	return ComponentUtil.getPage(pc,properties.pageSource).udfDefaultValue(pc,properties.index,index);
     }
     // public abstract Object getDefaultValue(PageContext pc,int index) throws PageException;

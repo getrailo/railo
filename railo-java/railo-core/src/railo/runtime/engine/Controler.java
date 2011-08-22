@@ -2,9 +2,11 @@ package railo.runtime.engine;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.management.MemoryUsage;
 import java.util.Map;
 
 import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
@@ -150,6 +152,7 @@ public final class Controler extends Thread {
 					try{cfmlFactory.getQueryCache().clearUnused();}catch(Throwable t){}
 					// contract Page Pool
 					try{doClearPagePools((ConfigWebImpl) config);}catch(Throwable t){}
+					try{doClearClassLoaders((ConfigWebImpl) config);}catch(Throwable t){}
 					try{doCheckMappings(config);}catch(Throwable t){}
 					try{doClearMailConnections();}catch(Throwable t){}
 				}
@@ -270,12 +273,50 @@ public final class Controler extends Thread {
         }
         if(startsize>poolSize)
         	SystemOut.printDate(config.getOutWriter(),"contract pagepools from "+startsize+" to "+poolSize +" in "+(System.currentTimeMillis()-start)+" millis");
-        
-        
     }
 
-    private PageSourcePool[] getPageSourcePools(ConfigWeb config) {
-        Mapping[] mappings = config.getMappings();
+    private void doClearClassLoaders(ConfigWebImpl config) {
+    	MemoryUsage pg = SystemUtil.getPermGenSpaceSize();
+		if((pg.getMax()-pg.getUsed())<1024*1024) {
+			SystemOut.printDate(config.getOutWriter(),"Free Perm Gen Space is less than 1mb (used:"+(pg.getUsed()/1024)+"kb;free:"+((pg.getMax()-pg.getUsed())/1024)+"kb), reset all template classloaders");
+			
+			clearClassLoaders(config.getMappings());
+			clear(getPageSourcePools(config.getMappings()));
+			
+			clearClassLoaders(config.getComponentMappings());
+			clear(getPageSourcePools(config.getComponentMappings()));
+			
+			clearClassLoaders(config.getCustomTagMappings());
+			clear(getPageSourcePools(config.getCustomTagMappings()));
+			
+			clearClassLoaders(config.getFunctionMapping());
+			clear(getPageSourcePools(config.getFunctionMapping()));
+			
+			clearClassLoaders(config.getServerFunctionMapping());
+			clear(getPageSourcePools(config.getServerFunctionMapping()));
+			
+			clearClassLoaders(config.getServerTagMapping());
+			clear(getPageSourcePools(config.getServerTagMapping()));
+			
+			clearClassLoaders(config.getTagMapping());
+			clear(getPageSourcePools(config.getTagMapping()));
+		}
+		
+    }
+
+    private void clearClassLoaders(Mapping... mappings) {
+		for(int i=0;i<mappings.length;i++){
+			try {
+				mappings[i].getClassLoaderForPhysical(true);
+			} catch (IOException e) {}
+		}
+	}
+
+	private PageSourcePool[] getPageSourcePools(ConfigWeb config) {
+		return getPageSourcePools(config.getMappings());
+	}
+
+	private PageSourcePool[] getPageSourcePools(Mapping... mappings) {
         PageSourcePool[] pools=new PageSourcePool[mappings.length];
         int size=0;
         
@@ -314,6 +355,11 @@ public final class Controler extends Thread {
         	
         }
         if(pool!=null)pool.remove(key);
+    }
+    private void clear(PageSourcePool[] pools) {
+        for(int i=0;i<pools.length;i++) {
+        	pools[i].clear();
+        }
     }
 
     /*private void doLogMemoryUsage(ConfigWeb config) {

@@ -110,7 +110,7 @@ public final class ResourceUtil {
     	EXT_MT.put("pgm","image/x-portable-graymap");
     	EXT_MT.put("pict","image/x-pict");
     	EXT_MT.put("pl","application/x-perl");
-    	EXT_MT.put("png","image/x-png");
+    	EXT_MT.put("png","image/png");
     	EXT_MT.put("pnm","image/x-portable-anymap");
     	EXT_MT.put("ppm","image/x-portable-pixmap");
     	EXT_MT.put("ppt","application/vnd.ms-powerpoint");

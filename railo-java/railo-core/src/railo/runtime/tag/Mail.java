@@ -97,7 +97,7 @@ public final class Mail extends BodyTagImpl {
 		try {
 			smtp.getProxyData().setServer(proxyserver);
 		} catch (Exception e) {
-			throw new ApplicationException("invalid definition for attribute proxyserver at tag mail",e.getMessage());
+			throw new ApplicationException("attribute [proxyserver] of the tag [mail] is invalid",e.getMessage());
 		}
     }
 	
@@ -112,7 +112,7 @@ public final class Mail extends BodyTagImpl {
 		try {
 			smtp.getProxyData().setPort((int)proxyport);
 		} catch (Exception e) {
-			throw new ApplicationException("invalid definition for attribute proxyport at tag mail",e.getMessage());
+			throw new ApplicationException("attribute [proxyport] of the tag [mail] is invalid",e.getMessage());
 		}
 	}
 
@@ -125,7 +125,7 @@ public final class Mail extends BodyTagImpl {
 		try {
 			smtp.getProxyData().setUsername(proxyuser);
 		} catch (Exception e) {
-			throw new ApplicationException("invalid definition for attribute proxyuser at tag mail",e.getMessage());
+			throw new ApplicationException("attribute [proxyuser] of the tag [mail] is invalid",e.getMessage());
 		}
 	}
 
@@ -139,7 +139,7 @@ public final class Mail extends BodyTagImpl {
 		try {
 			smtp.getProxyData().setPassword(proxypassword);
 		} catch (Exception e) {
-			throw new ApplicationException("invalid definition for attribute proxypassword at tag mail",e.getMessage());
+			throw new ApplicationException("attribute [proxypassword] of the tag [mail] is invalid",e.getMessage());
 		}
 	}
 
@@ -169,7 +169,7 @@ public final class Mail extends BodyTagImpl {
 		try {
 			smtp.addTo(to);
 		} catch (Exception e) {
-			throw new ApplicationException("invalid definition for attribute to at tag mail",e.getMessage());
+			throw new ApplicationException("attribute [to] of the tag [mail] is invalid",e.getMessage());
 		}
 	}
 
@@ -183,7 +183,7 @@ public final class Mail extends BodyTagImpl {
 		try {
 			smtp.addCC(cc);
 		} catch (Exception e) {
-			throw new ApplicationException("invalid definition for attribute cc at tag mail",e.getMessage());
+			throw new ApplicationException("attribute [cc] of the tag [mail] is invalid",e.getMessage());
 		}
 	}
 
@@ -200,7 +200,7 @@ public final class Mail extends BodyTagImpl {
 		try {
 			smtp.addBCC(bcc);
 		} catch (Exception e) {
-			throw new ApplicationException("invalid definition for attribute bcc at tag mail",e.getMessage());
+			throw new ApplicationException("attribute [bcc] of the tag [mail] is invalid",e.getMessage());
 		}
 	}	
 	
@@ -213,7 +213,7 @@ public final class Mail extends BodyTagImpl {
 		try {
 			smtp.addFailTo(failto);
 		} catch (Exception e) {
-			throw new ApplicationException("invalid definition for attribute failto at tag mail",e.getMessage());
+			throw new ApplicationException("attribute [failto] of the tag [mail] is invalid",e.getMessage());
 		}
 	}
 	/**
@@ -225,7 +225,7 @@ public final class Mail extends BodyTagImpl {
 		try {
 			smtp.addReplyTo(replyto);
 		} catch (Exception e) {
-			throw new ApplicationException("invalid definition for attribute replyto at tag mail",e.getMessage());
+			throw new ApplicationException("attribute [replyto] of the tag [mail] is invalid",e.getMessage());
 		}
 	}
 	

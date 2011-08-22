@@ -203,7 +203,6 @@ replaced with encoding output
 	<td colspan="2">
 	<span class="comment">
 		#stText.Overview.ServerTime#
-		#stText.Overview.DateTime#
 		#lsdateFormat(date:now(),timezone:"jvm")#
 		#lstimeFormat(time:now(),timezone:"jvm")#<br>
         

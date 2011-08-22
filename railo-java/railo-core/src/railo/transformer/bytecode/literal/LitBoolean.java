@@ -90,12 +90,14 @@ public final class LitBoolean extends ExpressionBase implements Literal,ExprBool
     public Type _writeOut(BytecodeContext bc, int mode) {
     	GeneratorAdapter adapter = bc.getAdapter();
         
-        adapter.visitInsn(b?Opcodes.ICONST_1:Opcodes.ICONST_0);
-        if(mode==MODE_REF) {
-            adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_BOOLEAN_FROM_BOOLEAN);
-            return Types.BOOLEAN;
-        }
-        return Types.BOOLEAN_VALUE;
+    	if(mode==MODE_REF) {
+    		adapter.getStatic(Types.BOOLEAN, b?"TRUE":"FALSE", Types.BOOLEAN);
+    		return Types.BOOLEAN;
+    	}
+    	else {
+    		adapter.visitInsn(b?Opcodes.ICONST_1:Opcodes.ICONST_0);
+    		return Types.BOOLEAN_VALUE;
+    	}
     }
 
     /**
