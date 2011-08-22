@@ -2,7 +2,6 @@ package railo.runtime.type.util;
 
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
