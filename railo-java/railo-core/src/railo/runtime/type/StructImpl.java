@@ -103,13 +103,14 @@ public class StructImpl extends StructSupport {
 	
 	public Collection.Key[] keys() {
 		try	{
-			Collection.Key[] keys = new Collection.Key[size()];
-			Iterator<Key> it = map.keySet().iterator();
+			//Collection.Key[] keys = new Collection.Key[size()];
+			return map.keySet().toArray(new Key[map.size()]);
+			/*Iterator<Key> it = map.keySet().iterator();
 			int count=0;
 			while(it.hasNext() && keys.length>count) {
 				keys[count++]=KeyImpl.toKey(it.next(), null);
 			}
-			return keys;
+			return keys;*/
 		}
 		catch(Throwable t) {
 			Map<Key, Object> old = map;
