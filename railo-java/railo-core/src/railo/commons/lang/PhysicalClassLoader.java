@@ -78,7 +78,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
      * @exception ClassNotFoundException if the class could not be found
      */
     protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-    	if(!name.endsWith("$cf")) return super.loadClass(name, resolve);
+    	//if(!name.endsWith("$cf")) return super.loadClass(name, resolve); this break Webervices
     	// First, check if the class has already been loaded
         Class<?> c = findLoadedClass(name);
         //print.o("load:"+name+" -> "+c);
@@ -134,7 +134,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
      * @see java.lang.ClassLoader#findClass(java.lang.String)
      */
     protected Class<?> findClass(String name) throws ClassNotFoundException {
-    	if(!name.endsWith("$cf")) return super.findClass(name);
+    	//if(!name.endsWith("$cf")) return super.findClass(name); this break Webervices
     	//File f = getFile(name.replace('.',File.separatorChar).concat(".class"));
     	Resource res=directory.getRealResource(name.replace('.','/').concat(".class"));
         //File f = new File(directory,name.replace('.',File.separatorChar).concat(".class"));
@@ -168,11 +168,11 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
 		} 
         catch (Throwable t) {
 			SystemUtil.sleep(1);
-			//try {
+			try {
 	    		return defineClass(name,barr,start,barr.length-start);
-			//} catch (Throwable t2) {SystemUtil.sleep(1);}
+			} catch (Throwable t2) {SystemUtil.sleep(1);}
 		}
-    	//return loadClass(name,false);
+    	return loadClass(name,false);
     }
     
     /**
