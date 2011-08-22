@@ -97,12 +97,22 @@ public class CatchBlock extends StructImpl implements Castable, Objects{
 		
 		public void set(Object o){
 			try {
-				if(key==DETAIL) pe.setDetail(Caster.toString(o));
-				else if(key==ERROR_CODE) pe.setErrorCode(Caster.toString(o));
-				else if(key==EXTENDED_INFO) pe.setExtendedInfo(Caster.toString(o));
+				if(key==DETAIL) {
+					pe.setDetail(Caster.toString(o));
+					return;
+				}
+				else if(key==ERROR_CODE) {
+					pe.setErrorCode(Caster.toString(o));
+					return;
+				}
+				else if(key==EXTENDED_INFO) {
+					pe.setExtendedInfo(Caster.toString(o));
+					return;
+				}
 				else if(key==STACK_TRACE) {
 					if(o instanceof StackTraceElement[]){
 						pe.setStackTrace((StackTraceElement[])o);
+						return;
 					}
 					else if(Decision.isCastableToArray(o)) {
 						Object[] arr = Caster.toNativeArray(o);
@@ -114,15 +124,14 @@ public class CatchBlock extends StructImpl implements Castable, Objects{
 								throw new CasterException(o, StackTraceElement[].class);
 						}
 						pe.setStackTrace(elements);
+						return;
 						
 					}
 				}
-				return;
 			}
 			catch(PageException pe){}
 			
-			
-			setEL(key,o);
+			superSetEL(key,o);
 			
 			
 		}
@@ -272,6 +281,10 @@ public class CatchBlock extends StructImpl implements Castable, Objects{
 				return value;
 			}
 		}
+		return super.setEL(key, value);
+	}
+	
+	private Object superSetEL(Key key, Object value) {
 		return super.setEL(key, value);
 	}
 
