@@ -61,7 +61,14 @@ public final class MappingImpl implements Mapping {
     //private Resource classRoot;
     private Map<String,Object> customTagPath=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
     //private final Map<String,Object> customTagPath=new HashMap<String, Object>();
-	private int classLoaderMaxElements=5000;
+	private int classLoaderMaxElements=100;
+	/**
+	 * @return the classLoaderMaxElements
+	 */
+	public int getClassLoaderMaxElements() {
+		return classLoaderMaxElements;
+	}
+
 	private boolean appMapping;
 	private boolean ignoreVirtual;
 
@@ -85,8 +92,6 @@ public final class MappingImpl implements Mapping {
      */
     public MappingImpl(ConfigImpl config, String virtual, String strPhysical,String strArchive, boolean trusted, 
             boolean physicalFirst, boolean hidden, boolean readonly,boolean topLevel, boolean appMapping, boolean ignoreVirtual, int classLoaderMaxElements) {
-    	//print.dumpStack();
-    	//if(virtual.equals("/map"))print.ds();
     	this.ignoreVirtual=ignoreVirtual;
     	this.config=config;
         this.hidden=hidden;
@@ -138,18 +143,16 @@ public final class MappingImpl implements Mapping {
 	/**
      * @see railo.runtime.Mapping#getClassLoaderForPhysical(boolean)
      */
-	public ClassLoader getClassLoaderForPhysical(boolean reload) throws IOException {
-		
+	public synchronized ClassLoader getClassLoaderForPhysical(boolean reload) throws IOException {//if(reload)print.ds();
 		// first access
 		if(physicalClassLoader==null){
 			physicalClassLoader=new PhysicalClassLoader(getClassRootDirectory(),getClass().getClassLoader());
 			return physicalClassLoader;
 		}
-		
 		// return existing classloader when not to big
-		if(!reload){
-			if(classLoaderMaxElements>physicalClassLoader.count())
-				return physicalClassLoader;
+		if(!reload){//print.o(physicalClassLoader+":"+classLoaderMaxElements+"-"+physicalClassLoader.count());
+			if(classLoaderMaxElements>physicalClassLoader.count()) return physicalClassLoader;
+			
 			getConfigImpl().getMappingLogger().info(getVirtual(), "max size ["+classLoaderMaxElements+"] for classloader reached");
 		}
 		
@@ -257,6 +260,7 @@ public final class MappingImpl implements Mapping {
 		htmlBox.appendRow(1,new SimpleDumpData("hidden"),new SimpleDumpData(Caster.toString(hidden)));
 		htmlBox.appendRow(1,new SimpleDumpData("appmapping"),new SimpleDumpData(Caster.toBoolean(appMapping)));
 		htmlBox.appendRow(1,new SimpleDumpData("toplevel"),new SimpleDumpData(Caster.toString(topLevel)));
+		htmlBox.appendRow(1,new SimpleDumpData("ClassLoaderMaxElements"),new SimpleDumpData(Caster.toString(classLoaderMaxElements)));
 		return htmlBox;
     }
 
@@ -441,7 +445,6 @@ public final class MappingImpl implements Mapping {
     	if(doCustomTagDeepSearch){
     		String path = _getRecursive(getPhysical(),null, filename);
         	if(path!=null ) {
-        		//print.out("path:"+path);
         		source=getPageSource(path);
         		if(isOK(source)) {
             		return source;
