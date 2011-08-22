@@ -8,7 +8,6 @@ import org.apache.commons.httpclient.HttpMethod;
 
 import railo.print;
 import railo.commons.date.TimeZoneConstants;
-import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 
 public class TestS3 {

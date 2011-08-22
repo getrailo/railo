@@ -33,7 +33,6 @@ import railo.loader.util.Util;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 
 public final class S3 implements S3Constants {

@@ -1,13 +1,11 @@
 package railo.runtime.img.coder;
 
 import java.awt.image.BufferedImage;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;

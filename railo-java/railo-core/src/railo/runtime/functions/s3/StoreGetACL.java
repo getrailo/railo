@@ -4,15 +4,10 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import railo.commons.io.res.Resource;
-import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.type.s3.AccessControl;
 import railo.commons.io.res.type.s3.S3Exception;
 import railo.commons.io.res.type.s3.S3Resource;
-import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.PageContext;
-import railo.runtime.exp.ExpressionException;
-import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
