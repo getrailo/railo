@@ -1,19 +1,34 @@
 package railo.runtime.exp;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
-import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Castable;
+import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
+import railo.runtime.reflection.Reflector;
+import railo.runtime.reflection.pairs.MethodInstance;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Objects;
+import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.StructUtil;
 
-public class CatchBlock extends StructImpl implements Castable{
+public class CatchBlock extends StructImpl implements Castable, Objects{
+
+	private static final long serialVersionUID = -4868635413052937742L;
 
 	public static final Key MESSAGE = KeyImpl.intern("Message");
 	public static final Key DETAIL = KeyImpl.intern("Detail");
@@ -22,34 +37,121 @@ public class CatchBlock extends StructImpl implements Castable{
 	public static final Key TAG_CONTEXT = KeyImpl.intern("TagContext");
 	public static final Key STACK_TRACE = KeyImpl.intern("StackTrace");
 	public static final Key ADDITIONAL = KeyImpl.intern("additional");
+	private static final Object NULL = new Object();
 	
-	private Config config;// MUSTMUST remove this -> serialiable
-	private PageExceptionImpl pe;
-	private SpecialItem si = new SpecialItem();
+	private PageExceptionImpl exception;
 	
 
-	public CatchBlock(Config config,PageExceptionImpl pe) {
-		this.config=config;
-		this.pe=pe;
+	public CatchBlock(PageExceptionImpl pe) {
+		this.exception=pe;
+
+		setEL(MESSAGE, new SpecialItem(pe, MESSAGE));
+		setEL(DETAIL, new SpecialItem(pe, DETAIL));
+		setEL(ERROR_CODE, new SpecialItem(pe, ERROR_CODE));
+		setEL(EXTENDED_INFO, new SpecialItem(pe, EXTENDED_INFO));
+		setEL(ADDITIONAL, new SpecialItem(pe, ADDITIONAL));
+		setEL(TAG_CONTEXT, new SpecialItem(pe, TAG_CONTEXT));
+		setEL(KeyImpl.TYPE, new SpecialItem(pe, KeyImpl.TYPE));
+		setEL(STACK_TRACE, new SpecialItem(pe, STACK_TRACE));
 		
-		setEL(MESSAGE,si);
-		setEL(DETAIL,si);
-		setEL(ERROR_CODE,si);
-		setEL(EXTENDED_INFO,si);
-		setEL(KeyImpl.TYPE,si);
-		setEL(TAG_CONTEXT,si);
-		setEL(STACK_TRACE,si);
-		setEL(ADDITIONAL,si);
-        
 		
+		if(pe instanceof NativeException){
+			Throwable throwable = ((NativeException)pe).getRootCause();
+			Method[] mGetters = Reflector.getGetters(throwable.getClass());
+			Method getter;
+			Collection.Key key;
+			if(!ArrayUtil.isEmpty(mGetters)){
+				for(int i=0;i<mGetters.length;i++){
+					getter=mGetters[i];
+					if(getter.getDeclaringClass()==Throwable.class) {
+						continue;
+					}
+					key=KeyImpl.init(Reflector.removeGetterPrefix(getter.getName()));
+					setEL(key,new Pair(throwable,key, getter,false));
+				}
+			}
+		}
 	}
 
+	
+	class SpecialItem {
+		private PageExceptionImpl pe;
+		private Key key;
+		
+		public SpecialItem(PageExceptionImpl pe, Key key) {
+			this.pe=pe;
+			this.key=key;
+		}
+		
+		public Object get() {
+			if(key==MESSAGE) return StringUtil.emptyIfNull(pe.getMessage());
+			if(key==DETAIL) return StringUtil.emptyIfNull(pe.getDetail());
+			if(key==ERROR_CODE) return StringUtil.emptyIfNull(pe.getErrorCode());
+			if(key==EXTENDED_INFO) return StringUtil.emptyIfNull(pe.getExtendedInfo());
+			if(key==KeyImpl.TYPE) return StringUtil.emptyIfNull(pe.getTypeAsString());
+			if(key==STACK_TRACE) return StringUtil.emptyIfNull(pe.getStackTraceAsString());
+			if(key==ADDITIONAL) return pe.getAddional();
+			if(key==TAG_CONTEXT) return pe.getTagContext(ThreadLocalPageContext.getConfig());
+			return null;
+		}
+		
+		public void set(Object o){
+			try {
+				if(key==DETAIL) pe.setDetail(Caster.toString(o));
+				else if(key==ERROR_CODE) pe.setErrorCode(Caster.toString(o));
+				else if(key==EXTENDED_INFO) pe.setExtendedInfo(Caster.toString(o));
+				else if(key==STACK_TRACE) {
+					if(o instanceof StackTraceElement[]){
+						pe.setStackTrace((StackTraceElement[])o);
+					}
+					else if(Decision.isCastableToArray(o)) {
+						Object[] arr = Caster.toNativeArray(o);
+						StackTraceElement[] elements=new StackTraceElement[arr.length];
+						for(int i=0;i<arr.length;i++) {
+							if(arr[i] instanceof StackTraceElement)
+								elements[i]=(StackTraceElement) arr[i];
+							else
+								throw new CasterException(o, StackTraceElement[].class);
+						}
+						pe.setStackTrace(elements);
+						
+					}
+				}
+				return;
+			}
+			catch(PageException pe){}
+			
+			
+			setEL(key,o);
+			
+			
+		}
+		public Object remove(){
+			Object rtn=null;
+			if(key==DETAIL) {
+				rtn=pe.getDetail();
+				pe.setDetail("");
+			}
+			else if(key==ERROR_CODE)  {
+				rtn=pe.getErrorCode();
+				pe.setErrorCode("0");
+			}
+			else if(key==EXTENDED_INFO)  {
+				rtn=pe.getExtendedInfo();
+				pe.setExtendedInfo(null);
+			}
+			return rtn;
+			
+		}
+	}
+	
+	
 	/**
 	 * FUTURE add to interface
 	 * @return the pe
 	 */
 	public PageException getPageException() {
-		return pe;
+		return exception;
 	}
 
 	/**
@@ -64,7 +166,7 @@ public class CatchBlock extends StructImpl implements Castable{
 	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
 	 */
 	public String castToString(String defaultValue) {
-		return pe.getClass().getName();
+		return exception.getClass().getName();
 	}
 
 	/**
@@ -72,8 +174,11 @@ public class CatchBlock extends StructImpl implements Castable{
 	 * @see railo.runtime.type.StructImpl#containsValue(java.lang.Object)
 	 */
 	public boolean containsValue(Object value) {
-		initAll();
-		return super.containsValue(value);
+		Key[] keys = keys();
+		for(int i=0;i<keys.length;i++){
+			if(get(keys[i],null)==value) return true;
+		}
+		return false;
 	}
 
 	/**
@@ -81,11 +186,9 @@ public class CatchBlock extends StructImpl implements Castable{
 	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
-		initAll();
-		CatchBlock trg = new CatchBlock(config,pe);
-		trg.initAll();
-		StructImpl.copy(this, trg, deepCopy);
-		return trg;
+		Struct sct=new StructImpl();
+		StructUtil.copy(this, sct, true);
+		return sct;
 	}
 
 	/**
@@ -93,12 +196,11 @@ public class CatchBlock extends StructImpl implements Castable{
 	 * @see railo.runtime.type.StructImpl#entrySet()
 	 */
 	public Set entrySet() {
-		initAll();
-		return super.entrySet();
+		return StructUtil.entrySet(this);
 	}
 	
 	public void print(PageContext pc){
-		((PageContextImpl)pc).handlePageException(pe);
+		((PageContextImpl)pc).handlePageException(exception);
 		
 	}
 
@@ -108,27 +210,139 @@ public class CatchBlock extends StructImpl implements Castable{
 	 */
 	public Object get(Key key, Object defaultValue) {
 		Object value = super.get(key,defaultValue);
-		if(value==si)return doSpecialItem(key);
+		if(value instanceof SpecialItem) {
+			return ((SpecialItem)value).get();
+		}
+		else if(value instanceof Pair) {
+			Pair pair=(Pair) value;
+			try {
+				Object res = pair.getter.invoke(pair.throwable, new Object[]{});
+				if(pair.doEmptyStringWhenNull && res==null) return "";
+				return res;
+			} 
+			catch (Exception e) {
+				return defaultValue;
+			}
+		}
 		return value;
 	}
 
 	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key)
+	 * @see railo.runtime.type.StructImpl#set(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
-	public Object get(Key key) throws PageException {
-		Object value = super.get(key);
-		if(value==si)return doSpecialItem(key);
-		return value;
+	public Object set(Key key, Object value) throws PageException {
+		Object curr = super.get(key,null);
+
+		if(curr instanceof SpecialItem){
+			((SpecialItem)curr).set(value);
+			return value;
+		}
+		else if(curr instanceof Pair){
+			Pair pair=(Pair) curr;
+			MethodInstance setter = Reflector.getSetter(pair.throwable, pair.name.getString(), value,null);
+			if(setter!=null){
+				try {
+					setter.invoke(pair.throwable);
+					return value;
+				} catch (Exception e) {
+					throw Caster.toPageException(e);
+				}
+			}
+		}
+		
+		return super.set(key, value);
 	}
 
 	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#toDumpData(railo.runtime.PageContext, int)
+	 * @see railo.runtime.type.StructImpl#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
-	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		initAll();
-		return super.toDumpData(pageContext, maxlevel,dp);
+	public Object setEL(Key key, Object value) {
+		Object curr = super.get(key,null);
+		if(curr instanceof SpecialItem){
+			((SpecialItem)curr).set(value);
+			return value;
+		}
+		else if(curr instanceof Pair){
+			Pair pair=(Pair) curr;
+			MethodInstance setter = Reflector.getSetter(pair.throwable, pair.name.getString(), value,null);
+			if(setter!=null){
+				try {
+					setter.invoke(pair.throwable);
+				} catch (Exception e) {}
+				return value;
+			}
+		}
+		return super.setEL(key, value);
+	}
+
+	/**
+	 * @see railo.runtime.type.StructImpl#size()
+	 */
+	public int size() {
+		return keys().length;
+	}
+
+	/**
+	 * @see railo.runtime.type.StructImpl#keys()
+	 */
+	public Key[] keys() {
+		Key[] keys = super.keys();
+		List<Key> list=new ArrayList<Key>();
+		for(int i=0;i<keys.length;i++){
+			if(get(keys[i], null)!=null)list.add(keys[i]);
+		}
+		return list.toArray(new Key[list.size()]);
+	}
+
+	/**
+	 * @see railo.runtime.type.StructImpl#keysAsString()
+	 */
+	public String[] keysAsString() {
+		Key[] keys = keys();
+		String[] strKeys=new String[keys.length];
+		for(int i=0;i<keys.length;i++){
+			strKeys[i]=keys[i].getString();
+		}
+		return strKeys;
+	}
+
+	/* (non-Javadoc)
+	 * @see railo.runtime.type.StructImpl#remove(railo.runtime.type.Collection.Key)
+	 */
+	@Override
+	public Object remove(Key key) throws PageException {
+		Object curr = super.get(key,null);
+		if(curr instanceof SpecialItem){
+			return ((SpecialItem)curr).remove();
+		}
+		else if(curr instanceof Pair){
+			Pair pair=(Pair) curr;
+			MethodInstance setter = Reflector.getSetter(pair.throwable, pair.name.getString(), null,null);
+			if(setter!=null){
+				try {
+					Object before = pair.getter.invoke(pair.throwable, new Object[0]);
+					setter.invoke(pair.throwable);
+					return before;
+				} catch (Exception e) {
+					throw Caster.toPageException(e);
+				}
+			}
+		}	
+		return super.remove(key);
+	}
+
+	/**
+	 * @see railo.runtime.type.StructImpl#keyIterator()
+	 */
+	public Iterator keyIterator() {
+		return new KeyIterator(keys());
+	}
+
+	/**
+	 * @see railo.runtime.type.util.StructSupport#keySet()
+	 */
+	public Set keySet() {
+		return StructUtil.keySet(this);
 	}
 
 	/**
@@ -136,39 +350,108 @@ public class CatchBlock extends StructImpl implements Castable{
 	 * @see railo.runtime.type.StructImpl#values()
 	 */
 	public java.util.Collection values() {
-		initAll();
-		return super.values();
+		throw new RuntimeException("not supported");
 	}
-	
 
 
-	private Object doSpecialItem(Collection.Key key) {
+	/**
+	 *
+	 * @see railo.runtime.type.StructImpl#toDumpData(railo.runtime.PageContext, int)
+	 */
+	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
+		return StructUtil.toDumpTable(this,"Catch",pageContext,maxlevel,dp);
+	}
+
+
+
+	class Pair{
+		Throwable throwable;
+		Collection.Key name;
+		Method getter;
+		private boolean doEmptyStringWhenNull;
 		
-		if(MESSAGE.equals(key)) 		return setEL(key, StringUtil.emptyIfNull(pe.getMessage()));
-		if(DETAIL.equals(key)) 		return setEL(key, StringUtil.emptyIfNull(pe.getDetail()));
-		if(ERROR_CODE.equals(key)) 	return setEL(key, StringUtil.emptyIfNull(pe.getErrorCode()));
-		if(EXTENDED_INFO.equals(key)) 	return setEL(key, StringUtil.emptyIfNull(pe.getExtendedInfo()));
-		if(KeyImpl.TYPE.equals(key)) 			return setEL(key, StringUtil.emptyIfNull(pe.getTypeAsString()));
-		if(STACK_TRACE.equals(key)) 	return setEL(key, StringUtil.emptyIfNull(pe.getStackTraceAsString()));
-		if(ADDITIONAL.equals(key)) 		return setEL(key, pe.getAdditional());
-		if(TAG_CONTEXT.equals(key)) 	return setEL(key, pe.getTagContext(config)); 	
-		return null;
+		public Pair(Throwable throwable,Key name, Method method,boolean doEmptyStringWhenNull) {
+			this.throwable = throwable;
+			this.name = name;
+			this.getter = method;
+			this.doEmptyStringWhenNull = doEmptyStringWhenNull;
+		}
+		public Pair(Throwable throwable,String name, Method method, boolean doEmptyStringWhenNull) {
+			this(throwable, KeyImpl.init(name), method,doEmptyStringWhenNull);
+		}
 	}
-	
-	private void initAll() {
-		get(MESSAGE,null);
-		get(DETAIL,null);
-		get(ERROR_CODE,null);
-		get(EXTENDED_INFO,null);
-		get(KeyImpl.TYPE,null);
-		get(STACK_TRACE,null);
-		get(ADDITIONAL,null);
-		get(TAG_CONTEXT,null);
-	}
-	
-	class SpecialItem {
-		
-	}
-	
 
+	public Object call(PageContext pc, String methodName, Object[] arguments) throws PageException {
+		Object obj=exception;
+		if(exception instanceof NativeException) obj=((NativeException)exception).getRootCause();
+		try{
+			return Reflector.callMethod(obj, methodName, arguments);
+		}
+		catch(PageException e){
+			return Reflector.callMethod(exception, methodName, arguments);
+		}
+	}
+
+	
+	
+	
+	public Object callWithNamedValues(PageContext pc, String methodName,Struct args) throws PageException {
+		throw new ApplicationException("named arguments not supported");
+	}
+
+	public Object callWithNamedValues(PageContext pc, Key methodName,Struct args) throws PageException {
+		throw new ApplicationException("named arguments not supported");
+	}
+	public boolean isInitalized() {
+		return true;
+	}
+
+	public Object set(PageContext pc, String propertyName, Object value) throws PageException {
+		return set(propertyName, value);
+	}
+
+	public Object set(PageContext pc, Key propertyName, Object value)throws PageException {
+		return set(propertyName, value);
+	}
+
+	public Object setEL(PageContext pc, String propertyName, Object value) {
+		return setEL(propertyName, value);
+	}
+
+	public Object setEL(PageContext pc, Key propertyName, Object value) {
+		return setEL(propertyName, value);
+	}
+	public Object get(Key key) throws PageException {
+		Object res = get(key,NULL);
+		if(res!=NULL) return res;
+		throw StructImpl.invalidKey(keysAsString(), key);
+	}
+	public Object get(PageContext pc, String key, Object defaultValue) {
+		return get(key,defaultValue);
+	}
+
+	public Object get(PageContext pc, Key key, Object defaultValue) {
+		return get(key,defaultValue);
+	}
+
+	public Object get(PageContext pc, String key) throws PageException {
+		return get(key);
+	}
+
+	public Object get(PageContext pc, Key key) throws PageException {
+		return get(key);
+	}
+	public Object call(PageContext pc, Key methodName, Object[] arguments) throws PageException {
+		return call(pc, methodName.getString(), arguments);
+	}
+	public Object remove(String key) throws PageException {
+		return remove(KeyImpl.init(key));
+	}
+	public Object removeEL(Key key) {
+		try {
+			return remove(key);
+		} catch (PageException e) {
+			return null;
+		}
+	}
 }
