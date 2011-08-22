@@ -675,6 +675,18 @@ public final class Reflector {
     public static MethodInstance getGetter(Class clazz, String prop) throws PageException, NoSuchMethodException {
         String getterName = "get"+StringUtil.ucFirst(prop);
         MethodInstance mi = getMethodInstanceEL(clazz,KeyImpl.getInstance(getterName),ArrayUtil.OBJECT_EMPTY);
+        
+        if(mi==null){
+        	String isName = "is"+StringUtil.ucFirst(prop);
+            mi = getMethodInstanceEL(clazz,KeyImpl.getInstance(isName),ArrayUtil.OBJECT_EMPTY);
+            if(mi!=null){
+            	Method m = mi.getMethod();
+            	Class rtn = m.getReturnType();
+            	if(rtn!=Boolean.class && rtn!=boolean.class) mi=null;
+            }
+        }
+            
+        
         if(mi==null)
         	throw new ExpressionException("No matching property ["+prop+"] found in ["+Caster.toTypeName(clazz)+"]");
         Method m=mi.getMethod();
@@ -748,15 +760,33 @@ public final class Reflector {
      * @param prop Name of the Method without get
      * @param value Value to set to the Method
      * @return MethodInstance
+     * @deprecated use instead <code>getSetter(Object obj, String prop,Object value, MethodInstance defaultValue)</code>
      */
     public static MethodInstance getSetterEL(Object obj, String prop,Object value)  {
-            prop="set"+StringUtil.ucFirst(prop);
-            MethodInstance mi = getMethodInstanceEL(obj.getClass(),KeyImpl.getInstance(prop),new Object[]{value});
-            if(mi==null) return null;
-            Method m=mi.getMethod();
-            
-            if(m.getReturnType()!=void.class) return null;
-            return mi;
+        prop="set"+StringUtil.ucFirst(prop);
+        MethodInstance mi = getMethodInstanceEL(obj.getClass(),KeyImpl.getInstance(prop),new Object[]{value});
+        if(mi==null) return null;
+        Method m=mi.getMethod();
+        
+        if(m.getReturnType()!=void.class) return null;
+        return mi;
+    }
+    
+    /**
+     * to invoke a setter Method of a Object
+     * @param obj Object to invoke method from
+     * @param prop Name of the Method without get
+     * @param value Value to set to the Method
+     * @return MethodInstance
+     */
+    public static MethodInstance getSetter(Object obj, String prop,Object value, MethodInstance defaultValue)  {
+        prop="set"+StringUtil.ucFirst(prop);
+        MethodInstance mi = getMethodInstanceEL(obj.getClass(),KeyImpl.getInstance(prop),new Object[]{value});
+        if(mi==null) return defaultValue;
+        Method m=mi.getMethod();
+        
+        if(m.getReturnType()!=void.class) return defaultValue;
+        return mi;
     }
 	
 	/**
@@ -1166,6 +1196,12 @@ public final class Reflector {
 			return to==double.class ;
 		}
 		return false;
+	}
+
+	public static String removeGetterPrefix(String name) {
+		if(name.startsWith("get")) return name.substring(3);
+		if(name.startsWith("is")) return name.substring(2);
+		return name;
 	}
 
 	
