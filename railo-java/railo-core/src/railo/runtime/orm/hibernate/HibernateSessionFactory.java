@@ -31,11 +31,13 @@ import railo.runtime.MappingImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.other.GetMetaData;
 import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
@@ -315,13 +317,21 @@ public class HibernateSessionFactory {
 		else if(res.isFile()){
 			if(!res.getName().equalsIgnoreCase("Application.cfc"))	{
 				try {
-					PageSource ps=null;
-					Resource root = cfclocation.getPhysical();
-	                String path = ResourceUtil.getPathToChild(res, root);
-	                if(!StringUtil.isEmpty(path,true)) {
-	                	ps=cfclocation.getPageSource(path);
-	                }
-					if(ps==null) ps = pc.toPageSource(res,null);
+					
+					// MUST still a bad solution
+					PageSource ps = pc.toPageSource(res,null);
+					if(ps==null || ps.getComponentName().indexOf("..")!=-1) {
+						PageSource ps2=null;
+						Resource root = cfclocation.getPhysical();
+		                String path = ResourceUtil.getPathToChild(res, root);
+		                if(!StringUtil.isEmpty(path,true)) {
+		                	ps2=cfclocation.getPageSource(path);
+		                }
+		                if(ps2!=null)ps=ps2;
+					}
+					
+					
+					
 					Page p = ps.loadPage(pc.getConfig());
 					String name=res.getName();
 					name=name.substring(0,name.length()-4);
