@@ -234,7 +234,6 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 		pc=pageContext;
 		switch(action) {
 			case ACTION_JOIN:	
-				required("thread", "join", "name", name);	
 				doJoin();
 			break;
 			case ACTION_SLEEP:	
@@ -305,13 +304,19 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 	}
 
     private void doJoin() throws ApplicationException {
-    	String[] names=List.listToStringArray(lcName, ',');
+    	PageContextImpl mpc=(PageContextImpl)getMainPageContext(pc);
+		
+    	String[] names;
+    	if(lcName==null) {
+    		names=mpc.getThreadScopeNames();
+    	}
+    	else names=List.listToStringArray(lcName, ',');
     	
     	ChildThread ct;
     	Threads ts;
     	for(int i=0;i<names.length;i++) {
     		if(StringUtil.isEmpty(names[i],true))continue;
-    		PageContextImpl mpc=(PageContextImpl)getMainPageContext(pc);
+    		//PageContextImpl mpc=(PageContextImpl)getMainPageContext(pc);
     		ts = mpc.getThreadScope(names[i]);
     		if(ts==null)
     			throw new ApplicationException("there is no thread running with the name ["+names[i]+"], only the following threads existing ["+List.arrayToList(mpc.getThreadScopeNames(),", ")+"]");
