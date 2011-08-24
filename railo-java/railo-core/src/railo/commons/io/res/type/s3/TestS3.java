@@ -16,10 +16,8 @@ public class TestS3 {
 		String accessKeyId = "1DHC5C5FVD7YEPR4DBG2"; 
 		String secretAccessKey = "R/sOy3hgimrI8D9c0lFHchoivecnOZ8LyVmJpRFQ";
 		HttpMethod m;
-		Map<String, String> meta;
 		
 		S3 s3=new S3(secretAccessKey, accessKeyId, TimeZoneConstants.CET);
-		InputStream raw;
 		//raw = s3.listBucketsRaw();
 		//print.o(StringUtil.replace(IOUtil.toString(raw, null),"<","\n<",false));
 		

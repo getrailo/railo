@@ -16,7 +16,6 @@ public final class GetMemoryUsage implements Function {
         return call(pc, null);
     }
 	public static Query call(PageContext pc,String type) throws PageException {
-		int _type=SystemUtil.MEMORY_TYPE_ALL;
 		if(StringUtil.isEmpty(type))
 			return SystemUtil.getMemoryUsage(SystemUtil.MEMORY_TYPE_ALL);
 		
