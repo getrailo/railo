@@ -728,11 +728,17 @@ public final class IOUtil {
             closeEL(writer);
         }
     }
-    
+
 
     public static void write(Resource res, byte[] barr) throws IOException {
         ByteArrayInputStream bais = new ByteArrayInputStream(barr);
     	OutputStream os=IOUtil.toBufferedOutputStream(res.getOutputStream());
+        IOUtil.copy(bais, os, true, true);
+    }
+
+    public static void write(Resource res, byte[] barr, boolean append) throws IOException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(barr);
+    	OutputStream os=IOUtil.toBufferedOutputStream(res.getOutputStream(append));
         IOUtil.copy(bais, os, true, true);
     }
     

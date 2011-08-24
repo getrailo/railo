@@ -34,6 +34,11 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	private ConfigListener configListener;
 	private Map<String, String> labels;
 	private static ConfigServerImpl instance;
+	private Resource monitorDir;
+	
+
+    public static final byte _CF=(byte)207; 
+    public static final byte _01=(byte)1;
 	
 	/**
      * @param engine 
@@ -314,6 +319,11 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     	super.reset();
     	getThreadQueue().clear();
     }
+
+	public Resource getMonitorDir() {
+		if(monitorDir==null) monitorDir=getConfigDir().getRealResource("monitor");
+		return monitorDir;
+	}
 	
 
 }

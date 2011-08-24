@@ -11,6 +11,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ClassUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.CFMLFactoryImpl;
@@ -20,6 +21,7 @@ import railo.runtime.PageSource;
 import railo.runtime.PageSourcePool;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
+import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.net.smtp.SMTPConnectionPool;
@@ -78,7 +80,6 @@ public final class Controler extends Thread {
             boolean doHour=(lastHourInterval+(1000*60*60))<now;
             if(doHour)lastHourInterval=now;
             
-            // if(doMinute) System.gc();
             // broadcast cluster scope
             factories=toFactories(factories,contextes);
             try {
@@ -88,7 +89,7 @@ public final class Controler extends Thread {
 				t.printStackTrace();
 			}
             
-            
+            monitor();
             for(int i=0;i<factories.length;i++) {
 	            run(factories[i], doMinute, doHour,firstRun);
 	        }
@@ -96,6 +97,22 @@ public final class Controler extends Thread {
 				firstRun=false;
 	    }    
 	}
+	
+	
+	private void monitor() {
+		Resource dir=((ConfigServerImpl)configServer).getMonitorDir();
+		Resource memory = touch(dir,"memory.bin",ConfigServerImpl._CF,ConfigServerImpl._01);
+		memory.isAbsolute();
+	}
+
+	private Resource touch(Resource dir, String name, byte first, byte second) {
+		Resource file = dir.getRealResource(name);
+		file.isAbsolute();
+		//if(file.length()>)
+		
+		return null;
+	}
+
 	private CFMLFactoryImpl[] toFactories(CFMLFactoryImpl[] factories,Map contextes) {
 		if(factories==null || factories.length!=contextes.size())
 			factories=(CFMLFactoryImpl[]) contextes.values().toArray(new CFMLFactoryImpl[contextes.size()]);
