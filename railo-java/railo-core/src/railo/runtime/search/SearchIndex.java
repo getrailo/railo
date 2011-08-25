@@ -123,7 +123,8 @@ public final class SearchIndex {
      */
     public static short toType(String type) throws SearchException {
         type=type.toLowerCase().trim();
-	    if(type.equals("custom"))return SearchIndex.TYPE_CUSTOM; 
+        if(type.equals("custom"))return SearchIndex.TYPE_CUSTOM; 
+        else if(type.equals("query"))return SearchIndex.TYPE_CUSTOM; 
 	    else if(type.equals("file"))return SearchIndex.TYPE_FILE; 
 	    else if(type.equals("path"))return SearchIndex.TYPE_PATH; 
 	    else if(type.equals("url"))return SearchIndex.TYPE_URL; 
@@ -276,10 +277,10 @@ public final class SearchIndex {
     	//if(type==SearchIndex.TYPE_PATH) return "file";//P504
     	
         try {
-			return SearchIndex.toStringTypeEL(type)+"-"+Md5.getDigestAsString(key+queryName);
+			return SearchIndex.toStringTypeEL(type)+"-"+Md5.getDigestAsString(key+null);// null is for backward compatibility to older collections
 		} catch (IOException e) {
 			
-			return SearchIndex.toStringTypeEL(type)+"-"+StringUtil.toVariableName(key+queryName);
+			return SearchIndex.toStringTypeEL(type)+"-"+StringUtil.toVariableName(key+null);// null is for backward compatibility to older collections
 		}
         //return SearchIndex.toStringTypeEL(type)+"-"+HexCoder.encode((key+queryName).getBytes());
     }

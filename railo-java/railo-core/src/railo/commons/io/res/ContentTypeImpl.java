@@ -3,6 +3,7 @@ package railo.commons.io.res;
 import java.io.InputStream;
 
 import railo.commons.io.IOUtil;
+import railo.commons.lang.StringUtil;
 import railo.runtime.type.List;
 
 public final class ContentTypeImpl implements ContentType {
@@ -57,6 +58,24 @@ public final class ContentTypeImpl implements ContentType {
 		if(type==null)return APPLICATION_UNKNOW.toString();
 		if(this.charset==null) return type+"/"+subtype;
 		return type+"/"+subtype+" charset="+charset;
+	}
+	
+	// FUTURE add to interface
+	/**
+	 * @return the mime type
+	 */
+	public String getMimeType() {
+		if(type==null)return APPLICATION_UNKNOW.toString();
+		return type+"/"+subtype;
+	}
+
+	// FUTURE add to interface
+	/**
+	 * @return the charset
+	 */
+	public String getCharset() {
+		if(StringUtil.isEmpty(charset,true)) return null;
+		return charset;
 	}
 	
 }

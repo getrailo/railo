@@ -69,6 +69,9 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	public static final Key LOCAL = KeyImpl.intern("local");
 	public static final Key SERVER = KeyImpl.intern("server");
 	public static final Key EXCEPTIONS = KeyImpl.intern("exceptions");
+	public static final Key BODY = KeyImpl.intern("body");
+	public static final Key TITLE = KeyImpl.intern("title");
+	public static final Key URL = KeyImpl.intern("url");
 	
 	
 	

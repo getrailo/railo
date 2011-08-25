@@ -428,9 +428,7 @@ public final class Index extends TagImpl {
                 }
             }
         }
-        if(type==SearchIndex.TYPE_CUSTOM) {
-            required("index",action,"query",query);
-        }
+        
         collection.deleteIndex(pageContext,key,type,query);   
     }
 
