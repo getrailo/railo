@@ -17,6 +17,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
+import railo.runtime.op.Caster;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.Page;
@@ -720,7 +721,7 @@ public final class CFMLTransformer {
 		                	}
 		                }
 		            }
-					
+					// TODO make sure longer namespace ar checked firts to support subsets, same for core libs
 					// insert
 		            TagLib[] newTlibs=new TagLib[data.tlibs[TAG_LIB_PAGE].length+1]; 
                     for(int i=0;i<data.tlibs[TAG_LIB_PAGE].length;i++) {
@@ -751,7 +752,7 @@ public final class CFMLTransformer {
 		TagLib tagLib=null;
 		
 		// loop over NameSpaces
-		for(int i=0;i<2;i++)	{
+		for(int i=1;i>=0;i--)	{
 			for(int ii=0;ii<data.tlibs[i].length;ii++)	{
 				tagLib= data.tlibs[i][ii];
 				char[] c=tagLib.getNameSpaceAndSeperatorAsCharArray();
@@ -821,7 +822,7 @@ public final class CFMLTransformer {
 				    	
 						Attribute attr=new Attribute(tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_DYNAMIC,
 				    			att.getName(),
-				    			Cast.toExpression(LitString.toExprString(att.getDefaultValue(), -1),att.getType()),att.getType()
+				    			Cast.toExpression(LitString.toExprString(Caster.toString(att.getDefaultValue(),null), -1),att.getType()),att.getType()
 				    	);
 				    	parent.addAttribute(attr);
 					}
