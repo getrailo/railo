@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.servlet.jsp.JspWriter;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
