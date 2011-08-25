@@ -707,7 +707,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
                 		rootPath=rootPath.replace(FileUtil.FILE_ANTI_SEPERATOR,FileUtil.FILE_SEPERATOR);
                 		file=record.getKey();
                 		file=file.replace(FileUtil.FILE_ANTI_SEPERATOR,FileUtil.FILE_SEPERATOR);
-                		qry.setAt("url",row,toURL(si.getUrlpath(),StringUtil.replace(file, rootPath, "", true)));
+                		qry.setAt(KeyImpl.URL,row,toURL(si.getUrlpath(),StringUtil.replace(file, rootPath, "", true)));
                 		
                 		
                 	break;
@@ -720,12 +720,15 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
                 		catch (MalformedURLException e) {}
                 		if(StringUtil.isEmpty(urlPath))urlPath=rootPath;
                 		file=record.getKey();
-                		qry.setAt("url",row,toURL(urlPath,StringUtil.replace(file, rootPath, "", true)));
+                		qry.setAt(KeyImpl.URL,row,toURL(urlPath,StringUtil.replace(file, rootPath, "", true)));
                 		
                 		
                 	break;
+                	case SearchIndex.TYPE_CUSTOM:
+                		qry.setAt(KeyImpl.URL,row,url);
+                	break;
                 	default:
-                		qry.setAt("url",row,toURL(si.getUrlpath(),url));
+                		qry.setAt(KeyImpl.URL,row,toURL(si.getUrlpath(),url));
                 	break;
                 	}
                 	
