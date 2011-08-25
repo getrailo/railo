@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.HttpMethod;
 
-import railo.print;
+import railo.aprint;
 import railo.commons.date.TimeZoneConstants;
 import railo.commons.lang.StringUtil;
 
@@ -30,9 +30,9 @@ public class TestS3 {
 		
 		
 		m = s3.head("j878", "sub/text.txt");
-		print.o(m.getResponseHeaders());
-		print.e(m.getStatusCode());
-		print.o(StringUtil.replace(m.getResponseBodyAsString(),"<","\n<",false));
+		aprint.o(m.getResponseHeaders());
+		aprint.e(m.getStatusCode());
+		aprint.o(StringUtil.replace(m.getResponseBodyAsString(),"<","\n<",false));
 		
 		//m = s3.head("j878", null);
 		//print.o(m.getResponseHeaders());

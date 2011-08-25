@@ -9,7 +9,6 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.ExpressionBase;
-import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Types;
 
 /**

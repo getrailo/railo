@@ -1,6 +1,7 @@
 package railo.runtime.exp;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -96,35 +97,37 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		
 		public void set(Object o){
 			try {
-				if(key==DETAIL) {
-					pe.setDetail(Caster.toString(o));
-					return;
-				}
-				else if(key==ERROR_CODE) {
-					pe.setErrorCode(Caster.toString(o));
-					return;
-				}
-				else if(key==EXTENDED_INFO) {
-					pe.setExtendedInfo(Caster.toString(o));
-					return;
-				}
-				else if(key==STACK_TRACE) {
-					if(o instanceof StackTraceElement[]){
-						pe.setStackTrace((StackTraceElement[])o);
+				if(!(o instanceof Pair)) {
+					if(key==DETAIL) {
+						pe.setDetail(Caster.toString(o));
 						return;
 					}
-					else if(Decision.isCastableToArray(o)) {
-						Object[] arr = Caster.toNativeArray(o);
-						StackTraceElement[] elements=new StackTraceElement[arr.length];
-						for(int i=0;i<arr.length;i++) {
-							if(arr[i] instanceof StackTraceElement)
-								elements[i]=(StackTraceElement) arr[i];
-							else
-								throw new CasterException(o, StackTraceElement[].class);
-						}
-						pe.setStackTrace(elements);
+					else if(key==ERROR_CODE) {
+						pe.setErrorCode(Caster.toString(o));
 						return;
-						
+					}
+					else if(key==EXTENDED_INFO) {
+						pe.setExtendedInfo(Caster.toString(o));
+						return;
+					}
+					else if(key==STACK_TRACE) {
+						if(o instanceof StackTraceElement[]){
+							pe.setStackTrace((StackTraceElement[])o);
+							return;
+						}
+						else if(Decision.isCastableToArray(o)) {
+							Object[] arr = Caster.toNativeArray(o);
+							StackTraceElement[] elements=new StackTraceElement[arr.length];
+							for(int i=0;i<arr.length;i++) {
+								if(arr[i] instanceof StackTraceElement)
+									elements[i]=(StackTraceElement) arr[i];
+								else
+									throw new CasterException(o, StackTraceElement[].class);
+							}
+							pe.setStackTrace(elements);
+							return;
+							
+						}
 					}
 				}
 			}
@@ -389,6 +392,14 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		}
 		public Pair(Throwable throwable,String name, Method method, boolean doEmptyStringWhenNull) {
 			this(throwable, KeyImpl.init(name), method,doEmptyStringWhenNull);
+		}
+		
+		public String toString(){
+			try {
+				return Caster.toString(getter.invoke(throwable, new Object[]{}));
+			} catch (Exception e) {
+				throw new PageRuntimeException(Caster.toPageException(e));
+			}
 		}
 	}
 

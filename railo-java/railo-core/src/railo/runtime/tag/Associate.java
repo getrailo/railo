@@ -62,19 +62,18 @@ public final class Associate extends TagImpl {
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws PageException	{
-
+		
+		// current
         CFTag current=getCFTag();
-        //CFTag parentx=getParentCFTag(this, basetag);
-        CFTag parent=GetBaseTagData.getParentCFTag(this.getParent(), basetag, 1);
+        Struct value;
+        if(current==null || (value=current.getAttributesScope())==null) 
+        	throw new ApplicationException("invalid context, tag is no inside a custom tag");
         
+        // parent
+        CFTag parent=GetBaseTagData.getParentCFTag(current.getParent(), basetag, -1);
         if(parent==null) throw new ApplicationException("there is no parent tag with name ["+basetag+"]");
+        
         Struct thisTag=parent.getThis();
-        
-        
-        
-        Struct value=current.getAttributesScope();//Caster.toStruct(pageContext.undefinedScope().get(ATTRIBUTES,null));
-        if(value==null) throw new ApplicationException("invalid context, tag is no inside a custom tag");
-	    
         Object obj=thisTag.get(datacollection,null);
         
         Array array;
