@@ -48,7 +48,16 @@ import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
-import railo.runtime.orm.hibernate.event.EventListenerImpl;
+import railo.runtime.orm.hibernate.event.AllEventListener;
+import railo.runtime.orm.hibernate.event.EventListener;
+import railo.runtime.orm.hibernate.event.PostDeleteEventListenerImpl;
+import railo.runtime.orm.hibernate.event.PostInsertEventListenerImpl;
+import railo.runtime.orm.hibernate.event.PostLoadEventListenerImpl;
+import railo.runtime.orm.hibernate.event.PostUpdateEventListenerImpl;
+import railo.runtime.orm.hibernate.event.PreDeleteEventListenerImpl;
+import railo.runtime.orm.hibernate.event.PreInsertEventListenerImpl;
+import railo.runtime.orm.hibernate.event.PreLoadEventListenerImpl;
+import railo.runtime.orm.hibernate.event.PreUpdateEventListenerImpl;
 import railo.runtime.orm.hibernate.tuplizer.AbstractEntityTuplizerImpl;
 import railo.runtime.orm.naming.CFCNamingStrategy;
 import railo.runtime.orm.naming.DefaultNamingStrategy;
@@ -289,54 +298,55 @@ public class HibernateORMEngine implements ORMEngine {
 	private static void addEventListeners(PageContext pc, Configuration config,ORMConfiguration ormConfig, Map<String, CFCInfo> cfcs) throws PageException {
 		if(!ormConfig.eventHandling()) return;
 		String eventHandler = ormConfig.eventHandler();
-		EventListenerImpl listener=null;
+		AllEventListener listener=null;
 		if(!StringUtil.isEmpty(eventHandler,true)){
 			//try {
 				Component c = pc.loadComponent(eventHandler.trim());
-				listener = new EventListenerImpl(c,true);
+				
+				listener = new AllEventListener(c);
 		        //config.setInterceptor(listener);
 			//}catch (PageException e) {e.printStackTrace();}
 		}
         EventListeners listeners = config.getEventListeners();
 		
         // post delete
-		List<EventListenerImpl> 
-		list=merge(listener,cfcs,EventListenerImpl.POST_DELETE);
+		List<EventListener> 
+		list=merge(listener,cfcs,EventListener.POST_DELETE);
 		listeners.setPostDeleteEventListeners(list.toArray(new PostDeleteEventListener[list.size()]));
 		
         // post insert
-		list=merge(listener,cfcs,EventListenerImpl.POST_INSERT);
+		list=merge(listener,cfcs,EventListener.POST_INSERT);
 		listeners.setPostInsertEventListeners(list.toArray(new PostInsertEventListener[list.size()]));
 		
 		// post update
-		list=merge(listener,cfcs,EventListenerImpl.POST_UPDATE);
+		list=merge(listener,cfcs,EventListener.POST_UPDATE);
 		listeners.setPostUpdateEventListeners(list.toArray(new PostUpdateEventListener[list.size()]));
 		
 		// post update
-		list=merge(listener,cfcs,EventListenerImpl.POST_LOAD);
+		list=merge(listener,cfcs,EventListener.POST_LOAD);
 		listeners.setPostLoadEventListeners(list.toArray(new PostLoadEventListener[list.size()]));
 		
 		// pre delete
-		list=merge(listener,cfcs,EventListenerImpl.PRE_DELETE);
+		list=merge(listener,cfcs,EventListener.PRE_DELETE);
 		listeners.setPreDeleteEventListeners(list.toArray(new PreDeleteEventListener[list.size()]));
 		
 		// pre insert
-		list=merge(listener,cfcs,EventListenerImpl.PRE_INSERT);
+		list=merge(listener,cfcs,EventListener.PRE_INSERT);
 		listeners.setPreInsertEventListeners(list.toArray(new PreInsertEventListener[list.size()]));
 		
 		// pre load
-		list=merge(listener,cfcs,EventListenerImpl.PRE_LOAD);
+		list=merge(listener,cfcs,EventListener.PRE_LOAD);
 		listeners.setPreLoadEventListeners(list.toArray(new PreLoadEventListener[list.size()]));
 		
 		// pre update
-		list=merge(listener,cfcs,EventListenerImpl.PRE_UPDATE);
+		list=merge(listener,cfcs,EventListener.PRE_UPDATE);
 		listeners.setPreUpdateEventListeners(list.toArray(new PreUpdateEventListener[list.size()]));
 		
 
     }
 
-	private static List<EventListenerImpl> merge(EventListenerImpl listener, Map<String, CFCInfo> cfcs, Collection.Key eventType) {
-		List<EventListenerImpl> list=new ArrayList<EventListenerImpl>();
+	private static List<EventListener> merge(EventListener listener, Map<String, CFCInfo> cfcs, Collection.Key eventType) {
+		List<EventListener> list=new ArrayList<EventListener>();
 			
 		
 		Iterator<Entry<String, CFCInfo>> it = cfcs.entrySet().iterator();
@@ -346,7 +356,23 @@ public class HibernateORMEngine implements ORMEngine {
 			entry = it.next();
 			cfc = entry.getValue().getCFC();
 			if(is(cfc,eventType)) {
-				list.add(new EventListenerImpl(cfc,false));
+				if(EventListener.POST_DELETE.equals(eventType))
+					list.add(new PostDeleteEventListenerImpl(cfc));
+				if(EventListener.POST_INSERT.equals(eventType))
+					list.add(new PostInsertEventListenerImpl(cfc));
+				if(EventListener.POST_LOAD.equals(eventType))
+					list.add(new PostLoadEventListenerImpl(cfc));
+				if(EventListener.POST_UPDATE.equals(eventType))
+					list.add(new PostUpdateEventListenerImpl(cfc));
+				
+				if(EventListener.PRE_DELETE.equals(eventType))
+					list.add(new PreDeleteEventListenerImpl(cfc));
+				if(EventListener.PRE_INSERT.equals(eventType))
+					list.add(new PreInsertEventListenerImpl(cfc));
+				if(EventListener.PRE_LOAD.equals(eventType))
+					list.add(new PreLoadEventListenerImpl(cfc));
+				if(EventListener.PRE_UPDATE.equals(eventType))
+					list.add(new PreUpdateEventListenerImpl(cfc));
 			}
 		}
 		
