@@ -58,9 +58,11 @@ import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.functions.arrays.ArrayFind;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
@@ -2189,7 +2191,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	 * @see java.sql.ResultSet#wasNull()
 	 */
 	public boolean wasNull() {
-		return false;
+		throw new PageRuntimeException(new ApplicationException("method [wasNull] is not supported"));
 	}
 
 	/**
