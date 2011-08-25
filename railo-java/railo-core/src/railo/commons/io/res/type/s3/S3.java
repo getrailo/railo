@@ -25,7 +25,6 @@ import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.xml.sax.SAXException;
 
-import railo.print;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.URLEncoder;
@@ -170,8 +169,6 @@ public final class S3 implements S3Constants {
 		if(hasObj) {
 			strUrl+=objectName;
 		}
-		//strUrl+="?acl";
-		print.o("here");
 		HttpMethod method = railo.commons.net.HTTPUtil.head(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,(Header[])headers.toArray(new Header[headers.size()]));
 		return method;
 		
