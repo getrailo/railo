@@ -169,8 +169,6 @@ public final class S3 implements S3Constants {
 		if(hasObj) {
 			strUrl+=objectName;
 		}
-		//strUrl+="?acl";
-		print.o("here");
 		HttpMethod method = railo.commons.net.HTTPUtil.head(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,headers.toArray(new Header[headers.size()]));
 		return method;
 		
