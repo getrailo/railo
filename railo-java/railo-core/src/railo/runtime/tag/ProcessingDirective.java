@@ -2,10 +2,16 @@ package railo.runtime.tag;
 
 import java.io.IOException;
 
+import javax.servlet.jsp.JspWriter;
+
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.writer.CFMLWriter;
+import railo.runtime.writer.WhiteSpaceWriter;
 
 /**
 * Suppresses extra white space and other output, produced by CFML within the tag's scope.
@@ -70,23 +76,8 @@ public final class ProcessingDirective extends BodyTagTryCatchFinallyImpl {
             throw new ApplicationException
             ("for suppressing whitespaces you must define a end tag for tag [cfprocessingdirective]");
         } 
-        if(doSuppressWhitespace())return EVAL_BODY_BUFFERED;
-
-    	/*JspWriter out = ((PageContextImpl)pageContext).getRootOut();
-        if(out instanceof CFMLWriterWhiteSpace){
-        	((CFMLWriterWhiteSpace)out).
-        }*/
-        	
+        if(suppresswhitespace!=null)return EVAL_BODY_BUFFERED;    	
         return EVAL_BODY_INCLUDE;
-        
-        
-        
-		//return doSuppressWhitespace()?EVAL_BODY_BUFFERED:EVAL_BODY_INCLUDE;
-	}
-
-
-    private boolean doSuppressWhitespace() {
-        return suppresswhitespace!=null && suppresswhitespace.booleanValue();
     }
 	
     /**
@@ -115,10 +106,23 @@ public final class ProcessingDirective extends BodyTagTryCatchFinallyImpl {
      * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doFinally()
      */
     public void doFinally() {
-    	if(doSuppressWhitespace()) {
-            try {
-            	pageContext.forceWrite(StringUtil.suppressWhiteSpace(bodyContent.getString()));
-            } catch (IOException e) {}
+    	if(suppresswhitespace!=null) {
+    		try {
+    			JspWriter out = pageContext.getOut();
+	            if(suppresswhitespace.booleanValue()) {
+	            	if(out instanceof WhiteSpaceWriter)out.write(bodyContent.getString());
+	            	else out.write(StringUtil.suppressWhiteSpace(bodyContent.getString()));
+	            }
+	            else {
+	                if(out instanceof CFMLWriter){
+	                	((CFMLWriter)out).writeRaw(bodyContent.getString());
+	                }
+	                else 
+	                	out.write(bodyContent.getString());
+	            }
+    		} catch (IOException e) {
+    			throw new PageRuntimeException(Caster.toPageException(e));
+    		}
         }
     }
 }

@@ -24,5 +24,13 @@ public abstract class CFMLWriter extends JspWriter {
 	public abstract String getHTMLHead() throws IOException;
 	
 	public abstract void resetHTMLHead() throws IOException;
+	
+
+	/**
+	 * write the given string without removing whitespace.
+	 * @param str
+	 * @throws IOException 
+	 */
+	public abstract void writeRaw(String str) throws IOException;
 
 }

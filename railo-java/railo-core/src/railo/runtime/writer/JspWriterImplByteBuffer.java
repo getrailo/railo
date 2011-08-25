@@ -458,5 +458,12 @@ public class JspWriterImplByteBuffer extends CFMLWriter {
 		initOut();
 		return out;
 	}
+    
+    /**
+	 * @see railo.runtime.writer.CFMLWriter#writeRaw(java.lang.String)
+	 */
+	public void writeRaw(String str) throws IOException {
+		write(str);
+	}
 
 } 
