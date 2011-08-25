@@ -17,13 +17,7 @@ import org.hibernate.event.PreLoadEventListener;
 import org.hibernate.event.PreUpdateEvent;
 import org.hibernate.event.PreUpdateEventListener;
 
-import railo.print;
 import railo.runtime.Component;
-import railo.runtime.component.Property;
-import railo.runtime.orm.hibernate.HibernateUtil;
-import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
 
 public class AllEventListener extends EventListener implements PreDeleteEventListener, PreInsertEventListener, PreLoadEventListener, PreUpdateEventListener,
 PostDeleteEventListener, PostInsertEventListener, PostLoadEventListener, PostUpdateEventListener {
@@ -63,17 +57,7 @@ PostDeleteEventListener, PostInsertEventListener, PostLoadEventListener, PostUpd
     }
 
 	public boolean onPreUpdate(PreUpdateEvent event) {
-		Struct oldData=new StructImpl();
-		Property[] properties = HibernateUtil.getProperties(component,HibernateUtil.FIELDTYPE_COLUMN,null);
-		Object[] data = event.getOldState();
-		
-		if(data!=null && properties!=null && data.length==properties.length) {
-			for(int i=0;i<data.length;i++){
-				oldData.setEL(KeyImpl.getInstance(properties[i].getName()), data[i]);
-			}
-		}
-		invoke(PRE_UPDATE, event.getEntity(),oldData);
-		return false;
+		return preUpdate(event);
 	}
 
 
