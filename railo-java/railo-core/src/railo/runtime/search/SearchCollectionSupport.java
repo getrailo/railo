@@ -500,11 +500,14 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      * @see railo.runtime.search.SearchCollection#deleteIndex(railo.runtime.PageContext, java.lang.String, short, java.lang.String)
      */
     public final IndexResult deleteIndex(PageContext pc,String key,short type,String queryName) throws SearchException {
-        Iterator<String> it = indexes.keySet().iterator();
         //if(queryName==null) queryName="";
     	Key k;
     	
         if(type==SearchIndex.TYPE_CUSTOM) {
+        	// delete all when no key is defined
+        	if(StringUtil.isEmpty(key,true))
+        		return deleteIndexNotCustom(pc, key, type, queryName);
+        	
         	try{
         		Query qv;
             	if(!StringUtil.isEmpty(queryName)) {
@@ -528,8 +531,14 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
         		throw new SearchException(pe);
         	}
         }
+        return deleteIndexNotCustom(pc, key, type, queryName);
         
         
+    }
+    
+
+    public final IndexResult deleteIndexNotCustom(PageContext pc,String key,short type,String queryName) throws SearchException {
+    	Iterator<String> it = indexes.keySet().iterator();
         while(it.hasNext()) {
             String id = it.next();
             if(id.equals(SearchIndex.toId(type,key,queryName))) {

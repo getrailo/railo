@@ -402,7 +402,7 @@ public final class Index extends TagImpl {
      */
     private void doDelete() throws PageException, SearchException {
         required("index",action,"collection",collection);
-        required("index",action,"key",key);
+        if(type!=SearchIndex.TYPE_CUSTOM)required("index",action,"key",key);
         
         // no type defined
         if(type==-1) {
