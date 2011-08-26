@@ -62,7 +62,6 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 	
 	
 	private static Collection.Key ATTRIBUTES=KeyImpl.intern("ATTRIBUTES");
-	private static Collection.Key ATTRIBUTE=KeyImpl.intern("ATTRIBUTE");
 	private static Collection.Key CALLER=KeyImpl.intern("CALLER");
 	private static Collection.Key THIS_TAG=KeyImpl.intern("THISTAG");
 	
@@ -76,7 +75,6 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 	private static final Collection.Key ATTRIBUTE_TYPE = KeyImpl.intern("attributetype");
 	private static final Collection.Key RT_EXPR_VALUE = KeyImpl.intern("rtexprvalue");
 	private static final Collection.Key PARSE_BODY = KeyImpl.intern("parsebody");
-	private static final Collection.Key EVALUATE_BODY = KeyImpl.intern("evaluatebody");
 	private static final Collection.Key METADATA = KeyImpl.intern("metadata");
 	private static final String MARKER = "2w12801";
 	
@@ -482,8 +480,8 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     		Map.Entry entry;
     		TagLibTagAttr attr;
     		Struct sct;
-    		String name,defaultValue;
-    		Object o;
+    		String name;
+    		Object defaultValue;
     		while(it.hasNext()){
     			entry=(Entry) it.next();
     			name=Caster.toString(entry.getKey(),null);
@@ -495,12 +493,10 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     			if(sct!=null){
     				attr.setRequired(Caster.toBooleanValue(sct.get(KeyImpl.REQUIRED,Boolean.FALSE),false));
     				attr.setType(Caster.toString(sct.get(KeyImpl.TYPE,"any"),"any"));
-    				o= sct.get(KeyImpl.DEFAULT,null);
-    				if(o!=null){
-    					defaultValue=Caster.toString(o,null);
-    					if(defaultValue!=null)
-    						attr.setDefaultValue(defaultValue);
-    				}
+    				
+    				defaultValue= sct.get(KeyImpl.DEFAULT,null);
+    				if(defaultValue!=null)attr.setDefaultValue(defaultValue);
+    				
     				
     				if(!runtime){
     					attr.setDescription(Caster.toString(sct.get(KeyImpl.HINT,null),null));

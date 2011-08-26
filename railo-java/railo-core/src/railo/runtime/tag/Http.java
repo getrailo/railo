@@ -665,7 +665,7 @@ public final class Http extends BodyTagImpl {
 	        //boolean responseProvideCharset=false;
 	        if(!StringUtil.isEmpty(mimetype)){
 		        if(isText) {
-		        	String[] types=splitMimeTypeAndCharset(mimetype);
+		        	String[] types=HTTPUtil.splitMimeTypeAndCharset(mimetype);
 		        	if(types[0]!=null)cfhttp.set(MIME_TYPE,types[0]);
 		        	if(types[1]!=null)cfhttp.set(CHARSET,types[1]);
 	                
@@ -787,23 +787,6 @@ public final class Http extends BodyTagImpl {
 			releaseConnection(httpMethod);
 		}
 	    
-	}
-	
-	public static String[] splitMimeTypeAndCharset(String mimetype) {
-		String[] types=mimetype.split(";");
-		String[] rtn=new String[2];
-    	
-    	if(types.length>0){
-    		rtn[0]=types[0];
-	        if(types.length>1) {
-	            String tmp=types[types.length-1];
-	            int index=tmp.indexOf("charset=");
-	            if(index!=-1) {
-	            	rtn[1]= StringUtil.removeQuotes(tmp.substring(index+8),true);
-	            }
-	        }
-    	}
-    	return rtn;
 	}
 
 	public static boolean isText(String mimetype) {
@@ -1374,7 +1357,7 @@ public final class Http extends BodyTagImpl {
 		try {
 			// text
 			if(isText(contentType)) {
-				String[] tmp = splitMimeTypeAndCharset(contentType);
+				String[] tmp = HTTPUtil.splitMimeTypeAndCharset(contentType);
 				//String mimetype=tmp[0];
 				String charset=tmp[1];
 				

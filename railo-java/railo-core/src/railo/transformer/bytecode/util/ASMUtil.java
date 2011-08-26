@@ -877,4 +877,15 @@ public final class ASMUtil {
 		return asmp;
 	}
 	
+
+	public static boolean containsComponent(Body body) {
+		if(body==null) return false;
+		
+		Iterator it = body.getStatements().iterator();
+		while(it.hasNext()){
+			if(it.next() instanceof TagComponent)return true;
+		}
+		return false;
+	}
+	
 }

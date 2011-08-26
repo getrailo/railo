@@ -3,15 +3,12 @@ package railo.runtime;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.instrument.ClassDefinition;
-import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.ClassUtil;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -25,7 +22,6 @@ import railo.runtime.engine.ThreadLocalPageSource;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TemplateException;
-import railo.runtime.instrumentation.InstrumentationFactory;
 import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
@@ -238,14 +234,15 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
                     // load page
                     else {
                     	try {
-                    		long lastMod=PhysicalClassLoader.lastModified(classFile,-1);
+                    		/*long lastMod=PhysicalClassLoader.lastModified(classFile,-1);
                     		if(lastMod!=-1 && srcLastModified!=lastMod) {
                     			isNew=true;
                                 this.page=page=compile(config,classRootDir,null);
                     		}
                     		else {
                         		this.page=page=newInstance(mapping.getClassLoaderForPhysical(isNew).loadClass(getClazz()));
-                    		}
+                    		}*/
+                    		this.page=page=newInstance(mapping.getClassLoaderForPhysical(isNew).loadClass(getClazz()));
                     		
                         } 
                         // if there is a problem to load the existing version, it will be recompiled
@@ -301,6 +298,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
             resetCL=Caster.toBoolean(cl!=null && cl.isClassLoaded(getClazz()));
         }
         Class clazz=null;
+        /*
         Instrumentation inst = InstrumentationFactory.getInstance();
         if(resetCL.booleanValue() && inst!=null && inst.isRedefineClassesSupported()) {
         	try {
@@ -313,8 +311,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         	catch (Throwable t) {
 				t.printStackTrace();
 			}
-        	
-        }
+        }*/
         
         cl = (PhysicalClassLoader)mapping.getClassLoaderForPhysical(resetCL.booleanValue());
         clazz = cl.loadClass(getClazz(),barr);

@@ -22,6 +22,8 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
@@ -35,14 +37,16 @@ import railo.runtime.type.util.ArrayUtil;
  */
 public abstract class SearchCollectionSupport implements SearchCollectionPlus {
 
-    private static final int LOCK_TIMEOUT = 10*60*1000; // ten minutes
+	private static final long serialVersionUID = 8089312879341384114L;
+	
+	private static final int LOCK_TIMEOUT = 10*60*1000; // ten minutes
     private final String name;
 	private final Resource path;
 	private String language;
 	private DateTime lastUpdate;
     private SearchEngineSupport searchEngine;
 	//TODO change visibility to private
-    protected Map indexes=new HashTable();
+    protected Map<String,SearchIndex> indexes=new HashTable();
 
     private DateTime created;
 
@@ -202,16 +206,16 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
             // populate query with a single row
                 qv=new QueryImpl(columns,1,"query");
                 // body
-                qv.setAt("key", 1, key);
+                qv.setAt(KeyImpl.KEY, 1, key);
                 key="key";
 
                 // body
-                qv.setAt("body", 1, body);
+                qv.setAt(KeyImpl.BODY, 1, body);
                 body="body";
 
                 // title
                 if(!StringUtil.isEmpty(title)){
-                	qv.setAt("title", 1, title);
+                	qv.setAt(KeyImpl.TITLE, 1, title);
                 	title="title";
                 }
 
@@ -374,8 +378,17 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
         changeLastUpdate();
         return ir;
     }
+    
+    
+    public final IndexResult deleteCustom(String id, QueryColumn keyColumn) throws SearchException {
+    	IndexResult ir = _deleteCustom(id,keyColumn);
+        changeLastUpdate();
+        return ir;
+    }
+    
+    protected abstract IndexResult _deleteCustom(String id, QueryColumn keyColumn) throws SearchException;
 
-    /**
+	/**
      * updates a collection with a custom
      * @param id
      * @param title Title for the Index
@@ -398,13 +411,13 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      * @throws SearchException
      */
     private void createIndex(SearchIndex index) throws SearchException {
-        Iterator it = indexes.keySet().iterator();
+        Iterator<String> it = indexes.keySet().iterator();
         SearchIndex otherIndex=null;
         
         while(it.hasNext()) {
             Object key=it.next();
             if(key.equals(index.getId())) {
-                otherIndex=(SearchIndex) indexes.get(key);
+                otherIndex=indexes.get(key);
                 break;
             }
         }
@@ -487,13 +500,50 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      * @see railo.runtime.search.SearchCollection#deleteIndex(railo.runtime.PageContext, java.lang.String, short, java.lang.String)
      */
     public final IndexResult deleteIndex(PageContext pc,String key,short type,String queryName) throws SearchException {
-        Iterator it = indexes.keySet().iterator();
+        //if(queryName==null) queryName="";
+    	Key k;
+    	
+        if(type==SearchIndex.TYPE_CUSTOM) {
+        	// delete all when no key is defined
+        	if(StringUtil.isEmpty(key,true))
+        		return deleteIndexNotCustom(pc, key, type, queryName);
+        	
+        	try{
+        		Query qv;
+            	if(!StringUtil.isEmpty(queryName)) {
+            		k=KeyImpl.init(key);
+            		qv = Caster.toQuery(pc.getVariable(queryName));
+            	}
+            	else {
+            		k=KeyImpl.ID;
+                    Key[] cols = new Key[]{k};
+                    String[] types = new String[]{"VARCHAR"};
+            		qv=new QueryImpl(cols,types, 1,"query");
+            		qv.setAtEL(k, 1, key);
+            	}
+        		
+        		
+        		
+	            QueryColumn keyColumn=qv.getColumn(k);
+	        	return deleteCustom("custom", keyColumn);
+        	}
+        	catch(PageException pe){
+        		throw new SearchException(pe);
+        	}
+        }
+        return deleteIndexNotCustom(pc, key, type, queryName);
         
-        while(it.hasNext()) {
-            Object id = it.next();
-            if(id.equals(SearchIndex.toId(type,key,queryName))) {
-                SearchIndex index=(SearchIndex) indexes.get(id);
+        
+    }
+    
 
+    public final IndexResult deleteIndexNotCustom(PageContext pc,String key,short type,String queryName) throws SearchException {
+    	Iterator<String> it = indexes.keySet().iterator();
+        while(it.hasNext()) {
+            String id = it.next();
+            if(id.equals(SearchIndex.toId(type,key,queryName))) {
+                SearchIndex index=indexes.get(id);
+                
                 IndexResult ir=_deleteIndex(index.getId());
                 Element indexEl=searchEngine.getIndexElement(searchEngine.getCollectionElement(name),index.getId());
                 if(indexEl!=null)indexEl.getParentNode().removeChild(indexEl);
@@ -637,22 +687,22 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
                 custom4=record.getCustom4();
                 url=record.getUrl();
                 
-                qry.setAt("title",row,title);
+                qry.setAt(KeyImpl.TITLE,row,title);
                 qry.setAt("custom1",row,custom1);
                 qry.setAt("custom2",row,custom2);
                 qry.setAt("custom3",row,custom3);
                 qry.setAt("custom4",row,custom4);
                 qry.setAt("categoryTree",row,record.getCategoryTree());
                 qry.setAt("category",row,record.getCategory());
-                qry.setAt("type",row,record.getMimeType());
+                qry.setAt(KeyImpl.TYPE,row,record.getMimeType());
                 qry.setAt("author",row,record.getAuthor());
-                qry.setAt("size",row,record.getSize());
+                qry.setAt(KeyImpl.SIZE,row,record.getSize());
 
                 qry.setAt("summary",row,record.getSummary());
                 qry.setAt("context",row,record.getContextSummary());
                 qry.setAt("score",row,new Float(record.getScore()));
-                qry.setAt("key",row,record.getKey());
-                qry.setAt("url",row,url);
+                qry.setAt(KeyImpl.KEY,row,record.getKey());
+                qry.setAt(KeyImpl.URL,row,url);
                 qry.setAt("collection",row,getName());
                 qry.setAt("rank",row,new Double(row));
                 String rootPath,file;
@@ -664,7 +714,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
                 		rootPath=rootPath.replace(FileUtil.FILE_ANTI_SEPERATOR,FileUtil.FILE_SEPERATOR);
                 		file=record.getKey();
                 		file=file.replace(FileUtil.FILE_ANTI_SEPERATOR,FileUtil.FILE_SEPERATOR);
-                		qry.setAt("url",row,toURL(si.getUrlpath(),StringUtil.replace(file, rootPath, "", true)));
+                		qry.setAt(KeyImpl.URL,row,toURL(si.getUrlpath(),StringUtil.replace(file, rootPath, "", true)));
                 		
                 		
                 	break;
@@ -677,17 +727,20 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
                 		catch (MalformedURLException e) {}
                 		if(StringUtil.isEmpty(urlPath))urlPath=rootPath;
                 		file=record.getKey();
-                		qry.setAt("url",row,toURL(urlPath,StringUtil.replace(file, rootPath, "", true)));
+                		qry.setAt(KeyImpl.URL,row,toURL(urlPath,StringUtil.replace(file, rootPath, "", true)));
                 		
                 		
                 	break;
+                	case SearchIndex.TYPE_CUSTOM:
+                		qry.setAt(KeyImpl.URL,row,url);
+                	break;
                 	default:
-                		qry.setAt("url",row,toURL(si.getUrlpath(),url));
+                		qry.setAt(KeyImpl.URL,row,toURL(si.getUrlpath(),url));
                 	break;
                 	}
                 	
                 	
-                    if(StringUtil.isEmpty(title))      qry.setAt("title",row,si.getTitle());
+                    if(StringUtil.isEmpty(title))      qry.setAt(KeyImpl.TITLE,row,si.getTitle());
                     if(StringUtil.isEmpty(custom1))    qry.setAt("custom1",row,si.getCustom1());
                     if(StringUtil.isEmpty(custom2))    qry.setAt("custom2",row,si.getCustom2());
                     if(StringUtil.isEmpty(custom3))    qry.setAt("custom3",row,si.getCustom3());
@@ -742,12 +795,12 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
 	
 
     protected SearchIndex[] getIndexes() {
-    	Iterator it = indexes.keySet().iterator();
+    	Iterator<Entry<String, SearchIndex>> it = indexes.entrySet().iterator();
 		int len=indexes.size();
 		SearchIndex[] rtn=new SearchIndex[len];
 		int count=0;
 		while(it.hasNext()) {
-			rtn[count++]=(SearchIndex) indexes.get(it.next());
+			rtn[count++]=it.next().getValue();
 		}
 		return rtn;
 	}
@@ -776,7 +829,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
 
 	// FUTURE
 	public Object getIndexesAsQuery() {
-		Iterator it = indexes.entrySet().iterator();
+		Iterator<Entry<String, SearchIndex>> it = indexes.entrySet().iterator();
 		
 		final String v="VARCHAR";
         Query query=null;
@@ -792,15 +845,14 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
             query=new QueryImpl(cols, 0,"query");
         }
         
-	    
-        Map.Entry entry;
+        Entry<String, SearchIndex> entry;
         SearchIndex index;
         int row=0;
 		while(it.hasNext()) {
 			query.addRow();
 			row++;
-        	entry=(Entry) it.next();
-        	index=(SearchIndex) entry.getValue();
+        	entry = it.next();
+        	index= entry.getValue();
         	if(index==null)continue;
 	        try {
 		        
@@ -813,12 +865,12 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
                 query.setAt("custom4",row,index.getCustom4());
                 
                 query.setAt("extensions",row,List.arrayToList(index.getExtensions(),","));
-                query.setAt("key",row,index.getKey());
+                query.setAt(KeyImpl.KEY,row,index.getKey());
                 query.setAt("language",row,index.getLanguage());
                 query.setAt("query",row,index.getQuery());
-                query.setAt("title",row,index.getTitle());
+                query.setAt(KeyImpl.TITLE,row,index.getTitle());
                 query.setAt("urlpath",row,index.getUrlpath());
-                query.setAt("type",row,SearchIndex.toStringTypeEL(index.getType()));
+                query.setAt(KeyImpl.TYPE,row,SearchIndex.toStringTypeEL(index.getType()));
                 
 	        }
 		    catch(PageException pe) {}

@@ -2031,11 +2031,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	public Object getObject(String columnName) throws SQLException {
 		int currentrow;
 		if((currentrow=arrCurrentRow.get(getPid(),0))==0) return null;
-		try {
-			return getAt(columnName,currentrow);
-		} catch (PageException e) {
-			throw new SQLException(e.getMessage());
-		}
+		return getAt(columnName,currentrow,null);
 	}
 	
 	/**

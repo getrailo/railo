@@ -24,7 +24,7 @@ public final class TagLibTagAttr {
 	private String description="";
 	private boolean required;
 	private boolean rtexpr=true;
-	private String defaultValue;
+	private Object defaultValue;
     private TagLibTag tag;
 	private boolean hidden;
 	private boolean _default;
@@ -181,7 +181,7 @@ public final class TagLibTagAttr {
     /**
      * @param defaultValue
      */
-    public void setDefaultValue(String defaultValue) {
+    public void setDefaultValue(Object defaultValue) {
         this.defaultValue=defaultValue;
         tag.setHasDefaultValue(true);
     }
@@ -189,7 +189,7 @@ public final class TagLibTagAttr {
     /**
      * @return Returns the defaultValue.
      */
-    public String getDefaultValue() {
+    public Object getDefaultValue() {
         return defaultValue;
     }
 

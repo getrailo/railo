@@ -20,6 +20,7 @@ import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
+import railo.commons.io.res.type.http.HTTPResource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
@@ -1011,6 +1012,12 @@ public final class ResourceUtil {
 	}
 
 	public static ContentType getContentType(Resource resource) {
+		// TODO make this part of a interface
+		if(resource instanceof HTTPResource) {
+			try {
+				return ((HTTPResource)resource).getContentType();
+			} catch (IOException e) {}
+		}
 		InputStream is=null;
 		try {
 			is = resource.getInputStream();

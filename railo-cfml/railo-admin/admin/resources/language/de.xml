@@ -88,9 +88,9 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.server.output">Ausgabe</data>
 	<data key="menu.server.error">Error</data>
 	<data key="menu.services.label">Dienste</data>
-	<data key="menu.services.gateway">Event Gateway (Beta)</data>
+	<data key="menu.services.gateway">Event Gateway</data>
 	<data key="menu.services.cache">Cache</data>
-	<data key="menu.services.orm">ORM (Beta)</data>
+	<data key="menu.services.orm">ORM</data>
 	<data key="menu.services.datasource">Datenquellen</data>
 	<data key="menu.services.search">Suche</data>
 	<data key="menu.services.mail">Mail</data>

@@ -75,12 +75,12 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	private short ATTR_TYPE_OPTIONAL=TagLibTagAttr.SCRIPT_SUPPORT_OPTIONAL;
 	private short ATTR_TYPE_REQUIRED=TagLibTagAttr.SCRIPT_SUPPORT_REQUIRED;
 	
-	public class ComponentBodyException extends TemplateException {
+	public static class ComponentTemplateException extends TemplateException {
 		private static final long serialVersionUID = -8103635220891288231L;
 		
 		private TemplateException te;
 
-		public ComponentBodyException(TemplateException te){
+		public ComponentTemplateException(TemplateException te){
 			super(te.getPageSource(),te.getLine(),0,te.getMessage());
 			this.te=te;
 			
@@ -135,13 +135,13 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @throws TemplateException 
 	 * @see railo.transformer.data.cfml.expression.data.cfmlExprTransformer#transform(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.data.cfmlString)
 	 */
-	public Expression transform(FunctionLib[] fld,CFMLString cfml) throws TemplateException {
+	public Expression transform(FunctionLib[] fld,CFMLString cfml) throws TemplateException {// FUTURE is this method needed anymore?
 		throw new TemplateException(cfml,"you can't use Method transform on class CFMLScriptTransformer");
 	}
 	/**
 	 * @see railo.transformer.data.cfml.expression.data.cfmlExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.data.cfmlString)
 	 */
-	public Expression transformAsString(FunctionLib[] fld,CFMLString cfml, boolean allowLowerThan) throws TemplateException {
+	public Expression transformAsString(FunctionLib[] fld,CFMLString cfml, boolean allowLowerThan) throws TemplateException {// FUTURE is this method needed anymore?
 		throw new TemplateException(cfml,"you can't use Method transformAsString on class CFMLScriptTransformer");
 	}
 	
@@ -798,7 +798,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 				data.cfml.setPos(pos);
 				return expressionStatement(data);
 			} catch (TemplateException e1) {
-				if(tlt.getScript().getContext()==CTX_CFC) throw new ComponentBodyException(e);
+				if(tlt.getScript().getContext()==CTX_CFC) throw new ComponentTemplateException(e);
 				throw e;
 			}
 		}

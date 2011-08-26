@@ -446,4 +446,11 @@ public class JspWriterImplStringBuffer extends CFMLWriter {
 	public OutputStream getResponseStream() throws IOException {
 		return response.getOutputStream();
 	}
+    
+    /**
+	 * @see railo.runtime.writer.CFMLWriter#writeRaw(java.lang.String)
+	 */
+	public void writeRaw(String str) throws IOException {
+		write(str);
+	}
 } 

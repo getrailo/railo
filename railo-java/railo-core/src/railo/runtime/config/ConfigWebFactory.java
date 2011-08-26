@@ -2241,7 +2241,7 @@ public final class ConfigWebFactory {
 	           boolean readonly=toBoolean(ctMapping.getAttribute("readonly"),false);
 	           boolean hidden=toBoolean(ctMapping.getAttribute("hidden"),false);
 	           boolean trusted=toBoolean(ctMapping.getAttribute("trusted"),false);
-	           int clMaxEl=toInt(ctMapping.getAttribute("classloader-max-elements"),5000);
+	           int clMaxEl=toInt(ctMapping.getAttribute("classloader-max-elements"),100);
 	           
 	           String primary=ctMapping.getAttribute("primary");
 	           
@@ -3733,7 +3733,7 @@ public final class ConfigWebFactory {
 	           boolean readonly=toBoolean(cMapping.getAttribute("readonly"),false);
 	           boolean hidden=toBoolean(cMapping.getAttribute("hidden"),false);
 	           boolean trusted=toBoolean(cMapping.getAttribute("trusted"),false);
-	           int clMaxEl=toInt(cMapping.getAttribute("classloader-max-elements"),5000);
+	           int clMaxEl=toInt(cMapping.getAttribute("classloader-max-elements"),100);
 	           
 	           String primary=cMapping.getAttribute("primary");
 	           

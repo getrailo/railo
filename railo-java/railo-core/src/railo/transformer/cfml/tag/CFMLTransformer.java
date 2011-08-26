@@ -17,6 +17,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
+import railo.runtime.op.Caster;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.Page;
@@ -29,13 +30,15 @@ import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.attributes.AttributeEvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.evaluator.impl.ProcessingDirectiveException;
 import railo.transformer.cfml.expression.SimpleExprTransformer;
-import railo.transformer.cfml.script.CFMLScriptTransformer.ComponentBodyException;
+import railo.transformer.cfml.script.CFMLScriptTransformer;
+import railo.transformer.cfml.script.CFMLScriptTransformer.ComponentTemplateException;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.CustomTagLib;
 import railo.transformer.library.tag.TagLib;
@@ -186,7 +189,7 @@ public final class CFMLTransformer {
 					}
 				}
 			}
-			catch (ComponentBodyException e) {
+			catch (ComponentTemplateException e) {
 				throw e.getTemplateException();
 			}
 			catch (TemplateException e) {
@@ -580,10 +583,15 @@ public final class CFMLTransformer {
 				if(tdbt==null) throw createTemplateException(data.cfml,"Tag dependent body Transformer is invalid for Tag ["+tagLibTag.getFullName()+"]",tagLibTag);
 				tdbt.transform(data.config,this,data.ep,data.flibs,tag,tagLibTag,data.cfml);
 				
-				
 				//	get TagLib of end Tag
-				if(!data.cfml.forwardIfCurrent("</"))
-					throw new TemplateException(data.cfml,"invalid construct");
+				if(!data.cfml.forwardIfCurrent("</")) {
+					// MUST this is a patch, do a more proper implementation
+					TemplateException te = new TemplateException(data.cfml,"invalid construct");
+					if(tdbt!=null && tdbt instanceof CFMLScriptTransformer && ASMUtil.containsComponent(tag.getBody())) {
+						throw new CFMLScriptTransformer.ComponentTemplateException(te);
+					}
+					throw te;
+				}
 				
 				TagLib tagLibEnd=nameSpace(data);
 				// same NameSpace
@@ -720,7 +728,7 @@ public final class CFMLTransformer {
 		                	}
 		                }
 		            }
-					
+					// TODO make sure longer namespace ar checked firts to support subsets, same for core libs
 					// insert
 		            TagLib[] newTlibs=new TagLib[data.tlibs[TAG_LIB_PAGE].length+1]; 
                     for(int i=0;i<data.tlibs[TAG_LIB_PAGE].length;i++) {
@@ -751,7 +759,7 @@ public final class CFMLTransformer {
 		TagLib tagLib=null;
 		
 		// loop over NameSpaces
-		for(int i=0;i<2;i++)	{
+		for(int i=1;i>=0;i--)	{
 			for(int ii=0;ii<data.tlibs[i].length;ii++)	{
 				tagLib= data.tlibs[i][ii];
 				char[] c=tagLib.getNameSpaceAndSeperatorAsCharArray();
@@ -821,7 +829,7 @@ public final class CFMLTransformer {
 				    	
 						Attribute attr=new Attribute(tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_DYNAMIC,
 				    			att.getName(),
-				    			Cast.toExpression(LitString.toExprString(att.getDefaultValue(), -1),att.getType()),att.getType()
+				    			Cast.toExpression(LitString.toExprString(Caster.toString(att.getDefaultValue(),null), -1),att.getType()),att.getType()
 				    	);
 				    	parent.addAttribute(attr);
 					}
