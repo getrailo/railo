@@ -6,95 +6,76 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.transformer.bytecode.BytecodeContext;
+import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.util.Types;
 
-
-public final class TryCatchFinallyVisitor {
-
-
+public class TryCatchFinallyVisitor implements Opcodes {
+	private OnFinally onFinally;
 	private Label beginTry;
 	private Label endTry;
-	
-	private Label endTryCatch;
-	private TryCatchFinallyData data;
-	
-	private Label beginGoToFinally;
-	private Label endGoToFinally;
-	private int lThrow;
-	private Label l13= new Label();;
-	//private boolean isFirst=true;
-	
+	private Label endTry2;
+	private Label l3;
+	private Label l4;
+	private Label l5;
+	private Label l6;
+	private Type type=Types.THROWABLE;
+
+
+	public TryCatchFinallyVisitor(OnFinally onFinally){
+		this.onFinally=onFinally;
+	}
+
 	public void visitTryBegin(BytecodeContext bc) {
+		GeneratorAdapter ga = bc.getAdapter();
 		beginTry = new Label();
 		endTry = new Label();
-		endTryCatch = new Label();
-		beginGoToFinally = new Label();
-		endGoToFinally = new Label();
-		data=new TryCatchFinallyData(l13);
-		bc.pushTryCatchFinallyData(data);
-		bc.getAdapter().visitLabel(beginTry);
+		endTry2 = new Label();
+		l3 = new Label();
+		l4 = new Label();
+		bc.pushOnFinally(onFinally);
+		ga.visitLabel(beginTry);
 	}
 
-	public void visitTryEnd(BytecodeContext bc) {
-		//bc.popTryCatchFinallyData();
-		bc.getAdapter().visitJumpInsn(Opcodes.GOTO, beginGoToFinally);
-		bc.getAdapter().visitLabel(endTry);
-	}
-
-	public int visitCatchBegin(BytecodeContext bc, Type type) {
-		//doReturnCatch(bc);
-		GeneratorAdapter adapter = bc.getAdapter();
+	public int visitTryEndCatchBeging(BytecodeContext bc) {
+		GeneratorAdapter ga = bc.getAdapter();
 		
-		Label beginCatch=new Label();
-		Label beginCatchBody=new Label();
-			
-		adapter.visitTryCatchBlock(beginTry, endTry, beginCatch,type.getInternalName());
-		adapter.visitLabel(beginCatch);
-		int lThrow = adapter.newLocal(type);
-		adapter.storeLocal(lThrow);
-		adapter.visitLabel(beginCatchBody);
-			
-		//bc.pushTryCatchFinallyData(data);
+		ga.visitTryCatchBlock(beginTry, endTry, endTry2, type.getInternalName());
+		ga.visitLabel(endTry);
+		l5 = new Label();
+		ga.visitJumpInsn(GOTO, l5);
+		ga.visitLabel(endTry2);
+		int lThrow = ga.newLocal(type);
+		ga.storeLocal(lThrow);
+		//mv.visitVarInsn(ASTORE, 1);
+		l6 = new Label();
+		ga.visitLabel(l6);
 		return lThrow;
 	}
+	
+	public void visitCatchEnd(BytecodeContext bc) throws BytecodeException {
+		Label end = new Label();
+		GeneratorAdapter ga = bc.getAdapter();
+		bc.popOnFinally();
+		ga.visitLabel(l3);
+		ga.visitJumpInsn(GOTO, l5);
+		ga.visitLabel(l4);
+		int lThrow = ga.newLocal(Types.THROWABLE);
+		ga.storeLocal(lThrow);
+		//mv.visitVarInsn(ASTORE, 2);
+		Label l8 = new Label();
+		ga.visitLabel(l8);
 
+		onFinally.writeOut(bc);
+			Label l9 = new Label();
+			ga.visitLabel(l9);
+			ga.loadLocal(lThrow);
+			//mv.visitVarInsn(ALOAD, 2);
+			ga.visitInsn(ATHROW);
+			ga.visitLabel(l5);
 
-	public void visitCatchEnd(BytecodeContext bc) {
-		//bc.popTryCatchFinallyData();
-		bc.getAdapter().visitLabel(new Label());
-		bc.getAdapter().visitJumpInsn(Opcodes.GOTO, beginGoToFinally);
+			onFinally.writeOut(bc);
+			ga.visitLabel(end);
+			ga.visitTryCatchBlock(beginTry, l3, l4, null);
+			
 	}
-
-	public int visitFinallyBegin(BytecodeContext bc) {
-		GeneratorAdapter adapter = bc.getAdapter();
-		adapter.visitLabel(endTryCatch);
-		int lThrow2 = adapter.newLocal(Types.THROWABLE);
-		adapter.storeLocal(lThrow2);
-		adapter.visitJumpInsn(Opcodes.JSR, l13);
-		Label l14 = new Label();
-		adapter.visitLabel(l14);
-		adapter.loadLocal(lThrow2);
-		adapter.visitInsn(Opcodes.ATHROW);
-		adapter.visitLabel(l13);
-		
-		lThrow = adapter.newLocal(Types.OBJECT);
-		adapter.storeLocal(lThrow);
-		Label l15 = new Label(); 
-		adapter.visitLabel(l15);
-		return lThrow;
-	}
-
-	public void visitFinallyEnd(BytecodeContext bc) {
-		bc.popTryCatchFinallyData();
-		GeneratorAdapter adapter = bc.getAdapter();
-		Label l16 = new Label();
-		adapter.visitLabel(l16);
-		adapter.ret(lThrow);
-		adapter.visitVarInsn(Opcodes.RET, 2);
-		adapter.visitLabel(beginGoToFinally);
-		adapter.visitJumpInsn(Opcodes.JSR, l13);
-		adapter.visitLabel(endGoToFinally);
-		adapter.visitTryCatchBlock(beginTry, endTryCatch, endTryCatch, null);
-	}
-
 }
