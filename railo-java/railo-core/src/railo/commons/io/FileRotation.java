@@ -3,7 +3,6 @@ package railo.commons.io;
 import java.io.IOException;
 import java.io.InputStream;
 
-import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 
 public class FileRotation {
