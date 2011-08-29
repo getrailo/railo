@@ -16,6 +16,7 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.DecisionIntVisitor;
 import railo.transformer.bytecode.visitor.NotVisitor;
+import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.ParseBodyVisitor;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 import railo.transformer.bytecode.visitor.WhileVisitor;
@@ -494,7 +495,7 @@ public final class TagOutput extends TagBase {
 
 
 	private void writeOutTypeQuery(BytecodeContext bc) throws BytecodeException {
-		GeneratorAdapter adapter = bc.getAdapter();
+		final GeneratorAdapter adapter = bc.getAdapter();
 
 		numberIterator = adapter.newLocal(TagOutput.NUMBER_ITERATOR);
 		ParseBodyVisitor pbv=new ParseBodyVisitor();
@@ -516,7 +517,7 @@ public final class TagOutput extends TagBase {
 
 		
 		// int startAt=query.getCurrentrow();
-		int startAt=adapter.newLocal(Types.INT_VALUE);
+		final int startAt=adapter.newLocal(Types.INT_VALUE);
 		adapter.loadLocal(query);
 		
 		adapter.loadArg(0);
@@ -577,7 +578,7 @@ public final class TagOutput extends TagBase {
 			Attribute attrGroup = getAttribute("group");
 			Attribute attrGroupCS = getAttribute("groupcasesensitive");
 			group=adapter.newLocal(Types.STRING);
-			int groupCaseSensitive=adapter.newLocal(Types.BOOLEAN_VALUE);
+			final int groupCaseSensitive=adapter.newLocal(Types.BOOLEAN_VALUE);
 			if(attrGroup!=null)	{
 				attrGroup.getValue().writeOut(bc, Expression.MODE_REF);
 				adapter.storeLocal(group);
@@ -594,10 +595,43 @@ public final class TagOutput extends TagBase {
 			adapter.invokeInterface(TagOutput.UNDEFINED, TagOutput.ADD_COLLECTION);
 			
 			// current
-			int current=adapter.newLocal(Types.INT_VALUE);
+			final int current=adapter.newLocal(Types.INT_VALUE);
 			
 			// Try
-			TryFinallyVisitor tfv=new TryFinallyVisitor();
+			TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
+				public void writeOut(BytecodeContext bc) {
+					// query.reset();
+					/*adapter.loadLocal(queryImpl);
+					adapter.loadArg(0);
+					adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
+					adapter.invokeVirtual(Types.QUERY_IMPL, TagOutput.RESET);*/
+					
+					// query.go(startAt);
+					adapter.loadLocal(query);
+					adapter.loadLocal(startAt);
+					
+					adapter.loadArg(0);
+					adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
+					adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
+					
+					/* OLD
+					adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
+					*/
+					adapter.pop();
+					
+					
+					
+					
+					// pc.us().removeCollection();
+					adapter.loadArg(0);
+					adapter.invokeVirtual(Types.PAGE_CONTEXT, TagOutput.US);
+					adapter.invokeInterface(TagOutput.UNDEFINED, TagOutput.REMOVE_COLLECTION);
+					
+			    	// NumberIterator.release(ni);
+					adapter.loadLocal(numberIterator);
+					adapter.invokeStatic(TagOutput.NUMBER_ITERATOR, TagOutput.REALEASE);
+				}
+			});
 			tfv.visitTryBegin(bc);
 				WhileVisitor wv = new WhileVisitor();
 				wv.visitBeforeExpression(bc);
@@ -676,49 +710,13 @@ public final class TagOutput extends TagBase {
 			
 				wv.visitAfterBody(bc,getEndLine());
 			
-			tfv.visitTryEndFinallyBegin(bc);
-
-	    		// query.reset();
-				/*adapter.loadLocal(queryImpl);
-				adapter.loadArg(0);
-				adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-				adapter.invokeVirtual(Types.QUERY_IMPL, TagOutput.RESET);*/
-	    		
-				// query.go(startAt);
-				adapter.loadLocal(query);
-				adapter.loadLocal(startAt);
-				
-				adapter.loadArg(0);
-				adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
-				adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
-				
-				/* OLD
-				adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
-				*/
-				adapter.pop();
-				
-				
-				
-				
-				// pc.us().removeCollection();
-				adapter.loadArg(0);
-				adapter.invokeVirtual(Types.PAGE_CONTEXT, TagOutput.US);
-				adapter.invokeInterface(TagOutput.UNDEFINED, TagOutput.REMOVE_COLLECTION);
-				
-	        	// NumberIterator.release(ni);
-				adapter.loadLocal(numberIterator);
-				adapter.invokeStatic(TagOutput.NUMBER_ITERATOR, TagOutput.REALEASE);
-				
-				
-			tfv.visitFinallyEnd(bc);
+				tfv.visitTryEnd(bc);
 
 		adapter.visitLabel(ifRecCount);
 		
 
 		pbv.visitEnd(bc);
 	}
-	
-
 	
 	/**
 	 * returns numberiterator of output

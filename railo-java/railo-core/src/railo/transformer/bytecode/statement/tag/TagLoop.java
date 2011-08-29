@@ -25,6 +25,7 @@ import railo.transformer.bytecode.visitor.ForContitionIntVisitor;
 import railo.transformer.bytecode.visitor.ForDoubleVisitor;
 import railo.transformer.bytecode.visitor.ForVisitor;
 import railo.transformer.bytecode.visitor.LoopVisitor;
+import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 import railo.transformer.bytecode.visitor.WhileVisitor;
 
@@ -398,7 +399,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 		}
 		
 		// BufferedReader reader = IOUtil.getBufferedReader(resource,charset);
-		int br=adapter.newLocal(Types.BUFFERED_READER);
+		final int br=adapter.newLocal(Types.BUFFERED_READER);
 		adapter.loadLocal(resource);
 		adapter.loadLocal(charset);
 		adapter.invokeStatic(IO_UTIL, GET_BUFFERED_READER);
@@ -412,10 +413,17 @@ public final class TagLoop extends TagBase implements FlowControl {
 		adapter.push(0);
 		adapter.storeLocal(count);
 		
-
-		TryFinallyVisitor tcfv=new TryFinallyVisitor();
+		TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
+			public void writeOut(BytecodeContext bc) {
+				bc.getAdapter().loadLocal(br);
+				bc.getAdapter().invokeStatic(IO_UTIL, CLOSE_EL);
+			}
+		});
+		//TryFinallyVisitor tcfv=new TryFinallyVisitor();
+		
 		// try
-		tcfv.visitTryBegin(bc);
+		tfv.visitTryBegin(bc);
+		//tcfv.visitTryBegin(bc);
 			// while((line=br.readLine())!=null) { 
 			//WhileVisitor wv=new WhileVisitor();
 			whileVisitor.visitBeforeExpression(bc);
@@ -487,17 +495,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 				
 			whileVisitor.visitAfterBody(bc,getEndLine());
 			
-		
-		tcfv.visitTryEndFinallyBegin(bc);
-		
-		
-		// finally
-		//tcfv.visitFinallyBegin(adapter);
-			//IOUtil.closeEL(reader);
-			adapter.loadLocal(br);
-			adapter.invokeStatic(IO_UTIL, CLOSE_EL);
-		
-		tcfv.visitFinallyEnd(bc);
+		tfv.visitTryEnd(bc);
 		
 	}
 
@@ -711,9 +709,9 @@ public final class TagLoop extends TagBase implements FlowControl {
 	private void writeOutTypeQuery(BytecodeContext bc) throws BytecodeException {
 		ForContitionIntVisitor forContitionVisitor = new ForContitionIntVisitor();// TODO replace with ForIntVisitor 
 		loopVisitor=forContitionVisitor;
-		GeneratorAdapter adapter = bc.getAdapter();
+		final GeneratorAdapter adapter = bc.getAdapter();
 		// railo.runtime.type.Query query=pc.getQuery(@query);
-		int query=adapter.newLocal(Types.QUERY);
+		final int query=adapter.newLocal(Types.QUERY);
 		adapter.loadArg(0);
 		getAttribute("query").getValue().writeOut(bc, Expression.MODE_REF);
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_QUERY);
@@ -726,7 +724,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 		
 		
 		// int startAt=query.getCurrentrow();
-		int startAt=adapter.newLocal(Types.INT_VALUE);
+		final int startAt=adapter.newLocal(Types.INT_VALUE);
 		
 		adapter.loadLocal(query);
 		adapter.loadArg(0);
@@ -770,7 +768,24 @@ public final class TagLoop extends TagBase implements FlowControl {
 		adapter.invokeInterface(UNDEFINED, ADD_QUERY);
 		
 		// try
-		TryFinallyVisitor tfv=new TryFinallyVisitor();
+		TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
+			public void writeOut(BytecodeContext bc) {
+				//GeneratorAdapter ga = bc.getAdapter();
+				// pc.us().removeCollection();
+				adapter.loadArg(0);
+				adapter.invokeVirtual(Types.PAGE_CONTEXT, US);
+				adapter.invokeInterface(UNDEFINED, REMOVE_QUERY);
+			
+				// query.go(startAt);
+				adapter.loadLocal(query);
+				adapter.loadLocal(startAt);
+				
+				adapter.loadArg(0);
+				adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
+				adapter.invokeInterface(Types.QUERY, GO_2);
+				adapter.pop();
+			}
+		});
 		tfv.visitTryBegin(bc);
 			// For
 			
@@ -821,28 +836,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 			forContitionVisitor.visitEndAfterContition(bc);
 
 		// Finally
-		tfv.visitTryEndFinallyBegin(bc);
-			// pc.us().removeCollection();
-			adapter.loadArg(0);
-			adapter.invokeVirtual(Types.PAGE_CONTEXT, US);
-			adapter.invokeInterface(UNDEFINED, REMOVE_QUERY);
-		
-			// query.go(startAt);
-			adapter.loadLocal(query);
-			adapter.loadLocal(startAt);
-			
-			adapter.loadArg(0);
-			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-			adapter.invokeInterface(Types.QUERY, GO_2);
-			
-			/* OLD
-			adapter.invokeInterface(Types.QUERY, GO_1);
-			*/
-			adapter.pop();
-			
-			
-			
-		tfv.visitFinallyEnd(bc);
+		tfv.visitTryEnd(bc);
 	}
 
 	/**

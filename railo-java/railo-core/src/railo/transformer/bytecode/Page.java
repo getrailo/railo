@@ -45,6 +45,7 @@ import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
 import railo.transformer.bytecode.visitor.ConditionVisitor;
 import railo.transformer.bytecode.visitor.DecisionIntVisitor;
+import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 
 /**
@@ -765,7 +766,7 @@ public final class Page extends BodyBase {
 	}
 
 	private void writeOutInitComponent(BytecodeContext statConstr,BytecodeContext constr,List keys, ClassWriter cw, Tag component) throws BytecodeException {
-		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , INIT_COMPONENT, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
+		final GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , INIT_COMPONENT, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
         BytecodeContext bc=new BytecodeContext(statConstr, constr,keys,cw,name,adapter,INIT_COMPONENT,writeLog());
 		Label methodBegin=new Label();
     	Label methodEnd=new Label();
@@ -774,7 +775,7 @@ public final class Page extends BodyBase {
     	adapter.visitLabel(methodBegin);
         
 		// Scope oldData=null;
-		int oldData=adapter.newLocal(Types.VARIABLES);
+		final int oldData=adapter.newLocal(Types.VARIABLES);
 		ASMConstants.NULL(adapter);
 		adapter.storeLocal(oldData);
 		
@@ -803,7 +804,7 @@ public final class Page extends BodyBase {
 			
 			
 		//int oldCheckArgs=	pc.undefinedScope().setMode(Undefined.MODE_NO_LOCAL_AND_ARGUMENTS);
-			int oldCheckArgs = adapter.newLocal(Types.INT_VALUE);
+			final int oldCheckArgs = adapter.newLocal(Types.INT_VALUE);
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, UNDEFINED_SCOPE);
 			adapter.push(Undefined.MODE_NO_LOCAL_AND_ARGUMENTS);
@@ -811,7 +812,26 @@ public final class Page extends BodyBase {
 			adapter.storeLocal(oldCheckArgs);
 		
 			
-		TryCatchFinallyVisitor tcf=new TryCatchFinallyVisitor();
+		TryCatchFinallyVisitor tcf=new TryCatchFinallyVisitor(new OnFinally() {
+			
+			public void writeOut(BytecodeContext bc) {
+
+				// undefined.setMode(oldMode);
+				adapter.loadArg(0);
+				adapter.invokeVirtual(Types.PAGE_CONTEXT, UNDEFINED_SCOPE);
+				adapter.loadLocal(oldCheckArgs,Types.INT_VALUE);
+				adapter.invokeInterface(Types.UNDEFINED, SET_MODE);
+				adapter.pop();
+				
+					// c.afterCall(pc,_oldData);
+					adapter.loadArg(1);
+					adapter.loadArg(0);
+					adapter.loadLocal(oldData);
+					adapter.invokeVirtual(Types.COMPONENT_IMPL, AFTER_CALL);
+				
+				
+			}
+		});
 		tcf.visitTryBegin(bc);
 			// oldData=c.beforeCall(pc);
 			adapter.loadArg(1);
@@ -821,9 +841,7 @@ public final class Page extends BodyBase {
 			ExpressionUtil.visitLine(bc, component.getStartLine());
 			writeOutCallBody(bc,component.getBody(),IFunction.PAGE_TYPE_COMPONENT);
 			ExpressionUtil.visitLine(bc, component.getEndLine());
-		tcf.visitTryEnd(bc);
-		
-		int t=tcf.visitCatchBegin(bc, Types.THROWABLE);
+		int t = tcf.visitTryEndCatchBeging(bc);
 			// BodyContentUtil.flushAndPop(pc,bc);
 			adapter.loadArg(0);
 			adapter.loadLocal(localBC);
@@ -835,24 +853,6 @@ public final class Page extends BodyBase {
 			adapter.throwException();
 		tcf.visitCatchEnd(bc);
 		
-		tcf.visitFinallyBegin(bc);
-		
-		// undefined.setMode(oldMode);
-		adapter.loadArg(0);
-		adapter.invokeVirtual(Types.PAGE_CONTEXT, UNDEFINED_SCOPE);
-		adapter.loadLocal(oldCheckArgs,Types.INT_VALUE);
-		adapter.invokeInterface(Types.UNDEFINED, SET_MODE);
-		adapter.pop();
-		
-			// c.afterCall(pc,_oldData);
-			adapter.loadArg(1);
-			adapter.loadArg(0);
-			adapter.loadLocal(oldData);
-			adapter.invokeVirtual(Types.COMPONENT_IMPL, AFTER_CALL);
-		
-			
-			
-		tcf.visitFinallyEnd(bc);
 		adapter.loadArg(0);
 		adapter.loadLocal(localBC);
 		adapter.invokeStatic(Types.BODY_CONTENT_UTIL, CLEAR_AND_POP);
@@ -1209,6 +1209,9 @@ public final class Page extends BodyBase {
 			adapter.visitLocalVariable("this", "L"+name+";", null, methodBegin, methodEnd, 0);
 	    	adapter.visitLabel(methodBegin);
 	        
+	    	
+	    	
+	    	
 	        writeOutCallBody(new BytecodeContext(statConstr, constr,keys,cw,name,adapter,CALL,writeLog()),this,IFunction.PAGE_TYPE_REGULAR);
 	        
 	        adapter.visitLabel(methodEnd);
@@ -1222,6 +1225,7 @@ public final class Page extends BodyBase {
 		writeOutFunctions(bc,body,pageType);
 		
 		
+		
 		if(pageType==IFunction.PAGE_TYPE_COMPONENT) {
 			GeneratorAdapter adapter = bc.getAdapter();
 			adapter.loadArg(1);
@@ -1231,6 +1235,23 @@ public final class Page extends BodyBase {
 
 		}
 		if(pageType!=IFunction.PAGE_TYPE_INTERFACE){
+			/*TCFV test=new TCFV(new OnFinally() {
+				
+				@Override
+				public void writeOut(BytecodeContext bc) throws BytecodeException {
+					ASMUtil.dummy2(bc);
+				}
+			});
+	    	test.visitTryBegin(bc);
+	    		ASMUtil.dummy1(bc);
+	    	test.visitTryEndCatchBeging(bc);
+	    		ASMUtil.dummy2(bc);
+			test.visitCatchEnd(bc);
+	    	*/
+	    	
+	    	
+	    	
+			
 			BodyBase.writeOut(bc.getStaticConstructor(),bc.getConstructor(),bc.getKeys(),body.getStatements(), bc);
 		}
 	}
@@ -1354,9 +1375,9 @@ public final class Page extends BodyBase {
 
 	public static byte[] setSourceLastModified(byte[] barr,  long lastModified) {
 		ClassReader cr = new ClassReader(barr);
-		ClassWriter cw = new ClassWriter(true);
+		ClassWriter cw = ASMUtil.getClassWriter();
 		ClassAdapter ca = new SourceLastModifiedClassAdapter(cw,lastModified);
-		cr.accept(ca, true);
+		cr.accept(ca, ClassReader.SKIP_DEBUG);
 		return cw.toByteArray();
 	}
 	

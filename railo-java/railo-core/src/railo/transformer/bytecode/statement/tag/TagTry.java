@@ -21,6 +21,7 @@ import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 
 public final class TagTry extends TagBase {
@@ -82,8 +83,8 @@ public final class TagTry extends TagBase {
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		Body tryBody=new BodyBase();
-		List catches=new ArrayList();
-		Tag _finally=null;
+		List<Tag> catches=new ArrayList<Tag>();
+		Tag tmpFinal=null;
 
 		tryBody.setParent(getBody().getParent());
 		
@@ -100,24 +101,31 @@ public final class TagTry extends TagBase {
 					continue;
 				}
 				else if(tag.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Finally"))	{
-					_finally=tag;
+					tmpFinal=tag;
 					continue;
 				}
 			}
 			tryBody.addStatement(stat);
 		};
 		
+		final Tag _finally=tmpFinal;
 		
 		
+		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor(new OnFinally() {
+			
+			public void writeOut(BytecodeContext bc) throws BytecodeException {
+				if(_finally!=null) {
+					ExpressionUtil.visitLine(bc, _finally.getLine());
+					_finally.getBody().writeOut(bc);
+				}
+			}
+		});
 		
-		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor();
+		
 		// Try
 		tcfv.visitTryBegin(bc);
 			tryBody.writeOut(bc);
-		tcfv.visitTryEnd(bc);
-		
-		// Catch
-		int e=tcfv.visitCatchBegin(bc, Types.THROWABLE);
+		int e=tcfv.visitTryEndCatchBeging(bc);
 			// if(e instanceof railo.runtime.exp.Abort) throw e;
 			Label abortEnd=new Label();
 			adapter.loadLocal(e);
@@ -217,20 +225,6 @@ public final class TagTry extends TagBase {
         adapter.invokeVirtual(Types.PAGE_CONTEXT, SET_CATCH_PE);
 			
 		tcfv.visitCatchEnd(bc);
-		
-		
-		
-		// Finally
-		tcfv.visitFinallyBegin(bc);
-			// pc.clearCatch();
-				//adapter.loadArg(0);
-				//adapter.invokeVirtual(Types.PAGE_CONTEXT, CLEAR_CATCH);
-		
-			if(_finally!=null) {
-				ExpressionUtil.visitLine(bc, _finally.getLine());
-				_finally.getBody().writeOut(bc);
-			}
-		tcfv.visitFinallyEnd(bc);
 	}
 
 	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter,Tag tag, int pe,boolean caugth) throws BytecodeException {

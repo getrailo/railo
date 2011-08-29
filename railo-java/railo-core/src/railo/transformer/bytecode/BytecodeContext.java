@@ -9,7 +9,7 @@ import org.objectweb.asm.commons.Method;
 
 import railo.commons.lang.StringUtil;
 import railo.transformer.bytecode.literal.LitString;
-import railo.transformer.bytecode.visitor.TryCatchFinallyData;
+import railo.transformer.bytecode.visitor.OnFinally;
 
 public class BytecodeContext {
 	
@@ -129,20 +129,28 @@ public class BytecodeContext {
 	}
 
 
-	Stack tcf=new Stack();
+	Stack<OnFinally> tcf=new Stack<OnFinally>();
 	private int currentTag;
 	private int line;
 	private BytecodeContext root;
 	private boolean writeLog;
 	//private static BytecodeContext staticConstr;
-	public void pushTryCatchFinallyData(TryCatchFinallyData data) {
+	
+	public void pushOnFinally(OnFinally onFinally) {
+		tcf.push(onFinally);
+	}
+	public void popOnFinally() {
+		tcf.pop();
+	}
+	
+	/*public void pushTryCatchFinallyData(TryCatchFinallyData data) {
 		tcf.push(data);
 	}
 	public void popTryCatchFinallyData() {
 		tcf.pop();
-	}
+	}*/
 	
-	public Stack getTryCatchFinallyDataStack() {
+	public Stack<OnFinally> getOnFinallyStack() {
 		return tcf;
 	}
 

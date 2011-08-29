@@ -113,6 +113,19 @@ public class BodyBase extends StatementBase implements Body {
 	
 	
 	public static void writeOut(BytecodeContext statConstr,BytecodeContext constr,List keys,List statements,BytecodeContext bc) throws BytecodeException {
+		Iterator it = statements.iterator();
+		//int lastLine=-1;
+		int count=0;
+		while(it.hasNext()) {
+			count++;
+			Statement s = ((Statement)it.next());
+			
+	    	s.writeOut(bc);
+        }
+		//ExpressionUtil.writeLog(bc, lastLine);	
+    }
+	
+	public static void writeOut2(BytecodeContext statConstr,BytecodeContext constr,List keys,List statements,BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
         boolean isOutsideMethod;
         GeneratorAdapter a=null;
@@ -162,7 +175,6 @@ public class BodyBase extends StatementBase implements Body {
 			a.endMethod();
         } 
     }
-
 
     
 

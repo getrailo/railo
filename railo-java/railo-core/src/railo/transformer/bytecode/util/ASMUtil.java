@@ -1,7 +1,6 @@
 package railo.transformer.bytecode.util;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,13 +16,12 @@ import org.objectweb.asm.commons.Method;
 import railo.aprint;
 import railo.commons.digest.MD5;
 import railo.commons.lang.StringUtil;
-import railo.commons.lang.SystemOut;
 import railo.runtime.component.Property;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.Body;
+import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
@@ -462,7 +460,7 @@ public final class ASMUtil {
 	        mv.visitLineNumber(4, l0);
 	        mv.visitLdcInsn(srcName);
 	        mv.visitInsn(Opcodes.ARETURN);
-	        mv.visitMaxs(1, 0);
+	        //mv.visitMaxs(0, 0);//visitMaxs(1, 0);// hansx
 	        mv.visitEnd();
         }
         
@@ -478,7 +476,7 @@ public final class ASMUtil {
 		cw.visitField(Opcodes.ACC_PRIVATE, name, type.toString(), null, null).visitEnd();
 		
 		int load=loadFor(type);
-		int sizeOf=sizeOf(type);
+		//int sizeOf=sizeOf(type);
 		
     	// get<PropertyName>():<type>
     		Type[] types=new Type[0];
@@ -494,8 +492,7 @@ public final class ASMUtil {
 			Label end = new Label();
 			adapter.visitLabel(end);
 			adapter.visitLocalVariable("this", "L"+classType+";", null, start, end, 0);
-			adapter.visitMaxs(sizeOf, 1);
-			
+			//adapter.visitMaxs(0, 0);//visitMaxs(sizeOf, 1);// hansx
 			adapter.visitEnd();
 			
 			
@@ -520,7 +517,7 @@ public final class ASMUtil {
 			adapter.visitLabel(end);
 			adapter.visitLocalVariable("this", "L"+classType+";", null, start, end, 0);
 			adapter.visitLocalVariable(name, type.toString(), null, start, end, 1);
-			adapter.visitMaxs(sizeOf+1, sizeOf+1);
+			//adapter.visitMaxs(0, 0);//.visitMaxs(sizeOf+1, sizeOf+1);// hansx
 			adapter.visitEnd();
         
 			
@@ -651,11 +648,15 @@ public final class ASMUtil {
 
 
 	public static ClassWriter getClassWriter() {
+		return new ClassWriter(ClassWriter.COMPUTE_MAXS|ClassWriter.COMPUTE_FRAMES);
+		/*if(true) return new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		
+		
 		if(version==VERSION_2)
-			return new ClassWriter(true);
+			return new ClassWriter(ClassWriter.COMPUTE_MAXS+ClassWriter.COMPUTE_FRAMES);
 		
 		try{
-			ClassWriter cw = new ClassWriter(true);
+			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 			version=VERSION_2;
 			return cw;
 		}
@@ -668,14 +669,14 @@ public final class ASMUtil {
 			SystemOut.printDate(ew, VERSION_MESSAGE);
 			
 			try {
-				return  ClassWriter.class.getConstructor(new Class[]{int.class}).newInstance(new Object[]{new Integer(1)});
+				return  ClassWriter.class.getConstructor(new Class[]{boolean.class}).newInstance(new Object[]{Boolean.TRUE});
 				
 			} 
 			catch (Exception e) {
 				throw new RuntimeException(Caster.toPageException(e));
 				
 			}
-		}
+		}*/
 	}
 
 	/*
@@ -886,6 +887,16 @@ public final class ASMUtil {
 			if(it.next() instanceof TagComponent)return true;
 		}
 		return false;
+	}
+
+
+	public static void dummy1(BytecodeContext bc) {
+		bc.getAdapter().visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J");
+		bc.getAdapter().visitInsn(Opcodes.POP2);
+	}
+	public static void dummy2(BytecodeContext bc) {
+		bc.getAdapter().visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "nanoTime", "()J");
+		bc.getAdapter().visitInsn(Opcodes.POP2);
 	}
 	
 }
