@@ -31,7 +31,6 @@ xalan-2-7
 hsqldb-2-7-1
 tm-extractors-0.4
 postgresql-8.3-604.jdbc3
-objectweb-asm-all-3.1
 iText-2.1.2u-1
 pd4ml_demo.jar
 jcommon-1.0.10
@@ -47,3 +46,4 @@ jta-1.1
 slf4j-api-1.5.8
 metadata-extractor-2.4.0-beta-1
 javaparser-1.0.8
+asm-all-4.0_RC1
