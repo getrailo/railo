@@ -11,7 +11,6 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.ClassUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.CFMLFactoryImpl;
@@ -102,7 +101,8 @@ public final class Controler extends Thread {
 	private void monitor() {
 		Resource dir=((ConfigServerImpl)configServer).getMonitorDir();
 		Resource memory = touch(dir,"memory.bin",ConfigServerImpl._CF,ConfigServerImpl._01);
-		memory.isAbsolute();
+		if(memory!=null);
+		//memory.isAbsolute();
 	}
 
 	private Resource touch(Resource dir, String name, byte first, byte second) {
