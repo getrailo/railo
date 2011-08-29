@@ -1,9 +1,6 @@
 package railo.commons.io.res.type.s3;
 
 
-import java.io.InputStream;
-import java.util.Map;
-
 import org.apache.commons.httpclient.HttpMethod;
 
 import railo.aprint;
