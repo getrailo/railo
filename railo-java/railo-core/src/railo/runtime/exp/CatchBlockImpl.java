@@ -1,7 +1,5 @@
 package railo.runtime.exp;
 
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,7 +31,8 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	public static final Key MESSAGE = KeyImpl.intern("Message");
 	public static final Key DETAIL = KeyImpl.intern("Detail");
 	public static final Key ERROR_CODE = KeyImpl.intern("ErrorCode");
-	public static final Key EXTENDED_INFO = KeyImpl.intern("ExtendedInfo");
+	public static final Key EXTENDEDINFO = KeyImpl.intern("ExtendedInfo");
+	public static final Key EXTENDED_INFO = KeyImpl.intern("Extended_Info");
 	public static final Key TAG_CONTEXT = KeyImpl.intern("TagContext");
 	public static final Key STACK_TRACE = KeyImpl.intern("StackTrace");
 	public static final Key ADDITIONAL = KeyImpl.intern("additional");
@@ -48,6 +47,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		setEL(MESSAGE, new SpecialItem(pe, MESSAGE));
 		setEL(DETAIL, new SpecialItem(pe, DETAIL));
 		setEL(ERROR_CODE, new SpecialItem(pe, ERROR_CODE));
+		setEL(EXTENDEDINFO, new SpecialItem(pe, EXTENDEDINFO));
 		setEL(EXTENDED_INFO, new SpecialItem(pe, EXTENDED_INFO));
 		setEL(ADDITIONAL, new SpecialItem(pe, ADDITIONAL));
 		setEL(TAG_CONTEXT, new SpecialItem(pe, TAG_CONTEXT));
@@ -87,6 +87,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 			if(key==MESSAGE) return StringUtil.emptyIfNull(pe.getMessage());
 			if(key==DETAIL) return StringUtil.emptyIfNull(pe.getDetail());
 			if(key==ERROR_CODE) return StringUtil.emptyIfNull(pe.getErrorCode());
+			if(key==EXTENDEDINFO) return StringUtil.emptyIfNull(pe.getExtendedInfo());
 			if(key==EXTENDED_INFO) return StringUtil.emptyIfNull(pe.getExtendedInfo());
 			if(key==KeyImpl.TYPE) return StringUtil.emptyIfNull(pe.getTypeAsString());
 			if(key==STACK_TRACE) return StringUtil.emptyIfNull(pe.getStackTraceAsString());
@@ -106,7 +107,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 						pe.setErrorCode(Caster.toString(o));
 						return;
 					}
-					else if(key==EXTENDED_INFO) {
+					else if(key==EXTENDEDINFO || key==EXTENDED_INFO) {
 						pe.setExtendedInfo(Caster.toString(o));
 						return;
 					}
@@ -147,7 +148,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 				rtn=pe.getErrorCode();
 				pe.setErrorCode("0");
 			}
-			else if(key==EXTENDED_INFO)  {
+			else if(key==EXTENDEDINFO || key==EXTENDED_INFO)  {
 				rtn=pe.getExtendedInfo();
 				pe.setExtendedInfo(null);
 			}
