@@ -678,7 +678,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
             		
                 int row=len+y+1;
                 record = records[y];
-            	si=(SearchIndex)indexes.get(record.getId());
+            	si=indexes.get(record.getId());
 
                 title=record.getTitle();
                 custom1=record.getCustom1();
