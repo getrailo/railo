@@ -1490,6 +1490,13 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<attribute-type>fixed</attribute-type>
 		
 		<attribute>
+			<type>string</type>
+			<name>engine</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>This attribute only exists for compatibility reasions to other CFML engines, the attribute is completely ignored by Railo.</description>
+		</attribute>
+		<attribute>
 			<type>boolean</type>
 			<name>categories</name>
 			<required>false</required>
