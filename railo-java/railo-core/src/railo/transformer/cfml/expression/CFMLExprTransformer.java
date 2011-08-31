@@ -1206,24 +1206,25 @@ public class CFMLExprTransformer implements ExprTransformer {
 	    Invoker invoker=null;
 		// Loop over nested Variables
 		while (data.cfml.isValidIndex()) {
-			Expression nameProp = null;
+			Expression nameProp = null,namePropUC = null;
 			// .
 			if (data.cfml.forwardIfCurrent('.')) {
 				// Extract next Var String
                 comments(data.cfml);
                 int line=data.cfml.getLine();
-				name = identifier(data,true,true);
+				name = identifier(data,true,false);
 				if(name==null) 
 					throw new TemplateException(data.cfml, "Invalid identifier");
                 comments(data.cfml);
 				nameProp=LitString.toExprString(name,line);
+				namePropUC=LitString.toExprString(name.toUpperCase(),line);
 			}
 			// []
 			else if (data.cfml.forwardIfCurrent('[')) {
 				
 				// get Next Var
 				nameProp = structElement(data);
-
+				namePropUC=nameProp;
 				// Valid Syntax ???
 				if (!data.cfml.forwardIfCurrent(']'))
 					throw new TemplateException(
@@ -1260,7 +1261,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			if (data.cfml.isCurrent('(')) invoker.addMember(getFunctionMember(data,name, false, nameProp));
 			
 			// property
-			else invoker.addMember(new DataMember(nameProp));
+			else invoker.addMember(new DataMember(namePropUC));
 			
 		}
 		
