@@ -34,6 +34,8 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 
 /**
  * 
@@ -571,6 +573,7 @@ public final class SystemUtil {
 		}
 	    
 	}
+	
 	public static MemoryUsage getPermGenSpaceSize() {
 		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
 		Iterator<MemoryPoolMXBean> it = manager.iterator();
@@ -623,4 +626,28 @@ public final class SystemUtil {
 		}
 		return qry;
 	}
+	
+	public static Struct getMemoryUsageCompaact(int type) {
+		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
+		Iterator<MemoryPoolMXBean> it = manager.iterator();
+		
+		MemoryPoolMXBean bean;
+		MemoryUsage usage;
+		MemoryType _type;
+		Struct sct=new StructImpl();
+		while(it.hasNext()){
+			bean = it.next();
+			usage = bean.getUsage();
+			_type = bean.getType();
+			if(type==MEMORY_TYPE_HEAP && _type!=MemoryType.HEAP)continue;
+			if(type==MEMORY_TYPE_NON_HEAP && _type!=MemoryType.NON_HEAP)continue;
+				
+			double d=((int)(100D/usage.getMax()*usage.getUsed()))/100D;
+			sct.setEL(bean.getName(), Caster.toDouble(d));
+			
+		}
+		return sct;
+	}
+	
+	
 }

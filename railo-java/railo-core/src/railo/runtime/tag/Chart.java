@@ -19,6 +19,7 @@ import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.Axis;
+import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.block.ColumnArrangement;
 import org.jfree.chart.block.LineBorder;
@@ -162,6 +163,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 	private String yaxistype="category";
 	private double smallest;
 	private double biggest;
+	private boolean showXLabel=true;
 	
 	public void release() {
 		_series.clear();
@@ -210,6 +212,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		showxgridlines=NONE;
 		showygridlines=false;
 		sortxaxis=false;
+		showXLabel=true;
 		
 		style=null;
 		title="";
@@ -217,8 +220,11 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		tipstyle=TIP_STYLE_MOUSEOVER;
 	}
 	
+	
 
-
+	public void setShowxlabel(boolean showXLabel) {
+		this.showXLabel = showXLabel;
+	}
 	public void setBackgroundcolor(String strBackgroundColor) throws ExpressionException {
 		this.backgroundcolor = ColorCaster.toColor(strBackgroundColor);
 	}
@@ -807,6 +813,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		int seriesCount=_series.size();
 		for(int i=0;i<seriesCount;i++){
 			lsr.setSeriesShapesVisible(i, true);
+			lsr.setSeriesItemLabelsVisible(i, true);
 			lsr.setSeriesShape(i, ShapeUtilities.createDiamond(markersize));
 	        lsr.setUseFillPaint(true);
 	        lsr.setBaseFillPaint(databackgroundcolor);
@@ -883,7 +890,13 @@ public final class Chart extends BodyTagImpl implements Serializable {
 			CategoryPlot cp=(CategoryPlot) plot;
 			ValueAxis rangeAxis = cp.getRangeAxis();
 			rangeAxis.setAutoTickUnitSelection(true);
-			rangeAxis.setStandardTickUnits(new TickUnitsImpl(rangeAxis.getStandardTickUnits(),labelFormat));	
+			rangeAxis.setStandardTickUnits(new TickUnitsImpl(rangeAxis.getStandardTickUnits(),labelFormat));
+			CategoryItemRenderer r = cp.getRenderer();
+			r.setBaseItemLabelsVisible(false);
+			
+			CategoryAxis da = cp.getDomainAxis();
+			if(!showXLabel)da.setTickLabelsVisible(false);
+			//da.setVisible(false);
 		}
 	}
 

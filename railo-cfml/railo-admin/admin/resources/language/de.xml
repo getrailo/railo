@@ -113,6 +113,9 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.debugging.logs">Logs</data>
 	<data key="menu.debugging.templates">Templates</data>
 	
+	<data key="menu.surveillance.label">Überwachung</data>
+	<data key="menu.surveillance.Memory">Memory</data>
+	
 	<data key="menu.security.label">Sicherheit</data>
 	<data key="menu.security.access">Zugriff</data>
 	<data key="menu.security.password">Passwort</data>

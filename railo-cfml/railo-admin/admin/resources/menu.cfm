@@ -55,6 +55,11 @@
 				struct(action:"cfx_tags",label:stMenu.resources.cfx_tags)
 			)
 		),
+		struct(action:"surveillance",label:stMenu.surveillance.label,
+			children:array(
+				struct(action:"memory",label:stMenu.surveillance.memory)
+			)
+		),
 		struct(action:"debugging",label:stMenu.debugging.label,
 			children:array(
 				struct(action:"templates",label:stMenu.debugging.templates),

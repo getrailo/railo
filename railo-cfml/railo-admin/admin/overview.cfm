@@ -42,13 +42,97 @@ Error Output --->
 <cfset printError(error)>
 
 
+
+
+
+<cfset pool["Par Eden Space"]="The pool from which memory is initially allocated for most objects.">
+<cfset pool["Par Survivor Space"]="The pool containing objects that have survived the garbage collection of the Eden space.">
+<cfset pool["CMS Old Gen"]="The pool containing objects that have existed for some time in the survivor space.">
+<cfset pool["CMS Perm Gen"]="The pool containing all the reflective data of the virtual machine itself, such as class and method objects.">
+<cfset pool["Code Cache"]="The HotSpot Java VM also includes a code cache, containing memory that is used for compilation and storage of native code.">
+
+
+<cffunction name="printMemory" output="yes">
+	<cfargument name="usage" type="query" required="yes">
+	
+    <cfset height=6>
+    <cfset width=100>
+       	<table cellpadding="0" cellspacing="0">
+        <cfloop query="usage">
+        	<cfset _used=int(width/usage.max*usage.used)>
+        	<cfset _free=width-_used> 
+            
+			<cfset pused=int(100/usage.max*usage.used)>
+        	<cfset pfree=100-pused> 
+            
+            
+            
+        	<tr>  
+   				<td>
+            	<table class="tbl" height="#height#" width="#width#">
+                
+                <tr>
+                	<td colspan="2"><cfmodule template="tp.cfm" height="1" width="#width#" /></td>
+                </tr>
+                <tr>
+                    <td  colspan="2"><b>#usage.name#</b><cfif StructKeyExists(pool,usage.name)><br /><span class="comment">#pool[usage.name]#</span></cfif></td>
+                </tr>
+                <tr>
+                    <td class="tblHead" style="background-color:##eee2d4" height="#height#" width="#_used#" title="#int(usage.used/1024)#kb (#pused#%)"><cfmodule template="tp.cfm" height="#height#" width="#_used#" /></td>
+                    <td class="tblContent" style="background-color:##d6eed4" height="#height#" width="#_free#" title="#int((usage.max-usage.used)/1024)#kb (#pfree#%)"><cfmodule template="tp.cfm" height="#height#" width="#_free#" /></td>
+                </tr>
+                </table>
+                </td>
+             </tr>
+    	</cfloop>
+        </table>
+</cffunction>
+
+<cfset total=query(
+	name:["Total"],
+	type:[""],
+	used:[server.java.totalMemory-server.java.freeMemory],
+	max:[server.java.totalMemory],
+	init:[0]
+)>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <cfoutput>
+
+
+
+
+
+
 <div style="width:740px">
 #stText.Overview.introdesc[request.adminType]#
 </div>
 <br />
 
+
+
 <table class="tbl" width="740">
+<tr>
+<td valign="top">
+<table class="tbl" width="300">
 <tr>
 	<td colspan="2"><h2>#stText.Overview.Info#</h2></td>
 </tr>
@@ -185,30 +269,11 @@ Error Output --->
 		#server.java.version# (#server.java.vendor#)<cfif structKeyExists(server.java,"archModel")> #server.java.archModel#bit</cfif>
 	</td> 
 </tr>
-
-
-
-
-
-
-
-
-
-
-
-<!---
-<tr>
-	<td class="tblHead" width="150">Memory</td>
-	<td class="tblContent">
-    	##round((server.java.maxMemory)/1024/1024)##mb
-	</td> 
-</tr>
---->
 <tr>
 	<td class="tblHead" width="150">Classpath</td>
 	<td class="tblContent">
     	
-	<div class="tblContent" style="font-family:Courier New;font-size : 7pt;overflow:auto;width:100%;height:100px;border-style:solid;border-width:1px;padding:0px">
+	<div class="tblContent" style="font-family:Courier New;font-size : 7pt;overflow:auto;width:400;height:100px;border-style:solid;border-width:1px;padding:0px">
     <cfset arr=getClasspath()>
     <cfloop from="1" to="#arrayLen(arr)#" index="line">
     <span style="background-color:###line mod 2?'d2e0ee':'ffffff'#;display:block;padding:1px 5px 1px 5px ;">#arr[line]#</span>
@@ -216,161 +281,46 @@ Error Output --->
    </div>
 	</td> 
 </tr>
+</table>
 
 
-
-
-<cffunction name="printMemoryOld" output="yes">
-	<cfargument name="type" type="string" required="yes">
-	
-    <cfset var usage=getmemoryUsage(arguments.type)>
-    
-    <cfset height=100>
-    <cfset width=10>
-       	<table cellpadding="0" cellspacing="0"> 
-        <tr>  
-        <cfloop query="usage">
-        	<cfset _used=int(height/usage.max*usage.used)>
-        	<cfset _free=height-_used>
-   			<td>
-            <table class="tbl" height="#height#" title="#usage.name# ">
-            <cfif usage.currentrow EQ 1>
-            
-            </cfif>
-            <tr>
-                <td class="tblContent" height="#_free#"><cfmodule template="tp.cfm" width="#width#" height="#_free#" /></td>
-            </tr>
-            <tr>
-                <td class="tblHead" style="background-color:red" height="#_used#"><cfmodule template="tp.cfm" width="#width#" height="#_used#" /></td>
-            </tr>
-            </table>
-            </td>
-    	</cfloop>
-        </tr>
-        </table>
-</cffunction>
-
-<cfset pool["Par Eden Space"]="The pool from which memory is initially allocated for most objects.">
-<cfset pool["Par Survivor Space"]="The pool containing objects that have survived the garbage collection of the Eden space.">
-<cfset pool["CMS Old Gen"]="The pool containing objects that have existed for some time in the survivor space.">
-<cfset pool["CMS Perm Gen"]="The pool containing all the reflective data of the virtual machine itself, such as class and method objects. With Java VMs that use class data sharing, this generation is divided into read-only and read-write areas.">
-<cfset pool["Code Cache"]="The HotSpot Java VM also includes a code cache, containing memory that is used for compilation and storage of native code.">
-
-
-<cffunction name="printMemory" output="yes">
-	<cfargument name="usage" type="query" required="yes">
-	
-    <cfset height=6>
-    <cfset width=200>
-       	<table cellpadding="0" cellspacing="0">
-        <cfloop query="usage">
-        	<cfset _used=int(width/usage.max*usage.used)>
-        	<cfset _free=width-_used> 
-            
-			<cfset pused=int(100/usage.max*usage.used)>
-        	<cfset pfree=100-pused> 
-            
-            
-            
-        	<tr>  
-   				<td>
-            	<table class="tbl" height="#height#" width="#width#">
-                
-                <tr>
-                	<td colspan="2"><cfmodule template="tp.cfm" height="1" width="#width#" /></td>
-                </tr>
-                <tr>
-                    <td  colspan="2"><b>#usage.name#</b><cfif StructKeyExists(pool,usage.name)><br /><span class="comment">#pool[usage.name]#</span></cfif></td>
-                </tr>
-                <tr>
-                    <td class="tblHead" style="background-color:##eee2d4" height="#height#" width="#_used#"><cfmodule template="tp.cfm" height="#height#" width="#_used#" /></td>
-                    <td class="tblContent" style="background-color:##d6eed4" height="#height#" width="#_free#"><cfmodule template="tp.cfm" height="#height#" width="#_free#" /></td>
-                </tr>
-                </table>
-                </td>
-             </tr>
-             
-             <tr>
-                <td>
-                <table class="tbl">
-                <colgroup>
-                	<col width="30" />
-                	<col width="100" />
-                </colgroup>
-              
-                 <tr>
-                    <td class="tblHead" style="background-color:##eee2d4"><span class="comment">Used</span></td>
-                    <td ><span class="comment">#int(usage.used/1024)#kb (#pused#%)</span></td>
-                 
-                    <td class="tblContent" style="background-color:##d6eed4" ><span class="comment">Free</span></td>
-                    <td ><span class="comment">#int((usage.max-usage.used)/1024)#kb (#pfree#%)</span></td>
-                </tr>
-                <tr>
-                	<td colspan="2"><cfmodule template="tp.cfm" height="2" width="1" /></td>
-                </tr>
-                </table>
-                </td>
-        	</tr>
-    	</cfloop>
-        </table>
-</cffunction>
-
-<cfset total=query(
-	name:["Total"],
-	type:[""],
-	used:[server.java.totalMemory-server.java.freeMemory],
-	max:[server.java.totalMemory],
-	init:[0]
-)>
-<cfif request.admintype EQ "server">
+</td>
+<td valign="top">
 <cftry>
 <cfsavecontent variable="memoryInfo">
+
+<table class="tbl">
+
 <tr>
-	<td colspan="2">&nbsp;<br />
-    <h2>Memory</h2>
- 
-The JVM (Java Virtual Machine) has a heap that is the runtime data area from which memory for all objects are allocated.
-The heap size may be configured with the following VM options:
-<li>Xmx{size} - to set the maximum Java heap size
-<li>Xms{size} - to set the initial Java heap size
-<br />
-<br />
-
-Also, the JVM has memory other than the heap, referred to as non-heap memory. It stores al cfc/cfm templates, java classes, interned Strings and meta-data.<br />
-
-The abnormal growth of non-heap memory mostly indicate that Railo has to load many cfc/cfm templates.
-
-If the application indeed needs that much of non-heap memory and the default maximum size of 64 Mb is not enough, you may enlarge the maximum size with the help of -XX:MaxPermSize VM option. For example, -XX:MaxPermSize=128m sets the size of 128 Mb.
-
-    
-    </td>
+	<td><h2>Memory Usage</h2></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">Heap</td>
+</tr>
+<tr>
 	<td class="tblContent">
         <cfset printMemory(getmemoryUsage("heap"))>
     </td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">Non-Heap</td>
+</tr>
+<tr>
 	<td class="tblContent">
         <cfset printMemory(getmemoryUsage("non_heap"))>
     </td>
 </tr>
-<!---
-<tr>
-	<td class="tblHead" width="150">Total</td>
-	<td class="tblContent">
-        <cfset printMemory(total)>
-    </td>
-</tr>
---->
 </cfsavecontent>
 #memoryInfo#
 <cfcatch></cfcatch>
 </cftry>
-</cfif>
 </table>
+
+</td>
+</tr>
+</table>
+
+
 
 <br><br>
 

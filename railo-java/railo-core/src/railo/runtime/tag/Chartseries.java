@@ -199,7 +199,8 @@ public final class Chartseries extends BodyTagImpl {
 	private String itemToString(Object obj) throws PageException {
 		if(obj instanceof Date) {
 			TimeZone tz = pageContext.getTimeZone();
-			return new railo.runtime.format.DateFormat(pageContext.getLocale()).format(Caster.toDate(obj, tz),"short",tz);
+			return new railo.runtime.format.DateFormat(pageContext.getLocale()).format(Caster.toDate(obj, tz),"short",tz)+" "+
+			new railo.runtime.format.TimeFormat(pageContext.getLocale()).format(Caster.toDate(obj, tz),"short",tz);
 		}
 		return Caster.toString(obj);
 	}

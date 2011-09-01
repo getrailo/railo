@@ -1,14 +1,9 @@
 package railo.transformer.bytecode.extern;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.ResourcesImpl;
-import railo.transformer.bytecode.extern.StringExternalizerWriter.Range;
 
 public class StringExternalizerWriter {
 	
@@ -39,7 +34,7 @@ public class StringExternalizerWriter {
 		
 	}
 	
-	public static void main(String[] args) throws IOException {
+	/*public static void main(String[] args) throws IOException {
 		Resource res = ResourcesImpl.getFileResourceProvider().getResource("/Users/mic/temp/externalize.txt");
 		
 		StringExternalizerWriter ext=new StringExternalizerWriter();
@@ -59,5 +54,5 @@ public class StringExternalizerWriter {
 		
 		
 		
-	}
+	}*/
 }

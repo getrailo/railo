@@ -89,7 +89,7 @@ public class NumberUtil {
 	
 	public static long byteArrayToLong(byte[] ba){
 		long l=0;
-		for(int i=0; (i<ba.length)&&(i<8); i++) {
+		for(int i=0; (i<8)&&(i<8); i++) {
 			l |= (((long)ba[i])<<(i<<3))&(255L<<(i<<3));
 		}
 		return l;

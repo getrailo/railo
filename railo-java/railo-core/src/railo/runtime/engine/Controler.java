@@ -20,7 +20,6 @@ import railo.runtime.PageSource;
 import railo.runtime.PageSourcePool;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
-import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.net.smtp.SMTPConnectionPool;
@@ -88,29 +87,12 @@ public final class Controler extends Thread {
 				t.printStackTrace();
 			}
             
-            monitor();
             for(int i=0;i<factories.length;i++) {
 	            run(factories[i], doMinute, doHour,firstRun);
 	        }
 	        if(factories.length>0)
 				firstRun=false;
 	    }    
-	}
-	
-	
-	private void monitor() {
-		Resource dir=((ConfigServerImpl)configServer).getMonitorDir();
-		Resource memory = touch(dir,"memory.bin",ConfigServerImpl._CF,ConfigServerImpl._01);
-		if(memory!=null);
-		//memory.isAbsolute();
-	}
-
-	private Resource touch(Resource dir, String name, byte first, byte second) {
-		Resource file = dir.getRealResource(name);
-		file.isAbsolute();
-		//if(file.length()>)
-		
-		return null;
 	}
 
 	private CFMLFactoryImpl[] toFactories(CFMLFactoryImpl[] factories,Map contextes) {
