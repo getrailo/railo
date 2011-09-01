@@ -57,7 +57,8 @@
 		),
 		struct(action:"surveillance",label:stMenu.surveillance.label,
 			children:array(
-				struct(action:"memory",label:stMenu.surveillance.memory)
+				struct(action:"memory",label:stMenu.surveillance.memory),
+				struct(action:"thread",label:stMenu.surveillance.thread)
 			)
 		),
 		struct(action:"debugging",label:stMenu.debugging.label,

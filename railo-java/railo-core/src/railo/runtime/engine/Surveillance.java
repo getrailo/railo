@@ -20,7 +20,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeContext;
 
-public class Surveillance {
+ class Surveillance {
 
 	private static final Collection.Key MEMORY = KeyImpl.intern("memory");
 	private static final Collection.Key SCOPES = KeyImpl.intern("scopes");
