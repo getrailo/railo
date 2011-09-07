@@ -16,7 +16,6 @@ import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadQueueImpl;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
-import railo.runtime.surveillance.Memory;
 
 /**
  * config server impl
@@ -303,7 +302,6 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 
 	
 	private ThreadQueueImpl threadQueue;
-	private Memory memoryMonitor;
 	protected void setThreadQueue(ThreadQueueImpl threadQueue) {
 		this.threadQueue=threadQueue;
 	}
@@ -317,17 +315,4 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     	super.reset();
     	getThreadQueue().clear();
     }
-
-	public Memory getMemoryMonitor() {
-		if(memoryMonitor==null) {
-			try {
-				memoryMonitor=new Memory(getConfigDir().getRealResource("monitor"));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return memoryMonitor;
-	}
-	
-
 }
