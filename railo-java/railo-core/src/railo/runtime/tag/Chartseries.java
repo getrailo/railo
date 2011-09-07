@@ -1,8 +1,6 @@
 package railo.runtime.tag;
 
 import java.awt.Color;
-import java.util.Date;
-import java.util.TimeZone;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.Tag;
@@ -139,6 +137,8 @@ public final class Chartseries extends BodyTagImpl {
 		else if("cylinder".equals(strType))			series.setType(ChartSeriesBean.TYPE_CYLINDER);
 		else if("horizontalbar".equals(strType))	series.setType(ChartSeriesBean.TYPE_HORIZONTALBAR);
 		else if("line".equals(strType))				series.setType(ChartSeriesBean.TYPE_LINE);
+		else if("timeline".equals(strType))				series.setType(ChartSeriesBean.TYPE_TIME);
+		else if("time".equals(strType))				series.setType(ChartSeriesBean.TYPE_TIME);
 		else if("pie".equals(strType))				series.setType(ChartSeriesBean.TYPE_PIE);
 		else if("pyramid".equals(strType))			series.setType(ChartSeriesBean.TYPE_PYRAMID);
 		else if("scatter".equals(strType))			series.setType(ChartSeriesBean.TYPE_SCATTER);
@@ -146,7 +146,7 @@ public final class Chartseries extends BodyTagImpl {
 		else if("step".equals(strType))				series.setType(ChartSeriesBean.TYPE_STEP);
 		
 		else throw new ExpressionException("invalid value ["+strType+"] for attribute type, for this attribute only the following values are supported " +
-				"[area, bar, cone, curve, cylinder, horizontalbar, line,pie,pyramid,scatter,step]");
+				"[area, bar, cone, curve, cylinder, horizontalbar, line,pie,pyramid,scatter,step,timeline]");
 	}
 	/**
 	 * @param valueColumn the valueColumn to set
@@ -180,7 +180,8 @@ public final class Chartseries extends BodyTagImpl {
 			for(int i=1;i<=rowCount;i++) {
 				data=new ChartDataBean();
 				data.setValue(Caster.toDoubleValue(query.getAt(valueColumn, i, new Double(0))));
-				data.setItem(itemToString(query.getAt(itemColumn, i, "")));
+				data.setItem(pageContext,query.getAt(itemColumn, i, ""));
+				//data.setItem(itemToString(query.getAt(itemColumn, i, "")));
 				addChartData(data);
 			}
 		}
@@ -195,13 +196,5 @@ public final class Chartseries extends BodyTagImpl {
 		}
 		while(parent!=null);
 		return EVAL_PAGE;
-	}
-	private String itemToString(Object obj) throws PageException {
-		if(obj instanceof Date) {
-			TimeZone tz = pageContext.getTimeZone();
-			return new railo.runtime.format.DateFormat(pageContext.getLocale()).format(Caster.toDate(obj, tz),"short",tz)+" "+
-			new railo.runtime.format.TimeFormat(pageContext.getLocale()).format(Caster.toDate(obj, tz),"short",tz);
-		}
-		return Caster.toString(obj);
 	}
 }
