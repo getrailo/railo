@@ -1203,6 +1203,20 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		</attribute>
 		<attribute>
 			<type>boolean</type>
+			<name>showTooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>show the tooltip or not</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>source</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>variable name of the source path, if set the path to the source file is returned and no image tag is written to response strea.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
 			<name>showYGridlines</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -11396,52 +11410,6 @@ dWord: creates a value of 0 (zero)</description>
 			<rtexprvalue>true</rtexprvalue>
 			<status>deprecated</status>
 			<description>This attribute has been deprecated and is non-functional.</description>
-		</attribute>
-	</tag>
-	<!-- surveillance -->
-	<tag>
-		<name>Surveillance</name>
-		<tag-class>railo.runtime.tag.Surveillance</tag-class>
-		<body-content>empty</body-content>
-		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>used for Surveillance of the system</description>
-		<attribute-type>fixed</attribute-type>
-		<attribute>
-			<type>string</type>
-			<name>action</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>the action to execute, valid actions are:
-- memory - return memory information</description>
-		</attribute>
-		<attribute>
-			<type>datetime</type>
-			<name>from</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>if set only records newer or equal to the given date are returnd</description>
-		</attribute>
-		<attribute>
-			<type>datetime</type>
-			<name>to</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>if set only records older or equal to the given date are returnd</description>
-		</attribute>
-		<attribute>
-			<type>number</type>
-			<name>slotSize</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>if set this will be the minium differents in seconds between to records</description>
-		</attribute>
-		
-		<attribute>
-			<type>string</type>
-			<name>returnvariable</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Name of a variable for the result.</description>
 		</attribute>
 	</tag>
 	<!-- switch -->
