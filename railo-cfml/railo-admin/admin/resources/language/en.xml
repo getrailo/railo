@@ -612,6 +612,7 @@
 	<data key="buttons.filter">filter</data>
 	<data key="buttons.agree">agree</data>
 	<data key="buttons.submit">submit</data>
+	<data key="buttons.stop">stop</data>
 	<data key="buttons.purge">purge</data>
 	<data key="buttons.ok">OK</data>
 	<data key="buttons.install">install</data>
