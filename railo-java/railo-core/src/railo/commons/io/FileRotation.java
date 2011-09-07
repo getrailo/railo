@@ -38,7 +38,7 @@ public class FileRotation {
             res.createNewFile();
             writeHeader=true;
         }
-        else {
+        else if(header!=null && header.length>0) {
         	byte[] buffer = new byte[header.length];
             int len;
             InputStream in = null;
@@ -64,7 +64,9 @@ public class FileRotation {
         
         
         if(writeHeader) {
+            if(header==null)header=new byte[0];
             IOUtil.write(res, header,false);
+           
         }   
     }
 }
