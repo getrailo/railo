@@ -44,7 +44,6 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
-import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.commons.lock.KeyLock;
@@ -836,7 +835,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		other.applicationContext=applicationContext;
 		other.thread=Thread.currentThread();
 		other.startTime=System.currentTimeMillis();
-        other.isCFCRequest = isCFCRequest;
+		other.isCFCRequest = isCFCRequest;
         
         
         
@@ -1964,7 +1963,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	execute(realPath, throwExcpetion, true);
     }
     public void execute(String realPath, boolean throwExcpetion, boolean onlyTopLevel) throws PageException  {
-    	SystemOut.printDate(config.getOutWriter(),"Call:"+realPath+" (id:"+getId()+";running-requests:"+config.getThreadQueue().size()+";)");
+    	//SystemOut.printDate(config.getOutWriter(),"Call:"+realPath+" (id:"+getId()+";running-requests:"+config.getThreadQueue().size()+";)");
 	    ApplicationListener listener=config.getApplicationListener();
 	    if(realPath.startsWith("/mapping-")){
 	    	base=null;
@@ -1997,6 +1996,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    	listener.onRequest(this,base);
 	    }
 	    catch(Throwable t) {
+	    	
 	    	PageException pe = Caster.toPageException(t);
 	    	if(!(pe instanceof Abort)){
 	    		if(fdEnabled){
@@ -2004,10 +2004,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	        	}
 	    		listener.onError(this,pe);	
 	    	}
-	    	
 	    	if(throwExcpetion) throw pe;
 	    }
 	    finally {
+	    	
+	    	
             if(enablecfoutputonly>0){
             	setCFOutputOnly((short)0);
             }
@@ -2022,7 +2023,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             base=null;
 	    }
 	}
-	
+
 	private PageSource getPageSource(Mapping[] mappings, String realPath) {
 		PageSource ps;
 		//print.err(mappings.length);
