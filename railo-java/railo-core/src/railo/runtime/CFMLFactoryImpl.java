@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspEngineInfo;
 
+import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
@@ -20,9 +21,11 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.Abort;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.RequestTimeoutException;
+import railo.runtime.functions.string.Hash;
 import railo.runtime.op.Caster;
 import railo.runtime.query.QueryCache;
 import railo.runtime.type.Array;
@@ -156,7 +159,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	            runningPcs.removeEL(ArgumentIntKey.init(pc.getId()));
 	            if(pcs.size()<100)// not more than 100 PCs
 	            	pcs.push(pc);
-	            SystemOut.printDate(config.getOutWriter(),"Release: (id:"+pc.getId()+";running-requests:"+config.getThreadQueue().size()+";)");
+	            //SystemOut.printDate(config.getOutWriter(),"Release: (id:"+pc.getId()+";running-requests:"+config.getThreadQueue().size()+";)");
 	        }
        /*}
         else {
@@ -328,15 +331,17 @@ public final class CFMLFactoryImpl extends CFMLFactory {
             	key=KeyImpl.toKey(it.next(),null);
                 //print.out("key:"+key);
                 pc=(PageContext) runningPcs.get(key,null);
-                if(pc==null) continue;
-                thread=pc.getThread();
+                if(pc==null || ((PageContextImpl)pc).isGatewayContext()) continue;
                 
+                thread=pc.getThread();
+                if(thread==Thread.currentThread()) continue;
                 
                 
                 
                 
                 data.setEL("startTime", new DateTimeImpl(pc.getStartTime(),false));
-                data.setEL("timeout", Caster.toDouble(pc.getRequestTimeout()));
+                data.setEL("endTime", new DateTimeImpl(pc.getStartTime()+pc.getRequestTimeout(),false));
+                data.setEL("timeout",new Double(pc.getRequestTimeout()));
                 
                 // thread
                 sctThread.setEL("name",thread.getName());
@@ -345,7 +350,10 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 
                 data.setEL("urlToken", pc.getURLToken());
                 data.setEL("debugger", pc.getDebugger().getDebuggingData(pc));
-                data.setEL("id", pc.getId());
+                try {
+					data.setEL("id", Hash.call(pc, pc.getId()+":"+pc.getStartTime()));
+				} catch (PageException e1) {}
+                data.setEL("requestid", pc.getId());
 
                 // Scopes
                 scopes.setEL("name", pc.getApplicationContext().getName());
@@ -372,10 +380,38 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 scopes.setEL("request", pc.requestScope());
                 
                 info.appendEL(data);
-                
-                
             }
             return info;
+        }
+	}
+	
+
+	public void stopThread(String threadId, String stopType) {
+		synchronized (pcs) {
+            //int len=runningPcs.size();
+			Iterator it = runningPcs.keyIterator();
+            PageContext pc;
+    		while(it.hasNext()) {
+            	
+            	pc=(PageContext) runningPcs.get(KeyImpl.toKey(it.next(),null),null);
+                if(pc==null) continue;
+                try {
+					String id = Hash.call(pc, pc.getId()+":"+pc.getStartTime());
+					if(id.equals(threadId)){
+						stopType=stopType.trim();
+						Throwable t;
+						if("abort".equalsIgnoreCase(stopType) || "cfabort".equalsIgnoreCase(stopType))
+							t=new Abort(Abort.SCOPE_REQUEST);
+						else
+							t=new RequestTimeoutException(pc,"request has been forced to stop.");
+						
+		                pc.getThread().stop(t);
+		                SystemUtil.sleep(10);
+						break;
+					}
+				} catch (PageException e1) {}
+                
+            }
         }
 	}
 }

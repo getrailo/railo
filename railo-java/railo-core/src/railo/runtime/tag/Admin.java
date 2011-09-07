@@ -575,6 +575,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updatemapping",          ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateMapping();
         else if(check("updatecustomtag",        ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCustomTag();
         else if(check("updateComponentMapping", ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateComponentMapping();
+        else if(check("stopThread", 			ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doStopThread();
     	
     	
         else if(check("updatejavacfx",          ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateJavaCFX();
@@ -3933,7 +3934,10 @@ private void doGetMappings() throws PageException {
 			Struct sct=new StructImpl();
 			for(int i=0;i<webs.length;i++){
 				ConfigWebImpl cw=(ConfigWebImpl) webs[i];
+				try{
 				sct.setEL(cw.getLabel(), ((CFMLFactoryImpl)cw.getFactory()).getInfo());
+				}
+				catch(Throwable t){}
 			}
 			pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
 			
@@ -3944,11 +3948,32 @@ private void doGetMappings() throws PageException {
 			pageContext.setVariable(getString("admin",action,"returnVariable"),
 					factory.getInfo());
 		}
+	}
+	
+	private void doStopThread() throws PageException {
+		String contextId=getString("admin", "stopThread", "contextId");
+		String threadId=getString("admin", "stopThread", "threadId");
+		String stopType=getString("stopType","exception");
 		
 		
-		
-		
-		//pageContext.setVariable(getString("admin",action,"returnVariable"),Surveillance.getInfo(config));
+		// Server
+		if(config instanceof ConfigServer) {
+			ConfigServer cs=(ConfigServer) config;
+			ConfigWeb[] webs = cs.getConfigWebs();
+			for(int i=0;i<webs.length;i++){
+				ConfigWebImpl cw=(ConfigWebImpl) webs[i];
+				if(!cw.getId().equals(contextId)) continue;
+				 ((CFMLFactoryImpl)cw.getFactory()).stopThread(threadId,stopType);
+				 break;
+			}
+			
+		}
+		/* / Web
+		else {
+			CFMLFactoryImpl factory = (CFMLFactoryImpl) config.getFactory();
+			pageContext.setVariable(getString("admin",action,"returnVariable"),
+					factory.getInfo());
+		}*/
 	}
     
     private void doGetProxy() throws PageException  {
