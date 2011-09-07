@@ -158,6 +158,89 @@ function go(action,action2='',others=struct()) {
 	
 	return rtn;
 }
+function byteFormat(numeric raw){
+	if(raw EQ 0) return "0b";
+    
+	var b=raw;
+    var rtn="";
+   	var kb=int(b/1024);
+    var mb=0;
+    var gb=0;
+    var tb=0;
+    
+    if(kb GT 0) {
+    	b-=kb*1024;
+        mb=int(kb/1024);
+        if(mb GT 0){
+        	kb-=mb*1024;
+			gb=int(mb/1024);
+            if(gb GT 0) {
+                mb-=gb*1024;
+				tb=int(gb/1024);
+                if(tb GT 0) {
+                    gb-=tb*1024;
+                }
+            }
+        }
+    }
+    
+    if(tb) rtn&=tb&"tb ";
+    if(gb) rtn&=gb&"gb ";
+    if(mb) rtn&=mb&"mb ";
+    if(kb) rtn&=kb&"kb ";
+    if(b) rtn&=b&"b ";
+    return trim(rtn);
+}
+
+
+function byteFormatShort(numeric raw, string preference='' ){
+	if(raw EQ 0) return "0b";
+    
+	var b=raw;
+    var rtn="";
+   	var kb=int(b/1024);
+    var mb=0;
+    var gb=0;
+    var tb=0;
+    
+    if(kb GT 0) {
+    	b-=kb*1024;
+        mb=int(kb/1024);
+        if(mb GT 0){
+        	kb-=mb*1024;
+			gb=int(mb/1024);
+            if(gb GT 0) {
+                mb-=gb*1024;
+				tb=int(gb/1024);
+                if(tb GT 0) {
+                    gb-=tb*1024;
+                }
+            }
+        }
+    }
+	
+	if(preference EQ "tb") return _byteFormatShort(tb,gb,"tb");
+	if(preference EQ "gb") return _byteFormatShort(gb,mb,"gb");
+	if(preference EQ "mb") return _byteFormatShort(mb,kb,"mb");
+	if(preference EQ "kb") return _byteFormatShort(kb,b,"kb");
+    
+    if(tb) return _byteFormatShort(tb,gb,"tb");
+	if(gb) return _byteFormatShort(gb,mb,"gb");
+	if(mb) return _byteFormatShort(mb,kb,"mb");
+	if(kb) return _byteFormatShort(kb,b,"kb");
+	
+    return b&"b ";
+}
+
+function _byteFormatShort(numeric left,numeric right,string suffix){
+	var rtn=left&".";
+	right=int(right/1024*1000)&"";
+	while(stringlen(right) lt 3) right="0"&right;
+	
+	right=left(right,2);
+	
+	return rtn&right&suffix;
+}
 
 /*
 // Config
