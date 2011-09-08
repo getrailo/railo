@@ -1,14 +1,11 @@
 package railo.transformer.bytecode.extern;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import railo.print;
+import railo.aprint;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
-import railo.transformer.bytecode.extern.StringExternalizerWriter.Range;
 
 public class StringExternalizerWriter {
 	
@@ -50,12 +47,12 @@ public class StringExternalizerWriter {
 		ext.writeOut(res);
 		
 		StringExternalizerReader reader=new StringExternalizerReader(res);
-		print.o(r1);
-		print.o(r2);
-		print.o(r3);
-		print.o(reader.read(r1.from, r1.to));
-		print.o(reader.read(r2.from, r2.to));
-		print.o(reader.read(r3.from, r3.to));
+		aprint.o(r1);
+		aprint.o(r2);
+		aprint.o(r3);
+		aprint.o(reader.read(r1.from, r1.to));
+		aprint.o(reader.read(r2.from, r2.to));
+		aprint.o(reader.read(r3.from, r3.to));
 		
 		
 		
