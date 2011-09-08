@@ -32,6 +32,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     private String updateType="";
 	private ConfigListener configListener;
 	private Map<String, String> labels;
+	private Object[] monitors;
 	private static ConfigServerImpl instance;
 	
 	/**
@@ -296,6 +297,14 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	public Map<String, String> getLabels() {
 		if(labels==null) labels=new HashMap<String, String>();
 		return labels;
+	}
+
+	public Object[] getMonitors() {
+		return monitors;
+	}
+
+	protected void setMonitors(Object[] monitors) {
+		this.monitors=monitors;;
 	}
 	
 

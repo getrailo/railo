@@ -1,14 +1,17 @@
-<cfsilent>
+<cfsilent> 
+<cfparam name="request.disableFrame" default="false" type="boolean">
+<cfparam name="request.setCFApplication" default="true" type="boolean">
+<cfif request.setCFApplication>
 <cfapplication name="webadmin" 
 	sessionmanagement="yes" 
 	clientmanagement="no" 
 	setclientcookies="yes" 
 	setdomaincookies="no">
-    
+</cfif>
 <cfif structKeyExists(url,'enable')>
 	<cfset session.enable=url.enable>
 </cfif>
-    
+  
     
 <cfset cookieKey="sdfsdf789sdfsd">
 <cfparam name="request.adminType" default="web">
@@ -71,7 +74,6 @@
 		</cfcatch>
 	</cftry>
 </cfif> 
-
 
 <cfif not StructKeyExists(session,'railo_admin_lang')>
 	<cfset session.railo_admin_lang ='en'>
@@ -237,7 +239,6 @@ function getRemoteClients() {
 }
 request.getRemoteClients=getRemoteClients;
 </cfscript>
-
 <cfif not StructKeyExists(session,"password"&request.adminType)>
 		<cfadmin 
 			action="hasPassword"
@@ -254,14 +255,18 @@ request.getRemoteClients=getRemoteClients;
 			<cfinclude template="login.new.cfm">
 		</cfmodule>
 	</cfif>
-	
 <cfelse>
 	<cfsavecontent variable="content">
 				<cfif not FindOneOf("\/",current.action)><cfinclude template="#current.action#.cfm"><cfelse><cfset current.label="Error">invalid action definition</cfif>
 	</cfsavecontent>
-	<cfmodule  template="admin_layout.cfm" width="960" navigation="#strNav#" right="#context#" title="#current.label#">
-		<cfoutput>#content#</cfoutput>
-	</cfmodule>
+	<cfif request.disableFrame>
+    	<cfoutput>#content#</cfoutput>
+    <cfelse>
+    	<cfmodule template="admin_layout.cfm" width="960" navigation="#strNav#" right="#context#" title="#current.label#">
+			<cfoutput>#content#</cfoutput>
+        </cfmodule>
+    </cfif>
+    
 </cfif>
 <cfif current.action neq "overview">
 	<cfcookie name="railo_admin_lastpage" value="#current.action#" expires="NEVER">

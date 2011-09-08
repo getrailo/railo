@@ -93,6 +93,12 @@ public final class CFMLEngineImpl implements CFMLEngine {
         controler.setPriority(Thread.MIN_PRIORITY);
         controler.start();  
         
+
+        Monitor monitor = new Monitor(getConfigServerImpl(),controlerState); 
+        monitor.setDaemon(true);
+        monitor.setPriority(Thread.MIN_PRIORITY);
+        monitor.start();  
+        
         //this.config=config; 
     }
 

@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -367,6 +368,7 @@ public final class ConfigWebFactory {
     	loadDumpWriter(cs, config, doc);
     	loadGatewayEL(configServer,config,doc);
     	loadExeLog(configServer,config,doc);
+    	loadMonitors(configServer,config,doc);
     	config.setLoadTime(System.currentTimeMillis());
     	
     	// this call is needed to make sure the railo StaticLoggerBinder is loaded
@@ -3326,6 +3328,40 @@ public final class ConfigWebFactory {
 	      	}
         }
       	config.setMailServers(servers);
+    }
+    
+
+    private static void loadMonitors(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException {
+        if(configServer!=null) return;
+        
+        configServer=(ConfigServerImpl) config;
+        
+        
+        Element parent=getChildByName(doc.getDocumentElement(),"monitors");
+        
+        if(!Caster.toBooleanValue(parent.getAttribute("enabled"),true))  return;
+        
+        int index=0;
+        Element[] children = getChildren(parent,"monitor");
+        java.util.List<Object> list=new ArrayList<Object>();
+        String className;
+      	for(int i=0;i<children.length;i++) {
+      		Element el=children[i];
+      		className=el.getAttribute("class");
+      		if(!StringUtil.isEmpty(className)) {
+      			try{
+      				Class clazz = ClassUtil.loadClass(config.getClassLoader(),className);
+      				Constructor constr = clazz.getConstructor(new Class[]{ConfigServer.class});
+      				list.add(constr.newInstance(new Object[]{configServer}));
+      			}
+      			catch(Throwable t){
+      				t.printStackTrace();
+      			}
+      		}
+      		
+      	}
+      	configServer.setMonitors(list.toArray());
+        
     }
 
     /**
