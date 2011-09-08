@@ -1196,6 +1196,27 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		</attribute>
 		<attribute>
 			<type>boolean</type>
+			<name>showXLabel</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>yes: shows the x-axis labels</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>showTooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>show the tooltip or not</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>source</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>variable name of the source path, if set the path to the source file is returned and no image tag is written to response strea.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
 			<name>showYGridlines</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
