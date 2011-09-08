@@ -170,7 +170,9 @@
 </cfif>
 
 <cfsavecontent variable="arrow"><cfmodule template="img.cfm" src="arrow.gif" width="4" height="7" /></cfsavecontent>
-
+<cfif structKeyExists(url,"action") and url.action EQ "plugin" && not structKeyExists(url,"plugin")>
+	<cflocation url="#request.self#" addtoken="no">
+</cfif>
 <cfscript>
 
 isRestrictedLevel=server.ColdFusion.ProductLevel EQ "community" or server.ColdFusion.ProductLevel EQ "professional";
