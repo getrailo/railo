@@ -15,49 +15,49 @@ import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.visitor.ConditionVisitor;
 
-public final class Contition extends StatementBase implements HasBodies {
+public final class Condition extends StatementBase implements HasBodies {
     
     private ArrayList ifs=new ArrayList();
     private Pair _else;
 
     /**
      * Constructor of the class
-     * @param contition
+     * @param condition
      * @param body
      * @param line
      */
-    public Contition(int line) {
+    public Condition(int line) {
         super(line);
     }
     
     /**
      * Constructor of the class
-     * @param contition
+     * @param condition
      * @param body
      * @param line
      */
-    public Contition(ExprBoolean contition, Statement body, int line) {
+    public Condition(ExprBoolean condition, Statement body, int line) {
         super(line);
-        addElseIf(contition,body,line);
+        addElseIf(condition,body,line);
         body.setParent(this);
     }
     
-    public Contition(boolean b, Statement body, int line) {
+    public Condition(boolean b, Statement body, int line) {
 		this(LitBoolean.toExprBoolean(b, -1),body,line);
 	}
 
 	/**
      * adds a else statment
-     * @param contition
+     * @param condition
      * @param body
      */
-    public void addElseIf(ExprBoolean contition, Statement body, int line) {
-        ifs.add(new Pair(contition,body,line));
+    public void addElseIf(ExprBoolean condition, Statement body, int line) {
+        ifs.add(new Pair(condition,body,line));
         body.setParent(this);
     }
     
     /**
-     * sets the else Block of the Contition
+     * sets the else Block of the condition
      * @param body
      */
     public void setElse(Statement body, int line) {
@@ -66,12 +66,12 @@ public final class Contition extends StatementBase implements HasBodies {
     }
     
     public final class Pair {
-        private ExprBoolean contition;
+        private ExprBoolean condition;
         private Statement body;
         private int line;
 
-        public Pair(ExprBoolean contition, Statement body, int line) {
-            this.contition=contition;
+        public Pair(ExprBoolean condition, Statement body, int line) {
+            this.condition=condition;
             this.body=body;
             this.line=line;
         }
@@ -90,7 +90,7 @@ public final class Contition extends StatementBase implements HasBodies {
         		pair=(Pair) it.next();
         		ExpressionUtil.visitLine(bc, pair.line);
         		cv.visitWhenBeforeExpr();
-        			pair.contition.writeOut(bc,Expression.MODE_VALUE);
+        			pair. condition.writeOut(bc,Expression.MODE_VALUE);
         		cv.visitWhenAfterExprBeforeBody(bc);
         			pair.body.writeOut(bc);
         		cv.visitWhenAfterBody(bc);

@@ -21,7 +21,7 @@ import railo.transformer.util.CFMLString;
  * Die Anforderungen an das Tag unterscheiden sich je nach Definition der Attribute.
  * Falls das Attribute list vorhanden ist, muss auch das Attribute index vorhanden sein.
  * Falls das Attribute list nicht vorhanden ist, aber das Attribute index, müssen auch die Attribute from und to vorhanden sein.
- * Wenn das Attribute contition vorhanden ist, muss dieses mithilfe des ExprTransformer noch transformiert werden. 
+ * Wenn das Attribute condition vorhanden ist, muss dieses mithilfe des ExprTransformer noch transformiert werden. 
  * Falls das Attribute collection verwendet wird, muss auch das Attribute item verwendet werden.
  **/
 public final class Loop extends EvaluatorSupport {
@@ -57,7 +57,7 @@ public final class Loop extends EvaluatorSupport {
 				throw new EvaluatorException("Wrong Context, when you use attribute index you must also use attribute from and to or list or file");
 			loop.setType(TagLoop.TYPE_INDEX);
 		}
-		// contition loop
+		// condition loop
 		else if(tag.containsAttribute("condition")){
 			TagLib tagLib=tagLibTag.getTagLib();
 			ExprTransformer transformer;

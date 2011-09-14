@@ -11,7 +11,7 @@ import railo.transformer.bytecode.util.Types;
 /**
  * @deprecated replaced with ForIntVisitor
  */
-public final class ForContitionIntVisitor implements Opcodes, LoopVisitor {
+public final class ForConditionIntVisitor implements Opcodes, LoopVisitor {
 
 	private Label l0;
 	private Label l1;
@@ -42,7 +42,7 @@ public final class ForContitionIntVisitor implements Opcodes, LoopVisitor {
 		
 		return i;
 	}
-	public void visitEndBeforeContition(BytecodeContext bc, int step, boolean isLocal,int startline) {
+	public void visitEndBeforeCondition(BytecodeContext bc, int step, boolean isLocal,int startline) {
 		GeneratorAdapter adapter = bc.getAdapter();
 
 		
@@ -61,7 +61,7 @@ public final class ForContitionIntVisitor implements Opcodes, LoopVisitor {
 		adapter.visitLabel(l2);
 	}
 	
-	public void visitEndAfterContition(BytecodeContext bc) {
+	public void visitEndAfterCondition(BytecodeContext bc) {
 		GeneratorAdapter adapter = bc.getAdapter();
 
 		adapter.ifZCmp(Opcodes.IFNE, l3);
