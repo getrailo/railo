@@ -55,7 +55,7 @@ public final class ExceptionUtil {
 		if(t instanceof InvocationTargetException) return toIOException(((InvocationTargetException) t).getCause());
 		if(t instanceof NativeException) return toIOException(((NativeException)t).getCause());
 		
-		IOException ioe = new IOException(t.getMessage());
+		IOException ioe = new IOException(t.getClass().getName()+":"+t.getMessage());
 		ioe.setStackTrace(t.getStackTrace());
 		return ioe;
 	}
