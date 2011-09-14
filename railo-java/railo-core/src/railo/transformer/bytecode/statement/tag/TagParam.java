@@ -9,6 +9,7 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.cfml.evaluator.impl.Argument;
 
 public final class TagParam extends TagBase {
 
@@ -49,6 +50,7 @@ public final class TagParam extends TagBase {
 		//PageContextImpl pc=null;
 		//pc.param("", "", "");
 		
+		Argument.checkDefaultValue(this);
 		
 		// pc
 		adapter.loadArg(0);
