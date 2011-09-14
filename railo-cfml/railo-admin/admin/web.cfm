@@ -11,7 +11,11 @@
 <cfif structKeyExists(url,'enable')>
 	<cfset session.enable=url.enable>
 </cfif>
-  
+
+<cfparam name="session.alwaysNew" default="false" type="boolean">
+<cfif structKeyExists(url,'alwaysNew')>
+	<cfset session.alwaysNew=url.alwaysNew EQ true>
+</cfif>
     
 <cfset cookieKey="sdfsdf789sdfsd">
 <cfparam name="request.adminType" default="web">
@@ -100,11 +104,14 @@
 	<cfif fileExists(fileLanguage)>
 		<cffile action="read" file="#fileLanguage#" variable="txtLanguage" charset="utf-8">
 		<cfxml casesensitive="no" variable="xml"><cfoutput>#txtLanguage#</cfoutput></cfxml>
+        <cfset language.__position=0>
         <cfif isDefined('xml.xmlRoot.XmlAttributes.action')>
         	<cfset language.__action=trim(xml.xmlRoot.XmlAttributes.action)>
+        	<cfset language.__position=StructKeyExists(xml.xmlRoot.XmlAttributes,"position")?xml.xmlRoot.XmlAttributes.position:0>
         </cfif>
         <cfset xml = XmlSearch(xml, "/languages/language[@key='#lCase(session.railo_admin_lang)#']")[1]>
         
+		<cfset language.__group=StructKeyExists(xml,"group")?xml.group.XmlText:UCFirst(language.__action)>
 		<cfset language.title=xml.title.XmlText>
 		<cfset language.text=xml.description.XmlText>
 		<cfif isDefined('xml.custom')>
@@ -130,27 +137,34 @@
 	    returnVariable="pluginDir">	
 	<cfset mappings['/railo_plugin_directory/']=pluginDir>
 	<cfapplication action="update" mappings="#mappings#">
-	
-    <cfif navigation[arrayLen(navigation)].action neq "plugin">
-    	
-        <cfset plugin=struct(
-            label:"Plugins",
-            children:plugins,
-            action:"plugin"
-        )>
-    	<cfset navigation[arrayLen(navigation)+1]=plugin>
-    	
+    
+    <cfset hasPlugin=false>
+    <cfloop array="#navigation#" index="el">
+    	<cfif el.action EQ "plugin"><cfset hasPlugin=true></cfif>
+    </cfloop>
+    
+	<cfif not hasPlugin or (structKeyExists(session,"alwaysNew") and session.alwaysNew)>
+    	<cfif not hasPlugin>
+			<cfset plugin=struct(
+                label:"Plugins",
+                children:plugins,
+                action:"plugin"
+            )>
+            <cfset navigation[arrayLen(navigation)+1]=plugin>
+        </cfif>
+        	
         <cfset sctNav={}>
         <cfloop array="#navigation#" index="item">
         	<cfset sctNav[item.action]=item>
         </cfloop>
-    	
-    
+
         <cfdirectory directory="#plugindir#" action="list" name="plugindirs" recurse="no">
         <cfloop query="plugindirs">
             <cfif plugindirs.type EQ "dir">
                 <cfset _lang=loadPluginLanguage(pluginDir,plugindirs.name)>
                 <cfset _act=_lang.__action>
+				<cfset _group=_lang.__group>
+				<cfset _pos=_lang.__position>
 				<cfset StructDelete(_lang,"__action",false)>
 				
 				<cfset application.pluginLanguage[session.railo_admin_lang][plugindirs.name]=_lang>
@@ -160,15 +174,45 @@
                     action:plugindirs.name,
                     _action:'plugin&plugin='&plugindirs.name
                 )>
-                <cfset sctNav[_act].children[arrayLen(sctNav[_act].children)+1]=item>
+                
+                <cfif not StructKeyExists(sctNav,_act)>
+                	<cfset sctNav[_act]=struct(
+						label:_group,
+						children:[],
+						action:_act
+					)>
+                    <cfif _pos GT 0 and _pos LTE arrayLen(navigation)>
+                    	<cfscript>
+						for(i=arrayLen(navigation)+1;i>_pos;i--){
+							navigation[i]=navigation[i-1];
+						}
+                        navigation[_pos]=sctNav[_act];
+						</cfscript>
+                    <cfelse>
+                    	<cfset navigation[arrayLen(navigation)+1]=sctNav[_act]>
+                    </cfif>
+                    
+                </cfif>
+                
+                <cfset children=sctNav[_act].children>
+                <cfset isUpdate=false>
+                <cfloop from="1" to="#arrayLen(children)#" index="i">
+                	<cfif children[i].action EQ item.action>
+                    	<cfset children[i]=item>
+                        <cfset isUpdate=true>
+                    </cfif>
+                </cfloop>
+                <cfif not isUpdate>
+                	<cfset children[arrayLen(children)+1]=item>
+                </cfif>
+                
             </cfif>
         </cfloop>
     </cfif>
-    	<cfcatch></cfcatch>
+    	<cfcatch><cfrethrow></cfcatch>
     </cftry>
     
 </cfif>
-
 <cfsavecontent variable="arrow"><cfmodule template="img.cfm" src="arrow.gif" width="4" height="7" /></cfsavecontent>
 <cfif structKeyExists(url,"action") and url.action EQ "plugin" && not structKeyExists(url,"plugin")>
 	<cflocation url="#request.self#" addtoken="no">

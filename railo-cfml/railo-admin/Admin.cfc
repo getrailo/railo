@@ -24,13 +24,8 @@
 		<cfargument name="password" required="yes" type="string">
 		<cfargument name="plugin" required="yes" type="string">
 		<cfargument name="action" required="yes" type="string">
-		<cfargument name="arg1" required="no" type="string" default="">
-		<cfargument name="arg2" required="no" type="string" default="">
-		<cfargument name="arg3" required="no" type="string" default="">
-		<cfargument name="arg4" required="no" type="string" default="">
-		<cfargument name="arg5" required="no" type="string" default="">
-		<cfargument name="arg6" required="no" type="string" default="">
-        
+		<cfargument name="urlCollection" required="no" type="struct" default="#{}#">
+	
 		<cfset var sec=getRailoId()[arguments.type].securityKey>
 		<cfset pw=Decrypt(arguments.password,sec,'cfmx_compat','hex')>
 		
@@ -54,14 +49,11 @@
     	<cfset url.plugin=arguments.plugin>
     	<cfset url.PluginAction=arguments.action>
         
-        <cfset request.arg1=arguments.arg1>
-        <cfset request.arg2=arguments.arg2>
-        <cfset request.arg3=arguments.arg3>
-        <cfset request.arg4=arguments.arg4>
-        <cfset request.arg5=arguments.arg5>
-        <cfset request.arg6=arguments.arg6>
+        <cfloop collection="#urlCollection#" item="key">
+        	<cfset url[key]=urlCollection[key]>
+        </cfloop>
         
-    
+        
         <cfset request.disableFrame=true>
         <cfset request.setCFApplication=false>
         <cfset request.adminType=arguments.type>

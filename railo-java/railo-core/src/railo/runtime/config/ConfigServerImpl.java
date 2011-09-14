@@ -12,6 +12,9 @@ import railo.commons.lang.StringUtil;
 import railo.loader.engine.CFMLEngine;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.engine.CFMLEngineImpl;
+import railo.runtime.exp.ApplicationException;
+import railo.runtime.monitor.IntervallMonitor;
+import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 
@@ -32,7 +35,9 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     private String updateType="";
 	private ConfigListener configListener;
 	private Map<String, String> labels;
-	private Object[] monitors;
+	private RequestMonitor[] requestMonitors;
+	private IntervallMonitor[] intervallMonitors;
+	private boolean monitoringEnabled=false;
 	private static ConfigServerImpl instance;
 	
 	/**
@@ -299,12 +304,41 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		return labels;
 	}
 
-	public Object[] getMonitors() {
-		return monitors;
+	public RequestMonitor[] getRequestMonitors() {
+		return requestMonitors;
+	}
+	
+	public RequestMonitor getRequestMonitor(String name) throws ApplicationException {
+		for(int i=0;i<requestMonitors.length;i++){
+			if(requestMonitors[i].getName().equalsIgnoreCase(name))
+				return requestMonitors[i];
+		}
+		throw new ApplicationException("there is no request monitor registered with name ["+name+"]");
 	}
 
-	protected void setMonitors(Object[] monitors) {
-		this.monitors=monitors;;
+	protected void setRequestMonitors(RequestMonitor[] monitors) {
+		this.requestMonitors=monitors;;
+	}
+	public IntervallMonitor[] getIntervallMonitors() {
+		return intervallMonitors;
+	}
+	public IntervallMonitor getIntervallMonitor(String name) throws ApplicationException {
+		for(int i=0;i<intervallMonitors.length;i++){
+			if(intervallMonitors[i].getName().equalsIgnoreCase(name))
+				return intervallMonitors[i];
+		}
+		throw new ApplicationException("there is no intervall monitor registered with name ["+name+"]");
+	}
+
+	protected void setIntervallMonitors(IntervallMonitor[] monitors) {
+		this.intervallMonitors=monitors;;
+	}
+	public boolean isMonitoringEnabled() {
+		return monitoringEnabled;
+	}
+
+	protected void setMonitoringEnabled(boolean monitoringEnabled) {
+		this.monitoringEnabled=monitoringEnabled;;
 	}
 	
 

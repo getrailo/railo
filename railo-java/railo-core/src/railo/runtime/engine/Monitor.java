@@ -1,7 +1,5 @@
 package railo.runtime.engine;
 
-import java.lang.reflect.Method;
-
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigServerImpl;
@@ -13,11 +11,9 @@ public final class Monitor extends Thread {
 
 	
 	private static final long INTERVALL = 5000;
-	private static final Object[] EMPTY = new Object[0];
 	private final RefBoolean run;
 	private final ConfigServerImpl configServer;
-	private Method log;
-
+	
 	/**
 	 * @param contextes
 	 * @param interval
@@ -42,25 +38,26 @@ public final class Monitor extends Thread {
             catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-           
-            Object[] monitors = configServer.getMonitors();
-            if(monitors==null) {
-            	tries++;
-            	if(tries>=10)return;
-            	// MUST better impl
+            
+            if(!configServer.isMonitoringEnabled()) return;
+            railo.runtime.monitor.IntervallMonitor[] monitors = configServer.getIntervallMonitors();
+            
+            int logCount=0;
+            if(monitors!=null)for(int i=0;i<monitors.length;i++){
+            	if(monitors[i].isLogEnabled()) {
+	            	logCount++;
+            		try {
+	            		monitors[i].log();
+	        		} 
+	        		catch (Throwable e) {
+	        			e.printStackTrace();
+	        		}
+            	}
             }
             
-            
-            
-            if(monitors!=null)for(int i=0;i<monitors.length;i++){
-            	try {
-            		if(log==null)
-            			log=monitors[i].getClass().getMethod("log", new Class[0]);
-        			log.invoke(monitors[i], EMPTY);// FUTURE add interface to loader and use interface
-        		} 
-        		catch (Throwable e) {
-        			e.printStackTrace();
-        		}
+            if(logCount==0) {
+            	tries++;
+            	if(tries>=10)return;
             }
 	    }    
 	}
