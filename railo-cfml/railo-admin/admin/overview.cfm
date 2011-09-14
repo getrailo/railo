@@ -336,11 +336,11 @@ The heap size may be configured with the following VM options:
 <br />
 <br />
 
-Also, the JVM has memory other than the heap, referred to as non-heap memory. It stores al cfc/cfm templates, java classes, interned Strings and meta-data.<br />
+Also, the JVM has memory other than the heap, referred to as non-heap memory. It stores all cfc/cfm templates, java classes, interned Strings and meta-data.<br />
 
-The abnormal growth of non-heap memory mostly indicate that Railo has to load many cfc/cfm templates.
+The abnormal growth of non-heap memory mostly indicates that Railo has to load many cfc/cfm templates.
 
-If the application indeed needs that much of non-heap memory and the default maximum size of 64 Mb is not enough, you may enlarge the maximum size with the help of -XX:MaxPermSize VM option. For example, -XX:MaxPermSize=128m sets the size of 128 Mb.
+If indeed, the application needs that much non-heap memory and the default maximum size of 64 Mb is not enough, you may enlarge the maximum size with the help of -XX:MaxPermSize VM option. For example, -XX:MaxPermSize=128m sets the size of 128 Mb.
 
     
     </td>
