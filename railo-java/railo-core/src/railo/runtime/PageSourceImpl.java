@@ -180,7 +180,6 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
             }
         } 
         catch (Exception e) {
-        	e.printStackTrace();
             return null;
         }
     }
