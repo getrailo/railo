@@ -251,10 +251,23 @@ Error Output --->
 </cffunction>
 
 <cfset pool["Par Eden Space"]="The pool from which memory is initially allocated for most objects.">
+
 <cfset pool["Par Survivor Space"]="The pool containing objects that have survived the garbage collection of the Eden space.">
 <cfset pool["CMS Old Gen"]="The pool containing objects that have existed for some time in the survivor space.">
 <cfset pool["CMS Perm Gen"]="The pool containing all the reflective data of the virtual machine itself, such as class and method objects. With Java VMs that use class data sharing, this generation is divided into read-only and read-write areas.">
 <cfset pool["Code Cache"]="The HotSpot Java VM also includes a code cache, containing memory that is used for compilation and storage of native code.">
+
+<cfset pool["Eden Space"]=pool["Par Eden Space"]>
+<cfset pool["PS Eden Space"]=pool["Par Eden Space"]>
+
+<cfset pool["Survivor Space"]=pool["Par Survivor Space"]>
+<cfset pool["PS Survivor Space"]=pool["Par Survivor Space"]>
+
+<cfset pool["Perm Gen"]=pool["CMS Perm Gen"]>
+
+<cfset pool["Tenured Gen"]=pool["CMS Old Gen"]>
+<cfset pool["PS Old Gen"]=pool["CMS Old Gen"]>
+
 
 
 <cffunction name="printMemory" output="yes">
