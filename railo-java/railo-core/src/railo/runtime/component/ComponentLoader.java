@@ -8,6 +8,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentPage;
+import railo.runtime.ComponentPro;
 import railo.runtime.InterfaceImpl;
 import railo.runtime.InterfacePage;
 import railo.runtime.Mapping;
@@ -233,6 +234,25 @@ public class ComponentLoader {
         	}
     	}
     	
+
+    	// search relative to active cfc (this get not cached because the cache get ambigous if we do)
+    	if(searchLocal && isRealPath)	{
+    		ComponentPro cfc = (ComponentPro) pc.getActiveComponent();
+    		if(cfc!=null) {
+	    		PageSource psCFC = cfc.getPageSource();
+		    	ps=psCFC.getRealPage(pathWithCFC);
+	    		if(ps!=null) {
+					page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+	
+					if(page!=null){
+						//if(doCache)config.putCachedPageSource(localCacheName, page.getPageSource());
+						return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+					}
+				}
+    		}
+    	}
+    	
+    	// translate cfide. to org.railo.cfml
     	if(StringUtil.startsWithIgnoreCase(rawPath, "cfide.")) {
     		String rpm="org.railo.cfml."+rawPath.substring(6);
     		try{
