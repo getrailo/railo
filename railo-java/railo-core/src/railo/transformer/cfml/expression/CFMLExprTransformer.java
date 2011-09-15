@@ -214,7 +214,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		return transformAsString(init(ep,fld, cfml,allowLowerThan),new String[]{" ", ">", "/>"});
 	}
 	
-	protected Expression transformAsString(Data data,String[] breakContitions) throws TemplateException {
+	protected Expression transformAsString(Data data,String[] breakConditions) throws TemplateException {
 		Expression el=null;
 		
 		// parse the houle Page String
@@ -231,7 +231,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 				return el;
 			}  
 		// Simple
-			return simple(data,breakContitions);
+			return simple(data,breakConditions);
 	}
 	
 	
@@ -1714,12 +1714,12 @@ public class CFMLExprTransformer implements ExprTransformer {
 	 * @return parsed Element
 	 * @throws TemplateException
 	 */
-	private Expression simple(Data data,String[] breakContitions) throws TemplateException {
+	private Expression simple(Data data,String[] breakConditions) throws TemplateException {
 		StringBuffer sb=new StringBuffer();
 		int line=data.cfml.getLine();
 		outer:while(data.cfml.isValidIndex()) {
-			for(int i=0;i<breakContitions.length;i++){
-				if(data.cfml.isCurrent(breakContitions[i]))break outer;
+			for(int i=0;i<breakConditions.length;i++){
+				if(data.cfml.isCurrent(breakConditions[i]))break outer;
 			}
 			
 			//if(data.cfml.isCurrent(' ') || data.cfml.isCurrent('>') || data.cfml.isCurrent("/>")) break;

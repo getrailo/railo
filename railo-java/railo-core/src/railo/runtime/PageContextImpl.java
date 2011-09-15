@@ -53,6 +53,7 @@ import railo.intergral.fusiondebug.server.FDSignal;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.DataSource;
@@ -85,9 +86,11 @@ import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.listener.ModernAppListenerException;
+import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.net.ftp.FTPPoolImpl;
 import railo.runtime.net.http.HTTPServletRequestWrap;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
@@ -1994,16 +1997,19 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    
 	    try {
 	    	listener.onRequest(this,base);
+	    	log(false);
 	    }
 	    catch(Throwable t) {
-	    	
 	    	PageException pe = Caster.toPageException(t);
 	    	if(!(pe instanceof Abort)){
+	    		log(true);
 	    		if(fdEnabled){
 	        		FDSignal.signal(pe, false);
 	        	}
 	    		listener.onError(this,pe);	
 	    	}
+	    	else log(false);
+
 	    	if(throwExcpetion) throw pe;
 	    }
 	    finally {
@@ -2022,6 +2028,21 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             }
             base=null;
 	    }
+	}
+
+	private void log(boolean error) {
+		ConfigServerImpl cs = config.getConfigServerImpl();
+		if(!isGatewayContext() && cs.isMonitoringEnabled()) {
+            RequestMonitor[] monitors = cs.getRequestMonitors();
+            if(monitors!=null)for(int i=0;i<monitors.length;i++){
+            	if(monitors[i].isLogEnabled()){
+	            	try {
+	            		monitors[i].log(this,error);
+	        		} 
+	        		catch (Throwable e) {}
+	            }
+            }
+		}
 	}
 
 	private PageSource getPageSource(Mapping[] mappings, String realPath) {

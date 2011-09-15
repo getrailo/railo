@@ -52,6 +52,18 @@ Error Output --->
 <cfset pool["Code Cache"]="The HotSpot Java VM also includes a code cache, containing memory that is used for compilation and storage of native code.">
 
 
+<cfset pool["Eden Space"]=pool["Par Eden Space"]>
+<cfset pool["PS Eden Space"]=pool["Par Eden Space"]>
+
+<cfset pool["Survivor Space"]=pool["Par Survivor Space"]>
+<cfset pool["PS Survivor Space"]=pool["Par Survivor Space"]>
+
+<cfset pool["Perm Gen"]=pool["CMS Perm Gen"]>
+
+<cfset pool["Tenured Gen"]=pool["CMS Old Gen"]>
+<cfset pool["PS Old Gen"]=pool["CMS Old Gen"]>
+
+
 <cffunction name="printMemory" output="yes">
 	<cfargument name="usage" type="query" required="yes">
 	

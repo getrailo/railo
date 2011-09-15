@@ -2709,8 +2709,8 @@ If you specify a structure element that doesn't exist, Railo ignores it and does
 		<attribute-type>noname</attribute-type>
 		<attribute>
 			<type>boolean</type>
-			<name>contition</name>
-			<description>Expression Contition</description>
+			<name>condition</name>
+			<description>Expression condition</description>
 		</attribute>
 	</tag>
 	<!-- Error -->
@@ -5691,8 +5691,8 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<attribute-type>noname</attribute-type>
 		<attribute>
 			<type>boolean</type>
-			<name>contition</name>
-			<description>Contition o the expression</description>
+			<name>condition</name>
+			<description>condition o the expression</description>
 		</attribute>
 	</tag>
 	<!-- Image -->
@@ -13684,12 +13684,12 @@ dWord: creates a value of 0 (zero)</description>
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Simplification of the tag cfloop-contition, analog to the cfscript "while" loop.</description>
+		<description>Simplification of the tag cfloop-condition, analog to the cfscript "while" loop.</description>
 		<attribute-type>noname</attribute-type>
 		<attribute>
 			<type>boolean</type>
 			<name>condition</name>
-			<description>Contition o the expression</description>
+			<description>condition o the expression</description>
 		</attribute>
 	</tag>
 	<!-- Zip -->

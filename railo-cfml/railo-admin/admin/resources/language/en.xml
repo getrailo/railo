@@ -172,17 +172,9 @@
 	<data key="menu.resources.component">Component</data>
 	<data key="menu.resources.customtags">Custom tags</data>
 	<data key="menu.resources.cfx_tags">CFX tags</data>
-	
 	<data key="menu.debugging.label">Debugging</data>
 	<data key="menu.debugging.logs">Logs</data>
 	<data key="menu.debugging.templates">Templates</data>
-	
-	<data key="menu.surveillance.label">Surveillance</data>
-	<data key="menu.surveillance.memory">Memory</data>
-	<data key="menu.surveillance.thread">Thread</data>
-	
-	
-	
 	<data key="menu.security.label">Security</data>
 	<data key="menu.security.access">Access</data>
 	<data key="menu.security.password">Password</data>

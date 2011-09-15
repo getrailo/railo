@@ -112,9 +112,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		int bufferSize,
 		boolean autoflush)  {
         //runningCount++;
-        synchronized (pcs) {
-            return getPageContextImpl(servlet, req, rsp, errorPageURL, needsSession, bufferSize, autoflush,true,false);
-        }
+        return getPageContextImpl(servlet, req, rsp, errorPageURL, needsSession, bufferSize, autoflush,true,false);
 	}
 	
 	public PageContextImpl getPageContextImpl(
@@ -155,7 +153,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
         pc.release();
         ThreadLocalPageContext.release();
         //if(!pc.hasFamily()){
-			synchronized (pcs) {
+			synchronized (runningPcs) {
 	            runningPcs.removeEL(ArgumentIntKey.init(pc.getId()));
 	            if(pcs.size()<100)// not more than 100 PCs
 	            	pcs.push(pc);
@@ -172,7 +170,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	 */
 	public void checkTimeout() {
 		if(!engine.allowRequestTimeout())return;
-		synchronized (pcs) {
+		synchronized (runningPcs) {
             //int len=runningPcs.size();
 			Iterator it = runningPcs.keyIterator();
             PageContext pc;
@@ -313,10 +311,10 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	public Array getInfo() {
 		Array info=new ArrayImpl();
 		
-		synchronized (pcs) {
+		synchronized (runningPcs) {
             //int len=runningPcs.size();
 			Iterator it = runningPcs.keyIterator();
-            PageContext pc;
+            PageContextImpl pc;
             Struct data,sctThread,scopes;
     		Collection.Key key;
             Thread thread;
@@ -330,18 +328,21 @@ public final class CFMLFactoryImpl extends CFMLFactory {
             	
             	key=KeyImpl.toKey(it.next(),null);
                 //print.out("key:"+key);
-                pc=(PageContext) runningPcs.get(key,null);
-                if(pc==null || ((PageContextImpl)pc).isGatewayContext()) continue;
+                pc=(PageContextImpl) runningPcs.get(key,null);
+                if(pc==null || pc.isGatewayContext()) continue;
+                thread=pc.getThread();
+                if(thread==Thread.currentThread()) continue;
+
                 
                 thread=pc.getThread();
                 if(thread==Thread.currentThread()) continue;
                 
-                
-                
+               
                 
                 data.setEL("startTime", new DateTimeImpl(pc.getStartTime(),false));
                 data.setEL("endTime", new DateTimeImpl(pc.getStartTime()+pc.getRequestTimeout(),false));
                 data.setEL("timeout",new Double(pc.getRequestTimeout()));
+
                 
                 // thread
                 sctThread.setEL("name",thread.getName());
@@ -350,6 +351,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 
                 data.setEL("urlToken", pc.getURLToken());
                 data.setEL("debugger", pc.getDebugger().getDebuggingData(pc));
+
                 try {
 					data.setEL("id", Hash.call(pc, pc.getId()+":"+pc.getStartTime()));
 				} catch (PageException e1) {}
@@ -384,10 +386,9 @@ public final class CFMLFactoryImpl extends CFMLFactory {
             return info;
         }
 	}
-	
 
 	public void stopThread(String threadId, String stopType) {
-		synchronized (pcs) {
+		synchronized (runningPcs) {
             //int len=runningPcs.size();
 			Iterator it = runningPcs.keyIterator();
             PageContext pc;

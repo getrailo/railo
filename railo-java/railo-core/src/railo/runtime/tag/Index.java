@@ -461,7 +461,7 @@ public final class Index extends TagImpl {
         }
         IndexResult result;
         
-        // FUTURE remove this contition
+        // FUTURE remove this condition
         if(collection instanceof LuceneSearchCollection)
         	result = ((LuceneSearchCollection)collection).index(pageContext,key,type,urlpath,title,body,language,extensions,query,recurse,categoryTree,category,timeout,custom1,custom2,custom3,custom4);
         else

@@ -237,10 +237,8 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
             }
             else if(first=='p') {
             	if(key.equals(PATH_INFO)) {
-            		//String pathInfo = Caster.toString(req.getAttribute("javax.servlet.include.path_info"),null);
-            	    //if(!StringUtil.isEmpty(pathInfo,true)) return pathInfo;
-            	    	 
-            	    String pathInfo = req.getPathInfo();
+            		String pathInfo = Caster.toString(req.getAttribute("javax.servlet.include.path_info"),null);
+            	    if(StringUtil.isEmpty(pathInfo)) pathInfo = req.getPathInfo();
             	    if(!StringUtil.isEmpty(pathInfo,true)) return pathInfo;
             	     
             	  //return StringUtil.replace(StringUtil.emptyIfNull(req.getRequestURI()), StringUtil.emptyIfNull(req.getServletPath()),"", true);

@@ -3,10 +3,6 @@
 <cfparam name="application.pluginLanguage.de" default="#struct()#">
 <cfparam name="application.pluginLanguage.en" default="#struct()#">
 <cfparam name="url.pluginAction" default="overview">
-<cfparam name="session.alwaysNew" default="false" type="boolean">
-<cfif structKeyExists(url,'alwaysNew')>
-	<cfset session.alwaysNew=url.alwaysNew EQ true>
-</cfif>
 <cfif not structKeyExists(url,"plugin")>
 	<cflocation url="#request.self#" addtoken="no">
 </cfif>
@@ -31,9 +27,8 @@
 
 <cfset plugin.language=application.pluginLanguage[session.railo_admin_lang][url.plugin]>
 
+<cfoutput><cfif not request.disableFrame and structKeyExists(plugin.language,'text') and len(trim(plugin.language.text))>#plugin.language.text#<br /><br /></cfif></cfoutput>
 
-<cfoutput><cfif structKeyExists(plugin.language,'text')>#plugin.language.text#<br /><br /></cfif></cfoutput>
-	
 <!--- create scopes --->
 <cfset req=duplicate(url)>
 <cfset _form=duplicate(form)>
@@ -48,7 +43,7 @@
 
 <!---cfset plugin.component._action(plugin:plugin,lang:lang,app:app,req:req)--->
 
-<!-- first call the action if exists -->
+<!--- first call the action if exists --->
 <cfset hasAction=structKeyExists(plugin.component,url.pluginAction)>
 
 <cfif hasAction>
@@ -60,12 +55,12 @@
 	<cfset rtnAction=url.pluginAction>
 </cfif>
 
-<!-- redirect -->
+<!--- redirect --->
 <cfif findNoCase('redirect:',rtnAction) EQ 1>
-	<cflocation url="#plugin.component.action(mid(rtnAction,10,len(rtnAction)))#">
+	<cflocation url="#plugin.component.action(mid(rtnAction,10,len(rtnAction)))#" addtoken="no">
 </cfif>
 
-<!-- then call display -->
+<!--- then call display --->
 <cfset dspFile="/railo_plugin_directory/#url.plugin#/#rtnAction#.cfm">
 
 <cfset hasDisplay=fileExists(expandPath(dspFile))>

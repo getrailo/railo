@@ -1992,6 +1992,15 @@ public final class ConfigWebAdmin {
         Element scope=_getRootElement("regional");
         scope.setAttribute("locale",locale.trim());
     }
+
+    public void updateMonitorEnabled(boolean updateMonitorEnabled) throws SecurityException {
+    	checkWriteAccess();
+        
+        Element scope=_getRootElement("monitoring");
+        scope.setAttribute("enabled",Caster.toString(updateMonitorEnabled));
+    }
+    
+    
     
     public void updateScriptProtect(String strScriptProtect) throws SecurityException {
     	checkWriteAccess();
@@ -2932,6 +2941,53 @@ public final class ConfigWebAdmin {
       	clients.appendChild(el);
 	}
 
+	public void updateMonitor(String className,String type, String name, boolean logEnabled) throws PageException {
+		checkWriteAccess();
+		
+        Element parent=_getRootElement("monitoring");
+        
+        
+        Element[] children = ConfigWebFactory.getChildren(parent,"monitor");
+        Element monitor=null;
+        // Update
+        for(int i=0;i<children.length;i++) {
+      	    Element el=children[i];
+      	    String _name=el.getAttribute("name");
+  			if(_name!=null && _name.equalsIgnoreCase(name)) {
+  				monitor=el;
+  				break;
+  			}
+      	}
+        
+        // Insert
+      	if(monitor==null) {
+      		monitor = doc.createElement("monitor");
+      		parent.appendChild(monitor);
+      	}
+        
+      	monitor.setAttribute("class",className);
+      	monitor.setAttribute("type",type);
+      	monitor.setAttribute("name",name);
+      	monitor.setAttribute("log",Caster.toString(logEnabled));
+	}
+
+	public void removeMonitor(String name) throws PageException {
+		checkWriteAccess();
+		
+        Element parent=_getRootElement("monitoring");
+        
+        
+        Element[] children = ConfigWebFactory.getChildren(parent,"monitor");
+        // Update
+        for(int i=0;i<children.length;i++) {
+      	    Element el=children[i];
+      	    String _name=el.getAttribute("name");
+  			if(_name!=null && _name.equalsIgnoreCase(name)) {
+  				parent.removeChild(el);
+  			}
+      	}
+        
+	}
 
 
 	public void updateExtensionInfo(boolean enabled) {

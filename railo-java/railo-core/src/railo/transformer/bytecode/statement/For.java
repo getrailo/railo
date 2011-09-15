@@ -15,7 +15,7 @@ import railo.transformer.bytecode.util.ExpressionUtil;
 public final class For extends StatementBase implements FlowControl,HasBody {
 
 	private Expression init;
-	private Expression contition;
+	private Expression condition;
 	private Expression update;
 	private Body body;
 	
@@ -29,15 +29,15 @@ public final class For extends StatementBase implements FlowControl,HasBody {
 	/**
 	 * Constructor of the class
 	 * @param init
-	 * @param contition
+	 * @param condition
 	 * @param update
 	 * @param body
 	 * @param line
 	 */
-	public For(Expression init,Expression contition,Expression update,Body body,int startline,int endline) {
+	public For(Expression init,Expression condition,Expression update,Body body,int startline,int endline) {
 		super(startline,endline);
 		this.init=init;
-		this.contition=contition;
+		this.condition=condition;
 		this.update=update;
 		this.body=body;
 		body.setParent(this);
@@ -74,7 +74,7 @@ public final class For extends StatementBase implements FlowControl,HasBody {
 		//ExpressionUtil.visitLine(bc, getStartLine());
 		adapter.visitLabel(afterUpdate);
 		
-		if(contition!=null)contition.writeOut(bc, Expression.MODE_VALUE);
+		if(condition!=null)condition.writeOut(bc, Expression.MODE_VALUE);
 		else LitBoolean.TRUE.writeOut(bc, Expression.MODE_VALUE);
 		adapter.visitJumpInsn(Opcodes.IFNE, afterInit);
 		//ExpressionUtil.visitLine(bc, getEndLine());

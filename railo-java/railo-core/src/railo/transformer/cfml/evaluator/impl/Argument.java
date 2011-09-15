@@ -37,45 +37,7 @@ public final class Argument extends EvaluatorSupport {
 			//ASMUtil.isLiteralAttribute(tag,"displayname",ASMUtil.TYPE_STRING,false,true);
 			
 			// check if default can be converted to a literal value that match the type declration.
-			{
-				Attribute _type = tag.getAttribute("type");
-				if(_type!=null) {
-					ExprString typeValue = CastString.toExprString(_type.getValue());
-					if(typeValue instanceof LitString) {
-						String strType=((LitString)typeValue).getString();
-						Attribute _default = tag.getAttribute("default");
-						if(_default!=null) {
-							Expression defaultValue = _default.getValue();
-							if(defaultValue instanceof LitString) {
-								String strDefault=((LitString)defaultValue).getString();
-								
-								
-								
-								// check for boolean
-								if("boolean".equalsIgnoreCase(strType)) {
-									if("true".equalsIgnoreCase(strDefault) || "yes".equalsIgnoreCase(strDefault))
-										tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), LitBoolean.TRUE, _default.getType()));
-									if("false".equalsIgnoreCase(strDefault) || "no".equalsIgnoreCase(strDefault))
-										tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), LitBoolean.FALSE, _default.getType()));
-								}
-
-								// check for numbers
-								if("number".equalsIgnoreCase(strType) || "numeric".equalsIgnoreCase(strType)) {
-									Double dbl = Caster.toDouble(strDefault,null);
-									if(dbl!=null) {
-										tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), LitDouble.toExprDouble(dbl.doubleValue(), -1), _default.getType()));
-									}
-								}
-								
-								
-							}
-						}
-						
-						
-						
-					}
-				}
-			}
+			checkDefaultValue(tag);
 				
 			// check attribute passby
 			Attribute attrPassBy = tag.getAttribute("passby");
@@ -103,5 +65,40 @@ public final class Argument extends EvaluatorSupport {
 			// TODO check if there is a tag other than argument and text before	
 			
 		}
+
+	public static void checkDefaultValue(Tag tag) {
+		Attribute _type = tag.getAttribute("type");
+		if(_type!=null) {
+			ExprString typeValue = CastString.toExprString(_type.getValue());
+			if(typeValue instanceof LitString) {
+				String strType=((LitString)typeValue).getString();
+				Attribute _default = tag.getAttribute("default");
+				if(_default!=null) {
+					Expression defaultValue = _default.getValue();
+					if(defaultValue instanceof LitString) {
+						String strDefault=((LitString)defaultValue).getString();
+						
+						
+						
+						// check for boolean
+						if("boolean".equalsIgnoreCase(strType)) {
+							if("true".equalsIgnoreCase(strDefault) || "yes".equalsIgnoreCase(strDefault))
+								tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), LitBoolean.TRUE, _default.getType()));
+							if("false".equalsIgnoreCase(strDefault) || "no".equalsIgnoreCase(strDefault))
+								tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), LitBoolean.FALSE, _default.getType()));
+						}
+
+						// check for numbers
+						if("number".equalsIgnoreCase(strType) || "numeric".equalsIgnoreCase(strType)) {
+							Double dbl = Caster.toDouble(strDefault,null);
+							if(dbl!=null) {
+								tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), LitDouble.toExprDouble(dbl.doubleValue(), -1), _default.getType()));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 
 }

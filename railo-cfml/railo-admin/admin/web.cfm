@@ -1,14 +1,21 @@
-<cfsilent>
+<cfsilent> 
+<cfparam name="request.disableFrame" default="false" type="boolean">
+<cfparam name="request.setCFApplication" default="true" type="boolean">
+<cfif request.setCFApplication>
 <cfapplication name="webadmin" 
 	sessionmanagement="yes" 
 	clientmanagement="no" 
 	setclientcookies="yes" 
 	setdomaincookies="no">
-    
+</cfif>
 <cfif structKeyExists(url,'enable')>
 	<cfset session.enable=url.enable>
 </cfif>
-    
+
+<cfparam name="session.alwaysNew" default="false" type="boolean">
+<cfif structKeyExists(url,'alwaysNew')>
+	<cfset session.alwaysNew=url.alwaysNew EQ true>
+</cfif>
     
 <cfset cookieKey="sdfsdf789sdfsd">
 <cfparam name="request.adminType" default="web">
@@ -72,7 +79,6 @@
 	</cftry>
 </cfif> 
 
-
 <cfif not StructKeyExists(session,'railo_admin_lang')>
 	<cfset session.railo_admin_lang ='en'>
 </cfif>
@@ -98,11 +104,14 @@
 	<cfif fileExists(fileLanguage)>
 		<cffile action="read" file="#fileLanguage#" variable="txtLanguage" charset="utf-8">
 		<cfxml casesensitive="no" variable="xml"><cfoutput>#txtLanguage#</cfoutput></cfxml>
+        <cfset language.__position=0>
         <cfif isDefined('xml.xmlRoot.XmlAttributes.action')>
         	<cfset language.__action=trim(xml.xmlRoot.XmlAttributes.action)>
+        	<cfset language.__position=StructKeyExists(xml.xmlRoot.XmlAttributes,"position")?xml.xmlRoot.XmlAttributes.position:0>
         </cfif>
         <cfset xml = XmlSearch(xml, "/languages/language[@key='#lCase(session.railo_admin_lang)#']")[1]>
         
+		<cfset language.__group=StructKeyExists(xml,"group")?xml.group.XmlText:UCFirst(language.__action)>
 		<cfset language.title=xml.title.XmlText>
 		<cfset language.text=xml.description.XmlText>
 		<cfif isDefined('xml.custom')>
@@ -128,27 +137,34 @@
 	    returnVariable="pluginDir">	
 	<cfset mappings['/railo_plugin_directory/']=pluginDir>
 	<cfapplication action="update" mappings="#mappings#">
-	
-    <cfif navigation[arrayLen(navigation)].action neq "plugin">
-    	
-        <cfset plugin=struct(
-            label:"Plugins",
-            children:plugins,
-            action:"plugin"
-        )>
-    	<cfset navigation[arrayLen(navigation)+1]=plugin>
-    	
+    
+    <cfset hasPlugin=false>
+    <cfloop array="#navigation#" index="el">
+    	<cfif el.action EQ "plugin"><cfset hasPlugin=true></cfif>
+    </cfloop>
+    
+	<cfif not hasPlugin or (structKeyExists(session,"alwaysNew") and session.alwaysNew)>
+    	<cfif not hasPlugin>
+			<cfset plugin=struct(
+                label:"Plugins",
+                children:plugins,
+                action:"plugin"
+            )>
+            <cfset navigation[arrayLen(navigation)+1]=plugin>
+        </cfif>
+        	
         <cfset sctNav={}>
         <cfloop array="#navigation#" index="item">
         	<cfset sctNav[item.action]=item>
         </cfloop>
-    	
-    
+
         <cfdirectory directory="#plugindir#" action="list" name="plugindirs" recurse="no">
         <cfloop query="plugindirs">
             <cfif plugindirs.type EQ "dir">
                 <cfset _lang=loadPluginLanguage(pluginDir,plugindirs.name)>
                 <cfset _act=_lang.__action>
+				<cfset _group=_lang.__group>
+				<cfset _pos=_lang.__position>
 				<cfset StructDelete(_lang,"__action",false)>
 				
 				<cfset application.pluginLanguage[session.railo_admin_lang][plugindirs.name]=_lang>
@@ -158,15 +174,49 @@
                     action:plugindirs.name,
                     _action:'plugin&plugin='&plugindirs.name
                 )>
-                <cfset sctNav[_act].children[arrayLen(sctNav[_act].children)+1]=item>
+                
+                <cfif not StructKeyExists(sctNav,_act)>
+                	<cfset sctNav[_act]=struct(
+						label:_group,
+						children:[],
+						action:_act
+					)>
+                    <cfif _pos GT 0 and _pos LTE arrayLen(navigation)>
+                    	<cfscript>
+						for(i=arrayLen(navigation)+1;i>_pos;i--){
+							navigation[i]=navigation[i-1];
+						}
+                        navigation[_pos]=sctNav[_act];
+						</cfscript>
+                    <cfelse>
+                    	<cfset navigation[arrayLen(navigation)+1]=sctNav[_act]>
+                    </cfif>
+                    
+                </cfif>
+                
+                <cfset children=sctNav[_act].children>
+                <cfset isUpdate=false>
+                <cfloop from="1" to="#arrayLen(children)#" index="i">
+                	<cfif children[i].action EQ item.action>
+                    	<cfset children[i]=item>
+                        <cfset isUpdate=true>
+                    </cfif>
+                </cfloop>
+                <cfif not isUpdate>
+                	<cfset children[arrayLen(children)+1]=item>
+                </cfif>
+                
             </cfif>
         </cfloop>
     </cfif>
-    	<cfcatch></cfcatch>
+    	<cfcatch><cfrethrow></cfcatch>
     </cftry>
     
 </cfif>
-
+<cfsavecontent variable="arrow"><cfmodule template="img.cfm" src="arrow.gif" width="4" height="7" /></cfsavecontent>
+<cfif structKeyExists(url,"action") and url.action EQ "plugin" && not structKeyExists(url,"plugin")>
+	<cflocation url="#request.self#" addtoken="no">
+</cfif>
 <cfscript>
 
 isRestrictedLevel=server.ColdFusion.ProductLevel EQ "community" or server.ColdFusion.ProductLevel EQ "professional";
@@ -184,9 +234,6 @@ current.label="Overview";
 if(isDefined("url.action"))current.action=url.action;
 else current.action="overview";
 
-
-
-strNav ="";
 for(i=1;i lte arrayLen(navigation);i=i+1) {
 	stNavi = navigation[i];
 	hasChildren=StructKeyExists(stNavi,"children");
@@ -202,25 +249,29 @@ for(i=1;i lte arrayLen(navigation);i=i+1) {
 			}
 			
 			if(not toBool(stCld,"hidden") and (not isRestricted or toBool(stCld,"display"))) {
+				if (isActive) {
+					sClass = "navsub_active";
+				}
+				else {
+					sClass = "navsub";
+				}
 				if(structKeyExists(stCld,'_action'))_action=stCld._action;
 				else _action=stNavi.action & '.' & stCld.action;
 				
-				subNav = subNav & '<li><a '&(isActive?'class="menu_active"':'class="menu_inactive"')&' href="' & request.self & '?action=' & _action & '"> ' & stCld.label & '</a></li>';
+				subNav = subNav & '<div class="navsub">'&arrow&'<a class="#sClass#" href="' & request.self & '?action=' & _action & '"> ' & stCld.label & '</a></div>';
 			}
 		}
 	}
 	strNav = strNav &'';
 	hasChildren=hasChildren and len(subNav) GT 0;
 	if(not hasChildren) {
-		if(toBool(stNavi,"display"))strNav = strNav & '<li><a href="' & request.self & '?action=' & stNavi.action & '">' & stNavi.label & '</a></li>';
+		if(toBool(stNavi,"display"))strNav = strNav & '<div class="navtop"><a class="navtop" href="' & request.self & '?action=' & stNavi.action & '">' & stNavi.label & '</a></div>';
 	}
 	else {
-		strNav = strNav & '<li><a href="##">' & stNavi.label & '</a><ul>'&subNav& "</ul></li>";
+		strNav = strNav & '<div class="navtop">' & stNavi.label & '</div>'&subNav& "";
 	}
+	strNav = strNav ;
 }
-
-	strNav ='<ul id="menu">'& strNav&'</ul>' ;
-
 
 
 function toBool(sct,key) {
@@ -234,138 +285,6 @@ function getRemoteClients() {
 }
 request.getRemoteClients=getRemoteClients;
 </cfscript>
-
-<cfsavecontent variable="strNav">
-<script src="../jquery.js.cfm"></script>
-<script src="../jquery.blockUI.js.cfm"></script>
-
-    
-<script>
-
-
-function initMenu() {
-$('#menu ul').show();
-$('#menu li a').click(
-	function() {
-		$(this).next().slideToggle('normal');
-	}
-);
-}
-
-
-function initMenu2() {
-  $('#menu ul').hide();
-  $('#menu ul:first').show();
-  $('#menu li a').click(
-    function() {
-      var checkElement = $(this).next();
-      if((checkElement.is('ul')) && (checkElement.is(':visible'))) {
-        return false;
-        }
-      if((checkElement.is('ul')) && (!checkElement.is(':visible'))) {
-        $('#menu ul:visible').slideUp('normal');
-        checkElement.slideDown('normal');
-        return false;
-        }
-      }
-    );
-  }
-
-var disableBlockUI=false;
-
-// {form:_form,name:_input.name,value:v,error:err.error};
-function customError(errors){ 
-	if(!errors || errors.length==0) return;
-	var err;
-	var form=errors[0].form;
-	var el;
-	var clazz;
-	var input;
-	
-	// remove error from last round
-	try{
-	for(var i=0;i<form.elements.length;i++){
-		input=form.elements[i];
-		el=$(input);
-		clazz=el.attr("class");
-		if(clazz && clazz=="InputError") {
-			el.removeClass();
-			el=$("#msg_"+input.name);
-			el.remove();
-		}
-		
-		
-		
-	}
-	}
-	catch(err){alert(err)}
-	
-	
-	// create new error
-	for(var i=0;i<errors.length;i++){
-		err=errors[i];
-		var input=form[err.name];
-		var _input=$(input);
-		if(i==0) _input.focus();
-		_input.addClass("InputError");
-		_input.after('<span id="msg_'+err.name+'" class="commentError"><br/>'+err.error+'</span>');
-	
-	}
-	disableBlockUI=true;
-}
-
-
-
-function createWaitBlockUI(){
-	var _blockUI=function() { 
-			
-			if(!disableBlockUI)
-			$.blockUI(
-				{ 
-					message:<cfoutput>"#JSStringFormat(stText.general.wait)#"</cfoutput>,
-					css: { 
-							border: 'none', 
-							padding: '15px', 
-							backgroundColor: '#000', 
-							'-webkit-border-radius': '10px', 
-							'-moz-border-radius': '10px', 
-							opacity: .5, 
-							color: '#fff' ,
-							fontSize : "18pt"
-						},
-					fadeIn: 1000 
-				}
-			); 
-		}
-	return _blockUI;
-}
-
-
-
-
-$(document).ready(function() { 
-	initMenu();
-		
-		__blockUI=function() {
-			setTimeout(createWaitBlockUI(),1000);
-		
-		}
-	
-	
-	
-	
-	
-	$('.submit,.menu_inactive,.menu_active').click(__blockUI);
-    }); 
-
-
-</script>
-
-<cfoutput>#strNav#</cfoutput>
-</cfsavecontent>
-
-
-
 <cfif not StructKeyExists(session,"password"&request.adminType)>
 		<cfadmin 
 			action="hasPassword"
@@ -382,14 +301,18 @@ $(document).ready(function() {
 			<cfinclude template="login.new.cfm">
 		</cfmodule>
 	</cfif>
-	
 <cfelse>
 	<cfsavecontent variable="content">
 				<cfif not FindOneOf("\/",current.action)><cfinclude template="#current.action#.cfm"><cfelse><cfset current.label="Error">invalid action definition</cfif>
 	</cfsavecontent>
-	<cfmodule  template="admin_layout.cfm" width="960" navigation="#strNav#" right="#context#" title="#current.label#">
-		<cfoutput>#content#</cfoutput>
-	</cfmodule>
+	<cfif request.disableFrame>
+    	<cfoutput>#content#</cfoutput>
+    <cfelse>
+    	<cfmodule template="admin_layout.cfm" width="960" navigation="#strNav#" right="#context#" title="#current.label#">
+			<cfoutput>#content#</cfoutput>
+        </cfmodule>
+    </cfif>
+    
 </cfif>
 <cfif current.action neq "overview">
 	<cfcookie name="railo_admin_lastpage" value="#current.action#" expires="NEVER">
