@@ -1070,12 +1070,14 @@ public final class Http extends BodyTagImpl {
 			boolean doIt=true;
 			if(!http.multiPart && parts.size()==1){
 				Part part = parts.get(0);
-				if(part instanceof ResourcePart){
+				/* jira 1513
+				  if(part instanceof ResourcePart){
 					ResourcePart rp = (ResourcePart) part;
 					eem.setRequestEntity(new ResourceRequestEntity(rp.getResource(),rp.getContentType()));
 					doIt=false;
 				}
-				else if(part instanceof RailoStringPart){
+				else */
+					if(part instanceof RailoStringPart){
 					RailoStringPart sp = (RailoStringPart) part;
 					try {
 						eem.setRequestEntity(new StringRequestEntity(sp.getValue(),sp.getContentType(),sp.getCharSet()));
