@@ -4059,32 +4059,6 @@ private void doGetMappings() throws PageException {
 		String threadId=getString("admin", "stopThread", "threadId");
 		String stopType=getString("stopType","exception");
 		
-		
-		// Server
-		if(config instanceof ConfigServer) {
-			ConfigServer cs=(ConfigServer) config;
-			ConfigWeb[] webs = cs.getConfigWebs();
-			for(int i=0;i<webs.length;i++){
-				ConfigWebImpl cw=(ConfigWebImpl) webs[i];
-				if(!cw.getId().equals(contextId)) continue;
-				 ((CFMLFactoryImpl)cw.getFactory()).stopThread(threadId,stopType);
-				 break;
-			}
-			
-		}
-		/* / Web
-		else {
-			CFMLFactoryImpl factory = (CFMLFactoryImpl) config.getFactory();
-			pageContext.setVariable(getString("admin",action,"returnVariable"),
-					factory.getInfo());
-		}*/
-	}
-	
-	private void doStopThread() throws PageException {
-		String contextId=getString("admin", "stopThread", "contextId");
-		String threadId=getString("admin", "stopThread", "threadId");
-		String stopType=getString("stopType","exception");
-		
 		if(!(config instanceof ConfigServer)) 
 			throw new ApplicationException("invalid context for this action");
 		
