@@ -365,20 +365,23 @@ public final class FileTag extends TagImpl {
 		
 		// destination
 		if(destination.isDirectory()) destination=destination.getRealResource(source.getName());
-		if(destination.exists() && nameconflict!=NAMECONFLICT_OVERWRITE) {
+		if(destination.exists()) {
 			// SKIP
 			if(nameconflict==NAMECONFLICT_SKIP) return;
+			// OVERWRITE
+			else if(nameconflict==NAMECONFLICT_OVERWRITE) destination.delete();
 			// MAKEUNIQUE
 			else if(nameconflict==NAMECONFLICT_MAKEUNIQUE) destination=makeUnique(destination);
 			// ERROR
 			else throw new ApplicationException("destiniation file ["+destination.toString()+"] already exist");
 		}
+			
         
 		try {
 			source.moveTo(destination);
 				
 		}
-		catch(Throwable t) {
+		catch(Throwable t) {t.printStackTrace();
 			throw new ApplicationException(t.getMessage());
 		}
         setMode(destination,mode);
@@ -421,9 +424,11 @@ public final class FileTag extends TagImpl {
 		
 		// destination
 		if(destination.isDirectory()) destination=destination.getRealResource(source.getName());
-		if(destination.exists() && nameconflict!=NAMECONFLICT_OVERWRITE) {
+		if(destination.exists()) {
 			// SKIP
 			if(nameconflict==NAMECONFLICT_SKIP) return;
+			// SKIP
+			else if(nameconflict==NAMECONFLICT_OVERWRITE) destination.delete();
 			// MAKEUNIQUE
 			else if(nameconflict==NAMECONFLICT_MAKEUNIQUE) destination=makeUnique(destination);
 			// ERROR
