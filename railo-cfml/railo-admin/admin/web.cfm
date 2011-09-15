@@ -11,7 +11,7 @@
 <cfif structKeyExists(url,'enable')>
 	<cfset session.enable=url.enable>
 </cfif>
-
+  
 <cfparam name="session.alwaysNew" default="false" type="boolean">
 <cfif structKeyExists(url,'alwaysNew')>
 	<cfset session.alwaysNew=url.alwaysNew EQ true>
@@ -137,27 +137,27 @@
 	    returnVariable="pluginDir">	
 	<cfset mappings['/railo_plugin_directory/']=pluginDir>
 	<cfapplication action="update" mappings="#mappings#">
-    
+	
     <cfset hasPlugin=false>
     <cfloop array="#navigation#" index="el">
     	<cfif el.action EQ "plugin"><cfset hasPlugin=true></cfif>
     </cfloop>
-    
+    	
 	<cfif not hasPlugin or (structKeyExists(session,"alwaysNew") and session.alwaysNew)>
     	<cfif not hasPlugin>
-			<cfset plugin=struct(
-                label:"Plugins",
-                children:plugins,
-                action:"plugin"
-            )>
-            <cfset navigation[arrayLen(navigation)+1]=plugin>
+        <cfset plugin=struct(
+            label:"Plugins",
+            children:plugins,
+            action:"plugin"
+        )>
+    	<cfset navigation[arrayLen(navigation)+1]=plugin>
         </cfif>
-        	
+    	
         <cfset sctNav={}>
         <cfloop array="#navigation#" index="item">
         	<cfset sctNav[item.action]=item>
         </cfloop>
-
+    	
         <cfdirectory directory="#plugindir#" action="list" name="plugindirs" recurse="no">
         <cfloop query="plugindirs">
             <cfif plugindirs.type EQ "dir">
@@ -200,18 +200,18 @@
                 	<cfif children[i].action EQ item.action>
                     	<cfset children[i]=item>
                         <cfset isUpdate=true>
-                    </cfif>
-                </cfloop>
+            </cfif>
+        </cfloop>
                 <cfif not isUpdate>
                 	<cfset children[arrayLen(children)+1]=item>
-                </cfif>
-                
-            </cfif>
+    </cfif>
+    
+</cfif>
         </cfloop>
     </cfif>
     	<cfcatch><cfrethrow></cfcatch>
     </cftry>
-    
+
 </cfif>
 <cfsavecontent variable="arrow"><cfmodule template="img.cfm" src="arrow.gif" width="4" height="7" /></cfsavecontent>
 <cfif structKeyExists(url,"action") and url.action EQ "plugin" && not structKeyExists(url,"plugin")>
@@ -229,11 +229,11 @@ isRestricted=isRestrictedLevel and request.adminType EQ "server";
 
 context=''; 
 // write Naviagtion
-strNav='';
 current.label="Overview";
 if(isDefined("url.action"))current.action=url.action;
 else current.action="overview";
 
+strNav ="";
 for(i=1;i lte arrayLen(navigation);i=i+1) {
 	stNavi = navigation[i];
 	hasChildren=StructKeyExists(stNavi,"children");
@@ -249,30 +249,33 @@ for(i=1;i lte arrayLen(navigation);i=i+1) {
 			}
 			
 			if(not toBool(stCld,"hidden") and (not isRestricted or toBool(stCld,"display"))) {
-				if (isActive) {
+				/*if (isActive) {
 					sClass = "navsub_active";
 				}
 				else {
 					sClass = "navsub";
-				}
+				}*/
 				if(structKeyExists(stCld,'_action'))_action=stCld._action;
 				else _action=stNavi.action & '.' & stCld.action;
 				
-				subNav = subNav & '<div class="navsub">'&arrow&'<a class="#sClass#" href="' & request.self & '?action=' & _action & '"> ' & stCld.label & '</a></div>';
+				subNav = subNav & '<li><a '&(isActive?'class="menu_active"':'class="menu_inactive"')&' href="' & request.self & '?action=' & _action & '"> ' & stCld.label & '</a></li>';
+				//subNav = subNav & '<div class="navsub">'&arrow&'<a class="#sClass#" href="' & request.self & '?action=' & _action & '"> ' & stCld.label & '</a></div>';
 			}
 		}
 	}
 	strNav = strNav &'';
 	hasChildren=hasChildren and len(subNav) GT 0;
 	if(not hasChildren) {
-		if(toBool(stNavi,"display"))strNav = strNav & '<div class="navtop"><a class="navtop" href="' & request.self & '?action=' & stNavi.action & '">' & stNavi.label & '</a></div>';
+		if(toBool(stNavi,"display"))strNav = strNav & '<li><a href="' & request.self & '?action=' & stNavi.action & '">' & stNavi.label & '</a></li>';
+		//if(toBool(stNavi,"display"))strNav = strNav & '<div class="navtop"><a class="navtop" href="' & request.self & '?action=' & stNavi.action & '">' & stNavi.label & '</a></div>';
 	}
 	else {
-		strNav = strNav & '<div class="navtop">' & stNavi.label & '</div>'&subNav& "";
+		strNav = strNav & '<li><a href="##">' & stNavi.label & '</a><ul>'&subNav& "</ul></li>";
+		//strNav = strNav & '<div class="navtop">' & stNavi.label & '</div>'&subNav& "";
 	}
-	strNav = strNav ;
+	//strNav = strNav ;
 }
-
+strNav ='<ul id="menu">'& strNav&'</ul>' ;
 
 function toBool(sct,key) {
 	if(not StructKeyExists(sct,key)) return false;
@@ -285,6 +288,123 @@ function getRemoteClients() {
 }
 request.getRemoteClients=getRemoteClients;
 </cfscript>
+
+
+
+<cfsavecontent variable="strNav">
+<script src="../jquery.js.cfm"></script>
+<script src="../jquery.blockUI.js.cfm"></script>
+<script>
+function initMenu() {
+	$('#menu ul').show();
+	$('#menu li a').click(
+  		function() {
+    		$(this).next().slideToggle('normal');
+  		}
+	);
+}
+
+function initMenu2() {
+  $('#menu ul').hide();
+  $('#menu ul:first').show();
+  $('#menu li a').click(
+    function() {
+      var checkElement = $(this).next();
+      if((checkElement.is('ul')) && (checkElement.is(':visible'))) {
+        return false;
+        }
+      if((checkElement.is('ul')) && (!checkElement.is(':visible'))) {
+        $('#menu ul:visible').slideUp('normal');
+        checkElement.slideDown('normal');
+        return false;
+        }
+      }
+    );
+  }
+
+var disableBlockUI=false;
+
+// {form:_form,name:_input.name,value:v,error:err.error};
+function customError(errors){ 
+	if(!errors || errors.length==0) return;
+	var err;
+	var form=errors[0].form;
+	var el;
+	var clazz;
+	var input;
+
+	// remove error from last round
+	try{
+  		for(var i=0;i<form.elements.length;i++){
+    		input=form.elements[i];
+    		el=$(input);
+    		clazz=el.attr("class");
+    		if(clazz && clazz=="InputError") {
+      			el.removeClass();
+      			el=$("#msg_"+input.name);
+      			el.remove();
+    		}
+  		}
+  	}
+  	catch(err){
+		alert(err)
+	}
+
+	// create new error
+  	for(var i=0;i<errors.length;i++){
+    	err=errors[i];
+    	var input=form[err.name];
+    	var _input=$(input);
+    	if(i==0) _input.focus();
+    	_input.addClass("InputError");
+    	_input.after('<span id="msg_'+err.name+'" class="commentError"><br/>'+err.error+'</span>');
+  	}
+  	disableBlockUI=true;
+}
+
+function createWaitBlockUI(){
+  var _blockUI=function() { 
+      if(!disableBlockUI)
+      $.blockUI(
+        { 
+          message:<cfoutput>"#JSStringFormat(stText.general.wait)#"</cfoutput>,
+          css: { 
+              border: 'none', 
+              padding: '15px', 
+              backgroundColor: '#000', 
+              '-webkit-border-radius': '10px', 
+              '-moz-border-radius': '10px', 
+              opacity: .5, 
+              color: '#fff' ,
+              fontSize : "18pt"
+            },
+          fadeIn: 1000 
+        }
+      ); 
+    }
+  return _blockUI;
+}
+
+$(document).ready(function() { 
+  initMenu();
+    
+    __blockUI=function() {
+      setTimeout(createWaitBlockUI(),1000);
+    
+    }
+
+  $('.submit,.menu_inactive,.menu_active').click(__blockUI);
+    }); 
+
+
+</script>
+<cfoutput>#strNav#</cfoutput>
+</cfsavecontent>
+
+
+
+
+
 <cfif not StructKeyExists(session,"password"&request.adminType)>
 		<cfadmin 
 			action="hasPassword"
