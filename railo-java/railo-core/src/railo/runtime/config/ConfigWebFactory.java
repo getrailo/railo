@@ -3370,7 +3370,7 @@ public final class ConfigWebFactory {
     }
     
 
-    private static void loadMonitors(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException {
+    private static void loadMonitors(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
         if(configServer!=null) return;
         
         configServer=(ConfigServerImpl) config;
@@ -3380,7 +3380,6 @@ public final class ConfigWebFactory {
         boolean enabled=Caster.toBooleanValue(parent.getAttribute("enabled"),false);
         configServer.setMonitoringEnabled(enabled);
         
-        int index=0;
         Element[] children = getChildren(parent,"monitor");
         java.util.List<IntervallMonitor> intervalls=new ArrayList<IntervallMonitor>();
         java.util.List<RequestMonitor> requests=new ArrayList<RequestMonitor>();
