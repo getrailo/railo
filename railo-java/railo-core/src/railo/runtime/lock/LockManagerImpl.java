@@ -15,13 +15,14 @@ public final class LockManagerImpl implements LockManager {
 
 	private static List<LockManagerImpl> managers=new ArrayList<LockManagerImpl>();
     private KeyLock<String> locks=new KeyLock<String>();
+	private boolean caseSensitive;
 	
-    private LockManagerImpl() {
-    	
+    private LockManagerImpl(boolean caseSensitive) {
+    	this.caseSensitive=caseSensitive;
     }
 	
-    public static LockManager getInstance() {
-    	LockManagerImpl lmi = new LockManagerImpl();
+    public static LockManager getInstance(boolean caseSensitive) {
+    	LockManagerImpl lmi = new LockManagerImpl(caseSensitive);
     	managers.add(lmi);
     	return lmi;
     }
@@ -30,6 +31,7 @@ public final class LockManagerImpl implements LockManager {
      * @see railo.runtime.lock.LockManager#lock(int, java.lang.String, int, int)
      */
 	public LockData lock(int type, String name, int timeout, int pageContextId) throws LockTimeoutException, InterruptedException {
+		if(!caseSensitive)name=name.toLowerCase();
 		if(type==LockManager.TYPE_READONLY) return new ReadLockData(name,pageContextId);
 		if(timeout<=0)timeout=1;
 		Lock lock;
