@@ -276,6 +276,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private ORMSession ormSession;
 	private boolean isChild;
 	private boolean gatewayContext;
+	private String serverPassword;
 
 	public long sizeOf() {
 		
@@ -320,6 +321,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		SizeOf.size(startTime)+
 		SizeOf.size(isCFCRequest)+
 		SizeOf.size(conns)+
+		SizeOf.size(serverPassword)+
 		SizeOf.size(ormSession);
 	}
 	
@@ -444,6 +446,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @see javax.servlet.jsp.PageContext#release()
 	 */
 	public void release() {//KeyImpl.dump();
+		this.serverPassword=null;
 		boolean isChild=parent!=null;
 		parent=null;
 		// Attention have to be before close
@@ -815,7 +818,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	other.timeZone=timeZone;
     	other.fdEnabled=fdEnabled;
     	other.useSpecialMappings=useSpecialMappings;
-    	
+    	other.serverPassword=serverPassword;
     	
     	
     	hasFamily=true;
@@ -2889,5 +2892,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public void setGatewayContext(boolean gatewayContext) {
 		this.gatewayContext = gatewayContext;
+	}
+
+
+
+	public void setServerPassword(String serverPassword) {
+		this.serverPassword=serverPassword;
+	}
+	public String getServerPassword() {
+		return serverPassword;
 	}
 }

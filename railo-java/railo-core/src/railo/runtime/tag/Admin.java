@@ -39,6 +39,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.net.JarLoader;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
+import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
@@ -63,6 +64,7 @@ import railo.runtime.db.DataSourceManager;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.DumpWriter;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
@@ -216,7 +218,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     public int doStartTag() throws PageException {
     	//adminSync = pageContext.getAdminSync();
     	
-        // Action
+    	// Action
         Object objAction=attributes.get(KeyImpl.ACTION);
         if(objAction==null)throw new ApplicationException("missing attrbute action for tag admin");
         action=StringUtil.toLowerCase(Caster.toString(objAction)).trim();
@@ -473,7 +475,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         
     	
-    	if(check("connect",ACCESS_FREE) && check2(CHECK_PW)) {/*do nothing more*/}
+    	if(check("connect",ACCESS_FREE) && check2(CHECK_PW)) {
+    		try{
+    			if(config instanceof ConfigServer)
+    				((PageContextImpl)pageContext).setServerPassword(password);
+    		}
+    		catch(Throwable t){}
+    	}
     	else if(check("surveillance",           ACCESS_FREE) && check2(ACCESS_READ  )) doSurveillance();
     	else if(check("getRegional",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetRegional();
     	else if(check("isMonitorEnabled",       ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ  )) doIsMonitorEnabled();
