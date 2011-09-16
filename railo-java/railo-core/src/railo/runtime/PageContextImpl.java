@@ -90,7 +90,6 @@ import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.net.ftp.FTPPoolImpl;
 import railo.runtime.net.http.HTTPServletRequestWrap;
-import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;

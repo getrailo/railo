@@ -45,7 +45,6 @@ import railo.commons.net.HTTPUtil;
 import railo.commons.net.RailoStringPart;
 import railo.commons.net.ResourcePart;
 import railo.commons.net.ResourcePartSource;
-import railo.commons.net.ResourceRequestEntity;
 import railo.commons.net.URLEncoder;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalConfig;
