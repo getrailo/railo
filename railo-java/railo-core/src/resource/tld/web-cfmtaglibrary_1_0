@@ -2008,18 +2008,35 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
     		- name: includes only filenames in the result set.</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>acl</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>only used for S3 Resources</description>
+			<description>An array of struct where each struct represents a permission or grant.
+Example:
+[{email="xxx@yyy.com", permission="full_control"}, {group="all", permission="read"}]
+</description>
+		</attribute>
+		<attribute>
+			<type>object</type>
+			<name>storeacl</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>alias for attribute "acl"</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>storage</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>only used for S3 Resources</description>
+			<description>Only used for S3 Resources. The location of the created bucket/object. The location can either be EU,US or US-WEST. The default location is US.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>storelocation</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>alias for attribute "storage"</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -3054,11 +3071,21 @@ If you specify a structure element that doesn't exist, Railo ignores it and does
  For example, if the action = "write", use the attributes associated with writing a text file.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>acl</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>only used for S3 Resources</description>
+			<description>An array of struct where each struct represents a permission or grant.
+Example:
+[{email="xxx@yyy.com", permission="full_control"}, {group="all", permission="read"}]
+			</description>
+		</attribute>
+		<attribute>
+			<type>object</type>
+			<name>storeacl</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>alias for attribute "acl"</description>
 		</attribute>
 		<attribute>
 			<type>string</type>

@@ -570,7 +570,7 @@ public final class S3 implements S3Constants {
 	public static int toIntStorage(String storage) throws S3Exception {
 		int s=toIntStorage(storage,-1);
 		if(s==-1)
-			throw new S3Exception("invalid storage value, valid values are [eu,us]");
+			throw new S3Exception("invalid storage value, valid values are [eu,us,us-west]");
 		return s;
 	}
 	public static int toIntStorage(String storage, int defaultValue) {

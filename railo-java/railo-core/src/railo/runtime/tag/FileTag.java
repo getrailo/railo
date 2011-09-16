@@ -11,7 +11,9 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.ModeUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.type.s3.S3;
 import railo.commons.io.res.type.s3.S3Constants;
+import railo.commons.io.res.type.s3.S3Resource;
 import railo.commons.io.res.util.ModeObjectWrap;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -21,6 +23,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.functions.list.ListFirst;
 import railo.runtime.functions.list.ListLast;
+import railo.runtime.functions.s3.StoreSetACL;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -104,14 +107,14 @@ public final class FileTag extends TagImpl {
 	private railo.runtime.security.SecurityManager securityManager;
 
 	private String serverPassword=null;
-	private int acl=S3Constants.ACL_PUBLIC_READ;
+	private Object acl=null;
 
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
 	*/
 	public void release()	{
 		super.release();
-		acl=S3Constants.ACL_PUBLIC_READ;
+		acl=null;
 		action=null;
 		strDestination=null;
 		output=null;
@@ -214,21 +217,16 @@ public final class FileTag extends TagImpl {
 	*  used only for s3 resources, for all others ignored
 	* @param charset value to set
 	 * @throws ApplicationException 
+	 * @Deprecated only exists for backward compatibility to old ra files.
 	**/
 	public void setAcl(String acl) throws ApplicationException	{
-		this.acl=toAcl(acl);
+		this.acl=acl;
 	}
-	public static int toAcl(String acl) throws ApplicationException	{
-		if(StringUtil.isEmpty(acl,true)) return S3Constants.ACL_PUBLIC_READ;
-		acl=acl.trim().toLowerCase();
-				
-		if("private".equals(acl)) 					return S3Constants.ACL_PRIVATE;
-		else if("public-read".equals(acl)) 			return S3Constants.ACL_PRIVATE;
-		else if("public-read-write".equals(acl))	return S3Constants.ACL_PUBLIC_READ_WRITE;
-		else if("authenticated-read".equals(acl))	return S3Constants.ACL_AUTH_READ;
-		
-		else throw new ApplicationException("invalid value for attribute/argument acl ["+acl+"]",
-				"valid values are [private,public-read,public-read-write,authenticated-read]");
+	public void setAcl(Object acl) throws ApplicationException	{
+		this.acl=acl;
+	}
+	public void setStoreacl(Object acl) throws ApplicationException	{
+		this.acl=acl;
 	}
 	
 	
@@ -350,7 +348,6 @@ public final class FileTag extends TagImpl {
 			throw new ApplicationException("attribute destination is not defined for tag file");
 		
 		Resource destination=toDestination(pageContext,strDestination,source);
-		setACL(destination,acl);
 		
 		securityManager.checkFileLocation(pageContext.getConfig(),source,serverPassword);
 		securityManager.checkFileLocation(pageContext.getConfig(),destination,serverPassword);
@@ -384,7 +381,8 @@ public final class FileTag extends TagImpl {
 		catch(Throwable t) {t.printStackTrace();
 			throw new ApplicationException(t.getMessage());
 		}
-        setMode(destination,mode);
+		setACL(destination,acl);
+		setMode(destination,mode);
         setAttributes(destination,attributes);
 	}
 
@@ -435,7 +433,6 @@ public final class FileTag extends TagImpl {
 			else throw new ApplicationException("destiniation file ["+destination.toString()+"] already exist");
 		}
         
-		setACL(destination,acl);
 		
 		
         try {
@@ -447,18 +444,32 @@ public final class FileTag extends TagImpl {
             ae.setStackTrace(e.getStackTrace());
             throw ae;
 		}
-        setMode(destination,mode);
+		setACL(destination,acl);
+		setMode(destination,mode);
         setAttributes(destination,attributes);
 	}
 
-	private static void setACL(Resource res,int acl) {
+	private static void setACL(Resource res,Object acl) throws PageException {
 		String scheme = res.getResourceProvider().getScheme();
 		
 		if("s3".equalsIgnoreCase(scheme)){
-			try {
-				Reflector.callMethod(res, SET_ACL, new Object[]{Caster.toInteger(acl)});
-			} 
-			catch (PageException e) {}
+			S3Resource s3r=(S3Resource) res;
+			
+			if(acl!=null){
+				try {
+					// old way
+					if(Decision.isString(acl)) {
+						s3r.setACL(S3.toIntACL(Caster.toString(acl)));
+					}
+					// new way
+					else {
+						StoreSetACL.invoke(s3r, acl);
+					}
+				} catch (IOException e) {
+					throw Caster.toPageException(e);
+				}
+			}
+			
 		}
 		// set acl for s3 resource
 		/*if(res instanceof S3Resource) {
@@ -541,7 +552,7 @@ public final class FileTag extends TagImpl {
         if(output==null)
             throw new ApplicationException("attribute output is not defined for tag file");
         checkFile(true,false,true);
-        setACL(file,acl);
+        
         try {
         	if(output instanceof InputStream)	{
         		IOUtil.copy(
@@ -572,7 +583,7 @@ public final class FileTag extends TagImpl {
             
             throw new ApplicationException("can't write file "+file.getAbsolutePath(),e.getMessage());
         }
-        
+        setACL(file,acl);
         setMode(file,mode);
         setAttributes(file,attributes);
     }
@@ -583,8 +594,7 @@ public final class FileTag extends TagImpl {
      */
     private void actionTouch() throws PageException {
         checkFile(true,true,true);
-        setACL(file,acl);
-
+        
         try {
             ResourceUtil.touch(file);
         } 
@@ -593,6 +603,7 @@ public final class FileTag extends TagImpl {
             throw new ApplicationException("can't touch file "+file.getAbsolutePath(),e.getMessage());
         }
         
+        setACL(file,acl);
         setMode(file,mode);
         setAttributes(file,attributes);
     }
@@ -607,7 +618,6 @@ public final class FileTag extends TagImpl {
 		if(output==null)
 			throw new ApplicationException("attribute output is not defined for tag file");
 		checkFile(true,false,true);
-		setACL(file,acl);
 		
         try {
 
@@ -624,7 +634,8 @@ public final class FileTag extends TagImpl {
         catch (IOException e) {
             throw new ApplicationException("can't write file",e.getMessage());
         }
-        setMode(file,mode);
+        setACL(file,acl);
+		setMode(file,mode);
         setAttributes(file,attributes);
 	}
 
@@ -711,7 +722,7 @@ public final class FileTag extends TagImpl {
 	
 
 	public static Array actionUploadAll(PageContext pageContext,railo.runtime.security.SecurityManager securityManager,
-			String strDestination,int nameconflict,String accept,int mode,String attributes,int acl,String serverPassword) throws PageException {
+			String strDestination,int nameconflict,String accept,int mode,String attributes,Object acl,String serverPassword) throws PageException {
 		Item[] items=getFormItems(pageContext);
 		Struct sct=null;
 		Array arr=new ArrayImpl();
@@ -723,7 +734,7 @@ public final class FileTag extends TagImpl {
 	}
 	
 	private static synchronized Struct _actionUpload(PageContext pageContext, railo.runtime.security.SecurityManager securityManager, 
-			Item formItem,String strDestination,int nameconflict,String accept,int mode,String attributes,int acl,String serverPassword) throws PageException {
+			Item formItem,String strDestination,int nameconflict,String accept,int mode,String attributes,Object acl,String serverPassword) throws PageException {
 		if(nameconflict==NAMECONFLICT_UNDEFINED) nameconflict=NAMECONFLICT_ERROR;
 
 		boolean fileWasRenamed=false;
@@ -770,8 +781,7 @@ public final class FileTag extends TagImpl {
 
 	    
 	    Resource destination=toDestination(pageContext,strDestination,null);
-	    setACL(destination,acl);
-		
+	    
 	    
 		securityManager.checkFileLocation(pageContext.getConfig(),destination,serverPassword);
 		
@@ -851,7 +861,8 @@ public final class FileTag extends TagImpl {
 			cffile.set("filewassaved",Boolean.TRUE);
 			
 
-	        setMode(destination,mode);
+			setACL(destination,acl);
+			setMode(destination,mode);
 	        setAttributes(destination, attributes);
 	        return cffile;
 	}
