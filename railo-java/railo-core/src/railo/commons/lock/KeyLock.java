@@ -1,7 +1,11 @@
 package railo.commons.lock;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class KeyLock<K> {
 
@@ -22,34 +26,48 @@ public class KeyLock<K> {
 			else if(lock.getLabel().getThreadId()==token.getThreadId()) {
 				return null;
 			}
-			lock.incWaiters();
 		}
-		lock.lock(timeout,false);
+		lock.lock(timeout);
 		return lock;
 	}
 
 	public void unlock(Lock lock) {
-		if(lock==null) {
-			return;
-		}
+		if(lock==null) return;
+		
 		synchronized (locks) {
-			if(lock.waiters()==0){
+			if(lock.getQueueLength()==0){
 				locks.remove(((SimpleLock<Token<K>>)lock).getLabel());
 			}
 		}
 		lock.unlock();
+	}
+	
+	public List<K> getOpenLockNames() {
+		Iterator<Entry<Token<K>, SimpleLock<Token<K>>>> it = locks.entrySet().iterator();
+		Entry<Token<K>, SimpleLock<Token<K>>> entry;
+		List<K> list=new ArrayList<K>();
+		while(it.hasNext()){
+			entry = it.next();
+			if(entry.getValue().getQueueLength()>0)
+				list.add(entry.getKey().getKey());
+		}
+		return list;
+	}
+
+	public void clean() {
+		Iterator<Entry<Token<K>, SimpleLock<Token<K>>>> it = locks.entrySet().iterator();
+		Entry<Token<K>, SimpleLock<Token<K>>> entry;
 		
-		/*Wrap wrap = locks.get(key);
-		if(wrap==null) return;
-		wrap.dec();
-		wrap.lock.unlock();
-		synchronized (locks) {
-			wrap = locks.get(key);
-			synchronized (wrap) {
-				if(wrap!=null && wrap.count()==0)
-					locks.remove(key);
+		while(it.hasNext()){
+			entry = it.next();
+			if(entry.getValue().getQueueLength()==0){
+				synchronized (locks) {
+					if(entry.getValue().getQueueLength()==0){
+						locks.remove(entry.getKey());
+					}
+				}
 			}
-		}*/
+		}
 	}
 }
 
@@ -71,6 +89,9 @@ class Token<K> {
 	 */
 	public long getThreadId() {
 		return threadid;
+	}
+	public K getKey() {
+		return key;
 	}
 
 	/**

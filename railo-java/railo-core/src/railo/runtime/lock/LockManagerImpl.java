@@ -52,15 +52,6 @@ public final class LockManagerImpl implements LockManager {
 		locks.unlock(l);
 		//locks.unlock(data.getName());
 	}
-	
-    
-	/**
-	 *
-	 * @see railo.runtime.lock.LockManager#getOpenLockNames()
-	 */
-	public String[] getOpenLockNames() {
-		throw new RuntimeException("no longer supported");//FUTURE remove from interface
-	}
 
 
 	/**
@@ -69,6 +60,21 @@ public final class LockManagerImpl implements LockManager {
 	 */
 	public void unlock(int pageContextId) {
 		throw new RuntimeException("no longer supported");//FUTURE remove from interface
+	}
+	
+    
+	/**
+	 *
+	 * @see railo.runtime.lock.LockManager#getOpenLockNames()
+	 */
+	public String[] getOpenLockNames() {
+		List<String> list = locks.getOpenLockNames();
+		return list.toArray(new String[list.size()]);
+		//throw new RuntimeException("no longer supported");//FUTURE remove from interface
+	}
+
+	public void clean() {
+		locks.clean();
 	}
 	
 	

@@ -22,6 +22,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.net.smtp.SMTPConnectionPool;
 import railo.runtime.op.Caster;
 import railo.runtime.type.scope.ScopeContext;
@@ -133,8 +134,6 @@ public final class Controler extends Thread {
 					config = cfmlFactory.getConfig();
 					ThreadLocalConfig.register(config);
 				}
-				//try{cfmlFactory.getScopeContext().clearUnused();}catch(Throwable t){}
-				
 				
 				//every Minute
 				if(doMinute) {
@@ -142,7 +141,6 @@ public final class Controler extends Thread {
 						config = cfmlFactory.getConfig();
 						ThreadLocalConfig.register(config);
 					}
-					
 					// clear unused DB Connections
 					try{((ConfigImpl)config).getDatasourceConnectionPool().clear();}catch(Throwable t){}
 					// clear all unused scopes
@@ -155,6 +153,9 @@ public final class Controler extends Thread {
 					try{doClearClassLoaders((ConfigWebImpl) config);}catch(Throwable t){}
 					try{doCheckMappings(config);}catch(Throwable t){}
 					try{doClearMailConnections();}catch(Throwable t){}
+					// clean LockManager
+					if(cfmlFactory.getUsedPageContextLength()==0)try{((LockManagerImpl)config.getLockManager()).clean();}catch(Throwable t){}
+					
 				}
 				// every hour
 				if(doHour) {
