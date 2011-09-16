@@ -32,7 +32,7 @@ public final class LockManagerImpl implements LockManager {
      */
 	public LockData lock(int type, String name, int timeout, int pageContextId) throws LockTimeoutException, InterruptedException {
 		if(!caseSensitive)name=name.toLowerCase();
-		if(type==LockManager.TYPE_READONLY) return new ReadLockData(name,pageContextId);
+		//if(type==LockManager.TYPE_READONLY) return new ReadLockData(name,pageContextId);
 		if(timeout<=0)timeout=1;
 		Lock lock;
 		try {
@@ -42,6 +42,10 @@ public final class LockManagerImpl implements LockManager {
 		} 
 		catch (LockInterruptedException e) {
 			throw e.getLockInterruptedException();
+		}
+		if(type==LockManager.TYPE_READONLY) {
+			unlock(new ExklLockData(lock,name,pageContextId));
+			return new ReadLockData(name,pageContextId);
 		}
 		return new ExklLockData(lock,name,pageContextId);
 	}
