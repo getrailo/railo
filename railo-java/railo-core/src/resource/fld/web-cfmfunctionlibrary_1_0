@@ -3760,7 +3760,7 @@ If omitted, the file's attributes are maintained.</description>
     	</argument>
 		<argument>
 			<name>acl</name>
-			<type>string</type>
+			<type>object</type>
 			<required>no</required>
 			<description>only used for S3 Resources</description>
     	</argument>
@@ -3810,7 +3810,7 @@ If omitted, the file's attributes are maintained.</description>
     	</argument>
 		<argument>
 			<name>acl</name>
-			<type>string</type>
+			<type>object</type>
 			<required>no</required>
 			<description>only used for S3 Resources</description>
     	</argument>

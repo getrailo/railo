@@ -700,7 +700,7 @@ public final class FileTag extends TagImpl {
 	
 	
 	public static Struct actionUpload(PageContext pageContext,railo.runtime.security.SecurityManager securityManager,String filefield,
-			String strDestination,int nameconflict,String accept,int mode,String attributes,int acl,String serverPassword) throws PageException {
+			String strDestination,int nameconflict,String accept,int mode,String attributes,Object acl,String serverPassword) throws PageException {
 		FormImpl.Item item=getFormItem(pageContext,filefield);
 		return _actionUpload(pageContext,securityManager,item,strDestination,nameconflict,accept,mode,attributes,acl,serverPassword);
 	}

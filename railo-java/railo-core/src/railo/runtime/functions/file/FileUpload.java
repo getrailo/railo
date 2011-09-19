@@ -27,12 +27,11 @@ public class FileUpload {
 		return call(pc, destination, fileField, accept, nameConflict, mode, attributes,null);
 	}
 	
-	public static Struct call(PageContext pc, String destination,String fileField,String accept, String nameConflict,String mode,String attributes,String strACL) throws PageException {
+	public static Struct call(PageContext pc, String destination,String fileField,String accept, String nameConflict,String mode,String attributes,Object acl) throws PageException {
 	    SecurityManager securityManager = pc.getConfig().getSecurityManager();
 	    
 	    int nc = FileTag.toNameconflict(nameConflict);
 	    int m=FileTag.toMode(mode);
-	    int acl=FileTag.toAcl(strACL);
 	    
 	    return FileTag.actionUpload(pc, securityManager, fileField,  destination, nc, accept, m, attributes, acl, null);
 	}
