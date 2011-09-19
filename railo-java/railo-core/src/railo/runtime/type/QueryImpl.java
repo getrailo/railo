@@ -248,7 +248,12 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 					if(uc>0 && createGeneratedKeys)setGeneratedKeys(dc, stat);
 				}
 				else break;
-				hasResult=stat.getMoreResults(Statement.CLOSE_CURRENT_RESULT);
+				try{
+					hasResult=stat.getMoreResults(Statement.CLOSE_CURRENT_RESULT);
+				}
+				catch(Throwable t){
+					break;
+				}
 			}
 			while(true);
 		} 
