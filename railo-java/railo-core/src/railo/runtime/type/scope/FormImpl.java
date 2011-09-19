@@ -132,6 +132,12 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
     	ServletFileUpload upload = new ServletFileUpload();
     	upload.setHeaderEncoding(encoding);
     	
+    	/*HttpServletRequest req = pc.getHttpServletRequest();
+    	ServletRequestContext context = new ServletRequestContext(req) {
+    		public String getCharacterEncoding() {
+    			return encoding;
+    		}
+    	};*/
     	
     	// Parse the request
     	try {
