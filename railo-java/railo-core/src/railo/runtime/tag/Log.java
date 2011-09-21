@@ -61,6 +61,7 @@ public final class Log extends TagImpl {
 	 * @throws ApplicationException
 	**/
 	public void setLog(String log) throws ApplicationException	{
+		if(StringUtil.isEmpty(log,true)) return;
 	    log=log.toLowerCase().trim();
 	    if(log.equals("application")) this.log=LOG_APPLICATION;
 	    else if(log.equals("scheduler")) this.log=LOG_SCHEDULER;
@@ -187,6 +188,7 @@ public final class Log extends TagImpl {
 	 * @param charset the charset to set
 	 */
 	public void setCharset(String charset) {
-		this.charset = charset;
+		if(StringUtil.isEmpty(log,true)) return;
+	    this.charset = charset;
 	}
 }
