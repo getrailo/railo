@@ -188,8 +188,6 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		super(properties.getAccess());
 		this.properties=properties;
 	}
-	
-
 
 	public UDF duplicate(ComponentImpl c) {
 		UDFImpl udf = new UDFImpl(properties);
@@ -197,9 +195,11 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		return udf;
 	}
 	
+	public UDF duplicate(boolean deepCopy) {
+		return duplicate(ownerComponent);
+	}
+	
 	public UDF duplicate() {
-		//UDFImpl udf = new UDFImpl(properties);
-		//udf.ownerComponent=ownerComponent;
 		return duplicate(ownerComponent);
 	}
 
