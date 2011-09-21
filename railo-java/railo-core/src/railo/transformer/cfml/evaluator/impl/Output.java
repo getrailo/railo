@@ -38,7 +38,7 @@ public final class Output extends EvaluatorSupport {
         //ç
         
         if(hasQuery && hasParentWithQuery) 
-			throw new EvaluatorException("Nesting of tags cfoutput with attribut query is not allowed");
+			throw new EvaluatorException("Nesting of tags cfoutput with attribute query is not allowed");
 
         if(hasQuery) 
         	output.setType(TagOutput.TYPE_QUERY);
