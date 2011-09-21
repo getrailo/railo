@@ -67,16 +67,17 @@ public class DatasourceConnectionPool {
         Connection conn=null;
         String dsn = ds.getDsnTranslated();
         try {
-            if(dsn.indexOf('?')==-1) {
-            	conn = DriverManager.getConnection(dsn, user, pass);
+        	try {
+        		conn = DriverManager.getConnection(dsn, user, pass);
+            } 
+            catch (SQLException e) {
+            	if(dsn.indexOf('?')!=-1) {
+                    String connStr=dsn+"&user="+user+"&password="+pass;
+                    conn = DriverManager.getConnection(connStr);
+                }
+            	else throw e;
             }
-            else{
-                String connStr=dsn+"&user="+user+"&password="+pass;
-                conn = DriverManager.getConnection(connStr);
-            }
-            
             conn.setAutoCommit(true);
-            
         } 
         catch (SQLException e) {
         	throw new DatabaseException("can't connect to datasource ["+ds.getName()+"]",e,null,null);
