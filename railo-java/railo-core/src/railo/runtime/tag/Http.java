@@ -41,6 +41,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.net.CookieUtil;
 import railo.commons.net.HTTPUtil;
 import railo.commons.net.RailoStringPart;
 import railo.commons.net.ResourcePart;
@@ -48,6 +49,7 @@ import railo.commons.net.ResourcePartSource;
 import railo.commons.net.URLEncoder;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalConfig;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.HTTPException;
@@ -539,7 +541,7 @@ public final class Http extends BodyTagImpl {
 	private void _doEndTag(Struct cfhttp) throws PageException, IOException	{
 		HttpConnectionManager manager=new SimpleHttpConnectionManager();//MultiThreadedHttpConnectionManager();
 		HttpClient client = new HttpClient(manager);
-		HttpMethod httpMethod=createMethod(this,client,url,port);
+		HttpMethod httpMethod=createMethod(pageContext.getConfig(),this,client,url,port);
 		try {
 		
 /////////////////////////////////////////// EXECUTE /////////////////////////////////////////////////
@@ -886,7 +888,12 @@ public final class Http extends BodyTagImpl {
     }
 	
 
-	static HttpMethod createMethod(Http http, HttpClient client, String url, int port) throws PageException, UnsupportedEncodingException {
+	static HttpMethod createMethod(Config cw,Http http, HttpClient client, String url, int port) throws PageException, UnsupportedEncodingException {
+		String _charset=http.charset;
+		if(StringUtil.isEmpty(_charset,true)) _charset=cw.getWebCharset();
+		else _charset=_charset.trim();
+		
+		
 		HttpMethod httpMethod;
 		HostConfiguration config = client.getHostConfiguration();
 		HttpState state = client.getState();
@@ -980,7 +987,7 @@ public final class Http extends BodyTagImpl {
 				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type formfield can't only be used, when method of the tag http equal post");
 				if(post!=null){
 					if(doMultiPart){
-						parts.add(new RailoStringPart(param.getName(),param.getValueAsString()));
+						parts.add(new RailoStringPart(param.getName(),param.getValueAsString(),_charset));
 					}
 					else post.addParameter(new NameValuePair(param.getName(),param.getValueAsString()));
 				}
@@ -1007,10 +1014,7 @@ public final class Http extends BodyTagImpl {
             }
 		// Cookie
 			else if(type.equals("cookie")) {
-				Cookie c = new Cookie();
-				c.setName(URLEncoder.encode(param.getName()));
-				c.setValue(URLEncoder.encode(param.getValueAsString()));
-				c.setDomain(_url.getHost());
+				Cookie c=CookieUtil.toCookie(_url.getHost(),param.getName(),param.getValueAsString(),_charset);
 				c.setPath("/");
 				client.getState().addCookie(c);
 			}
@@ -1020,8 +1024,7 @@ public final class Http extends BodyTagImpl {
 				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type file can't only be used, when method of the tag http equal post");
 				if(doMultiPart) {
 					try {
-						//FilePart part = new FilePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param),null);
-						parts.add(new ResourcePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param)));
+						parts.add(new ResourcePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param),_charset));
 					} 
 					catch (FileNotFoundException e) {
 						throw new ApplicationException("can't upload file, path is invalid",e.getMessage());
@@ -1199,8 +1202,8 @@ public final class Http extends BodyTagImpl {
     }
 
     private static String translateEncoding(String str, String charset) throws UnsupportedEncodingException {
-    	//print.ln(charset+":"+StringUtil.translateString(str,"ISO-8859-1")+"::"+URLEncoder.encode(str,charset));
-        return URLEncoder.encode(StringUtil.translateString(str,"ISO-8859-1"),charset);
+    	if(StringUtil.isAscci(str)) return str;
+    	return URLEncoder.encode(str,charset);
     }
 
     /**
@@ -1460,7 +1463,7 @@ class Executor extends Thread {
         	lu=Http.locationURL(httpMethod);
         	redirectURL=lu;
         	HttpMethod oldHttpMethod = httpMethod;
-        	httpMethod=Http.createMethod(http,client,lu.toExternalForm(),-1);
+        	httpMethod=Http.createMethod(ThreadLocalPageContext.getConfig(),http,client,lu.toExternalForm(),-1);
         	Http.releaseConnection(oldHttpMethod);
         }
         

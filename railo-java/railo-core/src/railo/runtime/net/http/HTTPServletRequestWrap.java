@@ -16,7 +16,6 @@ import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.type.scope.FormImpl;
 import railo.runtime.type.scope.FormUpload;
 import railo.runtime.util.EnumerationWrapper;
 
