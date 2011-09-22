@@ -34,7 +34,7 @@ import railo.runtime.util.ApplicationContext;
 /**
  * Form Scope
  */
-public final class FormImpl extends ScopeSupport implements Form,ScriptProtected {
+public final class FormImpl extends ScopeSupport implements Form,ScriptProtected,FormUpload {
 	
 
 	private byte EQL=61;

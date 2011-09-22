@@ -12,7 +12,6 @@ import railo.commons.io.ModeUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.type.s3.S3;
-import railo.commons.io.res.type.s3.S3Constants;
 import railo.commons.io.res.type.s3.S3Resource;
 import railo.commons.io.res.util.ModeObjectWrap;
 import railo.commons.io.res.util.ResourceUtil;
@@ -27,7 +26,6 @@ import railo.runtime.functions.s3.StoreSetACL;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
@@ -39,6 +37,7 @@ import railo.runtime.type.dt.DateImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.scope.FormImpl;
 import railo.runtime.type.scope.FormImpl.Item;
+import railo.runtime.type.scope.FormUpload;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
@@ -907,7 +906,7 @@ public final class FileTag extends TagImpl {
 		PageException pe = pageContext.formScope().getInitException();
 		if(pe!=null) throw pe;
 
-		FormImpl.Item fileItem = ((FormImpl)pageContext.formScope()).getUploadResource(filefield);
+		FormImpl.Item fileItem = ((FormUpload)pageContext.formScope()).getUploadResource(filefield);
 		if(fileItem==null) {
 			if(pageContext.formScope().get(filefield,null)==null)
 				throw new ApplicationException("form field ["+filefield+"] is not a file field");
@@ -921,7 +920,7 @@ public final class FileTag extends TagImpl {
 		PageException pe = pageContext.formScope().getInitException();
 		if(pe!=null) throw pe;
 		
-		FormImpl scope = (FormImpl) pageContext.formScope();
+		FormUpload scope = (FormUpload) pageContext.formScope();
 		return scope.getFileItems();
 	}
 	
