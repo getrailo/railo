@@ -1,6 +1,5 @@
 package railo.runtime.op;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,7 +14,6 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.converter.JavaConverter;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.dynamicEvaluation.Serialize;
 import railo.runtime.type.Collection;
 import railo.runtime.type.CollectionPlus;
 import railo.runtime.type.Duplicable;
