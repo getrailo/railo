@@ -16,7 +16,10 @@
 		
 		field('Auto reconnect','autoReconnect','true,false',false,'Should the driver try to re-establish stale and/or dead connections? If enabled the driver will throw an exception for a queries issued on a stale or dead connection, which belong to the current transaction, but will attempt reconnect before the next query issued on the connection in a new transaction. The use of this feature is not recommended, because it has side effects related to session state and data consistency when applications do not handle SQLExceptions properly, and is only designed to be used when you are unable to configure your application to handle SQLExceptions resulting from dead and stale connections properly. Alternatively, investigate setting the MySQL server variable "wait_timeout" to some high value rather than the default of 8 hours.',"radio"),
 		
-		 field('Throw error upon data truncation','jdbcCompliantTruncation','true,false',false,'If set to false then values for table fields are automatically truncated so that they fit into the field.',"radio")
+		 field('Throw error upon data truncation','jdbcCompliantTruncation','true,false',false,'If set to false then values for table fields are automatically truncated so that they fit into the field.',"radio"),
+		 field('TinyInt(1) is bit','tinyInt1isBit','true,false',false,'this defines the data type returned for tinyInt(1), if set to "true" (default) tinyInt(1) is converted to a bit value otherwise as integer.',"radio")
+		 //field('Transformed Bit Is Boolean','transformedBitIsBoolean','true,false',false,'',"radio")
+		
 		
 		
 	)>
