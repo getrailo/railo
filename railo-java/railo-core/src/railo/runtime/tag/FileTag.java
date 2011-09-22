@@ -905,12 +905,22 @@ public final class FileTag extends TagImpl {
 			
 		PageException pe = pageContext.formScope().getInitException();
 		if(pe!=null) throw pe;
-
-		FormImpl.Item fileItem = ((FormUpload)pageContext.formScope()).getUploadResource(filefield);
+		FormUpload upload = (FormUpload)pageContext.formScope();
+		FormImpl.Item fileItem = upload.getUploadResource(filefield);
 		if(fileItem==null) {
-			if(pageContext.formScope().get(filefield,null)==null)
-				throw new ApplicationException("form field ["+filefield+"] is not a file field");
-			throw new ApplicationException("form field ["+filefield+"] doesn't exist or has no content");
+			Item[] items = upload.getFileItems();
+			StringBuilder sb=new StringBuilder();
+			for(int i=0;i<items.length;i++){
+				if(i!=0) sb.append(", ");
+				sb.append(items[i].getFieldName());
+			}
+			String add=".";
+			if(sb.length()>0) add=", valid field names are ["+sb+"].";
+			
+			
+			if(pageContext.formScope().get(filefield,null)==null) 
+				throw new ApplicationException("form field ["+filefield+"] is not a file field"+add);
+			throw new ApplicationException("form field ["+filefield+"] doesn't exist or has no content"+add);
 		}
 		
 		return fileItem;
