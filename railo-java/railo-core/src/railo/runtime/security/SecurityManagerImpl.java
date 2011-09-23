@@ -5,6 +5,7 @@ import railo.commons.io.res.type.file.FileResourceProvider;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
@@ -358,7 +359,16 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
 	}
 
 	private boolean isValid(Config config, String serverPassword) {
-    	if(config==null || StringUtil.isEmpty(serverPassword)) return false;
+		if(StringUtil.isEmpty(serverPassword,true)) {
+			try {
+				PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
+				serverPassword=pc.getServerPassword();
+			} 
+			catch (Throwable t) {}
+		}
+		config=ThreadLocalPageContext.getConfig(config);
+		
+		if(config==null || StringUtil.isEmpty(serverPassword,true)) return false;
 		try {
 			config.getConfigServer(serverPassword);
 			return true;

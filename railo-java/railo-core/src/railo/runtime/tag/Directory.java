@@ -15,7 +15,10 @@ import railo.commons.io.res.filter.FileResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.type.file.FileResource;
+import railo.commons.io.res.type.s3.S3;
 import railo.commons.io.res.type.s3.S3Constants;
+import railo.commons.io.res.type.s3.S3Exception;
+import railo.commons.io.res.type.s3.S3Resource;
 import railo.commons.io.res.util.ModeObjectWrap;
 import railo.commons.io.res.util.ResourceAndResourceNameFilter;
 import railo.commons.io.res.util.ResourceUtil;
@@ -26,8 +29,9 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.functions.s3.StoreSetACL;
 import railo.runtime.op.Caster;
-import railo.runtime.reflection.Reflector;
+import railo.runtime.op.Decision;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
@@ -58,9 +62,6 @@ public final class Directory extends TagImpl  {
 	private static final Key ATTRIBUTES = KeyImpl.intern("attributes");
 	private static final Key DIRECTORY = KeyImpl.intern("directory");
 	
-
-	private static final Key SET_ACL = KeyImpl.intern("setACL");
-	private static final Key SET_STORAGE = KeyImpl.intern("setStorage");
 	
 	public static final int LIST_INFO_QUERY_ALL = 1;
 	public static final int LIST_INFO_QUERY_NAME = 2;
@@ -104,7 +105,8 @@ public final class Directory extends TagImpl  {
 	private int type=TYPE_ALL; 
 	//private boolean listOnlyNames;
 	private int listInfo=LIST_INFO_QUERY_ALL;
-	private int acl=S3Constants.ACL_PUBLIC_READ;
+	//private int acl=S3Constants.ACL_UNKNOW;
+	private Object acl=null;
 	private int storage=S3Constants.STORAGE_UNKNOW; 
 
 
@@ -114,7 +116,7 @@ public final class Directory extends TagImpl  {
 	*/
 	public void release()	{
 		super.release();
-		acl=S3Constants.ACL_PUBLIC_READ;
+		acl=null;
 		storage=S3Constants.STORAGE_UNKNOW; 
 
 		
@@ -181,9 +183,11 @@ public final class Directory extends TagImpl  {
 	*  used only for s3 resources, for all others ignored
 	* @param charset value to set
 	 * @throws ApplicationException 
+	 * @Deprecated only exists for backward compatibility to old ra files.
 	**/
 	public void setAcl(String acl) throws ApplicationException	{
-		acl=acl.trim().toLowerCase();
+		this.acl=acl;
+		/*acl=acl.trim().toLowerCase();
 				
 		if("private".equals(acl)) 					this.acl=S3Constants.ACL_PRIVATE;
 		else if("public-read".equals(acl)) 			this.acl=S3Constants.ACL_PRIVATE;
@@ -191,23 +195,33 @@ public final class Directory extends TagImpl  {
 		else if("authenticated-read".equals(acl))	this.acl=S3Constants.ACL_AUTH_READ;
 		
 		else throw new ApplicationException("invalid value for attribute acl ["+acl+"]",
-				"valid values are [private,public-read,public-read-write,authenticated-read]");
+				"valid values are [private,public-read,public-read-write,authenticated-read]");*/
+	}
+	
+	public void setAcl(Object acl) throws ApplicationException	{
+		this.acl=acl;
+	}
+	
+	public void setStoreacl(Object acl) throws ApplicationException	{
+		this.acl=acl;
 	}
 	
 	/** set the value storage
 	*  used only for s3 resources, for all others ignored
 	* @param charset value to set
-	 * @throws ApplicationException 
+	 * @throws PageException 
 	**/
-	public void setStorage(String storage) throws ApplicationException	{
-		storage=storage.trim().toLowerCase();
-				
-		if("eu".equals(storage)) 					this.storage=S3Constants.STORAGE_EU;
-		else if("us".equals(storage)) 				this.storage=S3Constants.STORAGE_US;
-		
-		else throw new ApplicationException("invalid value for attribute storage ["+acl+"]",
-				"valid values are [us,eu]");
+	public void setStorage(String storage) throws PageException	{
+		try {
+			this.storage=S3.toIntStorage(storage);
+		} catch (S3Exception e) {
+			throw Caster.toPageException(e);
+		}
 	}
+	public void setStorelocation(String storage) throws PageException	{
+		setStorage(storage);
+	}
+	
 	
 	
 	public void setServerpassword(String serverPassword)	{
@@ -528,12 +542,10 @@ public final class Directory extends TagImpl  {
 	 * create a directory
 	 * @throws PageException 
 	 */
-    public static void actionCreate(PageContext pc,Resource directory,String serverPassword, boolean doParent,int mode,int acl,int storage) throws PageException {
+    public static void actionCreate(PageContext pc,Resource directory,String serverPassword, boolean doParent,int mode,Object acl,int storage) throws PageException {
 
     	SecurityManager securityManager = pc.getConfig().getSecurityManager();
 	    securityManager.checkFileLocation(pc.getConfig(),directory,serverPassword);
-	    
-	    setS3Attrs(directory,acl,storage);
 	    
 		if(directory.exists()) {
 			if(directory.isDirectory())
@@ -548,6 +560,9 @@ public final class Directory extends TagImpl  {
 			throw Caster.toPageException(ioe);
 		}
 		
+		// set S3 stuff
+		setS3Attrs(directory,acl,storage);
+	    
 		// Set Mode
 		if(mode!=-1) {
 			try {
@@ -559,16 +574,27 @@ public final class Directory extends TagImpl  {
 		}
 	}
 	
-	private static void setS3Attrs(Resource res,int acl,int storage) {
+	private static void setS3Attrs(Resource res,Object acl,int storage) throws PageException {
 		String scheme = res.getResourceProvider().getScheme();
 		
 		if("s3".equalsIgnoreCase(scheme)){
-			try {
-				Reflector.callMethod(res, SET_ACL, new Object[]{Caster.toInteger(acl)});
-				if(storage!=S3Constants.STORAGE_UNKNOW)
-					Reflector.callMethod(res, SET_STORAGE, new Object[]{Caster.toInteger(storage)});
-			} 
-			catch (PageException e) {}
+			S3Resource s3r=(S3Resource) res;
+			if(acl!=null){
+				try {
+					// old way
+					if(Decision.isString(acl)) {
+						s3r.setACL(S3.toIntACL(Caster.toString(acl)));
+					}
+					// new way
+					else {
+						StoreSetACL.invoke(s3r, acl);
+					}
+				} catch (IOException e) {
+					throw Caster.toPageException(e);
+				}
+			}
+			
+			if(storage!=S3Constants.STORAGE_UNKNOW) s3r.setStorage(storage);
 		}
 	}
 
@@ -608,12 +634,11 @@ public final class Directory extends TagImpl  {
 	 * rename a directory to a new Name
 	 * @throws PageException 
 	 */
-	public static  void actionRename(PageContext pc,Resource directory,String strNewdirectory,String serverPassword, int acl,int storage) throws PageException {
+	public static  void actionRename(PageContext pc,Resource directory,String strNewdirectory,String serverPassword, Object acl,int storage) throws PageException {
 		// check directory
 		SecurityManager securityManager = pc.getConfig().getSecurityManager();
 	    securityManager.checkFileLocation(pc.getConfig(),directory,serverPassword);
 		
-	    setS3Attrs(directory,acl,storage);
 	    
 		if(!directory.exists())
 			throw new ApplicationException("directory ["+directory.toString()+"] doesn't exist");
@@ -637,6 +662,10 @@ public final class Directory extends TagImpl  {
 		catch(Throwable t) {
 			throw new ApplicationException(t.getMessage());
 		}
+		
+		// set S3 stuff
+		setS3Attrs(directory,acl,storage);
+	    
 	}
 
 	

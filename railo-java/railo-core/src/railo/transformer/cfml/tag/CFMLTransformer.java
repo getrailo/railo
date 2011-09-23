@@ -270,7 +270,7 @@ public final class CFMLTransformer {
 
 		SourceFile source=cfml.getSourceFile(); 
 		
-		Page page=new Page(source.getPhyscalFile().getAbsolutePath(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog());
+		Page page=new Page(source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog());
 		Data data = new Data(_tlibs,flibs,cfml,config,page);
 		
 		//Body body=page;

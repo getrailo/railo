@@ -16,7 +16,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.type.scope.FormImpl;
+import railo.runtime.type.scope.FormUpload;
 import railo.runtime.util.EnumerationWrapper;
 
 /**
@@ -211,7 +211,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 			if(!firstRead) {
 				PageContext pc = ThreadLocalPageContext.get();
 				if(pc!=null) {
-					return ((FormImpl)pc.formScope()).getInputStream();
+					return ((FormUpload)pc.formScope()).getInputStream();
 				}
 				return new ServletInputStreamDummy(new byte[]{});	//throw new IllegalStateException();
 			}

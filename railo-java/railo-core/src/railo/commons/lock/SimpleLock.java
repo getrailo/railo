@@ -1,101 +1,54 @@
 package railo.commons.lock;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
-import railo.commons.io.SystemUtil;
-import railo.commons.lang.SerializableObject;
-import railo.commons.lang.types.RefInteger;
-import railo.commons.lang.types.RefIntegerSync;
-
-public class SimpleLock<K> implements Lock {
+public class SimpleLock<L> implements Lock {
 	
-	private SerializableObject token;
-	private RefInteger waiters=new RefIntegerSync(0);
-	//private RefInteger runners=new RefIntegerSync(0);
-	private LockException stopException;
-	private K label;
+	private ReentrantLock lock;
+	private L label;
 	
-	public SimpleLock(K label) {
+	public SimpleLock(L label) {
+		this.lock=new ReentrantLock(true);
 		this.label=label;
 	}
-	
 
+	
 	public void lock(long timeout) throws LockException, LockInterruptedException {
-		lock(timeout, true);
-	}
-
-	public void lock(long timeout, boolean doWaitersPlus) throws LockException, LockInterruptedException {
+		if(timeout<=0) throw new LockException("timeout must be a postive number");
 		
-		long start=System.currentTimeMillis();
-
-		if(doWaitersPlus)waiters.plus(1);
-		SerializableObject t=null;
-		do {
-			synchronized (this) {
-				if(token==null) {
-					token=new SerializableObject();
-					waiters.minus(1);
-					//runners.plus(1);
-					return;
-				}
-				t=token;
+		try {
+			if(!lock.tryLock(timeout, TimeUnit.MILLISECONDS)){
+				throw new LockException(timeout);
 			}
-			
-			try {
-				synchronized (t) {
-					if(t!=token) continue;// handle if a unlock happen after the "synchronized (this)" above
-					token.wait(timeout);
-				}
-			} 
-			catch (InterruptedException e) {
-				waiters.minus(1);
-				throw new LockInterruptedException(e);
-			}
-			
-			
-			synchronized (this) {
-				if(stopException!=null) {
-					throw stopException;
-				}
-				else if((System.currentTimeMillis()-start)>timeout) {
-					waiters.minus(1);
-					throw new LockException(timeout);
-				}
-			}
+		} 
+		catch (InterruptedException e) {
+			throw new LockInterruptedException(e);
 		}
-		while(true);
-	}
-	
-	public synchronized void unlock() {
-		//runners.minus(1);
-		SerializableObject t = token;
-		token=null;
-		SystemUtil.notifyAll(t);
-	}
-
-	public void incWaiters() {
-		waiters.plus(1);
-	}
-	public int waiters() {
-		return waiters.toInt();
-	}
-	
-	/*public synchronized int runners() {
-		return runners.toInt();
-	}*/
-	
-	public K getLabel(){
-		return label;
-	}
-	
-
-	public void terminateAll() {
-		terminateAll(new LockException("lock terminated"));
-	}
-	
-	public synchronized void terminateAll(LockException stopException) {
-		this.stopException=stopException;
-		//waiters.setValue(0);
 		
-		if(token!=null)SystemUtil.notifyAll(token);
+	}
+
+
+	public void unlock()	{
+		lock.unlock();
+	}
+	
+	/**
+     * Returns an estimate of the number of threads waiting to
+     * acquire this lock.  The value is only an estimate because the number of
+     * threads may change dynamically while this method traverses
+     * internal data structures.  This method is designed for use in
+     * monitoring of the system state, not for synchronization
+     * control.
+     *
+     * @return the estimated number of threads waiting for this lock
+     */
+    public int getQueueLength()	{
+		return lock.getQueueLength();
+	}
+    
+
+	public L getLabel(){
+		return label;
 	}
 }

@@ -90,7 +90,6 @@ import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.net.ftp.FTPPoolImpl;
 import railo.runtime.net.http.HTTPServletRequestWrap;
-import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
@@ -274,6 +273,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private ORMSession ormSession;
 	private boolean isChild;
 	private boolean gatewayContext;
+	private String serverPassword;
 
 	public long sizeOf() {
 		
@@ -318,6 +318,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		SizeOf.size(startTime)+
 		SizeOf.size(isCFCRequest)+
 		SizeOf.size(conns)+
+		SizeOf.size(serverPassword)+
 		SizeOf.size(ormSession);
 	}
 	
@@ -467,11 +468,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public void release() {
 		
-	if(config.debug()) {
-    	if(!gatewayContext)config.getDebuggerPool().store(this, debugger);
-    	debugger.reset();
-    }
+		if(config.debug()) {
+    		if(!gatewayContext)config.getDebuggerPool().store(this, debugger);
+    		debugger.reset();
+    	}
 	
+		this.serverPassword=null;
+
 		boolean isChild=parent!=null;
 		parent=null;
 		// Attention have to be before close
@@ -829,7 +832,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	other.timeZone=timeZone;
     	other.fdEnabled=fdEnabled;
     	other.useSpecialMappings=useSpecialMappings;
-    	
+    	other.serverPassword=serverPassword;
     	
     	
     	hasFamily=true;
@@ -1740,7 +1743,15 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public void handlePageException(PageException pe) {
 		if(!(pe instanceof Abort)) {
-			getHttpServletResponse().setContentType("text/html");
+			
+			String charEnc = rsp.getCharacterEncoding();
+	        if(StringUtil.isEmpty(charEnc,true)) {
+				rsp.setContentType("text/html");
+	        }
+	        else {
+	        	rsp.setContentType("text/html; charset=" + charEnc);
+	        }
+			
 			int statusCode=getStatusCode(pe);
 			
 			if(getConfig().getErrorStatusCode())rsp.setStatus(statusCode);
@@ -2913,5 +2924,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public void setGatewayContext(boolean gatewayContext) {
 		this.gatewayContext = gatewayContext;
+	}
+
+
+
+	public void setServerPassword(String serverPassword) {
+		this.serverPassword=serverPassword;
+	}
+	public String getServerPassword() {
+		return serverPassword;
 	}
 }

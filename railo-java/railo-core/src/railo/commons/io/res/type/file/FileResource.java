@@ -169,6 +169,9 @@ public final class FileResource extends File implements Resource {
 		if(dest instanceof File) {
 			provider.lock(this);
 			try {
+				if(dest.exists() && !dest.delete())
+					throw new IOException("can't move file "+this.getAbsolutePath()+" cannot remove existing file "+dest.getAbsolutePath());
+				
 				if(!super.renameTo((File)dest)) {
 					throw new IOException("can't move file "+this.getAbsolutePath()+" to destination resource "+dest.getAbsolutePath());
 				}

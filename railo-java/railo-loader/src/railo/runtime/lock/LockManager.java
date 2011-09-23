@@ -42,4 +42,6 @@ public interface LockManager {
 
 	public void unlock(int pageContextId);
 
+	// FUTURE add to interface public abstract void clean();
+
 }

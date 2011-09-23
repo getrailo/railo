@@ -140,7 +140,7 @@ public final class ComponentUtil {
         GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_OBJECT,null,null,cw);
         adapter.loadThis();
         adapter.invokeConstructor(Types.OBJECT, CONSTRUCTOR_OBJECT);
-        railo.transformer.bytecode.Page.registerFields(new BytecodeContext(statConstr,constr,_keys,cw,real,adapter,CONSTRUCTOR_OBJECT,writeLog), _keys);
+        railo.transformer.bytecode.Page.registerFields(new BytecodeContext(statConstr,constr,null,_keys,cw,real,adapter,CONSTRUCTOR_OBJECT,writeLog), _keys);
         adapter.returnValue();
         adapter.endMethod();
         
@@ -416,7 +416,7 @@ public final class ComponentUtil {
         			types
             		);
             GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , method, null, null, cw);
-            BytecodeContext bc = new BytecodeContext(statConstr,constr,keys,cw,className,adapter,method,writeLog);
+            BytecodeContext bc = new BytecodeContext(statConstr,constr,null,keys,cw,className,adapter,method,writeLog);
             Label start=adapter.newLabel();
             adapter.visitLabel(start);
             

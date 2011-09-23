@@ -2,6 +2,7 @@ package railo.runtime.net.mail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.Normalizer;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +22,7 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
@@ -36,6 +38,8 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
@@ -62,6 +66,26 @@ public abstract class MailClient {
 			a = s1;
 		}
 	}
+	
+
+	private static final Collection.Key DATE = KeyImpl.init("date");
+	private static final Collection.Key SUBJECT = KeyImpl.init("subject");
+	private static final Collection.Key SIZE = KeyImpl.init("size");
+	private static final Collection.Key FROM = KeyImpl.init("from");
+	private static final Collection.Key MESSAGE_NUMBER = KeyImpl.init("messagenumber");
+	private static final Collection.Key MESSAGE_ID = KeyImpl.init("messageid");
+	private static final Collection.Key REPLYTO = KeyImpl.init("replyto");
+	private static final Collection.Key CC = KeyImpl.init("cc");
+	private static final Collection.Key BCC = KeyImpl.init("bcc");
+	private static final Collection.Key TO = KeyImpl.init("to");
+	private static final Collection.Key UID = KeyImpl.init("uid");
+	private static final Collection.Key HEADER = KeyImpl.init("header");
+	private static final Collection.Key BODY = KeyImpl.init("body");
+	private static final Collection.Key CIDS = KeyImpl.init("cids");
+	private static final Collection.Key TEXT_BODY = KeyImpl.init("textBody");
+	private static final Collection.Key HTML_BODY = KeyImpl.init("HTMLBody");
+	private static final Collection.Key ATTACHMENTS = KeyImpl.init("attachments");
+	private static final Collection.Key ATTACHMENT_FILES = KeyImpl.init("attachmentfiles");
 
 
 	public static final int TYPE_POP3 = 0;
@@ -157,7 +181,11 @@ public abstract class MailClient {
 		properties.put("mail."+type+".port", new Double(port));
 		properties.put("mail."+type+".connectiontimeout", String.valueOf(timeout));
 		properties.put("mail."+type+".timeout", String.valueOf(timeout));
+		//properties.put("mail.mime.charset", "UTF-8");
+	        
+		
 		if(TYPE_IMAP==getType())properties.put("mail.imap.partialfetch", "false" );
+		
 		_fldtry = username != null ? Session.getInstance(properties, new _Authenticator(username, password)) : Session.getInstance(properties);
 		_fldelse = _fldtry.getStore(type);
 		if(!StringUtil.isEmpty(username))_fldelse.connect(server,username,password);
@@ -180,12 +208,12 @@ public abstract class MailClient {
 		Message amessage[];
 		folder = _fldelse.getFolder("INBOX");
 		folder.open(2);
-		Map map = getMessages(null,folder, as1, as, startrow, maxrows,false);
-		Iterator iterator = map.keySet().iterator();
+		Map<String, Message> map = getMessages(null,folder, as1, as, startrow, maxrows,false);
+		Iterator<String> iterator = map.keySet().iterator();
 		amessage = new Message[map.size()];
 		int i = 0;
 		while(iterator.hasNext()) {
-			amessage[i++] = (Message) map.get(iterator.next());
+			amessage[i++] =  map.get(iterator.next());
 		}
 		try {
 			folder.setFlags(amessage, new Flags(javax.mail.Flags.Flag.DELETED), true);
@@ -224,35 +252,35 @@ public abstract class MailClient {
 		int row = qry.addRow();
     	// date
 		try {
-			qry.setAtEL("date", row, Caster.toDate(message.getSentDate(), true,null,null));
+			qry.setAtEL(DATE, row, Caster.toDate(message.getSentDate(), true,null,null));
 		} 
 		catch (MessagingException e) {}
 		
 		// subject
 		try {
-			qry.setAtEL("subject", row, message.getSubject());
+			qry.setAtEL(SUBJECT, row, message.getSubject());
 		} catch (MessagingException e) {
-			qry.setAtEL("subject", row, "MessagingException:"+e.getMessage());
+			qry.setAtEL(SUBJECT, row, "MessagingException:"+e.getMessage());
 		}
 		
 		// size
 		try {
-			qry.setAtEL("size", row, new Double(message.getSize()));
+			qry.setAtEL(SIZE, row, new Double(message.getSize()));
 		} 
 		catch (MessagingException e) {}
 		
-		qry.setAtEL("from", row, toList(getHeaderEL(message,"from")));
-		qry.setAtEL("messagenumber", row, new Double(message.getMessageNumber()));
-		qry.setAtEL("messageid", row, toList(getHeaderEL(message,"Message-ID")));
+		qry.setAtEL(FROM, row, toList(getHeaderEL(message,"from")));
+		qry.setAtEL(MESSAGE_NUMBER, row, new Double(message.getMessageNumber()));
+		qry.setAtEL(MESSAGE_ID, row, toList(getHeaderEL(message,"Message-ID")));
 		String s = toList(getHeaderEL(message,"reply-to"));
 		if(s.length() == 0) {
-			s = Caster.toString(qry.getAt("from", row,null), "");
+			s = Caster.toString(qry.getAt(FROM, row,null), "");
 		}
-		qry.setAtEL("replyto", row, s);
-		qry.setAtEL("cc", row, toList(getHeaderEL(message,"cc")));
-		qry.setAtEL("bcc", row, toList(getHeaderEL(message,"bcc")));
-		qry.setAtEL("to", row, toList(getHeaderEL(message,"to")));
-		qry.setAtEL("uid", row, uid);
+		qry.setAtEL(REPLYTO, row, s);
+		qry.setAtEL(CC, row, toList(getHeaderEL(message,"cc")));
+		qry.setAtEL(BCC, row, toList(getHeaderEL(message,"bcc")));
+		qry.setAtEL(TO, row, toList(getHeaderEL(message,"to")));
+		qry.setAtEL(UID, row, uid);
 		StringBuffer content = new StringBuffer();
 		try {
 			for(Enumeration enumeration = message.getAllHeaders(); enumeration.hasMoreElements(); content.append('\n')){
@@ -263,7 +291,7 @@ public abstract class MailClient {
 			}
 		} 
 		catch (MessagingException e) {}
-		qry.setAtEL("header", row, content.toString());
+		qry.setAtEL(HEADER, row, content.toString());
 		
 		if(all) {
 			getContentEL(qry, message, row);
@@ -329,7 +357,7 @@ public abstract class MailClient {
 		} catch (Exception e) {
 			String st = ExceptionUtil.getStacktrace(e,true);
 			
-			query.setAtEL("body", row, st);
+			query.setAtEL(BODY, row, st);
 		}
     }
 
@@ -344,15 +372,15 @@ public abstract class MailClient {
     private void getContent(Query query, Message message, int row) throws MessagingException, IOException {
 		StringBuffer body = new StringBuffer();
 		Struct cids=new StructImpl();
-		query.setAtEL("cids", row, cids);
+		query.setAtEL(CIDS, row, cids);
 		if(message.isMimeType("text/plain")) {
 			String content=getConent(message);
-	    	query.setAtEL("textBody",row,content);
+	    	query.setAtEL(TEXT_BODY,row,content);
 	    	body.append(content);
 		}
 		else if(message.isMimeType("text/html")) {
 			String content=getConent(message);
-	    	query.setAtEL("HTMLBody",row,content);
+	    	query.setAtEL(HTML_BODY,row,content);
 	    	body.append(content);
 		}
 		else {
@@ -364,14 +392,14 @@ public abstract class MailClient {
 	
 				if(attachments.size() > 0) {
 					try {
-						query.setAtEL("attachments", row, List.arrayToList(attachments, "\t"));
+						query.setAtEL(ATTACHMENTS, row, List.arrayToList(attachments, "\t"));
 					}
 					catch(PageException pageexception) {
 					}
 				}
 				if(attachmentFiles.size() > 0) {
 					try {
-						query.setAtEL("attachmentfiles", row, List.arrayToList(attachmentFiles, "\t"));
+						query.setAtEL(ATTACHMENT_FILES, row, List.arrayToList(attachmentFiles, "\t"));
 					}
 					catch(PageException pageexception1) {
 					}
@@ -380,7 +408,7 @@ public abstract class MailClient {
 				
 			}
 		}
-		query.setAtEL("body", row, body.toString());
+		query.setAtEL(BODY, row, body.toString());
 	}
 
 	private void getMultiPart(Query query, int row, Array attachments, Array attachmentFiles,Struct cids, Multipart multiPart, StringBuffer body) throws MessagingException, IOException {
@@ -392,14 +420,18 @@ public abstract class MailClient {
 			
 
 			if(bodypart.getFileName() != null) {
+				String filename = bodypart.getFileName();
+				try{
+					filename=Normalizer.normalize(MimeUtility.decodeText(filename),Normalizer.Form.NFC);
+				}
+				catch(Throwable t){}
 				
 				if(bodypart.getHeader("Content-ID") != null) {
 					String[] ids = bodypart.getHeader("Content-ID");
 					String cid=ids[0].substring(1, ids[0].length() - 1);
-					cids.setEL(bodypart.getFileName(), cid);
+					cids.setEL(KeyImpl.init(filename), cid);
 				}
 				
-				String filename = bodypart.getFileName();
 				if(filename != null && ArrayUtil.find(attachments, filename)==0) {
 					
 					attachments.appendEL(filename);
@@ -419,12 +451,12 @@ public abstract class MailClient {
 			}
 			else if(bodypart.isMimeType("text/plain")) {
 				content=getConent(bodypart);
-		    	query.setAtEL("textBody",row,content);
+		    	query.setAtEL(TEXT_BODY,row,content);
 		    	if(body.length()==0)body.append(content);
 			}
 			else if(bodypart.isMimeType("text/html")) {
 				content=getConent(bodypart);
-		    	query.setAtEL("HTMLBody",row,content);
+		    	query.setAtEL(HTML_BODY,row,content);
 		    	if(body.length()==0)body.append(content);
 			}
 			else if((content=bodypart.getContent()) instanceof Multipart) {
@@ -450,7 +482,7 @@ public abstract class MailClient {
 						attachmentFiles.appendEL(file.getAbsolutePath());
 					}
 				}
-				cids.setEL(filename, cid);
+				cids.setEL(KeyImpl.init(filename), cid);
 			}
 		}
 	}

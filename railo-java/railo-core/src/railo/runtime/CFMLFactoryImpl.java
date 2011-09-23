@@ -26,18 +26,21 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.RequestTimeoutException;
 import railo.runtime.functions.string.Hash;
+import railo.runtime.lock.LockManager;
 import railo.runtime.op.Caster;
 import railo.runtime.query.QueryCache;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.scope.ArgumentIntKey;
 import railo.runtime.type.scope.LocalNotSupportedScope;
 import railo.runtime.type.scope.ScopeContext;
+import railo.runtime.type.util.ArrayUtil;
 
 /**
  * implements a JSP Factory, this class produce JSP Compatible PageContext Object
@@ -203,16 +206,20 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	
 	public static void terminate(PageContext pc) {
 		Log log = pc.getConfig().getRequestTimeoutLogger();
-        //LockManager manager = pc.getConfig().getLockManager();
-        //String[] locks = manager.getOpenLockNames();
-        //String strLocks=List.arrayToList(locks, ", ");
-        //if(StringUtil.isEmpty(strLocks))strLocks="no open locks";
-        //else strLocks="open locks ("+strLocks+")";
-        //LockManagerImpl.unlockAll(pc.getId());
+        
+		String strLocks="";
+		try{
+			LockManager manager = pc.getConfig().getLockManager();
+	        String[] locks = manager.getOpenLockNames();
+	        if(!ArrayUtil.isEmpty(locks)) 
+	        	strLocks=" open locks at this time ("+List.arrayToList(locks, ", ")+").";
+	        //LockManagerImpl.unlockAll(pc.getId());
+		}
+		catch(Throwable t){}
         
         if(log!=null)log.error("controler",
-        		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+".");
-        pc.getThread().stop(new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") is run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."));
+        		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+"."+strLocks);
+        pc.getThread().stop(new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") is run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."+strLocks));
         
 	}
 
@@ -246,7 +253,18 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	 * @return returns count of pagecontext in use
 	 */
 	public int getUsedPageContextLength() { 
-	    return runningPcs.size();
+		int length=0;
+		try{
+		Iterator it = runningPcs.values().iterator();
+		while(it.hasNext()){
+			PageContextImpl pc=(PageContextImpl) it.next();
+			if(!pc.isGatewayContext()) length++;
+		}
+		}
+		catch(Throwable t){
+			return length;
+		}
+	    return length;
 	}
     /**
      * @return Returns the config.

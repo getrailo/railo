@@ -1,11 +1,6 @@
 package railo.runtime.monitor;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-
-import railo.commons.lang.ExceptionUtil;
 import railo.runtime.config.ConfigServer;
-import railo.runtime.type.Query;
 
 public abstract class MonitorWrap implements Monitor {
 	private static final Object[] PARAMS_LOG = new Object[0];
