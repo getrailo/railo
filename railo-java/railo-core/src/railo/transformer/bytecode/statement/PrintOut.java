@@ -7,7 +7,11 @@ import org.objectweb.asm.commons.Method;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.cast.CastString;
+import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.extern.StringExternalizerWriter;
+import railo.transformer.bytecode.extern.StringExternalizerWriter.Range;
+import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.Types;
 
 public final class PrintOut extends StatementBase {
@@ -44,10 +48,22 @@ public final class PrintOut extends StatementBase {
     public void _writeOut(BytecodeContext bc) throws BytecodeException {
     	GeneratorAdapter adapter = bc.getAdapter();
         adapter.loadArg(0);
-        if(checkPSQ)
-        	expr.writeOut(bc,Expression.MODE_REF);
-        else
-        	CastString.toExprString(expr).writeOut(bc,Expression.MODE_REF);
+        ExprString es=CastString.toExprString(expr);
+        boolean usedExternalizer=false;
+        
+        /*if(es instanceof LitString) {
+        	String str=((LitString)es).getString();
+        	if(str.length()>10) {
+        		StringExternalizerWriter writer=bc.getStringExternalizerWriter();
+        		if(writer!=null){
+        			Range range=writer.write(str);
+        			//reader.read(range.from, range.to);
+        			//usedExternalizer=true;
+        		}
+        	}
+        }*/
+        
+        if(!usedExternalizer)es.writeOut(bc,Expression.MODE_REF);
         adapter.invokeVirtual(Types.PAGE_CONTEXT,checkPSQ?METHOD_WRITE_PSQ:METHOD_WRITE);
     }
 
