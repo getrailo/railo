@@ -78,6 +78,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
      * @exception ClassNotFoundException if the class could not be found
      */
     protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+    	//if(!name.endsWith("$cf")) return super.loadClass(name, resolve); this break Webervices
     	// First, check if the class has already been loaded
         Class<?> c = findLoadedClass(name);
         //print.o("load:"+name+" -> "+c);
@@ -95,11 +96,46 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
         return c;
    }
     
+    
+
+    
+    public static long lastModified(Resource res, long defaultValue)  {
+    	InputStream in = null;
+        try{
+	        in=res.getInputStream();
+	        byte[] buffer = new byte[10];
+	    	in.read(buffer);
+	    	if(!ClassUtil.hasCF33Prefix(buffer)) return defaultValue;
+	    	
+	    	 byte[] _buffer = new byte[]{
+	    			 buffer[2],
+	    			 buffer[3],
+	    			 buffer[4],
+	    			 buffer[5],
+	    			 buffer[6],
+	    			 buffer[7],
+	    			 buffer[8],
+	    			 buffer[9],
+	    	 };
+	    	
+	    	
+	    	return NumberUtil.byteArrayToLong(_buffer);
+        }
+        catch(IOException ioe){
+        	return defaultValue;
+        }
+        finally {
+        	IOUtil.closeEL(in);
+        }
+        
+    }
+    
     /**
      * @see java.lang.ClassLoader#findClass(java.lang.String)
      */
     protected Class<?> findClass(String name) throws ClassNotFoundException {
-        //File f = getFile(name.replace('.',File.separatorChar).concat(".class"));
+    	//if(!name.endsWith("$cf")) return super.findClass(name); this break Webervices
+    	//File f = getFile(name.replace('.',File.separatorChar).concat(".class"));
     	Resource res=directory.getRealResource(name.replace('.','/').concat(".class"));
         //File f = new File(directory,name.replace('.',File.separatorChar).concat(".class"));
         //if(f==null) throw new ClassNotFoundException("class "+name+" not found");
@@ -117,25 +153,26 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
         count++;
         //print.o(name+":"+count+" -> "+(size/1024));
         IOUtil.closeEL(baos);
-        return defineClass(name,barr,0,barr.length);
+        return loadClass(name, barr);
+        //return defineClass(name,barr,0,barr.length);
     }
+    
 
     public Class<?> loadClass(String name, byte[] barr) throws ClassNotFoundException   {
+    	int start=0;
+    	if(ClassUtil.hasCF33Prefix(barr)) start=10;
+    	size+=barr.length-start;
+    	count++;
     	try {
-    		defineClass(name,barr,0,barr.length);
-			
+    		return defineClass(name,barr,start,barr.length-start);
 		} 
         catch (Throwable t) {
 			SystemUtil.sleep(1);
 			try {
-	    		defineClass(name,barr,0,barr.length);
-			} 
-	        catch (Throwable t2) {SystemUtil.sleep(1);}
+	    		return defineClass(name,barr,start,barr.length-start);
+			} catch (Throwable t2) {SystemUtil.sleep(1);}
 		}
-    	
-    	
-    	
-        return loadClass(name,false);
+    	return loadClass(name,false);
     }
     
     /**
@@ -191,6 +228,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
     }
     
     public boolean isClassLoaded(String className) {
+    	//print.o("isClassLoaded:"+className+"-"+(findLoadedClass(className)!=null));
         return findLoadedClass(className)!=null;
     }
 

@@ -19,7 +19,7 @@ Installed Applications --->
 #stText.ext.installeddesc#</td>
 </tr>
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
 <tr>
 		<td class="tblHead" nowrap><input type="text" name="filter" style="width:100%" value="#session.extFilter.filter#" /></td>
@@ -114,7 +114,7 @@ Not Installed Applications --->
 #stText.ext.notInstalleddesc#</td>
 </tr>
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
 <tr>
 		<td class="tblHead" nowrap><input type="text" name="filter2" style="width:100%" value="#session.extFilter.filter2#" /></td>
@@ -209,7 +209,7 @@ Not Installed Applications --->
     <td colspan="5"><h2>#stText.ext.notInstalled#</h2>
 #stText.ext.notInstalleddesc#</td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
 
 <tr>

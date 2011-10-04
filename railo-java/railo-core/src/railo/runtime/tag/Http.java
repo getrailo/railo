@@ -41,14 +41,15 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.net.CookieUtil;
 import railo.commons.net.HTTPUtil;
 import railo.commons.net.RailoStringPart;
 import railo.commons.net.ResourcePart;
 import railo.commons.net.ResourcePartSource;
-import railo.commons.net.ResourceRequestEntity;
 import railo.commons.net.URLEncoder;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalConfig;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.HTTPException;
@@ -540,7 +541,7 @@ public final class Http extends BodyTagImpl {
 	private void _doEndTag(Struct cfhttp) throws PageException, IOException	{
 		HttpConnectionManager manager=new SimpleHttpConnectionManager();//MultiThreadedHttpConnectionManager();
 		HttpClient client = new HttpClient(manager);
-		HttpMethod httpMethod=createMethod(this,client,url,port);
+		HttpMethod httpMethod=createMethod(pageContext.getConfig(),this,client,url,port);
 		try {
 		
 /////////////////////////////////////////// EXECUTE /////////////////////////////////////////////////
@@ -665,7 +666,7 @@ public final class Http extends BodyTagImpl {
 	        //boolean responseProvideCharset=false;
 	        if(!StringUtil.isEmpty(mimetype)){
 		        if(isText) {
-		        	String[] types=splitMimeTypeAndCharset(mimetype);
+		        	String[] types=HTTPUtil.splitMimeTypeAndCharset(mimetype);
 		        	if(types[0]!=null)cfhttp.set(MIME_TYPE,types[0]);
 		        	if(types[1]!=null)cfhttp.set(CHARSET,types[1]);
 	                
@@ -788,23 +789,6 @@ public final class Http extends BodyTagImpl {
 		}
 	    
 	}
-	
-	public static String[] splitMimeTypeAndCharset(String mimetype) {
-		String[] types=mimetype.split(";");
-		String[] rtn=new String[2];
-    	
-    	if(types.length>0){
-    		rtn[0]=types[0];
-	        if(types.length>1) {
-	            String tmp=types[types.length-1];
-	            int index=tmp.indexOf("charset=");
-	            if(index!=-1) {
-	            	rtn[1]= StringUtil.removeQuotes(tmp.substring(index+8),true);
-	            }
-	        }
-    	}
-    	return rtn;
-	}
 
 	public static boolean isText(String mimetype) {
 		if(mimetype==null)mimetype="";
@@ -904,7 +888,12 @@ public final class Http extends BodyTagImpl {
     }
 	
 
-	static HttpMethod createMethod(Http http, HttpClient client, String url, int port) throws PageException, UnsupportedEncodingException {
+	static HttpMethod createMethod(Config cw,Http http, HttpClient client, String url, int port) throws PageException, UnsupportedEncodingException {
+		String _charset=http.charset;
+		if(StringUtil.isEmpty(_charset,true)) _charset=cw.getWebCharset();
+		else _charset=_charset.trim();
+		
+		
 		HttpMethod httpMethod;
 		HostConfiguration config = client.getHostConfiguration();
 		HttpState state = client.getState();
@@ -998,7 +987,7 @@ public final class Http extends BodyTagImpl {
 				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type formfield can't only be used, when method of the tag http equal post");
 				if(post!=null){
 					if(doMultiPart){
-						parts.add(new RailoStringPart(param.getName(),param.getValueAsString()));
+						parts.add(new RailoStringPart(param.getName(),param.getValueAsString(),_charset));
 					}
 					else post.addParameter(new NameValuePair(param.getName(),param.getValueAsString()));
 				}
@@ -1025,10 +1014,7 @@ public final class Http extends BodyTagImpl {
             }
 		// Cookie
 			else if(type.equals("cookie")) {
-				Cookie c = new Cookie();
-				c.setName(URLEncoder.encode(param.getName()));
-				c.setValue(URLEncoder.encode(param.getValueAsString()));
-				c.setDomain(_url.getHost());
+				Cookie c=CookieUtil.toCookie(_url.getHost(),param.getName(),param.getValueAsString(),_charset);
 				c.setPath("/");
 				client.getState().addCookie(c);
 			}
@@ -1038,8 +1024,7 @@ public final class Http extends BodyTagImpl {
 				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type file can't only be used, when method of the tag http equal post");
 				if(doMultiPart) {
 					try {
-						//FilePart part = new FilePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param),null);
-						parts.add(new ResourcePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param)));
+						parts.add(new ResourcePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param),_charset));
 					} 
 					catch (FileNotFoundException e) {
 						throw new ApplicationException("can't upload file, path is invalid",e.getMessage());
@@ -1087,12 +1072,14 @@ public final class Http extends BodyTagImpl {
 			boolean doIt=true;
 			if(!http.multiPart && parts.size()==1){
 				Part part = parts.get(0);
-				if(part instanceof ResourcePart){
+				/* jira 1513
+				  if(part instanceof ResourcePart){
 					ResourcePart rp = (ResourcePart) part;
 					eem.setRequestEntity(new ResourceRequestEntity(rp.getResource(),rp.getContentType()));
 					doIt=false;
 				}
-				else if(part instanceof RailoStringPart){
+				else */
+					if(part instanceof RailoStringPart){
 					RailoStringPart sp = (RailoStringPart) part;
 					try {
 						eem.setRequestEntity(new StringRequestEntity(sp.getValue(),sp.getContentType(),sp.getCharSet()));
@@ -1215,8 +1202,8 @@ public final class Http extends BodyTagImpl {
     }
 
     private static String translateEncoding(String str, String charset) throws UnsupportedEncodingException {
-    	//print.ln(charset+":"+StringUtil.translateString(str,"ISO-8859-1")+"::"+URLEncoder.encode(str,charset));
-        return URLEncoder.encode(StringUtil.translateString(str,"ISO-8859-1"),charset);
+    	if(StringUtil.isAscci(str)) return str;
+    	return URLEncoder.encode(str,charset);
     }
 
     /**
@@ -1374,7 +1361,7 @@ public final class Http extends BodyTagImpl {
 		try {
 			// text
 			if(isText(contentType)) {
-				String[] tmp = splitMimeTypeAndCharset(contentType);
+				String[] tmp = HTTPUtil.splitMimeTypeAndCharset(contentType);
 				//String mimetype=tmp[0];
 				String charset=tmp[1];
 				
@@ -1476,7 +1463,7 @@ class Executor extends Thread {
         	lu=Http.locationURL(httpMethod);
         	redirectURL=lu;
         	HttpMethod oldHttpMethod = httpMethod;
-        	httpMethod=Http.createMethod(http,client,lu.toExternalForm(),-1);
+        	httpMethod=Http.createMethod(ThreadLocalPageContext.getConfig(),http,client,lu.toExternalForm(),-1);
         	Http.releaseConnection(oldHttpMethod);
         }
         

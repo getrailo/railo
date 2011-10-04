@@ -159,7 +159,7 @@
                 </tr>--->
                 </table>
                 
-            	<cfform action="#request.self#?action=#url.action#" method="post">
+            	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
                 	<input type="hidden" name="uid" value="#url.uid#">
                     
             		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.update#">
@@ -170,7 +170,7 @@
             
             <!--- Install --->
             <cfelseif isInstalled and not hasUpdate>
-            	<cfform action="#request.self#?action=#url.action#" method="post">
+            	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
             		<input type="hidden" name="uid" value="#url.uid#">
                     
             		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.uninstall#">
@@ -178,7 +178,7 @@
               	</cfform>
             <cfelse>
             
-				<cfform action="#request.self#?action=#url.action#" method="post">
+				<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
             		<input type="hidden" name="uid" value="#url.uid#">
                     
             		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.install#">

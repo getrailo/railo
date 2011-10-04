@@ -20,6 +20,7 @@ import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
+import railo.commons.io.res.type.http.HTTPResource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
@@ -110,7 +111,7 @@ public final class ResourceUtil {
     	EXT_MT.put("pgm","image/x-portable-graymap");
     	EXT_MT.put("pict","image/x-pict");
     	EXT_MT.put("pl","application/x-perl");
-    	EXT_MT.put("png","image/x-png");
+    	EXT_MT.put("png","image/png");
     	EXT_MT.put("pnm","image/x-portable-anymap");
     	EXT_MT.put("ppm","image/x-portable-pixmap");
     	EXT_MT.put("ppt","application/vnd.ms-powerpoint");
@@ -703,6 +704,15 @@ public final class ResourceUtil {
 	        res.createFile(true);
 	    }
     }
+    
+    public static void clear(Resource res) throws IOException {
+    	if(res.exists()) {
+    		IOUtil.write(res, new byte[0]);
+	    }
+	    else {
+	        res.createFile(true);
+	    }
+    }
     	
     
 
@@ -1011,6 +1021,12 @@ public final class ResourceUtil {
 	}
 
 	public static ContentType getContentType(Resource resource) {
+		// TODO make this part of a interface
+		if(resource instanceof HTTPResource) {
+			try {
+				return ((HTTPResource)resource).getContentType();
+			} catch (IOException e) {}
+		}
 		InputStream is=null;
 		try {
 			is = resource.getInputStream();

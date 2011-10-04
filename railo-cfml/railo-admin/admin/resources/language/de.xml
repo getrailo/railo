@@ -88,9 +88,9 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.server.output">Ausgabe</data>
 	<data key="menu.server.error">Error</data>
 	<data key="menu.services.label">Dienste</data>
-	<data key="menu.services.gateway">Event Gateway (Beta)</data>
+	<data key="menu.services.gateway">Event Gateway</data>
 	<data key="menu.services.cache">Cache</data>
-	<data key="menu.services.orm">ORM (Beta)</data>
+	<data key="menu.services.orm">ORM</data>
 	<data key="menu.services.datasource">Datenquellen</data>
 	<data key="menu.services.search">Suche</data>
 	<data key="menu.services.mail">Mail</data>
@@ -112,7 +112,6 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.debugging.label">Debugging</data>
 	<data key="menu.debugging.logs">Logs</data>
 	<data key="menu.debugging.templates">Templates</data>
-	
 	<data key="menu.security.label">Sicherheit</data>
 	<data key="menu.security.access">Zugriff</data>
 	<data key="menu.security.password">Passwort</data>
@@ -377,6 +376,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="general.year">Jahr</data>
 	<data key="general.day">Tag</data>
 	<data key="general.hours">Stunden</data>
+	<data key="general.wait">Bitte warten...</data>
 	<data key="general.seconds">Sekunden</data>
 	<data key="general.days">Tage</data>
 	<data key="general.no">Nein</data>
@@ -639,6 +639,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="buttons.filter">filter</data>
 	<data key="buttons.agree">einverstanden</data>
 	<data key="buttons.submit">senden</data>
+	<data key="buttons.stop">stop</data>
 	<data key="buttons.ok">OK</data>
 	<data key="buttons.purge">leeren</data>
 	<data key="buttons.install">installieren</data>

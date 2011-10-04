@@ -195,7 +195,7 @@ Create Datasource --->
 <tr>
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
 <!--- Base Component ---->
 <tr>
@@ -247,7 +247,7 @@ Create Datasource --->
 	<td class="tblHead" width="150">#stText.Components.componentMappingSearch#</td>
 	<td class="tblContent">
 		
-		<b>Yes (cooming soon)</b><br />
+		<b>Yes (coming soon)</b><br />
 		<span class="comment">#stText.Components.componentMappingSearchDesc#</span>
 	</td>
 </tr>
@@ -366,7 +366,7 @@ Use Shadow --->
 #stText.Components.componentMappingsDesc#</td>
 </tr>
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td><cfif hasAccess><input type="checkbox" class="checkbox" 
 			name="rro" onclick="selectAll(this)"></cfif></td>

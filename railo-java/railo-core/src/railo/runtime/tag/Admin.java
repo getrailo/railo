@@ -82,6 +82,9 @@ import railo.runtime.gateway.GatewayEntryImpl;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
+import railo.runtime.monitor.IntervallMonitor;
+import railo.runtime.monitor.Monitor;
+import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.mail.SMTPException;
 import railo.runtime.net.mail.SMTPVerifier;
 import railo.runtime.net.mail.Server;
@@ -157,6 +160,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Collection.Key IP_RANGE = KeyImpl.intern("ipRange");
 	private static final Collection.Key CUSTOM = KeyImpl.intern("custom");
 	private static final Collection.Key READONLY = KeyImpl.intern("readOnly");
+	private static final Collection.Key LOG_ENABLED = KeyImpl.intern("logEnabled");
+	private static final Collection.Key CLASS = KeyImpl.intern("class");
 	
 	
 	
@@ -216,7 +221,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     public int doStartTag() throws PageException {
     	//adminSync = pageContext.getAdminSync();
     	
-        // Action
+    	// Action
         Object objAction=attributes.get(KeyImpl.ACTION);
         if(objAction==null)throw new ApplicationException("missing attrbute action for tag admin");
         action=StringUtil.toLowerCase(Caster.toString(objAction)).trim();
@@ -473,9 +478,16 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         
     	
-    	if(check("connect",ACCESS_FREE) && check2(CHECK_PW)) {/*do nothing more*/}
+    	if(check("connect",ACCESS_FREE) && check2(CHECK_PW)) {
+    		try{
+    			if(config instanceof ConfigServer)
+    				((PageContextImpl)pageContext).setServerPassword(password);
+    		}
+    		catch(Throwable t){}
+    	}
     	else if(check("surveillance",           ACCESS_FREE) && check2(ACCESS_READ  )) doSurveillance();
     	else if(check("getRegional",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetRegional();
+    	else if(check("isMonitorEnabled",       ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ  )) doIsMonitorEnabled();
     	else if(check("resetORMSetting",            ACCESS_FREE) && check2(ACCESS_READ  )) doResetORMSetting();
     	else if(check("getORMSetting",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetORMSetting();
     	else if(check("getORMEngine",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetORMEngine();
@@ -505,6 +517,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getGatewayentries",    ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_READ  )) doGetGatewayEntries();
         else if(check("getGatewayentry",     ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_READ  )) doGetGatewayEntry();
         else if(check("getRunningThreads",     ACCESS_FREE) && check2(ACCESS_READ  )) doGetRunningThreads();
+        else if(check("getMonitors",     ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ  )) doGetMonitors();
+        else if(check("getMonitor",     ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ  )) doGetMonitor();
         else if(check("gateway",     ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_READ  )) doGateway();
         
     	
@@ -554,6 +568,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
         else if(check("resetId",				ACCESS_FREE) && check2(ACCESS_WRITE  )) doResetId();
         else if(check("updateJar",         		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateJar();
+        else if(check("updateMonitorEnabled",   ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateMonitorEnabled();
         else if(check("updateTLD",         		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateTLD();
         else if(check("updateFLD",         		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateFLD();
         else if(check("updateregional",         ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateRegional();
@@ -575,6 +590,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updatemapping",          ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateMapping();
         else if(check("updatecustomtag",        ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCustomTag();
         else if(check("updateComponentMapping", ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateComponentMapping();
+        else if(check("stopThread", 			ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doStopThread();
     	
     	
         else if(check("updatejavacfx",          ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateJavaCFX();
@@ -590,9 +606,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateExtensionInfo",	ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExtensionInfo();
         else if(check("updateGatewayEntry",  ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_WRITE  )) doUpdateGatewayEntry();
         else if(check("updateLogSettings",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateUpdateLogSettings();
+        else if(check("updateMonitor",  ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateMonitor();
         
     	
         //else if(check("removeproxy",       		ACCESS_NOT_WHEN_SERVER  )) doRemoveProxy();
+        else if(check("removeMonitor",    ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doRemoveMonitor();
         else if(check("removejar",       		ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveJar();
         else if(check("removeTLD",       		ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveTLD();
         else if(check("removeFLD",       		ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveFLD();
@@ -628,6 +646,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updatedefaultpassword",  ACCESS_FREE) && check2(ACCESS_WRITE            )) doUpdateDefaultPassword();
         else if(check("hasindividualsecurity",  ACCESS_FREE) && check2(ACCESS_READ            )) doHasIndividualSecurity();
         else if(check("resetpassword",          ACCESS_FREE) && check2(ACCESS_WRITE            )) doResetPassword();
+        else if(check("stopThread", 			ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doStopThread();
         
         else if(check("createsecuritymanager",  ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE            )) doCreateSecurityManager();
         else if(check("getsecuritymanager",     ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ            )) doGetSecurityManager();
@@ -2895,6 +2914,59 @@ private void doGetMappings() throws PageException {
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
 	}
 	
+
+	private void doGetMonitors() throws PageException  {
+		if(!(config instanceof ConfigServerImpl))
+			throw new ApplicationException("invalid context for this action");
+		
+		ConfigServerImpl cs=(ConfigServerImpl) config;
+		IntervallMonitor[] intervalls = cs.getIntervallMonitors();
+		RequestMonitor[] requests = cs.getRequestMonitors();
+		
+		railo.runtime.type.Query qry=
+			new QueryImpl(new Collection.Key[]{KeyImpl.NAME,KeyImpl.TYPE,LOG_ENABLED,CLASS}, 0, "monitorså");
+		doGetMonitors(qry,intervalls);
+		doGetMonitors(qry,requests);
+		
+        pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+	}
+	private void doGetMonitor() throws PageException  {
+		if(!(config instanceof ConfigServerImpl))
+			throw new ApplicationException("invalid context for this action");
+		ConfigServerImpl cs=(ConfigServerImpl) config;
+
+		String type=getString("admin",action,"monitorType");
+		String name=getString("admin",action,"name");
+		type=type.trim();
+		Monitor m;
+		if("request".equalsIgnoreCase(type)) 
+			m=cs.getRequestMonitor(name);
+		else
+			m=cs.getIntervallMonitor(name);
+		
+		Struct sct=new StructImpl();
+		sct.setEL(KeyImpl.NAME, m.getName());
+		sct.setEL(KeyImpl.TYPE, m.getType()==Monitor.TYPE_INTERVALL?"intervall":"request");
+		sct.setEL(LOG_ENABLED, m.isLogEnabled());
+		sct.setEL(CLASS, m.getClazz().getName());
+		
+        pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
+	}
+	
+	private void doGetMonitors(Query qry, Monitor[] monitors) {
+		Monitor m;
+		int row;
+		for(int i=0;i<monitors.length;i++){
+			m=monitors[i];
+			row=qry.addRow();
+        	qry.setAtEL(KeyImpl.NAME, row, m.getName());
+        	qry.setAtEL(KeyImpl.TYPE, row, m.getType()==Monitor.TYPE_INTERVALL?"intervall":"request");
+        	qry.setAtEL(LOG_ENABLED, row, m.isLogEnabled());
+        	qry.setAtEL(CLASS, row, m.getClazz().getName());
+		}
+		
+	}
+
 	private void doGetGatewayEntry() throws PageException {
         
         String id=getString("admin",action,"id");
@@ -3430,6 +3502,27 @@ private void doGetMappings() throws PageException {
         adminSync.broadcast(attributes, config);
     }
     
+
+
+    private void doUpdateMonitor() throws PageException  {
+    	admin.updateMonitor(
+    			getString("admin", "updateMonitor", "class"),
+    			getString("admin", "updateMonitor", "monitorType"),
+    			getString("admin", "updateMonitor", "name"),
+    			getBool("admin", "updateMonitor", "logEnabled")
+    	);
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+
+    private void doRemoveMonitor() throws PageException  {
+    	admin.removeMonitor(
+    			getString("admin", "updateMonitor", "name")
+    	);
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+    
     
     
     private void doUpdateExtension() throws PageException {
@@ -3650,6 +3743,18 @@ private void doGetMappings() throws PageException {
         }
         adminSync.broadcast(attributes, config);
     }
+    private void doUpdateMonitorEnabled() throws PageException {
+    	
+        try{
+        	admin.updateMonitorEnabled(getBool("admin","UpdateMonitorEnabled","monitorEnabled"));
+        }
+        finally {
+        	 store();
+        }
+        adminSync.broadcast(attributes, config);
+    }
+    
+    
 
     private void doUpdateTLD() throws PageException {
     	try {
@@ -3923,6 +4028,12 @@ private void doGetMappings() throws PageException {
         sct.set("usetimeserver",config.getUseTimeServer());
 		// replaced with encoding outputsct.set("defaultencoding", config.get DefaultEncoding());
     }
+    private void doIsMonitorEnabled() throws PageException  {
+        if(config instanceof ConfigServerImpl) {
+        	ConfigServerImpl cs=(ConfigServerImpl) config;
+        	pageContext.setVariable(getString("admin",action,"returnVariable"),Caster.toBoolean(cs.isMonitoringEnabled()));
+        }
+    }
     
 
 	private void doSurveillance() throws PageException {
@@ -3933,7 +4044,10 @@ private void doGetMappings() throws PageException {
 			Struct sct=new StructImpl();
 			for(int i=0;i<webs.length;i++){
 				ConfigWebImpl cw=(ConfigWebImpl) webs[i];
+				try{
 				sct.setEL(cw.getLabel(), ((CFMLFactoryImpl)cw.getFactory()).getInfo());
+				}
+				catch(Throwable t){}
 			}
 			pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
 			
@@ -3944,11 +4058,26 @@ private void doGetMappings() throws PageException {
 			pageContext.setVariable(getString("admin",action,"returnVariable"),
 					factory.getInfo());
 		}
+	}
+	
+	private void doStopThread() throws PageException {
+		String contextId=getString("admin", "stopThread", "contextId");
+		String threadId=getString("admin", "stopThread", "threadId");
+		String stopType=getString("stopType","exception");
+		
+		if(!(config instanceof ConfigServer)) 
+			throw new ApplicationException("invalid context for this action");
 		
 		
-		
-		
-		//pageContext.setVariable(getString("admin",action,"returnVariable"),Surveillance.getInfo(config));
+		ConfigServer cs=(ConfigServer) config;
+		ConfigWeb[] webs = cs.getConfigWebs();
+		for(int i=0;i<webs.length;i++){
+			ConfigWebImpl cw=(ConfigWebImpl) webs[i];
+			if(!cw.getId().equals(contextId)) continue;
+			 ((CFMLFactoryImpl)cw.getFactory()).stopThread(threadId,stopType);
+			 break;
+				
+		}
 	}
     
     private void doGetProxy() throws PageException  {

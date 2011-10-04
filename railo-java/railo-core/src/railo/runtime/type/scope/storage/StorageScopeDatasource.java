@@ -289,4 +289,11 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	public String getStorageType() {
 		return "Datasource";
 	}
+
+	/**
+	 * @return the datasourceName
+	 */
+	public String getDatasourceName() {
+		return datasourceName;
+	}
 }

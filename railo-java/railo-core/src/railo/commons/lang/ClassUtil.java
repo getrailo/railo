@@ -359,10 +359,25 @@ public final class ClassUtil {
 		}
 	}
 	
-	private static final int _0=202; 
-    private static final int _1=254; 
-    private static final int _2=186; 
-    private static final int _3=190; 
+	// CafeBabe (Java Magic Number)
+	private static final int ICA=202;//CA 
+    private static final int IFE=254;//FE
+    private static final int IBA=186;//BA
+    private static final int IBE=190;//BE
+    
+    // CF33 (Railo Magic Number)
+    private static final int ICF=207;//CF 
+    private static final int I33=51;//33
+    
+
+	private static final byte BCA=(byte)ICA;//CA 
+    private static final byte BFE=(byte)IFE;//FE
+    private static final byte BBA=(byte)IBA;//BA
+    private static final byte BBE=(byte)IBE;//BE
+    
+    private static final byte BCF=(byte)ICF;//CF 
+    private static final byte B33=(byte)I33;//33
+    
     
     /** 
      * check if given stream is a bytecode stream, if yes remove bytecode mark 
@@ -370,15 +385,41 @@ public final class ClassUtil {
      * @return is bytecode stream 
      * @throws IOException 
      */ 
-    public static boolean isBytecodeStream(InputStream is) throws IOException { 
+    public static boolean isBytecode(InputStream is) throws IOException { 
             if(!is.markSupported()) 
                     throw new IOException("can only read input streams that support mark/reset"); 
             is.mark(-1); 
-            //print(bytes); 
-            boolean rtn = (is.read()==_0 && is.read()==_1 && is.read()==_2 && is.read()==_3); 
+            //print(bytes);
+            int first=is.read();
+            int second=is.read();
+             boolean rtn=(first==ICF && second==I33) || (first==ICA && second==IFE && is.read()==IBA && is.read()==IBE);
+            
         is.reset(); 
         return rtn; 
     }
+    
+
+    public static boolean isBytecode(byte[] barr){ 
+        if(barr.length<4) return false;
+        return (barr[0]==BCF && barr[1]==B33) || (barr[0]==BCA && barr[1]==BFE && barr[2]==BBA && barr[3]==BBE); 
+    }
+    public static boolean isRawBytecode(byte[] barr){ 
+        if(barr.length<4) return false;
+        return (barr[0]==BCA && barr[1]==BFE && barr[2]==BBA && barr[3]==BBE); 
+    }
+    
+    public static boolean hasCF33Prefix(byte[] barr) { 
+        if(barr.length<4) return false;
+        return (barr[0]==BCF && barr[1]==B33); 
+    }
+    
+	public static byte[] removeCF33Prefix(byte[] barr) {
+		if(!hasCF33Prefix(barr)) return barr;
+    	
+		byte[] dest = new byte[barr.length-10];
+		System.arraycopy(barr, 10, dest, 0, 10);
+		return dest;
+	}
 
 	public static String getName(Class clazz) {
 		if(clazz.isArray()){
@@ -424,5 +465,9 @@ public final class ClassUtil {
 		}
 		return names;
 	}
+
+
+
+
 	
 }

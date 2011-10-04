@@ -490,6 +490,13 @@ public class CFMLWriterImpl extends CFMLWriter {
     public void write(String str) throws IOException { 
         _print(str);
     }
+    
+    /**
+	 * @see railo.runtime.writer.CFMLWriter#writeRaw(java.lang.String)
+	 */
+	public void writeRaw(String str) throws IOException {
+		_print(str);
+	}
 
     /**
      * @return Returns the flushed.

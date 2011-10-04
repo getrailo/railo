@@ -3,6 +3,7 @@ package railo.commons.net;
 import java.io.UnsupportedEncodingException;
 
 import railo.commons.io.SystemUtil;
+import railo.runtime.net.http.ReqRspUtil;
 
 public class URLDecoder {
 
@@ -43,7 +44,7 @@ public class URLDecoder {
      * @see URLEncoder#encode(java.lang.String, java.lang.String)
      */
     public static String decode(String s, String enc) throws UnsupportedEncodingException {
-	
+    	if(!ReqRspUtil.isURLEncoded(s)) return s;
     	//if(true) return java.net.URLDecoder.decode(s, enc);
     	
 	boolean needToChange = false;

@@ -61,12 +61,13 @@ public final class Log extends TagImpl {
 	 * @throws ApplicationException
 	**/
 	public void setLog(String log) throws ApplicationException	{
+		if(StringUtil.isEmpty(log,true)) return;
 	    log=log.toLowerCase().trim();
 	    if(log.equals("application")) this.log=LOG_APPLICATION;
 	    else if(log.equals("scheduler")) this.log=LOG_SCHEDULER;
 	    else if(log.equals("console")) this.log=LOG_CONSOLE;
 		else 
-		    throw new ApplicationException("invalid value for attribut log ["+log+"]","valid values are [application, scheduler,console]");
+		    throw new ApplicationException("invalid value for attribute log ["+log+"]","valid values are [application, scheduler,console]");
 	}
 
 	/** set the value text
@@ -92,7 +93,7 @@ public final class Log extends TagImpl {
         else if(type.startsWith("fatal")) this.type=railo.commons.io.log.Log.LEVEL_FATAL;
         else if(type.startsWith("debug")) this.type=railo.commons.io.log.Log.LEVEL_DEBUG;
 		else
-		    throw new ApplicationException("invalid value for attribut type ["+type+"]",
+		    throw new ApplicationException("invalid value for attribute type ["+type+"]",
 		      "valid values are [information,warning,error,fatal,debug]");
 
 	}
@@ -187,6 +188,7 @@ public final class Log extends TagImpl {
 	 * @param charset the charset to set
 	 */
 	public void setCharset(String charset) {
-		this.charset = charset;
+		if(StringUtil.isEmpty(log,true)) return;
+	    this.charset = charset;
 	}
 }

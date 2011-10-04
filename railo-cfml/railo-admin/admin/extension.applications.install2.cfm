@@ -182,7 +182,7 @@
 
 
 
-<cfform action="#request.self#?action=#url.action#&action2=install2&uid=#url.uid#&step=#url.step#" method="post" enctype="multipart/form-data">
+<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=install2&uid=#url.uid#&step=#url.step#" method="post" enctype="multipart/form-data">
 
 <cfif url.step GT arrayLen(steps)><cfset url.step=arrayLen(steps)></cfif>
 <cfif url.step LT 1><cfset url.step=1></cfif>

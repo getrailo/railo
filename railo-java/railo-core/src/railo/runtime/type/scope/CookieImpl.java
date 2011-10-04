@@ -1,6 +1,5 @@
 package railo.runtime.type.scope;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,8 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.lang.StringUtil;
-import railo.commons.net.URLDecoder;
-import railo.commons.net.URLEncoder;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -67,10 +64,11 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	}
 	
 	private void set(Config config,javax.servlet.http.Cookie cookie) throws PageException {
-		String name=StringUtil.toLowerCase(cookie.getName());
+		
+		String name=StringUtil.toLowerCase(ReqRspUtil.decode(cookie.getName(),charset));
 		raw.put(name,cookie.getValue());
     	if(isScriptProtected())	super.set (KeyImpl.init(name),ScriptProtect.translate(dec(cookie.getValue())));
-        else super.set (KeyImpl.init(name),dec(cookie.getValue()));
+        else super.set (KeyImpl.init(name),cookie.getValue());
 	}
 	
     /**
@@ -232,9 +230,8 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void initialize(PageContext pc) {
-		charset = pc.getConfig().getWebCharset();
 		Config config = ThreadLocalPageContext.getConfig(pc);
-		
+		charset = pc.getConfig().getWebCharset();
 		if(scriptProtected==ScriptProtected.UNDEFINED) {
 			scriptProtected=((pc.getApplicationContext().getScriptProtect()&ApplicationContext.SCRIPT_PROTECT_COOKIE)>0)?
 					ScriptProtected.YES:ScriptProtected.NO;
@@ -294,26 +291,9 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 
 
     public String dec(String str) {
-    	return dec(str,charset);
+    	return ReqRspUtil.decode(str,charset);
 	}
     public String enc(String str) {
-    	return enc(str,charset);
-	}
-
-    public static String dec(String str,String charset) {
-		try {
-			return URLDecoder.decode(str, charset);
-		} 
-		catch (UnsupportedEncodingException e) {
-			return str;
-		}
-	}
-    public static String enc(String str,String charset) {
-		try {
-			return URLEncoder.encode(str, charset);
-		} 
-		catch (UnsupportedEncodingException e) {
-			return str;
-		}
+    	return ReqRspUtil.encode(str,charset);
 	}
 }

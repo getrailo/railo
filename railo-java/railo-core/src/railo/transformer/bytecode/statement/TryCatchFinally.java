@@ -25,6 +25,7 @@ import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.TagTry;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 
 /**
@@ -125,27 +126,23 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		// Reference ref=null;
-		int lRef=adapter.newLocal(Types.REFERENCE);
+		final int lRef=adapter.newLocal(Types.REFERENCE);
 		adapter.visitInsn(Opcodes.ACONST_NULL);
 		adapter.storeLocal(lRef);
 
-		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor();
+		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor(new OnFinally() {
+			
+			public void writeOut(BytecodeContext bc) throws BytecodeException {
+				_writeOutFinally(bc,lRef);
+			}
+		});
 
 		// try
 		tcfv.visitTryBegin(bc);
 			tryBody.writeOut(bc);
-		tcfv.visitTryEnd(bc);
-		
-		// catch
-		int lThrow = tcfv.visitCatchBegin(bc, Types.THROWABLE);
+		int lThrow = tcfv.visitTryEndCatchBeging(bc);
 			_writeOutCatch(bc, lRef, lThrow);
 		tcfv.visitCatchEnd(bc);
-			
-		// finally
-		tcfv.visitFinallyBegin(bc);
-			_writeOutFinally(bc,lRef);
-		tcfv.visitFinallyEnd(bc);
-		
 		
 	}
 	

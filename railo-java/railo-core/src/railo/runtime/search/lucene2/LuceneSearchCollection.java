@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -312,8 +314,81 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
         
     }
 
-
     /**
+     * @param id
+     * @param title
+     * @param keyColumn
+     * @param bodyColumns
+     * @param language
+     * @param custom1
+     * @param custom2
+     * @param custom3
+     * @param custom4
+     * @return 
+     * @throws SearchException
+     */
+    protected IndexResult _deleteCustom(String id,QueryColumn keyColumn) throws SearchException {
+
+        int countBefore=0;
+        int countAfter=0; 
+        
+    	Map<String,Document> docs=new HashMap<String,Document>();
+    	
+    	Set<String> keys=toSet(keyColumn);
+    	IndexWriter writer=null;
+    	String key;
+    	IndexReader reader=null;
+    	Document doc;
+    	
+    	synchronized(token){
+	    	try {
+		        try {
+	        		reader=_getReader(id,false);
+	        		countBefore=reader.maxDoc();
+	        		for(int i=0;i<countBefore;i++) {
+	        			doc=reader.document(i);
+	        			key=doc.getField("key").stringValue();
+	        			if(!keys.contains(key))
+	        				docs.put(key,doc);
+	        		}
+		        }
+		        catch(Exception e) {}
+		        finally {
+		        	close(reader);
+		        } 
+		        countAfter=docs.size(); 
+		        
+        		
+		        writer = _getWriter(id,true);
+		        Iterator<Entry<String, Document>> it = docs.entrySet().iterator();
+		        while(it.hasNext()) {
+		        	writer.addDocument(it.next().getValue());
+		        }
+		        optimizeEL(writer);
+	            
+	        } catch (IOException e) {
+				throw new SearchException(e);
+			}
+	        finally {
+	        	close(writer);
+	        }
+	        indexSpellCheck(id);
+    	}
+        int removes=countBefore-countAfter;
+
+        return new IndexResultImpl(removes,0,0);
+    }
+
+    private Set<String> toSet(QueryColumn column) {
+    	Set<String> set=new HashSet<String>();
+    	Iterator it = column.valueIterator();
+    	while(it.hasNext()){
+    		set.add(Caster.toString(it.next(),null));
+    	}
+		return set;
+	}
+
+	/**
      * @param id
      * @param title
      * @param keyColumn
@@ -508,7 +583,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 	            outer:for(int i=0;i<files.length;i++) {
 		        	if(removeCorrupt(files[i]))continue;
 	            	String strFile=files[i].toString();
-		            SearchIndex si = (SearchIndex)indexes.get(files[i].getName());
+		            SearchIndex si = indexes.get(files[i].getName());
 		            
 		            if(si==null)continue;
 		            ct=si.getCategoryTree();
@@ -867,7 +942,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 		Double tmp;
 		
 		while(it.hasNext()) {
-			SearchIndex index=(SearchIndex) indexes.get(it.next());
+			SearchIndex index=indexes.get(it.next());
 			
 			// category tree
 			catTree = index.getCategoryTree();

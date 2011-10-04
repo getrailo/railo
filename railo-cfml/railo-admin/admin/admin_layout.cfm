@@ -34,11 +34,6 @@ if(structKeyExists(url,'action'))otherURL&="?action="&url.action;
 		h1 {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 20pt;color:#fgColor#;}
 		h2 {height:6pt;font-size : 12pt;font-weight:normal;color:#fgColor#;}
 		
-		div.navtop		{margin-top:8px;margin-bottom:3px;color:##333333;font-weight:bold;font-size : 9pt;}
-    	a.navtop		{text-decoration:none;font-weight:bold;font-size : 9pt;}
-		
-    	a.navsub		{text-decoration:none;color:#fgColor#;font-size : 8pt;}
-    	a.navsub_active	{text-decoration:none;color:#fgColor#;font-size : 8pt;font-weight:bold;}
 		
 		.comment{font-size : 10px;color:##787a7d;text-decoration:none;}
 		.commentHead{font-size : 10px;color:##DFE9F6;}
@@ -79,6 +74,50 @@ background-color:white;
 		a{color:#fgColor#;}
 		
 		
+	
+ul##menu, ul##menu ul {
+  list-style-type:none;
+  margin: 0;
+  padding: 0;
+}
+
+ul##menu a {
+  display: block;
+  text-decoration: none;	
+}
+
+ul##menu li {margin-top: 1px;}
+
+ul##menu li a {margin-top:8px;margin-bottom:3px;color:##333;font-weight:bold;font-size : 9pt;}
+ul##menu li a:hover {color:##000;}
+
+ul##menu li ul li a {
+margin-top:0px;margin-bottom:0px;font-weight:normal;
+ text-decoration:none;color:#fgColor#;font-size : 8pt;
+  padding-left: 10px;
+  background-image:url(<cfmodule type="css" template="img.cfm" src="arrow.gif" width="4" height="7" />);background-repeat:no-repeat;
+}
+
+ul##menu li ul li a:hover {
+ 
+margin-top:0px;margin-bottom:0px;font-weight:normal;
+ text-decoration:none;color:#fgColor#;font-size : 8pt;
+  padding-left: 10px;
+  background-image:url(<cfmodule type="css" template="img.cfm" src="arrow-active.gif" width="4" height="7" />);background-repeat:no-repeat;
+}
+
+ul##menu li ul li a.menu_active {
+margin-top:0px;margin-bottom:0px;font-weight:bold;
+ text-decoration:none;color:#fgColor#;font-size : 8pt;
+  padding-left: 10px;
+  background-image:url(<cfmodule type="css" template="img.cfm" src="arrow-active.gif" width="4" height="7" />);background-repeat:no-repeat;
+}
+		.commentError{font-size : 10px;color:##cc0000;text-decoration:none;}
+		
+		
+		.InputError{
+			background: url(<cfmodule type="css" template="img.cfm" src="input-shadow-error.png" />) repeat-x 0 0;background-color:##fae2e2;}
+		
 		<!---/*
 		.darker{background-color:##e0e0e0;}
 		.brigther{background-color:###bgBrightColor#;}
@@ -86,7 +125,7 @@ background-color:white;
 		*/--->
 		</style></cfoutput>
 	</head>
-	<body <cfif structKeyExists(attributes,"onload")>onload="<cfoutput>#attributes.onload#</cfoutput>"</cfif>>
+	<body id="body" <cfif structKeyExists(attributes,"onload")>onload="<cfoutput>#attributes.onload#</cfoutput>"</cfif>>
 
 <cfoutput>
 <table align="center" cellpadding="0" cellspacing="0" border="0">
@@ -164,7 +203,7 @@ background-color:white;
 </table>
 </body>
 </html>
-<cfif StructKeyExists(application,'notTranslated')>
+<cfif false and StructKeyExists(application,'notTranslated')>
 <cfset keys=structKeyArray(application.notTranslated)>
 <cfset ArraySort(keys,'textnocase')>
 <!--

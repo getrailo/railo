@@ -309,7 +309,7 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl implements WhiteS
 	}
 
 	/**
-	 * @see railo.runtime.writer.WhiteSpaceWriter#writeRaw(java.lang.String)
+	 * @see railo.runtime.writer.CFMLWriter#writeRaw(java.lang.String)
 	 */
 	public void writeRaw(String str) throws IOException {
 		printBuffer();

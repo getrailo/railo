@@ -139,7 +139,7 @@ function selectAll(field) {
 <tr>
 	<td colspan="#columns#">#stText.ext.prov.IntroText#</td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td width="30"><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"><cfmodule template="tp.cfm"  width="10" height="1"></td>
 		<td width="300" class="tblHead" nowrap>#stText.ext.prov.url#</td>

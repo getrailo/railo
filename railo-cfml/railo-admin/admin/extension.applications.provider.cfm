@@ -110,7 +110,7 @@
                 </tr>
                 </table>
                 
-            	<cfform action="#request.self#?action=#url.action#" method="post">
+            	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
                 	<input type="hidden" name="hashProvider_1" value="#url.hashProvider#">
                 	<input type="hidden" name="id_1" value="#url.id#">
                 	<input type="hidden" name="row" value="1">
@@ -123,7 +123,7 @@
             
             <!--- Install --->
             <cfelseif isInstalled and not hasUpdate>
-            	<cfform action="#request.self#?action=#url.action#" method="post">
+            	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
             		<input type="hidden" name="hashProvider_1" value="#url.hashProvider#">
                 	<input type="hidden" name="id_1" value="#url.id#">
                 	<input type="hidden" name="row" value="1">
@@ -133,7 +133,7 @@
               	</cfform>
             <cfelse>
             
-				<cfform action="#request.self#?action=#url.action#" method="post">
+				<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
             		<input type="hidden" name="hashProvider_1" value="#url.hashProvider#">
                 	<input type="hidden" name="id_1" value="#url.id#">
                 	<input type="hidden" name="row" value="1">

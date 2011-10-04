@@ -12,6 +12,7 @@ import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 
 import railo.commons.io.IOUtil;
+import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -153,13 +154,15 @@ public final class DocumentUtil {
      */
     public static Document toDocument(Resource file,String url,String charset) throws IOException {
         String ext = ResourceUtil.getExtension(file,null);
+        
+       
         Document doc=null;
         if(ext!=null) {
             ext=ext.toLowerCase();
             //String mimeType=new MimetypesFileTypeMap().getContentType(f);
             // HTML
             if(ext.equals("htm") || ext.equals("html") || ext.equals("cfm") || ext.equals("cfml") || ext.equals("php") || ext.equals("asp") || ext.equals("aspx")) {
-                doc= HTMLDocument.getDocument(file);
+                doc= HTMLDocument.getDocument(file,charset);
             }
             // PDF
             else if(ext.equals("pdf")) {
@@ -170,12 +173,16 @@ public final class DocumentUtil {
                 doc= WordDocument.getDocument(file);
             }
         }
-        else {
-            String type=ResourceUtil.getMymeType(file,"");
+        else { 
+        	ContentTypeImpl ct = (ContentTypeImpl) ResourceUtil.getContentType(file);
+        	String type = ct.getMimeType();
+        	String c=ct.getCharset();
+        	if(c!=null) charset=c;
+            //String type=ResourceUtil.getMymeType(file,"");
             if(type==null)  {}
             // HTML
             else if(type.equals("text/html")) {
-                doc= HTMLDocument.getDocument(file);
+                doc= HTMLDocument.getDocument(file,charset);
             }
             // PDF
             else if(type.equals("application/pdf")) {

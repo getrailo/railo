@@ -96,7 +96,7 @@ Mail Settings
 		@todo help text --->
 		<h2>#stText.Mail.Settings#</h2>
 		<table class="tbl" width="550">
-		<cfform action="#request.self#?action=#url.action#" method="post">
+		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<tr>
 			<td class="tblHead" width="100" nowrap>#stText.Mail.LogFile#</td>
 			<td class="tblContent" width="450"><cfinput type="text" name="logFile" value="#config.mailLogger.file#" required="yes"  style="width:450px" message="#stText.Mail.LogFileMissing#"></td>
@@ -135,7 +135,7 @@ Existing Collection --->
 		<td class="tblHead" nowrap>#stText.Mail.Password#</td>
 		<td class="tblHead" nowrap>#stText.Mail.Port#</td>
 	</tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <cfoutput>
 <cfset len=arrayLen(servers)>
 <cfloop index="idx" from="1" to="#len#" >

@@ -20,12 +20,14 @@ public class AMFServlet extends RailoServlet {
      */
     public void init(ServletConfig sg) throws ServletException {
         super.init(sg);
-        engine=CFMLEngineFactory.getInstance(sg,this);
+        // do not get engine here, because then it is possible that the engine is initilized with this values
     }
     /**
      * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void service(HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
+    	if(engine==null)
+    		engine=CFMLEngineFactory.getInstance(getServletConfig(),this);
         engine.serviceAMF(this,req,rsp);
     }
 }

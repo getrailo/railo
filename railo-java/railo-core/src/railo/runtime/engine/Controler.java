@@ -2,9 +2,11 @@ package railo.runtime.engine;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.management.MemoryUsage;
 import java.util.Map;
 
 import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
@@ -20,6 +22,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.net.smtp.SMTPConnectionPool;
 import railo.runtime.op.Caster;
 import railo.runtime.type.scope.ScopeContext;
@@ -76,7 +79,6 @@ public final class Controler extends Thread {
             boolean doHour=(lastHourInterval+(1000*60*60))<now;
             if(doHour)lastHourInterval=now;
             
-            // if(doMinute) System.gc();
             // broadcast cluster scope
             factories=toFactories(factories,contextes);
             try {
@@ -86,7 +88,6 @@ public final class Controler extends Thread {
 				t.printStackTrace();
 			}
             
-            
             for(int i=0;i<factories.length;i++) {
 	            run(factories[i], doMinute, doHour,firstRun);
 	        }
@@ -94,6 +95,7 @@ public final class Controler extends Thread {
 				firstRun=false;
 	    }    
 	}
+
 	private CFMLFactoryImpl[] toFactories(CFMLFactoryImpl[] factories,Map contextes) {
 		if(factories==null || factories.length!=contextes.size())
 			factories=(CFMLFactoryImpl[]) contextes.values().toArray(new CFMLFactoryImpl[contextes.size()]);
@@ -131,8 +133,6 @@ public final class Controler extends Thread {
 					config = cfmlFactory.getConfig();
 					ThreadLocalConfig.register(config);
 				}
-				//try{cfmlFactory.getScopeContext().clearUnused();}catch(Throwable t){}
-				
 				
 				//every Minute
 				if(doMinute) {
@@ -140,7 +140,6 @@ public final class Controler extends Thread {
 						config = cfmlFactory.getConfig();
 						ThreadLocalConfig.register(config);
 					}
-					
 					// clear unused DB Connections
 					try{((ConfigImpl)config).getDatasourceConnectionPool().clear();}catch(Throwable t){}
 					// clear all unused scopes
@@ -150,8 +149,12 @@ public final class Controler extends Thread {
 					try{cfmlFactory.getQueryCache().clearUnused();}catch(Throwable t){}
 					// contract Page Pool
 					try{doClearPagePools((ConfigWebImpl) config);}catch(Throwable t){}
+					try{doClearClassLoaders((ConfigWebImpl) config);}catch(Throwable t){}
 					try{doCheckMappings(config);}catch(Throwable t){}
 					try{doClearMailConnections();}catch(Throwable t){}
+					// clean LockManager
+					if(cfmlFactory.getUsedPageContextLength()==0)try{((LockManagerImpl)config.getLockManager()).clean();}catch(Throwable t){}
+					
 				}
 				// every hour
 				if(doHour) {
@@ -270,12 +273,50 @@ public final class Controler extends Thread {
         }
         if(startsize>poolSize)
         	SystemOut.printDate(config.getOutWriter(),"contract pagepools from "+startsize+" to "+poolSize +" in "+(System.currentTimeMillis()-start)+" millis");
-        
-        
     }
 
-    private PageSourcePool[] getPageSourcePools(ConfigWeb config) {
-        Mapping[] mappings = config.getMappings();
+    private void doClearClassLoaders(ConfigWebImpl config) {
+    	MemoryUsage pg = SystemUtil.getPermGenSpaceSize();
+		if((pg.getMax()-pg.getUsed())<1024*1024) {
+			SystemOut.printDate(config.getOutWriter(),"Free Perm Gen Space is less than 1mb (used:"+(pg.getUsed()/1024)+"kb;free:"+((pg.getMax()-pg.getUsed())/1024)+"kb), reset all template classloaders");
+			
+			clearClassLoaders(config.getMappings());
+			clear(getPageSourcePools(config.getMappings()));
+			
+			clearClassLoaders(config.getComponentMappings());
+			clear(getPageSourcePools(config.getComponentMappings()));
+			
+			clearClassLoaders(config.getCustomTagMappings());
+			clear(getPageSourcePools(config.getCustomTagMappings()));
+			
+			clearClassLoaders(config.getFunctionMapping());
+			clear(getPageSourcePools(config.getFunctionMapping()));
+			
+			clearClassLoaders(config.getServerFunctionMapping());
+			clear(getPageSourcePools(config.getServerFunctionMapping()));
+			
+			clearClassLoaders(config.getServerTagMapping());
+			clear(getPageSourcePools(config.getServerTagMapping()));
+			
+			clearClassLoaders(config.getTagMapping());
+			clear(getPageSourcePools(config.getTagMapping()));
+		}
+		
+    }
+
+    private void clearClassLoaders(Mapping... mappings) {
+		for(int i=0;i<mappings.length;i++){
+			try {
+				mappings[i].getClassLoaderForPhysical(true);
+			} catch (IOException e) {}
+		}
+	}
+
+	private PageSourcePool[] getPageSourcePools(ConfigWeb config) {
+		return getPageSourcePools(config.getMappings());
+	}
+
+	private PageSourcePool[] getPageSourcePools(Mapping... mappings) {
         PageSourcePool[] pools=new PageSourcePool[mappings.length];
         int size=0;
         
@@ -314,6 +355,11 @@ public final class Controler extends Thread {
         	
         }
         if(pool!=null)pool.remove(key);
+    }
+    private void clear(PageSourcePool[] pools) {
+        for(int i=0;i<pools.length;i++) {
+        	pools[i].clear();
+        }
     }
 
     /*private void doLogMemoryUsage(ConfigWeb config) {

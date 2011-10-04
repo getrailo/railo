@@ -56,9 +56,11 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.functions.arrays.ArrayFind;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
@@ -244,7 +246,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 					if(uc>0 && createGeneratedKeys)setGeneratedKeys(dc, stat);
 				}
 				else break;
-				hasResult=stat.getMoreResults(Statement.CLOSE_CURRENT_RESULT);
+				try{
+					hasResult=stat.getMoreResults(Statement.CLOSE_CURRENT_RESULT);
+				}
+				catch(Throwable t){
+					break;
+				}
 			}
 			while(true);
 		} 
@@ -2029,11 +2036,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	public Object getObject(String columnName) throws SQLException {
 		int currentrow;
 		if((currentrow=arrCurrentRow.get(getPid(),0))==0) return null;
-		try {
-			return getAt(columnName,currentrow);
-		} catch (PageException e) {
-			throw new SQLException(e.getMessage());
-		}
+		return getAt(columnName,currentrow,null);
 	}
 	
 	/**
@@ -2186,7 +2189,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @see java.sql.ResultSet#wasNull()
 	 */
 	public boolean wasNull() {
-		return false;
+		throw new PageRuntimeException(new ApplicationException("method [wasNull] is not supported"));
 	}
 
 	/**

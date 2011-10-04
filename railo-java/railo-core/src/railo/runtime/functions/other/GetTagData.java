@@ -80,8 +80,8 @@ public final class GetTagData implements Function {
 		//TagLibTagAttr attrName = tag.getAttribute("__name");
 		TagLibTagAttr attrIsWeb = tag.getAttribute("__isweb");
 		
-		String filename = attrFilename.getDefaultValue();
-		String name = attrFilename.getDefaultValue();
+		String filename = Caster.toString(attrFilename.getDefaultValue());
+		String name = Caster.toString(attrFilename.getDefaultValue());
 		boolean isWeb = Caster.toBooleanValue(attrIsWeb.getDefaultValue());
 		InitFile source = CFTagCore.createInitFile(pc, isWeb, filename);
 		

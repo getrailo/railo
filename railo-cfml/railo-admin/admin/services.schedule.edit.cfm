@@ -161,7 +161,7 @@ Error Output--->
 
 <cfoutput>
 <table class="tbl" width="740">
-<cfform action="#request.self#?action=#url.action#&action2=#url.action2#&task=#url.task#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=#url.action2#&task=#url.task#" method="post">
 <tr>
 	<td class="tblHead" width="150">#stText.Schedule.Name#</td>
 	<td class="tblContent" width="400"><input type="hidden" name="name" value="#trim(task.task)#">#task.task#</td>

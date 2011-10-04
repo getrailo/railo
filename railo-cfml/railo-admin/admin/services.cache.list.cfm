@@ -127,7 +127,7 @@ function selectAll(field) {
 		<td colspan="4"><h2>#stText.Settings.cache.titleReadOnly#</h2>
 	#stText.Settings.cache.descReadOnly#</td>
 	</tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<cfif access EQ "yes"><td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td></cfif>
 		<td width="225" class="tblHead" nowrap>#stText.Settings.cache.name#</td>
@@ -202,7 +202,7 @@ function selectAll(field) {
 		<td colspan="4"><h2>#stText.Settings.cache.titleExisting#</h2>#stText.Settings.cache.descExisting#</td>
 	</tr>
 	
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td width="60"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td>
 		<td width="280" class="tblHead" nowrap>#stText.Settings.cache.name#</td>
@@ -291,7 +291,7 @@ function selectAll(field) {
     <tr>
 		<td colspan="2"><h2>#stText.Settings.cache.defaultTitle#</h2>#stText.Settings.cache.defaultDesc#</td>
 	</tr>
-	<cfform action="#request.self#?action=#url.action#" method="post">
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
     <cfloop index="type" list="object,template,query,resource"><!---  --->
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.cache['defaulttype'& type]#</td>
@@ -328,7 +328,7 @@ function selectAll(field) {
 	<tr>
 		<td colspan="2"><h2>#stText.Settings.cache.titleCreate#</h2></td>
 	</tr>
-	<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
+	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.cache.Name#</td>
 		<td class="tblContent" width="300"><cfinput type="text" name="_name" value="" style="width:300px" required="yes" 

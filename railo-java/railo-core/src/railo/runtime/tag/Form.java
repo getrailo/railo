@@ -62,6 +62,7 @@ public final class Form extends BodyTagImpl {
 	private int timeout=0;
 	private int wMode=WMODE_WINDOW;
 	private boolean accessible=false;
+	private String onError;
       
 
     /**
@@ -88,7 +89,7 @@ public final class Form extends BodyTagImpl {
     	timeout=0;
     	wMode=WMODE_WINDOW;
     	accessible=false;
-    	
+    	onError=null;
         inputs.clear();
     }
     
@@ -231,6 +232,10 @@ public final class Form extends BodyTagImpl {
      */
     public void setOnsubmit(String onsubmit) {
         this.onsubmit = onsubmit;
+    }
+
+    public void setOnerror(String onError) {
+    	this.onError=onError;
     }
 
     public void setOnclick(String onclick) {
@@ -463,7 +468,7 @@ public final class Form extends BodyTagImpl {
         String funcName="railo_form_"+count;
         try {
             pageContext.write("</form><!-- name:"+name+" --><script>\n");
-            pageContext.write(funcName+"=new RailoForms("+js(name)+");\n");
+            pageContext.write(funcName+"=new RailoForms("+js(name)+","+js(onError)+");\n");
             Iterator it = inputs.keySet().iterator();
             while(it.hasNext()) {
                 InputBean input=(InputBean) inputs.get(it.next());
@@ -514,6 +519,10 @@ public final class Form extends BodyTagImpl {
                 throw new ApplicationException("duplicate input field ["+i.getName()+"] for form","a text or password field must be unique");
             }
         }
+        
+        //if(StringUtil.isEmpty(input.getOnError(),true) && !StringUtil.isEmpty(onError,true))
+        //	input.setOnError(onError);
+        
         inputs.put(input.getName().toLowerCase(),input);
     }
 

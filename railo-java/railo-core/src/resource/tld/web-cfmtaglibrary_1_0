@@ -1196,6 +1196,27 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		</attribute>
 		<attribute>
 			<type>boolean</type>
+			<name>showXLabel</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>yes: shows the x-axis labels</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>showTooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>show the tooltip or not</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>source</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>variable name of the source path, if set the path to the source file is returned and no image tag is written to response strea.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
 			<name>showYGridlines</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -1489,6 +1510,13 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<description>Allows you to create and administer Search collections. </description>
 		<attribute-type>fixed</attribute-type>
 		
+		<attribute>
+			<type>string</type>
+			<name>engine</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>This attribute only exists for compatibility reasions to other CFML engines, the attribute is completely ignored by Railo.</description>
+		</attribute>
 		<attribute>
 			<type>boolean</type>
 			<name>categories</name>
@@ -1980,18 +2008,35 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
     		- name: includes only filenames in the result set.</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>acl</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>only used for S3 Resources</description>
+			<description>An array of struct where each struct represents a permission or grant.
+Example:
+[{email="xxx@yyy.com", permission="full_control"}, {group="all", permission="read"}]
+</description>
+		</attribute>
+		<attribute>
+			<type>object</type>
+			<name>storeacl</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>alias for attribute "acl"</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>storage</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>only used for S3 Resources</description>
+			<description>Only used for S3 Resources. The location of the created bucket/object. The location can either be EU,US or US-WEST. The default location is US.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>storelocation</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>alias for attribute "storage"</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -2681,8 +2726,8 @@ If you specify a structure element that doesn't exist, Railo ignores it and does
 		<attribute-type>noname</attribute-type>
 		<attribute>
 			<type>boolean</type>
-			<name>contition</name>
-			<description>Expression Contition</description>
+			<name>condition</name>
+			<description>Expression condition</description>
 		</attribute>
 	</tag>
 	<!-- Error -->
@@ -3026,11 +3071,21 @@ If you specify a structure element that doesn't exist, Railo ignores it and does
  For example, if the action = "write", use the attributes associated with writing a text file.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>acl</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>only used for S3 Resources</description>
+			<description>An array of struct where each struct represents a permission or grant.
+Example:
+[{email="xxx@yyy.com", permission="full_control"}, {group="all", permission="read"}]
+			</description>
+		</attribute>
+		<attribute>
+			<type>object</type>
+			<name>storeacl</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>alias for attribute "acl"</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -3183,7 +3238,7 @@ The browser uses file extension to determine file type. </description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Builds a form with CFML custom control tags that provide more functionality than standard 
-  HTML form input elements (XML and Flash type no supported).</description>
+  HTML form input elements (XML and Flash type not supported).</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -3284,6 +3339,13 @@ The browser uses file extension to determine file type. </description>
 			<description>HTML id passed through to form tag created, only used for type html.</description>
 		</attribute>
 		
+		<attribute>
+			<type>string</type>
+			<name>onError</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The name of a JavaScript function that runs if a form submission fails.</description>
+		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>onReset</name>
@@ -5656,8 +5718,8 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<attribute-type>noname</attribute-type>
 		<attribute>
 			<type>boolean</type>
-			<name>contition</name>
-			<description>Contition o the expression</description>
+			<name>condition</name>
+			<description>condition o the expression</description>
 		</attribute>
 	</tag>
 	<!-- Image -->
@@ -13649,12 +13711,12 @@ dWord: creates a value of 0 (zero)</description>
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Simplification of the tag cfloop-contition, analog to the cfscript "while" loop.</description>
+		<description>Simplification of the tag cfloop-condition, analog to the cfscript "while" loop.</description>
 		<attribute-type>noname</attribute-type>
 		<attribute>
 			<type>boolean</type>
 			<name>condition</name>
-			<description>Contition o the expression</description>
+			<description>condition o the expression</description>
 		</attribute>
 	</tag>
 	<!-- Zip -->

@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -101,6 +102,10 @@ import railo.runtime.listener.ClassicAppListener;
 import railo.runtime.listener.MixedAppListener;
 import railo.runtime.listener.ModernAppListener;
 import railo.runtime.listener.NoneAppListener;
+import railo.runtime.monitor.IntervallMonitor;
+import railo.runtime.monitor.IntervallMonitorWrap;
+import railo.runtime.monitor.RequestMonitor;
+import railo.runtime.monitor.RequestMonitorWrap;
 import railo.runtime.net.mail.Server;
 import railo.runtime.net.mail.ServerImpl;
 import railo.runtime.net.proxy.ProxyData;
@@ -370,6 +375,7 @@ public final class ConfigWebFactory {
     	loadGatewayEL(configServer,config,doc);
     	loadExeLog(configServer,config,doc);
     	loadThreadQueue(configServer, config, doc);
+    	loadMonitors(configServer,config,doc);
     	config.setLoadTime(System.currentTimeMillis());
     	
     	// this call is needed to make sure the railo StaticLoggerBinder is loaded
@@ -1529,7 +1535,7 @@ public final class ConfigWebFactory {
 	           boolean readonly=toBoolean(el.getAttribute("readonly"),false);
 	           boolean hidden=toBoolean(el.getAttribute("hidden"),false);
 	           boolean toplevel=toBoolean(el.getAttribute("toplevel"),true);
-	           int clMaxEl=toInt(el.getAttribute("classloader-max-elements"),5000);
+	           int clMaxEl=toInt(el.getAttribute("classloader-max-elements"),100);
 	           
 	           if(virtual.equalsIgnoreCase("/railo-context/"))toplevel=true;
 	           
@@ -2241,7 +2247,7 @@ public final class ConfigWebFactory {
 	           boolean readonly=toBoolean(ctMapping.getAttribute("readonly"),false);
 	           boolean hidden=toBoolean(ctMapping.getAttribute("hidden"),false);
 	           boolean trusted=toBoolean(ctMapping.getAttribute("trusted"),false);
-	           int clMaxEl=toInt(ctMapping.getAttribute("classloader-max-elements"),5000);
+	           int clMaxEl=toInt(ctMapping.getAttribute("classloader-max-elements"),100);
 	           
 	           String primary=ctMapping.getAttribute("primary");
 	           
@@ -3362,6 +3368,62 @@ public final class ConfigWebFactory {
         }
       	config.setMailServers(servers);
     }
+    
+
+    private static void loadMonitors(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
+        if(configServer!=null) return;
+        
+        configServer=(ConfigServerImpl) config;
+        
+
+        Element parent=getChildByName(doc.getDocumentElement(),"monitoring");
+        boolean enabled=Caster.toBooleanValue(parent.getAttribute("enabled"),false);
+        configServer.setMonitoringEnabled(enabled);
+        
+        Element[] children = getChildren(parent,"monitor");
+        java.util.List<IntervallMonitor> intervalls=new ArrayList<IntervallMonitor>();
+        java.util.List<RequestMonitor> requests=new ArrayList<RequestMonitor>();
+        String className,strType,name;
+        boolean log;
+        short type;
+      	for(int i=0;i<children.length;i++) {
+      		Element el=children[i];
+      		className=el.getAttribute("class");
+      		strType=el.getAttribute("type");
+      		name=el.getAttribute("name");
+      		log=Caster.toBooleanValue(el.getAttribute("log"),true);
+      		if("request".equalsIgnoreCase(strType))
+      			type=IntervallMonitor.TYPE_REQUEST;
+      		else
+      			type=IntervallMonitor.TYPE_INTERVALL;
+      		
+      		if(!StringUtil.isEmpty(className) && !StringUtil.isEmpty(name)) {
+      			name=name.trim();
+      			try{
+      				Class clazz = ClassUtil.loadClass(config.getClassLoader(),className);
+      				Constructor constr = clazz.getConstructor(new Class[]{ConfigServer.class});
+      				Object obj = constr.newInstance(new Object[]{configServer});
+      				if(type==IntervallMonitor.TYPE_INTERVALL) {
+      					IntervallMonitorWrap m = new IntervallMonitorWrap(obj);
+          				m.init(configServer,name,log);
+          				intervalls.add(m);
+      				}
+      				else {
+      					RequestMonitorWrap m = new RequestMonitorWrap(obj);
+          				m.init(configServer,name,log);
+          				requests.add(m);
+      				}
+      			}
+      			catch(Throwable t){
+      				t.printStackTrace();
+      			}
+      		}
+      		
+      	}
+      	configServer.setRequestMonitors(requests.toArray(new RequestMonitor[requests.size()]));
+      	configServer.setIntervallMonitors(intervalls.toArray(new IntervallMonitor[intervalls.size()]));
+        configServer.getCFMLEngineImpl().touchMonitor(configServer);
+    }
 
     /**
      * @param configServer 
@@ -3733,7 +3795,7 @@ public final class ConfigWebFactory {
 	           boolean readonly=toBoolean(cMapping.getAttribute("readonly"),false);
 	           boolean hidden=toBoolean(cMapping.getAttribute("hidden"),false);
 	           boolean trusted=toBoolean(cMapping.getAttribute("trusted"),false);
-	           int clMaxEl=toInt(cMapping.getAttribute("classloader-max-elements"),5000);
+	           int clMaxEl=toInt(cMapping.getAttribute("classloader-max-elements"),100);
 	           
 	           String primary=cMapping.getAttribute("primary");
 	           

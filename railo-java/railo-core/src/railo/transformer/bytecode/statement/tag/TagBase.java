@@ -21,8 +21,8 @@ public class TagBase extends StatementBase implements Tag {
 	private String appendix;
 	private String fullname;
 	private TagLibTag tagLibTag;
-	Map attributes=new LinkedHashMap();
-	Map missingAttributes=new HashMap();
+	Map<String,Attribute> attributes=new LinkedHashMap<String,Attribute>();
+	Map<String,String> missingAttributes=new HashMap<String,String>();
 	private boolean scriptBase=false;
 
 
@@ -147,7 +147,7 @@ public class TagBase extends StatementBase implements Tag {
 	 * @see railo.transformer.bytecode.statement.tag.Tag#getAttribute(java.lang.String)
 	 */
 	public Attribute getAttribute(String name) {
-		return (Attribute) attributes.get(name.toLowerCase());
+		return attributes.get(name.toLowerCase());
 	}
 
 	/**
@@ -155,7 +155,7 @@ public class TagBase extends StatementBase implements Tag {
 	 * @see railo.transformer.bytecode.statement.tag.Tag#removeAttribute(java.lang.String)
 	 */
 	public Attribute removeAttribute(String name) {
-		return (Attribute) attributes.remove(name);
+		return attributes.remove(name);
 	}
 
 	/**

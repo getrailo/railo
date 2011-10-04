@@ -114,7 +114,8 @@ public final class ArchiveClassLoader extends ClassLoader implements Sizeable,Cl
     	byte[] barr = getBytes(name.replace('.','/').concat(".class"));
         if(barr!=null) {
             try {
-                return defineClass(name,barr,0,barr.length);
+            	int start=ClassUtil.hasCF33Prefix(barr)?10:0;
+            	return defineClass(name,barr,start,barr.length-start);
             }
             catch(Throwable t) {}
         }
@@ -129,7 +130,8 @@ public final class ArchiveClassLoader extends ClassLoader implements Sizeable,Cl
         if(is!=null) return is;
         
         byte[] barr = getBytes(name);
-        if(barr!=null) return new ByteArrayInputStream(barr);
+    	int start=ClassUtil.hasCF33Prefix(barr)?10:0;
+        if(barr!=null) return new ByteArrayInputStream(barr,start,barr.length-start);
         
         return null;
     }

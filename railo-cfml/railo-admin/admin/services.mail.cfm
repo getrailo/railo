@@ -201,7 +201,7 @@ Mail Settings
 	<td colspan="2"><h2>#stText.Mail.Settings#</h2></td>
 </tr>
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <cfset css=iif(len(mail.logfile) EQ 0 and len(mail.strlogfile) NEQ 0,de('Red'),de(''))>
 <tr>
 	<td class="tblHead" width="150">#stText.mail.DefaultEncoding#</td>
@@ -284,7 +284,7 @@ Existing Collection --->
 	<td class="tblHead" nowrap>#stText.Mail.ssl#</td>
 			<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<cfloop query="ms">
 		<tr>
 			<td height="26">

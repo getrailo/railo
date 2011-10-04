@@ -30,7 +30,7 @@ import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.literal.LitString;
-import railo.transformer.bytecode.statement.Contition;
+import railo.transformer.bytecode.statement.Condition;
 import railo.transformer.bytecode.statement.DoWhile;
 import railo.transformer.bytecode.statement.ExpressionStatement;
 import railo.transformer.bytecode.statement.For;
@@ -75,12 +75,12 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	private short ATTR_TYPE_OPTIONAL=TagLibTagAttr.SCRIPT_SUPPORT_OPTIONAL;
 	private short ATTR_TYPE_REQUIRED=TagLibTagAttr.SCRIPT_SUPPORT_REQUIRED;
 	
-	public class ComponentBodyException extends TemplateException {
+	public static class ComponentTemplateException extends TemplateException {
 		private static final long serialVersionUID = -8103635220891288231L;
 		
 		private TemplateException te;
 
-		public ComponentBodyException(TemplateException te){
+		public ComponentTemplateException(TemplateException te){
 			super(te.getPageSource(),te.getLine(),0,te.getMessage());
 			this.te=te;
 			
@@ -135,13 +135,13 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @throws TemplateException 
 	 * @see railo.transformer.data.cfml.expression.data.cfmlExprTransformer#transform(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.data.cfmlString)
 	 */
-	public Expression transform(FunctionLib[] fld,CFMLString cfml) throws TemplateException {
+	public Expression transform(FunctionLib[] fld,CFMLString cfml) throws TemplateException {// FUTURE is this method needed anymore?
 		throw new TemplateException(cfml,"you can't use Method transform on class CFMLScriptTransformer");
 	}
 	/**
 	 * @see railo.transformer.data.cfml.expression.data.cfmlExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.data.cfmlString)
 	 */
-	public Expression transformAsString(FunctionLib[] fld,CFMLString cfml, boolean allowLowerThan) throws TemplateException {
+	public Expression transformAsString(FunctionLib[] fld,CFMLString cfml, boolean allowLowerThan) throws TemplateException {// FUTURE is this method needed anymore?
 		throw new TemplateException(cfml,"you can't use Method transformAsString on class CFMLScriptTransformer");
 	}
 	
@@ -217,7 +217,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * Liest ein if Statement ein.
 	 * <br />
 	 * EBNF:<br />
-	 * <code>spaces contition spaces ")" spaces block {"else if" spaces "(" elseifStatement spaces }
+	 * <code>spaces condition spaces ")" spaces block {"else if" spaces "(" elseifStatement spaces }
 			 [("else"  spaces "(" | "else ") elseStatement spaces];</code>
 	 * @return if Statement
 	 * @throws TemplateException
@@ -229,7 +229,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		int line=data.cfml.getLine();
 		
 		Body body=new BodyBase();
-		Contition cont=new Contition(contition(data),body,line);
+		Condition cont=new Condition(condition(data),body,line);
 		
 		if(!data.cfml.forwardIfCurrent(')')) throw new TemplateException(data.cfml,"if statement must end with a [)]");
 		// ex block
@@ -251,11 +251,11 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * Liest ein else if Statement ein.
 	 * <br />
 	 * EBNF:<br />
-	 * <code>spaces contition spaces ")" spaces block;</code>
+	 * <code>spaces condition spaces ")" spaces block;</code>
 	 * @return else if Statement
 	 * @throws TemplateException
 	 */
-	protected boolean elseifStatement(Data data,Contition cont) throws TemplateException {
+	protected boolean elseifStatement(Data data,Condition cont) throws TemplateException {
 		int pos=data.cfml.getPos();
 		if(!data.cfml.forwardIfCurrent("else")) return false;
 		
@@ -267,7 +267,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 			
 		int line=data.cfml.getLine();
 		Body body=new BodyBase();
-		cont.addElseIf(contition(data), body, line);
+		cont.addElseIf(condition(data), body, line);
 
 		if(!data.cfml.forwardIfCurrent(')'))
 			throw new TemplateException(data.cfml,"else if statement must end with a [)]");
@@ -286,7 +286,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @throws TemplateException
 	 * 
 	 */
-	protected boolean elseStatement(Data data,Contition cont) throws TemplateException {
+	protected boolean elseStatement(Data data,Condition cont) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent("else",'{') && !data.cfml.forwardIfCurrent("else ") && !data.cfml.forwardIfCurrent("else",'/')) 
 			return false;
 
@@ -319,7 +319,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * Liest ein while Statement ein.
 	 * <br />
 	 * EBNF:<br />
-	 * <code>spaces contition spaces ")" spaces block;</code>
+	 * <code>spaces condition spaces ")" spaces block;</code>
 	 * @return while Statement
 	 * @throws TemplateException
 	 */
@@ -329,7 +329,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		
 		int line=data.cfml.getLine();
 		Body body=new BodyBase();
-		While whil=new While(contition(data),body,line,-1);
+		While whil=new While(condition(data),body,line,-1);
 		
 		if(!data.cfml.forwardIfCurrent(')'))
 			throw new TemplateException(data.cfml,"while statement must end with a [)]");
@@ -445,7 +445,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * Liest ein do Statement ein.
 	 * <br />
 	 * EBNF:<br />
-	 * <code>block spaces "while" spaces "(" spaces contition spaces ")";</code>
+	 * <code>block spaces "while" spaces "(" spaces condition spaces ")";</code>
 	 * @return do Statement
 	 * @throws TemplateException
 	 */
@@ -464,7 +464,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		if(!data.cfml.forwardIfCurrent("while",'('))
 			throw new TemplateException(data.cfml,"do statement must have a while at the end");
 		
-		DoWhile doWhile=new DoWhile(contition(data),body,line,data.cfml.getLine());
+		DoWhile doWhile=new DoWhile(condition(data),body,line,data.cfml.getLine());
 		
 		if(!data.cfml.forwardIfCurrent(')'))
 			throw new TemplateException(data.cfml,"do statement must end with a [)]");
@@ -477,7 +477,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * Liest ein for Statement ein.
 	 * <br />
 	 * EBNF:<br />
-	 * <code>expression spaces ";" spaces contition spaces ";" spaces expression spaces ")" spaces block;</code>
+	 * <code>expression spaces ";" spaces condition spaces ";" spaces expression spaces ")" spaces block;</code>
 	 * @return for Statement
 	 * @throws TemplateException
 	 */
@@ -498,10 +498,10 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 
 				Expression cont=null;
 				Expression update=null;
-				// contition
+				// condition
 					comments(data.cfml);
 					if(!data.cfml.isCurrent(';')) {
-						cont=contition(data);
+						cont=condition(data);
 						comments(data.cfml);
 					}
 				// middle
@@ -523,7 +523,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 			}
 		// middle foreach
 			else if(data.cfml.forwardIfCurrent("in")) {
-				// contition
+				// condition
 					comments(data.cfml);
 					Expression value = expression(data);
 					comments(data.cfml);
@@ -798,7 +798,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 				data.cfml.setPos(pos);
 				return expressionStatement(data);
 			} catch (TemplateException e1) {
-				if(tlt.getScript().getContext()==CTX_CFC) throw new ComponentBodyException(e);
+				if(tlt.getScript().getContext()==CTX_CFC) throw new ComponentTemplateException(e);
 				throw e;
 			}
 		}
@@ -1445,15 +1445,15 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * <br />
 	 * EBNF:<br />
 	 * <code>TemplateException::expression;</code>
-	 * @return Contition
+	 * @return condition
 	 * @throws TemplateException
 	 */
-	public ExprBoolean contition(Data data) throws TemplateException {
-		ExprBoolean contition=null;
+	public ExprBoolean condition(Data data) throws TemplateException {
+		ExprBoolean condition=null;
 		comments(data.cfml);
-		contition=CastBoolean.toExprBoolean(super.expression(data));
+		condition=CastBoolean.toExprBoolean(super.expression(data));
 		comments(data.cfml);
-		return contition;
+		return condition;
 	}
 	
 	/**

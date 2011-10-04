@@ -5,6 +5,7 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.transformer.bytecode.BytecodeContext;
+import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.util.Types;
 
 public final class ParseBodyVisitor {
@@ -19,7 +20,13 @@ public final class ParseBodyVisitor {
 	public void visitBegin(BytecodeContext bc) {
 		GeneratorAdapter adapter = bc.getAdapter();
 
-		tfv=new TryFinallyVisitor();
+		tfv=new TryFinallyVisitor(new OnFinally() {
+			public void writeOut(BytecodeContext bc) {
+				//ExpressionUtil.visitLine(bc, line);
+				bc.getAdapter().loadArg(0);
+				bc.getAdapter().invokeVirtual(Types.PAGE_CONTEXT,OUTPUT_END);
+			}
+		});
 
 		//ExpressionUtil.visitLine(bc, line);
 		adapter.loadArg(0);
@@ -28,14 +35,9 @@ public final class ParseBodyVisitor {
 
 
 	}
-	public void visitEnd(BytecodeContext bc) {
-		GeneratorAdapter adapter = bc.getAdapter();
-
-		tfv.visitTryEndFinallyBegin(bc);
-			//ExpressionUtil.visitLine(bc, line);
-			adapter.loadArg(0);
-			adapter.invokeVirtual(Types.PAGE_CONTEXT,OUTPUT_END);
-		tfv.visitFinallyEnd(bc);
+	public void visitEnd(BytecodeContext bc) throws BytecodeException {
+		
+		tfv.visitTryEnd(bc);
 
 	}
 }

@@ -178,7 +178,7 @@ function selectAll(field) {
 	<td colspan="4"><cfoutput><h2>#stText.CFX.CFXTags#</h2></cfoutput></td>
 </tr>
 
-<cfform name="java" action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" name="java" action="#request.self#?action=#url.action#" method="post">
 <cfoutput>
 	<tr>
 		<td><cfif has.cfx_setting ><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></cfif></td>
@@ -292,7 +292,7 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
     </td>
 </tr>
 
-<cfform name="cpp" action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" name="cpp" action="#request.self#?action=#url.action#" method="post">
 <cfoutput>
 	<tr>
 		<td><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></td>

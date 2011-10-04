@@ -6,6 +6,8 @@ package railo.runtime.type.scope;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 
+import javax.servlet.ServletInputStream;
+
 import org.apache.commons.fileupload.disk.DiskFileItem;
 
 import railo.runtime.PageContext;
@@ -14,12 +16,13 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.scope.FormImpl.Item;
 import railo.runtime.type.util.StructSupport;
 
 /**
  * 
  */
-public final class UrlFormImpl extends StructSupport implements URLForm {
+public final class UrlFormImpl extends StructSupport implements URLForm,FormUpload {
 
 	private FormImpl form;
 	private URLImpl url;
@@ -345,5 +348,17 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 	 */
 	public java.util.Collection values() {
 		return form.values();
+	}
+
+	public Item getUploadResource(String key) {
+		return form.getUploadResource(key);
+	}
+
+	public Item[] getFileItems() {
+		return form.getFileItems();
+	}
+
+	public ServletInputStream getInputStream() {
+		return form.getInputStream();
 	}
 }

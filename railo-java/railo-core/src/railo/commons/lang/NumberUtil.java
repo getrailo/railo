@@ -78,5 +78,20 @@ public class NumberUtil {
             koef=koef*16;
         }
         return sum;
-    } 
+    }
+	public static byte[] longToByteArray(long l) {
+		byte[] ba=new byte[8];
+		for(int i=0; i<64; i+=8) {
+			ba[i>>3] = new Long((l&(255L<<i))>>i).byteValue();
+		}
+		return ba;
+	}
+	
+	public static long byteArrayToLong(byte[] ba){
+		long l=0;
+		for(int i=0; (i<8)&&(i<8); i++) {
+			l |= (((long)ba[i])<<(i<<3))&(255L<<(i<<3));
+		}
+		return l;
+	}
 }

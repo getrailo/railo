@@ -4,6 +4,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.lang.CFTypes;
@@ -45,6 +47,7 @@ import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.functions.system.ContractPath;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
@@ -1443,6 +1446,18 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             sct.set(FULLNAME,ps.getComponentName());
             sct.set(KeyImpl.NAME,ps.getComponentName());
             sct.set(KeyImpl.PATH,ps.getDisplayPath());
+            
+            HttpServletRequest req = pc.getHttpServletRequest();
+            
+            try {
+            	String path=ContractPath.call(pc, ps.getDisplayPath()); // MUST better impl !!!
+				sct.set("remoteAddress",""+new URL(req.getScheme(),req.getServerName(),req.getServerPort(),req.getContextPath()+path+"?wsdl"));
+			} catch (Throwable t) {}
+            
+            
+            
+            
+            
             sct.set(KeyImpl.TYPE,"component");
             Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false);
             if(skeleton !=null)sct.set(SKELETON, skeleton);

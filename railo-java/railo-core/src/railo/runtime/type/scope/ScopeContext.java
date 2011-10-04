@@ -556,9 +556,14 @@ public final class ScopeContext {
 				if(doMemory)context.put(pc.getCFID(),session);
 				isNew.setValue(true);
 			}
-			else 
+			else {
+				/*if(session instanceof StorageScopeDatasource) {
+					DataSourceImpl ds = (DataSourceImpl) pc.getConfig().getDataSource(((StorageScopeDatasource)session).getDatasourceName());
+					if(ds!=null && !ds.isStorage())
+						throw new ApplicationException("datasource ["+storage+"] is not enabled to be used as session/client storage, you have to enable it in the railo administrator.");
+				}*/
 				getLog().info("scope-context", "use existing session scope for "+appContext.getName()+"/"+pc.getCFID()+" from storage "+storage);
-			
+			}
 			session.touchBeforeRequest(pc);
 			return session;
 	}

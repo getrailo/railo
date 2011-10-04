@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.Tag;
 
 import railo.commons.lang.StringUtil;
@@ -61,7 +62,6 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 	
 	
 	private static Collection.Key ATTRIBUTES=KeyImpl.intern("ATTRIBUTES");
-	private static Collection.Key ATTRIBUTE=KeyImpl.intern("ATTRIBUTE");
 	private static Collection.Key CALLER=KeyImpl.intern("CALLER");
 	private static Collection.Key THIS_TAG=KeyImpl.intern("THISTAG");
 	
@@ -75,8 +75,8 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 	private static final Collection.Key ATTRIBUTE_TYPE = KeyImpl.intern("attributetype");
 	private static final Collection.Key RT_EXPR_VALUE = KeyImpl.intern("rtexprvalue");
 	private static final Collection.Key PARSE_BODY = KeyImpl.intern("parsebody");
-	private static final Collection.Key EVALUATE_BODY = KeyImpl.intern("evaluatebody");
 	private static final Collection.Key METADATA = KeyImpl.intern("metadata");
+	private static final String MARKER = "2w12801";
 	
     /**
      * Field <code>attributesScope</code>
@@ -249,26 +249,60 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     } 
 	
     private int cfmlEndTag() throws PageException {
-        // thistag      
-        thistagScope.set(GENERATED_CONTENT,bodyContent.getString());
-        bodyContent.clearBody();
+        // thistag     
+    	String genConBefore = bodyContent.getString();
+    	thistagScope.set(GENERATED_CONTENT,genConBefore);
         thistagScope.set(EXECUTION_MODE,"end");
         thistagScope.set(EXECUTE_BODY,Boolean.FALSE);
+        writeEL(bodyContent, MARKER);
         
         // include
-        doInclude();
-
-        String output = bodyContent.getString(); 
-        try {
-            bodyContent.clearBody();
-            bodyContent.getEnclosingWriter().write(Caster.toString(thistagScope.get(GENERATED_CONTENT))+output);
-        } catch (IOException e) {}
+        try{
+        	doInclude();
+        }
+        catch(Throwable t){
+        	writeOut(genConBefore);
+        	throw Caster.toPageException(t);
+        }
         
+        writeOut(genConBefore);
+
         return Caster.toBooleanValue(thistagScope.get(EXECUTE_BODY))?EVAL_BODY_BUFFERED:SKIP_BODY;
     }
 
     
-    void doInclude() throws PageException {
+
+	private void writeOut(String genConBefore) throws PageException {
+		String output = bodyContent.getString(); 
+		bodyContent.clearBody();
+    	String genConAfter = Caster.toString(thistagScope.get(GENERATED_CONTENT));
+    	
+    	if(genConBefore!=genConAfter){
+        	if(output.startsWith(genConBefore+MARKER)){
+    			output=output.substring((genConBefore+MARKER).length());
+    		}
+    		output=genConAfter+output;
+    	}
+    	else {
+    		if(output.startsWith(genConBefore+MARKER)){
+    			output=output.substring((genConBefore+MARKER).length());
+    			output=genConBefore+output;
+    		}
+    	}
+    	
+    	
+    	writeEL(bodyContent.getEnclosingWriter(),output);
+	}
+
+	private void writeEL(JspWriter writer, String str) throws PageException {
+		try {
+			writer.write(str);
+		} catch (IOException e) {
+			throw Caster.toPageException(e);
+		}
+	}
+
+	void doInclude() throws PageException {
         Variables var=pageContext.variablesScope();
         pageContext.setVariablesScope(ctVariablesScope);
         
@@ -446,8 +480,8 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     		Map.Entry entry;
     		TagLibTagAttr attr;
     		Struct sct;
-    		String name,defaultValue;
-    		Object o;
+    		String name;
+    		Object defaultValue;
     		while(it.hasNext()){
     			entry=(Entry) it.next();
     			name=Caster.toString(entry.getKey(),null);
@@ -459,12 +493,10 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     			if(sct!=null){
     				attr.setRequired(Caster.toBooleanValue(sct.get(KeyImpl.REQUIRED,Boolean.FALSE),false));
     				attr.setType(Caster.toString(sct.get(KeyImpl.TYPE,"any"),"any"));
-    				o= sct.get(KeyImpl.DEFAULT,null);
-    				if(o!=null){
-    					defaultValue=Caster.toString(o,null);
-    					if(defaultValue!=null)
-    						attr.setDefaultValue(defaultValue);
-    				}
+    				
+    				defaultValue= sct.get(KeyImpl.DEFAULT,null);
+    				if(defaultValue!=null)attr.setDefaultValue(defaultValue);
+    				
     				
     				if(!runtime){
     					attr.setDescription(Caster.toString(sct.get(KeyImpl.HINT,null),null));

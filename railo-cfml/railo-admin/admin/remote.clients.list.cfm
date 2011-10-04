@@ -123,7 +123,7 @@ function checkTheBox(field) {
 	
 	
 	
-	<cfform action="#request.self#?action=#url.action#" method="post">
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<tr>
 			<td width="20"></td>
 			<td width="#iif(request.adminType NEQ "web",400,320)#" class="tblHead" nowrap>#stText.remote.label#</td>
@@ -218,7 +218,7 @@ function checkTheBox(field) {
 	<cfoutput>
 	<!--- 
 	Create Remote Client --->
-	<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
+	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 		<input type="submit" class="submit" name="run" value="#stText.remote.newClient#">
 	</cfform>
 	</cfoutput>

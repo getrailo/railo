@@ -36,6 +36,8 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import railo.aprint;
 import railo.commons.io.IOUtil;
+import railo.commons.io.res.ContentType;
+import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -893,6 +895,19 @@ public final class HTTPUtil {
 		catch (IOException e) {}
 		return length;
 	}
+
+	public static ContentType getContentType(HttpMethod http) {
+		Header[] headers = http.getResponseHeaders();
+		for(int i=0;i<headers.length;i++){
+			if("Content-Type".equalsIgnoreCase(headers[i].getName())){
+				String[] mimeCharset = splitMimeTypeAndCharset(headers[i].getValue());
+				String[] typeSub = splitTypeAndSubType(mimeCharset[0]);
+				return new ContentTypeImpl(typeSub[0],typeSub[1],mimeCharset[1]);
+			}
+		}
+		return null;
+	}
+	
 	
 
 	public static Map<String, String> parseParameterList(String _str, boolean decode,String charset) {
@@ -919,5 +934,38 @@ public final class HTTPUtil {
 	private static String decode(String str, boolean encode) {
 		// TODO Auto-generated method stub
 		return str;
+	}
+	
+	
+	
+	public static String[] splitMimeTypeAndCharset(String mimetype) {
+		String[] types=mimetype.split(";");
+		String[] rtn=new String[2];
+    	
+    	if(types.length>0){
+    		rtn[0]=types[0].trim();
+	        if(types.length>1) {
+	            String tmp=types[types.length-1].trim();
+	            int index=tmp.indexOf("charset=");
+	            if(index!=-1) {
+	            	rtn[1]= StringUtil.removeQuotes(tmp.substring(index+8),true);
+	            }
+	        }
+    	}
+    	return rtn;
+	}
+	
+
+	public static String[] splitTypeAndSubType(String mimetype) {
+		String[] types=List.listToStringArray(mimetype, '/');
+		String[] rtn=new String[2];
+    	
+    	if(types.length>0){
+    		rtn[0]=types[0].trim();
+	        if(types.length>1) {
+	        	rtn[1]=types[1].trim();
+	        }
+    	}
+    	return rtn;
 	}
 }

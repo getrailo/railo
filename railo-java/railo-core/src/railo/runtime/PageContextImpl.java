@@ -44,7 +44,6 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
-import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.commons.lock.KeyLock;
@@ -54,6 +53,7 @@ import railo.intergral.fusiondebug.server.FDSignal;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.DataSource;
@@ -86,6 +86,7 @@ import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.listener.ModernAppListenerException;
+import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.net.ftp.FTPPoolImpl;
 import railo.runtime.net.http.HTTPServletRequestWrap;
@@ -272,6 +273,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private ORMSession ormSession;
 	private boolean isChild;
 	private boolean gatewayContext;
+	private String serverPassword;
 
 	public long sizeOf() {
 		
@@ -316,6 +318,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		SizeOf.size(startTime)+
 		SizeOf.size(isCFCRequest)+
 		SizeOf.size(conns)+
+		SizeOf.size(serverPassword)+
 		SizeOf.size(ormSession);
 	}
 	
@@ -465,11 +468,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public void release() {
 		
-	if(config.debug()) {
-    	if(!gatewayContext)config.getDebuggerPool().store(this, debugger);
-    	debugger.reset();
-    }
+		if(config.debug()) {
+    		if(!gatewayContext)config.getDebuggerPool().store(this, debugger);
+    		debugger.reset();
+    	}
 	
+		this.serverPassword=null;
+
 		boolean isChild=parent!=null;
 		parent=null;
 		// Attention have to be before close
@@ -827,7 +832,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	other.timeZone=timeZone;
     	other.fdEnabled=fdEnabled;
     	other.useSpecialMappings=useSpecialMappings;
-    	
+    	other.serverPassword=serverPassword;
     	
     	
     	hasFamily=true;
@@ -836,7 +841,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		other.applicationContext=applicationContext;
 		other.thread=Thread.currentThread();
 		other.startTime=System.currentTimeMillis();
-        other.isCFCRequest = isCFCRequest;
+		other.isCFCRequest = isCFCRequest;
         
         
         
@@ -1738,7 +1743,15 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public void handlePageException(PageException pe) {
 		if(!(pe instanceof Abort)) {
-			getHttpServletResponse().setContentType("text/html");
+			
+			String charEnc = rsp.getCharacterEncoding();
+	        if(StringUtil.isEmpty(charEnc,true)) {
+				rsp.setContentType("text/html");
+	        }
+	        else {
+	        	rsp.setContentType("text/html; charset=" + charEnc);
+	        }
+			
 			int statusCode=getStatusCode(pe);
 			
 			if(getConfig().getErrorStatusCode())rsp.setStatus(statusCode);
@@ -1964,7 +1977,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	execute(realPath, throwExcpetion, true);
     }
     public void execute(String realPath, boolean throwExcpetion, boolean onlyTopLevel) throws PageException  {
-    	SystemOut.printDate(config.getOutWriter(),"Call:"+realPath+" (id:"+getId()+";running-requests:"+config.getThreadQueue().size()+";)");
+    	//SystemOut.printDate(config.getOutWriter(),"Call:"+realPath+" (id:"+getId()+";running-requests:"+config.getThreadQueue().size()+";)");
 	    ApplicationListener listener=config.getApplicationListener();
 	    if(realPath.startsWith("/mapping-")){
 	    	base=null;
@@ -1995,19 +2008,24 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    
 	    try {
 	    	listener.onRequest(this,base);
+	    	log(false);
 	    }
 	    catch(Throwable t) {
 	    	PageException pe = Caster.toPageException(t);
 	    	if(!(pe instanceof Abort)){
+	    		log(true);
 	    		if(fdEnabled){
 	        		FDSignal.signal(pe, false);
 	        	}
 	    		listener.onError(this,pe);	
 	    	}
-	    	
+	    	else log(false);
+
 	    	if(throwExcpetion) throw pe;
 	    }
 	    finally {
+	    	
+	    	
             if(enablecfoutputonly>0){
             	setCFOutputOnly((short)0);
             }
@@ -2022,7 +2040,22 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             base=null;
 	    }
 	}
-	
+
+	private void log(boolean error) {
+		ConfigServerImpl cs = config.getConfigServerImpl();
+		if(!isGatewayContext() && cs.isMonitoringEnabled()) {
+            RequestMonitor[] monitors = cs.getRequestMonitors();
+            if(monitors!=null)for(int i=0;i<monitors.length;i++){
+            	if(monitors[i].isLogEnabled()){
+	            	try {
+	            		monitors[i].log(this,error);
+	        		} 
+	        		catch (Throwable e) {}
+	            }
+            }
+		}
+	}
+
 	private PageSource getPageSource(Mapping[] mappings, String realPath) {
 		PageSource ps;
 		//print.err(mappings.length);
@@ -2891,5 +2924,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public void setGatewayContext(boolean gatewayContext) {
 		this.gatewayContext = gatewayContext;
+	}
+
+
+
+	public void setServerPassword(String serverPassword) {
+		this.serverPassword=serverPassword;
+	}
+	public String getServerPassword() {
+		return serverPassword;
 	}
 }

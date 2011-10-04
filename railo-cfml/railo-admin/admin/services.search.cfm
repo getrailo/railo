@@ -221,7 +221,7 @@ function selectAll(field) {
 		<tr>
 			<td colspan="2"><h2><cfoutput>#stText.Search.CreateCol#</cfoutput></h2></td>
 		</tr>
-		<cfform action="#request.self#?action=#url.action#" method="post">
+		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<cfoutput>
 		<tr>
 			<td class="tblHead" width="50">#stText.Search.Name#</td>
@@ -305,7 +305,7 @@ function selectAll(field) {
 			Create Index --->
 			<h2><cfoutput>#stText.Search.PathAction#</cfoutput></h2>
 			<table class="tbl" width="450">
-			<cfform action="#request.self#?action=#url.action#&collection=#collection.name#" method="post">
+			<cfform onerror="customError" action="#request.self#?action=#url.action#&collection=#collection.name#" method="post">
 			<tr>
 				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.FileExtensions#</cfoutput></td>
 				<td class="tblContent" width="300"><cfinput type="text" name="extensions" value=".html, .htm, .cfm, .cfml" style="width:300px" required="yes" message="#stText.Search.FileExtensionsMissing#"></td>
@@ -348,7 +348,7 @@ function selectAll(field) {
 			</table>
 			<br><br>
 			<table class="tbl" width="450">
-				<cfform action="#request.self#?action=#url.action#&collection=#collection.name#&search=1" method="post">
+				<cfform onerror="customError" action="#request.self#?action=#url.action#&collection=#collection.name#&search=1" method="post">
 				<tr>
 					<td colspan="2"><cfoutput><h2>#stText.Search.SearchTheCollection#</h2></cfoutput></td>
 				</tr>

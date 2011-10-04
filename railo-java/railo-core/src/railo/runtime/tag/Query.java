@@ -244,7 +244,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	 * @throws ApplicationException
 	**/
 	public void setProviderdsn(String providerdsn) throws ApplicationException	{
-	    throw new ApplicationException("attribut providerdsn (with value ["+providerdsn+"]) is Deprecated");
+	    throw new ApplicationException("attribute providerdsn (with value ["+providerdsn+"]) is Deprecated");
 	}
 
 	/** set the value connectstring
@@ -252,7 +252,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	 * @throws ApplicationException
 	**/
 	public void setConnectstring(String connectstring) throws ApplicationException	{
-	    throw new ApplicationException("attribut connectstring (with value ["+connectstring+"]) is Deprecated");
+	    throw new ApplicationException("attribute connectstring (with value ["+connectstring+"]) is Deprecated");
 	}
 
 	/** set the value blockfactor
@@ -289,7 +289,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	 * @throws ApplicationException
 	**/
 	public void setDbname(String dbname) throws ApplicationException	{
-	    throw new ApplicationException("attribut dbname (with value ["+dbname+"]) is Deprecated");
+	    throw new ApplicationException("attribute dbname (with value ["+dbname+"]) is Deprecated");
 	}
 
 	/** set the value maxrows
@@ -315,7 +315,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	 * @throws ApplicationException
 	**/
 	public void setProvider(String provider) throws ApplicationException	{
-	    throw new ApplicationException("attribut provider (with value ["+provider+"]) is Deprecated");
+	    throw new ApplicationException("attribute provider (with value ["+provider+"]) is Deprecated");
 	}
 
 	/** set the value dbserver
@@ -325,7 +325,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	 * @throws ApplicationException
 	**/
 	public void setDbserver(String dbserver) throws ApplicationException	{
-	    throw new ApplicationException("attribut dbserver (with value ["+dbserver+"]) is Deprecated");
+	    throw new ApplicationException("attribute dbserver (with value ["+dbserver+"]) is Deprecated");
 	}
 
 	/** set the value name

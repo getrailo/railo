@@ -402,7 +402,7 @@ public final class Index extends TagImpl {
      */
     private void doDelete() throws PageException, SearchException {
         required("index",action,"collection",collection);
-        required("index",action,"key",key);
+        if(type!=SearchIndex.TYPE_CUSTOM)required("index",action,"key",key);
         
         // no type defined
         if(type==-1) {
@@ -428,9 +428,7 @@ public final class Index extends TagImpl {
                 }
             }
         }
-        if(type==SearchIndex.TYPE_CUSTOM) {
-            required("index",action,"query",query);
-        }
+        
         collection.deleteIndex(pageContext,key,type,query);   
     }
 
@@ -463,7 +461,7 @@ public final class Index extends TagImpl {
         }
         IndexResult result;
         
-        // FUTURE remove this contition
+        // FUTURE remove this condition
         if(collection instanceof LuceneSearchCollection)
         	result = ((LuceneSearchCollection)collection).index(pageContext,key,type,urlpath,title,body,language,extensions,query,recurse,categoryTree,category,timeout,custom1,custom2,custom3,custom4);
         else

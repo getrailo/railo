@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspEngineInfo;
 
+import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
@@ -20,21 +21,26 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.Abort;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.RequestTimeoutException;
+import railo.runtime.functions.string.Hash;
+import railo.runtime.lock.LockManager;
 import railo.runtime.op.Caster;
 import railo.runtime.query.QueryCache;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.scope.ArgumentIntKey;
 import railo.runtime.type.scope.LocalNotSupportedScope;
 import railo.runtime.type.scope.ScopeContext;
+import railo.runtime.type.util.ArrayUtil;
 
 /**
  * implements a JSP Factory, this class produce JSP Compatible PageContext Object
@@ -109,9 +115,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		int bufferSize,
 		boolean autoflush)  {
         //runningCount++;
-        synchronized (pcs) {
-            return getPageContextImpl(servlet, req, rsp, errorPageURL, needsSession, bufferSize, autoflush,true,false);
-        }
+        return getPageContextImpl(servlet, req, rsp, errorPageURL, needsSession, bufferSize, autoflush,true,false);
 	}
 	
 	public PageContextImpl getPageContextImpl(
@@ -152,11 +156,11 @@ public final class CFMLFactoryImpl extends CFMLFactory {
         pc.release();
         ThreadLocalPageContext.release();
         //if(!pc.hasFamily()){
-			synchronized (pcs) {
+			synchronized (runningPcs) {
 	            runningPcs.removeEL(ArgumentIntKey.init(pc.getId()));
 	            if(pcs.size()<100)// not more than 100 PCs
 	            	pcs.push(pc);
-	            SystemOut.printDate(config.getOutWriter(),"Release: (id:"+pc.getId()+";running-requests:"+config.getThreadQueue().size()+";)");
+	            //SystemOut.printDate(config.getOutWriter(),"Release: (id:"+pc.getId()+";running-requests:"+config.getThreadQueue().size()+";)");
 	        }
        /*}
         else {
@@ -169,7 +173,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	 */
 	public void checkTimeout() {
 		if(!engine.allowRequestTimeout())return;
-		synchronized (pcs) {
+		synchronized (runningPcs) {
             //int len=runningPcs.size();
 			Iterator it = runningPcs.keyIterator();
             PageContext pc;
@@ -202,16 +206,20 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	
 	public static void terminate(PageContext pc) {
 		Log log = pc.getConfig().getRequestTimeoutLogger();
-        //LockManager manager = pc.getConfig().getLockManager();
-        //String[] locks = manager.getOpenLockNames();
-        //String strLocks=List.arrayToList(locks, ", ");
-        //if(StringUtil.isEmpty(strLocks))strLocks="no open locks";
-        //else strLocks="open locks ("+strLocks+")";
-        //LockManagerImpl.unlockAll(pc.getId());
+        
+		String strLocks="";
+		try{
+			LockManager manager = pc.getConfig().getLockManager();
+	        String[] locks = manager.getOpenLockNames();
+	        if(!ArrayUtil.isEmpty(locks)) 
+	        	strLocks=" open locks at this time ("+List.arrayToList(locks, ", ")+").";
+	        //LockManagerImpl.unlockAll(pc.getId());
+		}
+		catch(Throwable t){}
         
         if(log!=null)log.error("controler",
-        		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+".");
-        pc.getThread().stop(new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") is run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."));
+        		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+"."+strLocks);
+        pc.getThread().stop(new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") is run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."+strLocks));
         
 	}
 
@@ -245,7 +253,18 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	 * @return returns count of pagecontext in use
 	 */
 	public int getUsedPageContextLength() { 
-	    return runningPcs.size();
+		int length=0;
+		try{
+		Iterator it = runningPcs.values().iterator();
+		while(it.hasNext()){
+			PageContextImpl pc=(PageContextImpl) it.next();
+			if(!pc.isGatewayContext()) length++;
+		}
+		}
+		catch(Throwable t){
+			return length;
+		}
+	    return length;
 	}
     /**
      * @return Returns the config.
@@ -310,10 +329,10 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	public Array getInfo() {
 		Array info=new ArrayImpl();
 		
-		synchronized (pcs) {
+		synchronized (runningPcs) {
             //int len=runningPcs.size();
 			Iterator it = runningPcs.keyIterator();
-            PageContext pc;
+            PageContextImpl pc;
             Struct data,sctThread,scopes;
     		Collection.Key key;
             Thread thread;
@@ -327,16 +346,21 @@ public final class CFMLFactoryImpl extends CFMLFactory {
             	
             	key=KeyImpl.toKey(it.next(),null);
                 //print.out("key:"+key);
-                pc=(PageContext) runningPcs.get(key,null);
-                if(pc==null) continue;
+                pc=(PageContextImpl) runningPcs.get(key,null);
+                if(pc==null || pc.isGatewayContext()) continue;
                 thread=pc.getThread();
+                if(thread==Thread.currentThread()) continue;
+
                 
+                thread=pc.getThread();
+                if(thread==Thread.currentThread()) continue;
                 
-                
-                
+               
                 
                 data.setEL("startTime", new DateTimeImpl(pc.getStartTime(),false));
-                data.setEL("timeout", Caster.toDouble(pc.getRequestTimeout()));
+                data.setEL("endTime", new DateTimeImpl(pc.getStartTime()+pc.getRequestTimeout(),false));
+                data.setEL("timeout",new Double(pc.getRequestTimeout()));
+
                 
                 // thread
                 sctThread.setEL("name",thread.getName());
@@ -345,7 +369,11 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 
                 data.setEL("urlToken", pc.getURLToken());
                 data.setEL("debugger", pc.getDebugger().getDebuggingData(pc));
-                data.setEL("id", pc.getId());
+
+                try {
+					data.setEL("id", Hash.call(pc, pc.getId()+":"+pc.getStartTime()));
+				} catch (PageException e1) {}
+                data.setEL("requestid", pc.getId());
 
                 // Scopes
                 scopes.setEL("name", pc.getApplicationContext().getName());
@@ -372,10 +400,37 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 scopes.setEL("request", pc.requestScope());
                 
                 info.appendEL(data);
-                
-                
             }
             return info;
+        }
+	}
+
+	public void stopThread(String threadId, String stopType) {
+		synchronized (runningPcs) {
+            //int len=runningPcs.size();
+			Iterator it = runningPcs.keyIterator();
+            PageContext pc;
+    		while(it.hasNext()) {
+            	
+            	pc=(PageContext) runningPcs.get(KeyImpl.toKey(it.next(),null),null);
+                if(pc==null) continue;
+                try {
+					String id = Hash.call(pc, pc.getId()+":"+pc.getStartTime());
+					if(id.equals(threadId)){
+						stopType=stopType.trim();
+						Throwable t;
+						if("abort".equalsIgnoreCase(stopType) || "cfabort".equalsIgnoreCase(stopType))
+							t=new Abort(Abort.SCOPE_REQUEST);
+						else
+							t=new RequestTimeoutException(pc,"request has been forced to stop.");
+						
+		                pc.getThread().stop(t);
+		                SystemUtil.sleep(10);
+						break;
+					}
+				} catch (PageException e1) {}
+                
+            }
         }
 	}
 }

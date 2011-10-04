@@ -95,7 +95,7 @@ change password --->
 </tr>
 </cfoutput>
 
-<cfoutput><cfform action="#request.self#?action=#url.action#" method="post">
+<cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
 	<td class="tblHead" width="150">#stText.Login.OldPassword#</td>
 	<td class="tblContent">
@@ -156,7 +156,7 @@ Set default password --->
 <tr>
 	<td colspan="3"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<cfoutput><cfform action="#request.self#?action=#url.action#" method="post">
+<cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
 	<td class="tblHead" width="150">#stText.Login.Password#</td>
 	<td class="tblContent">
@@ -201,7 +201,7 @@ Reset Password --->
 <tr>
 	<td colspan="3"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<cfoutput><cfform action="#request.self#?action=#url.action#" method="post">
+<cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
 	<td class="tblHead" width="150">#stText.Login.web#</td>
 	<td class="tblContent">

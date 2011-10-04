@@ -179,7 +179,7 @@ function checkTheRadio(field) {
 </tr>
 
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <input type="hidden" name="subAction" value="setting" />
 <tr>
 	<td class="tblHead" width="150">#stText.CustomTags.customTagDeepSearch#</td>
@@ -288,7 +288,7 @@ function checkTheRadio(field) {
 	<td colspan="5"><h2>#stText.CustomTags.CustomtagMappings#</h2>
 #stText.CustomTags.CustomtagMappingsDesc#</td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td><cfif hasAccess><input type="checkbox" class="checkbox" 
 			name="rro" onclick="selectAll(this)"></cfif></td>

@@ -2,7 +2,7 @@
 <cfset session.railo_admin_lang = cookie.railo_admin_lang>
 <cfparam name="languages" default="#{en:'English',de:'Deutsch'}#">
 <table class="tbl">
-<cfform action="#request.self#" method="post">
+<cfform onerror="customError" action="#request.self#" method="post">
 <cfoutput>
 <tr>
 	<td class="tblHead" width="200" align="right">#stText.Login.Password#</td>

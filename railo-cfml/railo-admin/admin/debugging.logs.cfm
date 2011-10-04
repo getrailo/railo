@@ -102,7 +102,7 @@ Redirtect to entry --->
 <h2>#stText.debug.settingTitle#</h2>
 #stText.debug.settingDesc#
 <table class="tbl" width="480">
-<cfform action="#request.self#?action=#url.action#" method="post" name="debug_settings">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
 <tr>
 	<td class="tblHead" width="160">#stText.debug.maxLogs#</td>
 	<td class="tblContent" width="90"><select name="maxLogs">
@@ -137,7 +137,7 @@ Redirtect to entry --->
 <cfif isWeb>
 <!---<h2>#stText.debug.filterTitle#</h2>
 <table class="tbl" width="740">
-<cfform action="#request.self#?action=#url.action#" method="post" name="debug_settings">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
 
 <tr>
 	<td class="tblHead">#stText.debug.minExeTime#</td>
@@ -171,7 +171,7 @@ Redirtect to entry --->
 <h2>#stText.debug.outputTitle#</h2>
 #stText.debug.outputDesc#
 <table class="tbl" width="740">
-<cfform action="#request.self#?action=#url.action#" method="post" name="debug_settings">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
 <colgroup>
 	<col width="400"/>
 	<col width="220"/>

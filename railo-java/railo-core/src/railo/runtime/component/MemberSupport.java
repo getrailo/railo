@@ -3,9 +3,10 @@ package railo.runtime.component;
 import java.io.Serializable;
 
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.type.Duplicable;
 import railo.runtime.type.util.ComponentUtil;
 
-public abstract class MemberSupport implements Serializable,Member {
+public abstract class MemberSupport implements Serializable,Member,Duplicable {
     private int access;
 	//private Component component;
     //private Object value;

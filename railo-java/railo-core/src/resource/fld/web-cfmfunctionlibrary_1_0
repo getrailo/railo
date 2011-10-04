@@ -3760,7 +3760,7 @@ If omitted, the file's attributes are maintained.</description>
     	</argument>
 		<argument>
 			<name>acl</name>
-			<type>string</type>
+			<type>object</type>
 			<required>no</required>
 			<description>only used for S3 Resources</description>
     	</argument>
@@ -3810,7 +3810,7 @@ If omitted, the file's attributes are maintained.</description>
     	</argument>
 		<argument>
 			<name>acl</name>
-			<type>string</type>
+			<type>object</type>
 			<required>no</required>
 			<description>only used for S3 Resources</description>
     	</argument>
@@ -4700,6 +4700,25 @@ You can find a list of all available timezones in the Railo administrator (Setti
         the SetLocale function.</description>
 		<return>
 			<type>string</type>
+		</return>
+	</function>
+	<!-- GetMemoryUsage -->
+	<function>
+		<name>GetMemoryUsage</name>
+		<class>railo.runtime.functions.system.GetMemoryUsage</class>
+		<description>Returns detailed information to the memory usage of the container.</description>
+		<argument>
+			<name>type</name>
+			<type>string</type>
+			<required>No</required>
+			<description>type of the memory informtion, valid values are:
+- heap
+- non_heap
+
+if this attribute is not provided all types are returned.</description>
+		</argument>
+		<return>
+			<type>query</type>
 		</return>
 	</function>
 	<!-- getMetadata -->
@@ -9198,23 +9217,33 @@ The value determines whether the image is blurred or sharpened:
         specified Role.</description>
 		<argument>
 			<name>role_name</name>
+			<alias>rolename,role,name</alias>
 			<type>any</type>
 			<required>Yes</required>
-		<description>Name of a security role</description>
-    </argument>
+			<description>Name of a security role</description>
+	    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
 	</function>
+
 	<!-- isUserInAnyRole -->
 	<function>
 		<name>isUserInAnyRole</name>
-		<class>railo.runtime.functions.decision.isUserInAnyRole</class>
+		<class>railo.runtime.functions.decision.IsUserInAnyRole</class>
 		<description>Determines whether an authenticated user belongs to any role in a list of roles.</description>
+		<argument>
+			<name>role_list</name>
+			<alias>rolelist,role,list</alias>
+			<type>string</type>
+			<required>No</required>
+			<description>A comma-delimited list of one or more roles to be tested.</description>
+	    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
 	</function>
+
 	<!-- IsUserLoggedIn -->
 	<function>
 		<name>IsUserLoggedIn</name>

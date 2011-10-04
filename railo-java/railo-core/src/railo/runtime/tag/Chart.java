@@ -13,12 +13,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.Axis;
+import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.block.ColumnArrangement;
 import org.jfree.chart.block.LineBorder;
@@ -30,15 +32,22 @@ import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer3D;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.time.Second;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.HorizontalAlignment;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.RectangleEdge;
@@ -61,6 +70,7 @@ import railo.runtime.chart.PieToolTipGeneratorImpl;
 import railo.runtime.chart.TickUnitsImpl;
 import railo.runtime.chart.ToolTipTagFragmentGeneratorImpl;
 import railo.runtime.converter.JavaConverter;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -68,6 +78,7 @@ import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.functions.dateTime.DateAdd;
 import railo.runtime.img.Image;
 import railo.runtime.op.Caster;
+import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
 
 
@@ -142,6 +153,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 	private int seriesplacement=SERIES_PLACEMENT_DEFAULT;
 
 	private boolean show3d=false;
+	private boolean showtooltip=true;
 	private boolean showborder=false;
 	private boolean showlegend=true;
 	private boolean showmarkers=true;
@@ -153,7 +165,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 	private String title="";
 	
 	private int tipstyle=TIP_STYLE_MOUSEOVER;
-	private List _series=new ArrayList();
+	private List<ChartSeriesBean> _series=new ArrayList<ChartSeriesBean>();
 
 	private String url;
 	private double xoffset=0.1;
@@ -162,6 +174,8 @@ public final class Chart extends BodyTagImpl implements Serializable {
 	private String yaxistype="category";
 	private double smallest;
 	private double biggest;
+	private boolean showXLabel=true;
+	private String source;
 	
 	public void release() {
 		_series.clear();
@@ -210,15 +224,25 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		showxgridlines=NONE;
 		showygridlines=false;
 		sortxaxis=false;
-		
+		showXLabel=true;
+		showtooltip=true;
 		style=null;
 		title="";
-		
+		source=null;
 		tipstyle=TIP_STYLE_MOUSEOVER;
 	}
 	
+	
 
-
+	public void setShowxlabel(boolean showXLabel) {
+		this.showXLabel = showXLabel;
+	}
+	public void setSource(String source) {
+		this.source = source;
+	}
+	public void setShowtooltip(boolean showtooltip) {
+		this.showtooltip = showtooltip;
+	}
 	public void setBackgroundcolor(String strBackgroundColor) throws ExpressionException {
 		this.backgroundcolor = ColorCaster.toColor(strBackgroundColor);
 	}
@@ -289,6 +313,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		else if("currency".equals(strLabelFormat))	labelFormat=LabelFormatUtil.LABEL_FORMAT_CURRENCY;
 		else if("date".equals(strLabelFormat))		labelFormat=LabelFormatUtil.LABEL_FORMAT_DATE;
 		else if("percent".equals(strLabelFormat))	labelFormat=LabelFormatUtil.LABEL_FORMAT_PERCENT;
+		//else if("integer".equals(strLabelFormat))	labelFormat=LabelFormatUtil.LABEL_FORMAT_INTEGER;
 		
 		else throw new ExpressionException("invalid value ["+strLabelFormat+"] for attribute labelFormat, for this attribute only the following values are supported [date,percent,currency,number]");
 	}
@@ -410,15 +435,17 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		if(_series.size()==0) throw new ApplicationException("at least one cfchartseries tag required inside cfchart"); 
 		//if(_series.size()>1) throw new ApplicationException("only one cfchartseries tag allowed inside cfchart"); 
 		//doSingleSeries((ChartSeriesBean) _series.get(0));
-		ChartSeriesBean first=(ChartSeriesBean) _series.get(0);
+		ChartSeriesBean first= _series.get(0);
 		
 		try {
 				
 			if(first.getType()==ChartSeriesBean.TYPE_BAR)
 				//throw new ApplicationException("type bar is not supported");
 				chartBar();
+			else if(first.getType()==ChartSeriesBean.TYPE_TIME)
+				chartTimeLine();
 			else if(first.getType()==ChartSeriesBean.TYPE_AREA)
-				throw new ApplicationException("type area is not supported");
+				chartArea();
 			else if(first.getType()==ChartSeriesBean.TYPE_CONE)
 				throw new ApplicationException("type cone is not supported");
 			else if(first.getType()==ChartSeriesBean.TYPE_CURVE)
@@ -450,7 +477,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 	private void chartPie() throws PageException, IOException {
 		// do dataset
 		DefaultPieDataset dataset = new DefaultPieDataset();
-		ChartSeriesBean csb = (ChartSeriesBean)  _series.get(0);
+		ChartSeriesBean csb =  _series.get(0);
         
 		ChartDataBean cdb;
         
@@ -459,7 +486,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
         Iterator itt = datas.iterator();
     	while(itt.hasNext()) {
     		cdb=(ChartDataBean) itt.next();
-    		dataset.setValue(cdb.getItem(), cdb.getValue());
+    		dataset.setValue(cdb.getItemAsString(), cdb.getValue());
     	}	
 		
     	
@@ -500,10 +527,10 @@ public final class Chart extends BodyTagImpl implements Serializable {
         int count=0;
     	while(it.hasNext()) {
     		cdb=(ChartDataBean) it.next();
-            if(doSclice)pp.setExplodePercent(cdb.getItem(), 0.13);
+            if(doSclice)pp.setExplodePercent(cdb.getItemAsString(), 0.13);
             
             if(count<colors.length){
-            	pp.setSectionPaint(cdb.getItem(), colors[count]);
+            	pp.setSectionPaint(cdb.getItemAsString(), colors[count]);
             }
             count++;
     	}
@@ -554,6 +581,13 @@ public final class Chart extends BodyTagImpl implements Serializable {
 			setAxis(cp.getRangeAxis(),font);
 			setAxis(cp.getDomainAxis(),font);
 		}
+		if(plot instanceof XYPlot) {
+			XYPlot cp = (XYPlot)plot;
+			setAxis(cp.getRangeAxis(),font);
+			setAxis(cp.getDomainAxis(),font);
+		}
+		
+		
 	}
 	
 	
@@ -669,14 +703,21 @@ public final class Chart extends BodyTagImpl implements Serializable {
 			copy(res.getOutputStream(),jfc,info);
 		}
 		
-		// Tooltip
-		ToolTipTagFragmentGenerator tttfg = new ToolTipTagFragmentGeneratorImpl(url);
-		URLTagFragmentGenerator utfg=new EmptyURLTagFragmentGenerator();
-		
+		String src="/railo-context/graph.cfm?img="+id+"&type="+formatToString(format);
+		if(!StringUtil.isEmpty(source)) {
+			pageContext.setVariable(source, src);
+			return;
+		}
 		try {
-			String map=ImageMapUtilities.getImageMap(mapName, info,tttfg,utfg).trim();
-			pageContext.write(map);
-			pageContext.write("<img border=\"0\" usemap=\"#"+mapName+"\" src=\"/railo-context/graph.cfm?img="+id+"&type="+formatToString(format)+"\">");
+			// Tooltip
+			if(showtooltip) {
+				ToolTipTagFragmentGenerator tttfg = new ToolTipTagFragmentGeneratorImpl(url);
+				URLTagFragmentGenerator utfg=new EmptyURLTagFragmentGenerator();
+				
+				String map=ImageMapUtilities.getImageMap(mapName, info,tttfg,utfg).trim();
+				pageContext.write(map);
+			}
+			pageContext.write("<img border=\"0\" usemap=\"#"+mapName+"\" src=\""+src+"\">");
 		} 
 		catch (IOException e) {
 			throw Caster.toPageException(e);
@@ -718,7 +759,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 	private String formatToString(int format) {
 		if(format==FORMAT_GIF) return "gif";
 		if(format==FORMAT_JPG) return "jpeg";
-		if(format==FORMAT_PNG) return "x-png";
+		if(format==FORMAT_PNG) return "png";
 		return "swf";
 	}
 
@@ -767,7 +808,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		// create the chart...
         final JFreeChart chart = show3d?
         	ChartFactory.createLineChart3D(title,xaxistitle,yaxistitle,createDatasetCategory(),PlotOrientation.VERTICAL,false,true,false):
-        	ChartFactory.createLineChart  (title,xaxistitle,yaxistitle,createDatasetCategory(),PlotOrientation.VERTICAL,false,true,false);
+        	ChartFactory.createLineChart(title,xaxistitle,yaxistitle,createDatasetCategory(),PlotOrientation.VERTICAL,false,true,false);
         Plot p = chart.getPlot();
         Font _font = getFont();
         
@@ -787,30 +828,92 @@ public final class Chart extends BodyTagImpl implements Serializable {
         writeOut(chart);
 	}
 	
+	private void chartArea() throws PageException, IOException {
+		// create the chart...
+        final JFreeChart chart = ChartFactory.createAreaChart(title,xaxistitle,yaxistitle,createDatasetCategory(),PlotOrientation.VERTICAL,false,true,false);
+        Plot p = chart.getPlot();
+        Font _font = getFont();
+        
+        // settings
+        setMarker(chart,p);
+        setBackground(chart,p);
+		setBorder(chart,p);
+		set3d(p);
+		setFont(chart,_font);
+		setLabelFormat(chart);
+		setLegend(chart, p, _font);
+        setTooltip(chart);
+		setScale(chart);
+        setAxis(chart);
+        setColor(chart);
+        
+        writeOut(chart);
+	}
 	
-	
+	private void chartTimeLine() throws PageException, IOException {
+		// create the chart...
+        final JFreeChart chart = ChartFactory.createTimeSeriesChart(title,xaxistitle,yaxistitle,createTimeSeriesCollection(),false,true,false);
+        Plot p = chart.getPlot();
+        Font _font = getFont();
+        
+        // settings
+        setMarker(chart,p);
+        setBackground(chart,p);
+		setBorder(chart,p);
+		set3d(p);
+		setFont(chart,_font);
+		setLabelFormat(chart);
+		setLegend(chart, p, _font);
+        setTooltip(chart);
+		setScale(chart);
+        setAxis(chart);
+        setColor(chart);
+        
+        writeOut(chart);
+	}
+
+
 
 	private void setMarker(JFreeChart chart, Plot p) {
 		if(!showmarkers) return;
 		
-		if(!(p instanceof CategoryPlot))
-			return;
-		CategoryPlot cp=(CategoryPlot) p;
-		
-		CategoryItemRenderer r = cp.getRenderer();
-		if(!(r instanceof LineAndShapeRenderer))
-			return;
-		LineAndShapeRenderer lsr = (LineAndShapeRenderer)r;
-        
 		if(markersize<1 || markersize>100) markersize=4;
 		
-		int seriesCount=_series.size();
-		for(int i=0;i<seriesCount;i++){
-			lsr.setSeriesShapesVisible(i, true);
-			lsr.setSeriesShape(i, ShapeUtilities.createDiamond(markersize));
-	        lsr.setUseFillPaint(true);
-	        lsr.setBaseFillPaint(databackgroundcolor);
-	        
+		
+		
+		if(p instanceof XYPlot) {
+			XYPlot xyp=(XYPlot) p;
+			XYItemRenderer r = xyp.getRenderer();
+			if (r instanceof XYLineAndShapeRenderer) {
+				XYLineAndShapeRenderer xyr = (XYLineAndShapeRenderer) r;
+				xyr.setBaseShapesVisible(true);
+				xyr.setBaseShapesFilled(true);
+				
+				int seriesCount=_series.size();
+				for(int i=0;i<seriesCount;i++){
+					xyr.setSeriesShapesVisible(i, true);
+					xyr.setSeriesItemLabelsVisible(i, true);
+					xyr.setSeriesShape(i, ShapeUtilities.createDiamond(markersize));
+					xyr.setUseFillPaint(true);
+					xyr.setBaseFillPaint(databackgroundcolor);
+				}
+			}
+		}
+		else if(p instanceof CategoryPlot) {
+			CategoryPlot cp=(CategoryPlot) p;
+			CategoryItemRenderer r = cp.getRenderer();
+			if (r instanceof LineAndShapeRenderer) {
+				LineAndShapeRenderer lsr = (LineAndShapeRenderer)r;
+			
+				int seriesCount=_series.size();
+				for(int i=0;i<seriesCount;i++){
+					lsr.setSeriesShapesVisible(i, true);
+					lsr.setSeriesItemLabelsVisible(i, true);
+					lsr.setSeriesShape(i, ShapeUtilities.createDiamond(markersize));
+			        lsr.setUseFillPaint(true);
+			        lsr.setBaseFillPaint(databackgroundcolor);
+				}
+			}
 		}
 	}
 
@@ -821,11 +924,20 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		if(plot instanceof CategoryPlot) {
 			CategoryPlot cp=(CategoryPlot)plot;
 			
+			// Y
+			cp.setDomainGridlinesVisible(showygridlines);
+			if(showygridlines) cp.setDomainGridlinePaint(foregroundcolor);
+			
+			cp.setRangeGridlinesVisible(showxgridlines!=NO);
+			if(showxgridlines==NONE)cp.setRangeGridlinePaint(Color.GRAY);
+			else if(showxgridlines==YES)cp.setRangeGridlinePaint(foregroundcolor);
+		}
+		else if(plot instanceof XYPlot) {
+			XYPlot cp=(XYPlot)plot;
 			
 			// Y
 			cp.setDomainGridlinesVisible(showygridlines);
 			if(showygridlines) cp.setDomainGridlinePaint(foregroundcolor);
-			 
 			
 			cp.setRangeGridlinesVisible(showxgridlines!=NO);
 			if(showxgridlines==NONE)cp.setRangeGridlinePaint(Color.GRAY);
@@ -848,6 +960,11 @@ public final class Chart extends BodyTagImpl implements Serializable {
 			CategoryItemRenderer renderer = cp.getRenderer();
 			renderer.setBaseToolTipGenerator(new CategoryToolTipGeneratorImpl(labelFormat));
 		}
+		/*else if(plot instanceof XYPlot) {
+			XYPlot cp=(XYPlot) plot;
+			XYItemRenderer renderer = cp.getRenderer();
+			renderer.setBaseToolTipGenerator(new XYToolTipGeneratorImpl(labelFormat));
+		}*/
 		
 	}
 
@@ -875,6 +992,26 @@ public final class Chart extends BodyTagImpl implements Serializable {
 			if(!Double.isNaN(scaleto))upper=scaleto;
 			rangeAxis.setRange(new Range(lower,upper),true,true);
 		}
+		else if(plot instanceof XYPlot) {
+			XYPlot cp=(XYPlot) plot;
+			ValueAxis rangeAxis = cp.getRangeAxis();
+			Range r=rangeAxis.getRange();
+			double lower=r.getLowerBound();
+			double upper=r.getUpperBound();
+			
+			if(labelFormat==LabelFormatUtil.LABEL_FORMAT_DATE && rangeAxis.getRange().getLowerBound()==0) {
+				lower = smallest;
+				upper=biggest;
+				try	{
+					DateTime d = Caster.toDate(Caster.toDouble(lower),true,null,null);
+					lower = DateAdd.call(pageContext,"yyyy", -1, d).castToDoubleValue(lower);	
+				}
+				catch (PageException e) {}
+			}
+			if(!Double.isNaN(scalefrom))lower=scalefrom;
+			if(!Double.isNaN(scaleto))upper=scaleto;
+			rangeAxis.setRange(new Range(lower,upper),true,true);
+		}
 	}
 
 	private void setLabelFormat(JFreeChart chart) {
@@ -883,7 +1020,25 @@ public final class Chart extends BodyTagImpl implements Serializable {
 			CategoryPlot cp=(CategoryPlot) plot;
 			ValueAxis rangeAxis = cp.getRangeAxis();
 			rangeAxis.setAutoTickUnitSelection(true);
-			rangeAxis.setStandardTickUnits(new TickUnitsImpl(rangeAxis.getStandardTickUnits(),labelFormat));	
+			rangeAxis.setStandardTickUnits(new TickUnitsImpl(rangeAxis.getStandardTickUnits(),labelFormat));
+			CategoryItemRenderer r = cp.getRenderer();
+			r.setBaseItemLabelsVisible(false);
+			
+			CategoryAxis da = cp.getDomainAxis();
+			if(!showXLabel)da.setTickLabelsVisible(false);
+			//da.setVisible(false);
+		}
+		if(plot instanceof XYPlot) {
+			XYPlot cp=(XYPlot) plot;
+			ValueAxis rangeAxis = cp.getRangeAxis();
+			rangeAxis.setAutoTickUnitSelection(true);
+			rangeAxis.setStandardTickUnits(new TickUnitsImpl(rangeAxis.getStandardTickUnits(),labelFormat));
+			XYItemRenderer r = cp.getRenderer();
+			r.setBaseItemLabelsVisible(false);
+			
+			ValueAxis da = cp.getDomainAxis();
+			if(!showXLabel)da.setTickLabelsVisible(false);
+			//da.setVisible(false);
 		}
 	}
 
@@ -892,35 +1047,67 @@ public final class Chart extends BodyTagImpl implements Serializable {
 	// set individual colors for series
 	private void setColor(JFreeChart chart) {
 		Plot p = chart.getPlot();
-		if(!(p instanceof CategoryPlot)) return;
-		CategoryPlot cp=(CategoryPlot) p;
-		
-		CategoryItemRenderer renderer = cp.getRenderer();
-        
-		
-		
-		Iterator cs = _series.iterator();
-		//int seriesCount=_series.size();
-		ChartSeriesBean csb;
-		GradientPaint gp;
-		Color c=null;
-		Color[] ac;
-		
-		int index=0;
-		while(cs.hasNext()) {
-			csb=(ChartSeriesBean) cs.next();
-			// more than 1 series
-			//if(seriesCount>1) {
-				c=csb.getSeriesColor();
-				if(c==null) {
-					ac=csb.getColorlist();
-					if(ac!=null && ac.length>0)c=ac[0];
-				}
-				
-			//}
-			if(c==null) continue;
-			gp = new GradientPaint(0.0f, 0.0f, c, 0.0f, 0.0f,c);
-			renderer.setSeriesPaint(index++, gp);
+		if(p instanceof CategoryPlot) {
+			CategoryPlot cp=(CategoryPlot) p;
+			
+			CategoryItemRenderer renderer = cp.getRenderer();
+	        
+			
+			
+			Iterator<ChartSeriesBean> cs = _series.iterator();
+			//int seriesCount=_series.size();
+			ChartSeriesBean csb;
+			GradientPaint gp;
+			Color c=null;
+			Color[] ac;
+			
+			int index=0;
+			while(cs.hasNext()) {
+				csb= cs.next();
+				// more than 1 series
+				//if(seriesCount>1) {
+					c=csb.getSeriesColor();
+					if(c==null) {
+						ac=csb.getColorlist();
+						if(ac!=null && ac.length>0)c=ac[0];
+					}
+					
+				//}
+				if(c==null) continue;
+				gp = new GradientPaint(0.0f, 0.0f, c, 0.0f, 0.0f,c);
+				renderer.setSeriesPaint(index++, gp);
+			}
+		}
+		else if(p instanceof XYPlot) {
+			XYPlot cp=(XYPlot) p;
+			
+			XYItemRenderer renderer = cp.getRenderer();
+	        
+			
+			
+			Iterator<ChartSeriesBean> cs = _series.iterator();
+			//int seriesCount=_series.size();
+			ChartSeriesBean csb;
+			GradientPaint gp;
+			Color c=null;
+			Color[] ac;
+			
+			int index=0;
+			while(cs.hasNext()) {
+				csb= cs.next();
+				// more than 1 series
+				//if(seriesCount>1) {
+					c=csb.getSeriesColor();
+					if(c==null) {
+						ac=csb.getColorlist();
+						if(ac!=null && ac.length>0)c=ac[0];
+					}
+					
+				//}
+				if(c==null) continue;
+				gp = new GradientPaint(0.0f, 0.0f, c, 0.0f, 0.0f,c);
+				renderer.setSeriesPaint(index++, gp);
+			}
 		}
 	}
 
@@ -928,14 +1115,14 @@ public final class Chart extends BodyTagImpl implements Serializable {
 
 	private DefaultPieDataset createDatasetPie() {
 		DefaultPieDataset dataset = new DefaultPieDataset();
-		ChartSeriesBean csb = (ChartSeriesBean)  _series.get(0);
+		ChartSeriesBean csb =  _series.get(0);
         
 		ChartDataBean cdb;
         // write data set
         Iterator itt = csb.getDatas().iterator();
     	while(itt.hasNext()) {
     		cdb=(ChartDataBean) itt.next();
-    		dataset.setValue(cdb.getItem(), cdb.getValue());
+    		dataset.setValue(cdb.getItemAsString(), cdb.getValue());
     	}	
     	return dataset;
     }
@@ -943,10 +1130,10 @@ public final class Chart extends BodyTagImpl implements Serializable {
 
 	
 	
-	
+
 	private CategoryDataset createDatasetCategory() {
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        Iterator it = _series.iterator();
+        Iterator<ChartSeriesBean> it = _series.iterator();
         //int seriesCount=_series.size();
         Iterator itt;
         List datas;
@@ -959,19 +1146,20 @@ public final class Chart extends BodyTagImpl implements Serializable {
         boolean hasLabels=false;
         while(it.hasNext()) {
         	count++;
-        	csb=(ChartSeriesBean) it.next();
+        	csb= it.next();
         	label=csb.getSeriesLabel();
         	if(StringUtil.isEmpty(label))label=""+count;
         	else hasLabels=true;
         	datas = csb.getDatas();
         	if(sortxaxis)Collections.sort(datas);
             itt=datas.iterator();
-        	while(itt.hasNext()) {
+            while(itt.hasNext()) {
         		cdb=(ChartDataBean) itt.next();
         		if(smallest>cdb.getValue())smallest=cdb.getValue();
         		if(biggest<cdb.getValue())biggest=cdb.getValue();
         		//if(seriesCount>1)
-        		dataset.addValue(cdb.getValue(), label,cdb.getItem());
+        		
+        		dataset.addValue(cdb.getValue(), label,cdb.getItemAsString());
         		
         		//else dataset.addValue(cdb.getValue(), cdb.getItem(),"");
         		
@@ -980,6 +1168,48 @@ public final class Chart extends BodyTagImpl implements Serializable {
         }
         if(!hasLabels)showlegend=false;
         return dataset;
+    }
+	private XYDataset createTimeSeriesCollection() {
+		TimeZone tz = ThreadLocalPageContext.getTimeZone();
+		final TimeSeriesCollection coll=new TimeSeriesCollection(tz);
+		
+        //final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        Iterator<ChartSeriesBean> it = _series.iterator();
+        //int seriesCount=_series.size();
+        Iterator itt;
+        List datas;
+        ChartSeriesBean csb;
+        ChartDataBean cdb;
+        int count=0;
+        smallest=Double.MAX_VALUE;
+        biggest = Double.MIN_VALUE;
+        String label;
+        boolean hasLabels=false;
+        while(it.hasNext()) {
+        	count++;
+        	csb=it.next();
+        	label=csb.getSeriesLabel();
+        	if(StringUtil.isEmpty(label))label=""+count;
+        	else hasLabels=true;
+        	datas = csb.getDatas();
+        	if(sortxaxis)Collections.sort(datas);
+            itt=datas.iterator();
+            TimeSeries ts=new TimeSeries(label,Second.class);
+            while(itt.hasNext()) {
+        		cdb=(ChartDataBean) itt.next();
+        		if(smallest>cdb.getValue())smallest=cdb.getValue();
+        		if(biggest<cdb.getValue())biggest=cdb.getValue();
+        		//if(seriesCount>1)
+        		ts.addOrUpdate(new Second(DateCaster.toDateSimple(cdb.getItem(),false, tz,null)), cdb.getValue());
+        		
+        		//else dataset.addValue(cdb.getValue(), cdb.getItem(),"");
+        		
+            	
+        	}
+            coll.addSeries(ts);
+        }
+        if(!hasLabels)showlegend=false;
+        return coll;
     }
 
 	/**

@@ -4,15 +4,10 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import railo.commons.io.res.Resource;
-import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.type.s3.AccessControl;
 import railo.commons.io.res.type.s3.S3Exception;
 import railo.commons.io.res.type.s3.S3Resource;
-import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.PageContext;
-import railo.runtime.exp.ExpressionException;
-import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
@@ -22,7 +17,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
-public class StoreGetACL {
+public class StoreGetACL extends S3Function {
 
 	public static final Collection.Key GROUP = KeyImpl.intern("group");
 	public static final Collection.Key DISPLAY_NAME = KeyImpl.intern("displayName");
@@ -32,22 +27,13 @@ public class StoreGetACL {
 	
 	public static Object call(PageContext pc , String url) throws PageException {
         
-		S3Resource res=toS3Resource(pc,url);
+		S3Resource res=toS3Resource(pc,url,"StoreGetACL");
 		try {
 			return toArrayStruct(res.getAccessControlPolicy().getAccessControlList());
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}
     }
-
-	public static S3Resource toS3Resource(PageContext pc, String url) throws ExpressionException {
-		Resource res=ResourceUtil.toResourceNotExisting(pc, url);
-		ResourceProvider provider = res.getResourceProvider();
-		if(!provider.getScheme().equalsIgnoreCase("s3") || !res.exists()) 
-			throw new FunctionException(pc,"StoreGetACL",1,"url","defined url must be a valid existing S3 Resource");
-		
-		return (S3Resource) res;
-	}
 
 	private static Object toArrayStruct(List<AccessControl> accessControlList) throws S3Exception {
 		Array arr=new ArrayImpl();

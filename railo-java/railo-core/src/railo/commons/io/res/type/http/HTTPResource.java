@@ -8,6 +8,7 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 
 import railo.commons.io.IOUtil;
+import railo.commons.io.res.ContentType;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.util.ReadOnlyResourceSupport;
@@ -63,6 +64,20 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 		}
 		return http.getStatusCode();
 	}
+	
+	public ContentType getContentType() throws IOException {
+		if(http==null) {
+			URL url = new URL(provider.getProtocol(),data.host,data.port,data.path);
+			ProxyData pd=data.hasProxyData()?data.proxyData:ProxyDataImpl.NO_PROXY;
+			return HTTPUtil.getContentType(HTTPUtil.head(url, data.username, data.password, provider.getSocketTimeout(), 
+					null, data.userAgent, 
+					pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),
+					null));
+		}
+		return HTTPUtil.getContentType(http);
+	}
+	
+	
 
 	public boolean exists() {
 		try {
