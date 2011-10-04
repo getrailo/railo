@@ -273,17 +273,17 @@ Create Datasource --->
 <!---- data member default access --->
 
         <tr>
-        	<td class="tblContent" style="border-color:#colorCompatibility#;" width="10"><cfinput type="radio" name="mode" value="compatibility"></td>
+        	<td class="tblContent" style="border-color:#colorCompatibility#;" width="10"><cfinput type="radio" name="mode" id="mode" value="compatibility"></td>
             <td class="tblContent" style="border-color:#colorCompatibility#;#style#"><b>#stText.setting.general.compatibility#</b><br />
             <span class="comment">#stText.setting.general.compatibilityDesc#</span></td>
         </tr>
         <tr>
-        	<td class="tblContent" style="border-color:#colorStrict#;" width="10"><cfinput type="radio" name="mode" value="strict"></td>
+        	<td class="tblContent" style="border-color:#colorStrict#;" width="10"><cfinput type="radio" name="mode" id="mode" value="strict"></td>
             <td class="tblContent" style="border-color:#colorStrict#;#style#"><b>#stText.setting.general.strict#</b><br />
             <span class="comment">#stText.setting.general.strictDesc#</span></td>
         </tr>
         <tr>
-        	<td class="tblContent" style="border-color:#colorSpeed#;" width="10"><cfinput type="radio" name="mode" value="speed"></td>
+        	<td class="tblContent" style="border-color:#colorSpeed#;" width="10"><cfinput type="radio" name="mode" id="mode" value="speed"></td>
             <td class="tblContent" style="border-color:#colorSpeed#;#style#"><b>#stText.setting.general.speed#</b>
             <br /><span class="comment">#stText.setting.general.speedDesc#</span></td>
         </tr>
@@ -292,8 +292,8 @@ Create Datasource --->
 <tr>
 	<td colspan="2">
 		
-      <input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.update#">
-		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+      <input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.update#">
+		<input class="submit" type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 </table>

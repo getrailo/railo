@@ -180,12 +180,12 @@ function checkTheRadio(field) {
 
 
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-<input type="hidden" name="subAction" value="setting" />
+<input type="hidden" name="subAction" id="subAction" value="setting" />
 <tr>
 	<td class="tblHead" width="150">#stText.CustomTags.customTagDeepSearch#</td>
 	<td class="tblContent">
 	<cfif hasAccess>
-    	<input type="checkbox" class="checkbox" name="customTagDeepSearchDesc" value="yes" <cfif setting.deepsearch>checked</cfif>>
+    	<input type="checkbox" class="checkbox" name="customTagDeepSearchDesc" id="customTagDeepSearchDesc" value="yes" <cfif setting.deepsearch>checked</cfif>>
     <cfelse>
     	<b>#yesNoFormat(setting.deepsearch)#</b>
 	</cfif>
@@ -196,7 +196,7 @@ function checkTheRadio(field) {
 	<td class="tblHead" width="150">#stText.CustomTags.customTagLocalSearch#</td>
 	<td class="tblContent">
 	<cfif hasAccess>
-    	<input type="checkbox" class="checkbox" name="customTagLocalSearchDesc" value="yes" <cfif setting.localsearch>checked</cfif>>
+    	<input type="checkbox" class="checkbox" name="customTagLocalSearchDesc" id="customTagLocalSearchDesc" value="yes" <cfif setting.localsearch>checked</cfif>>
     <cfelse>
     	<b>#yesNoFormat(setting.localsearch)#</b>
 	</cfif>
@@ -209,12 +209,12 @@ function checkTheRadio(field) {
 	<td class="tblHead" width="150">#stText.CustomTags.customTagPathCache#</td>
 	<td class="tblContent">
 	<cfif hasAccess>
-    	<input type="checkbox" class="checkbox" name="customTagPathCache" value="yes" <cfif setting.customTagPathCache>checked</cfif>>
+    	<input type="checkbox" class="checkbox" name="customTagPathCache" id="customTagPathCache" value="yes" <cfif setting.customTagPathCache>checked</cfif>>
     <cfelse>
     	<b>#yesNoFormat(setting.customTagPathCache)#</b>
 	</cfif>
 	<span class="comment">#stText.CustomTags.customTagPathCacheDesc#</span>
-	<cfif setting.customTagPathCache><br /><input type="submit" class="submit" name="mainAction" value="#flushName#"></cfif></td>
+	<cfif setting.customTagPathCache><br /><input type="submit" class="submit" name="mainAction" id="mainAction" value="#flushName#"></cfif></td>
 </tr>
 
 
@@ -237,7 +237,7 @@ function checkTheRadio(field) {
         <table class="tbl">
         <cfloop array="#modes#" index="mode">
         <tr>
-            <td><input type="radio" class="checkbox" name="extensions" value="#mode.ext#"<cfif mode.ext EQ lstSetExt> checked="checked"<cfset has=true></cfif>></td>
+            <td><input type="radio" class="checkbox" name="extensions" id="extensions" value="#mode.ext#"<cfif mode.ext EQ lstSetExt> checked="checked"<cfset has=true></cfif>></td>
             <td><table class="tbl">
                     <tr>
                         <td class="tblContent" style="width:100px"><b>#mode.ext#</b></td>
@@ -247,8 +247,8 @@ function checkTheRadio(field) {
         </tr>
         </cfloop>
         <tr>
-            <td><input type="radio" class="checkbox" name="extensions" value="custom"<cfif not has> checked="checked"</cfif>></td>
-            <td><input type="text"  onClick="checkTheRadio(this)" name="extensions_custom" value="#ArrayToList(setting.extensions)#" required="no"  style="width:113px">
+            <td><input type="radio" class="checkbox" name="extensions" id="extensions" value="custom"<cfif not has> checked="checked"</cfif>></td>
+            <td><input type="text"  onClick="checkTheRadio(this)" name="extensions_custom" id="extensions_custom" value="#ArrayToList(setting.extensions)#" required="no"  style="width:113px">
             <span class="comment">#stText.CustomTags.mode.custom#</span></td>
         </tr>
         </table>
@@ -271,8 +271,8 @@ function checkTheRadio(field) {
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr></cfif>
 </cfform>
@@ -291,7 +291,7 @@ function checkTheRadio(field) {
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td><cfif hasAccess><input type="checkbox" class="checkbox" 
-			name="rro" onclick="selectAll(this)"></cfif></td>
+			name="rro" id="rro" onclick="selectAll(this)"></cfif></td>
 		<td class="tblHead" nowrap>#stText.CustomTags.Physical#</td>
 		<td class="tblHead" nowrap>#stText.CustomTags.Archive#</td>
 		<td class="tblHead" nowrap>#stText.CustomTags.Primary#</td>
@@ -306,8 +306,8 @@ function checkTheRadio(field) {
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td><cfif not mappings.ReadOnly><cfset count=count+1>
-			<input type="hidden" name="virtual_#mappings.currentrow#" value="#mappings.virtual#"><input type="checkbox" class="checkbox" 
-			name="row_#mappings.currentrow#" value="#mappings.currentrow#">
+			<input type="hidden" name="virtual_#mappings.currentrow#" id="virtual_#mappings.currentrow#" value="#mappings.virtual#"><input type="checkbox" class="checkbox" 
+			name="row_#mappings.currentrow#" id="row_#mappings.currentrow#" value="#mappings.currentrow#">
 			</cfif></td>
 		</tr>
 		</table>
@@ -316,14 +316,14 @@ function checkTheRadio(field) {
 		<cfset css=iif(len(mappings.physical) EQ 0 and len(mappings.strPhysical) NEQ 0,de('Red'),de(''))>
 		<td class="tblContent#css#" title="#mappings.strphysical#
 #mappings.physical#" nowrap><cfif mappings.ReadOnly>#cut(mappings.strphysical,40)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="physical_#mappings.currentrow#" value="#mappings.strphysical#" required="no"  
+			name="physical_#mappings.currentrow#" id="physical_#mappings.currentrow#" value="#mappings.strphysical#" required="no"  
 			style="width:260px" 
 			message="#stText.CustomTags.PhysicalMissing##mappings.currentrow#)"></cfif></td>
 		
 		<cfset css=iif(len(mappings.archive) EQ 0 and len(mappings.strArchive) NEQ 0,de('Red'),de(''))>
 		<td class="tblContent#css#" title="#mappings.strarchive#
 #mappings.archive#" nowrap><cfif mappings.ReadOnly>#cut(mappings.strarchive,40)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="archive_#mappings.currentrow#" value="#mappings.strarchive#" required="no"  
+			name="archive_#mappings.currentrow#" id="archive_#mappings.currentrow#" value="#mappings.strarchive#" required="no"  
 			style="width:260px" 
 			message="#stText.CustomTags.ArchiveMissing##mappings.currentrow#)"></cfif></td>
 		
@@ -333,7 +333,7 @@ function checkTheRadio(field) {
 		</select></cfif></td>
 		
 		<td class="tblContent" nowrap><cfif mappings.readOnly>#iif(mappings.Trusted,de("Yes"),de("No"))#<cfelse><input type="checkbox" class="checkbox" 
-		name="trusted_#mappings.currentrow#" onClick="checkTheBox(this)" value="yes" <cfif mappings.trusted>checked</cfif>></cfif></td>
+		name="trusted_#mappings.currentrow#" id="trusted_#mappings.currentrow#" onClick="checkTheBox(this)" value="yes" <cfif mappings.trusted>checked</cfif>></cfif></td>
 	</tr>
 </cfloop>
 <cfif hasAccess>
@@ -341,22 +341,22 @@ function checkTheRadio(field) {
 		<td>
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
-			<td><input type="checkbox" class="checkbox" name="row_#mappings.recordcount+1#" value="#mappings.recordcount+1#">
-			<input type="hidden" name="virtual_#mappings.recordcount+1#" value="/#mappings.recordcount+1#"></td>
+			<td><input type="checkbox" class="checkbox" name="row_#mappings.recordcount+1#" id="row_#mappings.recordcount+1#" value="#mappings.recordcount+1#">
+			<input type="hidden" name="virtual_#mappings.recordcount+1#" id="virtual_#mappings.recordcount+1#" value="/#mappings.recordcount+1#"></td>
 		</tr>
 		</table>
 		
 		</td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:260px"></td>
+			name="physical_#mappings.recordcount+1#" id="physical_#mappings.recordcount+1#" value="" required="no"  style="width:260px"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:260px" ></td>
+			name="archive_#mappings.recordcount+1#" id="archive_#mappings.recordcount+1#" value="" required="no"  style="width:260px" ></td>
 		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onChange="checkTheBox(this)">
 			<option value="physical" selected>#stText.CustomTags.physical#</option>
 			<option value="archive">#stText.CustomTags.archive#</option>
 		</select></td>
 		<td class="tblContent" nowrap><input onClick="checkTheBox(this)" type="checkbox" class="checkbox" 
-		name="trusted_#mappings.recordcount+1#" value="yes"></td>
+		name="trusted_#mappings.recordcount+1#" id="trusted_#mappings.recordcount+1#" value="yes"></td>
 	</tr>
 </cfif>
 <cfif hasAccess>
@@ -373,10 +373,10 @@ function checkTheRadio(field) {
 			<td></td>
 			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 			<td>&nbsp;
-			<input type="hidden" name="mainAction" value="#stText.Buttons.Update#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Update#">
-			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
+			<input type="hidden" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
+			<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Update#">
+			<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+			<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Delete#">
 			</td>	
 		</tr>
 		 </table>

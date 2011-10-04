@@ -58,7 +58,7 @@ function submitTheForm(field) {
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="button" class="submit" name="mainAction" value="#stText.services.update.restart#" onclick="submitTheForm(this)">
+		<input type="button" class="submit" name="mainAction" id="mainAction" value="#stText.services.update.restart#" onclick="submitTheForm(this)">
 	</td>
 </tr>
 </cfform>

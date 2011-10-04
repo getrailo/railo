@@ -131,11 +131,11 @@ replaced with encoding output
 	<td class="tblContent">
 		<span class="comment">#stText.Regional.DefaultEncodingDescription#</span>
 		<cfif hasAccess>
-		<cfinput type="text" name="defaultencoding" value="#regional.defaultEncoding#" 
+		<cfinput type="text" name="defaultencoding" id="defaultencoding" value="#regional.defaultEncoding#" 
 			style="width:200px" required="yes" message="#stText.regional.missingEncoding#">
 		
 		<cfelse>
-			<input type="hidden" name="defaultencoding" value="#regional.defaultEncoding#">
+			<input type="hidden" name="defaultencoding" id="defaultencoding" value="#regional.defaultEncoding#">
 		
 			<b>#regional.defaultEncoding#</b>
 		</cfif>
@@ -159,7 +159,7 @@ replaced with encoding output
 			 ---></cfloop>
 		</select>
         
-		<!--- <input type="text" name="locale_other" value="<cfif not hasFound>#regional.locale#</cfif>" style="width:200px"> --->
+		<!--- <input type="text" name="locale_other" id="locale_other" value="<cfif not hasFound>#regional.locale#</cfif>" style="width:200px"> --->
 		<cfelse>
 			<b>#regional.locale#</b>
 		</cfif>
@@ -184,18 +184,18 @@ replaced with encoding output
 		<cfelse>
 			<b>#regional.timezone#</b>
 		</cfif>
-		<!--- <cfinput type="text" name="timezone" value="#config.timezone.getId()#" style="width:200px" required="yes" message="Missing value for timezone"> --->
+		<!--- <cfinput type="text" name="timezone" id="timezone" value="#config.timezone.getId()#" style="width:200px" required="yes" message="Missing value for timezone"> --->
 	</td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Regional.TimeServer#</td>
 	<td class="tblContent"><span class="comment">#stText.Regional.TimeServerDescription#</span>
 	<cfif hasAccess>
-		<br /><cfinput type="text" name="timeserver" value="#regional.timeserver#" 
+		<br /><cfinput type="text" name="timeserver" id="timeserver" value="#regional.timeserver#" 
 			style="width:200px" required="no" message="#stText.Regional.TimeServerMissing#">
-		<br /><input type="checkbox" name="usetimeserver" <cfif regional.usetimeserver>checked="checked"</cfif> value="true" /> #stText.Regional.useTimeServer#
+		<br /><input type="checkbox" name="usetimeserver" id="usetimeserver" <cfif regional.usetimeserver>checked="checked"</cfif> value="true" /> #stText.Regional.useTimeServer#
 	<cfelse>
-		<b>#regional.timeserver#</b><input type="hidden" name="usetimeserver" value="#regional.usetimeserver#" />
+		<b>#regional.timeserver#</b><input type="hidden" name="usetimeserver" id="usetimeserver" value="#regional.usetimeserver#" />
 	</cfif>
 	</td>
 </tr>
@@ -222,9 +222,9 @@ replaced with encoding output
 
 <tr>
 	<td colspan="2">
-		<input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
+		<input class="submit" type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>

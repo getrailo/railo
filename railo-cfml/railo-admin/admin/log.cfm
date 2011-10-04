@@ -31,15 +31,15 @@
 </tr>
 <tr>
 	<td class="tblHead">#caller.stText.log.source#</td>
-	<td class="tblContent"><cfinput type="text" name="#logs.name#_source" value="#logs.virtualpath#" style="width:300px" required="yes" message=""></td>
+	<td class="tblContent"><cfinput type="text" name="#logs.name#_source" id="#logs.name#_source" value="#logs.virtualpath#" style="width:300px" required="yes" message=""></td>
 </tr>
 <tr>
 	<td class="tblHead">#caller.stText.log.maxFile#</td>
-	<td class="tblContent"><cfinput type="text" name="#logs.name#_maxFile" value="#logs.maxFile#" style="width:60px" required="yes" message=""></td>
+	<td class="tblContent"><cfinput type="text" name="#logs.name#_maxFile" id="#logs.name#_maxFile" value="#logs.maxFile#" style="width:60px" required="yes" message=""></td>
 </tr>
 <tr>
 	<td class="tblHead">#caller.stText.log.maxFileSize#</td>
-	<td class="tblContent"><cfinput type="text" name="#logs.name#_maxFileSize" value="#logs.maxFileSize/1024#" style="width:60px" required="yes" message=""></td>
+	<td class="tblContent"><cfinput type="text" name="#logs.name#_maxFileSize" id="#logs.name#_maxFileSize" value="#logs.maxFileSize/1024#" style="width:60px" required="yes" message=""></td>
 </tr>
 <tr>
 </tr>
@@ -54,8 +54,8 @@
 <!---<cfmodule template="remoteclients.cfm" colspan="2">--->
 <tr>
 	<td colspan="2">
-		<input type="reset" class="reset" name="cancel" value="#caller.stText.Buttons.Cancel#">
-		<input type="submit" class="submit" name="run" value="#caller.stText.Buttons.Create#">
+		<input type="reset" class="reset" name="cancel" id="cancel" value="#caller.stText.Buttons.Cancel#">
+		<input type="submit" class="submit" name="run" id="run" value="#caller.stText.Buttons.Create#">
 	</td>
 </tr>
 </cfform>

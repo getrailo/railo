@@ -98,11 +98,11 @@ Create Datasource --->
 	<td class="tblContent">
 		<span class="comment">#stText.charset.templateCharsetDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="text" name="templateCharset" value="#charset.templateCharset#" 
+		<cfinput type="text" name="templateCharset" id="templateCharset" value="#charset.templateCharset#" 
 			style="width:200px" required="no" message="#stText.charset.missingTemplateCharset#">
 		
 		<cfelse>
-			<input type="hidden" name="templateCharset" value="#charset.templateCharset#">
+			<input type="hidden" name="templateCharset" id="templateCharset" value="#charset.templateCharset#">
 		
 			<b>#charset.templateCharset#</b>
 		</cfif>
@@ -115,11 +115,11 @@ Create Datasource --->
 	<td class="tblContent">
 		<span class="comment">#stText.charset.webCharsetDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="text" name="webCharset" value="#charset.webCharset#" 
+		<cfinput type="text" name="webCharset" id="webCharset" value="#charset.webCharset#" 
 			style="width:200px" required="no" message="#stText.charset.missingWebCharset#">
 		
 		<cfelse>
-			<input type="hidden" name="webCharset" value="#charset.webCharset#">
+			<input type="hidden" name="webCharset" id="webCharset" value="#charset.webCharset#">
 		
 			<b>#charset.webCharset#</b>
 		</cfif>
@@ -132,11 +132,11 @@ Create Datasource --->
 	<td class="tblContent">
 		<span class="comment">#stText.charset.resourceCharsetDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="text" name="resourceCharset" value="#charset.resourceCharset#" 
+		<cfinput type="text" name="resourceCharset" id="resourceCharset" value="#charset.resourceCharset#" 
 			style="width:200px" required="no" message="#stText.charset.missingResourceCharset#">
 		
 		<cfelse>
-			<input type="hidden" name="resourceCharset" value="#charset.resourceCharset#">
+			<input type="hidden" name="resourceCharset" id="resourceCharset" value="#charset.resourceCharset#">
 		
 			<b>#charset.resourceCharset#</b>
 		</cfif>
@@ -148,9 +148,9 @@ Create Datasource --->
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
+		<input class="submit" type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>

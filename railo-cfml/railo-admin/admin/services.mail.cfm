@@ -208,11 +208,11 @@ Mail Settings
 	<td class="tblContent">
 		<span class="comment">#stText.mail.DefaultEncodingDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="text" name="defaultencoding" value="#mail.defaultEncoding#" 
+		<cfinput type="text" name="defaultencoding" id="defaultencoding" value="#mail.defaultEncoding#" 
 			style="width:200px" required="no" message="#stText.mail.missingEncoding#">
 		
 		<cfelse>
-			<input type="hidden" name="defaultencoding" value="#mail.defaultEncoding#">
+			<input type="hidden" name="defaultencoding" id="defaultencoding" value="#mail.defaultEncoding#">
 		
 			<b>#mail.defaultEncoding#</b>
 		</cfif>
@@ -221,7 +221,7 @@ Mail Settings
 <tr>
 	<td class="tblHead" width="100" nowrap>#stText.Mail.LogFile#</td>
 	<td class="tblContent#css#" width="450" height="28" title="#mail.strlogfile#
-#mail.logfile#"><cfif hasAccess><cfinput type="text" name="logFile" 
+#mail.logfile#"><cfif hasAccess><cfinput type="text" name="logFile" id="logFile" 
 	value="#mail.strlogfile#" required="no"  
 	style="width:450px" message="#stText.Mail.LogFileMissing#"><cfelse><b>#mail.strlogfile#</b></cfif></td>
 </tr>
@@ -241,23 +241,23 @@ Mail Settings
 </tr>
 <tr>
 	<td class="tblHead" width="100" height="28" nowrap>#stText.Mail.SpoolInterval#</td>
-	<td class="tblContent" width="450"><cfif hasAccess><cfinput type="text" name="spoolInterval" 
+	<td class="tblContent" width="450"><cfif hasAccess><cfinput type="text" name="spoolInterval" id="spoolInterval" 
 	value="#mail.spoolInterval#" validate="integer" style="width:50px" 
 	required="no"><cfelse><b>#mail.spoolInterval#</b></cfif></td>
 </tr>
 <tr>
 	<td class="tblHead" width="100" height="28" nowrap>#stText.Mail.Timeout#</td>
-	<td class="tblContent" width="450"><cfif hasAccess><cfinput type="text" name="timeout" 
+	<td class="tblContent" width="450"><cfif hasAccess><cfinput type="text" name="timeout" id="timeout" 
 	value="#mail.timeout#" validate="integer" style="width:50px" required="no"><cfelse><b>#mail.timeout#</b></cfif></td>
 </tr>
 <cfif hasAccess>
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2"><cfoutput>
-		<input type="hidden" name="mainAction" value="#stText.Buttons.Setting#">
-		<input type="submit" class="submit" name="_mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="canel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="_mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<input type="hidden" name="mainAction" id="mainAction" value="#stText.Buttons.Setting#">
+		<input type="submit" class="submit" name="_mainAction" id="_mainAction" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="canel" id="canel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="_mainAction" id="_mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</cfoutput></td>
 </tr></cfif>
 </cfform>
@@ -288,21 +288,21 @@ Existing Collection --->
 	<cfloop query="ms">
 		<tr>
 			<td height="26">
-            <input type="hidden" name="id_#ms.currentrow#" value="#hash(ms.hostName&":"&ms.username&":"&ms.password&":"&ms.tls&":"&ms.ssl)#">
+            <input type="hidden" name="id_#ms.currentrow#" id="id_#ms.currentrow#" value="#hash(ms.hostName&":"&ms.username&":"&ms.password&":"&ms.tls&":"&ms.ssl)#">
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
-				<td><cfif not ms.readonly><input type="checkbox" class="checkbox" name="row_#ms.currentrow#" 
+				<td><cfif not ms.readonly><input type="checkbox" class="checkbox" name="row_#ms.currentrow#" id="row_#ms.currentrow#" 
 				value="#ms.currentrow#"></cfif></td>
 			</tr>
 			</table>
 			
 			</td>
 		<!--- host --->
-			<td class="tblContent" nowrap><input type="hidden" name="hostName_#ms.currentrow#" 
+			<td class="tblContent" nowrap><input type="hidden" name="hostName_#ms.currentrow#" id="hostName_#ms.currentrow#" 
 			value="#ms.hostName#">#ms.hostName#</td>
 		<!--- username --->
 			<td class="tblContent" nowrap><cfif ms.readonly>#ms.username#&nbsp;<cfelse><cfinput 
-				onKeyDown="checkTheBox(this)" type="text" name="username_#ms.currentrow#" 
+				onKeyDown="checkTheBox(this)" type="text" name="username_#ms.currentrow#" id="username_#ms.currentrow#" 
 				value="#ms.username#" required="no"  style="width:120px" 
 				message="#stText.Mail.UserNameMissing##ms.currentrow#)"></cfif></td>
 		<!--- password --->
@@ -310,22 +310,22 @@ Existing Collection --->
             
             <cfinput 
 				onKeyDown="checkTheBox(this)" type="password" passthrough='autocomplete="off"' onClick="this.value='';"
-				name="password_#ms.currentrow#" value="#stars#" required="no"  
+				name="password_#ms.currentrow#" id="password_#ms.currentrow#" value="#stars#" required="no"  
 				style="width:120px" message="#stText.Mail.PasswordMissing##ms.currentrow#)"></cfif></td>
 		<!--- port --->
 			<td class="tblContent" nowrap><cfif ms.readonly>#ms.port#&nbsp;<cfelse><cfinput onKeyDown="checkTheBox(this)" 
-				type="text" name="port_#ms.currentrow#" value="#ms.port#" required="no"  
+				type="text" name="port_#ms.currentrow#" id="port_#ms.currentrow#" value="#ms.port#" required="no"  
 				style="width:40px" validate="integer" 
 				message="#stText.Mail.PortErrorFirst##ms.currentrow##stText.Mail.PortErrorLast#"></cfif></td>
 		<!--- tls --->
 			<td class="tblContent" nowrap><cfif ms.readonly>#ms.tls#&nbsp;<cfelse>
 			<cfinput onClick="checkTheBox(this)" 
-				type="checkbox" name="tls_#ms.currentrow#" value="true" required="no"   checked="#ms.tls#"
+				type="checkbox" name="tls_#ms.currentrow#" id="tls_#ms.currentrow#" value="true" required="no"   checked="#ms.tls#"
 				></cfif></td>
 		<!--- ssl --->
 			<td class="tblContent" nowrap><cfif ms.readonly>#ms.ssl#&nbsp;<cfelse>
 			<cfinput onClick="checkTheBox(this)" 
-				type="checkbox" name="ssl_#ms.currentrow#" value="true" required="no"   checked="#ms.ssl#"
+				type="checkbox" name="ssl_#ms.currentrow#" id="ssl_#ms.currentrow#" value="true" required="no"   checked="#ms.ssl#"
 				></cfif></td>
 		<!--- check --->
 			<td class="tblContent" nowrap valign="middle" align="center">
@@ -351,20 +351,20 @@ Existing Collection --->
 			<td>
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
-				<td><input type="checkbox" class="checkbox" name="row_#ms.recordcount+1#" value="0"></td>
+				<td><input type="checkbox" class="checkbox" name="row_#ms.recordcount+1#" id="row_#ms.recordcount+1#" value="0"></td>
 			</tr>
 			</table>
-			<input type="hidden" name="id_#ms.recordcount+1#" value="new">
+			<input type="hidden" name="id_#ms.recordcount+1#" id="id_#ms.recordcount+1#" value="new">
 			</td>
 			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)"  
-			type="text" name="hostName_#ms.recordcount+1#" value="" required="no"  style="width:220px"></td>
-			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="username_#ms.recordcount+1#" value="" required="no"  style="width:120px"></td>
-			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="password" name="password_#ms.recordcount+1#" passthrough='autocomplete="off"' value="" required="no"  style="width:120px"></td>
+			type="text" name="hostName_#ms.recordcount+1#" id="hostName_#ms.recordcount+1#" value="" required="no"  style="width:220px"></td>
+			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="username_#ms.recordcount+1#" id="username_#ms.recordcount+1#" value="" required="no"  style="width:120px"></td>
+			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="password" name="password_#ms.recordcount+1#" id="password_#ms.recordcount+1#" passthrough='autocomplete="off"' value="" required="no"  style="width:120px"></td>
 			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" 
-			type="text" name="port_#ms.recordcount+1#" value="" required="no" validate="integer" 
+			type="text" name="port_#ms.recordcount+1#" id="port_#ms.recordcount+1#" value="" required="no" validate="integer" 
 			message="Value for Port (Row #ms.recordcount+1#) must be of type number" style="width:40px"></td>
-			<td class="tblContent" nowrap><cfinput onClick="checkTheBox(this)" type="checkbox" name="tls_#ms.recordcount+1#" value="true" required="no"></td>
-			<td class="tblContent" nowrap><cfinput onClick="checkTheBox(this)" type="checkbox" name="ssl_#ms.recordcount+1#" value="true" required="no"></td>
+			<td class="tblContent" nowrap><cfinput onClick="checkTheBox(this)" type="checkbox" name="tls_#ms.recordcount+1#" id="tls_#ms.recordcount+1#" value="true" required="no"></td>
+			<td class="tblContent" nowrap><cfinput onClick="checkTheBox(this)" type="checkbox" name="ssl_#ms.recordcount+1#" id="ssl_#ms.recordcount+1#" value="true" required="no"></td>
 			<td class="tblContent" nowrap valign="middle" align="center">&nbsp;</td>
 			
 		</tr>
@@ -383,11 +383,11 @@ Existing Collection --->
 				<td></td>
 				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 				<td>&nbsp;
-				<input type="hidden" name="mainAction" value="#stText.Buttons.Update#">
-				<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Verify#">
-				<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Update#">
-				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-				<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
+				<input type="hidden" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
+				<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Verify#">
+				<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Update#">
+				<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+				<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Delete#">
 				</td>	
 			</tr>
 			 </table>

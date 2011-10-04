@@ -173,7 +173,7 @@ function removeStars(field) {
 	<tr>
 		<td class="tblHead" width="200">#stText.remote.label#</td>
 		<td class="tblContent" width="450">
-			<cfinput type="text" name="label" value="#rc.label#" style="width:300px" required="yes" message="#stText.remote.LabelMissing#">
+			<cfinput type="text" name="label" id="label" value="#rc.label#" style="width:300px" required="yes" message="#stText.remote.LabelMissing#">
 			
 		</td>
 	</tr>
@@ -190,11 +190,11 @@ function removeStars(field) {
 			<span class="comment">#stText.remote.usage.desc#</span><br />
             
             <cfloop query="usage">
-            <input type="checkbox" name="usage" value="#usage.code#" <cfif FindNoCase(usage.code,rc.usage)>  checked="checked"</cfif>> #usage.displayname#<br />
+            <input type="checkbox" name="usage" id="usage" value="#usage.code#" <cfif FindNoCase(usage.code,rc.usage)>  checked="checked"</cfif>> #usage.displayname#<br />
             </cfloop>
             <!---
-			<input type="checkbox" name="usage" value="synchronisation"<cfif FindNoCase('synchronisation',rc.usage)>  checked="checked"</cfif>> #stText.remote.usage.sync#
-			<cfif request.admintype EQ "server"><br /><input type="checkbox" name="usage" value="cluster"<cfif FindNoCase('cluster',rc.usage)>  checked="checked"</cfif>> #stText.remote.usage.cluster#</cfif>--->
+			<input type="checkbox" name="usage" id="usage" value="synchronisation"<cfif FindNoCase('synchronisation',rc.usage)>  checked="checked"</cfif>> #stText.remote.usage.sync#
+			<cfif request.admintype EQ "server"><br /><input type="checkbox" name="usage" id="usage" value="cluster"<cfif FindNoCase('cluster',rc.usage)>  checked="checked"</cfif>> #stText.remote.usage.cluster#</cfif>--->
 		</td>
 	</tr>
 	
@@ -207,7 +207,7 @@ function removeStars(field) {
 		<td class="tblHead" width="200">#stText.remote.urlServer#</td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.urlServerDesc#</span><br />
-			<cfinput type="text" name="url_server" value="#rc.url_server#" style="width:450px" required="yes" message="#stText.remote.urlServerMissing#">
+			<cfinput type="text" name="url_server" id="url_server" value="#rc.url_server#" style="width:450px" required="yes" message="#stText.remote.urlServerMissing#">
 		</td>
 	</tr>
 
@@ -215,7 +215,7 @@ function removeStars(field) {
 		<td class="tblHead" width="200">#stText.remote.urlPath#</td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.urlPathDesc#</span><br />
-			<cfinput type="text" name="url_path" value="#rc.url_path#" style="width:450px" required="yes" message="#stText.remote.urlPathMissing#">
+			<cfinput type="text" name="url_path" id="url_path" value="#rc.url_path#" style="width:450px" required="yes" message="#stText.remote.urlPathMissing#">
 		</td>
 	</tr>
 <cfelse>
@@ -223,7 +223,7 @@ function removeStars(field) {
 	<tr>
 		<td class="tblHead" width="200">#stText.remote.url#</td>
 		<td class="tblContent" width="450">
-			<input type="hidden" name="url" value="#rc.url#">
+			<input type="hidden" name="url" id="url" value="#rc.url#">
 			<b>#rc.url#</b>
 		</td>
 	</tr>
@@ -232,15 +232,15 @@ function removeStars(field) {
 		<td class="tblHead" width="200">#stText.remote.serverusername#</td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.serverusernameDesc#</span><br />
-			<cfinput type="text" name="serverusername" value="#rc.serverusername#" style="width:200px">
+			<cfinput type="text" name="serverusername" id="serverusername" value="#rc.serverusername#" style="width:200px">
 		</td>
 	</tr>
 	<tr>
 		<td class="tblHead" width="200">#stText.remote.serverpassword#</td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.serverpasswordDesc#</span><br />
-			<input type="hidden" name="serverpasswordh" value="#rc.serverpasswordh#">
-			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="serverpassword" value="#rc.serverpassword#" style="width:200px">
+			<input type="hidden" name="serverpasswordh" id="serverpasswordh" value="#rc.serverpasswordh#">
+			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="serverpassword" id="serverpassword" value="#rc.serverpassword#" style="width:200px">
 		</td>
 	</tr>
 	<tr>
@@ -250,16 +250,16 @@ function removeStars(field) {
 		<td class="tblHead" width="200">#stText.remote.adminPassword[request.adminType]#</td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.adminPasswordDesc[request.adminType]#</span><br />
-			<input type="hidden" name="adminPasswordh" value="#rc.adminPasswordh#">
-			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="adminPassword" value="#rc.adminPassword#" style="width:200px" required="yes" message="#stText.remote.passwordMissing#">
+			<input type="hidden" name="adminPasswordh" id="adminPasswordh" value="#rc.adminPasswordh#">
+			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="adminPassword" id="adminPassword" value="#rc.adminPassword#" style="width:200px" required="yes" message="#stText.remote.passwordMissing#">
 		</td>
 	</tr>
 	<tr>
 		<td class="tblHead" width="200">#stText.remote.securityKey#</td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.securityKeyDesc#</span><br />
-			<input type="hidden" name="securityKeyh" value="#rc.securityKeyh#">
-			<cfinput type="text" name="securityKey" value="#rc.securityKey#" onClick="removeStars(this)" style="width:300px" required="yes" message="#stText.remote.securityKeyMissing#"></td>
+			<input type="hidden" name="securityKeyh" id="securityKeyh" value="#rc.securityKeyh#">
+			<cfinput type="text" name="securityKey" id="securityKey" value="#rc.securityKey#" onClick="removeStars(this)" style="width:300px" required="yes" message="#stText.remote.securityKeyMissing#"></td>
 	</tr>
 
 	<tr>
@@ -269,27 +269,27 @@ function removeStars(field) {
 		<td class="tblHead" width="200">#stText.remote.proxyServer#</td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.proxyServerDesc#</span><br />
-			<cfinput type="text" name="proxyServer" value="#rc.proxyServer#" style="width:250px">
+			<cfinput type="text" name="proxyServer" id="proxyServer" value="#rc.proxyServer#" style="width:250px">
 		</td>
 	</tr>
 	<tr>
 		<td class="tblHead" width="200">#stText.remote.proxyPort#</td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.proxyPortDesc#</span><br />
-			<cfinput type="text" name="proxyPort" value="#rc.proxyPort#" style="width:50px">
+			<cfinput type="text" name="proxyPort" id="proxyPort" value="#rc.proxyPort#" style="width:50px">
 		</td>
 	</tr>
 	<tr>
 		<td class="tblHead" width="200">#stText.remote.proxyUsername#</td>
 		<td class="tblContent" width="450">
-			<cfinput type="text" name="proxyUsername" value="#rc.proxyUsername#" style="width:200px">
+			<cfinput type="text" name="proxyUsername" id="proxyUsername" value="#rc.proxyUsername#" style="width:200px">
 		</td>
 	</tr>
 	<tr>
 		<td class="tblHead" width="200">#stText.remote.proxyPassword#</td>
 		<td class="tblContent" width="450">
-			<input type="hidden" name="proxyPasswordh" value="#rc.proxyPasswordh#">
-			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="proxyPassword" value="#rc.proxyPassword#" style="width:200px">
+			<input type="hidden" name="proxyPasswordh" id="proxyPasswordh" value="#rc.proxyPasswordh#">
+			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="proxyPassword" id="proxyPassword" value="#rc.proxyPassword#" style="width:200px">
 		</td>
 	</tr>
 
@@ -300,9 +300,9 @@ function removeStars(field) {
 
 <tr>
 	<td colspan="2">
-	<input type="hidden" name="run" value="create2">
-	<input type="submit" class="submit" name="_run" value="#stText.Buttons[actionType]#">
-	<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#"></td>
+	<input type="hidden" name="run" id="run" value="create2">
+	<input type="submit" class="submit" name="_run" id="_run" value="#stText.Buttons[actionType]#">
+	<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" id="cancel" value="#stText.Buttons.Cancel#"></td>
 </tr>
 
 

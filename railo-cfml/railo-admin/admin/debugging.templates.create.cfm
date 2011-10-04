@@ -100,8 +100,8 @@ Error Output--->
 <table class="tbl" width="650">
 
 <cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
-<cfinput type="hidden" name="type" value="#entry.type#" >
-<cfinput type="hidden" name="label" value="#entry.label#" >
+<cfinput type="hidden" name="type" id="type" value="#entry.type#" >
+<cfinput type="hidden" name="label" id="label" value="#entry.label#" >
 	<tr>
 		<td width="150" class="tblHead" nowrap>#stText.debug.label#</td>
 		<td width="450" class="tblContent" nowrap>#entry.label#</td>
@@ -110,9 +110,9 @@ Error Output--->
 		<td width="150" class="tblHead" nowrap>#stText.debug.iprange#</td>
 		<td width="450" class="tblContent" nowrap>
         <cfinput type="text" 
-                name="iprange" 
+                name="iprange" id="iprange" 
                 value="#entry.iprange#" style="width:350px" required="yes"
-                message="#stText.debug.iprangeMissing#"><input type="button" name="addmyip" value="#stText.debug.addMyIp#" onclick="add(this)" class="submit">
+                message="#stText.debug.iprangeMissing#"><input type="button" name="addmyip" id="addmyip" value="#stText.debug.addMyIp#" onclick="add(this)" class="submit">
         <br /><span class="comment">#replace(stText.debug.iprangeDesc,"
 ","<br />","all")#</span>
 
@@ -151,7 +151,7 @@ Error Output--->
 
 </cfif><cfif type EQ "text" or type EQ "password">
             <cfinput type="#type#" 
-                name="custom_#field.getName()#" 
+                name="custom_#field.getName()#" id="custom_#field.getName()#" 
                 value="#default#" style="width:300px" required="#field.getRequired()#" 
                 message="Missing value for field #field.getDisplayName()#">
             
@@ -159,7 +159,7 @@ Error Output--->
 			
 <cfelseif left(type,4) EQ "text">
             <cfinput type="text" 
-                name="custom_#field.getName()#" 
+                name="custom_#field.getName()#" id="custom_#field.getName()#" 
                 value="#default#" style="width:#mid(type,5)#px" required="#field.getRequired()#" 
                 message="Missing value for field #field.getDisplayName()#">
             
@@ -168,7 +168,7 @@ Error Output--->
 <cfelseif type EQ "textarea">
 			<textarea style="width:450px;height:100px;" name="custom_#field.getName()#">#default#</textarea>
 <cfelseif type EQ "hidden">
-			<cfinput type="hidden" name="custom_#field.getName()#" value="#default#">
+			<cfinput type="hidden" name="custom_#field.getName()#" id="custom_#field.getName()#" value="#default#">
 <cfelseif type EQ "time">
 			<cfsilent>
             <cfset doBR=false>
@@ -203,19 +203,19 @@ Error Output--->
 		
 		<tr>
 			<td class="tblContent"><cfinput type="text" 
-                name="custompart_d_#field.getName()#" 
+                name="custompart_d_#field.getName()#" id="custompart_d_#field.getName()#" 
                 value="#addZero(d)#" style="width:40px" required="#field.getRequired()#"   validate="integer"
                 message="Missing value for field #field.getDisplayName()#"></td>
 			<td class="tblContent"><cfinput type="text" 
-                name="custompart_h_#field.getName()#" 
+                name="custompart_h_#field.getName()#" id="custompart_h_#field.getName()#" 
                 value="#addZero(h)#" style="width:40px" required="#field.getRequired()#"  maxlength="2"  validate="integer"
                 message="Missing value for field #field.getDisplayName()#"></td>
 			<td class="tblContent"><cfinput type="text" 
-                name="custompart_m_#field.getName()#" 
+                name="custompart_m_#field.getName()#" id="custompart_m_#field.getName()#" 
                 value="#addZero(m)#" style="width:40px" required="#field.getRequired()#"  maxlength="2" validate="integer" 
                 message="Missing value for field #field.getDisplayName()#"></td>
 			<td class="tblContent"><cfinput type="text" 
-                name="custompart_s_#field.getName()#" 
+                name="custompart_s_#field.getName()#" id="custompart_s_#field.getName()#" 
                 value="#addZero(s)#" style="width:40px" required="#field.getRequired()#"  maxlength="2"  validate="integer"
                 message="Missing value for field #field.getDisplayName()#"></td>
 		</tr>
@@ -253,7 +253,7 @@ Error Output--->
                     <cfset doBR=false>
                     <table cellpadding="0" cellspacing="2">
                     <tr>
-                    	<td valign="top"><cfinput type="#type#" name="custom_#field.getName()#" value="#item#" checked="#listFindNoCase(default,item)#">&nbsp;</td>
+                    	<td valign="top"><cfinput type="#type#" name="custom_#field.getName()#" id="custom_#field.getName()#" value="#item#" checked="#listFindNoCase(default,item)#">&nbsp;</td>
                         <td>
 							#item#
                             <cfif isStruct(desc) and StructKeyExists(desc,item)><div class="comment" style="padding-bottom:4px">#desc[item]#</div></cfif>
@@ -261,7 +261,7 @@ Error Output--->
                     </tr>
                     </table>
                     <cfelse>
-                    	<cfinput type="#type#" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
+                    	<cfinput type="#type#" name="custom_#field.getName()#" id="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
                     </cfif>
                 </cfloop>
                 <cfif isStruct(desc) and StructKeyExists(desc,'_bottom')><div class="comment" style="padding-top:4px">#desc._bottom#</div></cfif>
@@ -279,7 +279,7 @@ Error Output--->
     
     <tr>
 	<td colspan="2">
-	<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.submit#"></td>
+	<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.submit#"></td>
 </tr>
 
 

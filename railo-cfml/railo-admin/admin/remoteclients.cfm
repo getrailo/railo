@@ -80,7 +80,7 @@
 		<table class="tbl">
 		<cfloop query="clients"><cfif ListFindNoCase(clients.usage,"synchronisation")>
 		<tr>
-			<td><input type="checkbox" name="_securtyKeys[]" value="#clients.securityKey#"  checked="checked"/></td>
+			<td><input type="checkbox" name="_securtyKeys[]" id="_securtyKeys[]" value="#clients.securityKey#"  checked="checked"/></td>
 			<td>#clients.label#</td>
 		</tr>
 		</cfif></cfloop>

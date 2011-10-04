@@ -39,7 +39,7 @@
 </div>
 <br /><br /><br />
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.reset#">
+			<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.reset#">
 </cfform>
 
 </center>

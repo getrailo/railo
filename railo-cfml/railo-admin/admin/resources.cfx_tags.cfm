@@ -181,7 +181,7 @@ function selectAll(field) {
 <cfform onerror="customError" name="java" action="#request.self#?action=#url.action#" method="post">
 <cfoutput>
 	<tr>
-		<td><cfif has.cfx_setting ><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></cfif></td>
+		<td><cfif has.cfx_setting ><input type="checkbox" class="checkbox" name="rro" id="rro" onclick="selectAll(this)"></cfif></td>
 		<td class="tblHead" nowrap>#stText.CFX.Name#</td>
 		<td class="tblHead" nowrap>#stText.CFX.Class#</td>
 		<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
@@ -190,20 +190,20 @@ function selectAll(field) {
 		<!--- and now display --->
 	<tr>
 		<td>
-        <input type="hidden" name="type_#jtags.currentrow#" value="#jtags.displayname#">
+        <input type="hidden" name="type_#jtags.currentrow#" id="type_#jtags.currentrow#" value="#jtags.displayname#">
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
-			<td><cfif not jtags.readOnly><input type="checkbox" class="checkbox" name="row_#jtags.currentrow#" 
+			<td><cfif not jtags.readOnly><input type="checkbox" class="checkbox" name="row_#jtags.currentrow#" id="row_#jtags.currentrow#" 
 			value="#jtags.currentrow#"></cfif></td>
 		</tr>
 		</table>
 		</td>
 		<td class="tblContent" nowrap height="28"><input type="hidden" 
-			name="name_#jtags.currentrow#" value="#jtags.name#">&lt;cfx_<b>#jtags.name#</b>&gt;</td>
+			name="name_#jtags.currentrow#" id="name_#jtags.currentrow#" value="#jtags.name#">&lt;cfx_<b>#jtags.name#</b>&gt;</td>
 		<cfset css=iif(not jtags.isvalid,de(' style="background-color:####E3D1D6"'),de(''))>
 		
 		<td class="tblContent<cfoutput>#css#</cfoutput>" nowrap><cfif not has.cfx_setting or jtags.readOnly>#jtags.class#<cfelse><cfinput 
-		onKeyDown="checkTheBox(this)" type="text" name="class_#jtags.currentrow#" value="#jtags.class#" 
+		onKeyDown="checkTheBox(this)" type="text" name="class_#jtags.currentrow#" id="class_#jtags.currentrow#" value="#jtags.class#" 
 		required="yes"  style="width:350px" message="#stText.CFX.MissingClassValue##jtags.currentrow#)"></cfif></td>
         
         
@@ -233,14 +233,14 @@ function selectAll(field) {
 		<td>
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
-			<td><input type="checkbox" class="checkbox" name="row_#idx#" value="#idx#"></td>
+			<td><input type="checkbox" class="checkbox" name="row_#idx#" id="row_#idx#" value="#idx#"></td>
 		</tr>
 		</table>
 		</td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="name_#idx#" value="" required="no" style="width:150px"></td>
+			name="name_#idx#" id="name_#idx#" value="" required="no" style="width:150px"></td>
 		<td class="tblContent" nowrap colspan="2"><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="class_#idx#" value="" required="no" style="width:350px"></td>
+			name="class_#idx#" id="class_#idx#" value="" required="no" style="width:350px"></td>
 	</tr>
 </cfif>
 </cfoutput>
@@ -259,12 +259,12 @@ function selectAll(field) {
 			<td></td>
 			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 			<td>&nbsp;
-			<input type="hidden" name="type_#idx#" value="java">
-			<input type="hidden" name="mainAction" value="updateJava">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Verify#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.save#">
-			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
+			<input type="hidden" name="type_#idx#" id="type_#idx#" value="java">
+			<input type="hidden" name="mainAction" id="mainAction" value="updateJava">
+			<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Verify#">
+			<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.save#">
+			<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+			<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Delete#">
 			</td>	
 		</tr>
 		 </table>
@@ -295,7 +295,7 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
 <cfform onerror="customError" name="cpp" action="#request.self#?action=#url.action#" method="post">
 <cfoutput>
 	<tr>
-		<td><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></td>
+		<td><input type="checkbox" class="checkbox" name="rro" id="rro" onclick="selectAll(this)"></td>
 		<td class="tblHead" nowrap>#stText.CFX.Name#</td>
 		<td class="tblHead" nowrap>#stText.CFX.serverlibrary#</td>
 		<td class="tblHead" nowrap>#stText.CFX.procedure#</td>
@@ -307,10 +307,10 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
 	<tr>
         <!--- read-only --->
 		<td>
-    	<input type="hidden" name="type_#ctags.currentrow#" value="#ctags.displayname#">
+    	<input type="hidden" name="type_#ctags.currentrow#" id="type_#ctags.currentrow#" value="#ctags.displayname#">
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
-			<td><cfif not ctags.readOnly><input type="checkbox" class="checkbox" name="row_#ctags.currentrow#" 
+			<td><cfif not ctags.readOnly><input type="checkbox" class="checkbox" name="row_#ctags.currentrow#" id="row_#ctags.currentrow#" 
 			value="#ctags.currentrow#"></cfif></td>
 		</tr>
 		</table>
@@ -318,17 +318,17 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
 		
         <!--- name --->
         <td class="tblContent" nowrap height="28"><input type="hidden" 
-			name="name_#ctags.currentrow#" value="#ctags.name#">&lt;cfx_<b>#ctags.name#</b>&gt;</td>
+			name="name_#ctags.currentrow#" id="name_#ctags.currentrow#" value="#ctags.name#">&lt;cfx_<b>#ctags.name#</b>&gt;</td>
 		<cfset css=iif(not ctags.isvalid,de(' style="background-color:####E3D1D6"'),de(''))>
 		
         <!--- serverlibrary --->
 		<td class="tblContent<cfoutput>#css#</cfoutput>" nowrap><cfif not has.cfx_setting or ctags.readOnly>#ctags.serverlibrary#<cfelse><cfinput 
-		onKeyDown="checkTheBox(this)" type="text" name="serverlibrary_#ctags.currentrow#" value="#ctags.serverlibrary#" 
+		onKeyDown="checkTheBox(this)" type="text" name="serverlibrary_#ctags.currentrow#" id="serverlibrary_#ctags.currentrow#" value="#ctags.serverlibrary#" 
 		required="yes"  style="width:250px" message="#stText.CFX.MissingClassValue##ctags.currentrow#)"></cfif></td>
         
         <!--- procedure --->
 		<td class="tblContent<cfoutput>#css#</cfoutput>" nowrap><cfif not has.cfx_setting or ctags.readOnly>#ctags.procedure#<cfelse><cfinput 
-		onKeyDown="checkTheBox(this)" type="text" name="procedure_#ctags.currentrow#" value="#ctags.procedure#" 
+		onKeyDown="checkTheBox(this)" type="text" name="procedure_#ctags.currentrow#" id="procedure_#ctags.currentrow#" value="#ctags.procedure#" 
 		required="yes"  style="width:120px" message="#stText.CFX.MissingClassValue##ctags.currentrow#)"></cfif></td>
         
         <!--- keepAlive --->
@@ -336,7 +336,7 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
 			<cfif not has.cfx_setting or ctags.readOnly>
         		#yesNoFormat(ctags.procedure)#
 			<cfelse>
-            	<input type="checkbox" class="checkbox" onclick="checkTheBox(this)" name="keepalive_#ctags.currentrow#" value="true" <cfif ctags.keepAlive>checked</cfif>>
+            	<input type="checkbox" class="checkbox" onclick="checkTheBox(this)" name="keepalive_#ctags.currentrow#" id="keepalive_#ctags.currentrow#" value="true" <cfif ctags.keepAlive>checked</cfif>>
 			</cfif>
         </td>
         
@@ -367,18 +367,18 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
 		<td>
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
-			<td><input type="checkbox" class="checkbox" name="row_#idx#" value="#idx#"></td>
+			<td><input type="checkbox" class="checkbox" name="row_#idx#" id="row_#idx#" value="#idx#"></td>
 		</tr>
 		</table>
 		</td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="name_#idx#" value="" required="no" style="width:150px"></td>
+			name="name_#idx#" id="name_#idx#" value="" required="no" style="width:150px"></td>
 		<td class="tblContent" nowrap ><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="serverlibrary_#idx#" value="" required="no" style="width:250px"></td>
+			name="serverlibrary_#idx#" id="serverlibrary_#idx#" value="" required="no" style="width:250px"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="procedure_#idx#" value="ProcessTagRequest" required="no" style="width:120px"></td>
+			name="procedure_#idx#" id="procedure_#idx#" value="ProcessTagRequest" required="no" style="width:120px"></td>
 		<td class="tblContent" nowrap colspan="2">
-        	<input type="checkbox" class="checkbox" onclick="checkTheBox(this)" name="keepalive_#idx#" value="true"></td>
+        	<input type="checkbox" class="checkbox" onclick="checkTheBox(this)" name="keepalive_#idx#" id="keepalive_#idx#" value="true"></td>
 	</tr>
 	<tr>
 		<td></td>
@@ -419,12 +419,12 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
 			<td></td>
 			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 			<td>&nbsp;
-			<input type="hidden" name="type_#idx#" value="cpp">
-			<input type="hidden" name="mainAction" value="updateJava">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Verify#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.save#">
-			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
+			<input type="hidden" name="type_#idx#" id="type_#idx#" value="cpp">
+			<input type="hidden" name="mainAction" id="mainAction" value="updateJava">
+			<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Verify#">
+			<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.save#">
+			<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+			<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Delete#">
 			</td>	
 		</tr>
 		 </table>

@@ -29,7 +29,7 @@ function selectAll(field) {
 </tr>
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
-		<td><cfif hasAccess><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></cfif><cfmodule template="tp.cfm"  width="10" height="1"></td>
+		<td><cfif hasAccess><input type="checkbox" class="checkbox" name="rro" id="rro" onclick="selectAll(this)"></cfif><cfmodule template="tp.cfm"  width="10" height="1"></td>
 		<td><cfmodule template="tp.cfm"  width="17" height="1"></td>
 		<td class="tblHead" nowrap>#stText.Mappings.VirtualHead#</td>
 		<td class="tblHead" nowrap>#stText.Mappings.PhysicalHead#</td>
@@ -40,12 +40,12 @@ function selectAll(field) {
 	<cfloop query="mappings">
 		<cfif not mappings.hidden>
 		<!--- and now display --->
-		<input type="hidden" name="stopOnError_#mappings.currentrow#" value="yes">
+		<input type="hidden" name="stopOnError_#mappings.currentrow#" id="stopOnError_#mappings.currentrow#" value="yes">
 	<tr>
 		<!--- checkbox ---->
 		<td><table border="0" cellpadding="0" cellspacing="0">
 		<tr>
-			<td><cfif not mappings.readOnly><input type="checkbox" class="checkbox" name="row_#mappings.currentrow#" value="#mappings.currentrow#"></cfif></td>
+			<td><cfif not mappings.readOnly><input type="checkbox" class="checkbox" name="row_#mappings.currentrow#" id="row_#mappings.currentrow#" value="#mappings.currentrow#"></cfif></td>
 		</tr>
 		</table></td>
 		
@@ -59,19 +59,19 @@ function selectAll(field) {
 		
 		<!--- virtual --->
 		<td height="30" class="tblContent" title="#mappings.virtual#" nowrap><input type="hidden" 
-			name="virtual_#mappings.currentrow#" value="#mappings.virtual#">#cut(mappings.virtual,14)#</td>
+			name="virtual_#mappings.currentrow#" id="virtual_#mappings.currentrow#" value="#mappings.virtual#">#cut(mappings.virtual,14)#</td>
 		
 		<!--- physical --->
 		<cfset css=iif(len(mappings.physical) EQ 0 and len(mappings.strPhysical) NEQ 0,de('Red'),de(''))>
 		<td class="tblContent#css#" nowrap <cfif len(mappings.strPhysical)>title="#mappings.Physical#"</cfif>><cfif mappings.readOnly>#cut(mappings.strPhysical,36)#<cfelse><cfinput  onKeyDown="checkTheBox(this)" type="text" 
-			name="physical_#mappings.currentrow#" value="#mappings.strPhysical#" required="no"  
+			name="physical_#mappings.currentrow#" id="physical_#mappings.currentrow#" value="#mappings.strPhysical#" required="no"  
 			style="width:200px" message="#stText.Mappings.PhysicalMissing##mappings.currentrow#)"></cfif></td>
 		
 		
 		<!--- archive --->
 		<cfset css=iif(len(mappings.archive) EQ 0 and len(mappings.strArchive) NEQ 0,de('Red'),de(''))>
 		<td class="tblContent#css#" nowrap <cfif len(mappings.strArchive)>title="#mappings.Archive#"</cfif>><cfif mappings.readOnly>#cut(mappings.strArchive,36)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="archive_#mappings.currentrow#" value="#mappings.strArchive#" required="no"  
+			name="archive_#mappings.currentrow#" id="archive_#mappings.currentrow#" value="#mappings.strArchive#" required="no"  
 			style="width:200px" message="#stText.Mappings.ArchiveMissing##mappings.currentrow#)"></cfif></td>
 		
 		<!--- primary --->
@@ -91,9 +91,9 @@ function selectAll(field) {
             </select>
             
             <!---<input 
-		type="checkbox" class="checkbox" name="trusted_#mappings.currentrow#" onClick="checkTheBox(this)" 
+		type="checkbox" class="checkbox" name="trusted_#mappings.currentrow#" id="trusted_#mappings.currentrow#" onClick="checkTheBox(this)" 
 		value="yes" <cfif mappings.Trusted>checked</cfif>>---></cfif>
-		<input type="hidden" name="toplevel_#mappings.currentrow#" value="#mappings.toplevel#">
+		<input type="hidden" name="toplevel_#mappings.currentrow#" id="toplevel_#mappings.currentrow#" value="#mappings.toplevel#">
 		</td>
 	</tr>
 	</cfif>
@@ -102,17 +102,17 @@ function selectAll(field) {
 	<tr>
 		<td><table border="0" cellpadding="0" cellspacing="0">
 		<tr>
-			<td><input type="checkbox" class="checkbox" name="row_#mappings.recordcount+1#" value="#mappings.recordcount+1#"></td>
+			<td><input type="checkbox" class="checkbox" name="row_#mappings.recordcount+1#" id="row_#mappings.recordcount+1#" value="#mappings.recordcount+1#"></td>
 		</tr>
 		</table></td>
 		
 		<td><cfmodule template="tp.cfm"  width="17" height="1"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="virtual_#mappings.recordcount+1#" value="" required="no" style="width:100px"></td>
+			name="virtual_#mappings.recordcount+1#" id="virtual_#mappings.recordcount+1#" value="" required="no" style="width:100px"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:200px"></td>
+			name="physical_#mappings.recordcount+1#" id="physical_#mappings.recordcount+1#" value="" required="no"  style="width:200px"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:200px" ></td>
+			name="archive_#mappings.recordcount+1#" id="archive_#mappings.recordcount+1#" value="" required="no"  style="width:200px" ></td>
 		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onChange="checkTheBox(this)">
 			<option value="physical" selected>#stText.Mappings.Physical#</option>
 			<option value="archive">#stText.Mappings.Archive#</option>
@@ -125,7 +125,7 @@ function selectAll(field) {
             </select>
         
         
-		<input type="hidden" name="toplevel_#mappings.recordcount+1#" value="yes">
+		<input type="hidden" name="toplevel_#mappings.recordcount+1#" id="toplevel_#mappings.recordcount+1#" value="yes">
 		</td>
 	</tr>
 </cfif>
@@ -143,11 +143,11 @@ function selectAll(field) {
 			<td></td>
 			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="54" height="1"></td>
 			<td>&nbsp;
-			<input type="hidden" name="mainAction" value="#stText.Buttons.save#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.save#">
-			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.compileAll#">
+			<input type="hidden" name="mainAction" id="mainAction" value="#stText.Buttons.save#">
+			<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.save#">
+			<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+			<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Delete#">
+			<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.compileAll#">
 			</td>	
 		</tr>
 		 </table>

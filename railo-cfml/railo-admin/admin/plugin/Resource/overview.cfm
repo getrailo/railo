@@ -34,7 +34,7 @@ function selectAll(field) {
 <table class="tbl">
 <cfform onerror="customError" action="#action('delete')#" method="post">
     <tr>
-        <td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)">
+        <td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" id="rowreadonly" onclick="selectAll(this)">
             </td>
         <td width="400" class="tblHead" nowrap>#lang.path#</td>
         <td width="100" class="tblHead" nowrap>#lang.size#</td>
@@ -47,7 +47,7 @@ function selectAll(field) {
         <table border="0" cellpadding="0" cellspacing="0">
         <tr>
             <td>
-            <input type="checkbox" class="checkbox" name="path[]" value="#req.listing.path#">
+            <input type="checkbox" class="checkbox" name="path[]" id="path[]" value="#req.listing.path#">
             </td>
         </tr>
         </table>
@@ -69,7 +69,7 @@ function selectAll(field) {
             <td></td>
             <td valign="top"><cfmodule template="/railo-context/admin/img.cfm" src="#request.adminType#-bgcolor.gif" width="1" height="14"><cfmodule template="/railo-context/admin/img.cfm" src="#request.adminType#-bgcolor.gif" width="36" height="1"></td>
              <td>&nbsp;
-            <input type="submit" class="submit" name="delete" value="#lang.btnDelete#">
+            <input type="submit" class="submit" name="delete" id="delete" value="#lang.btnDelete#">
             </td>	
         </tr>
          </table>

@@ -64,15 +64,15 @@ Create Datasource --->
 	<td class="tblHead" width="150">#stText.Overview.SerialNumber#</td>
 	<td class="tblContent">
 		<!--- <span class="comment">The new Password for the Administrator</span><br> --->
-		<cfinput type="text" name="serialNumber" value="#serial#" 
+		<cfinput type="text" name="serialNumber" id="serialNumber" value="#serial#" 
 		style="width:400px;" required="no">
 	</td>
 </tr>
 
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Change#">
-		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Change#">
+		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 </cfform></cfoutput>

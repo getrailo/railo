@@ -83,7 +83,7 @@ Overview
 			<td>
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
-				<td><input type="checkbox" class="checkbox" name="ids_#contextes.currentrow#" value="#contextes.id#">
+				<td><input type="checkbox" class="checkbox" name="ids_#contextes.currentrow#" id="ids_#contextes.currentrow#" value="#contextes.id#">
 				</td>
 				<td><a href="#go(url.action,"edit",struct(id:contextes.id))#">
 			<cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
@@ -108,8 +108,8 @@ Overview
 				<td></td>
 				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 				<td>&nbsp;
-				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
+				<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+				<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Delete#">
 				</td>	
 			</tr>
 			 </table>
@@ -141,8 +141,8 @@ Overview
 		</tr>
 		<tr>
 			<td colspan="2">
-				<input type="submit" class="submit" name="run" value="#stText.Buttons.Create#">
-				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+				<input type="submit" class="submit" name="run" id="run" value="#stText.Buttons.Create#">
+				<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
 			</td>
 		</tr>
 		</cfform>

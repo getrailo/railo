@@ -46,7 +46,7 @@
 			<form action="#sHelpKey#" method="post">
 			#sContent#
 			<b>#stText.help.addHelpNote#</b>
-				<input type="hidden" name="addHelp" value="done">
+				<input type="hidden" name="addHelp" id="addHelp" value="done">
 				<textarea name="addLocalHelp" style="width:670px;height:50px"><!---
 				---></textarea><br>
 				<input type="Submit" value="#stText.help.addNote#">

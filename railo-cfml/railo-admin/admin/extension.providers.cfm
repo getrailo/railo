@@ -141,7 +141,7 @@ function selectAll(field) {
 </tr>
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
-		<td width="30"><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"><cfmodule template="tp.cfm"  width="10" height="1"></td>
+		<td width="30"><input type="checkbox" class="checkbox" name="rro" id="rro" onclick="selectAll(this)"><cfmodule template="tp.cfm"  width="10" height="1"></td>
 		<td width="300" class="tblHead" nowrap>#stText.ext.prov.url#</td>
 		<td width="260" class="tblHead" nowrap>#stText.ext.prov.title#</td>
 		<cfif doMode><td width="80" class="tblHead" nowrap>#stText.ext.prov.mode#</td></cfif>
@@ -153,13 +153,13 @@ function selectAll(field) {
         <!--- checkbox ---->
         <td><table border="0" cellpadding="0" cellspacing="0">
         <tr>
-            <td><cfif not providers.isReadOnly><input type="checkbox" class="checkbox" name="row_#providers.currentrow#" value="#providers.currentrow#"></cfif></td>
+            <td><cfif not providers.isReadOnly><input type="checkbox" class="checkbox" name="row_#providers.currentrow#" id="row_#providers.currentrow#" value="#providers.currentrow#"></cfif></td>
         </tr>
         </table></td>
         
         <!--- url --->
         <td height="30" class="tblContent" title="#providers.url#" nowrap>
-            <input type="hidden" name="url_#providers.currentrow#" value="#providers.url#">#providers.url#
+            <input type="hidden" name="url_#providers.currentrow#" id="url_#providers.currentrow#" value="#providers.url#">#providers.url#
          </td>
          
          
@@ -197,12 +197,12 @@ function selectAll(field) {
 	<tr>
 		<td><table border="0" cellpadding="0" cellspacing="0">
 		<tr>
-			<td><input type="checkbox" class="checkbox" name="row_#providers.recordcount+1#" value="#providers.recordcount+1#"></td>
+			<td><input type="checkbox" class="checkbox" name="row_#providers.recordcount+1#" id="row_#providers.recordcount+1#" value="#providers.recordcount+1#"></td>
 		</tr>
 		</table></td>
 		
 		<td class="tblContent" nowrap colspan="#columns-1#"><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="url_#providers.recordcount+1#" value="" required="no"  style="width:600px">
+			name="url_#providers.recordcount+1#" id="url_#providers.recordcount+1#" value="" required="no"  style="width:600px">
             <br /><span class="comment">&nbsp;&nbsp;#stText.ext.prov.urlDesc#</span></td>
 	</tr>
 </cfif>
@@ -220,10 +220,10 @@ function selectAll(field) {
 			<td></td>
 			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="54" height="1"></td>
 			<td>&nbsp;
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.save#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.verify#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
-			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+			<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.save#">
+			<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.verify#">
+			<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Delete#">
+			<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
 			</td>	
 		</tr>
 		 </table>

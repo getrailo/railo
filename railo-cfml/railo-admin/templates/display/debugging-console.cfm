@@ -138,7 +138,7 @@
 									<form action="#cgi.script_name#" method="post" name="options">
 									<td rowspan="10" class="tblContent" valign="top">
 									#sReload# <input type="Checkbox" id="reloadAutomatically"<cfif ListFirst(url.opt, "|") eq 1> checked</cfif>><br>
-									#sEvery#: <input type="Text" name="interval" value="#ListLast(url.opt, '|')#" size="1" id="interval"> #sSeconds#<br><br>
+									#sEvery#: <input type="Text" name="interval" id="interval" value="#ListLast(url.opt, '|')#" size="1" id="interval"> #sSeconds#<br><br>
 									</td>
 									</form>
 								</cfif>
@@ -209,12 +209,12 @@
 						---><cfparam name="form.filterType" default="0"><!--- 
 						---><cfparam name="form.filterTime" default="0"><!--- 
 						---><span title="#sTitleFilterTemplates#" alt="#sTitleFilterTemplates#">#sFilterTemplates#</span>:<br><!---
-						---><input type="Radio" name="filterType" value="0" class="checkbox" <cfif trim(form.filterType) eq 0>checked</cfif>><span title="#sTitleIncludeOnly#" alt="#sTitleIncludeOnly#">#sIncludeOnlyTemplates#</span>&nbsp;<!---
-						---><input type="Radio" name="filterType" value="1" class="checkbox" <cfif trim(form.filterType) neq 0>checked</cfif>><span title="#sTitleExcludeOnly#" alt="#sTitleExcludeOnly#">#sExcludeOnlyTemplates#</span><br><!---
+						---><input type="Radio" name="filterType" id="filterType" value="0" class="checkbox" <cfif trim(form.filterType) eq 0>checked</cfif>><span title="#sTitleIncludeOnly#" alt="#sTitleIncludeOnly#">#sIncludeOnlyTemplates#</span>&nbsp;<!---
+						---><input type="Radio" name="filterType" id="filterType" value="1" class="checkbox" <cfif trim(form.filterType) neq 0>checked</cfif>><span title="#sTitleExcludeOnly#" alt="#sTitleExcludeOnly#">#sExcludeOnlyTemplates#</span><br><!---
 						---><textarea name="templates" style="width:380px;height:50px">#form.templates#</textarea><br><!---
-						--->#sExecutionTimeLimit#<input type="Text" name="filterTime" class="cfdebug" value="#form.filterTime#">ms<br><!---
-						---><input type="Submit" value="#sSave#" name="storeSettings" class="btn">&nbsp;<!---
-						---><input type="Submit" value="#sResetSettings#" name="resetSettings" class="btn"><!---
+						--->#sExecutionTimeLimit#<input type="Text" name="filterTime" id="filterTime" class="cfdebug" value="#form.filterTime#">ms<br><!---
+						---><input type="Submit" value="#sSave#" name="storeSettings" id="storeSettings" class="btn">&nbsp;<!---
+						---><input type="Submit" value="#sResetSettings#" name="resetSettings" id="resetSettings" class="btn"><!---
 					---></td></form></tr></table></td></tr><!---
 				---></table>
 			</td>

@@ -138,7 +138,7 @@ function doEnableProxy(enableProxy) {
 <tr>
 	<td colspan="2">
 		
-		<input class="submit" type="submit" class="submit" name="mainAction" value="#iif(proxy.enabled,de(stText.proxy.disable),de(stText.proxy.enable))#">
+		<input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#iif(proxy.enabled,de(stText.proxy.disable),de(stText.proxy.enable))#">
 	
 	</td>
 </tr>
@@ -157,11 +157,11 @@ function doEnableProxy(enableProxy) {
 	<td class="tblContent">
 		<span class="comment">#stText.proxy.serverDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="text" name="server" value="#proxy.server#" 
+		<cfinput type="text" name="server" id="server" value="#proxy.server#" 
 			style="width:200px" required="no">
 		
 		<cfelse>
-			<input type="hidden" name="server" value="#proxy.server#">
+			<input type="hidden" name="server" id="server" value="#proxy.server#">
 		
 			<b>#proxy.server#</b>
 		</cfif>
@@ -174,11 +174,11 @@ function doEnableProxy(enableProxy) {
 	<td class="tblContent">
 		<span class="comment">#stText.proxy.portDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="text" name="port" value="#proxy.port#" 
+		<cfinput type="text" name="port" id="port" value="#proxy.port#" 
 			style="width:50px" required="yes" message="#stText.proxy.missingPort#">
 		
 		<cfelse>
-			<input type="hidden" name="port" value="#proxy.port#">
+			<input type="hidden" name="port" id="port" value="#proxy.port#">
 		
 			<b>#proxy.port#</b>
 		</cfif>
@@ -191,11 +191,11 @@ function doEnableProxy(enableProxy) {
 	<td class="tblContent">
 		<span class="comment">#stText.proxy.usernameDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="text" name="username" value="#proxy.username#" 
+		<cfinput type="text" name="username" id="username" value="#proxy.username#" 
 			style="width:200px" required="no">
 		
 		<cfelse>
-			<input type="hidden" name="username" value="#proxy.username#">
+			<input type="hidden" name="username" id="username" value="#proxy.username#">
 		
 			<b>#proxy.username#</b>
 		</cfif>
@@ -208,11 +208,11 @@ function doEnableProxy(enableProxy) {
 	<td class="tblContent">
 		<span class="comment">#stText.proxy.passwordDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="password" name="password" value="#proxy.password#" 
+		<cfinput type="password" name="password" id="password" value="#proxy.password#" 
 			style="width:200px" required="no" passthrough='autocomplete="off"'>
 		
 		<cfelse>
-			<input type="hidden" name="password" value="#proxy.password#">
+			<input type="hidden" name="password" id="password" value="#proxy.password#">
 		
 			<b>#proxy.password#</b>
 		</cfif>
@@ -221,8 +221,8 @@ function doEnableProxy(enableProxy) {
 <cfif hasAccess>
 <tr>
 	<td colspan="2">
-		<input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
+		<input class="submit" type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 </cfif>

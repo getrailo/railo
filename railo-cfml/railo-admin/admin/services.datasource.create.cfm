@@ -177,8 +177,8 @@ Error Output--->
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
 <cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
-<input type="hidden" name="name" value="#datasource.name#">
-<input type="hidden" name="type" value="#datasource.type#">
+<input type="hidden" name="name" id="name" value="#datasource.name#">
+<input type="hidden" name="type" id="type" value="#datasource.type#">
 
 <cfsilent>
 	<cfset TYPE_HIDDEN=0>
@@ -191,15 +191,15 @@ Error Output--->
 	<cfset typeUsername=driver.getType('username')>
 	<cfset typePassword=driver.getType('password')>
 </cfsilent>
-<cfif typeHost EQ TYPE_HIDDEN><input type="hidden" name="host" value="#datasource.host#"></cfif>
-<cfif typeDatabase EQ TYPE_HIDDEN><input type="hidden" name="database" value="#datasource.database#"></cfif>
-<cfif typePort EQ TYPE_HIDDEN><input type="hidden" name="port" value="#datasource.port#"></cfif>
-<cfif typeUsername EQ TYPE_HIDDEN><input type="hidden" name="username" value="#datasource.username#"></cfif>
-<cfif typePassword EQ TYPE_HIDDEN><input type="hidden" name="password" value="#datasource.password#"></cfif>
+<cfif typeHost EQ TYPE_HIDDEN><input type="hidden" name="host" id="host" value="#datasource.host#"></cfif>
+<cfif typeDatabase EQ TYPE_HIDDEN><input type="hidden" name="database" id="database" value="#datasource.database#"></cfif>
+<cfif typePort EQ TYPE_HIDDEN><input type="hidden" name="port" id="port" value="#datasource.port#"></cfif>
+<cfif typeUsername EQ TYPE_HIDDEN><input type="hidden" name="username" id="username" value="#datasource.username#"></cfif>
+<cfif typePassword EQ TYPE_HIDDEN><input type="hidden" name="password" id="password" value="#datasource.password#"></cfif>
 
 <tr>
 	<td class="tblHead" width="150">Name</td>
-	<td class="tblContent" width="300"><cfinput type="text" name="newName" 
+	<td class="tblContent" width="300"><cfinput type="text" name="newName" id="newName" 
 		value="#datasource.name#" style="width:300px" ></td>
 </tr>
 <!--- 
@@ -210,7 +210,7 @@ Host --->
 	<td class="tblHead" width="150">#stText.Settings.dbHost#</td>
 	<td class="tblContent" width="300">
 		<span class="comment">#stText.Settings.dbHostDesc#</span><br>
-		<cfinput type="text" name="host" 
+		<cfinput type="text" name="host" id="host" 
 		value="#datasource.host#" style="width:300px" required="#typeHost EQ TYPE_REQUIRED#"></td>
 </tr>
 </cfif>
@@ -222,7 +222,7 @@ DataBase --->
 	<td class="tblHead" width="150">#stText.Settings.dbDatabase#</td>
 	<td class="tblContent" width="300">
 		<span class="comment">#stText.Settings.dbDatabaseDesc#</span><br>
-		<cfinput type="text" name="database" 
+		<cfinput type="text" name="database" id="database" 
 		value="#datasource.database#" style="width:300px" required="#typeDataBase EQ TYPE_REQUIRED#"></td>
 </tr>
 </cfif>
@@ -234,7 +234,7 @@ Port --->
 	<td class="tblHead" width="150">#stText.Settings.dbPort#</td>
 	<td class="tblContent" width="300">
 		<span class="comment">#stText.Settings.dbPortDesc#</span><br>
-		<cfinput type="text" name="port" validate="integer" 
+		<cfinput type="text" name="port" id="port" validate="integer" 
 		value="#datasource.port#" style="width:60px" required="#typePort EQ TYPE_REQUIRED#"></td>
 </tr>
 </cfif>
@@ -246,7 +246,7 @@ Username --->
 	<td class="tblHead" width="150">#stText.Settings.dbUser#</td>
 	<td class="tblContent" width="300">
 		<span class="comment">#stText.Settings.dbUserDesc#</span><br>
-		<cfinput type="text" name="username" 
+		<cfinput type="text" name="username" id="username" 
 		value="#datasource.username#" style="width:300px" required="#typeUsername EQ TYPE_REQUIRED#"></td>
 </tr>
 </cfif>
@@ -258,7 +258,7 @@ Password --->
 	<td class="tblHead" width="150">#stText.Settings.dbPass#</td>
 	<td class="tblContent" width="300">
 		<span class="comment">#stText.Settings.dbPassDesc#</span><br>
-		<cfinput type="password" name="Password"  passthrough='autocomplete="off"'
+		<cfinput type="password" name="Password" id="Password"  passthrough='autocomplete="off"'
 		value="#datasource.password#" style="width:300px" onClick="this.value='';" required="#typePassword EQ TYPE_REQUIRED#"></td>
 </tr>
 </cfif>
@@ -289,7 +289,7 @@ Connection Timeout --->
 		<select name="ConnectionTimeout" class="select">
 			<cfloop index="idx" from="0" to="20"><option  <cfif datasource.ConnectionTimeout EQ idx>selected</cfif>>#idx#</option></cfloop>
 		</select>
-		<!--- <cfinput type="text" name="ConnectionTimeout" 
+		<!--- <cfinput type="text" name="ConnectionTimeout" id="ConnectionTimeout" 
 		validate="integer" value="#datasource.ConnectionTimeout#" style="width:60px"> --->
 		<span class="comment">#stText.Settings.dbConnTimeoutDesc#</span>
 	</td>
@@ -302,7 +302,7 @@ validate --->
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.dbValidate#</td>
 	<td class="tblContent" width="300">
-		<cfinput type="checkbox" class="checkbox" name="validate" value="yes" checked="#isDefined('datasource.validate') and datasource.validate#">
+		<cfinput type="checkbox" class="checkbox" name="validate" id="validate" value="yes" checked="#isDefined('datasource.validate') and datasource.validate#">
 		<span class="comment">#stText.Settings.dbValidateDesc#</span>
 	</td>
 </tr>
@@ -332,7 +332,7 @@ Meta Cache--->
 		</select>
 		<br /><span class="comment">#stText.Settings.dbMetaCacheTimeoutDesc#</span>
         
-	<cfif actionType EQ "update"><br /><br /><input type="submit" class="submit" name="_run" value="#stText.Settings.flushCache#"></cfif>
+	<cfif actionType EQ "update"><br /><br /><input type="submit" class="submit" name="_run" id="_run" value="#stText.Settings.flushCache#"></cfif>
 	</td>
 </tr>
 </cfif>
@@ -342,7 +342,7 @@ Blob --->
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.dbBlob#</td>
 	<td class="tblContent" width="300">
-		<cfinput type="checkbox" class="checkbox" name="blob" value="yes" checked="#datasource.blob#">
+		<cfinput type="checkbox" class="checkbox" name="blob" id="blob" value="yes" checked="#datasource.blob#">
 		<span class="comment">#stText.Settings.dbBlobDesc#</span>
 	</td>
 </tr>
@@ -352,7 +352,7 @@ Clob --->
 <tr>
 	<td class="tblHead" width="150">#stText.Settings.dbClob#</td>
 	<td class="tblContent" width="300">
-		<cfinput type="checkbox" class="checkbox" name="clob" value="yes" checked="#datasource.clob#">
+		<cfinput type="checkbox" class="checkbox" name="clob" id="clob" value="yes" checked="#datasource.clob#">
 		<span class="comment">#stText.Settings.dbClobDesc#</span>
 	</td>
 </tr>
@@ -365,23 +365,23 @@ Allow --->
 		<table width="100%">
 		
         <tr>
-			<td class="darker" >Select:<cfinput type="checkbox" class="checkbox" name="allowed_select" value="yes" 
+			<td class="darker" >Select:<cfinput type="checkbox" class="checkbox" name="allowed_select" id="allowed_select" value="yes" 
 			checked="#datasource.select#"></td>
-			<td class="darker" >Insert:<cfinput type="checkbox" class="checkbox" name="allowed_insert" value="yes" 
+			<td class="darker" >Insert:<cfinput type="checkbox" class="checkbox" name="allowed_insert" id="allowed_insert" value="yes" 
 			checked="#datasource.insert#"></td>
-			<td class="darker" >Update:<cfinput type="checkbox" class="checkbox" name="allowed_update" value="yes" 
+			<td class="darker" >Update:<cfinput type="checkbox" class="checkbox" name="allowed_update" id="allowed_update" value="yes" 
 			checked="#datasource.update#"></td>
-			<td class="darker" >Delete:<cfinput type="checkbox" class="checkbox" name="allowed_delete" value="yes" 
+			<td class="darker" >Delete:<cfinput type="checkbox" class="checkbox" name="allowed_delete" id="allowed_delete" value="yes" 
 			checked="#datasource.delete#"></td>
-			<td class="darker" >Create:<cfinput type="checkbox" class="checkbox" name="allowed_create" value="yes" 
+			<td class="darker" >Create:<cfinput type="checkbox" class="checkbox" name="allowed_create" id="allowed_create" value="yes" 
 			checked="#datasource.create#"></td>
-			<td class="darker" >Drop:<cfinput type="checkbox" class="checkbox" name="allowed_drop" value="yes" 
+			<td class="darker" >Drop:<cfinput type="checkbox" class="checkbox" name="allowed_drop" id="allowed_drop" value="yes" 
 			checked="#datasource.drop#"></td>
-			<td class="darker" >Revoke:<cfinput type="checkbox" class="checkbox" name="allowed_revoke" value="yes" 
+			<td class="darker" >Revoke:<cfinput type="checkbox" class="checkbox" name="allowed_revoke" id="allowed_revoke" value="yes" 
 			checked="#datasource.revoke#"></td>
-			<td class="darker" >Alter:<cfinput type="checkbox" class="checkbox" name="allowed_alter" value="yes" 
+			<td class="darker" >Alter:<cfinput type="checkbox" class="checkbox" name="allowed_alter" id="allowed_alter" value="yes" 
 			checked="#datasource.alter#"></td>
-			<td class="darker" >Grant:<cfinput type="checkbox" class="checkbox" name="allowed_grant" value="yes" 
+			<td class="darker" >Grant:<cfinput type="checkbox" class="checkbox" name="allowed_grant" id="allowed_grant" value="yes" 
 			checked="#datasource.grant#"></td>
 		</tr>
 		<tr>
@@ -396,7 +396,7 @@ storage --->
 <tr>
 	<td class="tblHead" width="150"><b>#stText.Settings.dbStorage#</b></td>
 	<td class="tblContent" width="300">
-		<cfinput type="checkbox" class="checkbox" name="storage" value="yes" checked="#isDefined('datasource.storage') and datasource.storage#">
+		<cfinput type="checkbox" class="checkbox" name="storage" id="storage" value="yes" checked="#isDefined('datasource.storage') and datasource.storage#">
 		<span class="comment">#stText.Settings.dbStorageDesc#</span>
 	</td>
 </tr>
@@ -420,7 +420,7 @@ storage --->
 	<td class="tblContent" width="300"><span class="comment">#field.getDescription()#</span>
 	<cfif type EQ "text" or type EQ "password">
 	<cfinput type="#type#" 
-		name="custom_#field.getName()#" 
+		name="custom_#field.getName()#" id="custom_#field.getName()#" 
 		value="#default#" style="width:300px" required="#field.getRequired()#" 
 		message="Missing value for field #field.getDisplayName()#">
 	<cfelseif type EQ "select">
@@ -440,7 +440,7 @@ storage --->
 		<cfoutput><br />
 		<cfif default EQ field.getDefaultValue() and field.getRequired()><cfset default=listFirst(default)></cfif>
 		<cfloop index="item" list="#field.getDefaultValue()#">
-			<cfinput type="radio" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
+			<cfinput type="radio" name="custom_#field.getName()#" id="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
 			#item#
 		</cfloop>
 		
@@ -454,7 +454,7 @@ storage --->
 	<td class="tblHead" colspan="2">
     	 <table class="tbl" width="100%">
          <tr>
-         	<td class="tblContent" bgcolor="white"><input type="checkbox" checked="checked" name="verify" value="true" /> &nbsp;# stText.Settings.verifyConnection#</td>
+         	<td class="tblContent" bgcolor="white"><input type="checkbox" checked="checked" name="verify" id="verify" value="true" /> &nbsp;# stText.Settings.verifyConnection#</td>
          </tr>
          </table>
          
@@ -462,10 +462,10 @@ storage --->
 </tr>
 <tr>
 	<td colspan="2">
-    <input type="hidden" name="mark" value="#structKeyExists(form,'mark')?form.mark:"update"#">
-	<input type="hidden" name="run" value="create2">
-	<input type="submit" class="submit" name="_run" value="#stText.Buttons[actionType]#">
-	<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#"></td>
+    <input type="hidden" name="mark" id="mark" value="#structKeyExists(form,'mark')?form.mark:"update"#">
+	<input type="hidden" name="run" id="run" value="create2">
+	<input type="submit" class="submit" name="_run" id="_run" value="#stText.Buttons[actionType]#">
+	<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" id="cancel" value="#stText.Buttons.Cancel#"></td>
 </tr>
 </cfform>
 </table>

@@ -18,7 +18,7 @@ function doFocus() {<cfoutput>
 
 <tr>
 	<td class="tblHead" width="120" align="right">#stText.Login.Password#</td>
-	<td class="tblContent" width="200"><cfinput type="password" name="login_password#request.adminType#" value=""   passthrough='autocomplete="off"'
+	<td class="tblContent" width="200"><cfinput type="password" name="login_password#request.adminType#" id="login_password#request.adminType#" value=""   passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.Login.PasswordMissing#"></td>
 </tr>
 <cfoutput>
@@ -50,7 +50,7 @@ function doFocus() {<cfoutput>
 
 </cfoutput>
 <tr>
-	<td colspan="2" align="right"><input class="submit" type="submit" name="submit" value="#stText.Buttons.Submit#"></td>
+	<td colspan="2" align="right"><input class="submit" type="submit" name="submit" id="submit" value="#stText.Buttons.Submit#"></td>
 </tr>
 </cfform>
 </table>

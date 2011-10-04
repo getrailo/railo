@@ -205,7 +205,7 @@ Create Datasource --->
 #component.BaseComponentTemplate#">
 		<span class="comment">#stText.Components.BaseComponentDescription#</span><br>
 		<cfif hasAccess>
-		<cfinput type="text" name="baseComponentTemplate" value="#component.strBaseComponentTemplate#" style="width:350px" 
+		<cfinput type="text" name="baseComponentTemplate" id="baseComponentTemplate" value="#component.strBaseComponentTemplate#" style="width:350px" 
 			required="no" 
 			message="#stText.Components.BaseComponentMissing#">
 		<cfelse>
@@ -220,7 +220,7 @@ Create Datasource --->
 	<td class="tblContent">
 		<span class="comment">#stText.Components.AutoImportDescription#</span><br>
 		<cfif hasAccess>
-		<cfinput type="text" name="componentDefaultImport" value="#component.componentDefaultImport#" style="width:350px" 
+		<cfinput type="text" name="componentDefaultImport" id="componentDefaultImport" value="#component.componentDefaultImport#" style="width:350px" 
 			required="no" 
 			message="#stText.Components.AutoImportMissing#">
 		<cfelse>
@@ -234,7 +234,7 @@ Create Datasource --->
 	<td class="tblHead" width="150">#stText.Components.componentLocalSearch#</td>
 	<td class="tblContent">
 		<cfif hasAccess>
-			<input type="checkbox" class="checkbox" name="componentLocalSearch" value="yes" <cfif component.componentLocalSearch>checked</cfif>>
+			<input type="checkbox" class="checkbox" name="componentLocalSearch" id="componentLocalSearch" value="yes" <cfif component.componentLocalSearch>checked</cfif>>
 			
 		<cfelse>
 			<b>#YesNoFormat(component.componentLocalSearch)#</b><br />
@@ -257,10 +257,10 @@ Create Datasource --->
 	<td class="tblHead" width="150">#stText.Components.componentPathCache#</td>
 	<td class="tblContent">
 		<cfif hasAccess>
-			<input type="checkbox" class="checkbox" name="componentPathCache" value="yes" <cfif component.componentPathCache>checked</cfif>>
+			<input type="checkbox" class="checkbox" name="componentPathCache" id="componentPathCache" value="yes" <cfif component.componentPathCache>checked</cfif>>
             <span class="comment">#stText.Components.componentPathCacheDesc#</span>
             <cfif component.componentPathCache><br />
-            <input type="submit" class="submit" name="mainAction" value="#flushName#">
+            <input type="submit" class="submit" name="mainAction" id="mainAction" value="#flushName#">
             </cfif>
             
 		<cfelse>
@@ -284,7 +284,7 @@ Create Datasource --->
 #component.componentDumpTemplate#">
 		<span class="comment">#stText.Components.ComponentDumpTemplateDescription#</span><br>
 		<cfif hasAccess>
-			<cfinput type="text" name="componentDumpTemplate" value="#component.strcomponentDumpTemplate#" style="width:350px" 
+			<cfinput type="text" name="componentDumpTemplate" id="componentDumpTemplate" value="#component.strcomponentDumpTemplate#" style="width:350px" 
 				required="no" 
 				message="#stText.Components.ComponentDumpTemplateMissing#">
 		<cfelse>
@@ -315,7 +315,7 @@ Trigger Data Member --->
 	<td class="tblHead" width="150">#stText.Components.triggerDataMember#</td>
 	<td class="tblContent">
 		<cfif hasAccess>
-		<input class="checkbox" type="checkbox" class="checkbox" name="triggerDataMember" 
+		<input class="checkbox" type="checkbox" class="checkbox" name="triggerDataMember" id="triggerDataMember" 
 			value="yes" <cfif component.triggerDataMember>checked</cfif>>
 		<cfelse>
 		<br><b>#iif(component.triggerDataMember,de('Yes'),de('No'))#</b>
@@ -330,7 +330,7 @@ Use Shadow --->
 	<td class="tblHead" width="150">#stText.Components.useShadow#</td>
 	<td class="tblContent">
 		<cfif hasAccess>
-		<input class="checkbox" type="checkbox" class="checkbox" name="useShadow" 
+		<input class="checkbox" type="checkbox" class="checkbox" name="useShadow" id="useShadow" 
 			value="yes" <cfif component.useShadow>checked</cfif>>
 		<cfelse>
 		<br><b>#iif(component.useShadow,de('Yes'),de('No'))#</b>
@@ -344,9 +344,9 @@ Use Shadow --->
 
 <tr>
 	<td colspan="2">
-		<input class="submit" type="submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<input class="submit" type="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>
@@ -369,7 +369,7 @@ Use Shadow --->
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td><cfif hasAccess><input type="checkbox" class="checkbox" 
-			name="rro" onclick="selectAll(this)"></cfif></td>
+			name="rro" id="rro" onclick="selectAll(this)"></cfif></td>
 		<td class="tblHead" nowrap>#stText.Components.Physical#</td>
 		<td class="tblHead" nowrap>#stText.Components.Archive#</td>
 		<td class="tblHead" nowrap>#stText.Components.Primary#</td>
@@ -384,8 +384,8 @@ Use Shadow --->
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td><cfif not mappings.ReadOnly><cfset count=count+1>
-			<input type="hidden" name="virtual_#mappings.currentrow#" value="#mappings.virtual#"><input type="checkbox" class="checkbox" 
-			name="row_#mappings.currentrow#" value="#mappings.currentrow#">
+			<input type="hidden" name="virtual_#mappings.currentrow#" id="virtual_#mappings.currentrow#" value="#mappings.virtual#"><input type="checkbox" class="checkbox" 
+			name="row_#mappings.currentrow#" id="row_#mappings.currentrow#" value="#mappings.currentrow#">
 			</cfif></td>
 		</tr>
 		</table>
@@ -394,14 +394,14 @@ Use Shadow --->
 		<cfset css=iif(len(mappings.physical) EQ 0 and len(mappings.strPhysical) NEQ 0,de('Red'),de(''))>
 		<td class="tblContent#css#" title="#mappings.strphysical#
 #mappings.physical#" nowrap><cfif mappings.ReadOnly>#cut(mappings.strphysical,40)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="physical_#mappings.currentrow#" value="#mappings.strphysical#" required="no"  
+			name="physical_#mappings.currentrow#" id="physical_#mappings.currentrow#" value="#mappings.strphysical#" required="no"  
 			style="width:270px" 
 			message="#stText.Components.PhysicalMissing##mappings.currentrow#)"></cfif></td>
 		
 		<cfset css=iif(len(mappings.archive) EQ 0 and len(mappings.strArchive) NEQ 0,de('Red'),de(''))>
 		<td class="tblContent#css#" title="#mappings.strarchive#
 #mappings.archive#" nowrap><cfif mappings.ReadOnly>#cut(mappings.strarchive,40)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="archive_#mappings.currentrow#" value="#mappings.strarchive#" required="no"  
+			name="archive_#mappings.currentrow#" id="archive_#mappings.currentrow#" value="#mappings.strarchive#" required="no"  
 			style="width:270px" 
 			message="#stText.Components.ArchiveMissing##mappings.currentrow#)"></cfif></td>
 		
@@ -411,7 +411,7 @@ Use Shadow --->
 		</select></cfif></td>
 		
 		<td class="tblContent" nowrap><cfif mappings.readOnly>#iif(mappings.Trusted,de("Yes"),de("No"))#<cfelse><input type="checkbox" class="checkbox" 
-		name="trusted_#mappings.currentrow#" onClick="checkTheBox(this)" value="yes" <cfif mappings.trusted>checked</cfif>></cfif></td>
+		name="trusted_#mappings.currentrow#" id="trusted_#mappings.currentrow#" onClick="checkTheBox(this)" value="yes" <cfif mappings.trusted>checked</cfif>></cfif></td>
 	</tr>
 </cfloop>
 <cfif hasAccess>
@@ -419,22 +419,22 @@ Use Shadow --->
 		<td>
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
-			<td><input type="checkbox" class="checkbox" name="row_#mappings.recordcount+1#" value="#mappings.recordcount+1#">
-			<input type="hidden" name="virtual_#mappings.recordcount+1#" value="/#mappings.recordcount+1#"></td>
+			<td><input type="checkbox" class="checkbox" name="row_#mappings.recordcount+1#" id="row_#mappings.recordcount+1#" value="#mappings.recordcount+1#">
+			<input type="hidden" name="virtual_#mappings.recordcount+1#" id="virtual_#mappings.recordcount+1#" value="/#mappings.recordcount+1#"></td>
 		</tr>
 		</table>
 		
 		</td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:270px"></td>
+			name="physical_#mappings.recordcount+1#" id="physical_#mappings.recordcount+1#" value="" required="no"  style="width:270px"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:270px" ></td>
+			name="archive_#mappings.recordcount+1#" id="archive_#mappings.recordcount+1#" value="" required="no"  style="width:270px" ></td>
 		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onChange="checkTheBox(this)">
 			<option value="physical" selected>#stText.Components.physical#</option>
 			<option value="archive">#stText.Components.archive#</option>
 		</select></td>
 		<td class="tblContent" nowrap><input onClick="checkTheBox(this)" type="checkbox" class="checkbox" 
-		name="trusted_#mappings.recordcount+1#" value="yes"></td>
+		name="trusted_#mappings.recordcount+1#" id="trusted_#mappings.recordcount+1#" value="yes"></td>
 	</tr>
 </cfif>
 <cfif hasAccess>
@@ -451,10 +451,10 @@ Use Shadow --->
 			<td></td>
 			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 			<td>&nbsp;
-			<input type="hidden" name="mainAction" value="#stText.Buttons.Update#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Update#">
-			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
+			<input type="hidden" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
+			<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Update#">
+			<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+			<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Delete#">
 			</td>	
 		</tr>
 		 </table>

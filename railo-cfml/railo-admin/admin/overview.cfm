@@ -357,19 +357,19 @@ Error Output --->
 </tr>
 <cfform onerror="customError" action="#request.self#" method="post">
 <cfloop query="rst">
-<input type="hidden" name="hash_#rst.currentrow#" value="#rst.hash#"/>
+<input type="hidden" name="hash_#rst.currentrow#" id="hash_#rst.currentrow#" value="#rst.hash#"/>
 <tr>
-	<td class="tblContent" width="100"><input type="text" style="width:100px" name="label_#rst.currentrow#" value="#rst.label#"/></td>
+	<td class="tblContent" width="100"><input type="text" style="width:100px" name="label_#rst.currentrow#" id="label_#rst.currentrow#" value="#rst.label#"/></td>
 	<td class="tblContent" width="150"><cfif len(rst.url)><a target="_blank" href="#rst.url#/railo-context/admin/web.cfm">#rst.url#</a></cfif></td>
-	<td class="tblContent"><input type="text" style="width:220px" name="path_#rst.currentrow#" value="#rst.path#" readonly="readonly"/></td>
-	<td class="tblContent"><input type="text" style="width:220px" name="cf_#rst.currentrow#" value="#rst.config_file#" readonly="readonly"/></td>
+	<td class="tblContent"><input type="text" style="width:220px" name="path_#rst.currentrow#" id="path_#rst.currentrow#" value="#rst.path#" readonly="readonly"/></td>
+	<td class="tblContent"><input type="text" style="width:220px" name="cf_#rst.currentrow#" id="cf_#rst.currentrow#" value="#rst.config_file#" readonly="readonly"/></td>
 </tr>
 </cfloop>
 
 <tr>
 	<td colspan="4">
-		<input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
+		<input class="submit" type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 
@@ -431,7 +431,7 @@ Error Output --->
 		<tr>
 			<td class="tblHead">#stText.Overview.AddNewLanguage#</td>
 			<form action="#cgi.script_name#?#cgi.query_string#" method="post" enctype="multipart/form-data">
-			<td class="tblContent"><input type="File" name="newLangFile"><br>
+			<td class="tblContent"><input type="File" name="newLangFile" id="newLangFile"><br>
 			<input type="submit" value="#stText.Overview.Submit#"></td>
 			</form>
 		</tr>

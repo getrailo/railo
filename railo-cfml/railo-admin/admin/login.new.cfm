@@ -6,12 +6,12 @@
 <cfoutput>
 <tr>
 	<td class="tblHead" width="200" align="right">#stText.Login.Password#</td>
-	<td class="tblContent" width="200"><cfinput type="password" name="new_password" value="" passthrough='autocomplete="off"'
+	<td class="tblContent" width="200"><cfinput type="password" name="new_password" id="new_password" value="" passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.Login.PasswordMissing#"></td>
 </tr>
 <tr>
 	<td class="tblHead" width="200" align="right">#stText.Login.RetypePassword#</td>
-	<td class="tblContent" width="200"><cfinput type="password" name="new_password_re" value="" passthrough='autocomplete="off"'
+	<td class="tblContent" width="200"><cfinput type="password" name="new_password_re" id="new_password_re" value="" passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.Login.RetypePasswordMissing#"></td>
 </tr>
 <cfset f="">
@@ -27,7 +27,7 @@
 
 
 <tr>
-	<td colspan="2" width="100"><input type="submit" class="submit" name="submit" value="#stText.Buttons.Submit#"></td>
+	<td colspan="2" width="100"><input type="submit" class="submit" name="submit" id="submit" value="#stText.Buttons.Submit#"></td>
 </tr>
 </cfoutput>
 </cfform>
