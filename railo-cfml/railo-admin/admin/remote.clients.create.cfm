@@ -171,7 +171,7 @@ function removeStars(field) {
 <cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.url'),de('&url=##url.url##'),de(''))#" method="post">
 
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.label#</td>
+		<td class="tblHead" width="200"><label for="label">#stText.remote.label#</label></td>
 		<td class="tblContent" width="450">
 			<cfinput type="text" name="label" id="label" value="#rc.label#" style="width:300px" required="yes" message="#stText.remote.LabelMissing#">
 			
@@ -185,7 +185,7 @@ function removeStars(field) {
 		<td width="200" colspan="2"><br /></td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.usage.title#</td>
+		<td class="tblHead" width="200"><label for="usage">#stText.remote.usage.title#</label></td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.usage.desc#</span><br />
             
@@ -204,7 +204,7 @@ function removeStars(field) {
 	
 <cfif actionType EQ "create">
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.urlServer#</td>
+		<td class="tblHead" width="200"><label for="url_server">#stText.remote.urlServer#</label></td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.urlServerDesc#</span><br />
 			<cfinput type="text" name="url_server" id="url_server" value="#rc.url_server#" style="width:450px" required="yes" message="#stText.remote.urlServerMissing#">
@@ -212,7 +212,7 @@ function removeStars(field) {
 	</tr>
 
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.urlPath#</td>
+		<td class="tblHead" width="200"><label for="url_path">#stText.remote.urlPath#</label></td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.urlPathDesc#</span><br />
 			<cfinput type="text" name="url_path" id="url_path" value="#rc.url_path#" style="width:450px" required="yes" message="#stText.remote.urlPathMissing#">
@@ -223,23 +223,23 @@ function removeStars(field) {
 	<tr>
 		<td class="tblHead" width="200">#stText.remote.url#</td>
 		<td class="tblContent" width="450">
-			<input type="hidden" name="url" id="url" value="#rc.url#">
+			<input type="hidden" name="url" value="#rc.url#">
 			<b>#rc.url#</b>
 		</td>
 	</tr>
 </cfif>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.serverusername#</td>
+		<td class="tblHead" width="200"><label for="serverusername">#stText.remote.serverusername#</label></td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.serverusernameDesc#</span><br />
 			<cfinput type="text" name="serverusername" id="serverusername" value="#rc.serverusername#" style="width:200px">
 		</td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.serverpassword#</td>
+		<td class="tblHead" width="200"><label for="serverpassword">#stText.remote.serverpassword#</label></td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.serverpasswordDesc#</span><br />
-			<input type="hidden" name="serverpasswordh" id="serverpasswordh" value="#rc.serverpasswordh#">
+			<input type="hidden" name="serverpasswordh" value="#rc.serverpasswordh#">
 			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="serverpassword" id="serverpassword" value="#rc.serverpassword#" style="width:200px">
 		</td>
 	</tr>
@@ -247,18 +247,18 @@ function removeStars(field) {
 		<td width="150" colspan="2" ><br /><b>#stText.remote.adminAccess#</b><br /><span class="comment">#stText.remote.adminAccessDesc#</span></td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.adminPassword[request.adminType]#</td>
+		<td class="tblHead" width="200"><label for="adminPassword">#stText.remote.adminPassword[request.adminType]#</label></td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.adminPasswordDesc[request.adminType]#</span><br />
-			<input type="hidden" name="adminPasswordh" id="adminPasswordh" value="#rc.adminPasswordh#">
+			<input type="hidden" name="adminPasswordh" value="#rc.adminPasswordh#">
 			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="adminPassword" id="adminPassword" value="#rc.adminPassword#" style="width:200px" required="yes" message="#stText.remote.passwordMissing#">
 		</td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.securityKey#</td>
+		<td class="tblHead" width="200"><label for="securityKey">#stText.remote.securityKey#</label></td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.securityKeyDesc#</span><br />
-			<input type="hidden" name="securityKeyh" id="securityKeyh" value="#rc.securityKeyh#">
+			<input type="hidden" name="securityKeyh" value="#rc.securityKeyh#">
 			<cfinput type="text" name="securityKey" id="securityKey" value="#rc.securityKey#" onClick="removeStars(this)" style="width:300px" required="yes" message="#stText.remote.securityKeyMissing#"></td>
 	</tr>
 
@@ -266,29 +266,29 @@ function removeStars(field) {
 		<td width="150" colspan="2"><br /><b>#stText.remote.proxy#</b><br /><span class="comment">#stText.remote.proxyDesc#</span></td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.proxyServer#</td>
+		<td class="tblHead" width="200"><label for="proxyServer">#stText.remote.proxyServer#</label></td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.proxyServerDesc#</span><br />
 			<cfinput type="text" name="proxyServer" id="proxyServer" value="#rc.proxyServer#" style="width:250px">
 		</td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.proxyPort#</td>
+		<td class="tblHead" width="200"><label for="proxyPort">#stText.remote.proxyPort#</label></td>
 		<td class="tblContent" width="450">
 			<span class="comment">#stText.remote.proxyPortDesc#</span><br />
 			<cfinput type="text" name="proxyPort" id="proxyPort" value="#rc.proxyPort#" style="width:50px">
 		</td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.proxyUsername#</td>
+		<td class="tblHead" width="200"><label for="proxyUsername">#stText.remote.proxyUsername#</label></td>
 		<td class="tblContent" width="450">
 			<cfinput type="text" name="proxyUsername" id="proxyUsername" value="#rc.proxyUsername#" style="width:200px">
 		</td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.proxyPassword#</td>
+		<td class="tblHead" width="200"><label for="proxyPassword">#stText.remote.proxyPassword#</label></td>
 		<td class="tblContent" width="450">
-			<input type="hidden" name="proxyPasswordh" id="proxyPasswordh" value="#rc.proxyPasswordh#">
+			<input type="hidden" name="proxyPasswordh" value="#rc.proxyPasswordh#">
 			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="proxyPassword" id="proxyPassword" value="#rc.proxyPassword#" style="width:200px">
 		</td>
 	</tr>
@@ -300,9 +300,9 @@ function removeStars(field) {
 
 <tr>
 	<td colspan="2">
-	<input type="hidden" name="run" id="run" value="create2">
-	<input type="submit" class="submit" name="_run" id="_run" value="#stText.Buttons[actionType]#">
-	<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" id="cancel" value="#stText.Buttons.Cancel#"></td>
+	<input type="hidden" name="run" value="create2">
+	<input type="submit" class="submit" name="_run" value="#stText.Buttons[actionType]#">
+	<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#"></td>
 </tr>
 
 

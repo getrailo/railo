@@ -22,8 +22,8 @@ Installed Applications --->
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
 <tr>
-		<td class="tblHead" nowrap><input type="text" name="filter" id="filter" style="width:100%" value="#session.extFilter.filter#" /></td>
-		<td class="tblHead" width="50" nowrap><input type="submit" class="submit" name="mainAction" id="mainAction" value="filter"></td>
+		<td class="tblHead" nowrap><input type="text" name="filter" style="width:100%" value="#session.extFilter.filter#" /></td>
+		<td class="tblHead" width="50" nowrap><input type="submit" class="submit" name="mainAction" value="filter"></td>
 	</tr>
 	<tr>
 		<td width="380" colspan="2" align="right"></td>
@@ -117,8 +117,8 @@ Not Installed Applications --->
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
 <tr>
-		<td class="tblHead" nowrap><input type="text" name="filter2" id="filter2" style="width:100%" value="#session.extFilter.filter2#" /></td>
-		<td class="tblHead" width="50" nowrap><input type="submit" class="submit" name="mainAction" id="mainAction" value="filter"></td>
+		<td class="tblHead" nowrap><input type="text" name="filter2" style="width:100%" value="#session.extFilter.filter2#" /></td>
+		<td class="tblHead" width="50" nowrap><input type="submit" class="submit" name="mainAction" value="filter"></td>
 	</tr>
 	<tr>
 		<td width="380" colspan="2" align="right"></td>
@@ -214,10 +214,10 @@ Not Installed Applications --->
 
 <tr>
 		<td width="20"></td>
-		<td width="225" class="tblHead" nowrap><input type="text" name="nameFilter2" id="nameFilter2" style="width:225px" value="#session.extFilter2.name#" /></td>
-		<td width="130" class="tblHead" nowrap><input type="text" name="categoryFilter2" id="categoryFilter2" style="width:130px" value="#session.extFilter2.category#" /></td>
-		<td width="225" class="tblHead" nowrap><input type="text" name="providerFilter2" id="providerFilter2" style="width:225px" value="#session.extFilter2.provider#" /></td>
-		<td class="tblHead" nowrap><input type="submit" class="submit" name="mainAction" id="mainAction" value="filter"></td>
+		<td width="225" class="tblHead" nowrap><input type="text" name="nameFilter2" style="width:225px" value="#session.extFilter2.name#" /></td>
+		<td width="130" class="tblHead" nowrap><input type="text" name="categoryFilter2" style="width:130px" value="#session.extFilter2.category#" /></td>
+		<td width="225" class="tblHead" nowrap><input type="text" name="providerFilter2" style="width:225px" value="#session.extFilter2.provider#" /></td>
+		<td class="tblHead" nowrap><input type="submit" class="submit" name="mainAction" value="filter"></td>
 	</tr>
 	<tr>
 		<td width="380" colspan="7" align="right"></td>
@@ -253,10 +253,10 @@ Not Installed Applications --->
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-				<input type="radio" class="radio" name="row" id="row" value="#data.currentrow#">
-                <input type="hidden" name="id_#data.currentrow#" id="id_#data.currentrow#" value="#data.id#">
-                <input type="hidden" name="uid_#data.currentrow#" id="uid_#data.currentrow#" value="#data.uid#">
-                <input type="hidden" name="hashProvider_#data.currentrow#" id="hashProvider_#data.currentrow#" value="#hash(data.provider)#">
+				<input type="radio" class="radio" name="row" value="#data.currentrow#">
+                <input type="hidden" name="id_#data.currentrow#" value="#data.id#">
+                <input type="hidden" name="uid_#data.currentrow#" value="#data.uid#">
+                <input type="hidden" name="hashProvider_#data.currentrow#" value="#hash(data.provider)#">
 				</td>
 			</tr>
 			</table>
@@ -293,7 +293,7 @@ Not Installed Applications --->
         <td></td>
         <td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1" /></td>
         <td>&nbsp;
-        <input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.install#">
+        <input type="submit" class="submit" name="mainAction" value="#stText.Buttons.install#">
         </td>	
     </tr>
      </table>

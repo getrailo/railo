@@ -238,11 +238,11 @@
         <cfset fields&=","&formPrefix&item.getName()>
         <cfset isError=isDefined('err.'&item.getName())><!--- @todo wenn das feld message heisst gibt es konflikt --->
         <cfif item.getType() EQ "hidden">
-        	 <input type="hidden" name="#formPrefix##item.getName()#" id="#formPrefix##item.getName()#" value="#HTMLEditFormat(item.getValue())#">
+        	 <input type="hidden" name="#formPrefix##item.getName()#" value="#HTMLEditFormat(item.getValue())#">
         <cfelse>
         <tr>
     		<td>&nbsp;</td>
-            <cfif len(trim(item.getLabel()))><td class="tblHead" width="100">#item.getLabel()#</td></cfif>
+            <cfif len(trim(item.getLabel()))><td class="tblHead" width="100"><label for="#formPrefix##item.getName()#">#item.getLabel()#</label></td></cfif>
             <td <cfif len(trim(item.getLabel())) EQ 0>colspan="2" width="500"<cfelse> width="400"</cfif> class="#iif(isError,de('tblContentRed'),de('tblContent'))#">
             <cfif isError><span class="CheckError">#err[item.getName()]#</span><br /></cfif>
                 
@@ -251,7 +251,7 @@
                     <cfset options=item.getOptions()>
                     
                     <cfif arrayLen(options)>
-                    <select name="#formPrefix##item.getName()#">
+                    <select name="#formPrefix##item.getName()#" id="#formPrefix##item.getName()#">
                     <cfloop array="#options#" index="option">
                         <cfif isDefined('fromForm')>
 							<cfset selected=fromForm EQ option.getValue()>
@@ -277,7 +277,7 @@
                             <cfset selected=option.getSelected()>
                         </cfif>
                         <tr>
-                            <td valign="top"><input type="#item.getType()#" name="#formPrefix##item.getName()#" id="#formPrefix##item.getName()#" value="#HTMLEditFormat(option.getValue())#" <cfif selected> checked="checked"</cfif> /></td>
+                            <td valign="top"><input type="#item.getType()#" name="#formPrefix##item.getName()#" value="#HTMLEditFormat(option.getValue())#" <cfif selected> checked="checked"</cfif> /></td>
                             <td valign="top">
                             	<table border="0" cellpadding="5" cellspacing="0" class="tbl">
                                 <tr>
@@ -295,7 +295,7 @@
                         <cfelse>
                             <cfset selected=item.getSelected()>
                         </cfif>
-                       <input type="#item.getType()#" name="#formPrefix##item.getName()#" id="#formPrefix##item.getName()#" value="#HTMLEditFormat(value)#"  <cfif selected> checked="checked"</cfif>/>
+                       <input type="#item.getType()#" name="#formPrefix##item.getName()#" value="#HTMLEditFormat(value)#"  <cfif selected> checked="checked"</cfif>/>
                     </cfif>
             <!--- text --->
                 <cfelse>
@@ -315,14 +315,14 @@
     	
     <td>&nbsp;</td>
     <td colspan="2">
-    <input type="hidden" name="step" id="step" value="#url.step#">
-    <input type="hidden" name="repPath" id="repPath" value="#zip#">
-    <input type="hidden" name="fields" id="fields" value="#ListCompact(fields)#">
+    <input type="hidden" name="step" value="#url.step#">
+    <input type="hidden" name="repPath" value="#zip#">
+    <input type="hidden" name="fields" value="#ListCompact(fields)#">
     
     <cfloop collection="#form#" item="key">
     	<cfif len(key) gt 3 and left(key,3) EQ "dyn">
         	<cfset stp=mid(key,4,find('_',key)-4)>
-    		<cfif stp NEQ url.step><input type="hidden" name="#key#" id="#key#" value="#HTMLEditFormat( form[key])#"></cfif>
+    		<cfif stp NEQ url.step><input type="hidden" name="#key#" value="#HTMLEditFormat( form[key])#"></cfif>
     	</cfif>
     </cfloop>
     
@@ -330,15 +330,15 @@
     
     
     <cfif stepLen EQ 1>
-    	<input type="submit" class="submit" name="install" id="install" value="#stText.Buttons[iif(not StructKeyExists(detail,"installed"),de('install'),de('update'))]#">
+    	<input type="submit" class="submit" name="install" value="#stText.Buttons[iif(not StructKeyExists(detail,"installed"),de('install'),de('update'))]#">
     <cfelseif isFirst>
-    	<input type="submit" class="submit" name="next" id="next" value="#stText.Buttons.next#">
+    	<input type="submit" class="submit" name="next" value="#stText.Buttons.next#">
     <cfelseif isLast>
-    	<input type="submit" class="submit" name="previous" id="previous" value="#stText.Buttons.previous#">
-    	<input type="submit" class="submit" name="install" id="install" value="#stText.Buttons[iif(not StructKeyExists(detail,"installed"),de('install'),de('update'))]#">
+    	<input type="submit" class="submit" name="previous" value="#stText.Buttons.previous#">
+    	<input type="submit" class="submit" name="install" value="#stText.Buttons[iif(not StructKeyExists(detail,"installed"),de('install'),de('update'))]#">
     <cfelse>
-    	<input type="submit" class="submit" name="previous" id="previous" value="#stText.Buttons.previous#">
-    	<input type="submit" class="submit" name="next" id="next" value="#stText.Buttons.next#">
+    	<input type="submit" class="submit" name="previous" value="#stText.Buttons.previous#">
+    	<input type="submit" class="submit" name="next" value="#stText.Buttons.next#">
     	
     </cfif>
     </td>

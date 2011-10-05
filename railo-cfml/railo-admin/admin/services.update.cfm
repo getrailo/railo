@@ -148,20 +148,20 @@ Settings --->
     <cfset isCustom=true>
     <table class="tbl">
     <tr>
-    	<td valign="top"><input type="radio" name="location" id="location" value="http://www.getrailo.org"<cfif update.location EQ 'http://www.getrailo.org'> <cfset isCustom=false>checked="checked"</cfif> /></td>
-        <td>#stText.services.update.location_www#<br /><span class="comment">#stText.services.update.location_wwwdesc#</span></td>
+    	<td valign="top"><input type="radio" name="location" id="location_www" value="http://www.getrailo.org"<cfif update.location EQ 'http://www.getrailo.org'> <cfset isCustom=false>checked="checked"</cfif> /></td>
+        <td><label for="location_www">#stText.services.update.location_www#</label><br /><span class="comment">#stText.services.update.location_wwwdesc#</span></td>
     </tr>
     <tr>
-    	<td valign="top"><input type="radio" name="location" id="location" value="http://preview.getrailo.org"<cfif update.location EQ 'http://preview.getrailo.org'> <cfset isCustom=false>checked="checked"</cfif> /></td>
-        <td>#stText.services.update.location_preview#<br /><span class="comment">#stText.services.update.location_previewdesc#</span></td>
+    	<td valign="top"><input type="radio" name="location" id="location_preview" value="http://preview.getrailo.org"<cfif update.location EQ 'http://preview.getrailo.org'> <cfset isCustom=false>checked="checked"</cfif> /></td>
+        <td><label for="location_preview">#stText.services.update.location_preview#</label><br /><span class="comment">#stText.services.update.location_previewdesc#</span></td>
     </tr>
     <tr>
-    	<td valign="top"><input type="radio" name="location" id="location" value="http://dev.getrailo.org"<cfif update.location EQ 'http://dev.getrailo.org'> <cfset isCustom=false>checked="checked"</cfif> /></td>
-        <td>#stText.services.update.location_dev#<br /><span class="comment">#stText.services.update.location_devdesc#</span></td>
+    	<td valign="top"><input type="radio" name="location" id="location_dev" value="http://dev.getrailo.org"<cfif update.location EQ 'http://dev.getrailo.org'> <cfset isCustom=false>checked="checked"</cfif> /></td>
+        <td><label for="location_dev">#stText.services.update.location_dev#</label><br /><span class="comment">#stText.services.update.location_devdesc#</span></td>
     </tr>
     <tr>
-    	<td valign="top"><input type="radio" name="location" id="location"<cfif isCustom> checked="checked"</cfif> value="" /></td>
-        <td>#stText.services.update.location_custom# <input onkeydown="checkTheBox(this)"  onclick="checkTheBox(this)" type="text" class="text" name="locationCustom" id="locationCustom" size="40" value="<cfif isCustom>#update.location#</cfif>"><br />
+    	<td valign="top"><input type="radio" name="location" id="location_custom"<cfif isCustom> checked="checked"</cfif> value="" /></td>
+        <td><label>#stText.services.update.location_custom# <input onkeydown="checkTheBox(this)"  onclick="checkTheBox(this)" type="text" class="text" name="locationCustom" id="locationCustom" size="40" value="<cfif isCustom>#update.location#</cfif>"></label><br />
         <span class="comment">#stText.services.update.location_customDesc#</span></td>
     </tr>
     </table>
@@ -192,8 +192,8 @@ Settings --->
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr></cfif>
 </cfform>
@@ -259,7 +259,7 @@ run update --->
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.services.update.exeRun#">
+		<input type="submit" class="submit" name="mainAction" value="#stText.services.update.exeRun#">
 	</td>
 </tr>
 </cfform>
@@ -281,7 +281,7 @@ run update --->
     <cfmodule template="remoteclients.cfm" colspan="2">
     <tr>
         <td colspan="2">
-            <input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.services.update.lib#">
+            <input type="submit" class="submit" name="mainAction" value="#stText.services.update.lib#">
         </td>
     </tr>
     </cfform>
@@ -322,8 +322,8 @@ remove update --->
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.services.update.removeRun#">
-		<input type="submit" class="submit" name="latest" id="latest" value="#replace(stText.services.update.removeLatest,'{version}',version)#">
+		<input type="submit" class="submit" name="mainAction" value="#stText.services.update.removeRun#">
+		<input type="submit" class="submit" name="latest" value="#replace(stText.services.update.removeLatest,'{version}',version)#">
 	</td>
 </tr>
 </cfform>

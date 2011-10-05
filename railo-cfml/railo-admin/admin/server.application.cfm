@@ -167,38 +167,37 @@ function selectCustom(form) {
 		
 		<table class="tbl">
 		<tr>
-			<td class="tblHead">none</td>
-			<td class="tblContent"><input type="radio" class="radio" onclick="deSelectCustom(this.form)" name="scriptProtect" id="scriptProtect" value="none" <cfif isNone>checked="checked"</cfif>><span class="comment">#stText.application.scriptProtectNone#</span></td>
+			<td class="tblHead"><label for="scriptProtect_none">none</label></td>
+			<td class="tblContent"><input type="radio" class="radio" onclick="deSelectCustom(this.form)" name="scriptProtect" id="scriptProtect_none" value="none" <cfif isNone>checked="checked"</cfif>><span class="comment">#stText.application.scriptProtectNone#</span></td>
 		</tr>
 		<tr>
-			<td class="tblHead">all</td>
-			<td class="tblContent"><input type="radio" onclick="deSelectCustom(this.form)" class="radio" name="scriptProtect" id="scriptProtect" value="all" <cfif isAll>checked="checked"</cfif>><span class="comment">#stText.application.scriptProtectAll#</span></td>
+			<td class="tblHead"><label for="scriptProtect_all">all</label></td>
+			<td class="tblContent"><input type="radio" onclick="deSelectCustom(this.form)" class="radio" name="scriptProtect" id="scriptProtect_all" value="all" <cfif isAll>checked="checked"</cfif>><span class="comment">#stText.application.scriptProtectAll#</span></td>
 		</tr>
 		<tr>
-			<td class="tblHead">custom</td>
-			<td class="tblContent"><input type="radio" class="radio" name="scriptProtect" id="scriptProtect" value="custom" <cfif isCustom>checked="checked"</cfif>><span class="comment">#stText.application.scriptProtectCustom#</span>
+			<td class="tblHead"><label for="scriptProtect_custom">custom</label></td>
+			<td class="tblContent"><input type="radio" class="radio" name="scriptProtect" id="scriptProtect_custom" value="custom" <cfif isCustom>checked="checked"</cfif>><span class="comment">#stText.application.scriptProtectCustom#</span>
 			<table class="tbl">
 			<tr>
-				<td class="tblHead">cgi</td>
-				<td class="tblContent"><input type="checkbox" onclick="selectCustom(this.form);" class="checkbox" name="scriptProtect_custom" id="scriptProtect_custom" 
+				<td class="tblHead"><label for="scriptProtect_custom_cgi">cgi</label></td>
+				<td class="tblContent"><input type="checkbox" onclick="selectCustom(this.form);" class="checkbox" name="scriptProtect_custom" id="scriptProtect_custom_cgi" 
 				<cfif ListFindNoCase(appSettings.scriptProtect,'cgi')> checked="checked"</cfif> value="cgi"></td>
-				<td class="tblHead">cookie</td>
-				<td class="tblContent"><input type="checkbox" onclick="selectCustom(this.form);" class="checkbox" name="scriptProtect_custom" id="scriptProtect_custom" 
+				<td class="tblHead"><label for="scriptProtect_custom_cookie">cookie</label></td>
+				<td class="tblContent"><input type="checkbox" onclick="selectCustom(this.form);" class="checkbox" name="scriptProtect_custom" id="scriptProtect_custom_cookie" 
 				<cfif ListFindNoCase(appSettings.scriptProtect,'cookie')> checked="checked"</cfif> value="cookie"></td>
-				<td class="tblHead">form</td>
-				<td class="tblContent"><input type="checkbox" onclick="selectCustom(this.form);" class="checkbox" name="scriptProtect_custom" id="scriptProtect_custom" 
+				<td class="tblHead"><label for="scriptProtect_custom_form">form</label></td>
+				<td class="tblContent"><input type="checkbox" onclick="selectCustom(this.form);" class="checkbox" name="scriptProtect_custom" id="scriptProtect_custom_form" 
 				<cfif ListFindNoCase(appSettings.scriptProtect,'form')> checked="checked"</cfif> value="form"></td>
-				<td class="tblHead">url</td>
-				<td class="tblContent"><input type="checkbox" onclick="selectCustom(this.form);" class="checkbox" name="scriptProtect_custom" id="scriptProtect_custom" 
+				<td class="tblHead"><label for="scriptProtect_custom_url">url</label></td>
+				<td class="tblContent"><input type="checkbox" onclick="selectCustom(this.form);" class="checkbox" name="scriptProtect_custom" id="scriptProtect_custom_url" 
 				<cfif ListFindNoCase(appSettings.scriptProtect,'url')> checked="checked"</cfif> value="url"></td>
-			
 			</tr>
 			</table>
 			</td>
 		</tr>
 		</table>
 		<cfelse>
-			<input type="hidden" name="scriptProtect" id="scriptProtect" value="#appSettings.scriptProtect#">
+			<input type="hidden" name="scriptProtect" value="#appSettings.scriptProtect#">
 		
 			<br /><b>#appSettings.scriptProtect#</b>
 		</cfif>
@@ -214,10 +213,10 @@ function selectCustom(form) {
 		<span class="comment">#stText.application.RequestTimeoutDescription#</span>
 		<table class="tbl">
 		<tr>
-			<td class="tblHead">#stText.General.Days#</td>
-			<td class="tblHead">#stText.General.Hours#</td>
-			<td class="tblHead">#stText.General.Minutes#</td>
-			<td class="tblHead">#stText.General.Seconds#</td>
+			<td class="tblHead"><label for="request_days">#stText.General.Days#</label></td>
+			<td class="tblHead"><label for="request_hours">#stText.General.Hours#</label></td>
+			<td class="tblHead"><label for="request_minutes">#stText.General.Minutes#</label></td>
+			<td class="tblHead"><label for="request_seconds">#stText.General.Seconds#</label></td>
 		</tr>
 		
 		<cfif hasAccess>
@@ -250,13 +249,13 @@ function selectCustom(form) {
 
 <!--- request timeout url --->
 <tr>
-	<td class="tblHead" width="150">#stText.application.AllowURLRequestTimeout#</td>
+	<td class="tblHead" width="150"><label for="AllowURLRequestTimeout">#stText.application.AllowURLRequestTimeout#</label></td>
 	<td class="tblContent">
 		<cfif hasAccess>
             <input type="checkbox" name="AllowURLRequestTimeout" id="AllowURLRequestTimeout" value="true"
 			<cfif appSettings.AllowURLRequestTimeout>  checked="checked"</cfif>>
 		<cfelse>
-        	<input type="hidden" name="AllowURLRequestTimeout" id="AllowURLRequestTimeout" value="#appSettings.AllowURLRequestTimeout#">
+        	<input type="hidden" name="AllowURLRequestTimeout" value="#appSettings.AllowURLRequestTimeout#">
             <b>#yesNoFormat(appSettings.AllowURLRequestTimeout)#</b>
         </cfif>
 		
@@ -271,9 +270,9 @@ function selectCustom(form) {
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction1" id="mainAction1" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction1" id="mainAction1" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<input type="submit" class="submit" name="mainAction1" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction1" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>
@@ -298,14 +297,14 @@ function selectCustom(form) {
 		<table class="tbl" width="100%">
         <cfloop index="key" list="none,classic,modern,mixed">
 		<tr>
-			<td width="200" class="tblHead" nowrap="nowrap">#stText.application['listenerType_' & key]#</td>
-			<td width="400" class="tblContent"><input type="radio" name="type" id="type" value="#key#" <cfif listener.type EQ key>checked="checked"</cfif>>
+			<td width="200" class="tblHead" nowrap="nowrap"><label for="type_#key#">#stText.application['listenerType_' & key]#</label></td>
+			<td width="400" class="tblContent"><input type="radio" name="type" id="type_#key#" value="#key#" <cfif listener.type EQ key>checked="checked"</cfif>>
 			<span class="comment">#stText.application['listenerTypeDescription_' & key]#</span></td>
 		</tr>
 		</cfloop>
 		</table>
 	<cfelse>
-		<input type="hidden" name="type" id="type" value="#listener.type#">
+		<input type="hidden" name="type" value="#listener.type#">
 		<b>#listener.type#</b><br />
 		<span class="comment">#stText.application['listenerTypeDescription_' & listener.type]#</span>
 	</cfif>
@@ -322,14 +321,14 @@ function selectCustom(form) {
 		<table class="tbl" width="100%">
 		<cfloop index="key" list="curr,root,curr2root">
 		<tr>
-			<td width="200" class="tblHead" nowrap="nowrap">#stText.application['listenerMode_' & key]#</td>
-			<td width="400" class="tblContent"><input type="radio" name="mode" id="mode" value="#key#" <cfif listener.mode EQ key>checked="checked"</cfif>>
+			<td width="200" class="tblHead" nowrap="nowrap"><label for="mode_#key#">#stText.application['listenerMode_' & key]#</label></td>
+			<td width="400" class="tblContent"><input type="radio" name="mode" id="mode_#key#" value="#key#" <cfif listener.mode EQ key>checked="checked"</cfif>>
 			<span class="comment">#stText.application['listenerModeDescription_' & key]#</span></td>
 		</tr>
 		</cfloop>
 		</table>
 	<cfelse>
-		<input type="hidden" name="type" id="type" value="#listener.mode#">
+		<input type="hidden" name="type" value="#listener.mode#">
 		<b>#listener.mode#</b><br />
 		<span class="comment">#stText.application['listenerModeDescription_' & listener.mode]#</span>
 	</cfif>
@@ -343,9 +342,9 @@ function selectCustom(form) {
 <cfmodule template="remoteclients.cfm" colspan="3">
 <tr>
 	<td colspan="3">
-		<input type="submit" class="submit" name="mainAction2" id="mainAction2" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction2" id="mainAction2" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<input type="submit" class="submit" name="mainAction2" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction2" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>

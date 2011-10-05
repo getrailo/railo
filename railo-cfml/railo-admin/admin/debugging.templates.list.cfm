@@ -97,13 +97,13 @@ function setDesc(id,key){
 <table class="tbl" width="740">
 <cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
 <tr>
-	<td class="tblHead" width="150">#stText.Debug.EnableDebugging#</td>
+	<td class="tblHead" width="150"><label for="debug">#stText.Debug.EnableDebugging#</label></td>
 	<td class="tblContent" height="28">
 		<cfset lbl=iif(_debug.debug,de(stText.general.yes),de(stText.general.no))>
 	
 		<span class="comment">#stText.Debug.EnableDescription#</span><br />
 		<cfif hasAccess>
-			<select name="debug">
+			<select name="debug" id="debug">
 				<cfif request.admintype EQ "web">
 					<option #iif(_debug.debugsrc EQ "server",de('selected'),de(''))# value="">#stText.Regional.ServerProp[request.adminType]# <cfif _debug.debugsrc EQ "server">(#lbl#) </cfif></option>
 					<option #iif(_debug.debugsrc EQ "web" and _debug.debug,de('selected'),de(''))# value="true">#stText.general.yes#</option>
@@ -116,7 +116,7 @@ function setDesc(id,key){
 		
 			<!--- <input type="checkbox" class="checkbox" name="debug" id="debug" value="yes" <cfif debug.debug>checked</cfif>>--->
 		<cfelse>
-			<b>#lbl#</b> <input type="hidden" name="debug" id="debug" value="#_debug.debug#">
+			<b>#lbl#</b> <input type="hidden" name="debug" value="#_debug.debug#">
 		</cfif>
 		
 		
@@ -126,9 +126,9 @@ function setDesc(id,key){
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>
@@ -151,15 +151,15 @@ function setDesc(id,key){
 
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
-		<cfif isWeb><td width="40"><input type="checkbox" class="checkbox" name="rowreadonly" id="rowreadonly" onclick="selectAll(this)"></td></cfif>
+		<cfif isWeb><td width="40"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td></cfif>
 		<td width="160" class="tblHead" nowrap>#stText.debug.label#</td>
 		<td width="#isWeb?440:480#" class="tblHead" nowrap>#stText.debug.ipRange#</td>
 		<td width="100" class="tblHead" nowrap># stText.debug.type#</td>
 	</tr>
 	<cfloop query="qry">
     <cfif IsSimpleValue(qry.driver)><cfcontinue></cfif>
-   	<input type="hidden" name="id_#qry.currentrow#" id="id_#qry.currentrow#" value="#qry.id#">
-    <input type="hidden" name="type_#qry.currentrow#" id="type_#qry.currentrow#" value="#qry.type#">
+   	<input type="hidden" name="id_#qry.currentrow#" value="#qry.id#">
+    <input type="hidden" name="type_#qry.currentrow#" value="#qry.type#">
     
     <tr>
     <cfif isWeb>
@@ -167,7 +167,7 @@ function setDesc(id,key){
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td>
-			<input type="checkbox" class="checkbox" name="row_#qry.currentrow#" id="row_#qry.currentrow#" value="#qry.currentrow#">
+			<input type="checkbox" class="checkbox" name="row_#qry.currentrow#" value="#qry.currentrow#">
 			</td>
             <td>
             <a href="#request.self#?action=#url.action#&action2=create&id=#qry.id#">
@@ -196,8 +196,8 @@ function setDesc(id,key){
 			<td></td>
 			<td valign="top"><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="36" height="1"></td>
 			<td>&nbsp;
-			<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.delete#">
-			<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.delete#">
+			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 			</td>	
 		</tr>
 		 </table>
@@ -224,7 +224,7 @@ function setDesc(id,key){
 	<table class="tbl" width="420">
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
-		<td class="tblHead" width="50">#stText.debug.label#</td>
+		<td class="tblHead" width="50"><label for="label">#stText.debug.label#<label></td>
 		<td class="tblContent" width="370"><cfinput type="text" name="label" id="label" value="" style="width:370px" required="yes" 
 			message="#stText.debug.labelMissing#"></td>
 	</tr>
@@ -245,8 +245,8 @@ function setDesc(id,key){
 	</tr>
 	<tr>
 		<td colspan="2">
-			<input type="submit" class="submit" name="run" id="run" value="#stText.Buttons.create#">
-			<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+			<input type="submit" class="submit" name="run" value="#stText.Buttons.create#">
+			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 		</td>
 	</tr>
 	</cfform>

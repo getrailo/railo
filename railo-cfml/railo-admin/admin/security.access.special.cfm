@@ -108,8 +108,8 @@ Overview
 				<td></td>
 				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 				<td>&nbsp;
-				<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
-				<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Delete#">
+				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
 				</td>	
 			</tr>
 			 </table>
@@ -141,8 +141,8 @@ Overview
 		</tr>
 		<tr>
 			<td colspan="2">
-				<input type="submit" class="submit" name="run" id="run" value="#stText.Buttons.Create#">
-				<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+				<input type="submit" class="submit" name="run" value="#stText.Buttons.Create#">
+				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 			</td>
 		</tr>
 		</cfform>

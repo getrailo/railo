@@ -27,7 +27,7 @@ function formatDesc(string desc){
 </cfscript>
 
 <form action="#request.self#">
-<input type="hidden" name="action" id="action" value="#url.action#" />
+<input type="hidden" name="action" value="#url.action#" />
 <table class="tbl">
 <tr>
 <td class="tblHead" width="300">
@@ -44,7 +44,7 @@ function formatDesc(string desc){
 </select>
 </td>
 <td class="tblContent">
-<input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.OK#"> 
+<input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.OK#"> 
 </td>
 </tr>
 </table>

@@ -204,7 +204,7 @@ Mail Settings
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <cfset css=iif(len(mail.logfile) EQ 0 and len(mail.strlogfile) NEQ 0,de('Red'),de(''))>
 <tr>
-	<td class="tblHead" width="150">#stText.mail.DefaultEncoding#</td>
+	<td class="tblHead" width="150"><label for="defaultencoding">#stText.mail.DefaultEncoding#<label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.mail.DefaultEncodingDescription#</span><br />
 		<cfif hasAccess>
@@ -212,17 +212,17 @@ Mail Settings
 			style="width:200px" required="no" message="#stText.mail.missingEncoding#">
 		
 		<cfelse>
-			<input type="hidden" name="defaultencoding" id="defaultencoding" value="#mail.defaultEncoding#">
+			<input type="hidden" name="defaultencoding" value="#mail.defaultEncoding#">
 		
 			<b>#mail.defaultEncoding#</b>
 		</cfif>
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="100" nowrap>#stText.Mail.LogFile#</td>
+	<td class="tblHead" width="100" nowrap><label for="logFile">#stText.Mail.LogFile#</label></td>
 	<td class="tblContent#css#" width="450" height="28" title="#mail.strlogfile#
 #mail.logfile#"><cfif hasAccess><cfinput type="text" name="logFile" id="logFile" 
-	value="#mail.strlogfile#" required="no"  
+	value="#mail.strlogfile#" required="no" 
 	style="width:450px" message="#stText.Mail.LogFileMissing#"><cfelse><b>#mail.strlogfile#</b></cfif></td>
 </tr>
 <tr>
@@ -240,13 +240,13 @@ Mail Settings
 	type="checkbox" class="checkbox" name="spoolEnable" value="yes"><cfelse><b>#iif(mail.spoolEnable,de('Yes'),de('No'))#</b></cfif></td>
 </tr>
 <tr>
-	<td class="tblHead" width="100" height="28" nowrap>#stText.Mail.SpoolInterval#</td>
+	<td class="tblHead" width="100" height="28" nowrap><label for="spoolInterval">#stText.Mail.SpoolInterval#</label></td>
 	<td class="tblContent" width="450"><cfif hasAccess><cfinput type="text" name="spoolInterval" id="spoolInterval" 
 	value="#mail.spoolInterval#" validate="integer" style="width:50px" 
 	required="no"><cfelse><b>#mail.spoolInterval#</b></cfif></td>
 </tr>
 <tr>
-	<td class="tblHead" width="100" height="28" nowrap>#stText.Mail.Timeout#</td>
+	<td class="tblHead" width="100" height="28" nowrap><label for="timeout">#stText.Mail.Timeout#</label></td>
 	<td class="tblContent" width="450"><cfif hasAccess><cfinput type="text" name="timeout" id="timeout" 
 	value="#mail.timeout#" validate="integer" style="width:50px" required="no"><cfelse><b>#mail.timeout#</b></cfif></td>
 </tr>
@@ -254,10 +254,10 @@ Mail Settings
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2"><cfoutput>
-		<input type="hidden" name="mainAction" id="mainAction" value="#stText.Buttons.Setting#">
-		<input type="submit" class="submit" name="_mainAction" id="_mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="canel" id="canel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="_mainAction" id="_mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<input type="hidden" name="mainAction" value="#stText.Buttons.Setting#">
+		<input type="submit" class="submit" name="_mainAction" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="_mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</cfoutput></td>
 </tr></cfif>
 </cfform>
@@ -288,7 +288,7 @@ Existing Collection --->
 	<cfloop query="ms">
 		<tr>
 			<td height="26">
-            <input type="hidden" name="id_#ms.currentrow#" id="id_#ms.currentrow#" value="#hash(ms.hostName&":"&ms.username&":"&ms.password&":"&ms.tls&":"&ms.ssl)#">
+            <input type="hidden" name="id_#ms.currentrow#" value="#hash(ms.hostName&":"&ms.username&":"&ms.password&":"&ms.tls&":"&ms.ssl)#">
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td><cfif not ms.readonly><input type="checkbox" class="checkbox" name="row_#ms.currentrow#" id="row_#ms.currentrow#" 
@@ -298,7 +298,7 @@ Existing Collection --->
 			
 			</td>
 		<!--- host --->
-			<td class="tblContent" nowrap><input type="hidden" name="hostName_#ms.currentrow#" id="hostName_#ms.currentrow#" 
+			<td class="tblContent" nowrap><input type="hidden" name="hostName_#ms.currentrow#" 
 			value="#ms.hostName#">#ms.hostName#</td>
 		<!--- username --->
 			<td class="tblContent" nowrap><cfif ms.readonly>#ms.username#&nbsp;<cfelse><cfinput 
@@ -354,7 +354,7 @@ Existing Collection --->
 				<td><input type="checkbox" class="checkbox" name="row_#ms.recordcount+1#" id="row_#ms.recordcount+1#" value="0"></td>
 			</tr>
 			</table>
-			<input type="hidden" name="id_#ms.recordcount+1#" id="id_#ms.recordcount+1#" value="new">
+			<input type="hidden" name="id_#ms.recordcount+1#" value="new">
 			</td>
 			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)"  
 			type="text" name="hostName_#ms.recordcount+1#" id="hostName_#ms.recordcount+1#" value="" required="no"  style="width:220px"></td>
@@ -383,11 +383,11 @@ Existing Collection --->
 				<td></td>
 				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 				<td>&nbsp;
-				<input type="hidden" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
-				<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Verify#">
-				<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Update#">
-				<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
-				<input type="submit" class="submit" name="subAction" id="subAction" value="#stText.Buttons.Delete#">
+				<input type="hidden" name="mainAction" value="#stText.Buttons.Update#">
+				<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Verify#">
+				<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Update#">
+				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+				<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
 				</td>	
 			</tr>
 			 </table>

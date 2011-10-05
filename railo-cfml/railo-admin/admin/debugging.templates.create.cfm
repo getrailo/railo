@@ -100,14 +100,14 @@ Error Output--->
 <table class="tbl" width="650">
 
 <cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
-<cfinput type="hidden" name="type" id="type" value="#entry.type#" >
-<cfinput type="hidden" name="label" id="label" value="#entry.label#" >
+<cfinput type="hidden" name="type" value="#entry.type#" >
+<cfinput type="hidden" name="label" value="#entry.label#" >
 	<tr>
 		<td width="150" class="tblHead" nowrap>#stText.debug.label#</td>
 		<td width="450" class="tblContent" nowrap>#entry.label#</td>
 	</tr>
     <tr>
-		<td width="150" class="tblHead" nowrap>#stText.debug.iprange#</td>
+		<td width="150" class="tblHead" nowrap><label for="addmyip">#stText.debug.iprange#</label></td>
 		<td width="450" class="tblContent" nowrap>
         <cfinput type="text" 
                 name="iprange" id="iprange" 
@@ -146,7 +146,7 @@ Error Output--->
         <cfset type=field.getType()>
 <cfif type NEQ "hidden">
         <tr>
-            <td class="tblHead" width="150">#field.getDisplayName()#</td>
+            <td class="tblHead" width="150"><label for="custom_#field.getName()#">#field.getDisplayName()#</label></td>
             <td class="tblContent" width="300">
 
 </cfif><cfif type EQ "text" or type EQ "password">
@@ -168,7 +168,7 @@ Error Output--->
 <cfelseif type EQ "textarea">
 			<textarea style="width:450px;height:100px;" name="custom_#field.getName()#">#default#</textarea>
 <cfelseif type EQ "hidden">
-			<cfinput type="hidden" name="custom_#field.getName()#" id="custom_#field.getName()#" value="#default#">
+			<cfinput type="hidden" name="custom_#field.getName()#" value="#default#">
 <cfelseif type EQ "time">
 			<cfsilent>
             <cfset doBR=false>
@@ -195,10 +195,10 @@ Error Output--->
             
             <table class="tbl">
 		<tr>
-			<td class="tblHead">#stText.General.Days#</td>
-			<td class="tblHead">#stText.General.Hours#</td>
-			<td class="tblHead">#stText.General.Minutes#</td>
-			<td class="tblHead">#stText.General.Seconds#</td>
+			<td class="tblHead"><label for="custompart_d_#field.getName()#">#stText.General.Days#</label></td>
+			<td class="tblHead"><label for="custompart_h_#field.getName()#">#stText.General.Hours#</label></td>
+			<td class="tblHead"><label for="custompart_m_#field.getName()#">#stText.General.Minutes#</label></td>
+			<td class="tblHead"><label for="custompart_s_#field.getName()#">#stText.General.Seconds#</label></td>
 		</tr>
 		
 		<tr>
@@ -279,7 +279,7 @@ Error Output--->
     
     <tr>
 	<td colspan="2">
-	<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.submit#"></td>
+	<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.submit#"></td>
 </tr>
 
 

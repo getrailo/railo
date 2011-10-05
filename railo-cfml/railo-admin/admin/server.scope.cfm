@@ -131,7 +131,7 @@ Error Output --->
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Scopes.CascadeToResultSet#</td>
+	<td class="tblHead" width="150"><label for="allowImplicidQueryCall">#stText.Scopes.CascadeToResultSet#</label></td>
 	<td class="tblContent">
 		<cfif hasAccess>
 		<input class="checkbox" type="checkbox" class="checkbox" name="allowImplicidQueryCall" id="allowImplicidQueryCall" 
@@ -161,7 +161,7 @@ Error Output --->
 <!--- 
 Merge URL and Form --->
 <tr>
-	<td class="tblHead" width="150">#stText.Scopes.mergeUrlForm#</td>
+	<td class="tblHead" width="150"><label for="mergeFormAndUrl">#stText.Scopes.mergeUrlForm#</label></td>
 	<td class="tblContent">
 		<cfif hasAccess>
 			<input type="checkbox" class="checkbox" name="mergeFormAndUrl" id="mergeFormAndUrl" value="yes" 
@@ -173,7 +173,7 @@ Merge URL and Form --->
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Scopes.SessionManagement#</td>
+	<td class="tblHead" width="150"><label for="sessionManagement">#stText.Scopes.SessionManagement#</label></td>
 	<td class="tblContent">
 		<cfif hasAccess>
 			<input type="checkbox" class="checkbox" name="sessionManagement" id="sessionManagement" value="yes" 
@@ -185,7 +185,7 @@ Merge URL and Form --->
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Scopes.ClientManagement#</td>
+	<td class="tblHead" width="150"><label for="clientManagement">#stText.Scopes.ClientManagement#</label></td>
 	<td class="tblContent">
 		<cfif hasAccess>
 			<input type="checkbox" class="checkbox" name="clientManagement" id="clientManagement" value="yes" 
@@ -197,7 +197,7 @@ Merge URL and Form --->
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Scopes.DomainCookies#</td>
+	<td class="tblHead" width="150"><label for="domainCookies">#stText.Scopes.DomainCookies#</label></td>
 	<td class="tblContent">
 		<cfif hasAccess>
 			<input type="checkbox" class="checkbox" name="domainCookies" id="domainCookies" value="yes" 
@@ -209,7 +209,7 @@ Merge URL and Form --->
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Scopes.ClientCookies#</td>
+	<td class="tblHead" width="150"><label for="clientCookies">#stText.Scopes.ClientCookies#</label></td>
 	<td class="tblContent">
 		<cfif hasAccess>
 			<input type="checkbox" class="checkbox" name="clientCookies" id="clientCookies" value="yes" 
@@ -222,19 +222,16 @@ Merge URL and Form --->
 </tr>
 
 <tr>
-	<td class="tblHead" width="150">#stText.Scopes.LocalMode#</td>
+	<td class="tblHead" width="150"><label for="LocalMode">#stText.Scopes.LocalMode#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.Scopes.LocalModeDesc#</span>
 		<cfif hasAccess>
-			
-		
-			
-			<select name="LocalMode">
+			<select name="LocalMode" id="LocalMode">
 				<option value="always" <cfif scope.LocalMode EQ "always">selected</cfif>>#stText.Scopes.LocalModeAlways#</option>
 				<option value="update" <cfif scope.LocalMode EQ "update">selected</cfif>>#stText.Scopes.LocalModeUpdate#</option>
 			</select>
 		<cfelse>
-			<br /><b>#scope.localMode#</b><input type="hidden"  name="LocalMode" id="LocalMode" value="#scope.localMode#">
+			<br /><b>#scope.localMode#</b><input type="hidden"  name="LocalMode" value="#scope.localMode#">
 		</cfif>
 	</td>
 </tr>
@@ -245,10 +242,10 @@ Merge URL and Form --->
 		<span class="comment">#stText.Scopes.SessionTimeoutDescription#</span>
 		<table class="tbl">
 		<tr>
-			<td class="tblHead">#stText.General.Days#</td>
-			<td class="tblHead">#stText.General.Hours#</td>
-			<td class="tblHead">#stText.General.Minutes#</td>
-			<td class="tblHead">#stText.General.Seconds#</td>
+			<td class="tblHead"><label for="session_days">#stText.General.Days#</label></td>
+			<td class="tblHead"><label for="session_hours">#stText.General.Hours#</label></td>
+			<td class="tblHead"><label for="session_minutes">#stText.General.Minutes#</label></td>
+			<td class="tblHead"><label for="session_seconds">#stText.General.Seconds#</label></td>
 		</tr>
 		<cfif hasAccess>
 		<tr>
@@ -276,10 +273,10 @@ Merge URL and Form --->
 		<cfset timeout=scope.applicationTimeout>
 		<table class="tbl">
 		<tr>
-			<td class="tblHead">#stText.General.Days#</td>
-			<td class="tblHead">#stText.General.Hours#</td>
-			<td class="tblHead">#stText.General.Minutes#</td>
-			<td class="tblHead">#stText.General.Seconds#</td>
+			<td class="tblHead"><label for="application_days">#stText.General.Days#</label></td>
+			<td class="tblHead"><label for="application_hours">#stText.General.Hours#</label></td>
+			<td class="tblHead"><label for="application_minutes">#stText.General.Minutes#</label></td>
+			<td class="tblHead"><label for="application_seconds">#stText.General.Seconds#</label></td>
 		</tr>
 		<cfif hasAccess>
 		<tr>
@@ -306,10 +303,10 @@ Merge URL and Form --->
 		<cfset timeout=scope.clientTimeout>
 		<table class="tbl">
 		<tr>
-			<td class="tblHead">#stText.General.Days#</td>
-			<td class="tblHead">#stText.General.Hours#</td>
-			<td class="tblHead">#stText.General.Minutes#</td>
-			<td class="tblHead">#stText.General.Seconds#</td>
+			<td class="tblHead"><label for="client_days">#stText.General.Days#</label></td>
+			<td class="tblHead"><label for="client_hours">#stText.General.Hours#</label></td>
+			<td class="tblHead"><label for="client_minutes">#stText.General.Minutes#</label></td>
+			<td class="tblHead"><label for="client_seconds">#stText.General.Seconds#</label></td>
 		</tr>
 		<cfif hasAccess>
 		<tr>
@@ -333,9 +330,9 @@ Merge URL and Form --->
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>

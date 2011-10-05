@@ -128,21 +128,21 @@ Create Datasource --->
 	<td class="tblContent">
     	<cfif hasAccess>
 		<!--- never --->
-    	<input class="radio" type="radio" name="inspectTemplate" id="inspectTemplate" value="never"<cfif settings.inspectTemplate EQ "never"> checked="checked"</cfif>>
-    	<b>#stText.setting.inspectTemplateNever#</b><br />
+    	<input class="radio" type="radio" name="inspectTemplate" id="inspectTemplate_never" value="never"<cfif settings.inspectTemplate EQ "never"> checked="checked"</cfif>>
+    	<b><label for="inspectTemplate_never">#stText.setting.inspectTemplateNever#</label></b><br />
 		<span class="comment">#stText.setting.inspectTemplateNeverDesc#</span><br>
     	<!--- once --->
-    	<input class="radio" type="radio" name="inspectTemplate" id="inspectTemplate" value="once"<cfif settings.inspectTemplate EQ "once"> checked="checked"</cfif>>
-    	<b>#stText.setting.inspectTemplateOnce#</b><br />
+    	<input class="radio" type="radio" name="inspectTemplate" id="inspectTemplate_once" value="once"<cfif settings.inspectTemplate EQ "once"> checked="checked"</cfif>>
+    	<b><label for="inspectTemplate_once">#stText.setting.inspectTemplateOnce#</label></b><br />
 		<span class="comment">#stText.setting.inspectTemplateOnceDesc#</span><br>
     	<!--- always --->
-    	<input class="radio" type="radio" name="inspectTemplate" id="inspectTemplate" value="always"<cfif settings.inspectTemplate EQ "always"> checked="checked"</cfif>>
-    	<b>#stText.setting.inspectTemplateAlways#</b><br />
+    	<input class="radio" type="radio" name="inspectTemplate" id="inspectTemplate_always" value="always"<cfif settings.inspectTemplate EQ "always"> checked="checked"</cfif>>
+    	<b><label for="inspectTemplate_always">#stText.setting.inspectTemplateAlways#</label></b><br />
 		<span class="comment">#stText.setting.inspectTemplateAlwaysDesc#</span>
         
 		<cfelse>
         <cfif ListFindNoCase("never,once,always",settings.inspectTemplate)>
-    	<input type="hidden" name="inspectTemplate" id="inspectTemplate" value="#settings.inspectTemplate#">
+    	<input type="hidden" name="inspectTemplate" value="#settings.inspectTemplate#">
     	<b>#stText.setting["inspectTemplate"& settings.inspectTemplate]#</b><br />
 		<span class="comment">#stText.setting["inspectTemplate#settings.inspectTemplate#Desc"]#</span><br>
 		</cfif>
@@ -154,7 +154,7 @@ Create Datasource --->
 	<td class="tblHead" width="150">#stText.setting.templateCache#</td>
 	<td class="tblContent" style="padding:10px">
     	
-      <input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#btnClearTemplateCache#">
+      <input class="submit" type="submit" class="submit" name="mainAction" value="#btnClearTemplateCache#">
         <br /><span class="comment">#stText.setting.templateCacheClearDesc#</span>
         
 	</td>
@@ -164,7 +164,7 @@ Create Datasource --->
 <tr>
 	<td class="tblHead" width="150">#stText.setting.queryCache#</td>
 	<td class="tblContent" style="padding:10px">
-        <input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#btnClearQueryCache#">
+        <input class="submit" type="submit" class="submit" name="mainAction" value="#btnClearQueryCache#">
         <br /><span class="comment">#stText.setting.queryCacheClearDesc#</span>
 	</td>
 </tr>
@@ -173,7 +173,7 @@ Create Datasource --->
 <tr>
 	<td class="tblHead" width="150">#stText.setting.componentCache#</td>
 	<td class="tblContent" style="padding:10px">
-        <input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#btnClearComponentCache#">
+        <input class="submit" type="submit" class="submit" name="mainAction" value="#btnClearComponentCache#">
         <br /><span class="comment">#stText.setting.componentCacheClearDesc#</span>
 	</td>
 </tr>
@@ -182,7 +182,7 @@ Create Datasource --->
 <tr>
 	<td class="tblHead" width="150">#stText.setting.ctCache#</td>
 	<td class="tblContent" style="padding:10px">
-        <input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#btnClearCTCache#">
+        <input class="submit" type="submit" class="submit" name="mainAction" value="#btnClearCTCache#">
         <br /><span class="comment">#stText.setting.ctCacheClearDesc#</span>
 	</td>
 </tr>
@@ -194,9 +194,9 @@ Create Datasource --->
 <tr>
 	<td colspan="2">
 		
-      <input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.update#">
-		<input class="submit" type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+      <input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.update#">
+		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>

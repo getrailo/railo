@@ -159,7 +159,7 @@ Create Datasource --->
 			</table>
 		<cfelse>
 			<b>#err.str[statusCode]#</b>
-			<input type="hidden" name="errorTemplate#statusCode#" id="errorTemplate#statusCode#" value="#err.str[statusCode]#">
+			<input type="hidden" name="errorTemplate#statusCode#" value="#err.str[statusCode]#">
 		</cfif>
 	</td>
 </tr>
@@ -167,7 +167,7 @@ Create Datasource --->
 
 
 <tr>
-	<td class="tblHead" width="150">#stText.err.errorStatusCode#</td>
+	<td class="tblHead" width="150"><label for="doStatusCode">#stText.err.errorStatusCode#</label></td>
 	<td class="tblContent">
 		<cfif hasAccess>
 		<input class="checkbox" type="checkbox" class="checkbox" name="doStatusCode" id="doStatusCode" value="yes" <cfif err.doStatusCode>checked</cfif>>
@@ -187,9 +187,9 @@ Create Datasource --->
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfif>

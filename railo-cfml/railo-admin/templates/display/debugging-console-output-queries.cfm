@@ -41,11 +41,11 @@
 						</cfif>
                         <form>
 						<!---<form name="sqlForm#iDebug#" action="#sAction#" method="post" target="_blank">
-						<input type="Hidden" name="datasource" id="datasource" value="#queries.datasource#">
-						<input type="Hidden" name="queryName" id="queryName" value="#queries.name#">
-						<input type="Hidden" name="executionTime" id="executionTime" value="#queries.time#">
-						<input type="Hidden" name="Records" id="Records" value="#queries.count#">
-						<input type="Hidden" name="src" id="src" value="#queries.src#">--->
+						<input type="Hidden" name="datasource" value="#queries.datasource#">
+						<input type="Hidden" name="queryName" value="#queries.name#">
+						<input type="Hidden" name="executionTime" value="#queries.time#">
+						<input type="Hidden" name="Records" value="#queries.count#">
+						<input type="Hidden" name="src" value="#queries.src#">--->
 					</cfif>
 					<tr>
 						<td width="20">

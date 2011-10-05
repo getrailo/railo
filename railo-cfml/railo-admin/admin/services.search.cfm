@@ -151,7 +151,7 @@ function selectAll(field) {
 		</tr>
 		<cfoutput><form action="#request.self#?action=#url.action#" method="post" enctype="multipart/form-data"></cfoutput>
 		<tr>
-			<td><input type="checkbox" class="checkbox" name="rro" id="rro" onclick="selectAll(this)"></td>
+			<td><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></td>
 			<td class="tblHead" nowrap><cfoutput>#stText.Search.Name#</cfoutput></td>
 			<td class="tblHead" nowrap><cfoutput>#stText.Search.Mapped#</cfoutput></td>
 			<td class="tblHead" nowrap><cfoutput>#stText.Search.Online#</cfoutput></td>
@@ -165,7 +165,7 @@ function selectAll(field) {
 				<td>
 				<table border="0" cellpadding="0" cellspacing="0">
 				<tr>
-					<td><input type="checkbox" class="checkbox" name="name[]" id="name[]" value="#collections.name#"></td>
+					<td><input type="checkbox" class="checkbox" name="name[]" value="#collections.name#"></td>
 					<td><a href="#request.self#?action=#url.action#&collection=#collections.name#"><cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
 				</tr>
 				</table>
@@ -196,12 +196,12 @@ function selectAll(field) {
 					<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 					<td>&nbsp;
 					
-					<input type="hidden" name="run" id="run" value="action">
-					<input type="submit" class="submit" name="action" id="action" value="#stText.Buttons.Repair#">
-					<input type="submit" class="submit" name="action" id="action" value="#stText.Buttons.Optimize#">
-					<input type="submit" class="submit" name="action" id="action" value="#stText.Buttons.Purge#">
-					<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
-					<input type="submit" class="submit" name="action" id="action" value="#stText.Buttons.Delete#">
+					<input type="hidden" name="run" value="action">
+					<input type="submit" class="submit" name="action" value="#stText.Buttons.Repair#">
+					<input type="submit" class="submit" name="action" value="#stText.Buttons.Optimize#">
+					<input type="submit" class="submit" name="action" value="#stText.Buttons.Purge#">
+					<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+					<input type="submit" class="submit" name="action" value="#stText.Buttons.Delete#">
 					</cfoutput>
 					</td>	
 				</tr>
@@ -224,11 +224,11 @@ function selectAll(field) {
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<cfoutput>
 		<tr>
-			<td class="tblHead" width="50">#stText.Search.Name#</td>
+			<td class="tblHead" width="50"><label for="collName">#stText.Search.Name#</label></td>
 			<td class="tblContent" width="300"><cfinput type="text" name="collName" id="collName" value="" style="width:300px" required="yes" message="#stText.Search.Missing_Name#"></td>
 		</tr>
 		<tr>
-			<td class="tblHead" width="50">#stText.Search.Path#</td>
+			<td class="tblHead" width="50"><label for="collPath">#stText.Search.Path#</label></td>
 			<td class="tblContent" width="300"><cfinput type="text" name="collPath" id="collPath" value="" style="width:300px" required="yes" message="#stText.Search.Missing_Path#"></td>
 		</tr>
 		</cfoutput>
@@ -247,8 +247,8 @@ function selectAll(field) {
 		<cfmodule template="remoteclients.cfm" colspan="2">
 		<tr>
 			<cfoutput><td colspan="2">
-				<input type="submit" class="submit" name="run" id="run" value="#stText.Buttons.Create#">
-				<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+				<input type="submit" class="submit" name="run" value="#stText.Buttons.Create#">
+				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 			</td></cfoutput>
 		</tr>
 		</cfform>
@@ -307,19 +307,19 @@ function selectAll(field) {
 			<table class="tbl" width="450">
 			<cfform onerror="customError" action="#request.self#?action=#url.action#&collection=#collection.name#" method="post">
 			<tr>
-				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.FileExtensions#</cfoutput></td>
+				<td class="tblHead" width="150" nowrap><label for="extensions"><cfoutput>#stText.Search.FileExtensions#</cfoutput></label></td>
 				<td class="tblContent" width="300"><cfinput type="text" name="extensions" id="extensions" value=".html, .htm, .cfm, .cfml" style="width:300px" required="yes" message="#stText.Search.FileExtensionsMissing#"></td>
 			</tr>
 			<tr>
-				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.DirectoryPath#</cfoutput></td>
+				<td class="tblHead" width="150" nowrap><label for="path"><cfoutput>#stText.Search.DirectoryPath#</cfoutput></label></td>
 				<td class="tblContent" width="300"><cfinput type="text" name="path" id="path" value="" style="width:300px" required="yes" message="#stText.Search.DirectoryPathMissing#"></td>
 			</tr>
 			<tr>
-				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.IndexSubdirs#</cfoutput></td>
+				<td class="tblHead" width="150" nowrap><label for="recurse"><cfoutput>#stText.Search.IndexSubdirs#</cfoutput></label></td>
 				<td class="tblContent" width="300"><input type="checkbox" class="checkbox" name="recurse" id="recurse" value="yes"></td>
 			</tr>
 			<tr>
-				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.URL#</cfoutput></td>
+				<td class="tblHead" width="150" nowrap><label for="url"><cfoutput>#stText.Search.URL#</cfoutput></label></td>
 				<td class="tblContent" width="300"><cfinput type="text" name="url" id="url" value="" style="width:300px" required="no"></td>
 			</tr>
 			<tr>
@@ -339,9 +339,9 @@ function selectAll(field) {
 					@todo kein funktioneller javascript
 					 --->
 					<input onClick="window.location='#request.self#?action=#url.action#';" 
-						type="button" class="button" name="canel" id="canel" value="#stText.Buttons.Cancel#">
-					<input type="hidden" name="run" id="run" value="index">
-					<input type="submit" class="submit" name="_run" id="_run" value="#stText.Buttons.Update#">
+						type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#">
+					<input type="hidden" name="run" value="index">
+					<input type="submit" class="submit" name="_run" value="#stText.Buttons.Update#">
 				</cfoutput></td>
 			</tr>
 			</cfform>
@@ -353,7 +353,7 @@ function selectAll(field) {
 					<td colspan="2"><cfoutput><h2>#stText.Search.SearchTheCollection#</h2></cfoutput></td>
 				</tr>
 				<tr>
-					<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.SearchTerm#</cfoutput></td>
+					<td class="tblHead" width="150" nowrap><label for="searchterm"><cfoutput>#stText.Search.SearchTerm#</cfoutput></label></td>
 					<td class="tblContent" width="300">
 					<cfif StructKeyExists(form,"searchterm")><cfset session.searchterm=form.searchterm></cfif>
 					<cfparam name="session.searchterm" default="">
@@ -373,7 +373,7 @@ function selectAll(field) {
 				</tr> --->
 				<tr><td colspan="2">
 					<cfoutput>
-					<input type="submit" class="submit" name="search" id="search" value="#stText.Buttons.Search#">
+					<input type="submit" class="submit" name="search" value="#stText.Buttons.Search#">
 					</cfoutput>
 				</td></tr>
 				</cfform>

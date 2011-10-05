@@ -156,7 +156,7 @@
 			<cfoutput>
 			<h2>#lsDateFormat(stElement.date)# #lsTimeFormat(stElement.date)#</h2>
 			#stElement.content#
-			<div style="float:right"><input src="resources/img/delete.png" type="image" border="0" alt="delete entry" title="delete entry" name="del_#stElement.sID#" id="del_#stElement.sID#"></div>
+			<div style="float:right"><input src="resources/img/delete.png" type="image" border="0" alt="delete entry" title="delete entry" name="del_#stElement.sID#"></div>
 			<hr>
 			</cfoutput>
 		</cfloop>

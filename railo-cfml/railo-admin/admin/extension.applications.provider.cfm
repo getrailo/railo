@@ -111,35 +111,35 @@
                 </table>
                 
             	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-                	<input type="hidden" name="hashProvider_1" id="hashProvider_1" value="#url.hashProvider#">
-                	<input type="hidden" name="id_1" id="id_1" value="#url.id#">
-                	<input type="hidden" name="row" id="row" value="1">
+                	<input type="hidden" name="hashProvider_1" value="#url.hashProvider#">
+                	<input type="hidden" name="id_1" value="#url.id#">
+                	<input type="hidden" name="row" value="1">
                     
-            		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.update#">
-            		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.uninstall#">
-            		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.cancel#">
+            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.update#">
+            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.uninstall#">
+            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#">
               	</cfform>
             
             
             <!--- Install --->
             <cfelseif isInstalled and not hasUpdate>
             	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-            		<input type="hidden" name="hashProvider_1" id="hashProvider_1" value="#url.hashProvider#">
-                	<input type="hidden" name="id_1" id="id_1" value="#url.id#">
-                	<input type="hidden" name="row" id="row" value="1">
+            		<input type="hidden" name="hashProvider_1" value="#url.hashProvider#">
+                	<input type="hidden" name="id_1" value="#url.id#">
+                	<input type="hidden" name="row" value="1">
                     
-            		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.uninstall#">
-            		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.cancel#">
+            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.uninstall#">
+            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#">
               	</cfform>
             <cfelse>
             
 				<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-            		<input type="hidden" name="hashProvider_1" id="hashProvider_1" value="#url.hashProvider#">
-                	<input type="hidden" name="id_1" id="id_1" value="#url.id#">
-                	<input type="hidden" name="row" id="row" value="1">
+            		<input type="hidden" name="hashProvider_1" value="#url.hashProvider#">
+                	<input type="hidden" name="id_1" value="#url.id#">
+                	<input type="hidden" name="row" value="1">
                     
-            		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.install#">
-            		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.cancel#">
+            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.install#">
+            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#">
               	</cfform>
             </cfif>
             

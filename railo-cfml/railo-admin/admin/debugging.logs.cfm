@@ -104,8 +104,8 @@ Redirtect to entry --->
 <table class="tbl" width="480">
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
 <tr>
-	<td class="tblHead" width="160">#stText.debug.maxLogs#</td>
-	<td class="tblContent" width="90"><select name="maxLogs">
+	<td class="tblHead" width="160"><label for="maxLogs">#stText.debug.maxLogs#</label></td>
+	<td class="tblContent" width="90"><select name="maxLogs" id="maxLogs">
    <cfset selected=false><cfloop list="10,20,50,100,200,500,1000" index="idx"><option <cfif idx EQ setting.maxLogs><cfset selected=true>selected="selected"</cfif> value="#idx#">#idx#</option></cfloop>
    <cfif !selected><option selected="selected" value="#setting.maxLogs#">#setting.maxLogs#</option></cfif>
     </select></td>
@@ -123,9 +123,9 @@ Redirtect to entry --->
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 </cfform>
@@ -140,7 +140,7 @@ Redirtect to entry --->
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
 
 <tr>
-	<td class="tblHead">#stText.debug.minExeTime#</td>
+	<td class="tblHead"><label for="minExeTimeTotal">#stText.debug.minExeTime#</label></td>
 	<td class="tblContent">
     	<table class="tbl">
         <tr>
@@ -159,8 +159,8 @@ Redirtect to entry --->
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 </cfform>
@@ -197,15 +197,15 @@ Redirtect to entry --->
     <td colspan="5"></td>
 </tr>
 <tr>
-    <td class="tblHead" nowrap><input type="text" name="path" id="path" style="width:100%" value="#session.debugFilter.path#" /><br />
+    <td class="tblHead" nowrap><input type="text" name="path" style="width:100%" value="#session.debugFilter.path#" /><br />
     	<span class="comment">#stText.Debug.filterPath#</span></td>
-    <td class="tblHead" nowrap><input type="text" name="IntervalFilter" id="IntervalFilter" style="width:100%" value="#session.debugFilter.path#" /></td>
-    <td class="tblHead" nowrap><input type="text" name="urlFilter" id="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></td>
-    <td class="tblHead" nowrap><input type="text" name="urlFilter" id="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></td>
-    <td class="tblHead" nowrap><input type="text" name="urlFilter" id="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></td>
+    <td class="tblHead" nowrap><input type="text" name="IntervalFilter" style="width:100%" value="#session.debugFilter.path#" /></td>
+    <td class="tblHead" nowrap><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></td>
+    <td class="tblHead" nowrap><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></td>
+    <td class="tblHead" nowrap><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></td>
 </tr>
 <tr>
-    <td class="tblHead" colspan="5"><input type="submit" name="filter" id="filter" class="submit" value="#stText.Debug.filter#" style="width:100%"/></td>
+    <td class="tblHead" colspan="5"><input type="submit" name="filter" class="submit" value="#stText.Debug.filter#" style="width:100%"/></td>
 </tr>
 <tr>
     <td colspan="5"></td>
@@ -236,9 +236,9 @@ Redirtect to entry --->
 <!--- 
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr>
 --->

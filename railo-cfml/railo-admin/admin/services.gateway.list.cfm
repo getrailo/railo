@@ -146,7 +146,7 @@ Error Output--->
 
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
-		<td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" id="rowreadonly" onclick="selectAll(this)"></td>
+		<td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td>
 		<td width="250" class="tblHead" nowrap>#stText.Settings.gateway.id#</td>
 		<td width="250" class="tblHead" nowrap># stText.Settings.gateway.type#</td>
 		<td width="250" class="tblHead" nowrap># stText.Settings.gateway.state#</td>
@@ -165,12 +165,12 @@ Error Output--->
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td>
-			<input type="checkbox" class="checkbox" name="row_#srcGlobal.currentrow#" id="row_#srcGlobal.currentrow#" value="#srcGlobal.currentrow#">
+			<input type="checkbox" class="checkbox" name="row_#srcGlobal.currentrow#" value="#srcGlobal.currentrow#">
 			</td>
 		</tr>
 		</table>
 		</td>
-		<td class="tblContent#css#" nowrap><input type="hidden" name="id_#srcGlobal.currentrow#" id="id_#srcGlobal.currentrow#" value="#srcGlobal.id#">#srcGlobal.id#</td>
+		<td class="tblContent#css#" nowrap><input type="hidden" name="id_#srcGlobal.currentrow#" value="#srcGlobal.id#">#srcGlobal.id#</td>
 		<td class="tblContent#css#" nowrap>#driver.getLabel()#</td>
 		<td class="tblContent#css#" nowrap>#srcGlobal.state#</td>
 		<td class="tblContent#css#" nowrap valign="middle" align="center">
@@ -203,8 +203,8 @@ Error Output--->
 			<td></td>
 			<td valign="top"><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="36" height="1"></td>
 			<td>&nbsp;
-				<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.verify#">
-				<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.verify#">
+				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 			</td>	
 		</tr>
 		 </table>
@@ -223,7 +223,7 @@ Error Output--->
 
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
-		<td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" id="rowreadonly" onclick="selectAll(this)"></td>
+		<td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td>
 		<td width="240" class="tblHead" nowrap>#stText.Settings.gateway.id#</td>
 		<td width="180" class="tblHead" nowrap># stText.Settings.gateway.type#</td>
 		<td width="100" class="tblHead" nowrap># stText.Settings.gateway.state#</td>
@@ -242,7 +242,7 @@ Error Output--->
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td>
-			<input type="checkbox" class="checkbox" name="row_#srcLocal.currentrow#" id="row_#srcLocal.currentrow#" value="#srcLocal.currentrow#">
+			<input type="checkbox" class="checkbox" name="row_#srcLocal.currentrow#" value="#srcLocal.currentrow#">
 			</td>
             <td>
             <a href="#request.self#?action=#url.action#&action2=create&id=#Hash(srcLocal.id)#">
@@ -251,7 +251,7 @@ Error Output--->
 		</tr>
 		</table>
 		</td>
-		<td class="tblContent#css#" nowrap><input type="hidden" name="id_#srcLocal.currentrow#" id="id_#srcLocal.currentrow#" value="#srcLocal.id#">#srcLocal.id#</td>
+		<td class="tblContent#css#" nowrap><input type="hidden" name="id_#srcLocal.currentrow#" value="#srcLocal.id#">#srcLocal.id#</td>
 		<td class="tblContent#css#" nowrap>#srcLocal.driver.getLabel()#</td>
 		<td class="tblContent#css#" nowrap>#srcLocal.state#</td>
 		<td class="tblContent#css#" nowrap valign="middle" align="center">
@@ -284,11 +284,11 @@ Error Output--->
 			<td></td>
 			<td valign="top"><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="36" height="1"></td>
 			<td>&nbsp;
-			<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.refresh#">
-			<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.delete#">
-			<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.restart#">
-			<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.stopstart#">
-			<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.refresh#">
+			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.delete#">
+			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.restart#">
+			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.stopstart#">
+			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 			</td>	
 		</tr>
 		 </table>
@@ -314,7 +314,7 @@ Error Output--->
 	<table class="tbl" width="350">
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
-		<td class="tblHead" width="50">#stText.Settings.gateway.id#</td>
+		<td class="tblHead" width="50"><label for="_id">#stText.Settings.gateway.id#<label></td>
 		<td class="tblContent" width="300"><cfinput type="text" name="_id" id="_id" value="" style="width:300px" required="yes" 
 			message="#stText.Settings.gateway.nameMissing#"></td>
 	</tr>
@@ -330,8 +330,8 @@ Error Output--->
 	</tr>
 	<tr>
 		<td colspan="2">
-			<input type="submit" class="submit" name="run" id="run" value="#stText.Buttons.create#">
-			<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+			<input type="submit" class="submit" name="run" value="#stText.Buttons.create#">
+			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 		</td>
 	</tr>
 	</cfform>

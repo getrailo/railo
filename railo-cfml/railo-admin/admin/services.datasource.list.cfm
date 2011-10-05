@@ -111,7 +111,7 @@ Create Datasource --->
 
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.PreserveSingleQuotes#</td>
+	<td class="tblHead" width="150"><label for="psq">#stText.Settings.PreserveSingleQuotes#</label></td>
 	<td class="tblContent">
 	<cfif access NEQ 0><input type="checkbox" class="checkbox" name="psq" id="psq" value="yes" <cfif dbSetting.psq>checked</cfif>><cfelse><b>#yesNoFormat(dbSetting.psq)#</b></cfif>
 	<span class="comment">#stText.Settings.PreserveSingleQuotesDescription#</span></td>
@@ -121,9 +121,9 @@ Create Datasource --->
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
 </tr></cfif>
 </cfform>
@@ -206,7 +206,7 @@ function selectAll(field) {
 	</tr>
 	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<tr>
-			<td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" id="rowreadonly" onclick="selectAll(this)">
+			<td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)">
 				</td>
 			<td width="205" class="tblHead" nowrap>#stText.Settings.Name#</td>
 			<td width="355" class="tblHead" nowrap>#stText.Settings.Type#</td>
@@ -220,15 +220,15 @@ function selectAll(field) {
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-				<input type="checkbox" class="checkbox" name="row_#srcGlobal.currentrow#" id="row_#srcGlobal.currentrow#" value="#srcLocal.currentrow#">
-				<input type="hidden" name="username_#srcGlobal.currentrow#" id="username_#srcGlobal.currentrow#" value="#srcGlobal.Username#">
-				<input type="hidden" name="password_#srcGlobal.currentrow#" id="password_#srcGlobal.currentrow#" value="#srcGlobal.Password#">
+				<input type="checkbox" class="checkbox" name="row_#srcGlobal.currentrow#" value="#srcLocal.currentrow#">
+				<input type="hidden" name="username_#srcGlobal.currentrow#" value="#srcGlobal.Username#">
+				<input type="hidden" name="password_#srcGlobal.currentrow#" value="#srcGlobal.Password#">
 				</td>
 			</tr>
 			</table>
 			</td>
 			<td class="tblContent" nowrap><input type="hidden" 
-				name="name_#srcGlobal.currentrow#" id="name_#srcGlobal.currentrow#" value="#srcGlobal.name#">#srcGlobal.name#</td>
+				name="name_#srcGlobal.currentrow#" value="#srcGlobal.name#">#srcGlobal.name#</td>
 			<td class="tblContent" nowrap>#getTypeName(srcGlobal.ClassName,srcGlobal.dsn)#</td>
 			<td class="tblContent" nowrap>#yesNoFormat(srcGlobal.storage)#</td>
 			<td class="tblContent" nowrap valign="middle" align="center">
@@ -259,8 +259,8 @@ function selectAll(field) {
 				<td></td>
 				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 				<td>&nbsp;
-				<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Verify#">
-				<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Verify#">
+				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 				</td>	
 			</tr>
 			 </table>
@@ -282,7 +282,7 @@ function selectAll(field) {
 	</tr>
 	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<tr>
-			<td width="60"><input type="checkbox" class="checkbox" name="rowread" id="rowread" onclick="selectAll(this)"></td>
+			<td width="60"><input type="checkbox" class="checkbox" name="rowread" onclick="selectAll(this)"></td>
 			<td width="205" class="tblHead" nowrap>#stText.Settings.Name#</td>
 			<td width="355" class="tblHead" nowrap>#stText.Settings.Type#</td>
 			<td width="50" class="tblHead" nowrap>#stText.Settings.dbStorage#</td>
@@ -295,9 +295,9 @@ function selectAll(field) {
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-				<input type="checkbox" class="checkbox" name="row_#srcLocal.currentrow#" id="row_#srcLocal.currentrow#" value="#srcLocal.currentrow#">
-				<input type="hidden" name="username_#srcLocal.currentrow#" id="username_#srcLocal.currentrow#" value="#srcLocal.Username#">
-				<input type="hidden" name="password_#srcLocal.currentrow#" id="password_#srcLocal.currentrow#" value="#srcLocal.Password#">
+				<input type="checkbox" class="checkbox" name="row_#srcLocal.currentrow#" value="#srcLocal.currentrow#">
+				<input type="hidden" name="username_#srcLocal.currentrow#" value="#srcLocal.Username#">
+				<input type="hidden" name="password_#srcLocal.currentrow#" value="#srcLocal.Password#">
 				</td>
 				<td><a href="#request.self#?action=#url.action#&action2=create&name=#srcLocal.name#">
 			<cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
@@ -305,7 +305,7 @@ function selectAll(field) {
 			</table>
 			</td>
 			<td class="tblContent" nowrap><input type="hidden" 
-				name="name_#srcLocal.currentrow#" id="name_#srcLocal.currentrow#" value="#srcLocal.name#">#srcLocal.name#</td>
+				name="name_#srcLocal.currentrow#" value="#srcLocal.name#">#srcLocal.name#</td>
 			<td class="tblContent" nowrap>#getTypeName(srcLocal.ClassName,srcLocal.dsn)#</td>
 			<td class="tblContent" nowrap>#yesNoFormat(srcLocal.storage)#</td>
 			<td class="tblContent" nowrap valign="middle" align="center">
@@ -340,9 +340,9 @@ function selectAll(field) {
 				<td></td>
 				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 				<td>&nbsp;
-				<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Verify#">
-				<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
-				<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Delete#">
+				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Verify#">
+				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
 				</td>	
 			</tr>
 			 </table>
@@ -365,7 +365,7 @@ function selectAll(field) {
 	</tr>
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
-		<td class="tblHead" width="50">#stText.Settings.Name#</td>
+		<td class="tblHead" width="50"><label for="name">#stText.Settings.Name#</label></td>
 		<td class="tblContent" width="300"><cfinput type="text" name="name" id="name" value="" style="width:300px" required="yes" 
 			message="#stText.Settings.NameMissing#"></td>
 	</tr>
@@ -384,9 +384,9 @@ function selectAll(field) {
 	</tr>
 	<tr>
 		<td colspan="2">
-			<input type="hidden" name="mark" id="mark" value="create">
-			<input type="submit" class="submit" name="run" id="run" value="#stText.Buttons.Create#">
-			<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+			<input type="hidden" name="mark" value="create">
+			<input type="submit" class="submit" name="run" value="#stText.Buttons.Create#">
+			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 		</td>
 	</tr>
 	</cfform>

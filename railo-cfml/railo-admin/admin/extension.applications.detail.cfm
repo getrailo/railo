@@ -160,29 +160,29 @@
                 </table>
                 
             	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-                	<input type="hidden" name="uid" id="uid" value="#url.uid#">
+                	<input type="hidden" name="uid" value="#url.uid#">
                     
-            		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.update#">
-            		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.uninstall#">
-            		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.cancel#">
+            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.update#">
+            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.uninstall#">
+            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#">
               	</cfform>
             
             
             <!--- Install --->
             <cfelseif isInstalled and not hasUpdate>
             	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-            		<input type="hidden" name="uid" id="uid" value="#url.uid#">
+            		<input type="hidden" name="uid" value="#url.uid#">
                     
-            		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.uninstall#">
-            		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.cancel#">
+            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.uninstall#">
+            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#">
               	</cfform>
             <cfelse>
             
 				<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-            		<input type="hidden" name="uid" id="uid" value="#url.uid#">
+            		<input type="hidden" name="uid" value="#url.uid#">
                     
-            		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.install#">
-            		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.cancel#">
+            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.install#">
+            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#">
               	</cfform>
             </cfif>
             

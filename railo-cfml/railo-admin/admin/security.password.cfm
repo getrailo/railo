@@ -97,7 +97,7 @@ change password --->
 
 <cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.Login.OldPassword#</td>
+	<td class="tblHead" width="150"><label for="_old_password">#stText.Login.OldPassword#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.Login.OldPasswordDescription#</span><br>
 		<cfinput type="password" name="_old_password" id="_old_password" value="" passthrough='autocomplete="off"'
@@ -105,7 +105,7 @@ change password --->
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Login.NewPassword#</td>
+	<td class="tblHead" width="150"><label for="_new_password">#stText.Login.NewPassword#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.Login.NewPasswordDescription#</span><br>
 		<cfinput type="password" name="_new_password" id="_new_password" value="" passthrough='autocomplete="off"'
@@ -113,7 +113,7 @@ change password --->
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Login.RetypePassword#</td>
+	<td class="tblHead" width="150"><label for="_new_password_re">#stText.Login.RetypePassword#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.Login.RetypeNewPassword#</span><br>
 		<cfinput type="password" name="_new_password_re" id="_new_password_re" value="" passthrough='autocomplete="off"' 
@@ -123,8 +123,8 @@ change password --->
 
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Change#">
-		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Change#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 </cfform></cfoutput>
@@ -158,7 +158,7 @@ Set default password --->
 </tr>
 <cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.Login.Password#</td>
+	<td class="tblHead" width="150"><label for="_new_password">#stText.Login.Password#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.Login.NewPasswordDescription#</span><br>
 		<cfinput type="text" name="_new_password" id="_new_password" value="#defaultPassword#" 
@@ -167,9 +167,9 @@ Set default password --->
 </tr>
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Update#">
-		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.delete#">
-		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.delete#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 </cfform></cfoutput>
@@ -223,8 +223,8 @@ Reset Password --->
 
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Reset#">
-		<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Reset#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 </cfform></cfoutput>

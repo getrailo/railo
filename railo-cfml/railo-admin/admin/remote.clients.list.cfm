@@ -141,9 +141,9 @@ function checkTheBox(field) {
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-<cfif hasAccess><input type="checkbox" class="checkbox" name="row_#clients.currentrow#" id="row_#clients.currentrow#" value="#clients.currentrow#">
-				<input type="hidden" name="url_#clients.currentrow#" id="url_#clients.currentrow#" value="#clients.url#"></cfif>
-				<!--- <input type="hidden" name="password_#clients.currentrow#" id="password_#clients.currentrow#" value="#clients.Password#">--->
+<cfif hasAccess><input type="checkbox" class="checkbox" name="row_#clients.currentrow#" value="#clients.currentrow#">
+				<input type="hidden" name="url_#clients.currentrow#" value="#clients.url#"></cfif>
+				<!--- <input type="hidden" name="password_#clients.currentrow#" value="#clients.Password#">--->
 				</td>
 				<td>
 <cfif hasAccess><a href="#request.self#?action=#url.action#&action2=create&url=#hash(clients.url)#">
@@ -197,9 +197,9 @@ function checkTheBox(field) {
 				<td></td>
 				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
 				<td>&nbsp;
-				<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Verify#">
-				<input type="reset" class="reset" name="cancel" id="cancel" value="#stText.Buttons.Cancel#">
-				<input type="submit" class="submit" name="mainAction" id="mainAction" value="#stText.Buttons.Delete#">
+				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Verify#">
+				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
 				</td>	
 			</tr>
 			 </table>
@@ -219,7 +219,7 @@ function checkTheBox(field) {
 	<!--- 
 	Create Remote Client --->
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
-		<input type="submit" class="submit" name="run" id="run" value="#stText.remote.newClient#">
+		<input type="submit" class="submit" name="run" value="#stText.remote.newClient#">
 	</cfform>
 	</cfoutput>
 </cfif>
