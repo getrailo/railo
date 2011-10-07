@@ -46,6 +46,7 @@ public final class DBInfo extends TagImpl {
 	private static final Key IS_PRIMARYKEY = KeyImpl.intern("IS_PRIMARYKEY");
 	private static final Key IS_FOREIGNKEY = KeyImpl.intern("IS_FOREIGNKEY");
 	private static final Key COLUMN_DEF = KeyImpl.intern("COLUMN_DEF");
+	private static final Key COLUMN_DEFAULT = KeyImpl.intern("COLUMN_DEFAULT");
 	private static final Key COLUMN_DEFAULT_VALUE = KeyImpl.intern("COLUMN_DEFAULT_VALUE");
 	private static final Key REFERENCED_PRIMARYKEY = KeyImpl.intern("REFERENCED_PRIMARYKEY");
 	private static final Key REFERENCED_PRIMARYKEY_TABLE = KeyImpl.intern("REFERENCED_PRIMARYKEY_TABLE");
@@ -283,8 +284,11 @@ public final class DBInfo extends TagImpl {
         QueryPro qry = new QueryImpl(columns,"query");
         
 		int len=qry.getRecordcount();
-		
+		if(qry.get(COLUMN_DEF) == null){
+			qry.rename(COLUMN_DEFAULT,COLUMN_DEFAULT_VALUE);
+		} else {
 		qry.rename(COLUMN_DEF,COLUMN_DEFAULT_VALUE);
+		}
         
 		// make sure decimal digits exists
 		QueryColumn col = qry.getColumn(DECIMAL_DIGITS,null);
