@@ -284,10 +284,10 @@ public final class DBInfo extends TagImpl {
         QueryPro qry = new QueryImpl(columns,"query");
         
 		int len=qry.getRecordcount();
-		if(qry.get(COLUMN_DEF) == null){
+		if(qry.get(COLUMN_DEF,null) == null){
 			qry.rename(COLUMN_DEFAULT,COLUMN_DEFAULT_VALUE);
 		} else {
-		qry.rename(COLUMN_DEF,COLUMN_DEFAULT_VALUE);
+			qry.rename(COLUMN_DEF,COLUMN_DEFAULT_VALUE);
 		}
         
 		// make sure decimal digits exists
