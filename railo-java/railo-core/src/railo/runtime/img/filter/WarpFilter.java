@@ -14,10 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter for warping images using the gridwarp algorithm.
@@ -26,7 +32,7 @@ import java.awt.image.BufferedImage;
  * a point in the source grid moves to its counterpart in the destination
  * grid.
  */
-public class WarpFilter extends WholeImageFilter {
+public class WarpFilter extends WholeImageFilter  implements DynFiltering {
 
 	private WarpGrid sourceGrid;
 	private WarpGrid destGrid;
@@ -39,6 +45,7 @@ public class WarpFilter extends WholeImageFilter {
 	 * Create a WarpFilter.
 	 */
 	public WarpFilter() {
+		//this(new WarpGrid(),new WarpGrid());
 	}
 	
 	/**
@@ -160,5 +167,20 @@ public class WarpFilter extends WholeImageFilter {
 		return "Distort/Mesh Warp...";
 	}
 
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("SourceGrid")))!=null)setSourceGrid(ImageFilterUtil.toWarpGrid(o,"SourceGrid"));
+		if((o=parameters.removeEL(KeyImpl.init("DestGrid")))!=null)setDestGrid(ImageFilterUtil.toWarpGrid(o,"DestGrid"));
+		if((o=parameters.removeEL(KeyImpl.init("Frames")))!=null)setFrames(ImageFilterUtil.toIntValue(o,"Frames"));
+		if((o=parameters.removeEL(KeyImpl.init("MorphImage")))!=null)setMorphImage(ImageFilterUtil.toBufferedImage(o,"MorphImage"));
+		if((o=parameters.removeEL(KeyImpl.init("Time")))!=null)setTime(ImageFilterUtil.toFloatValue(o,"Time"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [SourceGrid, DestGrid, Frames, MorphImage, Time]");
+		}
+
+		return filter(src, dst);
+	}
 }
 

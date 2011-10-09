@@ -7,12 +7,12 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.util.StructUtil;
 
 public class FeedProperties {
-	private static final Collection.Key ITEM = KeyImpl.getInstance("ITEM");
-	private static final Collection.Key ITEMS = KeyImpl.getInstance("ITEMS");
-	private static final Collection.Key ENTRY = KeyImpl.getInstance("ENTRY");
-	private static final Collection.Key RDF = KeyImpl.getInstance("RDF");
-	private static final Collection.Key RSS = KeyImpl.getInstance("RSS");
-	private static final Collection.Key CHANNEL = KeyImpl.getInstance("channel");
+	private static final Collection.Key ITEM = KeyImpl.intern("ITEM");
+	private static final Collection.Key ITEMS = KeyImpl.intern("ITEMS");
+	private static final Collection.Key ENTRY = KeyImpl.intern("ENTRY");
+	private static final Collection.Key RDF = KeyImpl.intern("RDF");
+	private static final Collection.Key RSS = KeyImpl.intern("RSS");
+	private static final Collection.Key CHANNEL = KeyImpl.intern("channel");
 	
 	
 	public static Struct toProperties(Struct data) {

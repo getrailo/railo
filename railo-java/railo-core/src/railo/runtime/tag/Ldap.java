@@ -111,7 +111,7 @@ public final class Ldap extends TagImpl {
     
     /**
      * Used in conjunction with action = "Query". Specifies the first row of the LDAP query to insert 
-     * into the ColdFusion query. The default is 1.
+     * into the query. The default is 1.
      * @param startrow The startrow to set.
      */
     public void setStartrow(double startrow) {

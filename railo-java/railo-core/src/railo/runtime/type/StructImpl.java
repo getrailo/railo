@@ -10,10 +10,8 @@ import java.util.Set;
 import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.collections.HashTable;
-import railo.commons.collections.HashTableNotSync;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.struct.StructKeyExists;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
@@ -105,13 +103,14 @@ public class StructImpl extends StructSupport {
 	
 	public Collection.Key[] keys() {
 		try	{
-			Collection.Key[] keys = new Collection.Key[size()];
-			Iterator<Key> it = map.keySet().iterator();
+			//Collection.Key[] keys = new Collection.Key[size()];
+			return map.keySet().toArray(new Key[map.size()]);
+			/*Iterator<Key> it = map.keySet().iterator();
 			int count=0;
 			while(it.hasNext() && keys.length>count) {
 				keys[count++]=KeyImpl.toKey(it.next(), null);
 			}
-			return keys;
+			return keys;*/
 		}
 		catch(Throwable t) {
 			Map<Key, Object> old = map;

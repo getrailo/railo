@@ -1,6 +1,6 @@
 <cfdirectory directory="../factory/img" action="list" name="imgs">
 <cfset bins=struct()>
-<cfset mimetypes={png:'x-png',gif:'gif'}>
+<cfset mimetypes={png:'png',gif:'gif'}>
 <cfset base64types={png:'png',gif:'gif'}>
 <cfloop query="imgs">
 	<cfif findnoCase(".png",imgs.name) or findnoCase(".gif",imgs.name) or findnoCase(".swf",imgs.name) >

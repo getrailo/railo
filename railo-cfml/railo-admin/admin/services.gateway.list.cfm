@@ -214,7 +214,7 @@ Error Output--->
 </table>
 </cfif>
 
-<!--- LIST CACHE --->
+<!--- LIST --->
 <cfif srcLocal.recordcount>
 	<h2>#stText.Settings.gateway.titleExisting#</h2>
 	#stText.Settings.gateway.descExisting#
@@ -343,7 +343,9 @@ Error Output--->
     
 	</cfoutput>
 <cfelse>
- 	<cfoutput>#stText.Settings.gateway.noAccess#</cfoutput>
+ 	<cfset noAccess(stText.Settings.gateway.noAccess)>
+
+
 </cfif>
 
     

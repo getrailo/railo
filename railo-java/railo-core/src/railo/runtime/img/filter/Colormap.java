@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 /**
  * An interface for color maps.  These are passed to filters which convert gray values to
  * colors. This is similar to the ColorModel class but works with floating point values.

@@ -12,8 +12,8 @@ public final class ListDeleteAt implements Function {
 	
 	private static char[] DEFAULT_DELIMETER=new char[]{','};
 	
-	public static String call(PageContext pc , String list, double pos) throws ExpressionException {
-		return _call(pc,list,(int)pos,DEFAULT_DELIMETER,false);
+	public static String call(PageContext pc , String list, double posNumber) throws ExpressionException {
+		return _call(pc,list,(int)posNumber,DEFAULT_DELIMETER,false);
 	}
 	
 	public static String call(PageContext pc, String list, double posNumber, String del) throws ExpressionException {

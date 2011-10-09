@@ -1,6 +1,7 @@
 package railo.runtime.type.scope;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -8,11 +9,15 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
 import railo.commons.collections.HashTable;
 import railo.commons.io.IOUtil;
@@ -34,7 +39,7 @@ import railo.runtime.util.ApplicationContext;
 /**
  * Form Scope
  */
-public final class FormImpl extends ScopeSupport implements Form,ScriptProtected {
+public final class FormImpl extends ScopeSupport implements Form,ScriptProtected,FormUpload {
 	
 
 	private byte EQL=61;
@@ -55,7 +60,6 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
     private static final int HEADER_TEXT_PLAIN=0;
     private static final int HEADER_MULTIPART_FORM_DATA=1;
     private static final int HEADER_APP_URL_ENC=2;
-	private static final Key FIELD_NAMES = KeyImpl.getInstance("fieldnames");
 	private int headerType=-1;
     
 	/**
@@ -94,7 +98,6 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			scriptProtected=((pc.getApplicationContext().getScriptProtect()&ApplicationContext.SCRIPT_PROTECT_FORM)>0)?
 					ScriptProtected.YES:ScriptProtected.NO;
 		}
-		
         super.initialize(pc);
 		
         String contentType=pc. getHttpServletRequest().getContentType();
@@ -118,7 +121,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 
     void setFieldNames() {
     	if(size()>0) {
-    		setEL(FIELD_NAMES,List.arrayToList(keysAsString(), ","));
+    		setEL(KeyImpl.FIELD_NAMES,List.arrayToList(keysAsString(), ","));
         }
     }
 
@@ -129,21 +132,32 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
     	Resource tempFile;
     	
     	// Create a new file upload handler
-    	String encoding=getEncoding();
-    	ServletFileUpload upload = new ServletFileUpload();
-    	upload.setHeaderEncoding(encoding);
+    	final String encoding=getEncoding();
+    	FileItemFactory factory = tempDir instanceof File? 
+    			new DiskFileItemFactory(DiskFileItemFactory.DEFAULT_SIZE_THRESHOLD,(File)tempDir):
+    				new DiskFileItemFactory();
     	
+    	ServletFileUpload upload = new ServletFileUpload(factory);
+    	upload.setHeaderEncoding(encoding);
+    	//ServletRequestContext c = new ServletRequestContext(pc.getHttpServletRequest());
+    	
+    	
+    	HttpServletRequest req = pc.getHttpServletRequest();
+    	ServletRequestContext context = new ServletRequestContext(req) {
+    		public String getCharacterEncoding() {
+    			return encoding;
+    		}
+    	};
     	
     	// Parse the request
     	try {
-    		FileItemIterator iter = upload.getItemIterator(pc.getHttpServletRequest());
+    		FileItemIterator iter = upload.getItemIterator(context);
         	//byte[] value;
         	InputStream is;
         	ArrayList list=new ArrayList();
 			while (iter.hasNext()) {
 			    FileItemStream item = iter.next();
-			    
-			    
+
 			    is=IOUtil.toBufferedInputStream(item.openStream());
 			    if (item.getContentType()==null || StringUtil.isEmpty(item.getName())) {
 			    	list.add(new URLItem(item.getFieldName(),new String(IOUtil.toBytes(is),encoding),false));	     
@@ -154,6 +168,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			    			new Item(tempFile,item.getContentType(),item.getName(),item.getFieldName()));
 					String value=tempFile.toString();
 			    	IOUtil.copy(is, tempFile,true);
+			    	
 				    list.add(new URLItem(item.getFieldName(),value,false));	     
 			    }       
 			}
@@ -259,6 +274,21 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		
 	}
 
+	public FormImpl.Item[] getFileItems() {
+		if(fileItems==null || fileItems.isEmpty()) return new FormImpl.Item[0];
+		
+		Iterator it = fileItems.entrySet().iterator();
+		Map.Entry entry;
+		FormImpl.Item[] rtn=new FormImpl.Item[fileItems.size()];
+		int index=0;
+		while(it.hasNext()){
+			entry=(Entry) it.next();
+			rtn[index++]=(Item) entry.getValue();
+		}
+		return rtn;
+	}
+	
+	
 	/**
      * @see railo.runtime.type.scope.Form#getFileUpload(java.lang.String)
      */

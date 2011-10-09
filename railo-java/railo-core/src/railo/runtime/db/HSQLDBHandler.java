@@ -26,6 +26,7 @@ import railo.runtime.sql.SelectParser;
 import railo.runtime.sql.Selects;
 import railo.runtime.sql.old.ParseException;
 import railo.runtime.timer.Stopwatch;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
@@ -45,7 +46,7 @@ public final class HSQLDBHandler {
 	
 	
 	private DatasourceConnection dc;
-    private ArrayList usedTables=new ArrayList();
+    private ArrayList<String> usedTables=new ArrayList<String>();
 	Executer executer=new Executer();
 	QoQ qoq=new QoQ();
 	private static Object lock=new SerializableObject(); 
@@ -70,17 +71,16 @@ public final class HSQLDBHandler {
 		name=name.replace('.','_');
 		usedTables.add(name);
 			stat = dc.getConnection().createStatement();
-			String[] keys=query.keysAsString();
+			Key[] keys = query.keys();
 			int[] types=query.getTypes();
 			int[] innerTypes=toInnerTypes(types);
-			
 			// CREATE STATEMENT
 				String comma="";
 				StringBuffer create=new StringBuffer("CREATE TABLE "+name+" (");
 				StringBuffer insert=new StringBuffer("INSERT INTO  "+name+" (");
 				StringBuffer values=new StringBuffer("VALUES (");
 				for(int i=0;i<keys.length;i++) {
-					String key=keys[i];
+					String key=keys[i].getString();
 					String type=(doSimpleTypes)?"VARCHAR_IGNORECASE":toUsableType(types[i]);
 					
 					
@@ -180,9 +180,11 @@ public final class HSQLDBHandler {
 	
 	
 	private String toUsableType(int type) {
-	    if(type==Types.VARCHAR)return "VARCHAR_IGNORECASE";
+		if(type==Types.NCHAR)return "CHAR";
+		if(type==Types.NCLOB)return "CLOB";
+		if(type==Types.NVARCHAR)return "VARCHAR_IGNORECASE";
+		if(type==Types.VARCHAR)return "VARCHAR_IGNORECASE";
 	    if(type==Types.JAVA_OBJECT)return "VARCHAR_IGNORECASE";
-	    //if(type==Types.DATE)return "DATETIME";
 	    
 	    
 	    
@@ -284,7 +286,7 @@ public final class HSQLDBHandler {
 	// SECOND Chance with hsqldb
 		try {
 			boolean isUnion=false;
-			Set tables=null;
+			Set<String> tables=null;
 			if(selects!=null) {
 				HSQLUtil2 hsql2=new HSQLUtil2(selects);
 				isUnion=hsql2.isUnion();
@@ -314,7 +316,7 @@ public final class HSQLDBHandler {
 		
     }
     
-    private QueryImpl _execute(PageContext pc, SQL sql, int maxrows, int fetchsize, int timeout, Stopwatch stopwatch, Set tables, boolean isUnion) throws PageException {
+    private QueryImpl _execute(PageContext pc, SQL sql, int maxrows, int fetchsize, int timeout, Stopwatch stopwatch, Set<String> tables, boolean isUnion) throws PageException {
     	try {
 			return __execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,false);
 		}
@@ -326,7 +328,7 @@ public final class HSQLDBHandler {
 		}
 	}
 
-	public QueryImpl __execute(PageContext pc, SQL sql, int maxrows, int fetchsize, int timeout,Stopwatch stopwatch, Set tables, boolean doSimpleTypes) throws PageException {
+	public QueryImpl __execute(PageContext pc, SQL sql, int maxrows, int fetchsize, int timeout,Stopwatch stopwatch, Set<String> tables, boolean doSimpleTypes) throws PageException {
 
 		synchronized(lock) {
 		    	
@@ -343,7 +345,7 @@ public final class HSQLDBHandler {
 	    		
 	        	//sql.setSQLString(HSQLUtil.sqlToZQL(sql.getSQLString(),false));
 		        try {
-	    			Iterator it = tables.iterator();
+	    			Iterator<String> it = tables.iterator();
 		    		//int len=tables.size();
 	                while(it.hasNext()) {
 		    			String tableName=it.next().toString();//tables.get(i).toString();

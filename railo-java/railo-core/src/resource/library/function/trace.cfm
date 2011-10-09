@@ -13,10 +13,11 @@ Tracks runtime logic flow, variable values, and execution time. Displays output 
 	---><cfargument name="inline" type="boolean" required="no" default="#false#" hint="if true displays trace code in line on the page in the location of the trace function, 
 addition to the debugging information output."><!---
 	---><cfargument name="abort" type="boolean" required="no" default="#false#" hint="stops further processing of the request."><!---
+	---><cfargument name="follow" type="boolean" required="no" default="#false#" hint="If true, Railo follows the variable defined in the [var] attribute and will log any changes to it. Ignored when attribute [var] is not defined."><!---
 	---><cftrace attributeCollection="#arguments#"><!---
 	---></cffunction>
 
-<!--- older Railo Version dies not support the caller attribute and it is possible this file remain after a downgrade --->
+<!--- older Railo Version does not support the caller attribute and it is possible this file remain after a downgrade --->
 <cffunction name="oldTrace" returntype="void" 
 	hint="Displays and logs debugging data about the state of an application at the time this function executes. 
 Tracks runtime logic flow, variable values, and execution time. Displays output at the end of the request or in the debugging section at the end of the request."><!---

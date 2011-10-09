@@ -11,7 +11,7 @@ import railo.runtime.ext.function.Function;
 
 public final class SystemOutput implements Function {
     public static boolean call(PageContext pc , String string) {
-        return call(pc, string, false);
+        return call(pc, string, false,false);
     }
     public static boolean call(PageContext pc , String string, boolean addNewLine) {
         return call(pc, string, addNewLine, false);
@@ -20,9 +20,14 @@ public final class SystemOutput implements Function {
     	PrintStream stream = System.out;
     	//string+=":"+Thread.currentThread().getId();
     	if(doErrorStream) stream = System.err;
-        
-    	if(addNewLine)stream.println(string);
-        else stream.print(string);
-        return true;
+        if("<print-stack-race>".equalsIgnoreCase(string)){
+        	new Exception("Stack trace").printStackTrace(stream);
+        	if(addNewLine)stream.println();
+        }
+        else {
+        	if(addNewLine)stream.println(string);
+        	else stream.print(string);
+        }
+    	return true;
     }
 }

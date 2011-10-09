@@ -372,7 +372,7 @@ public class QueryCacheQuery extends QueryImpl {
 	 * @see railo.runtime.type.QueryImpl#getColumn(java.lang.String)
 	 */
 	public QueryColumn getColumn(String key) throws DatabaseException {
-		return getColumn(KeyImpl.init(key));
+		return getColumn(KeyImpl.getInstance(key));
 	}
 
 	/**

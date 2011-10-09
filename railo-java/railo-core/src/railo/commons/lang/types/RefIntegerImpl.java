@@ -3,7 +3,7 @@ package railo.commons.lang.types;
 /**
  * Integer Type that can be modified
  */
-public final class RefIntegerImpl implements RefInteger {
+public class RefIntegerImpl implements RefInteger {
 
     private int value;
 

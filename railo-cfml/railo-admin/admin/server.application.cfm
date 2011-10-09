@@ -128,6 +128,12 @@ function selectCustom(form) {
 	
 }
 </script>
+
+
+
+<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
+
+
 <table class="tbl" width="740">
 <colgroup>
     <col width="150">
@@ -194,7 +200,7 @@ function selectCustom(form) {
 		<cfelse>
 			<input type="hidden" name="scriptProtect" value="#appSettings.scriptProtect#">
 		
-			<b>#appSettings.scriptProtect#</b>
+			<br /><b>#appSettings.scriptProtect#</b>
 		</cfif>
 	</td>
 </tr>
@@ -246,11 +252,15 @@ function selectCustom(form) {
 <tr>
 	<td class="tblHead" width="150">#stText.application.AllowURLRequestTimeout#</td>
 	<td class="tblContent">
-			<input type="checkbox" name="AllowURLRequestTimeout" value="true"
+		<cfif hasAccess>
+            <input type="checkbox" name="AllowURLRequestTimeout" value="true"
 			<cfif appSettings.AllowURLRequestTimeout>  checked="checked"</cfif>>
+		<cfelse>
+        	<input type="hidden" name="AllowURLRequestTimeout" value="#appSettings.AllowURLRequestTimeout#">
+            <b>#yesNoFormat(appSettings.AllowURLRequestTimeout)#</b>
+        </cfif>
+		
 			<span class="comment">#stText.application.AllowURLRequestTimeoutDesc#</span>
-		
-		
 	</td>
 </tr>
 

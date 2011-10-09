@@ -13,7 +13,7 @@ import railo.runtime.type.UDF;
 
 public class _CreateComponent {
 	
-	private static final Collection.Key INIT = KeyImpl.getInstance("init");
+	private static final Collection.Key INIT = KeyImpl.intern("init");
 	private static final Object[] EMPTY = new Object[0]; 
 
 	public static Object call(PageContext pc , Object[] objArr) throws PageException {

@@ -73,22 +73,32 @@ function RailoForms(form) {
 			else if(pub.TYPE_SELECT==el.type) prv.checkSelect(el);		
 		}
 		if(prv.errors.length) {
+			var _errors=[];
 			for(var i=0;i<prv.errors.length;i++) {
 				var err=prv.errors[i];
 				var el=err.element;
-				
-				if(el.onerror) {
-					if(typeof(el.onerror) == "string" && typeof(eval(el.onerror)) == "function") {
+				if(el.onerror && typeof(el.onerror) == "string" && typeof(eval(el.onerror)) == "function") {
 						var func=eval(el.onerror);
-						var f=document.forms[prv.form]
-						var i=f[el.name];				
-						var v=i.value;
+                    var _form=document.forms[prv.form]
+                    var _input=_form[el.name];				
+                    var v=_input.value;
 						if(!v && err.value)v='';
-						func(f,i,i.v);
-					}
+                    func(_form,_input.name,v,err.error);
 				}		
-				else alert(err.error);
+                else {
+                	_errors[_errors.length]=err.error;
+                }
+					}
+            if(_errors.length==1)
+            	alert(_errors[0]);
+            else if(_errors.length>1) {
+            	var msg="";
+            	for(var x=0;x<_errors.length;x++) {
+                	msg+="- "+_errors[x]+"\n";
+				}		
+                alert(msg);
 			}
+			
 			
 			prv.errors=[];
 			return false;

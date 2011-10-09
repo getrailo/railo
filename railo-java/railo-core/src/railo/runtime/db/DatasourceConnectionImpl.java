@@ -1,15 +1,25 @@
 package railo.runtime.db;
 
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import railo.commons.digest.MD5;
 import railo.runtime.op.Caster;
 
 /**
  * wrap for datasorce and connection from it
  */
-public final class DatasourceConnectionImpl implements DatasourceConnection {
+public final class DatasourceConnectionImpl implements DatasourceConnectionPro {
     
-    private Connection connection;
+    private static final int MAX_PS = 100;
+	private Connection connection;
     private DataSource datasource;
     private long time;
 	private String username;
@@ -125,7 +135,9 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 		this.requestId=requestId;
 	}
 
-	// FUTURE add to interface, pherhaps a more generic solition like getMeta(SUPPORT_GENERATED_KEYS)
+	/**
+	 * @see railo.runtime.db.DatasourceConnectionPro#supportsGetGeneratedKeys()
+	 */
 	public boolean supportsGetGeneratedKeys() {
 		if(supportsGetGeneratedKeys==null){
 			try {
@@ -136,5 +148,60 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 		}
 		return supportsGetGeneratedKeys.booleanValue();
 	}
+	
+	private Map<String,PreparedStatement> preparedStatements=new HashMap<String, PreparedStatement>();
+	
+	/**
+	 * @see railo.runtime.db.DatasourceConnectionPro#getPreparedStatement(railo.runtime.db.SQL, boolean)
+	 */
+	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys) throws SQLException {
+		// create key
+		String strSQL=sql.getSQLString();
+		String key=strSQL.trim()+":"+createGeneratedKeys;
+		try {
+			key = MD5.getDigestAsString(key);
+		} catch (IOException e) {}
+		PreparedStatement ps = preparedStatements.get(key);
+		if(ps!=null) return ps;
+		
+		if(createGeneratedKeys)	ps= getConnection().prepareStatement(strSQL,Statement.RETURN_GENERATED_KEYS);
+		else ps=getConnection().prepareStatement(strSQL);
+		if(preparedStatements.size()>MAX_PS)
+			closePreparedStatements((preparedStatements.size()-MAX_PS)+1);
+		preparedStatements.put(key,ps);
+		return ps;
+	}
 
+	/**
+	 * @see railo.runtime.db.DatasourceConnectionPro#close()
+	 */
+	public void close() throws SQLException {
+		closePreparedStatements(-1);
+		getConnection().close();
+	}
+	
+
+	public void closePreparedStatements(int maxDelete) throws SQLException {
+		Iterator<Entry<String, PreparedStatement>> it = preparedStatements.entrySet().iterator();
+		int count=0;
+		while(it.hasNext()){
+			try {
+				Entry<String, PreparedStatement> entry = it.next();
+				entry.getValue().close();
+				it.remove();
+				if(maxDelete!=0 && ++count>=maxDelete) break;
+			} 
+			catch (SQLException e) {}
+		}
+		
+	}
+	
+	
+	/*protected void finalize() throws Throwable {
+	    try {
+	        close();        // close open files
+	    } finally {
+	        super.finalize();
+	    }
+	}*/
 }

@@ -13,6 +13,12 @@ function uCaseFirst(String str) {
 		return uCase(mid(str,1,1))&mid(str,2,size);
 	}
 }
+
+function isColumnEmpty(string columnName){
+	if(!isDefined(columnName)) return true;
+	return !len(replace(valueList(""&columnName),',','','all'));
+}
+
 </cfscript>
 <cfadmin 
 	action="getDebugData"
@@ -67,7 +73,7 @@ a.cfdebuglink {color:blue; background-color:white }
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> Time Zone </td>
-			<td class="cfdebug"><cftry>#GetPageContext().getConfig().getTimeZone().getDisplayName()#<cfcatch></cfcatch></cftry></td>
+			<td class="cfdebug"><cftry>#getTimeZone()#<cfcatch></cfcatch></cftry></td>
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> Locale </td>
@@ -85,6 +91,10 @@ a.cfdebuglink {color:blue; background-color:white }
 			<td class="cfdebug" nowrap> Host Name </td>
 			<td class="cfdebug">#cgi.server_name#</td>
 		</tr>
+		<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")><tr>
+			<td class="cfdebug" nowrap> Architecture</td>
+			<td class="cfdebug"><cfif server.os.archModel NEQ server.os.archModel>OS #server.os.archModel#bit/JRE #server.java.archModel#bit<cfelse>#server.os.archModel#bit</cfif></td>
+		</tr></cfif>
 		</table>
 		</p>
 	
@@ -175,16 +185,21 @@ a.cfdebuglink {color:blue; background-color:white }
 </cfloop>                
  </table>
 </cfif>
+
+
 <!--- Traces --->
 <cfif traces.recordcount>
+	<cfset hasAction=!isColumnEmpty('traces.action')>
+	<cfset hasCategory=!isColumnEmpty('traces.category')>
 	<p class="cfdebug"><hr/><b class="cfdebuglge">Trace Points</b></p>
 		<table border="1" cellpadding="2" cellspacing="0" class="cfdebug">
 		<tr>
 			<td class="cfdebug"><b>Type</b></td>
-			<td class="cfdebug"><b>Category</b></td>
+			<cfif hasCategory><td class="cfdebug"><b>Category</b></td></cfif>
 			<td class="cfdebug"><b>Text</b></td>
 			<td class="cfdebug"><b>Template</b></td>
 			<td class="cfdebug"><b>Line</b></td>
+			<cfif hasAction><td class="cfdebug"><b>Action</b></td></cfif>
 			<td class="cfdebug"><b>Var</b></td>
 			<td class="cfdebug"><b>Total Time</b></td>
 			<td class="cfdebug"><b>Trace Slot Time</b></td>
@@ -194,11 +209,12 @@ a.cfdebuglink {color:blue; background-color:white }
 <cfset total=total+traces.time>
 		<tr>
 			<td align="left" class="cfdebug" nowrap>#traces.type#</td>
-			<td align="left" class="cfdebug" nowrap>#traces.category#&nbsp;</td>
+			<cfif hasCategory><td align="left" class="cfdebug" nowrap>#traces.category#&nbsp;</td></cfif>
 			<td align="let" class="cfdebug" nowrap>#traces.text#&nbsp;</td>
 			<td align="left" class="cfdebug" nowrap>#traces.template#</td>
 			<td align="right" class="cfdebug" nowrap>#traces.line#</td>
-			<td align="left" class="cfdebug" nowrap><cfif len(traces.varName)>#traces.varName# = #traces.varValue#<cftry><cfdump var="#evaluate(traces.varValue)#" label="#traces.varName#"><cfcatch></cfcatch></cftry><cfelse>&nbsp;<br />
+			<cfif hasAction><td align="left" class="cfdebug" nowrap>#traces.action#</td></cfif>
+			<td align="left" class="cfdebug" nowrap><cfif len(traces.varName)>#traces.varName#<cfif structKeyExists(traces,'varValue')> = #traces.varValue#</cfif><cfelse>&nbsp;<br />
 			</cfif></td>
 			<td align="right" class="cfdebug" nowrap>#total# ms</td>
 			<td align="right" class="cfdebug" nowrap>#traces.time# ms</td>

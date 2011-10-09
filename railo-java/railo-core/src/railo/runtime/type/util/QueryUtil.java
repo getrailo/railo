@@ -36,7 +36,7 @@ public class QueryUtil {
 		String[] strNames = qry.getColumns();
 		Key[] names=new Key[strNames.length];
 		for(int i=0;i<names.length;i++){
-			names[i]=KeyImpl.init(strNames[i]);
+			names[i]=KeyImpl.getInstance(strNames[i]);
 		}
 		return names;
 	}

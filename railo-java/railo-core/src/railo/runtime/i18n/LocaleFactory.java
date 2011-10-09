@@ -1,6 +1,7 @@
 
 package railo.runtime.i18n;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -197,7 +198,9 @@ public final class LocaleFactory {
 	private static String getSupportedLocalesAsString() {
 		//StringBuffer sb=new StringBuffer();
 	    // TODO chnge from ArryObject to string
-		return List.arrayToList((String[])locales.keySet().toArray(new String[locales.size()]),",");
+		String[] arr = (String[])locales.keySet().toArray(new String[locales.size()]);
+		Arrays.sort(arr);
+		return List.arrayToList(arr,",");
 		
 	}
 

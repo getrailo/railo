@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 /**
  * A grayscale colormap. Black is 0, white is 1.
  */

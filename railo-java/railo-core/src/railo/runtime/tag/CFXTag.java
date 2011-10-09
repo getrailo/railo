@@ -17,7 +17,7 @@ import com.allaire.cfx.Request;
 import com.allaire.cfx.Response;
 
 /**
-* Creates a ColdFusion CFX Tag
+* Creates a CFML CFX Tag
 *
 *
 *

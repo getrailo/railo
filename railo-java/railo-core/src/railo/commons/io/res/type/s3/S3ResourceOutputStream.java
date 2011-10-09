@@ -2,6 +2,10 @@ package railo.commons.io.res.type.s3;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.SocketException;
+
+import railo.commons.lang.ExceptionUtil;
+import railo.commons.lang.StringUtil;
 
 public final class S3ResourceOutputStream extends OutputStream {
 	
@@ -34,8 +38,14 @@ public final class S3ResourceOutputStream extends OutputStream {
 		try {
 			s3.put(bucketName, objectName, acl, new TemporaryStreamRequestEntity(ts,contentType));
 		} 
+
+		catch (SocketException se) {
+			String msg = StringUtil.emptyIfNull(se.getMessage());
+			if(StringUtil.indexOfIgnoreCase(msg, "Socket closed")==-1)
+				throw se;
+		}
 		catch (Exception e) {
-			throw new IOException(e.getMessage());
+			throw ExceptionUtil.toIOException(e);
 		}
 	}
 

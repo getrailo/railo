@@ -14,15 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.geom.Point2D;
+package railo.runtime.img.filter;import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which performs the popular whirl-and-pinch distortion effect.
  */
-public class PinchFilter extends TransformFilter {
+public class PinchFilter extends TransformFilter  implements DynFiltering {
 
 	private float angle = 0;
 	private float centreX = 0.5f;
@@ -192,4 +197,22 @@ public class PinchFilter extends TransformFilter {
 		return "Distort/Pinch...";
 	}
 
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=null;//ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));
+		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("CentreX")))!=null)setCentreX(ImageFilterUtil.toFloatValue(o,"CentreX"));
+		if((o=parameters.removeEL(KeyImpl.init("CentreY")))!=null)setCentreY(ImageFilterUtil.toFloatValue(o,"CentreY"));
+		//if((o=parameters.removeEL(KeyImpl.init("Centre")))!=null)setCentre(ImageFilterUtil.toPoint2D(o,"Centre"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Amount, Angle, CentreX, CentreY, Centre, EdgeAction, Interpolation]");
+		}
+
+		return filter(src, dst);
+	}
 }

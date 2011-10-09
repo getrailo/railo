@@ -65,7 +65,7 @@ public final class ASMUtil {
 	private static int version=0;
 	
 	private final static Method CONSTRUCTOR_OBJECT = Method.getMethod("void <init> ()");
-	private static final String VERSION_MESSAGE = "you use a old version of the ASM Jar, please update your jar files";
+	private static final String VERSION_MESSAGE = "you use a invalid version of the ASM Jar, please update your jar files";
 	private static long id=0;
 		
 	/**
@@ -813,6 +813,71 @@ public final class ASMUtil {
 			throw new EvaluatorException("Attribute ["+attrName+"] of the Tag ["+tag.getFullname()+"] is required");
 		}
 		return true;
+	}
+
+
+	public static boolean isRefType(Type type) {
+		return 
+		!(type==Types.BYTE_VALUE || type==Types.BOOLEAN_VALUE || type==Types.CHAR || type==Types.DOUBLE_VALUE || 
+		type==Types.FLOAT_VALUE || type==Types.INT_VALUE || type==Types.LONG_VALUE || type==Types.SHORT_VALUE);
+	}
+
+
+	public static Type toRefType(Type type) {
+		if(type==Types.BYTE_VALUE) return Types.BYTE;
+		if(type==Types.BOOLEAN_VALUE) return Types.BOOLEAN;
+		if(type==Types.CHAR) return Types.CHARACTER;
+		if(type==Types.DOUBLE_VALUE) return Types.DOUBLE;
+		if(type==Types.FLOAT_VALUE) return Types.FLOAT;
+		if(type==Types.INT_VALUE) return Types.INTEGER;
+		if(type==Types.LONG_VALUE) return Types.LONG;
+		if(type==Types.SHORT_VALUE) return Types.SHORT;
+		
+		return type;
+	}
+	
+	/**
+	 * return value type only when there is one
+	 * @param type
+	 * @return
+	 */
+	public static Type toValueType(Type type) {
+		if(type==Types.BYTE) return Types.BYTE_VALUE;
+		if(type==Types.BOOLEAN) return Types.BOOLEAN_VALUE;
+		if(type==Types.CHARACTER) return Types.CHAR;
+		if(type==Types.DOUBLE) return Types.DOUBLE_VALUE;
+		if(type==Types.FLOAT) return Types.FLOAT_VALUE;
+		if(type==Types.INTEGER) return Types.INT_VALUE;
+		if(type==Types.LONG) return Types.LONG_VALUE;
+		if(type==Types.SHORT) return Types.SHORT_VALUE;
+		
+		return type;
+	}
+
+
+	public static Class getValueTypeClass(Type type, Class defaultValue) {
+
+		if(type==Types.BYTE_VALUE) return byte.class;
+		if(type==Types.BOOLEAN_VALUE) return boolean.class;
+		if(type==Types.CHAR) return char.class;
+		if(type==Types.DOUBLE_VALUE) return double.class;
+		if(type==Types.FLOAT_VALUE) return float.class;
+		if(type==Types.INT_VALUE) return int.class;
+		if(type==Types.LONG_VALUE) return long.class;
+		if(type==Types.SHORT_VALUE) return short.class;
+		
+		return defaultValue;
+	}
+	
+
+	public static boolean containsComponent(Body body) {
+		if(body==null) return false;
+		
+		Iterator it = body.getStatements().iterator();
+		while(it.hasNext()){
+			if(it.next() instanceof TagComponent)return true;
+		}
+		return false;
 	}
 	
 }

@@ -31,7 +31,7 @@ public final class IsDefined implements Function {
 		return true;
 	}
 	public static boolean call(PageContext pc , double scope,String key) {
-		return call(pc, scope, KeyImpl.init(key));
+		return call(pc, scope, KeyImpl.getInstance(key));
 	}
 	
 	public static boolean call(PageContext pc , double scope,String[] varNames) {

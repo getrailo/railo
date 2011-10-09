@@ -9,7 +9,7 @@ import railo.transformer.library.function.FunctionLib;
 import railo.transformer.util.CFMLString;
 
 /**
- * Zum lesen von Attributen bei dem cold fusion expressions nicht geparst werden sollen (cfloop contition) 
+ * Zum lesen von Attributen bei dem cold fusion expressions nicht geparst werden sollen (cfloop condition) 
  */
 public final class SimpleExprTransformer implements ExprTransformer {
 	

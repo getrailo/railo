@@ -28,13 +28,13 @@ public final class HTMLDocument {
     return url.substring(0, url.lastIndexOf('/')); // remove date from end
   }
   
-  public static Document getDocument(Resource res)  {
+  public static Document getDocument(Resource res,String charset)  {
     Document doc = new Document();
     doc.add(FieldUtil.Text("uid", uid(res), false));
-
+    
     HTMLParser parser = new HTMLParser();
     try {
-    	parser.parse(res,null);
+    	parser.parse(res,charset);
     } 
     catch (Throwable t) {
         return doc;

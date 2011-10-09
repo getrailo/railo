@@ -19,7 +19,7 @@ import railo.runtime.type.dt.DateTime;
 
 public abstract class StructSupport implements Map,Struct,Sizeable {
 
-
+	private static final long serialVersionUID = 7433668961838400995L;
 
 	/**
 	 * throw exception for invalid key
@@ -28,6 +28,9 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	 */
 	protected ExpressionException invalidKey(Key key) {
 		return new ExpressionException("key ["+key.getString()+"] doesn't exist in struct (keys:"+List.arrayToList(keysAsString(), ",")+")");
+	}
+	public static ExpressionException invalidKey(String[] keys, Key key) {
+		return new ExpressionException("key ["+key.getString()+"] doesn't exist in struct (keys:"+List.arrayToList(keys, ",")+")");
 	}
 	
 	

@@ -29,7 +29,7 @@ import com.intergral.fusiondebug.server.IFDVariable;
 public class FDStackFrameImpl implements IFDStackFrame {
 
 
-	private static final Collection.Key CALLER = KeyImpl.getInstance("caller");
+	private static final Collection.Key CALLER = KeyImpl.intern("caller");
 	
 	private static final int[] SCOPES_AS_INT = new int[]{
 		Scope.SCOPE_VARIABLES,Scope.SCOPE_CGI,Scope.SCOPE_URL,Scope.SCOPE_FORM,

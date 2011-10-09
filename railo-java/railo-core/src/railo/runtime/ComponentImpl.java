@@ -13,8 +13,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.Cookie;
+
+import railo.commons.io.DevNullOutputStream;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
+import railo.commons.lang.Pair;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -25,6 +29,7 @@ import railo.runtime.component.InterfaceCollection;
 import railo.runtime.component.Member;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.debug.DebugEntry;
@@ -34,6 +39,7 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DeprecatedException;
@@ -46,6 +52,7 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.op.Operator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
+import railo.runtime.thread.ThreadUtil;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
@@ -57,6 +64,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.comparator.ArrayOfStructComparator;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.scope.Argument;
@@ -73,7 +81,7 @@ import railo.runtime.util.ArrayIterator;
  * %**%
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
-public class ComponentImpl extends StructSupport implements Externalizable,ComponentPro,coldfusion.runtime.TemplateProxy,Sizeable {
+public class ComponentImpl extends StructSupport implements Externalizable,ComponentAccess,coldfusion.runtime.TemplateProxy,Sizeable {
 
 
 	private ComponentProperties properties;
@@ -91,8 +99,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	private boolean triggerDataMember;
     	
 	// state control of component
-	private int threadUsingLock=0;
-	private int threadsWaiting=0;
 	boolean isInit=false;
 
 	private InterfaceCollection interfaceCollection;
@@ -101,26 +107,20 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	boolean afterConstructor;
 	private Map<Key,UDF> constructorUDFs;
 
+	private static final Key TO_DATETIME = KeyImpl.intern("_toDateTime");
+	private static final Key TO_NUMERIC = KeyImpl.intern("_toNumeric");
+	private static final Key TO_BOOLEAN = KeyImpl.intern("_toBoolean");
+	private static final Key TO_STRING = KeyImpl.intern("_toString");
 
-	public static final Key KEY_SUPER=KeyImpl.getInstance("SUPER");
-	public static final Key KEY_THIS=KeyImpl.getInstance("THIS");
+	private static final Key ON_MISSING_METHOD = KeyImpl.intern("onmissingmethod");
 
-	private static final Key TO_DATETIME = KeyImpl.getInstance("_toDateTime");
-	private static final Key TO_NUMERIC = KeyImpl.getInstance("_toNumeric");
-	private static final Key TO_BOOLEAN = KeyImpl.getInstance("_toBoolean");
-	private static final Key TO_STRING = KeyImpl.getInstance("_toString");
-
-	private static final Key ON_MISSING_METHOD = KeyImpl.getInstance("onmissingmethod");
-
-	protected static final Key EXTENDS = KeyImpl.getInstance("extends");
-	protected static final Key IMPLEMENTS = KeyImpl.getInstance("implements");
-	protected static final Key FUNCTIONS = KeyImpl.getInstance("functions");
-	protected static final Key FULLNAME = KeyImpl.getInstance("fullname");
-	protected static final Key NAME = KeyImpl.getInstance("name");
-	protected static final Key PATH = KeyImpl.getInstance("path");
-	protected static final Key TYPE = KeyImpl.getInstance("type");
-	protected static final Key SKELETON = KeyImpl.getInstance("skeleton");
-	protected static final Key PROPERTIES = KeyImpl.getInstance("properties");
+	protected static final Key EXTENDS = KeyImpl.intern("extends");
+	protected static final Key IMPLEMENTS = KeyImpl.intern("implements");
+	protected static final Key FUNCTIONS = KeyImpl.intern("functions");
+	protected static final Key FULLNAME = KeyImpl.intern("fullname");
+	protected static final Key SKELETON = KeyImpl.intern("skeleton");
+	protected static final Key PROPERTIES = KeyImpl.intern("properties");
+	private static final Key MAPPED_SUPER_CLASS = KeyImpl.intern("mappedSuperClass");
 	
 	public long sizeOf() {
 		return 
@@ -129,8 +129,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			SizeOf.size(scope)+
 			SizeOf.size(dataMemberDefaultAccess)+
 			SizeOf.size(triggerDataMember)+
-			SizeOf.size(threadUsingLock)+
-			SizeOf.size(threadsWaiting)+
 			SizeOf.size(false)+
 			SizeOf.size(interfaceCollection)+
 			SizeOf.size(useShadow)+
@@ -142,7 +140,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * Constructor of the Component, USED ONLY FOR DESERIALIZE
      */
 	 public ComponentImpl() {
-		
 	 }
 	
     /**
@@ -212,8 +209,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	try{
 			// attributes
 	    	trg.pageSource=pageSource;
-			trg.threadsWaiting=threadsWaiting;
-	        trg.threadUsingLock=threadUsingLock;
 	        trg.triggerDataMember=triggerDataMember;
 	        trg.useShadow=useShadow;
 	        trg.afterConstructor=afterConstructor;
@@ -364,12 +359,12 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
         // extends
 	    if(!StringUtil.isEmpty(properties.extend)) {
-			base= ComponentLoader.loadComponentImpl(pageContext,properties.extend,Boolean.TRUE,null);
+			base= ComponentLoader.loadComponent(pageContext,properties.extend,Boolean.TRUE,null);
 		}
 	    else { 
 	    	Page p=((ConfigWebImpl)pageContext.getConfig()).getBaseComponentPage(pageContext);
 	    	if(!componentPage.getPageSource().equals(p.getPageSource())) {
-            	base=ComponentLoader.loadComponentImpl(pageContext,p,p.getPageSource(),"Component",false);
+            	base=ComponentLoader.loadComponent(pageContext,p,p.getPageSource(),"Component",false);
 	        } 
 	    }
     	
@@ -394,12 +389,13 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	    
 	    // scope
 	    if(useShadow=pageContext.getConfig().useComponentShadow()) {
-	        if(base==null) scope=new ComponentScopeShadow(this,new HashMap());
+	        if(base==null) scope=new ComponentScopeShadow(this,new HashMap<Key,Object>());
 		    else scope=new ComponentScopeShadow(this,(ComponentScopeShadow)base.scope,false);
 	    }
 	    else {
 	    	scope=new ComponentScopeThis(this);
 	    }
+	    initProperties();
 	}
     
     public void checkInterface(PageContext pc, ComponentPage componentPage) throws PageException {
@@ -539,47 +535,89 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         if(member==null)throw ComponentUtil.notFunction(this, KeyImpl.init(name), null,access);
         throw ComponentUtil.notFunction(this, KeyImpl.init(name), member.getValue(),access);
     }
-    
+	
 	Object _call(PageContext pc, UDF udf, Struct namedArgs, Object[] args) throws PageException {
 			
 		Object rtn=null;
 		Variables parent=null;
         
+		// INFO duplicate code is for faster execution -> less contions
+		
+		
+		// debug yes
 		if(pc.getConfig().debug()) {
 		    DebugEntry debugEntry=pc.getDebugger().getEntry(pc,pageSource,udf.getFunctionName());//new DebugEntry(src,udf.getFunctionName());
 			int currTime=pc.getExecutionTime();
 			long time=System.currentTimeMillis();
 			
-			try {
-				openLock(pc.getId());
-				parent=beforeCall(pc);// FUTURE add to interface
-				if(args!=null)rtn=udf.call(pc,args,true);
-				else rtn=udf.callWithNamedValues(pc,namedArgs,true);
-			}		
-			finally {
-				pc.setVariablesScope(parent);
-				int diff= ((int)(System.currentTimeMillis()-time)-(pc.getExecutionTime()-currTime));
-				pc.setExecutionTime(pc.getExecutionTime()+diff);
-				debugEntry.updateExeTime(diff);	
-				closeLock();
-			}	
+			// sync yes
+			if(top.properties._synchronized){
+				synchronized (this) {
+					try {
+						parent=beforeCall(pc);// FUTURE add to interface
+						if(args!=null)rtn=udf.call(pc,args,true);
+						else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+					}		
+					finally {
+						pc.setVariablesScope(parent);
+						int diff= ((int)(System.currentTimeMillis()-time)-(pc.getExecutionTime()-currTime));
+						pc.setExecutionTime(pc.getExecutionTime()+diff);
+						debugEntry.updateExeTime(diff);	
+					}	
+				}
+			}
+
+			// sync no
+			else {
+				try {
+					parent=beforeCall(pc);// FUTURE add to interface
+					if(args!=null)rtn=udf.call(pc,args,true);
+					else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+				}		
+				finally {
+					pc.setVariablesScope(parent);
+					int diff= ((int)(System.currentTimeMillis()-time)-(pc.getExecutionTime()-currTime));
+					pc.setExecutionTime(pc.getExecutionTime()+diff);
+					debugEntry.updateExeTime(diff);	
+				}	
+			}
+			
+			
 		}
+		
+		// debug no
 		else {
-		    try {
-				openLock(pc.getId());
-            	parent=beforeCall(pc); // FUTURE add to interface
-            	if(args!=null)rtn=udf.call(pc,args,true);
-				else rtn=udf.callWithNamedValues(pc,namedArgs,true);
-			}		
-			finally {
-				pc.setVariablesScope(parent);
-				closeLock();
+			
+			// sync yes
+			if(top.properties._synchronized){
+				synchronized (this) {
+				    try {
+		            	parent=beforeCall(pc); // FUTURE add to interface
+		            	if(args!=null)rtn=udf.call(pc,args,true);
+						else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+					}		
+					finally {
+						pc.setVariablesScope(parent);
+					}
+				}
+			}
+			
+			// sync no
+			else {
+			    try {
+	            	parent=beforeCall(pc); // FUTURE add to interface
+	            	if(args!=null)rtn=udf.call(pc,args,true);
+					else rtn=udf.callWithNamedValues(pc,namedArgs,true);
+				}		
+				finally {
+					pc.setVariablesScope(parent);
+				}
 			}
 		}
 		return rtn;
 	}
 
-	private void openLock(int id) {
+	/*private void openLock(int id) {
 		// check log
 		if(top.properties._synchronized) {
 			if(top.threadUsingLock!=0 && top.threadUsingLock!=id){
@@ -603,7 +641,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		synchronized(this) {
     		notify();
     	}
-	}
+	}*/
 	
 	
 	/**
@@ -611,7 +649,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @param pc
      * @return the old scope map
      */
-    public Variables beforeCall(PageContext pc) {
+	public Variables beforeCall(PageContext pc) {
     	Variables parent=pc.variablesScope();
         pc.setVariablesScope(scope);
         return parent;
@@ -664,7 +702,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	 * @param access
 	 * @return size
 	 */
-	protected int size(int access) {
+    public int size(int access) {
 	    return keys(access).length;
 	}
 
@@ -675,13 +713,13 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @param doBase 
      * @return key set
      */
-    protected Set<Key> keySet(int access) {
+	public Set<Key> keySet(int access) {
     	HashSet<Key> set=new HashSet<Key>();
         Map.Entry<Key, Member> entry;    
         Iterator<Entry<Key, Member>> it = _data.entrySet().iterator();
         while(it.hasNext()) {
             entry=it.next();
-            if((entry.getValue()).getAccess()<=access)set.add(entry.getKey());
+            if(entry.getValue().getAccess()<=access)set.add(entry.getKey());
         }
         return set;
     }
@@ -705,7 +743,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         Member e;
         Iterator<Entry<Key, Member>> it = _data.entrySet().iterator();
         while(it.hasNext()) {
-        	e= it.next().getValue();
+        	e=it.next().getValue();
             if(e.getAccess()<=access)members.add(e);
         }
         return members;
@@ -718,7 +756,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @param access
      * @return iterator of the keys
      */
-    protected Iterator iterator(int access) {
+    public Iterator iterator(int access) {
         return new ArrayIterator(keysAsString(access));
     }
     
@@ -756,8 +794,8 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
     public Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess) {
     	// check super
-        if(dataMember && access==ACCESS_PRIVATE && key.equalsIgnoreCase(KEY_SUPER)) {
-        	return SuperComponent.superMember(ComponentUtil.getActiveComponent((PageContextImpl)ThreadLocalPageContext.get(),this).base);
+        if(dataMember && access==ACCESS_PRIVATE && key.equalsIgnoreCase(KeyImpl.SUPER)) {
+        	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent((PageContextImpl)ThreadLocalPageContext.get(),this)._base());
             //return SuperComponent . superMember(base);
         }
     	if(superAccess) {
@@ -783,8 +821,8 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      */
     protected Member getMember(PageContext pc, Collection.Key key, boolean dataMember,boolean superAccess) {
         // check super
-        if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KEY_SUPER)) {
-        	return SuperComponent.superMember(ComponentUtil.getActiveComponent((PageContextImpl)pc,this).base);
+        if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KeyImpl.SUPER)) {
+        	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent((PageContextImpl)pc,this)._base());
         }
         if(superAccess) 
         	return (Member) _udfs.get(key);
@@ -943,6 +981,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		if(ci.top.properties.persistent || ci.top.properties.accessors){
 			Property[] properties=ci.getProperties(false);
 			DumpTable prop = new DumpTable("#99cc99","#ccffcc","#000000");
+
 			prop.setTitle("Properties");
 			prop.setWidth("100%");
 			Property p;
@@ -1365,6 +1404,18 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     public synchronized Struct getMetaData(PageContext pc) throws PageException {
     	return getMetaData(ACCESS_PRIVATE,pc,top);
     }
+    
+
+    public synchronized Object getMetaStructItem(Collection.Key name) {
+    	if(top.properties.meta!=null) {
+        	return top.properties.meta.get(name,null);
+        }
+    	return null;
+    }
+    
+    
+    
+    
 
     protected static Struct getMetaData(int access,PageContext pc, ComponentImpl comp) throws PageException {
         StructImpl sct=new StructImpl();
@@ -1383,6 +1434,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             
             sct.set("persistent",comp.properties.persistent);
             sct.set("accessors",comp.properties.accessors);
+            sct.set("synchronized",comp.properties._synchronized);
             
             
             
@@ -1415,9 +1467,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             PageSource ps = comp.pageSource;
             
             sct.set(FULLNAME,ps.getComponentName());
-            sct.set(NAME,ps.getComponentName());
-            sct.set(PATH,ps.getDisplayPath());
-            sct.set(TYPE,"component");
+            sct.set(KeyImpl.NAME,ps.getComponentName());
+            sct.set(KeyImpl.PATH,ps.getDisplayPath());
+            sct.set(KeyImpl.TYPE,"component");
             Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false);
             if(skeleton !=null)sct.set(SKELETON, skeleton);
             
@@ -1430,7 +1482,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             		p=pit.next().getValue();
             		parr.add(p.getMetaData());
             	}
-            	parr.sort(new ArrayOfStructComparator(NAME));
+            	parr.sort(new ArrayOfStructComparator(KeyImpl.NAME));
             	
             	
             	sct.set(PROPERTIES,parr);
@@ -1609,7 +1661,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     }
 
     private Object callGetter(PageContext pc,Collection.Key key) throws PageException {
-    	Member member=getMember(pc,KeyImpl.init("get"+key.getLowerString()),false,false);
+    	Member member=getMember(pc,KeyImpl.getInstance("get"+key.getLowerString()),false,false);
         if(member instanceof UDF) {
             UDF udf = (UDF)member;
             if(udf.getFunctionArguments().length==0 && udf.getReturnType()!=CFTypes.TYPE_VOID) {
@@ -1620,7 +1672,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	}
     
     private Object callGetter(PageContext pc,Collection.Key key, Object defaultValue) {
-    	Member member=getMember(pc,KeyImpl.init("get"+key.getLowerString()),false,false);
+    	Member member=getMember(pc,KeyImpl.getInstance("get"+key.getLowerString()),false,false);
         if(member instanceof UDF) {
             UDF udf = (UDF)member;
             if(udf.getFunctionArguments().length==0 && udf.getReturnType()!=CFTypes.TYPE_VOID) {
@@ -1635,7 +1687,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 	}
     
     private Object callSetter(PageContext pc,Collection.Key key, Object value) throws PageException {
-    	Member member=getMember(pc,KeyImpl.init("set"+key.getLowerString()),false,false);
+    	Member member=getMember(pc,KeyImpl.getInstance("set"+key.getLowerString()),false,false);
     	if(member instanceof UDF) {
         	UDF udf = (UDF)member;
         	if(udf.getFunctionArguments().length==1 && (udf.getReturnType()==CFTypes.TYPE_VOID) || udf.getReturnType()==CFTypes.TYPE_ANY   ) {// TDOO support int return type
@@ -1705,7 +1757,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
      * @param defaultValue
      * @return
      */
-    protected Object get(int access, Collection.Key key, Object defaultValue) {
+    public Object get(int access, Collection.Key key, Object defaultValue) { 
         Member member=getMember(access,key,true,false);
         if(member!=null) return member.getValue();
         
@@ -1746,7 +1798,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         return _call(pc,access,KeyImpl.init(name),null,args,false);
     }
     
-    protected Object call(PageContext pc, int access, Collection.Key name, Object[] args) throws PageException {
+    public Object call(PageContext pc, int access, Collection.Key name, Object[] args) throws PageException {
         return _call(pc,access,name,null,args,false);
     }
 
@@ -1765,7 +1817,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         return _call(pc,access,KeyImpl.init(name),args,null,false);
     }
     
-    protected Object callWithNamedValues(PageContext pc, int access, Collection.Key name, Struct args) throws PageException {
+    public Object callWithNamedValues(PageContext pc, int access, Collection.Key name, Struct args) throws PageException {
         return _call(pc,access,name,args,null,false);
     }
 
@@ -1850,68 +1902,64 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
     	return top.properties.accessors;
     }
 
-	public void setProperty(Property property) {
-		if(top.properties.properties==null) top.properties.properties=new LinkedHashMap<String,Property>();
+	public void setProperty(Property property) throws PageException {
 		top.properties.properties.put(StringUtil.toLowerCase(property.getName()),property);
 		if(top.properties.persistent || top.properties.accessors){
 			if(property.getDefault()!=null)scope.setEL(KeyImpl.init(property.getName()), property.getDefault());
-			// getter
-			if(property.getGetter()){
-				PropertyFactory.addGet(this,property);
-			}
-			// setter
-			if(property.getSetter()){
-				PropertyFactory.addSet(this,property);
-			}
-
-			String fieldType = Caster.toString(property.getMeta().get(PropertyFactory.FIELD_TYPE,null),null);
-			
-			// add
-			if(fieldType!=null) {
-				if("one-to-many".equalsIgnoreCase(fieldType) || "many-to-many".equalsIgnoreCase(fieldType)) {
-					PropertyFactory.addHas(this,property);
-					PropertyFactory.addAdd(this,property);
-					PropertyFactory.addRemove(this,property);
-				}
-				else if("one-to-one".equalsIgnoreCase(fieldType) || "many-to-one".equalsIgnoreCase(fieldType)) {
-					PropertyFactory.addHas(this,property);
-				}
-			}
-			
-			
-			
-			
+			PropertyFactory.createPropertyUDFs(this,property);
 		}
+	}
+
+	
+
+	private void initProperties() throws PageException {
+		top.properties.properties=new LinkedHashMap<String,Property>();
 		
+		// MappedSuperClass  
+		if(isPersistent() && !isBasePeristent() && top.base!=null && top.base.properties.properties!=null && top.base.properties.meta!=null) {
+			boolean msc = Caster.toBooleanValue(top.base.properties.meta.get(MAPPED_SUPER_CLASS,Boolean.FALSE),false);
+			if(msc){
+				Property p;
+				Iterator<Entry<String, Property>> it = top.base.properties.properties.entrySet().iterator();
+				while(it.hasNext())	{
+					p = it.next().getValue();
+					if(p.isPeristent()) {
+						
+						setProperty(p);
+					}
+				}
+			}
+		}
 	}
 
 	// FUTURE add to interface and then search for #321 and change this as well
 	public Property[] getProperties(boolean onlyPeristent) {
 		if(top.properties.properties==null) return new Property[0];
-		Iterator<String> it = top.properties.properties.keySet().iterator();
 		
-		// filter none peristent properties
-		if(onlyPeristent){
-			Property p;
-			java.util.List<Property> props=new ArrayList<Property>();
-			while(it.hasNext())	{
-				p = top.properties.properties.get(it.next());
-				//print.e(p.getName()+":"+p.isPeristent());
-				if(p.isPeristent()) props.add(p);
-			}
-			return props.toArray(new Property[props.size()]);
-		}
-		// all properties
-		else {
+		
+		// for faster execution we have this
+		if(!onlyPeristent) {
 			int index=0;
+			Iterator<Entry<String, Property>> it = top.properties.properties.entrySet().iterator();
 			Property[] props=new Property[top.properties.properties.size()];
 			while(it.hasNext())	{
-				props[index++]=(Property) top.properties.properties.get(it.next());
+				props[index++]=it.next().getValue();
 			}
-			
-			return props;
 		}
 		
+		
+		// collect with filter
+		Property p;
+		java.util.List<Property> props=new ArrayList<Property>();
+		Iterator<Entry<String, Property>> it = top.properties.properties.entrySet().iterator();
+		while(it.hasNext())	{
+			p = it.next().getValue();
+			if(p.isPeristent()) {
+				props.add(p);
+			}
+		}
+		
+		return props.toArray(new Property[props.size()]);
 	}
 
 	public ComponentScope getComponentScope() {
@@ -1955,9 +2003,19 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 
 // MUST more native impl
 	public void readExternal(ObjectInput in) throws IOException,ClassNotFoundException {
+		boolean pcCreated=false;
+		PageContext pc = ThreadLocalPageContext.get();
+		// MUST this is just a workaround
+		if(pc==null){
+			pcCreated=true;
+			ConfigWeb config = (ConfigWeb) ThreadLocalConfig.get();
+			Pair[] parr = new Pair[0];
+			pc=ThreadUtil.createPageContext(config, DevNullOutputStream.DEV_NULL_OUTPUT_STREAM, "localhost", "/","", new Cookie[0], parr, parr, new StructImpl());
+		}
+		
 		try {
-			// MUST nicht gut
-			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(ThreadLocalPageContext.get(),in.readUTF());
+			// MUST do serialisation more like the cloning way
+			ComponentImpl other=(ComponentImpl) new CFMLExpressionInterpreter().interpret(pc,in.readUTF());
 			
 			
 			this._data=other._data;
@@ -1974,8 +2032,6 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			this.isInit=other.isInit;
 			this.properties=other.properties;
 			this.scope=other.scope;
-			this.threadsWaiting=other.threadsWaiting;
-			this.threadUsingLock=other.threadUsingLock;
 			this.top=this;
 			this.triggerDataMember=other.triggerDataMember;
 			this.useShadow=other.useShadow;
@@ -1983,6 +2039,9 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			
 		} catch (PageException e) {
 			throw new IOException(e.getMessage());
+		}
+		finally {
+			if(pcCreated)ThreadLocalPageContext.release();
 		}
 	}
 
@@ -2005,6 +2064,13 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 			//print.printST(t);
 		}
 		
+	}
+
+	/**
+	 * @see railo.runtime.type.cfc.ComponentAccess#_base()
+	 */
+	public ComponentAccess _base() {
+		return base;
 	}
 	
 }

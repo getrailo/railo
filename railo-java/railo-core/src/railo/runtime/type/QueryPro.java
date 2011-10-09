@@ -21,4 +21,6 @@ public interface QueryPro extends Query {
 	public Collection.Key[] getColumnNames();
 	
 	public String[] getColumnNamesAsString();
+	
+	public Query getGeneratedKeys();
 }

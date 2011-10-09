@@ -29,7 +29,7 @@ public final class TimeFormat implements Function {
 	/**
 	 * @param pc
 	 * @param object
-	 * @param mask Characters that show how ColdFusion displays a date:
+	 * @param mask Characters that show how CFML displays a date:
 	 * @return Formated Time Object as String
 	 * @throws ExpressionException
 	 */
@@ -38,7 +38,7 @@ public final class TimeFormat implements Function {
 	}
 
 	public static String call(PageContext pc , Object object, String mask,String strTimezone) throws ExpressionException {
-		return _call(pc,object,mask, TimeZoneUtil.toTimeZone(strTimezone));
+		return _call(pc,object,mask, strTimezone==null?ThreadLocalPageContext.getTimeZone(pc):TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	
 	private static String _call(PageContext pc , Object object, String mask,TimeZone tz) throws ExpressionException {

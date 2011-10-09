@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 /**
  * A colormap implemented with an array of colors. This corresponds to the IndexColorModel class.
  */

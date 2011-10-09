@@ -16,17 +16,21 @@ import org.w3c.dom.Node;
 
 import railo.commons.lang.CFTypes;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
+import railo.runtime.ComponentPro;
+import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
+import railo.runtime.component.Property;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ObjectWrap;
@@ -35,6 +39,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
@@ -46,16 +51,20 @@ import railo.runtime.type.util.ComponentUtil;
  */
 public final class JSONConverter {
     
+	private static final Collection.Key REMOTING_FETCH = KeyImpl.intern("remotingFetch");
 
-	private static final Key TO_JSON = KeyImpl.getInstance("_toJson");
+	private static final Key TO_JSON = KeyImpl.intern("_toJson");
     private static final Object NULL = new Object();
     private static final String NULL_STRING = "";
+
+	private boolean ignoreRemotingFetch;
 
 
 	/**
      * constructor of the class
      */
-    public JSONConverter() {
+    public JSONConverter(boolean ignoreRemotingFetch) {
+    	this.ignoreRemotingFetch=ignoreRemotingFetch;
     }
 	
 	
@@ -207,7 +216,7 @@ public final class JSONConverter {
     public void _serializeStruct(PageContext pc,Set test,Struct struct, StringBuffer sb, boolean serializeQueryByColumns, boolean addUDFs, Set<Object> done) throws ConverterException {
         // Component
     	if(struct instanceof Component){
-        	String res = castToJson(pc, (Component)struct, NULL_STRING);
+    		String res = castToJson(pc, (Component)struct, NULL_STRING);
         	if(res!=NULL_STRING) {
         		sb.append(res);
         		return;
@@ -224,15 +233,51 @@ public final class JSONConverter {
         for(int i=0;i<keys.length;i++) {
         	key=keys[i];
         	value=struct.get(key,null);
-        	if(!addUDFs && value instanceof UDF)continue;
+        	
+        	if(!addUDFs && (value instanceof UDF || value==null))continue;
         	if(doIt)sb.append(',');
             doIt=true;
             sb.append('"');
             sb.append(escape(key.getString()));
             sb.append('"');
             sb.append(':');
-            _serialize(pc,test,struct.get(key,null),sb,serializeQueryByColumns,done);
+            _serialize(pc,test,value,sb,serializeQueryByColumns,done);
         }
+        
+        if(struct instanceof ComponentPro){
+        	Boolean remotingFetch;
+        	ComponentPro cp = (ComponentPro)struct;
+        	boolean isPeristent=false;
+        	try {
+				ComponentAccess ca = ComponentUtil.toComponentAccess(cp);
+				isPeristent=ca.isPersistent();
+			} catch (ExpressionException e) {}
+			
+        	Property[] props = cp.getProperties(false);
+        	ComponentScope scope = cp.getComponentScope();
+        	for(int i=0;i<props.length;i++) {
+        		if(!ignoreRemotingFetch) {
+        			remotingFetch=Caster.toBoolean(props[i].getMeta().get(REMOTING_FETCH,null),null);
+        			if(remotingFetch==null){
+        				if(isPeristent  && HBMCreator.isRelated(props[i])) continue;
+        			}
+        			else if(!remotingFetch.booleanValue()) continue;
+            		
+        		}
+        		key=KeyImpl.getInstance(props[i].getName());
+            	value=scope.get(key,null);
+            	if(!addUDFs && (value instanceof UDF || value==null))continue;
+            	if(doIt)sb.append(',');
+                doIt=true;
+                sb.append('"');
+                sb.append(escape(key.getString()));
+                sb.append('"');
+                sb.append(':');
+                _serialize(pc,test,value,sb,serializeQueryByColumns,done);
+        	}
+        }
+        
+        
         sb.append('}');
     }
     
@@ -240,7 +285,7 @@ public final class JSONConverter {
 		Object o=cfc.get(TO_JSON,null);
 		if(!(o instanceof UDF)) return defaultValue;
 		UDF udf=(UDF) o;
-		if(udf.getReturnType()==CFTypes.TYPE_STRING && udf.getFunctionArguments().length==0) {
+		if(udf.getReturnType()!=CFTypes.TYPE_VOID && udf.getFunctionArguments().length==0) {
 			try {
 				return Caster.toString(cfc.call(pc, TO_JSON, new Object[0]));
 			} catch (PageException e) {
@@ -290,8 +335,7 @@ public final class JSONConverter {
      */
     private void _serializeComponent(PageContext pc,Set test,Component component, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
     	try {
-			ComponentImpl ci = ComponentUtil.toComponentImpl(component);
-			ComponentWrap cw = new ComponentWrap(Component.ACCESS_PRIVATE,ci);
+			ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,component);
 	    	_serializeStruct(pc,test,cw, sb, serializeQueryByColumns,false,done);
 		} 
     	catch (ExpressionException e) {

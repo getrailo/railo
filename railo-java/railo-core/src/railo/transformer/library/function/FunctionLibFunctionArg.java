@@ -24,6 +24,7 @@ public final class FunctionLibFunctionArg {
 	private FunctionLibFunction function;
 	private String name;
 	private String description="";
+	private String alias=null;
 	private String defaultValue=null;
 	private boolean hidden;	
 	private short status=TagLib.STATUS_IMPLEMENTED;
@@ -152,6 +153,7 @@ public final class FunctionLibFunctionArg {
 	public String getDefaultValue() {
 		return defaultValue;
 	}
+	
 
 	/**
 	 * @param defaultValue the defaultValue to set
@@ -167,12 +169,25 @@ public final class FunctionLibFunctionArg {
 		sb.append(this.getRequired());
 		sb.append(this.getType());
 		sb.append(this.getTypeAsString());
+		sb.append(this.getAlias());
 		
 		try {
 			return Md5.getDigestAsString(sb.toString());
 		} catch (IOException e) {
 			return "";
 		}
+	}
+	/**
+	 * @return the alias
+	 */
+	public String getAlias() {
+		return alias;
+	}
+	/**
+	 * @param alias the alias to set
+	 */
+	public void setAlias(String alias) {
+		this.alias = alias;
 	}
 	public void setHidden(boolean hidden) {
 		this.hidden=hidden;

@@ -20,40 +20,29 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.util.ComponentUtil;
 
 public class ORMUtil {
-	
-	
-	
-	
-	
-	
-	
-	/*public static void checkRestriction(PageContext pc) {
-		boolean enable = false;
-		try {
-			String str = Caster.toString(pc.serverScope().get("enableORM", null), null);
-			enable="dinfao".equals(str);
-		} 
-		catch (PageException e) {}
-		//enable=false;
-		if(!enable)
-			throw new PageRuntimeException(new railo.runtime.exp.SecurityException("orm functionality is not supported"));
-		
-	}*/
-	
+
 	public static ORMSession getSession(PageContext pc) throws PageException {
-		return ((PageContextImpl) pc).getORMSession();
+		return getSession(pc,true);
+	}
+	
+	public static ORMSession getSession(PageContext pc, boolean create) throws PageException {
+		return ((PageContextImpl) pc).getORMSession(create);
 	}
 
 	public static ORMEngine getEngine(PageContext pc) throws PageException {
-		//checkRestriction(pc);
 		ConfigImpl config=(ConfigImpl) pc.getConfig();
 		return config.getORMEngine(pc);
 	}
 
-	public static void resetEngine(PageContext pc) throws PageException {
-		//checkRestriction(pc);
+	/**
+	 * 
+	 * @param pc
+	 * @param force if set to false the engine is on loaded when the configuration has changed
+	 * @throws PageException
+	 */
+	public static void resetEngine(PageContext pc, boolean force) throws PageException {
 		ConfigImpl config=(ConfigImpl) pc.getConfig();
-		config.resetORMEngine(pc);
+		config.resetORMEngine(pc,force);
 	}
 	
 	public static void printError(Throwable t, ORMEngine engine) {
@@ -63,7 +52,6 @@ public class ORMUtil {
 	public static void printError(String msg, ORMEngine engine) {
 		printError(null, engine, msg);
 	}
-	
 
 	private static void printError(Throwable t, ORMEngine engine,String msg) {
 		SystemOut.printDate("{"+engine.getLabel().toUpperCase()+"} - "+msg,SystemOut.ERR);
@@ -71,8 +59,6 @@ public class ORMUtil {
 		t.printStackTrace(SystemOut.getPrinWriter(SystemOut.ERR));
 	}
 
-	//private ThreadLocal<HashSet<Object>> _equuals=new ThreadLocal<HashSet<Object>>();
-	
 	public static boolean equals(Object left, Object right) {
 		HashSet<Object> done=new HashSet<Object>();
 		return _equals(done, left, right);
@@ -82,7 +68,7 @@ public class ORMUtil {
 		
 		if(left==right) return true;
 		if(left==null || right==null) return false;
-		//if(left.equals(right)) return true;
+		
 		// components
 		if(left instanceof Component && right instanceof Component){
 			return _equals(done,(Component)left, (Component)right);
@@ -103,9 +89,6 @@ public class ORMUtil {
 		} catch (PageException e) {
 			return false;
 		}
-		
-		
-		//CollectionUtil.equals(this,(Collection)obj);
 	}
 	
 	private static boolean _equals(HashSet<Object> done,Collection left, Collection right) {
@@ -132,20 +115,17 @@ public class ORMUtil {
 		
 		ComponentPro cpl =ComponentUtil.toComponentPro(left,null);
 		ComponentPro cpr = ComponentUtil.toComponentPro(right,null);
+		
 		if(cpl==null || cpr==null) return false;
 		if(!cpl.getPageSource().equals(cpr.getPageSource())) return false;
 		Property[] props = cpl.getProperties(true);
 		Object l,r;
 		props=HBMCreator.getIds(null,null,props,null,true);
 		for(int i=0;i<props.length;i++){
-			l=cpl.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
-			r=cpr.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
+			l=cpl.getComponentScope().get(KeyImpl.getInstance(props[i].getName()),null);
+			r=cpr.getComponentScope().get(KeyImpl.getInstance(props[i].getName()),null);
 			if(!_equals(done,l, r)) return false;
 		}
 		return true;
 	}
-
-	
-	
-
 }

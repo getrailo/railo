@@ -11,7 +11,7 @@ public final class IsNull implements Function {
 	public static boolean call(PageContext pc , Object object) {
 		return object==null;
 	}
-	// caled by modifed call from translation time evaluator
+	// called by modifed call from translation time evaluator
 	public static boolean call(PageContext pc , String str) {
 		
 		try {

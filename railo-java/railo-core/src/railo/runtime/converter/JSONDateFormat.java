@@ -21,7 +21,7 @@ public class JSONDateFormat {
 		String id=locale.hashCode()+"-"+tz.getID();
 		DateFormat format = (DateFormat) map.get(id);
 		if(format==null){
-			format=new SimpleDateFormat("MMMM, dd yyyy HH:mm:ss",locale);
+			format=new SimpleDateFormat("MMMM, dd yyyy HH:mm:ssZ",locale);
 			format.setTimeZone(tz);
 			map.put(id, format);
 		}

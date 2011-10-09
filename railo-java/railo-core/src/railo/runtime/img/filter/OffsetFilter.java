@@ -14,11 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 
-import java.awt.image.BufferedImage;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
-public class OffsetFilter extends TransformFilter {
+public class OffsetFilter extends TransformFilter  implements DynFiltering {
 
 	private int width, height;
 	private int xOffset, yOffset;
@@ -29,10 +35,10 @@ public class OffsetFilter extends TransformFilter {
 	}
 
 	public OffsetFilter(int xOffset, int yOffset, boolean wrap) {
+		super(ConvolveFilter.ZERO_EDGES );
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
 		this.wrap = wrap;
-		setEdgeAction( ZERO );
 	}
 
 	public void setXOffset(int xOffset) {
@@ -85,5 +91,20 @@ public class OffsetFilter extends TransformFilter {
 
 	public String toString() {
 		return "Distort/Offset...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("XOffset")))!=null)setXOffset(ImageFilterUtil.toIntValue(o,"XOffset"));
+		if((o=parameters.removeEL(KeyImpl.init("YOffset")))!=null)setYOffset(ImageFilterUtil.toIntValue(o,"YOffset"));
+		if((o=parameters.removeEL(KeyImpl.init("Wrap")))!=null)setWrap(ImageFilterUtil.toBooleanValue(o,"Wrap"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [XOffset, YOffset, Wrap, EdgeAction, Interpolation]");
+		}
+
+		return filter(src, dst);
 	}
 }

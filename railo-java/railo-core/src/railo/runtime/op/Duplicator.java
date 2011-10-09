@@ -1,5 +1,6 @@
 package railo.runtime.op;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,9 +12,11 @@ import java.util.Map;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.converter.JavaConverter;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.CollectionPlus;
+import railo.runtime.type.Duplicable;
 import railo.runtime.type.UDF;
 
 
@@ -102,12 +105,19 @@ public final class Duplicator {
 
     	if(object instanceof CollectionPlus)return ((CollectionPlus)object).duplicate(deepCopy,ThreadLocalDuplication.getMap());
     	if(object instanceof Collection)return ((Collection)object).duplicate(deepCopy);
-		if(object instanceof UDF)		return ((UDF)object).duplicate();
+    	if(object instanceof Duplicable)return ((Duplicable)object).duplicate(deepCopy);
+    	if(object instanceof UDF)		return ((UDF)object).duplicate();
         if(object instanceof List)		return duplicateList((List)object,deepCopy);
         if(object instanceof Map) 		return duplicateMap((Map)object,deepCopy);
-		
+		if(object instanceof Serializable) {
+			try {
+				String ser = JavaConverter.serialize((Serializable)object);
+				return JavaConverter.deserialize(ser);
+				
+			} catch (Throwable t) {}
+		}
 	        
-	        
+	    
 		return object;
     }
 

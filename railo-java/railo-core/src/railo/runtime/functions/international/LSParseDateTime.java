@@ -15,15 +15,23 @@ import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.Caster;
 
 public final class LSParseDateTime implements Function {
+	
+	private static final long serialVersionUID = 7808039073301229473L;
+	
 	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate) throws PageException {
 		return _call(pc, oDate, pc.getLocale(),pc.getTimeZone());
 	}
+	
 	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate,String strLocale) throws PageException {
 		return _call(pc, oDate, LocaleFactory.getLocale(strLocale),pc.getTimeZone());
 	}
+	
 	public static railo.runtime.type.dt.DateTime call(PageContext pc , Object oDate,String strLocale,String strTimezone) throws PageException {
-		return _call(pc, oDate, LocaleFactory.getLocale(strLocale),TimeZoneUtil.toTimeZone(strTimezone));
+		return _call(pc, oDate, 
+				strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),
+				strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone));
 	}
+	
 	private static railo.runtime.type.dt.DateTime _call(PageContext pc , Object oDate,Locale locale,TimeZone tz) throws PageException {
 		if(oDate instanceof Date) return Caster.toDate(oDate, tz);
 		//return Caster.toDateTime(locale,Caster.toString(oDate),tz,locale.equals(Locale.US));

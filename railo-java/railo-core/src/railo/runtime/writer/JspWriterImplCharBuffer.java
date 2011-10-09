@@ -1,9 +1,9 @@
 package railo.runtime.writer;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.lang.CharBuffer;
@@ -441,8 +441,18 @@ public class JspWriterImplCharBuffer extends CFMLWriter {
         _check();
     }
     
-    public ServletOutputStream getServletOutputStream() throws IOException {
+    /**
+	 * @see railo.runtime.writer.CFMLWriter#getResponseStream()
+	 */
+	public OutputStream getResponseStream() throws IOException {
 		return response.getOutputStream();
+	}
+    
+    /**
+	 * @see railo.runtime.writer.CFMLWriter#writeRaw(java.lang.String)
+	 */
+	public void writeRaw(String str) throws IOException {
+		write(str);
 	}
 
 

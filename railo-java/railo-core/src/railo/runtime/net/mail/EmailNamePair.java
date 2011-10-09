@@ -168,12 +168,13 @@ public final class EmailNamePair {
 		if(StringUtil.isEmpty(strEmails,true)) return new EmailNamePair[0];
 		Array raw = List.listWithQuotesToArray(strEmails,",;","\"");
 		
-		
 		Iterator<String> it = raw.valueIterator();
 		ArrayList<EmailNamePair> pairs=new ArrayList<EmailNamePair>();
-		
+		String address;
 		while(it.hasNext()) {
-			pairs.add(new EmailNamePair(it.next()));
+			address=it.next();
+			if(StringUtil.isEmpty(address,true))continue;
+			pairs.add(new EmailNamePair(address));
 		}
 		return pairs.toArray(new EmailNamePair[pairs.size()]);
 	}

@@ -451,9 +451,19 @@ public class JspWriterImplByteBuffer extends CFMLWriter {
         _check();
     }
 
-	public ServletOutputStream getServletOutputStream() throws IOException {
+    /**
+	 * @see railo.runtime.writer.CFMLWriter#getResponseStream()
+	 */
+	public OutputStream getResponseStream() throws IOException {
 		initOut();
 		return out;
+	}
+    
+    /**
+	 * @see railo.runtime.writer.CFMLWriter#writeRaw(java.lang.String)
+	 */
+	public void writeRaw(String str) throws IOException {
+		write(str);
 	}
 
 } 

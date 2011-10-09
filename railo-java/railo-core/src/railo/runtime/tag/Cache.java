@@ -44,7 +44,7 @@ import railo.runtime.writer.CFMLWriterImpl;
 /**
 * Speeds up page rendering when dynamic content does not have to be retrieved each time a user accesses
 *   the page. To accomplish this, cfcache creates temporary files that contain the static HTML returned from
-*   a ColdFusion page. You can use cfcache for simple URLs and URLs that contain URL parameters.
+*   a CFML page. You can use cfcache for simple URLs and URLs that contain URL parameters.
 *
 *
 *
@@ -417,7 +417,7 @@ public final class Cache extends BodyTagImpl {
 		}
 		else {
 			railo.commons.io.cache.Cache cache = 
-				Util.getCache(pageContext,cachename,ConfigImpl.CACHE_DEFAULT_OBJECT);
+				Util.getCache(pageContext.getConfig(),cachename,ConfigImpl.CACHE_DEFAULT_OBJECT);
 			CacheEntry entry = throwOnError?cache.getCacheEntry(Util.key(id)):cache.getCacheEntry(Util.key(id),null);
 			if(entry!=null){
 				pageContext.setVariable(name,entry.getValue());
@@ -516,7 +516,7 @@ public final class Cache extends BodyTagImpl {
 	
 	private OutputStream getOutputStream() throws PageException, IOException {
         try {
-        	return ((PageContextImpl)pageContext).getServletOutputStream();
+        	return ((PageContextImpl)pageContext).getResponseStream();
         } 
         catch(IllegalStateException ise) {
             throw new TemplateException("content is already send to user, flush");

@@ -22,7 +22,7 @@ import railo.runtime.type.KeyImpl;
 
 public class CFCInstantiator implements Instantiator {
 	
-	private static final Collection.Key INIT = KeyImpl.init("init");
+	private static final Collection.Key INIT = KeyImpl.intern("init");
 	private String entityName;
 	private Set<String> isInstanceEntityNames = new HashSet<String>();
 	
@@ -59,7 +59,7 @@ public class CFCInstantiator implements Instantiator {
 	public final Object instantiate() {
 		try {
 			PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
-			HibernateORMSession session=(HibernateORMSession) pc.getORMSession();
+			HibernateORMSession session=(HibernateORMSession) pc.getORMSession(true);
 			HibernateORMEngine engine=(HibernateORMEngine) session.getEngine();
 			return engine.create(pc, session, entityName, true);
 		} 
@@ -74,6 +74,6 @@ public class CFCInstantiator implements Instantiator {
 	public final boolean isInstance(Object object) {
 		Component cfc = Caster.toComponent(object,null);
 		if(cfc==null) return false;
-		return isInstanceEntityNames.contains( HibernateCaster.getEntityName(null,cfc));
+		return isInstanceEntityNames.contains( HibernateCaster.getEntityName(cfc));
 	}
 }

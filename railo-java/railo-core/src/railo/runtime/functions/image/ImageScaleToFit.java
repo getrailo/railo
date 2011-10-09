@@ -8,7 +8,7 @@ import railo.runtime.op.Caster;
 public class ImageScaleToFit {
 	
 	public static String call(PageContext pc, Object name,String fitWidth, String fitHeight) throws PageException {
-		return call(pc, name, fitWidth, fitHeight, "lanczos",1.0);
+		return call(pc, name, fitWidth, fitHeight, "highestQuality",1.0);
 	}
 	
 	public static String call(PageContext pc, Object name,String fitWidth, String fitHeight, String interpolation) throws PageException {

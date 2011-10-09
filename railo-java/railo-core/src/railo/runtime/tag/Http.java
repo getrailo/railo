@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
@@ -40,12 +41,15 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.net.CookieUtil;
 import railo.commons.net.HTTPUtil;
 import railo.commons.net.RailoStringPart;
 import railo.commons.net.ResourcePart;
 import railo.commons.net.ResourcePartSource;
-import railo.commons.net.ResourceRequestEntity;
 import railo.commons.net.URLEncoder;
+import railo.runtime.config.Config;
+import railo.runtime.engine.ThreadLocalConfig;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.HTTPException;
@@ -122,21 +126,21 @@ public final class Http extends BodyTagImpl {
 	private static final short GET_AS_BINARY_YES=1;
 	private static final short GET_AS_BINARY_AUTO=2;
 
-	private static final Key ERROR_DETAIL = KeyImpl.getInstance("errordetail");
-	private static final Key STATUSCODE = KeyImpl.getInstance("statuscode");
-	private static final Key STATUS_CODE = KeyImpl.getInstance("status_code");
-	private static final Key STATUS_TEXT = KeyImpl.getInstance("status_text");
-	private static final Key HTTP_VERSION = KeyImpl.getInstance("http_version");
+	private static final Key ERROR_DETAIL = KeyImpl.intern("errordetail");
+	private static final Key STATUSCODE = KeyImpl.intern("statuscode");
+	private static final Key STATUS_CODE = KeyImpl.intern("status_code");
+	private static final Key STATUS_TEXT = KeyImpl.intern("status_text");
+	private static final Key HTTP_VERSION = KeyImpl.intern("http_version");
 	
 
-	private static final Key MIME_TYPE = KeyImpl.getInstance("mimetype");
-	private static final Key CHARSET = KeyImpl.getInstance("charset");
-	private static final Key FILE_CONTENT = KeyImpl.getInstance("filecontent");
-	private static final Key HEADER = KeyImpl.getInstance("header");
-	private static final Key TEXT = KeyImpl.getInstance("text");
-	private static final Key EXPLANATION = KeyImpl.getInstance("explanation");
-	private static final Key RESPONSEHEADER = KeyImpl.getInstance("responseheader");
-	private static final Key SET_COOKIE = KeyImpl.getInstance("set-cookie");
+	private static final Key MIME_TYPE = KeyImpl.intern("mimetype");
+	private static final Key CHARSET = KeyImpl.intern("charset");
+	private static final Key FILE_CONTENT = KeyImpl.intern("filecontent");
+	private static final Key HEADER = KeyImpl.intern("header");
+	private static final Key TEXT = KeyImpl.intern("text");
+	private static final Key EXPLANATION = KeyImpl.intern("explanation");
+	private static final Key RESPONSEHEADER = KeyImpl.intern("responseheader");
+	private static final Key SET_COOKIE = KeyImpl.intern("set-cookie");
 
 	
 	
@@ -161,14 +165,7 @@ public final class Http extends BodyTagImpl {
 	** 	links remain intact. */
 	private boolean resolveurl;
 
-	/** A value, in seconds. When a URL timeout is specified in the browser, the timeout attribute setting 
-	** 		takes precedence over the ColdFusion Administrator timeout. The ColdFusion server then uses the lesser 
-	** 		of the URL timeout and the timeout passed in the timeout attribute, so that the request always times 
-	** 		out before or at the same time as the page times out. If there is no URL timeout specified, ColdFusion 
-	** 		takes the lesser of the ColdFusion Administrator timeout and the timeout passed in the timeout attribute.
-	** 		If there is no timeout set on the URL in the browser, no timeout set in the ColdFusion Administrator, 
-	** 		and no timeout set with the timeout attribute, ColdFusion waits indefinitely for the cfhttp request to 
-	** 		process. */
+	/** A value, in seconds. When a URL timeout is specified in the browser */
 	private long timeout=-1;
 
 	/** Host name or IP address of a proxy server. */
@@ -195,13 +192,7 @@ public final class Http extends BodyTagImpl {
 	** 	resolved to preserve links in the retrieved document. */
 	private int proxyport=80;
 
-	/** Specifies the column names for a query when creating a query as a result of a cfhttp GET. 
-	** 	By default, the first row of a text file is interpreted as column headings. If there are column 
-	** 	headers in the text file from which the query is drawn, do not specify this attribute except to overwrite them. 
-	** 	When duplicate column heading names are encountered, ColdFusion appends an underscore character to 
-	** 	the duplicate column name to make it unique. If there are no column headers in the text file, or to 
-	** 	override those in the file, you must specify the columns attribute. However ColdFusion never treats 
-	** 	the first row of the file as data, even if you specify the columns attribute. */
+	/** Specifies the column names for a query when creating a query as a result of a cfhttp GET. */
 	private String[] columns;
 
 	/** The port number on the server from which the object is requested. Default is 80. When used with 
@@ -227,12 +218,7 @@ public final class Http extends BodyTagImpl {
 	** 	number. Port numbers specified in the url attribute override the port attribute. */
 	private String url;
 
-	/** Boolean indicating whether to redirect execution or stop execution. The default is Yes. If set 
-	** 	to No and throwOnError = "yes", execution stops if cfhttp fails, and the status code and associated 
-	** 	error message are returned in the variable cfhttp.statuscode. To see where execution would have been 
-	** 	redirected, use the variable cfhttp.responseHeader[LOCATION]. The key LOCATION identifies the path of 
-	** 	redirection. ColdFusion will follow up to five redirections on a request. if this limit is exceeded, 
-	** 	ColdFusion behaves as if redirect = "no". */
+	/** Boolean indicating whether to redirect execution or stop execution.*/
 	private boolean redirect=true;
 
 
@@ -337,14 +323,6 @@ public final class Http extends BodyTagImpl {
 	}
 
 	/** set the value timeout
-	*  A value, in seconds. When a URL timeout is specified in the browser, the timeout attribute setting 
-	* 		takes precedence over the ColdFusion Administrator timeout. The ColdFusion server then uses the lesser 
-	* 		of the URL timeout and the timeout passed in the timeout attribute, so that the request always times 
-	* 		out before or at the same time as the page times out. If there is no URL timeout specified, ColdFusion 
-	* 		takes the lesser of the ColdFusion Administrator timeout and the timeout passed in the timeout attribute.
-	* 		If there is no timeout set on the URL in the browser, no timeout set in the ColdFusion Administrator, 
-	* 		and no timeout set with the timeout attribute, ColdFusion waits indefinitely for the cfhttp request to 
-	* 		process.
 	* @param timeout value to set
 	 * @throws ExpressionException 
 	**/
@@ -403,13 +381,6 @@ public final class Http extends BodyTagImpl {
 	}
 
 	/** set the value columns
-	*  Specifies the column names for a query when creating a query as a result of a cfhttp GET. 
-	* 	By default, the first row of a text file is interpreted as column headings. If there are column 
-	* 	headers in the text file from which the query is drawn, do not specify this attribute except to overwrite them. 
-	* 	When duplicate column heading names are encountered, ColdFusion appends an underscore character to 
-	* 	the duplicate column name to make it unique. If there are no column headers in the text file, or to 
-	* 	override those in the file, you must specify the columns attribute. However ColdFusion never treats 
-	* 	the first row of the file as data, even if you specify the columns attribute.
 	* @param columns value to set
 	 * @throws PageException
 	**/
@@ -474,12 +445,6 @@ public final class Http extends BodyTagImpl {
 	}
 
 	/** set the value redirect
-	*  Boolean indicating whether to redirect execution or stop execution. The default is Yes. If set 
-	* 	to No and throwOnError = "yes", execution stops if cfhttp fails, and the status code and associated 
-	* 	error message are returned in the variable cfhttp.statuscode. To see where execution would have been 
-	* 	redirected, use the variable cfhttp.responseHeader[LOCATION]. The key LOCATION identifies the path of 
-	* 	redirection. ColdFusion will follow up to five redirections on a request. if this limit is exceeded, 
-	* 	ColdFusion behaves as if redirect = "no".
 	* @param redirect value to set
 	**/
 	public void setRedirect(boolean redirect)	{
@@ -576,7 +541,7 @@ public final class Http extends BodyTagImpl {
 	private void _doEndTag(Struct cfhttp) throws PageException, IOException	{
 		HttpConnectionManager manager=new SimpleHttpConnectionManager();//MultiThreadedHttpConnectionManager();
 		HttpClient client = new HttpClient(manager);
-		HttpMethod httpMethod=createMethod(this,client,url,port);
+		HttpMethod httpMethod=createMethod(pageContext.getConfig(),this,client,url,port);
 		try {
 		
 /////////////////////////////////////////// EXECUTE /////////////////////////////////////////////////
@@ -632,6 +597,7 @@ public final class Http extends BodyTagImpl {
 	// Write Response Scope
 		//String rawHeader=httpMethod.getStatusLine().toString();
 			String mimetype=null;
+			String contentEncoding=null;
 			
 		// status code
 			cfhttp.set(STATUSCODE,((httpMethod.getStatusCode()+" "+httpMethod.getStatusText()).trim()));
@@ -654,28 +620,33 @@ public final class Http extends BodyTagImpl {
 	        		setCookie.append(header.getValue());
 	        	else {
 	        	    //print.ln(header.getName()+"-"+header.getValue());
-	        		Object value=responseHeader.get(KeyImpl.init(header.getName()),null);
-	        		if(value==null) responseHeader.set(KeyImpl.init(header.getName()),header.getValue());
+	        		Object value=responseHeader.get(KeyImpl.getInstance(header.getName()),null);
+	        		if(value==null) responseHeader.set(KeyImpl.getInstance(header.getName()),header.getValue());
 	        		else {
 	        		    Array arr=null;
-	        		    if(value instanceof ArrayImpl) {
+	        		    if(value instanceof Array) {
 	        		        arr=(Array) value;
 	        		    }
 	        		    else {
 	        		        arr=new ArrayImpl();
-	        		        responseHeader.set(KeyImpl.init(header.getName()),arr);
+	        		        responseHeader.set(KeyImpl.getInstance(header.getName()),arr);
 	        		        arr.appendEL(value);
 	        		    }
 	        		    arr.appendEL(header.getValue());
 	        		}
 	        	}
 	        	
+	        	// Content-Type
 	        	if(header.getName().equalsIgnoreCase("Content-Type")) {
 	        		mimetype=header.getValue();
-	    	        
-	        	// mime type
-	        		if(mimetype==null)mimetype=NO_MIMETYPE;
+		    	    if(mimetype==null)mimetype=NO_MIMETYPE;
 	        	}
+	        	
+	        	// Content-Encoding
+        		if(header.getName().equalsIgnoreCase("Content-Encoding")) {
+        			contentEncoding=header.getValue();
+        		}
+	        	
 	        }
 	        cfhttp.set(RESPONSEHEADER,responseHeader);
 	        responseHeader.set(STATUS_CODE,new Double(httpMethod.getStatusCode()));
@@ -690,22 +661,15 @@ public final class Http extends BodyTagImpl {
 	        
 	       
 	        cfhttp.set(TEXT,Caster.toBoolean(isText));
+	        
 	    // mimetype charset
 	        //boolean responseProvideCharset=false;
 	        if(!StringUtil.isEmpty(mimetype)){
 		        if(isText) {
-		        	String[] types=mimetype.split(";");
-		        	cfhttp.set(MIME_TYPE,types[0]);
-		        	
-	                if(types.length>1) {
-	                    String tmp=types[types.length-1];
-	                    int index=tmp.indexOf("charset=");
-	                    if(index!=-1) {
-	                    	responseCharset=StringUtil.removeQuotes(tmp.substring(index+8),true);
-	                        cfhttp.set(CHARSET,responseCharset);
-	                        //responseProvideCharset=true;
-	                    }
-	                }
+		        	String[] types=HTTPUtil.splitMimeTypeAndCharset(mimetype);
+		        	if(types[0]!=null)cfhttp.set(MIME_TYPE,types[0]);
+		        	if(types[1]!=null)cfhttp.set(CHARSET,types[1]);
+	                
 		        }
 		        else cfhttp.set(MIME_TYPE,mimetype);
 	        }
@@ -734,92 +698,98 @@ public final class Http extends BodyTagImpl {
 	        // filecontent
 	        //try {
 	        //print.ln(">> "+responseCharset);
-	        
-		        if(isText && getAsBinary!=GET_AS_BINARY_YES) {
-		            
-		    String str;
+
+		    InputStream is=null;
+		    if(isText && getAsBinary!=GET_AS_BINARY_YES) {
+		    	String str;
+                try {
+                	is = httpMethod.getResponseBodyAsStream();
+                    if(is!=null &&isGzipEncoded(contentEncoding))
+                    	is = new GZIPInputStream(is);
+                        	
                     try {
-                        InputStream stream = httpMethod.getResponseBodyAsStream();
-                        try{
-                        	str = stream==null?"":IOUtil.toString(stream,responseCharset);
-                        }
-                        catch (UnsupportedEncodingException uee) {
-                        	str = stream==null?"":IOUtil.toString(stream,null);
-                        }
+                    	str = is==null?"":IOUtil.toString(is,responseCharset);
                     }
-                    catch (IOException ioe) {
-                        throw Caster.toPageException(ioe);
+                    catch (UnsupportedEncodingException uee) {
+                    	str = is==null?"":IOUtil.toString(is,null);
                     }
+                }
+                catch (IOException ioe) {
+                	throw Caster.toPageException(ioe);
+                }
+                finally {
+                	IOUtil.closeEL(is);
+                }
                     
-                    if(str==null)str="";
-		        	if(resolveurl)str=new URLResolver().transform(str,new URL(url),false);
-		        	cfhttp.set(FILE_CONTENT,str);
+                if(str==null)str="";
+		        if(resolveurl){
+		        	//URI uri = httpMethod.getURI();
+		        	if(e!=null && e.redirectURL!=null)url=e.redirectURL.toExternalForm();
+		        	str=new URLResolver().transform(str,new URL(url),false);
+		        }
+		        cfhttp.set(FILE_CONTENT,str);
+		        try {
+		        	if(file!=null){
+		        		IOUtil.write(file,str,pageContext.getConfig().getWebCharset(),false);
+                    }
+                } 
+		        catch (IOException e1) {}
+		        
+		        if(name!=null) {
+		        	Query qry = new CSVParser().parse(str,delimiter,textqualifier,columns,firstrowasheaders);
+                    pageContext.setVariable(name,qry);
+		        }
+		    }
+		    // Binary
+		    else {
+		    	byte[] barr=null;
+		        if(isGzipEncoded(contentEncoding)){
+		        	is = new GZIPInputStream(httpMethod.getResponseBodyAsStream());
 		        	try {
-                        if(file!=null){
-                            IOUtil.write(file,str,pageContext.getConfig().getWebCharset(),false);
-                        }
-                    } 
-		        	catch (IOException e1) {}
-		        	if(name!=null) {
-                        Query qry = new CSVParser().parse(str,delimiter,textqualifier,columns,firstrowasheaders);
-                        pageContext.setVariable(name,qry);
-		        	}
+		        		barr = IOUtil.toBytes(is);
+					} 
+		        	catch (IOException t) {
+		        		throw Caster.toPageException(t);
+					}
+					finally{
+						IOUtil.closeEL(is);
+					}
 		        }
 		        else {
-		            byte[] barr=null;
-					try {
-						barr = httpMethod.getResponseBody();
-					} catch (IOException t) {
-						throw Caster.toPageException(t);
+		        	try {
+		        		barr = httpMethod.getResponseBody();
+					} 
+		        	catch (IOException t) {
+		        		throw Caster.toPageException(t);
 					}
-                    
-                    /*if(getAsBinary==GET_AS_BINARY_NO) {
-		                ByteArrayOutputStream os = new ByteArrayOutputStream();
-		                
-		                try {
-		                    if(barr!=null)os.write(barr);
-			                cfhttp.set(FILE_CONTENT,os);
-                        } 
-                        catch (IOException ioe) {
-                            throw Caster.toPageException(ioe);
-                        }
-		            }
-		            else {*/
-		                cfhttp.set(FILE_CONTENT,barr);
-		            //}
-
-		            if(file!=null) {
-                        try {
-                        	if(barr!=null)IOUtil.copy(
-                                    new ByteArrayInputStream(barr),
-                                    file,
-                                    true);
-                            //new File(file.getAbsolutePath()).write(barr);
-                        } 
-                        catch (IOException ioe) {
-                            throw Caster.toPageException(ioe);
-                        }
-		            }   
 		        }
-	        /*} catch (IOException e) {
-                throw new ApplicationException(e);
-            }*/
+		        	
+		        cfhttp.set(FILE_CONTENT,barr);
+		        
+		        if(file!=null) {
+		        	try {
+		        		if(barr!=null)IOUtil.copy(new ByteArrayInputStream(barr),file,true);
+		        	} 
+		        	catch (IOException ioe) {
+                		throw Caster.toPageException(ioe);
+		        	}
+		        }   
+		    }
+	        
 	    // header		
 	        cfhttp.set(HEADER,raw.toString());
-	        
-	    
-
-        if(status!=STATUS_OK){
-            cfhttp.setEL(ERROR_DETAIL,httpMethod.getStatusCode()+" "+httpMethod.getStatusText());
-            if(throwonerror)throw new HTTPException(httpMethod);
-        }
+	       
+	        if(status!=STATUS_OK){
+	            cfhttp.setEL(ERROR_DETAIL,httpMethod.getStatusCode()+" "+httpMethod.getStatusText());
+	            if(throwonerror)throw new HTTPException(httpMethod);
+	        }
 		}
 		finally {
 			releaseConnection(httpMethod);
 		}
 	    
 	}
-	
+
 	public static boolean isText(String mimetype) {
 		if(mimetype==null)mimetype="";
 		else mimetype=mimetype.trim().toLowerCase();
@@ -918,7 +888,12 @@ public final class Http extends BodyTagImpl {
     }
 	
 
-	static HttpMethod createMethod(Http http, HttpClient client, String url, int port) throws PageException, UnsupportedEncodingException {
+	static HttpMethod createMethod(Config cw,Http http, HttpClient client, String url, int port) throws PageException, UnsupportedEncodingException {
+		String _charset=http.charset;
+		if(StringUtil.isEmpty(_charset,true)) _charset=cw.getWebCharset();
+		else _charset=_charset.trim();
+		
+		
 		HttpMethod httpMethod;
 		HostConfiguration config = client.getHostConfiguration();
 		HttpState state = client.getState();
@@ -998,6 +973,7 @@ public final class Http extends BodyTagImpl {
 		ArrayList<NameValuePair> listQS=new ArrayList<NameValuePair>();
 		ArrayList<Part> parts=new ArrayList<Part>();
 		int len=http.params.size();
+		StringBuilder acceptEncoding=new StringBuilder();
 		for(int i=0;i<len;i++) {
 			HttpParamBean param=(HttpParamBean)http.params.get(i);
 			String type=param.getType();
@@ -1011,7 +987,7 @@ public final class Http extends BodyTagImpl {
 				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type formfield can't only be used, when method of the tag http equal post");
 				if(post!=null){
 					if(doMultiPart){
-						parts.add(new RailoStringPart(param.getName(),param.getValueAsString()));
+						parts.add(new RailoStringPart(param.getName(),param.getValueAsString(),_charset));
 					}
 					else post.addParameter(new NameValuePair(param.getName(),param.getValueAsString()));
 				}
@@ -1029,14 +1005,16 @@ public final class Http extends BodyTagImpl {
         // Header
             else if(type.startsWith("head")) {
             	if(param.getName().equalsIgnoreCase("content-type")) hasContentType=true;
-            	httpMethod.addRequestHeader(param.getName(),headerValue(param.getValueAsString()));
+            	
+            	if(param.getName().equalsIgnoreCase("Accept-Encoding")) {
+            		acceptEncoding.append(headerValue(param.getValueAsString()));
+            		acceptEncoding.append(", ");
+            	}
+            	else httpMethod.addRequestHeader(param.getName(),headerValue(param.getValueAsString()));
             }
 		// Cookie
 			else if(type.equals("cookie")) {
-				Cookie c = new Cookie();
-				c.setName(URLEncoder.encode(param.getName()));
-				c.setValue(URLEncoder.encode(param.getValueAsString()));
-				c.setDomain(_url.getHost());
+				Cookie c=CookieUtil.toCookie(_url.getHost(),param.getName(),param.getValueAsString(),_charset);
 				c.setPath("/");
 				client.getState().addCookie(c);
 			}
@@ -1046,8 +1024,7 @@ public final class Http extends BodyTagImpl {
 				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type file can't only be used, when method of the tag http equal post");
 				if(doMultiPart) {
 					try {
-						//FilePart part = new FilePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param),null);
-						parts.add(new ResourcePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param)));
+						parts.add(new ResourcePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param),_charset));
 					} 
 					catch (FileNotFoundException e) {
 						throw new ApplicationException("can't upload file, path is invalid",e.getMessage());
@@ -1085,18 +1062,24 @@ public final class Http extends BodyTagImpl {
 		    
 		}
 		
+		httpMethod.setRequestHeader("Accept-Encoding",acceptEncoding.append("gzip").toString());
+		
+		
+		
 		// multipart
 		if(doMultiPart && eem!=null) {
 			hasContentType=true;
 			boolean doIt=true;
 			if(!http.multiPart && parts.size()==1){
 				Part part = parts.get(0);
-				if(part instanceof ResourcePart){
+				/* jira 1513
+				  if(part instanceof ResourcePart){
 					ResourcePart rp = (ResourcePart) part;
 					eem.setRequestEntity(new ResourceRequestEntity(rp.getResource(),rp.getContentType()));
 					doIt=false;
 				}
-				else if(part instanceof RailoStringPart){
+				else */
+					if(part instanceof RailoStringPart){
 					RailoStringPart sp = (RailoStringPart) part;
 					try {
 						eem.setRequestEntity(new StringRequestEntity(sp.getValue(),sp.getContentType(),sp.getCharSet()));
@@ -1219,8 +1202,8 @@ public final class Http extends BodyTagImpl {
     }
 
     private static String translateEncoding(String str, String charset) throws UnsupportedEncodingException {
-    	//print.ln(charset+":"+StringUtil.translateString(str,"ISO-8859-1")+"::"+URLEncoder.encode(str,charset));
-        return URLEncoder.encode(StringUtil.translateString(str,"ISO-8859-1"),charset);
+    	if(StringUtil.isAscci(str)) return str;
+    	return URLEncoder.encode(str,charset);
     }
 
     /**
@@ -1359,6 +1342,53 @@ public final class Http extends BodyTagImpl {
 		}
 		return mimeType;
 	}
+
+	public static boolean isGzipEncoded(String contentEncoding) {
+		return !StringUtil.isEmpty(contentEncoding) && StringUtil.indexOfIgnoreCase(contentEncoding, "gzip")!=-1;
+	}
+
+	public static Object getOutput(InputStream is, String contentType, String contentEncoding, boolean closeIS) {
+		if(StringUtil.isEmpty(contentType))contentType="text/html";
+		
+		// Gzip
+		if(Http.isGzipEncoded(contentEncoding)){
+			try {
+				is=new GZIPInputStream(is);
+			} 
+			catch (IOException e) {}
+		}
+		
+		try {
+			// text
+			if(isText(contentType)) {
+				String[] tmp = HTTPUtil.splitMimeTypeAndCharset(contentType);
+				//String mimetype=tmp[0];
+				String charset=tmp[1];
+				
+				if(StringUtil.isEmpty(charset,true)) {
+					Config config = ThreadLocalConfig.get();
+					if(config!=null)charset=config.getWebCharset();
+				}
+				
+				try {
+					return IOUtil.toString(is, charset);
+				} catch (IOException e) {}
+			}
+			// Binary
+			else {
+				try {
+					return IOUtil.toBytes(is);
+				} 
+				catch (IOException e) {}
+			}
+		}
+		finally{
+			if(closeIS)IOUtil.closeEL(is);
+		}
+
+		return "";
+	}
+	
 }
 
 class MultipartRequestEntityFlex extends MultipartRequestEntity {
@@ -1402,6 +1432,7 @@ class Executor extends Thread {
 	 final boolean redirect;
 	 Throwable t;
 	 boolean done;
+	URL redirectURL;
 
 	public Executor(Http http, HttpClient client,HttpMethod httpMethod,boolean redirect) {
 		this.http=http;
@@ -1430,8 +1461,9 @@ class Executor extends Thread {
         URL lu;
         while(Http.isRedirect(client.executeMethod(httpMethod)) && redirect && count++ < Http.MAX_REDIRECT) { 
         	lu=Http.locationURL(httpMethod);
+        	redirectURL=lu;
         	HttpMethod oldHttpMethod = httpMethod;
-        	httpMethod=Http.createMethod(http,client,lu.toExternalForm(),-1);
+        	httpMethod=Http.createMethod(ThreadLocalPageContext.getConfig(),http,client,lu.toExternalForm(),-1);
         	Http.releaseConnection(oldHttpMethod);
         }
         

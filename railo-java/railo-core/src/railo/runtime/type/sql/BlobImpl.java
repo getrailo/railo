@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.sql.Blob;
 import java.sql.SQLException;
 
-import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 
   
@@ -101,7 +101,7 @@ public final class BlobImpl implements java.sql.Blob, Serializable {
          throw new SQLException("JDBC 3.0 Method truncate not implemented");
      }
 
-    public static Blob toBlob(Object value) throws ExpressionException {
+    public static Blob toBlob(Object value) throws PageException {
         if(value instanceof Blob) return (Blob)value;
         return new BlobImpl(Caster.toBinary(value));
     }

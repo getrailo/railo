@@ -14,14 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
+package railo.runtime.img.filter;import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
-import java.awt.Rectangle;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * Given a binary image, this filter performs binary erosion, setting all removed pixels to the given 'new' color.
  */
-public class ErodeFilter extends BinaryFilter {
+public class ErodeFilter extends BinaryFilter  implements DynFiltering {
 
 	private int threshold = 2;
 
@@ -99,5 +106,19 @@ public class ErodeFilter extends BinaryFilter {
 		return "Binary/Erode...";
 	}
 
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Threshold")))!=null)setThreshold(ImageFilterUtil.toIntValue(o,"Threshold"));
+		if((o=parameters.removeEL(KeyImpl.init("Iterations")))!=null)setIterations(ImageFilterUtil.toIntValue(o,"Iterations"));
+		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));
+		if((o=parameters.removeEL(KeyImpl.init("NewColor")))!=null)setNewColor(ImageFilterUtil.toColorRGB(o,"NewColor"));
+		
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Threshold, Iterations, Colormap, NewColor, BlackFunction]");
+		}
+
+		return filter(src, dst);
+	}
 }
 

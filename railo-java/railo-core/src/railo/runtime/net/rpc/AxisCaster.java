@@ -38,7 +38,7 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
+import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
@@ -58,6 +58,7 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Argument;
@@ -209,41 +210,26 @@ public final class AxisCaster {
         return v;
     }
 
-    /*private static Array toArray(Object value) throws PageException {
-        Array arr = Caster.toArray(value);
-        Array rtn=new ArrayImpl();
-        int len=arr.size();
-        Object o;
-        for(int i=1;i<=len;i++) {
-            o=arr.get(i,null);
-            rtn.setEL(i,toAxisType(o));
-        }
-        return rtn;
-    }*/
-
     private static Object toPojo(TypeMapping tm,Component comp) throws PageException {
 
     	PageContext pc = ThreadLocalPageContext.get(); 
     	
 	    try {
-	    	//print.o("++++++++++");
-	    	//print.o(src.getFullClassName());
-	    	//print.o(src.getDisplayPath());
-	    	//pc.addPageSource(src,true);
-			return _toPojo(pc, tm, comp);
+	    	return _toPojo(pc, tm, comp);
 			
 		}
 		catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
-		finally {
+		/*finally {
 			//pc.removeLastPageSource(true);
-		}
+		}*/
     }
     
     private static Object _toPojo(PageContext pc, TypeMapping tm,Component comp) throws PageException {
-    	if(comp instanceof ComponentImpl)comp=new ComponentWrap(ComponentImpl.ACCESS_PRIVATE,(ComponentImpl)comp);
-		
+    	ComponentAccess ca = ComponentUtil.toComponentAccess(comp);
+    	comp=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,ca);
+		ComponentScope scope = ca.getComponentScope();
     	
     	Property[] props=ComponentUtil.getProperties(comp,false);
     	//Map rtn=new HashTable();
@@ -257,12 +243,14 @@ public final class AxisCaster {
     	//PageContext pc = ThreadLocalPageContext.get();
     	Property p;
     	Object v;
+    	Collection.Key k;
 		CFMLExpressionInterpreter interpreter = new CFMLExpressionInterpreter();
     	for(int i=0;i<props.length;i++){
     		p=props[i];
-    		
+    		k=Caster.toKey(p.getName());
     	// value
-    		v=comp.get(p.getName(), null);
+    		v=scope.get(k,null);
+    		if(v==null)v=comp.get(k, null);
     	// default
     		
     		if(v!=null)v=Caster.castTo(pc, p.getType(), v, false);
@@ -344,20 +332,14 @@ public final class AxisCaster {
         if(Decision.isStruct(value)) {
         	if(value instanceof Component) {
         		Object pojo= toPojo(tm,(Component)value);
-        		try{
-	        		//if(pc!=null){
-	        			//RPCServer server=RPCServer.getInstance(pc.getId(),pc.getServletContext());
-		        		//org.apache.axis.encoding.TypeMapping tm = (org.apache.axis.encoding.TypeMapping) 
-		            	//server.getEngine().getTypeMappingRegistry().getDefaultTypeMapping();
-		        		
-		        		QName name = new QName("http://rpc.xml.coldfusion",pojo.getClass().getName());
-			    		if(tm.getSerializer(pojo.getClass(),name)==null){
-			        		tm.register(pojo.getClass(), 
-			        				name,
-			                        new BeanSerializerFactory(pojo.getClass(),name),
-			                        new BeanDeserializerFactory(pojo.getClass(),name));
-		        		}
-	        		//}
+        		try	{	
+	        		QName name = new QName("http://rpc.xml.coldfusion",pojo.getClass().getName());
+		    		if(tm.getSerializer(pojo.getClass(),name)==null){
+		        		tm.register(pojo.getClass(), 
+		        				name,
+		                        new BeanSerializerFactory(pojo.getClass(),name),
+		                        new BeanDeserializerFactory(pojo.getClass(),name));
+	        		}
         		}
         		catch(Throwable fault){
         			throw Caster.toPageException(fault);
@@ -540,8 +522,8 @@ public final class AxisCaster {
     	pc=ThreadLocalPageContext.get(pc);
     	if(pc!=null && value instanceof Pojo) {
     		try{
-    			ComponentImpl c = ComponentUtil.toComponentImpl(pc.loadComponent(value.getClass().getName()));
-    			ComponentWrap cw=new ComponentWrap(Component.ACCESS_PRIVATE,c);
+    			ComponentAccess c = ComponentUtil.toComponentAccess(pc.loadComponent(value.getClass().getName()));
+    			ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,c);
     		
     			// delete this scope data members
         		Collection.Key[] keys = cw.keys();

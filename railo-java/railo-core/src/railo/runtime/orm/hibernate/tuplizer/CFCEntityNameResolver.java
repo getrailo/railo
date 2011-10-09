@@ -16,7 +16,7 @@ public  class CFCEntityNameResolver implements EntityNameResolver {
 	public String resolveEntityName(Object entity) {
 		try {
 			Component cfc = HibernateCaster.toComponent(entity);
-			return HibernateCaster.getEntityName(null,cfc);
+			return HibernateCaster.getEntityName(cfc);
 		} catch (PageException e) {
 			//print.printST(e);
 			throw new HibernateRuntimeException(e);

@@ -27,7 +27,7 @@ public class UDFRemoveProperty extends UDFGSProperty {
 	public UDFRemoveProperty(ComponentImpl component,Property prop)  {
 		super(component,"remove"+StringUtil.ucFirst(PropertyFactory.getSingularName(prop)),getFunctionArgument(prop),CFTypes.TYPE_BOOLEAN,"wddx");
 		this.prop=prop;
-		this.propName=KeyImpl.init(prop.getName());
+		this.propName=KeyImpl.getInstance(prop.getName());
 	} 
 
 	private static FunctionArgument[] getFunctionArgument(Property prop) {
@@ -97,7 +97,7 @@ public class UDFRemoveProperty extends UDFGSProperty {
 			if(strKey==null) return false;
 			
 			if(propValue instanceof Struct) {
-				return ((Struct)propValue).removeEL(KeyImpl.init(strKey))!=null;
+				return ((Struct)propValue).removeEL(KeyImpl.getInstance(strKey))!=null;
 			}
 			else if(propValue instanceof Map) {
 				return ((Map)propValue).remove(strKey)!=null;

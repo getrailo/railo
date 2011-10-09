@@ -21,9 +21,10 @@
 	type="#request.adminType#"
 	password="#session["password"&request.adminType]#"
 	returnVariable="hasAccess"
-	secType="debugging"
+	secType="setting"
 	secValue="yes">
 	
+
 
 <!--- 
 Defaults --->
@@ -89,6 +90,8 @@ Error Output --->
 
 
 <cfoutput>
+
+<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
 
 <!--- 
 Create Datasource --->

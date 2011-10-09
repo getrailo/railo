@@ -11,21 +11,9 @@ import railo.runtime.ext.tag.TagImpl;
 *
 **/
 public final class ServletParam extends TagImpl {
-
-	/** Value of a name-value pair passed to the servlet as a parameter. */
 	private String value;
-
-	/** The data type of the ColdFusion variable being passed. By default, ColdFusion usually passes variables 
-	** 		as strings; however, to ensure that the data is the correct type on the Java side, you can specify any 
-	** 		of the following types: INT, DOUBLE, BOOL, DATE, or STRING. */
 	private String type;
-
-	/** The name of a ColdFusion variable. See the Usage section for details on passing parameters. The 
-	** 		value appears in the servlet as an attribute */
 	private String variable;
-
-	/** If used with the value attribute, it is the name of the servlet parameter. If used with the variable attribute, it is 
-	** 		the name of the servlet attribute */
 	private String name;
 
 
@@ -46,9 +34,6 @@ public final class ServletParam extends TagImpl {
 	}
 
 	/** set the value type
-	*  The data type of the ColdFusion variable being passed. By default, ColdFusion usually passes variables 
-	* 		as strings; however, to ensure that the data is the correct type on the Java side, you can specify any 
-	* 		of the following types: INT, DOUBLE, BOOL, DATE, or STRING.
 	* @param type value to set
 	**/
 	public void setType(String type)	{
@@ -56,8 +41,6 @@ public final class ServletParam extends TagImpl {
 	}
 
 	/** set the value variable
-	*  The name of a ColdFusion variable. See the Usage section for details on passing parameters. The 
-	* 		value appears in the servlet as an attribute
 	* @param variable value to set
 	**/
 	public void setVariable(String variable)	{

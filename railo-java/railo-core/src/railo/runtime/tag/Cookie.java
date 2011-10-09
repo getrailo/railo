@@ -114,7 +114,7 @@ public final class Cookie extends TagImpl {
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws PageException	{
-		pageContext.cookieScope().setCookie(KeyImpl.init(name),value,expires,secure,path,domain);
+		pageContext.cookieScope().setCookie(KeyImpl.getInstance(name),value,expires,secure,path,domain);
 		return SKIP_BODY;
 	}
 

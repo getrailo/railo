@@ -10,7 +10,7 @@
     
 	<cffunction name="_getData" access="private" output="no">
     	<!--- session --->
-        <cfif StructKeyExists(session,"cfcs") and StructKeyExists(session.cfcs,this.cfcName)>
+        <cfif StructKeyExists(session,"cfcs") and StructKeyExists(session.cfcs,this.cfcName) and DateAdd("n",10,session.cfcs[this.cfcName].getInfo.lastModified) GT now()>
         	<cfset var info=session.cfcs[this.cfcName].getInfo>
             <cfif not StructKeyExists(info,'mode') or (info.mode NEQ "develop" and info.mode NEQ "development")>
         		<cfreturn session.cfcs[this.cfcName]>
@@ -20,9 +20,9 @@
         <cfif StructKeyExists(request,"cfcs") and StructKeyExists(request.cfcs,this.cfcName)>
         	<cfreturn request.cfcs[this.cfcName]>
         </cfif>
-        
         <cfset cfc= createObject('webservice',this.cfcName&"?wsdl")>
         <cfset var data.getInfo=cfc.getInfo()>
+        <cfset data.getInfo.lastModified=now()>
         <cfset data.listApplications=cfc.listApplications()>
         <cfset session.cfcs[this.cfcName]=data>
         <cfset request.cfcs[this.cfcName]=data>

@@ -83,20 +83,23 @@ public class FormatUtil {
 		if(df==null) {
 			df= new SimpleDateFormat[]{
 					  new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy",Locale.ENGLISH)
-						 ,new SimpleDateFormat("MMM dd, yyyy H:mm:ss a",Locale.ENGLISH)
-						 
+					 ,new SimpleDateFormat("MMM dd, yyyy H:mm:ss a",Locale.ENGLISH)	 
 					 ,new SimpleDateFormat("MMMM dd, yyyy HH:mm:ss a zzz",Locale.ENGLISH)
+					 ,new SimpleDateFormat("MMMM d yyyy HH:mm:ssZ",Locale.ENGLISH)
 					 ,new SimpleDateFormat("MMMM d yyyy HH:mm:ss",Locale.ENGLISH)
 					 ,new SimpleDateFormat("MMMM d yyyy HH:mm",Locale.ENGLISH)
+					 ,new SimpleDateFormat("EEE, MMM dd, yyyy HH:mm:ssZ",Locale.ENGLISH)
 					 ,new SimpleDateFormat("EEE, MMM dd, yyyy HH:mm:ss",Locale.ENGLISH)
-					 ,new SimpleDateFormat("EEEE, MMMM dd, yyyy h:mm:ss a zzz",Locale.ENGLISH)
+				     ,new SimpleDateFormat("EEEE, MMMM dd, yyyy H:mm:ss a zzz",Locale.ENGLISH)
 					 ,new SimpleDateFormat("dd-MMM-yy HH:mm a",Locale.ENGLISH)
 					 ,new SimpleDateFormat("dd-MMMM-yy HH:mm a",Locale.ENGLISH)
 					 ,new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
 					 ,new SimpleDateFormat("EEE d, MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
 					 ,new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH)
-						 ,new SimpleDateFormat("MMMM, dd yyyy hh:mm:ss",Locale.ENGLISH)
-						 ,new SimpleDateFormat("yyyy/MM/dd hh:mm:ss zz",Locale.ENGLISH)
+					 ,new SimpleDateFormat("MMMM, dd yyyy HH:mm:ssZ",Locale.ENGLISH)
+					 ,new SimpleDateFormat("MMMM, dd yyyy HH:mm:ss",Locale.ENGLISH)
+					 ,new SimpleDateFormat("yyyy/MM/dd HH:mm:ss zz",Locale.ENGLISH)
+					 ,new SimpleDateFormat("dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
 					 //,new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",Locale.ENGLISH)
 				};
 

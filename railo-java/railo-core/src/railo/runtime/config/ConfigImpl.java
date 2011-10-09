@@ -78,7 +78,6 @@ import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
-import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.net.amf.AMFCaster;
 import railo.runtime.net.amf.ClassicAMFCaster;
@@ -142,6 +141,9 @@ public abstract class ConfigImpl implements Config {
 	public static final int CACHE_DEFAULT_TEMPLATE = 2;
 	public static final int CACHE_DEFAULT_QUERY = 4;
 	public static final int CACHE_DEFAULT_RESOURCE = 8;
+
+	public static final int AMF_CONFIG_TYPE_XML = 1;
+	public static final int AMF_CONFIG_TYPE_MANUAL = 2;
 	
 
 	private PhysicalClassLoader rpcClassLoader;
@@ -171,7 +173,7 @@ public abstract class ConfigImpl implements Config {
 
     private boolean suppresswhitespace = false;
     private boolean suppressContent = false;
-    private boolean showVersion = true;
+    private boolean showVersion = false;
     
 	private Resource tempDirectory;
     private TimeSpan clientTimeout=new TimeSpanImpl(90,0,0,0);
@@ -233,7 +235,6 @@ public abstract class ConfigImpl implements Config {
     
     
     private LogAndSource mailLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
-    private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
     private LogAndSource threadLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
     
     private LogAndSource requestTimeoutLogger=null;
@@ -281,7 +282,9 @@ public abstract class ConfigImpl implements Config {
 
 
 	private Resource clientScopeDir;
+	private Resource sessionScopeDir;
 	private long clientScopeDirSize=1024*1024*10;
+	private long sessionScopeDirSize=1024*1024*10;
 
 	private Resource cacheDir;
 	private long cacheDirSize=1024*1024*10;
@@ -301,6 +304,8 @@ public abstract class ConfigImpl implements Config {
 
 	private boolean closeConnection=false;
 	private boolean contentLength=true;
+	private boolean allowCompression=false;
+	
 
 	private boolean doLocalCustomTag=true; 
 
@@ -346,7 +351,6 @@ public abstract class ConfigImpl implements Config {
 	private String defaultDataSource;
 	private short inspectTemplate=INSPECT_ONCE;
 	private String serial="";
-	private GatewayEngineImpl gatewayEngine;
 	private String cacheMD5;
 	private boolean executionLogEnabled;
 	private ExecutionLogFactory executionLogFactory;
@@ -363,6 +367,8 @@ public abstract class ConfigImpl implements Config {
 	private LogAndSource ormLogger;
 	private boolean useComponentPathCache=true;
 	private boolean useCTPathCache=true;
+	private int amfConfigType=AMF_CONFIG_TYPE_XML;
+	private LogAndSource scopeLogger;
 	
 	
 	
@@ -401,6 +407,7 @@ public abstract class ConfigImpl implements Config {
         clearFunctionCache();
         clearCTCache();
         clearComponentCache();
+        clearComponentMetadata();
     }
     
     /**
@@ -688,19 +695,6 @@ public abstract class ConfigImpl implements Config {
     /**
      * @see railo.runtime.config.Config#getMailLogger()
      */
-    public LogAndSource getGatewayLogger() {
-    	if(gatewayLogger==null)gatewayLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
-		return gatewayLogger;
-    }
-
-
-    public void setGatewayLogger(LogAndSource gatewayLogger) {
-    	this.gatewayLogger=gatewayLogger;
-    }
-
-    /**
-     * @see railo.runtime.config.Config#getMailLogger()
-     */
     public LogAndSource getThreadLogger() {
     	if(threadLogger==null)threadLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return threadLogger;
@@ -784,12 +778,11 @@ public abstract class ConfigImpl implements Config {
 
 
     public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel) {
-    	return getPageSource(mappings, realPath, onlyTopLevel, ((PageContextImpl)ThreadLocalPageContext.get()).useSpecialMappings());
+    	return getPageSource(ThreadLocalPageContext.get(),mappings, realPath, onlyTopLevel, ((PageContextImpl)ThreadLocalPageContext.get()).useSpecialMappings(),true);
     }
     
-    public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings) {
+    public PageSource getPageSource(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
         realPath=realPath.replace('\\','/');
-        
         String lcRealPath = StringUtil.toLowerCase(realPath)+'/';
         Mapping mapping;
         
@@ -834,6 +827,17 @@ public abstract class ConfigImpl implements Config {
         	}
         }
         
+        // component mappings (only used for gateway)
+        if(pc!=null && ((PageContextImpl)pc).isGatewayContext()) {
+        	boolean isCFC=getCFCExtension().equalsIgnoreCase(ResourceUtil.getExtension(realPath, null));
+            if(isCFC) {
+	        	Mapping[] cmappings = getComponentMappings();
+	        	for(int i=0;i<cmappings.length-1;i++) {
+	                PageSource ps = cmappings[i].getPageSource(realPath);
+	            	if(ps.exists()) return ps;
+	            }
+        	}
+        }
         
         // config mappings
         for(int i=0;i<this.mappings.length-1;i++) {
@@ -843,7 +847,8 @@ public abstract class ConfigImpl implements Config {
             }
         }
         
-        return this.mappings[this.mappings.length-1].getPageSource(realPath);
+        if(useDefaultMapping)return this.mappings[this.mappings.length-1].getPageSource(realPath);
+        return null;
     }
     
     /**
@@ -962,6 +967,11 @@ public abstract class ConfigImpl implements Config {
     	if(applicationLogger==null)applicationLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return applicationLogger;
     }
+    
+    public LogAndSource getScopeLogger() {
+    	if(scopeLogger==null)scopeLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		return scopeLogger;
+    }
 
     /**
      * sets the password
@@ -1060,16 +1070,19 @@ public abstract class ConfigImpl implements Config {
         }
     }
     
+    public TagLib getCoreTagLib(){
+    	for(int i=0;i<tlds.length;i++) {
+        	if(tlds[i].getNameSpaceAndSeparator().equals("cf"))return tlds[i];	
+        }
+    	throw new RuntimeException("no core taglib found"); // this should never happen
+    }
+    
     protected void setTagDirectory(Resource tagDirectory) {
     	this.tagDirectory=tagDirectory;
     	
-    	this.tagMapping= new MappingImpl(this,"/mapping-tag/",tagDirectory.getAbsolutePath(),null,true,true,true,true,true);
+    	this.tagMapping= new MappingImpl(this,"/mapping-tag/",tagDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true);
     	
-    	TagLib tl=null;
-        for(int i=0;i<tlds.length;i++) {
-        	// TODO get core taglib
-        	if(tlds[i].getNameSpaceAndSeparator().equals("cf"))tl=tlds[i];	
-        }
+    	TagLib tl=getCoreTagLib();
     	
         // now overwrite with new data
         if(tagDirectory.isDirectory()) {
@@ -1082,7 +1095,7 @@ public abstract class ConfigImpl implements Config {
         
     }
     
-    public void createTag(TagLib tl,String filename) {
+    public void createTag(TagLib tl,String filename) {// Jira 1298
     	String name=toName(filename);//filename.substring(0,filename.length()-(getCFCExtension().length()+1));xxx
         
     	TagLibTag tlt = new TagLibTag(tl);
@@ -1127,7 +1140,7 @@ public abstract class ConfigImpl implements Config {
     
     protected void setFunctionDirectory(Resource functionDirectory) {
     	this.functionDirectory=functionDirectory;
-    	this.functionMapping= new MappingImpl(this,"/mapping-function/",functionDirectory.getAbsolutePath(),null,true,true,true,true,true);
+    	this.functionMapping= new MappingImpl(this,"/mapping-function/",functionDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true);
     	FunctionLib fl=flds[flds.length-1];
         
         // now overwrite with new data
@@ -1471,7 +1484,7 @@ public abstract class ConfigImpl implements Config {
         }
     	
     	
-    	if(!isDirectory(scheduleDirectory)) throw new ExpressionException("schedule task directory "+scheduleDirectory+" doesn't exist or is not a directory");
+        if(!isDirectory(scheduleDirectory)) throw new ExpressionException("schedule task directory "+scheduleDirectory+" doesn't exist or is not a directory");
         try {
         	if(this.scheduler==null)
         		this.scheduler=new SchedulerImpl(engine,this,scheduleDirectory,logger,SystemUtil.getCharset());
@@ -1556,9 +1569,8 @@ public abstract class ConfigImpl implements Config {
 			} 
         }); 
         this.mappings = mappings;
-    }    
+    }
     
-
     /**
      * @param datasources The datasources to set
      */
@@ -1653,8 +1665,11 @@ public abstract class ConfigImpl implements Config {
      * @return pagesource of the base component
      */
     public PageSource getBaseComponentPageSource() {
+        return getBaseComponentPageSource(ThreadLocalPageContext.get());
+    }
+    public PageSource getBaseComponentPageSource(PageContext pc) {
         if(baseComponentPageSource==null) {
-            baseComponentPageSource=getPageSource(null,getBaseComponentTemplate(),false,false);
+            baseComponentPageSource=getPageSource(pc,null,getBaseComponentTemplate(),false,false,true);
         }
         return baseComponentPageSource;
     }
@@ -1673,6 +1688,10 @@ public abstract class ConfigImpl implements Config {
      */
     protected void setApplicationLogger(LogAndSource applicationLogger) {
         this.applicationLogger=applicationLogger;
+    }
+
+    protected void setScopeLogger(LogAndSource scopeLogger) {
+        this.scopeLogger=scopeLogger;
     }
 
 
@@ -2260,8 +2279,13 @@ public abstract class ConfigImpl implements Config {
 	 * @see railo.runtime.config.Config#getClientScopeDir()
 	 */
 	public Resource getClientScopeDir() {
-		if(clientScopeDir==null) return getConfigDir().getRealResource("client");
+		if(clientScopeDir==null) clientScopeDir=getConfigDir().getRealResource("client-scope");
 		return clientScopeDir;
+	}
+
+	public Resource getSessionScopeDir() {
+		if(sessionScopeDir==null) sessionScopeDir=getConfigDir().getRealResource("session-scope");
+		return sessionScopeDir;
 	}
 	
 	
@@ -2283,12 +2307,19 @@ public abstract class ConfigImpl implements Config {
 	public long getClientScopeDirSize() {
 		return clientScopeDirSize;
 	}
+	public long getSessionScopeDirSize() {
+		return sessionScopeDirSize;
+	}
 
 	/**
 	 * @param clientScopeDir the clientScopeDir to set
 	 */
 	protected void setClientScopeDir(Resource clientScopeDir) {
 		this.clientScopeDir = clientScopeDir;
+	}
+	
+	protected void setSessionScopeDir(Resource sessionScopeDir) {
+		this.sessionScopeDir = sessionScopeDir;
 	}
 
 	/**
@@ -2536,6 +2567,15 @@ public abstract class ConfigImpl implements Config {
 	public boolean contentLength() {
 		return contentLength;
 	}
+	
+
+	public boolean allowCompression() {
+		return allowCompression;
+	}
+	protected void setAllowCompression(boolean allowCompression) {
+		this.allowCompression= allowCompression;
+	}
+
 
 	protected void setContentLength(boolean contentLength) {
 		this.contentLength=contentLength;
@@ -2837,6 +2877,19 @@ public abstract class ConfigImpl implements Config {
 		amfCasterArguments=args;
         amfCasterClass=clazz;
 	}
+	
+	public void setAMFConfigType(String strDeploy) {
+		if(!StringUtil.isEmpty(strDeploy)){
+			if("xml".equalsIgnoreCase(strDeploy))amfConfigType=AMF_CONFIG_TYPE_XML;
+			else if("manual".equalsIgnoreCase(strDeploy))amfConfigType=AMF_CONFIG_TYPE_MANUAL;
+		}
+	}
+	public void setAMFConfigType(int amfDeploy) {
+		this.amfConfigType=amfDeploy;
+	}
+	public int getAMFConfigType() {
+		return amfConfigType;
+	}
 
 	public AMFCaster getAMFCaster(ConfigMap properties) throws ClassException {
 		if(amfCaster==null){
@@ -2960,22 +3013,6 @@ public abstract class ConfigImpl implements Config {
 		return cacheDefaultConnectionNameResource;
 	}
 
-	protected void setGatewayEntries(Map gatewayEntries,Resource cfcDirectory) {
-		getGatewayEngine().setCFCDirectory(cfcDirectory);
-		
-		try {
-			getGatewayEngine().addEntries(this,gatewayEntries);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	
-	}
-	public GatewayEngineImpl getGatewayEngine() {
-		if(gatewayEngine==null){
-			gatewayEngine=new GatewayEngineImpl(this);
-		}
-		return gatewayEngine;
-	}
-
 	public String getCacheMD5() { 
 		return cacheMD5;
 	}
@@ -2998,11 +3035,11 @@ public abstract class ConfigImpl implements Config {
 		this.executionLogFactory= executionLogFactory;
 	}
 	
-	public ORMEngine resetORMEngine(PageContext pc) throws PageException {
+	public ORMEngine resetORMEngine(PageContext pc, boolean force) throws PageException {
 		//String name = pc.getApplicationContext().getName();
 		//ormengines.remove(name);
 		ORMEngine e = getORMEngine(pc);
-		e.reload(pc);
+		e.reload(pc,force);
 		return e;
 	}
 	
@@ -3156,7 +3193,7 @@ public abstract class ConfigImpl implements Config {
 			m=new MappingImpl(
 				this,virtual,
 				physical,
-				null,false,true,false,false,false,true
+				null,false,true,false,false,false,true,true
 				);
 			customTagAppMappings.put(physical.toLowerCase(),m);
 		}
@@ -3170,6 +3207,7 @@ public abstract class ConfigImpl implements Config {
 	private Map<String,InitFile> ctPatchCache=null;//new ArrayList<Page>();
 	
 	private Map udfCache=new ReferenceMap();
+	
 	
 	
 	
@@ -3300,4 +3338,40 @@ public abstract class ConfigImpl implements Config {
 		}
 		return compress;
 	}
+
+	public boolean getSessionCluster() {
+		return false;
+	}
+
+	public boolean getClientCluster() {
+		return false;
+	}
+	
+	private Map<String,ComponentMetaData> componentMetaData=null;
+	public ComponentMetaData getComponentMetadata(String key) {
+		if(componentMetaData==null) return null;
+		return componentMetaData.get(key.toLowerCase());
+	}
+	public void putComponentMetadata(String key,ComponentMetaData data) {
+		if(componentMetaData==null) componentMetaData=new HashMap<String, ComponentMetaData>();
+		componentMetaData.put(key.toLowerCase(),data);
+	}
+	
+	public void clearComponentMetadata() {
+		if(componentMetaData==null) return; 
+		componentMetaData.clear();
+	}
+	
+	public static class ComponentMetaData {
+
+		public final Struct meta;
+		public final long lastMod;
+
+		public ComponentMetaData(Struct meta, long lastMod) {
+			this.meta=meta;
+			this.lastMod=lastMod;
+		}
+		
+	}
+	
 }

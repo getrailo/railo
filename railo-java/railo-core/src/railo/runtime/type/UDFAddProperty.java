@@ -25,7 +25,7 @@ public class UDFAddProperty extends UDFGSProperty {
 	public UDFAddProperty(ComponentImpl component,Property prop)  {
 		super(component,"add"+StringUtil.ucFirst(PropertyFactory.getSingularName(prop)),getFunctionArgument(prop),CFTypes.TYPE_ANY,"wddx");
 		this.prop=prop;
-		this.propName=KeyImpl.init(prop.getName());
+		this.propName=KeyImpl.getInstance(prop.getName());
 	} 
 
 	private static FunctionArgument[] getFunctionArgument(Property prop) {

@@ -14,15 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.image.BufferedImage;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A BufferedImageOp which iterates another BufferedImageOp.
  */
-public class IteratedFilter extends AbstractBufferedImageOp {
+public class IteratedFilter extends AbstractBufferedImageOp  implements DynFiltering {
 	private BufferedImageOp filter;
 	private int iterations;
 	
@@ -43,5 +48,15 @@ public class IteratedFilter extends AbstractBufferedImageOp {
 			image = filter.filter( image, dst );
 		
 		return image;
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported []");
+		}
+
+		return filter(src, dst);
 	}
 }

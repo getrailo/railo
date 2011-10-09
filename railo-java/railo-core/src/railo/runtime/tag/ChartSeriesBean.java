@@ -31,6 +31,7 @@ public class ChartSeriesBean implements Serializable {
 	public static final int TYPE_STEP = 8;
 	public static final int TYPE_SCATTER = 9;
 	public static final int TYPE_PIE = 10;
+	public static final int TYPE_TIME = 11;
 
 	public static final int DATA_LABEL_STYLE_NONE = 0;
 	public static final int DATA_LABEL_STYLE_VALUE = 1;

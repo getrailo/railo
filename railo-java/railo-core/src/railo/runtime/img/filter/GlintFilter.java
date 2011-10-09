@@ -14,14 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 
-import java.awt.image.BufferedImage;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which renders "glints" on bright parts of the image.
  */
-public class GlintFilter extends AbstractBufferedImageOp {
+public class GlintFilter extends AbstractBufferedImageOp  implements DynFiltering {
 
     private float threshold = 1.0f;
     private int length = 5;
@@ -193,7 +199,7 @@ public class GlintFilter extends AbstractBufferedImageOp {
 		}
 
 		if ( blur != 0 )
-			mask = new GaussianFilter(blur).filter( mask, null );
+			mask = new GaussianFilter(blur).filter( mask, (BufferedImage)null );
 
         if ( dst == null )
             dst = createCompatibleDestImage( src, null );
@@ -258,5 +264,21 @@ public class GlintFilter extends AbstractBufferedImageOp {
     
 	public String toString() {
 		return "Effects/Glint...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));
+		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
+		if((o=parameters.removeEL(KeyImpl.init("Blur")))!=null)setBlur(ImageFilterUtil.toFloatValue(o,"Blur"));
+		if((o=parameters.removeEL(KeyImpl.init("GlintOnly")))!=null)setGlintOnly(ImageFilterUtil.toBooleanValue(o,"GlintOnly"));
+		if((o=parameters.removeEL(KeyImpl.init("Length")))!=null)setLength(ImageFilterUtil.toIntValue(o,"Length"));
+		if((o=parameters.removeEL(KeyImpl.init("Threshold")))!=null)setThreshold(ImageFilterUtil.toFloatValue(o,"Threshold"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Colormap, Amount, Blur, GlintOnly, Length, Threshold]");
+		}
+
+		return filter(src, dst);
 	}
 }

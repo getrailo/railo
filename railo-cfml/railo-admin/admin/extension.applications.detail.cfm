@@ -1,25 +1,29 @@
 
 
 
-<cfset detail=struct()>
-<cftry>
-<cfset detail=getDetail(url.hashProvider,url.id)>
-	<cfcatch>
-    	<cfset detail=getDetailFromExtension(url.hashProvider,url.id)>
-    </cfcatch>
-</cftry>
+<cfset detail=getDetailByUid(url.uid)>
+
 
 <cfset isInstalled=structKeyExists(detail,'installed')>
 <cfif StructKeyExists(detail,'installed')>
 	<cfset app=detail.installed>
     <cfset hasUpdate=updateAvailable(detail.installed)>
 <cfelse>
-	<cfset app=detail.app>
+	<cfset app=detail.data>
     <cfset hasUpdate=false>
 </cfif>
 
-<cfset info=detail.info>
 
+<cfif arrayLen(detail.all) GT 0>
+	<cfset info=detail.data.info>
+	<cfloop array="#detail.all#" index="ap">
+    	<cfif ap.provider EQ app.provider>
+        	<cfset info=ap.info>
+        </cfif>
+    </cfloop>
+<cfelse>
+	<cfset info={title:""}>
+</cfif>
         
         <cfoutput query="app">
         	
@@ -41,7 +45,8 @@
                     <cfelseif len(app.video)>
                     	<td><cfvideoplayer attributeCollection="#attrs#" video="#app.video#" width="320" height="256" allowfullscreen="true"></td>
                     <cfelseif len(app.image)>
-                    	<td><img src="#app.image#" /></td>
+                    	<cfset dn=getDumpNail(app.image,700,600)>
+                    	<cfif len(dn)><img src="#dn#" /></td></cfif>
                     </cfif>
                 
                 
@@ -134,7 +139,7 @@
             <cfif isInstalled and hasUpdate>
             	<h2>#stText.ext.updateAvailable#</h2>
                 <cfset updateAvailableDesc=replace(stText.ext.updateAvailableDesc,'{installed}',app.version)>
-                <cfset updateAvailableDesc=replace(updateAvailableDesc,'{update}',detail.app.version)>
+                <cfset updateAvailableDesc=replace(updateAvailableDesc,'{update}',detail.data.version)>
                 <!--- #updateAvailableDesc#--->
                 
                 <table class="tbl" width="600">
@@ -144,20 +149,18 @@
                 </tr>
                 <tr>
                     <td class="tblHead">#stText.ext.availableVersion#</td>
-                    <td class="tblContent">#detail.app.version#</td>
+                    <td class="tblContent">#detail.data.version#</td>
                 </tr>
-                <tr>
+                <!---<tr>
                     <td class="tblContent" colspan="2">
                     <textarea cols="80" rows="20">TODO get Update info</textarea>
                     
                     </td>
-                </tr>
+                </tr>--->
                 </table>
                 
             	<cfform action="#request.self#?action=#url.action#" method="post">
-                	<input type="hidden" name="hashProvider_1" value="#url.hashProvider#">
-                	<input type="hidden" name="id_1" value="#url.id#">
-                	<input type="hidden" name="row" value="1">
+                	<input type="hidden" name="uid" value="#url.uid#">
                     
             		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.update#">
             		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.uninstall#">
@@ -168,9 +171,7 @@
             <!--- Install --->
             <cfelseif isInstalled and not hasUpdate>
             	<cfform action="#request.self#?action=#url.action#" method="post">
-            		<input type="hidden" name="hashProvider_1" value="#url.hashProvider#">
-                	<input type="hidden" name="id_1" value="#url.id#">
-                	<input type="hidden" name="row" value="1">
+            		<input type="hidden" name="uid" value="#url.uid#">
                     
             		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.uninstall#">
             		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#">
@@ -178,9 +179,7 @@
             <cfelse>
             
 				<cfform action="#request.self#?action=#url.action#" method="post">
-            		<input type="hidden" name="hashProvider_1" value="#url.hashProvider#">
-                	<input type="hidden" name="id_1" value="#url.id#">
-                	<input type="hidden" name="row" value="1">
+            		<input type="hidden" name="uid" value="#url.uid#">
                     
             		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.install#">
             		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#">

@@ -18,8 +18,7 @@ public class IsNull implements FunctionEvaluator{
 		if(value instanceof Variable){
 			try{
 				ExprString exprStr=VariableString.translateVariableToExprString(value);
-				arg.setStringType(String.class.getName());
-				arg.setValue(exprStr);
+				arg.setValue(exprStr,String.class.getName());
 			}
 			catch(Throwable t){
 				

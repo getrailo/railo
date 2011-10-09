@@ -6,7 +6,7 @@ import railo.loader.TP;
 import railo.loader.util.Util;
 
 /**
- * returns th current build in version
+ * returns th current built in version
  */
 public class Version {
 

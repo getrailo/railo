@@ -19,11 +19,16 @@
 		<tag-class>railo.runtime.tag.Abort</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>single</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Stops processing of a page at the tag location. CFML returns everything that was processed before the cfabort tag. The cfabort tag is often used with conditional logic to stop processing a page when a condition occurs. </description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>showError</name>
+			<script-support>optional</script-support>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>
@@ -48,6 +53,10 @@
 		<tag-class>railo.runtime.tag.Admin</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Tag for the railo web/server administrator</description>
 		<attribute-type>dynamic</attribute-type>
 		
@@ -200,6 +209,10 @@
 		<tag-class>railo.runtime.tag.Application</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>
 			Defines scoping for a application, enables or disables storing client variables, 
 			and specifies a client variable storage mechanism. 
@@ -261,7 +274,54 @@
 			<name>clientStorage</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies how Railo stores client variables</description>
+			<description>
+Specifies how Railo stores client variables:
+- memory: the session is only kept in memory
+- cookie: the session is stored in the client cookie
+- file (default): the session is stored in a local file
+- "datasource-name"|"cache-name": when you select a name of an available datasource or cache, the client scope will be stored in there</description>
+		</attribute>
+		
+		<attribute>
+			<type>string</type>
+			<name>sessionType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+<description>
+Railo provide 2 kind of sessions:
+- cfml: session handled by Railo
+- j2ee: session handled by the Servlet Engine used				
+Default value is defined in the Railo Web Administrator. "j2ee" can not use a session storage.
+</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>sessionStorage</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+<description>
+Specifies how Railo stores session variables:
+- memory (default): the session is only kept in memory
+- cookie: the session is stored in the client cookie
+- file: the session is stored in a local file
+- "datasource-name"|"cache-name": when you select a name of an available datasource or cache, the session scope will be stored in there
+</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>clientCluster</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true, railo uses the storage backend for the client scope as master and Railo checks for changes in the storage backend with every request,
+			if set to false (default), the storage is only used as slave, railo only initially gets the data from the storage. Ignored for storage type "memory".</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>sessionCluster</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true, railo uses the storage backend for the session scope as master and Railo checks for changes in the storage backend with every request,
+			if set to false (default), the storage is only used as slave, railo only initially gets the data from the storage. Ignored for storage type "memory".</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -286,6 +346,15 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>Enter the CreateTimeSpan function and values in days, hours, minutes, and seconds, separated 
 		by commas, to specify the lifespan of session variables. The default value is specified in the
+		Variables page of the Railo Administrator.</description>
+		</attribute>
+		<attribute>
+			<type>timespan</type>
+			<name>clientTimeout</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Enter the CreateTimeSpan function and values in days, hours, minutes, and seconds, separated 
+		by commas, to specify the lifespan of client variables. The default value is specified in the
 		Variables page of the Railo Administrator.</description>
 		</attribute>
 		<attribute>
@@ -328,6 +397,13 @@
 			<description>Contains custom tag paths.</description>
 		</attribute>
 		<attribute>
+			<type>any</type>
+			<name>componentpaths</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Contains component paths.</description>
+		</attribute>
+		<attribute>
 			<type>boolean</type>
 			<name>secureJson</name>
 			<required>false</required>
@@ -341,6 +417,86 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The security prefix to put in front of the value that a function returns in JSON-format in response to a remote call if the secureJSON setting is true.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>localmode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Defines how the local scope of a function is invoked when a variable with no scope definition is used (default value set in the railo administrator).
+- always: the local scope is always invoked
+- update (CFML standard): the local scope is only invoked when the key already exists in it</description>
+		</attribute>
+		
+		<attribute>
+			<type>boolean</type>
+			<name>ormenabled</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Specifies whether ORM should be enabled for the current application context.The default is false.</description>
+		</attribute>
+		<attribute>
+			<type>struct</type>
+			<name>ormsettings</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+A struct that defines all the ORM settings, the following keys are supported:
+
+autogenmap(default:true): Specifies whether Railo should automatically generate mapping for the persistent CFCs. If autogenmap=false, mapping should be provided in the form of "{cfc-name}.cfc.hbm.xml" files.
+
+automanageSession(default:true; not supported yet): Lets you specify if Railo must manage Hibernate session automatically. If enabled: Railo manages the session completely. That is, it decides when to flush the session, when to clear the session, and when to close the session. If disabled: The application is responsible for managing flushing, clearing, or closing of the session. The only exception is (in the case of transaction), when the transaction commits, the application flushes the session. Railo closes the ORM session at the end of request irrespective of this flag being enabled or disabled. 
+
+cacheconfig: Specifies the location of the configuration file that should be used by the secondary cache provider.This setting is used only when secondarycacheenabled=true.
+
+cacheprovider: Specifies the cache provider that should be used by ORM as secondary cache.
+
+catalog: Specifies the default Catalog that should be used by ORM.
+
+cfclocation: Specifies the directory (or array of directories) that should be used by Railo to search for persistent CFCs to generate the mapping. If cfclocation is set, Railo looks at only the paths specified in it. If it is not set, Railo looks at the application directory, its sub-directories, and its mapped directories to search for persistent CFCs.
+
+datasource: Specifies the data source that should be used by ORM. If it is not specified here, then the data source specified for the application is picked up.
+
+dbcreate(default:none): Hibernate can automatically create the tables for your application in the database. dbCreate takes the following values:
+- update: Setting this value creates the table if it does not exist or update the table if it exists.
+- dropcreate: Setting this value drops the table if it exists and then creates it.
+- none: Setting this value does not change anything in the database schema.
+
+dialect: Specifies the dialect.Railo supports the following dialects: [Cache 2007.1, Cache71, Caché 2007.1, DB2, DB2/390, DB2/400, DB2390, DB2400, DB2AS400, DB2OS390, DataDirectOracle9, Derby, Firebird, FrontBase, H2, H2DB, HSQL, HSQLDB, Informix, Ingres, Interbase, JDataStore, MSSQL, Mckoi, MckoiSQL, MicrosoftSQLServer, Mimer, MimerSQL, MySQL, MySQL/InnoDB, MySQL/MyISAM, MySQL5, MySQL5/InnoDB, MySQL5InnoDB, MySQLInnoDB, MySQLMyISAM, MySQLwithInnoDB, MySQLwithMyISAM, Oracle, Oracle10g, Oracle8i, Oracle9, Oracle9i, Pointbase, PostgreSQL, PostgresPlus, Progress, SAPDB, SQLServer, Sybase, Sybase11, SybaseASE15, SybaseAnywhere, com.ddtek.jdbc.db2.DB2Driver, com.microsoft.jdbc.sqlserver.SQLServerDriver, oracle.jdbc.driver.OracleDriver, org.firebirdsql.jdbc.FBDriver, org.gjt.mm.mysql.Driver, org.h2.Driver, org.hsqldb.jdbcDriver, org.postgresql.Driver]
+
+eventHandling(default:false): Specifies whether ORM Event callbacks should be given.
+
+flushatrequestend(default:true): Specifies whether ormflush should be called automatically at request end. If flushatrequestend is false, ormflush is not called automatically at request end.
+
+logSQL(default:false): Specifies whether the SQL queries that are executed by ORM will be logged. If LogSQL=true, the SQL queries are logged to the console.
+
+ormconfig: The Hibernate configuration file. This file contains various configuration parameters like, dialect, cache settings, and mapping files that are required for the application. For more details, see www.hibernate.org/hib_docs/reference/en/html/session-configuration.html. The settings defined in the ormsettings override the settings defined in the Hibernate Configuration XML file.The connection information in the Hibernate Configuration XML file is however ignored because Railo uses its own connection pool. You will need to use this only when you need to use a hibernate setting that is not available using ormsetting.
+
+savemapping(default:false): Specifies whether the generated Hibernate mapping file has to be saved to disc. If you set the value to true, the Hibernate mapping XML file is saved with the filename "CFC name".hbm.xml in the same directory as the CFC. If any value of savemapping is specified in CFC, it will override the value specified in the ormsetting.
+
+schema: Specifies the default Schema that should be used by ORM.
+
+secondarycacheenabled(default:false): Specifies whether secondary caching should be enabled
+
+skipCFCWithError(default:false;not implemented yet): Lets you specify if Railo must skip the CFCs that have errors. If set to true, Railo ignores the CFCs that have errors.
+
+sqlscript: Path to the SQL script file that gets executed after ORM is initialized. This applies if dbcreate is set to dropcreate. This must be the absolute file path or the path relative to the application.The SQL script file lets you populate the tables before the application is accessed.
+
+useDBForMapping(default:true): Specifies whether the database has to be inspected to identify the missing information required to generate the Hibernate mapping. The database is inspected to get the column data type, primary key and foreign key information.
+</description>
+		</attribute>
+		<attribute>
+			<type>struct</type>
+			<name>s3</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+A struct that defines default S3 settings, this settings can be overwritten as part of the S3 file path, the following keys are supported:
+- accessKeyId: S3 access key id
+- awsSecretKey: AWS (Amazon Web Service) Secret Key
+- defaultLocation(default:us): region for the bucket, possible values are [eu,us,us-west]
+- host(default:"s3.amazonaws.com"): hostname of the service
+</description>
 		</attribute>
 	</tag>
 	<!-- Argument -->
@@ -403,12 +559,16 @@
 			<description>should the argument passed as reference (default) or as a value</description>
 		</attribute>
 	</tag>
-	<!--Associate-->
+	<!-- Associate -->
 	<tag>
 		<name>associate</name>
 		<tag-class>railo.runtime.tag.Associate</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Allows subtag data to be saved with the base tag. Applies only to custom tags.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -445,6 +605,10 @@
 		<tag-class>railo.runtime.tag.Break</tag-class>
 		<tte-class>railo.transformer.cfml.evaluator.impl.Break</tte-class>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagBreak</ttt-class>
+		<script>
+			<type>single</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Used to break out of a cfloop,cfwhile or cfforeach.</description>
@@ -457,6 +621,10 @@
 		<tte-class>railo.transformer.cfml.evaluator.impl.Cache</tte-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Speeds up page rendering when dynamic content does not have to be retrieved each time a user accesses
   the page. To accomplish this, cfcache creates temporary files that contain the static HTML returned from
   a page. You can use cfcache for simple URLs and URLs that contain URL parameters.</description>
@@ -1028,6 +1196,27 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		</attribute>
 		<attribute>
 			<type>boolean</type>
+			<name>showXLabel</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>yes: shows the x-axis labels</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>showTooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>show the tooltip or not</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>source</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>variable name of the source path, if set the path to the source file is returned and no image tag is written to response strea.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
 			<name>showYGridlines</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -1314,9 +1503,20 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<tag-class>railo.runtime.tag.Collection</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Allows you to create and administer Search collections. </description>
 		<attribute-type>fixed</attribute-type>
 		
+		<attribute>
+			<type>string</type>
+			<name>engine</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>This attribute only exists for compatibility reasions to other CFML engines, the attribute is completely ignored by Railo.</description>
+		</attribute>
 		<attribute>
 			<type>boolean</type>
 			<name>categories</name>
@@ -1370,6 +1570,11 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagComponent</ttt-class>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>false</rtexprvalue>
+			<context>component</context>
+		</script>
 		<description>Creates and defines a component object; encloses functionality that you build in CFML and enclose within cffunction tags. This tag contains one or more cffunction tags that define methods. Code within the body of this tag, other than cffunction tags, is executed when the component is instantiated. </description>
 		<att-class>railo.transformer.cfml.attributes.impl.Component</att-class>
 		<attribute-type>mixed</attribute-type>
@@ -1521,6 +1726,9 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<tag-class>railo.runtime.tag.Continue</tag-class>
 		<tte-class>railo.transformer.cfml.evaluator.impl.Continue</tte-class>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagContinue</ttt-class>
+		<script>
+			<type>single</type>
+		</script>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Used within a cfloop tag. Returns processing to the top of a loop.</description>
@@ -1532,6 +1740,10 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<tag-class>railo.runtime.tag.Content</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Defines the MIME type returned by the current page. Optionally, lets you specify the name of a file
   to be returned with the page.</description>
 		<attribute-type>fixed</attribute-type>
@@ -1594,6 +1806,10 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<tag-class>railo.runtime.tag.Cookie</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Defines cookie variables, including expiration and security options.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -1661,12 +1877,16 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<tag-class>railo.runtime.tag.DBInfo</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Lets you retrieve information about a data source, including details about the database, tables, queries, procedures, foreign keys, indexes, and version information about the database, driver, and JDBC. This tag supports only JDBC drivers, and does not support ODBC-based drivers, including the Microsoft Access driver.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>datasource</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Datasource to use to connect to the database.</description>
 		</attribute>
@@ -1765,6 +1985,10 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<!-- tte-class>railo.transformer.cfml.evaluator.impl.Directory</tte-class -->
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Handles interactions with directories.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -1784,18 +2008,35 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
     		- name: includes only filenames in the result set.</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>acl</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>only used for S3 Resources</description>
+			<description>An array of struct where each struct represents a permission or grant.
+Example:
+[{email="xxx@yyy.com", permission="full_control"}, {group="all", permission="read"}]
+</description>
+		</attribute>
+		<attribute>
+			<type>object</type>
+			<name>storeacl</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>alias for attribute "acl"</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
 			<name>storage</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>only used for S3 Resources</description>
+			<description>Only used for S3 Resources. The location of the created bucket/object. The location can either be EU,US or US-WEST. The default location is US.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>storelocation</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>alias for attribute "storage"</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -1923,6 +2164,10 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<!-- tte-class>railo.transformer.cfml.evaluator.impl.Directory</tte-class -->
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Creates a PDF document from a text block containing CFML and HTML.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -2199,8 +2444,11 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<tag-class>railo.runtime.tag.DocumentItem</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>
-		Specifies action items for a PDF document created by the cfdocument tag.</description>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
+		<description>Specifies action items for a PDF document created by the cfdocument tag.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -2228,6 +2476,10 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<tag-class>railo.runtime.tag.DocumentSection</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Divides a PDF document into sections. 
 		By using this tag in conjunction with a cfdocumentitem tag, each section can have unique headers, footers, and page numbers.</description>
 		<attribute-type>fixed</attribute-type>
@@ -2474,8 +2726,8 @@ If you specify a structure element that doesn't exist, Railo ignores it and does
 		<attribute-type>noname</attribute-type>
 		<attribute>
 			<type>boolean</type>
-			<name>contition</name>
-			<description>Expression Contition</description>
+			<name>condition</name>
+			<description>Expression condition</description>
 		</attribute>
 	</tag>
 	<!-- Error -->
@@ -2484,6 +2736,10 @@ If you specify a structure element that doesn't exist, Railo ignores it and does
 		<tag-class>railo.runtime.tag.Error</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Enables the display of customized HTML pages when errors occur. This lets you maintain a 
   consistent look and feel within your application, even when errors occur.</description>
 		<attribute-type>fixed</attribute-type>
@@ -2523,6 +2779,10 @@ If you specify a structure element that doesn't exist, Railo ignores it and does
 		<tag-class>railo.runtime.tag.Execute</tag-class>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Enables developers to execute a process on a server computer.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -2584,6 +2844,10 @@ If you specify a structure element that doesn't exist, Railo ignores it and does
 		<tag-class>railo.runtime.tag.Exit</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>single</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Used to: Abort the processing of the currently executing CFML custom tag, exit the template 
 	within the currently executing CFML custom tag and reexecute a section of code within the currently
 	executing CFML custom tag</description>
@@ -2593,6 +2857,7 @@ If you specify a structure element that doesn't exist, Railo ignores it and does
 			<name>method</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<script-support>optional</script-support>
 		<description>exittag: aborts processing of currently executing tag
             exittemplate: exits page of currently executing tag
             loop: reexecutes body of currently executing tag</description>
@@ -2604,6 +2869,10 @@ If you specify a structure element that doesn't exist, Railo ignores it and does
 		<tag-class>railo.runtime.tag.Feed</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Reads or creates an RSS or Atom syndication feed. 
 		This tag can read various RSS and Atom 0.3 versions. It can create RSS 2.0 or Atom 1.0 feeds.</description>
 		<attribute-type>fixed</attribute-type>
@@ -2794,15 +3063,29 @@ If you specify a structure element that doesn't exist, Railo ignores it and does
 		<tte-class>railo.transformer.cfml.evaluator.impl.File</tte-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Handles all interactions with files. The attributes you use with cffile depend on the value of the action attribute. 
  For example, if the action = "write", use the attributes associated with writing a text file.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>acl</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>only used for S3 Resources</description>
+			<description>An array of struct where each struct represents a permission or grant.
+Example:
+[{email="xxx@yyy.com", permission="full_control"}, {group="all", permission="read"}]
+			</description>
+		</attribute>
+		<attribute>
+			<type>object</type>
+			<name>storeacl</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>alias for attribute "acl"</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -2930,6 +3213,10 @@ The browser uses file extension to determine file type. </description>
 		<tag-class>railo.runtime.tag.Flush</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>single</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Flushes currently available data to the client.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -2937,6 +3224,7 @@ The browser uses file extension to determine file type. </description>
 			<name>interval</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<script-support>optional</script-support>
 			<description>Flush the output each time at least the specified number of bytes become available. HTML 
 		headers, and any data that is already available when you make this call, are not included in 
 		the count.</description>
@@ -2950,7 +3238,7 @@ The browser uses file extension to determine file type. </description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Builds a form with CFML custom control tags that provide more functionality than standard 
-  HTML form input elements (XML and Flash type no supported).</description>
+  HTML form input elements (XML and Flash type not supported).</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -3527,6 +3815,10 @@ The browser uses file extension to determine file type. </description>
 		<tag-class>railo.runtime.tag.Forward</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>single</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>
 		Leads the request to a different page. 
 		This tag acts like the tag cflocation except that the relocation is done directly on the server. 
@@ -3537,6 +3829,7 @@ The browser uses file extension to determine file type. </description>
 			<name>template</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
+			<script-support>required</script-support>
 			<description>template path to forward to</description>
 		</attribute>
 	</tag>
@@ -3546,6 +3839,10 @@ The browser uses file extension to determine file type. </description>
 		<tag-class>railo.runtime.tag.Ftp</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Lets users implement File Transfer Protocol (FTP) operations.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -5025,6 +5322,10 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<tag-class>railo.runtime.tag.Header</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Generates custom HTTP response headers to return to the client.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -5073,6 +5374,10 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<tag-class>railo.runtime.tag.HtmlHead</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Writes the text specified in the text attribute to the 'head' section of a generated HTML page. 
 	 The cfhtmlhead tag can be useful for embedding JavaScript code, or placing other HTML tags such, as 
 	 META, LINK, TITLE, or BASE in an HTML page header.</description>
@@ -5085,7 +5390,6 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<description>The text to add to the 'head' area of an HTML page. Everything inside the quotation marks is 
 		placed in the 'head' section</description>
 		</attribute>
-		
 		<attribute>
 			<type>string</type>
 			<name>variable</name>
@@ -5107,6 +5411,10 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<tag-class>railo.runtime.tag.Http</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Lets you execute HTTP POST and GET operations on files. Using cfhttp, you can execute standard 
   GET operations and create a query object from a text file. POST operations lets you upload MIME file 
   types to a server, or post cookie, formfield, URL, file, or CGI variables directly to a specified server.</description>
@@ -5340,6 +5648,10 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<tag-class>railo.runtime.tag.HttpParam</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Required for cfhttp POST operations, cfhttpparam is used to specify the parameters necessary to 
 	 build a cfhttp POST.</description>
 		<attribute-type>fixed</attribute-type>
@@ -5399,8 +5711,8 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<attribute-type>noname</attribute-type>
 		<attribute>
 			<type>boolean</type>
-			<name>contition</name>
-			<description>Contition o the expression</description>
+			<name>condition</name>
+			<description>condition o the expression</description>
 		</attribute>
 	</tag>
 	<!-- Image -->
@@ -5409,6 +5721,10 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<tag-class>railo.runtime.tag.Image</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Lets you resize and add labels to GIF and JPEG format images.</description>
 		<attribute-type>fixed</attribute-type>
 		
@@ -5577,6 +5893,13 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Width in pixels of the image.</description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>base64</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>should action "writetobrowser" embed the source of the image as base64 encoded string, default is false.</description>
+		</attribute>
 		
 	</tag>
 	
@@ -5589,6 +5912,10 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<tag-class>railo.runtime.tag.Imap</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Retrieves and deletes e-mail messages from a Imap mail server.
 		This tag works exactly the same way as the cfmail tag. It has the same attributes.
 		The Internet Message Access Protocol or IMAP is one of two of the most prevalent Internet standard protocols for e-mail retrieval, 
@@ -5704,6 +6031,10 @@ no: the function is processed as if it were within a cfsilent tag </description>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagImport</ttt-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>single</type>
+			<rtexprvalue>false</rtexprvalue>
+		</script>
 		<description>To import a JSP Taglibrary or a CFML Custom Tag Directory</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -5728,6 +6059,7 @@ If you import a CFML custom tag directory and specify an empty value, "", for th
 			<name>path</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<script-support>required</script-support>
 			<description>path of CFC to be imported</description>
 			<default>false</default>
 		</attribute>
@@ -5740,6 +6072,11 @@ If you import a CFML custom tag directory and specify an empty value, "", for th
 		<tte-class>railo.transformer.cfml.evaluator.impl.Interface</tte-class>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>false</rtexprvalue>
+			<context>interface</context>
+		</script>
 		<description>Defines an interface that consists of a set of signatures for functions. 
 		The interface does not include the full function definitions; instead, you implement the functions in a Component. The interfaces that you define by using this tag can make up the structure of a reusable application framework.</description>
 		<attribute-type>fixed</attribute-type>
@@ -5777,6 +6114,10 @@ both functions must have the same attributes; otherwise
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagInclude</ttt-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>single</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Lets you embed references to pages in CFML. You can embed cfinclude tags recursively. 
   For an additional method of encapsulating CFML</description>
 		<attribute-type>fixed</attribute-type>
@@ -5785,6 +6126,7 @@ both functions must have the same attributes; otherwise
 			<name>template</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
+			<script-support>required</script-support>
 			<description>A logical path to an existing page.</description>
 		</attribute>
 	</tag>
@@ -5794,6 +6136,10 @@ both functions must have the same attributes; otherwise
 		<tag-class>railo.runtime.tag.Index</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Populates collections with indexed data. The cfindex and cfsearch tags encapsulate the 
   indexing and searching utilities. Collections can be populated from text files in a directory 
   you specify, or from a query generated by a query. Before you can populate a collection, 
@@ -6630,6 +6976,107 @@ Valid only for cfinput type="text".</description>
 			<description>Flash only: Text to display when the mouse pointer hovers
             over the control.</description>
 		</attribute>
+		
+		
+		<attribute>
+			<type>string</type>
+			<name>autocomplete</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Specifies the types of files that can be submitted through a file upload (only for type="file")</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>autofocus</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Specifies that the input field should have focus on page load (not for type="hidden")</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>form</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Specifies one ore more forms the input field belongs to</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>formaction</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Overrides the form's action attribute. Must be a valid URL that defines where to send the data when the form is submitted (for type="submit" and type="image")</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>formenctype</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Overrides the form's enctype attribute. Specifies how form-data should be encoded before sending it to the server (for type="submit" and type="image")</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>formmethod</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Overrides the form's method attribute. Defines the HTTP method for sending data to the action URL (fo type="submit" and type="image")</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>formnovalidate</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Overrides the form's novalidate attribute. If present the input field should not be validated when submitted</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>formtarget</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Overrides the form's target attribute. Specifies the target window used when the form is submitted (for type="submit" and type="image")</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>list</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Refers to a datalist containing predefined options for the input field</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>max</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Specifies the input field's maximum value. Use together with the "min" attribute to create a range of legal values</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>min</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Specifies the input field's minimum value. Use together with the "max" attribute to create a range of legal values</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>multiple</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: If present the user is allowed more than one value</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>placeholder</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Specifies a hint to help users fill out the input field</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>step</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>HTML attribute: Specifies the legal number intervals for the input field</description>
+		</attribute>
+		
 	</tag>
 
 	<!-- Insert -->
@@ -6836,6 +7283,10 @@ Valid only for cfinput type="text".</description>
 		<tag-class>railo.runtime.tag.Ldap</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Provides an interface to LDAP Lightweight Directory Access Protocol 
   directory servers like the Netscape Directory Server.</description>
 		<attribute-type>fixed</attribute-type>
@@ -7035,6 +7486,10 @@ Valid only for cfinput type="text".</description>
 		<tag-class>railo.runtime.tag.Location</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Opens a CFML page or HTML file. For example, you might use cflocation to specify a standard 
   message or response that you use in several applications. Use the addToken attribute to verify 
   client requests.</description>
@@ -7069,6 +7524,10 @@ Valid only for cfinput type="text".</description>
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>A container for user login and authentication code. 
 		Railo runs the code in this tag if a user is not already logged in.
 		You put code in the tag that authenticates the user and identifies the user with a set of roles. Used with cfloginuser tag.</description>
@@ -7104,6 +7563,10 @@ Valid only for cfinput type="text".</description>
 		<tag-class>railo.runtime.tag.Loginuser</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Identifies an authenticated user to ColdFusion. Specifies the user ID and roles. Used within a cflogin tag.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -7134,6 +7597,10 @@ Valid only for cfinput type="text".</description>
 		<tag-class>railo.runtime.tag.Logout</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>single</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Logs the current user out. Removes knowledge of the user ID, password, and roles from the server. 
 		If you do not use this tag, the user is automatically logged out when the session ends.</description>
 		<attribute-type>fixed</attribute-type>
@@ -7147,6 +7614,11 @@ Valid only for cfinput type="text".</description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<handle-exception>true</handle-exception>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+			<context>lock</context>
+		</script>
 		<description>Provides two types of locks to ensure the integrity of shared data: Exclusive lock and Read-only 
   lock. An exclusive lock single-threads access to the CFML constructs in its body. Single-threaded access 
   implies that the body of the tag can be executed by at most one request at a time. A request executing 
@@ -7219,6 +7691,10 @@ Valid only for cfinput type="text".</description>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Writes a message to a log file.</description>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>string</type>
@@ -7306,6 +7782,11 @@ Valid only for cfinput type="text".</description>
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+			<context>loop</context>
+		</script>
 		<description>Looping is a very powerful programming technique that lets you repeat a set of instructions or 
   display output repeatedly until one or more conditions are met. cfloop supports five types of loops.</description>
 		<attribute-type>fixed</attribute-type>
@@ -7449,6 +7930,10 @@ Railo uses the number of characters in the file.</description>
 		<handle-exception>false</handle-exception>
 		<body-content>must</body-content>
 		<body-rtexprvalue>true</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Sends e-mail messages by an SMTP server.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -7461,7 +7946,7 @@ Railo uses the number of characters in the file.</description>
 		<attribute>
 			<type>object</type>
 			<name>to</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>The name of the e-mail message recipient.</description>
 		</attribute>
@@ -7726,6 +8211,10 @@ Railo uses the number of characters in the file.</description>
 		<tag-class>railo.runtime.tag.MailPart</tag-class>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Specifies one part of a multipart e-mail message. Can only be used in the cfmail tag. You can use more than one cfmailpart tag within a cfmail tag</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -7757,6 +8246,10 @@ Railo uses the number of characters in the file.</description>
 		<tte-class>railo.transformer.cfml.evaluator.impl.MailParam</tte-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Can either attach a file or add a header to a message. It is nested within a cfmail tag. You can 
   use more than one cfmailparam tag within a cfmail tag.</description>
 		<attribute-type>fixed</attribute-type>
@@ -7831,6 +8324,10 @@ Railo uses the number of characters in the file.</description>
 		<handle-exception>true</handle-exception>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Invokes a custom tag for use in cfml templates. The cfmodule tag can help deal with 
   custom tag name conflicts. Use the template attribute to name a template that contains the custom 
   tag definition, including its path..</description>
@@ -8055,7 +8552,7 @@ Each type-value pair must start with a hyphen.</description>
 			<description>Clears queries from the cache in the Application scope.</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>filter</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -8137,6 +8634,10 @@ Each type-value pair must start with a hyphen.</description>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagParam</ttt-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Tests for a parameter's existence, tests its data type, and provides a default value if one 
   is not assigned.</description>
 		<attribute-type>fixed</attribute-type>
@@ -8194,6 +8695,10 @@ Each type-value pair must start with a hyphen.</description>
 		<tag-class>railo.runtime.tag.PDF</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>
 Manipulates existing PDF documents. The following list describes some of the tasks you can perform with the cfpdf tag:
 - Merge several PDF documents into one PDF document.
@@ -8487,6 +8992,10 @@ Manipulates existing PDF documents. The following list describes some of the tas
 		<tte-class>railo.transformer.cfml.evaluator.impl.PDFParam</tte-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Provides additional information for the cfpdf tag. The cfpdfparam tag applies only to the merge action of the cfpdf tag and is always a child tag of the cfpdf tag.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -8518,6 +9027,10 @@ Manipulates existing PDF documents. The following list describes some of the tas
 		<tag-class>railo.runtime.tag.Pop</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Retrieves and deletes e-mail messages from a POP mail server.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -8626,6 +9139,10 @@ Manipulates existing PDF documents. The following list describes some of the tas
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Suppresses extra white space and other output, produced by CFML within the tag's scope.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -8651,6 +9168,32 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			<description>A string literal; the character encoding to use to read the page. The value may be enclosed in single or double quotation marks, or none.</description>
 		</attribute>
 	</tag>
+	
+	<!-- pageEncoding -->
+	<tag>
+		<name>pageEncoding</name>
+		<tag-class>railo.runtime.tag.PageEncoding</tag-class>
+		<tte-class>railo.transformer.cfml.evaluator.impl.PageEncoding</tte-class>
+		<handle-exception>true</handle-exception>
+		<allow-removing-literal>yes</allow-removing-literal>
+		<body-content>free</body-content>
+		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>single</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
+		<description>A string literal; the character encoding to use to read the page. The value may be enclosed in single or double quotation marks, or none.</description>
+		<attribute-type>fixed</attribute-type>
+		<attribute>
+			<type>string</type>
+			<name>charset</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<script-support>required</script-support>
+			<description>A string literal; the character encoding to use to read the page. The value may be enclosed in single or double quotation marks, or none.</description>
+		</attribute>
+	</tag>
+	
 	<!-- ProcParam -->
 	<tag>
 		<name>procparam</name>
@@ -8658,6 +9201,10 @@ Manipulates existing PDF documents. The following list describes some of the tas
 		
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Specifies parameter information, including type, name, value, and length. The cfprocparam tag 
   is nested within a cfstoredproc tag.</description>
 		<attribute-type>fixed</attribute-type>
@@ -8729,6 +9276,10 @@ Manipulates existing PDF documents. The following list describes some of the tas
 		
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Specifies a result set name that other tags, such as cfoutput and cftable, use to access 
   the result set. It also lets you optionally identify which of the stored procedure's result sets to 
   return. The cfprocresult tag is nested within a cfstoredproc tag.</description>
@@ -8983,6 +9534,11 @@ Manipulates existing PDF documents. The following list describes some of the tas
 		<body-content>must</body-content>
 		<body-rtexprvalue>true</body-rtexprvalue>
 		<handle-exception>true</handle-exception>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+			<context>query</context>
+		</script>
 		<description>Passes SQL statements to a data source. Not limited to queries.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -9179,6 +9735,10 @@ Manipulates existing PDF documents. The following list describes some of the tas
 		
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Checks the data type of a query parameter. The cfqueryparam tag is nested within a cfquery tag. 
   It is embedded within the query SQL statement. If you specify its optional parameters, cfqueryparam 
   also performs data validation.</description>
@@ -9502,6 +10062,10 @@ dWord: creates a value of 0 (zero)</description>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagReThrow</ttt-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>single</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Rethrows the currently active exception. Preserves the exception's cfcatch.type and cfcatch.
   agContext information.</description>
 		<attribute-type>fixed</attribute-type>
@@ -9529,6 +10093,11 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<handle-exception>true</handle-exception>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+			<context>savecontent</context>
+		</script>
 		<description>Saves the generated content inside the tag body in a variable.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -9552,6 +10121,10 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Schedule</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Provides a programmatic interface to the scheduling engine. You can run a specified 
   page at scheduled intervals with the option to write out static HTML pages. This lets you offer users 
   access to pages that publish data, such as reports, without forcing users to wait while a database transaction 
@@ -9759,6 +10332,24 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Script</tag-class>
 		<tdbt-class>railo.transformer.cfml.script.CFMLScriptTransformer</tdbt-class>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagScript</ttt-class>
+		<tte-class>railo.transformer.cfml.evaluator.impl.Script</tte-class>
+		<body-content>tagdependent</body-content>
+		<body-rtexprvalue>false</body-rtexprvalue>
+		<description>Encloses a code segment containing cfscript.</description>
+		<attribute-type>fixed</attribute-type>
+		<attribute>
+			<type>string</type>
+			<name>language</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	<!-- ScriptJava -->
+	<tag>
+		<name>ScriptJava</name>
+		<tag-class>railo.runtime.tag.ScriptJava</tag-class>
+		<tdbt-class>railo.transformer.cfml.script.JavaScriptTransformer</tdbt-class>
+		<ttt-class>railo.transformer.bytecode.statement.tag.TagJavaScript</ttt-class>
 		<body-content>tagdependent</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Encloses a code segment containing cfscript.</description>
@@ -9777,6 +10368,10 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Search</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Executes searches against data indexed </description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -10417,6 +11012,10 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Setting</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Controls various aspects of page processing, such as the output of HTML code in pages. One 
   benefit of this option is managing whitespace that can occur in output pages served by CFML.</description>
 		<attribute-type>fixed</attribute-type>
@@ -10451,6 +11050,10 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Sleep</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>single</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Pauses the execution of the page for a given interval</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -10458,6 +11061,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>time</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
+			<script-support>required</script-support>
 			<description>Expressed in milli seconds.</description>
 		</attribute>
 	</tag>
@@ -10470,6 +11074,10 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<handle-exception>true</handle-exception>
+		<script>
+			<type>single</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Suppresses all output that is produced by the CFML within the tag's scope.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -10477,6 +11085,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>bufferoutput</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<script-support>optional</script-support>
 			<description>if set to true (default) the output written to the body of the tag is buffered and in case of a exception also outputed.
 			if set to false the content to body is ignored and not disbled when a failure in the body of the tag occur.</description>
 		</attribute>
@@ -10693,6 +11302,10 @@ dWord: creates a value of 0 (zero)</description>
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Stops the time from starttag to endtag</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -10716,6 +11329,10 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.StoredProc</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Executes stored procedures by an ODBC or native connection to a server database. It specifies database connection 
   information and identifies the stored procedure.</description>
 		<attribute-type>fixed</attribute-type>
@@ -11547,6 +12164,10 @@ dWord: creates a value of 0 (zero)</description>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagThread</ttt-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>The cfthread tag enables you to create threads, independent streams of code execution, in your application. 
 		You use this tag to run or end a thread, temporarily stop thread execution, or join together multiple threads.</description>
 		<attribute-type>mixed</attribute-type>
@@ -11657,6 +12278,10 @@ dWord: creates a value of 0 (zero)</description>
 		<tte-class>railo.transformer.cfml.evaluator.impl.Throw</tte-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>single</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>The cfthrow tag raises a developer-specified exception that can be caught with cfcatch tag 
   having any of the following type specifications - cfcatch type = 'custom_type', cfcatch type = 'Application'
   'cfcatch' type = 'Any'</description>
@@ -11675,6 +12300,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>message</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<script-support>optional</script-support>
 			<description>A message that describes the exceptional event.</description>
 		</attribute>
 		<attribute>
@@ -11714,6 +12340,10 @@ dWord: creates a value of 0 (zero)</description>
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Displays execution time for a specified section of CFML code. 
 		Railo displays the timing information along with any output produced by the timed code.</description>
 		<attribute-type>fixed</attribute-type>
@@ -11754,6 +12384,10 @@ dWord: creates a value of 0 (zero)</description>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<handle-exception>true</handle-exception>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Groups multiple queries into a single unit. The cftransaction 
   tag provides commit and rollback processing.</description>
 		<attribute-type>fixed</attribute-type>
@@ -12116,6 +12750,10 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Trace</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>
 			Displays and logs debugging data about the state of an application at the time the cftrace tag executes.
 		</description>
@@ -12183,6 +12821,13 @@ dWord: creates a value of 0 (zero)</description>
 
             Useful for displaying a temporary value, or a value that
             does not display on any CFM page (alias for attribute "var").</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>follow</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>If true, Railo follows the variable defined in the [var] attribute and will log any changes to it. Ignored when attribute [var] is not defined.</description>
 		</attribute>
 		<attribute>
 			<type>struct</type>
@@ -12912,6 +13557,10 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Wddx</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Serializes and de-serializes CFML data structures to the XML-based WDDX format. 
   Generates JavaScript statements to instantiate JavaScript objects equivalent to the contents of a 
   WDDX packet or some CFML data structures.</description>
@@ -12983,6 +13632,10 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Xml</tag-class>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Creates a CFML XML document object that contains the markup in the tag body. This tag can include XML and CFML tags. 
 		Railo processes the CFML code in the tag body, then assigns the resulting text to an XML document object variable. </description>
 		<attribute-type>fixed</attribute-type>
@@ -13051,12 +13704,12 @@ dWord: creates a value of 0 (zero)</description>
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
-		<description>Simplification of the tag cfloop-contition, analog to the cfscript "while" loop.</description>
+		<description>Simplification of the tag cfloop-condition, analog to the cfscript "while" loop.</description>
 		<attribute-type>noname</attribute-type>
 		<attribute>
 			<type>boolean</type>
 			<name>condition</name>
-			<description>Contition o the expression</description>
+			<description>condition o the expression</description>
 		</attribute>
 	</tag>
 	<!-- Zip -->
@@ -13065,6 +13718,11 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.Zip</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+			<context>zip</context>
+		</script>
 		<description>Manipulates ZIP and Java Archive (JAR) files. 
 		In addition to the basic zip and unzip functions, use the cfzip tag to delete entries from an archive, filter files, 
 		read files in binary format, list the contents of an archive, and specify an entry path used in an executable JAR file.</description>
@@ -13225,6 +13883,10 @@ dWord: creates a value of 0 (zero)</description>
 		<tag-class>railo.runtime.tag.ZipParam</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>The cfzipparam tag is always a child tag of the cfzip tag. see tag zip for more details.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>

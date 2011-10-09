@@ -31,6 +31,8 @@ public interface CacheConnection {
 	 */
 	public abstract Struct getCustom();
 
-	public abstract CacheConnection duplicate(Config config) throws IOException;
+	public CacheConnection duplicate(Config config) throws IOException;
+
+	public boolean isStorage();
 
 }

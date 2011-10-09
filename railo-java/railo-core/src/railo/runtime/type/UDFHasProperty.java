@@ -5,6 +5,7 @@ import java.util.Map;
 
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
+import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
@@ -21,12 +22,12 @@ public class UDFHasProperty extends UDFGSProperty {
 	
 	private Key propName;
 	
-	private static final String NULL="sdsdsdfsfsfjkln fsdfsa";
+	//private static final String NULL="sdsdsdfsfsfjkln fsdfsa";
 
 	public UDFHasProperty(ComponentImpl component,Property prop)  {
 		super(component,"has"+StringUtil.ucFirst(PropertyFactory.getSingularName(prop)),getFunctionArgument(prop),CFTypes.TYPE_BOOLEAN,"wddx");
 		this.prop=prop;
-		this.propName=KeyImpl.init(prop.getName());
+		this.propName=KeyImpl.getInstance(prop.getName());
 	} 
 
 	private static FunctionArgument[] getFunctionArgument(Property prop) {
@@ -103,7 +104,7 @@ public class UDFHasProperty extends UDFGSProperty {
 				
 				return ((java.util.List)propValue).size()>0;
 			}
-			return false;
+			return propValue instanceof Component;
 		}
 	}
 	
@@ -116,7 +117,7 @@ public class UDFHasProperty extends UDFGSProperty {
 			//if(strKey==NULL) throw new ;
 			
 			if(propValue instanceof Struct) {
-				return ((Struct)propValue).containsKey(KeyImpl.init(strKey));
+				return ((Struct)propValue).containsKey(KeyImpl.getInstance(strKey));
 			}
 			else if(propValue instanceof Map) {
 				return ((Map)propValue).containsKey(strKey);

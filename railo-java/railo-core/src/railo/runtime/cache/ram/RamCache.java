@@ -6,7 +6,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import railo.commons.io.SystemUtil;
+import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
 import railo.runtime.cache.CacheSupport;
 import railo.runtime.config.Config;
@@ -16,20 +19,30 @@ import railo.runtime.type.Struct;
 
 public class RamCache extends CacheSupport {
 
+	private static final int DEFAULT_CONTROL_INTERVALL = 60;
 	private Map<String, RamCacheEntry> entries= new HashMap<String, RamCacheEntry>();
 	private long missCount;
 	private int hitCount;
 	
 	private long idleTime;
 	private long until;
+	private int controlIntervall=DEFAULT_CONTROL_INTERVALL*1000;
 	
 
-	public static void init(Config config,String[] cacheNames,Struct[] arguments)  {
+	public static void init(Config config,String[] cacheNames,Struct[] arguments)  {//print.ds();
+		
+	}
+	
+
+	public void init(Cache cache,String cacheName, Struct arguments) throws IOException {
+		init(cacheName, arguments);
 	}
 	
 	public void init(String cacheName, Struct arguments) throws IOException {
 		until=Caster.toLongValue(arguments.get("timeToLiveSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
 		idleTime=Caster.toLongValue(arguments.get("timeToIdleSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
+		controlIntervall=Caster.toIntValue(arguments.get("controlIntervall",null),DEFAULT_CONTROL_INTERVALL)*1000;
+		new Controler(this).start();
 	}
 	
 	/**
@@ -82,12 +95,12 @@ public class RamCache extends CacheSupport {
 	}
 
 	public List keys() {
-		List list=new ArrayList();
+		List<String> list=new ArrayList<String>();
 		
-		Iterator it = entries.entrySet().iterator();
+		Iterator<Entry<String, RamCacheEntry>> it = entries.entrySet().iterator();
 		RamCacheEntry entry;
 		while(it.hasNext()){
-			entry=(RamCacheEntry) ((Map.Entry)it.next()).getValue();
+			entry=it.next().getValue();
 			if(valid(entry))list.add(entry.getKey());
 		}
 		return list;
@@ -113,6 +126,35 @@ public class RamCache extends CacheSupport {
 		return valid(entry);
 		
 	}
+	
+	public static  class Controler extends Thread {
 
+		private RamCache ramCache;
+
+		public Controler(RamCache ramCache) {
+			this.ramCache=ramCache;
+		}
+		
+		public void run(){
+			while(true){
+				try{
+					_run();
+				}
+				catch(Throwable t){
+					t.printStackTrace();
+				}
+				SystemUtil.sleep(ramCache.controlIntervall);
+			}
+		}
+
+		private void _run() {
+			RamCacheEntry[] values = ramCache.entries.values().toArray(new RamCacheEntry[ramCache.entries.size()]);
+			for(int i=0;i<values.length;i++){
+				if(!CacheSupport.valid(values[i])){
+					ramCache.entries.remove(values[i].getKey());
+				}
+			}
+		}
+	}
 
 }

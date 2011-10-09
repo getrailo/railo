@@ -14,17 +14,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
 /**
  * A page curl effect.
  */
-public class CurlFilter extends TransformFilter {
+public final class CurlFilter extends TransformFilter  implements DynFiltering {
 	
 	private float angle = 0;
 	private float transition = 0.0f;
@@ -37,7 +43,7 @@ public class CurlFilter extends TransformFilter {
 	 * Construct a CurlFilter with no distortion.
 	 */
 	public CurlFilter() {
-		setEdgeAction( ZERO );
+		super(ConvolveFilter.ZERO_EDGES );
 	}
 
 	public void setTransition( float transition ) {
@@ -111,12 +117,12 @@ public class CurlFilter extends TransformFilter {
 		final private int getPixel( int[] pixels, int x, int y, int width, int height ) {
 			if (x < 0 || x >= width || y < 0 || y >= height) {
 				switch (edgeAction) {
-				case ZERO:
+				case ConvolveFilter.ZERO_EDGES:
 				default:
 					return 0;
-				case WRAP:
+				case ConvolveFilter.WRAP_EDGES:
 					return pixels[(ImageMath.mod(y, height) * width) + ImageMath.mod(x, width)];
-				case CLAMP:
+				case ConvolveFilter.CLAMP_EDGES:
 					return pixels[(ImageMath.clamp(y, 0, height-1) * width) + ImageMath.clamp(x, 0, width-1)];
 				}
 			}
@@ -205,12 +211,12 @@ public class CurlFilter extends TransformFilter {
 	final private int getPixel( int[] pixels, int x, int y, int width, int height ) {
 		if (x < 0 || x >= width || y < 0 || y >= height) {
 			switch (edgeAction) {
-			case ZERO:
+			case ConvolveFilter.ZERO_EDGES:
 			default:
 				return 0;
-			case WRAP:
+			case ConvolveFilter.WRAP_EDGES:
 				return pixels[(ImageMath.mod(y, height) * width) + ImageMath.mod(x, width)];
-			case CLAMP:
+			case ConvolveFilter.CLAMP_EDGES:
 				return pixels[(ImageMath.clamp(y, 0, height-1) * width) + ImageMath.clamp(x, 0, width-1)];
 			}
 		}
@@ -290,4 +296,19 @@ public class CurlFilter extends TransformFilter {
 		return "Distort/Curl...";
 	}
 
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("Transition")))!=null)setTransition(ImageFilterUtil.toFloatValue(o,"Transition"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Angle, Transition, EdgeAction, Interpolation]");
+		}
+
+		return filter(src, dst);
+	}
 }

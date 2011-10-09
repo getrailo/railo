@@ -18,24 +18,9 @@ import railo.runtime.type.util.ArrayUtil;
 
 public class DatasourceConnectionPool {
 
-	private Map dcs=new HashMap();
-	private Map counter=new HashMap();
+	private Map<String,DCStack> dcs=new HashMap<String,DCStack>();
+	private Map<String,RefInteger> counter=new HashMap<String,RefInteger>();
 	
-	/*public DatasourceConnection getDatasourceConnectionX(PageContext pc,DataSource datasource, String user, String pass) throws PageException {
-		if(pc!=null) {
-			String id=createId(datasource,user,pass);
-			DatasourceConnection dc=((PageContextImpl)pc).getConnection(id);
-			if(dc!=null && !isClosedEL(dc)){
-				return dc;
-			}
-			dc=getDatasourceConnection(datasource, user, pass);
-			((PageContextImpl)pc).setConnection(id,dc);
-			return dc;
-		}
-		
-		return getDatasourceConnection(datasource, user, pass);
-	}*/
-
 	public DatasourceConnection getDatasourceConnection(PageContext pc,DataSource datasource, String user, String pass) throws PageException {
 		pc=ThreadLocalPageContext.get(pc);
 		if(StringUtil.isEmpty(user)) {
@@ -63,34 +48,36 @@ public class DatasourceConnectionPool {
 				}
 				
 			}
-			while(!stack.isEmpty()) {
-				DatasourceConnectionImpl dc=(DatasourceConnectionImpl) stack.get(pc);
-					if(dc!=null && isValid(dc,Boolean.TRUE)){
-						_inc(datasource);
-						return dc.using();
-					}
-				
+			if(pc!=null){
+				while(!stack.isEmpty()) {
+					DatasourceConnectionImpl dc=(DatasourceConnectionImpl) stack.get(pc);
+						if(dc!=null && isValid(dc,Boolean.TRUE)){
+							_inc(datasource);
+							return dc.using();
+						}
+					
+				}
 			}
 			_inc(datasource);
 			return loadDatasourceConnection(datasource, user, pass).using();
 		}
-		
 	}
 
 	private DatasourceConnectionImpl loadDatasourceConnection(DataSource ds, String user, String pass) throws DatabaseException  {
         Connection conn=null;
         String dsn = ds.getDsnTranslated();
         try {
-            if(dsn.indexOf('?')==-1) {
-            	conn = DriverManager.getConnection(dsn, user, pass);
+        	try {
+        		conn = DriverManager.getConnection(dsn, user, pass);
+            } 
+            catch (SQLException e) {
+            	if(dsn.indexOf('?')!=-1) {
+                    String connStr=dsn+"&user="+user+"&password="+pass;
+                    conn = DriverManager.getConnection(connStr);
+                }
+            	else throw e;
             }
-            else{
-                String connStr=dsn+"&user="+user+"&password="+pass;
-                conn = DriverManager.getConnection(connStr);
-            }
-            
             conn.setAutoCommit(true);
-            
         } 
         catch (SQLException e) {
         	throw new DatabaseException("can't connect to datasource ["+ds.getName()+"]",e,null,null);
@@ -102,10 +89,9 @@ public class DatasourceConnectionPool {
 	public void releaseDatasourceConnection(DatasourceConnection dc) {
 		if(dc==null) return;
 		
-		
 		DCStack stack=getDCStack(dc.getDatasource(), dc.getUsername(), dc.getPassword());
 		synchronized (stack) {
-			stack.add(dc);
+			stack.add((DatasourceConnectionPro)dc);
 			int max = dc.getDatasource().getConnectionLimit();
 
 			if(max!=-1) {
@@ -156,11 +142,21 @@ public class DatasourceConnectionPool {
 	public static boolean isValid(DatasourceConnection dc,Boolean autoCommit) {
 		try {
 			if(dc.getConnection().isClosed())return false;
+		} 
+		catch (Throwable t) {return false;}
+
+		try {
+			if(((DataSourceImpl)dc.getDatasource()).validate() && !DataSourceUtil.isValid(dc,1000))return false;
+		} 
+		catch (Throwable t) {} // not all driver support this, because of that we ignore a error here, also protect from java 5
+		
+		
+		try {
 			if(autoCommit!=null) dc.getConnection().setAutoCommit(autoCommit.booleanValue());
 		} 
-		catch (Throwable t) {
-				return false;
-		}
+		catch (Throwable t) {return false;}
+		
+		
 		return true;
 	}
 

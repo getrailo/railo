@@ -89,6 +89,7 @@ public class URLEncoder {
      * @see URLDecoder#decode(java.lang.String, java.lang.String)
      */
     public static String encode(String s, String enc) throws UnsupportedEncodingException {
+    	if(StringUtil.isAscci(s)) return s;
     	return java.net.URLEncoder.encode(s, enc);
     }
     

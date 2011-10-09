@@ -105,12 +105,12 @@ public final class HSQLUtil {
 	 * @return invoked tables in a ArrayList
 	 * @throws ParseException
 	 */
-	public Set getInvokedTables() throws ParseException {
+	public Set<String> getInvokedTables() throws ParseException {
 		
 	  	
 	  	// Read all SQL statements from input
 	  	ZStatement st;
-	  	Set tables=new HashSet();
+	  	Set<String> tables=new HashSet<String>();
 	  	
 		while((st = parser.readStatement()) != null) {
 			this.sql=st.toString();
@@ -122,7 +122,7 @@ public final class HSQLUtil {
 		return tables;
 	}
 	
-	private void getInvokedTables(ZQuery query, Set tablesNames) {
+	private void getInvokedTables(ZQuery query, Set<String> tablesNames) {
 		//print.out("qry:"+query.getSet());
 		Vector tables=query.getFrom();
 		Enumeration e = tables.elements();

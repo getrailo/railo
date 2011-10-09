@@ -14,14 +14,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
 
 
 /**
  * A filter to change the saturation of an image. This works by calculating a grayscale version of the image
  * and then extrapolating away from it.
  */
-public class SaturationFilter extends PointFilter {
+public class SaturationFilter extends PointFilter  implements DynFiltering {
 	
 	public float amount = 1;
 	
@@ -74,6 +83,21 @@ public class SaturationFilter extends PointFilter {
 
 	public String toString() {
 		return "Colors/Saturation...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, Dimensions]");
+		}
+
+		return filter(src, dst);
 	}
 }
 

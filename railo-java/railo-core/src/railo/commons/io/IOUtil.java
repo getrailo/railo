@@ -93,18 +93,9 @@ public final class IOUtil {
 	 * @throws IOException
 	 */
 	public static void copy(Resource in, Resource out) throws IOException {
-		InputStream is=null;
-		OutputStream os=null;
-		try {
-			is=toBufferedInputStream(in.getInputStream());
-			os=toBufferedOutputStream(out.getOutputStream());
-		}
-		catch(IOException ioe) {
-			IOUtil.closeEL(is,os);
-			throw ioe;
-		}
-		copy(is,os,true,true);
+		in.copyTo(out, false);
 	}
+	
 	public static void merge(Resource in1, Resource in2, Resource out) throws IOException {
 		InputStream is1=null;
 		InputStream is2=null;
@@ -682,7 +673,7 @@ public final class IOUtil {
     public static String[] toStringArray(Reader reader) throws IOException {
         if(reader==null)return new String[0];
         BufferedReader br = new BufferedReader(reader); 
-        LinkedList list=new LinkedList();
+        LinkedList<String> list=new LinkedList<String>();
         
         String line;
         while((line=br.readLine())!=null)   {
@@ -692,7 +683,7 @@ public final class IOUtil {
         String[] content=new String[list.size()];
         int count=0;
         while(!list.isEmpty()) {
-            content[count++]=list.removeFirst().toString();
+            content[count++]=list.removeFirst();
         }
         return content;
     }
@@ -809,8 +800,13 @@ public final class IOUtil {
      * @throws IOException
      */
     public static byte[] toBytes(InputStream is) throws IOException {
+       return toBytes(is,false);
+    }
+    
+
+    public static byte[] toBytes(InputStream is, boolean closeStream) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        copy(is,baos,false,true);
+        copy(is,baos,closeStream,true);
         return baos.toByteArray();
     }
 

@@ -11,12 +11,14 @@ import java.util.regex.Pattern;
 
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
+import railo.runtime.PageContext;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Constants;
 import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.Array;
@@ -39,19 +41,30 @@ import railo.runtime.type.StructImpl;
 **/
 public final class DBInfo extends TagImpl {
 
-	private static final Key TABLE_NAME = KeyImpl.getInstance("TABLE_NAME");
-	private static final Key COLUMN_NAME = KeyImpl.getInstance("COLUMN_NAME");
-	private static final Key IS_PRIMARYKEY = KeyImpl.getInstance("IS_PRIMARYKEY");
-	private static final Key IS_FOREIGNKEY = KeyImpl.getInstance("IS_FOREIGNKEY");
-	private static final Key COLUMN_DEF = KeyImpl.getInstance("COLUMN_DEF");
-	private static final Key COLUMN_DEFAULT_VALUE = KeyImpl.getInstance("COLUMN_DEFAULT_VALUE");
-	private static final Key REFERENCED_PRIMARYKEY = KeyImpl.getInstance("REFERENCED_PRIMARYKEY");
-	private static final Key REFERENCED_PRIMARYKEY_TABLE = KeyImpl.getInstance("REFERENCED_PRIMARYKEY_TABLE");
-	private static final Key USER = KeyImpl.getInstance("USER");
-	private static final Key TABLE_SCHEM = KeyImpl.getInstance("TABLE_SCHEM");
-	private static final Key DECIMAL_DIGITS = KeyImpl.getInstance("DECIMAL_DIGITS");
-	
-	
+	private static final Key TABLE_NAME = KeyImpl.intern("TABLE_NAME");
+	private static final Key COLUMN_NAME = KeyImpl.intern("COLUMN_NAME");
+	private static final Key IS_PRIMARYKEY = KeyImpl.intern("IS_PRIMARYKEY");
+	private static final Key IS_FOREIGNKEY = KeyImpl.intern("IS_FOREIGNKEY");
+	private static final Key COLUMN_DEF = KeyImpl.intern("COLUMN_DEF");
+	private static final Key COLUMN_DEFAULT = KeyImpl.intern("COLUMN_DEFAULT");
+	private static final Key COLUMN_DEFAULT_VALUE = KeyImpl.intern("COLUMN_DEFAULT_VALUE");
+	private static final Key REFERENCED_PRIMARYKEY = KeyImpl.intern("REFERENCED_PRIMARYKEY");
+	private static final Key REFERENCED_PRIMARYKEY_TABLE = KeyImpl.intern("REFERENCED_PRIMARYKEY_TABLE");
+	private static final Key USER = KeyImpl.intern("USER");
+	private static final Key TABLE_SCHEM = KeyImpl.intern("TABLE_SCHEM");
+	private static final Key DECIMAL_DIGITS = KeyImpl.intern("DECIMAL_DIGITS");
+
+	private static final Key DATABASE_NAME = KeyImpl.intern("database_name");
+	private static final Key TABLE_CAT = KeyImpl.intern("TABLE_CAT");
+	private static final Key PROCEDURE = KeyImpl.intern("procedure");
+	private static final Key CATALOG = KeyImpl.intern("catalog");
+	private static final Key SCHEMA = KeyImpl.intern("schema");
+	private static final Key DATABASE_PRODUCTNAME = KeyImpl.intern("DATABASE_PRODUCTNAME");
+	private static final Key DATABASE_VERSION = KeyImpl.intern("DATABASE_VERSION");
+	private static final Key DRIVER_NAME = KeyImpl.intern("DRIVER_NAME");
+	private static final Key DRIVER_VERSION = KeyImpl.intern("DRIVER_VERSION");
+	private static final Key JDBC_MAJOR_VERSION = KeyImpl.intern("JDBC_MAJOR_VERSION");
+	private static final Key JDBC_MINOR_VERSION = KeyImpl.intern("JDBC_MINOR_VERSION");	
 	
 	private static final int TYPE_NONE=0;
 	private static final int TYPE_DBNAMES=1;
@@ -64,6 +77,7 @@ public final class DBInfo extends TagImpl {
 	private static final int TYPE_INDEX = 8;
 	private static final int TYPE_USERS = 9;
 	private static final int TYPE_TERMS = 10;
+
 	
 	//private static final String[] ALL_TABLE_TYPES = {"TABLE", "VIEW", "SYSTEM TABLE", "SYNONYM"};
 	
@@ -217,7 +231,7 @@ public final class DBInfo extends TagImpl {
 	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws PageException	{
-		
+		datasource=getDatasource(pageContext, datasource);
 		DataSourceManager manager = pageContext.getDataSourceManager();
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
 		try {
@@ -270,8 +284,11 @@ public final class DBInfo extends TagImpl {
         QueryPro qry = new QueryImpl(columns,"query");
         
 		int len=qry.getRecordcount();
-		
-		qry.rename(COLUMN_DEF,COLUMN_DEFAULT_VALUE);
+		if(qry.get(COLUMN_DEF,null) == null){
+			qry.rename(COLUMN_DEFAULT,COLUMN_DEFAULT_VALUE);
+		} else {
+			qry.rename(COLUMN_DEF,COLUMN_DEFAULT_VALUE);
+		}
         
 		// make sure decimal digits exists
 		QueryColumn col = qry.getColumn(DECIMAL_DIGITS,null);
@@ -399,21 +416,21 @@ public final class DBInfo extends TagImpl {
 		String value;
 		// catalog
 		for(int i=1;i<=len;i++) {
-			value=(String) catalogs.getAt("TABLE_CAT", i);
+			value=(String) catalogs.getAt(TABLE_CAT, i);
 			if(!matchPattern(value,p)) continue;
 			qry.addRow();
-			qry.setAt("database_name", row, value);
-			qry.setAt(KeyImpl.init("type"), row, "CATALOG");
+			qry.setAt(DATABASE_NAME, row, value);
+			qry.setAt(KeyImpl.TYPE, row, "CATALOG");
 			row++;
 		}
 		// scheme
 		len=scheme.getRecordcount();
 		for(int i=1;i<=len;i++) {
-			value=(String) scheme.getAt("TABLE_SCHEM", i);
+			value=(String) scheme.getAt(TABLE_SCHEM, i);
 			if(!matchPattern(value,p)) continue;
 			qry.addRow();
-			qry.setAt("database_name", row, value);
-			qry.setAt("type", row, "SCHEMA");
+			qry.setAt(DATABASE_NAME, row, value);
+			qry.setAt(KeyImpl.TYPE, row, "SCHEMA");
 			row++;
 		}
 		
@@ -538,9 +555,9 @@ public final class DBInfo extends TagImpl {
 
 	private void typeTerms(DatabaseMetaData metaData) throws SQLException, PageException {
 		Struct sct=new StructImpl();
-		sct.setEL("procedure", metaData.getProcedureTerm());
-		sct.setEL("catalog", metaData.getCatalogTerm());
-		sct.setEL("schema", metaData.getSchemaTerm());
+		sct.setEL(PROCEDURE, metaData.getProcedureTerm());
+		sct.setEL(CATALOG, metaData.getCatalogTerm());
+		sct.setEL(SCHEMA, metaData.getSchemaTerm());
 		
 		pageContext.setVariable(name, sct);
 	}
@@ -567,25 +584,18 @@ public final class DBInfo extends TagImpl {
 
 		Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
-
-		String dbproductname="DATABASE_PRODUCTNAME";
-		String dbversion="DATABASE_VERSION";
-		String drname="DRIVER_NAME";
-		String drversion="DRIVER_VERSION";
-		String major="JDBC_MAJOR_VERSION";
-		String minor="JDBC_MINOR_VERSION";
 		
-		String[] columns=new String[]{dbproductname,dbversion,drname,drversion,major,minor};
+		Key[] columns=new Key[]{DATABASE_PRODUCTNAME,DATABASE_VERSION,DRIVER_NAME,DRIVER_VERSION,JDBC_MAJOR_VERSION,JDBC_MINOR_VERSION};
 		String[] types=new String[]{"VARCHAR","VARCHAR","VARCHAR","VARCHAR","DOUBLE","DOUBLE"};
 		
 		railo.runtime.type.Query qry=new QueryImpl(columns,types,1,"query");
 
-		qry.setAt(dbproductname,1,metaData.getDatabaseProductName());
-		qry.setAt(dbversion,1,metaData.getDatabaseProductVersion());
-		qry.setAt(drname,1,metaData.getDriverName());
-		qry.setAt(drversion,1,metaData.getDriverVersion());
-		qry.setAt(major,1,new Double(metaData.getJDBCMajorVersion()));
-		qry.setAt(minor,1,new Double(metaData.getJDBCMinorVersion()));
+		qry.setAt(DATABASE_PRODUCTNAME,1,metaData.getDatabaseProductName());
+		qry.setAt(DATABASE_VERSION,1,metaData.getDatabaseProductVersion());
+		qry.setAt(DRIVER_NAME,1,metaData.getDriverName());
+		qry.setAt(DRIVER_VERSION,1,metaData.getDriverVersion());
+		qry.setAt(JDBC_MAJOR_VERSION,1,new Double(metaData.getJDBCMajorVersion()));
+		qry.setAt(JDBC_MINOR_VERSION,1,new Double(metaData.getJDBCMinorVersion()));
 		
 		
         qry.setExecutionTime(stopwatch.time());
@@ -627,5 +637,18 @@ public final class DBInfo extends TagImpl {
 	*/
 	public int doEndTag()	{
 		return EVAL_PAGE;
+	}
+	
+
+	public static String getDatasource(PageContext pageContext, String datasource) throws ApplicationException {
+		if(StringUtil.isEmpty(datasource)){
+			datasource=((ApplicationContextPro)pageContext.getApplicationContext()).getDefaultDataSource();
+
+			if(StringUtil.isEmpty(datasource))
+				throw new ApplicationException(
+						"attribute [datasource] is required, when no default datasource is defined",
+						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+		}
+		return datasource;
 	}
 }

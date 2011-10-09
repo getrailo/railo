@@ -66,6 +66,7 @@ public final class Image extends TagImpl {
 	private String text;
 	private int thickness=1;
 	private String passthrough;
+	private boolean base64;
 	
 
 
@@ -97,6 +98,7 @@ public final class Image extends TagImpl {
 		text=null;
 		thickness=1;
 		passthrough=null;
+		base64=false;
 	}
 
 
@@ -121,6 +123,14 @@ public final class Image extends TagImpl {
 		else if("write_to_browser".equals(strAction))action=ACTION_WRITE_TO_BROWSER;
 		else throw new ApplicationException("invalid action ["+this.strAction+"], " +
 		"valid actions are [border,captcha,convert,info,read,resize,rotate,write,writeToBrowser]");
+	}
+
+
+	/**
+	 * @param base64 the base64 to set
+	 */
+	public void setBase64(boolean base64) {
+		this.base64 = base64;
 	}
 
 
@@ -362,12 +372,17 @@ public final class Image extends TagImpl {
 		write();
 	}
 	
-	private void writeLink(String path) throws ExpressionException, IOException {
+	private void writeLink(String path) throws IOException, PageException {
 		String add="";
 		if(passthrough!=null) {
             add=" "+passthrough;
         }
 		
+		if(base64) {
+			String b64 = source.getBase64String(format);
+			pageContext.write("<img src=\"data:image/"+ImageUtil.getMimeTypeFromFormat(format)+";base64,"+b64+"\" width=\""+source.getWidth()+"\" height=\""+source.getHeight()+"\""+add+" />");
+			return;
+		}
 		pageContext.write("<img src=\""+path+"\" width=\""+source.getWidth()+"\" height=\""+source.getHeight()+"\""+add+" />");
 	
 	
@@ -472,12 +487,14 @@ public final class Image extends TagImpl {
 	// Write an image to the browser
 	private void doActionWriteToBrowser() throws IOException, PageException {
 		required("source", source);
+		
 		String path=null;
 		
 		// create destination
-		path=touchDestination();
-		
-		write();
+		if(!base64 || !StringUtil.isEmpty(name)) {
+			path=touchDestination();
+			write();
+		}
 		// link destination
 		if(StringUtil.isEmpty(name))writeLink(path);
 		

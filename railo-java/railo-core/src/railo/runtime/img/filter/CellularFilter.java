@@ -14,18 +14,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.img.math.Function2D;
 import railo.runtime.img.math.Noise;
-
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 /**
  * A filter which produces an image with a cellular texture.
  */
-public class CellularFilter extends WholeImageFilter implements Function2D, Cloneable {
+public class CellularFilter extends WholeImageFilter implements Function2D, Cloneable, DynFiltering {
 
 	protected float scale = 32;
 	protected float stretch = 1.0f;
@@ -227,8 +233,23 @@ public class CellularFilter extends WholeImageFilter implements Function2D, Clon
 		return randomness;
 	}
 
-	public void setGridType(int gridType) {
-		this.gridType = gridType;
+	/**
+	 * the grid type to set, one of the following:
+	 * -  RANDOM
+	 * -  SQUARE
+	 * -  HEXAGONAL
+	 * -  OCTAGONAL
+	 * -  TRIANGULAR
+	 */
+	public void setGridType(String gridType) throws ExpressionException {
+		gridType=gridType.trim().toLowerCase();
+		if("random".equals(gridType)) this.gridType = RANDOM;
+		else if("square".equals(gridType)) this.gridType = SQUARE;
+		else if("hexagonal".equals(gridType)) this.gridType = HEXAGONAL;
+		else if("octagonal".equals(gridType)) this.gridType = OCTAGONAL;
+		else if("triangular".equals(gridType)) this.gridType = TRIANGULAR;
+		else 
+			throw new ExpressionException("invalid value ["+gridType+"] for gridType, valid values are [random,square,hexagonal,octagonal,triangular]");
 	}
 
 	public int getGridType() {
@@ -525,4 +546,29 @@ public class CellularFilter extends WholeImageFilter implements Function2D, Clon
 		return "Texture/Cellular...";
 	}
 	
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));
+		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
+		if((o=parameters.removeEL(KeyImpl.init("Turbulence")))!=null)setTurbulence(ImageFilterUtil.toFloatValue(o,"Turbulence"));
+		if((o=parameters.removeEL(KeyImpl.init("Stretch")))!=null)setStretch(ImageFilterUtil.toFloatValue(o,"Stretch"));
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("AngleCoefficient")))!=null)setAngleCoefficient(ImageFilterUtil.toFloatValue(o,"AngleCoefficient"));
+		if((o=parameters.removeEL(KeyImpl.init("GradientCoefficient")))!=null)setGradientCoefficient(ImageFilterUtil.toFloatValue(o,"GradientCoefficient"));
+		if((o=parameters.removeEL(KeyImpl.init("F1")))!=null)setF1(ImageFilterUtil.toFloatValue(o,"F1"));
+		if((o=parameters.removeEL(KeyImpl.init("F2")))!=null)setF2(ImageFilterUtil.toFloatValue(o,"F2"));
+		if((o=parameters.removeEL(KeyImpl.init("F3")))!=null)setF3(ImageFilterUtil.toFloatValue(o,"F3"));
+		if((o=parameters.removeEL(KeyImpl.init("F4")))!=null)setF4(ImageFilterUtil.toFloatValue(o,"F4"));
+		if((o=parameters.removeEL(KeyImpl.init("Randomness")))!=null)setRandomness(ImageFilterUtil.toFloatValue(o,"Randomness"));
+		if((o=parameters.removeEL(KeyImpl.init("GridType")))!=null)setGridType(ImageFilterUtil.toString(o,"GridType"));
+		if((o=parameters.removeEL(KeyImpl.init("DistancePower")))!=null)setDistancePower(ImageFilterUtil.toFloatValue(o,"DistancePower"));
+		if((o=parameters.removeEL(KeyImpl.init("Scale")))!=null)setScale(ImageFilterUtil.toFloatValue(o,"Scale"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Colormap, Amount, Turbulence, Stretch, Angle, Coefficient, AngleCoefficient, GradientCoefficient, F1, F2, F3, F4, Randomness, GridType, DistancePower, Scale]");
+		}
+
+		return filter(src, dst);
+	}
 }

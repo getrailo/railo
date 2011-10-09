@@ -12,8 +12,10 @@ import railo.runtime.reflection.Reflector;
 /**
  * Box a Native Exception, Native = !PageException
  */
-public final class NativeException extends PageExceptionImpl {
+public class NativeException extends PageExceptionImpl {
 
+	private static final long serialVersionUID = 6221156691846424801L;
+	
 	private Throwable t;
 
     /**
@@ -23,8 +25,27 @@ public final class NativeException extends PageExceptionImpl {
 	public NativeException(Throwable t) {
         super(t,t.getClass().getName());
         this.t=t;
-        //setStackTrace(t.getStackTrace());
+        StackTraceElement[] st = t.getStackTrace();
+        if(hasRailoRuntime(st))setStackTrace(st);
+        else {
+        	StackTraceElement[] cst = new Exception("Stack trace").getStackTrace();
+        	if(hasRailoRuntime(cst)){
+        		StackTraceElement[] mst=new StackTraceElement[st.length+cst.length-1];
+        		System.arraycopy(st, 0, mst, 0, st.length);
+        		System.arraycopy(cst, 1, mst, st.length, cst.length-1);
+        		
+        		setStackTrace(mst);
+        	}
+        	else setStackTrace(st);
+        }
         setAdditional("Cause", t.getClass().getName());
+	}
+
+	private boolean hasRailoRuntime(StackTraceElement[] st) {
+		if(st!=null)for(int i=0;i<st.length;i++){
+			if(st[i].getClassName().indexOf("railo.runtime")!=-1) return true;
+		}
+		return false;
 	}
 
 	/**

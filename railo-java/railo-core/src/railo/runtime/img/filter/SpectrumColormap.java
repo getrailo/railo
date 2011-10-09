@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 package railo.runtime.img.filter;
-
 /**
  * A colormap with the colors of the spectrum.
  */

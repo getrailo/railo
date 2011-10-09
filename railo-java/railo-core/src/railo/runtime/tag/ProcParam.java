@@ -23,7 +23,7 @@ public class ProcParam extends TagSupport {
 	 * @throws DatabaseException 
 	 */
 	public void setCfsqltype(String cfsqltype) throws DatabaseException {
-		param.setType(SQLCaster.cfSQLTypeToIntType(cfsqltype));
+		param.setType(SQLCaster.toIntType(cfsqltype));
 	}
 
 	/**

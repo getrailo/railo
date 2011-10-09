@@ -18,7 +18,7 @@ public final class SQLItemImpl implements SQLItem,Serializable,Sizeable {
 	** 	value attribute. The default is No. */
 	private boolean nulls;
 
-	/** Specifies the actual value that ColdFusion passes to the right of the comparison operator in a 
+	/** Specifies the actual value that Railo passes to the right of the comparison operator in a 
 	** 	where clause. */
 	private Object value;
 	private Object cfValue;

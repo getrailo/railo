@@ -176,6 +176,7 @@ function checkTheRadio(field) {
 
 </script>
 
+<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
 <!--- 
 Error Output --->
 <cfset printError(error)>
@@ -246,7 +247,7 @@ Create Datasource --->
 	<td class="tblHead" width="150">#stText.Components.componentMappingSearch#</td>
 	<td class="tblContent">
 		
-		<b>Yes (cooming soon)</b><br />
+		<b>Yes (coming soon)</b><br />
 		<span class="comment">#stText.Components.componentMappingSearchDesc#</span>
 	</td>
 </tr>
@@ -367,8 +368,8 @@ Use Shadow --->
 
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<tr>
-		<td><input type="checkbox" class="checkbox" 
-			name="rro" onclick="selectAll(this)"></td>
+		<td><cfif hasAccess><input type="checkbox" class="checkbox" 
+			name="rro" onclick="selectAll(this)"></cfif></td>
 		<td class="tblHead" nowrap>#stText.Components.Physical#</td>
 		<td class="tblHead" nowrap>#stText.Components.Archive#</td>
 		<td class="tblHead" nowrap>#stText.Components.Primary#</td>

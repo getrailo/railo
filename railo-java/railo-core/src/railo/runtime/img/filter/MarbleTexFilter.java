@@ -14,11 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.img.math.Noise;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
-public class MarbleTexFilter extends PointFilter {
+public class MarbleTexFilter extends PointFilter  implements DynFiltering {
 
 	private float scale = 32;
 	private float stretch = 1.0f;
@@ -143,4 +150,24 @@ public class MarbleTexFilter extends PointFilter {
 		return "Texture/Marble Texture...";
 	}
 	
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));
+		if((o=parameters.removeEL(KeyImpl.init("Turbulence")))!=null)setTurbulence(ImageFilterUtil.toFloatValue(o,"Turbulence"));
+		if((o=parameters.removeEL(KeyImpl.init("Stretch")))!=null)setStretch(ImageFilterUtil.toFloatValue(o,"Stretch"));
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("TurbulenceFactor")))!=null)setTurbulenceFactor(ImageFilterUtil.toFloatValue(o,"TurbulenceFactor"));
+		if((o=parameters.removeEL(KeyImpl.init("Scale")))!=null)setScale(ImageFilterUtil.toFloatValue(o,"Scale"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Colormap, Turbulence, Stretch, Angle, TurbulenceFactor, Scale, Dimensions]");
+		}
+
+		return filter(src, dst);
+	}
 }

@@ -27,7 +27,7 @@ public abstract class DateTime extends Date implements Dumpable,Castable,Seriali
     }
     
     /**
-     * @return returns the coldfusion type double value represent a date
+     * @return returns the CFML type double value represent a date
      */
     public abstract double toDoubleValue();
 }

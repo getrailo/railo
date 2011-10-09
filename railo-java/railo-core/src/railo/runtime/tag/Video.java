@@ -52,9 +52,9 @@ public class Video extends TagSupport {
 
 	public static final int EXECUTION_QUALITY=0;
 	public static final int EXECUTION_PERFORMANCE=1;
-	private static final Key SOURCE = KeyImpl.getInstance("source");
-	private static final Key SOURCE1 = KeyImpl.getInstance("source1");
-	private static final Key SOURCE2 = KeyImpl.getInstance("source2");
+	private static final Key SOURCE = KeyImpl.intern("source");
+	private static final Key SOURCE1 = KeyImpl.intern("source1");
+	private static final Key SOURCE2 = KeyImpl.intern("source2");
 	
 	private static VideoUtilImpl util=VideoUtilImpl.getInstance();
 	

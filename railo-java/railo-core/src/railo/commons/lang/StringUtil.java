@@ -15,25 +15,6 @@ import railo.runtime.type.Collection;
  */
 public final class StringUtil {
     
-    /**
-     * translate a String from local encoding to a specified encoding
-     * @param str String to translate
-     * @param charset charset to translate
-     * @return translated string
-     * @throws UnsupportedEncodingException
-     */
-    public static String translateString(String str, String charset) throws UnsupportedEncodingException {
-        return new String(str.getBytes(SystemUtil.getCharset()),charset);
-    }
-    
-    public static String translateString(String str, String charset, String defaultValue) {
-        try {
-            return translateString(str,charset);
-        } catch (UnsupportedEncodingException e) {
-            return defaultValue;
-        }
-    }
-    
 	/**
 	 * do first Letter Upper case
 	 * @param str String to operate
@@ -903,5 +884,14 @@ public final class StringUtil {
 		}
 		return sb.toString();
 	}
-	
+
+	public static boolean isAscci(String str) {
+		char c;
+		for(int i=str.length()-1;i>=0;i--){
+			c = str.charAt(i);
+			if(c < 128)  continue;
+			return false;
+		}
+		return true;
+	}
 }

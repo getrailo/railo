@@ -87,7 +87,7 @@ public final class List {
 			    c=list.charAt(i);
 			    for(int y=0;y<del.length;y++) {
 					if(c==del[y]) {
-						array._append(list.substring(last,i));
+						array.appendEL(list.substring(last,i));
 						last=i+1;
 					}
 			    }

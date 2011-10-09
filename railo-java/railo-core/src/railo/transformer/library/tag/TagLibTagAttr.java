@@ -6,6 +6,7 @@ import java.util.Date;
 
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
+import railo.commons.lang.StringUtil;
 
 
 /**
@@ -13,17 +14,22 @@ import railo.commons.lang.Md5;
  * und hält sämtliche Informationen zu diesem Attribut.
  */
 public final class TagLibTagAttr {
+
+	public static final short SCRIPT_SUPPORT_NONE = 0;
+	public static final short SCRIPT_SUPPORT_OPTIONAL = 1;
+	public static final short SCRIPT_SUPPORT_REQUIRED = 2;
 	
 	private String name="noname";
 	private String type;
 	private String description="";
 	private boolean required;
 	private boolean rtexpr=true;
-	private String defaultValue;
+	private Object defaultValue;
     private TagLibTag tag;
 	private boolean hidden;
 	private boolean _default;
 	private short status=TagLib.STATUS_IMPLEMENTED;
+	private short scriptSupport=SCRIPT_SUPPORT_NONE;
 
 	
 	public TagLibTagAttr duplicate(TagLibTag tag) {
@@ -175,7 +181,7 @@ public final class TagLibTagAttr {
     /**
      * @param defaultValue
      */
-    public void setDefaultValue(String defaultValue) {
+    public void setDefaultValue(Object defaultValue) {
         this.defaultValue=defaultValue;
         tag.setHasDefaultValue(true);
     }
@@ -183,7 +189,7 @@ public final class TagLibTagAttr {
     /**
      * @return Returns the defaultValue.
      */
-    public String getDefaultValue() {
+    public Object getDefaultValue() {
         return defaultValue;
     }
 
@@ -223,6 +229,32 @@ public final class TagLibTagAttr {
 
 	public boolean isDefault() {
 		return _default;
+	}
+
+
+	public void setScriptSupport(String str) {
+		if(!StringUtil.isEmpty(str))  {
+			str=str.trim().toLowerCase();
+			if("optional".equals(str)) this.scriptSupport=SCRIPT_SUPPORT_OPTIONAL;
+			else if("opt".equals(str)) this.scriptSupport=SCRIPT_SUPPORT_OPTIONAL;
+			else if("required".equals(str)) this.scriptSupport=SCRIPT_SUPPORT_REQUIRED;
+			else if("req".equals(str)) this.scriptSupport=SCRIPT_SUPPORT_REQUIRED;
+		}
+	}
+
+
+	/**
+	 * @return the scriptSupport
+	 */
+	public short getScriptSupport() {
+		return scriptSupport;
+	}
+
+
+	public Object getScriptSupportAsString() {
+		if(scriptSupport==SCRIPT_SUPPORT_OPTIONAL) return "optional";
+		if(scriptSupport==SCRIPT_SUPPORT_REQUIRED) return "required";
+		return "none";
 	}
 
 }

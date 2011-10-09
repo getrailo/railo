@@ -14,14 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
+package railo.runtime.img.filter;import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
-import java.awt.Rectangle;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A class to emboss an image.
  */
-public class EmbossFilter extends WholeImageFilter {
+public class EmbossFilter extends WholeImageFilter  implements DynFiltering {
 
 	private final static float pixelScale = 255.9f;
 
@@ -133,4 +140,18 @@ public class EmbossFilter extends WholeImageFilter {
 		return "Stylize/Emboss...";
 	}
 
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("BumpHeight")))!=null)setBumpHeight(ImageFilterUtil.toFloatValue(o,"BumpHeight"));
+		if((o=parameters.removeEL(KeyImpl.init("Azimuth")))!=null)setAzimuth(ImageFilterUtil.toFloatValue(o,"Azimuth"));
+		if((o=parameters.removeEL(KeyImpl.init("Elevation")))!=null)setElevation(ImageFilterUtil.toFloatValue(o,"Elevation"));
+		if((o=parameters.removeEL(KeyImpl.init("Emboss")))!=null)setEmboss(ImageFilterUtil.toBooleanValue(o,"Emboss"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [BumpHeight, Azimuth, Elevation, Emboss]");
+		}
+
+		return filter(src, dst);
+	}
 }

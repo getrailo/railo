@@ -171,6 +171,8 @@ function checkTheRadio(field) {
 
 <cfoutput>
 
+<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
+
 <table class="tbl" width="740">
 <tr>
 	<td colspan="2"><h2>#stText.CustomTags.CustomtagSetting#</h2></td>
@@ -182,14 +184,22 @@ function checkTheRadio(field) {
 <tr>
 	<td class="tblHead" width="150">#stText.CustomTags.customTagDeepSearch#</td>
 	<td class="tblContent">
-	<input type="checkbox" class="checkbox" name="customTagDeepSearchDesc" value="yes" <cfif setting.deepsearch>checked</cfif>>
-	<span class="comment">#stText.CustomTags.customTagDeepSearchDesc#</span></td>
-	
+	<cfif hasAccess>
+    	<input type="checkbox" class="checkbox" name="customTagDeepSearchDesc" value="yes" <cfif setting.deepsearch>checked</cfif>>
+    <cfelse>
+    	<b>#yesNoFormat(setting.deepsearch)#</b>
+	</cfif>
+    
+    <span class="comment">#stText.CustomTags.customTagDeepSearchDesc#</span></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.CustomTags.customTagLocalSearch#</td>
 	<td class="tblContent">
-	<input type="checkbox" class="checkbox" name="customTagLocalSearchDesc" value="yes" <cfif setting.localsearch>checked</cfif>>
+	<cfif hasAccess>
+    	<input type="checkbox" class="checkbox" name="customTagLocalSearchDesc" value="yes" <cfif setting.localsearch>checked</cfif>>
+    <cfelse>
+    	<b>#yesNoFormat(setting.localsearch)#</b>
+	</cfif>
 	<span class="comment">#stText.CustomTags.customTagLocalSearchDesc#</span></td>
 	
 </tr>
@@ -198,10 +208,13 @@ function checkTheRadio(field) {
 <tr>
 	<td class="tblHead" width="150">#stText.CustomTags.customTagPathCache#</td>
 	<td class="tblContent">
-	<input type="checkbox" class="checkbox" name="customTagPathCache" value="yes" <cfif setting.customTagPathCache>checked</cfif>>
+	<cfif hasAccess>
+    	<input type="checkbox" class="checkbox" name="customTagPathCache" value="yes" <cfif setting.customTagPathCache>checked</cfif>>
+    <cfelse>
+    	<b>#yesNoFormat(setting.customTagPathCache)#</b>
+	</cfif>
 	<span class="comment">#stText.CustomTags.customTagPathCacheDesc#</span>
-	<cfif setting.customTagPathCache><br />
-            <input type="submit" class="submit" name="mainAction" value="#flushName#"></cfif></td>
+	<cfif setting.customTagPathCache><br /><input type="submit" class="submit" name="mainAction" value="#flushName#"></cfif></td>
 </tr>
 
 
@@ -219,7 +232,7 @@ function checkTheRadio(field) {
 			struct(mode:'modern',ext:'cfc')
 		
 		)>
-    
+    	<cfif hasAccess>
       	<cfset has=false>
         <table class="tbl">
         <cfloop array="#modes#" index="mode">
@@ -239,6 +252,9 @@ function checkTheRadio(field) {
             <span class="comment">#stText.CustomTags.mode.custom#</span></td>
         </tr>
         </table>
+        <cfelse>
+        <b>#lstSetExt#</b><br />
+        </cfif>
         <span class="comment">#stText.CustomTags.extensionsDesc#</span>
     
     
@@ -251,7 +267,7 @@ function checkTheRadio(field) {
     
     
 </tr>
-<cfif true>
+<cfif hasAccess>
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
@@ -274,8 +290,8 @@ function checkTheRadio(field) {
 </tr>
 <cfform action="#request.self#?action=#url.action#" method="post">
 	<tr>
-		<td><input type="checkbox" class="checkbox" 
-			name="rro" onclick="selectAll(this)"></td>
+		<td><cfif hasAccess><input type="checkbox" class="checkbox" 
+			name="rro" onclick="selectAll(this)"></cfif></td>
 		<td class="tblHead" nowrap>#stText.CustomTags.Physical#</td>
 		<td class="tblHead" nowrap>#stText.CustomTags.Archive#</td>
 		<td class="tblHead" nowrap>#stText.CustomTags.Primary#</td>

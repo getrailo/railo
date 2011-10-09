@@ -9,7 +9,7 @@ import railo.runtime.ext.function.Function;
 
 public final class HTMLCodeFormat implements Function {
 	public static String call(PageContext pc , String html) {
-		return "<pre>"+HTMLEntities.escapeHTML(html,HTMLEntities.HTMLV20)+"</pre>";
+		return "<pre>"+HTMLEntities.escapeHTML(html,HTMLEntities.HTMLV40)+"</pre>";
 	}
 	public static String call(PageContext pc , String html, double version) {
 		short v=HTMLEntities.HTMLV40;

@@ -14,17 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.Graphics2D;
+package railo.runtime.img.filter;import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which crops an image to a given rectangle.
  */
-public class CropFilter extends AbstractBufferedImageOp {
+public class CropFilter extends AbstractBufferedImageOp  implements DynFiltering {
 
 	private int x;
 	private int y;
@@ -125,13 +130,20 @@ public class CropFilter extends AbstractBufferedImageOp {
 	}
 
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
-        int w = src.getWidth();
+        
+    	int w = src.getWidth();
         int h = src.getHeight();
 
-        if ( dst == null ) {
-            ColorModel dstCM = src.getColorModel();
-			dst = new BufferedImage(dstCM, dstCM.createCompatibleWritableRaster(width, height), dstCM.isAlphaPremultiplied(), null);
-		}
+        if(x<0)x=0;
+        if(y<0)y=0;
+        if(x>w)x=w;
+        if(y>h)y=h;
+        
+        
+		dst=ImageUtil.createBufferedImage(src,width,height);
+		
+
+        
 
 		Graphics2D g = dst.createGraphics();
 		g.drawRenderedImage( src, AffineTransform.getTranslateInstance(-x, -y) );
@@ -142,5 +154,19 @@ public class CropFilter extends AbstractBufferedImageOp {
 
 	public String toString() {
 		return "Distort/Crop";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("X")))!=null)setX(ImageFilterUtil.toIntValue(o,"X"));
+		if((o=parameters.removeEL(KeyImpl.init("Y")))!=null)setY(ImageFilterUtil.toIntValue(o,"Y"));
+		if((o=parameters.removeEL(KeyImpl.init("Width")))!=null)setWidth(ImageFilterUtil.toIntValue(o,"Width"));
+		if((o=parameters.removeEL(KeyImpl.init("Height")))!=null)setHeight(ImageFilterUtil.toIntValue(o,"Height"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [X, Y, Width, Height]");
+		}
+
+		return filter(src, (BufferedImage)null);
 	}
 }

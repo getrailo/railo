@@ -32,7 +32,7 @@ public final class MonthAsString implements Function {
 		return call(month, pc.getLocale());
 	}
 	public static String call(PageContext pc , double month, String strLocale) throws ExpressionException {
-		return call(month, LocaleFactory.getLocale(strLocale));
+		return call(month, strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale));
 	}
 	
 	private static String call(double month, Locale locale) throws ExpressionException {

@@ -30,6 +30,7 @@ public final class XmlTransform implements Function {
 			throw Caster.toPageException(e);
 		} 
 	}
+	
 	public static String call(PageContext pc , Object oXml, String xsl,Array parameters) throws PageException {
 		// TODO impl. parameters support
 		return call(pc, oXml, xsl);

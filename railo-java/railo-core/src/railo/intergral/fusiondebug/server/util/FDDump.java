@@ -97,8 +97,8 @@ public class FDDump {
 		sct.set("susi2", "fff");
 		arr.setEL(7, sct);
 		
-		Key aaa = KeyImpl.init("aaa");
-		Key bbb = KeyImpl.init("bbb");
+		Key aaa = KeyImpl.intern("aaa");
+		Key bbb = KeyImpl.intern("bbb");
 		Query qry=new QueryImpl(new Collection.Key[]{aaa,bbb},2,"quererli");
 		qry.setAt(aaa, 1, "a1");
 		qry.setAt(bbb, 1, "b1");

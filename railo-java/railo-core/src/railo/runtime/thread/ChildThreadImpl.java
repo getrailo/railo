@@ -19,6 +19,7 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.net.http.HttpUtil;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
@@ -36,7 +37,10 @@ import railo.runtime.type.scope.Threads;
 import railo.runtime.type.scope.Undefined;
 
 public class ChildThreadImpl extends ChildThread implements Serializable {
-	private static final Collection.Key KEY_ATTRIBUTES = KeyImpl.getInstance("attributes");
+
+	private static final long serialVersionUID = -8902836175312356628L;
+
+	private static final Collection.Key KEY_ATTRIBUTES = KeyImpl.intern("attributes");
 
 	//private static final Set EMPTY = new HashSet(); 
 	
@@ -71,6 +75,10 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 	private long requestTimeout;
 
 	private boolean serializable;
+
+	String contentType;
+
+	String contentEncoding;
 	
 	
 	public ChildThreadImpl(PageContextImpl parent,Page page, String tagName,int threadIndex, Struct attrs, boolean serializable) {
@@ -80,7 +88,6 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		start=System.currentTimeMillis();
 		if(attrs==null) this.attrs=new StructImpl();
 		else this.attrs=attrs;
-		
 		
 		
 		if(!serializable){
@@ -125,7 +132,6 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		Page p=page;
 		
 		if(parent!=null){
-			
 			pc=parent;
 			ThreadLocalPageContext.register(pc);
 		}
@@ -133,18 +139,20 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			ConfigWebImpl cwi;
 			try {
 				cwi = (ConfigWebImpl)config;
-				p=cwi.getPageSource(null, template, false,false).loadPage(cwi);
+				p=cwi.getPageSource(oldPc,null, template, false,false,true).loadPage(cwi);
 			} catch (PageException e) {
 				return e;
 			}
 			DevNullOutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
 			pc=ThreadUtil.createPageContext(cwi, os, serverName, requestURI, queryString, SerializableCookie.toCookies(cookies), headers, parameters, attributes);
-			pc.setRequestTimeout(requestTimeout);
+			pc.setRequestTimeout(requestTimeout);pc.addPageSource(p.getPageSource(), true);
 		}
 		pc.setThreadScope("thread", new ThreadsImpl(this));
 		pc.setThread(Thread.currentThread());
 		
-        Undefined undefined=pc.us();
+		//String encodings = pc.getHttpServletRequest().getHeader("Accept-Encoding");
+		
+		Undefined undefined=pc.us();
 		
 		ArgumentPro newArgs=new ArgumentThreadImpl((Struct) attrs.duplicate(false));//(ArgumentPro) pc.getScopeFactory().getArgumentInstance();// FUTURE
         LocalImpl newLocal=pc.getScopeFactory().getLocalInstance();
@@ -157,7 +165,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		//print.out(newArgs);
 		
 		newLocal.setEL(KEY_ATTRIBUTES, newArgs);
-		Argument oldArgs=pc.as();
+		Argument oldArgs=pc.argumentsScope();
         Scope oldLocal=pc.localScope();
         
         int oldMode=undefined.setMode(Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS);
@@ -168,7 +176,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		}
 		catch (Throwable t) {
 			//t.printStackTrace(pc.getConfig().getErrWriter());
-			t.printStackTrace();
+			//t.printStackTrace();
 			ConfigWeb c = pc.getConfig();
 			if(c instanceof ConfigImpl) {
 				ConfigImpl ci=(ConfigImpl) c;
@@ -185,6 +193,17 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		    undefined.setMode(oldMode);
 		    //pc.getScopeFactory().recycle(newArgs);
             pc.getScopeFactory().recycle(newLocal);
+            
+            if(pc.getHttpServletResponse() instanceof HttpServletResponseDummy) {
+	            HttpServletResponseDummy rsp=(HttpServletResponseDummy) pc.getHttpServletResponse();
+	            pc.flush();
+	            contentType=rsp.getContentType();
+	            Pair[] _headers = rsp.getHeaders();
+	            if(_headers!=null)for(int i=0;i<_headers.length;i++){
+	            	if(_headers[i].getName().equalsIgnoreCase("Content-Encoding"))
+	            		contentEncoding=Caster.toString(_headers[i].getValue(),null);
+	            }
+            }
             
 			((ConfigImpl)pc.getConfig()).getFactory().releasePageContext(pc);
 			pc=null;
@@ -204,7 +223,6 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 	 * @see railo.runtime.thread.ChildThread#getStartTime()
 	 */
 	public long getStartTime() {
-		// TODO Auto-generated method stub
 		return start;
 	}
 

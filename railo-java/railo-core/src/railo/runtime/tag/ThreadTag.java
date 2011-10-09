@@ -52,12 +52,6 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 	private static final int TYPE_TASK = 1;
 	private static final ExecutionPlan[] EXECUTION_PLAN = new ExecutionPlan[0];
 	
-	private static final Key DURATION = KeyImpl.getInstance("duration");
-	private static final Key NAME = KeyImpl.getInstance("name");
-	
-	
-	
-	
 	private int action=ACTION_RUN;
 	private long duration=-1;
 	private String name;
@@ -74,11 +68,6 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 	* @see javax.servlet.jsp.tagext.Tag#release()
 	*/
 	public void release()	{
-		if(ACTION_RUN==action) return;
-		_release();
-		
-	}
-	private void _release()	{
 		super.release();
 		action=ACTION_RUN;
 		duration=-1;
@@ -89,6 +78,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 		plans=EXECUTION_PLAN;
 		timeout=0;
 		attrs=null;
+		pc=null;
 	}
 	
 	/**
@@ -222,7 +212,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 
 	public void setDynamicAttribute(String uri, String name, Object value) {
 		if(attrs==null)attrs=new StructImpl();
-		Key key = KeyImpl.init(name=StringUtil.trim(name,""));
+		Key key = KeyImpl.getInstance(name=StringUtil.trim(name,""));
 		
 		/*if(key.equals(NAME))	setName(name);
 		else if(key.equals(DURATION)){
@@ -244,7 +234,6 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 		pc=pageContext;
 		switch(action) {
 			case ACTION_JOIN:	
-				required("thread", "join", "name", name);	
 				doJoin();
 			break;
 			case ACTION_SLEEP:	
@@ -302,7 +291,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 			throw Caster.toPageException(t);
 		}
 		finally {
-			_release();
+			pc.reuse(this);// this method is not called from template when type is run, a call from template is to early,
 		}
 	}
 	
@@ -315,16 +304,22 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 	}
 
     private void doJoin() throws ApplicationException {
-    	String[] names=List.listToStringArray(lcName, ',');
+    	PageContextImpl mpc=(PageContextImpl)getMainPageContext(pc);
+		
+    	String[] names;
+    	if(lcName==null) {
+    		names=mpc.getThreadScopeNames();
+    	}
+    	else names=List.listToStringArray(lcName, ',');
     	
     	ChildThread ct;
     	Threads ts;
     	for(int i=0;i<names.length;i++) {
     		if(StringUtil.isEmpty(names[i],true))continue;
-    		PageContextImpl mpc=(PageContextImpl)getMainPageContext(pc);
+    		//PageContextImpl mpc=(PageContextImpl)getMainPageContext(pc);
     		ts = mpc.getThreadScope(names[i]);
     		if(ts==null)
-    			throw new ApplicationException("there is no thread running with the name ["+names[i]+"]");
+    			throw new ApplicationException("there is no thread running with the name ["+names[i]+"], only the following threads existing ["+List.arrayToList(mpc.getThreadScopeNames(),", ")+"]");
     		ct=ts.getChildThread();
     		
     		if(ct.isAlive()) {

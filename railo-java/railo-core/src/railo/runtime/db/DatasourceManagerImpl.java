@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.exp.PageException;
@@ -21,7 +22,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 	private ConfigImpl config;
 	
 	boolean autoCommit=true;
-	private int isolation;
+	private int isolation=Connection.TRANSACTION_NONE;
 	private DatasourceConnection transConn;
     
 
@@ -39,15 +40,15 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 	 */
 
 	public DatasourceConnection getConnection(PageContext pc,String _datasource, String user, String pass) throws PageException {
+		if(autoCommit)
+			return config.getDatasourceConnectionPool().getDatasourceConnection(pc,config.getDataSource(_datasource),user,pass);
 		
-		DatasourceConnection dc;
-		if(pc!=null && !autoCommit)
-			dc=((PageContextImpl)pc).getConnection(_datasource,user,pass);
-		else
-			dc=config.getDatasourceConnectionPool().getDatasourceConnection(pc,config.getDataSource(_datasource),user,pass);
+		
+		pc=ThreadLocalPageContext.get(pc);
+		DatasourceConnection dc=((PageContextImpl)pc)._getConnection(_datasource,user,pass);
 		
 		// transaction
-		if(!autoCommit) {
+		//if(!autoCommit) {
             try {
                 if(transConn==null) {
                 	dc.getConnection().setAutoCommit(false);
@@ -59,7 +60,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
     			else if(!transConn.equals(dc)) {
                 	if("_queryofquerydb".equalsIgnoreCase(_datasource)) return dc;
     				throw new DatabaseException(
-    						"can't connect different datasource or same with other username/password",null,null,dc);
+    						"can't use different connections inside a transaction",null,null,dc);
     			}
                 else if(dc.getConnection().getAutoCommit()) {
                     dc.getConnection().setAutoCommit(false);
@@ -67,7 +68,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
             } catch (SQLException e) {
                ExceptionHandler.printStackTrace(e);
             }
-		}
+		//}
 		return dc;
 	}
 	
@@ -85,14 +86,14 @@ public final class DatasourceManagerImpl implements DataSourceManager {
                     transConn=dc;
     			}
     			else if(!(transConn instanceof ORMDatasourceConnection)){
-    				if(transConn.getDatasource().equals(session.getEngine().getDataSource())){
+    				/*if(transConn.getDatasource().equals(session.getEngine().getDataSource())){
     					ORMDatasourceConnection dc=new ORMDatasourceConnection(pc,session);
                     	
                         if(isolation!=Connection.TRANSACTION_NONE)
     					    dc.getConnection().setTransactionIsolation(isolation);
                         transConn=dc;
     				}
-    				else
+    				else*/
     					throw new DatabaseException(
     						"can't use transaction for datasource and orm at the same time",null,null,null);
     			}
@@ -106,8 +107,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 	 * @see railo.runtime.db.DataSourceManager#releaseConnection(railo.runtime.db.DatasourceConnection)
 	 */
 	public void releaseConnection(PageContext pc,DatasourceConnection dc) {
-		if(autoCommit || pc==null)
-			config.getDatasourceConnectionPool().releaseDatasourceConnection(dc);
+		if(autoCommit) config.getDatasourceConnectionPool().releaseDatasourceConnection(dc);
 	}
 	
 	/*private void releaseConnection(int pid,DatasourceConnection dc) {
@@ -232,6 +232,11 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 
 	public void remove(String datasource) {
 		config.getDatasourceConnectionPool().remove(datasource);
+	}
+
+	public void release() {
+		this.transConn=null;
+		this.isolation=Connection.TRANSACTION_NONE;
 	}
 
 }

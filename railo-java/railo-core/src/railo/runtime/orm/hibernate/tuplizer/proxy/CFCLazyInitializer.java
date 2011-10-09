@@ -5,16 +5,15 @@ import java.io.Serializable;
 import org.hibernate.engine.SessionImplementor;
 import org.hibernate.proxy.AbstractLazyInitializer;
 
-import railo.runtime.ComponentImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.hibernate.HibernateRuntimeException;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ComponentUtil;
 
 /**
  * Lazy initializer for "dynamic-map" entity representations.
- *
- * @author Gavin King
+ * SLOW
  */
 public class CFCLazyInitializer extends AbstractLazyInitializer implements Serializable {
 
@@ -24,11 +23,10 @@ public class CFCLazyInitializer extends AbstractLazyInitializer implements Seria
 		
 	}
 
-	public ComponentImpl getCFC() {
+	public ComponentAccess getCFC() {
 		try {
-			return ComponentUtil.toComponentImpl(Caster.toComponent(getImplementation()));
+			return ComponentUtil.toComponentAccess(Caster.toComponent(getImplementation()));
 		} catch (PageException e) {
-			//print.printST(e);
 			throw new HibernateRuntimeException(e);
 		}
 	}

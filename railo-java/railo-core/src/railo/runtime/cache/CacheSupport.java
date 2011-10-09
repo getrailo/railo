@@ -201,7 +201,7 @@ public abstract class CacheSupport implements Cache {
 		return entry.getValue();
 	} 
 	
-	protected boolean valid(CacheEntry entry) {
+	protected static boolean valid(CacheEntry entry) {
 		long now = System.currentTimeMillis();
 		if(entry.liveTimeSpan()>0 && entry.liveTimeSpan()+entry.created().getTime()<now){
 			return false;

@@ -12,7 +12,9 @@ import railo.commons.io.IOUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.tag.Http;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
@@ -22,12 +24,12 @@ public final class GetHTTPRequestData implements Function {
 		Struct sct=new StructImpl();
 		Struct headers=new StructImpl();
 		HttpServletRequest req = pc.getHttpServletRequest();
-		
+		String charset = pc.getConfig().getWebCharset();
 		// headers
 		Enumeration e = req.getHeaderNames();
 		while(e.hasMoreElements()) {
 			String key=e.nextElement().toString();
-			headers.set(key,req.getHeader(key));
+			headers.set(KeyImpl.init(ReqRspUtil.decode(key, charset)),ReqRspUtil.decode(req.getHeader(key),charset));
 		}
 		sct.set("headers", headers);
 		sct.set("protocol",req.getProtocol());
