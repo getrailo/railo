@@ -26,11 +26,13 @@ public class InstrumentationFactory {
 			doInit=false;
 			
 			Class agent = ClassUtil.loadClass("railo.runtime.instrumentation.Agent",null);
-			if(agent==null) return null;
+			if(agent==null) {
+				SystemOut.printDate("missing class railo.runtime.instrumentation.Agent");
+				return null;
+			}
 			
 			// if Agent was loaded at startup there is already a Instrumentation
 			inst=getInstrumentation(agent);
-			
 			// try to load Agent
 			if(inst==null) {
 				try {
