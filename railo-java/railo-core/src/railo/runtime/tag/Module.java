@@ -9,6 +9,7 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.customtag.CustomTagUtil;
 import railo.runtime.customtag.InitFile;
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.type.KeyImpl;
 
 /**
@@ -17,9 +18,10 @@ import railo.runtime.type.KeyImpl;
 public final class Module extends CFTag {
 
 	/**
+	 * @throws ExpressionException 
 	 * @see railo.runtime.tag.CFTag#initFile()
 	 */
-	public void initFile() throws ExpressionException {
+	public void initFile() throws MissingIncludeException, ExpressionException {
 		ConfigWeb config = pageContext.getConfig();
         // MUSTMUST cache like ct
 		//String[] filenames=getFileNames(config,getAppendix());// = appendix+'.'+config.getCFMLExtension();
@@ -36,7 +38,7 @@ public final class Module extends CFTag {
     		
             //attributesScope.removeEL(TEMPLATE);
 			if(!MappingImpl.isOK(source.getPageSource()))
-					throw new ExpressionException("could not find template ["+template+"]","file ["+source.getPageSource().getDisplayPath()+"] doesn't exist");
+					throw new MissingIncludeException(source.getPageSource(),"could not find template ["+template+"], file ["+source.getPageSource().getDisplayPath()+"] doesn't exist");
 			setAppendix(source.getPageSource());
 	    }
 	    else if(objName!=null) {

@@ -27,6 +27,11 @@ public final class MissingIncludeException extends PageExceptionImpl {
         this.pageSource=pageSource;
         
     }
+    public MissingIncludeException(PageSource pageSource,String msg) {
+        super(msg,"missinginclude");
+        this.pageSource=pageSource;
+        
+    }
 
 	/**
 	 * @return the pageSource
@@ -59,4 +64,10 @@ public final class MissingIncludeException extends PageExceptionImpl {
 		sct.setEL(MISSING_FILE_NAME_ABS,pageSource.getDisplayPath());
 		return sct;
 	}
+	
+	public boolean typeEqual(String type) {
+    	if(super.typeEqual(type)) return true;
+        type=type.toLowerCase().trim();
+        return type.equals("template");
+    }
 }
