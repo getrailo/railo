@@ -2659,6 +2659,7 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 		<description>Determines whether a directory exists.</description>
 		<argument>
 			<name>absolute_path</name>
+			<alias>path</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>An absolute path. Alternatively, you can specify IP address as in the following example: DirectoryExists(\"//12.3.123.123/c_drive/test\");</description>
@@ -2681,6 +2682,7 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 		<description>Lists the directory and returns the list of files under it as array or query</description>
 		<argument>
 			<name>absolute_path</name>
+			<alias>path</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>The absolute path of the directory for which to list the contents. Alternatively, you can specify IP address as in the following example: DirectoryList(\"//12.3.123.123/c_drive/test\");.</description>
@@ -3525,6 +3527,7 @@ EntitySave(entity, [forceinsert])</description>
 		<description>Does the opposite of the function expandPath(), tries to match given absolute path, to the mappings in the enviroment, when no mapping match, railo creates a relatie path from the current position,</description>
 		<argument>
 			<name>absolute_path</name>
+			<alias>path</alias>
 			<type>string</type>
 			<required>Yes</required>
 			<description>a absolute path</description>
