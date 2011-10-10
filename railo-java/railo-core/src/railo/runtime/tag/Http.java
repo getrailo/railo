@@ -583,7 +583,7 @@ public final class Http extends BodyTagImpl {
 			if(!e.done){
 				httpMethod.abort();
 				if(throwonerror)
-					throw new HTTPException("408 Request Time-out","there is a timeout occurred in tag http",408);
+					throw new HTTPException("408 Request Time-out","a timeout occurred in tag http",408);
 				setRequestTimeout(cfhttp);	
 				return;
 				//throw new ApplicationException("timeout");	
