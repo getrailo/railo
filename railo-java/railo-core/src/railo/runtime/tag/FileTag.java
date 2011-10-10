@@ -350,6 +350,7 @@ public final class FileTag extends TagImpl {
 		
 		securityManager.checkFileLocation(pageContext.getConfig(),source,serverPassword);
 		securityManager.checkFileLocation(pageContext.getConfig(),destination,serverPassword);
+		if(source.equals(destination)) return ;
 		
 		// source
 		if(!source.exists())
