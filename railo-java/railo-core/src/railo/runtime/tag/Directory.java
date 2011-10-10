@@ -583,7 +583,8 @@ public final class Directory extends TagImpl  {
 				try {
 					// old way
 					if(Decision.isString(acl)) {
-						s3r.setACL(S3.toIntACL(Caster.toString(acl)));
+						if(Decision.isInteger(acl)) s3r.setACL(Caster.toIntValue(acl));
+						else s3r.setACL(S3.toIntACL(Caster.toString(acl)));
 					}
 					// new way
 					else {
