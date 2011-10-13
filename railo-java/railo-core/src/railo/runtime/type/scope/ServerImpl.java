@@ -99,7 +99,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			
 			String rootdir="";
 			try{
-				rootdir=ThreadLocalConfig.get().getRootDirectory().getAbsolutePath();
+				rootdir=ThreadLocalPageContext.getConfig(pc).getRootDirectory().getAbsolutePath();
 			}
 			catch(Throwable t){}
 			coldfusion.setEL(ROOT_DIR,rootdir);// 

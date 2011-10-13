@@ -1366,7 +1366,7 @@ public final class Http extends BodyTagImpl {
 				String charset=tmp[1];
 				
 				if(StringUtil.isEmpty(charset,true)) {
-					Config config = ThreadLocalConfig.get();
+					Config config = ThreadLocalPageContext.getConfig();
 					if(config!=null)charset=config.getWebCharset();
 				}
 				

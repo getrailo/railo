@@ -14,7 +14,7 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.CFMLEngineImpl;
-import railo.runtime.engine.ThreadLocalConfig;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.security.SerialNumber;
 import railo.runtime.type.Struct;
@@ -94,7 +94,7 @@ public class FDControllerImpl implements IFDController {
 	 * @see com.intergral.fusiondebug.server.IFDController#output(java.lang.String)
 	 */
 	public void output(String message) {
-		Config config = ThreadLocalConfig.get();
+		Config config = ThreadLocalPageContext.getConfig();
 		PrintWriter out=config==null?SystemUtil.PRINTWRITER_OUT:((ConfigWebImpl)config).getOutWriter();
 		SystemOut.print(out, message);
 	}
