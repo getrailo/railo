@@ -48,7 +48,6 @@ import railo.commons.net.ResourcePart;
 import railo.commons.net.ResourcePartSource;
 import railo.commons.net.URLEncoder;
 import railo.runtime.config.Config;
-import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;

@@ -2,7 +2,6 @@ package railo.runtime.text.pdf;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,7 +30,6 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 
-import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
 import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;

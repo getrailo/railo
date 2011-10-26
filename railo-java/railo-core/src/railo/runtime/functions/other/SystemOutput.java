@@ -5,7 +5,6 @@ package railo.runtime.functions.other;
 
 
 import java.io.PrintStream;
-import java.io.StringWriter;
 
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;

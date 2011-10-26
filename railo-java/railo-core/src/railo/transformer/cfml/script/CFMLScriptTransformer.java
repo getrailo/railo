@@ -12,7 +12,6 @@ import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Component;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.system.CFFunction;
