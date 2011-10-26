@@ -637,7 +637,7 @@ public final class Page extends BodyBase {
         adapter.endMethod();
     	
         try {
-			externalizer.writeOut();
+			if(externalizer!=null)externalizer.writeOut();
 		} catch (IOException e) {
 			throw new BytecodeException(e.getMessage(), -1);
 		}
