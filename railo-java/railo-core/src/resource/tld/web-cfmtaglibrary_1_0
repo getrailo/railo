@@ -8730,6 +8730,13 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			<description>Order in which the PDF files are sorted</description>
 		</attribute>
 		<attribute>
+			<type>string</type>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>used for action "extractText", defines the format type of the extraction, valid values are: string,xml</description>
+		</attribute>
+		<attribute>
 			<type>any</type>
 			<name>copyFrom</name>
 			<required>false</required>

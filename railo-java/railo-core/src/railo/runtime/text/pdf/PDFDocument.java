@@ -1,14 +1,21 @@
 package railo.runtime.text.pdf;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.pdfbox.exceptions.CryptographyException;
+import org.pdfbox.exceptions.InvalidPasswordException;
+import org.pdfbox.pdmodel.PDDocument;
+
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.type.file.FileResource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -24,15 +31,17 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 
 public class PDFDocument extends StructSupport implements Struct {
 
 	private byte[] barr;
 	private String password;
 	private Resource resource;
-	private Set pages;
+	private Set<Integer> pages;
 
 	public PDFDocument(byte[] barr, String password) {
 		this.barr=barr;
@@ -337,11 +346,11 @@ public class PDFDocument extends StructSupport implements Struct {
 	public void setPages(String strPages) throws PageException {
 		if(StringUtil.isEmpty(strPages))return;
 		if(pages==null)
-			pages=new HashSet();
+			pages=new HashSet<Integer>();
 		PDFUtil.parsePageDefinition(pages,strPages);
 	}
 
-	public Set getPages() {
+	public Set<Integer> getPages() {
 		//if(pages==null)pages=new HashSet();
 		return pages;
 	}
@@ -366,6 +375,22 @@ public class PDFDocument extends StructSupport implements Struct {
 	 */
 	public java.util.Collection values() {
 		return getInfo().values();
+	}
+	
+	public PDDocument toPDDocument() throws CryptographyException, InvalidPasswordException, IOException {
+		PDDocument doc;
+		if(barr!=null) 
+			doc= PDDocument.load(new ByteInputStream(barr,0,barr.length));
+		else if(resource instanceof FileResource)
+			doc= PDDocument.load((File)resource);
+		else 
+			doc= PDDocument.load(new ByteInputStream(IOUtil.toBytes(resource),0,barr.length));
+		
+		if(password!=null)doc.decrypt(password);
+		
+		
+		return doc;
+		
 	}
 
 }
