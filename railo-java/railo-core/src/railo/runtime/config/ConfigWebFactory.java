@@ -987,8 +987,6 @@ public final class ConfigWebFactory {
         if(!f.exists())createFileFromResourceEL("/resource/bin/jacob.dll",f);
 
 
-        Resource secDir = configDir.getRealResource("security");
-        if(!secDir.exists())secDir.mkdirs();
         
         Resource storDir = configDir.getRealResource("storage");
         if(!storDir.exists())storDir.mkdirs();
@@ -997,34 +995,16 @@ public final class ConfigWebFactory {
         if(!cfcDir.exists())cfcDir.mkdirs();
         
        
+        // remove old cacerts files, they are now only in the server context
+        Resource secDir = configDir.getRealResource("security");
+        if(secDir.exists()){
+        	f=secDir.getRealResource("cacerts");
+        	if(f.exists())f.delete();
+        	if(ResourceUtil.isEmpty(secDir))secDir.delete();
+        }
         
-        /*TrustManager[] trustAllCerts = new TrustManager[]{
-		        new X509TrustManager() {
-		            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-		                return null;
-		            }
-		            public void checkClientTrusted(
-		                java.security.cert.X509Certificate[] certs, String authType) {
-		            }
-		            public void checkServerTrusted(
-		                java.security.cert.X509Certificate[] certs, String authType) {
-		            }
-		        }
-		    };
-	    try {
-			SSLContext sc = SSLContext.getInstance("SSL");
-			sc.init(null, trustAllCerts, new java.security.SecureRandom());
-		    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-		} catch (Throwable t) {
-		}*/
-        //URL url = new URL("https://wsportal.dsb.net/net/dsb/wsportal/router/RequestHandler.wsdl");
-	    //print.out(HTTPUtil.getTextContent(url));
-        f=secDir.getRealResource("cacerts");
-        if(!f.exists())createFileFromResourceEL("/resource/security/cacerts",f);
-        //else createFileFromResourceCheckSizeDiff("/resource/security/cacerts",f);
-
         
-        System.setProperty("javax.net.ssl.trustStore",f.toString());
+        
         
         
 	    f=contextDir.getRealResource("railo-context.ra");
