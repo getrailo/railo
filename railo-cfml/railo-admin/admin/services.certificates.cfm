@@ -112,8 +112,8 @@ Create Datasource --->
 
 <cftry>
 <cfadmin 
-	type="server"
-    password="server"
+                type="#request.adminType#"
+				password="#session["password"&request.adminType]#"
 	action="getsslcertificate" host="#_host#"port="#_port#" returnvariable="qry">
 
 
