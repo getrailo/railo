@@ -41,23 +41,21 @@ public class aprint {
     			+" "+value);
 	}
 
-	public static void ds() {
-		Thread.dumpStack();
+	public static void ds(boolean useOutStream) {
+		new Exception("Stack trace").printStackTrace(useOutStream?System.out:System.err);
 	}
 	
-	public static void ds(Object label) {
-		err(label);
-		Thread.dumpStack();
+	public static void ds(Object label,boolean useOutStream) {
+		_(useOutStream?System.out:System.err, label);
+		ds(useOutStream);
 	}
 	
-	public static void dumpStack() {
-		Thread.dumpStack();
-	}
-	
-	public static void dumpStack(String label) {
-		err(label);
-		Thread.dumpStack();
-	}
+	public static void ds() {ds(false);}
+	public static void ds(Object label) {ds(label,false);}
+	public static void dumpStack() {ds(false);}
+	public static void dumpStack(boolean useOutStream) {ds(useOutStream);}
+	public static void dumpStack(String label) {ds(label,false);}
+	public static void dumpStack(String label,boolean useOutStream) {ds(label,useOutStream);}
     
     public static void err(boolean o) { 
 		System.err.println(o);

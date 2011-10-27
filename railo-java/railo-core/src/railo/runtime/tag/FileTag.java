@@ -12,7 +12,6 @@ import railo.commons.io.ModeUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.type.s3.S3;
-import railo.commons.io.res.type.s3.S3Constants;
 import railo.commons.io.res.type.s3.S3Resource;
 import railo.commons.io.res.util.ModeObjectWrap;
 import railo.commons.io.res.util.ResourceUtil;
@@ -27,7 +26,6 @@ import railo.runtime.functions.s3.StoreSetACL;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
@@ -39,6 +37,7 @@ import railo.runtime.type.dt.DateImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.scope.FormImpl;
 import railo.runtime.type.scope.FormImpl.Item;
+import railo.runtime.type.scope.FormUpload;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
@@ -351,6 +350,7 @@ public final class FileTag extends TagImpl {
 		
 		securityManager.checkFileLocation(pageContext.getConfig(),source,serverPassword);
 		securityManager.checkFileLocation(pageContext.getConfig(),destination,serverPassword);
+		if(source.equals(destination)) return ;
 		
 		// source
 		if(!source.exists())
@@ -700,7 +700,7 @@ public final class FileTag extends TagImpl {
 	
 	
 	public static Struct actionUpload(PageContext pageContext,railo.runtime.security.SecurityManager securityManager,String filefield,
-			String strDestination,int nameconflict,String accept,int mode,String attributes,int acl,String serverPassword) throws PageException {
+			String strDestination,int nameconflict,String accept,int mode,String attributes,Object acl,String serverPassword) throws PageException {
 		FormImpl.Item item=getFormItem(pageContext,filefield);
 		return _actionUpload(pageContext,securityManager,item,strDestination,nameconflict,accept,mode,attributes,acl,serverPassword);
 	}
@@ -906,12 +906,22 @@ public final class FileTag extends TagImpl {
 			
 		PageException pe = pageContext.formScope().getInitException();
 		if(pe!=null) throw pe;
-
-		FormImpl.Item fileItem = ((FormImpl)pageContext.formScope()).getUploadResource(filefield);
+		FormUpload upload = (FormUpload)pageContext.formScope();
+		FormImpl.Item fileItem = upload.getUploadResource(filefield);
 		if(fileItem==null) {
-			if(pageContext.formScope().get(filefield,null)==null)
-				throw new ApplicationException("form field ["+filefield+"] is not a file field");
-			throw new ApplicationException("form field ["+filefield+"] doesn't exist or has no content");
+			Item[] items = upload.getFileItems();
+			StringBuilder sb=new StringBuilder();
+			for(int i=0;i<items.length;i++){
+				if(i!=0) sb.append(", ");
+				sb.append(items[i].getFieldName());
+			}
+			String add=".";
+			if(sb.length()>0) add=", valid field names are ["+sb+"].";
+			
+			
+			if(pageContext.formScope().get(filefield,null)==null) 
+				throw new ApplicationException("form field ["+filefield+"] is not a file field"+add);
+			throw new ApplicationException("form field ["+filefield+"] doesn't exist or has no content"+add);
 		}
 		
 		return fileItem;
@@ -921,7 +931,7 @@ public final class FileTag extends TagImpl {
 		PageException pe = pageContext.formScope().getInitException();
 		if(pe!=null) throw pe;
 		
-		FormImpl scope = (FormImpl) pageContext.formScope();
+		FormUpload scope = (FormUpload) pageContext.formScope();
 		return scope.getFileItems();
 	}
 	

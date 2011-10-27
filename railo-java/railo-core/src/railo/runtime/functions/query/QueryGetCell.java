@@ -13,6 +13,7 @@ public final class QueryGetCell implements Function {
 		return call(pc,query,columnName,query.getRecordcount());
 	}
 	public static Object call(PageContext pc , Query query, String columnName, double rowNumber) throws PageException {
-		return query.getAt(columnName,(int)rowNumber);
+		if(rowNumber==-9999) rowNumber=query.getRecordcount();// used for named arguments
+    	return query.getAt(columnName,(int)rowNumber);
 	}
 }

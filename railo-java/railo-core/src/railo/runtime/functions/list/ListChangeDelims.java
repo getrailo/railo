@@ -13,10 +13,10 @@ public final class ListChangeDelims implements Function {
 	private static final long serialVersionUID = 8979553735693035787L;
 	
 	public static String call(PageContext pc , String list, String newDel) throws PageException {
-		return call(pc , list, newDel, ",");
+		return call(pc , list, newDel, ",",false);
 	}
 	public static String call(PageContext pc , String list, String newDel, String oldDel) throws PageException {
-		return List.arrayToList(List.listToArrayRemoveEmpty(list,oldDel),newDel);
+		return call(pc, list, newDel, oldDel, false);
 	}
 	public static String call(PageContext pc , String list, String newDel, String oldDel, boolean includeEmptyFields) throws PageException {
 		if(includeEmptyFields)return List.arrayToList(List.listToArray(list,oldDel),newDel);

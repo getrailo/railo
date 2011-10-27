@@ -25,8 +25,13 @@ public final class XmlElemNew implements Function {
 	public static Element call(PageContext pc , Node node, String namespace, String childname) throws FunctionException {
 		Document doc=XMLUtil.getDocument(node);
 		
-		if(StringUtil.isEmpty(childname))
-			throw new FunctionException(pc, "XmlElemNew", 3, "childname", "argument is required");
+		if(StringUtil.isEmpty(childname)) {
+			if(!StringUtil.isEmpty(namespace)) {
+				childname=namespace;
+				namespace=null;
+			}
+			else throw new FunctionException(pc, "XmlElemNew", 3, "childname", "argument is required");
+		}
 		
 		Element el = null;
 		

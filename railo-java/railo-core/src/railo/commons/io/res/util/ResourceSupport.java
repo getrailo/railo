@@ -298,8 +298,15 @@ public abstract class ResourceSupport implements Resource {
 		if(!(obj instanceof Resource)) return false;
 		Resource other=(Resource) obj;
 		
-		if(getPath().equals(other.getPath())) return true;
-		return ResourceUtil.getCanonicalPathEL(this).equals(ResourceUtil.getCanonicalPathEL(other));
+		if(getResourceProvider()!=other.getResourceProvider()) return false;
+		
+		if(getResourceProvider().isCaseSensitive()) {
+			if(getPath().equals(other.getPath())) return true;
+			return ResourceUtil.getCanonicalPathEL(this).equals(ResourceUtil.getCanonicalPathEL(other));
+		}
+		if(getPath().equalsIgnoreCase(other.getPath())) return true;
+		return ResourceUtil.getCanonicalPathEL(this).equalsIgnoreCase(ResourceUtil.getCanonicalPathEL(other));
+		
 	}
 	
 	/**

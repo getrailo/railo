@@ -704,6 +704,15 @@ public final class ResourceUtil {
 	        res.createFile(true);
 	    }
     }
+    
+    public static void clear(Resource res) throws IOException {
+    	if(res.exists()) {
+    		IOUtil.write(res, new byte[0]);
+	    }
+	    else {
+	        res.createFile(true);
+	    }
+    }
     	
     
 

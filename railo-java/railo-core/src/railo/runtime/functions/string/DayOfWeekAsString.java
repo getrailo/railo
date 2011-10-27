@@ -32,7 +32,7 @@ public final class DayOfWeekAsString implements Function {
 		return call(pc,dow, pc.getLocale(),true);
 	}
 	public static String call(PageContext pc , double dow, String strLocale) throws ExpressionException {
-		return call(pc,dow, LocaleFactory.getLocale(strLocale),true);
+		return call(pc,dow, strLocale==null?pc.getLocale():LocaleFactory.getLocale(strLocale),true);
 	}
 	protected static String call(PageContext pc , double dow, Locale locale,boolean _long) throws ExpressionException {
 		

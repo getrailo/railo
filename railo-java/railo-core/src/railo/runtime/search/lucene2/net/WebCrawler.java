@@ -20,7 +20,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.config.Config;
-import railo.runtime.engine.ThreadLocalConfig;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.search.lucene2.DocumentUtil;
 import railo.runtime.tag.Index;
 import railo.runtime.type.util.ArrayUtil;
@@ -187,7 +187,7 @@ public final class WebCrawler {
 	    			
 	    			if(ci.isAlive()){
 	    				ci.interrupt();
-	    				Config config = ThreadLocalConfig.get();
+	    				Config config = ThreadLocalPageContext.getConfig();
 	    				SystemOut.printDate(config!=null?config.getErrWriter():new PrintWriter(System.err),"timeout ["+timeout+" ms] occur while invoking page ["+ci.url+"]");
 	    			}
 	    		}

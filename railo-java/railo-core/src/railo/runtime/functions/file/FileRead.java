@@ -18,6 +18,8 @@ public class FileRead {
 	}
 	
 	public static Object call(PageContext pc, Object obj, Object charsetOrSize) throws PageException {
+		if(charsetOrSize==null) return call(pc, obj);
+		
 		if(obj instanceof FileStreamWrapper) {
 			return _call((FileStreamWrapper)obj,Caster.toIntValue(charsetOrSize));
 		}

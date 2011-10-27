@@ -1,5 +1,6 @@
 package railo.runtime.op;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -266,10 +267,18 @@ public final class Operator {
 	 * @return difference as int
 	 */ 
 	public static int compare(String left, String right) { 
-		if(Decision.isNumeric(left))
-			return compare(Caster.toDoubleValue(left,Double.NaN),right);
-		if(Decision.isBoolean(left))
+		if(Decision.isNumeric(left)) {
+			if(Decision.isNumeric(right)){
+				// long numbers
+				if(left.length()>9 || right.length()>9) {
+					return new BigDecimal(left).compareTo(new BigDecimal(right));
+				}
+				return compare(Caster.toDoubleValue(left,Double.NaN),Caster.toDoubleValue(right,Double.NaN));
+			}
+		}
+		else if(Decision.isBoolean(left)) {
 			return compare(Caster.toBooleanValue(left,false)?1D:0D,right);
+		}
 //		 NICE Date compare, perhaps datetime to double
 		return left.compareToIgnoreCase(right); 
 	} 
@@ -281,8 +290,12 @@ public final class Operator {
      * @return difference as int
      */ 
     public static int compare(String left, double right) { 
-    	if(Decision.isNumeric(left))
-            return compare(Caster.toDoubleValue(left,Double.NaN),right); 
+    	if(Decision.isNumeric(left)) {
+            if(left.length()>9) {
+            	return new BigDecimal(left).compareTo(new BigDecimal(right));
+            }
+    		return compare(Caster.toDoubleValue(left,Double.NaN),right); 
+    	}
         if(Decision.isBoolean(left))
             return compare(Caster.toBooleanValue(left,false),right); 
         
@@ -334,16 +347,6 @@ public final class Operator {
     public static int compare(double left, String right) { 
         return -compare(right,left);
     }
-    
-	/* * 
-	 * compares a double with a double 
-	 * @param left 
-	 * @param right 
-	 * @return difference as int
-	 * / 
-    public static int compare(double left, double right) { 
-    	return __compare(left,right);
-    }*/
     
 	/** 
 	 * compares a double with a double 
@@ -717,4 +720,41 @@ public final class Operator {
     public static double bitor(double left, double right) {
         return (int)left|(int)right;
     }
+    
+    
+
+    public static Double divRef(Object left, Object right) throws PageException {
+		double r = Caster.toDoubleValue(right);
+    	if(r==0d)
+			throw new ArithmeticException("Division by zero is not possible");
+		return Caster.toDouble(Caster.toDoubleValue(left)/r);
+	}
+    
+    public static Double exponentRef(Object left, Object right) throws PageException {
+		return Caster.toDouble(StrictMath.pow(Caster.toDoubleValue(left),Caster.toDoubleValue(right)));
+	}
+    
+    public static Double intdivRef(Object left, Object right) throws PageException {
+		return Caster.toDouble(Caster.toIntValue(left)/Caster.toIntValue(right));
+	}
+    
+    public static Double plusRef(Object left, Object right) throws PageException {
+		return Caster.toDouble(Caster.toDoubleValue(left)+Caster.toDoubleValue(right));
+	}
+    
+    public static Double minusRef(Object left, Object right) throws PageException {
+		return Caster.toDouble(Caster.toDoubleValue(left)-Caster.toDoubleValue(right));
+	}
+    
+    public static Double modulusRef(Object left, Object right) throws PageException {
+		return Caster.toDouble(Caster.toDoubleValue(left)%Caster.toDoubleValue(right));
+	}
+    
+    public static Double divideRef(Object left, Object right) throws PageException {
+		return Caster.toDouble(Caster.toDoubleValue(left)/Caster.toDoubleValue(right));
+	}
+    
+    public static Double multiplyRef(Object left, Object right) throws PageException {
+		return Caster.toDouble(Caster.toDoubleValue(left)*Caster.toDoubleValue(right));
+	}
 }

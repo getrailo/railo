@@ -38,7 +38,7 @@ public final class TimeFormat implements Function {
 	}
 
 	public static String call(PageContext pc , Object object, String mask,String strTimezone) throws ExpressionException {
-		return _call(pc,object,mask, TimeZoneUtil.toTimeZone(strTimezone));
+		return _call(pc,object,mask, strTimezone==null?ThreadLocalPageContext.getTimeZone(pc):TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	
 	private static String _call(PageContext pc , Object object, String mask,TimeZone tz) throws ExpressionException {

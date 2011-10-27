@@ -766,4 +766,10 @@ public final class FileResource extends File implements Resource {
 			provider.unlock(this);
 		}
 	}
+	
+	public boolean equals(Object other){
+		if(provider.isCaseSensitive()) return super.equals(other);
+		if(!(other instanceof File)) return false;
+		return getAbsolutePath().equalsIgnoreCase(((File)other).getAbsolutePath());
+	}
 }

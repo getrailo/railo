@@ -574,8 +574,10 @@ public final class DateCaster {
 	}
 
 	private static DateTime parseOffset(DateString ds, TimeZone timeZone, int[] date,int hours, int minutes, int seconds, int msSeconds,DateTime defaultValue) {
-		
-		if(ds.fwIfCurrent('+')){
+		if(ds.isLast() && (ds.fwIfCurrent('Z') ||  ds.fwIfCurrent('z'))) {
+			return util.toDateTime(TimeZoneConstants.UTC, date[0], date[1], date[2], hours, minutes, seconds, msSeconds,defaultValue);
+		}
+		else if(ds.fwIfCurrent('+')){
 	    	DateTime rtn = util.toDateTime(timeZone, date[0], date[1], date[2], hours, minutes, seconds, msSeconds,defaultValue);
 	    	if(rtn==defaultValue) return rtn;
        	 	return readOffset(true,timeZone,rtn,date[0], date[1], date[2], hours, minutes, seconds, msSeconds,ds,defaultValue);

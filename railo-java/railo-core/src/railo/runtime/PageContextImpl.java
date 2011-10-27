@@ -1732,7 +1732,15 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public void handlePageException(PageException pe) {
 		if(!(pe instanceof Abort)) {
-			getHttpServletResponse().setContentType("text/html");
+			
+			String charEnc = rsp.getCharacterEncoding();
+	        if(StringUtil.isEmpty(charEnc,true)) {
+				rsp.setContentType("text/html");
+	        }
+	        else {
+	        	rsp.setContentType("text/html; charset=" + charEnc);
+	        }
+			
 			int statusCode=getStatusCode(pe);
 			
 			if(getConfig().getErrorStatusCode())rsp.setStatus(statusCode);
@@ -2473,10 +2481,16 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#addPageSource(railo.runtime.PageSource, boolean)
      */
     public void addPageSource(PageSource ps, boolean alsoInclude) {
-    	//print.dumpStack();
     	pathList.add(ps);
         if(alsoInclude) 
             includePathList.add(ps);
+    }
+    
+
+    public void addPageSource(PageSource ps, PageSource psInc) {
+    	pathList.add(ps);
+        if(psInc!=null) 
+            includePathList.add(psInc);
     }
 
     /**

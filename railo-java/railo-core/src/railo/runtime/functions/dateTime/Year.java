@@ -17,6 +17,6 @@ public final class Year implements Function {
 	}
 	
 	public static double call(PageContext pc , DateTime date, String strTimezone) throws ExpressionException {
-		return DateTimeUtil.getInstance().getYear(TimeZoneUtil.toTimeZone(strTimezone),date);
+		return DateTimeUtil.getInstance().getYear(strTimezone==null?pc.getTimeZone():TimeZoneUtil.toTimeZone(strTimezone),date);
 	}
 }

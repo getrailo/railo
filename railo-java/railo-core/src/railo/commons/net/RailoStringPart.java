@@ -1,5 +1,8 @@
 package railo.commons.net;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 
 public class RailoStringPart extends StringPart {
@@ -22,6 +25,14 @@ public class RailoStringPart extends StringPart {
 	public String getValue() {
 		return value;
 	}
-
+	/**
+     * Write the disposition header to the output stream
+     * @param out The output stream
+     * @throws IOException If an IO problem occurs
+     * @see Part#sendDispositionHeader(OutputStream)
+     */
+	protected void sendDispositionHeader(OutputStream out)  throws IOException {
+		ResourcePart.sendDispositionHeader(getName(),null,getCharSet(),out);
+	}
 
 }

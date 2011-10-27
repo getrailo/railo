@@ -10,6 +10,7 @@ import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -35,7 +36,7 @@ public final class Property extends MemberSupport implements ASMProperty {
 	private String _default;
 	private String displayname="";
 	private String hint="";
-	private final Struct meta=new StructImpl();
+	private Struct meta=new StructImpl();
 
 	private String ownerName;
 	
@@ -234,5 +235,21 @@ public final class Property extends MemberSupport implements ASMProperty {
 		Property other=(Property)obj;
 		
 		return toString().equals(other.toString());
+	}
+
+	public Object duplicate(boolean deepCopy) {
+		Property other = new Property();
+		other._default=_default;
+		other.displayname=displayname;
+		other.getter=getter;
+		other.hint=hint;
+		other.meta=deepCopy?(Struct) Duplicator.duplicate(meta,deepCopy):meta;
+		other.name=name;
+		other.ownerName=ownerName;
+		other.required=required;
+		other.setter=setter;
+		other.type=type;
+		
+		return other;
 	}
 }

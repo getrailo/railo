@@ -1,11 +1,18 @@
 package railo.runtime.functions.dynamicEvaluation;
 
 import railo.runtime.PageContext;
-import railo.runtime.exp.FunctionNotSupported;
+import railo.runtime.exp.PageException;
+import railo.runtime.ext.function.Function;
 
-public class PrecisionEvaluate {
-	// FUTURE
-	public static Object call(PageContext pc , Object[] objs) throws FunctionNotSupported {
-		throw new FunctionNotSupported("PrecisionEvaluate");
+/**
+ * Implements the Cold Fusion Function evaluate
+ */
+public final class PrecisionEvaluate implements Function {
+
+	
+	public static Object call(PageContext pc , Object[] objs) throws PageException {
+		
+		return Evaluate.call(pc, objs,true);
 	}
+
 }

@@ -22,7 +22,7 @@ public final class ThreadLocalConfig {
 	 * returns Config registered for the current thread
 	 * @return Config for the current thread or null 
 	 */
-	public static Config get() {
+	static Config get() {
 		return (Config) cThreadLocal.get();
 	}
 	

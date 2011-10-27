@@ -138,7 +138,7 @@ public final class ConfigWebUtil {
                 else if(str.startsWith("-dir}",5)) str=config.getTempDirectory().getRealResource(str.substring(10)).toString();
                 else if(str.startsWith("-directory}",5)) str=config.getTempDirectory().getRealResource(str.substring(16)).toString();
             }
-            else if(config instanceof ServletConfig)str=SystemUtil.parsePlaceHolder(str,((ServletConfig)config).getServletContext());
+            else if(config instanceof ServletConfig)str=SystemUtil.parsePlaceHolder(str,((ServletConfig)config).getServletContext(),((ConfigImpl)config).getConfigServerImpl().getLabels());
             else str=SystemUtil.parsePlaceHolder(str);
             
             if(StringUtil.startsWith(str,'{')){

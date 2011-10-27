@@ -3,6 +3,7 @@ package railo.runtime.tag;
 import railo.runtime.PageSource;
 import railo.runtime.err.ErrorPageImpl;
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.ext.tag.TagImpl;
 
 /**
@@ -60,13 +61,13 @@ public final class Error extends TagImpl {
 	/** set the value template
 	*  The relative path to the custom error page.
 	* @param template value to set
-	 * @throws ExpressionException
+	* @throws MissingIncludeException 
 	**/
-	public void setTemplate(String template) throws ExpressionException	{
+	public void setTemplate(String template) throws MissingIncludeException	{
 	    PageSource sf=pageContext.getCurrentPageSource().getRealPage(template);
 	    //new PageSource(pageContext.getCurrentTemplateSourceFile(),template);
 		if(!sf.exists())
-			throw new ExpressionException("template ["+template+"] is not defined");
+			throw new MissingIncludeException(sf);
 		errorPage.setTemplate(sf);
 	}
 	

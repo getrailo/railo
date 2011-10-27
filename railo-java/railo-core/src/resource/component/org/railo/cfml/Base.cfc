@@ -1,4 +1,4 @@
-<cfcomponent displayname="base" accessors="true">
+<cfcomponent displayname="base" accessors="true" output="no">
 
 	<cfproperty type="String" name="tagName">
 	<cfproperty type="Array" name="params" >
@@ -200,22 +200,20 @@
 					<cfset body = tagAttributes.body>
 					<cfset Structdelete(tagAttributes, "body")>
 				</cfif>
-				<cfmail attributeCollection="#tagAttributes#">#body#							
-				<cfloop array="#tagParams#" index="param">
-                        <cfmailparam attributeCollection="#param#">
-                  </cfloop>
+				<cfmail attributeCollection="#tagAttributes#">#body#<!---							
+				---><cfloop array="#tagParams#" index="param"><!---
+                        ---><cfmailparam attributeCollection="#param#"><!---
+                  ---></cfloop><!---
 				
-				<cfloop array="#variables.parts#" index="part">
-					<cfset partbody = "">
-                        <cfif structkeyexists(part,"body")>
-                             <cfset partbody = part["body"]>
-                             <cfset structdelete(part,"body")>
-                        </cfif>
-                        <cfmailpart attributeCollection="#part#">
-                            #partbody#
-                        </cfmailpart>
-                    </cfloop>
-				</cfmail>
+				---><cfloop array="#variables.parts#" index="part"><!---
+					---><cfset partbody = ""><!---
+                        ---><cfif structkeyexists(part,"body")><!---
+                             ---><cfset partbody = part["body"]><!---
+                             ---><cfset structdelete(part,"body")><!---
+                        ---></cfif><!---
+                        ---><cfmailpart attributeCollection="#part#">#partbody#</cfmailpart><!---
+                    ---></cfloop><!---
+				---></cfmail>
 			
 				<cfreturn this/>
 			</cfcase>

@@ -129,6 +129,12 @@ public final class ConfigServerFactory {
 		//if()
 		//f=cDir.getRealResource("Cache.cfc");
         //if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/cdriver/Cache.cfc",f);
-
+		
+		// Security certificate
+        Resource secDir = configDir.getRealResource("security");
+        if(!secDir.exists())secDir.mkdirs();
+        Resource f = secDir.getRealResource("cacerts");
+        if(!f.exists())ConfigWebFactory.createFileFromResourceEL("/resource/security/cacerts",f);
+        System.setProperty("javax.net.ssl.trustStore",f.toString());
 	}
 }

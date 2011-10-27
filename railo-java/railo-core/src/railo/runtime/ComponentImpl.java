@@ -39,7 +39,6 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
-import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DeprecatedException;
@@ -2008,7 +2007,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
 		// MUST this is just a workaround
 		if(pc==null){
 			pcCreated=true;
-			ConfigWeb config = (ConfigWeb) ThreadLocalConfig.get();
+			ConfigWeb config = (ConfigWeb) ThreadLocalPageContext.getConfig();
 			Pair[] parr = new Pair[0];
 			pc=ThreadUtil.createPageContext(config, DevNullOutputStream.DEV_NULL_OUTPUT_STREAM, "localhost", "/","", new Cookie[0], parr, parr, new StructImpl());
 		}

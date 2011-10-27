@@ -2,12 +2,18 @@ package railo.runtime.text.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.pdfbox.exceptions.CryptographyException;
+import org.pdfbox.exceptions.InvalidPasswordException;
+import org.pdfbox.pdmodel.PDDocument;
+import org.pdfbox.util.PDFText2HTML;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -314,5 +320,38 @@ public class PDFUtil {
 	public static void writeImages(byte[] input,Set pages,Resource outputDirectory, String prefix,
 			String format, int scale, boolean overwrite, boolean goodQuality,boolean transparent) throws PageException, IOException {
 		PDF2Image.getInstance().writeImages(input, pages, outputDirectory, prefix, format, scale, overwrite, goodQuality, transparent);
+	}
+
+	public static Object extractText(PDFDocument doc, Set<Integer> pageNumbers) throws IOException, CryptographyException, InvalidPasswordException {
+		PDDocument pdDoc = doc.toPDDocument();
+		//PDPageNode pages = pdDoc.getDocumentCatalog().getPages();
+		//pages.
+		//pdDoc.getDocumentCatalog().
+		
+		/*Iterator<Integer> it = pageNumbers.iterator();
+		int p;
+		while(it.hasNext()){
+			p=it.next().intValue();
+		
+			pdDoc.getDocumentCatalog().getPages()
+		}
+		*/
+		
+		//print.o(pages);
+		
+		
+		
+		//pdDoc.
+		
+		
+		//PDFTextStripperByArea  stripper = new PDFTextStripperByArea();
+		//PDFHighlighter  stripper = new PDFHighlighter();
+		PDFText2HTML  stripper = new PDFText2HTML();
+		//PDFTextStripper stripper = new PDFTextStripper();
+	    StringWriter writer = new StringWriter();
+	    stripper.writeText(pdDoc, writer);
+	    
+		
+		return writer.toString();
 	}
 }

@@ -6,19 +6,26 @@ import railo.aprint;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
+import railo.commons.io.res.util.ResourceUtil;
 
 public class StringExternalizerWriter {
 	
 	private StringBuilder sb=new StringBuilder();
 	private int offset=0;
+	private Resource res;
+	
+	public StringExternalizerWriter(Resource res) throws IOException{
+		this.res=res;
+		ResourceUtil.clear(res);
+	}
 	
 	public Range write(String str){
 		sb.append(str);
 		return new Range(offset,(offset+=str.length())-1);
 	} 
 	
-	public void writeOut(Resource res) throws IOException{
-		IOUtil.write(res, sb.toString(),"UTF-8",false);
+	public void writeOut() throws IOException{
+		if(sb.length()>0)IOUtil.write(res, sb.toString(),"UTF-8",false);
 	}
 	
 	public static class Range {
@@ -39,12 +46,12 @@ public class StringExternalizerWriter {
 	public static void main(String[] args) throws IOException {
 		Resource res = ResourcesImpl.getFileResourceProvider().getResource("/Users/mic/temp/externalize.txt");
 		
-		StringExternalizerWriter ext=new StringExternalizerWriter();
+		StringExternalizerWriter ext=new StringExternalizerWriter(res);
 		Range r1 = ext.write("hallo");
 		Range r2 = ext.write("peter");
 		Range r3 = ext.write("müller");
 		
-		ext.writeOut(res);
+		ext.writeOut();
 		
 		StringExternalizerReader reader=new StringExternalizerReader(res);
 		aprint.o(r1);

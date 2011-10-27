@@ -16,7 +16,7 @@ import railo.runtime.text.xml.XMLUtil;
 
 public final class XmlParse implements Function {
 	public static Node call(PageContext pc , String string) throws PageException {
-		return call(pc,string,false);
+		return call(pc,string,false,null);
 	}
 	public static Node call(PageContext pc , String string, boolean caseSensitive) throws PageException {
 		return call(pc, string, caseSensitive,null);

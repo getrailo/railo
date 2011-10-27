@@ -167,7 +167,7 @@ public final class TagLibTag {
 	 * Gibt alle Attribute (TagLibTagAttr) eines Tag als HashMap zurück.
 	 * @return HashMap Attribute als HashMap.
 	 */
-	public Map getAttributes() {
+	public Map<String,TagLibTagAttr> getAttributes() {
 		return attributes;
 	}
 	
@@ -510,8 +510,9 @@ public final class TagLibTag {
 	 * Diese Methode wird durch die Klasse TagLibFactory verwendet.
 	 * @param  tteClass Klassendefinition der Evaluator-Implementation.
 	 */
-	protected void setTttClass(String tttClass) {
+	public void setTttClass(String tttClass) {
 		this.tttClass = tttClass;
+		this.tttConstructor=null;
 	}
 
 	/**
@@ -519,8 +520,9 @@ public final class TagLibTag {
 	 * Diese Methode wird durch die Klasse TagLibFactory verwendet.
 	 * @param  tdbtClass Klassendefinition der TagDependentBodyTransformer-Implementation.
 	 */
-	protected void setTdbtClass(String tdbtClass) {
+	public void setTdbtClass(String tdbtClass) {
 		this.tdbtClass = tdbtClass;
+		this.tdbt = null;
 	}
 
 	/**

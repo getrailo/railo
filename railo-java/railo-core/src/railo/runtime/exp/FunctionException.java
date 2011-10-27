@@ -58,7 +58,7 @@ public final class FunctionException extends ExpressionException {
 
 	public FunctionException(PageContext pc,String functionName, String badArgumentPosition, String badArgumentName, String message) {
         super("invalid call of the function "+functionName+", "+(badArgumentPosition)+" Argument ("+badArgumentName+") is invalid, "+message);
-        setAdditional("function info",getFunctionInfo(pc,functionName));
+        setAdditional("pattern",getFunctionInfo(pc,functionName));
     }
     
 	private static String getFunctionInfo(PageContext pc,String functionName) {
@@ -85,6 +85,8 @@ public final class FunctionException extends ExpressionException {
 				rtn.append("[");
 				optionals++;
 			}
+			rtn.append(arg.getName());
+			rtn.append(":");
 			rtn.append(arg.getTypeAsString());
 		}
 		for(int i=0;i<optionals;i++)
