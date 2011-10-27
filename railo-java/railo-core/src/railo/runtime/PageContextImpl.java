@@ -83,6 +83,7 @@ import railo.runtime.exp.PageServletException;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.listener.AppListenerSupport;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.listener.ModernAppListenerException;
@@ -251,8 +252,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private PageException exception;
     private PageSource base;
 
-    ApplicationContext applicationContext;
-    ApplicationContext defaultApplicationContext;
+    ApplicationContextPro applicationContext;
+    ApplicationContextPro defaultApplicationContext;
 
     private ScopeFactory scopeFactory=new ScopeFactory();
 
@@ -2531,7 +2532,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         session=null;
         application=null;
         client=null;
-        this.applicationContext = applicationContext;
+        this.applicationContext = (ApplicationContextPro) applicationContext;
         
         int scriptProtect = applicationContext.getScriptProtect();
         
@@ -2915,5 +2916,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 	public String getServerPassword() {
 		return serverPassword;
+	}
+
+	public short getSessionType() {
+		if(isGatewayContext())return Config.SESSION_TYPE_CFML;
+		return applicationContext.getSessionType();
 	}
 }
