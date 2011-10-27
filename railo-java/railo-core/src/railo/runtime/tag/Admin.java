@@ -3721,6 +3721,7 @@ private void doGetMappings() throws PageException {
     private void doUpdateSSLCertificate() throws PageException {
     	String host=getString("admin", "UpdateSSLCertificateInstall", "host");
     	int port = getInt("port", 443);
+    	updateSSLCertificate((ConfigServer)config, host, port);
     }
     
     public static void updateSSLCertificate(ConfigServer cs,String host, int port) throws PageException {
@@ -3735,7 +3736,7 @@ private void doGetMappings() throws PageException {
     }
     
     private void doGetSSLCertificate() throws PageException {
-    	String host=getString("admin", "UpdateSSLCertificateInstall", "host");
+    	String host=getString("admin", "GetSSLCertificate", "host");
     	int port = getInt("port", 443);
     	pageContext.setVariable(getString("admin",action,"returnVariable"),getSSLCertificate((ConfigServer)config,host,port));
     }
