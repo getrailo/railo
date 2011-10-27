@@ -148,7 +148,9 @@ public final class ReqRspUtil {
 	}
 	
 	public static boolean isURLEncoded(String str) {
-		if(StringUtil.isEmpty(str,true) || !StringUtil.isAscci(str)) return false;
+		if(StringUtil.isEmpty(str,true)) return false;
+		if(str.indexOf('+')!=-1) return true;
+		if(!StringUtil.isAscci(str)) return false;
 		int index,last=0;
 		boolean rtn=false;
 		while((index=str.indexOf('%',last))!=-1){
