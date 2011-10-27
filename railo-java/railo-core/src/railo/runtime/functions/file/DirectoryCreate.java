@@ -13,7 +13,7 @@ public class DirectoryCreate {
 	}
 	public static String call(PageContext pc , String path, boolean doParent) throws PageException {
 		Resource dir=ResourceUtil.toResourceNotExisting(pc, path,pc.getConfig().allowRealPath());
-		Directory.actionCreate(pc, dir, null, doParent, -1, S3Constants.ACL_PUBLIC_READ, S3Constants.STORAGE_UNKNOW);
+		Directory.actionCreate(pc, dir, null, doParent, -1, null, S3Constants.STORAGE_UNKNOW);
 		
 	    return null;
 	}

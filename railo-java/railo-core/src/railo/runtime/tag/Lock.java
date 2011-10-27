@@ -221,7 +221,7 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 			//print.out("LockTimeoutException");
 		    name=null;
 			String errorText=e.getMessage();
-		    if(lockType!=null)errorText=("there is a timeout occurred on ["+lockType+"] scope lock");
+		    if(lockType!=null)errorText=("a timeout occurred on ["+lockType+"] scope lock");
 			
 		    cflock.set("succeeded",Boolean.FALSE);
 		    cflock.set("errortext",errorText);

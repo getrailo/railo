@@ -18,10 +18,13 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.op.Caster;
 import railo.runtime.op.Constants;
 import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
@@ -75,6 +78,7 @@ public final class DBInfo extends TagImpl {
 	private static final int TYPE_INDEX = 8;
 	private static final int TYPE_USERS = 9;
 	private static final int TYPE_TERMS = 10;
+	private static final Collection.Key CARDINALITY = KeyImpl.init("CARDINALITY");
 
 	
 	//private static final String[] ALL_TABLE_TYPES = {"TABLE", "VIEW", "SYSTEM TABLE", "SYNONYM"};
@@ -496,8 +500,39 @@ public final class DBInfo extends TagImpl {
 		
 		checkTable(metaData);
 		
-        ResultSet tables = metaData.getIndexInfo(dbname, schema, table, true, true);
+        ResultSet tables = metaData.getIndexInfo(dbname, schema, table, false, true);
         railo.runtime.type.Query qry = new QueryImpl(tables,"query");
+        
+        // type int 2 string
+        int rows = qry.getRecordcount();
+        String strType;
+        int type,card;
+        for(int row=1;row<=rows;row++){
+        	
+        	// type
+        	switch(type=Caster.toIntValue(qry.getAt(KeyImpl.TYPE,row))){
+        	case 0:
+        		strType="Table Statistic";
+        	break;
+        	case 1:
+	    		strType="Clustered Index";
+	    	break;
+        	case 2:
+	    		strType="Hashed Index";
+	    	break;
+        	case 3:
+	    		strType="Other Index";
+	    	break;
+	    	default:
+	    		strType=Caster.toString(type);
+	    	}
+        	qry.setAt(KeyImpl.TYPE, row, strType);
+        	
+        	// CARDINALITY
+        	card=Caster.toIntValue(qry.getAt(CARDINALITY,row),0);
+        	qry.setAt(CARDINALITY, row, Caster.toDouble(card));
+        	
+        }
         qry.setExecutionTime(stopwatch.time());
         
         

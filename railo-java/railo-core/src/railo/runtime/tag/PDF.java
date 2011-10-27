@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.oro.text.regex.MalformedPatternException;
+import org.pdfbox.exceptions.CryptographyException;
+import org.pdfbox.exceptions.InvalidPasswordException;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -58,6 +60,7 @@ public class PDF extends BodyTagImpl  {
 	private static final int ACTION_SET_INFO = 8;
 	private static final int ACTION_THUMBNAIL = 9;
 	private static final int ACTION_WRITE = 10;
+	private static final int ACTION_EXTRACT_TEXT = 11;
 
 	
 	private static final String FORMAT_JPG ="jpg";
@@ -73,9 +76,14 @@ public class PDF extends BodyTagImpl  {
 	private static final int SAVE_OPTION_FULL = 0;
 	private static final int SAVE_OPTION_INCREMENTAL = 1;
 	private static final int SAVE_OPTION_LINEAR = 2;
+	
+	private static final int TYPE_STRING = 1;
+	private static final int TYPE_XML = 2;
+    
+	
 	private static final ExtensionResourceFilter PDF_FILTER = new ExtensionResourceFilter("pdf");
 	private static final int UNDEFINED = Integer.MIN_VALUE;
-    
+	
 	
 	
 	private int action=ACTION_PROCESSDDX;
@@ -116,6 +124,7 @@ public class PDF extends BodyTagImpl  {
 	private java.util.List<PDFParamBean> params;
 	private ResourceFilter filter=null;
 	private String imagePrefix=null;
+	private int type=TYPE_XML;
 	
 	/**
 	 * @see railo.runtime.ext.tag.BodyTagImpl#release()
@@ -160,6 +169,7 @@ public class PDF extends BodyTagImpl  {
 		params=null;
 		filter=null;
 		imagePrefix=null;
+		type=TYPE_XML;
 	}
 	
 	
@@ -206,8 +216,26 @@ public class PDF extends BodyTagImpl  {
 		else if("set_info".equals(strAction))				action=ACTION_SET_INFO;
 		else if("thumbnail".equals(strAction))				action=ACTION_THUMBNAIL;
 		else if("write".equals(strAction))					action=ACTION_WRITE;
+		else if("extracttext".equals(strAction))					action=ACTION_EXTRACT_TEXT;
+		else if("extract-text".equals(strAction))					action=ACTION_EXTRACT_TEXT;
+		else if("extract_text".equals(strAction))					action=ACTION_EXTRACT_TEXT;
+		
 		else throw new ApplicationException("invalid action definition ["+strAction+"], valid actions definitions are " +
 				"[addWatermark,deletePages,getInfo,merge,protect,read,removeWatermark,setInfo,thumbnail,write]");
+		
+	}
+	
+
+	public void setType(String strType) throws ApplicationException {
+		
+		strType=StringUtil.toLowerCase(strType.trim());
+		if("string".equals(strType))				type=TYPE_STRING;
+		else if("text".equals(strType))				type=TYPE_STRING;
+		else if("plain".equals(strType))				type=TYPE_STRING;
+		else if("xml".equals(strType))				type=TYPE_XML;
+		
+		else throw new ApplicationException("invalid type definition ["+strType+"], valid type definitions are " +
+				"[string,xml]");
 		
 	}
 	
@@ -558,6 +586,10 @@ public class PDF extends BodyTagImpl  {
 			else if(ACTION_DELETE_PAGES==action)		doActionDeletePages();
 			else if(ACTION_PROTECT==action)				doActionProtect();
 			else if(ACTION_THUMBNAIL==action)			doActionThumbnail();
+			else if(ACTION_EXTRACT_TEXT==action)		{
+				if(true)throw new ApplicationException("not supported yet, see https://issues.jboss.org/browse/RAILO-1559");
+				doActionExtractText();
+			}
 			
 			//else if(ACTION_PROCESSDDX==action)	throw new ApplicationException("action [processddx] not supported");
 			
@@ -1118,14 +1150,41 @@ public class PDF extends BodyTagImpl  {
 		}
 	}
 	
-	
-	private void doActionGetInfo() throws PageException {
+	private void doActionGetInfo() throws PageException, IOException {
 		required("pdf", "getInfo", "name", name,true);
 		required("pdf", "getInfo", "source", source);
 		
 		PDFDocument doc = toPDFDocument(source,password,null);
 		pageContext.setVariable(name, doc.getInfo());
 		
+	}
+	private void doActionExtractText() throws PageException, IOException, CryptographyException, InvalidPasswordException {
+		required("pdf", "extractText", "name", name,true);
+		
+		PDFDocument doc = toPDFDocument(source,password,null);
+		doc.setPages(pages);
+		
+		pageContext.setVariable(name, PDFUtil.extractText(doc,doc.getPages()));
+		/*
+		 <cfpdf 
+ required 
+    action="extracttext" <!---extract all the words in the PDF.---> 
+    ***source= "absolute or relative path of the PDF file|PDF document variable| 
+            cfdocument variable" 
+    pages = "*" <!----page numbers from where the text needs to be extracted from the 
+                PDF document---> 
+
+optional 
+    addquads = "add the position or quadrants for the text in the PDF" 
+    honourspaces = "true|false" 
+    overwrite = "true" <!---Overwrite the specified object in the PDF document---> 
+    ***password = "" <!--- PDF document password---> 
+    type = "string|xml" <!---format in which the text needs to be extracted---> 
+    one of the following: 
+    destination = "PDF output file pathname" 
+    name = "PDF document variable" 
+    usestructure = "true|false" 
+		 * */
 	}
 	
 	private Object allowed(boolean encrypted, int permissions, int permission) {

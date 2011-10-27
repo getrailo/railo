@@ -9,9 +9,6 @@ import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.extern.StringExternalizerWriter;
-import railo.transformer.bytecode.extern.StringExternalizerWriter.Range;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.Types;
 
 public final class PrintOut extends StatementBase {

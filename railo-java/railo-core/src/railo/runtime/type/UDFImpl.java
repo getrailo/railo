@@ -391,10 +391,25 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         Local		oldLocal=pc.localScope();
         
 		pci.setFunctionScopes(newLocal,newArgs);
-		int oldCheckArgs=undefined.setMode((pc.getApplicationContext()).getLocalMode());
-		
+		int oldCheckArgs=undefined.setMode(((ApplicationContextPro)pc.getApplicationContext()).getLocalMode());
+		PageSource psInc=null;
 		try {
-			pc.addPageSource(getPageSource(),doIncludePath);
+			PageSource ps = getPageSource();
+			if(doIncludePath)psInc = ps;
+			//if(!ps.getDisplayPath().endsWith("Dump.cfc"))print.e(getPageSource().getDisplayPath());
+			if(doIncludePath && getOwnerComponent()!=null) {
+				//if(!ps.getDisplayPath().endsWith("Dump.cfc"))print.ds(ps.getDisplayPath());
+				psInc=ComponentUtil.getPageSource(getOwnerComponent());
+				if(psInc==pci.getCurrentTemplatePageSource()) {
+					psInc=null;
+				}
+				
+			}
+			
+			
+			
+			
+			pci.addPageSource(ps,psInc);
 //////////////////////////////////////////
 			BodyContent bc =  (getOutput()?null:pci.pushBody());
 		    //boolean isC=ownerComponent!=null;
@@ -433,7 +448,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			
 		}
 		finally {
-			pc.removeLastPageSource(doIncludePath);
+			pc.removeLastPageSource(psInc!=null);
             pci.setFunctionScopes(oldLocal,oldArgs);
 		    undefined.setMode(oldCheckArgs);
             pci.getScopeFactory().recycle(newArgs);

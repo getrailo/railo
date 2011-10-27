@@ -15,6 +15,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 
@@ -649,5 +650,22 @@ public final class SystemUtil {
 		return sct;
 	}
 	
-	
+	public static String getPropertyEL(String key) {
+		try{
+			String str = System.getProperty(key);
+			if(!StringUtil.isEmpty(str,true)) return str;
+			
+			Iterator<Entry<Object, Object>> it = System.getProperties().entrySet().iterator();
+			Entry<Object, Object> e;
+			String n;
+			while(it.hasNext()){
+				e = it.next();
+				n=(String) e.getKey();
+				if(key.equalsIgnoreCase(n)) return (String) e.getValue();
+			}
+			
+		}
+		catch(Throwable t){}
+		return null;
+	}
 }

@@ -12,7 +12,7 @@ import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Component;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.engine.ThreadLocalConfig;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.system.CFFunction;
 import railo.runtime.op.Caster;
@@ -1374,7 +1374,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	private void eval(TagLibTag tlt, railo.transformer.cfml.expression.CFMLExprTransformer.Data data, Tag tag) throws TemplateException {
 		if(!StringUtil.isEmpty(tlt.getTteClassName())){
 			try {
-				tlt.getEvaluator().execute(ThreadLocalConfig.get(), tag, tlt,data.fld, data.cfml);
+				tlt.getEvaluator().execute(ThreadLocalPageContext.getConfig(), tag, tlt,data.fld, data.cfml);
 			} catch (EvaluatorException e) {
 				throw new TemplateException(e.getMessage());
 			}

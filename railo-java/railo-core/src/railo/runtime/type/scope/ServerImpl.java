@@ -3,7 +3,6 @@ package railo.runtime.type.scope;
 import railo.commons.io.SystemUtil;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
-import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -98,7 +97,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			
 			String rootdir="";
 			try{
-				rootdir=ThreadLocalConfig.get().getRootDirectory().getAbsolutePath();
+				rootdir=ThreadLocalPageContext.getConfig(pc).getRootDirectory().getAbsolutePath();
 			}
 			catch(Throwable t){}
 			coldfusion.setEL(ROOT_DIR,rootdir);// 

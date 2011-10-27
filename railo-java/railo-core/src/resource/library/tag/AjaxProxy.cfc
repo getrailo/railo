@@ -9,12 +9,11 @@
     <cfset this.metadata.attributes={
 		cfc:		{required:false,type:"string",default:"",hint="the CFC for which to create a proxy. You must specify a dot-delimited path to the CFC. The path can be absolute or relative to location of the CFML page. For example, if the myCFC CFC is in the cfcs subdirectory of the Railox page, specify cfcs.myCFC. On UNIX based systems, the tag searches first for a file whos name or path corresponds to the specified name or path, but is in all lower case. If it does not find it, Railox then searches for a file name or path that coresponds to the attribute value exactly, with identical character casing."},
 		jsclassname:{required:false,type:"string",default:"",hint="The name to use for the JavaScript proxy class."},		
-		bind:		{required:false,type:"string",default:"",hint="A bind expression that specifies a CFC method, JavaScript function, or URL to call.
-"},
+		bind:		{required:false,type:"string",default:"",hint="A bind expression that specifies a CFC method, JavaScript function, or URL to call. Cannot be used with the cfc attribute."},
 		onError:	{required:false,type:"string",default:"",hint="The name of a JavaScript function to invoke when a bind, specified by the bind attribute fails. The function must take two arguments: an error code and an error message."},
 		onSuccess:	{required:false,type:"string",default:"",hint="The name of a JavaScript function to invoke when a bind, specified by the bind attribute succeeds. The function must take one argument, the bind function return value. If the bind function is a CFC function, the return value is automatically converted to a JavaScript variable before being passed to the onSuccess function."},
-		extends:	{required:false,type:"boolean",default:false,hint=""},
-		methods:	{required:false,type:"string",default:"",hint=""}
+		extends:	{required:false,type:"boolean",default:false,hint="If true force ajaxproxy to look for remote methods in the cfc extensions chain. Any remote method found will be added to the proxy object. This atrribute cannot be used with a bind attribute."},
+		methods:	{required:false,type:"string",default:"",hint="Comma delimited list of methods name. If exists only the method ( if remote ) specified will be exposed in the proxy object."}
 	}>
          
     <cffunction name="init" output="no" returntype="void"

@@ -52,7 +52,7 @@ public final class NumberFormat implements Function {
             return new railo.runtime.util.NumberFormat().format(Locale.US,toNumber(pc,object),mask);
         } 
         catch (InvalidMaskException e) {
-            throw new FunctionException(pc,"numberFormat",1,"number",e.getMessage());
+            throw new FunctionException(pc,"numberFormat",2,"mask",e.getMessage());
         }
     }
     
@@ -63,8 +63,6 @@ public final class NumberFormat implements Function {
         String str=Caster.toString(object);
         if(str.length()==0) return 0;
         throw new FunctionException(pc,"numberFormat",1,"number","can't cast value ["+str+"] to a number");
-            
-        
     }
     
 

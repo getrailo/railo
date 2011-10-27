@@ -48,7 +48,6 @@ import railo.commons.net.ResourcePart;
 import railo.commons.net.ResourcePartSource;
 import railo.commons.net.URLEncoder;
 import railo.runtime.config.Config;
-import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -583,7 +582,7 @@ public final class Http extends BodyTagImpl {
 			if(!e.done){
 				httpMethod.abort();
 				if(throwonerror)
-					throw new HTTPException("408 Request Time-out","there is a timeout occurred in tag http",408);
+					throw new HTTPException("408 Request Time-out","a timeout occurred in tag http",408);
 				setRequestTimeout(cfhttp);	
 				return;
 				//throw new ApplicationException("timeout");	
@@ -1366,7 +1365,7 @@ public final class Http extends BodyTagImpl {
 				String charset=tmp[1];
 				
 				if(StringUtil.isEmpty(charset,true)) {
-					Config config = ThreadLocalConfig.get();
+					Config config = ThreadLocalPageContext.getConfig();
 					if(config!=null)charset=config.getWebCharset();
 				}
 				

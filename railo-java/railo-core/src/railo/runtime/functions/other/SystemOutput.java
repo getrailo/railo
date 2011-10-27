@@ -6,6 +6,8 @@ package railo.runtime.functions.other;
 
 import java.io.PrintStream;
 
+import railo.commons.lang.ExceptionUtil;
+import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 
@@ -20,14 +22,13 @@ public final class SystemOutput implements Function {
     	PrintStream stream = System.out;
     	//string+=":"+Thread.currentThread().getId();
     	if(doErrorStream) stream = System.err;
-        if("<print-stack-race>".equalsIgnoreCase(string)){
-        	new Exception("Stack trace").printStackTrace(stream);
-        	if(addNewLine)stream.println();
+        if(string!=null && StringUtil.indexOfIgnoreCase(string,"<print-stack-trace>")!=-1){
+        	String st = ExceptionUtil.getStacktrace(new Exception("Stack trace"), false);
+        	string=StringUtil.replace(string, "<print-stack-trace>", "\n"+st+"\n", true).trim();
         }
-        else {
-        	if(addNewLine)stream.println(string);
-        	else stream.print(string);
-        }
+        if(addNewLine)stream.println(string);
+        else stream.print(string);
+        
     	return true;
     }
 }

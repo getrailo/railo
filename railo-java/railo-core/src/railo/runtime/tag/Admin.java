@@ -3,6 +3,7 @@ package railo.runtime.tag;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -28,6 +29,7 @@ import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogResource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.DirectoryResourceFilter;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.OrResourceFilter;
@@ -85,6 +87,7 @@ import railo.runtime.listener.ApplicationListener;
 import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.Monitor;
 import railo.runtime.monitor.RequestMonitor;
+import railo.runtime.net.http.CertificateInstaller;
 import railo.runtime.net.mail.SMTPException;
 import railo.runtime.net.mail.SMTPVerifier;
 import railo.runtime.net.mail.Server;
@@ -529,7 +532,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getDebuggingList",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetDebuggingList();
         else if(check("getLoggedDebugData",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetLoggedDebugData();
         else if(check("getDebugSetting",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetDebugSetting();
-        
+        else if(check("getSSLCertificate",	ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ  )) doGetSSLCertificate();
         else if(check("getPluginDirectory",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetPluginDirectory();
         else if(check("getPlugins",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetPlugins();
         else if(check("updatePlugin",		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdatePlugin();
@@ -568,6 +571,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
         else if(check("resetId",				ACCESS_FREE) && check2(ACCESS_WRITE  )) doResetId();
         else if(check("updateJar",         		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateJar();
+        else if(check("updateSSLCertificate",ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateSSLCertificate();
         else if(check("updateMonitorEnabled",   ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateMonitorEnabled();
         else if(check("updateTLD",         		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateTLD();
         else if(check("updateFLD",         		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateFLD();
@@ -3797,6 +3801,66 @@ private void doGetMappings() throws PageException {
 		}
         store();
     }
+    
+    private void doUpdateSSLCertificate() throws PageException {
+    	String host=getString("admin", "UpdateSSLCertificateInstall", "host");
+    	int port = getInt("port", 443);
+    }
+    
+    public static void updateSSLCertificate(ConfigServer cs,String host, int port) throws PageException {
+    	Resource cacerts=getCacerts(cs);
+    	 
+    	try {
+			CertificateInstaller installer = new CertificateInstaller(cacerts,host,(int)port);
+			installer.installAll();
+		} catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
+    }
+    
+    private void doGetSSLCertificate() throws PageException {
+    	String host=getString("admin", "UpdateSSLCertificateInstall", "host");
+    	int port = getInt("port", 443);
+    	pageContext.setVariable(getString("admin",action,"returnVariable"),getSSLCertificate((ConfigServer)config,host,port));
+    }
+    
+    public static Query getSSLCertificate(ConfigServer cs,String host, int port) throws PageException {
+    	Resource cacerts=getCacerts(cs);
+    	CertificateInstaller installer;
+		try {
+			installer = new CertificateInstaller(cacerts,host,(int)port);
+		} catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
+    	X509Certificate[] certs = installer.getCertificates();
+    	X509Certificate cert;
+    	
+    	Query qry=new QueryImpl(new String[]{"subject","issuer"},certs.length,"certificates");
+    	for(int i=0;i<certs.length;i++){
+    		cert=certs[i];
+    		qry.setAtEL("subject",i+1, cert.getSubjectDN().getName());
+    		qry.setAtEL("issuer",i+1, cert.getIssuerDN().getName());
+    	}
+    	return qry;
+    }
+    
+    
+    private static Resource getCacerts(ConfigServer cs) throws PageException {
+    	Resource cacerts=null;
+    	// javax.net.ssl.trustStore
+    	String trustStore = SystemUtil.getPropertyEL("javax.net.ssl.trustStore");
+    	if(trustStore!=null){
+    		cacerts = ResourcesImpl.getFileResourceProvider().getResource(trustStore);
+    	}
+    	
+    	// security/cacerts
+    	if(cacerts==null || !cacerts.exists()) {
+    		cacerts = cs.getConfigDir().getRealResource("security/cacerts");
+    	}
+    	return cacerts;
+    }
+    
+    
 
     private void doRemoveJar() throws PageException {
     	try {

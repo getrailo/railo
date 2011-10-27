@@ -23,6 +23,20 @@
 	<data key="services.update.remove">Remove installed patches</data>
 	<data key="services.update.exerun">execute update</data>
 	<data key="services.update.typedesc">Define how Railo will be patched. &quot;Automatic&quot; means that Railo searches automatically for updates once a day. &quot;Manual&quot; means that you can update Railo only manually here.</data>
+	<data key="services.certificate.desc">List SSL Certificates for a specific Host or install them.</data>
+	<data key="services.certificate.host">Host</data>
+	<data key="services.certificate.hostDesc">The host server, for example "www.getrailo.org"</data>
+	<data key="services.certificate.port">Port</data>
+	<data key="services.certificate.portDesc">The port of the server.</data>
+	<data key="services.certificate.install">install</data>
+	<data key="services.certificate.list">list</data>
+	<data key="services.certificate.result">SSL Certificates from host {host}</data>
+	<data key="services.certificate.subject">Subject</data>
+	<data key="services.certificate.issuer">Issuer</data>
+	<data key="services.certificate.subject">Subject</data>
+	<data key="services.certificate.issuer">Issuer</data>
+	<data key="services.certificate.noCert">There is no Certificate available from this host.</data>
+	
 	<data key="mappings.archivesecuredesc">Exclude source files from archive. Source files are only used for codeprints in case of an error</data>
 	<data key="mappings.topleveldesc">Make this mapping web-accessible (i.e., accessible via a browser or remote HTTP call)</data>
 	<data key="mappings.archiveheaddescription">Name of the archive file (ra or ras), (absolute or relative to the webroot)</data>
@@ -161,6 +175,7 @@
 	<data key="menu.services.schedule">Scheduled tasks</data>
 	<data key="menu.services.update">Update</data>
 	<data key="menu.services.restart">Restart</data>
+	<data key="menu.services.certificates">SSL Certificates</data>
 	<data key="menu.extension.label">Extension</data>
 	<data key="menu.extension.applications">Applications</data>
 	<data key="menu.extension.providers">Providers</data>
