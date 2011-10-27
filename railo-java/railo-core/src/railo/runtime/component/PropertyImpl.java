@@ -239,7 +239,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	}
 
 	public Object duplicate(boolean deepCopy) {
-		Property other = new Property();
+		PropertyImpl other = new PropertyImpl();
 		other._default=_default;
 		other.displayname=displayname;
 		other.getter=getter;

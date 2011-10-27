@@ -694,8 +694,7 @@ public final class Page extends BodyBase {
 					name, "Lrailo/runtime/type/Collection$Key;", null, null);
 			fv.visitEnd();
 			ExpressionUtil.writeOutSilent(value,staticBC, Expression.MODE_REF);
-			if(value instanceof Literal)
-				statcConst.invokeStatic(KEY_IMPL, KEY_INTERN);
+			statcConst.invokeStatic(KEY_IMPL, KEY_INTERN);
 			statcConst.visitFieldInsn(Opcodes.PUTSTATIC, staticBC.getClassName(), name, "Lrailo/runtime/type/Collection$Key;");
 			
 			

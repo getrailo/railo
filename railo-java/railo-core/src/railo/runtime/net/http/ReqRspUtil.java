@@ -1,5 +1,6 @@
 package railo.runtime.net.http;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public final class ReqRspUtil {
 		String charset = config.getWebCharset();
 		
 		if(cookies!=null) {
-			Cookie cookie,c;
+			Cookie cookie;
 			String tmp;
 			for(int i=0;i<cookies.length;i++){
 				cookie=cookies[i];	
@@ -169,7 +170,7 @@ public final class ReqRspUtil {
 	}
 	
 
-	private static String dec(String str, String charset) throws UnsupportedEncodingException {
+	private static String dec(String str, String charset) {
 		str=str.trim();
 		if(StringUtil.startsWith(str, '"') && StringUtil.endsWith(str, '"'))
 			str=str.substring(1,str.length()-1);

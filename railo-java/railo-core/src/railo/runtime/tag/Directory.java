@@ -198,11 +198,11 @@ public final class Directory extends TagImpl  {
 				"valid values are [private,public-read,public-read-write,authenticated-read]");*/
 	}
 	
-	public void setAcl(Object acl) throws ApplicationException	{
+	public void setAcl(Object acl) 	{
 		this.acl=acl;
 	}
 	
-	public void setStoreacl(Object acl) throws ApplicationException	{
+	public void setStoreacl(Object acl) 	{
 		this.acl=acl;
 	}
 	

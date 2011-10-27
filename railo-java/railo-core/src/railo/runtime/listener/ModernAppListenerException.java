@@ -9,6 +9,7 @@ import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalConfig;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.PageException;
@@ -59,7 +60,7 @@ public final class ModernAppListenerException extends PageException {
 	 * @see railo.runtime.exp.IPageException#getCatchBlock()
 	 */
 	public Struct getCatchBlock() {
-		return getCatchBlock(ThreadLocalConfig.get());
+		return getCatchBlock(ThreadLocalPageContext.getConfig());
 	}
 	
 

@@ -3805,13 +3805,14 @@ private void doGetMappings() throws PageException {
     private void doUpdateSSLCertificate() throws PageException {
     	String host=getString("admin", "UpdateSSLCertificateInstall", "host");
     	int port = getInt("port", 443);
+    	updateSSLCertificate((ConfigServer)config, host, port);
     }
     
     public static void updateSSLCertificate(ConfigServer cs,String host, int port) throws PageException {
     	Resource cacerts=getCacerts(cs);
     	 
     	try {
-			CertificateInstaller installer = new CertificateInstaller(cacerts,host,(int)port);
+			CertificateInstaller installer = new CertificateInstaller(cacerts,host,port);
 			installer.installAll();
 		} catch (Exception e) {
 			throw Caster.toPageException(e);
@@ -3819,7 +3820,7 @@ private void doGetMappings() throws PageException {
     }
     
     private void doGetSSLCertificate() throws PageException {
-    	String host=getString("admin", "UpdateSSLCertificateInstall", "host");
+    	String host=getString("admin", "GetSSLCertificate", "host");
     	int port = getInt("port", 443);
     	pageContext.setVariable(getString("admin",action,"returnVariable"),getSSLCertificate((ConfigServer)config,host,port));
     }
@@ -3828,7 +3829,7 @@ private void doGetMappings() throws PageException {
     	Resource cacerts=getCacerts(cs);
     	CertificateInstaller installer;
 		try {
-			installer = new CertificateInstaller(cacerts,host,(int)port);
+			installer = new CertificateInstaller(cacerts,host,port);
 		} catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
@@ -3845,7 +3846,7 @@ private void doGetMappings() throws PageException {
     }
     
     
-    private static Resource getCacerts(ConfigServer cs) throws PageException {
+    private static Resource getCacerts(ConfigServer cs) {
     	Resource cacerts=null;
     	// javax.net.ssl.trustStore
     	String trustStore = SystemUtil.getPropertyEL("javax.net.ssl.trustStore");

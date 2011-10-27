@@ -1150,7 +1150,7 @@ public class PDF extends BodyTagImpl  {
 		}
 	}
 	
-	private void doActionGetInfo() throws PageException, IOException {
+	private void doActionGetInfo() throws PageException {
 		required("pdf", "getInfo", "name", name,true);
 		required("pdf", "getInfo", "source", source);
 		

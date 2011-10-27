@@ -391,7 +391,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         Local		oldLocal=pc.localScope();
         
 		pci.setFunctionScopes(newLocal,newArgs);
-		int oldCheckArgs=undefined.setMode(((ApplicationContextPro)pc.getApplicationContext()).getLocalMode());
+		int oldCheckArgs=undefined.setMode(pc.getApplicationContext().getLocalMode());
 		PageSource psInc=null;
 		try {
 			PageSource ps = getPageSource();

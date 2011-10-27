@@ -8,6 +8,7 @@ import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalConfig;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.IPageException;
@@ -82,7 +83,7 @@ private PageException pe;
 	 */
 	public Struct getCatchBlock() {
 		// TLPC
-		return pe.getCatchBlock(ThreadLocalConfig.get());
+		return pe.getCatchBlock(ThreadLocalPageContext.getConfig());
 	}
 	
 

@@ -221,10 +221,10 @@ public final class FileTag extends TagImpl {
 	public void setAcl(String acl) throws ApplicationException	{
 		this.acl=acl;
 	}
-	public void setAcl(Object acl) throws ApplicationException	{
+	public void setAcl(Object acl)	{
 		this.acl=acl;
 	}
-	public void setStoreacl(Object acl) throws ApplicationException	{
+	public void setStoreacl(Object acl)	{
 		this.acl=acl;
 	}
 	
